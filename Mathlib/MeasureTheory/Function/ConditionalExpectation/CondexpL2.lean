@@ -3,9 +3,13 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
-import Mathlib.MeasureTheory.Function.L2Space
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
+public import Mathlib.MeasureTheory.Function.L2Space
+
+@[expose] public section
 
 /-! # Conditional expectation in L2
 

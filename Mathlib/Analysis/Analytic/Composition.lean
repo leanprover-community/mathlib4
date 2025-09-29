@@ -3,9 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johan Commelin
 -/
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Analytic.CPolynomialDef
-import Mathlib.Combinatorics.Enumerative.Composition
+module
+
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Analytic.CPolynomialDef
+public import Mathlib.Combinatorics.Enumerative.Composition
+
+@[expose] public section
 
 /-!
 # Composition of analytic functions

@@ -3,11 +3,14 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Fin.Tuple.Embedding
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Card
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Fin.Tuple.Embedding
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Set.Card
+
+@[expose] public section
 
 /-! # Existence of embeddings from finite types
 

@@ -3,9 +3,13 @@ Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Algebra.Group.Commutator
-import Mathlib.GroupTheory.Subgroup.Centralizer
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Commutator
+public import Mathlib.GroupTheory.Subgroup.Centralizer
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+
+@[expose] public section
 
 /-!
 # Commutators of Subgroups

@@ -3,8 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Order.CompleteBooleanAlgebra
+
+@[expose] public section
 
 /-!
 # Properties of morphisms

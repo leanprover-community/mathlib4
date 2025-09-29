@@ -3,12 +3,16 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Lean.Expr.Rat
-import Mathlib.Tactic.Hint
-import Mathlib.Tactic.NormNum.Result
-import Mathlib.Util.AtLocation
-import Mathlib.Util.Qq
-import Lean.Elab.Tactic.Location
+module
+
+public import Mathlib.Lean.Expr.Rat
+public import Mathlib.Tactic.Hint
+public import Mathlib.Tactic.NormNum.Result
+public import Mathlib.Util.AtLocation
+public import Mathlib.Util.Qq
+public import Lean.Elab.Tactic.Location
+
+@[expose] public section
 
 /-!
 ## `norm_num` core functionality

@@ -3,7 +3,11 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+
+@[expose] public section
 
 /-!
 # Preservation of projective objects

@@ -3,7 +3,11 @@ Copyright (c) 2023 Wen Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wen Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+module
+
+public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+
+@[expose] public section
 
 /-!
 # Projective Special Linear Group

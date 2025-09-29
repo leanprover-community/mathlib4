@@ -3,9 +3,13 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn
 -/
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.Algebra.Category.Grp.EpiMono
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+
+@[expose] public section
 
 /-!
 # The concrete (co)kernels in the category of abelian groups are categorical (co)kernels.

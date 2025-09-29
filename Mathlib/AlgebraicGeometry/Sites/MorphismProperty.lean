@@ -3,8 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Joël Riou, Adam Topaz
 -/
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.Sites.MorphismProperty
+module
+
+public import Mathlib.AlgebraicGeometry.Pullbacks
+public import Mathlib.CategoryTheory.Sites.MorphismProperty
+
+@[expose] public section
 
 /-!
 

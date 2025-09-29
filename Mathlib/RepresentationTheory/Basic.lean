@@ -3,8 +3,12 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.Algebra.Group.Equiv.TypeTags
+module
+
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.Algebra.Group.Equiv.TypeTags
+
+@[expose] public section
 
 /-!
 # Monoid representations

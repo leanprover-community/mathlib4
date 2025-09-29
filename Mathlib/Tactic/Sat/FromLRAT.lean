@@ -3,8 +3,12 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.ByContra
+
+@[expose] public section
 
 /-!
 # `lrat_proof` command

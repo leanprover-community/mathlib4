@@ -3,11 +3,15 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.Riemannian.PathELength
-import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.Riemannian.PathELength
+public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+
+@[expose] public section
 
 /-! # Riemannian manifolds
 

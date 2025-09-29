@@ -3,9 +3,13 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.Topology.ContinuousMap.StarOrdered
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Data.Real.StarOrdered
+public import Mathlib.Topology.ContinuousMap.StarOrdered
+
+@[expose] public section
 
 /-! # Instances of `ContinuousSqrt`
 

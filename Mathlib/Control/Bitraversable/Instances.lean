@@ -3,8 +3,12 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Bitraversable.Lemmas
-import Mathlib.Control.Traversable.Lemmas
+module
+
+public import Mathlib.Control.Bitraversable.Lemmas
+public import Mathlib.Control.Traversable.Lemmas
+
+@[expose] public section
 
 /-!
 # Bitraversable instances

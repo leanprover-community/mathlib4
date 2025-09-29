@@ -3,10 +3,14 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Closed.Cartesian
-import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+
+@[expose] public section
 
 /-!
 # Cartesian closure of Type

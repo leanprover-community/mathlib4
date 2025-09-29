@@ -3,9 +3,13 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+
+@[expose] public section
 
 /-!
 # Definition of `mulExpNegMulSq` and properties

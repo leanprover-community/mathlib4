@@ -3,10 +3,14 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker, Devon Tuma, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Density
-import Mathlib.Probability.ConditionalProbability
-import Mathlib.Probability.ProbabilityMassFunction.Constructions
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.ProbabilityMassFunction.Constructions
+
+@[expose] public section
 
 /-!
 # Uniform distributions and probability mass functions

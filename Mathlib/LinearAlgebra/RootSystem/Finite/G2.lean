@@ -3,9 +3,13 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Base
-import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Base
+public import Mathlib.LinearAlgebra.RootSystem.Chain
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+
+@[expose] public section
 
 /-!
 # Properties of the `𝔤₂` root system.

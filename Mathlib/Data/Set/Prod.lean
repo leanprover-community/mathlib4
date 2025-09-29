@@ -3,8 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.SProd
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.SProd
+
+@[expose] public section
 
 /-!
 # Sets in product and pi types

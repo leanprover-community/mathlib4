@@ -3,8 +3,12 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
+module
+
+public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+
+@[expose] public section
 
 /-!
 # Topological results for integer-valued rings

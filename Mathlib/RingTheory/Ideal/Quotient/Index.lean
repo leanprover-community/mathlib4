@@ -3,15 +3,19 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.GroupTheory.Index
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.GroupTheory.Index
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.TensorProduct.Finite
+
+@[expose] public section
 
 /-!
 # Indices of ideals

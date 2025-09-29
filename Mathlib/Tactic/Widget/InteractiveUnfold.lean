@@ -3,10 +3,14 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Lean.GoalsLocation
-import Mathlib.Lean.Meta.KAbstractPositions
+module
+
+public import Mathlib.Tactic.NthRewrite
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import Mathlib.Lean.GoalsLocation
+public import Mathlib.Lean.Meta.KAbstractPositions
+
+@[expose] public section
 
 /-!
 

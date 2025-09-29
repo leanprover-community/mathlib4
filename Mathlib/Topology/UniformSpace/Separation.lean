@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.UniformSpace.Basic
+module
+
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.UniformSpace.Basic
+
+@[expose] public section
 
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.

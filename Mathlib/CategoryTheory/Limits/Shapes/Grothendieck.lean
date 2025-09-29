@@ -3,8 +3,12 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Grothendieck
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Grothendieck
+public import Mathlib.CategoryTheory.Limits.HasLimits
+
+@[expose] public section
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction

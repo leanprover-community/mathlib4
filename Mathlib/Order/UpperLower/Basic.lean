@@ -3,10 +3,14 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Interval.Set.OrderEmbedding
-import Mathlib.Order.SetNotation
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Order.Interval.Set.OrderEmbedding
+public import Mathlib.Order.SetNotation
+public import Mathlib.Order.WellFounded
+
+@[expose] public section
 
 /-!
 # Properties of unbundled upper/lower sets

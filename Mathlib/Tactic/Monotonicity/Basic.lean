@@ -3,8 +3,12 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Lean.Elab.Tactic.SolveByElim
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Lean.Elab.Tactic.SolveByElim
+public import Mathlib.Tactic.Monotonicity.Attr
+
+@[expose] public section
 
 /-! # Monotonicity tactic
 

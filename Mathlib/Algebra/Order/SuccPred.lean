@@ -3,12 +3,16 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.SuccPred.WithBot
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.SuccPred.WithBot
+
+@[expose] public section
 
 /-!
 # Interaction between successors and arithmetic

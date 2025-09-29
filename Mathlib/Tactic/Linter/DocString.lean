@@ -3,8 +3,11 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
+module
 
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header
+
+@[expose] public section
 
 /-!
 #  The "DocString" style linter

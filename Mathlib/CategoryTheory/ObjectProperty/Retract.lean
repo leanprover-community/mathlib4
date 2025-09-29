@@ -3,8 +3,12 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.CategoryTheory.Retract
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.CategoryTheory.Retract
+
+@[expose] public section
 
 /-! # Properties of objects which are stable under retracts
 

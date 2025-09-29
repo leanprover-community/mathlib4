@@ -3,10 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.MeasureTheory.Integral.Average
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.MeasureTheory.Integral.Average
+
+@[expose] public section
 
 /-!
 # Jensen's inequality for integrals

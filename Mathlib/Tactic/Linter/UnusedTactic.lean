@@ -3,13 +3,16 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Parser.Syntax
-import Batteries.Tactic.Unreachable
+public import Lean.Parser.Syntax
+public import Batteries.Tactic.Unreachable
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
-import Mathlib.Tactic.Linter.UnusedTacticExtension
+public import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.UnusedTacticExtension
+
+@[expose] public section
 
 /-!
 # The unused tactic linter

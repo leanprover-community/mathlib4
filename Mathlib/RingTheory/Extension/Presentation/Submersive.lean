@@ -3,9 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.RingTheory.Extension.Presentation.Basic
+
+@[expose] public section
 
 /-!
 # Submersive presentations

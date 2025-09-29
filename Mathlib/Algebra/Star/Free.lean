@@ -3,8 +3,12 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Algebra.FreeAlgebra
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.FreeAlgebra
+
+@[expose] public section
 
 /-!
 # A *-algebra structure on the free algebra.

@@ -3,9 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Antidiag.Prod
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Multiset.NatAntidiagonal
+module
+
+public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Multiset.NatAntidiagonal
+
+@[expose] public section
 
 /-!
 # Antidiagonals in ℕ × ℕ as finsets

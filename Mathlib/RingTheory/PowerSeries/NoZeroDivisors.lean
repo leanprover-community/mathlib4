@@ -3,8 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
-import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.RingTheory.Ideal.Maps
+
+@[expose] public section
 
 /-!
 # Power series over rings with no zero divisors

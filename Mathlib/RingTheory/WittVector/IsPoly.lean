@@ -3,9 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Funext
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.RingTheory.WittVector.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.RingTheory.WittVector.Basic
+
+@[expose] public section
 /-!
 # The `IsPoly` predicate
 

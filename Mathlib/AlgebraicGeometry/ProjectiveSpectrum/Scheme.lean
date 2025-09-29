@@ -3,9 +3,13 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.RingTheory.GradedAlgebra.Radical
+module
+
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
+public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+public import Mathlib.RingTheory.GradedAlgebra.Radical
+
+@[expose] public section
 
 /-!
 # Proj as a scheme

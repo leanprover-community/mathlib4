@@ -3,8 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
+
+@[expose] public section
 
 /-!
 # The `simp_rw` tactic

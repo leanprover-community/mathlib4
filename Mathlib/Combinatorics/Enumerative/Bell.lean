@@ -3,9 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
+module
 
-import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.Data.Nat.Choose.Mul
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.Data.Nat.Choose.Mul
+
+@[expose] public section
 
 /-! # Bell numbers for multisets
 

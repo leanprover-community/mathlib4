@@ -3,8 +3,12 @@ Copyright (c) 2024 Google. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Wong
 -/
-import Mathlib.Computability.DFA
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Computability.DFA
+public import Mathlib.Data.Set.Finite.Basic
+
+@[expose] public section
 
 /-!
 # Myhill–Nerode theorem

@@ -3,11 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Submonoid
-import Mathlib.Data.DFinsupp.Sigma
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+module
+
+public import Mathlib.Data.DFinsupp.Submonoid
+public import Mathlib.Data.DFinsupp.Sigma
+public import Mathlib.Data.Finsupp.ToDFinsupp
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+
+@[expose] public section
 
 /-!
 # Properties of the module `Π₀ i, M i`

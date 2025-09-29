@@ -3,7 +3,11 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
+
+@[expose] public section
 
 /-!
 # Integral of `log ∘ sin`

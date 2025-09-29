@@ -3,9 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Jacobson.Radical
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.RingTheory.Jacobson.Radical
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.SimpleModule.Basic
+
+@[expose] public section
 
 /-!
 # Semiprimary rings

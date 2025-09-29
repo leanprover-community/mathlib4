@@ -3,8 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.MulChar.Basic
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.NumberTheory.MulChar.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Complex
+
+@[expose] public section
 
 /-!
 # Further Results on multiplicative characters

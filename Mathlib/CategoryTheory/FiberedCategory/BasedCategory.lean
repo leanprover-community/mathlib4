@@ -3,11 +3,14 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
-import Mathlib.CategoryTheory.Bicategory.Strict
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.Bicategory.Strict
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+
+@[expose] public section
 
 /-!
 # The bicategory of based categories

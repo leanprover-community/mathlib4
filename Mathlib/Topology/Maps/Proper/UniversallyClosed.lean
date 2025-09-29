@@ -3,8 +3,12 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.Compactification.StoneCech
+module
+
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.Compactification.StoneCech
+
+@[expose] public section
 
 /-!
 # A map is proper iff it is continuous and universally closed

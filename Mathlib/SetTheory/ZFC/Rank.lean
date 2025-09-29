@@ -3,9 +3,13 @@ Copyright (c) 2024 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Ordinal.Rank
-import Mathlib.SetTheory.ZFC.Basic
+module
+
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Ordinal.Rank
+public import Mathlib.SetTheory.ZFC.Basic
+
+@[expose] public section
 
 /-!
 # Ordinal ranks of PSet and ZFSet

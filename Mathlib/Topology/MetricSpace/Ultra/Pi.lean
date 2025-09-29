@@ -3,8 +3,12 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Pi
-import Mathlib.Topology.MetricSpace.Ultra.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
+
+@[expose] public section
 
 /-!
 # Ultrametric distances on pi types

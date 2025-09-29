@@ -3,10 +3,14 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.Order.LeftRightLim
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.Order.LeftRightLim
+
+@[expose] public section
 
 /-!
 # Stieltjes measures on the real line

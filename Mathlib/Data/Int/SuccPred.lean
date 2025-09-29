@@ -3,8 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.SuccPred
+
+@[expose] public section
 
 /-!
 # Successors and predecessors of integers

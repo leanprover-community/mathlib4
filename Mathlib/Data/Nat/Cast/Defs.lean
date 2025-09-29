@@ -3,10 +3,14 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Init
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.OfNat
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.OfNat
+
+@[expose] public section
 
 /-!
 # Cast of natural numbers

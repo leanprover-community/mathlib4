@@ -3,7 +3,11 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+
+@[expose] public section
 
 /-!
 # Paths in simplicial sets

@@ -3,10 +3,14 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
-import Mathlib.FieldTheory.RatFunc.Degree
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.FieldTheory.RatFunc.Degree
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+@[expose] public section
 
 /-!
 # Function fields

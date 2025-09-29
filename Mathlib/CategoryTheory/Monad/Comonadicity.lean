@@ -3,10 +3,14 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Monad.Equalizer
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Monad.Equalizer
+public import Mathlib.CategoryTheory.Monad.Limits
+
+@[expose] public section
 
 /-!
 # Comonadicity theorems

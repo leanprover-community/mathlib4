@@ -3,9 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+module
+
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+
+@[expose] public section
 
 /-!
 

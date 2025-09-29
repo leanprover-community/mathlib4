@@ -3,10 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.PFun
-import Mathlib.Data.Vector3
-import Mathlib.NumberTheory.PellMatiyasevic
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Data.PFun
+public import Mathlib.Data.Vector3
+public import Mathlib.NumberTheory.PellMatiyasevic
+
+@[expose] public section
 
 /-!
 # Diophantine functions and Matiyasevic's theorem

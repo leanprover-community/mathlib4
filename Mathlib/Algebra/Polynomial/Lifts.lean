@@ -3,9 +3,13 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Eval.Subring
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.Subring
+public import Mathlib.Algebra.Polynomial.Monic
+
+@[expose] public section
 
 /-!
 # Polynomials that lift

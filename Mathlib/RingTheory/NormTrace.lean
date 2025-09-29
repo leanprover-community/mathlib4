@@ -3,8 +3,12 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.Trace.Defs
+module
+
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.Trace.Defs
+
+@[expose] public section
 
 /-!
 # Relation between norms and traces

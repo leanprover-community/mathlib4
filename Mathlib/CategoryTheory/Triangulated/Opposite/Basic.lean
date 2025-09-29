@@ -3,9 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Shift.Opposite
-import Mathlib.CategoryTheory.Shift.Pullback
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Shift.Opposite
+public import Mathlib.CategoryTheory.Shift.Pullback
+
+@[expose] public section
 
 /-!
 # The shift on the opposite category of a pretriangulated category

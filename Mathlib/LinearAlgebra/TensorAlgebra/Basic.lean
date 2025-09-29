@@ -3,11 +3,15 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.Algebra.RingQuot
-import Mathlib.Algebra.TrivSqZeroExt
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.LinearAlgebra.Multilinear.Basic
+
+@[expose] public section
 
 /-!
 # Tensor Algebras

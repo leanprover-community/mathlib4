@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Set.Finite.Basic
+
+@[expose] public section
 
 /-!
 # Preimage of a `Finset` under an injective map.

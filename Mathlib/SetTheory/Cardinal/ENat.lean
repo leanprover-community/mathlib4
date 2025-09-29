@@ -3,9 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Data.ENat.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
+
+@[expose] public section
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`

@@ -3,11 +3,15 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Presheaf.Basic
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Over
+module
+
+public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Over
+
+@[expose] public section
 
 /-!
 # Colimit of representables

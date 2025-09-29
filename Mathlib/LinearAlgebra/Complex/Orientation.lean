@@ -3,8 +3,12 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.LinearAlgebra.Orientation
+module
+
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.LinearAlgebra.Orientation
+
+@[expose] public section
 
 /-!
 # The standard orientation on `ℂ`.

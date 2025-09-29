@@ -3,13 +3,17 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.Order.Fin.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.SuppressCompilation
+
+@[expose] public section
 
 /-!
 # Composable arrows

@@ -3,10 +3,14 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.CollectFacts
-import Mathlib.Tactic.Order.Preprocessing
-import Mathlib.Tactic.Order.Graph.Basic
-import Mathlib.Tactic.Order.Graph.Tarjan
+module
+
+public import Mathlib.Tactic.Order.CollectFacts
+public import Mathlib.Tactic.Order.Preprocessing
+public import Mathlib.Tactic.Order.Graph.Basic
+public import Mathlib.Tactic.Order.Graph.Tarjan
+
+@[expose] public section
 
 /-!
 # `order` tactic

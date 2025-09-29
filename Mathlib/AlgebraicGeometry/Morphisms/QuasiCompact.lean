@@ -3,9 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.Topology.Spectral.Hom
-import Mathlib.AlgebraicGeometry.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.Topology.Spectral.Hom
+public import Mathlib.AlgebraicGeometry.Limits
+
+@[expose] public section
 
 /-!
 # Quasi-compact morphisms

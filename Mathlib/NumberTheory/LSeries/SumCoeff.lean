@@ -3,11 +3,15 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.NumberTheory.AbelSummation
-import Mathlib.NumberTheory.LSeries.Basic
+module
+
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.LSeries.Basic
+
+@[expose] public section
 
 /-!
 # Partial sums of coefficients of L-series

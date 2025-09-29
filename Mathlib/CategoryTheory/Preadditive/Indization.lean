@@ -3,10 +3,14 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Indization.Category
-import Mathlib.CategoryTheory.Preadditive.Transfer
-import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.Algebra.Category.Grp.LeftExactFunctor
+module
+
+public import Mathlib.CategoryTheory.Limits.Indization.Category
+public import Mathlib.CategoryTheory.Preadditive.Transfer
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+public import Mathlib.Algebra.Category.Grp.LeftExactFunctor
+
+@[expose] public section
 
 /-!
 # The category of ind-objects is preadditive

@@ -3,9 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Monoid.Defs
+
+@[expose] public section
 
 /-!
 # Topological (sub)algebras over `Rat`

@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
-import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
-import Mathlib.AlgebraicTopology.ModelCategory.Instances
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
+public import Mathlib.AlgebraicTopology.ModelCategory.Instances
+
+@[expose] public section
 
 /-!
 # Model categories

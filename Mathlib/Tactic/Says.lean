@@ -3,10 +3,14 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
-import Batteries.Linter.UnreachableTactic
-import Qq.Match
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Tactic.TryThis
+public import Batteries.Linter.UnreachableTactic
+public import Qq.Match
+
+@[expose] public section
 
 /-!
 # The `says` tactic combinator.

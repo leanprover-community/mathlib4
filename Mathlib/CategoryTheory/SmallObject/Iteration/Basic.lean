@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.Interval.Set.InitialSeg
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.Interval.Set.InitialSeg
+
+@[expose] public section
 
 /-! # Transfinite iterations of a successor structure
 

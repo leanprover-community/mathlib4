@@ -3,8 +3,12 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
-import Mathlib.Control.ULiftable
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Control.ULiftable
+public import Mathlib.Order.Fin.Basic
+
+@[expose] public section
 
 /-!
 # Rand Monad and Random Class

@@ -3,8 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Pi
-import Mathlib.RingTheory.Unramified.Field
+module
+
+public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Unramified.Field
+
+@[expose] public section
 
 /-!
 # Étale algebras over fields

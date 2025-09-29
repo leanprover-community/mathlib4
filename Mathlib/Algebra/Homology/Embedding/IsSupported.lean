@@ -3,9 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Basic
+public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+
+@[expose] public section
 
 /-! # Support of homological complexes
 

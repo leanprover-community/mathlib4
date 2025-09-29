@@ -3,10 +3,14 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Bitwise
-import Mathlib.Data.Nat.Size
-import Batteries.Data.Int
+module
+
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Bitwise
+public import Mathlib.Data.Nat.Size
+public import Batteries.Data.Int
+
+@[expose] public section
 
 /-!
 # Bitwise operations on integers

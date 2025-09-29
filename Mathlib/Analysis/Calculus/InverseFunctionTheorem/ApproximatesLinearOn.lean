@@ -3,9 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Topology.PartialHomeomorph
+module
+
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.PartialHomeomorph
+
+@[expose] public section
 /-!
 # Non-linear maps close to affine maps
 

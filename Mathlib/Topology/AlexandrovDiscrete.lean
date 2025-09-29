@@ -3,10 +3,14 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Compactness.NhdsKer
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Compactness.NhdsKer
+
+@[expose] public section
 
 /-!
 # Alexandrov-discrete topological spaces

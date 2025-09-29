@@ -3,8 +3,12 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.PEquiv
+module
+
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.PEquiv
+
+@[expose] public section
 
 /-!
 # partial equivalences for matrices

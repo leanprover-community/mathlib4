@@ -3,11 +3,15 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-import Mathlib.AlgebraicTopology.CechNerve
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.CechNerve
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Tactic.FinCases
+
+@[expose] public section
 
 /-!
 

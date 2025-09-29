@@ -3,10 +3,13 @@ Copyright (c) 2025 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
-import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Data.Set.Card
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+@[expose] public section
 
 /-!
 # Results using cardinal arithmetic

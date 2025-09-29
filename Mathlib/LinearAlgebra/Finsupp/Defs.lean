@@ -3,9 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finsupp.SMul
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finsupp.SMul
+
+@[expose] public section
 
 /-!
 # Properties of the module `α →₀ M`

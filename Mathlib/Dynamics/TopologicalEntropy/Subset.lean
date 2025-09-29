@@ -3,7 +3,11 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
+module
+
+public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
+
+@[expose] public section
 
 /-!
 # Topological entropy of subsets: monotonicity, closure, union

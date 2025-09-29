@@ -4,11 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.LinearMap.DivisionRing
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Algebra.Module.LinearMap.DivisionRing
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Module.Basic
+
+@[expose] public section
 
 /-!
 # Continuous linear maps

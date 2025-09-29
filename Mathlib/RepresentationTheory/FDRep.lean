@@ -3,12 +3,16 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.FGModuleCat.Limits
-import Mathlib.Algebra.Category.FGModuleCat.Colimits
-import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
-import Mathlib.CategoryTheory.Preadditive.Schur
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.RepresentationTheory.Rep
+module
+
+public import Mathlib.Algebra.Category.FGModuleCat.Limits
+public import Mathlib.Algebra.Category.FGModuleCat.Colimits
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
+public import Mathlib.CategoryTheory.Preadditive.Schur
+public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.Rep
+
+@[expose] public section
 
 /-!
 # `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.

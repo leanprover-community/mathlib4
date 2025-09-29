@@ -3,10 +3,14 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Utensil Song
 -/
-import Mathlib.Algebra.RingQuot
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.Isometry
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+module
+
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+
+@[expose] public section
 
 /-!
 # Clifford Algebras

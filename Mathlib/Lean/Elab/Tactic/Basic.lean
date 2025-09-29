@@ -3,7 +3,11 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jon Eugster
 -/
-import Mathlib.Lean.Meta
+module
+
+public import Mathlib.Lean.Meta
+
+@[expose] public section
 /-!
 # Additions to `Lean.Elab.Tactic.Basic`
 -/

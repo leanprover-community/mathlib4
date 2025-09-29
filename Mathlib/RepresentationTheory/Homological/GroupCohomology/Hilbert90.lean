@@ -3,8 +3,12 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.FieldTheory.Fixed
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import Mathlib.FieldTheory.Fixed
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+
+@[expose] public section
 
 /-!
 # Hilbert's Theorem 90

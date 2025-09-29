@@ -3,8 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yuyang Zhao
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+
+@[expose] public section
 
 /-!
 # Algebra towers for polynomial

@@ -3,17 +3,21 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Basis.Fin
-import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.LinearAlgebra.Basis.SMul
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.StdBasis
-import Mathlib.RingTheory.AlgebraTower
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Fin
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.LinearAlgebra.Basis.SMul
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.StdBasis
+public import Mathlib.RingTheory.AlgebraTower
+public import Mathlib.RingTheory.Ideal.Span
+
+@[expose] public section
 
 /-!
 # Linear maps and matrices

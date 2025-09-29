@@ -3,10 +3,14 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
-import Mathlib.CategoryTheory.Preadditive.Transfer
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+public import Mathlib.CategoryTheory.Preadditive.Transfer
+
+@[expose] public section
 
 /-!
 # Transferring "abelian-ness" across a functor

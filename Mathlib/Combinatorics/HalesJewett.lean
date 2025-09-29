@@ -3,11 +3,15 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Shrink
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Finite.Prod
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Shrink
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+@[expose] public section
 
 /-!
 # The Hales-Jewett theorem

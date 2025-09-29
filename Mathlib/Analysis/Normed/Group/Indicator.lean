@@ -3,9 +3,13 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Analysis.Normed.Group.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Analysis.Normed.Group.Basic
+
+@[expose] public section
 
 /-!
 # Indicator function and (e)norm

@@ -3,12 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Shrink
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Types.Limits
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+
+@[expose] public section
 
 /-!
 # The category of (commutative) (additive) monoids has all limits

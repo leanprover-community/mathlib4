@@ -3,8 +3,11 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
+module
 
-import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Fin.VecNotation
+
+@[expose] public section
 
 /-! # Function types of a given heterogeneous arity
 

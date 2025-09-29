@@ -3,9 +3,13 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.GaussSum
-import Mathlib.NumberTheory.MulChar.Lemmas
-import Mathlib.RingTheory.RootsOfUnity.Lemmas
+module
+
+public import Mathlib.NumberTheory.GaussSum
+public import Mathlib.NumberTheory.MulChar.Lemmas
+public import Mathlib.RingTheory.RootsOfUnity.Lemmas
+
+@[expose] public section
 
 /-!
 # Jacobi Sums

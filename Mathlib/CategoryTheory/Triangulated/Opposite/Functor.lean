@@ -3,8 +3,12 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
-import Mathlib.CategoryTheory.Adjunction.Opposites
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+
+@[expose] public section
 
 /-!
 # Opposites of functors between pretriangulated categories,

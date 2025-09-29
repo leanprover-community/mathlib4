@@ -3,9 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Star.Pi
-import Mathlib.LinearAlgebra.Matrix.RowCol
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.RowCol
+
+@[expose] public section
 
 /-!
 # Dot product of two vectors

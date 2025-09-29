@@ -3,9 +3,13 @@ Copyright (c) 2024 Elliot Dean Young and Jiazhen Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiazhen Xia, Elliot Dean Young, Joël Riou
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Category.TopCat.Sphere
-import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Category.TopCat.Sphere
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+
+@[expose] public section
 
 /-!
 # CW-complexes

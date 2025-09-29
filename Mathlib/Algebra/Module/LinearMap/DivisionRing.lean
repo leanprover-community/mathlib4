@@ -3,8 +3,12 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Span.Defs
+
+@[expose] public section
 
 /-!
 # Some lemmas about linear functionals on division rings

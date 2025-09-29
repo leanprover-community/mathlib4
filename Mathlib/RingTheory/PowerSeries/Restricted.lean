@@ -3,11 +3,14 @@ Copyright (c) 2025 William Coram. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: William Coram
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Ultra
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Tactic.Bound
+public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Tactic.Bound
+
+@[expose] public section
 
 /-!
 # Restricted power series

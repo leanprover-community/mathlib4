@@ -3,12 +3,16 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Instances.ZMultiples
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Instances.ZMultiples
+
+@[expose] public section
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane

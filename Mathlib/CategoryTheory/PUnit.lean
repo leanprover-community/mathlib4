@@ -3,8 +3,12 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.Discrete.Basic
+
+@[expose] public section
 
 /-!
 # The category `Discrete PUnit`

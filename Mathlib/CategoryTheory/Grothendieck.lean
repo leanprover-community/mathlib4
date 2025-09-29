@@ -3,9 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Category.Cat.AsSmall
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Comma.Over.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Cat.AsSmall
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+
+@[expose] public section
 
 /-!
 # The Grothendieck construction

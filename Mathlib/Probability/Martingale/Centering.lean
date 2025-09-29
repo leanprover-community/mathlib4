@@ -3,7 +3,11 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Martingale.Basic
+module
+
+public import Mathlib.Probability.Martingale.Basic
+
+@[expose] public section
 
 /-!
 # Centering lemma for stochastic processes

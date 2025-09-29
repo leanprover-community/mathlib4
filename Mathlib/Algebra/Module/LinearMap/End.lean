@@ -4,8 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Equiv.Opposite
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+module
+
+public import Mathlib.Algebra.Module.Equiv.Opposite
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+
+@[expose] public section
 
 /-!
 # Endomorphisms of a module

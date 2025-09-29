@@ -3,8 +3,12 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.SuccPred
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Embedding.Basic
+
+@[expose] public section
 
 /-!
 # Embeddings of `Fin n`

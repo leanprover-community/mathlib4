@@ -3,9 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Anne Baanen
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.Hom.Basic
+
+@[expose] public section
 
 /-!
 # Lattice structure on order homomorphisms

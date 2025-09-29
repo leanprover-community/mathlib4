@@ -3,10 +3,14 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+@[expose] public section
 
 /-!
 

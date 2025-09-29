@@ -3,11 +3,15 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.GroupTheory.Perm.Option
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Tactic.ApplyFun
+
+@[expose] public section
 
 /-!
 # Derangements on types

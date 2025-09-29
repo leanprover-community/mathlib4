@@ -3,7 +3,11 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+
+@[expose] public section
 
 /-!
 # Chebyshev-Markov inequality in terms of Lp seminorms

@@ -3,8 +3,12 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Data.List.Triplewise
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Data.List.Triplewise
+
+@[expose] public section
 
 /-!
 # Betweenness for lists of points.

@@ -3,11 +3,15 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Order.Ring.Cast
+module
+
+public import Mathlib.Tactic.NormNum.Eq
+public import Mathlib.Algebra.Order.Field.Defs
+public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.Monoid.WithTop
+public import Mathlib.Algebra.Order.Ring.Cast
+
+@[expose] public section
 
 /-!
 # `norm_num` extensions for inequalities.

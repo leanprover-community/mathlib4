@@ -3,10 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Vasilii Nesterov
 -/
-import Mathlib.Data.Seq.Defs
-import Mathlib.Data.ENat.Basic
-import Mathlib.Tactic.ENatToNat
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Data.Seq.Defs
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Tactic.ApplyFun
+
+@[expose] public section
 
 /-!
 # Basic properties of sequences (possibly infinite lists)

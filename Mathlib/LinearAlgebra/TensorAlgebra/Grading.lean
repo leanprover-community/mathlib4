@@ -3,8 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+
+@[expose] public section
 
 /-!
 # Results about the grading structure of the tensor algebra

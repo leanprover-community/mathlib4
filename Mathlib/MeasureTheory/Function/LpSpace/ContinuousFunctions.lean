@@ -3,10 +3,14 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
-import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.Topology.ContinuousMap.Compact
+module
+
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.Topology.ContinuousMap.Compact
+
+@[expose] public section
 
 /-!
 # Continuous functions in Lp space

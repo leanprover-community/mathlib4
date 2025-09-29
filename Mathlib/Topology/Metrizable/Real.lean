@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Order.Real
+module
+
+public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.Order.MonotoneContinuity
+public import Mathlib.Topology.Order.Real
+
+@[expose] public section
 
 /-!
 # `ENNReal` is metrizable

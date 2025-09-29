@@ -3,7 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+
+@[expose] public section
 
 /-!
 # Bind operation for multisets

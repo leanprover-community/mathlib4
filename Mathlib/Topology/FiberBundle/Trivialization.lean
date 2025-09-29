@@ -3,11 +3,15 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Bundle
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.PartialHomeomorph
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Data.Bundle
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.PartialHomeomorph
+public import Mathlib.Topology.Order.Basic
+
+@[expose] public section
 
 /-!
 # Trivializations

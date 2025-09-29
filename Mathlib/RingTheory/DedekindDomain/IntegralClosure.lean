@@ -3,13 +3,17 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.BilinearForm.DualLattice
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.RingTheory.Trace.Basic
-import Mathlib.RingTheory.RingHom.Finite
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.Localization.Module
+public import Mathlib.RingTheory.Trace.Basic
+public import Mathlib.RingTheory.RingHom.Finite
+
+@[expose] public section
 
 /-!
 # Integral closure of Dedekind domains

@@ -3,13 +3,17 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.DefView
-import Lean.Util.CollectAxioms
-import ImportGraph.Imports
-import ImportGraph.RequiredModules
+module
+
+public import Lean.Elab.DefView
+public import Lean.Util.CollectAxioms
+public import ImportGraph.Imports
+public import ImportGraph.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header
+
+@[expose] public section
 
 /-! # `#min_imports in` a command to find minimal imports
 

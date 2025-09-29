@@ -3,10 +3,13 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
-import Mathlib.ModelTheory.Algebra.Field.Basic
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
+public import Mathlib.ModelTheory.Algebra.Field.Basic
+
+@[expose] public section
 
 /-!
 # First-order theory of fields

@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+module
+
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+
+@[expose] public section
 
 /-!
 # Resolutions for a morphism of localizers

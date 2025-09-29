@@ -3,11 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Basis.Cardinality
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Cardinality
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.LinearAlgebra.StdBasis
+public import Mathlib.RingTheory.Finiteness.Basic
+
+@[expose] public section
 
 /-!
 # Finite modules and types with finitely many elements

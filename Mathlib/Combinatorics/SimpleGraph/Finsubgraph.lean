@@ -3,8 +3,12 @@ Copyright (c) 2022 Joanna Choules. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joanna Choules
 -/
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
+
+@[expose] public section
 
 /-!
 # Homomorphisms from finite subgraphs

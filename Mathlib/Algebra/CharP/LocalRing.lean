@@ -3,10 +3,14 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+
+@[expose] public section
 
 /-!
 # Characteristics of local rings

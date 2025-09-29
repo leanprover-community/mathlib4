@@ -3,10 +3,14 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Mathlib.Topology.Category.Profinite.AsLimit
-import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.Topology.ClopenBox
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+public import Mathlib.Topology.Category.Profinite.AsLimit
+public import Mathlib.Topology.Category.Profinite.CofilteredLimit
+public import Mathlib.Topology.ClopenBox
+
+@[expose] public section
 /-!
 
 # Light profinite spaces

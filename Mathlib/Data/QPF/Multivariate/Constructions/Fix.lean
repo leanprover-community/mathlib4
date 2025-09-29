@@ -3,8 +3,12 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.W
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.W
+public import Mathlib.Data.QPF.Multivariate.Basic
+
+@[expose] public section
 
 /-!
 # The initial algebra of a multivariate qpf is again a qpf.

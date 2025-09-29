@@ -3,9 +3,12 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.Order.Ring.InjSurj
+
+@[expose] public section
 
 /-!
 # Ordered instances on subfields

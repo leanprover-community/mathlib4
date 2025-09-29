@@ -3,12 +3,16 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Int.Cast.Basic
-import Qq.MetaM
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Int.Cast.Basic
+public import Qq.MetaM
+
+@[expose] public section
 
 /-!
 ## The `Result` type for `norm_num`

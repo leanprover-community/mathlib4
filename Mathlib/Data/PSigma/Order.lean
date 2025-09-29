@@ -3,12 +3,16 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Minchao Wu
 -/
-import Mathlib.Data.Sigma.Lex
-import Mathlib.Util.Notation3
-import Init.NotationExtra
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Order.Lattice
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Data.Sigma.Lex
+public import Mathlib.Util.Notation3
+public import Init.NotationExtra
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.BoundedOrder.Basic
+
+@[expose] public section
 
 /-!
 # Lexicographic order on a sigma type

@@ -3,9 +3,13 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.UnitInterval
+
+@[expose] public section
 
 /-!
 # The standard simplex

@@ -3,8 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.WithTerminal.Basic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
+
+@[expose] public section
 
 /-!
 # Further lemmas on `WithTerminal`

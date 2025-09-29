@@ -3,9 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Order.RelClasses
+module
+
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.RelClasses
+
+@[expose] public section
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms

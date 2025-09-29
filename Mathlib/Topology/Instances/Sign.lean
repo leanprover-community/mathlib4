@@ -3,8 +3,12 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Sign.Defs
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Data.Sign.Defs
+public import Mathlib.Topology.Order.Basic
+
+@[expose] public section
 
 /-!
 # Topology on `SignType`

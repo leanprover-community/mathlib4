@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Logic.Embedding.Basic
+
+@[expose] public section
 
 /-!
 # More lemmas about group actions

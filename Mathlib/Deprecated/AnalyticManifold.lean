@@ -3,8 +3,12 @@ Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
+
+@[expose] public section
 
 /-!
 # Analytic manifolds (possibly with boundary or corners)

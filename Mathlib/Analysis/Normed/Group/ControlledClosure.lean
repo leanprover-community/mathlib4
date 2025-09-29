@@ -3,8 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.SpecificLimits.Normed
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.SpecificLimits.Normed
+
+@[expose] public section
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 

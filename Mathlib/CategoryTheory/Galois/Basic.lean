@@ -3,14 +3,18 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.Data.Finite.Card
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.FintypeCat
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.Data.Finite.Card
+
+@[expose] public section
 
 /-!
 # Definition and basic properties of Galois categories

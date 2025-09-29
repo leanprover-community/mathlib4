@@ -3,10 +3,14 @@ Copyright (c) 2023 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+@[expose] public section
 
 /-!
 # Double factorials

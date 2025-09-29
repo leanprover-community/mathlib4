@@ -3,10 +3,14 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Products.Unitor
+module
+
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Products.Unitor
+
+@[expose] public section
 
 /-!
 # Comma categories

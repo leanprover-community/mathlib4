@@ -3,8 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
+
+@[expose] public section
 
 /-!
 # The category of commutative rings has all colimits.

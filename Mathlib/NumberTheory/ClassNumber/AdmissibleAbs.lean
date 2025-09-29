@@ -3,9 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+public import Mathlib.Data.Real.Archimedean
+
+@[expose] public section
 
 /-!
 # Admissible absolute value on the integers

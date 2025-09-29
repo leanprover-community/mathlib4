@@ -3,9 +3,13 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Balanced
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Balanced
+public import Mathlib.CategoryTheory.Functor.EpiMono
+
+@[expose] public section
 
 /-!
 # Balanced categories and functors reflecting isomorphisms

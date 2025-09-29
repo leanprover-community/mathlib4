@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.PropInstances
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Order.PropInstances
+public import Mathlib.Order.GaloisConnection.Defs
+
+@[expose] public section
 
 /-!
 # Heyting algebras

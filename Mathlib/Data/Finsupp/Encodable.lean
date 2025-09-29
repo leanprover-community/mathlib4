@@ -3,8 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Data.DFinsupp.Encodable
+module
+
+public import Mathlib.Data.Finsupp.ToDFinsupp
+public import Mathlib.Data.DFinsupp.Encodable
+
+@[expose] public section
 /-!
 # `Encodable` and `Countable` instances for `α →₀ β`
 

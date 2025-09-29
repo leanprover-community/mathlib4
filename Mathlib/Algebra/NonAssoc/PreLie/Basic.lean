@@ -3,9 +3,13 @@ Copyright (c) 2025 Nikolas Tapia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Algebra.Ring.Associator
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Algebra.Ring.Associator
+public import Mathlib.GroupTheory.GroupAction.Ring
+
+@[expose] public section
 /-!
 # Pre-Lie rings and algebras
 

@@ -3,8 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Harald Carlens, Andrew Yang, Jujian Zhang
 -/
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+
+@[expose] public section
 
 /-!
 

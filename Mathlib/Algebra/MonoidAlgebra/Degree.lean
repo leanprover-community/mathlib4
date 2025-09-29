@@ -3,9 +3,13 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Order.Filter.Extr
+module
+
+public import Mathlib.Algebra.Group.Subsemigroup.Operations
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Order.Filter.Extr
+
+@[expose] public section
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`

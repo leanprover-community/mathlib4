@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Subobject.FactorThru
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Subobject.FactorThru
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.Data.Finset.Lattice.Fold
+
+@[expose] public section
 
 /-!
 # The lattice of subobjects

@@ -3,11 +3,15 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.Tactic.FinCases
+
+@[expose] public section
 
 /-!
 # Affine combinations of points

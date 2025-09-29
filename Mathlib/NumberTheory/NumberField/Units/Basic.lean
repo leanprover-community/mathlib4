@@ -3,10 +3,14 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.GroupTheory.Torsion
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.GroupTheory.Torsion
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Complex
+
+@[expose] public section
 
 /-!
 # Units of a number field

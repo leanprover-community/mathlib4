@@ -3,8 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.Injective.Resolution
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
+
+@[expose] public section
 
 /-!
 # Right-derived functors

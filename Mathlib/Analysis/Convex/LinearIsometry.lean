@@ -3,9 +3,13 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.ContinuousLinearEquiv
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
+module
+
+public import Mathlib.Analysis.Convex.ContinuousLinearEquiv
+public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+
+@[expose] public section
 
 /-!
 # (Strict) convexity and linear isometries

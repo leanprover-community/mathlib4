@@ -3,10 +3,13 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Batteries.Data.String.Matcher
-import Mathlib.Data.Nat.Notation
-import Lake.Util.Casing
+public import Batteries.Data.String.Matcher
+public import Mathlib.Data.Nat.Notation
+public import Lake.Util.Casing
+
+@[expose] public section
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.

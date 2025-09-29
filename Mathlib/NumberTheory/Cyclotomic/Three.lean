@@ -3,11 +3,14 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Pietro Monticone
 -/
+module
 
-import Mathlib.NumberTheory.Cyclotomic.Embeddings
-import Mathlib.NumberTheory.Cyclotomic.Rat
-import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-import Mathlib.RingTheory.Fintype
+public import Mathlib.NumberTheory.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.Cyclotomic.Rat
+public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+public import Mathlib.RingTheory.Fintype
+
+@[expose] public section
 
 /-!
 # Third Cyclotomic Field

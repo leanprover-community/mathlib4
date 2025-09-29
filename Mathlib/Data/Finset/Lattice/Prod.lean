@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finset.Prod
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Prod
+
+@[expose] public section
 
 /-!
 # Lattice operations on finsets of products

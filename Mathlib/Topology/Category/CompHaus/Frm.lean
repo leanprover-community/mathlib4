@@ -3,10 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+module
 
-import Mathlib.Order.Category.Frm
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Sets.Opens
+public import Mathlib.Order.Category.Frm
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Sets.Opens
+
+@[expose] public section
 
 /-! The forgetful functor from `TopCatᵒᵖ` to `Frm`. -/
 

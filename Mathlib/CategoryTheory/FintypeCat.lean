@@ -3,10 +3,14 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Data.Finite.Prod
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.Data.Finite.Prod
+
+@[expose] public section
 
 /-!
 # The category of finite types.

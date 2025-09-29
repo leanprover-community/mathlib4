@@ -3,8 +3,12 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.Yoneda
+
+@[expose] public section
 
 /-!
 # Adjunctions between functors

@@ -3,9 +3,13 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Util.Heartbeats
-import Lean.Meta.Tactic.TryThis
+module
+
+public import Mathlib.Init
+public import Lean.Util.Heartbeats
+public import Lean.Meta.Tactic.TryThis
+
+@[expose] public section
 
 /-!
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.

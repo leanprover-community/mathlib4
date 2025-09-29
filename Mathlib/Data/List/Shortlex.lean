@@ -3,10 +3,13 @@ Copyright (c) 2024 Hannah Fechtner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hannah Fechtner
 -/
+module
 
-import Mathlib.Data.List.Lex
-import Mathlib.Tactic.Linarith
-import Mathlib.Order.RelClasses
+public import Mathlib.Data.List.Lex
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Order.RelClasses
+
+@[expose] public section
 
 /-!
 # Shortlex ordering of lists.

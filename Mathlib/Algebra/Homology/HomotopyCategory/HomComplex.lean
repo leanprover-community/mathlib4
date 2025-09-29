@@ -3,12 +3,16 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Tactic.Linarith
+
+@[expose] public section
 
 /-! The cochain complex of homomorphisms between cochain complexes
 

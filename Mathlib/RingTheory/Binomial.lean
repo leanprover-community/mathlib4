@@ -3,15 +3,19 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Polynomial.Smeval
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Data.NNRat.Order
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Polynomial.Smeval
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Module
+
+@[expose] public section
 
 /-!
 # Binomial rings

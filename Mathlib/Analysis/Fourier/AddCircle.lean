@@ -3,15 +3,19 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Analysis.InnerProductSpace.l2Space
-import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Analysis.InnerProductSpace.l2Space
+public import Mathlib.MeasureTheory.Function.ContinuousMapDense
+public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+
+@[expose] public section
 
 /-!
 

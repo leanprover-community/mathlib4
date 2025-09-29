@@ -3,15 +3,19 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-import Lean.Elab.BuiltinCommand
-import Lean.Elab.MacroArgUtil
-import Mathlib.Lean.Elab.Term
-import Mathlib.Lean.PrettyPrinter.Delaborator
-import Mathlib.Tactic.ScopedNS
-import Batteries.Linter.UnreachableTactic
-import Batteries.Util.ExtendedBinder
-import Batteries.Lean.Syntax
-import Lean.Elab.AuxDef
+module
+
+public import Lean.Elab.BuiltinCommand
+public import Lean.Elab.MacroArgUtil
+public import Mathlib.Lean.Elab.Term
+public import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Tactic.ScopedNS
+public import Batteries.Linter.UnreachableTactic
+public import Batteries.Util.ExtendedBinder
+public import Batteries.Lean.Syntax
+public import Lean.Elab.AuxDef
+
+@[expose] public section
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.

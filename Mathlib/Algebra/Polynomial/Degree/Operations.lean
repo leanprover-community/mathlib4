@@ -3,9 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+module
+
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
+
+@[expose] public section
 
 /-!
 # Lemmas for calculating the degree of univariate polynomials

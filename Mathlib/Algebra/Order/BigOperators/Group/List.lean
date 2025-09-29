@@ -3,9 +3,13 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+
+@[expose] public section
 
 /-!
 # Big operators on a list in ordered groups

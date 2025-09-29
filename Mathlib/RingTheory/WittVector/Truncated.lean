@@ -3,7 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.InitTail
+module
+
+public import Mathlib.RingTheory.WittVector.InitTail
+
+@[expose] public section
 
 /-!
 

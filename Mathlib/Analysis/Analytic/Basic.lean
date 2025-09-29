@@ -3,8 +3,12 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.ConvergenceRadius
-import Mathlib.Topology.Algebra.InfiniteSum.Module
+module
+
+public import Mathlib.Analysis.Analytic.ConvergenceRadius
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+
+@[expose] public section
 
 /-!
 # Analytic functions

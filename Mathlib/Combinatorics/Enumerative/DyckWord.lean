@@ -3,9 +3,13 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Batteries.Data.List.Count
-import Mathlib.Combinatorics.Enumerative.Catalan
-import Mathlib.Tactic.Positivity
+module
+
+public import Batteries.Data.List.Count
+public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Tactic.Positivity
+
+@[expose] public section
 
 /-!
 # Dyck words

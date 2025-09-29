@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
+
+@[expose] public section
 
 /-!
 # Noetherian rings and modules

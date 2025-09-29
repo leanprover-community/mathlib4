@@ -3,8 +3,12 @@ Copyright (c) 2021 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Fintype.Powerset
+module
+
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Fintype.Powerset
+
+@[expose] public section
 
 /-!
 # Set-like fintype

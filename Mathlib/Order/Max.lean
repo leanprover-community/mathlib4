@@ -3,7 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Order.Synonym
+
+@[expose] public section
 
 /-!
 # Minimal/maximal and bottom/top elements

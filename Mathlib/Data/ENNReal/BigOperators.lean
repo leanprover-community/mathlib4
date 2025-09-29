@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.WithTop
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Data.ENNReal.Inv
+module
+
+public import Mathlib.Algebra.BigOperators.WithTop
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Data.ENNReal.Inv
+
+@[expose] public section
 
 /-!
 # Properties of big operators extended non-negative real numbers

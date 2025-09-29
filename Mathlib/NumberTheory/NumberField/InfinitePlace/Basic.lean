@@ -3,10 +3,14 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-import Mathlib.NumberTheory.NumberField.Norm
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.Topology.Instances.Complex
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+public import Mathlib.NumberTheory.NumberField.Norm
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.Topology.Instances.Complex
+
+@[expose] public section
 
 /-!
 # Infinite places of a number field

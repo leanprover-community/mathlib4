@@ -3,9 +3,12 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
+
+@[expose] public section
 
 /-!
 # Tensor product and direct limits commute with each other.

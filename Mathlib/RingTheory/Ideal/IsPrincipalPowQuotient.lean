@@ -3,9 +3,13 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+@[expose] public section
 
 /-!
 # Quotients of powers of principal ideals

@@ -3,10 +3,14 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Order.GroupWithZero.Submonoid
-import Mathlib.Algebra.Order.Ring.Defs
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
+public import Mathlib.Algebra.Order.Ring.Defs
+
+@[expose] public section
 
 /-!
 

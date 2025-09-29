@@ -3,8 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.TopComparison
-import Mathlib.Topology.Category.CompactlyGenerated
+module
+
+public import Mathlib.Condensed.TopComparison
+public import Mathlib.Topology.Category.CompactlyGenerated
+
+@[expose] public section
 /-!
 
 # The adjunction between condensed sets and topological spaces

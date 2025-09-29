@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Localization.Adjunction
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Localization.Pi
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Localization.Adjunction
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Localization.Pi
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+@[expose] public section
 
 /-! The localized category has finite products
 

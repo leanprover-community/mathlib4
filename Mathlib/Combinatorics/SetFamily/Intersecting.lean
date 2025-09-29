@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Order.UpperLower.Basic
+
+@[expose] public section
 
 /-!
 # Intersecting families

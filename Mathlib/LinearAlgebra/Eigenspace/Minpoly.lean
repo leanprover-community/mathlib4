@@ -3,8 +3,12 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.FieldTheory.Minpoly.Field
+module
+
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.FieldTheory.Minpoly.Field
+
+@[expose] public section
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.

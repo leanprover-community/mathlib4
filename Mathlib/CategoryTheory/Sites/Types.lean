@@ -3,7 +3,11 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.CategoryTheory.Sites.Canonical
+module
+
+public import Mathlib.CategoryTheory.Sites.Canonical
+
+@[expose] public section
 
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types

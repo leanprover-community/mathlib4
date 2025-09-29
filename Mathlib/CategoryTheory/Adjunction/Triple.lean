@@ -3,9 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Monad.Adjunction
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Monad.Adjunction
+
+@[expose] public section
 /-!
 
 # Adjoint triples

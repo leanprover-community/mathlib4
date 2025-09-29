@@ -3,11 +3,15 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.BernoulliPolynomials
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Analysis.PSeries
+module
+
+public import Mathlib.NumberTheory.BernoulliPolynomials
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.Analysis.PSeries
+
+@[expose] public section
 
 /-!
 # Critical values of the Riemann zeta function

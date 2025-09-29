@@ -3,15 +3,19 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.FunProp.Core
-import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Elab
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.Theorems
-import Mathlib.Tactic.FunProp.ToBatteries
-import Mathlib.Tactic.FunProp.Types
+module
+
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.FunProp.Core
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Elab
+public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.Theorems
+public import Mathlib.Tactic.FunProp.ToBatteries
+public import Mathlib.Tactic.FunProp.Types
+
+@[expose] public section
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...

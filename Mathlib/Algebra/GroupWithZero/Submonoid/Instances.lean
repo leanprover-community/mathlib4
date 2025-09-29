@@ -3,9 +3,12 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
 
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+
+@[expose] public section
 
 /-!
 # Instances for the range submonoid of a monoid with zero hom

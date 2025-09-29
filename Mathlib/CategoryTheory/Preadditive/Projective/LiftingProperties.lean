@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+
+@[expose] public section
 
 /-!
 # Characterization of projective objects in terms of lifting properties

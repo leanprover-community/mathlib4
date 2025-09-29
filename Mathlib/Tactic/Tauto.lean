@@ -3,11 +3,15 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
-import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.Core
-import Mathlib.Lean.Elab.Tactic.Basic
-import Mathlib.Logic.Basic
-import Qq
+module
+
+public import Mathlib.Tactic.CasesM
+public import Mathlib.Tactic.Core
+public import Mathlib.Lean.Elab.Tactic.Basic
+public import Mathlib.Logic.Basic
+public import Qq
+
+@[expose] public section
 
 /-!
 The `tauto` tactic.

@@ -3,8 +3,12 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+
+@[expose] public section
 
 /-! # Range of the continuous functional calculus
 

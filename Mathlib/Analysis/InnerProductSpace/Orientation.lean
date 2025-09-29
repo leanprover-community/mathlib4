@@ -3,8 +3,12 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-import Mathlib.LinearAlgebra.Orientation
+module
+
+public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+public import Mathlib.LinearAlgebra.Orientation
+
+@[expose] public section
 
 /-!
 # Orientations of real inner product spaces.

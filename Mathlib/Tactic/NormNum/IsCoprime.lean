@@ -3,8 +3,12 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.Tactic.NormNum.GCD
+module
+
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Tactic.NormNum.GCD
+
+@[expose] public section
 
 /-! # `norm_num` extension for `IsCoprime`
 

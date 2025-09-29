@@ -3,9 +3,13 @@ Copyright (c) 2024 Salvatore Mercuri, María Inés de Frutos-Fernández. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
-import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
+public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+
+@[expose] public section
 
 /-!
 # The adele ring of a number field

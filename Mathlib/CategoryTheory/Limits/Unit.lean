@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Limits.HasLimits
+
+@[expose] public section
 
 /-!
 # `Discrete PUnit` has limits and colimits

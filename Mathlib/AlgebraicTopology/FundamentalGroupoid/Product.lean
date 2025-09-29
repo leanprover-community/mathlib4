@@ -3,10 +3,14 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Products
-import Mathlib.Topology.Homotopy.Product
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Products
+public import Mathlib.Topology.Homotopy.Product
+
+@[expose] public section
 
 /-!
 # Fundamental groupoid preserves products

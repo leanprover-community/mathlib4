@@ -3,7 +3,11 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+
+@[expose] public section
 
 /-!
 # Additivity on measurable sets with finite measure

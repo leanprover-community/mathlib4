@@ -3,10 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Shift.Localization
+module
+
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Shift.Localization
+
+@[expose] public section
 
 /-! # Localization of triangulated categories
 

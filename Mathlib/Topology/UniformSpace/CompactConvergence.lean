@@ -3,11 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Compactness.CompactlyCoherentSpace
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+@[expose] public section
 
 /-!
 # Compact convergence (uniform convergence on compact sets)

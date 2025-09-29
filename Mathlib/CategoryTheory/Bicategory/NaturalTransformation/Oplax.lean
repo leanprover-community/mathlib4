@@ -3,7 +3,11 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+
+@[expose] public section
 
 /-!
 # Transformations between oplax functors

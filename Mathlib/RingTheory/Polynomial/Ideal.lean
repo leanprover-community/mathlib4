@@ -3,9 +3,13 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Ideal.Maps
+
+@[expose] public section
 
 /-!
 # Ideals in polynomial rings

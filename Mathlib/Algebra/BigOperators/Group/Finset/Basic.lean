@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Sum
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Sum
+
+@[expose] public section
 
 /-!
 # Big operators

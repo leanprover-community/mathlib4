@@ -3,11 +3,14 @@ Copyright (c) 2025 Francisco Silva. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Francisco Silva
 -/
+module
 
-import Mathlib.GroupTheory.Sylow
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Data.Finite.Perm
-import Mathlib.Algebra.Group.End
+public import Mathlib.GroupTheory.Sylow
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Data.Finite.Perm
+public import Mathlib.Algebra.Group.End
+
+@[expose] public section
 
 /-!
 # Regular wreath product

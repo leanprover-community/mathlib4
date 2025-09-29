@@ -3,14 +3,18 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Lattice
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.RingTheory.Nilpotent.Defs
+
+@[expose] public section
 
 /-!
 # Nilpotent elements

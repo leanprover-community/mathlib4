@@ -3,8 +3,12 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.LocallyClosed
+module
+
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.LocallyClosed
+
+@[expose] public section
 
 /-!
 # Intervals are locally closed

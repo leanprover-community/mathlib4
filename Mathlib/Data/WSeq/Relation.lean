@@ -3,8 +3,12 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Basic
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.WSeq.Basic
+public import Mathlib.Logic.Relation
+
+@[expose] public section
 
 /-!
 # Relations between and equivalence of weak sequences

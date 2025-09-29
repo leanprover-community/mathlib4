@@ -3,8 +3,12 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Data.PNat.Prime
+module
+
+public import Mathlib.Tactic.Ring
+public import Mathlib.Data.PNat.Prime
+
+@[expose] public section
 
 /-!
 # Euclidean algorithm for ℕ

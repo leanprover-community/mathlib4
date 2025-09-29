@@ -3,9 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan Commelin
 -/
+module
 
-import Mathlib.Util.Tactic
-import Mathlib.Logic.Function.Basic
+public import Mathlib.Util.Tactic
+public import Mathlib.Logic.Function.Basic
+
+@[expose] public section
 
 /-!
 # `choose` tactic

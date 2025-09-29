@@ -3,9 +3,13 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Ineq
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Data.Ineq
+
+@[expose] public section
 
 /-!
 # Lemmas for the linear_combination tactic

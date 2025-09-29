@@ -3,10 +3,14 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.IsNormal
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.Order.IsNormal
+public import Mathlib.Topology.Order.Monotone
+
+@[expose] public section
 
 /-!
 ### Topology of ordinals

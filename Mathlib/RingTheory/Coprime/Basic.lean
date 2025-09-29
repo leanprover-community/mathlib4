@@ -3,13 +3,17 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 /-!
 # Coprime elements of a ring or monoid

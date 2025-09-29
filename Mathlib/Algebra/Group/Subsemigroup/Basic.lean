@@ -4,8 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Subsemigroup.Defs
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Algebra.Group.Subsemigroup.Defs
+public import Mathlib.Data.Set.Lattice.Image
+
+@[expose] public section
 
 /-!
 # Subsemigroups: `CompleteLattice` structure

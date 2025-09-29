@@ -3,10 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.List.GetD
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Data.List.GetD
+
+@[expose] public section
 
 /-!
 # Turing machine tapes

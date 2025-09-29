@@ -3,8 +3,12 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.Probability.Independence.Basic
+
+@[expose] public section
 
 /-!
 # Independence of functions implies that the measure is a probability measure

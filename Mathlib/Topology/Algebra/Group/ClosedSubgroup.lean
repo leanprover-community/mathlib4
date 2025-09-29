@@ -3,10 +3,13 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+module
 
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.Index
-import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Topology.Algebra.Group.Basic
+
+@[expose] public section
 
 /-!
 # Closed subgroups of a topological group

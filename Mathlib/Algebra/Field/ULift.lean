@@ -3,9 +3,13 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.ULift
-import Mathlib.Algebra.Ring.ULift
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.ULift
+public import Mathlib.Algebra.Ring.ULift
+
+@[expose] public section
 
 /-!
 # Field instances for `ULift`

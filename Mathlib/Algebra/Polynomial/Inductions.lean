@@ -3,10 +3,14 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagemaker
 -/
-import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Algebra.Polynomial.Degree.Operations
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Division
+public import Mathlib.Algebra.Polynomial.Degree.Operations
+public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Order.Interval.Finset.Nat
+
+@[expose] public section
 
 /-!
 # Induction on polynomials

@@ -3,7 +3,11 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
+
+@[expose] public section
 
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.

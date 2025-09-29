@@ -3,7 +3,11 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Order.Zorn
+module
+
+public import Mathlib.Order.Zorn
+
+@[expose] public section
 
 /-!
 # Extend a partial order to a linear order

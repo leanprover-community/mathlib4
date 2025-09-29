@@ -3,10 +3,14 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.CategoryTheory.Yoneda
+
+@[expose] public section
 
 /-!
 # The forgetful functor is corepresentable

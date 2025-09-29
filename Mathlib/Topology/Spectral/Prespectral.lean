@@ -3,10 +3,14 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.Spectral.Hom
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.Spectral.Hom
+
+@[expose] public section
 
 /-!
 

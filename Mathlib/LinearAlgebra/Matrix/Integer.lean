@@ -3,11 +3,15 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.Rat.Cast.CharZero
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.Rat.Cast.CharZero
+
+@[expose] public section
 
 /-!
 # Lemmas on integer matrices

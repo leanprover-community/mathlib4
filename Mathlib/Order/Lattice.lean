@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Bool.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.ULift
+module
+
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Order.ULift
+
+@[expose] public section
 
 /-!
 # (Semi-)lattices

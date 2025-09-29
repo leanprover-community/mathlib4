@@ -3,9 +3,13 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
-import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
+public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+
+@[expose] public section
 
 /-!
 

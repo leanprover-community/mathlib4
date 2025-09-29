@@ -3,10 +3,14 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.UniformSpace.Completion
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.UniformSpace.Completion
+
+@[expose] public section
 
 /-!
 # The category of uniform spaces

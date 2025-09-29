@@ -3,8 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+module
+
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+
+@[expose] public section
 
 /-!
 # Products of subalgebras

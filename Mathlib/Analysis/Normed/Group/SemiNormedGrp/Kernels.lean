@@ -3,9 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin, Kim Morrison
 -/
-import Mathlib.Analysis.Normed.Group.SemiNormedGrp
-import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+
+@[expose] public section
 
 /-!
 # Kernels and cokernels in SemiNormedGrp₁ and SemiNormedGrp

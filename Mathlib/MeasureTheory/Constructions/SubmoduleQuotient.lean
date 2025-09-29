@@ -3,8 +3,12 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+
+@[expose] public section
 
 /-!
 # Measurability on the quotient of a module by a submodule

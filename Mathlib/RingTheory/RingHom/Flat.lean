@@ -3,9 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Ideal.GoingDown
+module
+
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Ideal.GoingDown
+
+@[expose] public section
 
 /-!
 # Flat ring homomorphisms

@@ -3,10 +3,14 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Group.Shrink
-import Mathlib.Algebra.Module.Projective
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+
+@[expose] public section
 
 /-!
 # The category of `R`-modules has enough projectives.

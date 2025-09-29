@@ -3,9 +3,13 @@ Copyright (c) 2025 Markus Himmel, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Andrew Yang
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+
+@[expose] public section
 
 /-!
 # Yoneda embedding of `Mon C`

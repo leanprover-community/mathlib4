@@ -3,8 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+module
+
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+
+@[expose] public section
 
 /-!
 # Uniform properties of neighborhood bases in topological algebra

@@ -3,8 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+
+@[expose] public section
 
 /-!
 # The (pre)triangulated structure on the opposite category

@@ -3,10 +3,14 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Order.DirectedInverseSystem
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Data.Rat.Cast.Defs
+public import Mathlib.Order.DirectedInverseSystem
+public import Mathlib.Tactic.SuppressCompilation
+
+@[expose] public section
 
 /-!
 # Direct limit of algebraic structures

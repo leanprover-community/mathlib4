@@ -3,7 +3,11 @@ Copyright (c) 2024 Sven Manthe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
-import Mathlib.Order.CompleteLattice.SetLike
+module
+
+public import Mathlib.Order.CompleteLattice.SetLike
+
+@[expose] public section
 
 /-!
 # Trees in the sense of descriptive set theory

@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+
+@[expose] public section
 
 /-!
 # Monoidal opposites

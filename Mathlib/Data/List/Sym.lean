@@ -3,8 +3,12 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Sym.Sym2
+
+@[expose] public section
 
 /-! # Unordered tuples of elements of a list
 

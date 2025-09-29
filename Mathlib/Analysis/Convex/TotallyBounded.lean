@@ -3,11 +3,14 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+@[expose] public section
 
 /-!
 # Totally Bounded sets and Convex Hulls

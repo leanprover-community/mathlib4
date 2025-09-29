@@ -3,10 +3,14 @@ Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Order.Interval.Finset.Defs
+
+@[expose] public section
 
 /-! # Antidiagonal with values in general types
 

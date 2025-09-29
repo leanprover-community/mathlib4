@@ -3,9 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.GaloisObjects
-import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
-import Mathlib.Data.Finite.Sum
+module
+
+public import Mathlib.CategoryTheory.Galois.GaloisObjects
+public import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
+public import Mathlib.Data.Finite.Sum
+
+@[expose] public section
 
 /-!
 # Decomposition of objects into connected components and applications

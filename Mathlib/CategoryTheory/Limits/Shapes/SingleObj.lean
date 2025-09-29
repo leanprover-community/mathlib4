@@ -3,11 +3,15 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Defs
+
+@[expose] public section
 
 /-!
 # (Co)limits of functors out of `SingleObj M`

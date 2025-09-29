@@ -3,11 +3,15 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.LinearAlgebra.Finsupp.Pi
+module
+
+public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.LinearAlgebra.Finsupp.Pi
+
+@[expose] public section
 
 /-! # Product topology on power series
 

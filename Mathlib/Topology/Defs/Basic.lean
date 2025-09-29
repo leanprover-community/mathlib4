@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.SetNotation
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.ToAdditive
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.SetNotation
+public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.AssertExists
+
+@[expose] public section
 
 /-!
 # Basic definitions about topological spaces

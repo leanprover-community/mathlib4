@@ -3,8 +3,11 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct
+
+@[expose] public section
 
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring

@@ -3,7 +3,11 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.RingTheory.Derivation.Basic
+
+@[expose] public section
 
 /-!
 # Differential and Algebras

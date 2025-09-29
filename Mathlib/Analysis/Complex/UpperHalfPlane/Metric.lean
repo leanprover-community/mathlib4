@@ -3,9 +3,13 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Analysis.SpecialFunctions.Arsinh
-import Mathlib.Geometry.Euclidean.Inversion.Basic
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Analysis.SpecialFunctions.Arsinh
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+
+@[expose] public section
 
 /-!
 # Metric on the upper half-plane

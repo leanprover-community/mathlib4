@@ -3,14 +3,18 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.Group.Action.Hom
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Data.List.FinRange
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Sigma.Basic
-import Lean.Elab.Tactic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+public import Mathlib.Algebra.Group.Action.Hom
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Sigma.Basic
+public import Lean.Elab.Tactic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+@[expose] public section
 
 /-!
 # Additively-graded multiplicative structures

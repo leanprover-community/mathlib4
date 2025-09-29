@@ -3,8 +3,12 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Join.Basic
-import Mathlib.CategoryTheory.Sums.Basic
+module
+
+public import Mathlib.CategoryTheory.Join.Basic
+public import Mathlib.CategoryTheory.Sums.Basic
+
+@[expose] public section
 
 /-!
 # Embedding of `C ⊕ D` into `C ⋆ D`

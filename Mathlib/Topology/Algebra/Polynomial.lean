@@ -3,12 +3,16 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.RingTheory.Polynomial.Vieta
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.RingTheory.Polynomial.Vieta
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+
+@[expose] public section
 
 /-!
 # Polynomials and limits

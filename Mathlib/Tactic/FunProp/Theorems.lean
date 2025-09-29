@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Types
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
-import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+module
+
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Types
+public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+
+@[expose] public section
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`

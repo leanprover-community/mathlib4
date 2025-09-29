@@ -3,8 +3,12 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.Images
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Abelian.Images
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+
+@[expose] public section
 
 /-!
 # Preservation of coimage-image comparisons

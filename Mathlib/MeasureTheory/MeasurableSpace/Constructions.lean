@@ -3,13 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Update
-import Mathlib.Data.Prod.TProd
-import Mathlib.Data.Set.UnionLift
-import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.Disjointed
+module
+
+public import Mathlib.Data.Finset.Update
+public import Mathlib.Data.Prod.TProd
+public import Mathlib.Data.Set.UnionLift
+public import Mathlib.GroupTheory.Coset.Defs
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Instances
+public import Mathlib.Order.Disjointed
+
+@[expose] public section
 
 /-!
 # Constructions for measurable spaces and functions

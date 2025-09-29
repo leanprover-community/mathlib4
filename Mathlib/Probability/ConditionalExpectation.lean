@@ -3,9 +3,13 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Independence.Basic
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+
+@[expose] public section
 
 /-!
 

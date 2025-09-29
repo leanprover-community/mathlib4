@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.Filter.Basic
+module
+
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.Filter.Basic
+
+@[expose] public section
 
 /-!
 # Definition of `Filter.atTop` and `Filter.atBot` filters

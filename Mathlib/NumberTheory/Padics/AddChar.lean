@@ -3,9 +3,13 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.Padics.MahlerBasis
-import Mathlib.Topology.Algebra.Monoid.AddChar
-import Mathlib.Analysis.SpecificLimits.Normed
+module
+
+public import Mathlib.NumberTheory.Padics.MahlerBasis
+public import Mathlib.Topology.Algebra.Monoid.AddChar
+public import Mathlib.Analysis.SpecificLimits.Normed
+
+@[expose] public section
 
 /-!
 # Additive characters of `ℤ_[p]`

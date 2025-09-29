@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+
+@[expose] public section
 
 /-!
 # The retract argument

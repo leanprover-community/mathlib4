@@ -3,9 +3,13 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-import Mathlib.Topology.VectorBundle.Riemannian
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Topology.VectorBundle.Riemannian
+
+@[expose] public section
 
 /-! # Riemannian vector bundles
 

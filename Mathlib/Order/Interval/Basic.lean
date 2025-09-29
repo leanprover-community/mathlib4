@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.SetLike.Basic
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.SetLike.Basic
+
+@[expose] public section
 
 /-!
 # Order intervals

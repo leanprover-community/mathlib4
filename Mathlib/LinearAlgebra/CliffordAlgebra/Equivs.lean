@@ -3,12 +3,16 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.Algebra.QuaternionBasis
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.CliffordAlgebra.Star
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.Algebra.QuaternionBasis
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
+
+@[expose] public section
 
 /-!
 # Other constructions isomorphic to Clifford Algebras

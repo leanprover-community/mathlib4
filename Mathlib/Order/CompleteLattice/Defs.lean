@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.SetNotation
+
+@[expose] public section
 
 /-!
 # Definition of complete lattices

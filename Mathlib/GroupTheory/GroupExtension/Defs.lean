@@ -3,9 +3,12 @@ Copyright (c) 2024 Yudai Yamazaki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yudai Yamazaki
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.SemidirectProduct
+public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.GroupTheory.SemidirectProduct
+
+@[expose] public section
 
 /-!
 # Group Extensions

@@ -3,8 +3,12 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Bhavik Mehta
 -/
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Util.Qq
+module
+
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Util.Qq
+
+@[expose] public section
 
 /-! # Divisor Simprocs
 

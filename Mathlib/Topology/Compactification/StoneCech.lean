@@ -3,9 +3,13 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.Connected.TotallyDisconnected
+
+@[expose] public section
 
 /-! # Stone-Čech compactification
 

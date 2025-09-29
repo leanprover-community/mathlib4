@@ -3,8 +3,12 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Order.AddTorsor
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Order.AddTorsor
+public import Mathlib.Order.WellFoundedSet
+
+@[expose] public section
 
 /-!
 # Antidiagonal for scalar multiplication

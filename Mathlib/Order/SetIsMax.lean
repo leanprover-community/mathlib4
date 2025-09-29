@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.Max
-import Mathlib.Data.Set.CoeSort
+module
+
+public import Mathlib.Order.Max
+public import Mathlib.Data.Set.CoeSort
+
+@[expose] public section
 
 /-!
 # Maximal elements of subsets

@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Finsupp
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Finsupp
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Order.Interval.Finset.Basic
+
+@[expose] public section
 
 /-!
 # Finite intervals of finitely supported functions

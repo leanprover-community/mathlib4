@@ -3,11 +3,15 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+
+@[expose] public section
 
 /-!
 # Orthogonal projections in finite-dimensional spaces

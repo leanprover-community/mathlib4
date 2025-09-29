@@ -3,8 +3,12 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Logic.Equiv.Basic
+
+@[expose] public section
 
 /-!
 # Symmetric difference and bi-implication

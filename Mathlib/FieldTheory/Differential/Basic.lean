@@ -3,8 +3,12 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.MapCoeffs
-import Mathlib.FieldTheory.PrimitiveElement
+module
+
+public import Mathlib.RingTheory.Derivation.MapCoeffs
+public import Mathlib.FieldTheory.PrimitiveElement
+
+@[expose] public section
 
 /-!
 # Differential Fields

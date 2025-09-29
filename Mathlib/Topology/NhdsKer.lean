@@ -3,8 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Topology.NhdsSet
-import Mathlib.Topology.Inseparable
+module
+
+public import Mathlib.Topology.NhdsSet
+public import Mathlib.Topology.Inseparable
+
+@[expose] public section
 
 /-!
 # Neighborhoods kernel of a set

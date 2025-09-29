@@ -3,11 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.Ring.Int.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Algebra.Ring.Int.Defs
+
+@[expose] public section
 
 /-!
 # The rational numbers possess a linear order

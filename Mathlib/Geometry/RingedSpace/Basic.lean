@@ -3,12 +3,16 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Geometry.RingedSpace.SheafedSpace
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Geometry.RingedSpace.SheafedSpace
+public import Mathlib.Topology.Sheaves.Stalks
+
+@[expose] public section
 
 /-!
 # Ringed spaces

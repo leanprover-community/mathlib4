@@ -3,9 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.Tactic.NormNum
+
+@[expose] public section
 
 /-! # Integer powers of `-1` in a field -/
 

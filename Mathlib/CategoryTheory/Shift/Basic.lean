@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Andrew Yang, Joël Riou
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-import Mathlib.CategoryTheory.Monoidal.End
-import Mathlib.CategoryTheory.Monoidal.Discrete
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.Monoidal.End
+public import Mathlib.CategoryTheory.Monoidal.Discrete
+
+@[expose] public section
 
 /-!
 # Shift

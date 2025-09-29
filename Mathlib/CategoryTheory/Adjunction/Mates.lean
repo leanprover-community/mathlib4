@@ -3,11 +3,15 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Emily Riehl
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Functor.TwoSquare
-import Mathlib.CategoryTheory.HomCongr
+module
 
-import Mathlib.Tactic.ApplyFun
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Functor.TwoSquare
+public import Mathlib.CategoryTheory.HomCongr
+
+public import Mathlib.Tactic.ApplyFun
+
+@[expose] public section
 
 /-!
 # Mate of natural transformations

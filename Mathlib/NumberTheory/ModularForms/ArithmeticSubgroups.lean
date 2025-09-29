@@ -3,13 +3,17 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.GroupTheory.Commensurable
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.Topology.MetricSpace.Isometry
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.GroupTheory.Commensurable
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.MetricSpace.Isometry
+
+@[expose] public section
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`

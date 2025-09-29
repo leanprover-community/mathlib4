@@ -3,7 +3,11 @@ Copyright (c) 2024 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.String.Defs
+module
+
+public import Mathlib.Data.String.Defs
+
+@[expose] public section
 
 /-!
 # Format Table

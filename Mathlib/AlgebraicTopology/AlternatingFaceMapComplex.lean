@@ -3,11 +3,15 @@ Copyright (c) 2021 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Adam Topaz, Johan Commelin
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.AlgebraicTopology.MooreComplex
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.AlgebraicTopology.MooreComplex
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+
+@[expose] public section
 
 /-!
 

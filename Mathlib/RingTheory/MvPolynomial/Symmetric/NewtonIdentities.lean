@@ -3,11 +3,15 @@ Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Data.Fintype.Basic
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+
+@[expose] public section
 
 /-!
 # Newton's Identities

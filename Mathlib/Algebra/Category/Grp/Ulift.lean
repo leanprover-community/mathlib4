@@ -3,10 +3,14 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.Grp.LargeColimits
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+module
+
+public import Mathlib.Algebra.Category.Grp.LargeColimits
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+
+@[expose] public section
 
 /-!
 # Properties of the universe lift functor for groups

@@ -3,8 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Int.Cast.Basic
+
+@[expose] public section
 
 /-!
 # Cardinality of a finite set and subtraction

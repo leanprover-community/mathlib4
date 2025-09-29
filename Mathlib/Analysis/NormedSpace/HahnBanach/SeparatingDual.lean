@@ -3,11 +3,15 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Central.Defs
-import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.LinearAlgebra.Dual.Lemmas
+module
+
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+
+@[expose] public section
 
 /-!
 # Spaces with separating dual

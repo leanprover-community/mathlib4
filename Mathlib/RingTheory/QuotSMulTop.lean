@@ -3,9 +3,13 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+module
+
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+
+@[expose] public section
 
 /-!
 # Reducing a module modulo an element of the ring

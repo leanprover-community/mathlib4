@@ -3,8 +3,12 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Common
+
+@[expose] public section
 
 /-!
 The type `List.Vector` represents lists with fixed length.

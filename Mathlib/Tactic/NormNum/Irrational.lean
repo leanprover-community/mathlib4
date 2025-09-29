@@ -3,10 +3,14 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Real.Irrational
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Real.Irrational
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Rify
+
+@[expose] public section
 
 /-! # `norm_num` extension for `Irrational`
 

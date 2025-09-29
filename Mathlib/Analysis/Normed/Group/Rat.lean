@@ -3,9 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Topology.Instances.Rat
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Topology.Instances.Rat
+
+@[expose] public section
 
 /-! # ℚ as a normed group -/
 

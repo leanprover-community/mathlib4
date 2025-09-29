@@ -3,8 +3,12 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang, Wanyi He, Nailin Guan
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RingTheory.QuotSMulTop
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.RingTheory.QuotSMulTop
+
+@[expose] public section
 
 /-!
 # Categorical constructions for `IsSMulRegular`

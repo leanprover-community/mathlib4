@@ -3,8 +3,12 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.Algebra.Group.AddChar
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.Group.AddChar
+
+@[expose] public section
 
 /-!
 # Direct sum of additive characters

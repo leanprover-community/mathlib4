@@ -3,8 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Data.Finsupp.ToDFinsupp
+
+@[expose] public section
 
 /-!
 # Results on direct sums and finitely supported functions.

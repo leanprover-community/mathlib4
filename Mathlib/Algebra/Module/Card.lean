@@ -3,8 +3,12 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
+
+@[expose] public section
 
 /-!
 # Cardinality of a module

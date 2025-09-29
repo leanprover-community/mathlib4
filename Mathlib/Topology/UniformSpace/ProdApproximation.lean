@@ -3,9 +3,13 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Topology.Algebra.Indicator
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Separation.DisjointCover
+module
+
+public import Mathlib.Topology.Algebra.Indicator
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Separation.DisjointCover
+
+@[expose] public section
 
 /-!
 # Uniform approximation by products

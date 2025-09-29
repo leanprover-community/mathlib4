@@ -3,11 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.Group.Nat.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+
+@[expose] public section
 
 /-!
 # The rational numbers are a commutative ring

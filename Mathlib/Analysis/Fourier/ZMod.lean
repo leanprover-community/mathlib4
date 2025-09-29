@@ -3,10 +3,14 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Group.EvenFunction
-import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.NumberTheory.DirichletCharacter.GaussSum
+module
+
+public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.NumberTheory.DirichletCharacter.GaussSum
+
+@[expose] public section
 
 /-!
 # Fourier theory on `ZMod N`

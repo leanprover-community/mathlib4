@@ -3,9 +3,13 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.Sets.Compacts
+
+@[expose] public section
 
 /-!
 # Contents

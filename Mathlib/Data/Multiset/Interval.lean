@@ -3,10 +3,14 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.Interval
-import Mathlib.Data.DFinsupp.Multiset
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Data.DFinsupp.Interval
+public import Mathlib.Data.DFinsupp.Multiset
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Data.Nat.Lattice
+
+@[expose] public section
 
 /-!
 # Finite intervals of multisets

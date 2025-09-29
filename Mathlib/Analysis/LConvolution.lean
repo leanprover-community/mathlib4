@@ -3,8 +3,12 @@ Copyright (c) 2025 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.MeasureTheory.Group.LIntegral
+module
+
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Group.LIntegral
+
+@[expose] public section
 
 /-!
 # Convolution of functions using the Lebesgue integral

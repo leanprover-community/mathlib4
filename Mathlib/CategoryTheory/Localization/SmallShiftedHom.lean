@@ -3,9 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.SmallHom
-import Mathlib.CategoryTheory.Shift.ShiftedHom
-import Mathlib.CategoryTheory.Shift.Localization
+module
+
+public import Mathlib.CategoryTheory.Localization.SmallHom
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
+public import Mathlib.CategoryTheory.Shift.Localization
+
+@[expose] public section
 
 /-!
 # Shrinking morphisms in localized categories equipped with shifts

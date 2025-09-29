@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
-import Mathlib.CategoryTheory.Localization.Bousfield
+module
+
+public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
+public import Mathlib.CategoryTheory.Localization.Bousfield
+
+@[expose] public section
 
 /-!
 # Bousfield localizations with respect to Serre classes

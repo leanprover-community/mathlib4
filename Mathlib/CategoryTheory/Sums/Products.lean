@@ -3,8 +3,12 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Sums.Associator
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.CategoryTheory.Sums.Associator
+public import Mathlib.CategoryTheory.Products.Associator
+
+@[expose] public section
 
 /-!
 # Functors out of sums of categories.

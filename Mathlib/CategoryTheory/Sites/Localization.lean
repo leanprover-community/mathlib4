@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Bousfield
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Localization.Bousfield
+public import Mathlib.CategoryTheory.Sites.Sheafification
+
+@[expose] public section
 
 /-!
 # The sheaf category as a localized category

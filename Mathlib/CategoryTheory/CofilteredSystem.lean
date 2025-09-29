@@ -3,7 +3,11 @@ Copyright (c) 2022 Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Konig
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Konig
+
+@[expose] public section
 
 /-!
 # Cofiltered systems

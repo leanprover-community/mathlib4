@@ -3,12 +3,16 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Monad.Types
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Data.Set.Constructions
+module
+
+public import Mathlib.CategoryTheory.Monad.Types
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Data.Set.Constructions
+
+@[expose] public section
 
 /-!
 

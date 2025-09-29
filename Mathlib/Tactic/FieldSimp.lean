@@ -3,13 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-import Mathlib.Data.Ineq
-import Mathlib.Tactic.FieldSimp.Attr
-import Mathlib.Tactic.FieldSimp.Discharger
-import Mathlib.Tactic.FieldSimp.Lemmas
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.SynthesizeUsing
+module
+
+public import Mathlib.Data.Ineq
+public import Mathlib.Tactic.FieldSimp.Attr
+public import Mathlib.Tactic.FieldSimp.Discharger
+public import Mathlib.Tactic.FieldSimp.Lemmas
+public import Mathlib.Util.AtLocation
+public import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.SynthesizeUsing
+
+@[expose] public section
 
 /-!
 # `field_simp` tactic

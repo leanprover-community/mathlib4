@@ -3,9 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Extension.Generators
-import Mathlib.Algebra.Module.SnakeLemma
+module
+
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Extension.Generators
+public import Mathlib.Algebra.Module.SnakeLemma
+
+@[expose] public section
 
 /-!
 

@@ -3,8 +3,12 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Bicategory.End
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.End
+public import Mathlib.CategoryTheory.Monoidal.Functor
+
+@[expose] public section
 
 /-!
 # Promoting a monoidal category to a single object bicategory.

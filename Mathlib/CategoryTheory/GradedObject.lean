@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Algebra.Group.Int.Defs
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Algebra.Group.Int.Defs
+
+@[expose] public section
 
 /-!
 # The category of graded objects

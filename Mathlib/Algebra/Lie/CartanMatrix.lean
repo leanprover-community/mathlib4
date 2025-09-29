@@ -3,9 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Free
-import Mathlib.Algebra.Lie.Quotient
-import Mathlib.LinearAlgebra.Matrix.Notation
+module
+
+public import Mathlib.Algebra.Lie.Free
+public import Mathlib.Algebra.Lie.Quotient
+public import Mathlib.LinearAlgebra.Matrix.Notation
+
+@[expose] public section
 
 /-!
 # Lie algebras from Cartan matrices

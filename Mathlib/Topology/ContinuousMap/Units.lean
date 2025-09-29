@@ -3,9 +3,13 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
+
+@[expose] public section
 
 /-!
 # Units of continuous functions

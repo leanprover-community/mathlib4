@@ -3,8 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.RingHom.Smooth
-import Mathlib.RingTheory.RingHom.Unramified
+module
+
+public import Mathlib.RingTheory.RingHom.Smooth
+public import Mathlib.RingTheory.RingHom.Unramified
+
+@[expose] public section
 
 /-!
 # Étale ring homomorphisms

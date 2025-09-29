@@ -3,13 +3,17 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Nicolò Cavalleri
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.UniformSpace.CompactConvergence
+
+@[expose] public section
 
 /-!
 # Algebraic structures over continuous functions

@@ -3,8 +3,11 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour, Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+
+@[expose] public section
 
 /-!
 # (Co)limits in a preorder category

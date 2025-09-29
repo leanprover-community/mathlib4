@@ -3,8 +3,12 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Combinatorics.SimpleGraph.Copy
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+
+@[expose] public section
 
 /-!
 # Extremal graph theory

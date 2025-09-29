@@ -3,10 +3,14 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.Additive.AP.Three.Defs
-import Mathlib.Combinatorics.Additive.Corner.Defs
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+module
+
+public import Mathlib.Combinatorics.Additive.AP.Three.Defs
+public import Mathlib.Combinatorics.Additive.Corner.Defs
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+
+@[expose] public section
 
 /-!
 # The corners theorem and Roth's theorem

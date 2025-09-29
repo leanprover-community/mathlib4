@@ -3,11 +3,15 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Coe
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Coe
+public import Mathlib.Util.AssertExists
+
+@[expose] public section
 
 /-!
 # Monotonicity

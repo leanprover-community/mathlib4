@@ -3,10 +3,14 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Measure.Complex
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
-import Mathlib.MeasureTheory.VectorMeasure.WithDensity
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Measure.Complex
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
+
+@[expose] public section
 
 /-!
 # Lebesgue decomposition

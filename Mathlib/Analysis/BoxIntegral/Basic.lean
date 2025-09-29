@@ -3,12 +3,16 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Filter
-import Mathlib.Analysis.BoxIntegral.Partition.Measure
-import Mathlib.Analysis.Oscillation
-import Mathlib.Data.Bool.Basic
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Topology.UniformSpace.Compact
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Filter
+public import Mathlib.Analysis.BoxIntegral.Partition.Measure
+public import Mathlib.Analysis.Oscillation
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Topology.UniformSpace.Compact
+
+@[expose] public section
 
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane

@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Bipointed
-import Mathlib.Data.TwoPointing
+module
+
+public import Mathlib.CategoryTheory.Category.Bipointed
+public import Mathlib.Data.TwoPointing
+
+@[expose] public section
 
 /-!
 # The category of two-pointed types

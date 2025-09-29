@@ -3,14 +3,18 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Instances
-import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Tactic.Algebraize
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.IsTensorProduct
+module
+
+public import Mathlib.Algebra.Category.Ring.Instances
+public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Tactic.Algebraize
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.IsTensorProduct
+
+@[expose] public section
 
 /-!
 # Constructions of (co)limits in `CommRingCat`

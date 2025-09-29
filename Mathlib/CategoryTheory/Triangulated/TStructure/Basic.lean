@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Shift
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Shift
+public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+
+@[expose] public section
 
 /-!
 # t-structures on triangulated categories

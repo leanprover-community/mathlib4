@@ -3,9 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Order.Hom.Basic
+
+@[expose] public section
 
 /-!
 # Multiplication by a positive element as an order isomorphism

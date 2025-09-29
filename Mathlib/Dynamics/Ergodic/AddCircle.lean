@@ -3,12 +3,16 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Dynamics.FixedPoints.Prufer
-import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.MeasureTheory.Covering.DensityTheorem
-import Mathlib.MeasureTheory.Group.AddCircle
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Dynamics.FixedPoints.Prufer
+public import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.MeasureTheory.Covering.DensityTheorem
+public import Mathlib.MeasureTheory.Group.AddCircle
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
+
+@[expose] public section
 
 /-!
 # Ergodic maps of the additive circle

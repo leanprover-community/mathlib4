@@ -3,9 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+
+@[expose] public section
 
 /-!
 # Ring-theoretic results in terms of categorical language

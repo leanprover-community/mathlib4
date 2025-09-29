@@ -3,9 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Associator
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Algebra.Homology.Bifunctor
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Associator
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Algebra.Homology.Bifunctor
+
+@[expose] public section
 
 /-!
 # The associator for actions of bifunctors on homological complexes

@@ -3,8 +3,12 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.Interval.Set.SuccPred
+module
+
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Interval.Set.SuccPred
+
+@[expose] public section
 
 /-!
 # Finset intervals in a successor-predecessor order

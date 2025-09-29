@@ -3,9 +3,13 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Topology.Instances.AddCircle.Real
+module
+
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Topology.Instances.AddCircle.Real
+
+@[expose] public section
 
 /-!
 # The additive circle as a normed group

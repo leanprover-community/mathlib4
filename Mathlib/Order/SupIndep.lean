@@ -3,12 +3,16 @@ Copyright (c) 2021 Aaron Anderson, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
-import Mathlib.Data.Finset.Lattice.Union
-import Mathlib.Data.Finset.Pairwise
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Order.CompleteLatticeIntervals
+module
+
+public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Order.CompleteLatticeIntervals
+
+@[expose] public section
 
 /-!
 # Supremum independence

@@ -3,11 +3,15 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Algebra.Ring.Units
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Algebra.Ring.Units
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Logic.Embedding.Basic
+
+@[expose] public section
 
 /-!
 # Characteristic zero rings

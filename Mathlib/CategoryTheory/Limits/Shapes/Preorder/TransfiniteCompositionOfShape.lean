@@ -3,15 +3,19 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
-import Mathlib.Data.Fin.SuccPredOrder
-import Mathlib.Order.LatticeIntervals
-import Mathlib.Order.Interval.Set.Final
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
+public import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.Interval.Set.Final
+
+@[expose] public section
 
 /-!
 # A structure to describe transfinite compositions

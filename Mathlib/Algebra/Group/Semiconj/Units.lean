@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 -- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
+module
 
-import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.Group.Semiconj.Defs
+public import Mathlib.Algebra.Group.Units.Basic
+
+@[expose] public section
 
 /-!
 # Semiconjugate elements of a semigroup

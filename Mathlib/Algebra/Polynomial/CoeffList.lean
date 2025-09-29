@@ -3,9 +3,13 @@ Copyright (c) 2023 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Data.List.Range
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Data.List.Range
+
+@[expose] public section
 
 /-!
 # A list of coefficients of a polynomial

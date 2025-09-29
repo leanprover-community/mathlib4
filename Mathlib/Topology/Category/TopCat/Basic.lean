@@ -3,8 +3,12 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Topology.ContinuousMap.Basic
+
+@[expose] public section
 
 /-!
 # Category instance for topological spaces

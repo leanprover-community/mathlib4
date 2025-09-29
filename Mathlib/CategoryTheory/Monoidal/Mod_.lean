@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Paul Lezeau, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.Monoidal.Action.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Action.Basic
+
+@[expose] public section
 
 /-!
 # The category of module objects over a monoid object.

@@ -3,8 +3,12 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.GroupTheory.OreLocalization.Cardinality
-import Mathlib.RingTheory.OreLocalization.Ring
+module
+
+public import Mathlib.GroupTheory.OreLocalization.Cardinality
+public import Mathlib.RingTheory.OreLocalization.Ring
+
+@[expose] public section
 
 /-!
 # Cardinality of Ore localizations of rings

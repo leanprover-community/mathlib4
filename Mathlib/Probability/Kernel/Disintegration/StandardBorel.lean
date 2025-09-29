@@ -3,12 +3,16 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
-import Mathlib.Probability.Kernel.Disintegration.Basic
-import Mathlib.Probability.Kernel.Disintegration.CondCDF
-import Mathlib.Probability.Kernel.Disintegration.Density
-import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
-import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+public import Mathlib.Probability.Kernel.Disintegration.Basic
+public import Mathlib.Probability.Kernel.Disintegration.CondCDF
+public import Mathlib.Probability.Kernel.Disintegration.Density
+public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
+public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
+
+@[expose] public section
 
 /-!
 # Existence of disintegration of measures and kernels for standard Borel spaces

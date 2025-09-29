@@ -3,9 +3,13 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.RingTheory.Bialgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.CoalgCat.Basic
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.RingTheory.Bialgebra.Equiv
+
+@[expose] public section
 
 /-!
 # The category of bialgebras over a commutative ring

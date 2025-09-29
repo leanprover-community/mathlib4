@@ -3,9 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Quaternion
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Quaternion
+public import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 /-!
 # Basis on a quaternion-like algebra

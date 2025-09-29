@@ -3,13 +3,17 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finset.MulAntidiagonal
-import Mathlib.Data.Finset.SMulAntidiagonal
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.HahnSeries.Addition
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Data.Finset.MulAntidiagonal
+public import Mathlib.Data.Finset.SMulAntidiagonal
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.HahnSeries.Addition
+
+@[expose] public section
 
 /-!
 # Multiplicative properties of Hahn series

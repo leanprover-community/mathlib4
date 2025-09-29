@@ -3,10 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Logic.IsEmpty
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Logic.IsEmpty
+
+@[expose] public section
 
 /-!
 # Multiplicative opposite and algebraic operations on it

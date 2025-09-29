@@ -3,12 +3,16 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Data.PNat.Basic
-import Mathlib.Data.PNat.Interval
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Multiset.Sort
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.PNat.Interval
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.IntervalCases
+
+@[expose] public section
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`

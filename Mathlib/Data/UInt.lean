@@ -3,10 +3,14 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Data.ZMod.Defs
-import Mathlib.Data.BitVec
+module
+
+public import Mathlib.Init
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Data.BitVec
+
+@[expose] public section
 
 
 /-!

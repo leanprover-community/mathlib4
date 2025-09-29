@@ -3,8 +3,12 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang, Andrew Yang
 -/
-import Mathlib.RingTheory.Idempotents
-import Mathlib.Algebra.DirectSum.Decomposition
+module
+
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.Algebra.DirectSum.Decomposition
+
+@[expose] public section
 
 /-!
 # Decomposition of the identity of a semiring into orthogonal idempotents

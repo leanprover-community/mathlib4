@@ -3,11 +3,15 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.NumberField.Discriminant.Defs
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.RingTheory.DedekindDomain.Different
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.DedekindDomain.Different
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.Tactic.Qify
+
+@[expose] public section
 
 /-!
 

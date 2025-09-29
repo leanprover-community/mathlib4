@@ -3,8 +3,12 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration.Density
-import Mathlib.Probability.Kernel.WithDensity
+module
+
+public import Mathlib.Probability.Kernel.Disintegration.Density
+public import Mathlib.Probability.Kernel.WithDensity
+
+@[expose] public section
 
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels

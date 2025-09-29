@@ -3,8 +3,12 @@ Copyright (c) 2024 Miguel Marco. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miguel Marco
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Data.Set.Functor
+
+@[expose] public section
 
 /-!
 # Sets in subtypes

@@ -3,8 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.RingTheory.Trace.Basic
-import Mathlib.FieldTheory.Finite.GaloisField
+module
+
+public import Mathlib.RingTheory.Trace.Basic
+public import Mathlib.FieldTheory.Finite.GaloisField
+
+@[expose] public section
 
 /-!
 # The trace and norm maps for finite fields

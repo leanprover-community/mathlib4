@@ -3,11 +3,15 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Smooth.StandardSmooth
-import Mathlib.RingTheory.Smooth.Kaehler
-import Mathlib.RingTheory.Etale.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Exact
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmooth
+public import Mathlib.RingTheory.Smooth.Kaehler
+public import Mathlib.RingTheory.Etale.Basic
+
+@[expose] public section
 
 /-!
 # Cotangent complex of a submersive presentation

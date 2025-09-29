@@ -3,11 +3,15 @@ Copyright (c) 2024 Alvaro Belmonte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alvaro Belmonte, Joël Riou
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.Data.ULift
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.Data.ULift
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Adjunction.Basic
+
+@[expose] public section
 
 /-!
 # Codiscrete categories

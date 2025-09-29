@@ -3,8 +3,12 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.List
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Data.Fintype.List
+public import Mathlib.Data.Fintype.OfMap
+
+@[expose] public section
 
 /-!
 # Cycles of a list

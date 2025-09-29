@@ -3,9 +3,13 @@ Copyright (c) 2025 Moisés Herradón Cueto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moisés Herradón Cueto
 -/
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.WithTerminal.Basic
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
+public import Mathlib.Data.Fintype.Option
+
+@[expose] public section
 
 /-!
 

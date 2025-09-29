@@ -3,8 +3,12 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Timothy Carlin-Burns
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Logic.Small.Basic
+
+@[expose] public section
 
 /-!
 # Results about `Small` on coerced sets

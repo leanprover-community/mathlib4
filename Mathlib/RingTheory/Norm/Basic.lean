@@ -3,12 +3,16 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
+public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.Galois.Basic
+
+@[expose] public section
 
 /-!
 # Norm for (finite) ring extensions

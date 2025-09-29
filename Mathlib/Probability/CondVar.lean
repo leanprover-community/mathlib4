@@ -3,9 +3,13 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.Probability.Moments.Variance
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.Probability.Moments.Variance
+
+@[expose] public section
 
 /-!
 # Conditional variance

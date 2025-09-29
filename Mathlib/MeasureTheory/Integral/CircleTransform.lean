@@ -3,8 +3,12 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Data.Complex.Basic
-import Mathlib.MeasureTheory.Integral.CircleIntegral
+module
+
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+
+@[expose] public section
 
 /-!
 # Circle integral transform

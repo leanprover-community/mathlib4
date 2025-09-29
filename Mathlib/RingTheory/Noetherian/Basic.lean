@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.Order.SuccPred.PartialSups
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.Finiteness.Finsupp
-import Mathlib.RingTheory.Ideal.Prod
+module
+
+public import Mathlib.Algebra.Order.SuccPred.PartialSups
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Finiteness.Finsupp
+public import Mathlib.RingTheory.Ideal.Prod
+
+@[expose] public section
 
 /-!
 # Noetherian rings and modules

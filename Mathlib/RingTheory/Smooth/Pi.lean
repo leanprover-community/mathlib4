@@ -3,8 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Idempotents
-import Mathlib.RingTheory.Smooth.Basic
+module
+
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.RingTheory.Smooth.Basic
+
+@[expose] public section
 
 /-!
 

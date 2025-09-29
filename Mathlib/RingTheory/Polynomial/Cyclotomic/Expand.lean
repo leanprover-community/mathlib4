@@ -3,8 +3,12 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+
+@[expose] public section
 
 /-!
 # Cyclotomic polynomials and `expand`.

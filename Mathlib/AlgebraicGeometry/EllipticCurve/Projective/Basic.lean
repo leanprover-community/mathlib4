@@ -3,10 +3,14 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.Tactic.Ring.NamePolyVars
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.Tactic.Ring.NamePolyVars
+
+@[expose] public section
 
 /-!
 # Weierstrass equations and the nonsingular condition in projective coordinates

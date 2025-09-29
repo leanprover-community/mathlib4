@@ -3,9 +3,13 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Elab.Command
-import Mathlib.Util.AssertExistsExt
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Command
+public import Mathlib.Util.AssertExistsExt
+
+@[expose] public section
 
 /-!
 # User commands to assert the (non-)existence of declarations or instances.

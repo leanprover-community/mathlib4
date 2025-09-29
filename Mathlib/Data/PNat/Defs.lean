@@ -3,12 +3,16 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.PNat.Notation
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Lift
+module
+
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.PNat.Notation
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Coe
+public import Mathlib.Tactic.Lift
+
+@[expose] public section
 
 /-!
 # The positive natural numbers

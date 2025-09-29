@@ -3,7 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
+
+@[expose] public section
 
 /-!
 # Local isomorphisms

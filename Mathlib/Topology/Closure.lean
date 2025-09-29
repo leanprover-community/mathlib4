@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Topology.Basic
+
+@[expose] public section
 
 /-!
 # Interior, closure and frontier of a set

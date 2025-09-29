@@ -3,13 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Piecewise
-import Mathlib.Topology.Separation.SeparatedNhds
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Bases
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Piecewise
+public import Mathlib.Topology.Separation.SeparatedNhds
+public import Mathlib.Topology.Compactness.LocallyCompact
+public import Mathlib.Topology.Bases
+public import Mathlib.Tactic.StacksAttribute
+
+@[expose] public section
 
 /-!
 # Separation properties of topological spaces

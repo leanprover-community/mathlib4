@@ -3,10 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Action.Basic
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.CategoryTheory.Action.Basic
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+
+@[expose] public section
 
 /-!
 

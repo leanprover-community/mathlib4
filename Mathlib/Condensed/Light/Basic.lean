@@ -3,8 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
+
+@[expose] public section
 /-!
 
 # Light condensed objects

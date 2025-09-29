@@ -3,12 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.Topology.Category.TopCommRingCat
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Topology.Category.TopCommRingCat
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Sheaves.Stalks
+
+@[expose] public section
 
 /-!
 # Sheaves of (commutative) rings.

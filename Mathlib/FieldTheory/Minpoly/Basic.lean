@@ -3,7 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+
+@[expose] public section
 
 /-!
 # Minimal polynomials

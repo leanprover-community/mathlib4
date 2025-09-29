@@ -3,9 +3,13 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.HomCongr
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.CategoryTheory.HomCongr
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+
+@[expose] public section
 
 /-!
 # Computation of `Over A` for a presheaf `A`

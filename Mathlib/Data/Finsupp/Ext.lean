@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.TypeTags.Hom
+module
+
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.TypeTags.Hom
+
+@[expose] public section
 
 /-!
 # Extensionality for maps on `Finsupp`

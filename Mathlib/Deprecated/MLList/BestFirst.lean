@@ -3,10 +3,14 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Batteries.Data.MLList.Basic
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Deprecated.Estimator
+module
+
+public import Batteries.Data.MLList.Basic
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Deprecated.Estimator
+
+@[expose] public section
 
 /-!
 # Best first search

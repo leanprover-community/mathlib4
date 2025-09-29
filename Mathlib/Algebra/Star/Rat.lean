@@ -3,10 +3,14 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Data.Rat.Cast.Defs
+module
+
+public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Data.Rat.Cast.Defs
+
+@[expose] public section
 
 /-!
 # *-ring structure on ℚ and ℚ≥0.

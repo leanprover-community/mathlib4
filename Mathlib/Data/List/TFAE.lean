@@ -3,9 +3,13 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon
 -/
-import Batteries.Tactic.Alias
-import Batteries.Data.List.Basic
-import Mathlib.Tactic.TypeStar
+module
+
+public import Batteries.Tactic.Alias
+public import Batteries.Data.List.Basic
+public import Mathlib.Tactic.TypeStar
+
+@[expose] public section
 
 /-!
 # The Following Are Equivalent

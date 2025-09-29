@@ -3,9 +3,12 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.Data.Real.Archimedean
-import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.RingTheory.PowerSeries.Order
+
+@[expose] public section
 
 /-!
 # Gauss norm for power series

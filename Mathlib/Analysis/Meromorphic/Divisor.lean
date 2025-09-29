@@ -3,9 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.Meromorphic.Order
-import Mathlib.Topology.LocallyFinsupp
+module
+
+public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Meromorphic.Order
+public import Mathlib.Topology.LocallyFinsupp
+
+@[expose] public section
 
 /-!
 # The Divisor of a meromorphic function

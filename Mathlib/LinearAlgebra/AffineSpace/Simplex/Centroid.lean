@@ -3,8 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Centroid
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+
+@[expose] public section
 
 /-!
 # Centroid of a simplex in affine space

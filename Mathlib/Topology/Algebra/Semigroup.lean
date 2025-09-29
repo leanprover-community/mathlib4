@@ -3,8 +3,12 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Topology.Separation.Hausdorff
+
+@[expose] public section
 
 /-!
 # Idempotents in topological semigroups

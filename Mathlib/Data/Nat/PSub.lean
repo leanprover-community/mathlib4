@@ -3,9 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Nat.Basic
+
+@[expose] public section
 
 /-!
 # Partial predecessor and partial subtraction on the natural numbers

@@ -3,9 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Invertible
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Invertible
+public import Mathlib.Data.Nat.Cast.Order.Ring
+
+@[expose] public section
 
 /-!
 # Lemmas about `invOf` in ordered (semi)rings.

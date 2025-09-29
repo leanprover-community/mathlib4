@@ -3,10 +3,14 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Data.ZMod.Defs
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Data.Int.Cast.Lemmas
+
+@[expose] public section
 
 /-!
 # Basic Theorems About Bitvectors

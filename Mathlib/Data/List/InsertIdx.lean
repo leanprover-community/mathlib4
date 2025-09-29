@@ -3,8 +3,12 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Data.List.Basic
+public import Mathlib.Order.Basic
+
+@[expose] public section
 
 /-!
 # insertIdx

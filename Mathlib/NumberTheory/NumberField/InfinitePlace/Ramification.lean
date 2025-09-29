@@ -3,7 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+
+@[expose] public section
 
 /-!
 # Ramification of infinite places of a number field

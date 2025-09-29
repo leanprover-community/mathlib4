@@ -3,9 +3,13 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Support
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.List.Rotate
+public import Mathlib.GroupTheory.Perm.Support
+
+@[expose] public section
 
 /-!
 # Permutations from a list

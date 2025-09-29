@@ -3,9 +3,13 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
-import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+
+@[expose] public section
 
 /-!
 # Kan complexes

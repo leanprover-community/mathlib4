@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.MonoidAlgebra.Lift
-import Mathlib.Data.Finsupp.SMul
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Lift
+public import Mathlib.Data.Finsupp.SMul
+
+@[expose] public section
 
 /-!
 # MonoidAlgebra.mapDomain

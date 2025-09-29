@@ -3,8 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+
+@[expose] public section
 
 /-!
 # Extending an alternating map to the exterior algebra

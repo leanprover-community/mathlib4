@@ -3,8 +3,12 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.Topology.Algebra.Field
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.Topology.Algebra.Field
+
+@[expose] public section
 
 /-!
 # Continuous actions related to intermediate fields

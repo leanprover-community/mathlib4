@@ -3,8 +3,12 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Analytic.ChangeOrigin
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Analytic.ChangeOrigin
+
+@[expose] public section
 
 /-!
 # Properties of analyticity restricted to a set

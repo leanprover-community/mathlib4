@@ -3,11 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Order.Basic
+
+@[expose] public section
 
 /-!
 # Prime numbers

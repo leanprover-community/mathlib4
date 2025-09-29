@@ -3,12 +3,16 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.PowMod
-import Mathlib.Tactic.ReduceModChar.Ext
-import Mathlib.Util.AtLocation
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.Tactic.NormNum.DivMod
+public import Mathlib.Tactic.NormNum.PowMod
+public import Mathlib.Tactic.ReduceModChar.Ext
+public import Mathlib.Util.AtLocation
+
+@[expose] public section
 
 /-!
 # `reduce_mod_char` tactic

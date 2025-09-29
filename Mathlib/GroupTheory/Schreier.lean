@@ -3,10 +3,14 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.GroupTheory.Commutator.Finite
-import Mathlib.GroupTheory.Transfer
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Commutator.Finite
+public import Mathlib.GroupTheory.Transfer
+
+@[expose] public section
 
 /-!
 # Schreier's Lemma

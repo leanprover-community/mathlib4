@@ -3,10 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Ordmap.Ordnode
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Dist
+public import Mathlib.Data.Ordmap.Ordnode
+public import Mathlib.Tactic.Abel
+
+@[expose] public section
 
 /-!
 # Invariants for the verification of `Ordnode`

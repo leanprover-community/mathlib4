@@ -3,10 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Equiv.Defs
+
+@[expose] public section
 /-!
 # Theorems about invertible elements
 

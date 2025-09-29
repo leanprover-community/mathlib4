@@ -3,11 +3,15 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.MetricSpace.Lipschitz
+
+@[expose] public section
 
 /-!
 # Compatibility of algebraic operations with metric space structures

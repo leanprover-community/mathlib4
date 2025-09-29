@@ -3,9 +3,13 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Basic
-import Mathlib.Algebra.ContinuedFractions.Translations
-import Mathlib.Algebra.Order.Floor.Ring
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
+public import Mathlib.Algebra.ContinuedFractions.Translations
+public import Mathlib.Algebra.Order.Floor.Ring
+
+@[expose] public section
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions

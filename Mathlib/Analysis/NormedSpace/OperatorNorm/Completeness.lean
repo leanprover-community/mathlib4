@@ -1,3 +1,7 @@
-import Mathlib.Analysis.Normed.Operator.Completeness
+module
+
+public import Mathlib.Analysis.Normed.Operator.Completeness
+
+@[expose] public section
 
 deprecated_module (since := "2025-09-03")

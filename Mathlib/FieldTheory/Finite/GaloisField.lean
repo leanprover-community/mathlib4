@@ -3,10 +3,14 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van de Velde
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Norm.Basic
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Norm.Basic
+
+@[expose] public section
 
 /-!
 # Galois fields

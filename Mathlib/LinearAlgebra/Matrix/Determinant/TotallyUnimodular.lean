@@ -3,9 +3,13 @@ Copyright (c) 2024 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev, Bhavik Mehta
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Data.Matrix.ColumnRowPartitioned
-import Mathlib.Data.Sign.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.Data.Matrix.ColumnRowPartitioned
+public import Mathlib.Data.Sign.Basic
+
+@[expose] public section
 
 /-!
 # Totally unimodular matrices

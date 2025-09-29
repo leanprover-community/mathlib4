@@ -3,8 +3,12 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Lean.Elab.Command
-import Lean.Elab.ParseImportsFast
+module
+
+public import Lean.Elab.Command
+public import Lean.Elab.ParseImportsFast
+
+@[expose] public section
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter

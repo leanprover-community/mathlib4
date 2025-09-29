@@ -3,9 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
+
+@[expose] public section
 
 /-! Signs in constructions on homological complexes
 

@@ -3,8 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+
+@[expose] public section
 
 /-!
 # Homology of linear categories

@@ -3,11 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Polynomial
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Polynomial
+public import Mathlib.Algebra.MvPolynomial.Rename
+
+@[expose] public section
 
 /-!
 ## Function extensionality for multivariate polynomials

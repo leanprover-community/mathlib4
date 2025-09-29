@@ -3,8 +3,12 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+public import Mathlib.RingTheory.Derivation.Basic
+
+@[expose] public section
 
 /-!
 

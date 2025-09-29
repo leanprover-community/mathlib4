@@ -3,8 +3,12 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Geometry.Convex.Cone.Pointed
+module
+
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Geometry.Convex.Cone.Pointed
+
+@[expose] public section
 
 /-!
 # The algebraic dual of a cone

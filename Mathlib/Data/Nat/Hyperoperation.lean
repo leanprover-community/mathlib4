@@ -3,7 +3,11 @@ Copyright (c) 2023 Mark Andrew Gerads. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
 -/
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 /-!
 # Hyperoperation sequence

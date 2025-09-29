@@ -3,9 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.Solvable
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.Solvable
+public import Mathlib.LinearAlgebra.Dual.Defs
+
+@[expose] public section
 
 /-!
 # Characters of Lie algebras

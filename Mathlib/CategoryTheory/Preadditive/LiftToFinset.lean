@@ -3,9 +3,13 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+@[expose] public section
 
 /-!
 # Additional results about the `liftToFinset` construction

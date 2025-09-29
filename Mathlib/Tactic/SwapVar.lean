@@ -3,8 +3,12 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-import Lean.Elab.ElabRules
-import Mathlib.Util.Tactic
+module
+
+public import Lean.Elab.ElabRules
+public import Mathlib.Util.Tactic
+
+@[expose] public section
 
 /-!
 # Defines the `swap_var` tactic

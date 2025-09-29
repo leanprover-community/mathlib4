@@ -3,13 +3,17 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+@[expose] public section
 
 /-!
 # The Plünnecke-Ruzsa inequality

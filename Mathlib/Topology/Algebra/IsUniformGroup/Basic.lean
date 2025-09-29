@@ -3,15 +3,19 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Topology.UniformSpace.CompleteSeparated
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.HeineCantor
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.DiscreteSubset
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Topology.UniformSpace.UniformConvergence
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.HeineCantor
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Tactic.Abel
+
+@[expose] public section
 
 /-!
 # Uniform structure on topological groups

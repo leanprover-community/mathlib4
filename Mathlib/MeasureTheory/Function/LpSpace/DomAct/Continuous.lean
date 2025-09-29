@@ -3,9 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
-import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
-import Mathlib.Topology.Algebra.Constructions.DomMulAct
+module
+
+public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
+public import Mathlib.Topology.Algebra.Constructions.DomMulAct
+
+@[expose] public section
 
 /-!
 # Continuity of the action of `Mᵈᵐᵃ` on `MeasureSpace.Lp E p μ`

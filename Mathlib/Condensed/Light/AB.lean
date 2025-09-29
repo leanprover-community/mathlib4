@@ -3,9 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.ModuleCat.AB
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-import Mathlib.Condensed.Light.Epi
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.AB
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+public import Mathlib.Condensed.Light.Epi
+
+@[expose] public section
 /-!
 
 # Grothendieck's AB axioms for light condensed modules

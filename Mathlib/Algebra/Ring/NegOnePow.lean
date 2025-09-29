@@ -3,9 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.Data.ZMod.IntUnitsPower
+module
+
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.Data.ZMod.IntUnitsPower
+
+@[expose] public section
 
 /-!
 # Integer powers of (-1)

@@ -3,10 +3,14 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Order.Hom.Lex
-import Mathlib.Order.PiLex
-import Mathlib.RingTheory.HahnSeries.Addition
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Order.Hom.Lex
+public import Mathlib.Order.PiLex
+public import Mathlib.RingTheory.HahnSeries.Addition
+
+@[expose] public section
 
 /-!
 

@@ -3,10 +3,14 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Set.Functor
+
+@[expose] public section
 
 /-!
 # LawfulTraversable instances

@@ -3,10 +3,14 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Sigma.Basic
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Sigma.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+
+@[expose] public section
 
 /-!
 # Connected components of a category

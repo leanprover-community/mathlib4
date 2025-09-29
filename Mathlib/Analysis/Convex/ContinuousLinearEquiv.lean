@@ -3,8 +3,12 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Strict
-import Mathlib.Topology.Algebra.Module.Equiv
+module
+
+public import Mathlib.Analysis.Convex.Strict
+public import Mathlib.Topology.Algebra.Module.Equiv
+
+@[expose] public section
 
 /-!
 # (Pre)images of strict convex sets under continuous linear equivalences

@@ -3,7 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Data.QPF.Multivariate.Basic
+
+@[expose] public section
 
 /-!
 # The quotient of QPF is itself a QPF

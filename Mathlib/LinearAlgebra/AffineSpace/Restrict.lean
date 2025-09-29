@@ -3,7 +3,11 @@ Copyright (c) 2022 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+
+@[expose] public section
 
 /-!
 # Affine map restrictions

@@ -3,8 +3,12 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 -/
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.Normed.Lp.WithLp
+module
+
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.Normed.Lp.WithLp
+
+@[expose] public section
 
 /-!
 # `L^p` distance on products of two metric spaces

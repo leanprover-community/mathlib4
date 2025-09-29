@@ -3,9 +3,12 @@ Copyright (c) 2023 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
+module
 
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+@[expose] public section
 
 /-!
 # Multivariate polynomials and continuity

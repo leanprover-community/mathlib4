@@ -3,8 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Prod
-import Mathlib.CategoryTheory.Functor.Currying
+module
+
+public import Mathlib.CategoryTheory.Localization.Prod
+public import Mathlib.CategoryTheory.Functor.Currying
+
+@[expose] public section
 
 /-!
 # Lifting of bifunctors

@@ -3,11 +3,15 @@ Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Tactic.Monotonicity.Attr
+
+@[expose] public section
 
 /-!
 # Kleene Algebras

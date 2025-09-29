@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Subset
-import Mathlib.Topology.Clopen
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Data.Set.Subset
+public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Connected.Basic
+
+@[expose] public section
 
 /-!
 # Connected subsets and their relation to clopen sets

@@ -3,8 +3,12 @@ Copyright (c) 2024 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.OpenImmersion
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+@[expose] public section
 
 /-!
 # Covers of schemes

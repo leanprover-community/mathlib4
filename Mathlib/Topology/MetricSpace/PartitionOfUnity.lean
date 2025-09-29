@@ -3,9 +3,13 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Analysis.Convex.PartitionOfUnity
+module
+
+public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Analysis.Convex.PartitionOfUnity
+
+@[expose] public section
 
 /-!
 # Lemmas about (e)metric spaces that need partition of unity

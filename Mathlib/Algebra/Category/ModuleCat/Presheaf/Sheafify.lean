@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
+
+@[expose] public section
 
 /-!
 # The associated sheaf of a presheaf of modules

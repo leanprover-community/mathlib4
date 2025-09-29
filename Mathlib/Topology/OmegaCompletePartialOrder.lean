@@ -3,8 +3,12 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Topology.Order.ScottTopology
+module
+
+public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Topology.Order.ScottTopology
+
+@[expose] public section
 
 /-!
 # Scott Topological Spaces

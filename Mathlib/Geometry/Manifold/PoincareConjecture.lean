@@ -3,11 +3,15 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.Instances.Sphere
-import Mathlib.Topology.Homotopy.Equiv
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Topology.Homotopy.Equiv
+public import Mathlib.Util.Superscript
+
+@[expose] public section
 
 /-!
 # Statement of the generalized Poincaré conjecture

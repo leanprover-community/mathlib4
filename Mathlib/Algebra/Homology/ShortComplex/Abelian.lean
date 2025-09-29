@@ -3,9 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.Homology
-import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.CategoryTheory.Abelian.Basic
+
+@[expose] public section
 
 /-!
 # Abelian categories have homology

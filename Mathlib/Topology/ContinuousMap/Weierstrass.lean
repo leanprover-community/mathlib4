@@ -3,9 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.SpecialFunctions.Bernstein
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
+
+@[expose] public section
 
 /-!
 # The Weierstrass approximation theorem for continuous functions on `[a,b]`

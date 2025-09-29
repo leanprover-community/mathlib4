@@ -3,9 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
-import Mathlib.Analysis.CStarAlgebra.CStarMatrix
+public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
+public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
+
+@[expose] public section
 
 /-! # Completely positive maps
 

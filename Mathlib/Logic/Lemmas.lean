@@ -3,10 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.Tauto
+
+@[expose] public section
 
 /-!
 # More basic logic properties

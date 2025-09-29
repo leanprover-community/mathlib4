@@ -3,8 +3,12 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.Independence.Conditional
+module
+
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.Independence.Conditional
+
+@[expose] public section
 
 /-!
 # Kolmogorov's 0-1 law

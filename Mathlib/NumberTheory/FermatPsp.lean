@@ -3,10 +3,14 @@ Copyright (c) 2022 Niels Voss. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Niels Voss
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Tactic.GCongr
+
+@[expose] public section
 
 /-!
 # Fermat Pseudoprimes

@@ -3,11 +3,15 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
-import Mathlib.Probability.Moments.Basic
-import Mathlib.Probability.Moments.IntegrableExpMul
+module
+
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.IntegrableExpMul
+
+@[expose] public section
 
 /-!
 # The complex-valued moment-generating function

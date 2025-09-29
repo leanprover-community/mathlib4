@@ -3,10 +3,13 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.MinimalAxioms
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.MinimalAxioms
+
+@[expose] public section
 
 /-!
 # Minimal Axioms for a Ring

@@ -3,10 +3,14 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Star
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
+
+@[expose] public section
 
 /-!
 # Definition of BoundedContinuousFunction.char

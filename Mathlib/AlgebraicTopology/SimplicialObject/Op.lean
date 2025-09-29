@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Rev
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Rev
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+
+@[expose] public section
 
 /-!
 # The covariant involution of the category of simplicial objects

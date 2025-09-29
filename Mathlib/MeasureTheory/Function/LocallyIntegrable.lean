@@ -3,7 +3,11 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.IntegrableOn
+module
+
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
+
+@[expose] public section
 
 /-!
 # Locally integrable functions

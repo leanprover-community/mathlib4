@@ -3,10 +3,14 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.DifferentialRing
-import Mathlib.Algebra.Polynomial.Module.Basic
-import Mathlib.Algebra.Polynomial.Derivation
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.RingTheory.Derivation.DifferentialRing
+public import Mathlib.Algebra.Polynomial.Module.Basic
+public import Mathlib.Algebra.Polynomial.Derivation
+public import Mathlib.FieldTheory.Separable
+
+@[expose] public section
 
 /-!
 # Coefficient-wise derivation on polynomials

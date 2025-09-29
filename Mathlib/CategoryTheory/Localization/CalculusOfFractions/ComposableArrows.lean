@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+
+@[expose] public section
 
 /-! # Essential surjectivity of the functor induced on composable arrows
 

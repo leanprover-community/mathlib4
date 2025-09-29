@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Topology.Order.Monotone
+
+@[expose] public section
 
 /-!
 # Lemmas about liminf and limsup in an order topology.

@@ -3,11 +3,15 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Path
-import Mathlib.Topology.UniformSpace.CompactConvergence
-import Mathlib.Topology.UniformSpace.HeineCantor
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.ContinuousMap.Interval
+module
+
+public import Mathlib.Topology.Path
+public import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Topology.UniformSpace.HeineCantor
+public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Topology.ContinuousMap.Interval
+
+@[expose] public section
 
 /-!
 # Paths in uniform spaces

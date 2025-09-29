@@ -3,13 +3,17 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Defs
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Scan
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Data.Vector.Defs
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Data.List.Scan
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+
+@[expose] public section
 
 /-!
 # Additional theorems and definitions about the `Vector` type

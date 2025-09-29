@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Multiset.Antidiagonal
+module
+
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Multiset.Antidiagonal
+
+@[expose] public section
 
 /-!
 # The `Finsupp` counterpart of `Multiset.antidiagonal`.

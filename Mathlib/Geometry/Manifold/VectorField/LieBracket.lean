@@ -3,11 +3,15 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.VectorField
-import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-import Mathlib.Geometry.Manifold.VectorField.Pullback
+module
+
+public import Mathlib.Analysis.Calculus.VectorField
+public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.VectorField.Pullback
+
+@[expose] public section
 
 /-!
 # Lie brackets of vector fields on manifolds

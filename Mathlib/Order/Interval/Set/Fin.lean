@@ -3,8 +3,12 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
+module
+
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+
+@[expose] public section
 
 /-!
 # (Pre)images of set intervals under `Fin` operations

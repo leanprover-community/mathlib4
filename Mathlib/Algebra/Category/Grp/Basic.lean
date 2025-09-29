@@ -3,10 +3,14 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.End
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Group.End
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.Data.Int.Cast.Lemmas
+
+@[expose] public section
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.

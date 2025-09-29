@@ -3,8 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+
+@[expose] public section
 
 /-!
 # The successor case in the induction for Nöbeling's theorem

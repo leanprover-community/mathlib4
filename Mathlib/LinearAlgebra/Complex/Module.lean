@@ -3,11 +3,15 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Real.Star
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Real.Star
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+
+@[expose] public section
 
 /-!
 # Complex number as a vector space over `ℝ`

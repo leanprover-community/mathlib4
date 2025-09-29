@@ -3,7 +3,11 @@ Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Category
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Category
+
+@[expose] public section
 
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)

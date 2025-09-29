@@ -3,9 +3,13 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Connected.PathConnected
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Topology.Connected.PathConnected
+
+@[expose] public section
 
 /-!
 # Segment between 2 points as a bundled path

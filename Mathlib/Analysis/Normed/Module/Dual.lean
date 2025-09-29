@@ -3,12 +3,16 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Analysis.Normed.Module.Convex
+module
+
+public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Analysis.LocallyConvex.AbsConvex
+public import Mathlib.Analysis.Normed.Module.Convex
+
+@[expose] public section
 
 /-!
 # The strong dual of a normed space

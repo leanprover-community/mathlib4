@@ -3,8 +3,12 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Jun Kwon
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Sym.Sym2
+
+@[expose] public section
 
 /-!
 # Multigraphs

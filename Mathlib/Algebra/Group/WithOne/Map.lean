@@ -3,8 +3,12 @@ Copyright (c) 2025 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Data.Option.NAry
+module
+
+public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Data.Option.NAry
+
+@[expose] public section
 
 /-!
 # Adjoining a zero/one to semigroups and mapping

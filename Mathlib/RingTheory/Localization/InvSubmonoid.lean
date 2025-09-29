@@ -3,9 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.GroupTheory.Submonoid.Inverses
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.GroupTheory.Submonoid.Inverses
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Localization.Defs
+
+@[expose] public section
 
 /-!
 # Submonoid of inverses

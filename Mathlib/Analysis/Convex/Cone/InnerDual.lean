@@ -3,8 +3,12 @@ Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Dual
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import Mathlib.Analysis.Convex.Cone.Dual
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+
+@[expose] public section
 
 /-!
 # Inner dual cone of a set

@@ -3,11 +3,15 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.ENat.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+@[expose] public section
 
 /-!
 # Multiplicity of a divisor

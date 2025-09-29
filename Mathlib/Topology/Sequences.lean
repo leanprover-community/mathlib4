@@ -3,8 +3,12 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Defs.Sequences
-import Mathlib.Topology.UniformSpace.Cauchy
+module
+
+public import Mathlib.Topology.Defs.Sequences
+public import Mathlib.Topology.UniformSpace.Cauchy
+
+@[expose] public section
 
 /-!
 # Sequences in topological spaces

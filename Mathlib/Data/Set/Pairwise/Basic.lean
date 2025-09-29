@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Logic.Pairwise
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Logic.Relation
+
+@[expose] public section
 
 /-!
 # Relations holding pairwise

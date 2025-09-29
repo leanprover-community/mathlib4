@@ -3,8 +3,12 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.Order.Restriction
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+public import Mathlib.Order.Restriction
+
+@[expose] public section
 
 /-!
 # Measurability of the restriction function for functions indexed by a preorder

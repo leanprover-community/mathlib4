@@ -3,8 +3,12 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Floor.Defs
-import Mathlib.Algebra.Order.Nonneg.Basic
+module
+
+public import Mathlib.Algebra.Order.Floor.Defs
+public import Mathlib.Algebra.Order.Nonneg.Basic
+
+@[expose] public section
 
 /-!
 # Nonnegative elements are archimedean

@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Data.Set.Defs
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Data.Set.Defs
+
+@[expose] public section
 
 /-!
 # Relations holding pairwise

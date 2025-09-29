@@ -3,8 +3,12 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
-import Mathlib.RepresentationTheory.Rep
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+public import Mathlib.RepresentationTheory.Rep
+
+@[expose] public section
 
 /-!
 # Coinduced representations

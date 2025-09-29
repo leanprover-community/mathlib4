@@ -3,7 +3,11 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Bornology.Constructions
+module
+
+public import Mathlib.Topology.Bornology.Constructions
+
+@[expose] public section
 
 /-!
 # Bornology of order-bounded sets

@@ -3,11 +3,15 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Zify
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Zify
+
+@[expose] public section
 
 /-!
 # `qify` tactic

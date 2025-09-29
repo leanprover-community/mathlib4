@@ -3,10 +3,14 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.Algebra.Monoid
+module
+
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.Star
+public import Mathlib.Topology.Algebra.Monoid
+
+@[expose] public section
 
 /-! # `unitary R` is a topological group
 

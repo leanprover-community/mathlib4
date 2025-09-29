@@ -3,10 +3,13 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-import Mathlib.Analysis.Matrix
-import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
+public import Mathlib.Analysis.Matrix
+public import Mathlib.Topology.UniformSpace.Matrix
+
+@[expose] public section
 
 /-!
 # Matrices with entries in a C⋆-algebra

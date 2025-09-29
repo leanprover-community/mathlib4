@@ -3,11 +3,14 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.LocalRing.Basic
+
+@[expose] public section
 
 /-!
 # Formal (multivariate) power series - Inverses

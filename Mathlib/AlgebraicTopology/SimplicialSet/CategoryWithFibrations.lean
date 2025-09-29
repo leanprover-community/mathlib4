@@ -3,10 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
-import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
-import Mathlib.AlgebraicTopology.SimplicialSet.Horn
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+
+@[expose] public section
 
 /-!
 # Cofibrations and fibrations in the category of simplicial sets

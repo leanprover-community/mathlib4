@@ -3,9 +3,13 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.Data.ULift
+
+@[expose] public section
 
 /-!
 # Discrete categories

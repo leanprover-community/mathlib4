@@ -3,12 +3,16 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Algebra.Module.Submodule.Union
-import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.RootSystem.Base
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
+module
+
+public import Mathlib.Algebra.CharZero.Infinite
+public import Mathlib.Algebra.Module.Submodule.Union
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
+public import Mathlib.LinearAlgebra.RootSystem.Base
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
+
+@[expose] public section
 
 /-!
 # Cartan matrices for root systems

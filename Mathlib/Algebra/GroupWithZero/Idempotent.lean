@@ -3,8 +3,12 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.GroupWithZero.Defs
+module
+
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.GroupWithZero.Defs
+
+@[expose] public section
 
 /-!
 # Idempotent elements of a group with zero

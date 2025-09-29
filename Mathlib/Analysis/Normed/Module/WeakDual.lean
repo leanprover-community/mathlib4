@@ -3,9 +3,13 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Normed.Operator.Completeness
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Analysis.Normed.Operator.Completeness
+public import Mathlib.Topology.Algebra.Module.WeakDual
+
+@[expose] public section
 
 /-!
 # Weak dual of normed space

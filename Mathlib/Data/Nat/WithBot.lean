@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.Order.Nat
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Data.Nat.Cast.WithTop
+public import Mathlib.Order.Nat
+
+@[expose] public section
 
 /-!
 # `WithBot ℕ`

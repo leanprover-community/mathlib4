@@ -3,8 +3,12 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Theorems
+module
+
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Theorems
+
+@[expose] public section
 
 /-!
 ## `funProp` attribute

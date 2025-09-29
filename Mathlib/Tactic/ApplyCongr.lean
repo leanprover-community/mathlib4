@@ -3,8 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Allen, Kim Morrison
 -/
+module
 
-import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Conv
+
+@[expose] public section
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.

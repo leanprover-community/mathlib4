@@ -3,11 +3,15 @@ Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+
+@[expose] public section
 
 /-!
 # Incidence algebras

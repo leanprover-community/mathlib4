@@ -3,8 +3,12 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Tactic.Basic
-import Mathlib.Order.Filter.Basic
+module
+
+public import Mathlib.Tactic.Basic
+public import Mathlib.Order.Filter.Basic
+
+@[expose] public section
 
 /-!
 # The `peel` tactic

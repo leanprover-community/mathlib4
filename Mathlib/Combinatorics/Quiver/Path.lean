@@ -3,10 +3,13 @@ Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
+module
 
-import Mathlib.Combinatorics.Quiver.Prefunctor
-import Mathlib.Logic.Lemmas
-import Batteries.Data.List.Basic
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Logic.Lemmas
+public import Batteries.Data.List.Basic
+
+@[expose] public section
 
 /-!
 # Paths in quivers

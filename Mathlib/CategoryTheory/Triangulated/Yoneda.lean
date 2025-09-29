@@ -3,11 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+
+@[expose] public section
 
 /-!
 # The Yoneda functors are homological

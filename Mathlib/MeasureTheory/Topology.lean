@@ -3,8 +3,12 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.Topology.DiscreteSubset
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.Topology.DiscreteSubset
+
+@[expose] public section
 
 /-!
 # Theorems combining measure theory and topology

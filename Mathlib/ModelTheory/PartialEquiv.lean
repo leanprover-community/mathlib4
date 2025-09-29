@@ -3,8 +3,12 @@ Copyright (c) 2024 Gabin Kolly. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly, David Wärn
 -/
-import Mathlib.ModelTheory.DirectLimit
-import Mathlib.Order.Ideal
+module
+
+public import Mathlib.ModelTheory.DirectLimit
+public import Mathlib.Order.Ideal
+
+@[expose] public section
 
 /-!
 # Partial Isomorphisms

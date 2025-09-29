@@ -3,11 +3,15 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Topology.Algebra.Valued.WithVal
-import Mathlib.Topology.GDelta.MetrizableSpace
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.Valued.WithVal
+public import Mathlib.Topology.GDelta.MetrizableSpace
+
+@[expose] public section
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`

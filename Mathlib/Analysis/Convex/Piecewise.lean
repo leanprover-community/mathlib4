@@ -3,7 +3,11 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Analysis.Convex.Function
+module
+
+public import Mathlib.Analysis.Convex.Function
+
+@[expose] public section
 
 /-!
 # Convex and concave piecewise functions

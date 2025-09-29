@@ -3,8 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Data.NNRat.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.NNRat.Defs
+
+@[expose] public section
 
 /-!
 # The rational numbers form a field

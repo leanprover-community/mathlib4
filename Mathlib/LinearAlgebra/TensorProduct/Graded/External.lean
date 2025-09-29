@@ -3,11 +3,15 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.ZMod.IntUnitsPower
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.Algebra.DirectSum.Algebra
+module
+
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.Data.ZMod.IntUnitsPower
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+public import Mathlib.Algebra.DirectSum.Algebra
+
+@[expose] public section
 
 /-!
 # Graded tensor products over graded algebras

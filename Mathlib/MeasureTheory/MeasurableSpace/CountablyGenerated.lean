@@ -3,9 +3,13 @@ Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.Data.Set.MemPartition
-import Mathlib.Order.Filter.CountableSeparatingOn
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.Data.Set.MemPartition
+public import Mathlib.Order.Filter.CountableSeparatingOn
+
+@[expose] public section
 
 /-!
 # Countably generated measurable spaces

@@ -3,7 +3,11 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Computability.Language
+module
+
+public import Mathlib.Computability.Language
+
+@[expose] public section
 
 /-!
 # Context-Free Grammars

@@ -3,9 +3,13 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Algebra.Module.End
-import Mathlib.GroupTheory.FreeAbelianGroup
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Module.End
+public import Mathlib.GroupTheory.FreeAbelianGroup
+
+@[expose] public section
 
 /-!
 # Isomorphism between `FreeAbelianGroup X` and `X →₀ ℤ`

@@ -3,10 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Sym.Basic
-import Mathlib.Order.Preorder.Finsupp
+module
+
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Sym.Basic
+public import Mathlib.Order.Preorder.Finsupp
+
+@[expose] public section
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions

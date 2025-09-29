@@ -3,9 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.LocallyConstant
-import Mathlib.Condensed.Equivalence
-import Mathlib.Topology.Category.LightProfinite.Extend
+module
+
+public import Mathlib.Condensed.Discrete.LocallyConstant
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Topology.Category.LightProfinite.Extend
+
+@[expose] public section
 /-!
 
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.

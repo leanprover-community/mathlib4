@@ -3,8 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+@[expose] public section
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`

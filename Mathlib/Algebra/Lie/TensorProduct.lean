@@ -3,8 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+
+@[expose] public section
 
 /-!
 # Tensor products of Lie modules

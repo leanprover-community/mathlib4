@@ -3,8 +3,12 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Tilted
-import Mathlib.Probability.Moments.MGFAnalytic
+module
+
+public import Mathlib.MeasureTheory.Measure.Tilted
+public import Mathlib.Probability.Moments.MGFAnalytic
+
+@[expose] public section
 
 /-!
 # Results relating `Measure.tilted` to `mgf` and `cgf`

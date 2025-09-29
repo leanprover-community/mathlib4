@@ -3,11 +3,15 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
-import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.CategoryTheory.MorphismProperty.Descent
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+public import Mathlib.CategoryTheory.MorphismProperty.Descent
+
+@[expose] public section
 
 /-!
 # Descent of morphism properties

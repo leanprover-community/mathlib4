@@ -3,9 +3,13 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Analysis.Normed.Operator.Basic
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Normed.Operator.Basic
+
+@[expose] public section
 
 /-!
 # Normed spaces over R or C

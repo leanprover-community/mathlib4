@@ -3,11 +3,15 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.GroupWithZero.Action.Hom
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Action.Hom
+public import Mathlib.Algebra.Ring.Defs
+
+@[expose] public section
 
 /-!
 # Type tags for right action on the domain of a function

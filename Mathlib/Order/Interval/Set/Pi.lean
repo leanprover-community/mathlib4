@@ -3,11 +3,15 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
+module
+
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+
+@[expose] public section
 
 /-!
 # Intervals in `pi`-space

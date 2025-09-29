@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
+
+@[expose] public section
 
 /-!
 # Continuous functors between sites.

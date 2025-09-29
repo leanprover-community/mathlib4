@@ -3,9 +3,13 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.Ring.Idempotent
+module
+
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Ring.Idempotent
+
+@[expose] public section
 
 /-!
 # Star projections

@@ -3,8 +3,12 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Tactic.Linarith
+
+@[expose] public section
 
 /-!
 # Absolute value in `ZMod n`

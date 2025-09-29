@@ -3,10 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Set.Sigma
-import Mathlib.Order.Filter.Defs
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Interval.Set.Basic
+
+@[expose] public section
 
 /-!
 # Basic results on filter bases

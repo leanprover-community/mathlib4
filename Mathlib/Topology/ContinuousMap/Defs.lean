@@ -3,10 +3,14 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.Lift
-import Mathlib.Topology.Defs.Basic
+module
+
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.Lift
+public import Mathlib.Topology.Defs.Basic
+
+@[expose] public section
 
 /-!
 # Continuous bundled maps

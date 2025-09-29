@@ -3,7 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.InitialSeg
+module
+
+public import Mathlib.Order.InitialSeg
+
+@[expose] public section
 
 /-!
 # Intervals as initial segments

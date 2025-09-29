@@ -3,9 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+@[expose] public section
 
 /-!
 # Preserving (co)equalizers

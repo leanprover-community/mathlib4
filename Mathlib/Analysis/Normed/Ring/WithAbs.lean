@@ -3,7 +3,11 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.Analysis.Normed.Ring.Basic
+
+@[expose] public section
 
 /-!
 # WithAbs

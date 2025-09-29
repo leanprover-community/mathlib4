@@ -3,8 +3,11 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
+
+@[expose] public section
 /-!
 ## Definitions on Arrays
 

@@ -3,9 +3,13 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.UniformSpace.UniformConvergence
+module
+
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Topology.UniformSpace.UniformConvergence
+
+@[expose] public section
 
 /-!
 # TendstoUniformlyOn on ordered spaces

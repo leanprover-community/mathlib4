@@ -3,13 +3,17 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Topology.Algebra.Module.Equiv
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Submodule
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.Topology.Algebra.Module.Equiv
+
+@[expose] public section
 
 /-!
 # (Semi-)linear isometries

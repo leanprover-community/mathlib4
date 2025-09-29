@@ -3,9 +3,13 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Presentable.Finite
+module
+
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Presentable.Finite
+
+@[expose] public section
 
 /-!
 # (Co)limit presentations

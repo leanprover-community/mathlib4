@@ -3,10 +3,14 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Tactic.AdaptationNote
+
+@[expose] public section
 
 /-!
 # Abelian categories with enough injectives have injective resolutions

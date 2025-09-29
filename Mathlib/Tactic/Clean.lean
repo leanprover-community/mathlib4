@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Michail Karatarakis, Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Elab.SyntheticMVars
+module
+
+public import Mathlib.Init
+public import Lean.Elab.SyntheticMVars
+
+@[expose] public section
 
 /-!
 # `clean%` term elaborator

@@ -3,11 +3,15 @@ Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Fin
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Fin
+public import Mathlib.Logic.Equiv.Fin.Basic
+
+@[expose] public section
 
 /-!
 # Big operators and `Fin`

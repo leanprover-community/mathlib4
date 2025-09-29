@@ -3,7 +3,11 @@ Copyright (c) 2021 Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Lutz, Oliver Nash
 -/
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Tactic.TypeStar
+
+@[expose] public section
 
 /-!
 # Bracket Notation

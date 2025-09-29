@@ -3,10 +3,14 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Combinatorics.Derangements.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Combinatorics.Derangements.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 /-!
 # Derangements on fintypes

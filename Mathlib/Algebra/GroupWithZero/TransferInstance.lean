@@ -3,8 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.GroupWithZero.InjSurj
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+
+@[expose] public section
 
 /-!
 # Transfer algebraic structures across `Equiv`s

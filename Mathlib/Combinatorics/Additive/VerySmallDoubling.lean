@@ -3,14 +3,18 @@ Copyright (c) 2024 Yaël Dillies, Patrick Luo, Bhavik Mehta. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Qify
+
+@[expose] public section
 
 /-!
 # Sets with very small doubling

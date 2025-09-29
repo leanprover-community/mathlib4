@@ -3,15 +3,19 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.EverywherePos
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousMap.Ordered
+module
+
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.EverywherePos
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.Topology.Metrizable.Urysohn
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.ContinuousMap.Ordered
+
+@[expose] public section
 
 /-!
 # Uniqueness of Haar measure in locally compact groups

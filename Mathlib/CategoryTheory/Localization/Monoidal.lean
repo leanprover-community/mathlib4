@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Localization.Trifunctor
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Localization.Trifunctor
+public import Mathlib.CategoryTheory.Monoidal.Functor
+
+@[expose] public section
 
 /-!
 # Localization of monoidal categories

@@ -3,11 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Sophie Morel
 -/
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Shift.Adjunction
-import Mathlib.CategoryTheory.Adjunction.Additive
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Shift.Adjunction
+public import Mathlib.CategoryTheory.Adjunction.Additive
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+
+@[expose] public section
 
 /-!
 # The adjoint functor is triangulated

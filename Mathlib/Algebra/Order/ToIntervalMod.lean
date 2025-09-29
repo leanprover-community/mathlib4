@@ -3,11 +3,15 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.ModEq
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Ring.Periodic
-import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Circular
+module
+
+public import Mathlib.Algebra.ModEq
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Ring.Periodic
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Circular
+
+@[expose] public section
 
 /-!
 # Reducing to an interval modulo its length

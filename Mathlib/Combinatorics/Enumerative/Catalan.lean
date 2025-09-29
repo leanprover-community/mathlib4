@@ -3,12 +3,16 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
+
+@[expose] public section
 
 /-!
 # Catalan numbers

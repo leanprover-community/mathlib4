@@ -3,8 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.Sort
+module
+
+public import Mathlib.Data.List.Duplicate
+public import Mathlib.Data.List.Sort
+
+@[expose] public section
 
 /-!
 # Equivalence between `Fin (length l)` and elements of a list

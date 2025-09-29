@@ -3,11 +3,15 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.NumberTheory.ModularForms.Basic
-import Mathlib.NumberTheory.ModularForms.Identities
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.NumberTheory.ModularForms.Basic
+public import Mathlib.NumberTheory.ModularForms.Identities
+public import Mathlib.RingTheory.PowerSeries.Basic
+
+@[expose] public section
 
 /-!
 # q-expansions of modular forms

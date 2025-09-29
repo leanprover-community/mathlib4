@@ -3,10 +3,14 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Hom.Set
-import Mathlib.Order.RelIso.Set
+module
+
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Hom.Set
+public import Mathlib.Order.RelIso.Set
+
+@[expose] public section
 
 /-!
 # Lexicographic order and order isomorphisms

@@ -3,9 +3,13 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Jon Bannon
 -/
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+
+@[expose] public section
 
 /-!
 # Multiplier Algebra of a C⋆-algebra

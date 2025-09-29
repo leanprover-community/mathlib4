@@ -3,12 +3,16 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Module.End
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Module.End
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+
+@[expose] public section
 
 /-!
 # Preadditive categories

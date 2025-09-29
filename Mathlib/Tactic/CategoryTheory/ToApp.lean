@@ -3,8 +3,12 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.Util.AddRelatedDecl
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.Util.AddRelatedDecl
+
+@[expose] public section
 
 /-!
 # The `to_app` attribute

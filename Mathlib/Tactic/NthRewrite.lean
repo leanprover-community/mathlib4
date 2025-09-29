@@ -3,8 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
+
+@[expose] public section
 
 /-!
 # `nth_rewrite` tactic

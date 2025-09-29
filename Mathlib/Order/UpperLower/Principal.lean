@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Order.UpperLower.CompleteLattice
+module
+
+public import Mathlib.Order.Interval.Set.OrderIso
+public import Mathlib.Order.UpperLower.CompleteLattice
+
+@[expose] public section
 
 /-!
 # Principal upper/lower sets

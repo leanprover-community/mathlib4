@@ -3,8 +3,12 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.NumberTheory.ArithmeticFunction
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.NumberTheory.ArithmeticFunction
+
+@[expose] public section
 
 /-!
 # Lemmas on infinite sums over the antidiagonal of the divisors function

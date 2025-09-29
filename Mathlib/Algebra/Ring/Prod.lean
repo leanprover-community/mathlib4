@@ -3,10 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Int.Cast.Prod
-import Mathlib.Algebra.GroupWithZero.Prod
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Data.Int.Cast.Prod
+public import Mathlib.Algebra.GroupWithZero.Prod
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.Algebra.Ring.Equiv
+
+@[expose] public section
 
 /-!
 # Semiring, ring etc. structures on `R × S`

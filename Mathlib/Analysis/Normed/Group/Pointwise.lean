@@ -3,10 +3,13 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.MetricSpace.Thickening
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.MetricSpace.Thickening
+
+@[expose] public section
 
 /-!
 # Properties of pointwise addition of sets in normed groups

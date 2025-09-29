@@ -3,8 +3,12 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Holder
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Data.ENNReal.Holder
+public import Mathlib.Tactic.LinearCombination
+
+@[expose] public section
 
 /-!
 # Real conjugate exponents

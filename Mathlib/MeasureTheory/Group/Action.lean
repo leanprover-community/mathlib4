@@ -3,13 +3,17 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.Dynamics.Minimal
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Group.Defs
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.Dynamics.Minimal
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.MeasureTheory.Group.MeasurableEquiv
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.Order.Filter.EventuallyConst
+
+@[expose] public section
 
 /-!
 # Measures invariant under group actions

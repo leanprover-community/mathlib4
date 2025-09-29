@@ -3,9 +3,13 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Topology.Piecewise
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.Topology.Piecewise
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+
+@[expose] public section
 
 /-!
 # Semicontinuous maps

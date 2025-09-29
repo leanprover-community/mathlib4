@@ -3,7 +3,11 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+
+@[expose] public section
 
 /-!
 # Totally real and totally complex number fields

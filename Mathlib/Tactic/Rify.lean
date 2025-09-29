@@ -3,9 +3,13 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.Qify
+
+@[expose] public section
 
 /-!
 # `rify` tactic

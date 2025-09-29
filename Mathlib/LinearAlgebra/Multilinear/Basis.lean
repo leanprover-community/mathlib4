@@ -3,8 +3,12 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.Multilinear.Basic
+
+@[expose] public section
 
 /-!
 # Multilinear maps in relation to bases.

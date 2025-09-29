@@ -3,10 +3,14 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Density
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Finset.Density
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.Positivity.Core
+
+@[expose] public section
 
 /-!
 # Positivity extensions for finsets

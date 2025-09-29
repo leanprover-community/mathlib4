@@ -3,9 +3,13 @@ Copyright (c) 2023 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
+
+@[expose] public section
 
 /-!
 # Lucas's theorem

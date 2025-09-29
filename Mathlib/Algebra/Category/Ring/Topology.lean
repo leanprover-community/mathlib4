@@ -3,10 +3,14 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+@[expose] public section
 
 /-!
 # Topology on `Hom(R, S)`

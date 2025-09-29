@@ -3,8 +3,12 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementarySubstructures
-import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+module
+
+public import Mathlib.ModelTheory.ElementarySubstructures
+public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+
+@[expose] public section
 
 /-!
 # Bundled First-Order Structures

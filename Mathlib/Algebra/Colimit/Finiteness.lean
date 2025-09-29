@@ -3,8 +3,12 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.RingTheory.Finiteness.Basic
+
+@[expose] public section
 
 /-!
 # Modules as direct limits of finitely generated submodules

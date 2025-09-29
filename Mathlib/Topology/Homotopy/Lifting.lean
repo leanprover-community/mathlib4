@@ -3,11 +3,15 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Topology.Covering
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Topology.UnitInterval
+
+@[expose] public section
 
 /-!
 # The homotopy lifting property for covering maps

@@ -3,8 +3,12 @@ Copyright (c) 2025 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Topology.Algebra.Support
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.Topology.Algebra.Support
+
+@[expose] public section
 
 /-!
 # The topological support of sup and inf of functions

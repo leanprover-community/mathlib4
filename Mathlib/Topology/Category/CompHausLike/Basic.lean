@@ -3,9 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+
+@[expose] public section
 /-!
 
 # Categories of Compact Hausdorff Spaces

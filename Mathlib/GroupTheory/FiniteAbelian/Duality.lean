@@ -3,8 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.GroupTheory.FiniteAbelian.Basic
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+module
+
+public import Mathlib.GroupTheory.FiniteAbelian.Basic
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+
+@[expose] public section
 
 /-!
 # Duality for finite abelian groups

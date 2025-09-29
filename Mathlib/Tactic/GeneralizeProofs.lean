@@ -3,10 +3,14 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Kyle Miller
 -/
-import Lean.Elab.Tactic.Config
-import Lean.Elab.Tactic.Location
-import Mathlib.Lean.Expr.Basic
-import Batteries.Lean.Expr
+module
+
+public import Lean.Elab.Tactic.Config
+public import Lean.Elab.Tactic.Location
+public import Mathlib.Lean.Expr.Basic
+public import Batteries.Lean.Expr
+
+@[expose] public section
 
 /-!
 # The `generalize_proofs` tactic

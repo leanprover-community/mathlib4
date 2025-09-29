@@ -3,9 +3,13 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Location
-import Lean.Meta.Tactic.Simp.Main
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Location
+public import Lean.Meta.Tactic.Simp.Main
+
+@[expose] public section
 
 /-!
 # Rewriting at specified locations

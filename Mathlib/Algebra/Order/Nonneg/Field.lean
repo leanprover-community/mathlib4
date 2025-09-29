@@ -3,10 +3,14 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Canonical
-import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Order.Field.Canonical
+public import Mathlib.Algebra.Order.Nonneg.Ring
+public import Mathlib.Data.Nat.Cast.Order.Ring
+
+@[expose] public section
 
 /-!
 # Semifield structure on the type of nonnegative elements

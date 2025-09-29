@@ -3,9 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Combinatorics.Pigeonhole
+public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+
+@[expose] public section
 
 /-!
 # Admissible absolute values

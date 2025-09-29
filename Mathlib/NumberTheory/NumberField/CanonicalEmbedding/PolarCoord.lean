@@ -3,8 +3,12 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.PolarCoord
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+
+@[expose] public section
 
 /-!
 # Polar coordinate change of variables for the mixed space of a number field

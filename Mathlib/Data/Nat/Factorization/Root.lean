@@ -3,9 +3,13 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Floor.Div
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Factorization.Defs
+module
+
+public import Mathlib.Algebra.Order.Floor.Div
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Factorization.Defs
+
+@[expose] public section
 
 /-!
 # Roots of natural numbers, rounded up and down

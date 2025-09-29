@@ -3,9 +3,13 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
+module
+
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+
+@[expose] public section
 
 /-!
 # Sums of two squares

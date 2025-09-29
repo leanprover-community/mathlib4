@@ -3,11 +3,15 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.OrderOfElement
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.OrderOfElement
+
+@[expose] public section
 
 /-!
 # Multiplicative characters of finite rings and fields

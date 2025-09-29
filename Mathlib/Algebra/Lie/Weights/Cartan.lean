@@ -3,8 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.CartanSubalgebra
-import Mathlib.Algebra.Lie.Weights.Basic
+module
+
+public import Mathlib.Algebra.Lie.CartanSubalgebra
+public import Mathlib.Algebra.Lie.Weights.Basic
+
+@[expose] public section
 
 /-!
 # Weights and roots of Lie modules and Lie algebras with respect to Cartan subalgebras

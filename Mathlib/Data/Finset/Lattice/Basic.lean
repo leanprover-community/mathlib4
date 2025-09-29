@@ -3,8 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.FinsetOps
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.FinsetOps
+
+@[expose] public section
 
 /-!
 # Lattice structure on finite sets

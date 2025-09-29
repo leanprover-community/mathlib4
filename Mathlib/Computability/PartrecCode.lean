@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Partrec
-import Mathlib.Data.Option.Basic
+module
+
+public import Mathlib.Computability.Partrec
+public import Mathlib.Data.Option.Basic
+
+@[expose] public section
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.

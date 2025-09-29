@@ -3,9 +3,13 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Mathlib.Util.PPOptions
-import Lean.PrettyPrinter.Delaborator.Builtins
+module
+
+public import Mathlib.Init
+public import Mathlib.Util.PPOptions
+public import Lean.PrettyPrinter.Delaborator.Builtins
+
+@[expose] public section
 
 /-! # Pi type notation
 

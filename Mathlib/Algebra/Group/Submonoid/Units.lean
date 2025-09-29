@@ -3,9 +3,13 @@ Copyright (c) 2023 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.Group.Subgroup.Lattice
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+
+@[expose] public section
 
 /-!
 

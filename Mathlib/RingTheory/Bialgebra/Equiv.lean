@@ -3,8 +3,12 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Equiv
-import Mathlib.RingTheory.Bialgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Equiv
+public import Mathlib.RingTheory.Bialgebra.Hom
+
+@[expose] public section
 
 /-!
 # Isomorphisms of `R`-bialgebras

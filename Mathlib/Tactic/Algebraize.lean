@@ -3,8 +3,11 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle Sönne, Adam Topaz
 -/
+module
 
-import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Algebra.Tower
+
+@[expose] public section
 
 /-!
 

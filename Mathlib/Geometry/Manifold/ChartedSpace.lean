@@ -3,8 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.PartialHomeomorph
-import Mathlib.Topology.Connected.LocPathConnected
+module
+
+public import Mathlib.Topology.PartialHomeomorph
+public import Mathlib.Topology.Connected.LocPathConnected
+
+@[expose] public section
 
 /-!
 # Charted spaces

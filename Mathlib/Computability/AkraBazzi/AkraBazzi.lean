@@ -3,10 +3,13 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Computability.AkraBazzi.SumTransform
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Computability.AkraBazzi.SumTransform
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+
+@[expose] public section
 
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem

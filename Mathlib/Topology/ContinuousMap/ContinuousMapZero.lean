@@ -3,8 +3,12 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
+module
+
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
+
+@[expose] public section
 
 /-!
 # Continuous maps sending zero to zero

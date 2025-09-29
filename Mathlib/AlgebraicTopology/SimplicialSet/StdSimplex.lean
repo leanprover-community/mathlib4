@@ -3,11 +3,15 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
-import Mathlib.CategoryTheory.Subpresheaf.OfSection
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Order.Fin.SuccAboveOrderIso
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+public import Mathlib.CategoryTheory.Subpresheaf.OfSection
+public import Mathlib.CategoryTheory.Limits.Types.Shapes
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Order.Fin.SuccAboveOrderIso
+
+@[expose] public section
 
 /-!
 # The standard simplex

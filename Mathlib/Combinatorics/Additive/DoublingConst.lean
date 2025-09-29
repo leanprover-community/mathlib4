@@ -3,8 +3,12 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-import Mathlib.Data.Finset.Density
+module
+
+public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+public import Mathlib.Data.Finset.Density
+
+@[expose] public section
 
 /-!
 # Doubling and difference constants

@@ -3,8 +3,12 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+
+@[expose] public section
 
 /-!
 # Topological Kőnig's lemma

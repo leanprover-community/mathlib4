@@ -3,10 +3,13 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Topology.MetricSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Topology.MetricSpace.UniformConvergence
+public import Mathlib.Topology.UniformSpace.CompactConvergence
+
+@[expose] public section
 
 /-! # Continuity of the continuous functional calculus in each variable
 

@@ -3,8 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Analysis.Normed.Module.Convex
+module
+
+public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.Normed.Module.Convex
+
+@[expose] public section
 /-!
 # "Gauge rescale" homeomorphism between convex sets
 

@@ -3,9 +3,13 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.Tactic.TFAE
+
+@[expose] public section
 
 /-!
 # Adjunctions as Kan extensions

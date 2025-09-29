@@ -3,8 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Algebra.Algebra.Opposite
+module
+
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.Algebra.Algebra.Opposite
+
+@[expose] public section
 
 /-! # `MulOpposite` distributes over `⊗`
 

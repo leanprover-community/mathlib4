@@ -3,9 +3,13 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Lean.Meta
+public import Mathlib.Order.Defs.LinearOrder
+
+@[expose] public section
 
 /-!
 

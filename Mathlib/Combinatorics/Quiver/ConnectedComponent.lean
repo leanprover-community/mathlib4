@@ -3,9 +3,13 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Combinatorics.Quiver.Subquiver
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Combinatorics.Quiver.Symmetric
+module
+
+public import Mathlib.Combinatorics.Quiver.Subquiver
+public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Combinatorics.Quiver.Symmetric
+
+@[expose] public section
 
 /-!
 ## Weakly connected components

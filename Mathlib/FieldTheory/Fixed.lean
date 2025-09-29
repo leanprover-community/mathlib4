@@ -3,14 +3,18 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.GroupRingAction
-import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.Algebra.Ring.Action.Invariant
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.FieldTheory.Normal.Defs
-import Mathlib.FieldTheory.Separable
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+module
+
+public import Mathlib.Algebra.Polynomial.GroupRingAction
+public import Mathlib.Algebra.Ring.Action.Field
+public import Mathlib.Algebra.Ring.Action.Invariant
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.FieldTheory.Normal.Defs
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+@[expose] public section
 
 /-!
 # Fixed field under a group action.

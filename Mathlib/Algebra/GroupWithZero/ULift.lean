@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.GroupWithZero.InjSurj
+module
+
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+
+@[expose] public section
 
 /-!
 # `ULift` instances for groups and monoids with zero

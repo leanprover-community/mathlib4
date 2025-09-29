@@ -3,11 +3,15 @@ Copyright (c) 2023 Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
-import Mathlib.Combinatorics.SimpleGraph.Circulant
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Data.Fin.Parity
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Circulant
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
+public import Mathlib.Data.Fin.Parity
+
+@[expose] public section
 
 /-!
 # Concrete colorings of common graphs

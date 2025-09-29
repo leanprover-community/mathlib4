@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 -/
-import Mathlib.NumberTheory.Fermat
-import Mathlib.RingTheory.Fintype
+module
+
+public import Mathlib.NumberTheory.Fermat
+public import Mathlib.RingTheory.Fintype
+
+@[expose] public section
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes

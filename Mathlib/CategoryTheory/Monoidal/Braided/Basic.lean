@@ -3,11 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Discrete
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
-import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.CategoryTheory.CommSq
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+public import Mathlib.CategoryTheory.Monoidal.Opposite
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+public import Mathlib.CategoryTheory.CommSq
+
+@[expose] public section
 
 /-!
 # Braided and symmetric monoidal categories

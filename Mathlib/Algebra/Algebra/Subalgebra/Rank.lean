@@ -3,9 +3,13 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+
+@[expose] public section
 
 /-!
 

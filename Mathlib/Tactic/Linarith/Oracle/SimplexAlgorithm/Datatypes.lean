@@ -3,8 +3,12 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Init
-import Std.Data.HashMap.Basic
+module
+
+public import Mathlib.Init
+public import Std.Data.HashMap.Basic
+
+@[expose] public section
 
 /-!
 # Datatypes for the Simplex Algorithm implementation

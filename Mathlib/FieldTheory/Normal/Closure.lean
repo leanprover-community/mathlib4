@@ -3,11 +3,14 @@ Copyright (c) 2023 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.FieldTheory.Normal.Basic
-import Mathlib.Order.Closure
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.Order.Closure
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+@[expose] public section
 /-!
 # Normal closures
 

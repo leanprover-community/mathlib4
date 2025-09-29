@@ -3,9 +3,13 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.FinCases
-import Mathlib.Control.Basic
+module
+
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Control.Basic
+
+@[expose] public section
 
 /-!
 # Case bash on variables in finite intervals

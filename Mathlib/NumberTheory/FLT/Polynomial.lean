@@ -3,12 +3,16 @@ Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.FLT.MasonStothers
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.FLT.MasonStothers
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.Tactic.GCongr
+
+@[expose] public section
 
 /-!
 # Fermat's Last Theorem for polynomials over a field

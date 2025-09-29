@@ -3,8 +3,12 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Data.Finset.Insert
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Set.Lattice
+
+@[expose] public section
 
 /-!
 # Constructions involving sets of sets.

@@ -3,9 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DirectSum.Algebra
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Algebra.DirectSum.Algebra
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Data.Finsupp.ToDFinsupp
+
+@[expose] public section
 
 /-!
 # Conversion between `AddMonoidAlgebra` and homogeneous `DirectSum`

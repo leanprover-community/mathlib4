@@ -3,8 +3,12 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Complement
-import Mathlib.GroupTheory.Sylow
+module
+
+public import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.Sylow
+
+@[expose] public section
 
 /-!
 # The Transfer Homomorphism

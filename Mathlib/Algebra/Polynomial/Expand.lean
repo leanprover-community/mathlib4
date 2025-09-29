@@ -3,10 +3,14 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.RingTheory.Polynomial.Basic
+
+@[expose] public section
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.

@@ -3,12 +3,15 @@ Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Moritz Firsching
 -/
+module
 
-import Lean.DeclarationRange
-import Lean.ResolveName
+public import Lean.DeclarationRange
+public import Lean.ResolveName
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header
+
+@[expose] public section
 
 /-!
 This file contains functions that are used by multiple linters.

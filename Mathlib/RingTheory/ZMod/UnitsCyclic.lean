@@ -3,11 +3,15 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.ZMod.Units
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.FieldTheory.Finite.Basic
+
+@[expose] public section
 
 /-! # Cyclicity of the units of `ZMod n`
 

@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.PathObject
-import Mathlib.CategoryTheory.Localization.Quotient
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
+public import Mathlib.CategoryTheory.Localization.Quotient
+
+@[expose] public section
 
 /-!
 # Right homotopies in model categories

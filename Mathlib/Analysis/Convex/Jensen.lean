@@ -3,9 +3,13 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Tactic.FieldSimp
+
+@[expose] public section
 
 /-!
 # Jensen's inequality and maximum principle for convex functions

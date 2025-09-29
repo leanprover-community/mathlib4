@@ -3,7 +3,11 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+
+@[expose] public section
 
 /-!
 # Compactly supported bounded continuous functions

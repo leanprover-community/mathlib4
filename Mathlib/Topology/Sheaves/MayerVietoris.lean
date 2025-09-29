@@ -3,10 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
-import Mathlib.CategoryTheory.Sites.Spaces
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
+public import Mathlib.CategoryTheory.Sites.Spaces
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+
+@[expose] public section
 
 /-!
 # Mayer-Vietoris squares

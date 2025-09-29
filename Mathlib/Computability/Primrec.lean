@@ -3,9 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.Logic.Function.Iterate
+
+@[expose] public section
 
 /-!
 # The primitive recursive functions

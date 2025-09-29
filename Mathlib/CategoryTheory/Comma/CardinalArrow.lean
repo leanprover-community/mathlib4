@@ -3,12 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+
+@[expose] public section
 
 /-!
 # Cardinal of Arrow

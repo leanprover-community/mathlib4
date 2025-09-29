@@ -3,7 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+
+@[expose] public section
 
 /-!
 # Cones and limits

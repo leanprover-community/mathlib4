@@ -3,9 +3,13 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MapComap
-import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Process.PartitionFiltration
+module
+
+public import Mathlib.Probability.Kernel.Composition.MapComap
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Process.PartitionFiltration
+
+@[expose] public section
 
 /-!
 # Kernel density

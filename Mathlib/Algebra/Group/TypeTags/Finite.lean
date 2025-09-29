@@ -3,9 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Fintype.Card
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Fintype.Card
+
+@[expose] public section
 
 /-!
 # `Finite`, `Infinite` and `Fintype` are preserved by `Additive` and `Multiplicative`.

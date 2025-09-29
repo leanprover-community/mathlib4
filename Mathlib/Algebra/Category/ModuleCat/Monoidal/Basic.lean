@@ -3,9 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Associator
-import Mathlib.CategoryTheory.Monoidal.Linear
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.CategoryTheory.Monoidal.Linear
+
+@[expose] public section
 
 /-!
 # The monoidal category structure on R-modules

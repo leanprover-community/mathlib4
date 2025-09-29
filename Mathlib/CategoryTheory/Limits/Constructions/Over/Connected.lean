@@ -3,10 +3,14 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Filtered.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Filtered.Final
+
+@[expose] public section
 
 /-!
 # Connected limits in the over category

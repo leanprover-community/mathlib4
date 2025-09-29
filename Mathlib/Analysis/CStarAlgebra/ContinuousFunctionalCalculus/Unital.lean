@@ -3,12 +3,16 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Algebra.Algebra.StrictPositivity
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.Algebra.Star.Real
-import Mathlib.Topology.ContinuousMap.StarOrdered
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Algebra.StrictPositivity
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.Algebra.Star.Real
+public import Mathlib.Topology.ContinuousMap.StarOrdered
+
+@[expose] public section
 
 /-!
 # The continuous functional calculus

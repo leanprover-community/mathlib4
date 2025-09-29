@@ -3,8 +3,12 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
-import Mathlib.CategoryTheory.Monoidal.CommGrp_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
+public import Mathlib.CategoryTheory.Monoidal.CommGrp_
+
+@[expose] public section
 
 /-!
 # `CommGrp_ (Type u) ≌ CommGrp.{u}`

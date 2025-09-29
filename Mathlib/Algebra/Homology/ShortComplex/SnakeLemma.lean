@@ -3,9 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.Algebra.Homology.ShortComplex.Limits
-import Mathlib.CategoryTheory.Abelian.Refinements
+module
+
+public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.Algebra.Homology.ShortComplex.Limits
+public import Mathlib.CategoryTheory.Abelian.Refinements
+
+@[expose] public section
 
 /-!
 # The snake lemma

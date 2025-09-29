@@ -3,10 +3,13 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+
+@[expose] public section
 
 /-!
 # Uniform convergence of Eisenstein series

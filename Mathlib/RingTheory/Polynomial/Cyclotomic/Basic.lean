@@ -3,10 +3,14 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.RingTheory.RootsOfUnity.Complex
+
+@[expose] public section
 
 /-!
 # Cyclotomic polynomials.

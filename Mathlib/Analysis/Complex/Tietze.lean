@@ -3,11 +3,15 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Topology.TietzeExtension
-import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Topology.TietzeExtension
+public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+
+@[expose] public section
 /-!
 # Finite-dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
 

@@ -3,10 +3,14 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Qq
+module
 
-import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.ToBatteries
+public import Qq
+
+public import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.ToBatteries
+
+@[expose] public section
 
 /-!
 ## `funProp` data structure holding information about a function

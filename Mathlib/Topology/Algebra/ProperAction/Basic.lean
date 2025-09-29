@@ -3,9 +3,13 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.Maps.OpenQuotient
+module
+
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.Maps.OpenQuotient
+
+@[expose] public section
 
 /-!
 # Proper group action

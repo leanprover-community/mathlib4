@@ -3,11 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Rat.Init
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Rat.Init
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Common
+public import Mathlib.Data.Nat.Basic
+
+@[expose] public section
 
 /-!
 # Basics for the Rational Numbers

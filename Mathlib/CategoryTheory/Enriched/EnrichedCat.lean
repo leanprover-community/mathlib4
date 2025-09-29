@@ -3,8 +3,12 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Enriched.Basic
-import Mathlib.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Enriched.Basic
+public import Mathlib.CategoryTheory.Bicategory.Basic
+
+@[expose] public section
 
 /-!
 # The bicategory of `V`-enriched categories

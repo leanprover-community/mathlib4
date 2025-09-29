@@ -3,11 +3,15 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
 -/
-import Mathlib.Algebra.Polynomial.DenomsClearable
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Real.Irrational
-import Mathlib.Topology.Algebra.Polynomial
+module
+
+public import Mathlib.Algebra.Polynomial.DenomsClearable
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Data.Real.Irrational
+public import Mathlib.Topology.Algebra.Polynomial
+
+@[expose] public section
 
 /-!
 

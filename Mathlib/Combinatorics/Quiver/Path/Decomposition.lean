@@ -3,8 +3,12 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.Quiver.Path
+
+@[expose] public section
 
 /-!
 # Path Decomposition and Boundary Crossing

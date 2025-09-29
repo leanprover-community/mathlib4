@@ -3,8 +3,12 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Normed.Ring.WithAbs
+module
+
+public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Normed.Ring.WithAbs
+
+@[expose] public section
 
 /-!
 # WithAbs for fields

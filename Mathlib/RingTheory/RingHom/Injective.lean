@@ -3,7 +3,11 @@ Copyright (c) 2024 Andrew Yang, Qi Ge, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Qi Ge, Christian Merten
 -/
-import Mathlib.RingTheory.RingHomProperties
+module
+
+public import Mathlib.RingTheory.RingHomProperties
+
+@[expose] public section
 
 /-! # Meta properties of injective ring homomorphisms -/
 

@@ -3,9 +3,12 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Xavier Roblot, Andrew Yang
 -/
+module
 
-import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.PowerBasis
+public import Mathlib.RingTheory.Localization.Submodule
+public import Mathlib.RingTheory.PowerBasis
+
+@[expose] public section
 
 /-!
 # The conductor ideal

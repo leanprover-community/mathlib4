@@ -3,8 +3,12 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Topology.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Topology.Algebra.Group.Defs
+
+@[expose] public section
 
 /-!
 

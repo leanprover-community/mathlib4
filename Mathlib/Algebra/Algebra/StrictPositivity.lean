@@ -3,11 +3,14 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+
+@[expose] public section
 
 /-!
 # Strictly positive elements of an algebra

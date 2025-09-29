@@ -3,11 +3,15 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Even
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Even
+
+@[expose] public section
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/

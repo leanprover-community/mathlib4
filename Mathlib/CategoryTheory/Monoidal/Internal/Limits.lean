@@ -3,9 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Limits.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Limits.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+@[expose] public section
 
 /-!
 # Limits of monoid objects.

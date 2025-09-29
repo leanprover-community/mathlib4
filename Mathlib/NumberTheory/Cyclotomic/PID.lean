@@ -3,10 +3,13 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+module
 
-import Mathlib.NumberTheory.NumberField.ClassNumber
-import Mathlib.NumberTheory.Cyclotomic.Rat
-import Mathlib.NumberTheory.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.NumberField.ClassNumber
+public import Mathlib.NumberTheory.Cyclotomic.Rat
+public import Mathlib.NumberTheory.Cyclotomic.Embeddings
+
+@[expose] public section
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.

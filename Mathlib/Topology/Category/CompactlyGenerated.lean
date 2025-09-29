@@ -3,8 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.CategoryTheory.Elementwise
+
+@[expose] public section
 /-!
 
 # Compactly generated topological spaces

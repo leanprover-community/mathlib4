@@ -3,9 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.Tactic.Rify
+
+@[expose] public section
 
 /-!
 # Complex roots of unity

@@ -3,8 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Functor.FunctorHom
-import Mathlib.CategoryTheory.Closed.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Functor.FunctorHom
+public import Mathlib.CategoryTheory.Closed.Monoidal
+
+@[expose] public section
 
 /-!
 # Functors to Type are closed.

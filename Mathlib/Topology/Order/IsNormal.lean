@@ -3,8 +3,12 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.IsNormal
-import Mathlib.Topology.Order.IsLUB
+module
+
+public import Mathlib.Order.IsNormal
+public import Mathlib.Topology.Order.IsLUB
+
+@[expose] public section
 
 /-!
 # A normal function is strictly monotone and continuous

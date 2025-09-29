@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.LinearAlgebra.ExteriorPower.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+
+@[expose] public section
 
 /-!
 # The exterior powers as functors on the category of modules

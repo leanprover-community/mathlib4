@@ -3,9 +3,13 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Brendan Murphy
 -/
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Logic.Function.OfArity
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Logic.Function.OfArity
+
+@[expose] public section
 
 /-!
 # Currying and uncurrying of n-ary functions

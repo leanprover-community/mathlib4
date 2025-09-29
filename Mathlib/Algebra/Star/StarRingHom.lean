@@ -3,8 +3,12 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Star.Basic
+
+@[expose] public section
 
 /-!
 # Morphisms of star rings

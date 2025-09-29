@@ -3,9 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Tactic.Positivity.Core
+
+@[expose] public section
 
 /-!
 # Casts of rational numbers into linear ordered fields.

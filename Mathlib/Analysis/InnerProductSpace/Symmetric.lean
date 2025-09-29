@@ -3,10 +3,14 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Subspace
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.LinearAlgebra.SesquilinearForm
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+
+@[expose] public section
 
 /-!
 # Symmetric linear maps in an inner product space

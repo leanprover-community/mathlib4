@@ -3,11 +3,15 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
-import Lean.Elab.DeclarationRange
-import Lean.Meta.Tactic.Cases
-import Mathlib.Lean.Meta
-import Mathlib.Lean.Name
-import Mathlib.Tactic.TypeStar
+module
+
+public import Lean.Elab.DeclarationRange
+public import Lean.Meta.Tactic.Cases
+public import Mathlib.Lean.Meta
+public import Mathlib.Lean.Name
+public import Mathlib.Tactic.TypeStar
+
+@[expose] public section
 
 /-!
 # mk_iff_of_inductive_prop

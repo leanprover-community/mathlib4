@@ -3,9 +3,13 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
-import Mathlib.Probability.Kernel.Composition.Prod
-import Mathlib.Probability.Kernel.IonescuTulcea.Maps
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
+public import Mathlib.Probability.Kernel.Composition.Prod
+public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
+
+@[expose] public section
 
 /-!
 # Consecutive composition of kernels

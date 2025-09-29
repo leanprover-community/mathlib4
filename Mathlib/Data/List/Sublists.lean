@@ -3,11 +3,15 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.FinRange
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Induction
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Lex
+public import Mathlib.Data.List.Induction
+
+@[expose] public section
 
 /-! # sublists
 

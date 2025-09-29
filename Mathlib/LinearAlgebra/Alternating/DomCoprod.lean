@@ -3,12 +3,16 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.Perm.Basic
+public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+
+@[expose] public section
 
 /-!
 # Exterior product of alternating maps

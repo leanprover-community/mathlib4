@@ -3,12 +3,15 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
+module
 
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.GroupTheory.Perm.Finite
-import Mathlib.GroupTheory.Perm.List
-import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.GroupTheory.Perm.Basic
+public import Mathlib.GroupTheory.Perm.Finite
+public import Mathlib.GroupTheory.Perm.List
+public import Mathlib.GroupTheory.Perm.Sign
+
+@[expose] public section
 
 /-!
 # Cycles of a permutation

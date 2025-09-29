@@ -3,8 +3,12 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Init
-import Lean.Elab.Binders
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Binders
+
+@[expose] public section
 
 /-!
 # Macro for spread syntax (`__ := instSomething`) in structures.

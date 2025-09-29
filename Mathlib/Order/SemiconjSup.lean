@@ -3,11 +3,15 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.Order.Group.End
-import Mathlib.Logic.Function.Conjugate
-import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.OrdContinuous
+module
+
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.Order.Group.End
+public import Mathlib.Logic.Function.Conjugate
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Order.OrdContinuous
+
+@[expose] public section
 
 /-!
 # Semiconjugate by `sSup`

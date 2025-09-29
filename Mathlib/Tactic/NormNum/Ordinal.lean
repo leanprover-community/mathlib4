@@ -3,9 +3,12 @@ Copyright (c) 2025 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
+module
 
-import Mathlib.SetTheory.Ordinal.Exponential
-import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.SetTheory.Ordinal.Exponential
+public import Mathlib.Tactic.NormNum.Basic
+
+@[expose] public section
 
 /-!
 # `norm_num` extensions for Ordinals

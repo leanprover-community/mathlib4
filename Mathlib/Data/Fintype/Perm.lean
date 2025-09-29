@@ -3,11 +3,15 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Nat.Factorial.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Nat.Factorial.Basic
+
+@[expose] public section
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`

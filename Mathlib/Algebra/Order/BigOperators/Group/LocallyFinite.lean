@@ -3,10 +3,14 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Finset.Nat
+
+@[expose] public section
 
 /-!
 # Big operators indexed by intervals

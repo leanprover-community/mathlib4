@@ -3,9 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Contrapose
-import Mathlib.Data.Prod.PProd
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Data.Prod.PProd
+
+@[expose] public section
 
 /-!
 # Equivalence between product types

@@ -3,9 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Basic
-import Batteries.WF
+public import Mathlib.Data.Nat.Basic
+public import Batteries.WF
+
+@[expose] public section
 
 /-!
 # `Nat.find` and `Nat.findGreatest`

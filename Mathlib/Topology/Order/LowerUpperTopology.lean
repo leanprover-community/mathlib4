@@ -3,9 +3,13 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Order.Lattice
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Order.Lattice
+
+@[expose] public section
 
 /-!
 # Lower and Upper topology

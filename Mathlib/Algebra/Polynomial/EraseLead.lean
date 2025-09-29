@@ -3,9 +3,13 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Alex Meiburg
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Polynomial.Degree.Monomial
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Degree.Monomial
+
+@[expose] public section
 
 /-!
 # Erase the leading term of a univariate polynomial

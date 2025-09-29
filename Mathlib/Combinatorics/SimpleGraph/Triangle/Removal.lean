@@ -3,11 +3,15 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
-import Mathlib.Data.Finset.CastCard
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
+public import Mathlib.Data.Finset.CastCard
+
+@[expose] public section
 
 /-!
 # Triangle removal lemma

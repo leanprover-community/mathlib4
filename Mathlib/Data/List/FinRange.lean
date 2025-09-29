@@ -3,9 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
-import Mathlib.Data.List.OfFn
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Nodup
+module
+
+public import Mathlib.Data.List.OfFn
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Nodup
+
+@[expose] public section
 
 /-!
 # Lists of elements of `Fin n`

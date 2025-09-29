@@ -3,7 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.Order.CompleteBooleanAlgebra
+
+@[expose] public section
 
 /-!
 # Sets are a complete atomic Boolean algebra.

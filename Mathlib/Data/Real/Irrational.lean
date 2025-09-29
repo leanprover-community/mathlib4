@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Data.Rat.Sqrt
-import Mathlib.Data.Real.Sqrt
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Data.Rat.Sqrt
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Tactic.IntervalCases
+
+@[expose] public section
 
 /-!
 # Irrational real numbers

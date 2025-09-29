@@ -3,9 +3,13 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Tactic.Bound.Init
-import Qq
-import Aesop
+module
+
+public import Mathlib.Tactic.Bound.Init
+public import Qq
+public import Aesop
+
+@[expose] public section
 
 /-!
 # The `bound` attribute

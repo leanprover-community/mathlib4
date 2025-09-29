@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.Limits
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.Presentable.Limits
+public import Mathlib.CategoryTheory.Limits.Presentation
+
+@[expose] public section
 
 /-!
 # Presentable generators

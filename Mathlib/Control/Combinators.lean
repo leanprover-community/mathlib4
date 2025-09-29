@@ -3,8 +3,11 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
+
+@[expose] public section
 /-!
 # Monad combinators, as in Haskell's Control.Monad.
 -/

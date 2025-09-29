@@ -3,8 +3,12 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Sets.Closeds
+
+@[expose] public section
 
 /-!
 # Closed submodules of a topological module

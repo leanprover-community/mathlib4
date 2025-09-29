@@ -3,8 +3,12 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
+
+@[expose] public section
 
 /-!
 # Separation quotient is a finite module

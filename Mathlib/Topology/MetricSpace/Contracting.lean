@@ -3,10 +3,14 @@ Copyright (c) 2019 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Dynamics.FixedPoints.Topology
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Dynamics.FixedPoints.Topology
+public import Mathlib.Topology.MetricSpace.Lipschitz
+
+@[expose] public section
 
 /-!
 # Contracting maps

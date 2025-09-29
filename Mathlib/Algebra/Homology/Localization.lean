@@ -3,12 +3,15 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.HomotopyCofiber
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.CategoryTheory.Localization.Composition
-import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.Algebra.Homology.HomotopyCofiber
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Localization.Composition
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+
+@[expose] public section
 
 /-! The category of homological complexes up to quasi-isomorphisms
 

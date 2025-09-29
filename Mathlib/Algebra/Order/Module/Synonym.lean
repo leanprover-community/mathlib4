@@ -3,9 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
-import Mathlib.Algebra.Order.Ring.Synonym
+module
+
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+public import Mathlib.Algebra.Order.Ring.Synonym
+
+@[expose] public section
 
 /-!
 # Action instances for `OrderDual`

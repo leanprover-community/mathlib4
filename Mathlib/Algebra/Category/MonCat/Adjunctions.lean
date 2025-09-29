@@ -3,13 +3,17 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Category.Semigrp.Basic
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.WithOne.Basic
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Category.Semigrp.Basic
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.WithOne.Basic
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.CategoryTheory.Adjunction.Basic
+
+@[expose] public section
 
 /-!
 # Adjunctions regarding the category of monoids

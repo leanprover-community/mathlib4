@@ -3,7 +3,11 @@ Copyright (c) 2021 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
 -/
-import Mathlib.Data.Finsupp.Single
+module
+
+public import Mathlib.Data.Finsupp.Single
+
+@[expose] public section
 
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`

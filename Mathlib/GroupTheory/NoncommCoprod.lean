@@ -3,11 +3,15 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Order.Disjoint
+module
+
+public import Mathlib.Algebra.Group.Commute.Hom
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Order.Disjoint
+
+@[expose] public section
 
 /-!
 # Canonical homomorphism from a pair of monoids

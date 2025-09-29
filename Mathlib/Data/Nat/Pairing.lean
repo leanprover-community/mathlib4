@@ -3,9 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Data.Set.Lattice.Image
+
+@[expose] public section
 
 /-!
 # Naturals pairing function

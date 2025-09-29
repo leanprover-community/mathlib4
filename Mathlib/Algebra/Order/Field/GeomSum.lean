@@ -3,8 +3,12 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.Field.GeomSum
-import Mathlib.Algebra.Order.Ring.Defs
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Algebra.Order.Ring.Defs
+
+@[expose] public section
 
 /-!
 # Partial sums of geometric series in an ordered field

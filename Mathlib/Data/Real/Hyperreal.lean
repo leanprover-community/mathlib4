@@ -1,3 +1,7 @@
-import Mathlib.Analysis.Real.Hyperreal
+module
+
+public import Mathlib.Analysis.Real.Hyperreal
+
+@[expose] public section
 
 deprecated_module (since := "2025-08-26")

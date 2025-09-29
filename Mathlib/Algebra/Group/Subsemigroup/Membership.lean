@@ -3,7 +3,11 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Subsemigroup.Basic
+module
+
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+
+@[expose] public section
 
 /-!
 # Subsemigroups: membership criteria

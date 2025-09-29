@@ -3,12 +3,16 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.GroupTheory.Abelianization.Finite
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.GroupTheory.Abelianization.Finite
+public import Mathlib.GroupTheory.SpecificGroups.Dihedral
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Qify
+
+@[expose] public section
 
 /-!
 # Commuting Probability

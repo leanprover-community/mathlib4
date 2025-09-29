@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.OfFunction
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.OfFunction
+public import Mathlib.MeasureTheory.PiSystem
+
+@[expose] public section
 
 /-!
 # The Caratheodory σ-algebra of an outer measure

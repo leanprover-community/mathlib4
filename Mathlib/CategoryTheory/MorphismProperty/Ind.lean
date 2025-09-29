@@ -3,11 +3,15 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Comma.LocallySmall
-import Mathlib.CategoryTheory.Limits.Preserves.Over
-import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.ObjectProperty.Ind
+module
+
+public import Mathlib.CategoryTheory.Comma.LocallySmall
+public import Mathlib.CategoryTheory.Limits.Preserves.Over
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.ObjectProperty.Ind
+
+@[expose] public section
 
 /-!
 # Ind and pro-properties

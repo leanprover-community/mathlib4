@@ -3,8 +3,12 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.GCongr.CoreAttrs
-import Mathlib.Tactic.Hint
+module
+
+public import Mathlib.Tactic.GCongr.CoreAttrs
+public import Mathlib.Tactic.Hint
+
+@[expose] public section
 
 /-! # Setup for the `gcongr` tactic
 

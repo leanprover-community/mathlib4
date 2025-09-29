@@ -3,8 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.MkIffOfInductiveProp
+
+@[expose] public section
 
 /-!
 # Additional lemmas about sum types

@@ -3,8 +3,12 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Order.Lattice
+
+@[expose] public section
 
 /-!
 # Sorting the elements of `Sym2`

@@ -3,9 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.RingTheory.Conductor
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.IsAdjoinRoot
+module
+
+public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.IsAdjoinRoot
+
+@[expose] public section
 
 /-!
 # Kummer-Dedekind theorem

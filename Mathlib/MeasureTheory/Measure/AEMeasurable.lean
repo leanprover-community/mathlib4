@@ -3,8 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Trim
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+module
+
+public import Mathlib.MeasureTheory.Measure.Trim
+public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+
+@[expose] public section
 
 /-!
 # Almost everywhere measurable functions

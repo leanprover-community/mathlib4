@@ -3,9 +3,12 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+
+@[expose] public section
 
 /-!
 # The Petersson scalar product

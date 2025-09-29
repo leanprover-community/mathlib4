@@ -3,9 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+public import Mathlib.CategoryTheory.Monad.Algebra
+
+@[expose] public section
 
 /-!
 # Special coequalizers associated to a monad

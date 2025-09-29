@@ -3,7 +3,11 @@ Copyright (c) 2023 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Matteo Cipollina
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+
+@[expose] public section
 
 /-!
 # Invariance of measures along a kernel

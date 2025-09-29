@@ -3,10 +3,14 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.UnitInterval
+
+@[expose] public section
 
 /-!
 # Homotopy between functions

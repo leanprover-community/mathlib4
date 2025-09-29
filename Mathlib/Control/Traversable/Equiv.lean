@@ -3,9 +3,13 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.Logic.Equiv.Defs
-import Batteries.Tactic.SeqFocus
+module
+
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Logic.Equiv.Defs
+public import Batteries.Tactic.SeqFocus
+
+@[expose] public section
 
 /-!
 # Transferring `Traversable` instances along isomorphisms

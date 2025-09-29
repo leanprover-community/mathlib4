@@ -3,10 +3,14 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Data.ENNReal.Action
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.MetricSpace.Algebra
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.MetricSpace.Algebra
+
+@[expose] public section
 
 /-!
 # Lemmas for `IsBoundedSMul` over normed additive groups

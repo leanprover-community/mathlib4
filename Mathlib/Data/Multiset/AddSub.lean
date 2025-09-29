@@ -3,8 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Count
-import Mathlib.Data.List.Count
+module
+
+public import Mathlib.Data.Multiset.Count
+public import Mathlib.Data.List.Count
+
+@[expose] public section
 
 /-!
 # Sum and difference of multisets

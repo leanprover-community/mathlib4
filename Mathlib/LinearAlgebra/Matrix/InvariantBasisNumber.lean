@@ -3,10 +3,14 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.InvariantBasisNumber
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
+
+@[expose] public section
 
 /-!
 # Invertible matrices over a ring with invariant basis number are square.

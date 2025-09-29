@@ -3,14 +3,18 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Subtype
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Order.Notation
-import Mathlib.Tactic.GRewrite
-import Mathlib.Tactic.Spread
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.SimpRw
+module
+
+public import Mathlib.Data.Subtype
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Notation
+public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Inhabit
+public import Mathlib.Tactic.SimpRw
+
+@[expose] public section
 
 /-!
 # Basic definitions about `≤` and `<`

@@ -3,8 +3,12 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Dynamics.Flow
-import Mathlib.Tactic.Monotonicity
+module
+
+public import Mathlib.Dynamics.Flow
+public import Mathlib.Tactic.Monotonicity
+
+@[expose] public section
 
 /-!
 # ω-limits

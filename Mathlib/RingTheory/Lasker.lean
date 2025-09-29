@@ -3,10 +3,14 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Order.Irreducible
-import Mathlib.RingTheory.Ideal.Colon
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Order.Irreducible
+public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Noetherian.Defs
+
+@[expose] public section
 
 /-!
 # Lasker ring

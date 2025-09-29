@@ -3,9 +3,13 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.CategoryTheory.IsoReassoc
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.FullyFaithful
+module
+
+public import Mathlib.Tactic.CategoryTheory.IsoReassoc
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+
+@[expose] public section
 
 /-!
 # Whiskering

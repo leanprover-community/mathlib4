@@ -3,10 +3,14 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.LinearCombination.Lemmas
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Ring.Compare
+module
+
+public import Mathlib.Tactic.LinearCombination.Lemmas
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Ring.Compare
+
+@[expose] public section
 
 /-!
 # linear_combination Tactic

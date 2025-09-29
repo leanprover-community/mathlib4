@@ -3,11 +3,15 @@ Copyright (c) 2022 Alex Kontorovich and Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Group.FundamentalDomain
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.Haar.Basic
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Group.FundamentalDomain
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+
+@[expose] public section
 
 /-!
 # Haar quotient measure

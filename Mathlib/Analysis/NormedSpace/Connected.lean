@@ -3,11 +3,15 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Convex.Contractible
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.Topology.Algebra.Module.Cardinality
+module
+
+public import Mathlib.Analysis.Convex.Contractible
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.Topology.Algebra.Module.Cardinality
+
+@[expose] public section
 
 /-!
 # Connectedness of subsets of vector spaces

@@ -3,9 +3,12 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+module
 
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Tactic.CongrM
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import Mathlib.Tactic.CongrM
+
+@[expose] public section
 
 /-! # CongrM widget
 

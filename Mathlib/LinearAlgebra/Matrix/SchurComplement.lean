@@ -3,8 +3,12 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Eric Wieser, Jeremy Avigad, Johan Commelin
 -/
-import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.Data.Matrix.Invertible
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+@[expose] public section
 
 /-! # 2×2 block matrices and the Schur complement
 

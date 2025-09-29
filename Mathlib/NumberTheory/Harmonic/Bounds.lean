@@ -3,10 +3,13 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SumIntegralComparisons
-import Mathlib.NumberTheory.Harmonic.Defs
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.SumIntegralComparisons
+public import Mathlib.NumberTheory.Harmonic.Defs
+
+@[expose] public section
 
 /-!
 

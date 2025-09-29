@@ -3,9 +3,13 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.ZMod
-import Mathlib.LinearAlgebra.Dimension.Free
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Module.ZMod
+public import Mathlib.LinearAlgebra.Dimension.Free
+
+@[expose] public section
 
 /-!
 # Quotienting out a free `ℤ`-module

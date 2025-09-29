@@ -3,10 +3,14 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.Prime.Pow
-import Mathlib.NumberTheory.Divisors
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Prime.Pow
+public import Mathlib.NumberTheory.Divisors
+
+@[expose] public section
 
 /-!
 # Prime powers and factorizations

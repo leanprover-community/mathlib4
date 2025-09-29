@@ -3,9 +3,13 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Lattice
-import Qq
+module
+
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Qq
+
+@[expose] public section
 
 /-!
 # Facts collection for the `order` Tactic

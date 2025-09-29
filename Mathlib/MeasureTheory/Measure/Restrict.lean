@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Comap
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.MeasureTheory.Measure.Comap
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+public import Mathlib.Data.Set.Card
+
+@[expose] public section
 
 /-!
 # Restricting a measure to a subset or a subtype

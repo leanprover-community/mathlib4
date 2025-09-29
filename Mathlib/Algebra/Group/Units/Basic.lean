@@ -3,13 +3,17 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Subsingleton
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Subsingleton
+
+@[expose] public section
 
 /-!
 # Units (i.e., invertible elements) of a monoid

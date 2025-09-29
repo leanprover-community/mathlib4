@@ -3,12 +3,16 @@ Copyright (c) 2020 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.GroupAction.CardCommute
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
+
+@[expose] public section
 
 /-!
 # Dihedral Groups

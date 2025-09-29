@@ -3,9 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.Order.CompleteLattice.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.Order.CompleteLattice.Basic
+
+@[expose] public section
 
 /-!
 # The category of "pairwise intersections".

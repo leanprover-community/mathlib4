@@ -3,9 +3,13 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.HomCongr
+
+@[expose] public section
 
 /-!
 # Conjugate morphisms by isomorphisms

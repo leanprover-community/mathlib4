@@ -3,7 +3,11 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+module
+
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+
+@[expose] public section
 
 /-!
 # Lemmas which are consequences of monoidal coherence

@@ -3,8 +3,12 @@ Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Hom.Ring
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.Hom.Ring
+
+@[expose] public section
 
 /-!
 ### Uniqueness of ring homomorphisms to archimedean fields.

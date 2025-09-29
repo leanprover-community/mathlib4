@@ -3,8 +3,12 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.Submonoid.Center
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Submonoid.Center
+
+@[expose] public section
 
 /-!
 # Centers of subgroups

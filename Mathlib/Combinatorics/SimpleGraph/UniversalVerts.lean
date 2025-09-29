@@ -3,9 +3,13 @@ Copyright (c) 2024 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
-import Mathlib.Combinatorics.SimpleGraph.Matching
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
+public import Mathlib.Combinatorics.SimpleGraph.Matching
+
+@[expose] public section
 
 /-!
 # Universal Vertices

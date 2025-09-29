@@ -3,9 +3,13 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+
+@[expose] public section
 
 /-!
 # Sesquilinear maps

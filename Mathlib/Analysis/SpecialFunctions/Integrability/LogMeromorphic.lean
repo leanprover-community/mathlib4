@@ -3,12 +3,16 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.FactorizedRational
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.MeasureTheory.Integral.CircleIntegral
+module
+
+public import Mathlib.Analysis.Meromorphic.FactorizedRational
+public import Mathlib.Analysis.NormedSpace.Connected
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+
+@[expose] public section
 
 /-!
 # Integrability for Logarithms of Meromorphic Functions

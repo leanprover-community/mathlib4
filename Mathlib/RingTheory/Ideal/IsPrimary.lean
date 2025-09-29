@@ -3,8 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yakov Pechersky
 -/
-import Mathlib.RingTheory.IsPrimary
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.RingTheory.IsPrimary
+public import Mathlib.RingTheory.Ideal.Operations
+
+@[expose] public section
 
 /-!
 # Primary ideals

@@ -3,8 +3,11 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+
+@[expose] public section
 
 /-!
 # Grassmannians

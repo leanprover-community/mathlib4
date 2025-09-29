@@ -3,9 +3,13 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales, Benjamin Davidson
 -/
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.Geometry.Euclidean.Sphere.Tangent
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.Geometry.Euclidean.Sphere.Tangent
+
+@[expose] public section
 
 /-!
 # Power of a point (intersecting chords and secants)

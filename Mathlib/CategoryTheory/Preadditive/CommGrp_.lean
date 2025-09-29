@@ -3,8 +3,12 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.CommGrp_
-import Mathlib.CategoryTheory.Preadditive.Biproducts
+module
+
+public import Mathlib.CategoryTheory.Monoidal.CommGrp_
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+
+@[expose] public section
 
 /-!
 # Commutative group objects in additive categories.

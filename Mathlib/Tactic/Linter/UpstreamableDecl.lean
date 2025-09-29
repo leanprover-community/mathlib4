@@ -3,8 +3,12 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Anne Baanen
 -/
-import ImportGraph.Imports
-import Mathlib.Init
+module
+
+public import ImportGraph.Imports
+public import Mathlib.Init
+
+@[expose] public section
 
 /-! # The `upstreamableDecl` linter
 

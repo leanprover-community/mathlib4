@@ -3,9 +3,12 @@ Copyright (c) 2023 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
+module
 
-import Mathlib.Init
-import Aesop
+public import Mathlib.Init
+public import Aesop
+
+@[expose] public section
 
 /-!
 # arith_mult Rule Set

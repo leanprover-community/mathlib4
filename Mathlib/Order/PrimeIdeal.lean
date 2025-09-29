@@ -3,8 +3,12 @@ Copyright (c) 2021 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Noam Atar
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Order.PFilter
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Order.PFilter
+
+@[expose] public section
 
 /-!
 # Prime ideals

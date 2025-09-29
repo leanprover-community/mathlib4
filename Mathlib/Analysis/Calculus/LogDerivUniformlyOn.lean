@@ -3,8 +3,12 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+module
+
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+
+@[expose] public section
 
 /-!
 # The Logarithmic derivative of an infinite product

@@ -3,8 +3,12 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Tactic.CC.MkProof
+module
+
+public import Mathlib.Data.Option.Defs
+public import Mathlib.Tactic.CC.MkProof
+
+@[expose] public section
 
 /-!
 # Process when an new equation is added to a congruence closure

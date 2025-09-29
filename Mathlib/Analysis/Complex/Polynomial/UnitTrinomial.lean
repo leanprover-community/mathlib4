@@ -3,8 +3,12 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Polynomial.UnitTrinomial
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.UnitTrinomial
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+
+@[expose] public section
 
 /-!
 # Irreducibility of unit trinomials

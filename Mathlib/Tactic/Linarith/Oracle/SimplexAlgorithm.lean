@@ -3,8 +3,12 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+module
+
+public import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+
+@[expose] public section
 
 /-!
 # The oracle based on Simplex Algorithm

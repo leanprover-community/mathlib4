@@ -3,10 +3,14 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Submonoid
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+
+@[expose] public section
 
 /-!
 # Flows and invariant sets

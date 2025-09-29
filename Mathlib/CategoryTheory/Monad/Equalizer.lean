@@ -3,9 +3,13 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
+public import Mathlib.CategoryTheory.Monad.Algebra
+
+@[expose] public section
 
 /-!
 # Special equalizers associated to a comonad

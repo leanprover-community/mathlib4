@@ -3,12 +3,15 @@ Copyright (c) 2024 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
+module
 
-import Mathlib.Combinatorics.SimpleGraph.Matching
-import Mathlib.Combinatorics.SimpleGraph.Metric
-import Mathlib.Combinatorics.SimpleGraph.Operations
-import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
-import Mathlib.Data.Fintype.Card
+public import Mathlib.Combinatorics.SimpleGraph.Matching
+public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
+public import Mathlib.Data.Fintype.Card
+
+@[expose] public section
 
 /-!
 # Tutte's theorem

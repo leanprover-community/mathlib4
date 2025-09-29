@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
+
+@[expose] public section
 
 /-!
 # The associator for actions of bifunctors on graded objects

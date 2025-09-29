@@ -3,9 +3,13 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Jiedong Jiang
 -/
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.IntermediateField.Algebraic
+module
+
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
+
+@[expose] public section
 
 /-!
 # Relative Algebraic Closure

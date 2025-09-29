@@ -3,8 +3,11 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
 
-import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+
+@[expose] public section
 
 /-!
 # Quasicategories

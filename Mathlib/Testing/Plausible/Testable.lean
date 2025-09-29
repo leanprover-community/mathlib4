@@ -3,8 +3,12 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
-import Plausible.Testable
-import Mathlib.Logic.Basic
+module
+
+public import Plausible.Testable
+public import Mathlib.Logic.Basic
+
+@[expose] public section
 
 /-!
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.

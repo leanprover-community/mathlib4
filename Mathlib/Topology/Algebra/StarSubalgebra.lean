@@ -3,9 +3,13 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Subalgebra
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.Star
+module
+
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.Star
+
+@[expose] public section
 
 /-!
 # Topological star (sub)algebras

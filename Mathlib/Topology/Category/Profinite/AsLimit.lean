@@ -3,8 +3,12 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.DiscreteQuotient
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.DiscreteQuotient
+
+@[expose] public section
 
 /-!
 # Profinite sets as limits of finite sets.

@@ -3,8 +3,12 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Maps.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.Maps.Basic
+
+@[expose] public section
 
 /-!
 # Homeomorphisms

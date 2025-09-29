@@ -3,11 +3,15 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+
+@[expose] public section
 
 /-!
 # Flatness is stable under composition and base change

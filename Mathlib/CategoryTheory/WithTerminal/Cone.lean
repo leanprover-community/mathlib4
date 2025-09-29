@@ -3,8 +3,12 @@ Copyright (c) 2025 Moisés Herradón Cueto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moisés Herradón Cueto
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.WithTerminal.Basic
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
+
+@[expose] public section
 
 /-!
 # Relations between `Cone`, `WithTerminal` and `Over`

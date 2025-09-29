@@ -3,12 +3,16 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Control.Monad.Cont
-import Mathlib.Control.Monad.Writer
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Logic.Equiv.Functor
-import Mathlib.Control.Lawful
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Control.Monad.Cont
+public import Mathlib.Control.Monad.Writer
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Logic.Equiv.Functor
+public import Mathlib.Control.Lawful
+
+@[expose] public section
 
 /-!
 # Universe lifting for type families

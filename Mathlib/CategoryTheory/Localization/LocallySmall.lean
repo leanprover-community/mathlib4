@@ -3,9 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.EssentiallySmall
+
+@[expose] public section
 
 /-!
 # Locally small localizations

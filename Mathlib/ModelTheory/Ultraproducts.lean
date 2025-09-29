@@ -3,10 +3,14 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Quotients
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Order.Filter.Ultrafilter.Defs
+module
+
+public import Mathlib.ModelTheory.Quotients
+public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Filter.Germ.Basic
+public import Mathlib.Order.Filter.Ultrafilter.Defs
+
+@[expose] public section
 
 /-!
 # Ultraproducts and Łoś's Theorem

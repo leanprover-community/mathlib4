@@ -3,8 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.MeasureTheory.Function.AEEqFun
+module
+
+public import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.MeasureTheory.Function.AEEqFun
+
+@[expose] public section
 
 /-!
 # Functions invariant under (quasi)ergodic map

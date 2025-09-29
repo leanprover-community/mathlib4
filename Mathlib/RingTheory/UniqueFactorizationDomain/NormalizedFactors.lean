@@ -3,9 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+
+@[expose] public section
 
 /-!
 # Unique factorization and normalization

@@ -3,10 +3,14 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Combinatorics.Matroid.IndepAxioms
-import Mathlib.Combinatorics.Matroid.Rank.Cardinal
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+module
+
+public import Mathlib.Combinatorics.Matroid.IndepAxioms
+public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+
+@[expose] public section
 
 /-!
 # Transcendence basis

@@ -3,7 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Combination
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Combination
+
+@[expose] public section
 
 /-!
 # Centroid of a Finite Set of Points in Affine Space

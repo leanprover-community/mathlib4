@@ -3,12 +3,16 @@ Copyright (c) 2023 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Finite.Sigma
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Shapes
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Finite.Sigma
+
+@[expose] public section
 
 /-!
 # (Co)limits in the category of finite types

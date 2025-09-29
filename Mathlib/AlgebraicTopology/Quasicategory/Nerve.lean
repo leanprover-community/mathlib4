@@ -3,7 +3,11 @@ Copyright (c) 2024 Nick Ward. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Emily Riehl, Nick Ward
 -/
-import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
+module
+
+public import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
+
+@[expose] public section
 
 /-!
 # The nerve of a category is a quasicategory

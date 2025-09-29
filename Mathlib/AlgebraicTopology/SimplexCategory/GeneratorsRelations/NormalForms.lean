@@ -3,11 +3,15 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.Tactic.Zify
-import Mathlib.Data.List.Sort
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.Ring.Basic
+module
+
+public import Mathlib.Tactic.Zify
+public import Mathlib.Data.List.Sort
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Tactic.Ring.Basic
+
+@[expose] public section
 
 /-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
 

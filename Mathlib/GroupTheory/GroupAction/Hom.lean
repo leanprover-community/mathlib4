@@ -3,12 +3,15 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.Hom.CompTypeclasses
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Algebra.Regular.SMul
-import Mathlib.Algebra.Ring.Action.Basic
+public import Mathlib.Algebra.Group.Hom.CompTypeclasses
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.Ring.Action.Basic
+
+@[expose] public section
 
 /-!
 # Equivariant homomorphisms

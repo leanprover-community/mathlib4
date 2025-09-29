@@ -3,10 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Algebra.Order.Group.Action
-import Mathlib.LinearAlgebra.Finsupp.Supported
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.Order.Group.Action
+public import Mathlib.LinearAlgebra.Finsupp.Supported
+public import Mathlib.LinearAlgebra.Span.Basic
+
+@[expose] public section
 
 /-! # Pointwise instances on `Submodule`s
 

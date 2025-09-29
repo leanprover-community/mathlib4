@@ -3,7 +3,11 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Equivalence
+module
+
+public import Mathlib.ModelTheory.Equivalence
+
+@[expose] public section
 
 /-!
 # Quantifier Complexity

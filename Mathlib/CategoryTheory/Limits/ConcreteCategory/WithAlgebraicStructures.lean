@@ -3,9 +3,13 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+
+@[expose] public section
 
 /-!
 # Colimits in ModuleCat

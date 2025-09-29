@@ -3,8 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Small.Basic
-import Mathlib.Data.Countable.Defs
+module
+
+public import Mathlib.Logic.Small.Basic
+public import Mathlib.Data.Countable.Defs
+
+@[expose] public section
 
 /-!
 # All countable types are small.

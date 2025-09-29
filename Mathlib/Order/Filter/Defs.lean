@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Insert
-import Mathlib.Order.SetNotation
-import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Order.SetNotation
+public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.Bounds.Defs
+
+@[expose] public section
 
 /-!
 # Definitions about filters

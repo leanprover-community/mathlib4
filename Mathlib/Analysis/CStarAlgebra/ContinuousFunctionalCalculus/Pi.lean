@@ -3,10 +3,13 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Algebra.Algebra.Spectrum.Pi
-import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Algebra.Algebra.Spectrum.Pi
+public import Mathlib.Algebra.Star.StarAlgHom
+
+@[expose] public section
 
 /-! # The continuous functional calculus on product types
 

@@ -3,9 +3,13 @@ Copyright (c) 2023 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Robert Ballard
 -/
-import Mathlib.Algebra.Divisibility.Units
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Divisibility.Units
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Tactic.Common
+
+@[expose] public section
 
 /-!
 # The maximal power of one natural number dividing another

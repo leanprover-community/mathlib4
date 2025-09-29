@@ -3,7 +3,11 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
+
+@[expose] public section
 
 /-!
 # simproc for `∃ a', ... ∧ a' = a ∧ ...`

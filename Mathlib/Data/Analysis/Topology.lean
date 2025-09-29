@@ -3,9 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Analysis.Filter
-import Mathlib.Topology.Bases
-import Mathlib.Topology.LocallyFinite
+module
+
+public import Mathlib.Data.Analysis.Filter
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.LocallyFinite
+
+@[expose] public section
 
 /-!
 # Computational realization of topological spaces (experimental)

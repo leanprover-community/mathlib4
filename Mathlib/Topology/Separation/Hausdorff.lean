@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Topology.Compactness.SigmaCompact
+public import Mathlib.Topology.Irreducible
+public import Mathlib.Topology.Separation.Basic
+
+@[expose] public section
 
 /-!
 # T₂ and T₂.₅ spaces.

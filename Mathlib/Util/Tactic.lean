@@ -3,8 +3,12 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jannis Limperg
 -/
-import Mathlib.Init
-import Lean.MetavarContext
+module
+
+public import Mathlib.Init
+public import Lean.MetavarContext
+
+@[expose] public section
 
 /-!
 # Miscellaneous helper functions for tactics.

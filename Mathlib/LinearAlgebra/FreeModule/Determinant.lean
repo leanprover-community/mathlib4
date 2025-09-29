@@ -3,8 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+module
+
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
+@[expose] public section
 
 /-!
 # Determinants in free (finite) modules

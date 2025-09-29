@@ -3,11 +3,15 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
-import Qq
-import Mathlib.Data.Nat.Notation
-import Mathlib.Util.AtomM
-import Mathlib.Data.List.TFAE
-import Mathlib.Tactic.ExtendDoc
+module
+
+public import Qq
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Util.AtomM
+public import Mathlib.Data.List.TFAE
+public import Mathlib.Tactic.ExtendDoc
+
+@[expose] public section
 
 /-!
 # The Following Are Equivalent (TFAE)

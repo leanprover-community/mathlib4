@@ -3,7 +3,11 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+
+@[expose] public section
 
 /-! # Pointwise instances on `AffineSubspace`s
 

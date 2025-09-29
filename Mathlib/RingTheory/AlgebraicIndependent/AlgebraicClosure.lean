@@ -3,9 +3,13 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.AlgebraicClosure
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+module
+
+public import Mathlib.FieldTheory.AlgebraicClosure
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+
+@[expose] public section
 
 /-!
 # Algebraic independence persists to the algebraic closure

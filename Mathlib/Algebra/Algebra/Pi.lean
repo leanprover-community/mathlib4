@@ -3,9 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Algebra.Prod
+
+@[expose] public section
 
 /-!
 # The R-algebra structure on families of R-algebras

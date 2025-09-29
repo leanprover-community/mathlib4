@@ -3,10 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.Basic
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Comma.Basic
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Functor.EpiMono
+
+@[expose] public section
 
 /-!
 # The category of "structured arrows"

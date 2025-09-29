@@ -3,9 +3,13 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Part
-import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Part
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Common
+
+@[expose] public section
 
 /-!
 # Monotonicity of monadic operations on `Part`

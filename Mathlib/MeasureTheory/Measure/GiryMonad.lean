@@ -3,7 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+
+@[expose] public section
 
 /-!
 # The Giry monad

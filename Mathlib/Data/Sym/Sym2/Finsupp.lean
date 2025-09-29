@@ -3,9 +3,13 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Finsupp.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Finsupp.Defs
+
+@[expose] public section
 
 /-!
 # Finitely supported functions from the symmetric square

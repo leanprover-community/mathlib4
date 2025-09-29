@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Enriched.Basic
-import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+module
+
+public import Mathlib.CategoryTheory.Enriched.Basic
+public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+
+@[expose] public section
 
 /-!
 # Enriched ordinary categories

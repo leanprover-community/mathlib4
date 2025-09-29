@@ -3,9 +3,13 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Data.ENNReal.Lemmas
-import Mathlib.Topology.MetricSpace.Thickening
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Data.ENNReal.Lemmas
+public import Mathlib.Topology.MetricSpace.Thickening
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+
+@[expose] public section
 
 /-!
 # Thickened indicators

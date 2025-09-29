@@ -3,7 +3,11 @@ Copyright (c) 2022 John Nicol. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Nicol
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+
+@[expose] public section
 
 /-!
 # Wilson's theorem.

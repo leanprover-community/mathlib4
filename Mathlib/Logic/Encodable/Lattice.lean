@@ -3,9 +3,13 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Data.Set.Subsingleton
+
+@[expose] public section
 
 /-!
 # Lattice operations on encodable types

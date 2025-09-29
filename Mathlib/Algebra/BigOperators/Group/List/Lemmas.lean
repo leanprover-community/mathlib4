@@ -3,17 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Flatten
-import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Range
-import Mathlib.Data.List.Rotate
-import Mathlib.Data.List.ProdSigma
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Int.Units
+public import Mathlib.Data.List.Dedup
+public import Mathlib.Data.List.Flatten
+public import Mathlib.Data.List.Pairwise
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Range
+public import Mathlib.Data.List.Rotate
+public import Mathlib.Data.List.ProdSigma
+public import Mathlib.Algebra.Group.Opposite
+
+@[expose] public section
 
 /-!
 # Sums and products from lists

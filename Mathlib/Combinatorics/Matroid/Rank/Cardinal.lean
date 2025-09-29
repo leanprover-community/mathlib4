@@ -3,10 +3,14 @@ Copyright (c) 2025 Peter Nelson and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Junyan Xu
 -/
-import Mathlib.Combinatorics.Matroid.Map
-import Mathlib.Combinatorics.Matroid.Rank.ENat
-import Mathlib.Combinatorics.Matroid.Rank.Finite
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.Combinatorics.Matroid.Map
+public import Mathlib.Combinatorics.Matroid.Rank.ENat
+public import Mathlib.Combinatorics.Matroid.Rank.Finite
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+@[expose] public section
 
 /-!
 # Cardinal-valued rank

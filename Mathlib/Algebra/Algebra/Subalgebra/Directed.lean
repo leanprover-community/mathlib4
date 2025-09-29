@@ -3,9 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Data.Set.UnionLift
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Data.Set.UnionLift
+
+@[expose] public section
 
 /-!
 # Subalgebras and directed Unions of sets

@@ -3,9 +3,13 @@ Copyright (c) 2020 Johan Commelin, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Order.Basic
+
+@[expose] public section
 
 /-!
 # Type synonyms

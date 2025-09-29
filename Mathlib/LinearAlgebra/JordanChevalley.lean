@@ -3,9 +3,13 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Newton
-import Mathlib.LinearAlgebra.Semisimple
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+module
+
+public import Mathlib.Dynamics.Newton
+public import Mathlib.LinearAlgebra.Semisimple
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+@[expose] public section
 
 /-!
 # Jordan-Chevalley-Dunford decomposition

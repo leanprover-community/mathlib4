@@ -3,8 +3,12 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Order.Fin.Basic
+
+@[expose] public section
 
 /-! # Constructions of embeddings of `Fin n` into a type
 

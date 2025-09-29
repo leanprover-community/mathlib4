@@ -3,8 +3,12 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Num.Basic
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Data.Num.Basic
+public import Mathlib.Data.Vector.Basic
+
+@[expose] public section
 
 /-!
 # Bitwise operations using binary representation of integers

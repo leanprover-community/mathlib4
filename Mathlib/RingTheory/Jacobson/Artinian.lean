@@ -3,8 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Andrew Yang
 -/
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.Jacobson.Ring
+module
+
+public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Jacobson.Ring
+
+@[expose] public section
 
 /-!
 # Artinian rings over Jacobson rings

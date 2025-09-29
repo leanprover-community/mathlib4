@@ -3,11 +3,15 @@ Copyright (c) 2022 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard M. Hill
 -/
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+
+@[expose] public section
 
 /-!
 # Action of the polynomial ring on module induced by an algebra element.

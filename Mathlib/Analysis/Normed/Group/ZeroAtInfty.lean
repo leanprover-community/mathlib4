@@ -3,8 +3,11 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+
+@[expose] public section
 
 /-!
 # ZeroAtInftyContinuousMapClass in normed additive groups

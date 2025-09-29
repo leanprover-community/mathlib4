@@ -3,10 +3,13 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
 
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace
+
+@[expose] public section
 
 /-!
 # Proper nontrivially normed fields

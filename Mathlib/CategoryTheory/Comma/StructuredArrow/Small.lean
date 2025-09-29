@@ -3,9 +3,13 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.Logic.Small.Set
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.Logic.Small.Set
+
+@[expose] public section
 
 /-!
 # Small sets in the category of structured arrows

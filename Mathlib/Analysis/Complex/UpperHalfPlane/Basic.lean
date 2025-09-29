@@ -3,7 +3,11 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.Analysis.Complex.Basic
+
+@[expose] public section
 
 /-!
 # The upper half plane

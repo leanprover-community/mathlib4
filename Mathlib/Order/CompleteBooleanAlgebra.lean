@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.CompleteLattice.Lemmas
-import Mathlib.Order.Directed
-import Mathlib.Order.GaloisConnection.Basic
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Order.CompleteLattice.Lemmas
+public import Mathlib.Order.Directed
+public import Mathlib.Order.GaloisConnection.Basic
+
+@[expose] public section
 
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras

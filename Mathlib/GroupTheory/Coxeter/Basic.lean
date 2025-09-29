@@ -3,13 +3,17 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee, Óscar Álvarez
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.GroupTheory.Coxeter.Matrix
-import Mathlib.GroupTheory.PresentedGroup
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Use
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.PresentedGroup
+public import Mathlib.Tactic.NormNum.DivMod
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Use
+
+@[expose] public section
 
 /-!
 # Coxeter groups and Coxeter systems

@@ -3,8 +3,12 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+
+@[expose] public section
 
 /-!
 # Rays in the complex numbers

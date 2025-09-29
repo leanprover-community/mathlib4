@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.Data.List.Prime
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.Data.List.Prime
+public import Mathlib.RingTheory.Polynomial.Tower
+
+@[expose] public section
 
 /-!
 # Split polynomials

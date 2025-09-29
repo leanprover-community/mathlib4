@@ -3,9 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
-import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+
+@[expose] public section
 
 /-!
 # The real function `fun x ↦ x * log x + 1 - x`

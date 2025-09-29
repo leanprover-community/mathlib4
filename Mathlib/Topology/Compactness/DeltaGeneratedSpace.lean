@@ -3,7 +3,11 @@ Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
+module
+
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+
+@[expose] public section
 
 /-!
 # Delta-generated topological spaces

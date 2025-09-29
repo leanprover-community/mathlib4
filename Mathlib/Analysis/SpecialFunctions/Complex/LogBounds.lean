@@ -3,9 +3,13 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.Calculus.Deriv.Shift
+module
+
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Shift
+
+@[expose] public section
 
 /-!
 # Estimates for the complex logarithm

@@ -3,9 +3,13 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.GroupWithZero.Equiv
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.GroupWithZero.Equiv
+
+@[expose] public section
 
 /-!
 # If a semiring is a field, any isomorphic semiring is also a field.

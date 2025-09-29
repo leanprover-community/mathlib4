@@ -3,7 +3,11 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.RingTheory.Coalgebra.Basic
+module
+
+public import Mathlib.RingTheory.Coalgebra.Basic
+
+@[expose] public section
 
 /-!
 # MulOpposite of coalgebras

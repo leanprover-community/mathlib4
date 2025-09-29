@@ -3,9 +3,13 @@ Copyright (c) 2024 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+
+@[expose] public section
 
 /-!
 # Infinite sums and products in topological fields

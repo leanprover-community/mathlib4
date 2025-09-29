@@ -3,13 +3,17 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Cover.Open
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.AlgebraicGeometry.Restrict
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.Topology.Sheaves.CommRingCat
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.Open
+public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.RingTheory.Localization.InvSubmonoid
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.Topology.Sheaves.CommRingCat
+
+@[expose] public section
 
 /-!
 # Affine schemes

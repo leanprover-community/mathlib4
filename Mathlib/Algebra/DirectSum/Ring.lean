@@ -3,9 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.Algebra.Ring.Associator
+module
+
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.Ring.Associator
+
+@[expose] public section
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`

@@ -3,7 +3,11 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.SuccPred.Basic
+
+@[expose] public section
 
 /-!
 # Successor function on `WithBot`

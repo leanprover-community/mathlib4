@@ -3,11 +3,15 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Data.Int.ModEq
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+
+@[expose] public section
 
 /-!
 # Equality modulo an element

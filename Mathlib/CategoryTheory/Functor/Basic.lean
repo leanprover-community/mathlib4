@@ -3,9 +3,13 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Combinatorics.Quiver.Prefunctor
-import Mathlib.Tactic.CategoryTheory.CheckCompositions
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Tactic.CategoryTheory.CheckCompositions
+
+@[expose] public section
 
 /-!
 # Functors

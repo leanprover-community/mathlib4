@@ -3,11 +3,15 @@ Copyright (c) 2020 Bhavik Mehta, Edward Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.Order.Copy
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.Order.Copy
+public import Mathlib.Data.Set.Subsingleton
+
+@[expose] public section
 
 /-!
 # Grothendieck topologies

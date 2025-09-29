@@ -3,8 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.BigOperators
-import Mathlib.Data.DFinsupp.Order
+module
+
+public import Mathlib.Data.DFinsupp.BigOperators
+public import Mathlib.Data.DFinsupp.Order
+
+@[expose] public section
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions

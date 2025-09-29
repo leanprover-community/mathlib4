@@ -3,10 +3,14 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.Lean.Meta.Simp
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Util.AddRelatedDecl
+module
+
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.Lean.Meta.Simp
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Util.AddRelatedDecl
+
+@[expose] public section
 
 /-!
 # The `reassoc` attribute

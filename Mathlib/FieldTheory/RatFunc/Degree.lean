@@ -3,10 +3,14 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Content
+module
+
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Polynomial.Content
+
+@[expose] public section
 
 /-!
 # The degree of rational functions

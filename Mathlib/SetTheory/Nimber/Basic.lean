@@ -3,9 +3,13 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Nat.Bitwise
-import Mathlib.SetTheory.Ordinal.Family
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Data.Nat.Bitwise
+public import Mathlib.SetTheory.Ordinal.Family
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+@[expose] public section
 
 deprecated_module
   "This module is now at `CombinatorialGames.Nimber.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"

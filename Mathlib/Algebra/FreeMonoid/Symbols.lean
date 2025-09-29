@@ -3,9 +3,12 @@ Copyright (c) 2024 Hannah Fechtner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hannah Fechtner
 -/
+module
 
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Data.Finset.Lattice.Lemmas
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Data.Finset.Lattice.Lemmas
+
+@[expose] public section
 
 /-!
 # The finite set of symbols in a FreeMonoid element

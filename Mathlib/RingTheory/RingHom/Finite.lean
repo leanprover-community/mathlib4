@@ -3,9 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.TensorProduct.Finite
+
+@[expose] public section
 
 /-!
 

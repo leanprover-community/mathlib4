@@ -3,8 +3,12 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Ergodic.AddCircle
-import Mathlib.MeasureTheory.Covering.LiminfLimsup
+module
+
+public import Mathlib.Dynamics.Ergodic.AddCircle
+public import Mathlib.MeasureTheory.Covering.LiminfLimsup
+
+@[expose] public section
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem

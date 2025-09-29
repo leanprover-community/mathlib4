@@ -4,9 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Mathlib.Data.Set.Finite.Range
+module
+
+public import Mathlib.Algebra.Module.Submodule.Ker
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Data.Set.Finite.Range
+
+@[expose] public section
 
 /-!
 # Range of linear maps

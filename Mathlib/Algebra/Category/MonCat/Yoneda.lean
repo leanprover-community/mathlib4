@@ -3,9 +3,13 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.CategoryTheory.Yoneda
+
+@[expose] public section
 
 /-!
 # Yoneda embeddings

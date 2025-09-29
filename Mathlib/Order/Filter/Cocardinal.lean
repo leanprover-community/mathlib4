@@ -3,11 +3,15 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Order.Filter.CardinalInter
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Cardinal.Cofinality
+module
+
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Order.Filter.CardinalInter
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Cofinality
+
+@[expose] public section
 
 /-!
 # The cocardinal filter

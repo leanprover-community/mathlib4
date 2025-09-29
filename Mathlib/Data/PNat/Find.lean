@@ -3,8 +3,12 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Floris van Doorn
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.PNat.Basic
+
+@[expose] public section
 
 /-!
 # Explicit least witnesses to existentials on positive natural numbers

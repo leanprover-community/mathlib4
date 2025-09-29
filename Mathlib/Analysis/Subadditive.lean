@@ -3,10 +3,14 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Filter.AtTopBot.Finite
-import Mathlib.Order.Filter.AtTopBot.Prod
-import Mathlib.Topology.Algebra.Ring.Real
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Order.Filter.AtTopBot.Finite
+public import Mathlib.Order.Filter.AtTopBot.Prod
+public import Mathlib.Topology.Algebra.Ring.Real
+
+@[expose] public section
 
 /-!
 # Convergence of subadditive sequences

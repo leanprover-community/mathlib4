@@ -3,15 +3,19 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Topology.LocallyConstant.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.AffineMap
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Topology.LocallyConstant.Basic
+
+@[expose] public section
 
 /-!
 # The mean value inequality and equalities

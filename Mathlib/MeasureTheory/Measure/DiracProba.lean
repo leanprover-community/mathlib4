@@ -3,8 +3,12 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.Separation.CompletelyRegular
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+module
+
+public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+
+@[expose] public section
 
 /-!
 # Dirac deltas as probability measures and embedding of a space into probability measures on it

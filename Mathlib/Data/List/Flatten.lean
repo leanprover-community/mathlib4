@@ -3,8 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Util.AssertExists
+
+@[expose] public section
 
 /-!
 # Join of a list of lists

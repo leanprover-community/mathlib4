@@ -3,11 +3,15 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
-import Mathlib.NumberTheory.Divisors
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
-import Mathlib.Data.Nat.MaxPowDiv
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.Prime.Int
+module
+
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.NumberTheory.Padics.PadicVal.Defs
+public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.Data.Nat.Prime.Int
+
+@[expose] public section
 
 /-!
 # `p`-adic Valuation

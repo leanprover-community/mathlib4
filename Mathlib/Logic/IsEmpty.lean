@@ -3,8 +3,12 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Relator
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Relator
+
+@[expose] public section
 
 /-!
 # Types that are empty

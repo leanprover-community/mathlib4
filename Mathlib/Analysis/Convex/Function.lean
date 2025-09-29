@@ -3,9 +3,13 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, François Dupuis
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Order.Filter.Extr
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Order.Filter.Extr
+public import Mathlib.Tactic.NormNum
+
+@[expose] public section
 
 /-!
 # Convex and concave functions

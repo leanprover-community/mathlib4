@@ -3,8 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
-import Mathlib.Combinatorics.Additive.Dissociation
+module
+
+public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
+public import Mathlib.Combinatorics.Additive.Dissociation
+
+@[expose] public section
 
 /-!
 # Randomising by a function of dissociated support

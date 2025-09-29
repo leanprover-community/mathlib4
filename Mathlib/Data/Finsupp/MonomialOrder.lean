@@ -3,9 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
+
+@[expose] public section
 
 /-! # Monomial orders
 

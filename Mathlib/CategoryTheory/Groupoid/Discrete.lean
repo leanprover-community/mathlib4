@@ -3,8 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Discrete.Basic
+
+@[expose] public section
 /-!
 
 # Discrete categories are groupoids

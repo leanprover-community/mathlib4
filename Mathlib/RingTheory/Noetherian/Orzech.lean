@@ -3,10 +3,14 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.Module.Submodule.IterateMapComap
-import Mathlib.Order.PartialSups
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.OrzechProperty
+module
+
+public import Mathlib.Algebra.Module.Submodule.IterateMapComap
+public import Mathlib.Order.PartialSups
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.OrzechProperty
+
+@[expose] public section
 
 /-!
 # Noetherian rings have the Orzech property

@@ -3,8 +3,12 @@ Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
-import Mathlib.Util.AssertExists
-import Mathlib.Data.List.Defs
+module
+
+public import Mathlib.Util.AssertExists
+public import Mathlib.Data.List.Defs
+
+@[expose] public section
 
 /-!
 # Lemmas about List.*Idx functions.

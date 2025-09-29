@@ -3,8 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
+
+@[expose] public section
 
 /-!
 # Quadratic reciprocity.

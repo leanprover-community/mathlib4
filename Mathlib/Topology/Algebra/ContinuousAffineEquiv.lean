@@ -3,9 +3,13 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
+
+@[expose] public section
 
 /-!
 # Continuous affine equivalences

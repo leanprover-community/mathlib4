@@ -3,9 +3,13 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+@[expose] public section
 
 /-!
 # Algebraic facts about the topology of uniform convergence

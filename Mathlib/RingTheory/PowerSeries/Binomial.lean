@@ -3,8 +3,12 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.PowerSeries.WellKnown
+module
+
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.PowerSeries.WellKnown
+
+@[expose] public section
 
 /-!
 # Binomial Power Series

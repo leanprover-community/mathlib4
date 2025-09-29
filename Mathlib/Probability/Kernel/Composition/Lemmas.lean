@@ -3,7 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+
+@[expose] public section
 
 /-!
 # Lemmas relating different ways to compose measures and kernels

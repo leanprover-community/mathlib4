@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Violeta Hernández Palacios. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Ivanov
 -/
-import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Fin.Basic
+
+@[expose] public section
 
 /-!
 # Graded orders

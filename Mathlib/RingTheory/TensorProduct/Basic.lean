@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Module.Rat
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+
+@[expose] public section
 
 /-!
 # The tensor product of R-algebras

@@ -3,11 +3,15 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Tactic.Monotonicity.Attr
+
+@[expose] public section
 
 /-! # Lemmas for the `mono` tactic
 

@@ -3,9 +3,12 @@ Copyright (c) 2025 Lenny Taelman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lenny Taelman
 -/
+module
 
-import Mathlib.Data.Set.SymmDiff
-import Mathlib.Data.Set.Disjoint
+public import Mathlib.Data.Set.SymmDiff
+public import Mathlib.Data.Set.Disjoint
+
+@[expose] public section
 
 /-!
 # The `tauto_set` tactic

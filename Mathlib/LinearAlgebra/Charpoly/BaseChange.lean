@@ -3,9 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.RingTheory.TensorProduct.Finite
+
+@[expose] public section
 
 
 /-! # The characteristic polynomial of base change -/

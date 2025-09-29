@@ -3,10 +3,14 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Lean.Meta.Tactic.TryThis
-import Batteries.Linter.UnreachableTactic
-import Batteries.Control.Nondet.Basic
-import Mathlib.Init
+module
+
+public import Lean.Meta.Tactic.TryThis
+public import Batteries.Linter.UnreachableTactic
+public import Batteries.Control.Nondet.Basic
+public import Mathlib.Init
+
+@[expose] public section
 
 /-!
 # The `hint` tactic.

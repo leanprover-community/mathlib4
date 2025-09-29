@@ -3,8 +3,12 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.Logic.Equiv.Defs
+
+@[expose] public section
 
 /-!
 # Full and faithful functors

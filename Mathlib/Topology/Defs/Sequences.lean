@@ -3,8 +3,12 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.Topology.Defs.Filter
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.Topology.Defs.Filter
+
+@[expose] public section
 
 /-!
 # Sequences in topological spaces

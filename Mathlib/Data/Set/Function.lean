@@ -3,8 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Prod
-import Mathlib.Data.Set.Restrict
+module
+
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Data.Set.Restrict
+
+@[expose] public section
 
 /-!
 # Functions over sets

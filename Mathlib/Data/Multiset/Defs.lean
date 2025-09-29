@@ -3,12 +3,16 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Subperm
-import Mathlib.Data.Quot
-import Mathlib.Order.Monotone.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.List.Perm.Subperm
+public import Mathlib.Data.Quot
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Util.AssertExists
+
+@[expose] public section
 
 /-!
 # Multisets

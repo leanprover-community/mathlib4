@@ -3,10 +3,13 @@ Copyright (c) 2024 Emilie Burgun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
+module
 
-import Mathlib.Dynamics.PeriodicPts.Lemmas
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.Dynamics.PeriodicPts.Lemmas
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.GroupAction.Basic
+
+@[expose] public section
 
 /-!
 # Period of a group action

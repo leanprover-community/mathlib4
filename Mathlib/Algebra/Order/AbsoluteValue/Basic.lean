@@ -3,11 +3,15 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Tactic.Positivity.Core
+
+@[expose] public section
 
 /-!
 # Absolute values

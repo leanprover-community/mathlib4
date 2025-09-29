@@ -3,9 +3,13 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Eval
-import Lean.Elab.Tactic.ElabTerm
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Eval
+public import Lean.Elab.Tactic.ElabTerm
+
+@[expose] public section
 
 /-!
 # The `applyWith` tactic

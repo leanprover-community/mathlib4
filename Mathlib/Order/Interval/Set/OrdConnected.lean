@@ -3,9 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrderEmbedding
-import Mathlib.Order.Antichain
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Order.Interval.Set.OrderEmbedding
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.SetNotation
+
+@[expose] public section
 
 /-!
 # Order-connected sets

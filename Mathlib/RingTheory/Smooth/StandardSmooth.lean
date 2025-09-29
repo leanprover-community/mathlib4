@@ -3,7 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
-import Mathlib.RingTheory.Extension.Presentation.Submersive
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
+
+@[expose] public section
 
 /-!
 # Standard smooth algebras

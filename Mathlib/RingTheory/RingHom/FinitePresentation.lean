@@ -3,9 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Localization.Finiteness
-import Mathlib.RingTheory.RingHom.FiniteType
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+module
+
+public import Mathlib.RingTheory.Localization.Finiteness
+public import Mathlib.RingTheory.RingHom.FiniteType
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+
+@[expose] public section
 
 /-!
 

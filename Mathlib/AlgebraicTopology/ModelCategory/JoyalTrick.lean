@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+@[expose] public section
 
 /-!
 # A trick by Joyal

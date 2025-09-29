@@ -3,9 +3,13 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Independence.Kernel
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Group.Convolution
+module
+
+public import Mathlib.Probability.Independence.Kernel
+public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.MeasureTheory.Group.Convolution
+
+@[expose] public section
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)

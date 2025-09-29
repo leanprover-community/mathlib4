@@ -3,10 +3,14 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.Order.LocalExtr
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+
+@[expose] public section
 
 /-!
 # Minima and maxima of convex functions

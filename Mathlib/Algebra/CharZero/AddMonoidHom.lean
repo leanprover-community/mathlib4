@@ -3,9 +3,13 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Data.Nat.Cast.Basic
+
+@[expose] public section
 
 /-!
 # Transporting `CharZero` accross injective `AddMonoidHom`s

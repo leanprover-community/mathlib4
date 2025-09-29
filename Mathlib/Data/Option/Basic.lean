@@ -3,12 +3,16 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Control.Combinators
-import Mathlib.Data.Option.Defs
-import Mathlib.Logic.IsEmpty
-import Mathlib.Logic.Relator
-import Mathlib.Util.CompileInductive
-import Aesop
+module
+
+public import Mathlib.Control.Combinators
+public import Mathlib.Data.Option.Defs
+public import Mathlib.Logic.IsEmpty
+public import Mathlib.Logic.Relator
+public import Mathlib.Util.CompileInductive
+public import Aesop
+
+@[expose] public section
 
 /-!
 # Option of a type

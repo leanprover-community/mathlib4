@@ -3,7 +3,11 @@ Copyright (c) 2025 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Data.Fintype.Card
+module
+
+public import Mathlib.Data.Fintype.Card
+
+@[expose] public section
 
 /-!
 # Pigeonhole-like results for Fin

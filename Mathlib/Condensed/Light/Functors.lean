@@ -3,8 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-import Mathlib.Condensed.Light.Basic
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
+public import Mathlib.Condensed.Light.Basic
+
+@[expose] public section
 
 /-!
 # Functors from categories of topological spaces to light condensed sets

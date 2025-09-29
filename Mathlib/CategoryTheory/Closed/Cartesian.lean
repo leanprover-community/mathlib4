@@ -3,8 +3,12 @@ Copyright (c) 2020 Bhavik Mehta, Edward Ayers, Thomas Read. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers, Thomas Read
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+
+@[expose] public section
 
 /-!
 # Cartesian-closed categories

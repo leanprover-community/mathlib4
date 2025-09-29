@@ -3,12 +3,16 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.Topology.Perfect
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Order.Filter.EventuallyConst
+public import Mathlib.Topology.Perfect
+
+@[expose] public section
 
 /-!
 # Principle of isolated zeros

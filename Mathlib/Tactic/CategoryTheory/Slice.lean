@@ -3,8 +3,12 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Tactic.Conv
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Tactic.Conv
+
+@[expose] public section
 
 /-!
 # The `slice` tactic

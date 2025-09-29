@@ -3,9 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Counit
-import Mathlib.Algebra.MvPolynomial.Invertible
-import Mathlib.RingTheory.WittVector.Defs
+module
+
+public import Mathlib.Algebra.MvPolynomial.Counit
+public import Mathlib.Algebra.MvPolynomial.Invertible
+public import Mathlib.RingTheory.WittVector.Defs
+
+@[expose] public section
 
 /-!
 # Witt vectors

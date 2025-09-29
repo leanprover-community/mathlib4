@@ -3,7 +3,11 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
+
+@[expose] public section
 
 /-!
 # A `norm_num` extension for Jacobi and Legendre symbols

@@ -3,12 +3,16 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.Nilpotent.Defs
+
+@[expose] public section
 
 /-! # Degree and leading coefficient of polynomials with respect to a monomial order
 

@@ -3,8 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+
+@[expose] public section
 
 /-!
 # Action of `Mᵈᵐᵃ` on `Lᵖ` spaces

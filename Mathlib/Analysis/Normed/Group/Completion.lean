@@ -3,9 +3,13 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.MetricSpace.Completion
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.MetricSpace.Completion
+
+@[expose] public section
 
 /-!
 # Completion of a normed group

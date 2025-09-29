@@ -3,13 +3,17 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.Algebra.CharP.Pi
-import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Algebra.CharP.Subring
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.FieldTheory.Perfect
-import Mathlib.RingTheory.Valuation.Integers
+module
+
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.CharP.Pi
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.Algebra.CharP.Subring
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.RingTheory.Valuation.Integers
+
+@[expose] public section
 
 /-!
 # Ring Perfection and Tilt

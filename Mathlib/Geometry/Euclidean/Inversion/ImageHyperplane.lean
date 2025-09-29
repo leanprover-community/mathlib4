@@ -3,8 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Euclidean.Inversion.Basic
-import Mathlib.Geometry.Euclidean.PerpBisector
+module
+
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+public import Mathlib.Geometry.Euclidean.PerpBisector
+
+@[expose] public section
 
 /-!
 # Image of a hyperplane under inversion

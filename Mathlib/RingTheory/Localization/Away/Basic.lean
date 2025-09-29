@@ -3,11 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+
+@[expose] public section
 
 /-!
 # Localizations away from an element

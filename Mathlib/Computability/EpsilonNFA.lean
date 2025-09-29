@@ -3,8 +3,12 @@ Copyright (c) 2021 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Yaël Dillies, Anthony DeRossi
 -/
-import Mathlib.Computability.NFA
-import Mathlib.Data.List.ReduceOption
+module
+
+public import Mathlib.Computability.NFA
+public import Mathlib.Data.List.ReduceOption
+
+@[expose] public section
 
 /-!
 # Epsilon Nondeterministic Finite Automata

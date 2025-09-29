@@ -3,9 +3,13 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Order.GameAdd
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Order.GameAdd
+
+@[expose] public section
 
 /-!
 # Termination of a hydra game

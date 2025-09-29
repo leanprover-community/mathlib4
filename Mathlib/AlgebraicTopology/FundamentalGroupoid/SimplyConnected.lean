@@ -3,10 +3,14 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+
+@[expose] public section
 
 /-!
 # Simply connected spaces

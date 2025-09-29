@@ -3,11 +3,15 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Analysis.Complex.Cardinality
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.Order.Interval.Set.Infinite
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Analysis.Complex.Cardinality
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.Order.Interval.Set.Infinite
+
+@[expose] public section
 
 /-!
 # Complex number as a finite-dimensional vector space over `ℝ`

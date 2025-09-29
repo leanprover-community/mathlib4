@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-import Mathlib.CategoryTheory.Quotient
+module
+
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+public import Mathlib.CategoryTheory.Quotient
+
+@[expose] public section
 
 /-!
 # Localization of quotient categories

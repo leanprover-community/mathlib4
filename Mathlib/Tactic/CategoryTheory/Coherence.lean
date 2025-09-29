@@ -3,10 +3,14 @@ Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Coherence
-import Mathlib.Lean.Meta
-import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
-import Mathlib.Tactic.CategoryTheory.MonoidalComp
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+public import Mathlib.Lean.Meta
+public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.MonoidalComp
+
+@[expose] public section
 
 /-!
 # A `coherence` tactic for monoidal categories

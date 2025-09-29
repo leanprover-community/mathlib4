@@ -3,8 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Ring.Defs
+
+@[expose] public section
 
 /-!
 # `PUnit` is a commutative ring

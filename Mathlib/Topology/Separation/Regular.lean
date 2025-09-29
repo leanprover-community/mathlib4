@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Topology.Compactness.Lindelof
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Topology.Connected.Clopen
+
+@[expose] public section
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces

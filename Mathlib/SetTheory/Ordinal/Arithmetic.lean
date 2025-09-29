@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.SuccPred.InitialSeg
-import Mathlib.SetTheory.Ordinal.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.InitialSeg
+public import Mathlib.SetTheory.Ordinal.Basic
+
+@[expose] public section
 
 /-!
 # Ordinal arithmetic

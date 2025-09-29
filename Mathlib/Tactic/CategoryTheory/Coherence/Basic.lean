@@ -3,9 +3,13 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+public import Mathlib.CategoryTheory.Category.Basic
+
+@[expose] public section
 
 /-!
 # The Core function for `monoidal` and `bicategory` tactics

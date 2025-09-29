@@ -3,11 +3,15 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+module
+
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Data.Fintype.CardEmbedding
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+
+@[expose] public section
 
 /-!
 # Operator norm on the space of continuous multilinear maps

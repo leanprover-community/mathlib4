@@ -3,13 +3,17 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Expand
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.ZMod.Basic
+
+@[expose] public section
 
 /-!
 # Witt polynomials

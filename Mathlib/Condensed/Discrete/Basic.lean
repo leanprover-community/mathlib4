@@ -3,10 +3,14 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
-import Mathlib.CategoryTheory.Sites.Equivalence
-import Mathlib.Condensed.Basic
-import Mathlib.Condensed.Light.Basic
+module
+
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
+public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.Condensed.Basic
+public import Mathlib.Condensed.Light.Basic
+
+@[expose] public section
 /-!
 
 # Discrete-underlying adjunction

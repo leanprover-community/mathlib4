@@ -3,7 +3,11 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.Algebra.Star.Basic
+
+@[expose] public section
 /-!
 # Morphisms of star monoids
 

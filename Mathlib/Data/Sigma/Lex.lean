@@ -3,9 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Order.Defs.Unbundled
-import Batteries.Logic
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Order.Defs.Unbundled
+public import Batteries.Logic
+
+@[expose] public section
 
 /-!
 # Lexicographic order on a sigma type

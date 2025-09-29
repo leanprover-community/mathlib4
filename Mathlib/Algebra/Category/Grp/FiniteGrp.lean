@@ -3,8 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Algebra.Category.Grp.Basic
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Algebra.Category.Grp.Basic
+
+@[expose] public section
 
 /-!
 

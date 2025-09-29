@@ -3,11 +3,15 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Algebra.Field
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.FieldTheory.Differential.Basic
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+module
+
+public import Mathlib.Algebra.Algebra.Field
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.FieldTheory.Differential.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+
+@[expose] public section
 
 /-!
 # Liouville's theorem

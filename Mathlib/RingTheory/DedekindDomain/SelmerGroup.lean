@@ -3,10 +3,14 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.Algebra.Group.Int.TypeTags
+module
+
+public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.Algebra.Group.Int.TypeTags
+
+@[expose] public section
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains

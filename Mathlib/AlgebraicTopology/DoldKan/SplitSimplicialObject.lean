@@ -3,9 +3,13 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Split
-import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
-import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
+public import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+
+@[expose] public section
 
 /-!
 

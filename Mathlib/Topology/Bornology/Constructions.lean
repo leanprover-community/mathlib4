@@ -3,8 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Topology.Bornology.Basic
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Topology.Bornology.Basic
+
+@[expose] public section
 
 /-!
 # Bornology structure on products and subtypes

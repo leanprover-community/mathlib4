@@ -3,8 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+public import Mathlib.GroupTheory.GroupAction.Hom
+
+@[expose] public section
 /-!
 # Action of `Mᵈᵐᵃ` on `α →[N] β` and `A →+[N] B`
 

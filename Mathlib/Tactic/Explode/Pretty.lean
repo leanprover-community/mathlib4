@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
-import Lean.Meta.Basic
-import Mathlib.Tactic.Explode.Datatypes
+module
+
+public import Lean.Meta.Basic
+public import Mathlib.Tactic.Explode.Datatypes
+
+@[expose] public section
 
 /-!
 # Explode command: pretty

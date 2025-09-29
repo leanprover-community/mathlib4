@@ -3,8 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+module
+
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+
+@[expose] public section
 
 /-!
 

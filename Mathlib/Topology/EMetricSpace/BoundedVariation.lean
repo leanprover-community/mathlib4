@@ -3,10 +3,14 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Tactic.Finiteness
-import Mathlib.Topology.Semicontinuous
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+@[expose] public section
 
 /-!
 # Functions of bounded variation

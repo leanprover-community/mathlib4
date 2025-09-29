@@ -3,8 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.EpiMono
+
+@[expose] public section
 
 /-!
 # Retracts

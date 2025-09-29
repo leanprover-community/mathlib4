@@ -3,8 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Prime.Lemmas
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Algebra.Prime.Lemmas
+public import Mathlib.Order.BoundedOrder.Basic
+
+@[expose] public section
 
 /-!
 # Associated elements.

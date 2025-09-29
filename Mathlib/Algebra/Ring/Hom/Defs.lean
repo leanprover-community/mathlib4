@@ -3,9 +3,13 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.Basic
+
+@[expose] public section
 
 /-!
 # Homomorphisms of semirings and rings

@@ -3,8 +3,12 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Probability.Kernel.Integral
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Probability.Kernel.Integral
+
+@[expose] public section
 
 /-! # Integral against a kernel over a set
 

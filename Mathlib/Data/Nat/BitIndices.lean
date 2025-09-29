@@ -3,12 +3,16 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.List.Sort
-import Mathlib.Data.Nat.Bitwise
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.Nat.Bitwise
+
+@[expose] public section
 
 /-!
 # Bit Indices

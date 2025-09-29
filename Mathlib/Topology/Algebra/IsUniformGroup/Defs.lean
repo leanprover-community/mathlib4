@@ -3,8 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
+public import Mathlib.Topology.Algebra.Group.Basic
+
+@[expose] public section
 
 /-!
 # Uniform structure on topological groups

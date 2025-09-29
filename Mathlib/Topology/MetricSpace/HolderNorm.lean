@@ -3,7 +3,11 @@ Copyright (c) 2024 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Topology.MetricSpace.Holder
+module
+
+public import Mathlib.Topology.MetricSpace.Holder
+
+@[expose] public section
 
 /-!
 # Hölder norm

@@ -3,10 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir and María-Inés de Frutos Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.FG
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Adjoin.FG
+
+@[expose] public section
 
 /-! # Tensor products and finitely generated submodules
 

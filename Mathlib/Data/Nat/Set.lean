@@ -3,7 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Image
+
+@[expose] public section
 
 /-!
 ### Recursion on the natural numbers and `Set.range`

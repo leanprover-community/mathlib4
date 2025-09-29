@@ -3,12 +3,16 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Group.Basic
+
+@[expose] public section
 
 /-!
 # Dependent functions with finite support

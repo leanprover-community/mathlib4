@@ -3,8 +3,12 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+
+@[expose] public section
 
 /-!
 # Factorization of monic polynomials of given degree

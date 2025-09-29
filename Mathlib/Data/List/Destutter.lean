@@ -3,7 +3,11 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez, Eric Wieser
 -/
-import Mathlib.Data.List.Chain
+module
+
+public import Mathlib.Data.List.Chain
+
+@[expose] public section
 
 /-!
 # Destuttering of Lists

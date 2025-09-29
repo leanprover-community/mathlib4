@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Generator.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Generator.Basic
+
+@[expose] public section
 
 /-!
 # Generators for the category of presheaves of modules

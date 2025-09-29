@@ -3,9 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
-import Mathlib.CategoryTheory.Shift.ShiftedHom
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
+
+@[expose] public section
 
 /-! Shifted morphisms in the opposite category
 

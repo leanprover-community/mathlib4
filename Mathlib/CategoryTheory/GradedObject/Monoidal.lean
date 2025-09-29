@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.CategoryTheory.GradedObject.Unitor
-import Mathlib.Data.Fintype.Prod
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Unitor
+public import Mathlib.Data.Fintype.Prod
+
+@[expose] public section
 
 /-!
 # The monoidal category structures on graded objects

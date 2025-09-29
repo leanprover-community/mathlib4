@@ -3,9 +3,13 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Order.Nat
-import Mathlib.Data.Nat.Prime.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Order.Nat
+public import Mathlib.Data.Nat.Prime.Basic
+
+@[expose] public section
 
 /-!
 # Prime powers

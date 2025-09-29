@@ -3,9 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Real.Irrational
-import Mathlib.Topology.Instances.AddCircle.Defs
-import Mathlib.Topology.Algebra.Order.Archimedean
+module
+
+public import Mathlib.Data.Real.Irrational
+public import Mathlib.Topology.Instances.AddCircle.Defs
+public import Mathlib.Topology.Algebra.Order.Archimedean
+
+@[expose] public section
 
 /-!
 # Irrational rotation is minimal

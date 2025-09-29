@@ -3,13 +3,17 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Lean.Meta.Tactic.TryThis
-import Lean.Meta.Tactic.SolveByElim
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Lean.Meta.Basic
-import Batteries.Util.Cache
-import Mathlib.Tactic.Core
+module
+
+public import Lean.Meta.Tactic.TryThis
+public import Lean.Meta.Tactic.SolveByElim
+public import Mathlib.Lean.Expr.Basic
+public import Mathlib.Lean.Meta
+public import Mathlib.Lean.Meta.Basic
+public import Batteries.Util.Cache
+public import Mathlib.Tactic.Core
+
+@[expose] public section
 
 /-!
 # Propose

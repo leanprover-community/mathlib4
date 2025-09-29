@@ -3,7 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Loic Simon
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+
+@[expose] public section
 
 /-!
 # Unsigned Hahn decomposition theorem

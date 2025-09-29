@@ -3,11 +3,15 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.CoverLifting
-import Mathlib.CategoryTheory.Sites.CoverPreserving
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.CoverLifting
+public import Mathlib.CategoryTheory.Sites.CoverPreserving
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
+
+@[expose] public section
 
 /-!
 # Dense subsites

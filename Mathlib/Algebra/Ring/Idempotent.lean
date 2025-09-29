@@ -3,11 +3,15 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupWithZero.Idempotent
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Notation
-import Mathlib.Tactic.Convert
-import Mathlib.Algebra.Group.Torsion
+module
+
+public import Mathlib.Algebra.GroupWithZero.Idempotent
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.Notation
+public import Mathlib.Tactic.Convert
+public import Mathlib.Algebra.Group.Torsion
+
+@[expose] public section
 
 /-!
 # Idempotent elements of a ring

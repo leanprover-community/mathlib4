@@ -3,8 +3,12 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+
+@[expose] public section
 
 /-!
 # Limits in full subcategories

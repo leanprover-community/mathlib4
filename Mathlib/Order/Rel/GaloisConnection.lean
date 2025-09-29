@@ -3,7 +3,11 @@ Copyright (c) 2024 Lagrange Mathematics and Computing Research Center. All right
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Bordg
 -/
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.Data.Rel
+
+@[expose] public section
 
 /-!
 # The Galois Connection Induced by a Relation

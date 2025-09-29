@@ -3,7 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.SetToL1
+module
+
+public import Mathlib.MeasureTheory.Integral.SetToL1
+
+@[expose] public section
 
 /-!
 # Bochner integral

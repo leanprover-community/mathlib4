@@ -3,13 +3,17 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+
+@[expose] public section
 
 /-!
 # Weighted homogeneous polynomials

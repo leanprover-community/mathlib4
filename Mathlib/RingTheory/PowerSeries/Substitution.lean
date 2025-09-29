@@ -3,9 +3,12 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Substitution
-import Mathlib.RingTheory.PowerSeries.Evaluation
+public import Mathlib.RingTheory.MvPowerSeries.Substitution
+public import Mathlib.RingTheory.PowerSeries.Evaluation
+
+@[expose] public section
 
 /-! # Substitutions in power series
 

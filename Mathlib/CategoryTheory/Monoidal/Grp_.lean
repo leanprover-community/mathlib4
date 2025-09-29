@@ -3,9 +3,13 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.ExactFunctor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
+
+@[expose] public section
 
 /-!
 # The category of groups in a Cartesian monoidal category

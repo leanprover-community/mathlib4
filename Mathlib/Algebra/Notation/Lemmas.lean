@@ -3,11 +3,15 @@ Copyright (c) 2023 Yael Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yael Dillies
 -/
-import Batteries.Tactic.Init
-import Mathlib.Tactic.ToAdditive
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Util.AssertExists
+module
+
+public import Batteries.Tactic.Init
+public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Util.AssertExists
+
+@[expose] public section
 
 /-! # Lemmas about inequalities with `1`. -/
 

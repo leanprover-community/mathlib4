@@ -3,10 +3,14 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.LSeries.Convergence
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.LSeries.Convergence
+
+@[expose] public section
 
 /-!
 # Dirichlet convolution of sequences and products of L-series

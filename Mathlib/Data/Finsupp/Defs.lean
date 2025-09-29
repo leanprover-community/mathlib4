@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Data.Set.Finite.Basic
+
+@[expose] public section
 
 /-!
 # Type of functions with finite support

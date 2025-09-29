@@ -3,13 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.ConditionallyCompleteOrder
-import Mathlib.Topology.Instances.Discrete
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Order.Bornology
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Data.Int.ConditionallyCompleteOrder
+public import Mathlib.Topology.Instances.Discrete
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Order.Bornology
+
+@[expose] public section
 
 /-!
 # Topology on the integers

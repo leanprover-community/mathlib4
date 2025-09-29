@@ -3,9 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Tactic.Peel
-import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.NhdsKer
+module
+
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.NhdsKer
+
+@[expose] public section
 
 /-!
 # Compactness of the neighborhoods kernel of a set

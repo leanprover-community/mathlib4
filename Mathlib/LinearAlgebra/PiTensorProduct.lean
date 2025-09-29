@@ -3,9 +3,13 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.LinearAlgebra.Multilinear.Curry
+module
+
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.LinearAlgebra.Multilinear.Curry
+
+@[expose] public section
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings

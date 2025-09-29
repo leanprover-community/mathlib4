@@ -3,9 +3,12 @@ Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Fernando Chu, Christian Merten
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Grothendieck
-import Mathlib.CategoryTheory.FiberedCategory.HasFibers
+public import Mathlib.CategoryTheory.Bicategory.Grothendieck
+public import Mathlib.CategoryTheory.FiberedCategory.HasFibers
+
+@[expose] public section
 
 /-!
 # The Grothendieck construction gives a fibered category

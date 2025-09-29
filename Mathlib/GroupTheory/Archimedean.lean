@@ -3,8 +3,12 @@ Copyright (c) 2020 Heather Macbeth, Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Order
+public import Mathlib.Algebra.Order.Archimedean.Basic
+
+@[expose] public section
 
 /-!
 # Archimedean groups

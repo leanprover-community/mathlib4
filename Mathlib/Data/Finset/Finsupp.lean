@@ -3,10 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Data.Finsupp.Indicator
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Data.Finsupp.Indicator
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+@[expose] public section
 
 /-!
 # Finitely supported product of finsets

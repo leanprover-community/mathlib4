@@ -3,8 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.WithDensity
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.Analysis.Normed.Module.Basic
+
+@[expose] public section
 
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
 

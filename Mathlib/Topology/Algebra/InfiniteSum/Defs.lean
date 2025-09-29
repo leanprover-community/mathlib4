@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Order.Filter.AtTopBot.BigOperators
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Order.Filter.AtTopBot.BigOperators
+public import Mathlib.Topology.Separation.Hausdorff
+
+@[expose] public section
 
 /-!
 # Infinite sum and product over a topological monoid

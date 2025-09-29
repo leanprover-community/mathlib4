@@ -3,9 +3,12 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
+module
 
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Ring.WithTop
+
+@[expose] public section
 
 /-!
 # Conversion from WithTop to Base Type

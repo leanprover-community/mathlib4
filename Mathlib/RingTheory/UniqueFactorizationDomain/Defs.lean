@@ -3,11 +3,15 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
+public import Mathlib.Order.WellFounded
+
+@[expose] public section
 
 /-!
 # Unique factorization

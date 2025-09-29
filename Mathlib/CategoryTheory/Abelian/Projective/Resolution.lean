@@ -3,9 +3,13 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison, Jakob von Raumer, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Tactic.SuppressCompilation
+
+@[expose] public section
 
 /-!
 # Abelian categories with enough projectives have projective resolutions

@@ -3,9 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Topology.Algebra.InfiniteSum.Field
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.Topology.Algebra.InfiniteSum.Field
+
+@[expose] public section
 
 /-!
 # Summability of logarithms

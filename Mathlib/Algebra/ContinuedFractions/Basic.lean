@@ -3,8 +3,12 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Data.Seq.Defs
-import Mathlib.Algebra.Field.Defs
+module
+
+public import Mathlib.Data.Seq.Defs
+public import Mathlib.Algebra.Field.Defs
+
+@[expose] public section
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions

@@ -3,12 +3,15 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Anatole Dedecker
 -/
+module
 
-import Mathlib.Analysis.Normed.Algebra.Spectrum
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
-import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+
+@[expose] public section
 
 /-!
 # Integrals and the continuous functional calculus

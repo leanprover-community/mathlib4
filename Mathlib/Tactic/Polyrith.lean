@@ -3,7 +3,11 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro, Thomas Zhu
 -/
-import Lean.Elab.Tactic.Basic
+module
+
+public import Lean.Elab.Tactic.Basic
+
+@[expose] public section
 
 /-!
 

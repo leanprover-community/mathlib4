@@ -3,8 +3,12 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Order.Notation
-import Mathlib.Combinatorics.Quiver.Basic
+module
+
+public import Mathlib.Order.Notation
+public import Mathlib.Combinatorics.Quiver.Basic
+
+@[expose] public section
 
 /-!
 ## Wide subquivers

@@ -3,9 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.BooleanAlgebra.Defs
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.Order.BooleanAlgebra.Defs
+public import Mathlib.Order.Hom.Basic
+
+@[expose] public section
 
 /-!
 # Boolean algebra structure on idempotents in a commutative (semi)ring

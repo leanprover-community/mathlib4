@@ -3,9 +3,13 @@ Copyright (c) 2025 Bryan Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Wang
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Diagonal
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Diagonal
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+
+@[expose] public section
 
 /-!
 # Matrix subalgebras

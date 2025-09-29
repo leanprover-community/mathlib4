@@ -3,7 +3,11 @@ Copyright (c) 2022 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Kevin H. Wilson, Heather Macbeth
 -/
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Order.Filter.Tendsto
+
+@[expose] public section
 
 /-!
 # Product and coproduct filters

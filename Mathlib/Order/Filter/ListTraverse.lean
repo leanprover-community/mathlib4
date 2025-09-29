@@ -3,8 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Control.Traversable.Instances
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.Control.Traversable.Instances
+public import Mathlib.Order.Filter.Map
+
+@[expose] public section
 /-!
 # Properties of `Traversable.traverse` on `List`s and `Filter`s
 

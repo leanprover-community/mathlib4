@@ -3,10 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.GroupWithZero.Opposite
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Data.Int.Cast.Basic
+
+@[expose] public section
 
 /-!
 # Ring structures on the multiplicative opposite

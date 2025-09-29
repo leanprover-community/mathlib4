@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
-import Mathlib.Data.List.Palindrome
-import Mathlib.Data.Nat.Digits.Lemmas
+module
+
+public import Mathlib.Data.List.Palindrome
+public import Mathlib.Data.Nat.Digits.Lemmas
+
+@[expose] public section
 
 /-!
 # Divisibility tests for natural numbers in terms of digits.

@@ -3,9 +3,12 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+@[expose] public section
 
 /-!
 # Simpleness is preserved by ring isomorphism/surjective ring homomorphisms

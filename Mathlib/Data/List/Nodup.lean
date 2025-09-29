@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Order.Basic
+
+@[expose] public section
 
 /-!
 # Lists with no duplicates

@@ -3,8 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+module
+
+public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+
+@[expose] public section
 
 /-!
 # Barycentric coordinates are smooth

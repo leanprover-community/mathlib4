@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Data.Rat.Cast.CharZero
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Data.Nat.Factorization.Defs
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Data.Rat.Cast.CharZero
+
+@[expose] public section
 
 /-!
 # Real logarithm

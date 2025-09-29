@@ -3,9 +3,13 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Compactness.SigmaCompact
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Topology.Compactness.SigmaCompact
+
+@[expose] public section
 
 /-!
 # Lindelöf sets and Lindelöf spaces

@@ -3,10 +3,14 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+public import Mathlib.RingTheory.LocalRing.Basic
+
+@[expose] public section
 
 /-!
 # Admissible absolute values on polynomials

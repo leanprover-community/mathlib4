@@ -3,10 +3,14 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Centroid
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.LinearAlgebra.AffineSpace.Pointwise
-import Mathlib.LinearAlgebra.Basis.SMul
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.LinearAlgebra.AffineSpace.Pointwise
+public import Mathlib.LinearAlgebra.Basis.SMul
+
+@[expose] public section
 
 /-!
 # Affine bases and barycentric coordinates

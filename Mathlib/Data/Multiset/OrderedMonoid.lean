@@ -3,8 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+
+@[expose] public section
 
 /-!
 # Multisets as ordered monoids

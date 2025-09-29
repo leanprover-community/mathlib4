@@ -3,9 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Util.AssertExists
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Data.Prod.Basic
+module
+
+public import Mathlib.Util.AssertExists
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Data.Prod.Basic
+
+@[expose] public section
 
 /-!
 # Arithmetic operators on (pairwise) product types

@@ -3,13 +3,17 @@ Copyright (c) 2025 Madison Crim, Aaron Liu, Justus Springer, Junyan Xu. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Madison Crim, Aaron Liu, Justus Springer, Junyan Xu
 -/
-import Mathlib.Algebra.Module.PID
-import Mathlib.Algebra.MvPolynomial.Funext
-import Mathlib.Algebra.Polynomial.Module.AEval
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+module
+
+public import Mathlib.Algebra.Module.PID
+public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+
+@[expose] public section
 
 /-!
 # The normal basis theorem

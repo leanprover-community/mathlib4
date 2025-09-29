@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Tauto
+
+@[expose] public section
 
 /-!
 # Turning a preorder into a partial order

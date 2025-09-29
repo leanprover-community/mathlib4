@@ -3,8 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.Basic
+
+@[expose] public section
 
 /-!
 # Basis from a split exact sequence

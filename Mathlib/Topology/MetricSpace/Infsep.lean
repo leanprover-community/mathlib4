@@ -3,7 +3,11 @@ Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Topology.MetricSpace.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Basic
+
+@[expose] public section
 
 /-!
 # Infimum separation

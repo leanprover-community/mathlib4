@@ -3,10 +3,14 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
-import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
-import Mathlib.Topology.Instances.AddCircle.Real
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
+public import Mathlib.Topology.Instances.AddCircle.Real
+
+@[expose] public section
 
 /-!
 # Additive characters valued in the unit circle

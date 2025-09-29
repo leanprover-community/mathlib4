@@ -3,10 +3,13 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init
-import Lean.Elab.ElabRules
-import Lean.DocString
+public import Mathlib.Init
+public import Lean.Elab.ElabRules
+public import Lean.DocString
+
+@[expose] public section
 
 /-!
 #  `extend_doc` command

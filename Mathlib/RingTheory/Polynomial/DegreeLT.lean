@@ -3,12 +3,15 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.RingTheory.Polynomial.Basic
+
+@[expose] public section
 
 /-!
 # Polynomials with degree strictly less than `n`

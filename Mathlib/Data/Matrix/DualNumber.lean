@@ -3,8 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.Data.Matrix.Basic
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.Data.Matrix.Basic
+
+@[expose] public section
 
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices

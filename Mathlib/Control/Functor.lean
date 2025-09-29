@@ -3,10 +3,14 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.TypeStar
-import Batteries.Tactic.Lint
+module
+
+public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Tactic.TypeStar
+public import Batteries.Tactic.Lint
+
+@[expose] public section
 
 /-!
 # Functors

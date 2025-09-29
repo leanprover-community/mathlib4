@@ -3,9 +3,13 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.Artinian.Module
+
+@[expose] public section
 
 /-!
 # Instances related to Artinian rings

@@ -3,8 +3,12 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
+
+@[expose] public section
 
 /-!
 # The Freyd-Mitchell embedding theorem

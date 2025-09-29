@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
+
+@[expose] public section
 
 /-!
 # Operations on outer measures

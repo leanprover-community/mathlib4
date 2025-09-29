@@ -3,8 +3,12 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+
+@[expose] public section
 
 /-!
 # Sequence of measurable functions associated to a sequence of a.e.-measurable functions

@@ -3,8 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.Algebra.DirectSum.Module
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.Algebra.DirectSum.Module
+
+@[expose] public section
 /-!
 # Tensor products of direct sums
 

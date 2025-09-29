@@ -3,9 +3,13 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.Determinant
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Determinant
+
+@[expose] public section
 
 /-!
 # Gershgorin's circle theorem

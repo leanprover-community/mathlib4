@@ -3,10 +3,14 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Tactic.Common
+
+@[expose] public section
 
 /-!
 # Lemmas about the divisibility relation in product (semi)groups

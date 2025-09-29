@@ -3,7 +3,11 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SetFamily.Shadow
+module
+
+public import Mathlib.Combinatorics.SetFamily.Shadow
+
+@[expose] public section
 
 /-!
 # UV-compressions

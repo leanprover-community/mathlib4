@@ -3,8 +3,12 @@ Copyright (c) 2024 Lucas Whitfield. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Whitfield, Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.RingTheory.Finiteness.Nilpotent
+module
+
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.RingTheory.Finiteness.Nilpotent
+
+@[expose] public section
 
 /-!
 # Lie's theorem for Solvable Lie algebras.

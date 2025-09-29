@@ -3,12 +3,15 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
+module
 
-import Aesop
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Tactic.NormNum.Core
+public import Aesop
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Linarith.Frontend
+public import Mathlib.Tactic.NormNum.Core
+
+@[expose] public section
 
 /-!
 ## The `bound` tactic

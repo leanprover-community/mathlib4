@@ -3,9 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+@[expose] public section
 
 /-!
 # Quadratic forms are line (Gateaux) differentiable

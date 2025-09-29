@@ -3,10 +3,14 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.Control.EquivFunctor
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.Control.EquivFunctor
+
+@[expose] public section
 
 /-!
 # The core of a category

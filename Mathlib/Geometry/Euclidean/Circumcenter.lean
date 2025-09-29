@@ -3,11 +3,15 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Tactic.DeriveFintype
+
+@[expose] public section
 
 /-!
 # Circumcenter and circumradius

@@ -3,8 +3,12 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+module
+
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+@[expose] public section
 
 /-!
 # The space of continuous maps is a locally convex space

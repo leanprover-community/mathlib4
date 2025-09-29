@@ -3,8 +3,12 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Andrew Yang
 -/
-import Mathlib.RingTheory.HopfAlgebra.Basic
-import Mathlib.RingTheory.Bialgebra.TensorProduct
+module
+
+public import Mathlib.RingTheory.HopfAlgebra.Basic
+public import Mathlib.RingTheory.Bialgebra.TensorProduct
+
+@[expose] public section
 
 /-!
 # Tensor products of Hopf algebras

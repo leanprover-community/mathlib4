@@ -3,7 +3,11 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Kyle Miller
 -/
-import Mathlib.Tactic.CongrExclamation
+module
+
+public import Mathlib.Tactic.CongrExclamation
+
+@[expose] public section
 
 /-!
 # The `convert` tactic.

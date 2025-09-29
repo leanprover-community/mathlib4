@@ -3,11 +3,14 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
+module
 
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Data.Nat.Find
-import Mathlib.Order.Atoms
-import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.Atoms
+public import Mathlib.Data.SetLike.Basic
+
+@[expose] public section
 
 /-!
 # Rooted trees

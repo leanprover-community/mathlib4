@@ -3,10 +3,14 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.MetricSpace.Antilipschitz
+module
+
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.MetricSpace.Antilipschitz
+
+@[expose] public section
 
 /-!
 # Isometries

@@ -3,9 +3,13 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Replace
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Basic
+public import Lean.Meta.Tactic.Replace
+
+@[expose] public section
 
 /-!
 # Infer an optional parameter

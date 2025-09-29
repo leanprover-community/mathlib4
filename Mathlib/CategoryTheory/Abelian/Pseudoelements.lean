@@ -3,9 +3,13 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+
+@[expose] public section
 
 /-!
 # Pseudoelements in abelian categories

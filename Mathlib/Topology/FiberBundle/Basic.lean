@@ -3,8 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Topology.FiberBundle.Trivialization
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Topology.FiberBundle.Trivialization
+public import Mathlib.Topology.Order.LeftRightNhds
+
+@[expose] public section
 
 /-!
 # Fiber bundles

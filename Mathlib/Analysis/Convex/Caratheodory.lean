@@ -3,9 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.Tactic.FieldSimp
+
+@[expose] public section
 
 /-!
 # Carathéodory's convexity theorem

@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.Algebra.Module.Shrink
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.Algebra.Module.Shrink
+
+@[expose] public section
 
 /-!
 # The category of R-modules has all limits

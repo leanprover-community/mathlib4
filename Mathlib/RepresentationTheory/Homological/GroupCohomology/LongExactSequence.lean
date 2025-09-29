@@ -3,9 +3,13 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+module
+
+public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+
+@[expose] public section
 
 /-!
 # Long exact sequence in group cohomology

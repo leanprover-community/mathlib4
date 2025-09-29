@@ -3,8 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Prime
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.RingTheory.Ideal.Prime
+public import Mathlib.RingTheory.Ideal.Span
+
+@[expose] public section
 
 /-!
 

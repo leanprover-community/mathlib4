@@ -3,8 +3,12 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.Probability.Independence.Basic
+
+@[expose] public section
 
 /-!
 # Links between independence and characteristic function

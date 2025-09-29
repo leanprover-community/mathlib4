@@ -3,10 +3,14 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Positivity
+
+@[expose] public section
 
 /-!
 # Abel's limit theorem

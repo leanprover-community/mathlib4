@@ -3,11 +3,15 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Wojciech Nawrocki
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.GroupTheory.Congruence.BigOperators
-import Mathlib.RingTheory.Ideal.Lattice
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.RingTheory.Jacobson.Ideal
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.GroupTheory.Congruence.BigOperators
+public import Mathlib.RingTheory.Ideal.Lattice
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.Jacobson.Ideal
+
+@[expose] public section
 
 /-!
 # Ideals in a matrix ring

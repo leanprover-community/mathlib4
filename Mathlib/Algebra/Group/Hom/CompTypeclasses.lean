@@ -3,10 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
+public import Mathlib.Logic.Function.CompTypeclasses
+public import Mathlib.Algebra.Group.Hom.Defs
 
-import Mathlib.Logic.Function.CompTypeclasses
-import Mathlib.Algebra.Group.Hom.Defs
+@[expose] public section
 
 /-!
 # Propositional typeclasses on several monoid homs

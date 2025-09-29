@@ -3,11 +3,15 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupWithZero.ProdHom
-import Mathlib.Algebra.Order.Group.Equiv
-import Mathlib.Algebra.Order.Monoid.Lex
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Data.Prod.Lex
+module
+
+public import Mathlib.Algebra.GroupWithZero.ProdHom
+public import Mathlib.Algebra.Order.Group.Equiv
+public import Mathlib.Algebra.Order.Monoid.Lex
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Data.Prod.Lex
+
+@[expose] public section
 
 /-!
 # Order homomorphisms for products of linearly ordered groups with zero

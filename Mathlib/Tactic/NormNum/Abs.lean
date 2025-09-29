@@ -3,8 +3,12 @@ Copyright (c) 2025 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Data.Nat.Cast.Order.Ring
+
+@[expose] public section
 
 
 /-!

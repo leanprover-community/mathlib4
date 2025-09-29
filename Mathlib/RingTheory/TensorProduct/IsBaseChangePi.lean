@@ -3,9 +3,13 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.Prod
-import Mathlib.RingTheory.Localization.BaseChange
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Prod
+public import Mathlib.RingTheory.Localization.BaseChange
+
+@[expose] public section
 
 /-!
 # Base change commutes with finite products

@@ -3,8 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.RingTheory.Ideal.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.RingTheory.Ideal.Defs
+
+@[expose] public section
 
 /-!
 

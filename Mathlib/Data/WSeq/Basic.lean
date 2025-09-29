@@ -3,8 +3,12 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Seq.Basic
-import Mathlib.Util.CompileInductive
+module
+
+public import Mathlib.Data.Seq.Basic
+public import Mathlib.Util.CompileInductive
+
+@[expose] public section
 
 /-!
 # Partially defined possibly infinite lists

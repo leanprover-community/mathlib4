@@ -3,10 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Group.Units.Opposite
-import Mathlib.Algebra.Module.Opposite
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Group.Units.Opposite
+public import Mathlib.Algebra.Module.Opposite
+
+@[expose] public section
 
 /-!
 # Multiplication on the left/right as additive automorphisms

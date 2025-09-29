@@ -3,11 +3,15 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Linear
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Topology.Algebra.Module.Star
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Topology.Algebra.Module.Star
+
+@[expose] public section
 
 /-!
 # Star operations on derivatives

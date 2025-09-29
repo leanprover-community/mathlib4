@@ -3,7 +3,11 @@ Copyright (c) 2022 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.Topology.FiberBundle.Basic
+module
+
+public import Mathlib.Topology.FiberBundle.Basic
+
+@[expose] public section
 
 /-!
 # Standard constructions on fiber bundles

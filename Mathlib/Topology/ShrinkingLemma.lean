@@ -3,7 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
 -/
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Separation.Regular
+
+@[expose] public section
 
 /-!
 # The shrinking lemma

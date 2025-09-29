@@ -3,11 +3,15 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.Topology.Sheaves.Init
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Data.Set.Subsingleton
+
+@[expose] public section
 
 /-!
 # Presheaves on a topological space

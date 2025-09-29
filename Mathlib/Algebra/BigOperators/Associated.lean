@@ -3,9 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupWithZero.Associated
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Associated
+
+@[expose] public section
 
 /-!
 # Products of associated, prime, and irreducible elements.

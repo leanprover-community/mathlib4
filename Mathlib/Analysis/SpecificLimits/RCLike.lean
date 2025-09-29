@@ -3,8 +3,12 @@ Copyright (c) 2023 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, Patrick Massot
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.RCLike.Basic
+
+@[expose] public section
 
 /-!
 # A collection of specific limit computations for `RCLike`

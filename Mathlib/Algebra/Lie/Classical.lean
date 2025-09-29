@@ -3,12 +3,16 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Algebra.Lie.SkewAdjoint
-import Mathlib.LinearAlgebra.SymplecticGroup
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.DMatrix
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.Algebra.Lie.SkewAdjoint
+public import Mathlib.LinearAlgebra.SymplecticGroup
+
+@[expose] public section
 
 /-!
 # Classical Lie algebras

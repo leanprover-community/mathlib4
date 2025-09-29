@@ -3,7 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Order.UpperLower.Basic
+
+@[expose] public section
 
 /-!
 # Upper/lower sets and fibrations

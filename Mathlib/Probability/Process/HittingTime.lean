@@ -3,8 +3,12 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Process.Stopping
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Tactic.AdaptationNote
+
+@[expose] public section
 
 /-!
 # Hitting time

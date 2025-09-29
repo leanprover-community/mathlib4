@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Set.Finite.Powerset
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Data.Set.Finite.Powerset
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.Lattice.Image
+
+@[expose] public section
 
 /-!
 # Finiteness of unions and intersections

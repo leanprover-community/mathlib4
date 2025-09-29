@@ -3,8 +3,12 @@ Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Junyan Xu
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+
+@[expose] public section
 
 /-!
 # Extension of field embeddings

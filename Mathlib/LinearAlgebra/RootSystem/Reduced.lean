@@ -3,7 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+
+@[expose] public section
 
 /-!
 # Reduced root pairings

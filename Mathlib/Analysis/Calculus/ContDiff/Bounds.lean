@@ -3,10 +3,14 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Nat.Choose.Multinomial
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Data.Nat.Choose.Multinomial
+
+@[expose] public section
 
 /-!
 # Bounds on higher derivatives

@@ -3,9 +3,13 @@ Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.Topology.ContinuousMap.CompactlySupported
-import Mathlib.Topology.PartitionOfUnity
+module
+
+public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.Topology.ContinuousMap.CompactlySupported
+public import Mathlib.Topology.PartitionOfUnity
+
+@[expose] public section
 
 /-!
 #  Riesz–Markov–Kakutani representation theorem

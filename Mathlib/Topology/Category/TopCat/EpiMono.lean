@@ -3,8 +3,12 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Category.TopCat.Adjunctions
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.Topology.Category.TopCat.Adjunctions
+public import Mathlib.CategoryTheory.Functor.EpiMono
+
+@[expose] public section
 
 /-!
 # Epi- and monomorphisms in `Top`

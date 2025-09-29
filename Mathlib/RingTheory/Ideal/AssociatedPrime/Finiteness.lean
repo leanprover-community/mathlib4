@@ -3,10 +3,14 @@ Copyright (c) 2025 Jinzhao Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzhao Pan
 -/
-import Mathlib.Order.RelSeries
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Defs
+module
+
+public import Mathlib.Order.RelSeries
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
+
+@[expose] public section
 
 /-!
 

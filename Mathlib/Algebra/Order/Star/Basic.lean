@@ -3,15 +3,19 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Group.Opposite
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.StarRingHom
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Algebra.Star.StarProjection
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Opposite
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.StarRingHom
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Star.StarProjection
+
+@[expose] public section
 
 /-! # Star ordered rings
 

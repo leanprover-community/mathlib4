@@ -3,10 +3,14 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Order.WellFoundedSet
+
+@[expose] public section
 
 /-!
 # Hahn Series

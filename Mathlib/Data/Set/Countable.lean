@@ -3,11 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Logic.Equiv.List
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Data.Countable.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Logic.Equiv.List
+public import Mathlib.Order.Preorder.Finite
+
+@[expose] public section
 
 /-!
 # Countable sets

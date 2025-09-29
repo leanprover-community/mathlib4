@@ -3,9 +3,13 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Order.Filter.Extr
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Order.Filter.Extr
+public import Mathlib.Topology.ContinuousOn
+
+@[expose] public section
 
 /-!
 # Local extrema of functions on topological spaces

@@ -3,11 +3,15 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Count
-import Mathlib.Data.Rat.Floor
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Count
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.Order.Interval.Finset.Nat
+
+@[expose] public section
 
 /-!
 # Counting elements in an interval with given residue

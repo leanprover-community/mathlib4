@@ -3,9 +3,13 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.RingTheory.Adjoin.Basic
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.RingTheory.Adjoin.Basic
+
+@[expose] public section
 
 /-!
 # Some results on dimensions of algebra adjoin

@@ -3,9 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
-import Mathlib.MeasureTheory.Integral.CircleAverage
+module
+
+public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
+public import Mathlib.MeasureTheory.Integral.CircleAverage
+
+@[expose] public section
 
 
 /-!

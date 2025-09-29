@@ -3,9 +3,12 @@ Copyright (c) 2024 Sam van Gool. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sam van Gool
 -/
+module
 
-import Mathlib.Order.PrimeIdeal
-import Mathlib.Order.Zorn
+public import Mathlib.Order.PrimeIdeal
+public import Mathlib.Order.Zorn
+
+@[expose] public section
 
 /-!
 # Separating prime filters and ideals

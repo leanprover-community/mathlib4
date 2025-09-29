@@ -4,9 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.Support
-import Mathlib.Data.Finset.NoncommProd
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Data.Finset.NoncommProd
+
+@[expose] public section
 
 /-!
 # Submonoids: membership criteria for products and sums

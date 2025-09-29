@@ -3,8 +3,12 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Star.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.Star.Basic
+
+@[expose] public section
 
 /-!
 # Commutative star-ordered rings are ordered rings

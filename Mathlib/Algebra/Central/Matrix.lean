@@ -3,8 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Yunzhou Xie
 -/
-import Mathlib.Algebra.Central.Defs
-import Mathlib.Data.Matrix.Basis
+module
+
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Data.Matrix.Basis
+
+@[expose] public section
 
 /-!
 # The matrix algebra is a central algebra

@@ -3,8 +3,12 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Mathlib.Init
+module
+
+public import Lean.Elab.Command
+public import Mathlib.Init
+
+@[expose] public section
 
 /-!
 # The `stacks` and `kerodon` attributes

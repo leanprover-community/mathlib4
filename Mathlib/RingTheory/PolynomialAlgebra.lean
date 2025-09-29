@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.IsTensorProduct
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.RingTheory.IsTensorProduct
+
+@[expose] public section
 
 /-!
 # Base change of polynomial algebras

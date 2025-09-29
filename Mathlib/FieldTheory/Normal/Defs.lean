@@ -3,9 +3,13 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Minpoly.Field
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Field
+
+@[expose] public section
 
 /-!
 # Normal field extensions

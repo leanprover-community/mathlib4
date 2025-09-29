@@ -3,11 +3,15 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Jensen
-import Mathlib.Analysis.Convex.PathConnected
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.Analysis.Convex.Jensen
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Analysis.Normed.Module.Basic
+
+@[expose] public section
 
 /-!
 # Metric properties of convex sets in normed spaces

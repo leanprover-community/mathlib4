@@ -3,9 +3,13 @@ Copyright (c) 2024 Thomas Lanard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran Wu
 -/
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.LinearAlgebra.Matrix.Rank
+module
+
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.Matrix.Rank
+
+@[expose] public section
 /-!
 # Cardinal of the general linear group over finite rings
 

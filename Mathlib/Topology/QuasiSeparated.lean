@@ -3,8 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.NoetherianSpace
+module
+
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.NoetherianSpace
+
+@[expose] public section
 
 /-!
 # Quasi-separated spaces

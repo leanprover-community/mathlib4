@@ -3,9 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Violeta Hernández Palacios
 -/
-import Mathlib.Data.Finsupp.AList
-import Mathlib.SetTheory.Ordinal.Exponential
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.Data.Finsupp.AList
+public import Mathlib.SetTheory.Ordinal.Exponential
+public import Mathlib.SetTheory.Ordinal.Family
+
+@[expose] public section
 
 /-!
 # Cantor Normal Form

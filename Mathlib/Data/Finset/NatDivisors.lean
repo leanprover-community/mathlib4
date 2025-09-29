@@ -3,8 +3,12 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yury Kudryashov
 -/
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+@[expose] public section
 
 /-!
 #  `Nat.divisors` as a multiplicative homomorpism

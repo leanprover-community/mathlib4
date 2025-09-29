@@ -3,11 +3,15 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Edward van de Meent
 -/
-import Mathlib.Tactic.TacticAnalysis
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.MinImports
-import Lean.Elab.Tactic.Meta
-import Lean.Elab.Command
+module
+
+public import Mathlib.Tactic.TacticAnalysis
+public import Mathlib.Tactic.ExtractGoal
+public import Mathlib.Tactic.MinImports
+public import Lean.Elab.Tactic.Meta
+public import Lean.Elab.Command
+
+@[expose] public section
 
 /-!
 # Tactic linters

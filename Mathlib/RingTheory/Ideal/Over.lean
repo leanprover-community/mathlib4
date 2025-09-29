@@ -3,10 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.RingTheory.Ideal.Pointwise
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.RingTheory.Ideal.Pointwise
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+
+@[expose] public section
 
 /-!
 # Ideals over/under ideals

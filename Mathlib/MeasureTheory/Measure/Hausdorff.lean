@@ -3,11 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.MetricSpace.Holder
-import Mathlib.Topology.MetricSpace.MetricSeparated
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Topology.MetricSpace.Holder
+public import Mathlib.Topology.MetricSpace.MetricSeparated
+
+@[expose] public section
 
 /-!
 # Hausdorff measure and metric (outer) measures

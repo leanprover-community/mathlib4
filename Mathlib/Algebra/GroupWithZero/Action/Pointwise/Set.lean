@@ -3,11 +3,15 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+
+@[expose] public section
 
 /-!
 # Pointwise operations of sets in a group with zero

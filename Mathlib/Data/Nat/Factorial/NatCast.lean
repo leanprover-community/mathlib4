@@ -3,11 +3,14 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.RingTheory.Nilpotent.Defs
+
+@[expose] public section
 
 /-!
 # Invertibility of factorials

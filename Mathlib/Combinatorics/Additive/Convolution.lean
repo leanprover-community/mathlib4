@@ -3,7 +3,11 @@ Copyright (c) 2025 Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+
+@[expose] public section
 
 /-!
 # Convolution

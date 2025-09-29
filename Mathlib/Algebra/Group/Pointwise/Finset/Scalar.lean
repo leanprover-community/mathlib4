@@ -3,9 +3,13 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+
+@[expose] public section
 
 /-!
 # Pointwise operations of finsets

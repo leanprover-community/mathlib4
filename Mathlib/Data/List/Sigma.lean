@@ -3,11 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Lookmap
-import Mathlib.Data.Sigma.Basic
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Pairwise
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Lookmap
+public import Mathlib.Data.Sigma.Basic
+
+@[expose] public section
 
 /-!
 # Utilities for lists of sigmas

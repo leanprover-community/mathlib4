@@ -3,8 +3,12 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Logic.Function.Basic
+
+@[expose] public section
 
 /-!
 # Very basic algebraic operations on pi types

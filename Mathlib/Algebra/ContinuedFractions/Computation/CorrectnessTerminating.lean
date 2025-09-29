@@ -3,12 +3,16 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 /-!
 # Correctness of Terminating Continued Fraction Computations (`GenContFract.of`)

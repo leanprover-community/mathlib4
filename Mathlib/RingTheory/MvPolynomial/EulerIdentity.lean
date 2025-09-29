@@ -3,8 +3,12 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+
+@[expose] public section
 
 /-!
 # Euler's homogeneous identity

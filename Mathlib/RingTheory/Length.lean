@@ -3,11 +3,15 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.FiniteLength
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.Order.KrullDimension
+public import Mathlib.RingTheory.FiniteLength
+
+@[expose] public section
 
 /-!
 

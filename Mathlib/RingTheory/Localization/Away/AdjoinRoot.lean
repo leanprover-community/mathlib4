@@ -3,8 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.Localization.Away.Basic
+
+@[expose] public section
 
 /-!
 The `R`-`AlgEquiv` between the localization of `R` away from `r` and

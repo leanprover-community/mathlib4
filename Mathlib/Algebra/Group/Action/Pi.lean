@@ -3,9 +3,13 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Piecewise
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Piecewise
+
+@[expose] public section
 
 /-!
 # Pi instances for multiplicative actions

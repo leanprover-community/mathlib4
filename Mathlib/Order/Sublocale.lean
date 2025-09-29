@@ -3,8 +3,12 @@ Copyright (c) 2025 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
-import Mathlib.Order.Nucleus
-import Mathlib.Order.SupClosed
+module
+
+public import Mathlib.Order.Nucleus
+public import Mathlib.Order.SupClosed
+
+@[expose] public section
 
 /-!
 # Sublocale

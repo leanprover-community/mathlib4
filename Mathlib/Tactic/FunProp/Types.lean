@@ -3,8 +3,12 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+module
+
+public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+
+@[expose] public section
 
 /-!
 ## `funProp`

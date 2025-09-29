@@ -3,9 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.DirectSum.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.DirectSum.Ring
+
+@[expose] public section
 
 /-! # Additively-graded algebra structures on `⨁ i, A i`
 

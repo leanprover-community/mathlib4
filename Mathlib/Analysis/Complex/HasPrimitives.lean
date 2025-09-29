@@ -3,8 +3,12 @@ Copyright (c) 2024 Ian Jauslin and Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Jauslin, Alex Kontorovich, Oliver Nash
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Complex.Convex
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.Convex
+
+@[expose] public section
 
 /-!
 # Primitives of Holomorphic Functions

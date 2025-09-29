@@ -3,8 +3,12 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
-import Mathlib.NumberTheory.NumberField.ClassNumber
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
+public import Mathlib.NumberTheory.NumberField.ClassNumber
+
+@[expose] public section
 
 /-!
 # Asymptotics on integral ideals of a number field

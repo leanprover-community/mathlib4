@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SetFamily.HarrisKleitman
-import Mathlib.Combinatorics.SetFamily.Intersecting
+module
+
+public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
+public import Mathlib.Combinatorics.SetFamily.Intersecting
+
+@[expose] public section
 
 /-!
 # Kleitman's bound on the size of intersecting families

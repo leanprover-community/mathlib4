@@ -3,10 +3,14 @@ Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.RingTheory.Polynomial.RationalRoot
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.RingTheory.Polynomial.RationalRoot
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Rify
+
+@[expose] public section
 
 /-! # Niven's Theorem
 

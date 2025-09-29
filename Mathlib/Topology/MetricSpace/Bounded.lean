@@ -3,12 +3,16 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.Bornology
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.MetricSpace.Defs
-import Mathlib.Topology.EMetricSpace.Diam
+module
+
+public import Mathlib.Topology.Order.Bornology
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.MetricSpace.Cauchy
+public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.EMetricSpace.Diam
+
+@[expose] public section
 
 /-!
 ## Boundedness in (pseudo)-metric spaces

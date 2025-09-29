@@ -3,7 +3,11 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
+module
+
+public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
+
+@[expose] public section
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy

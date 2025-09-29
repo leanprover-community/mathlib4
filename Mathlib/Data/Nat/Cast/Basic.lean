@@ -3,11 +3,15 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.Nat
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.Nat
+
+@[expose] public section
 
 /-!
 # Cast of natural numbers (additional theorems)

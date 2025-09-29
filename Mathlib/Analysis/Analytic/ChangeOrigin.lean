@@ -3,7 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Basic
+module
+
+public import Mathlib.Analysis.Analytic.Basic
+
+@[expose] public section
 
 /-!
 # Changing origin in a power series

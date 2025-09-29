@@ -4,10 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Rewrite
-import Batteries.Tactic.Alias
-import Lean.Elab.Binders
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Tactic.Rewrite
+public import Batteries.Tactic.Alias
+public import Lean.Elab.Binders
+
+@[expose] public section
 
 /-!
 # Additional operations on Expr and related types

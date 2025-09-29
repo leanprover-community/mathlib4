@@ -3,11 +3,15 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.GroupWithZero.Pi
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.GroupWithZero.Pi
+public import Mathlib.Tactic.Common
+
+@[expose] public section
 
 /-!
 # Pi instances for multiplicative actions with zero

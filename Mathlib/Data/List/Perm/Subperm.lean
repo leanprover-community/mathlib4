@@ -3,8 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Basic
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Basic
+
+@[expose] public section
 
 /-!
 # List Sub-permutations

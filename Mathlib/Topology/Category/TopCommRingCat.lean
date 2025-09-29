@@ -3,9 +3,13 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+@[expose] public section
 
 /-!
 # Category of topological commutative rings

@@ -3,10 +3,14 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Norm.Basic
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+module
+
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+
+@[expose] public section
 
 /-!
 # Eisenstein polynomials

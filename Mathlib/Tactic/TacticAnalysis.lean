@@ -3,11 +3,14 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Lean.Util.Heartbeats
-import Lean.Server.InfoUtils
-import Mathlib.Lean.ContextInfo
-import Mathlib.Lean.Elab.Tactic.Meta
+public import Lean.Util.Heartbeats
+public import Lean.Server.InfoUtils
+public import Mathlib.Lean.ContextInfo
+public import Mathlib.Lean.Elab.Tactic.Meta
+
+@[expose] public section
 
 /-! # Tactic analysis framework
 

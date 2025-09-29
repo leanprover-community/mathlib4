@@ -3,9 +3,13 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Module.Defs
-import Mathlib.Analysis.CStarAlgebra.Module.Synonym
-import Mathlib.Topology.MetricSpace.Bilipschitz
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Module.Defs
+public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
+public import Mathlib.Topology.MetricSpace.Bilipschitz
+
+@[expose] public section
 
 /-! # Constructions of Hilbert C⋆-modules
 

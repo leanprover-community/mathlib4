@@ -3,11 +3,15 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.LinearAlgebra.FreeAlgebra
-import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.DirectedInverseSystem
+module
+
+public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.LinearAlgebra.FreeAlgebra
+public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Order.DirectedInverseSystem
+
+@[expose] public section
 
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree

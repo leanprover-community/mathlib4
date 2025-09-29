@@ -3,9 +3,13 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.LocallyDirected
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.AlgebraicGeometry.Gluing
+module
+
+public import Mathlib.CategoryTheory.LocallyDirected
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.AlgebraicGeometry.Gluing
+
+@[expose] public section
 
 /-!
 # Locally directed covers

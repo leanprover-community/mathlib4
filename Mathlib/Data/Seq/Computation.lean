@@ -3,9 +3,13 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Tactic.Common
+
+@[expose] public section
 
 /-!
 # Coinductive formalization of unbounded computations.

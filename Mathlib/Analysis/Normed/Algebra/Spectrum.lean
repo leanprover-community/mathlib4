@@ -3,12 +3,16 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-import Mathlib.Topology.Algebra.Module.CharacterSpace
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.Topology.Algebra.Module.CharacterSpace
+
+@[expose] public section
 
 /-!
 # The spectrum of elements in a complete normed algebra

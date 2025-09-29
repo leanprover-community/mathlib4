@@ -3,11 +3,15 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
-import Mathlib.GroupTheory.GroupAction.Basic
+module
+
+public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Limits.FintypeCat
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
+public import Mathlib.GroupTheory.GroupAction.Basic
+
+@[expose] public section
 
 /-!
 # Galois objects in Galois categories

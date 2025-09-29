@@ -3,9 +3,13 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Order.Interval.Basic
-import Mathlib.Data.Prod.Lex
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Order.Interval.Basic
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Tactic.FastInstance
+
+@[expose] public section
 /-!
 # The lexicographic order on intervals
 

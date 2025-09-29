@@ -3,12 +3,16 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.RingTheory.Finiteness.Nilpotent
-import Mathlib.Data.Int.Interval
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Algebra.DirectSum.LinearMap
+public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.RingTheory.Finiteness.Nilpotent
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Order.Filter.Cofinite
+
+@[expose] public section
 
 /-!
 # Chains of roots and weights

@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.HomEquiv
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.CategoryTheory.Localization.HomEquiv
+public import Mathlib.Logic.Small.Defs
+
+@[expose] public section
 
 /-!
 # Shrinking morphisms in localized categories

@@ -3,7 +3,11 @@ Copyright (c) 2022 Evan Lohn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Lohn, Mario Carneiro
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
+
+@[expose] public section
 
 /-!
 # The `substs` macro

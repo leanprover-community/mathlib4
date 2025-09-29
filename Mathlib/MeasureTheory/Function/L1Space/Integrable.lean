@@ -3,9 +3,13 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
-import Mathlib.MeasureTheory.Function.LpOrder
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
+public import Mathlib.MeasureTheory.Function.LpOrder
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+
+@[expose] public section
 
 /-!
 # Integrable functions

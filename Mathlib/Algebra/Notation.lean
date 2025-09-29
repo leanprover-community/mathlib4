@@ -3,8 +3,12 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.ToAdditive
+
+@[expose] public section
 
 /-!
 # Notations for operations involving order and algebraic structure

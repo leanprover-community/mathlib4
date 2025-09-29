@@ -3,11 +3,15 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Tactic.Exact
-import Batteries.Tactic.Init
-import Mathlib.Logic.Basic
-import Mathlib.Util.AtomM
-import Qq
+module
+
+public import Batteries.Tactic.Exact
+public import Batteries.Tactic.Init
+public import Mathlib.Logic.Basic
+public import Mathlib.Util.AtomM
+public import Qq
+
+@[expose] public section
 
 /-!
 

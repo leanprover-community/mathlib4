@@ -3,8 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+
+@[expose] public section
 
 /-!
 # Extension of a functor from `Set.Iic j` to `Set.Iic (Order.succ j)`

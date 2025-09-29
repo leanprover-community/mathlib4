@@ -3,8 +3,11 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Sets.Opens
+
+@[expose] public section
 
 /-!
 # Open covers

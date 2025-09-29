@@ -3,8 +3,12 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+module
+
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+
+@[expose] public section
 
 /-! # Restriction of the continuous functional calculus to a scalar subring
 

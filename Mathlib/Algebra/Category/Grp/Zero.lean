@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+
+@[expose] public section
 
 /-!
 # The category of (commutative) (additive) groups has a zero object.

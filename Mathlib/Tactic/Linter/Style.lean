@@ -3,13 +3,16 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Lean.Elab.Command
-import Lean.Server.InfoUtils
+public import Lean.Elab.Command
+public import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
-import Mathlib.Tactic.DeclarationNames
+public import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.DeclarationNames
+
+@[expose] public section
 
 /-!
 ## Style linters

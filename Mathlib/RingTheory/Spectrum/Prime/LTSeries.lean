@@ -3,7 +3,11 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu
 -/
-import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+module
+
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+
+@[expose] public section
 
 /-!
 # Lemmas about `LTSeries` in the prime spectrum

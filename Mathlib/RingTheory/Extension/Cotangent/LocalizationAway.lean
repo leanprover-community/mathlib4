@@ -3,7 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Basic
+
+@[expose] public section
 
 /-!
 # Cotangent and localization away

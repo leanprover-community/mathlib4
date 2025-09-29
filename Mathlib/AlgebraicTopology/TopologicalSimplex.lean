@@ -3,10 +3,14 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Adam Topaz
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.Topology.Category.TopCat.ULift
-import Mathlib.Topology.Connected.PathConnected
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.Topology.Category.TopCat.ULift
+public import Mathlib.Topology.Connected.PathConnected
+
+@[expose] public section
 
 /-!
 # Topological simplices

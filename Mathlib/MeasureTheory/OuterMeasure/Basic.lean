@@ -3,11 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Order.Disjointed
-import Mathlib.MeasureTheory.OuterMeasure.Defs
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Data.Countable.Basic
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Order.Disjointed
+public import Mathlib.MeasureTheory.OuterMeasure.Defs
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+
+@[expose] public section
 
 /-!
 # Outer Measures

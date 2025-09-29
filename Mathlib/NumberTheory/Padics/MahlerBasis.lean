@@ -3,14 +3,18 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Giulio Caflisch, David Loeffler
 -/
-import Mathlib.Algebra.Group.ForwardDiff
-import Mathlib.Analysis.Normed.Group.Ultra
-import Mathlib.NumberTheory.Padics.ProperSpace
-import Mathlib.RingTheory.Binomial
-import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
-import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
+module
+
+public import Mathlib.Algebra.Group.ForwardDiff
+public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.NumberTheory.Padics.ProperSpace
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+public import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
+
+@[expose] public section
 
 /-!
 # The Mahler basis of continuous functions

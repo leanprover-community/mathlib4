@@ -3,7 +3,11 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Util.AtomM
+module
+
+public import Mathlib.Util.AtomM
+
+@[expose] public section
 
 /-!
 # Running `AtomM` metaprograms recursively

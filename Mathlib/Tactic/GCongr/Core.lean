@@ -3,12 +3,16 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Lean
-import Batteries.Lean.Except
-import Batteries.Tactic.Exact
-import Mathlib.Lean.Elab.Term
-import Mathlib.Tactic.GCongr.ForwardAttr
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Lean
+public import Batteries.Lean.Except
+public import Batteries.Tactic.Exact
+public import Mathlib.Lean.Elab.Term
+public import Mathlib.Tactic.GCongr.ForwardAttr
+public import Mathlib.Order.Defs.Unbundled
+
+@[expose] public section
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.TotalComplex
+module
+
+public import Mathlib.Algebra.Homology.TotalComplex
+
+@[expose] public section
 
 /-! The symmetry of the total complex of a bicomplex
 

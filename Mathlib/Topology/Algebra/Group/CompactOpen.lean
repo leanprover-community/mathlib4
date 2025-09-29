@@ -3,11 +3,15 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Equicontinuity
-import Mathlib.Topology.Algebra.Group.Compact
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.UniformSpace.Ascoli
+module
+
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Equicontinuity
+public import Mathlib.Topology.Algebra.Group.Compact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.UniformSpace.Ascoli
+
+@[expose] public section
 
 /-!
 # The compact-open topology on continuous monoid morphisms.

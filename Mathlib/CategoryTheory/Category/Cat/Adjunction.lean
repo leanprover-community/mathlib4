@@ -3,9 +3,13 @@ Copyright (c) 2024 Nicolas Rolland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolas Rolland
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.ConnectedComponents
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.ConnectedComponents
+
+@[expose] public section
 
 /-!
 # Adjunctions related to Cat, the category of categories

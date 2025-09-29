@@ -3,10 +3,14 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Ultraproducts
-import Mathlib.ModelTheory.Bundled
-import Mathlib.ModelTheory.Skolem
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.ModelTheory.Ultraproducts
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.ModelTheory.Skolem
+public import Mathlib.Order.Filter.AtTopBot.Basic
+
+@[expose] public section
 
 /-!
 # First-Order Satisfiability

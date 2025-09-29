@@ -3,9 +3,13 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Matrix.StdBasis
-import Mathlib.RingTheory.Finiteness.Cardinality
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Matrix.StdBasis
+public import Mathlib.RingTheory.Finiteness.Cardinality
+
+@[expose] public section
 
 /-!
 # Finite and free modules

@@ -3,9 +3,13 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Martingale.BorelCantelli
-import Mathlib.Probability.ConditionalExpectation
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.Probability.Martingale.BorelCantelli
+public import Mathlib.Probability.ConditionalExpectation
+public import Mathlib.Probability.Independence.Basic
+
+@[expose] public section
 
 /-!
 

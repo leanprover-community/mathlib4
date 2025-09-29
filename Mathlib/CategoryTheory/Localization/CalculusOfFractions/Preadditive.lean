@@ -3,10 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+@[expose] public section
 
 /-!
 # The preadditive category structure on the localized category

@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Topology.Instances.Int
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Topology.Instances.Int
+
+@[expose] public section
 
 /-!
 # Topology on the natural numbers

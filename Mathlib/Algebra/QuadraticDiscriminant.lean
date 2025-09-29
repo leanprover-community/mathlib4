@@ -3,10 +3,14 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Linarith.Frontend
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Field
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Linarith.Frontend
+
+@[expose] public section
 
 /-!
 # Quadratic discriminants and roots of a quadratic

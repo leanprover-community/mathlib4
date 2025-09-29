@@ -3,7 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Data.Real.Sqrt
+
+@[expose] public section
 
 /-! # `norm_num` extension for `Real.sqrt`
 

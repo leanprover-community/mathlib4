@@ -3,8 +3,12 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Tactic.NormNum
+
+@[expose] public section
 
 /-! # `norm_num` extensions for factorials
 

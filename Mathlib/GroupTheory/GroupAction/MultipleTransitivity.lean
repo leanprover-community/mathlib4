@@ -3,11 +3,14 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-import Mathlib.SetTheory.Cardinal.Embedding
-import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+public import Mathlib.SetTheory.Cardinal.Embedding
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+@[expose] public section
 
 /-! # Multiple transitivity
 

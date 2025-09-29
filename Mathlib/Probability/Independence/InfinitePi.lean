@@ -3,8 +3,12 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.ProductMeasure
+module
+
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.ProductMeasure
+
+@[expose] public section
 
 /-!
 # Random variables are independent iff their joint distribution is the product measure.

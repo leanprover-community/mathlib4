@@ -3,8 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.FieldTheory.Separable
+
+@[expose] public section
 
 /-! # Instances on residue fields -/
 

@@ -3,7 +3,11 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Translations
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Translations
+
+@[expose] public section
 
 /-!
 # Recurrence Lemmas for the Continuants (`conts`) Function of Continued Fractions

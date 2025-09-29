@@ -3,11 +3,15 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.CoverLifting
-import Mathlib.CategoryTheory.Sites.CoverPreserving
-import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Connected
+module
+
+public import Mathlib.CategoryTheory.Sites.CoverLifting
+public import Mathlib.CategoryTheory.Sites.CoverPreserving
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
+
+@[expose] public section
 
 /-! Localization
 

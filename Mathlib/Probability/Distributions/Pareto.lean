@@ -3,9 +3,13 @@ Copyright (c) 2024 Alvan Caleb Arulandu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alvan Caleb Arulandu
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.CDF
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+
+@[expose] public section
 
 /-! # Pareto distributions over ℝ
 

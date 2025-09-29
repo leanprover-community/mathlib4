@@ -3,7 +3,11 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Basic
+module
+
+public import Mathlib.Analysis.Meromorphic.Basic
+
+@[expose] public section
 
 /-!
 # Principles of Isolated Zeros and Identity Principles for Meromorphic Functions

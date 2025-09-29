@@ -3,9 +3,12 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
+module
 
-import Mathlib.Init
-import Lean.Util.Path
+public import Mathlib.Init
+public import Lean.Util.Path
+
+@[expose] public section
 
 /-!
 # Utility functions for finding all `.lean` files or modules in a project.

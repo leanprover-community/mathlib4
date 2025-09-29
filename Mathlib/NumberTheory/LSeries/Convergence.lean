@@ -3,8 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.EReal.Basic
-import Mathlib.NumberTheory.LSeries.Basic
+module
+
+public import Mathlib.Data.EReal.Basic
+public import Mathlib.NumberTheory.LSeries.Basic
+
+@[expose] public section
 
 /-!
 # Convergence of L-series

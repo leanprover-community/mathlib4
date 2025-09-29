@@ -3,9 +3,13 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.LinearAlgebra.Matrix.MvPolynomial
-import Mathlib.LinearAlgebra.Matrix.Polynomial
+module
+
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
+public import Mathlib.LinearAlgebra.Matrix.Polynomial
+
+@[expose] public section
 
 /-!
 # Cramer's rule and adjugate matrices

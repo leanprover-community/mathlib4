@@ -3,7 +3,11 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Basic
+
+@[expose] public section
 
 /-!
 # Linear locally finite orders are densely ordered iff they are trivial

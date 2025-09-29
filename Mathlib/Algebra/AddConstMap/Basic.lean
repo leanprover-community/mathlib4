@@ -3,10 +3,14 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.Archimedean.Basic
+
+@[expose] public section
 
 /-!
 # Maps (semi)conjugating a shift to a shift

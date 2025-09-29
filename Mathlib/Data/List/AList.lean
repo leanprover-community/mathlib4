@@ -3,7 +3,11 @@ Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 -/
-import Mathlib.Data.List.Sigma
+module
+
+public import Mathlib.Data.List.Sigma
+
+@[expose] public section
 
 /-!
 # Association Lists

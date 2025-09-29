@@ -3,9 +3,12 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
+module
 
-import Mathlib.Analysis.Normed.Field.Ultra
-import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Field.Ultra
+public import Mathlib.Analysis.Normed.Module.Basic
+
+@[expose] public section
 
 /-!
 # Normed algebra preserves ultrametricity

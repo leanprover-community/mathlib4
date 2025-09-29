@@ -3,9 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Localization.NumDen
-import Mathlib.RingTheory.Polynomial.ScaleRoots
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
+
+@[expose] public section
 
 /-!
 # Rational root theorem and integral root theorem

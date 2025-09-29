@@ -3,9 +3,13 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Sums.Basic
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Sums.Basic
+public import Mathlib.CategoryTheory.Products.Basic
+
+@[expose] public section
 
 /-! # Sums and products of discrete categories.
 

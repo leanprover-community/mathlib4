@@ -3,12 +3,16 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Batteries.Data.List.Pairwise
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.TakeWhile
-import Mathlib.Order.Fin.Basic
+module
+
+public import Batteries.Data.List.Pairwise
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.TakeWhile
+public import Mathlib.Order.Fin.Basic
+
+@[expose] public section
 
 /-!
 # Sorting algorithms on lists

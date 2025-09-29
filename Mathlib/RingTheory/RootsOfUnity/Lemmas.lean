@@ -3,7 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.FieldTheory.KummerExtension
+module
+
+public import Mathlib.FieldTheory.KummerExtension
+
+@[expose] public section
 
 /-!
 # More results on primitive roots of unity

@@ -3,8 +3,12 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+module
+
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+
+@[expose] public section
 
 /-!
 # Lemma about subtraction in ordered monoids with a top element adjoined.

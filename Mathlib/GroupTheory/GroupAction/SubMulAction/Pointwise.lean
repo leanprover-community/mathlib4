@@ -3,8 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+
+@[expose] public section
 
 /-!
 # Pointwise monoid structures on SubMulAction

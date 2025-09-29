@@ -3,10 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Malo Jaffré
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Linarith
+
+@[expose] public section
 
 /-!
 # Slopes of convex functions

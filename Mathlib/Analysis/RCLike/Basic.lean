@@ -3,14 +3,18 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Algebra.Field
-import Mathlib.Algebra.BigOperators.Balance
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Ring.Finite
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Algebra.Algebra.Field
+public import Mathlib.Algebra.BigOperators.Balance
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Ring.Finite
+public import Mathlib.Data.Real.Sqrt
+
+@[expose] public section
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ

@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.Hom.Order
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Order.Hom.Order
+public import Mathlib.Order.OmegaCompletePartialOrder
+
+@[expose] public section
 
 /-!
 # Fixed point construction on complete lattices

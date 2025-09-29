@@ -3,9 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Filter.IsBounded
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.Filter.IsBounded
+public import Mathlib.Order.Hom.CompleteLattice
+
+@[expose] public section
 
 /-!
 # liminfs and limsups of functions and filters

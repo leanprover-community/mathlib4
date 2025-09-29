@@ -3,9 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+
+@[expose] public section
 
 /-!
 # Infinite sum in the reals

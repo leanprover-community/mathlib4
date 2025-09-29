@@ -3,13 +3,17 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
-import Mathlib.MeasureTheory.Function.FactorsThrough
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
-import Mathlib.Probability.Kernel.Composition.IntegralCompProd
-import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
-import Mathlib.Probability.Kernel.SetIntegral
+module
+
+public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
+public import Mathlib.MeasureTheory.Function.FactorsThrough
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
+public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
+public import Mathlib.Probability.Kernel.SetIntegral
+
+@[expose] public section
 
 /-!
 # Ionescu-Tulcea theorem

@@ -3,8 +3,12 @@ Copyright (c) 2022 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Rfl
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Tactic.Rfl
+
+@[expose] public section
 
 /-!
 # `Lean.MVarId.liftReflToEq`

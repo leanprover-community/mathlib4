@@ -3,10 +3,14 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Data.Set.NAry
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Data.Set.NAry
+
+@[expose] public section
 
 /-!
 # Pointwise scalar operations of sets

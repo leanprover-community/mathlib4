@@ -3,9 +3,13 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Nat.Sqrt
+module
+
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Nat.Sqrt
+
+@[expose] public section
 
 /-!
 # `IsSquare` and `Even` for natural numbers

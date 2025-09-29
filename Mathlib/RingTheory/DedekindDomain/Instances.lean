@@ -3,9 +3,13 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.DedekindDomain.PID
-import Mathlib.FieldTheory.Separable
-import Mathlib.RingTheory.RingHom.Finite
+module
+
+public import Mathlib.RingTheory.DedekindDomain.PID
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.RingHom.Finite
+
+@[expose] public section
 
 /-!
 # Instances for Dedekind domains

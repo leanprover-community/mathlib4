@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.LatticeIntervals
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.SuccPred.Basic
+
+@[expose] public section
 
 /-!
 # Successors in intervals

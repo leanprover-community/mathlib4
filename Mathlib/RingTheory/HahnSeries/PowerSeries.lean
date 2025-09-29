@@ -3,10 +3,14 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.HahnSeries.Multiplication
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.Data.Finsupp.PWO
+module
+
+public import Mathlib.RingTheory.HahnSeries.Multiplication
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+public import Mathlib.Data.Finsupp.PWO
+
+@[expose] public section
 
 /-!
 # Comparison between Hahn series and power series

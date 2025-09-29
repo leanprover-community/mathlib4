@@ -3,10 +3,14 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.MinimalAxioms
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.Normed.Operator.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Algebra.Module.MinimalAxioms
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+
+@[expose] public section
 
 /-!
 # Inheritance of normed algebraic structures by bounded continuous functions

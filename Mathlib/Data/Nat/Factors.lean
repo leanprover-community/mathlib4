@@ -3,12 +3,16 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.List.Prime
-import Mathlib.Data.List.Sort
-import Mathlib.Data.List.Perm.Subperm
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.List.Prime
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.List.Perm.Subperm
+
+@[expose] public section
 
 /-!
 # Prime numbers

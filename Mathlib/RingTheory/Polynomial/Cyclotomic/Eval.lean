@@ -3,11 +3,15 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.Tactic.ByContra
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
-import Mathlib.Analysis.Complex.Arg
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.Tactic.ByContra
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+public import Mathlib.Analysis.Complex.Arg
+
+@[expose] public section
 
 /-!
 # Evaluating cyclotomic polynomials

@@ -4,7 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Submodule.Range
+module
+
+public import Mathlib.Algebra.Module.Submodule.Range
+
+@[expose] public section
 
 /-! ### Linear equivalences involving submodules -/
 

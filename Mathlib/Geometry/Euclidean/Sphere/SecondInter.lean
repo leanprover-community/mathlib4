@@ -3,7 +3,11 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+module
+
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
+
+@[expose] public section
 
 /-!
 # Second intersection of a sphere and a line

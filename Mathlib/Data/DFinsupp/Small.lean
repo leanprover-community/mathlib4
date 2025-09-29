@@ -3,9 +3,13 @@ Copyright (c) 2025 Sophie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.Data.Finsupp.ToDFinsupp
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Logic.Small.Basic
+
+@[expose] public section
 
 /-!
 # Smallness of the `DFinsupp` type

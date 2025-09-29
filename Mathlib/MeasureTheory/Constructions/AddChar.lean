@@ -3,8 +3,12 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
+module
+
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+
+@[expose] public section
 
 /-!
 # Measurable space instance for additive characters

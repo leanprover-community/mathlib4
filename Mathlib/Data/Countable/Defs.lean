@@ -3,10 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Subtype
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.MkIffOfInductiveProp
+
+@[expose] public section
 
 /-!
 # Countable and uncountable types

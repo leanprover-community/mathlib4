@@ -3,11 +3,15 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.Algebra.Quotient
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Quotient
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+
+@[expose] public section
 
 /-!
 # Cosets

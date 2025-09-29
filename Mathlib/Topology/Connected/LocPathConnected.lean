@@ -3,8 +3,12 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Ben Eltschig
 -/
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.AlexandrovDiscrete
+module
+
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.AlexandrovDiscrete
+
+@[expose] public section
 
 /-!
 # Locally path-connected spaces

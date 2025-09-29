@@ -3,10 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Irreducible.Defs
-import Mathlib.Algebra.Group.Units.Equiv
+module
+
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Irreducible.Defs
+public import Mathlib.Algebra.Group.Units.Equiv
+
+@[expose] public section
 
 /-!
 # More lemmas about irreducible elements

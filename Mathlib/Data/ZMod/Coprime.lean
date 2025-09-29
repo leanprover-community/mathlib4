@@ -3,11 +3,15 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
+
+@[expose] public section
 
 /-!
 # Coprimality and vanishing

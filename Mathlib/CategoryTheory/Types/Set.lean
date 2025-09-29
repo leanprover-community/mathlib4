@@ -3,9 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Data.Set.Basic
+
+@[expose] public section
 
 /-!
 # The functor from `Set X` to types

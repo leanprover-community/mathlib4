@@ -3,8 +3,12 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Colimit.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+module
+
+public import Mathlib.Algebra.Colimit.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+
+@[expose] public section
 
 /-!
 # Tensor product with direct limit of finitely generated submodules

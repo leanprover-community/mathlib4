@@ -3,8 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.CategoryTheory.Monoidal.Grp_
+module
+
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.CategoryTheory.Monoidal.Grp_
+
+@[expose] public section
 
 /-!
 # Yoneda embedding of `Grp_ C`

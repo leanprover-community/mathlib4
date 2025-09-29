@@ -3,10 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Evaluation
-import Mathlib.RingTheory.PowerSeries.PiTopology
-import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.MvPowerSeries.Evaluation
+public import Mathlib.RingTheory.PowerSeries.PiTopology
+public import Mathlib.Algebra.MvPolynomial.Equiv
+
+@[expose] public section
 
 /-! # Evaluation of power series
 

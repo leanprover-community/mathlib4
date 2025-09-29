@@ -3,9 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Order.Atoms
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import Mathlib.Order.Atoms
+
+@[expose] public section
 
 /-! # Simple rings
 

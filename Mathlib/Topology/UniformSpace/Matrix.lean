@@ -3,9 +3,13 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Heather Macbeth
 -/
-import Mathlib.LinearAlgebra.Matrix.Defs
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.UniformSpace.Pi
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.UniformSpace.Pi
+
+@[expose] public section
 
 /-!
 # Uniform space structure on matrices

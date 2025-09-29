@@ -3,12 +3,16 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Algebra.Notation.Prod
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Algebra.Notation.Prod
+
+@[expose] public section
 
 /-!
 # (Semi)ring equivs

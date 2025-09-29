@@ -3,8 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.CompHausLike.Limits
-import Mathlib.Topology.Category.LightProfinite.Basic
+module
+
+public import Mathlib.Topology.Category.CompHausLike.Limits
+public import Mathlib.Topology.Category.LightProfinite.Basic
+
+@[expose] public section
 /-!
 
 # Explicit limits and colimits

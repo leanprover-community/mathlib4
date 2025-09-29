@@ -3,9 +3,12 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Patrick Massot
 -/
+module
 
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Order.LocalExtr
+
+@[expose] public section
 
 /-!
 # Local maxima from monotonicity and antitonicity

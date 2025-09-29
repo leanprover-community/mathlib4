@@ -3,9 +3,13 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.VectorField.LieBracket
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.VectorField.LieBracket
+
+@[expose] public section
 
 /-!
 # The Lie algebra of a Lie group

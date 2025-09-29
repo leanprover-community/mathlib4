@@ -3,7 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
+
+@[expose] public section
 
 /-!
 # The “almost everywhere” filter of co-null sets.

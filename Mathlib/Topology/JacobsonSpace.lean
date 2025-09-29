@@ -3,9 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Tactic.StacksAttribute
+
+@[expose] public section
 
 /-!
 

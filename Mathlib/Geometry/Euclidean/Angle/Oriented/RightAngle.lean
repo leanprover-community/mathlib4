@@ -3,8 +3,12 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+
+@[expose] public section
 
 /-!
 # Oriented angles in right-angled triangles.

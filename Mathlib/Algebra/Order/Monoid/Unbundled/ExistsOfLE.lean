@@ -3,8 +3,12 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.MinMax
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Order.MinMax
+
+@[expose] public section
 
 /-!
 # Unbundled and weaker forms of canonically ordered monoids

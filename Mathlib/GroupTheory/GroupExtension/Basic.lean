@@ -3,11 +3,14 @@ Copyright (c) 2024 Yudai Yamazaki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yudai Yamazaki
 -/
+module
 
-import Mathlib.GroupTheory.GroupExtension.Defs
-import Mathlib.GroupTheory.SemidirectProduct
-import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.Tactic.Group
+public import Mathlib.GroupTheory.GroupExtension.Defs
+public import Mathlib.GroupTheory.SemidirectProduct
+public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.Tactic.Group
+
+@[expose] public section
 
 /-!
 # Basic lemmas about group extensions

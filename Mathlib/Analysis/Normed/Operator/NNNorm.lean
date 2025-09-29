@@ -3,8 +3,12 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.Normed.Operator.Basic
-import Mathlib.Analysis.Normed.Module.RCLike.Real
+module
+
+public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+
+@[expose] public section
 
 /-!
 # Operator norm as an `NNNorm`

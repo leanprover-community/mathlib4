@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies, David Loeffler
 -/
-import Mathlib.Order.PartialSups
-import Mathlib.Order.Interval.Finset.Fin
+module
+
+public import Mathlib.Order.PartialSups
+public import Mathlib.Order.Interval.Finset.Fin
+
+@[expose] public section
 
 /-!
 # Making a sequence disjoint

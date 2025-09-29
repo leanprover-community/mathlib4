@@ -3,15 +3,19 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Logic.Equiv.Fin.Rotate
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Module
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Logic.Equiv.Fin.Rotate
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.NoncommRing
+
+@[expose] public section
 
 /-!
 # Linear independence

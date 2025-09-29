@@ -3,12 +3,16 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.RingTheory.FractionalIdeal.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Basic
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Tactic.FieldSimp
+
+@[expose] public section
 
 /-!
 # More operations on fractional ideals

@@ -3,7 +3,11 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.Logic.Small.Defs
+
+@[expose] public section
 
 /-!
 # UnivLE

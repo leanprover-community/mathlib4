@@ -3,8 +3,12 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Function.SimpleFunc
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFunc
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+
+@[expose] public section
 
 /-!
 # Density of simple functions

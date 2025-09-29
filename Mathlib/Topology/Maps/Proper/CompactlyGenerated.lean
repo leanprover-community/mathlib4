@@ -3,8 +3,12 @@ Copyright (c) 2024 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-import Mathlib.Topology.Maps.Proper.Basic
+module
+
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.Topology.Maps.Proper.Basic
+
+@[expose] public section
 
 /-!
 # A map is proper iff preimage of compact sets are compact

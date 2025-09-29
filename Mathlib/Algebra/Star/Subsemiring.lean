@@ -3,8 +3,12 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Star.NonUnitalSubsemiring
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.Star.NonUnitalSubsemiring
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
+
+@[expose] public section
 
 /-!
 # Star subrings

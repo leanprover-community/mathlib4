@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Minimal
-import Mathlib.Order.UpperLower.Principal
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Minimal
+public import Mathlib.Order.UpperLower.Principal
+
+@[expose] public section
 
 /-!
 # Upper and lower closures

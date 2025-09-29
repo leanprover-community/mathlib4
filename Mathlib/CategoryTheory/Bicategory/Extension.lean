@@ -3,8 +3,12 @@ Copyright (c) 2023 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+
+@[expose] public section
 
 /-!
 # Extensions and lifts in bicategories

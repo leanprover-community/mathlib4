@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.EReal.Basic
-import Mathlib.Topology.Order.T5
+module
+
+public import Mathlib.Data.EReal.Basic
+public import Mathlib.Topology.Order.T5
+
+@[expose] public section
 
 /-!
 # The reals are equipped with their order topology

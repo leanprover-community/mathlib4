@@ -3,9 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.FieldTheory.Finite.Polynomial
-import Mathlib.NumberTheory.Basic
-import Mathlib.RingTheory.WittVector.WittPolynomial
+module
+
+public import Mathlib.FieldTheory.Finite.Polynomial
+public import Mathlib.NumberTheory.Basic
+public import Mathlib.RingTheory.WittVector.WittPolynomial
+
+@[expose] public section
 
 /-!
 # Witt structure polynomials

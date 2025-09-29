@@ -3,9 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Fintype.Vector
-import Mathlib.Data.Multiset.Sym
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Fintype.Vector
+public import Mathlib.Data.Multiset.Sym
+
+@[expose] public section
 
 /-!
 # Symmetric powers of a finset

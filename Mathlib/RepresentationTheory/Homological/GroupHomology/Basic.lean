@@ -3,11 +3,15 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.RepresentationTheory.Coinvariants
-import Mathlib.RepresentationTheory.Homological.Resolution
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.CategoryTheory.Abelian.LeftDerived
+module
+
+public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.RepresentationTheory.Coinvariants
+public import Mathlib.RepresentationTheory.Homological.Resolution
+public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.CategoryTheory.Abelian.LeftDerived
+
+@[expose] public section
 
 /-!
 # The group homology of a `k`-linear `G`-representation

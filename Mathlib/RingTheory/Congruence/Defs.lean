@@ -3,10 +3,14 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Tactic.FastInstance
+
+@[expose] public section
 
 /-!
 # Congruence relations on rings

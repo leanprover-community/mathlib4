@@ -3,8 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Lemma
+module
+
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
+
+@[expose] public section
 
 /-!
 # Coequalizer of a pair of functions

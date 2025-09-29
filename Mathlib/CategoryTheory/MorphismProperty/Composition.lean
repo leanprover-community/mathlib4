@@ -3,7 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+
+@[expose] public section
 
 /-!
 # Compatibilities of properties of morphisms with respect to composition

@@ -4,10 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Data.Set.Function
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Algebra.Group.Units.Hom
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Data.Set.Function
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Algebra.Group.Units.Hom
+
+@[expose] public section
 
 /-!
 # Pointwise actions of equivariant maps

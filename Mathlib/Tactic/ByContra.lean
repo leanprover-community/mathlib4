@@ -3,8 +3,12 @@ Copyright (c) 2022 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Batteries.Tactic.Init
-import Mathlib.Tactic.Push
+module
+
+public import Batteries.Tactic.Init
+public import Mathlib.Tactic.Push
+
+@[expose] public section
 
 /-!
 # The `by_contra` tactic

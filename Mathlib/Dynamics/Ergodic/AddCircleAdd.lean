@@ -3,9 +3,13 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.Action.OfMinimal
-import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+module
+
+public import Mathlib.Dynamics.Ergodic.Action.OfMinimal
+public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+
+@[expose] public section
 
 /-!
 # Ergodicity of an irrational rotation

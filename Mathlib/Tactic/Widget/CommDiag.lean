@@ -3,9 +3,13 @@ Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki
 -/
-import ProofWidgets.Component.PenroseDiagram
-import ProofWidgets.Presentation.Expr
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public import ProofWidgets.Component.PenroseDiagram
+public import ProofWidgets.Presentation.Expr
+public import Mathlib.CategoryTheory.Category.Basic
+
+@[expose] public section
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/

@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Monotone.Monovary
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Order.Monotone.Monovary
+public import Mathlib.SetTheory.Cardinal.Order
+
+@[expose] public section
 
 /-!
 # Interpreting monovarying functions as monotone functions

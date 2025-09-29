@@ -3,7 +3,11 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Data.PNat.Basic
+
+@[expose] public section
 
 /-!
 # `pnat_to_nat`

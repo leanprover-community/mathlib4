@@ -3,10 +3,14 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Hom
-import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.Data.ULift
-import Mathlib.Logic.Function.ULift
+module
+
+public import Mathlib.CategoryTheory.Functor.Hom
+public import Mathlib.CategoryTheory.Products.Basic
+public import Mathlib.Data.ULift
+public import Mathlib.Logic.Function.ULift
+
+@[expose] public section
 
 /-!
 # The Yoneda embedding

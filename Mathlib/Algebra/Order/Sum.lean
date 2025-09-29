@@ -3,8 +3,12 @@ Copyright (c) 2024 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Order.Basic
+
+@[expose] public section
 
 /-!
 # Interaction between `Sum.elim`, `≤`, and `0` or `1`

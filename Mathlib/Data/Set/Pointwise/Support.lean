@@ -3,8 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Notation.Support
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Notation.Support
+
+@[expose] public section
 
 /-!
 # Support of a function composed with a scalar action

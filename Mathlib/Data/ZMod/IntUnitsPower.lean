@@ -3,9 +3,13 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.Data.ZMod.Basic
+
+@[expose] public section
 
 /-!
 # The power operator on `ℤˣ` by `ZMod 2`, `ℕ`, and `ℤ`

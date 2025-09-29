@@ -3,7 +3,11 @@ Copyright (c) 2024 Yaël Dillies, Kalle Kytölä, Kin Yau James Wong. All rights
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kalle Kytölä, Kin Yau James Wong
 -/
-import Mathlib.Probability.Kernel.Composition.CompNotation
+module
+
+public import Mathlib.Probability.Kernel.Composition.CompNotation
+
+@[expose] public section
 
 /-!
 # Proper kernels

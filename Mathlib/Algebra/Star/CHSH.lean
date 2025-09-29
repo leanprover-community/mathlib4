@@ -3,11 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Real.Star
+module
+
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Data.Real.Star
+
+@[expose] public section
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.

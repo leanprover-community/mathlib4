@@ -3,10 +3,14 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Patrick Massot, Floris van Doorn, Jireh Loreaux, Eric Wieser
 -/
-import Mathlib.Topology.Order.OrderClosedExtr
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
+module
+
+public import Mathlib.Topology.Order.OrderClosedExtr
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Ordered
+
+@[expose] public section
 
 /-!
 # The First-Derivative Test

@@ -3,9 +3,13 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-import Mathlib.Condensed.Functors
-import Mathlib.Condensed.Limits
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.Condensed.Functors
+public import Mathlib.Condensed.Limits
+
+@[expose] public section
 
 /-!
 

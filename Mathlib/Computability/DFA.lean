@@ -3,10 +3,14 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Chris Wong
 -/
-import Mathlib.Computability.Language
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Computability.Language
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Tactic.NormNum
+
+@[expose] public section
 
 /-!
 # Deterministic Finite Automata

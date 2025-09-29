@@ -3,9 +3,12 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.MinimalAxioms
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.MinimalAxioms
+
+@[expose] public section
 
 /-!
 # Minimal Axioms for a Field

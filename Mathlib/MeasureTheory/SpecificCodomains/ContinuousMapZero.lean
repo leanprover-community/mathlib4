@@ -3,8 +3,12 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
-import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
+module
+
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
+
+@[expose] public section
 
 /-!
 # Specific results about `ContinuousMapZero`-valued integration

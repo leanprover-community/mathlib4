@@ -3,9 +3,13 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fin.Rev
-import Mathlib.Data.Nat.Find
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Data.Fin.Rev
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.Fin.Basic
+
+@[expose] public section
 
 /-!
 # Operation on tuples

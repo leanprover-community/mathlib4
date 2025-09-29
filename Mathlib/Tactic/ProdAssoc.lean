@@ -3,8 +3,12 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Lean.Expr.Basic
+public import Mathlib.Logic.Equiv.Defs
+
+@[expose] public section
 
 /-!
 # Associativity of products

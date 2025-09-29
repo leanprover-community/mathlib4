@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.NNRat.Order
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.Nat
+module
+
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Nat
+
+@[expose] public section
 
 /-!
 # Topology on the rational numbers

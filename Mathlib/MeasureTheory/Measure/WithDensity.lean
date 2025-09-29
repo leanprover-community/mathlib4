@@ -3,10 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Analysis.LConvolution
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.Analysis.LConvolution
+
+@[expose] public section
 
 /-!
 # Measure with a given density with respect to another measure

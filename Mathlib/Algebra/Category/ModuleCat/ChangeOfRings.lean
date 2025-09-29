@@ -3,13 +3,17 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.CategoryTheory.Adjunction.Mates
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+
+@[expose] public section
 
 /-!
 # Change Of Rings

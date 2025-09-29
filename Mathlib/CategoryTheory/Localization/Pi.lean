@@ -3,9 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Prod
-import Mathlib.CategoryTheory.Localization.Equivalence
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.CategoryTheory.Localization.Prod
+public import Mathlib.CategoryTheory.Localization.Equivalence
+public import Mathlib.Data.Fintype.Option
+
+@[expose] public section
 
 /-!
 # Localization of product categories

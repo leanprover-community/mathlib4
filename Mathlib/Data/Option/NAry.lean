@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Batteries.Tactic.Init
-import Mathlib.Logic.Function.Defs
+module
+
+public import Batteries.Tactic.Init
+public import Mathlib.Logic.Function.Defs
+
+@[expose] public section
 
 /-!
 # Binary map of options

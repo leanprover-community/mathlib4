@@ -3,7 +3,11 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, David Loeffler
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
+
+@[expose] public section
 
 /-!
 # Vertical line test for group homs

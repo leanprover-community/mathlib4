@@ -3,11 +3,15 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Data.PNat.Prime
-import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.Data.Multiset.Sort
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Data.PNat.Prime
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Data.Multiset.Sort
+
+@[expose] public section
 
 /-!
 # Prime factors of nonzero naturals

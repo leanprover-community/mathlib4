@@ -3,13 +3,17 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Tree.Basic
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Util.SynthesizeUsing
-import Mathlib.Util.Qq
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Tree.Basic
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Util.Qq
+
+@[expose] public section
 
 /-!
 # A tactic for canceling numeric denominators

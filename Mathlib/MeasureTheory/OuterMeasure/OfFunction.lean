@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Operations
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.Operations
+public import Mathlib.Analysis.SpecificLimits.Basic
+
+@[expose] public section
 
 /-!
 # Outer measures from functions

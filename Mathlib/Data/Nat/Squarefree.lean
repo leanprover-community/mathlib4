@@ -3,11 +3,15 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.NumberTheory.Divisors
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+
+@[expose] public section
 
 /-!
 # Lemmas about squarefreeness of natural numbers

@@ -3,9 +3,13 @@ Copyright (c) 2023 Claus Clausen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Claus Clausen, Patrick Massot
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Probability.Distributions.Gamma
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.CDF
+public import Mathlib.Probability.Distributions.Gamma
+
+@[expose] public section
 
 /-! # Exponential distributions over ℝ
 

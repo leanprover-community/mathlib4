@@ -3,9 +3,12 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Paul Lezeau
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
-import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.Functor.Const
+
+@[expose] public section
 
 /-!
 

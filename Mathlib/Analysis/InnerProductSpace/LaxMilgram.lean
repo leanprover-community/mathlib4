@@ -3,7 +3,11 @@ Copyright (c) 2022 Daniel Roca González. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Roca González
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+
+@[expose] public section
 
 /-!
 # The Lax-Milgram Theorem

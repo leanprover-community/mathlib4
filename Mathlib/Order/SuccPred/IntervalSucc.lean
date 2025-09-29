@@ -3,9 +3,13 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.SuccPred.Archimedean
+module
+
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.SuccPred.Archimedean
+
+@[expose] public section
 
 /-!
 # Intervals `Ixx (f x) (f (Order.succ x))`

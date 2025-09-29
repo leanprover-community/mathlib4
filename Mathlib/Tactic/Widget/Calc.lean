@@ -3,12 +3,16 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Lean.Elab.Tactic.Calc
-import Lean.Meta.Tactic.TryThis
+module
 
-import Mathlib.Data.String.Defs
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Batteries.CodeAction.Attr
+public import Lean.Elab.Tactic.Calc
+public import Lean.Meta.Tactic.TryThis
+
+public import Mathlib.Data.String.Defs
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import Batteries.CodeAction.Attr
+
+@[expose] public section
 
 /-! # Calc widget
 

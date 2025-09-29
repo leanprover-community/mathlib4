@@ -3,8 +3,12 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Topology.Algebra.SeparationQuotient.Hom
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
+
+@[expose] public section
 
 /-!
 # Lifts of maps to separation quotients of seminormed groups

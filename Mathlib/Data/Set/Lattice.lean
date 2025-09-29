@@ -3,8 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Data.Set.BooleanAlgebra
+
+@[expose] public section
 
 /-!
 # The set lattice

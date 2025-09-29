@@ -3,12 +3,16 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.Star
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Analysis.Normed.Group.InfiniteSum
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
+public import Mathlib.Topology.ContinuousMap.Star
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+
+@[expose] public section
 
 /-!
 # Continuous functions on a compact space

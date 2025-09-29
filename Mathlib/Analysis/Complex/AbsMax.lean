@@ -3,12 +3,16 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.NormedSpace.Extr
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.Topology.Order.ExtrClosure
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.NormedSpace.Extr
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Topology.Order.ExtrClosure
+
+@[expose] public section
 
 /-!
 # Maximum modulus principle

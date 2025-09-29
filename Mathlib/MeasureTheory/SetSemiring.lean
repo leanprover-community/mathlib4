@@ -3,10 +3,14 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.MeasureTheory.PiSystem
+
+@[expose] public section
 
 /-! # Semirings and rings of sets
 

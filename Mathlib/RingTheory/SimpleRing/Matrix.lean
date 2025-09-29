@@ -3,8 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.Matrix.Ideal
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Ideal
+public import Mathlib.RingTheory.SimpleRing.Basic
+
+@[expose] public section
 
 /-!
 The matrix ring over a simple ring is simple

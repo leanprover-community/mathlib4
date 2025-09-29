@@ -3,8 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.Data.Finite.Sigma
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.Data.Finite.Sigma
+
+@[expose] public section
 
 /-!
 # Description of the covering sieves of the extensive topology

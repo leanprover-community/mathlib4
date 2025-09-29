@@ -3,11 +3,15 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Lean.Linter.Deprecated
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Tactic.TypeStar
+module
+
+public import Lean.Linter.Deprecated
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Tactic.TypeStar
+
+@[expose] public section
 
 /-!
 # Binary representation of integers using inductive types

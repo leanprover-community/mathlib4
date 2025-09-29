@@ -3,9 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.Algebra.Polynomial.Derivation
+module
+
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.Algebra.Polynomial.Derivation
+
+@[expose] public section
 
 /-!
 # The Kähler differential module of polynomial algebras

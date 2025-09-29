@@ -3,8 +3,12 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Union
+
+@[expose] public section
 
 /-!
 # Finsets in product types

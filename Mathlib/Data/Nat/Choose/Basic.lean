@@ -3,8 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Order.Monotone.Defs
+
+@[expose] public section
 
 /-!
 # Binomial coefficients

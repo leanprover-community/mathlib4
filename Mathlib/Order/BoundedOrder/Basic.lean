@@ -3,11 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Max
-import Mathlib.Order.ULift
-import Mathlib.Tactic.Push
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.Max
+public import Mathlib.Order.ULift
+public import Mathlib.Tactic.Push
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Util.AssertExists
+
+@[expose] public section
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants

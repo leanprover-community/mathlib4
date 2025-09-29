@@ -3,9 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Center.Basic
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Center.Basic
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+@[expose] public section
 
 /-!
 # Localization of the center of a category

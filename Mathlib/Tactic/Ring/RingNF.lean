@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.TryThis
-import Mathlib.Tactic.Conv
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.Qq
+module
+
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.TryThis
+public import Mathlib.Tactic.Conv
+public import Mathlib.Util.AtLocation
+public import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.Qq
+
+@[expose] public section
 
 /-!
 # `ring_nf` tactic

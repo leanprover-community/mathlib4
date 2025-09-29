@@ -3,8 +3,12 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Jordan.Basic
-import Mathlib.Algebra.Module.Defs
+module
+
+public import Mathlib.Algebra.Jordan.Basic
+public import Mathlib.Algebra.Module.Defs
+
+@[expose] public section
 
 /-!
 # Symmetrized algebra

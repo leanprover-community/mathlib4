@@ -3,10 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.Coprime.Basic
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.RingTheory.Coprime.Basic
+public import Mathlib.Tactic.AdaptationNote
+
+@[expose] public section
 
 /-!
 # Scaling the roots of a polynomial

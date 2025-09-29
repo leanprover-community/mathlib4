@@ -3,9 +3,12 @@ Copyright (c) 2023 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
+module
 
-import Mathlib.Init
-import Aesop
+public import Mathlib.Init
+public import Aesop
+
+@[expose] public section
 
 /-!
 # SimpleGraph Rule Set

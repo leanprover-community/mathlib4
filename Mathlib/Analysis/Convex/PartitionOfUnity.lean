@@ -3,8 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.PartitionOfUnity
-import Mathlib.Analysis.Convex.Combination
+module
+
+public import Mathlib.Topology.PartitionOfUnity
+public import Mathlib.Analysis.Convex.Combination
+
+@[expose] public section
 
 /-!
 # Partition of unity and convex sets

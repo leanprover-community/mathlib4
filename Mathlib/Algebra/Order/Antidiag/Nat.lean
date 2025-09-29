@@ -3,9 +3,13 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Order.Antidiag.Pi
+public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.Tactic.IntervalCases
+
+@[expose] public section
 
 /-!
 # Sets of tuples with a fixed product

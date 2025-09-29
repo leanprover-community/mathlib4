@@ -3,9 +3,13 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Distribution.SchwartzSpace
-import Mathlib.Analysis.Fourier.FourierTransformDeriv
-import Mathlib.Analysis.Fourier.Inversion
+module
+
+public import Mathlib.Analysis.Distribution.SchwartzSpace
+public import Mathlib.Analysis.Fourier.FourierTransformDeriv
+public import Mathlib.Analysis.Fourier.Inversion
+
+@[expose] public section
 
 /-!
 # Fourier transform on Schwartz functions

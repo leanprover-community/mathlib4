@@ -3,7 +3,11 @@ Copyright (c) 2025 Yaël Dillies, Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Michał Mrugała
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+
+@[expose] public section
 
 /-!
 # Submonoid of pairs with quotient in a submonoid

@@ -3,8 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.ZeroCons
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.ZeroCons
+
+@[expose] public section
 
 /-!
 # Empty and nonempty finite sets

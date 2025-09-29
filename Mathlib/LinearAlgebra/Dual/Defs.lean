@@ -3,9 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Span.Defs
+
+@[expose] public section
 
 /-!
 # Dual vector spaces

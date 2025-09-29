@@ -3,10 +3,14 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Will Sawin
 -/
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Group.Basic
+
+@[expose] public section
 
 /-!
 # A "module topology" for modules over a topological ring

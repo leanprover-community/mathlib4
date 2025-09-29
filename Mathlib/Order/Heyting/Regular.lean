@@ -3,7 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.GaloisConnection.Basic
+module
+
+public import Mathlib.Order.GaloisConnection.Basic
+
+@[expose] public section
 
 /-!
 # Heyting regular elements

@@ -3,8 +3,11 @@ Copyright (c) 2025 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
+module
 
-import Mathlib.Topology.CWComplex.Classical.Basic
+public import Mathlib.Topology.CWComplex.Classical.Basic
+
+@[expose] public section
 
 /-!
 # Finiteness notions on CW complexes

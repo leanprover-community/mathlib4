@@ -3,9 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+
+@[expose] public section
 
 /-!
 # Epimorphisms in `CommRingCat`

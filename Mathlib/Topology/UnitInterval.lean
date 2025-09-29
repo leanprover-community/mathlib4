@@ -3,9 +3,13 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Order.Interval.Set.Instances
-import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Algebra.Ring.Real
+module
+
+public import Mathlib.Algebra.Order.Interval.Set.Instances
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Topology.Algebra.Ring.Real
+
+@[expose] public section
 
 /-!
 # The unit interval, as a topological space

@@ -3,8 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.LeftRight
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Topology.Order.LeftRight
+public import Mathlib.Topology.Order.Monotone
+
+@[expose] public section
 
 /-!
 # Left and right limits

@@ -3,9 +3,13 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Action.End
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Hom.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Hom.Defs
+
+@[expose] public section
 
 /-!
 # Composing modules with a ring hom

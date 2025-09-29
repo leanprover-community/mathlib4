@@ -3,8 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Retract
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+
+@[expose] public section
 
 /-!
 # Stability under retracts

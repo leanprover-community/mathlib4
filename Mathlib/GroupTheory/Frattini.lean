@@ -3,8 +3,12 @@ Copyright (c) 2024 Colva Roney-Dougal. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colva Roney-Dougal, Inna Capdeboscq, Susanna Fishel, Kim Morrison
 -/
-import Mathlib.GroupTheory.Nilpotent
-import Mathlib.Order.Radical
+module
+
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.Order.Radical
+
+@[expose] public section
 
 /-!
 # The Frattini subgroup

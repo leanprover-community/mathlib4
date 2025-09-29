@@ -3,11 +3,14 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
+module
 
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Algebra.Order.Module.Basic
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Algebra.Order.Module.Basic
+
+@[expose] public section
 
 /-!
 # Archimedean classes for ordered module

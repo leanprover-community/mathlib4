@@ -3,11 +3,15 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.GroupTheory.Subsemigroup.Center
-import Mathlib.RingTheory.NonUnitalSubring.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.GroupTheory.Subsemigroup.Center
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+
+@[expose] public section
 
 /-!
 # `NonUnitalSubring`s

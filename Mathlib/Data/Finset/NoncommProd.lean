@@ -3,10 +3,14 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Commute.Hom
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Data.Fintype.Basic
+
+@[expose] public section
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.

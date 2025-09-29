@@ -3,8 +3,12 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Data.Fintype.WithTopBot
+module
+
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Data.Fintype.WithTopBot
+
+@[expose] public section
 
 /-! # Order topology on `WithTop ι`
 

@@ -3,10 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+module
+
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+
+@[expose] public section
 
 /-!
 

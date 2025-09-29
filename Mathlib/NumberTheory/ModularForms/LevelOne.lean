@@ -3,9 +3,13 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.NumberTheory.Modular
-import Mathlib.NumberTheory.ModularForms.QExpansion
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.NumberTheory.Modular
+public import Mathlib.NumberTheory.ModularForms.QExpansion
+
+@[expose] public section
 /-!
 # Level one modular forms
 

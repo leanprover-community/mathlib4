@@ -3,15 +3,19 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Topology.Algebra.Module.Determinant
-import Mathlib.Topology.Algebra.Module.ModuleTopology
-import Mathlib.Topology.Algebra.Module.Simple
-import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
+module
+
+public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Topology.Algebra.Module.Determinant
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
+public import Mathlib.Topology.Algebra.Module.Simple
+public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
+
+@[expose] public section
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields

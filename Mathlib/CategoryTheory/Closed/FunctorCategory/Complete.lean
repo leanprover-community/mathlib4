@@ -3,11 +3,15 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Lifting.Right
-import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
-import Mathlib.CategoryTheory.Groupoid.Discrete
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Monad.Comonadicity
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Lifting.Right
+public import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
+public import Mathlib.CategoryTheory.Groupoid.Discrete
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Monad.Comonadicity
+
+@[expose] public section
 /-!
 
 # Functors into a complete monoidal closed category form a monoidal closed category.

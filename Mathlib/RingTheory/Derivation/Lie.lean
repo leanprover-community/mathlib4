@@ -3,8 +3,12 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.RingTheory.Derivation.Basic
+
+@[expose] public section
 
 /-!
 # Results

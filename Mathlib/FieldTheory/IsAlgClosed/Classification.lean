@@ -3,12 +3,16 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.Algebraic.Cardinality
-import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.Algebraic.Cardinality
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+
+@[expose] public section
 
 /-!
 # Classification of Algebraically closed fields

@@ -3,10 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Control.EquivFunctor
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Control.EquivFunctor
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Subtype
+public import Mathlib.Logic.Equiv.Defs
+
+@[expose] public section
 
 /-!
 # Equivalences for `Option α`

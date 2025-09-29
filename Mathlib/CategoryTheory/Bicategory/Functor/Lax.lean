@@ -3,10 +3,13 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.Tactic.CategoryTheory.ToApp
+public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.Tactic.CategoryTheory.ToApp
+
+@[expose] public section
 
 /-!
 # Lax functors

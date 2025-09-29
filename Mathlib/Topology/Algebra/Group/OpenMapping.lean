@@ -3,8 +3,12 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Algebra.Group.Pointwise
+
+@[expose] public section
 
 /-! # Open mapping theorem for morphisms of topological groups
 

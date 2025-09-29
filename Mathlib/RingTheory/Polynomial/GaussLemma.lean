@@ -3,10 +3,14 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.RingTheory.Localization.Integral
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Polynomial.Content
+module
+
+public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.RingTheory.Localization.Integral
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Polynomial.Content
+
+@[expose] public section
 
 /-!
 # Gauss's Lemma

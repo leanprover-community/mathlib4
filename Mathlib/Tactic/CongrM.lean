@@ -3,8 +3,12 @@ Copyright (c) 2023 Moritz Doll, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
-import Mathlib.Tactic.TermCongr
-import Mathlib.Tactic.WithoutCDot
+module
+
+public import Mathlib.Tactic.TermCongr
+public import Mathlib.Tactic.WithoutCDot
+
+@[expose] public section
 
 /-!
 # The `congrm` tactic

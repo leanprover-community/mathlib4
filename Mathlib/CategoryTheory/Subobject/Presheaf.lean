@@ -3,8 +3,12 @@ Copyright (c) 2025 Pablo Donato. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pablo Donato
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+module
+
+public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+
+@[expose] public section
 
 /-!
 # Subobjects presheaf

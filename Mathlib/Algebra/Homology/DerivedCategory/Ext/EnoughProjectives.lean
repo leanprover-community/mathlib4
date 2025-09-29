@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+
+@[expose] public section
 
 /-!
 # Smallness of Ext-groups from the existence of enough projectives

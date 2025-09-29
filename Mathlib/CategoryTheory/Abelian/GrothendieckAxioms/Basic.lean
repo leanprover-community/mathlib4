@@ -3,12 +3,16 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Mathlib.Logic.Equiv.List
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+public import Mathlib.Logic.Equiv.List
+
+@[expose] public section
 /-!
 
 # Grothendieck Axioms

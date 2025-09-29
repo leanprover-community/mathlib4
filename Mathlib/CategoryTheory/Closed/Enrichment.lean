@@ -3,8 +3,12 @@ Copyright (c) 2024 Daniel Carranza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Carranza, Joël Riou
 -/
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Closed.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Closed.Monoidal
+
+@[expose] public section
 
 /-!
 # A closed monoidal category is enriched in itself

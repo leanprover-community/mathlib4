@@ -3,9 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw
 -/
+module
 
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Util.DischargerAsTactic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Util.DischargerAsTactic
+
+@[expose] public section
 
 /-!
 # Discharger for `field_simp` tactic

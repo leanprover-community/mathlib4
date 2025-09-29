@@ -3,9 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.Combinatorics.Quiver.Path
+
+@[expose] public section
 
 /-!
 # The category paths on a quiver.

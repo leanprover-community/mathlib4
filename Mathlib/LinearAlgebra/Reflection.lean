@@ -3,15 +3,19 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.FiniteSpan
-import Mathlib.RingTheory.Polynomial.Chebyshev
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.Algebra.Module.Torsion
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.FiniteSpan
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+
+@[expose] public section
 
 /-!
 # Reflections in linear algebra

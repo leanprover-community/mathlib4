@@ -3,11 +3,15 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
-import Mathlib.Topology.Algebra.Module.UniformConvergence
-import Mathlib.Topology.Algebra.SeparationQuotient.Section
-import Mathlib.Topology.Hom.ContinuousEvalConst
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
+module
+
+public import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
+public import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.SeparationQuotient.Section
+public import Mathlib.Topology.Hom.ContinuousEvalConst
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+
+@[expose] public section
 
 /-!
 # Topology on continuous multilinear maps

@@ -3,9 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Data.Finsupp.Option
-import Mathlib.LinearAlgebra.Finsupp.Supported
+module
+
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Data.Finsupp.Option
+public import Mathlib.LinearAlgebra.Finsupp.Supported
+
+@[expose] public section
 
 /-!
 # `Finsupp.linearCombination`

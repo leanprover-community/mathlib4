@@ -3,7 +3,11 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
-import Mathlib.Algebra.Group.Commute.Defs
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+
+@[expose] public section
 
 /-!
 # Units (i.e., invertible elements) of a monoid

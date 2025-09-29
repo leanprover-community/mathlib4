@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Order.UpperLower.Principal
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Order.UpperLower.Principal
+
+@[expose] public section
 
 /-!
 # `UpperSet.Ici` etc. as `Sup`/`sSup`/`Inf`/`sInf`-homomorphisms

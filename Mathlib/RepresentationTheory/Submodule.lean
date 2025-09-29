@@ -3,8 +3,12 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.RepresentationTheory.Basic
+
+@[expose] public section
 
 /-!
 # Invariant submodules of a group representation

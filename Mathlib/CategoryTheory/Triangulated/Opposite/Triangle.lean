@@ -3,8 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Basic
-import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Basic
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
+
+@[expose] public section
 
 /-!
 # Triangles in the opposite category of a (pre)triangulated category

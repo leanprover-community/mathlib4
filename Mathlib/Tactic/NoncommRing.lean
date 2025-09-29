@@ -3,8 +3,12 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Tactic.Abel
+
+@[expose] public section
 
 /-! # The `noncomm_ring` tactic
 

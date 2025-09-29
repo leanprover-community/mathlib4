@@ -3,9 +3,13 @@ Copyright (c) 2025 Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.Data.List.Indexes
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Data.List.Indexes
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+
+@[expose] public section
 /-!
 # Noether normalization lemma
 This file contains a proof by Nagata of the Noether normalization lemma.

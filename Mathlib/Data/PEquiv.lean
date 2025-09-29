@@ -3,10 +3,14 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Option.Basic
-import Batteries.Tactic.Congr
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Contrapose
+module
+
+public import Mathlib.Data.Option.Basic
+public import Batteries.Tactic.Congr
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Contrapose
+
+@[expose] public section
 
 /-!
 

@@ -3,9 +3,13 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.Ring.Subring.Defs
+module
+
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Subring.Defs
+
+@[expose] public section
 
 /-!
 

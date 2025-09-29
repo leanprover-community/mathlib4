@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kexing Ying
 -/
-import Mathlib.Analysis.Normed.Order.UpperLower
-import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.Topology.Order.DenselyOrdered
+module
+
+public import Mathlib.Analysis.Normed.Order.UpperLower
+public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.Topology.Order.DenselyOrdered
+
+@[expose] public section
 
 /-!
 # Order-connected sets are null-measurable

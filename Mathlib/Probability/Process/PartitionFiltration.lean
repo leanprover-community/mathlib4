@@ -3,8 +3,12 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-import Mathlib.Probability.Process.Filtration
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+public import Mathlib.Probability.Process.Filtration
+
+@[expose] public section
 
 /-!
 # Filtration built from the finite partitions of a countably generated measurable space

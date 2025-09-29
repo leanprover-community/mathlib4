@@ -3,11 +3,15 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Analytic.ChangeOrigin
+module
+
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Analytic.ChangeOrigin
+
+@[expose] public section
 
 /-!
 # Uniqueness principle for analytic functions

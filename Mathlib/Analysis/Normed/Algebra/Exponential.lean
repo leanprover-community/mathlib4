@@ -3,12 +3,16 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.Analysis.Analytic.ChangeOrigin
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Analysis.SpecificLimits.RCLike
+module
+
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.Analysis.Analytic.ChangeOrigin
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.SpecificLimits.RCLike
+
+@[expose] public section
 
 /-!
 # Exponential in a Banach algebra

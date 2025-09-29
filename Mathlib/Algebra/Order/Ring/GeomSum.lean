@@ -3,9 +3,13 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.GeomSum
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.GeomSum
+
+@[expose] public section
 
 /-!
 # Partial sums of geometric series in an ordered ring

@@ -3,7 +3,11 @@ Copyright (c) 2024 Jiecheng Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiecheng Zhao
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
+
+@[expose] public section
 /-!
 # Lemmas about `Array.extract`
 

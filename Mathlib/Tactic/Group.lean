@@ -3,9 +3,13 @@ Copyright (c) 2020. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Massot
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FailIfNoProgress
-import Mathlib.Algebra.Group.Commutator
+module
+
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.FailIfNoProgress
+public import Mathlib.Algebra.Group.Commutator
+
+@[expose] public section
 
 /-!
 # `group` tactic

@@ -3,14 +3,18 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
+
+@[expose] public section
 
 /-!
 # Extended metric spaces

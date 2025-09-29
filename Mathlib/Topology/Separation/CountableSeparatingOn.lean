@@ -3,8 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountableSeparatingOn
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Order.Filter.CountableSeparatingOn
+public import Mathlib.Topology.Separation.Basic
+
+@[expose] public section
 
 /-!
 # Countable separating families of sets in topological spaces

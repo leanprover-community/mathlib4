@@ -3,9 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
-import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.FunctionField
+module
+
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
+public import Mathlib.NumberTheory.ClassNumber.Finite
+public import Mathlib.NumberTheory.FunctionField
+
+@[expose] public section
 
 /-!
 # Class numbers of function fields

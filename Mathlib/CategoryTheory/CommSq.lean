@@ -3,7 +3,11 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+
+@[expose] public section
 
 /-!
 # Commutative squares

@@ -3,11 +3,15 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Data.Finsupp.Interval
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.Topology.Algebra.LinearTopology
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+module
+
+public import Mathlib.Data.Finsupp.Interval
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+public import Mathlib.Topology.Algebra.LinearTopology
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+@[expose] public section
 
 /-! # Linear topology on the ring of multivariate power series
 

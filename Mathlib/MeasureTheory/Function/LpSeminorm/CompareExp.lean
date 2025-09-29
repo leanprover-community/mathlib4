@@ -3,9 +3,13 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Eric Wieser
 -/
-import Mathlib.Data.ENNReal.Holder
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-import Mathlib.MeasureTheory.Integral.MeanInequalities
+module
+
+public import Mathlib.Data.ENNReal.Holder
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Integral.MeanInequalities
+
+@[expose] public section
 
 /-!
 # Compare Lp seminorms for different values of `p`

@@ -3,13 +3,17 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Control.Basic
-import Mathlib.Data.Nat.Cast.Basic
-import Qq
+module
+
+public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Tactic.HaveI
+public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Nat.Cast.Basic
+public import Qq
+
+@[expose] public section
 
 /-!
 ## `positivity` core functionality

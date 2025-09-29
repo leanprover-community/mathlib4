@@ -3,9 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.Opposite
+module
+
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.Opposite
+
+@[expose] public section
 
 /-!
 # The extension of a homological complex by an embedding of complex shapes

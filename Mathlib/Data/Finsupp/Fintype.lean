@@ -3,8 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.Data.Finsupp.Single
-import Mathlib.Data.Fintype.BigOperators
+module
+
+public import Mathlib.Data.Finsupp.Single
+public import Mathlib.Data.Fintype.BigOperators
+
+@[expose] public section
 
 /-!
 

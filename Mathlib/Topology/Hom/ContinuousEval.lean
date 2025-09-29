@@ -3,8 +3,12 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Hom.ContinuousEvalConst
-import Mathlib.Topology.ContinuousMap.Defs
+module
+
+public import Mathlib.Topology.Hom.ContinuousEvalConst
+public import Mathlib.Topology.ContinuousMap.Defs
+
+@[expose] public section
 
 /-!
 # Bundled maps with evaluation continuous in both variables

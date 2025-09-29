@@ -3,8 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+module
 
-import Mathlib.Logic.Function.FromTypes
+public import Mathlib.Logic.Function.FromTypes
+
+@[expose] public section
 
 /-! # Function types of a given arity
 

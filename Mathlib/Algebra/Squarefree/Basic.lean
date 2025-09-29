@@ -3,10 +3,14 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+module
+
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+
+@[expose] public section
 
 /-!
 # Squarefree elements of monoids

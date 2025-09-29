@@ -3,11 +3,15 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.DiscreteSubset
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Topology.DiscreteSubset
+
+@[expose] public section
 
 /-!
 # Type of functions with locally finite support

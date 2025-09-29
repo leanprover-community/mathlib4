@@ -3,8 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.Prime.Factorial
-import Mathlib.NumberTheory.LegendreSymbol.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+
+@[expose] public section
 
 /-!
 # Lemmas of Gauss and Eisenstein

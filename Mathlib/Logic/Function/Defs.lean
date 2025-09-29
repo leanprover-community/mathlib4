@@ -3,11 +3,15 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Eqns
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Eqns
+public import Mathlib.Tactic.TypeStar
+
+@[expose] public section
 
 /-!
 # General operations on functions

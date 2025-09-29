@@ -3,12 +3,16 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Functor.OfSequence
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Mathlib.CategoryTheory.Limits.Shapes.PiProd
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+public import Mathlib.CategoryTheory.Limits.Shapes.PiProd
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.Order.Interval.Finset.Nat
+
+@[expose] public section
 /-!
 
 # ℕ-indexed products as sequential limits

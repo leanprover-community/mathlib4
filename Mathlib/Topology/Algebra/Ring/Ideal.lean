@@ -3,9 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+@[expose] public section
 
 /-!
 # Ideals and quotients of topological rings

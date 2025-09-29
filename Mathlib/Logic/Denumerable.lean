@@ -3,10 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.List.MinMax
-import Mathlib.Data.Nat.Order.Lemmas
-import Mathlib.Logic.Encodable.Basic
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Data.Nat.Order.Lemmas
+public import Mathlib.Logic.Encodable.Basic
+
+@[expose] public section
 
 /-!
 # Denumerable types

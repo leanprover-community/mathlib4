@@ -3,8 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Adjunction
-import Mathlib.CategoryTheory.Preadditive.Opposite
+module
+
+public import Mathlib.CategoryTheory.Shift.Adjunction
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+@[expose] public section
 
 /-!
 # The (naive) shift on the opposite category

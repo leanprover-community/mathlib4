@@ -3,8 +3,12 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Products.Basic
+public import Mathlib.CategoryTheory.Types.Basic
+
+@[expose] public section
 
 /-!
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.

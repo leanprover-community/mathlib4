@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.Order.Bornology
+module
+
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.Order.Bornology
+
+@[expose] public section
 
 /-!
 # The reals are equipped with their order bornology

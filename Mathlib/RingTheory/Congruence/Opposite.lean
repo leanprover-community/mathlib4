@@ -3,9 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+module
 
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.GroupTheory.Congruence.Opposite
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.GroupTheory.Congruence.Opposite
+
+@[expose] public section
 
 /-!
 # Congruences on the opposite ring

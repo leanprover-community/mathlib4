@@ -3,9 +3,13 @@ Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Finite.Basic
+
+@[expose] public section
 
 /-!
 # Hall's Marriage Theorem for finite index types

@@ -3,10 +3,14 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.PEmptyInstances
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.Algebra.PEmptyInstances
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+
+@[expose] public section
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`

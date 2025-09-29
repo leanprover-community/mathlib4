@@ -3,9 +3,13 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Lean.Name
-import Mathlib.Lean.Expr.Basic
-import Lean.Elab.Command
+module
+
+public import Mathlib.Lean.Name
+public import Mathlib.Lean.Expr.Basic
+public import Lean.Elab.Command
+
+@[expose] public section
 
 /-!
 # Commands `#long_names` and `#long_instances`

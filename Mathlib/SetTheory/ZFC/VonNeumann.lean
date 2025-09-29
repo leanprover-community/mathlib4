@@ -3,9 +3,13 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.ZFC.Class
-import Mathlib.SetTheory.ZFC.Ordinal
-import Mathlib.SetTheory.ZFC.Rank
+module
+
+public import Mathlib.SetTheory.ZFC.Class
+public import Mathlib.SetTheory.ZFC.Ordinal
+public import Mathlib.SetTheory.ZFC.Rank
+
+@[expose] public section
 
 /-!
 # Von Neumann hierarchy

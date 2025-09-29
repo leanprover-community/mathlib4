@@ -3,8 +3,12 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan, Oliver Nash
 -/
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.LinearAlgebra.RootSystem.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.LinearAlgebra.RootSystem.Defs
+
+@[expose] public section
 
 /-!
 # Root pairings taking values in a subring

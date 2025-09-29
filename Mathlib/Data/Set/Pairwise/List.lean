@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Set.Pairwise.Basic
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Set.Pairwise.Basic
+
+@[expose] public section
 
 /-!
 # Translating pairwise relations on sets to lists

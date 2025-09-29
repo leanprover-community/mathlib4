@@ -3,8 +3,12 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Preadditive.Basic
+
+@[expose] public section
 
 /-!
 # The category of additive commutative groups is preadditive.

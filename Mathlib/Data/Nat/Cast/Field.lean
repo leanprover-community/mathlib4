@@ -3,11 +3,15 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+module
+
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+
+@[expose] public section
 
 /-!
 # Cast of naturals into fields

@@ -3,8 +3,12 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.Topology.Connected.LocPathConnected
+module
+
+public import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.Topology.Connected.LocPathConnected
+
+@[expose] public section
 
 /-! # The path component of the identity in a locally path connected topological group
 

@@ -3,10 +3,14 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.Condensed.Basic
-import Mathlib.Topology.Category.TopCat.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.Condensed.Basic
+public import Mathlib.Topology.Category.TopCat.Yoneda
+
+@[expose] public section
 
 /-!
 

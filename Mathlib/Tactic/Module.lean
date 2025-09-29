@@ -3,10 +3,14 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Tactic.Ring
-import Mathlib.Util.AtomM
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Tactic.Ring
+public import Mathlib.Util.AtomM
+
+@[expose] public section
 
 /-! # A tactic for normalization over modules
 

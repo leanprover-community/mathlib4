@@ -3,9 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.SetNotation
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.SetNotation
+public import Mathlib.Order.WellFounded
+
+@[expose] public section
 
 /-!
 # Definitions of conditionally complete lattices

@@ -3,8 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+module
+
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+
+@[expose] public section
 
 /-!
 

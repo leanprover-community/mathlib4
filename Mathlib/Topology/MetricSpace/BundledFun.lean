@@ -3,8 +3,12 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Topology.UniformSpace.Ultra.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Topology.UniformSpace.Ultra.Basic
+
+@[expose] public section
 
 /-!
 # Pseudometrics as bundled functions

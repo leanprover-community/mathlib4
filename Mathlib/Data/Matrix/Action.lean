@@ -3,9 +3,12 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+module
 
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Algebra.Ring.Opposite
+
+@[expose] public section
 
 /-!
 # Actions by matrices on vectors through `*ᵥ` and `ᵥ*`, cast as `Module`s

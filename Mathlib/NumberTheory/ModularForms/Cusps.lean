@@ -3,12 +3,16 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.GroupTheory.Commensurable
-import Mathlib.RingTheory.Localization.NumDen
-import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.GroupTheory.Commensurable
+public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+
+@[expose] public section
 
 /-!
 # Cusps

@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Geometry.RingedSpace.PresheafedSpace
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Sheaves.Limits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+module
+
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Sheaves.Limits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+@[expose] public section
 
 /-!
 # `PresheafedSpace C` has colimits.

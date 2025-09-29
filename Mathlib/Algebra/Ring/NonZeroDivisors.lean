@@ -3,10 +3,14 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.Regular.Opposite
-import Mathlib.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Regular.Opposite
+public import Mathlib.Algebra.Ring.Basic
+
+@[expose] public section
 
 /-!
 # Non-zero divisors in a ring

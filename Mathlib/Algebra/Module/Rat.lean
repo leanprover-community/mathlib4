@@ -3,9 +3,13 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Field.Rat
+module
+
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Field.Rat
+
+@[expose] public section
 
 /-!
 # Basic results about modules over the rationals.

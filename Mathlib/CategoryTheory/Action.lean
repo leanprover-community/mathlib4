@@ -3,11 +3,15 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.SemidirectProduct
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.SemidirectProduct
+
+@[expose] public section
 
 /-!
 # Actions as functors and as categories

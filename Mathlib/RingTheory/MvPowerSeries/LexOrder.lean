@@ -3,9 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.Finsupp.WellFounded
+
+@[expose] public section
 
 /-! LexOrder of multivariate power series
 

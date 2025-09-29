@@ -3,11 +3,15 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Nat
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Nat
+public import Mathlib.Order.UpperLower.Basic
+
+@[expose] public section
 
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`

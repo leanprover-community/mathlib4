@@ -3,13 +3,17 @@ Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Prod.Lex
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Order.Monotone.Monovary
+module
+
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.Order.Monotone.Monovary
+
+@[expose] public section
 
 /-!
 # Rearrangement inequality

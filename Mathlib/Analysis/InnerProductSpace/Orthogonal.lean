@@ -3,8 +3,12 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.LinearAlgebra.SesquilinearForm
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Subspace
+public import Mathlib.LinearAlgebra.SesquilinearForm
+
+@[expose] public section
 
 /-!
 # Orthogonal complements of submodules

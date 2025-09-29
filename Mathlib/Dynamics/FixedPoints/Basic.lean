@@ -3,8 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Set.Function
+
+@[expose] public section
 
 /-!
 # Fixed points of a self-map

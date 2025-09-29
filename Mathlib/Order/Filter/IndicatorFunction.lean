@@ -3,11 +3,15 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.CompleteLattice.Finset
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.Order.Filter.Tendsto
+
+@[expose] public section
 
 /-!
 # Indicator function and filters

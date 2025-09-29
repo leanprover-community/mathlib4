@@ -3,10 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
-import Mathlib.Data.Multiset.Pi
-import Mathlib.Logic.Function.DependsOn
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Union
+public import Mathlib.Data.Multiset.Pi
+public import Mathlib.Logic.Function.DependsOn
+
+@[expose] public section
 
 /-!
 # The Cartesian product of finsets

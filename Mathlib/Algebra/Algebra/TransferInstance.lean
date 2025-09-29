@@ -3,9 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.Algebra.Ring.TransferInstance
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Ring.TransferInstance
+
+@[expose] public section
 
 /-!
 # Transfer algebraic structures across `Equiv`s

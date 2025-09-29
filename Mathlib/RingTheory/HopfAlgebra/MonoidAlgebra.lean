@@ -3,8 +3,12 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
-import Mathlib.RingTheory.HopfAlgebra.Basic
+module
+
+public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.Basic
+
+@[expose] public section
 
 /-!
 # The Hopf algebra structure on group algebras

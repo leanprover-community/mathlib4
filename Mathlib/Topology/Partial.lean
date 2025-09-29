@@ -3,8 +3,12 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Partial
-import Mathlib.Topology.Neighborhoods
+module
+
+public import Mathlib.Order.Filter.Partial
+public import Mathlib.Topology.Neighborhoods
+
+@[expose] public section
 
 /-!
 # Partial functions and topological spaces

@@ -3,8 +3,12 @@ Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve, Elan Roth
 -/
-import Mathlib.Computability.Partrec
-import Mathlib.Order.Antisymmetrization
+module
+
+public import Mathlib.Computability.Partrec
+public import Mathlib.Order.Antisymmetrization
+
+@[expose] public section
 
 /-!
 # Oracle Computability and Turing Degrees

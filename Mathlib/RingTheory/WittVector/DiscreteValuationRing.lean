@@ -3,10 +3,14 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Domain
-import Mathlib.RingTheory.WittVector.MulCoeff
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.RingTheory.WittVector.Domain
+public import Mathlib.RingTheory.WittVector.MulCoeff
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.Tactic.LinearCombination
+
+@[expose] public section
 
 /-!
 

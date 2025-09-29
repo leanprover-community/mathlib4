@@ -3,8 +3,12 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Limits.Preorder
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preorder
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+
+@[expose] public section
 
 /-!
 # The preorder category of a meet-semilattice with a greatest element is Cartesian monoidal

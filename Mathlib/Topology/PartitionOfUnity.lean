@@ -3,12 +3,16 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.ShrinkingLemma
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousMap.Ordered
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Compactness.Paracompact
+public import Mathlib.Topology.ShrinkingLemma
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.ContinuousMap.Ordered
+
+@[expose] public section
 
 /-!
 # Continuous partition of unity

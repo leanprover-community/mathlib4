@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Interval.Finset.Defs
+
+@[expose] public section
 
 /-!
 # Finite intervals in a disjoint union

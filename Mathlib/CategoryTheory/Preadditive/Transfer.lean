@@ -3,8 +3,12 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+@[expose] public section
 
 /-!
 # Pulling back a preadditive structure along a fully faithful functor

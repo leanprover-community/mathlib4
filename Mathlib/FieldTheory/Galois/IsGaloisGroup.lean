@@ -3,8 +3,12 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Invariant.Defs
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Invariant.Defs
+
+@[expose] public section
 
 /-!
 # Predicate for Galois Groups

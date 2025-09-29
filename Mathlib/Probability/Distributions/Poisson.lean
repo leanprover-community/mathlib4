@@ -3,10 +3,13 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Probability.ProbabilityMassFunction.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Probability.ProbabilityMassFunction.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+
+@[expose] public section
 
 /-! # Poisson distributions over ℕ
 

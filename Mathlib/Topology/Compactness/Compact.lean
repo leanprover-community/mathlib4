@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Ultrafilter
-import Mathlib.Topology.Defs.Ultrafilter
+module
+
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Topology.Bornology.Basic
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Ultrafilter
+public import Mathlib.Topology.Defs.Ultrafilter
+
+@[expose] public section
 
 /-!
 # Compact sets and compact spaces

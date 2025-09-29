@@ -3,11 +3,15 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+
+@[expose] public section
 
 /-!
 # Images of intervals under `(+ d)`

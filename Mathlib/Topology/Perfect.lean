@@ -3,8 +3,11 @@ Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
+module
 
-import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Separation.Regular
+
+@[expose] public section
 
 /-!
 # Perfect Sets

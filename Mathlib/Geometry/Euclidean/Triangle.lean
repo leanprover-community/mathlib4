@@ -3,10 +3,14 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Tactic.IntervalCases
+
+@[expose] public section
 
 /-!
 # Triangles

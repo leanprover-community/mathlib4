@@ -3,9 +3,13 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Iván Renison
 -/
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.ZMod.Defs
+module
+
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Data.ZMod.Defs
+
+@[expose] public section
 
 /-!
 # Parity in `Fin n`

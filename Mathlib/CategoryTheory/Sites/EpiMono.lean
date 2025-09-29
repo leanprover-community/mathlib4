@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Concrete
-import Mathlib.CategoryTheory.Sites.LocallyBijective
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Concrete
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+
+@[expose] public section
 
 /-!
 # Morphisms of sheaves factor as a locally surjective followed by a locally injective morphism

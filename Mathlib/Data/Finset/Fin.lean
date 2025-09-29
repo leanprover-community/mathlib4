@@ -3,8 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Kim Morrison, Johan Commelin
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fin.Embedding
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Fin.Embedding
+
+@[expose] public section
 
 /-!
 # Finsets in `Fin n`

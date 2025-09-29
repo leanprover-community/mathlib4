@@ -3,8 +3,12 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Rewrite
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Rewrite
+
+@[expose] public section
 
 /-!
 # The `erw?` tactic

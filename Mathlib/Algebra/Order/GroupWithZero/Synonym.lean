@@ -3,8 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Order.Group.Synonym
+module
+
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Order.Group.Synonym
+
+@[expose] public section
 
 /-!
 # Group with zero structure on the order type synonyms

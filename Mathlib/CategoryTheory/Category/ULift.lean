@@ -3,10 +3,14 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.Data.ULift
+
+@[expose] public section
 
 /-!
 # Basic API for ULift

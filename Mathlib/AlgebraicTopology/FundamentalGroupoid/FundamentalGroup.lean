@@ -3,11 +3,15 @@ Copyright (c) 2021 Mark Lavrentyev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Lavrentyev
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+
+@[expose] public section
 
 /-!
 # Fundamental group of a space

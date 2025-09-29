@@ -3,8 +3,12 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Opposites
+
+@[expose] public section
 
 /-!
 # The dualizing functor on `Cat`

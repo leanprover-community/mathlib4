@@ -3,11 +3,15 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.GroupTheory.Abelianization.Finite
-import Mathlib.GroupTheory.Nilpotent
-import Mathlib.GroupTheory.SchurZassenhaus
-import Mathlib.GroupTheory.SemidirectProduct
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.GroupTheory.Abelianization.Finite
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.GroupTheory.SchurZassenhaus
+public import Mathlib.GroupTheory.SemidirectProduct
+
+@[expose] public section
 
 /-!
 # Z-Groups

@@ -3,8 +3,12 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Balanced
-import Mathlib.CategoryTheory.LiftingProperties.Basic
+module
+
+public import Mathlib.CategoryTheory.Balanced
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
+
+@[expose] public section
 
 /-!
 # Strong epimorphisms

@@ -3,10 +3,14 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
-import Mathlib.Data.Int.NatPrime
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Data.Int.NatPrime
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Tactic.FieldSimp
+
+@[expose] public section
 
 /-!
 # Pythagorean Triples

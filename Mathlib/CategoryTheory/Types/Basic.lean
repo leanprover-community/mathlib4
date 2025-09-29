@@ -3,11 +3,15 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Data.Set.CoeSort
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.ToAdditive
+
+@[expose] public section
 
 /-!
 # The category `Type`.

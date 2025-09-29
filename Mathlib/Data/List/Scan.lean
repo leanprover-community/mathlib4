@@ -3,10 +3,14 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Batteries.Data.List.Basic
-import Mathlib.Order.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Option.Basic
+module
+
+public import Batteries.Data.List.Basic
+public import Mathlib.Order.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Option.Basic
+
+@[expose] public section
 
 /-!
 # List scan

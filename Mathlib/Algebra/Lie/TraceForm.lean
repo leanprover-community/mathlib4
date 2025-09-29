@@ -3,12 +3,16 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Algebra.Lie.Weights.Linear
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.LinearAlgebra.PID
+module
+
+public import Mathlib.Algebra.DirectSum.LinearMap
+public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Algebra.Lie.Weights.Linear
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.LinearAlgebra.PID
+
+@[expose] public section
 
 /-!
 # The trace and Killing forms of a Lie algebra.

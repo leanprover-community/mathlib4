@@ -3,8 +3,12 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Tactic.ToAdditive
+
+@[expose] public section
 
 /-!
 # Instances on pempty

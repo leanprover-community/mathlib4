@@ -3,9 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.Cast.Order.Ring
+
+@[expose] public section
 
 /-!
 # Order properties of cast of integers

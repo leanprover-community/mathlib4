@@ -3,7 +3,11 @@ Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Heather Macbeth, Winston Yin
 -/
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+
+@[expose] public section
 
 /-!
 # Units of a normed algebra

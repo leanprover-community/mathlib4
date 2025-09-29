@@ -3,12 +3,16 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
-import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
+public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
+public import Mathlib.CategoryTheory.Sites.Whiskering
+
+@[expose] public section
 /-!
 
 # Categories of coherent sheaves

@@ -3,10 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir and Filippo Nuccio. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+module
 
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
-import Mathlib.Algebra.GroupWithZero.WithZero
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
+public import Mathlib.Algebra.GroupWithZero.WithZero
+
+@[expose] public section
 
 /-! # The range of a MonoidWithZeroHom
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `MonoidWithZero`, we define the

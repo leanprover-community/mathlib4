@@ -3,11 +3,15 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.NumberTheory.Harmonic.ZetaAsymp
-import Mathlib.NumberTheory.LSeries.Dirichlet
-import Mathlib.NumberTheory.LSeries.DirichletContinuation
-import Mathlib.NumberTheory.LSeries.Positivity
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+public import Mathlib.NumberTheory.LSeries.Dirichlet
+public import Mathlib.NumberTheory.LSeries.DirichletContinuation
+public import Mathlib.NumberTheory.LSeries.Positivity
+
+@[expose] public section
 
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1

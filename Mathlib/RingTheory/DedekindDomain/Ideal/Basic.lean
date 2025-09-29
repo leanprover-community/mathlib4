@@ -3,10 +3,14 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.FractionalIdeal.Inverse
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Inverse
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
+
+@[expose] public section
 
 /-!
 # Dedekind domains and invertible ideals

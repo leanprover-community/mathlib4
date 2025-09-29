@@ -3,10 +3,14 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.UniversalEnveloping
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.UniversalEnveloping
+public import Mathlib.GroupTheory.GroupAction.Ring
+
+@[expose] public section
 
 /-!
 # Free Lie algebras

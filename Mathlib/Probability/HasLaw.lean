@@ -3,8 +3,12 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: EtienneMarion
 -/
-import Mathlib.Probability.Density
-import Mathlib.Probability.Moments.Variance
+module
+
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.Moments.Variance
+
+@[expose] public section
 
 /-!
 # Law of a random variable

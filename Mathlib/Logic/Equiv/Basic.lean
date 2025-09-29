@@ -3,11 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Sum.Basic
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Logic.Equiv.Sum
-import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.Lift
+module
+
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Logic.Equiv.Sum
+public import Mathlib.Logic.Function.Conjugate
+public import Mathlib.Tactic.Lift
+
+@[expose] public section
 
 /-!
 # Equivalence between types

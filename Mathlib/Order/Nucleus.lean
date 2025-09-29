@@ -3,8 +3,12 @@ Copyright (c) 2024 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
-import Mathlib.Order.Closure
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.Closure
+public import Mathlib.Order.Hom.CompleteLattice
+
+@[expose] public section
 
 /-!
 # Nucleus

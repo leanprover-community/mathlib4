@@ -3,8 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.RelIso.Basic
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.RelIso.Basic
+
+@[expose] public section
 
 /-!
 # Order continuity

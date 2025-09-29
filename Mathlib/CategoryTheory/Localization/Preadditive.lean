@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+
+@[expose] public section
 
 /-!
 # Localization of natural transformations to preadditive categories

@@ -3,11 +3,15 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.RingTheory.LocalRing.Basic
+
+@[expose] public section
 
 /-!
 # Intermediate fields

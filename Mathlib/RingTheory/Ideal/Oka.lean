@@ -3,7 +3,11 @@ Copyright (c) 2025 Anthony Fernandes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Fernandes, Marc Robin
 -/
-import Mathlib.RingTheory.Ideal.Colon
+module
+
+public import Mathlib.RingTheory.Ideal.Colon
+
+@[expose] public section
 
 /-!
 # Oka predicates

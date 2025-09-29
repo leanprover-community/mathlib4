@@ -3,9 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Full
-import Mathlib.CategoryTheory.Galois.Topology
-import Mathlib.Topology.Algebra.OpenSubgroup
+module
+
+public import Mathlib.CategoryTheory.Galois.Full
+public import Mathlib.CategoryTheory.Galois.Topology
+public import Mathlib.Topology.Algebra.OpenSubgroup
+
+@[expose] public section
 
 /-!
 

@@ -3,10 +3,14 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.GradedMulAction
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.Module.BigOperators
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Algebra.Module.BigOperators
+
+@[expose] public section
 
 /-!
 # Graded Module

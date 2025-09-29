@@ -3,8 +3,12 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.GradedMulAction
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Algebra.GradedMulAction
+
+@[expose] public section
 
 /-!
 # Homogeneous submodules of a graded module

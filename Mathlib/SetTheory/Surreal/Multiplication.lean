@@ -3,9 +3,13 @@ Copyright (c) 2024 Theodore Hwa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Violeta Hernández Palacios, Junyan Xu, Theodore Hwa
 -/
-import Mathlib.Logic.Hydra
-import Mathlib.SetTheory.Surreal.Basic
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Logic.Hydra
+public import Mathlib.SetTheory.Surreal.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+@[expose] public section
 
 deprecated_module
   "This module is now at `CombinatorialGames.Surreal.Multiplication` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"

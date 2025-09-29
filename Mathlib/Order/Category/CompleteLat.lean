@@ -3,8 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.BddLat
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.Category.BddLat
+public import Mathlib.Order.Hom.CompleteLattice
+
+@[expose] public section
 
 /-!
 # The category of complete lattices

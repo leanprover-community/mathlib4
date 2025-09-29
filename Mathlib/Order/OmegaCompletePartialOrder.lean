@@ -3,13 +3,17 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Ira Fesefeldt
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Order.Iterate
-import Mathlib.Order.Part
-import Mathlib.Order.Preorder.Chain
-import Mathlib.Order.ScottContinuity
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Order.Iterate
+public import Mathlib.Order.Part
+public import Mathlib.Order.Preorder.Chain
+public import Mathlib.Order.ScottContinuity
+
+@[expose] public section
 
 /-!
 # Omega Complete Partial Orders

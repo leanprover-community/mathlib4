@@ -3,7 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Faithful
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+
+@[expose] public section
 
 /-!
 # Option instances for additive and multiplicative actions

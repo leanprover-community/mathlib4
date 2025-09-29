@@ -3,8 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inverse
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inverse
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+
+@[expose] public section
 
 /-!
 # Inverse function theorem, 1D case

@@ -3,7 +3,11 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.SetTheory.Cardinal.ENat
+module
+
+public import Mathlib.SetTheory.Cardinal.ENat
+
+@[expose] public section
 
 /-!
 # Projection from cardinal numbers to natural numbers

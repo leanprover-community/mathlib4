@@ -3,10 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.ByContra
+
+@[expose] public section
 
 /-! # Embeddings of complex shapes
 

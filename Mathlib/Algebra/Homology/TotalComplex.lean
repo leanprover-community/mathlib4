@@ -3,10 +3,14 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Homology.ComplexShapeSigns
-import Mathlib.Algebra.Homology.HomologicalBicomplex
-import Mathlib.Algebra.Module.Basic
+module
+
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Homology.ComplexShapeSigns
+public import Mathlib.Algebra.Homology.HomologicalBicomplex
+public import Mathlib.Algebra.Module.Basic
+
+@[expose] public section
 
 /-!
 # The total complex of a bicomplex

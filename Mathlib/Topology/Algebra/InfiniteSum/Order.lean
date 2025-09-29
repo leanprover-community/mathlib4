@@ -3,11 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Order.MonotoneConvergence
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.Order.MonotoneConvergence
+
+@[expose] public section
 
 /-!
 # Infinite sum or product in an order

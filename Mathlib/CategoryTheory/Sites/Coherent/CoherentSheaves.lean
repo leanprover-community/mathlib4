@@ -3,9 +3,13 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Canonical
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+module
+
+public import Mathlib.CategoryTheory.Sites.Canonical
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+
+@[expose] public section
 /-!
 
 # Sheaves for the coherent topology

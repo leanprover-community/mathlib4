@@ -3,13 +3,17 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.RingTheory.Bezout
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.RingTheory.Bezout
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.Valuation.Integers
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.FieldSimp
+
+@[expose] public section
 
 /-!
 # Valuation Rings

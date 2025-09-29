@@ -3,8 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Data.ZMod.Basic
+
+@[expose] public section
 
 /-!
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`

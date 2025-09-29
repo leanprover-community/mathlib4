@@ -4,9 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn,
 Mario Carneiro
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Util.AssertExists
+
+@[expose] public section
 
 /-! # getD and getI
 

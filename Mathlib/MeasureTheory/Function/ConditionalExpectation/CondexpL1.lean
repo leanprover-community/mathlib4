@@ -3,8 +3,12 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
-import Mathlib.MeasureTheory.Measure.Real
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+public import Mathlib.MeasureTheory.Measure.Real
+
+@[expose] public section
 
 /-! # Conditional expectation in L1
 

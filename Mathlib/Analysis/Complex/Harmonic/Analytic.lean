@@ -3,10 +3,14 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.Analysis.Complex.Conformal
-import Mathlib.Analysis.Complex.HasPrimitives
-import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.Complex.Conformal
+public import Mathlib.Analysis.Complex.HasPrimitives
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+
+@[expose] public section
 
 /-!
 # Analyticity of Harmonic Functions

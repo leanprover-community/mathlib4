@@ -3,7 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+
+@[expose] public section
 
 /-! # Restriction of a closed compact set in a product space to a set of coordinates
 

@@ -3,7 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
+
+@[expose] public section
 
 /-!
 # Endofunctors as a monoidal category.

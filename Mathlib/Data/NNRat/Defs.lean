@@ -3,13 +3,17 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Algebra.Ring.Rat
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Order.Nonneg.Basic
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.GaloisConnection.Defs
+
+@[expose] public section
 
 /-!
 # Nonnegative rationals

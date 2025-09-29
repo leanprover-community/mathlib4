@@ -3,8 +3,11 @@ Copyright (c) 2023 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
+
+@[expose] public section
 /-!
 # Variants of `haveI`/`letI` for use in do-notation.
 

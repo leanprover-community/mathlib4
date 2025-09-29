@@ -3,8 +3,12 @@ Copyright (c) 2025 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+public import Mathlib.CategoryTheory.Monad.Limits
+
+@[expose] public section
 
 
 /-!

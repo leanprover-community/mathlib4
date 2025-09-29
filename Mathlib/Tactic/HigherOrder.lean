@@ -3,12 +3,16 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Lean.Meta.Tactic.Apply
-import Lean.Meta.Tactic.Assumption
-import Lean.Meta.MatchUtil
-import Lean.Meta.Tactic.Intro
-import Lean.Elab.DeclarationRange
-import Mathlib.Tactic.Attr.Register
+module
+
+public import Lean.Meta.Tactic.Apply
+public import Lean.Meta.Tactic.Assumption
+public import Lean.Meta.MatchUtil
+public import Lean.Meta.Tactic.Intro
+public import Lean.Elab.DeclarationRange
+public import Mathlib.Tactic.Attr.Register
+
+@[expose] public section
 
 /-!
 # HigherOrder attribute

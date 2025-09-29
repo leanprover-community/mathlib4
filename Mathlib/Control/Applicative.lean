@@ -3,9 +3,13 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Control.Functor
-import Mathlib.Control.Basic
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Control.Functor
+public import Mathlib.Control.Basic
+
+@[expose] public section
 
 /-!
 # `applicative` instances

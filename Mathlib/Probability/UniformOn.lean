@@ -3,8 +3,12 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Bhavik Mehta
 -/
-import Mathlib.Probability.ConditionalProbability
-import Mathlib.MeasureTheory.Measure.Count
+module
+
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.MeasureTheory.Measure.Count
+
+@[expose] public section
 
 /-!
 # Classical probability

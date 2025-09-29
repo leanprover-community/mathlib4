@@ -3,9 +3,13 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.MeasureTheory.Covering.OneDim
-import Mathlib.Order.Monotone.Extension
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.MeasureTheory.Covering.OneDim
+public import Mathlib.Order.Monotone.Extension
+
+@[expose] public section
 
 /-!
 # Differentiability of monotone functions

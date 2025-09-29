@@ -3,10 +3,14 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Analytic.RadiusLiminf
-import Mathlib.Analysis.Complex.Liouville
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Analysis.Normed.Algebra.Spectrum
+module
+
+public import Mathlib.Analysis.Analytic.RadiusLiminf
+public import Mathlib.Analysis.Complex.Liouville
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
+
+@[expose] public section
 
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras

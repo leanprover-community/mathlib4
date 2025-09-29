@@ -3,7 +3,11 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+
+@[expose] public section
 
 /-!
 # Localizations of modules away from an element

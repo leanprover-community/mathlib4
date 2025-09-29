@@ -3,8 +3,12 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.RepresentationTheory.FDRep
+module
+
+public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.FDRep
+
+@[expose] public section
 
 /-!
 # Subspace of invariants a group representation

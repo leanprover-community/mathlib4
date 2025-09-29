@@ -3,9 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, Aaron Liu
 -/
-import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Separation.GDelta
+module
+
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.Separation.GDelta
+
+@[expose] public section
 
 /-!
 # `Gδ` sets and metrizable spaces

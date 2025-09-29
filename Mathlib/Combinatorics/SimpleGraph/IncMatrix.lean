@@ -3,9 +3,13 @@ Copyright (c) 2021 Gabriel Moise. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Matrix.Mul
+
+@[expose] public section
 
 /-!
 # Incidence matrix of a simple graph

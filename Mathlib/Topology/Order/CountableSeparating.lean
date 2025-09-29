@@ -3,8 +3,12 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Order.Filter.CountableSeparatingOn
+module
+
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Order.Filter.CountableSeparatingOn
+
+@[expose] public section
 
 /-!
 # Countably many infinite intervals separate points

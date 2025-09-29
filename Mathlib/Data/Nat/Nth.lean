@@ -3,13 +3,17 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
-import Mathlib.Data.List.GetD
-import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Order.OrderIsoNat
-import Mathlib.Order.WellFounded
-import Mathlib.Data.Finset.Sort
+module
+
+public import Mathlib.Data.List.GetD
+public import Mathlib.Data.Nat.Count
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.WellFounded
+public import Mathlib.Data.Finset.Sort
+
+@[expose] public section
 
 /-!
 # The `n`th Number Satisfying a Predicate

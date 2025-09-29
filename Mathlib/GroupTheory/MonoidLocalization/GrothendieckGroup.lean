@@ -3,7 +3,11 @@ Copyright (c) 2025 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+
+@[expose] public section
 
 /-!
 # Grothendieck group

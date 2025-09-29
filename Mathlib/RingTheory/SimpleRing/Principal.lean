@@ -3,10 +3,13 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
 
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.SimpleRing.Field
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.RingTheory.SimpleRing.Field
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+@[expose] public section
 
 /-!
 # A commutative simple ring is a principal ideal domain

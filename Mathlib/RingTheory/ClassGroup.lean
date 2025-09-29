@@ -3,7 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
+
+@[expose] public section
 
 /-!
 # The ideal class group

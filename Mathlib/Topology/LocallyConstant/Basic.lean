@@ -3,10 +3,14 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Tactic.FinCases
-import Mathlib.Topology.Connected.LocallyConnected
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.Sets.Closeds
+
+@[expose] public section
 
 /-!
 # Locally constant functions

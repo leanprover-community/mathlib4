@@ -3,10 +3,14 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.FunctorN
-import Mathlib.AlgebraicTopology.DoldKan.Decomposition
-import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
-import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
+public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
+
+@[expose] public section
 
 /-!
 

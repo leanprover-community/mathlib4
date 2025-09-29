@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.Preadditive.Basic
+
+@[expose] public section
 
 /-!
 # Factoring through subobjects

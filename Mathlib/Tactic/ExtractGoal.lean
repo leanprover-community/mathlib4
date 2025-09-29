@@ -3,12 +3,16 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kyle Miller, Damiano Testa
 -/
-import Lean.Elab.Term
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Meta.Tactic.Cleanup
-import Lean.PrettyPrinter
-import Batteries.Lean.Meta.Inaccessible
-import Mathlib.Tactic.MinImports
+module
+
+public import Lean.Elab.Term
+public import Lean.Elab.Tactic.ElabTerm
+public import Lean.Meta.Tactic.Cleanup
+public import Lean.PrettyPrinter
+public import Batteries.Lean.Meta.Inaccessible
+public import Mathlib.Tactic.MinImports
+
+@[expose] public section
 
 /-!
 #  `extract_goal`: Format the current goal as a stand-alone example

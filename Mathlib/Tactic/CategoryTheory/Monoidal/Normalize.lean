@@ -3,8 +3,12 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+module
+
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+
+@[expose] public section
 
 /-!
 # Normalization of morphisms in monoidal categories

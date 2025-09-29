@@ -3,9 +3,13 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Int.DivMod
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Int.DivMod
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Common
+
+@[expose] public section
 
 /-!
 # The finite type with `n` elements

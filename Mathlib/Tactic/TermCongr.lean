@@ -3,10 +3,14 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.CongrExclamation
+module
+
+public import Mathlib.Lean.Expr.Basic
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.CongrExclamation
+
+@[expose] public section
 
 /-! # `congr(...)` congruence quotations
 

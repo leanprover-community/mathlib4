@@ -3,9 +3,13 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Chain
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+
+@[expose] public section
 
 /-!
 # Bases for root pairings / systems

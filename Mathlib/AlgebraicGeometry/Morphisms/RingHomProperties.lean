@@ -3,9 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.RingHom.Locally
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.RingHom.Locally
+
+@[expose] public section
 
 /-!
 

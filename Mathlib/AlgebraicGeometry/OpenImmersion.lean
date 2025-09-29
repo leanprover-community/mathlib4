@@ -3,10 +3,14 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Geometry.RingedSpace.OpenImmersion
-import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.AlgebraicGeometry.Scheme
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+@[expose] public section
 
 /-!
 # Open immersions of schemes

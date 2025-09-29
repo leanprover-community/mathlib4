@@ -3,7 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.IsPoly
+module
+
+public import Mathlib.RingTheory.WittVector.IsPoly
+
+@[expose] public section
 
 /-!
 ## Multiplication by `n` in the ring of Witt vectors

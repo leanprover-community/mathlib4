@@ -3,8 +3,12 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+module
+
+public import Mathlib.Algebra.Module.Torsion
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+
+@[expose] public section
 
 /-!
 # Modules over a Dedekind domain

@@ -3,10 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Strict
-import Mathlib.Analysis.Convex.StdSimplex
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Analysis.Convex.Strict
+public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Algebra.Module.Basic
+
+@[expose] public section
 
 /-!
 # Topological properties of convex sets

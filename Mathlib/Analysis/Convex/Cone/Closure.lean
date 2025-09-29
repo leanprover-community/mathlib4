@@ -3,9 +3,13 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Geometry.Convex.Cone.Pointed
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Monoid.Defs
+
+@[expose] public section
 
 /-!
 # Closure of cones

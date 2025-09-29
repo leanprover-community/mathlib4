@@ -3,13 +3,17 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+
+@[expose] public section
 
 /-!
 # Lemmas about linear ordered (semi)fields

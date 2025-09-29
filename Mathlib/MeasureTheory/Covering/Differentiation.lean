@@ -3,11 +3,15 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Function.AEMeasurableOrder
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Measure.Regular
+module
+
+public import Mathlib.MeasureTheory.Covering.VitaliFamily
+public import Mathlib.MeasureTheory.Function.AEMeasurableOrder
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Measure.Regular
+
+@[expose] public section
 
 /-!
 # Differentiation of measures

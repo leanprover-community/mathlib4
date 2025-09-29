@@ -3,7 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Category.Lat
+module
+
+public import Mathlib.Order.Category.Lat
+
+@[expose] public section
 
 /-!
 # Category of linear orders

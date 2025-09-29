@@ -3,9 +3,13 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.RingTheory.Localization.Defs
+
+@[expose] public section
 
 /-!
 # Localized Module

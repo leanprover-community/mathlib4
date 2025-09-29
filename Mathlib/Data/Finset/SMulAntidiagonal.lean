@@ -3,8 +3,12 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Data.Set.SMulAntidiagonal
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Data.Set.SMulAntidiagonal
+
+@[expose] public section
 
 /-!
 # Antidiagonal for scalar multiplication as a `Finset`.

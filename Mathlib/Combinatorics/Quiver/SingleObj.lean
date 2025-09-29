@@ -3,8 +3,12 @@ Copyright (c) 2023 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Combinatorics.Quiver.Cast
-import Mathlib.Combinatorics.Quiver.Symmetric
+module
+
+public import Mathlib.Combinatorics.Quiver.Cast
+public import Mathlib.Combinatorics.Quiver.Symmetric
+
+@[expose] public section
 
 /-!
 # Single-object quiver

@@ -3,13 +3,17 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Tactic.ArithMult
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Data.Nat.Factorization.Induction
+public import Mathlib.Tactic.ArithMult
+
+@[expose] public section
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution

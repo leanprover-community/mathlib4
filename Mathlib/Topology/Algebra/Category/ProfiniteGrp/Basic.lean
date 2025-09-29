@@ -3,11 +3,15 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
-import Mathlib.Algebra.Category.Grp.FiniteGrp
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.Separation.Connected
+module
+
+public import Mathlib.Algebra.Category.Grp.FiniteGrp
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.Separation.Connected
+
+@[expose] public section
 /-!
 
 # Category of Profinite Groups

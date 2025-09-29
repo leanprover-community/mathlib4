@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.LocalPredicate
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Topology.Sheaves.LocalPredicate
+public import Mathlib.Topology.Sheaves.Stalks
+
+@[expose] public section
 
 /-!
 # Sheafification of `Type`-valued presheaves

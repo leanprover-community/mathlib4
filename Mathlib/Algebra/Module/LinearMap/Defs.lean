@@ -4,11 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Module.RingHom
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Module.RingHom
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.GroupTheory.GroupAction.Hom
+
+@[expose] public section
 
 /-!
 # (Semi)linear maps

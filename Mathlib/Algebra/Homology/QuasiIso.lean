@@ -3,9 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.ShortComplex.Retract
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Homology.ShortComplex.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+
+@[expose] public section
 
 /-!
 # Quasi-isomorphisms

@@ -3,9 +3,12 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Init
-import Aesop
+public import Mathlib.Init
+public import Aesop
+
+@[expose] public section
 
 /-!
 # SetLike Rule Set

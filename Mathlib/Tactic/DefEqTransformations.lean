@@ -3,7 +3,11 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Tactic.Basic
+
+@[expose] public section
 
 /-! # Tactics that transform types into definitionally equal types
 

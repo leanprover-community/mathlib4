@@ -3,12 +3,16 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Tactic.TryThis
+module
+
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Combinatorics.Quiver.Basic
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.TryThis
+
+@[expose] public section
 
 /-!
 # Categories

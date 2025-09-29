@@ -3,11 +3,15 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury Kudryashov
 -/
-import Mathlib.Order.UpperLower.Closure
-import Mathlib.Order.UpperLower.Fibration
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Maps.OpenQuotient
+module
+
+public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.UpperLower.Fibration
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Maps.OpenQuotient
+
+@[expose] public section
 
 /-!
 # Inseparable points in a topological space

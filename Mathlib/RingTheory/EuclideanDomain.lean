@@ -3,10 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
+
+@[expose] public section
 
 /-!
 # Lemmas about Euclidean domains

@@ -3,10 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Kyle Miller
 -/
+module
 
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Util.AddRelatedDecl
-import Batteries.Tactic.Lint
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Util.AddRelatedDecl
+public import Batteries.Tactic.Lint
+
+@[expose] public section
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories

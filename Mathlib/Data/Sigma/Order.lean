@@ -3,11 +3,15 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Sigma.Lex
-import Mathlib.Util.Notation3
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Order.Lattice
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Data.Sigma.Lex
+public import Mathlib.Util.Notation3
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.BoundedOrder.Basic
+
+@[expose] public section
 
 /-!
 # Orders on a sigma type

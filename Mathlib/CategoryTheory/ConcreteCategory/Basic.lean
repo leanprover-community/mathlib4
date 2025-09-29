@@ -3,7 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Types.Basic
+
+@[expose] public section
 
 /-!
 # Concrete categories

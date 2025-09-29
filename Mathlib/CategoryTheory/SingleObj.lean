@@ -3,12 +3,16 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Combinatorics.Quiver.SingleObj
-import Mathlib.Algebra.Group.Units.Equiv
+module
+
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Combinatorics.Quiver.SingleObj
+public import Mathlib.Algebra.Group.Units.Equiv
+
+@[expose] public section
 
 /-!
 # Single-object category

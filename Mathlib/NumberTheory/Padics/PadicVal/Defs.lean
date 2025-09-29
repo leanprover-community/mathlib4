@@ -3,8 +3,12 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.Data.Nat.Factors
+module
+
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.Data.Nat.Factors
+
+@[expose] public section
 
 /-!
 # `p`-adic Valuation

@@ -3,10 +3,14 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+
+@[expose] public section
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.

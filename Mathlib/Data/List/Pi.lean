@@ -3,7 +3,11 @@ Copyright (c) 2023 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Data.Multiset.Pi
+module
+
+public import Mathlib.Data.Multiset.Pi
+
+@[expose] public section
 
 /-!
 # The Cartesian product of lists

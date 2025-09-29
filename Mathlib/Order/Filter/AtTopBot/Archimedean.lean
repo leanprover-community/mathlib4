@@ -3,10 +3,14 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Order.Filter.CountablyGenerated
+public import Mathlib.Tactic.GCongr
+
+@[expose] public section
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields

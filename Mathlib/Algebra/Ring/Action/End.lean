@@ -3,8 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Action.Group
-import Mathlib.Algebra.Ring.Aut
+module
+
+public import Mathlib.Algebra.Ring.Action.Group
+public import Mathlib.Algebra.Ring.Aut
+
+@[expose] public section
 
 /-!
 # Ring automorphisms

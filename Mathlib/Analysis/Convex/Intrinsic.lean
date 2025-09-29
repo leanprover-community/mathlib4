@@ -3,7 +3,11 @@ Copyright (c) 2023 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+
+@[expose] public section
 
 /-!
 # Intrinsic frontier and interior

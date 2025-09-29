@@ -3,10 +3,13 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kyle Miller
 -/
+module
 
-import Lean.Elab.SyntheticMVars
-import Lean
-import Mathlib.Init
+public import Lean.Elab.SyntheticMVars
+public import Lean
+public import Mathlib.Init
+
+@[expose] public section
 /-!
 # The `fast_instance%` term elaborator
 -/

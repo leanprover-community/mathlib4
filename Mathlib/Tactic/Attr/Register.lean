@@ -3,10 +3,14 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.SimpTheorems
-import Lean.Meta.Tactic.Simp.RegisterCommand
-import Lean.LabelAttribute
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Tactic.Simp.SimpTheorems
+public import Lean.Meta.Tactic.Simp.RegisterCommand
+public import Lean.LabelAttribute
+
+@[expose] public section
 
 /-!
 # Attributes used in `Mathlib`

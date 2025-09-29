@@ -3,12 +3,16 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Data.Rat.Encodable
-import Mathlib.Data.Finset.Sort
-import Mathlib.ModelTheory.Complexity
-import Mathlib.ModelTheory.Fraisse
-import Mathlib.Order.CountableDenseLinearOrder
+module
+
+public import Mathlib.Algebra.CharZero.Infinite
+public import Mathlib.Data.Rat.Encodable
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.ModelTheory.Complexity
+public import Mathlib.ModelTheory.Fraisse
+public import Mathlib.Order.CountableDenseLinearOrder
+
+@[expose] public section
 
 /-!
 # Ordered First-Ordered Structures

@@ -3,8 +3,12 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.CategoryTheory.Abelian.Refinements
+module
+
+public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.CategoryTheory.Abelian.Refinements
+
+@[expose] public section
 
 /-!
 # The four and five lemmas

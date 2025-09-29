@@ -3,8 +3,12 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Logic.Function.DependsOn
+module
+
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Logic.Function.DependsOn
+
+@[expose] public section
 
 /-!
 # Update a function on a set of values

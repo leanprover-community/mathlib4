@@ -3,9 +3,13 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Tactic.CategoryTheory.Slice
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Tactic.CategoryTheory.Slice
+
+@[expose] public section
 
 /-!
 # 2-squares of functors

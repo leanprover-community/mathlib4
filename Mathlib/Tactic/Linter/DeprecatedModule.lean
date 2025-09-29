@@ -3,8 +3,12 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Std.Time.Format
-import Mathlib.Init
+module
+
+public import Std.Time.Format
+public import Mathlib.Init
+
+@[expose] public section
 
 /-!
 #  The `deprecated.module` linter

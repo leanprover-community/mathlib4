@@ -3,10 +3,14 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.SetTheory.PGame.Algebra
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.SetTheory.PGame.Algebra
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+@[expose] public section
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"

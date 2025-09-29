@@ -3,8 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
-import Mathlib.Analysis.BoxIntegral.Partition.Split
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
+public import Mathlib.Analysis.BoxIntegral.Partition.Split
+
+@[expose] public section
 
 /-!
 # Filters used in box-based integrals

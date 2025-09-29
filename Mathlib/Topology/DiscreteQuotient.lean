@@ -3,10 +3,14 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
-import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Data.Setoid.Partition
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Connected.TotallyDisconnected
+
+@[expose] public section
 
 /-!
 

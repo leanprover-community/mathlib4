@@ -3,9 +3,13 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
-import Mathlib.Algebra.Category.AlgCat.Basic
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
+public import Mathlib.Algebra.Category.AlgCat.Basic
+
+@[expose] public section
 
 /-! # Category-theoretic interpretations of `CliffordAlgebra`
 

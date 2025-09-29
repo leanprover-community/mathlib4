@@ -3,9 +3,13 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Embedding
-import Mathlib.Data.Fin.Rev
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Fin.Embedding
+public import Mathlib.Data.Fin.Rev
+public import Mathlib.Order.Hom.Basic
+
+@[expose] public section
 
 /-!
 # `Fin n` forms a bounded linear order

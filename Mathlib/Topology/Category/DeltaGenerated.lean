@@ -3,9 +3,13 @@ Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Compactness.DeltaGeneratedSpace
+module
+
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
+
+@[expose] public section
 
 /-!
 # Delta-generated topological spaces

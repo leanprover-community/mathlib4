@@ -3,12 +3,16 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Module.Card
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.SetTheory.Cardinal.CountableCover
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.MetricSpace.Perfect
+module
+
+public import Mathlib.Algebra.Module.Card
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.SetTheory.Cardinal.Continuum
+public import Mathlib.SetTheory.Cardinal.CountableCover
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Topology.MetricSpace.Perfect
+
+@[expose] public section
 
 /-!
 # Cardinality of open subsets of vector spaces

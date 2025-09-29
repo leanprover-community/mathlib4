@@ -3,8 +3,12 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.IonescuTulcea.Traj
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
+
+@[expose] public section
 
 /-!
 # Infinite product of probability measures

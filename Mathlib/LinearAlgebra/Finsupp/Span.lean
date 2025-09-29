@@ -3,8 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.LinearAlgebra.Finsupp.Defs
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.LinearAlgebra.Span.Basic
+
+@[expose] public section
 
 /-!
 # Finitely supported functions and spans

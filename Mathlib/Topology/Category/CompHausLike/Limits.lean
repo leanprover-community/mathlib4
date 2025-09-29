@@ -3,9 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.Topology.Category.CompHausLike.Basic
+module
+
+public import Mathlib.CategoryTheory.Extensive
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.Topology.Category.CompHausLike.Basic
+
+@[expose] public section
 /-!
 
 # Explicit limits and colimits

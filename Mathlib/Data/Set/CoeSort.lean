@@ -4,7 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Kim Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Data.Set.Defs
+module
+
+public import Mathlib.Data.Set.Defs
+
+@[expose] public section
 
 /-!
 # Coercing sets to types.

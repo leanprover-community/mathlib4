@@ -3,11 +3,15 @@ Copyright (c) 2023 Parth Shastri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Command
-import Lean.Compiler.CSimpAttr
-import Lean.Util.FoldConsts
-import Lean.Data.AssocList
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Command
+public import Lean.Compiler.CSimpAttr
+public import Lean.Util.FoldConsts
+public import Lean.Data.AssocList
+
+@[expose] public section
 
 /-!
 # Define the `compile_inductive%` command.

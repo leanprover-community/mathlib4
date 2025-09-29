@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Notation.Pi.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Opposite
+public import Mathlib.Algebra.Notation.Pi.Basic
+
+@[expose] public section
 
 /-!
 # Definitions of group actions

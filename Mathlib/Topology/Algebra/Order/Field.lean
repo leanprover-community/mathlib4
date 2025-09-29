@@ -3,10 +3,14 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.Order.Group
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Order.Filter.AtTopBot.Field
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.Order.Group
+
+@[expose] public section
 
 /-!
 # Topologies on linear ordered fields

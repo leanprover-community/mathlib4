@@ -3,7 +3,11 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Adjoin.FG
+module
+
+public import Mathlib.RingTheory.Adjoin.FG
+
+@[expose] public section
 
 /-!
 # Adjoining elements and being finitely generated in an algebra tower

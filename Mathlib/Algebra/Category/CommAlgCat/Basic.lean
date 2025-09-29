@@ -3,10 +3,14 @@ Copyright (c) 2025 Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yan
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Category.Ring.Under.Basic
-import Mathlib.CategoryTheory.Limits.Over
-import Mathlib.CategoryTheory.WithTerminal.Cone
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.Ring.Under.Basic
+public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.CategoryTheory.WithTerminal.Cone
+
+@[expose] public section
 
 /-!
 # The category of commutative algebras over a commutative ring

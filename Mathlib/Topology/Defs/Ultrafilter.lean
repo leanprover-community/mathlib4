@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Ultrafilter.Defs
-import Mathlib.Topology.Defs.Basic
-import Mathlib.Topology.Defs.Filter
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Filter.Ultrafilter.Defs
+public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Topology.Defs.Filter
+
+@[expose] public section
 
 /-!
 # Limit of an ultrafilter.

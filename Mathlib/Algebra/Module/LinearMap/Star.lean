@@ -3,8 +3,12 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Star.Basic
+
+@[expose] public section
 
 /-!
 # Notation for star-linear maps

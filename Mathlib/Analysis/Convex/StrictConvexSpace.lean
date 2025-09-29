@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.Normed.Module.Ray
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+module
+
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.Normed.Module.Ray
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+
+@[expose] public section
 
 /-!
 # Strictly convex spaces

@@ -3,10 +3,14 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Category.ULift
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Category.ULift
+
+@[expose] public section
 
 /-!
 # Finite categories

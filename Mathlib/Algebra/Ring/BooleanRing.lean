@@ -3,12 +3,16 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 /-!
 # Boolean rings

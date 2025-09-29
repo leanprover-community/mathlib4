@@ -3,10 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.NumberTheory.Transcendental.Liouville.Basic
-import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Baire.LocallyCompactRegular
-import Mathlib.Topology.Instances.Irrational
+module
+
+public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Baire.LocallyCompactRegular
+public import Mathlib.Topology.Instances.Irrational
+
+@[expose] public section
 
 /-!
 # Density of Liouville numbers

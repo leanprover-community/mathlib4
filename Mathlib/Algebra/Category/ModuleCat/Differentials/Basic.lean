@@ -3,9 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.RingTheory.Kaehler.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.RingTheory.Kaehler.Basic
+
+@[expose] public section
 
 /-!
 # The differentials of a morphism in the category of commutative rings

@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Logic.Small.Basic
+
+@[expose] public section
 
 /-!
 # Small classes of morphisms

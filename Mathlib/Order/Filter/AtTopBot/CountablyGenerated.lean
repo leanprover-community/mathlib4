@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.AtTopBot.Finite
-import Mathlib.Order.Filter.AtTopBot.Prod
-import Mathlib.Order.Filter.CountablyGenerated
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Finite
+public import Mathlib.Order.Filter.AtTopBot.Prod
+public import Mathlib.Order.Filter.CountablyGenerated
+
+@[expose] public section
 
 /-!
 # Convergence to infinity and countably generated filters

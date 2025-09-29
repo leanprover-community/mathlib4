@@ -3,8 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+
+@[expose] public section
 /-!
 
 # Effective epimorphisms in `TopCat`

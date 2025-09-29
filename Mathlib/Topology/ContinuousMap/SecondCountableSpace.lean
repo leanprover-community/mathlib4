@@ -3,7 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
+module
+
+public import Mathlib.Topology.CompactOpen
+
+@[expose] public section
 
 /-!
 # Second countable topology on `C(X, Y)`

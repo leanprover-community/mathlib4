@@ -3,9 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Option
-import Mathlib.Analysis.BoxIntegral.Box.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Option
+public import Mathlib.Analysis.BoxIntegral.Box.Basic
+public import Mathlib.Data.Set.Pairwise.Lattice
+
+@[expose] public section
 
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`

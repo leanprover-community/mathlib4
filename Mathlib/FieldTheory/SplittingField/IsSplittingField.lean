@@ -3,9 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.RingTheory.Adjoin.Field
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.RingTheory.Adjoin.Field
+
+@[expose] public section
 
 /-!
 # Splitting fields

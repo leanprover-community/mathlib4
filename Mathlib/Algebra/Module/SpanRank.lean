@@ -3,11 +3,15 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, Andrew Yang
 -/
-import Mathlib.Data.Set.Card
-import Mathlib.Data.ENat.Lattice
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+module
+
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+
+@[expose] public section
 
 /-!
 # Minimum Cardinality of generating set of a submodule

@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Prod
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.GroupWithZero.Prod
+
+@[expose] public section
 
 /-!
 # Definitions of group actions

@@ -3,9 +3,13 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Module.Basic
-import Mathlib.Data.NNRat.Lemmas
-import Mathlib.Data.Rat.Cast.Order
+module
+
+public import Mathlib.Algebra.Order.Module.Basic
+public import Mathlib.Data.NNRat.Lemmas
+public import Mathlib.Data.Rat.Cast.Order
+
+@[expose] public section
 
 /-!
 # Monotonicity of the action by rational numbers

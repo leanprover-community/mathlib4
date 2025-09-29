@@ -3,8 +3,12 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.Positivity
-import Mathlib.Algebra.Order.Field.Basic
+module
+
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Algebra.Order.Field.Basic
+
+@[expose] public section
 
 /-!
 Rational approximation of the square root of a natural number.

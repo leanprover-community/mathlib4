@@ -3,8 +3,12 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PathCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.PathCategory.Basic
+
+@[expose] public section
 
 /-!
 # Free groupoid on a quiver

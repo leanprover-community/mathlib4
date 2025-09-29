@@ -3,7 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+module
+
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+
+@[expose] public section
 
 /-!
 # Pullback of a measure

@@ -3,9 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.MeasureTheory.Measure.Tight
-import Mathlib.Order.CompletePartialOrder
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.MeasureTheory.Measure.Tight
+public import Mathlib.Order.CompletePartialOrder
+
+@[expose] public section
 
 /-!
 # Tight sets of measures in normed spaces

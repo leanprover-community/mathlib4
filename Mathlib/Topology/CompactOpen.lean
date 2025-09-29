@@ -3,9 +3,13 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Hom.ContinuousEval
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Hom.ContinuousEval
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Separation.Regular
+
+@[expose] public section
 
 /-!
 # The compact-open topology

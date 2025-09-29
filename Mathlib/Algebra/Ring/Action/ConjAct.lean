@@ -3,8 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.GroupAction.ConjAct
+module
+
+public import Mathlib.Algebra.Ring.Action.Basic
+public import Mathlib.GroupTheory.GroupAction.ConjAct
+
+@[expose] public section
 
 /-!
 # Conjugation action of a ring on itself

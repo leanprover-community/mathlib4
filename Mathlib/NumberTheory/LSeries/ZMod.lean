@@ -3,10 +3,13 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Fourier.ZMod
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.Analysis.Fourier.ZMod
+public import Mathlib.Analysis.NormedSpace.Connected
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+
+@[expose] public section
 
 /-!
 # L-series of functions on `ZMod N`

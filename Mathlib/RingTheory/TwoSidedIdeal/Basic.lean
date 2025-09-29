@@ -3,11 +3,14 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.RingTheory.Congruence.Opposite
+
+@[expose] public section
 
 /-!
 # Two Sided Ideals

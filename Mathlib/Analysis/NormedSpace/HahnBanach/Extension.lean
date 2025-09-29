@@ -3,9 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.Normed.Module.RCLike.Extend
-import Mathlib.Analysis.RCLike.Lemmas
+module
+
+public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.Normed.Module.RCLike.Extend
+public import Mathlib.Analysis.RCLike.Lemmas
+
+@[expose] public section
 
 /-!
 # Extension Hahn-Banach theorem

@@ -3,7 +3,11 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro
 -/
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 /-!
 # linear_combination' Tactic

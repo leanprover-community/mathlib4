@@ -3,9 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Batteries.Tactic.Alias
+module
+
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Batteries.Tactic.Alias
+
+@[expose] public section
 
 /-!
 # Extra definitions on `Option`

@@ -3,10 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.Weight
+
+@[expose] public section
 
 /-! Homogeneous lexicographic monomial ordering
 

@@ -3,10 +3,14 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Affine.Isometry
+
+@[expose] public section
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces

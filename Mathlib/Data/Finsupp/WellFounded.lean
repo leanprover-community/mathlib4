@@ -3,8 +3,12 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Data.DFinsupp.WellFounded
-import Mathlib.Data.Finsupp.Lex
+module
+
+public import Mathlib.Data.DFinsupp.WellFounded
+public import Mathlib.Data.Finsupp.Lex
+
+@[expose] public section
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `Finsupp`

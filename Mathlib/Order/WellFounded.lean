@@ -3,8 +3,12 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Bounds.Defs
+
+@[expose] public section
 
 /-!
 # Well-founded relations

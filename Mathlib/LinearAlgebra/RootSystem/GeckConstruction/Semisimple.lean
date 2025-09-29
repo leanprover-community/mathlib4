@@ -3,11 +3,15 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.Semisimple.Lemmas
-import Mathlib.Algebra.Lie.Weights.Linear
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-import Mathlib.RingTheory.Finiteness.Nilpotent
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.Algebra.Lie.Semisimple.Lemmas
+public import Mathlib.Algebra.Lie.Weights.Linear
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+public import Mathlib.RingTheory.Finiteness.Nilpotent
+
+@[expose] public section
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras

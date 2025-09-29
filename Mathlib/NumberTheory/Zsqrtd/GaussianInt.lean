@@ -3,10 +3,14 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Real.Archimedean
-import Mathlib.NumberTheory.Zsqrtd.Basic
+module
+
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.NumberTheory.Zsqrtd.Basic
+
+@[expose] public section
 
 /-!
 # Gaussian integers

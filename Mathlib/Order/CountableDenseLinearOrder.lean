@@ -3,8 +3,12 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Data.Finset.Max
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Data.Finset.Max
+
+@[expose] public section
 
 /-!
 # The back and forth method and countable dense linear orders

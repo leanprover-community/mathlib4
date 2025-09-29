@@ -3,10 +3,14 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Lean.Elab.Tactic.Simp
-import Lean.Elab.App
-import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Lean.Expr.Basic
+module
+
+public import Lean.Elab.Tactic.Simp
+public import Lean.Elab.App
+public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Lean.Expr.Basic
+
+@[expose] public section
 
 /-!
 # Simps attribute

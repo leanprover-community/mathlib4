@@ -3,10 +3,13 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Patrick Massot
 -/
+module
 
-import Lean.Elab.Tactic.Location
-import Mathlib.Util.Tactic
-import Mathlib.Lean.Expr.Basic
+public import Lean.Elab.Tactic.Location
+public import Mathlib.Util.Tactic
+public import Mathlib.Lean.Expr.Basic
+
+@[expose] public section
 
 /-!
 # The `rename_bvar` tactic

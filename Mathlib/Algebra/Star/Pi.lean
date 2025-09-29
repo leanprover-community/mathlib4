@@ -3,9 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Ring.Pi
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Ring.Pi
+
+@[expose] public section
 
 /-!
 # Basic Results about Star on Pi Types

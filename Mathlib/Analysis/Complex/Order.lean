@@ -3,7 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.Complex.Norm
+module
+
+public import Mathlib.Analysis.Complex.Norm
+
+@[expose] public section
 
 /-!
 # The partial order on the complex numbers

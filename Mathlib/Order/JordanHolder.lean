@@ -3,12 +3,16 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.Lattice
-import Mathlib.Data.List.Sort
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Logic.Equiv.Functor
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Order.RelSeries
+module
+
+public import Mathlib.Order.Lattice
+public import Mathlib.Data.List.Sort
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Logic.Equiv.Functor
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Order.RelSeries
+
+@[expose] public section
 
 /-!
 # Jordan-Hölder Theorem

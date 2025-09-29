@@ -3,9 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+
+@[expose] public section
 
 /-!
 # Monomorphisms in `Module R`

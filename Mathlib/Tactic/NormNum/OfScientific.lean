@@ -3,8 +3,12 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Rat.Cast.Lemmas
+module
+
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Data.Rat.Cast.Lemmas
+
+@[expose] public section
 
 /-!
 ## `norm_num` plugin for scientific notation.

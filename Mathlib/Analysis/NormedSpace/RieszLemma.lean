@@ -3,9 +3,13 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Analysis.Seminorm
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+@[expose] public section
 
 /-!
 # Applications of the Hausdorff distance in normed spaces

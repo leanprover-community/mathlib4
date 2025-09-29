@@ -3,13 +3,17 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Rel
-import Mathlib.Order.OrderIsoNat
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Rel
+public import Mathlib.Order.OrderIsoNat
+
+@[expose] public section
 
 /-!
 # Series of a relation

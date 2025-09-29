@@ -3,8 +3,12 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.BoundedOrder.Lattice
+module
+
+public import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Order.BoundedOrder.Lattice
+
+@[expose] public section
 
 /-!
 # Successor and predecessor limits

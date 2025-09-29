@@ -3,10 +3,14 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Algebra.Algebra.Bilinear
+module
+
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Algebra.Algebra.Bilinear
+
+@[expose] public section
 
 /-!
 # Bundled versions of multiplication for matrices

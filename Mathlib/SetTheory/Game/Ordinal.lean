@@ -3,9 +3,13 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Game.Basic
-import Mathlib.SetTheory.Ordinal.NaturalOps
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.SetTheory.Game.Basic
+public import Mathlib.SetTheory.Ordinal.NaturalOps
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+@[expose] public section
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Ordinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"

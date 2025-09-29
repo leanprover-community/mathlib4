@@ -3,9 +3,13 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.Algebra.Group.Submonoid.DistribMulAction
-import Mathlib.GroupTheory.OreLocalization.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
+public import Mathlib.GroupTheory.OreLocalization.Basic
+public import Mathlib.Algebra.GroupWithZero.Defs
+
+@[expose] public section
 
 /-!
 

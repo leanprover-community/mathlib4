@@ -3,7 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Action
+module
+
+public import Mathlib.CategoryTheory.Galois.Action
+
+@[expose] public section
 
 /-!
 

@@ -3,10 +3,14 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Preord
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Order.UpperLowerSetTopology
+module
+
+public import Mathlib.Order.Category.Preord
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Order.UpperLowerSetTopology
+
+@[expose] public section
 
 /-!
 # Specialization order

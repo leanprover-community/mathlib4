@@ -3,12 +3,16 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+module
+
+public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+
+@[expose] public section
 
 /-!
 # Properties of the integral of `mulExpNegMulSq`

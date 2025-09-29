@@ -3,7 +3,11 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+
+@[expose] public section
 
 /-!
 # Galois Groups of Polynomials

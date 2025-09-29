@@ -3,19 +3,23 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
-import Batteries.Tactic.Trans
-import Lean.Elab.Tactic.Ext
-import Lean.Meta.Tactic.Rfl
-import Lean.Meta.Tactic.Symm
-import Lean.Meta.Tactic.TryThis
-import Mathlib.Data.Array.Defs
-import Mathlib.Data.Nat.Notation
-import Mathlib.Lean.Expr.ReplaceRec
-import Mathlib.Lean.Meta.Simp
-import Mathlib.Lean.Name
-import Mathlib.Tactic.Eqns -- just to copy the attribute
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.ToAdditive.GuessName
+module
+
+public import Batteries.Tactic.Trans
+public import Lean.Elab.Tactic.Ext
+public import Lean.Meta.Tactic.Rfl
+public import Lean.Meta.Tactic.Symm
+public import Lean.Meta.Tactic.TryThis
+public import Mathlib.Data.Array.Defs
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Lean.Expr.ReplaceRec
+public import Mathlib.Lean.Meta.Simp
+public import Mathlib.Lean.Name
+public import Mathlib.Tactic.Eqns -- just to copy the attribute
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.ToAdditive.GuessName
+
+@[expose] public section
 
 /-!
 # The `@[to_additive]` attribute.

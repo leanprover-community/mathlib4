@@ -3,9 +3,13 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Data.Finite.Prod
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+
+@[expose] public section
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 

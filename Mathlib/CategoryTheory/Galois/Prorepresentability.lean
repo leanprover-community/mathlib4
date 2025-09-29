@@ -3,11 +3,15 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.CategoryTheory.Galois.Decomposition
-import Mathlib.CategoryTheory.Limits.IndYoneda
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+module
+
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.CategoryTheory.Galois.Decomposition
+public import Mathlib.CategoryTheory.Limits.IndYoneda
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+
+@[expose] public section
 
 /-!
 # Pro-Representability of fiber functors

@@ -3,9 +3,13 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Covolume
-import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
-import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Covolume
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
+public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+
+@[expose] public section
 
 /-!
 # Regulator of a number field

@@ -3,9 +3,13 @@ Copyright (c) 2025 Bernhard Reinke. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bernhard Reinke
 -/
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Tactic.Abel
+
+@[expose] public section
 
 /-!
 # Associator in a ring

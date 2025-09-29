@@ -3,8 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Topology.Spectral.Prespectral
+module
+
+public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Topology.Spectral.Prespectral
+
+@[expose] public section
 
 /-!
 # Compact open covered sets

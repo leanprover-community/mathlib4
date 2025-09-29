@@ -3,8 +3,12 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.NormNum.Ineq
+module
+
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.NormNum.Ineq
+
+@[expose] public section
 
 /-!
 # Automation for proving inequalities in commutative (semi)rings

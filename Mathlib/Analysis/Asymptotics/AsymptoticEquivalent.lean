@@ -3,7 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Asymptotics.Theta
+module
+
+public import Mathlib.Analysis.Asymptotics.Theta
+
+@[expose] public section
 
 /-!
 # Asymptotic equivalence

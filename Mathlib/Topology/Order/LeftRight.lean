@@ -3,8 +3,12 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Order.Antichain
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Order.Antichain
+public import Mathlib.Topology.ContinuousOn
+
+@[expose] public section
 
 /-!
 # Left and right continuity

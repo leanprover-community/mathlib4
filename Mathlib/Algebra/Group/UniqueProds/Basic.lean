@@ -3,13 +3,17 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Data.DFinsupp.Defs
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Data.DFinsupp.Defs
+
+@[expose] public section
 
 /-!
 # Unique products and related notions

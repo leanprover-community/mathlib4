@@ -3,7 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+
+@[expose] public section
 
 /-!
 

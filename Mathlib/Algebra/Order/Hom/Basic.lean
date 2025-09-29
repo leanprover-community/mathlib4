@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Ring.Defs
+
+@[expose] public section
 
 /-!
 # Algebraic order homomorphism classes

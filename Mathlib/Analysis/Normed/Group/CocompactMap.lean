@@ -3,10 +3,13 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.ContinuousMap.CocompactMap
-import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.ContinuousMap.CocompactMap
+public import Mathlib.Topology.MetricSpace.Bounded
+
+@[expose] public section
 
 /-!
 # Cocompact maps in normed groups

@@ -3,9 +3,12 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.ModelTheory.Algebra.Ring.Basic
-import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.ModelTheory.Algebra.Ring.Basic
+public import Mathlib.RingTheory.FreeCommRing
+
+@[expose] public section
 
 /-!
 # Making a term in the language of rings from an element of the FreeCommRing

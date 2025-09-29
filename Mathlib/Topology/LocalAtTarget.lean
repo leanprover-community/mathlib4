@@ -3,9 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.LocallyClosed
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.LocallyClosed
+
+@[expose] public section
 
 /-!
 # Properties of maps that are local at the target or at the source.

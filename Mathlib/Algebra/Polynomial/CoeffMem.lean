@@ -3,9 +3,13 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.RingTheory.Ideal.Span
+
+@[expose] public section
 
 /-!
 # Bounding the coefficients of the quotient and remainder of polynomials

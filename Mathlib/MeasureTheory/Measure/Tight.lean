@@ -3,8 +3,12 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.Order.Lattice
+module
+
+public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.Topology.Order.Lattice
+
+@[expose] public section
 
 /-!
 # Tight sets of measures

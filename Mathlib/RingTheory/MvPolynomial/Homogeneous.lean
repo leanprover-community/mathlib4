@@ -3,14 +3,18 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Internal
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+public import Mathlib.SetTheory.Cardinal.Basic
+
+@[expose] public section
 
 /-!
 # Homogeneous polynomials

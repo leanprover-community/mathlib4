@@ -3,11 +3,15 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.Countable
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.MeasureTheory.Group.FundamentalDomain
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.RingTheory.Localization.Module
+module
+
+public import Mathlib.LinearAlgebra.Countable
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.MeasureTheory.Group.FundamentalDomain
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.RingTheory.Localization.Module
+
+@[expose] public section
 
 /-!
 # ℤ-lattices

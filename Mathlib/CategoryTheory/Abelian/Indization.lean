@@ -3,9 +3,13 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Preadditive.Indization
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Indization
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+
+@[expose] public section
 
 /-!
 # The category of ind-objects is abelian

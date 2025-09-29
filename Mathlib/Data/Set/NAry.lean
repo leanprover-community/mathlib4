@@ -3,7 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Set.Prod
+module
+
+public import Mathlib.Data.Set.Prod
+
+@[expose] public section
 
 /-!
 # N-ary images of sets

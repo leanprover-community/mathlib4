@@ -3,9 +3,13 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Monoidal
-import Mathlib.Algebra.Category.HopfAlgCat.Basic
-import Mathlib.RingTheory.HopfAlgebra.TensorProduct
+module
+
+public import Mathlib.Algebra.Category.BialgCat.Monoidal
+public import Mathlib.Algebra.Category.HopfAlgCat.Basic
+public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
+
+@[expose] public section
 
 /-!
 # The monoidal structure on the category of Hopf algebras

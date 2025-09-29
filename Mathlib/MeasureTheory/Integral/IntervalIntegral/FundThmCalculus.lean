@@ -3,13 +3,17 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Measurable
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
-import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Measurable
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
+public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+@[expose] public section
 
 /-!
 # Fundamental Theorem of Calculus

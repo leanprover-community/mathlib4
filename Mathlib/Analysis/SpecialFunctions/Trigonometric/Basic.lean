@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Algebra.Field.NegOnePow
-import Mathlib.Algebra.Field.Periodic
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.SpecialFunctions.Exp
+module
+
+public import Mathlib.Algebra.Field.NegOnePow
+public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Analysis.SpecialFunctions.Exp
+
+@[expose] public section
 
 /-!
 # Trigonometric functions

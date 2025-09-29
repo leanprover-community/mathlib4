@@ -3,10 +3,14 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+
+@[expose] public section
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules

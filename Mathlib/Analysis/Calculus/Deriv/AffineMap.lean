@@ -3,9 +3,13 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Linear
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Linear
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+
+@[expose] public section
 /-!
 # Derivatives of affine maps
 

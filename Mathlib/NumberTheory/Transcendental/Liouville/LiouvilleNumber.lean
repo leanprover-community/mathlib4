@@ -3,7 +3,11 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
 -/
-import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+module
+
+public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+
+@[expose] public section
 
 /-!
 

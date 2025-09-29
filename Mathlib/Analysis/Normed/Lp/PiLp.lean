@@ -3,10 +3,14 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Jireh Loreaux
 -/
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Data.Fintype.Order
-import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.Analysis.Normed.Lp.ProdLp
+module
+
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.Analysis.Normed.Lp.ProdLp
+
+@[expose] public section
 
 /-!
 # `L^p` distance on finite products of metric spaces

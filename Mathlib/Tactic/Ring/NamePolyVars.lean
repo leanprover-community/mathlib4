@@ -3,7 +3,11 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic
+
+@[expose] public section
 
 /-!
 The command `name_poly_vars` names variables in

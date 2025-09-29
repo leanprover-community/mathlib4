@@ -3,13 +3,17 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.MulAction
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.MulAction
+
+@[expose] public section
 
 /-!
 # Normed spaces

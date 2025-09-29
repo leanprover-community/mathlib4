@@ -3,9 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Finsupp.SMul
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.Data.Finsupp.SMul
+
+@[expose] public section
 
 /-!
 # Conversion between `Finsupp` and homogeneous `DFinsupp`

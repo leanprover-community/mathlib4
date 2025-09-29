@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.One
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
+
+@[expose] public section
 
 /-!
 # Characterization of sheaves using 1-hypercovers

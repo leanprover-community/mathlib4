@@ -3,9 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+
+@[expose] public section
 
 /-!
 # Norm on the continuous affine maps between normed vector spaces.

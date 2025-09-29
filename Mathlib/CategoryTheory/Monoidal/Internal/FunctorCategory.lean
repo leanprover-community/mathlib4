@@ -3,9 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.CommMon_
-import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Monoidal.CommMon_
+public import Mathlib.CategoryTheory.Monoidal.Comon_
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+
+@[expose] public section
 
 /-!
 # `Mon (C ⥤ D) ≌ C ⥤ Mon D`

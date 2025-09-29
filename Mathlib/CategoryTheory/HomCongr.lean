@@ -3,7 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.Iso
+
+@[expose] public section
 
 /-!
 # Conjugate morphisms by isomorphisms

@@ -3,11 +3,15 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.Shift.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.Shift.Quotient
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Tactic.Linarith
+
+@[expose] public section
 
 /-!
 # The shift on cochain complexes and on the homotopy category

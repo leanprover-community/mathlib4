@@ -3,10 +3,14 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Batteries.Classes.RatCast
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Batteries.Classes.RatCast
+
+@[expose] public section
 
 /-!
 # Basic definitions around the rational numbers

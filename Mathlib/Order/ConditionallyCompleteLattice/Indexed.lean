@@ -3,7 +3,11 @@ Copyright (c) 2018 Sébastian Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastian Gouëzel
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+@[expose] public section
 
 /-!
 # Indexed sup / inf in conditionally complete lattices

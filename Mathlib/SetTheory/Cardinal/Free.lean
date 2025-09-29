@@ -3,14 +3,18 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Daniel Weber
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.Algebra.Ring.TransferInstance
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.Data.ZMod.Defs
-import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.RingTheory.FreeCommRing
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Cardinal.Finsupp
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.Algebra.Ring.TransferInstance
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.GroupTheory.FreeGroup.Reduce
+public import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Finsupp
+
+@[expose] public section
 
 /-!
 # Cardinalities of free constructions

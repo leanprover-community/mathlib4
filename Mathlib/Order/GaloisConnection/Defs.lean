@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Util.AssertExists
+
+@[expose] public section
 
 /-!
 # Galois connections, insertions and coinsertions

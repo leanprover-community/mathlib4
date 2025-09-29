@@ -3,9 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Polynomial
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.RingTheory.Kaehler.Polynomial
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.RingTheory.Extension.Presentation.Basic
+
+@[expose] public section
 
 /-!
 

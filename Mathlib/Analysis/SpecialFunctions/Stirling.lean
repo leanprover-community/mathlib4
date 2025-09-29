@@ -3,9 +3,13 @@ Copyright (c) 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Real.Pi.Wallis
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Real.Pi.Wallis
+public import Mathlib.Tactic.AdaptationNote
+
+@[expose] public section
 
 /-!
 # Stirling's formula

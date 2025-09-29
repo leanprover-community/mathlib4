@@ -3,8 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Analysis.Normed.Group.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Analysis.Normed.Group.Basic
+
+@[expose] public section
 
 /-!
 # Subgroups of normed (semi)groups

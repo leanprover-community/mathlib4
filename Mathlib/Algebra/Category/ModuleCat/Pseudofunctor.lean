@@ -3,10 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
+public import Mathlib.CategoryTheory.Adjunction.Mates
+
+@[expose] public section
 
 /-!
 # The pseudofunctors which send a commutative ring to its category of modules

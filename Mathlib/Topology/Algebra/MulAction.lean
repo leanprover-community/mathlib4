@@ -3,11 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.AddTorsor.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Connected.Basic
+
+@[expose] public section
 
 /-!
 # Continuous monoid action

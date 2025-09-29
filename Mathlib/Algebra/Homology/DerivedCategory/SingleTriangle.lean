@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
+
+@[expose] public section
 
 /-!
 # The distinguished triangle of a short exact sequence in an abelian category

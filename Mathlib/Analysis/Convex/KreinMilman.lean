@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Exposed
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.Analysis.Convex.Exposed
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
+
+@[expose] public section
 
 /-!
 # The Krein-Milman theorem

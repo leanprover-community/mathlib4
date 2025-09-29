@@ -3,15 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Order.Filter.Ker
-import Mathlib.Order.Filter.Pi
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.CountablyGenerated
+public import Mathlib.Order.Filter.Ker
+public import Mathlib.Order.Filter.Pi
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.Filter.AtTopBot.Basic
+
+@[expose] public section
 
 /-!
 # The cofinite filter

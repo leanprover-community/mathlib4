@@ -3,8 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Probability.Moments.Variance
-import Mathlib.MeasureTheory.Function.UniformIntegrable
+module
+
+public import Mathlib.Probability.Moments.Variance
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
+
+@[expose] public section
 
 /-!
 # Identically distributed random variables

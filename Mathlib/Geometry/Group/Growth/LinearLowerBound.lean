@@ -3,9 +3,13 @@ Copyright (c) 2024 Yaël Dillies, Patrick Luo, Eric Rodriguez. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Data.Nat.SuccPred
+
+@[expose] public section
 
 /-!
 # Linear lower bound on the growth of a generating set

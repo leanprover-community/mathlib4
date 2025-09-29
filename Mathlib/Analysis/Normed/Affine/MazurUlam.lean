@@ -3,8 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Analysis.Normed.Affine.Isometry
+
+@[expose] public section
 
 /-!
 # Mazur-Ulam Theorem

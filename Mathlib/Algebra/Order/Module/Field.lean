@@ -3,9 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Tactic.Positivity.Core
+
+@[expose] public section
 
 /-!
 # Ordered vector spaces

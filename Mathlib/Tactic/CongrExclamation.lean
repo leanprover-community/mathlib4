@@ -3,12 +3,16 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Elab.Tactic.Config
-import Lean.Elab.Tactic.RCases
-import Lean.Meta.Tactic.Assumption
-import Lean.Meta.Tactic.Rfl
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Logic.Basic
+module
+
+public import Lean.Elab.Tactic.Config
+public import Lean.Elab.Tactic.RCases
+public import Lean.Meta.Tactic.Assumption
+public import Lean.Meta.Tactic.Rfl
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Logic.Basic
+
+@[expose] public section
 
 /-!
 # The `congr!` tactic

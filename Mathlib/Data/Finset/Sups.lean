@@ -3,9 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Set.Sups
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Slice
+public import Mathlib.Data.Set.Sups
+
+@[expose] public section
 
 /-!
 # Set family operations

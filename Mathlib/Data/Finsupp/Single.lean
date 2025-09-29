@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Finsupp.Defs
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Finsupp.Defs
+
+@[expose] public section
 
 /-!
 # Finitely supported functions on exactly one point

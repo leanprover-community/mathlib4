@@ -3,13 +3,17 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Batteries.Tactic.Lint.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Ineq
+module
+
+public import Batteries.Tactic.Lint.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Data.Ineq
+
+@[expose] public section
 
 /-!
 # Lemmas for `linarith`.

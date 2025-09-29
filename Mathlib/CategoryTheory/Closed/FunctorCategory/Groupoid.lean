@@ -3,9 +3,13 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+
+@[expose] public section
 
 /-!
 # Functors from a groupoid into a monoidal closed category form a monoidal closed category.

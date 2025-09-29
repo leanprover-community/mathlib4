@@ -3,12 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Data.Int.Basic
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Spread
+
+@[expose] public section
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.

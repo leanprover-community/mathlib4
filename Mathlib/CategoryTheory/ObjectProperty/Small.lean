@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.Logic.Small.Basic
+
+@[expose] public section
 
 /-!
 # Smallness of a property of objects

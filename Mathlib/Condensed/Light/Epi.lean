@@ -3,9 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
-import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
-import Mathlib.Condensed.Light.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
+public import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
+public import Mathlib.Condensed.Light.Limits
+
+@[expose] public section
 /-!
 
 # Epimorphisms of light condensed objects

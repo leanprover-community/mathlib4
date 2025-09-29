@@ -3,7 +3,11 @@ Copyright (c) 2024 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
-import Mathlib.Topology.Instances.Nat
+module
+
+public import Mathlib.Topology.Instances.Nat
+
+@[expose] public section
 
 /-!
 # Topology on the positive natural numbers

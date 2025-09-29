@@ -3,10 +3,14 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Separation.Regular
+
+@[expose] public section
 
 /-!
 # The topology on linearly ordered commutative groups with zero

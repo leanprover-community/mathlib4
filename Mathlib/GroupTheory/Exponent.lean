@@ -3,12 +3,16 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Nat.Factorization.LCM
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Tactic.Peel
+module
+
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Tactic.Peel
+
+@[expose] public section
 
 /-!
 # Exponent of a group

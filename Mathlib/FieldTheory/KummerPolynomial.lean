@@ -3,8 +3,12 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.Norm.Defs
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.Norm.Defs
+
+@[expose] public section
 /-!
 # Irreducibility of X ^ p - a
 

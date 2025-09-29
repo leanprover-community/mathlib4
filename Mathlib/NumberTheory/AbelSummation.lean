@@ -3,10 +3,14 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.MeasureTheory.Function.Floor
-import Mathlib.MeasureTheory.Integral.Asymptotics
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.Topology.Order.IsLocallyClosed
+module
+
+public import Mathlib.MeasureTheory.Function.Floor
+public import Mathlib.MeasureTheory.Integral.Asymptotics
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+public import Mathlib.Topology.Order.IsLocallyClosed
+
+@[expose] public section
 
 /-!
 # Abel's summation formula

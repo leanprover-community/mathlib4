@@ -3,7 +3,11 @@ Copyright (c) 2024 Lean FRO. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.List.InsertIdx
+module
+
+public import Mathlib.Data.List.InsertIdx
+
+@[expose] public section
 
 /-!
 This is a stub file for importing `Mathlib/Data/List/InsertNth.lean`,

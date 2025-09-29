@@ -3,9 +3,12 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+module
 
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+
+@[expose] public section
 
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.

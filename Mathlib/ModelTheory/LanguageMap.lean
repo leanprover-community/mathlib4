@@ -3,7 +3,11 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.ModelTheory.Basic
+module
+
+public import Mathlib.ModelTheory.Basic
+
+@[expose] public section
 
 /-!
 # Language Maps

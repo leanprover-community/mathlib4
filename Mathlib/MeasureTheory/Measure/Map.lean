@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+@[expose] public section
 
 /-!
 # Pushforward of a measure

@@ -3,10 +3,14 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.Data.Int.Sqrt
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.Data.Int.Sqrt
+
+@[expose] public section
 
 /-!
 # Square root on rational numbers

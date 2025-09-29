@@ -3,13 +3,17 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.Analysis.Convex.Star
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.NoncommRing
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.Analysis.Convex.Star
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+
+@[expose] public section
 
 /-!
 # Convex sets

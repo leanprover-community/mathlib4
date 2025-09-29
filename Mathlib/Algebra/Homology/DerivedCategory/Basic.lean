@@ -3,11 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
-import Mathlib.Algebra.Homology.Localization
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+public import Mathlib.Algebra.Homology.Localization
+
+@[expose] public section
 
 /-! # The derived category of an abelian category
 

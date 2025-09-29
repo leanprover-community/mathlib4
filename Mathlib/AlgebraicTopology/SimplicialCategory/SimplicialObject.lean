@@ -3,8 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-import Mathlib.CategoryTheory.Functor.FunctorHom
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
+public import Mathlib.CategoryTheory.Functor.FunctorHom
+
+@[expose] public section
 
 /-!
 # The category of simplicial objects is simplicial

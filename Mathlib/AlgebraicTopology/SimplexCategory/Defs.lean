@@ -3,9 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Order.Fin.Basic
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Util.Superscript
+
+@[expose] public section
 
 /-! # The simplex category
 

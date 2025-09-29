@@ -3,9 +3,13 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Tactic.TypeStar
-import Mathlib.Util.CompileInductive
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Util.CompileInductive
+
+@[expose] public section
 
 /-!
 # Binary tree

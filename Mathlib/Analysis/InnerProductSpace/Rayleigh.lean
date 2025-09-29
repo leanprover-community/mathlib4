@@ -3,12 +3,16 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.Calculus.LagrangeMultipliers
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.Algebra.EuclideanDomain.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.Calculus.LagrangeMultipliers
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.Algebra.EuclideanDomain.Basic
+
+@[expose] public section
 
 /-!
 # The Rayleigh quotient

@@ -3,8 +3,12 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Semisimple.Defs
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+module
+
+public import Mathlib.Algebra.Lie.Semisimple.Defs
+public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+
+@[expose] public section
 
 /-!
 # Lie algebras with non-degenerate invariant bilinear forms are semisimple

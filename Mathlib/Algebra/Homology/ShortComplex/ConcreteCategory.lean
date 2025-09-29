@@ -3,10 +3,14 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+
+@[expose] public section
 
 /-!
 # Exactness of short complexes in concrete abelian categories

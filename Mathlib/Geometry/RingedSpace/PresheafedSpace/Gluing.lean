@@ -3,9 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Gluing
-import Mathlib.Geometry.RingedSpace.OpenImmersion
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+module
+
+public import Mathlib.Topology.Gluing
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+
+@[expose] public section
 
 /-!
 # Gluing structured spaces

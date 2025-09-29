@@ -3,10 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+
+@[expose] public section
 /-!
 # Urysohn's Metrization Theorem
 

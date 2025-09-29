@@ -4,11 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis,
 Jireh Loreaux
 -/
-import Lean.Elab.Tactic.Location
-import Mathlib.Tactic.Push.Attr
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Conv
-import Mathlib.Util.AtLocation
+module
+
+public import Lean.Elab.Tactic.Location
+public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.Conv
+public import Mathlib.Util.AtLocation
+
+@[expose] public section
 
 /-!
 # The `push`, `push_neg` and `pull` tactics

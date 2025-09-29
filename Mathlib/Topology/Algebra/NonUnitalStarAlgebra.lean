@@ -3,9 +3,13 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Topology.Algebra.NonUnitalAlgebra
-import Mathlib.Topology.Algebra.Star
+module
+
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.Topology.Algebra.NonUnitalAlgebra
+public import Mathlib.Topology.Algebra.Star
+
+@[expose] public section
 
 /-!
 # Non-unital topological star (sub)algebras

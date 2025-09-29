@@ -3,8 +3,12 @@ Copyright (c) 2022 Jiale Miao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiale Miao, Kevin Buzzard, Alexander Bentkamp
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.LinearAlgebra.Matrix.Block
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.LinearAlgebra.Matrix.Block
+
+@[expose] public section
 
 /-!
 # Gram-Schmidt Orthogonalization and Orthonormalization

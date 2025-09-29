@@ -3,16 +3,20 @@ Copyright (c) 2025 Janos Wolosz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.Tactic.FieldSimp
+
+@[expose] public section
 
 /-!
 # Exponential map on algebras

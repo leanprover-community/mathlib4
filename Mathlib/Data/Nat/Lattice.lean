@@ -3,9 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Order.Interval.Finset.Nat
+
+@[expose] public section
 
 /-!
 # Conditionally complete linear order structure on `ℕ`

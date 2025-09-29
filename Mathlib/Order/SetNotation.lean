@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Util.Notation3
+
+@[expose] public section
 
 /-!
 # Notation classes for set supremum and infimum

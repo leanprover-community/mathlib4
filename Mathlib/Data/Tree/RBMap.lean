@@ -3,8 +3,12 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Batteries.Data.RBMap.Basic
-import Mathlib.Data.Tree.Basic
+module
+
+public import Batteries.Data.RBMap.Basic
+public import Mathlib.Data.Tree.Basic
+
+@[expose] public section
 
 /-!
 # Binary tree and RBMaps

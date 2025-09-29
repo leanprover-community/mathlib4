@@ -3,9 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Light.TopComparison
-import Mathlib.Topology.Category.Sequential
-import Mathlib.Topology.Category.LightProfinite.Sequence
+module
+
+public import Mathlib.Condensed.Light.TopComparison
+public import Mathlib.Topology.Category.Sequential
+public import Mathlib.Topology.Category.LightProfinite.Sequence
+
+@[expose] public section
 /-!
 
 # The adjunction between light condensed sets and topological spaces

@@ -3,9 +3,13 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.FieldTheory.SeparableClosure
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.FieldTheory.SeparableClosure
+
+@[expose] public section
 
 /-!
 # Cyclotomic extensions

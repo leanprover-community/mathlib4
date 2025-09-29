@@ -3,8 +3,12 @@ Copyright (c) 2024 Tom Kranz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tom Kranz
 -/
-import Mathlib.Data.FinEnum
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Data.FinEnum
+public import Mathlib.Logic.Equiv.Fin.Basic
+
+@[expose] public section
 
 /-!
 # FinEnum instance for Option

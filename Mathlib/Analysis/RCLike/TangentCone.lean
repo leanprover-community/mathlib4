@@ -3,9 +3,13 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Instances.RealVectorSpace
+module
+
+public import Mathlib.Analysis.Calculus.TangentCone
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Instances.RealVectorSpace
+
+@[expose] public section
 
 /-! # Relationships between unique differentiability over `ℝ` and `ℂ`
 

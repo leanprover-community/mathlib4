@@ -3,9 +3,13 @@ Copyright (c) 2025 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
-import Mathlib.CategoryTheory.Enriched.Basic
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+public import Mathlib.CategoryTheory.Enriched.Basic
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+
+@[expose] public section
 
 /-!
 # The strict bicategory associated to a Cat-enriched category

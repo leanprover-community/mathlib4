@@ -3,9 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.LinearAlgebra.Matrix.Basis
+module
+
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.LinearAlgebra.Matrix.Basis
+
+@[expose] public section
 
 /-!
 # Power basis for `Algebra.adjoin R {x}`

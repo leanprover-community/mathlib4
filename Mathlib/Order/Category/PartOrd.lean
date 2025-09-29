@@ -3,9 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Order.Category.Preord
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.Category.Preord
+public import Mathlib.CategoryTheory.Adjunction.Basic
+
+@[expose] public section
 
 /-!
 # Category of partial orders

@@ -3,8 +3,12 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Tactic.Simp
-import Mathlib.Init
+module
+
+public import Lean.Elab.Tactic.Simp
+public import Mathlib.Init
+
+@[expose] public section
 
 /-! # `simp_intro` tactic -/
 

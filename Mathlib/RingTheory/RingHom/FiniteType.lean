@@ -3,9 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.RingHom.Finite
+module
+
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Localization.InvSubmonoid
+public import Mathlib.RingTheory.RingHom.Finite
+
+@[expose] public section
 
 /-!
 

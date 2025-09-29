@@ -3,9 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Composition.CompNotation
-import Mathlib.Probability.Kernel.Composition.KernelLemmas
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+module
+
+public import Mathlib.Probability.Kernel.Composition.CompNotation
+public import Mathlib.Probability.Kernel.Composition.KernelLemmas
+public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+
+@[expose] public section
 
 /-!
 # Lemmas about the composition of a measure and a kernel

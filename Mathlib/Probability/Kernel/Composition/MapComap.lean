@@ -3,7 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Basic
+module
+
+public import Mathlib.Probability.Kernel.Basic
+
+@[expose] public section
 
 /-!
 # Map of a kernel by a measurable function

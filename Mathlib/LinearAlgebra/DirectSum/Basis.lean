@@ -3,8 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+
+@[expose] public section
 
 /-!
 # Bases for direct sum of modules

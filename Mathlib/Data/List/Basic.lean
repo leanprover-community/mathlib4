@@ -3,14 +3,18 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Control.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.List.Defs
-import Mathlib.Data.List.Monad
-import Mathlib.Logic.OpClass
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.List.Monad
+public import Mathlib.Logic.OpClass
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Common
+
+@[expose] public section
 
 /-!
 # Basic properties of lists

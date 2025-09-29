@@ -3,11 +3,15 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Sym.Basic
-import Mathlib.Data.Sym.Sym2.Init
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Sym.Basic
+public import Mathlib.Data.Sym.Sym2.Init
+
+@[expose] public section
 
 /-!
 # The symmetric square

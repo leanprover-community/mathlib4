@@ -3,8 +3,12 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.SuccPred.Basic
+
+@[expose] public section
 
 /-!
 # `SuccOrder` and `PredOrder` of `Fin n`

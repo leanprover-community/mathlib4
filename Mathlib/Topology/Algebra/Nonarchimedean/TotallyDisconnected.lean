@@ -3,8 +3,11 @@ Copyright (c) 2024 Jou Glasheen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jou Glasheen, Kevin Buzzard, David Loeffler, Yongle Hu, Johan Commelin
 -/
+module
 
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+
+@[expose] public section
 
 /-!
 # Total separatedness of nonarchimedean groups

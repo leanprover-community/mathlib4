@@ -3,7 +3,11 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.FractionalIdeal.Operations
+module
+
+public import Mathlib.RingTheory.FractionalIdeal.Operations
+
+@[expose] public section
 
 /-!
 # Inverse operator for fractional ideals

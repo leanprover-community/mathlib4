@@ -3,11 +3,15 @@ Copyright (c) 2024 Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sihan Su, Yongle Hu, Yi Song
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.LocalProperties.Submodule
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-import Mathlib.Algebra.Module.LocalizedModule.Away
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.LocalProperties.Submodule
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+public import Mathlib.Algebra.Module.LocalizedModule.Away
+
+@[expose] public section
 
 /-!
 # Local properties about linear maps

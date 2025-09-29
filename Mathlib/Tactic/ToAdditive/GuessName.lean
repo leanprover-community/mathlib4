@@ -3,9 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
+module
 
-import Std.Data.TreeMap.Basic
-import Mathlib.Data.String.Defs
+public import Std.Data.TreeMap.Basic
+public import Mathlib.Data.String.Defs
+
+@[expose] public section
 
 /-!
 # Name generation APIs for `to_additive`

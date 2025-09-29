@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Subpresheaf.Image
-import Mathlib.CategoryTheory.Subobject.Basic
+module
+
+public import Mathlib.CategoryTheory.Subpresheaf.Image
+public import Mathlib.CategoryTheory.Subobject.Basic
+
+@[expose] public section
 
 /-!
 # Comparison between `Subpresheaf`, `MonoOver` and `Subobject`

@@ -3,9 +3,13 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.Topology.Algebra.Module.WeakBilin
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm
+public import Mathlib.Topology.Algebra.Module.WeakBilin
+
+@[expose] public section
 
 /-!
 # Polar set

@@ -3,7 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+
+@[expose] public section
 
 /-!
 # Complementary embeddings

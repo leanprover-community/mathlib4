@@ -3,10 +3,14 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Probability.Moments.MGFAnalytic
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Probability.Independence.Basic
+
+@[expose] public section
 
 /-!
 # Gaussian distributions over ℝ

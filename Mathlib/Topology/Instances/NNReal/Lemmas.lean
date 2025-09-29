@@ -3,11 +3,15 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.ContinuousMap.Basic
+
+@[expose] public section
 
 /-!
 # Topology on `ℝ≥0`

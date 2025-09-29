@@ -3,9 +3,13 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnectedComponent
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnectedComponent
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Topology.Separation.Regular
+
+@[expose] public section
 
 /-!
 # Linear order is a completely normal Hausdorff topological space

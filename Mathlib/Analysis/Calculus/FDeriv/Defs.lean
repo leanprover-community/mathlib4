@@ -3,7 +3,11 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.TVS
+module
+
+public import Mathlib.Analysis.Asymptotics.TVS
+
+@[expose] public section
 
 /-!
 # The Fréchet derivative: definition

@@ -3,8 +3,12 @@ Copyright (c) 2025 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li
 -/
-import Mathlib.Topology.Sober
-import Mathlib.Topology.Spectral.Prespectral
+module
+
+public import Mathlib.Topology.Sober
+public import Mathlib.Topology.Spectral.Prespectral
+
+@[expose] public section
 
 /-!
 # Spectral spaces

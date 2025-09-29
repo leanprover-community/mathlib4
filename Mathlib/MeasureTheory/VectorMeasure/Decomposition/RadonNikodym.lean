@@ -3,8 +3,12 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Thomas Zhu
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
+
+@[expose] public section
 
 /-!
 # Radon-Nikodym derivatives of vector measures

@@ -3,10 +3,14 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Monotonicity.Attr
+
+@[expose] public section
 
 /-!
 # Lemmas about the interaction of power operations with order in terms of `CovariantClass`

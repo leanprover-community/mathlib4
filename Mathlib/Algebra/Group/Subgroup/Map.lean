@@ -3,8 +3,12 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.TypeTags.Hom
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.TypeTags.Hom
+
+@[expose] public section
 
 /-!
 # `map` and `comap` for subgroups

@@ -3,8 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Closeds
+
+@[expose] public section
 
 /-!
 # Noetherian space

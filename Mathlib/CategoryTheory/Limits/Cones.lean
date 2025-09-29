@@ -3,10 +3,14 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+
+@[expose] public section
 
 /-!
 # Cones and cocones

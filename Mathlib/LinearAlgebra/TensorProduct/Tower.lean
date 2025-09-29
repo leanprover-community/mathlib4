@@ -3,8 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
+
+@[expose] public section
 
 /-!
 # The `A`-module structure on `M ⊗[R] N`

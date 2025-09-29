@@ -3,8 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Adam Topaz
 -/
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-import Mathlib.CategoryTheory.Sites.Canonical
+module
+
+public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+public import Mathlib.CategoryTheory.Sites.Canonical
+
+@[expose] public section
 /-!
 # The big Zariski site of schemes
 

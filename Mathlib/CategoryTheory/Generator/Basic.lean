@@ -3,10 +3,14 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.EssentiallySmall
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.Data.Set.Opposite
+module
+
+public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.Data.Set.Opposite
+
+@[expose] public section
 
 /-!
 # Separating and detecting sets

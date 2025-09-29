@@ -3,9 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Basis.Defs
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Basis.Defs
+
+@[expose] public section
 
 /-!
 # Direct sum of modules

@@ -3,8 +3,12 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.LinearAlgebra.Basis.Defs
+module
+
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.LinearAlgebra.Basis.Defs
+
+@[expose] public section
 
 /-!
 

@@ -3,11 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Algebra.Ring.GrindInstances
+module
+
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Algebra.Ring.GrindInstances
+
+@[expose] public section
 
 /-!
 # The integers are a ring

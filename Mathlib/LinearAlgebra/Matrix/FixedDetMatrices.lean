@@ -3,9 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.Data.Int.Interval
+public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.Data.Int.Interval
+
+@[expose] public section
 
 /-!
 # Matrices with fixed determinant

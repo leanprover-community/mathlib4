@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+
+@[expose] public section
 
 /-!
 # More operations on modules and ideals

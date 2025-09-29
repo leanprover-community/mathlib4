@@ -3,8 +3,12 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+module
+
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+
+@[expose] public section
 
 /-!
 # Linear and semilinear sets

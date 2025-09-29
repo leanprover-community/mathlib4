@@ -3,14 +3,18 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 /-!
 # Small tripling implies small powers

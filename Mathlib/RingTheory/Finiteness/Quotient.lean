@@ -3,10 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Ideal.Pointwise
-import Mathlib.RingTheory.Ideal.Over
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Ideal.Pointwise
+public import Mathlib.RingTheory.Ideal.Over
+
+@[expose] public section
 
 /-!
 # Finiteness of quotient modules

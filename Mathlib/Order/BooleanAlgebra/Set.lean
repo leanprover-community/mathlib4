@@ -3,8 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Insert
-import Mathlib.Order.BooleanAlgebra.Basic
+module
+
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Order.BooleanAlgebra.Basic
+
+@[expose] public section
 
 /-!
 # Boolean algebra of sets

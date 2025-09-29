@@ -3,9 +3,13 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.Normal.Basic
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.GroupTheory.CosetCover
+module
+
+public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.GroupTheory.CosetCover
+
+@[expose] public section
 
 /-!
 # Algebraic extensions are determined by their sets of minimal polynomials up to isomorphism

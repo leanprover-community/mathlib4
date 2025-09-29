@@ -3,9 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Order.OrderIsoNat
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Tactic.TFAE
+
+@[expose] public section
 
 /-!
 

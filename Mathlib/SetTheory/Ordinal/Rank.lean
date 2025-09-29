@@ -3,7 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
+
+@[expose] public section
 
 /-!
 # Rank in a well-founded relation

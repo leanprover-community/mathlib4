@@ -3,11 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Tape
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.Computability.Tape
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.PFun
+
+@[expose] public section
 
 /-!
 # Turing machines

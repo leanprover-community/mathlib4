@@ -3,7 +3,11 @@ Copyright (c) 2022 Matej Penciak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matej Penciak, Moritz Doll, Fabien Clery
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+@[expose] public section
 
 /-!
 # The Symplectic Group

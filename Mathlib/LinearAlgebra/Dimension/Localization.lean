@@ -3,12 +3,16 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.OreLocalization.OreSet
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.OreLocalization.OreSet
+
+@[expose] public section
 
 /-!
 # Rank of localization
