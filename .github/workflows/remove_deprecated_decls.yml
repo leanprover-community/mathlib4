@@ -1,18 +1,17 @@
 name: Remove outdated deprecated declarations
 
 on:
-  push:
-    # TODO: delete the "push" trigger and uncomment the "schedule" trigger below before merging!
-    branches:
-    - remove_deprecations_linter_dev_upstream
-  # schedule:
-  #   - cron: "5 4 * * 1" # At 04:05, on Monday
+  #push:
+  #  branches:
+  #  - remove_deprecations_linter_dev_upstream
+  schedule:
+  - cron: "5 4 * * 1" # At 04:05, on Monday
   workflow_dispatch:
     inputs:
       raw_from_date:
         description: 'starting date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "3 months ago"'
         required: false
-        default: ''
+        default: '2025-01-01'
         type: string
       raw_to_date:
         description: 'ending date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "2 weeks ago"'
