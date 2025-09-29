@@ -108,7 +108,7 @@ variable [Group α] [Group G] [Group G']
 @[to_additive /-- A non-cyclic additive group is non-trivial. -/]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
-  exact @isCyclic_of_subsingleton _ _ (not_nontrivial_iff_subsingleton.mp nc)
+  exact @isCyclic_of_subsingleton _ _ nc
 
 @[to_additive]
 theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
@@ -693,7 +693,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   interval_cases a
   · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by simp_all
   · simp_all
-  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by omega
+  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by cutsat
 
 end Exponent
 

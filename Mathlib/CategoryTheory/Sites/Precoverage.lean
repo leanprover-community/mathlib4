@@ -166,13 +166,18 @@ lemma mem_comap_iff {X : C} {R : Presieve X} :
 
 lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
 
+@[simp]
+lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
+  ext
+  simp
+
 instance [HasIsos J] : HasIsos (J.comap F) where
   mem_coverings_of_isIso {S T} f hf := by simpa using mem_coverings_of_isIso (F.map f)
 
 instance [IsStableUnderComposition.{w', w} J] :
     IsStableUnderComposition.{w', w} (J.comap F) where
   comp_mem_coverings {ι} S Y f hf σ Z g hg := by
-    simp at hf hg ⊢
+    simp only [mem_comap_iff, Presieve.map_ofArrows, Functor.map_comp] at hf hg ⊢
     exact J.comp_mem_coverings _ hf _ hg
 
 instance [PreservesLimitsOfShape WalkingCospan F] [IsStableUnderBaseChange.{w} J] :
