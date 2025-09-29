@@ -5,7 +5,8 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Topology.Bornology.Absorbs
 
 /-!
@@ -169,7 +170,7 @@ theorem absorbent_iff_eventually_nhdsNE_zero :
 @[deprecated (since := "2025-03-03")]
 alias absorbent_iff_eventually_nhdsWithin_zero := absorbent_iff_eventually_nhdsNE_zero
 
-alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
+alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
 @[deprecated (since := "2025-03-03")]
 alias Absorbent.eventually_nhdsWithin_zero := Absorbent.eventually_nhdsNE_zero
