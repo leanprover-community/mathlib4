@@ -777,15 +777,12 @@ lemma lcCandidate_eq_lcCandidateAux [FiniteDimensional ℝ E]
     -- Now, start the real proof.
     sorry
 
-/-- The candidate definition `lcCandidateAux` is a covariant derivative
-on each local trivialisation's domain. -/
-lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
+lemma isCovariantDerivativeOn_lcCandidateAux_of_nonempty [FiniteDimensional ℝ E]
+    (hE : ¬(Subsingleton E)) [Nontrivial E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
     IsCovariantDerivativeOn E (lcCandidateAux I (M := M) e o) e.baseSet where
   addX {_X _X' _σ x} hX hX' hσ hx := by
-    by_cases hE : Subsingleton E; · simp [lcCandidateAux, hE]
-    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     simp only [lcCandidateAux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
@@ -794,8 +791,6 @@ lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
     exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   smulX {_X _σ _g _x} hX hσ hg hx := by
-    by_cases hE : Subsingleton E; · simp [lcCandidateAux, hE]
-    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     simp only [lcCandidateAux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]
     congr; ext i
@@ -805,12 +800,6 @@ lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
       have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
       exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   smul_const_σ {X _σ x} a hX hσ hx := by
-    by_cases hE : Subsingleton E
-    · have : X x = 0 := by
-        have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
-        exact Subsingleton.eq_zero (X x)
-      simp [lcCandidateAux, hE, this]
-    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     simp only [lcCandidateAux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]; congr; ext i
     rw [leviCivitaRhs_smulY_const_apply hX hσ, ← smul_assoc]
@@ -818,12 +807,6 @@ lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
       have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
       exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   addσ {X σ σ' x} hX hσ hσ' hx := by
-    by_cases hE : Subsingleton E
-    · have : X x = 0 := by
-        have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
-        exact Subsingleton.eq_zero (X x)
-      simp [lcCandidateAux, hE, this]
-    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     simp only [lcCandidateAux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
@@ -832,14 +815,7 @@ lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
     exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   leibniz {X σ g x} hX hσ hg hx := by
-    by_cases hE : Subsingleton E
-    · have : X x = 0 := by
-        have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
-        exact Subsingleton.eq_zero (X x)
-      simp [lcCandidateAux, hE, this]
     simp only [lcCandidateAux, hE, ↓reduceDIte]
-
-    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     let b := Basis.ofVectorSpace ℝ E
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
     let Z (i : (Basis.ofVectorSpaceIndex ℝ E)) := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
@@ -865,6 +841,17 @@ lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
       congr
     rw [this]
     simp_rw [← hZ', smul_assoc, Finset.smul_sum]
+
+/-- The candidate definition `lcCandidateAux` is a covariant derivative
+on each local trivialisation's domain. -/
+lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
+    {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
+    IsCovariantDerivativeOn E (lcCandidateAux I (M := M) e o) e.baseSet := by
+  by_cases hE : Subsingleton E
+  · exact (IsCovariantDerivativeOn.of_subsingleton E _).mono (Set.subset_univ _)
+  · have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+    exact isCovariantDerivativeOn_lcCandidateAux_of_nonempty I hE e
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]

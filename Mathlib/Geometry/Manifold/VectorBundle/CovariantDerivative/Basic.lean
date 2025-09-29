@@ -365,6 +365,26 @@ namespace IsCovariantDerivativeOn
 
 variable [IsManifold I 1 M]
 
+variable (E) in
+/-- If `E` is the trivial vector space, the axioms of a covariant derivative are vacuous. -/
+lemma of_subsingleton [hE : Subsingleton E]
+    (f : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) →
+      ((x : M) → TangentSpace I x)) :
+    IsCovariantDerivativeOn E f Set.univ := by
+  have (X) (Y) (x) : f X Y x = 0 := by
+    have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
+    exact Subsingleton.eq_zero _
+  exact {
+    addX {_X _X' _σ x} hX hX' hσ hx := by simp [this]
+    smulX {_X _σ _g _x} hX hσ hg hx := by simp [this]
+    smul_const_σ {X _σ x} a hX hσ hx := by simp [this]
+    addσ {X σ σ' x} hX hσ hσ' hx := by simp [this]
+    leibniz {X σ g x} hX hσ hg hx := by
+      have hσ : σ x = 0 := by
+        have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
+        exact Subsingleton.eq_zero _
+      simp [this, hσ] }
+
 section changing_set
 /-! Changing set
 
