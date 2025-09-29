@@ -45,18 +45,10 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
     intro z hz
     simp_all only [abs_one, mem_sphere_iff_norm, sub_zero]
     congr 1
+    have : z ≠ 0 := fun h ↦ by simp [h] at hz
     calc ‖z - a‖
-    _ = 1 * ‖z - a‖ :=
-      (one_mul ‖z - a‖).symm
-    _ = ‖z⁻¹‖ * ‖z - a‖ := by
-      simp_all
-    _ = ‖z⁻¹ * (z - a)‖ :=
-      (Complex.norm_mul z⁻¹ (z - a)).symm
-    _ = ‖z⁻¹ * z - z⁻¹ * a‖ := by
-      rw [mul_sub]
-    _ = ‖1 - z⁻¹ * a‖ := by
-      rw [inv_mul_cancel₀]
-      aesop
+    _ = ‖z⁻¹ * (z - a)‖ := by simp [hz]
+    _ = ‖1 - z⁻¹ * a‖ := by field_simp
   _ = 0 := by
     rw [circleAverage_zero_one_congr_inv (f := fun x ↦ log ‖1 - x * a‖),
       HarmonicOnNhd.circleAverage_eq, zero_mul, sub_zero,
