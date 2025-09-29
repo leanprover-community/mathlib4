@@ -18,13 +18,13 @@ This file contains proofs of ergodicity for maps of the additive circle.
 ## Main definitions:
 
 * `AddCircle.ergodic_zsmul`: given `n : ℤ` such that `1 < |n|`, the self map `y ↦ n • y` on
-  the additive circle is ergodic (wrt the Haar measure).
+  the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_nsmul`: given `n : ℕ` such that `1 < n`, the self map `y ↦ n • y` on
-  the additive circle is ergodic (wrt the Haar measure).
+  the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_zsmul_add`: given `n : ℤ` such that `1 < |n|` and `x : AddCircle T`, the
-  self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
+  self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_nsmul_add`: given `n : ℕ` such that `1 < n` and `x : AddCircle T`, the
-  self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
+  self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 
 -/
 
@@ -77,7 +77,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
       ext j
       simp only [δ, Pi.inv_apply, mul_inv_rev, inv_inv, div_eq_inv_mul, ← mul_assoc]
     have hw : ∀ᶠ j in l, d ∈ closedBall d (1 * δ j) := hδ₀.mono fun j hj => by
-      simp only [comp_apply, one_mul, mem_closedBall, dist_self]
+      simp only [one_mul, mem_closedBall, dist_self]
       apply hj.le
     exact hd _ δ hδ₁ hw
   suffices ∀ᶠ j in l, μ (s ∩ I j) / μ (I j) = μ s / ENNReal.ofReal T by

@@ -110,7 +110,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
                 Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x => x ∈ T))
                   ?_⟩)
         simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
-          Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
+          Subtype.exists, exists_and_right, exists_eq_right]
         exact ⟨hφ, h' (Finset.mem_singleton_self _)⟩
       exact ⟨ModelType.of T M'⟩⟩
 
@@ -266,7 +266,6 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
     ∃ N : ModelType.{u, v, w} T, #N = κ := by
   cases h with
   | intro M MI =>
-    haveI := MI
     obtain ⟨N, hN, rfl⟩ := exists_elementarilyEquivalent_card_eq L M κ h1 h2
     haveI : Nonempty N := hN.nonempty
     exact ⟨hN.theory_model.bundled, rfl⟩

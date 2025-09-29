@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Objects of a category up to an isomorphism
@@ -51,7 +51,7 @@ def isomorphismClasses : Cat.{v, u} ⥤ Type u where
     apply funext; intro x
     apply @Quot.recOn _ _ _ x
     · intro _ _ _
-      simp only [types_id_apply]
+      simp only
     · intro _
       rfl
 

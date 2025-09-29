@@ -58,9 +58,6 @@ theorem support_integralNormalization_subset :
   intro
   simp +contextual [sum_def, integralNormalization, coeff_monomial, mem_support_iff]
 
-@[deprecated (since := "2024-11-30")]
-alias integralNormalization_support := support_integralNormalization_subset
-
 theorem integralNormalization_coeff_degree {i : ℕ} (hi : p.degree = i) :
     (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, if_pos hi]
 
@@ -102,7 +99,7 @@ theorem integralNormalization_mul_C_leadingCoeff (p : R[X]) :
   rw [coeff_mul_C, integralNormalization_coeff]
   split_ifs with h
   · simp [natDegree_eq_of_degree_eq_some h, leadingCoeff]
-  · simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, coeff_scaleRoots]
+  · simp only [coeff_scaleRoots]
     by_cases h' : i < p.degree
     · rw [mul_assoc, ← pow_succ, tsub_right_comm, tsub_add_cancel_of_le]
       rw [le_tsub_iff_left (coe_lt_degree.mp h').le, Nat.succ_le_iff]
@@ -176,7 +173,7 @@ theorem support_integralNormalization {f : R[X]} :
   refine ⟨fun h => support_integralNormalization_subset h, ?_⟩
   simp only [integralNormalization_coeff, mem_support_iff]
   intro hfi
-  split_ifs with hi <;> simp [hf, hfi, hi]
+  split_ifs with hi <;> simp [hf, hfi]
 
 end IsCancelMulZero
 

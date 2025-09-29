@@ -177,7 +177,7 @@ theorem Pairwise.insert_of_symmetric_of_notMem (hs : s.Pairwise r) (hr : Symmetr
   (pairwise_insert_of_symmetric_of_notMem hr ha).2 ⟨hs, h⟩
 
 @[deprecated (since := "2025-05-23")]
-alias Pairwise.insert_of_symmetric_of_not_mem := Pairwise.insert_of_symmetric_of_notMem
+alias Pairwise.insert_of_symmetric_of_not_mem := Pairwise.insert_of_symmetric
 
 theorem pairwise_pair : Set.Pairwise {a, b} r ↔ a ≠ b → r a b ∧ r b a := by simp [pairwise_insert]
 
@@ -216,7 +216,7 @@ end Pairwise
 
 theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) :
     (Pairwise fun (x : s) (y : s) => r x y) ↔ s.Pairwise r := by
-  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff, Subtype.coe_mk]
+  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff]
 
 alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
 

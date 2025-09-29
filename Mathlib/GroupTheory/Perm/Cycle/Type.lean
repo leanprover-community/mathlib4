@@ -85,7 +85,7 @@ theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
   congr 1
   apply Multiset.filter_congr
   intro d h
-  simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
+  simp only [eq_comm, Finset.mem_val.mp h, exists_const]
 
 @[simp]
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
@@ -117,12 +117,7 @@ theorem card_cycleType_eq_one {σ : Perm α} : Multiset.card σ.cycleType = 1 �
   rw [card_eq_one]
   simp_rw [cycleType_def, Multiset.map_eq_singleton, ← Finset.singleton_val, Finset.val_inj,
     cycleFactorsFinset_eq_singleton_iff]
-  constructor
-  · rintro ⟨_, _, ⟨h, -⟩, -⟩
-    exact h
-  · intro h
-    use #σ.support, σ
-    simp [h]
+  grind
 
 theorem Disjoint.cycleType {σ τ : Perm α} (h : Disjoint σ τ) :
     (σ * τ).cycleType = σ.cycleType + τ.cycleType := by
@@ -171,7 +166,7 @@ theorem sign_of_cycleType (f : Perm α) :
   | empty => rfl
   | cons a s ihs =>
     rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
-    simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
+    simp only [pow_add, pow_one, neg_mul, mul_neg, mul_assoc, mul_one]
 
 @[simp]
 theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
@@ -223,7 +218,7 @@ theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : #σ.support < 2 * orderOf σ) : σ.IsCycle := by
   obtain ⟨n, hn⟩ := cycleType_prime_order h1
   rw [← σ.sum_cycleType, hn, Multiset.sum_replicate, nsmul_eq_mul, Nat.cast_id,
-    mul_lt_mul_right (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, Nat.le_zero] at h2
+    mul_lt_mul_iff_left₀ (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, Nat.le_zero] at h2
   rw [← card_cycleType_eq_one, hn, card_replicate, h2]
 
 theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cycleFactorsFinset) :
@@ -385,7 +380,7 @@ theorem exists_fixed_point_of_prime' {p n : ℕ} [hp : Fact p.Prime] (hα : p �
   classical
     have h : ∀ b : α, b ∈ σ.supportᶜ ↔ σ b = b := fun b => by
       rw [Finset.mem_compl, mem_support, Classical.not_not]
-    obtain ⟨b, hb1, hb2⟩ := Finset.exists_ne_of_one_lt_card (hp.out.one_lt.trans_le
+    obtain ⟨b, hb1, hb2⟩ := Finset.exists_mem_ne (hp.out.one_lt.trans_le
       (Nat.le_of_dvd (Finset.card_pos.mpr ⟨a, (h a).mpr ha⟩) (Nat.modEq_zero_iff_dvd.mp
         ((card_compl_support_modEq hσ).trans (Nat.modEq_zero_iff_dvd.mpr hα))))) a
     exact ⟨b, (h b).mp hb1, hb2⟩
@@ -397,7 +392,7 @@ theorem isCycle_of_prime_order' {σ : Perm α} (h1 : (orderOf σ).Prime)
 theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
     (h2 : orderOf σ = Fintype.card α) : σ.IsCycle :=
   isCycle_of_prime_order' ((congr_arg Nat.Prime h2).mpr h1) <| by
-    rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_right (orderOf_pos σ)]
+    rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_iff_left₀ (orderOf_pos σ)]
     exact one_lt_two
 
 section Cauchy
@@ -507,7 +502,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
-  · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
+  · rw [Subtype.ext_iff, Subtype.ext_iff, hg, hg', v.1.2]
     simp only [v₀, List.Vector.replicate]
 
 -- TODO: Make the `Finite` version of this theorem the default
@@ -648,7 +643,7 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
     rw [← card_support_eq_three_iff, h]
     simp [ab, ac, bc]
   apply le_antisymm ((support_mul_le _ _).trans fun x => _) fun x hx => ?_
-  · simp [ab, ac, bc]
+  · simp [ab, ac]
   · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rw [mem_support]
     simp only [Perm.coe_mul, Function.comp_apply, Ne]

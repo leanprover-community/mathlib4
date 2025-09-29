@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Order.Filter.Basic
 
 /-!
@@ -104,7 +105,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
       ∃ I : Set ι, I.Finite ∧ ∃ V : ι → Set α, (∀ i, V i ∈ s i) ∧
         (∀ i ∉ I, V i = univ) ∧ (U = ⋂ i ∈ I, V i) ∧ U = ⋂ i, V i := by
   classical
-  simp only [mem_iInf, SetCoe.forall', biInter_eq_iInter]
+  simp only [mem_iInf, biInter_eq_iInter]
   refine ⟨?_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
   refine ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => ?_, fun i hi => ?_, ?_⟩
@@ -113,14 +114,14 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
     exacts [hV ⟨i,_⟩, univ_mem]
   · exact dif_neg hi
   · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
-      iInter_univ, inter_univ, eq_self_iff_true, true_and]
+      iInter_univ, inter_univ, true_and]
 
 theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter α} {s}
     (hs : s ∈ ⨅ i, f i) : ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by
   rw [← iInf_range' (g := (·))] at hs
   let ⟨_, _, V, hVs, _, _, hVU'⟩ := mem_iInf'.1 hs
   use V ∘ rangeFactorization f, fun i ↦ hVs (rangeFactorization f i)
-  rw [hVU', ← surjective_onto_range.iInter_comp, comp_def]
+  rw [hVU', ← rangeFactorization_surjective.iInter_comp, comp_def]
 
 theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Filter α} (s) :
     (s ∈ ⨅ i, f i) ↔ ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by

@@ -40,7 +40,7 @@ variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 /-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
-  d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
+    d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
   (β_ _ _).hom ≫ (_ ◁ adj.unit.app _) ≫ adj.unit.app _ ≫
     R.map (inv (L.map (adj.unit.app _ ⊗ₘ adj.unit.app _))) ≫ (L ⋙ R).map (β_ _ _).hom ≫
       (L ⋙ R).map ((ihom.ev _).app _) ≫ inv (adj.unit.app _)
@@ -60,7 +60,8 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
   simp only [id_obj, comp_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
     braiding_naturality_right_assoc]
   slice_lhs 2 3 =>
-    simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, Category.id_comp, Category.comp_id]
+    simp only [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp,
+      Category.comp_id]
   slice_lhs 2 4 =>
     rw [← adj.unit_naturality_assoc]
   simp
@@ -102,7 +103,7 @@ theorem isIso_tfae : List.TFAE
     -- and conclude.
     have : (adj.unit.app d) ⊗ₘ (adj.unit.app d') =
         (adj.unit.app d ▷ d') ≫ (((L ⋙ R).obj _) ◁ adj.unit.app d') := by
-      simp [← tensorHom_id, ← id_tensorHom, ← tensor_comp]
+      simp [← tensorHom_id, ← id_tensorHom, tensorHom_comp_tensorHom]
     rw [this, map_comp]
     infer_instance
   tfae_have 4 → 1
@@ -160,7 +161,7 @@ theorem isIso_tfae : List.TFAE
       types_id_apply]
     have : f = R.map (R.preimage f) := by simp
     rw [this]
-    simp [← map_comp, ← map_comp_assoc, -map_preimage]
+    simp [← map_comp, -map_preimage]
   tfae_have 2 ↔ 3 := by
     conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
     conv => rhs; intro d d'; rw [isIso_iff_isIso_coyoneda_map]

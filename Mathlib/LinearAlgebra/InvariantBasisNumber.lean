@@ -39,13 +39,13 @@ It is also useful to consider the following stronger conditions:
 ## Instances
 
 - `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian.lean`) :
-  any left-noetherian ring satisfies the Orzech property.
+  any left-Noetherian ring satisfies the Orzech property.
   This applies in particular to division rings.
 
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
-  (for non trivial rings).
+  (for non-trivial rings).
 
-- `IsNoetherianRing.strongRankCondition` : every nontrivial left-noetherian ring satisfies the
+- `IsNoetherianRing.strongRankCondition` : every nontrivial left-Noetherian ring satisfies the
   strong rank condition (and so in particular every division ring or field).
 
 - `rankCondition_of_strongRankCondition` : the strong rank condition implies the rank condition.
@@ -148,7 +148,7 @@ instance (priority := 100) strongRankCondition_of_orzechProperty
     apply OrzechProperty.injective_of_surjective_of_injective i f hi
       (Fin.castSucc_injective _).surjective_comp_right
     ext m
-    simp [f, update_apply]
+    simp [f]
   simpa using congr_fun h (Fin.last n)
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
@@ -235,9 +235,8 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
-  by_contra h
+  by_contra! h
   refine zero_ne_one (eq_of_fin_equiv R ?_)
-  haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
     Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
   exact
@@ -254,7 +253,7 @@ section
 
 variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 
-/-- Any nontrivial noetherian ring satisfies the strong rank condition,
+/-- Any nontrivial Noetherian ring satisfies the strong rank condition,
     since it satisfies Orzech property. -/
 instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R :=
   inferInstance

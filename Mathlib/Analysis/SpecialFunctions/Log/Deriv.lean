@@ -41,7 +41,7 @@ theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := b
   rcases hx.lt_or_gt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
-    · field_simp [hx.ne]
+    · field_simp
   · exact hasStrictDerivAt_log_of_pos hx
 
 theorem hasDerivAt_log (hx : x ≠ 0) : HasDerivAt log x⁻¹ x :=
@@ -128,14 +128,14 @@ theorem deriv.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
 `f x  ≠ 0`. -/
 lemma Real.deriv_log_comp_eq_logDeriv {f : ℝ → ℝ} {x : ℝ} (h₁ : DifferentiableAt ℝ f x)
     (h₂ : f x ≠ 0) : deriv (log ∘ f) x = logDeriv f x := by
-  simp only [ne_eq, logDeriv, Pi.div_apply, ← deriv.log h₁ h₂, Function.comp_def]
+  simp only [logDeriv, Pi.div_apply, ← deriv.log h₁ h₂, Function.comp_def]
 
 end deriv
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {x : E} {f' : E →L[ℝ] ℝ}
-  {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {x : E}
+  {f' : StrongDual ℝ E} {s : Set E}
 
 theorem HasFDerivWithinAt.log (hf : HasFDerivWithinAt f f' s x) (hx : f x ≠ 0) :
     HasFDerivWithinAt (fun x => log (f x)) ((f x)⁻¹ • f') s x :=
@@ -201,6 +201,8 @@ end LogDifferentiable
 
 namespace Real
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
@@ -218,12 +220,12 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   -- First step: compute the derivative of `F`
   have A : ∀ y ∈ Ioo (-1 : ℝ) 1, HasDerivAt F (F' y) y := fun y hy ↦ by
     have : HasDerivAt F ((∑ i ∈ range n, ↑(i + 1) * y ^ i / (↑i + 1)) + (-1) / (1 - y)) y :=
-      .add (.sum fun i _ ↦ (hasDerivAt_pow (i + 1) y).div_const ((i : ℝ) + 1))
+      .add (.fun_sum fun i _ ↦ (hasDerivAt_pow (i + 1) y).div_const ((i : ℝ) + 1))
         (((hasDerivAt_id y).const_sub _).log <| sub_ne_zero.2 hy.2.ne')
     convert this using 1
     calc
       -y ^ n / (1 - y) = ∑ i ∈ Finset.range n, y ^ i + -1 / (1 - y) := by
-        field_simp [geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne']
+        simp [field, geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne']
         ring
       _ = ∑ i ∈ Finset.range n, ↑(i + 1) * y ^ i / (↑i + 1) + -1 / (1 - y) := by
         congr with i
@@ -307,11 +309,11 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
   have h₃ := h.ne'
   rw [← log_div]
   · congr
-    field_simp
-    linarith
+    simp [field]
+    ring
   · field_simp
-    linarith
-  · field_simp
+    positivity
+  · simp [field, h₃]
 
 /-- Expansion of `log (1 + a)` as a series in powers of `a / (a + 2)`. -/
 theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
@@ -320,15 +322,15 @@ theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
   obtain (rfl | ha0) := eq_or_ne a 0
   · simp [hasSum_zero]
   · convert hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
-    all_goals field_simp [add_comm]
+    all_goals simp [field, add_comm]
 
 lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
   convert le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
-  field_simp
+  simp [field]
 
 lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
   convert lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity)
     1 (by positivity) (by positivity) using 1
-  field_simp
+  simp [field]
 
 end Real

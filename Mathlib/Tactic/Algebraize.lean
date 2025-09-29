@@ -39,8 +39,8 @@ specified declaration should be one of the following:
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
 `Algebra` property by giving the `RingHom` property as a term. Due to how this is performed, we also
-need to assume that the `Algebra` property can be constructed only from the homomorphism, so it can
-not have any other explicit arguments.
+need to assume that the `Algebra` property can be constructed only from the homomorphism, so it
+cannot have any other explicit arguments.
 2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
 it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
 is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
@@ -58,7 +58,7 @@ def RingHom.Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 ```
-An example with a constructor as parameter (as the two properties are not definitonally the same):
+An example with a constructor as parameter (as the two properties are not definitionally the same):
 ```
 @[algebraize Algebra.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
@@ -170,44 +170,57 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← getLCtx
   ctx.forM fun decl => do
     if decl.isImplementationDetail then return
-    let (nm, args) := decl.type.getAppFnArgs
+    let (nm, args) := (← instantiateMVars decl.type).getAppFnArgs
     -- Check if the type of the current hypothesis has been tagged with the `algebraize` attribute
     match Attr.algebraizeAttr.getParam? (← getEnv) nm with
     -- If it has, `p` will either be the name of the corresponding `Algebra` property, or a
     -- lemma/constructor.
     | some p =>
-      -- The last argument of the `RingHom` property is assumed to be `f`
-      let f := args[args.size - 1]!
-      -- Check that `f` appears in the list of functions given to `algebraize`
-      if ¬ (← t.anyM (Meta.isDefEq · f)) then return
+      let cinfo ← try getConstInfo p catch _ =>
+        logWarning m!"Hypothesis {decl.toExpr} has type{indentD decl.type}.\n\
+          Its head symbol {.ofConstName nm} is (effectively) tagged with `@[algebraize {p}]`, \
+          but no constant{indentD p}\nhas been found.\n\
+          Check for missing imports, missing namespaces or typos."
+        return
+      let p' ← mkConstWithFreshMVarLevels p
+      let (pargs, _, _) ← forallMetaTelescope (← inferType p')
+      let tp' := mkAppN p' pargs
 
-      let cinfo ← getConstInfo p
-      let n ← getExpectedNumArgs cinfo.type
-      let pargs := Array.replicate n (none : Option Expr)
-      /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
-      is definitionally the same as the `RingHom` property. Then, we just need to construct its type
-      and the local declaration will already give a valid term. -/
-      if cinfo.isInductive then
-        let pargs := pargs.set! 0 args[0]!
-        let pargs := pargs.set! 1 args[1]!
-        let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
-        unless (← synthInstance? tp).isSome do
-        liftMetaTactic fun mvarid => do
-          let nm ← mkFreshBinderNameForTactic `algebraizeInst
-          let (_, mvar) ← mvarid.note nm decl.toExpr tp
-          return [mvar]
-      /- Otherwise, the attribute points to a lemma or a constructor for the `Algebra` property.
-      In this case, we assume that the `RingHom` property is the last argument of the lemma or
-      constructor (and that this is all we need to supply explicitly). -/
-      else
-        let pargs := pargs.set! (n - 1) decl.toExpr
-        let val ← mkAppOptM p pargs
-        let tp ← inferType val
-        unless (← synthInstance? tp).isSome do
-        liftMetaTactic fun mvarid => do
-          let nm ← mkFreshBinderNameForTactic `algebraizeInst
-          let (_, mvar) ← mvarid.note nm val
-          return [mvar]
+      let getValType : MetaM (Option (Expr × Expr)) := do
+        /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
+        is definitionally the same as the `RingHom` property. Then, we just need to construct its
+        type and the local declaration will already give a valid term. -/
+        if cinfo.isInductive then
+          pargs[0]!.mvarId!.assignIfDefEq args[0]!
+          pargs[1]!.mvarId!.assignIfDefEq args[1]!
+          -- This should be the type `Algebra.Property A B`
+          let tp ← instantiateMVars tp'
+          if ← isDefEqGuarded decl.type tp then return (decl.toExpr, tp)
+          else return none
+        /- Otherwise, the attribute points to a lemma or a constructor for the `Algebra` property.
+        In this case, we assume that the `RingHom` property is the last argument of the lemma or
+        constructor (and that this is all we need to supply explicitly). -/
+        else
+          try pargs.back!.mvarId!.assignIfDefEq decl.toExpr catch _ => return none
+          let val ← instantiateMVars tp'
+          let tp ← inferType val -- This should be the type `Algebra.Property A B`.
+          return (val, tp)
+      let some (val, tp) ← getValType | return
+      /- Find all arguments to `Algebra.Property A B` or `Module.Property A B` which are
+        of the form `RingHom.toAlgebra f`, `RingHom.toModule f`
+        or `Algebra.toModule (RingHom.toAlgebra f)`. -/
+      let ringHom_args ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
+        let y := (← whnfUntil x ``Algebra.toModule) >>= (·.getAppArgs.back?)
+        return ((← whnfUntil (y.getD x) ``RingHom.toAlgebra) <|> (← whnfUntil x ``RingHom.toModule))
+          >>= (·.getAppArgs.back?)
+      /- Check that we're not reproving a local hypothesis, and that all involved `RingHom`s are
+        indeed arguments to the tactic. -/
+      unless (← synthInstance? tp).isSome || !(← ringHom_args.allM (fun z => t.anyM
+        (withoutModifyingMCtx <| isDefEq z ·))) do
+      liftMetaTactic fun mvarid => do
+        let nm ← mkFreshBinderNameForTactic `algebraizeInst
+        let (_, mvar) ← mvarid.note nm val tp
+        return [mvar]
     | none => return
 
 /-- Configuration for `algebraize`. -/
