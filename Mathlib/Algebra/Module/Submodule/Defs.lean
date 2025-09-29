@@ -34,7 +34,7 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
-structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Type v
+structure Submodule (R : Type u) (M : Type v) [AddCommMonoid M] [SMul R M] : Type v
     extends AddSubmonoid M, SubMulAction R M
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
@@ -45,7 +45,7 @@ add_decl_doc Submodule.toSubMulAction
 
 namespace Submodule
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid M] [SMul R M]
 
 instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
@@ -57,7 +57,7 @@ initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
 /-- The actual `Submodule` obtained from an element of a `SMulMemClass` and `AddSubmonoidClass`. -/
 @[simps]
-def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+def ofClass {S R M : Type*} [AddCommMonoid M] [SMul R M] [SetLike S M]
     [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Submodule R M where
   carrier := s
   add_mem' := add_mem
@@ -170,11 +170,13 @@ namespace Submodule
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M]
+variable [AddCommMonoid M]
+
+section SMul
 
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
-variable {module_M : Module R M}
+variable {smul_M : SMul R M}
 variable {p q : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
@@ -191,27 +193,6 @@ protected theorem add_mem (h₁ : x ∈ p) (h₂ : y ∈ p) : x + y ∈ p :=
 theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
   p.smul_mem' r h
 
-theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h : x ∈ p) :
-    r • x ∈ p :=
-  p.toSubMulAction.smul_of_tower_mem r h
-
-@[simp]
-theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
-    g • x ∈ p ↔ x ∈ p :=
-  p.toSubMulAction.smul_mem_iff' g
-
-@[simp]
-lemma smul_mem_iff'' [Invertible r] :
-    r • x ∈ p ↔ x ∈ p := by
-  refine ⟨fun h ↦ ?_, p.smul_mem r⟩
-  rw [← invOf_smul_smul r x]
-  exact p.smul_mem _ h
-
-lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
-    r • x ∈ p ↔ x ∈ p :=
-  let _ : Invertible r := hr.invertible
-  smul_mem_iff'' p
-
 instance add : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
 
@@ -220,16 +201,6 @@ instance zero : Zero p :=
 
 instance inhabited : Inhabited p :=
   ⟨0⟩
-
-instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
-  ⟨fun c x => ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
-
-instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
-  p.toSubMulAction.isScalarTower
-
-instance isScalarTower' {S' : Type*} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
-    [IsScalarTower S' R M] [IsScalarTower S S' M] [IsScalarTower S R M] : IsScalarTower S S' p :=
-  p.toSubMulAction.isScalarTower'
 
 protected theorem nonempty : (p : Set M).Nonempty :=
   ⟨0, p.zero_mem⟩
@@ -256,11 +227,6 @@ theorem coe_zero : ((0 : p) : M) = 0 :=
 theorem coe_smul (r : R) (x : p) : ((r • x : p) : M) = r • (x : M) :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x : p) :
-    ((r • x : p) : M) = r • (x : M) :=
-  rfl
-
 @[norm_cast]
 theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
@@ -281,6 +247,50 @@ instance isRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd p :=
 
 instance isCancelAdd [IsCancelAdd M] : IsCancelAdd p where
 
+end SMul
+
+section MulAction
+
+variable [Monoid R] {_ : MulAction R M} {p q : Submodule R M} {r : R} {x y : M}
+variable (p)
+
+theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h : x ∈ p) :
+    r • x ∈ p :=
+  p.toSubMulAction.smul_of_tower_mem r h
+
+@[simp]
+theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
+    g • x ∈ p ↔ x ∈ p :=
+  p.toSubMulAction.smul_mem_iff' g
+
+@[simp]
+lemma smul_mem_iff'' [Invertible r] :
+    r • x ∈ p ↔ x ∈ p := by
+  refine ⟨fun h ↦ ?_, p.smul_mem r⟩
+  rw [← invOf_smul_smul r x]
+  exact p.smul_mem _ h
+
+lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
+    r • x ∈ p ↔ x ∈ p :=
+  let _ : Invertible r := hr.invertible
+  smul_mem_iff'' p
+
+instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
+  ⟨fun c x => ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
+
+instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
+  p.toSubMulAction.isScalarTower
+
+instance isScalarTower' {S' : Type*} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
+    [IsScalarTower S' R M] [IsScalarTower S S' M] [IsScalarTower S R M] : IsScalarTower S S' p :=
+  p.toSubMulAction.isScalarTower'
+
+variable {p} in
+@[simp, norm_cast]
+theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x : p) :
+    ((r • x : p) : M) = r • (x : M) :=
+  rfl
+
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
@@ -289,7 +299,9 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     add_smul := fun a b x => by ext; simp [add_smul]
     smul_add := fun a x y => by ext; simp [smul_add] }
 
-instance module : Module R p :=
+end MulAction
+
+instance module [Semiring R] {_ : Module R M} (p : Submodule R M) : Module R p :=
   p.module'
 
 end AddCommMonoid
