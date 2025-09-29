@@ -702,7 +702,6 @@ theorem contMDiffOn_iff_source_of_mem_maximalAtlas [IsManifold I n M]
   apply contMDiffWithinAt_congr_set
   simp_rw [e.extend_symm_preimage_inter_range_eventuallyEq hs (hs hx)]
 
--- Porting note: didn't compile; fixed by golfing the proof and moving parts to lemmas
 /-- A function is `C^n` within a set at a point, for `n : ℕ` or `n = ω`,
 if and only if it is `C^n` on a neighborhood of this point. -/
 theorem contMDiffWithinAt_iff_contMDiffOn_nhds

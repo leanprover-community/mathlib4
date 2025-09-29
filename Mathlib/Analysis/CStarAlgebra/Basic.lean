@@ -32,6 +32,8 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 
 -/
 
+assert_not_exists ContinuousLinearMap.hasOpNorm
+
 open Topology
 
 local postfix:max "⋆" => star
@@ -241,9 +243,10 @@ end CStarRing
 
 theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] {x : E}
     (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
-  induction' n with k hk
-  · simp only [pow_zero, pow_one]
-  · rw [pow_succ', pow_mul', sq]
+  induction n with
+  | zero => simp only [pow_zero, pow_one]
+  | succ k hk =>
+    rw [pow_succ', pow_mul', sq]
     nth_rw 1 [← selfAdjoint.mem_iff.mp hx]
     rw [← star_pow, CStarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
 

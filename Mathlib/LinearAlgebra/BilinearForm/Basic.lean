@@ -23,7 +23,7 @@ The result that there exists an orthogonal basis with respect to a symmetric,
 nondegenerate bilinear form can be found in `QuadraticForm.lean` with
 `exists_orthogonal_basis`.
 
-## Notations
+## Notation
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
@@ -149,5 +149,8 @@ def restrict (B : BilinForm R M) (W : Submodule R M) : BilinForm R W :=
   LinearMap.domRestrict₁₂ B W W
 
 end BilinForm
+
+@[simp]
+theorem lsmul_flip_apply (m : M) : (lsmul R M).flip m = toSpanSingleton R M m := rfl
 
 end LinearMap
