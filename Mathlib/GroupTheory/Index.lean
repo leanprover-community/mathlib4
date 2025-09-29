@@ -589,9 +589,6 @@ lemma index_prod (H : Subgroup G) (K : Subgroup G') : (H.prod K).index = H.index
     ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.prodQuotientEquiv _ _).symm)
   rw [QuotientGroup.leftRel_prod]
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddSubgroup.index_sum := AddSubgroup.index_prod
-
 @[to_additive (attr := simp)]
 lemma index_pi {ι : Type*} [Fintype ι] (H : ι → Subgroup G) :
     (Subgroup.pi Set.univ H).index = ∏ i, (H i).index := by

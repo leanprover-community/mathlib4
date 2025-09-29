@@ -306,9 +306,6 @@ theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g
     (f.prod g).ker = f.ker ⊓ g.ker :=
   SetLike.ext fun _ => Prod.mk_eq_one
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoidHom.ker_sum := AddMonoidHom.ker_prod
-
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
   ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩

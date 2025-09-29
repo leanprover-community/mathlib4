@@ -504,30 +504,6 @@ example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance
 `@[simp]` lemmas for `MonoidHom.comp` and categorical identities.
 -/
 
-@[to_additive (attr := deprecated
-  "Proven by `simp only [MonCat.hom_id, comp_id]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.comp_id_monCat {G : MonCat.{u}} {H : Type u} [Monoid H] (f : G →* H) :
-    f.comp (MonCat.Hom.hom (𝟙 G)) = f := by simp
-@[to_additive (attr := deprecated
-  "Proven by `simp only [MonCat.hom_id, id_comp]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.id_monCat_comp {G : Type u} [Monoid G] {H : MonCat.{u}} (f : G →* H) :
-    MonoidHom.comp (MonCat.Hom.hom (𝟙 H)) f = f := by simp
-
-@[to_additive (attr := deprecated
-  "Proven by `simp only [CommMonCat.hom_id, comp_id]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.comp_id_commMonCat {G : CommMonCat.{u}} {H : Type u} [CommMonoid H] (f : G →* H) :
-    f.comp (CommMonCat.Hom.hom (𝟙 G)) = f := by
-  simp
-@[to_additive (attr := deprecated
-  "Proven by `simp only [CommMonCat.hom_id, id_comp]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.id_commMonCat_comp {G : Type u} [CommMonoid G] {H : CommMonCat.{u}} (f : G →* H) :
-    MonoidHom.comp (CommMonCat.Hom.hom (𝟙 H)) f = f := by
-  simp
-
 /-- The equivalence between `AddMonCat` and `MonCat`. -/
 @[simps]
 def AddMonCat.equivalence : AddMonCat ≌ MonCat where

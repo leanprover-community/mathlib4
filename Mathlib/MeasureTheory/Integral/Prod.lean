@@ -156,9 +156,6 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
   rw [lt_top_iff_ne_top] at hx
   simp [ofReal_toReal, hx]
 
-@[deprecated (since := "2025-03-05")]
-alias MeasureTheory.Measure.integrable_measure_prod_mk_left := integrable_measure_prodMk_left
-
 end Measure
 
 open Measure
@@ -199,10 +196,6 @@ theorem MeasureTheory.AEStronglyMeasurable.prodMk_left [SFinite ν] {f : α × �
   filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with x hx
   exact ⟨fun y ↦ hf.mk f (x, y),
     hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
-
-@[deprecated (since := "2025-03-05")]
-alias MeasureTheory.AEStronglyMeasurable.prod_mk_left :=
-  MeasureTheory.AEStronglyMeasurable.prodMk_left
 
 theorem MeasureTheory.AEStronglyMeasurable.prodMk_right [SFinite μ] [SFinite ν] {f : α × β → X}
     (hf : AEStronglyMeasurable f (μ.prod ν)) :

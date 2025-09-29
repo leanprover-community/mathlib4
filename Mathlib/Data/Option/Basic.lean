@@ -92,13 +92,6 @@ theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
     (hf : ∀ a ∈ y, f a = g a) : x.bind f = y.bind g :=
   hx.symm ▸ bind_congr hf
 
-@[deprecated bind_congr (since := "2025-03-20")]
--- This was renamed from `bind_congr` after https://github.com/leanprover/lean4/pull/7529
--- upstreamed it with a slightly different statement.
-theorem bind_congr'' {f g : α → Option β} {x : Option α}
-    (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
-  grind [cases Option]
-
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 
@@ -254,8 +247,6 @@ theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : �
 @[deprecated (since := "2025-04-10")] alias bnot_comp_isSome := not_comp_isSome
 @[deprecated (since := "2025-04-10")] alias bnot_isNone := not_isNone
 @[deprecated (since := "2025-04-10")] alias bnot_comp_isNone := not_comp_isNone
-@[deprecated (since := "2025-03-19")] alias forall_some_ne_iff_eq_none := eq_none_iff_forall_some_ne
-
 open Function in
 @[simp]
 lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
