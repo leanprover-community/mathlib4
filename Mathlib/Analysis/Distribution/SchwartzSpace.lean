@@ -1367,7 +1367,7 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V]
 Version for a general bilinear map. -/
 theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
     (L : E →L[ℝ] F →L[ℝ] V) :
-    ∫ (x : ℝ), (L (f x)) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
+    ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
   MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
     f.hasDerivAt g.hasDerivAt (bilinLeftCLM L (derivCLM ℝ g).hasTemperateGrowth f).integrable
     (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).integrable
