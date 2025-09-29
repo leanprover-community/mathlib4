@@ -1382,17 +1382,17 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
 
 Version for a Schwartz function with values in continuous linear maps. -/
-theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F)) (g : 𝓢(ℝ, F →L[𝕜] V)) :
-    ∫ (x : ℝ), g x (deriv f x) = -∫ (x : ℝ), deriv g x (f x) :=
-  integral_bilinear_deriv_right_eq_neg_left g f
+theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)) (g : 𝓢(ℝ, F)) :
+    ∫ (x : ℝ), f x (deriv g x) = -∫ (x : ℝ), deriv f x (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g
     ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
 
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
 
 Version for multiplication of scalar-valued Schwartz functions. -/
-theorem integral_mul_deriv_right_eq_neg_left (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, 𝕜)) :
-    ∫ (x : ℝ), g x * (deriv f x) = -∫ (x : ℝ), deriv g x * (f x) :=
-  integral_bilinear_deriv_right_eq_neg_left g f (ContinuousLinearMap.mul ℝ 𝕜)
+theorem integral_mul_deriv_eq_neg_deriv_mul (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, 𝕜)) :
+    ∫ (x : ℝ), f x * (deriv g x) = -∫ (x : ℝ), deriv f x * (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜)
 
 end integration_by_parts
 
