@@ -149,6 +149,11 @@ def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S�
   map_zero' := eval₂_zero f g
   map_add' _ _ := eval₂_add _ _
 
+@[gcongr]
+lemma eval₂_dvd (f : R →+* S₁) (g : σ → S₁) {p q : MvPolynomial σ R} (h : p ∣ q) :
+    p.eval₂ f g ∣ q.eval₂ f g :=
+  map_dvd (eval₂Hom f g) h
+
 @[simp]
 theorem coe_eval₂Hom (f : R →+* S₁) (g : σ → S₁) : ⇑(eval₂Hom f g) = eval₂ f g :=
   rfl
@@ -476,9 +481,10 @@ lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
           disjoint_support_monomial ha hs
 
 @[simp]
-lemma coe_coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
-    ((map f p).coeffs : Set S₁) ⊆ f '' p.coeffs :=
-  subset_trans (coeffs_map f p) (Finset.coe_image (f := f) ▸ .rfl)
+lemma coe_coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) :
+    ((map f p).coeffs : Set S₁) ⊆ f '' p.coeffs := by
+  classical
+  exact mod_cast coeffs_map f p
 
 lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S₁} :
     x ∈ Set.range (MvPolynomial.map f) ↔ (x.coeffs : Set _) ⊆ .range f := by
@@ -783,8 +789,6 @@ lemma aeval_sumElim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ →
   | C r => simp [← IsScalarTower.algebraMap_apply]
   | add p q hp hq => simp [hp, hq]
   | mul_X p i h => cases i <;> simp [h]
-
-@[deprecated (since := "2025-02-21")] alias aeval_sum_elim := aeval_sumElim
 
 end CommSemiring
 
