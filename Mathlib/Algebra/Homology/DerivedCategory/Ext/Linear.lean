@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.Algebra.Module.TransferInstance
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Ext-modules in linear categories
@@ -94,12 +95,12 @@ end Ring
 
 section CommRing
 
-variable (R : Type t) [CommRing R] {C : Type u} [Category.{v} C] [Abelian C] [Linear R C]
-  [HasExt.{w} C] (X Y Z : C)
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
 /-- The composition of `Ext`, as a bilinear map. -/
 @[simps!]
-noncomputable def bilinearCompOfLinear (a b c : ℕ) (h : a + b = c) :
+noncomputable def bilinearCompOfLinear (R : Type t) [CommRing R] [Linear R C] (X Y Z : C)
+    (a b c : ℕ) (h : a + b = c) :
     Ext X Y a →ₗ[R] Ext Y Z b →ₗ[R] Ext X Z c where
   toFun α :=
     { toFun β := α.comp β h
@@ -107,6 +108,18 @@ noncomputable def bilinearCompOfLinear (a b c : ℕ) (h : a + b = c) :
       map_smul' := by simp }
   map_add' := by aesop
   map_smul' := by aesop
+
+/-- The postcomposition `Ext X Y a →ₗ[R] Ext X Z b` with `β : Ext Y Z n` when `a + n = b`. -/
+noncomputable abbrev postcompOfLinear {Y Z : C} {n : ℕ} (β : Ext Y Z n)
+    (R : Type t) [CommRing R] [Linear R C] (X : C) {a b : ℕ} (h : a + n = b) :
+    Ext X Y a →ₗ[R] Ext X Z b :=
+  (bilinearCompOfLinear R X Y Z a n b h).flip β
+
+/-- The precomposition `Ext Y Z a →ₗ[R] Ext X Z b` with `α : Ext X Y n` when `n + a = b`. -/
+noncomputable abbrev precompOfLinear {X Y : C} {n : ℕ} (α : Ext X Y n)
+    (R : Type t) [CommRing R] [Linear R C] (Z : C) {a b : ℕ} (h : n + a = b) :
+    Ext Y Z a →ₗ[R] Ext X Z b :=
+  bilinearCompOfLinear R X Y Z n a b h α
 
 end CommRing
 
