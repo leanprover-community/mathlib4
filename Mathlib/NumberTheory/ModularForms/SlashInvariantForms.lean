@@ -58,8 +58,7 @@ instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinu
   obtain ⟨t, ht⟩ := hgn.1
   have := congr_arg Matrix.GeneralLinearGroup.det ht.symm
   rw [Matrix.SpecialLinearGroup.det_mapGL, map_pow] at this
-  rw [this]
-  simp
+  simp [this]
 
 end
 
