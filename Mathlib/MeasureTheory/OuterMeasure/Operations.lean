@@ -143,7 +143,7 @@ instance instAddLeftMono {α : Type*} : AddLeftMono (OuterMeasure α) :=
   ⟨fun _ν _μ₁ _μ₂ hμ s => add_le_add_left (hμ s) _⟩
 
 instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure α) where
-  add_le_add_left := fun _ _ => add_le_add_left
+  add_le_add_left _ _ := add_le_add_left
 
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,

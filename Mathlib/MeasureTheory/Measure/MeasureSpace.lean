@@ -1005,7 +1005,7 @@ instance instAddLeftMono {_ : MeasurableSpace α} : AddLeftMono (Measure α) :=
   ⟨fun _ν _μ₁ _μ₂ hμ s => add_le_add_left (hμ s) _⟩
 
 instance instIsOrderedAddMonoid {_ : MeasurableSpace α} : IsOrderedAddMonoid (Measure α) where
-  add_le_add_left := fun _ _ => add_le_add_left
+  add_le_add_left _ _ := add_le_add_left
 
 protected theorem le_add_left (h : μ ≤ ν) : μ ≤ ν' + ν := fun s => le_add_left (h s)
 
