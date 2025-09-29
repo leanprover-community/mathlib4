@@ -75,6 +75,7 @@ theorem restrictSurjective_of_add_le_ENatCard (hn : m + n ≤ ENat.card α) :
   ext i
   simp [trans_apply, coe_castAddEmb, append]
 
+-- TODO rename
 theorem restrictSurjective_of_le_ENatCard (hmn : m ≤ n) (hn : n ≤ ENat.card α) :
     Function.Surjective (fun x : Fin n ↪ α ↦ (castLEEmb hmn).trans x) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
