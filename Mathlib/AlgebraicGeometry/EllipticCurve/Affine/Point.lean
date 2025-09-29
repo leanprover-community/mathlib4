@@ -522,8 +522,9 @@ variable [DecidableEq F]
 instance : Add W.Point :=
   ⟨add⟩
 
-instance : AddZeroClass W.Point :=
-  ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
+instance : AddZeroClass W.Point where
+  zero_add := by rintro (_ | _) <;> rfl
+  add_zero := by rintro (_ | _) <;> rfl
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
   rfl
