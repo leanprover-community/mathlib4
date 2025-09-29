@@ -277,11 +277,9 @@ section Extension
 
 variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
 
-/--
-If `L/K` and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then we say `φ` is an extension of `ψ` if
-`φ` restricted to `K` is `ψ`.
--/
-abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+/-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
+`φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
+protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
 
 namespace Extension
 
