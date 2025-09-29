@@ -347,6 +347,6 @@ lemma degenerate_iff_of_mono {Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (x : X _⦋n�
 variable {X} in
 lemma nonDegenerate_iff_of_mono {Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (x : X _⦋n⦌) :
     f.app _ x ∈ Y.nonDegenerate n ↔ x ∈ X.nonDegenerate n := by
-  simp only [mem_nonDegenerate_iff_notMem_degenerate, degenerate_iff_of_mono]
+  simp [mem_nonDegenerate_iff_notMem_degenerate, degenerate_iff_of_mono]
 
 end SSet
