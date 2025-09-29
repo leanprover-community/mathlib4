@@ -236,36 +236,36 @@ namespace Subcomplex
 
 variable {X} (A : X.Subcomplex)
 
-lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op (.mk n))) :
+lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
   rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
   constructor
-  · rintro ⟨m, hm, f, _, ⟨y, rfl⟩⟩
-    exact ⟨m, hm, f, inferInstance, ⟨y.1, rfl⟩⟩
+  · rintro ⟨m, hm, f, _, y, rfl⟩
+    exact ⟨m, hm, f, inferInstance, y.val, rfl⟩
   · obtain ⟨x, hx⟩ := x
     rintro ⟨m, hm, f, _, ⟨y, rfl⟩⟩
-    refine ⟨m, hm, f, inferInstance, ⟨⟨y, ?_⟩, rfl⟩⟩
+    refine ⟨m, hm, f, inferInstance, ⟨y, ?_⟩, rfl⟩
     have := isSplitEpi_of_epi f
     simpa [Set.mem_preimage, ← op_comp, ← FunctorToTypes.map_comp_apply,
       IsSplitEpi.id, op_id, FunctorToTypes.map_id_apply] using A.map (section_ f).op hx
 
-lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op (.mk n))) :
-    x ∈ nonDegenerate A n ↔ x.1 ∈ X.nonDegenerate n := by
+lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
+    x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
   rw [mem_nonDegenerate_iff_notMem_degenerate,
     mem_nonDegenerate_iff_notMem_degenerate, mem_degenerate_iff]
 
 lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
-    A ≤ B ↔ ∀ (n : ℕ) (x : X.nonDegenerate n), x.1 ∈ A.obj _ → x.1 ∈ B.obj _ := by
+    A ≤ B ↔ ∀ (n : ℕ) (x : X.nonDegenerate n), x.val ∈ A.obj _ → x.val ∈ B.obj _ := by
   constructor
   · aesop
   · rintro h ⟨n⟩ x hx
-    induction' n using SimplexCategory.rec with n
+    induction n using SimplexCategory.rec with | _ n =>
     obtain ⟨m, f, _, ⟨a, ha⟩, ha'⟩ := exists_nonDegenerate A ⟨x, hx⟩
     simp only [Subpresheaf.toPresheaf_obj, Subtype.ext_iff,
       Subpresheaf.toPresheaf_map_coe] at ha'
     subst ha'
     rw [mem_nonDegenerate_iff] at ha
-    exact B.map f.op (h _ ⟨_, ha⟩ a.2)
+    exact B.map f.op (h _ ⟨_, ha⟩ a.prop)
 
 lemma eq_top_iff_contains_nonDegenerate :
     A = ⊤ ↔ ∀ (n : ℕ), X.nonDegenerate n ⊆ A.obj _ := by
@@ -282,11 +282,11 @@ lemma degenerate_eq_top_iff (n : ℕ) :
   · intro h
     simp only [Set.inf_eq_inter, Set.inter_eq_right] at h
     ext x
-    simpa [A.mem_degenerate_iff] using h x.2
+    simpa [A.mem_degenerate_iff] using h x.prop
 
 variable (X) in
 lemma iSup_ofSimplex_nonDegenerate_eq_top :
-    ⨆ (x : Σ (p : ℕ), X.nonDegenerate p), ofSimplex x.2.1 = ⊤ := by
+    ⨆ (x : Σ (p : ℕ), X.nonDegenerate p), ofSimplex x.2.val = ⊤ := by
   rw [eq_top_iff_contains_nonDegenerate]
   intro n x hx
   simp only [Subpresheaf.iSup_obj, Set.mem_iUnion, Sigma.exists,
@@ -299,14 +299,14 @@ section
 
 variable {X} {Y : SSet.{u}}
 
-lemma degenerate_map {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n) (f : X ⟶ Y) :
+lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n) (f : X ⟶ Y) :
     f.app _ x ∈ Y.degenerate n := by
   obtain ⟨m, hm, g, y, rfl⟩ := hx
   exact ⟨m, hm, g, f.app _ y, by rw [FunctorToTypes.naturality]⟩
 
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
     X.degenerate n ⊆ (f.app _)⁻¹' (Y.degenerate n) :=
-  fun _ hx ↦ degenerate_map hx f
+  fun _ hx ↦ degenerate_app_apply hx f
 
 lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
     (f.app _)'' (X.degenerate n) ⊆ Y.degenerate n := by
@@ -316,8 +316,8 @@ lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌)
     f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by
   constructor
   · intro hy
-    simpa [← FunctorToTypes.comp] using degenerate_map hy (inv f)
-  · exact fun hx ↦ degenerate_map hx f
+    simpa [← FunctorToTypes.comp] using degenerate_app_apply hy (inv f)
+  · exact fun hx ↦ degenerate_app_apply hx f
 
 lemma nonDegenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
     f.app _ x ∈ Y.nonDegenerate n ↔ x ∈ X.nonDegenerate n := by
