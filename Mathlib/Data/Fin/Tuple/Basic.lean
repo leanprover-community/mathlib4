@@ -1068,21 +1068,41 @@ section Find
 
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
+--⟨Nat.find (Fin.exists_iff.mp h), (Nat.find_spec (Fin.exists_iff.mp h)).fst⟩
+
 /-- `find p` returns the first index `k` where `p k` is satisfied,
   given that it is satisfied somewhere. -/
-@[simps]
-protected def find (h : ∃ k, p k) : Fin n :=
-  ⟨Nat.find (Fin.exists_iff.mp h), (Nat.find_spec (Fin.exists_iff.mp h)).fst⟩
+protected def find : {n : ℕ} → {p : Fin n → Prop} → [DecidablePred p] → (h : ∃ k, p k) → Fin n
+  | 0, _, _, h => isEmptyElim h.choose
+  | _ + 1, p, _, h => if h0 : p 0 then 0 else
+    (Fin.find <| (exists_fin_succ.mp h).resolve_left h0).succ
 
 /-- If `find p = i`, then `p i` holds -/
-theorem find_spec (h : ∃ k, p k) : p (Fin.find h) := (Nat.find_spec (Fin.exists_iff.mp h)).snd
+theorem find_spec (h : ∃ k, p k) : p (Fin.find h) := by
+  induction n with | zero | succ n ih
+  · exact isEmptyElim h.choose
+  · unfold Fin.find
+    by_cases h0 : p 0
+    · rwa [dif_pos h0]
+    · rw [dif_neg h0]
+      exact ih ((exists_fin_succ.mp h).resolve_left h0)
 
 grind_pattern Fin.find_spec => Fin.find h
 
 /-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
 protected theorem find_min (h : ∃ k, p k) {j : Fin n} :
-    j < Fin.find h → ¬ p j := fun hj hpj => Nat.find_min (Fin.exists_iff.mp h) hj ⟨_, hpj⟩
+    j < Fin.find h → ¬ p j := by
+  induction n with | zero | succ n ih
+  · exact isEmptyElim h.choose
+  · unfold Fin.find
+    by_cases h0 : p 0
+    · rw [dif_pos h0]
+      exact fun h => (not_lt_zero _ h).elim
+    · cases j using cases with | zero | succ j
+      · exact fun _ => h0
+      · rw [dif_neg h0, succ_lt_succ_iff]
+        exact ih _
 
 /-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
@@ -1115,6 +1135,11 @@ theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find h = i ↔ p i ∧ �
 
 @[simp] lemma find_eq_zero {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) :
   Fin.find h = 0 ↔ p 0 := by simp [find_eq_iff]
+
+@[simp] theorem val_find (h : ∃ k, p k) : (Fin.find h).val = Nat.find (Fin.exists_iff.mp h) := by
+  simp_rw [eq_comm (b := Nat.find _), Nat.find_eq_iff,
+    Fin.eta, is_lt, exists_const, not_exists, find_spec, true_and]
+  exact fun _ hm _ => Fin.find_min h hm
 
 /-- If a predicate `q` holds at some `x` and implies `p` up to that `x`, then
 the earliest `xq` such that `q xq` is at least the smallest `xp` where `p xp`.
@@ -1168,40 +1193,42 @@ lemma find_add {p : Fin (m + n) → Prop} [DecidablePred p]
   · rw [Fin.natAdd_lt_natAdd_iff] at hi
     exact Fin.find_min hⱼ hi
 
-theorem find?_decide_eq_some_find_of_exists (h : ∃ i, p i) :
-    find? (p ·) = some (Fin.find h) := by
-  simp_rw [find?_eq_some_iff, decide_eq_true_eq, ← find_eq_iff h]
+theorem find?_eq_dite {p : Fin n → Bool} :
+    find? p = if h : ∃ i, p i then some (Fin.find h) else none := by
+  split_ifs with h
+  · simp_rw [find?_eq_some_iff, Fin.find_spec h, lt_find_iff]
+    grind
+  · simpa [find?_eq_none_iff] using h
 
-theorem find?_decide_eq_some_find_of_isSome (h : (find? p).isSome) :
-    find? (p ·) = some (Fin.find (exists_of_find?_isSome' h)) := by
-  have h := exists_of_find?_isSome' h
-  simp_all [find?_decide_eq_some_find_of_exists]
+theorem find?_decide_eq_dite :
+    find? (p ·) = if h : ∃ i, p i then some (Fin.find h) else none := by
+  simp_rw [find?_eq_dite, decide_eq_true_eq]
 
-theorem find_mem_find?_decide_of_exists (h : ∃ i, p i) :
-    Fin.find h ∈ find? p := by
-  simp_rw [Option.mem_def, find?_decide_eq_some_find_of_exists h]
+theorem get_find?_eq_find_of_eq_true {p : Fin n → Bool} (h : p i) :
+    (find? p).get (isSome_find?_of_eq_true h) = Fin.find (p := (p ·)) ⟨i, h⟩ := by
+  simp_rw [find?_eq_dite, Option.get_dite]
+
+theorem find?_decide_get_eq_find (h : ∃ i, p i) :
+    (find? (p ·)).get (isSome_find?_of_eq_true (i := h.choose)
+    (by simp only [h.choose_spec, decide_true])) = Fin.find h := by
+  simp_rw [find?_decide_eq_dite, Option.get_dite]
+
+theorem find_mem_find?_decide (h : ∃ i, p i) :
+    Fin.find h ∈ find? p := by grind [find?_eq_dite]
 
 end Find
 
 section Find?
 
 theorem mem_find?_iff {p : Fin n → Bool} {i : Fin n} :
-    i ∈ find? p ↔ p i ∧ ∀ j, j < i → ¬ p j := by simp [find?_eq_some_iff]
+    i ∈ find? p ↔ p i ∧ ∀ j, j < i → ¬ p j := by simp
 
 theorem find?_eq_some_find_of_exists {p : Fin n → Bool} (h : ∃ i, p i) :
-    find? p = some (Fin.find h) := by
-  simp_rw [find?_eq_some_iff, Fin.find_spec h, lt_find_iff]
-  grind
+    find? p = some (Fin.find h) := by simp_rw [find?_eq_dite, h, dite_true]
 
 theorem find?_eq_some_find_of_isSome {p : Fin n → Bool} (h : (find? p).isSome) :
-    find? p = some (Fin.find (exists_of_find?_isSome' h)) := by
-  simp_rw [find?_eq_some_find_of_exists (exists_of_find?_isSome' h)]
-
-theorem find?_eq_dite {p : Fin n → Bool} :
-    find? p = if h : ∃ i, p i then some (Fin.find h) else none := by
-  split_ifs with h
-  · exact find?_eq_some_find_of_exists h
-  · simpa [find?_eq_none_iff] using h
+    find? p = some (Fin.find (exists_eq_true_of_isSome_find? h)) := by
+  simp_rw [find?_eq_dite, exists_eq_true_of_isSome_find? h, dite_true]
 
 end Find?
 
