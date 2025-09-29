@@ -45,7 +45,7 @@ lemma IsAdic.isPrecomplete_iff : IsPrecomplete I R ↔ CompleteSpace R := by
       n (.trans (Finset.le_sup (by simp)) hn)) (hL i)
     rwa [sub_add_sub_cancel] at this
   · intro H f hf
-    obtain ⟨L, hL⟩ := CompleteSpace.complete (f := (Filter.atTop.map f))
+    obtain ⟨L, hL⟩ := CompleteSpace.complete (f := Filter.atTop.map f)
       (hI.hasBasis_nhds_zero.uniformity_of_nhds_zero.cauchySeq_iff.mpr fun i _ ↦
         ⟨i, fun m hm n hn ↦ by simpa using Ideal.sub_mem _ (hf hm) (hf hn)⟩)
     refine ⟨L, fun i ↦ ?_⟩
