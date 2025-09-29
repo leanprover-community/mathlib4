@@ -11,7 +11,6 @@ import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # The Riemann-Lebesgue Lemma
@@ -85,7 +84,7 @@ theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
   simp_rw [smul_sub]
   rw [integral_sub, fourierIntegral_half_period_translate hw, sub_eq_add_neg, neg_neg, ←
     two_smul ℂ _, ← @smul_assoc _ _ _ _ _ _ (IsScalarTower.left ℂ), smul_eq_mul]
-  · norm_num
+  · simp
   exacts [(Real.fourierIntegral_convergent_iff w).2 hf,
     (Real.fourierIntegral_convergent_iff w).2 (hf.comp_add_right _)]
 
@@ -166,7 +165,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   rw [this] at bdA2
   refine bdA2.trans_lt ?_
   rw [div_mul_eq_mul_div, div_lt_iff₀ (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
-    mul_lt_mul_left hε]
+    mul_lt_mul_iff_right₀ hε]
   refine (ENNReal.toReal_mono ENNReal.coe_ne_top hB_vol).trans_lt ?_
   rw [ENNReal.coe_toReal, two_mul]
   exact lt_add_of_pos_left _ hB_pos

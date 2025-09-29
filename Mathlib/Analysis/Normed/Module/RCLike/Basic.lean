@@ -5,7 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Normed spaces over R or C

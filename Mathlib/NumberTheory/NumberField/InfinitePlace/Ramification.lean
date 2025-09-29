@@ -14,7 +14,7 @@ This file studies the ramification of infinite places of a number field.
 
 * `NumberField.InfinitePlace.comap`: the restriction of an infinite place along an embedding.
 * `NumberField.InfinitePlace.orbitRelEquiv`: the equiv between the orbits of infinite places under
-  the action of the galois group and the infinite places of the base field.
+  the action of the Galois group and the infinite places of the base field.
 * `NumberField.InfinitePlace.IsUnramified`: an infinite place is unramified in a field extension
   if the restriction has the same multiplicity.
 * `NumberField.InfinitePlace.not_isUnramified_iff`: an infinite place is not unramified
@@ -92,7 +92,7 @@ lemma card_mono [NumberField k] [NumberField K] :
 
 variable {k K}
 
-/-- The action of the galois group on infinite places. -/
+/-- The action of the Galois group on infinite places. -/
 @[simps! smul_coe_apply]
 instance : MulAction (K ≃ₐ[k] K) (InfinitePlace K) where
   smul := fun σ w ↦ w.comap σ.symm
@@ -141,7 +141,7 @@ lemma mem_orbit_iff [IsGalois k K] {w w' : InfinitePlace K} :
   rw [← mk_embedding w, comap_mk, smul_mk, comap_mk]
   congr 1; ext1; simp
 
-/-- The orbits of infinite places under the action of the galois group are indexed by
+/-- The orbits of infinite places under the action of the Galois group are indexed by
 the infinite places of the base field. -/
 noncomputable
 def orbitRelEquiv [IsGalois k K] :

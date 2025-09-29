@@ -173,7 +173,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
-        omega
+        cutsat
       · simp only [isPath_copy]
         exact (hf _).tail
   case surj =>
@@ -242,9 +242,9 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
       gcongr
       exact le_trans q (G.minDegree_le_degree _)
     rw [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
-    omega
+    cutsat
   · have := h.isConnected.preconnected.minDegree_pos_of_nontrivial
-    omega
+    cutsat
 
 /-- A nontrivial tree has a vertex of degree one. -/
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]

@@ -159,8 +159,8 @@ include h2 in
 private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3
   have h4 : (N.comap K.subtype).index = N.index := by
-    rw [← N.relindex_top_right, ← hK]
-    exact (relindex_sup_right K N).symm
+    rw [← N.relIndex_top_right, ← hK]
+    exact (relIndex_sup_right K N).symm
   have h5 : Nat.card K < Nat.card G := by
     rw [← K.index_mul_card]
     exact lt_mul_of_one_lt_left Nat.card_pos (one_lt_index_of_ne_top h3)
@@ -169,9 +169,9 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Nat.card (H.map K.subtype) = N.index := by
-    rw [← relindex_bot_left, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
-      relindex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
-      range_subtype, ← relindex_sup_right, hK, relindex_top_right]
+    rw [← relIndex_bot_left, ← relIndex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
+      relIndex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
+      range_subtype, ← relIndex_sup_right, hK, relIndex_top_right]
   have h7 : Nat.card N * Nat.card (H.map K.subtype) = Nat.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
   have h8 : (Nat.card N).Coprime (Nat.card (H.map K.subtype)) := by
