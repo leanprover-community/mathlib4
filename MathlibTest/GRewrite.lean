@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 import Mathlib.Data.Int.ModEq
+import Mathlib.Order.Antisymmetrization
 import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.NormNum
@@ -153,6 +154,14 @@ example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
 
 end modeq
 
+section dvd
+
+example {a b c : ℤ} (h₁ : a ∣ b) (h₂ : b ∣ a ^ 2 * c) : a ∣ b ^ 2 * c := by
+  grw [h₁] at *
+  exact h₂
+
+end dvd
+
 section wildcard
 
 /-! Rewriting at a wildcard `*`, i.e. `grw [h] at *`, will sometimes include a rewrite at `h` itself
@@ -229,7 +238,7 @@ end
 example {x y a b : ℤ} (h1 : |x| ≤ a) (h2 : |y| ≤ b) :
     |x ^ 2 + 2 * x * y| ≤ a ^ 2 + 2 * a * b := by
   have : 0 ≤ a := by grw [← h1]; positivity
-  grw [abs_add, abs_mul, abs_mul, abs_pow, h1, h2, abs_of_nonneg]
+  grw [abs_add_le, abs_mul, abs_mul, abs_pow, h1, h2, abs_of_nonneg]
   norm_num
 
 example {a b : ℚ} {P : Prop} (hP : P) (h : P → a < b) : False := by
@@ -303,3 +312,31 @@ example : ∃ n, n < 2 := by
   on_goal 2 => grw [← one_lt_two]
   exact 0
   refine zero_lt_one
+
+variable {a b c d n : ℤ}
+
+example (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := by
+  grw [h]
+
+example (h₁ : a ∣ b) (h₂ : b ∣ a * d) : a ∣ b * d := by
+  grw [h₁] at h₂ ⊢
+  exact h₂
+
+namespace AntiSymmRelTest
+
+variable {α : Type u} [Preorder α] {a b : α}
+
+local infix:50 " ≈ " => AntisymmRel (· ≤ ·)
+
+axiom f : α → α
+
+@[gcongr]
+axiom f_congr' : a ≤ b → f a ≤ f b
+
+example (h : a ≈ b) : f a ≤ f b := by
+  grw [h]
+
+example (h : b ≈ a) : f a ≤ f b := by
+  grw [h]
+
+end AntiSymmRelTest

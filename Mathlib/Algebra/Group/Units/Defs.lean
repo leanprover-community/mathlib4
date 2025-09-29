@@ -79,7 +79,6 @@ namespace Units
 section Monoid
 variable [Monoid α]
 
--- Porting note: unclear whether this should be a `CoeHead` or `CoeTail`
 /-- A unit can be interpreted as a term in the base `Monoid`. -/
 @[to_additive /-- An additive unit can be interpreted as a term in the base `AddMonoid`. -/]
 instance : CoeHead αˣ α :=
@@ -319,8 +318,7 @@ theorem divp_one (a : α) : a /ₚ 1 = a :=
 theorem divp_assoc (a b : α) (u : αˣ) : a * b /ₚ u = a * (b /ₚ u) :=
   mul_assoc _ _ _
 
-/-- `field_simp` needs the reverse direction of `divp_assoc` to move all `/ₚ` to the right. -/
-@[field_simps]
+@[deprecated divp_assoc (since := "2025-08-25")]
 theorem divp_assoc' (x y : α) (u : αˣ) : x * (y /ₚ u) = x * y /ₚ u :=
   (divp_assoc _ _ _).symm
 
@@ -336,7 +334,6 @@ theorem divp_mul_cancel (a : α) (u : αˣ) : a /ₚ u * u = a :=
 theorem mul_divp_cancel (a : α) (u : αˣ) : a * u /ₚ u = a :=
   (mul_assoc _ _ _).trans <| by rw [Units.mul_inv, mul_one]
 
-@[field_simps]
 theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u₂ = x /ₚ (u₂ * u₁) := by
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 
@@ -344,14 +341,8 @@ theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u�
 theorem one_divp (u : αˣ) : 1 /ₚ u = ↑u⁻¹ :=
   one_mul _
 
-/-- Used for `field_simp` to deal with inverses of units. -/
-@[field_simps]
 theorem inv_eq_one_divp (u : αˣ) : ↑u⁻¹ = 1 /ₚ u := by rw [one_divp]
 
-/-- `field_simp` moves division inside `αˣ` to the right, and this lemma
-lifts the calculation to `α`.
--/
-@[field_simps]
 theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u₂ := by
   rw [divp, division_def, Units.val_mul]
 
@@ -394,7 +385,7 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 
-@[to_additive (attr := simp, grind)]
+@[to_additive (attr := simp, grind ←)]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 
@@ -602,7 +593,6 @@ protected lemma mul_div_mul_left (h : IsUnit c) (a b : α) : c * a / (c * b) = a
 end DivisionCommMonoid
 end IsUnit
 
-@[field_simps]
 lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := by
   rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 

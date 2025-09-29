@@ -16,7 +16,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.68" -- ProofWidgets 
     If this does not work, report your issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "nightly-testing"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "v4.22.0"
+require "leanprover-community" / "plausible" @ git "main"
 
 /-!
 ## Options for building mathlib
@@ -27,6 +27,7 @@ require "leanprover-community" / "plausible" @ git "v4.22.0"
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
 ]
 

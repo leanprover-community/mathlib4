@@ -307,15 +307,10 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
         (S := Submonoid.powers a.val) (A := Localization.Away a.val)]
       exact Algebra.IsPushout.out
   · intro a
-    have : (algebraMap (S ⊗[R] T) (S ⊗[R] Localization.Away a.val)).comp
-        Algebra.TensorProduct.includeLeftRingHom =
-        Algebra.TensorProduct.includeLeftRingHom := by
-      ext x
-      simp [RingHom.algebraMap_toAlgebra]
-    rw [this]
+    rw [← IsScalarTower.algebraMap_eq]
     apply hPb R (Localization.Away a.val)
-    rw [IsScalarTower.algebraMap_eq R T (Localization.Away a.val)]
-    apply hs a a.property
+    rw [IsScalarTower.algebraMap_eq R T]
+    exact hs a a.property
 
 /-- If `P` is preserved by localization away, then so is `Locally P`. -/
 lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :

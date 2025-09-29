@@ -541,7 +541,7 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   by_cases hy : y = 0; · simp [hy]
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.norm_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    field_simp
+    simp [field]
   · exact o.kahler_ne_zero hx hy
 
 /-- The cosine of the oriented angle between two nonzero vectors is the inner product divided by
@@ -549,7 +549,7 @@ the product of the norms. -/
 theorem cos_oangle_eq_inner_div_norm_mul_norm {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     Real.Angle.cos (o.oangle x y) = ⟪x, y⟫ / (‖x‖ * ‖y‖) := by
   rw [o.inner_eq_norm_mul_norm_mul_cos_oangle]
-  field_simp [norm_ne_zero_iff.2 hx, norm_ne_zero_iff.2 hy]
+  field_simp
 
 /-- The cosine of the oriented angle between two nonzero vectors equals that of the unoriented
 angle. -/
@@ -635,8 +635,8 @@ theorem angle_eq_iff_oangle_eq_of_sign_eq {w x y z : V} (hw : w ≠ 0) (hx : x �
 /-- The oriented angle between two vectors equals the unoriented angle if the sign is positive. -/
 theorem oangle_eq_angle_of_sign_eq_one {x y : V} (h : (o.oangle x y).sign = 1) :
     o.oangle x y = InnerProductGeometry.angle x y := by
-  by_cases hx : x = 0; · exfalso; simp [hx] at h
-  by_cases hy : y = 0; · exfalso; simp [hy] at h
+  by_cases hx : x = 0; · simp [hx] at h
+  by_cases hy : y = 0; · simp [hy] at h
   refine (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_right ?_
   intro hxy
   rw [hxy, Real.Angle.sign_neg, neg_eq_iff_eq_neg, ← SignType.neg_iff, ← not_le] at h
@@ -647,8 +647,8 @@ theorem oangle_eq_angle_of_sign_eq_one {x y : V} (h : (o.oangle x y).sign = 1) :
 negative. -/
 theorem oangle_eq_neg_angle_of_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sign = -1) :
     o.oangle x y = -InnerProductGeometry.angle x y := by
-  by_cases hx : x = 0; · exfalso; simp [hx] at h
-  by_cases hy : y = 0; · exfalso; simp [hy] at h
+  by_cases hx : x = 0; · simp [hx] at h
+  by_cases hy : y = 0; · simp [hy] at h
   refine (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_left ?_
   intro hxy
   rw [hxy, ← SignType.neg_iff, ← not_le] at h
@@ -889,7 +889,6 @@ vector, is the sign of the factor by which the second vector is multiplied in th
 multiplied by the sign of the angle between the two vectors. -/
 theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle x (r₁ • x + r₂ • y)).sign = SignType.sign r₂ * (o.oangle x y).sign := by
-  rw [← o.oangle_sign_smul_add_right x (r₁ • x + r₂ • y) (-r₁)]
   simp
 
 /-- The sign of the angle between a linear combination of two vectors and the second vector is

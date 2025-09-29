@@ -22,9 +22,9 @@ recover the usual definition of the ω-limit set as the set of all `y`
 such that there exist sequences `(tₙ)`, `(xₙ)` such that `ϕ tₙ xₙ ⟶ y`
 as `n ⟶ ∞`.
 
-## Notations
+## Notation
 
-The `omegaLimit` locale provides the localised notation `ω` for
+The `omegaLimit` scope provides the localised notation `ω` for
 `omegaLimit`, as well as `ω⁺` and `ω⁻` for `omegaLimit atTop` and
 `omegaLimit atBot` respectively for when the acting monoid is
 endowed with an order.
@@ -223,7 +223,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   have hw₃ : k \ n ⊆ (closure (image2 ϕ w s))ᶜ := by
     apply Subset.trans hg₃
     simp only [j, iUnion_subset_iff, compl_subset_compl]
-    intros u hu
+    intro u hu
     unfold w
     gcongr
     refine iInter_subset_of_subset u (iInter_subset_of_subset hu ?_)

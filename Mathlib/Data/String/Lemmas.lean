@@ -14,28 +14,24 @@ import Batteries.Tactic.Alias
 
 namespace String
 
-lemma congr_append : ∀ (a b : String), a ++ b = String.mk (a.data ++ b.data)
-  | ⟨_⟩, ⟨_⟩ => rfl
+lemma congr_append (a b : String) : a ++ b = String.mk (a.data ++ b.data) := by simp
 
 @[simp] lemma length_replicate (n : ℕ) (c : Char) : (replicate n c).length = n := by
-  simp only [String.length, String.replicate, List.length_replicate]
+  simp only [← length_data, String.replicate, List.data_asString, List.length_replicate]
 
 lemma length_eq_list_length (l : List Char) : (String.mk l).length = l.length := by
-  simp only [String.length]
+  simp
 
 /-- The length of the String returned by `String.leftpad n a c` is equal
   to the larger of `n` and `s.length` -/
 @[simp] lemma length_leftpad (n : ℕ) (c : Char) :
     ∀ (s : String), (leftpad n c s).length = max n s.length
-  | ⟨s⟩ => by simp only [leftpad, String.length, List.length_leftpad]
-
-@[deprecated (since := "2025-02-24")]
-alias leftpad_length := length_leftpad
+  | s => by simp [leftpad, Nat.sub_add_eq_max]
 
 lemma leftpad_prefix (n : ℕ) (c : Char) : ∀ s, IsPrefix (replicate (n - length s) c) (leftpad n c s)
-  | ⟨l⟩ => by simp only [IsPrefix, replicate, leftpad, String.length, List.leftpad_prefix]
+  | s => by simp [leftpad, IsPrefix, replicate]
 
 lemma leftpad_suffix (n : ℕ) (c : Char) : ∀ s, IsSuffix s (leftpad n c s)
-  | ⟨l⟩ => by simp only [IsSuffix, leftpad, List.leftpad_suffix]
+  | s => by simp [leftpad, IsSuffix]
 
 end String
