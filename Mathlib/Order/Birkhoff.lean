@@ -209,7 +209,7 @@ powerset lattice. -/
 noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
   by_cases h : IsEmpty α
   · exact OrderEmbedding.ofIsEmpty
-  rw [not_isEmpty_iff] at h
+  push_neg at h
   have := Fintype.toOrderBot α
   exact OrderIso.lowerSetSupIrred.toOrderEmbedding.trans ⟨⟨_, SetLike.coe_injective⟩, Iff.rfl⟩
 

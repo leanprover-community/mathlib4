@@ -50,7 +50,6 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     have (i' : _) : IsAffine (𝒰.X i') := inferInstanceAs (IsAffine (Spec _))
     obtain ⟨j, H⟩ :
         ∃ j : 𝒰.I₀, ∀ {i'} (f : i' ⟶ i), Nonempty ((𝒰.pullbackCover (D.map f)).X j) := by
-      simp_rw [← not_isEmpty_iff]
       by_contra! H
       choose i' f hf using H
       let g (j) := IsCofiltered.infTo (insert i (Finset.univ.image i'))

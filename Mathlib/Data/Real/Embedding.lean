@@ -229,7 +229,7 @@ theorem exists_orderAddMonoidHom_real_injective :
     ∃ f : M →+o ℝ, Function.Injective f := by
   by_cases h : Subsingleton M
   · exact ⟨0, Function.injective_of_subsingleton _⟩
-  · have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
+  · push_neg at h
     obtain ⟨a, ha⟩ := exists_ne (0 : M)
     let one : One M := ⟨|a|⟩
     have : ZeroLEOneClass M := ⟨abs_nonneg a⟩
