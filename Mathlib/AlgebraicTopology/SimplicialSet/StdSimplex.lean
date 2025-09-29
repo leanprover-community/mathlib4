@@ -304,6 +304,7 @@ lemma objEquiv_symm_mem_nonDegenerate_iff_mono {n d : ℕ} (f : ⦋d⦌ ⟶ ⦋n
 
 /-- Nondegenerate `d`-dimensional simplices of the standard simplex `Δ[n]`
 identify to order embeddings `Fin (d + 1) ↪o Fin (n + 1)`. -/
+@[simps! apply_apply symm_apply_coe]
 def nonDegenerateEquiv {n d : ℕ} :
     (Δ[n] : SSet.{u}).nonDegenerate d ≃ (Fin (d + 1) ↪o Fin (n + 1)) where
   toFun s := OrderEmbedding.ofStrictMono _ ((mem_nonDegenerate_iff_strictMono _).1 s.2)
