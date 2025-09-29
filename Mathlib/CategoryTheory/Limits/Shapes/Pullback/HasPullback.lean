@@ -77,14 +77,12 @@ open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Ho
 variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
 /-- `HasPullback f g` represents a particular choice of limiting cone
-for the pair of morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`.
--/
+for the pair of morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`. -/
 abbrev HasPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasLimit (cospan f g)
 
 /-- `HasPushout f g` represents a particular choice of colimiting cocone
-for the pair of morphisms `f : X ⟶ Y` and `g : X ⟶ Z`.
--/
+for the pair of morphisms `f : X ⟶ Y` and `g : X ⟶ Z`. -/
 abbrev HasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :=
   HasColimit (span f g)
 
@@ -509,6 +507,14 @@ theorem inr_comp_pushoutSymmetry_inv [HasPushout f g] :
     pushout.inr _ _ ≫ (pushoutSymmetry f g).inv = pushout.inl _ _ := by simp [Iso.comp_inv_eq]
 
 end PushoutSymmetry
+
+/-- `HasPullbackAlong f` represents a choice of pullback
+for each morphism into the codomain of `f : X ⟶ Z`. -/
+abbrev HasPullbackAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : W ⟶ Y), HasPullback h f
+
+/-- `HasPushforwardAlong f` represents a choice of pushforward
+for each morphism out of the domain of `f : X ⟶ Z`. -/
+abbrev HasPushoutAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : X ⟶ W), HasPushout h f
 
 variable (C)
 
