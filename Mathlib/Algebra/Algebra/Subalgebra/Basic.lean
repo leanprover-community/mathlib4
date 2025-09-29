@@ -243,19 +243,6 @@ theorem toSubring_inj {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R
 instance : Inhabited S :=
   ⟨(0 : S.toSubsemiring)⟩
 
-/-! `Subalgebra`s inherit cancelllation from the algebra. -/
-
-/-- A subalgebra of a left cancellative algebra is also left cancellative. -/
-instance isLeftCancelAdd [IsLeftCancelAdd A] : IsLeftCancelAdd S :=
-  S.toAddSubmonoid.isLeftCancelAdd
-
-/-- A subalgebra of a right cancellative algebra is also right cancellative. -/
-instance isRightCancelAdd [IsRightCancelAdd A] : IsRightCancelAdd S :=
-  S.toAddSubmonoid.isRightCancelAdd
-
-/-- A subalgebra of a cancellative algebra is also cancellative. -/
-instance isCancelAdd [IsCancelAdd A] : IsCancelAdd S where
-
 section
 
 /-! `Subalgebra`s inherit structure from their `Subsemiring` / `Semiring` coercions. -/
