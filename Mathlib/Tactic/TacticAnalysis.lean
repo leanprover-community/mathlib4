@@ -9,6 +9,7 @@ public meta import Lean.Util.Heartbeats
 public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Lean.ContextInfo
 public meta import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Compiler.IR.CompilerM
 
 public meta section
 

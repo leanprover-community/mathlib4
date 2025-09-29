@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Batteries.Tactic.Lint
 
-@[expose] public section
+public meta section
 
 /-!
 # A parser for superscripts and subscripts
@@ -109,7 +109,6 @@ def partitionPoint (lo := 0) (hi := as.size) : Nat :=
     else
       partitionPoint lo m
   else lo
-  termination_by hi - lo
 
 /-- The core function for super/subscript parsing. It consists of three stages:
 

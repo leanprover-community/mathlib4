@@ -26,7 +26,7 @@ namespace Mathlib.Notation
 open Lean
 
 /-- Checks to see that `xs` has only one binder. -/
-def isExplicitBinderSingular (xs : TSyntax ``explicitBinders) : Bool :=
+meta def isExplicitBinderSingular (xs : TSyntax ``explicitBinders) : Bool :=
   match xs with
   | `(explicitBinders| $_:binderIdent $[: $_]?) => true
   | `(explicitBinders| ($_:binderIdent : $_)) => true
@@ -56,7 +56,7 @@ macro "∃!" xs:explicitBinders ", " b:term : term => do
 Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing for `Exists`.
 However, it does *not* merge binders.
 -/
-@[app_unexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
+@[app_unexpander ExistsUnique] meta def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
   | `($(_) fun $x:ident ↦ $b)                      => `(∃! $x:ident, $b)
   | `($(_) fun ($x:ident : $t) ↦ $b)               => `(∃! $x:ident : $t, $b)
   | _                                               => throw ()

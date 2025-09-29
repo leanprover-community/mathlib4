@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Linter.UnusedVariables
 
 public meta section
 
@@ -309,7 +310,7 @@ where
 
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
-def ignorevariable? : Lean.Linter.IgnoreFunction := fun _ stack _ =>
+def ignorevariable? : Linter.IgnoreFunction := fun _ stack _ =>
   stack.matches [`null, none, `null, ``Mathlib.Command.Variable.variable?]
   || stack.matches [`null, none, `null, `null, ``Mathlib.Command.Variable.variable?]
 

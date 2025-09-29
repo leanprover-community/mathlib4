@@ -5,12 +5,12 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Mathlib.Lean.Elab.Tactic.Meta
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header
 
-@[expose] public section
+@[expose] public meta section
 
 /-! # Executing actions using the infotree
 

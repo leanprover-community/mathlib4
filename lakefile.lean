@@ -6,15 +6,15 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "modsys"
-require "leanprover-community" / "Qq" @ git "modulize"
+require batteries from "../batteries"
+require quote4 from git "https://github.com/Kha/quote4" @ "modulize-nightly"
 require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.75-pre2" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
     If this does not work, report your issue on the Lean Zulip."
-require "leanprover-community" / "importGraph" @ git "modulize"
+require importGraph from "../import-graph"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
@@ -28,6 +28,8 @@ require "leanprover-community" / "plausible" @ git "main"
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  ⟨`linter.style.header, false⟩,  -- TODO
+  ⟨`linter.style.missingEnd, false⟩,  -- TODO
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
 ]
@@ -48,7 +50,7 @@ package mathlib where
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
-  -- weakLeanArgs := #[]
+  weakLeanArgs := #["-DmaxErrors=1"]
 
 /-!
 ## Mathlib libraries

@@ -10,7 +10,7 @@ public import Lean.Elab.Tactic.Basic
 public import Lean.Meta.Tactic.Simp.Rewrite
 public import Batteries.Tactic.Exact
 
-@[expose] public section
+@[expose] public meta section
 
 /-!
 ## Dischargers for `simp` to tactics
