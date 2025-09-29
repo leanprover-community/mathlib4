@@ -34,7 +34,6 @@ variable {R}
 
 theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := by
   contrapose! h
-  rw [not_nontrivial_iff_subsingleton] at h
   apply is_transcendental_of_subsingleton
 
 variable (R A)

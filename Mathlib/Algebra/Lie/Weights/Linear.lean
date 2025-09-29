@@ -236,8 +236,7 @@ lemma exists_nontrivial_weightSpace_of_isNilpotent [Field k] [LieAlgebra k L] [M
     [IsTriangularizable k L M] [Nontrivial M] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace M χ) := by
   obtain ⟨χ⟩ : Nonempty (Weight k L M) := by
-    by_contra contra
-    rw [not_nonempty_iff] at contra
+    by_contra! contra
     simpa only [iSup_of_empty, bot_ne_top] using LieModule.iSup_genWeightSpace_eq_top' k L M
   obtain ⟨m, hm₀, hm⟩ := exists_forall_lie_eq_smul k L M χ
   simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, ne_eq, not_forall]

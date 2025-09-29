@@ -310,7 +310,7 @@ lemma forget_comparison_surjective {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶
 lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y ⟶ S} :
     IsEmpty ↑(Limits.pullback f g) ↔ Disjoint (Set.range f.base) (Set.range g.base) := by
   refine ⟨?_, Scheme.isEmpty_pullback f g⟩
-  rw [← not_nonempty_iff, Set.disjoint_iff_forall_ne]
+  rw [Set.disjoint_iff_forall_ne]
   contrapose!
   rintro ⟨_, ⟨x, rfl⟩, _, ⟨y, rfl⟩, e⟩
   obtain ⟨z, -⟩ := exists_preimage_pullback x y e
