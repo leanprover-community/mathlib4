@@ -73,7 +73,7 @@ circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.
 lemma AnalyticOnNhd.circleAverage_log_norm_of_ne_zero {R : ℝ} {c : ℂ} {g : ℂ → ℂ}
     (h₁g : AnalyticOnNhd ℂ g (closedBall c |R|)) (h₂g : ∀ u ∈ closedBall c |R|, g u ≠ 0) :
     circleAverage (Real.log ‖g ·‖) c R = Real.log ‖g c‖ :=
-  HarmonicOnNhd.circleAverage_eq (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g ⟨x, hx⟩))
+  HarmonicOnNhd.circleAverage_eq (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
 
 /-!
 ## Jensen's Formula
@@ -103,7 +103,10 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     _ = circleAverage (∑ᶠ u, (divisor f CB u * log ‖· - u‖)) c R + circleAverage (log ‖g ·‖) c R :=
       circleAverage_add (circleIntegrable_log_norm_factorizedRational (divisor f CB))
         (circleIntegrable_log_norm_meromorphicOn (h₁g.mono sphere_subset_closedBall).meromorphicOn)
-    _ = ∑ᶠ u, divisor f CB u * log R + log ‖g c‖ := by simp [h₁g, h₂g]
+    _ = ∑ᶠ u, divisor f CB u * log R + log ‖g c‖ := by
+      simp [h₁g]
+      rw [h₁g.circleAverage_log_norm_of_ne_zero]
+      exact fun u hu ↦ h₂g ⟨u, hu⟩
     _ = ∑ᶠ u, divisor f CB u * log R
       + (log ‖meromorphicTrailingCoeffAt f c‖ - ∑ᶠ u, divisor f CB u * log ‖c - u‖) := by
       have t₀ : c ∈ CB := by simp [CB]
