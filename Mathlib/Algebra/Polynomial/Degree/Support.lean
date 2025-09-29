@@ -84,7 +84,7 @@ theorem as_sum_range' (p : R[X]) {n : ℕ} (hn : p.natDegree < n) :
   p.sum_monomial_eq.symm.trans <| p.sum_over_range' monomial_zero_right _ hn
 
 theorem as_sum_range (p : R[X]) : p = ∑ i ∈ range (p.natDegree + 1), monomial i (coeff p i) :=
-  p.sum_monomial_eq.symm.trans <| p.sum_over_range <| monomial_zero_right
+  p.as_sum_range' (lt_add_one _)
 
 theorem as_sum_range_C_mul_X_pow' (p : R[X]) {n : ℕ} (hn : p.natDegree < n) :
     p = ∑ i ∈ range n, C (coeff p i) * X ^ i :=
@@ -92,7 +92,7 @@ theorem as_sum_range_C_mul_X_pow' (p : R[X]) {n : ℕ} (hn : p.natDegree < n) :
 
 theorem as_sum_range_C_mul_X_pow (p : R[X]) :
     p = ∑ i ∈ range (p.natDegree + 1), C (coeff p i) * X ^ i :=
-  p.as_sum_range.trans <| by simp only [C_mul_X_pow_eq_monomial]
+  p.as_sum_range_C_mul_X_pow' (lt_add_one _)
 
 theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X ^ n)) : a = n :=
   mem_singleton.1 <| support_C_mul_X_pow' n c h
