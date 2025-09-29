@@ -49,9 +49,9 @@ lemma eq_trivialRel_of_compatible_one [h : ValuativeRel R]
   simp_all [Valuation.one_apply_of_ne_zero, Valuation.one_apply_le_one]
 
 lemma trivialRel_eq_ofValuation_one :
-    trivialRel = .ofValuation (1 : Valuation R Γ) := by
+    trivialRel = ValuativeRel.ofValuation (1 : Valuation R Γ) := by
   convert (eq_trivialRel_of_compatible_one (Γ := Γ)).symm
-  exact .ofValuation 1
+  exact Valuation.Compatible.ofValuation 1
 
 variable (R Γ) in
 lemma subsingleton_units_valueGroupWithZero_of_trivialRel [ValuativeRel R]
