@@ -171,10 +171,9 @@ end Neg
 
 section Const
 
-
-variable (ε) in
 /-- The class of constant Lp functions. Has only `p = ∞` and `μ.IsFiniteMeasure` instances. -/
-class MemLp.Const (p : ℝ≥0∞) (μ : Measure α) where
+class MemLp.Const {α : Type u_1} (ε : Type u_2) {m0 : MeasurableSpace α} [ENorm ε] (p : ℝ≥0∞)
+  (μ : Measure α) where
   eLpNorm_const_lt_top' (c : ε) (hc : ‖c‖ₑ ≠ ∞) : eLpNorm (fun _ ↦ c) p μ < ∞
 
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
@@ -226,7 +225,7 @@ export MeasureTheory.MemLp.Const (eLpNorm_const_lt_top')
 
 theorem memLp_const_of_enorm [TopologicalSpace ε] [MemLp.Const ε p μ] {c : ε}
     (hc : ‖c‖ₑ ≠ ∞) : MemLp (fun _ ↦ c) p μ :=
-  ⟨aestronglyMeasurable_const, MemLp.Const.eLpNorm_const_lt_top' _ hc⟩
+  ⟨aestronglyMeasurable_const, eLpNorm_const_lt_top' _ hc⟩
 
 theorem eLpNorm_const' (c : ε) (h0 : p ≠ 0) (h_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ = ‖c‖ₑ * μ Set.univ ^ (1 / ENNReal.toReal p) := by
