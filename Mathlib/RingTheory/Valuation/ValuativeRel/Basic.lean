@@ -744,6 +744,9 @@ lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) 
   rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
   simpa [embed] using h
 
+/-- For any `x ∈ posSubmonoid R`, the trivial valuation `1 : Valuation R Γ` sends `x` to `1`.
+In fact, this is true for any `x ≠ 0`. This lemma is a special case useful for shorthand of
+`x ∈ posSubmonoid R → x ≠ 0`. -/
 lemma one_apply_posSubmonoid [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0]
     (x : posSubmonoid R) : (1 : Valuation R Γ) x = 1 :=
   Valuation.one_apply_of_ne_zero (by simp)
