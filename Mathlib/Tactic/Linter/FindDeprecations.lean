@@ -20,6 +20,8 @@ See the doc-string for the command for more information.
 
 open Lean Elab Command
 
+namespace Mathlib.Tactic
+
 /-- A convenience instance to print a `String.Range` as the corresponding pair of `String.Pos`. -/
 local instance : ToString String.Range where
   toString | ⟨s, e⟩ => s!"({s}, {e})"
@@ -127,7 +129,6 @@ def deprecatedHashMap (oldDate newDate : String) :
       let lean := (modName.components.foldl (init := "")
         fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
       --let lean ← findLean searchPath modName
-      dbg_trace lean
       let file ← IO.FS.readFile lean
       let fm := FileMap.ofString file
       let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
@@ -207,8 +208,10 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
   let fm := file.toFileMap
   let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>
     m!"{.ofConstName decl} {(fm.toPosition s, fm.toPosition e)}"
+  let rgsStringPos := rgs.map (m!"{·.2}")
+  let combinedRanges := rgsPos.zipWith (· ++ m!" " ++ ·) rgsStringPos |>.toList
   logInfo m!"Adding '{option}' to '{fname}'\nWriting to {indentD fname_with_option}\n\
-          {m!"\n".joinSep rgsPos.toList}\n{m!"\n".joinSep (rgs.map (m!"{·}")).toList}"
+          {m!"\n".joinSep combinedRanges}"
   IO.FS.writeFile fname_with_option fileWithOptionAdded
   let ranges := rgs.map (·.2)
 
@@ -263,17 +266,18 @@ elab "#clear_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")
   let mut filesToRemove := #[]
   let env ← getEnv
   let sortedFMap := fmap.toArray.qsort fun ((a, _), _) ((b, _), _) => importLT env b a
-  for ((_modName, fname), noDeprs) in sortedFMap do
-    let msg := m!"\n* ".joinSep
-      (noDeprs.map (fun (decl, rg) => m!"{.ofConstName decl}: {rg}")).toList
-    logInfo
-      m!"The deprecations in the date range {oldDate} to {newDate} in{indentD fname}\n\
-        are:\n\n* {msg}"
+  for ((modName, fname), noDeprs) in sortedFMap do
     let (toRemove, fileWithoutDeprecations) ← rewriteOneFile fname noDeprs
-    dbg_trace fileWithoutDeprecations
+    let message :=
+      m!"Click to see the file with the deprecations in the date range \
+        {oldDate} to {newDate} removed"
+    let collapsibleMessage := .trace {cls := modName} message #[fileWithoutDeprecations]
+    logInfo collapsibleMessage
     if really?.isSome then
       IO.FS.writeFile fname fileWithoutDeprecations
     filesToRemove := filesToRemove.push toRemove
-  dbg_trace "Removing {filesToRemove}"
+  logInfo m!"Removing\n* {m!"\n* ".joinSep (filesToRemove.map (m!"{·}")).toList}"
   for tmp in filesToRemove do
     IO.FS.removeFile tmp
+
+end Mathlib.Tactic
