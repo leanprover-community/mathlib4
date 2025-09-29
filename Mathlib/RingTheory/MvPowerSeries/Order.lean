@@ -280,9 +280,9 @@ theorem le_weightedOrder_mul :
   rw [coeff_mul, Finset.sum_eq_zero]
   rintro ⟨i, j⟩ hij
   by_cases hi : weight w i < f.weightedOrder w
-  · rw [coeff_eq_zero_of_lt_weightedOrder w hi, MulZeroClass.zero_mul]
+  · rw [coeff_eq_zero_of_lt_weightedOrder w hi, zero_mul]
   · by_cases hj : weight w j < g.weightedOrder w
-    · rw [coeff_eq_zero_of_lt_weightedOrder w hj, MulZeroClass.mul_zero]
+    · rw [coeff_eq_zero_of_lt_weightedOrder w hj, mul_zero]
     · rw [not_lt] at hi hj
       simp only [Finset.mem_antidiagonal] at hij
       exfalso
@@ -503,7 +503,7 @@ def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowe
   map_smul' a f := by
     ext d
     simp only [map_smul,
-      smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, MulZeroClass.mul_zero]
+      smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, mul_zero]
 
 theorem coeff_weightedHomogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : MvPowerSeries σ R) :
     coeff d (weightedHomogeneousComponent w p f) =
