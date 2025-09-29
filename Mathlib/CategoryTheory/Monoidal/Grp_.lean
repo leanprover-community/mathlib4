@@ -257,8 +257,6 @@ theorem inv_hom [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] : ι ≫ f = f 
 lemma toMonObj_injective {X : C} :
     Function.Injective (@GrpObj.toMonObj C ‹_› ‹_› X) := by
   intro h₁ h₂ e
-  let X₁ : Grp_ C := @Grp_.mk _ _ _ X h₁
-  let X₂ : Grp_ C := @Grp_.mk _ _ _ X h₂
   suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
   rw [left_inv]
@@ -434,22 +432,29 @@ variable
 namespace Functor
 variable {F F' : C ⥤ D} [F.Monoidal] [F'.Monoidal] {G : D ⥤ E} [G.Monoidal]
 
+open scoped Obj
+
+/-- The image of a group object under a monoidal functor is a group object. -/
+abbrev grpObjObj {G : C} [GrpObj G] : GrpObj (F.obj G) where
+  inv := F.map ι
+  left_inv := by
+    simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
+      Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
+  right_inv := by
+    simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
+      Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
+
+scoped[Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
+
+@[reassoc, simp] lemma obj.ι_def {G : C} [GrpObj G] : ι[F.obj G] =  F.map ι := rfl
+
 open Monoidal
 
 variable (F) in
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]
 def mapGrp : Grp_ C ⥤ Grp_ D where
-  obj A :=
-    { F.mapMon.obj A.toMon with
-      grp :=
-      { inv := F.map ι[A.X]
-        left_inv := by
-          simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
-            Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
-        right_inv := by
-          simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
-            Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
+  obj A := .mk (F.obj A.X)
   map f := F.mapMon.map f
 
 protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where

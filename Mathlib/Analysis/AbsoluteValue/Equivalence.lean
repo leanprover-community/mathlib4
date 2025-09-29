@@ -115,7 +115,8 @@ variable [Archimedean S] [ExistsAddOfLE S]
 
 theorem isEquiv_of_lt_one_imp (hv : v.IsNontrivial) (h : ∀ x, v x < 1 → w x < 1) : v.IsEquiv w := by
   refine isEquiv_iff_lt_one_iff.2 fun a ↦ ?_
-  rcases eq_or_ne a 0 with (rfl | ha₀) <;> try simp
+  rcases eq_or_ne a 0 with (rfl | ha₀)
+  · simp
   refine ⟨h a, fun hw ↦ ?_⟩
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
   have hpow (n : ℕ) (hv : 1 ≤ v a) : w x₀ < w a ^ n := by
