@@ -125,7 +125,7 @@ theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
   (iff_adjoin_eq_top _ _ _).2  <| by simpa
 
 theorem isCyclotomicExtension_zero_iff :
-    IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B):= by
+    IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
   rw [surjective_algebraMap_iff, eq_comm]
   refine ⟨?_, fun h ↦ singleton_zero_of_bot_eq_top h⟩
   rw [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty, subsingleton_iff_bot_eq_top]
