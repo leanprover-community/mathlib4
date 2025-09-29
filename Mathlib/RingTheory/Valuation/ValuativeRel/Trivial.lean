@@ -16,7 +16,7 @@ by the trivial valuation which sends all non-zero elements to `1`.
 
 ## TODO
 
-This is equivalent to the value group being isomorphic to `WithZero Unit`.
+A trivial valuative relation is equivalent to the value group being isomorphic to `WithZero Unit`.
 
 -/
 
