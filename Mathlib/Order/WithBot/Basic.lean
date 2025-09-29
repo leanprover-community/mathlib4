@@ -279,13 +279,14 @@ theorem withBotCongr_symm (e : α ≃ β) : withBotCongr e.symm = (withBotCongr 
 @[simp]
 theorem withBotCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
     withBotCongr (e₁.trans e₂) = (withBotCongr e₁).trans (withBotCongr e₂) := by
-  ext x : 1
-  symm
-  apply WithBot.map_map
+  ext x
+  simp
 
 end Equiv
 
 namespace WithBot
+
+variable {a b : α}
 
 section LE
 
@@ -852,7 +853,7 @@ attribute [grind =] withTopCongr_apply
 
 @[simp]
 theorem withTopCongr_refl : withTopCongr (Equiv.refl α) = Equiv.refl _ :=
-  Equiv.ext <| congr_fun WithBot.map_id
+  Equiv.ext <| congr_fun WithTop.map_id
 
 @[simp, grind =]
 theorem withTopCongr_symm (e : α ≃ β) : withTopCongr e.symm = (withTopCongr e).symm :=
@@ -861,13 +862,14 @@ theorem withTopCongr_symm (e : α ≃ β) : withTopCongr e.symm = (withTopCongr 
 @[simp]
 theorem withTopCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
     withTopCongr (e₁.trans e₂) = (withTopCongr e₁).trans (withTopCongr e₂) := by
-  ext x : 1
-  symm
-  apply WithBot.map_map
+  ext x
+  simp
 
 end Equiv
 
 namespace WithTop
+
+variable {a b : α}
 
 section LE
 
