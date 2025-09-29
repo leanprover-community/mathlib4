@@ -572,11 +572,7 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
 theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
   refine ⟨smooth f ⊤, fun n => ?_⟩
   rcases f.decay 0 n with ⟨C, Cpos, hC⟩
-  use 0, C
-  intro x
-  specialize hC x
-  simp only [pow_zero, one_mul, mul_one] at hC ⊢
-  assumption
+  exact ⟨0, C, by simpa using hC⟩
 
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
