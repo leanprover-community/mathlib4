@@ -279,14 +279,13 @@ applications.
 Sharper bounds due to Robbins are available, but are not yet formalised. These would add
 lower order terms (beginning with `(12 * n)⁻¹`) to the left hand side.
 -/
-theorem le_log_factorial_stirling (n : ℕ) (hn : n ≠ 0) :
+theorem le_log_factorial_stirling {n : ℕ} (hn : n ≠ 0) :
     n * log n - n + log n / 2 + log (2 * π) / 2 ≤ log n ! := by
   calc
-    _ ≥ log (√(2 * π * n) * (n / rexp 1) ^ n) :=
-        log_le_log (by positivity) (le_factorial_stirling n)
-    _ ≥ (log (2 * π) + log n) / 2 + n * (log n - 1) := by
-        rw [log_mul, log_sqrt, log_mul, log_pow, log_div, log_exp]
-        all_goals positivity
-    _ = _ := by ring
+    _ = (log (2 * π) + log n) / 2 + n * (log n - 1) := by ring
+    _ = log (√(2 * π * n) * (n / rexp 1) ^ n) := by
+      rw [log_mul (x := √_), log_sqrt, log_mul (x := 2 * π), log_pow, log_div, log_exp] <;>
+      positivity
+    _ ≤ _ := log_le_log (by positivity) (le_factorial_stirling n)
 
 end Stirling
