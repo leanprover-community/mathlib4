@@ -24,6 +24,8 @@ We prove the following facts:
   is bounded.
 -/
 
+-- TODO assert_not_exists Cardinal
+
 variable {E : Type*}
 
 open Metric Set
@@ -138,7 +140,7 @@ variable {α : Type*} {f : Filter α} {x : E} {y z : α → E} {r : α → E →
 
 theorem Eventually.segment_of_prod_nhds (hy : Tendsto y f (𝓝 x)) (hz : Tendsto z f (𝓝 x))
     (hr : ∀ᶠ p in f ×ˢ 𝓝 x, r p.1 p.2) : ∀ᶠ χ in f, ∀ v ∈ [y χ -[ℝ] z χ], r χ v := by
-  have ⟨p, hp, δ, hδ, hr⟩ := eventually_prod_nhds_iff.mp hr
+  obtain ⟨p, hp, δ, hδ, hr⟩ := eventually_prod_nhds_iff.mp hr
   rw [Metric.tendsto_nhds] at hy hz
   filter_upwards [hp, hy δ hδ, hz δ hδ] with χ hp hy hz
   exact fun v hv => hr hp <| convex_iff_segment_subset.mp (convex_ball x δ) hy hz hv

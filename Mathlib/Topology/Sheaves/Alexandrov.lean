@@ -64,11 +64,7 @@ def principals : X ⥤ (Opens X)ᵒᵖ where
 lemma exists_le_of_le_sup {ι : Type v} {x : X}
     (Us : ι → Opens X) (h : principalOpen x ≤ iSup Us) :
     ∃ i : ι, principalOpen x ≤ Us i := by
-  have : x ∈ iSup Us := h <| self_mem_principalOpen x
-  simp only [Opens.mem_iSup] at this
-  obtain ⟨i, hi⟩ := this
-  refine ⟨i, ?_⟩
-  simpa
+  grind [principalOpen_le_iff, Opens.mem_iSup]
 
 /-- The right kan extension of `F` along `X ⥤ (Opens X)ᵒᵖ`. -/
 abbrev principalsKanExtension : (Opens X)ᵒᵖ ⥤ C :=

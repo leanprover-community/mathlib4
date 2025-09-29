@@ -49,9 +49,9 @@ import Mathlib.Order.Disjointed
 
 ## Implementation details
 
-* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the galois
+* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the Galois
   insertion, nor do we define a complete lattice. In theory, we could define a complete
-  lattice and galois insertion on the subtype corresponding to `IsPiSystem`.
+  lattice and Galois insertion on the subtype corresponding to `IsPiSystem`.
 -/
 
 
@@ -319,7 +319,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
         revert h2
         rw [Subtype.val_injective.extend_apply]
         apply id
-  · intros b h_b
+  · intro b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
     obtain ⟨h_b_w, h_b_h⟩ := h_b
@@ -407,17 +407,8 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     rw [ht1_eq, ht2_eq]
     simp_rw [← Set.inf_eq_inter]
     ext1 x
-    simp only [g, inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
-    refine ⟨fun h i _ => ?_, fun h => ⟨fun i hi1 => ?_, fun i hi2 => ?_⟩⟩
-    · split_ifs with h_1 h_2 h_2
-      exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
-        ⟨Set.mem_univ _, Set.mem_univ _⟩]
-    · specialize h i (Or.inl hi1)
-      rw [if_pos hi1] at h
-      exact h.1
-    · specialize h i (Or.inr hi2)
-      rw [if_pos hi2] at h
-      exact h.2
+    simp only [inf_eq_inter, mem_inter_iff, mem_iInter]
+    grind
   refine ⟨fun n hn => ?_, h_inter_eq⟩
   simp only [g]
   split_ifs with hn1 hn2 h
@@ -427,8 +418,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
       (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
     refine le_antisymm (Set.iInter_subset_of_subset n ?_) (Set.empty_subset _)
     refine Set.iInter_subset_of_subset hn ?_
-    simp_rw [g, if_pos hn1, if_pos hn2]
-    exact h.subset
+    grind
   · simp [hf1m n hn1]
   · simp [hf2m n h]
   · exact absurd hn (by simp [hn1, h])

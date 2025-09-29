@@ -15,7 +15,7 @@ Unlike `Is(Little|Big)O` relations, this one requires `u` and `v` to have the sa
 While the definition only requires `β` to be a `NormedAddCommGroup`, most interesting properties
 require it to be a `NormedField`.
 
-## Notations
+## Notation
 
 We introduce the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
 `Asymptotics` locale.
@@ -157,6 +157,16 @@ theorem IsEquivalent.sub_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u - w ~[
 theorem IsLittleO.add_isEquivalent (hu : u =o[l] w) (hv : v ~[l] w) : u + v ~[l] w :=
   add_comm v u ▸ hv.add_isLittleO hu
 
+theorem IsEquivalent.add_const_of_norm_tendsto_atTop {c : β}
+    (huv : u ~[l] v) (hv : Tendsto (norm ∘ v) l atTop) :
+    (u · + c) ~[l] v :=
+  huv.add_isLittleO <| isLittleO_const_left.mpr (Or.inr hv)
+
+theorem IsEquivalent.const_add_of_norm_tendsto_atTop {c : β}
+    (huv : u ~[l] v) (hv : Tendsto (norm ∘ v) l atTop) :
+    (c + u ·) ~[l] v :=
+  (isLittleO_const_left.mpr (Or.inr hv)).add_isEquivalent huv
+
 theorem IsLittleO.isEquivalent (huv : (u - v) =o[l] v) : u ~[l] v := huv
 
 theorem IsEquivalent.neg (huv : u ~[l] v) : (fun x ↦ -u x) ~[l] fun x ↦ -v x := by
@@ -206,7 +216,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
       (tendsto_congr' <| hz.mono fun x hnz ↦ @div_self _ _ (v x) hnz).mpr tendsto_const_nhds
     convert this.add key
     · simp
-    · norm_num
+    · simp
   · exact isEquivalent_of_tendsto_one (hz.mono fun x hnvz hz ↦ (hnvz hz).elim)
 
 end NormedField
@@ -237,8 +247,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
       ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ := by gcongr
       _ ≤ c / 2 / C * (C * ‖v x‖) := by gcongr
       _ = c / 2 * ‖v x‖ := by
-        field_simp [hC.ne.symm]
-        ring
+        field_simp
   calc
     ‖((fun x : α ↦ φ x • u x) - v) x‖ = ‖(φ x - 1) • u x + (u x - v x)‖ := by
       simp [sub_smul, sub_add]
@@ -323,6 +332,18 @@ theorem IsEquivalent.tendsto_atBot_iff [OrderTopology β] (huv : u ~[l] v) :
   ⟨huv.tendsto_atBot, huv.symm.tendsto_atBot⟩
 
 end NormedLinearOrderedField
+
+section Real
+
+theorem IsEquivalent.add_add_of_nonneg {α : Type*} {u v t w : α → ℝ} {l : Filter α}
+    (hu : 0 ≤ v) (hw : 0 ≤ w) (htu : u ~[l] v) (hvw : t ~[l] w) :
+    u + t ~[l] v + w := by
+  simp only [IsEquivalent, add_sub_add_comm]
+  change (fun x ↦ (u - v) x + (t - w) x) =o[l] (fun x ↦ v x + w x)
+  conv => enter [3, x]; rw [← abs_eq_self.mpr (hu x), ← abs_eq_self.mpr (hw x)]
+  simpa [← Real.norm_eq_abs] using .add_add htu hvw
+
+end Real
 
 end Asymptotics
 
