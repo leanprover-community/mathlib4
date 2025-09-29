@@ -115,8 +115,7 @@ instance lTensor_nontrivial
 lemma rTensor_reflects_triviality
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
     [h : Subsingleton (N ⊗[R] M)] : Subsingleton N := by
-  revert h; change _ → _; contrapose
-  simp only [not_subsingleton_iff_nontrivial]
+  revert h; change _ → _; contrapose!
   intro h
   infer_instance
 

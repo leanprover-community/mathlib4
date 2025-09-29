@@ -153,7 +153,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     (hc : IsCoprime x y) : IsSquare (-1 : ZMod n.natAbs) := by
   obtain ⟨u, v, huv⟩ : IsCoprime x n := by
     have hc2 : IsCoprime (x ^ 2) (y ^ 2) := hc.pow
-    rw [show y ^ 2 = n + -1 * x ^ 2 by omega] at hc2
+    rw [show y ^ 2 = n + -1 * x ^ 2 by cutsat] at hc2
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
   have H : u * y * (u * y) - -1 = n * (-v ^ 2 * n + u ^ 2 + 2 * v) := by
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv
