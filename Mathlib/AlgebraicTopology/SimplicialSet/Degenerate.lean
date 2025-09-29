@@ -309,7 +309,7 @@ lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
   fun _ hx ↦ degenerate_map hx f
 
 lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
-    Set.image (f.app _) (X.degenerate n) ⊆ Y.degenerate n := by
+    (f.app _)'' (X.degenerate n) ⊆ Y.degenerate n := by
   simpa using degenerate_le_preimage f n
 
 lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
