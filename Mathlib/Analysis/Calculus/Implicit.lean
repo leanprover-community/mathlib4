@@ -11,7 +11,7 @@ import Mathlib.Analysis.Normed.Module.Complemented
 /-!
 # Implicit function theorem
 
-We prove four versions of the implicit function theorem. First we define a structure
+We prove a few different versions of the implicit function theorem. First we define a structure
 `ImplicitFunctionData` that holds arguments for the most general version of the implicit function
 theorem, see `ImplicitFunctionData.implicitFunction` and
 `ImplicitFunctionData.implicitFunction_hasStrictFDerivAt`. This version allows a user to choose a
@@ -25,9 +25,9 @@ Third, if the codomain of `f` is a finite-dimensional space, then we can automat
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
-Lastly we consider the common case of a bivariate `f`, the second of whose partial derivatives is
+Fourth, we consider the common case of bivariate `f`, the second of whose partial derivatives is
 invertible. Then we may apply the general theorem to obtain `ψ` such that for `(y₁, y₂)` in a
-neighbourhood of `(x₁, x₂)` we have `f y₁ y₂ = f x₁ x₂ ↔ ψ y₁ = y₂`.
+neighbourhood of `(x₁, x₂)` we have `f (y₁, y₂) = f (x₁, x₂) ↔ ψ y₁ = y₂`.
 
 ## TODO
 
@@ -457,18 +457,17 @@ end FiniteDimensional
 section ProdDomain
 
 /-!
-### Bivariate case
+### Case of a product space domain
 
 Here we identify `E` with `E₁ × E₂`, `G` with `E₁` and `g : E → G` with the first projection. Now
-given `f : E₁ → E₂ → F` and its two partial derivatives, the second invertible, we may construct an
+given `f : E₁ × E₂ → F` and its two partial derivatives, the second invertible, we may construct an
 instance of the `ImplicitFunctionData` data structure and extract `ψ : E₁ → E₂` with the desired
-properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunOfProdDomain` for
-uncurried `f` in this section and `implicitFunOfBivariate` for curried `f` in the next. A formula
+properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunOfProdDomain`. A formula
 for the first derivative of `ψ` is immediately derived.
 
 ## TODO
 
-* Derive a formula for the second derivative of `ψ`.
+* Derive formulae for the higher derivatives of `ψ`.
 -/
 
 variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
