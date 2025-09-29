@@ -415,7 +415,6 @@ lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
   · rw [holderTriple_iff]
     have hp := h.ne_zero
     have hq := h.symm.ne_zero
-    have hr := h.ne_zero'
     exact_mod_cast h.inv_add_inv_eq_inv
 
 alias ⟨_, _root_.NNReal.HolderTriple.coe_ennreal⟩ := holderTriple_coe_iff
