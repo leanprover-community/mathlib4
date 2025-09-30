@@ -16,8 +16,8 @@ the relation which identifies `a` with `b` if there is a path from `a` to `b` in
 
 We reuse `IsPreconnected V` for strong (directed) connectivity, i.e. `∀ i j, Nonempty (Path i j)`.
 We also define:
-* `IsPreconnectedPos V`: every pair of vertices is connected by a path of positive length.
-* `StronglyConnectedComponent V`: the quotient by the equivalence relation “paths in both
+* `Quiver.IsPreconnectedPos V`: every pair of vertices is connected by a path of positive length.
+* `Quiver.StronglyConnectedComponent V`: the quotient by the equivalence relation “paths in both
 directions”.
 
 These concepts relate strong and weak connectivity and let us reason about strongly connected
@@ -107,18 +107,20 @@ abbrev IsStronglyConnected (V : Type*) [Quiver V] : Prop := IsPreconnected V
 abbrev IsSStronglyConnected (V : Type*) [Quiver V] : Prop := IsPreconnectedPos V
 
 /-- Unfold `IsSStronglyConnected` to an existential over paths with positive length. -/
-@[simp] lemma IsSStronglyConnected_iff
+@[simp]
+lemma IsSStronglyConnected_iff
     (V : Type*) [Quiver V] :
     IsSStronglyConnected V ↔ ∀ i j : V, ∃ p : Path i j, 0 < p.length := by
   simpa [IsSStronglyConnected] using (IsPreconnectedPos_iff (V))
 
 /-- Unfold `IsStronglyConnected` to the usual preconnectedness. -/
-@[simp] lemma IsStronglyConnected_iff
+lemma IsStronglyConnected_iff
     (V : Type*) [Quiver V] :
     IsStronglyConnected V ↔ ∀ i j : V, Nonempty (Path i j) := Iff.rfl
 
 /-- Exact alias: `IsStronglyConnected V ↔ IsPreconnected V`. -/
-@[simp] lemma isStronglyConnected_iff_isPreconnected
+@[simp]
+lemma isStronglyConnected_iff_isPreconnected
     (V : Type*) [Quiver V] :
     IsStronglyConnected V ↔ IsPreconnected V := Iff.rfl
 
