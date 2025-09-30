@@ -111,7 +111,10 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
     rw [← smul_eq_mul, ← smul_assoc]
     norm_cast
     have unz : u ≠ 0 := (ne_of_lt e3).symm
-    aesop
+    simp_all only [nonempty_subtype, Set.mem_compl_iff, one_div, ne_eq, not_false_eq_true,
+      smul_inv_smul₀, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, mul_inv_cancel₀,
+      map_one, one_mul]
+    rfl
   -- From which it follows that `x` can't be in the bipolar of `s`
   by_contra hc
   rw [Set.mem_compl_iff, not_not] at hc
