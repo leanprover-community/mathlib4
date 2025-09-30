@@ -124,7 +124,3 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
         apply Pointed.Hom.ext
         funext x
         cases x <;> rfl }
-
-section ker
-
-end ker

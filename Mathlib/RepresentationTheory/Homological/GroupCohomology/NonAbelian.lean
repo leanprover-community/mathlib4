@@ -3,7 +3,8 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.CategoryTheory.Action.Limits
+import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.CategoryTheory.Category.Pointed.Basic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
@@ -93,6 +94,10 @@ instance : Inhabited (H1 G A) := ⟨0⟩
 end H1
 
 section connectHom
+
+#synth Limits.HasZeroMorphisms AddGrp.{u}
+
+variable {G : Type u} [Group G] (S : ShortComplex (NonAbelianRep G))
 
 end connectHom
 
