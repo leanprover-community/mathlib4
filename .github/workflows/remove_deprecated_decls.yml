@@ -81,8 +81,8 @@ jobs:
             from_date=$(parse_date_safely "${RAW_FROM_DATE}")
           fi
         else
-          echo "No raw_from_date provided, using 5 years ago"
-          from_date=$(date -d '5 years ago' +%Y-%m-%d)
+          echo "No raw_from_date provided, using '2025-01-01'"
+          from_date='2025-01-01'
         fi
 
         # Process to_date
@@ -157,7 +157,7 @@ jobs:
         # This will add the new files, whose names end in `_with_option.lean` and with the
         # `commandRanges` linter on.  Building these files gives access to the ranges of all
         # the commands in the files with deprecations to be removed.
-        # These files ending in `_with_option.lean` get erased after they have been build.
+        # These files ending in `_with_option.lean` get erased after they have been built.
         # If the `really` flag is passed, then the deprecations are removed from the appropriate
         # files.  Otherwise, they are only logged as an output, but the original files are left
         # untouched.
@@ -166,6 +166,7 @@ jobs:
         echo "::endgroup::"
 
     - name: configure git setup
+      if: toJson(inputs.dry_run) != 'true'
       run: |
         git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib4.git"
         git config user.email "leanprover.community@gmail.com"
@@ -186,7 +187,7 @@ jobs:
         DEPRECATION_DATE_TO: ${{ steps.process_dates.outputs.to_date }}
 
     - name: Send Zulip message
-      if: steps.pr.outcome == 'success'
+      if: steps.pr.outcome == 'success' && steps.pr.outputs.message
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
