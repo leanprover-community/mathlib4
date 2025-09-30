@@ -119,8 +119,8 @@ error: Application type mismatch: The argument
 has type
   M
 of sort `Type u_4` but is expected to have type
-  Type ?u.63950
-of sort `Type (?u.63950 + 1)` in the application
+  Type ?u.63952
+of sort `Type (?u.63952 + 1)` in the application
   @modelWithCornersSelf a✝
 -/
 #guard_msgs in
