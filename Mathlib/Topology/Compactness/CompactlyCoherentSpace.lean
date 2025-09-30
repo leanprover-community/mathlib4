@@ -267,7 +267,7 @@ instance instCompactlyCoherentSpace : CompactlyCoherentSpace (k X) := by
   exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtype_val)
 
 /-- The compact coherentification preserves the topology of k-spaces. -/
-protected def mk_homeo [CompactlyCoherentSpace X] : X ≃ₜ k X where
+protected def homeo [CompactlyCoherentSpace X] : X ≃ₜ k X where
   toEquiv := CompactCoherentification.mk X
   continuous_toFun := continuous_mk
   continuous_invFun := continuous_mk_symm
