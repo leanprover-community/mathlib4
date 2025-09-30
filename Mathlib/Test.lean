@@ -4,11 +4,9 @@ import Batteries.Data.List.Lemmas
 
 
 
-variable {α X : Type*} [Fintype α]   [DecidableEq α]
+variable {α X : Type*} [Fintype α] [DecidableEq α]
 
---abbrev n := Fintype.card α
-
-variable  [MulAction (FreeGroup α) X]
+variable [MulAction (FreeGroup α) X]
 
 --- All Elements of the free Group that start with a certain letter
 def FreeGroup.startWith (w : α × Bool) := {g : FreeGroup α | (FreeGroup.toWord g)[0]? = some w}
@@ -22,8 +20,8 @@ theorem Orbit.not_one {w : α × Bool} (g : FreeGroup α)  (h : g ∈ FreeGroup.
 theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y ∈ Orbit x w} =
       ⋃ v ∈ {z : α × Bool | z ≠ (w.1, !w.2)}, Orbit x v := by
   ext i
-  simp only [FreeGroup.inv_mk, Set.mem_setOf_eq, ne_eq, Set.mem_iUnion, exists_prop, Prod.exists, Prod.mk.injEq,
-  not_and, Bool.not_eq_not, Bool.exists_bool, Bool.false_eq, Bool.true_eq]
+  simp only [FreeGroup.inv_mk, Set.mem_setOf_eq, ne_eq, Set.mem_iUnion, exists_prop, Prod.exists,
+    Prod.mk.injEq, not_and, Bool.not_eq_not, Bool.exists_bool, Bool.false_eq, Bool.true_eq]
   constructor
   . intro h
     rcases h with ⟨y, ⟨hy1, hy2⟩⟩
@@ -38,14 +36,35 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
       . left
         constructor
         . intro h
-          have h4  : FreeGroup.IsReduced g.toWord := by
-            sorry
-          sorry
-        . sorry
+          have h4  : FreeGroup.IsReduced g.toWord := FreeGroup.isReduced_toWord
+          have h5 := List.IsChain.getElem h4 0 (by grind) (by grind) -- des isches
+          grind
+        .
+          use FreeGroup.mk g.toWord.tail
+          have h4 : FreeGroup.reduce g.toWord.tail = g.toWord.tail := by
+              sorry
+          constructor
+          . simp
 
+            grind
+          .
+            rw [← mul_smul, show g = FreeGroup.mk (g.toWord) by exact Eq.symm FreeGroup.mk_toWord]
+            congr 1
+            simp
+            refine FreeGroup.reduce.exact ?_
+            have h5 : FreeGroup.invRev [w] ++ g.toWord = (w.1, !w.2) :: g.toWord := by
+              simp [FreeGroup.invRev]
+            rw [h5]
+            simp only [FreeGroup.reduce.cons, Bool.not_eq_eq_eq_not, Bool.not_not,
+              FreeGroup.reduce_toWord]
+            rw [show g.toWord = g.toWord.head (by grind) :: g.toWord.tail by grind]
+            simp
+            have h6 : g.toWord.head (by grind) = (w.1, w.2) := by
+              rw [List.getElem?_eq_getElem] at hg1
+              . sorry -- gschenkt
+              . grind
 
-
-          --- TODO lemma über aufeinanderfolgende buchstaben in g.toWord: wenn g[n].1 = g[n+1].1 → g[n].2 = !g[n+1].2
+            simp [h6, h4]
       . sorry
     .
       sorry --gschenkter gaul
@@ -67,7 +86,9 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
             simp_rw [hg]
             have h_head : head = (a, false) := by
               rw [hg] at h2
-              sorry
+              simp only [List.length_cons, Nat.zero_lt_succ, getElem?_pos, List.getElem_cons_zero,
+                Option.some.injEq] at h2
+              exact h2
               --simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
               --  getElem?_pos, List.getElem_cons_zero, Option.some.injEq] at h2
               --exact h2
