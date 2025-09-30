@@ -29,6 +29,11 @@ In each of these cases, the models with corners are inferred from the domain and
 The search for models with corners uses the local context and is (almost) only syntactic, hence
 hopefully fast enough to always run.
 
+This has no dedicated support for product manifolds (or product vector spaces) yet;
+adding this is left for future changes. (It would make need to make a choice between e.g. the
+trivial model with corners on a product `E × F` and the product of the trivial models on `E` and
+`F`).
+
 Secondly, this space adds an elaborator to ease working with sections in a fibre bundle,
 converting a section `s : Π x : M, Π V x` to a non-dependent function into the total space of the
 bundle.
@@ -54,9 +59,11 @@ prototype. Don't rewrite all of mathlib to use it just yet. Notable bugs and lim
 the following.
 
 ## TODO
-- extend the feature to infer e.g. models with corners on product manifolds
+- extend the elaborator to guess models with corners on product manifolds
   (this has to make a guess, hence cannot always be correct: but it could make the guess that
   is correct 90% of the time)
+  For products of vector spaces `E × F`, this could print a warning about making a choice between
+  the model in `E × F` and the product of the models on `E` and `F`.
 - fix pretty-printing: currently, the `commandStart` linter expects some different formatting
 - better error messages: forgetting e.g. the `T%` elaborator yields cryptic errors
 - further testing and fixing of edge cases
