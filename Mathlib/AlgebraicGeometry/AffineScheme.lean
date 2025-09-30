@@ -152,6 +152,29 @@ lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.appTop 
     f = g := by
   rw [← cancel_mono Y.toSpecΓ, Scheme.toSpecΓ_naturality, Scheme.toSpecΓ_naturality, e]
 
+/-- `Scheme.Γ.rightOp : Scheme ⥤ CommRingCatᵒᵖ` preserves limits of diagrams consisting of
+affine schemes. -/
+instance preservesLimit_rightOp_Γ.{v, w}
+    {I : Type w} [Category.{v} I] (D : I ⥤ Scheme.{u}) [∀ i, IsAffine (D.obj i)] :
+    PreservesLimit D Scheme.Γ.rightOp := by
+  let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
+  have (i : _) : IsIso (α.app i) := IsAffine.affine
+  have : IsIso α := NatIso.isIso_of_isIso_app α
+  suffices PreservesLimit ((D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec) Scheme.Γ.rightOp from
+    preservesLimit_of_iso_diagram _ (asIso α).symm
+  have := monadicCreatesLimits.{v, w} Scheme.Spec.{u}
+  suffices PreservesLimit (D ⋙ Scheme.Γ.rightOp) (Scheme.Spec ⋙ Scheme.Γ.rightOp) from
+    preservesLimit_comp_of_createsLimit _ _
+  exact preservesLimit_of_natIso _ (NatIso.op Scheme.SpecΓIdentity)
+
+/-- `Scheme.Γ : Schemeᵒᵖ ⥤ CommRingCat` preserves colimits of diagrams consisting of
+affine schemes. -/
+instance preservesColimit_Γ.{v, w}
+    {I : Type w} [Category.{v} I] (D : I ⥤ Scheme.{u}ᵒᵖ) [∀ i, IsAffine (D.obj i).unop] :
+    PreservesColimit D Scheme.Γ := by
+  have (i : _) : IsAffine (D.leftOp.obj i) := Functor.leftOp_obj D _ ▸ inferInstance
+  exact preservesColimit_of_rightOp D Scheme.Γ
+
 namespace AffineScheme
 
 /-- The `Spec` functor into the category of affine schemes. -/
@@ -216,7 +239,7 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
 def forgetToSchemeCreatesLimits : CreatesLimits forgetToScheme.{u} :=
   ⟨⟨createsLimitOfReflectsIsomorphismsOfPreserves⟩⟩
 
-/-- The opposite of the forgetful functor `AffineScheme ⥤ Scheme` creates small colimits. -/
+/-- The opposite of the forgetful functor `AffineSchemeᵒᵖ ⥤ Schemeᵒᵖ` creates small colimits. -/
 def forgetToSchemeCreatesColimits : CreatesColimits forgetToScheme.{u}.op :=
   let : PreservesColimits forgetToScheme.{u}.op := preservesColimits_op _
   ⟨⟨createsColimitOfReflectsIsomorphismsOfPreserves⟩⟩
