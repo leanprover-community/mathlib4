@@ -316,7 +316,6 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
       · rintro - ⟨b, b_in, rfl⟩
         exact (B i).add_mem a_in b_in }
 
-
 -- See note [non-Archimedean non-instances]
 theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
   letI := hB.topology
@@ -325,7 +324,6 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
   obtain ⟨-, ⟨i, rfl⟩, hi : (B i : Set M) ⊆ U⟩ :=
     hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
   exact ⟨hB.openAddSubgroup i, hi⟩
-
 
 library_note "non-Archimedean non-instances"/--
 The non-Archimedean subgroup basis lemmas cannot be instances because some instances
