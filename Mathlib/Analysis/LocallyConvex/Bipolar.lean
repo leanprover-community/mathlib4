@@ -105,7 +105,9 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
     suffices u⁻¹ * RCLike.re (f x) = RCLike.re ((B x) f₀) by exact lt_of_lt_of_eq hf₂ this
     rw [← RCLike.re_ofReal_mul]
     congr
-    simp [map_inv₀, ← fg2, ← hf₀, WeakBilin.eval]
+    simp only [map_inv₀, ← fg2, ← hf₀, WeakBilin.eval, coe_mk, AddHom.coe_mk,
+      ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_mk', Pi.smul_apply,
+      Algebra.mul_smul_comm]
     rw [← smul_eq_mul, ← smul_assoc]
     norm_cast
     have unz : u ≠ 0 := (ne_of_lt e3).symm
