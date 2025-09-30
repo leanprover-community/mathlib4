@@ -108,6 +108,20 @@ variable {f : M → M'} {s : Set M} {m : M}
 #guard_msgs in
 #check MDiffAt f
 
+-- TODO: understand why this fails and fix it!
+/--
+error: Application type mismatch: In the application
+  @modelWithCornersSelf a✝
+the argument
+  a✝
+has type
+  M : Type u_4
+but is expected to have type
+  Type ?u.68271 : Type (?u.68271 + 1)
+-/
+#guard_msgs in
+#check MDiffAt2 f
+
 /-- info: MDifferentiableAt I I' f m : Prop -/
 #guard_msgs in
 #check MDiffAt f m

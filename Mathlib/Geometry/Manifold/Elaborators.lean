@@ -283,6 +283,26 @@ elab:max "MDiffAt" t:term:arg : term => do
     return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
+-- This implement is more robust (in theory), but currently fails tests.
+-- TODO: investigate why, fix this and replace `MDiffAt` by this one!
+/-- `MDiffAt2 f x` elaborates to `MDifferentiableAt I J f x`,
+trying to determine `I` and `J` from the local context.
+The argument `x` can be omitted. -/
+elab:max "MDiffAt2" t:term:arg : term => do
+  let e ← Term.elabTerm t none
+  let etype ← inferType e >>= instantiateMVars
+  forallBoundedTelescope etype (some 1) fun src tgt ↦ do
+    if let some src := src[0]? then
+      let srcI ← find_model src
+      if Lean.Expr.occurs src tgt then
+        throwError m!"Term {e} is a dependent function, of type {etype}\n\
+        Note: you can use the 'T%' elaborator to convert a dependent function \
+        to a non-dependent one"
+      let tgtI ← find_model tgt (src, srcI)
+      return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
+    else
+      throwError m!"Term {e} is not a function."
+
 /-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f s`,
 trying to determine `I` and `J` from the local context. -/
 elab:max "MDiff[" s:term:arg "]" t:term:arg : term => do
