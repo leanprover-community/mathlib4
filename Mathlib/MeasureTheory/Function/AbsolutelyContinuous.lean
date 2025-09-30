@@ -68,11 +68,10 @@ tends to `0` as `j` tends to infinity.
 def totalLengthFilter : Filter (ℕ × (ℕ → F × F)) := Filter.comap
   (fun E ↦ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2) (𝓝 0)
 
-lemma hasBasis_totalLengthFilter : totalLengthFilter.HasBasis
-    (fun (ε : ℝ) => 0 < ε)
-    (fun (ε : ℝ) => {E : ℕ × (ℕ → F × F) | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε})
-    := by
-  convert Filter.HasBasis.comap _ (nhds_basis_Ioo_pos _) using 1 <;> try infer_instance
+lemma hasBasis_totalLengthFilter : totalLengthFilter.HasBasis (fun (ε : ℝ) => 0 < ε)
+    (fun (ε : ℝ) => 
+      {E : ℕ × (ℕ → F × F) | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε}) := by
+  convert Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1 
   ext ε E
   simp only [mem_setOf_eq, zero_sub, zero_add, mem_preimage, mem_Ioo, iff_and_self]
   suffices 0 ≤ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 by grind
@@ -90,8 +89,8 @@ def disjWithin (a b : ℝ) := {E : ℕ × (ℕ → ℝ × ℝ) |
 lemma disjWithin_comm (a b : ℝ) : disjWithin a b = disjWithin b a := by
   rw [disjWithin, disjWithin, uIcc_comm]
 
-lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) : disjWithin c d ⊆ disjWithin a b
-    := by
+lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
+    disjWithin c d ⊆ disjWithin a b := by
   simp +contextual only [disjWithin, Finset.mem_range, setOf_subset_setOf, and_true,
     and_imp, Prod.forall]
   exact fun (n I h _ i hi) ↦ ⟨habcd (h i hi).left, habcd (h i hi).right⟩
@@ -122,7 +121,7 @@ theorem absolutelyContinuousOnInterval_iff (f : ℝ → F) (a b : ℝ) :
     ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ E, E ∈ disjWithin a b →
     ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < δ →
     ∑ i ∈ Finset.range E.1, dist (f (E.2 i).1) (f (E.2 i).2) < ε := by
-  simp +contextual [AbsolutelyContinuousOnInterval, Metric.tendsto_nhds,
+  simp [AbsolutelyContinuousOnInterval, Metric.tendsto_nhds,
     Filter.HasBasis.eventually_iff (hasBasis_totalLengthFilter.inf_principal _),
     imp.swap, abs_of_nonneg (Finset.sum_nonneg (fun _ _ ↦ dist_nonneg))]
 
@@ -143,7 +142,6 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
 theorem fun_add (hf : AbsolutelyContinuousOnInterval f a b)
     (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ f x + g x) a b := by
-  unfold AbsolutelyContinuousOnInterval at hf
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.add hg)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · rw [← Finset.sum_add_distrib]
@@ -284,7 +282,7 @@ theorem mul {f g : ℝ → ℝ} {a b : ℝ}
 end AbsolutelyContinuousOnInterval
 
 /-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
-theorem LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → F} {a b : ℝ} {K : NNReal}
+theorem LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → F} {a b : ℝ} {K : ℝ≥0}
     (hfK : LipschitzOnWith K f (uIcc a b)) : AbsolutelyContinuousOnInterval f a b := by
   rw [absolutelyContinuousOnInterval_iff]
   intro ε hε

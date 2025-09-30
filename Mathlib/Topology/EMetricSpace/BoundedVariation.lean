@@ -437,9 +437,9 @@ theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : 
     (hn : ∀ i, 0 < i → i ≤ n → E i ∈ s) :
     eVariationOn f (s ∩ Icc (E 0) (E (n + 1))) = ∑ i ∈ Finset.range (n + 1),
       eVariationOn f (s ∩ Icc (E i) (E (i + 1))) := by
-    induction n with
-    | zero => simp
-    | succ n ih =>
+  induction n with
+  | zero => simp
+  | succ n ih =>
     rw [← Icc_add_Icc (b := E (n + 1))]
     · rw [ih (by intros; apply hn <;> omega)]
       symm; apply Finset.sum_range_succ
