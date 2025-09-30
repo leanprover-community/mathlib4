@@ -31,14 +31,6 @@ convention also cyclically reduced. -/]
 def IsCyclicallyReduced (L : List (α × Bool)) : Prop :=
   IsReduced L ∧ ∀ a ∈ L.getLast?, ∀ b ∈ L.head?, a.1 = b.1 → a.2 = b.2
 
-@[to_additive (attr := simp)]
-theorem isCyclicallyReduced_nil : IsCyclicallyReduced ([] : List (α × Bool)) := by
-  simp [IsCyclicallyReduced]
-
-@[to_additive (attr := simp)]
-theorem isCyclicallyReduced_singleton {x : (α × Bool)} : IsCyclicallyReduced [x] := by
-  simp [IsCyclicallyReduced]
-
 @[to_additive]
 theorem isCyclicallyReduced_iff :
     IsCyclicallyReduced L ↔
@@ -51,11 +43,22 @@ theorem isCyclicallyReduced_cons_append_iff {a b : α × Bool} :
   rw [isCyclicallyReduced_iff,List.getLast?_concat]
   simp
 
-@[to_additive]
-theorem IsCyclicallyReduced.isReduced (h : IsCyclicallyReduced L) : IsReduced L := h.1
+namespace IsCyclicallyReduced
+
+@[to_additive (attr := simp)]
+theorem nil : IsCyclicallyReduced ([] : List (α × Bool)) := by
+  simp [IsCyclicallyReduced]
+
+@[to_additive (attr := simp)]
+theorem singleton {x : (α × Bool)} : IsCyclicallyReduced [x] := by
+  simp [IsCyclicallyReduced]
+
 
 @[to_additive]
-theorem IsCyclicallyReduced.flatten_replicate (n : ℕ) (h : IsCyclicallyReduced L) :
+theorem isReduced (h : IsCyclicallyReduced L) : IsReduced L := h.1
+
+@[to_additive]
+theorem flatten_replicate (n : ℕ) (h : IsCyclicallyReduced L) :
     IsCyclicallyReduced (List.replicate n L).flatten := by match n, L with
   | 0, _ => simp
   | n + 1, [] => simp
@@ -67,4 +70,5 @@ theorem IsCyclicallyReduced.flatten_replicate (n : ℕ) (h : IsCyclicallyReduced
     rw [Option.mem_def, List.head?_flatten_replicate (h := by simp +arith)] at hb
     exact h.2 _ ha _ hb
 
+end IsCyclicallyReduced
 end FreeGroup
