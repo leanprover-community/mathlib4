@@ -127,7 +127,7 @@ theorem flip_polar_polar_eq {s : Set E} [Nonempty s] :
 
 /-
 This fails when `s` is empty. Indeed, `closedAbsConvexHull (E := WeakBilin B) 𝕜 s` is the empty set,
-but `B.polar_gc.closureOperator s` equals `{0}` when `B` is left separating.
+but `B.polar_gc.closureOperator s` equals `{0}` when `B` is left separating (see example above).
 -/
 lemma closureOperator_polar_gc_nonempty {s : Set E} [Nonempty s] :
     B.polar_gc.closureOperator s = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
