@@ -300,7 +300,197 @@ end differentiability
 /-! Tests for the custom elaborators for `ContMDiff{WithinAt,At,On}` -/
 section smoothness
 
--- TODO: add actual tests!
+-- Copy-pasted the tests for differentiability mutatis mutandis.
+-- Start with some basic tests: a simple function, both in applied and unapplied form.
+variable {EM' : Type*} [NormedAddCommGroup EM']
+  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+-- TODO: add tests for the error message when smoothness hypotheses are missing
+
+-- General case: a function between two manifolds.
+variable {f : M → M'} {s : Set M} {m : M}
+
+variable [IsManifold I 1 M] [IsManifold I' 1 M']
+
+-- TODO: can there be better error messages when forgetting the smoothness exponent?
+section error
+
+-- yields a parse error, "unexpected toekn '/--'; expected term"
+-- #check CMDiffAt[s] f
+
+/-- error: Term m is not a function. -/
+#guard_msgs in
+#check CMDiffAt[s] f m
+
+/-- error: Term m is not a function. -/
+#guard_msgs in
+#check CMDiffAt[s] f m
+
+-- yields a parse error, "unexpected toekn '/--'; expected term"
+-- #check CMDiffAt f
+
+end error
+
+/-- info: ContMDiffWithinAt I I' 1 f s : M → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 1 f
+
+/-- info: ContMDiffWithinAt I I' 1 f s m : Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 1 f m
+
+/-- info: ContMDiffWithinAt I I' 1 f s m : Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 1 f m
+
+/-- info: ContMDiffAt I I' 1 f : M → Prop -/
+#guard_msgs in
+#check CMDiffAt 1 f
+
+/-- info: ContMDiffAt I I' 2 f m : Prop -/
+#guard_msgs in
+#check CMDiffAt 2 f m
+
+/-- info: ContMDiffOn I I' 37 f s : Prop -/
+#guard_msgs in
+#check CMDiff[s] 37 f
+
+-- Testing an error message.
+section
+
+/--
+error: Function expected at
+  ContMDiffOn I I' 2 f s
+but this term has type
+  Prop
+
+Note: Expected a function because this term is being applied to the argument
+  m
+-/
+#guard_msgs in
+#check CMDiff[s] 2 f m
+
+variable {n : WithTop ℕ∞} {k : ℕ} {k' : ℕ∞}
+/--
+error: Function expected at
+  ContMDiffOn I I' n f s
+but this term has type
+  Prop
+
+Note: Expected a function because this term is being applied to the argument
+  m
+-/
+#guard_msgs in
+#check ContMDiffOn I I' n f s m
+
+/-- info: MDifferentiable I I' f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+/--
+error: Function expected at
+  ContMDiff I I' n f
+but this term has type
+  Prop
+
+Note: Expected a function because this term is being applied to the argument
+  m
+-/
+#guard_msgs in
+#check CMDiff n f m
+
+end
+
+-- Tests for coercions from ℕ or ℕ∞ to Withtop ℕ∞.
+-- TODO: decide on the correct behaviour and update the tests accordingly!
+section coercions
+-- TODO: add them
+end coercions
+
+-- Function from a manifold into a normed space.
+variable {g : M → E}
+
+/-- info: ContMDiffWithinAt I 𝓘(𝕜, E) 1 g s : M → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 1 g
+/-- info: ContMDiffWithinAt I 𝓘(𝕜, E) 0 g s m : Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 0 g m
+/-- info: ContMDiffAt I 𝓘(𝕜, E) 1 g : M → Prop -/
+#guard_msgs in
+#check CMDiffAt 1 g
+/-- info: ContMDiffAt I 𝓘(𝕜, E) 1 g m : Prop -/
+#guard_msgs in
+#check CMDiffAt 1 g m
+/-- info: ContMDiffOn I 𝓘(𝕜, E) n g s : Prop -/
+#guard_msgs in
+#check CMDiff[s] n g
+-- TODO: fix and enable! #check CMDiff[s] n g m
+/-- info: ContMDiff I 𝓘(𝕜, E) n g : Prop -/
+#guard_msgs in
+#check CMDiff n g
+-- TODO: fix and enable! #check CMDiff n g m
+
+-- From a manifold into a field.
+variable {h : M → 𝕜}
+
+/-- info: ContMDiffWithinAt I 𝓘(𝕜, 𝕜) 0 h s : M → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 0 h
+/-- info: ContMDiffWithinAt I 𝓘(𝕜, 𝕜) 1 h s m : Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 1 h m
+/-- info: ContMDiffAt I 𝓘(𝕜, 𝕜) 2 h : M → Prop -/
+#guard_msgs in
+#check CMDiffAt 2 h
+/-- info: ContMDiffAt I 𝓘(𝕜, 𝕜) n h m : Prop -/
+#guard_msgs in
+#check CMDiffAt n h m
+/-- info: ContMDiffOn I 𝓘(𝕜, 𝕜) n h s : Prop -/
+#guard_msgs in
+#check CMDiff[s] n h
+-- TODO: fix and enable! #check CMDiff[s] n h m
+/-- info: ContMDiff I 𝓘(𝕜, 𝕜) 37 h : Prop -/
+#guard_msgs in
+#check CMDiff 37 h
+-- TODO: fix and enable! #check CMDiff 0 h m
+
+-- The following tests are more spotty, as most code paths are already covered above.
+-- Add further details as necessary.
+-- This list mirrors some of the tests for `MDifferentiable{WithinAt,At,On}`, but not all.
+
+-- From a normed space into a manifold.
+variable {f : E → M'} {s : Set E} {x : E}
+/-- info: ContMDiffWithinAt 𝓘(𝕜, E) I' 2 f s : E → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 2 f
+/-- info: ContMDiffAt 𝓘(𝕜, E) I' 3 f x : Prop -/
+#guard_msgs in
+#check CMDiffAt 3 f x
+-- TODO: fix and enable! #check CMDiff[s] 1 f x
+/-- info: ContMDiff 𝓘(𝕜, E) I' 1 f : Prop -/
+#guard_msgs in
+#check CMDiff 1 f
+-- TODO: should this error? if not, fix and enable! #check CMDiff 1 f x
+-- same! #check MDifferentiable% f x
+
+-- Between normed spaces.
+variable {f : E → E'} {s : Set E} {x : E}
+
+/-- info: ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, E') 2 f x : Prop -/
+#guard_msgs in
+#check CMDiffAt 2 f x
+/-- info: ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, E') 2 f : E → Prop -/
+#guard_msgs in
+#check CMDiffAt 2 f
+-- should this error or not? #check CMDiff[s] 2 f x
+/-- info: ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') 2 f s : E → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 2 f
+/-- info: ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E') 2 f s : Prop -/
+#guard_msgs in
+#check CMDiff[s] 2 f
 
 end smoothness
 
