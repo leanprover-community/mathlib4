@@ -77,15 +77,6 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   conv => { lhs; rw [← (pow_one p)] }
   exact Nat.pow_le_pow_right hp.one_lt.le hk
 
-theorem isPrimePow_nat_iff_bounded' (n : ℕ) :
-    IsPrimePow n ↔ ∃ k : ℕ, k ≤ n ∧ ∃ p : ℕ, p ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
-  rw [isPrimePow_nat_iff_bounded]
-  constructor
-  · rintro ⟨p, hp, k, hk, hp', hk', rfl⟩
-    exact ⟨k, hk, ⟨p, hp, hp', hk', rfl⟩⟩
-  · rintro ⟨k, hk, ⟨p, hp, hp', hk', rfl⟩⟩
-    exact ⟨p, hp, k, hk, hp', hk', rfl⟩
-
 theorem isPrimePow_nat_iff_bounded_log (n : ℕ) :
     IsPrimePow n
       ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ ∃ p : ℕ, p ≤ n ∧ p ^ k = n ∧ p.Prime := by
