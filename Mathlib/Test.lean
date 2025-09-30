@@ -42,7 +42,9 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
         .
           use FreeGroup.mk g.toWord.tail
           have h4 : FreeGroup.reduce g.toWord.tail = g.toWord.tail := by
-              sorry
+              have h6 : FreeGroup.IsReduced g.toWord.tail :=
+                FreeGroup.IsReduced.infix g.isReduced_toWord (by sorry)
+              rw [FreeGroup.IsReduced.reduce_eq h6]
           constructor
           . simp
 
@@ -61,7 +63,8 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
             simp
             have h6 : g.toWord.head (by grind) = (w.1, w.2) := by
               rw [List.getElem?_eq_getElem] at hg1
-              . sorry -- gschenkt
+              .
+                sorry -- gschenkt
               . grind
 
             simp [h6, h4]
@@ -89,9 +92,6 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
               simp only [List.length_cons, Nat.zero_lt_succ, getElem?_pos, List.getElem_cons_zero,
                 Option.some.injEq] at h2
               exact h2
-              --simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
-              --  getElem?_pos, List.getElem_cons_zero, Option.some.injEq] at h2
-              --exact h2
             by_cases hC : a = w.1
             . simp_rw [h1 hC, show (head.2 = false) by simp [h_head]]
               simp
@@ -100,7 +100,13 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
                 exact fun a_1 ↦ hC (id (Eq.symm a_1))
               simp [h]
 
-        . sorry
+        .
+          have h : FreeGroup.IsReduced (w :: g.toWord.head (by grind) :: g.toWord.tail) := by
+            rw [FreeGroup.isReduced_cons_cons]
+            constructor
+            . intro h
+
+
       . rw [← mul_smul]
         rw [← mul_assoc]
         simp only [FreeGroup.mul_mk]
