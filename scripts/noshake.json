@@ -68,6 +68,7 @@
   "Mathlib.Tactic.Attr.Register",
   "Mathlib.Tactic.Basic",
   "Mathlib.Tactic.Bound.Attribute",
+  "Mathlib.Tactic.ByCases",
   "Mathlib.Tactic.ByContra",
   "Mathlib.Tactic.CC",
   "Mathlib.Tactic.CancelDenoms",
@@ -336,6 +337,7 @@
   "Mathlib.Tactic.CC.Datatypes":
   ["Mathlib.Lean.Meta.CongrTheorems", "Mathlib.Lean.Meta.Datatypes"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
+  "Mathlib.Tactic.ByCases": ["Batteries.Tactic.PermuteGoals"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Bound.Attribute":
   ["Mathlib.Algebra.Group.ZeroOne", "Mathlib.Tactic.Bound.Init"],
