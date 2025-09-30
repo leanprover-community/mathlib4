@@ -347,6 +347,17 @@ def patternToOriginConfig (p : Pattern A G) : G → A :=
 attribute [inherit_doc SymbolicDynamics.Ambiant.patternToOriginConfig]
   SymbolicDynamics.Ambiant.addPatternToOriginConfig
 
+/-- Translate a finite pattern `p` so that it occurs at the translate `v`.
+
+On input `h : G`, we proceed as follows:
+* if `h` lies in the right-translate of the support, i.e. `h ∈ p.support.image (· * v)`,
+  choose (noncomputably) `w ∈ p.support` with `w * v = h` and return `p.data ⟨w, _⟩`;
+* otherwise return `default`.
+
+This definition does **not** assume cancellation; it only *chooses* a preimage.
+Uniqueness (and the usual equations such as `patternToConfig p v (w * v) = p.data ⟨w, _⟩`)
+require a right-cancellation hypothesis and are proved in separate lemmas.
+-/
 @[to_additive addPatternToConfig]
 noncomputable def patternToConfig (p : Pattern A G) (v : G) : G → A :=
   fun h =>
@@ -360,6 +371,9 @@ noncomputable def patternToConfig (p : Pattern A G) (v : G) : G → A :=
       p.data ⟨w, hw⟩
     else
       default
+
+attribute [inherit_doc SymbolicDynamics.Ambiant.patternToConfig]
+  SymbolicDynamics.Ambiant.addPatternToConfig
 
 /-- Restrict a configuration to a finite support, seen as a pattern. -/
 @[to_additive addPatternFromConfig]
@@ -525,11 +539,11 @@ section Language
 variable {A : Type*} [Fintype A]
 variable {G : Type*}
 variable [TopologicalSpace A]
-variable [Monoid G] [IsRightCancelMul G]
+variable [Monoid G]
 
 /-- Patterns with fixed support `U`. -/
 @[to_additive AddFixedSupport]
-def FixedSupport (A : Type*) (G : Type*) [Monoid G] [IsRightCancelMul G] (U : Finset G) :=
+def FixedSupport (A : Type*) (G : Type*) [Monoid G] (U : Finset G) :=
   { p : Pattern A G // p.support = U }
 
 attribute [inherit_doc SymbolicDynamics.Ambiant.FixedSupport]
