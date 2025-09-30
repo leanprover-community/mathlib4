@@ -371,7 +371,7 @@ Note: Expected a function because this term is being applied to the argument
 #guard_msgs in
 #check CMDiff[s] 2 f m
 
-variable {n : WithTop ℕ∞} {k : ℕ} {k' : ℕ∞}
+variable {n : WithTop ℕ∞}
 /--
 error: Function expected at
   ContMDiffOn I I' n f s
@@ -405,7 +405,101 @@ end
 -- Tests for coercions from ℕ or ℕ∞ to Withtop ℕ∞.
 -- TODO: decide on the correct behaviour and update the tests accordingly!
 section coercions
--- TODO: add them
+
+variable {k : ℕ} {k' : ℕ∞}
+
+/-- info: ContMDiffWithinAt I I' 0 f s : M → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 0 f
+
+/-- info: ContMDiffWithinAt I I' 1 f s : M → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 1 f
+
+/-- info: ContMDiffWithinAt I I' 37 f s : M → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 37 f
+
+/--
+error: Application type mismatch: In the application
+  ContMDiffWithinAt I I' k
+the argument
+  k
+has type
+  ℕ : Type
+but is expected to have type
+  WithTop ℕ∞ : Type
+-/
+#guard_msgs in
+#check CMDiffAt[s] k f
+
+/--
+error: Application type mismatch: In the application
+  ContMDiffWithinAt I I' k'
+the argument
+  k'
+has type
+  ℕ∞ : Type
+but is expected to have type
+  WithTop ℕ∞ : Type
+-/
+#guard_msgs in
+#check CMDiffAt[s] k' f m
+
+/-- info: ContMDiffWithinAt I I' n f s m : Prop -/
+#guard_msgs in
+#check CMDiffAt[s] n f m
+
+/-- info: ContMDiffAt I I' (↑k) f : M → Prop -/
+#guard_msgs in
+#check CMDiffAt k f
+
+/-- info: ContMDiffAt I I' (↑k') f m : Prop -/
+#guard_msgs in
+#check CMDiffAt k' f m
+
+/-- info: ContMDiffOn I I' (↑k) f s : Prop -/
+#guard_msgs in
+#check CMDiff[s] k f
+
+/--
+error: Function expected at
+  ContMDiffOn I I' (↑k') f s
+but this term has type
+  Prop
+
+Note: Expected a function because this term is being applied to the argument
+  m
+-/
+#guard_msgs in
+#check CMDiff[s] k' f m
+
+/--
+error: Application type mismatch: In the application
+  ContMDiff I I' k
+the argument
+  k
+has type
+  ℕ : Type
+but is expected to have type
+  WithTop ℕ∞ : Type
+-/
+#guard_msgs in
+#check CMDiff k f
+
+/--
+error: Application type mismatch: In the application
+  ContMDiff I I' k'
+the argument
+  k'
+has type
+  ℕ∞ : Type
+but is expected to have type
+  WithTop ℕ∞ : Type
+-/
+#guard_msgs in
+#check CMDiff k' f m
+
 end coercions
 
 -- Function from a manifold into a normed space.
