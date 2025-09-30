@@ -110,14 +110,14 @@ variable {f : M → M'} {s : Set M} {m : M}
 
 -- TODO: understand why this fails and fix it!
 /--
-error: Application type mismatch: In the application
-  @modelWithCornersSelf a✝
-the argument
+error: Application type mismatch: The argument
   a✝
 has type
-  M : Type u_4
-but is expected to have type
-  Type ?u.68271 : Type (?u.68271 + 1)
+  M
+of sort `Type u_4` but is expected to have type
+  Type ?u.60421
+of sort `Type (?u.60421 + 1)` in the application
+  @modelWithCornersSelf a✝
 -/
 #guard_msgs in
 #check MDiffAt2 f
@@ -406,12 +406,13 @@ section error
 -- #check CMDiffAt[s] f
 
 /--
-error: type mismatch
+error: Type mismatch
   f
 has type
-  M → M' : Type (max u_10 u_4)
-but is expected to have type
-  WithTop ℕ∞ : Type
+  M → M'
+of sort `Type (max u_10 u_4)` but is expected to have type
+  WithTop ℕ∞
+of sort `Type`
 ---
 error: Term m is not a function.
 -/
@@ -419,12 +420,13 @@ error: Term m is not a function.
 #check CMDiffAt[s] f m
 
 /--
-error: type mismatch
+error: Type mismatch
   f
 has type
-  M → M' : Type (max u_10 u_4)
-but is expected to have type
-  WithTop ℕ∞ : Type
+  M → M'
+of sort `Type (max u_10 u_4)` but is expected to have type
+  WithTop ℕ∞
+of sort `Type`
 ---
 error: Term m is not a function.
 -/
@@ -824,14 +826,14 @@ section errors
 variable {s' : Set M} {m' : M}
 
 /--
-error: Application type mismatch: In the application
-  mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f m'
-the argument
+error: Application type mismatch: The argument
   m'
 has type
-  M : Type u_4
-but is expected to have type
-  E : Type u_2
+  M
+of sort `Type u_4` but is expected to have type
+  E
+of sort `Type u_2` in the application
+  mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f m'
 ---
 info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f sorry : TangentSpace 𝓘(𝕜, E) sorry →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f sorry)
 -/
@@ -840,27 +842,27 @@ info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f sorry : TangentSpace 𝓘(𝕜, E)
 
 -- Error messages: argument s has mismatched type.
 /--
-error: Application type mismatch: In the application
-  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
-the argument
+error: Application type mismatch: The argument
   s'
 has type
-  Set.{u_4} M : Type u_4
-but is expected to have type
-  Set.{u_2} E : Type u_2
+  Set.{u_4} M
+of sort `Type u_4` but is expected to have type
+  Set.{u_2} E
+of sort `Type u_2` in the application
+  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
 -/
 #guard_msgs in
 #check mfderiv[s'] f
 
 /--
-error: Application type mismatch: In the application
-  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
-the argument
+error: Application type mismatch: The argument
   s'
 has type
-  Set.{u_4} M : Type u_4
-but is expected to have type
-  Set.{u_2} E : Type u_2
+  Set.{u_4} M
+of sort `Type u_4` but is expected to have type
+  Set.{u_2} E
+of sort `Type u_2` in the application
+  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
 -/
 #guard_msgs in
 #check mfderiv[s'] f m
