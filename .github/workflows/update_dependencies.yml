@@ -29,7 +29,7 @@ jobs:
         id: get-branch-sha
         run: |
           # Check if the branch exists remotely
-          if git fetch origin "$BRANCH_NAME" then
+          if git fetch origin "$BRANCH_NAME"; then
             SHA=$(git rev-parse "origin/$BRANCH_NAME")
             echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
             echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
