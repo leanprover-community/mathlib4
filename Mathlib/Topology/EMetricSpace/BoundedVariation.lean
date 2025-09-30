@@ -434,27 +434,29 @@ theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hb
   rw [← eVariationOn.union f A B, ← inter_union_distrib_left, Icc_union_Icc_eq_Icc hab hbc]
 
 theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : ℕ}
-    (hn : ∀ i, 0 < i → i ≤ n → E i ∈ s) :
-    eVariationOn f (s ∩ Icc (E 0) (E (n + 1))) = ∑ i ∈ Finset.range (n + 1),
-      eVariationOn f (s ∩ Icc (E i) (E (i + 1))) := by
+    (hn : ∀ i, 0 < i → i < n → E i ∈ s) :
+    ∑ i ∈ Finset.range n, eVariationOn f (s ∩ Icc (E i) (E (i + 1))) =
+      eVariationOn f (s ∩ Icc (E 0) (E n)) := by
   induction n with
-  | zero => simp
+  | zero => simp [eVariationOn.subsingleton f Subsingleton.inter_singleton]
   | succ n ih =>
-    rw [← Icc_add_Icc (b := E (n + 1))]
-    · rw [ih (by intros; apply hn <;> omega)]
-      symm; apply Finset.sum_range_succ
+    by_cases hn₀ : n = 0
+    · simp [hn₀]
+    rw [← Icc_add_Icc (b := E n)]
+    · rw [← ih (by intros; apply hn <;> omega)]
+      apply Finset.sum_range_succ
     · apply hE; omega
     · apply hE; omega
     · apply hn <;> omega
 
 theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
-    eVariationOn f (Icc (I 0) (I (n + 1))) = ∑ i ∈ Finset.range (n + 1),
-      eVariationOn f (Icc (I i) (I (i + 1))) := by
-  convert sum f hI (s := Icc (I 0) (I (n + 1))) (n := n)
+    ∑ i ∈ Finset.range n, eVariationOn f (Icc (I i) (I (i + 1)))
+     = eVariationOn f (Icc (I 0) (I n)) := by
+  convert sum f hI (s := Icc (I 0) (I n)) (n := n)
     (hn := by intros; rw [mem_Icc]; constructor <;> (apply hI; omega) ) with i hi
-  · simp
   · simp only [right_eq_inter]
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; omega)
+  · simp
 
 section Monotone
 

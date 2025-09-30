@@ -31,7 +31,7 @@ We use the filter version to prove that absolutely continuous functions are clos
 * subtraction - `AbsolutelyContinuousOnInterval.fun_sub`, `AbsolutelyContinuousOnInterval.sub`;
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
 `AbsolutelyContinuousOnInterval.const_mul`;
-* multiplication - `AbsolutelyContinuousOnInterval.fun_smul`,
+* multiplication - `AbsolutelyContinuousOnInterval.fun_smul`, `AbsolutelyContinuousOnInterval.smul`,
 `AbsolutelyContinuousOnInterval.fun_mul`, `AbsolutelyContinuousOnInterval.mul`;
 and that absolutely continuous implies uniform continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
@@ -51,7 +51,7 @@ variable [SeminormedAddCommGroup F]
 
 open Set Filter Function
 
-open scoped Topology
+open scoped Topology NNReal
 
 namespace AbsolutelyContinuousOnInterval
 
@@ -155,7 +155,6 @@ theorem add (hf : AbsolutelyContinuousOnInterval f a b)
 
 theorem fun_neg (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ -(f x)) a b := by
-  unfold AbsolutelyContinuousOnInterval at hf
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · simp
@@ -164,15 +163,14 @@ theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (-f) a b :=
   hf.fun_neg
 
-theorem const_smul [Module ℝ F] [NormSMulClass ℝ F]
-    (α : ℝ) (hf : AbsolutelyContinuousOnInterval f a b) :
+theorem const_smul {M : Type*} [SeminormedRing M] [ContinuousMul M] [Module M F]
+    [NormSMulClass M F] (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α • f x) a b := by
-  unfold AbsolutelyContinuousOnInterval at hf
-  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.const_mul |α|)
+  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.const_mul ‖α‖)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · rw [Finset.mul_sum]
     gcongr
-    simp only [← smul_eq_mul, dist_smul₀]
+    simp only [dist_smul₀]
     rfl
 
 theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -243,27 +241,29 @@ theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
   · exact Filter.Eventually.of_forall <| fun _ ↦ Finset.sum_nonneg (fun i hi ↦ by exact dist_nonneg)
   rw [eventually_inf_principal]
   filter_upwards with (n, I) hnI
-  simp only
-  calc
-  _ ≤ ∑ i ∈ Finset.range n, (C * dist (g ((I i).1)) (g ((I i).2)) +
-        D * dist (f ((I i).1))  (f ((I i).2))) := by
-    gcongr with i hi
-    trans dist (f (I i).1 • g (I i).1) (f (I i).1 • g (I i).2) +
-      dist (f (I i).1 • g (I i).2) (f (I i).2 • g (I i).2)
-    · exact dist_triangle _ _ _
-    · simp only [disjWithin, mem_setOf_eq] at hnI
+  simp only [Finset.mul_sum, ← Finset.sum_add_distrib]
+  gcongr with i hi
+  trans dist (f (I i).1 • g (I i).1) (f (I i).1 • g (I i).2) +
+    dist (f (I i).1 • g (I i).2) (f (I i).2 • g (I i).2)
+  · exact dist_triangle _ _ _
+  · simp only [disjWithin, mem_setOf_eq] at hnI
+    gcongr
+    · rw [dist_smul₀]
       gcongr
-      · rw [dist_smul₀]
-        gcongr
-        exact hC _ (hnI.left i hi |>.left)
-      · rw [mul_comm]
-        grw [dist_pair_smul]
-        gcongr
-        rw [dist_zero_right]
-        exact hD _ (hnI.left i hi |>.right)
-  _ = C * ∑ i ∈ Finset.range n, dist (g ((I i).1)) (g ((I i).2)) +
-      D * ∑ i ∈ Finset.range n, dist (f ((I i).1)) (f ((I i).2)) := by
-    rw [Finset.sum_add_distrib, Finset.mul_sum, Finset.mul_sum]
+      exact hC _ (hnI.left i hi |>.left)
+    · rw [mul_comm]
+      grw [dist_pair_smul]
+      gcongr
+      rw [dist_zero_right]
+      exact hD _ (hnI.left i hi |>.right)
+
+/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
+on `uIcc a b`. -/
+theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+    {f : ℝ → M} {g : ℝ → F} {a b : ℝ}
+    (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f • g) a b :=
+  hf.fun_smul hg
 
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
 on `uIcc a b`. -/
@@ -293,16 +293,16 @@ theorem LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → F} {a b : �
   simp only at hnI₂
   simp only [LipschitzOnWith] at hfK
   calc
-  _ ≤ ∑ i ∈ Finset.range n, K * dist (I i).1 (I i).2 := by
-    apply Finset.sum_le_sum
-    intro i hi
-    have := hfK (hnI₁.left i hi).left (hnI₁.left i hi).right
-    apply ENNReal.toReal_mono (Ne.symm (not_eq_of_beq_eq_false rfl)) at this
-    rwa [ENNReal.toReal_mul, ← dist_edist, ← dist_edist] at this
-  _ = K * ∑ i ∈ Finset.range n, dist (I i).1 (I i).2 := by symm; exact Finset.mul_sum _ _ _
-  _ ≤ K * (ε / (K + 1)) := by gcongr
-  _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
-  _ = ε := by field_simp
+    _ ≤ ∑ i ∈ Finset.range n, K * dist (I i).1 (I i).2 := by
+      apply Finset.sum_le_sum
+      intro i hi
+      have := hfK (hnI₁.left i hi).left (hnI₁.left i hi).right
+      apply ENNReal.toReal_mono (Ne.symm (not_eq_of_beq_eq_false rfl)) at this
+      rwa [ENNReal.toReal_mul, ← dist_edist, ← dist_edist] at this
+    _ = K * ∑ i ∈ Finset.range n, dist (I i).1 (I i).2 := by symm; exact Finset.mul_sum _ _ _
+    _ ≤ K * (ε / (K + 1)) := by gcongr
+    _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
+    _ = ε := by field_simp
 
 namespace AbsolutelyContinuousOnInterval
 
@@ -330,7 +330,7 @@ theorem boundedVariationOn {f : ℝ → F} {a b : ℝ} (hf : AbsolutelyContinuou
     refine div_nonneg ?_ ?_ <;> linarith
   have v_sum : eVariationOn f (Icc a b) =
       ∑ i ∈ Finset.range (n + 1), eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) := by
-    convert eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono
+    convert eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono |>.symm
     · simp
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field_simp; abel
     · norm_cast
