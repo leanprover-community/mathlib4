@@ -3,9 +3,6 @@ name: Remove outdated deprecated declarations
 on:
   schedule:
   - cron: "5 4 * * 1" # At 04:05, on Monday
-  push:
-   branches:
-   - remove_deprecations_linter_dev_upstream
   workflow_dispatch:
     inputs:
       raw_from_date:
