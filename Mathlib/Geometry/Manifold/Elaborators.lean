@@ -147,8 +147,8 @@ elab:max "T% " t:term:arg : term => do
   | _ => pure ()
   return e
 
-/-- Try to find a `ModelWithCorners` instance on an expression `e`, using the local context
-to infer the expected type. This supports the following cases:
+/-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
+using the local context to infer the expected type. This supports the following cases:
 - the model with corners on the total space of a vector bundle
 - a model with corners on a manifold
 - the trivial model `𝓘(𝕜, E)` on a normed space
@@ -156,9 +156,14 @@ to infer the expected type. This supports the following cases:
   and if successful, return `𝓘(𝕜)`.
 
 Further cases can be added as necessary.
-This implementation is not maximally robust yet, but already useful.
 
-TODO: document what `baseInfo` is and how to use it!
+Return an expression describing the found model with corners.
+
+`baseInfo` is only used for the first case, a model with corners on the total space of the vector
+bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
+and the model with corners on the base: these are required to construct the right model with corners.
+
+This implementation is not maximally robust yet.
 -/
 -- FIXME: better failure when trying to find a `NormedField` instance
 def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
@@ -197,7 +202,6 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
         let I ← Term.elabTerm iTerm none
         trace[MDiffElab] m!"Found model: {I}"
         return I
-
       else
         throwError "Having a TotalSpace as source is not yet supported"
     let mut H : Expr := default
@@ -245,7 +249,6 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
             trace[MDiffElab] m!"Found model: {decl}"
             return decl
         | _ => pure ()
-      -- throwError m!"Couldn’t find models with corners with H = {H}"
     else
       trace[MDiffElab] m!"Hoping {e} is a normed field"
       let eT : Term ← PrettyPrinter.delab e
@@ -253,7 +256,6 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
       let I ← Term.elabTerm iTerm none
       trace[MDiffElab] m!"Found model: {I}"
       return I
-
     throwError "Couldn’t find models with corners"
 
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
