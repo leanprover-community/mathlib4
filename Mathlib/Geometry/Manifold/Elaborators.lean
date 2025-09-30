@@ -59,11 +59,13 @@ prototype. Don't rewrite all of mathlib to use it just yet. Notable bugs and lim
 the following.
 
 ## TODO
-- extend the elaborator to guess models with corners on product manifolds
+- extend the elaborators to guess models with corners on product manifolds
   (this has to make a guess, hence cannot always be correct: but it could make the guess that
   is correct 90% of the time)
   For products of vector spaces `E × F`, this could print a warning about making a choice between
   the model in `E × F` and the product of the models on `E` and `F`.
+- extend the elaborators to support `PartialHomeomorph`s and `PartialEquiv`s
+
 - fix pretty-printing: currently, the `commandStart` linter expects some different formatting
 - better error messages: forgetting e.g. the `T%` elaborator yields cryptic errors
 - further testing and fixing of edge cases
