@@ -5,10 +5,10 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
 module
 
-public import Mathlib.Init
-public import Qq
+public meta import Mathlib.Init
+public meta import Qq
 
-@[expose] public section
+public meta section
 
 /-!
 # Extra `Qq` helpers

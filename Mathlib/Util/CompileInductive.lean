@@ -5,13 +5,13 @@ Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Command
-public import Lean.Compiler.CSimpAttr
-public import Lean.Util.FoldConsts
-public import Lean.Data.AssocList
+public meta import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Compiler.CSimpAttr
+public meta import Lean.Util.FoldConsts
+public meta import Lean.Data.AssocList
 
-@[expose] public section
+public meta section
 
 /-!
 # Define the `compile_inductive%` command.

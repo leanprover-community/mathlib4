@@ -5,10 +5,10 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.Basic
-public import Lean.Meta.Tactic.Simp.Rewrite
-public import Batteries.Tactic.Exact
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.Meta.Tactic.Simp.Rewrite
+public meta import Batteries.Tactic.Exact
 
 @[expose] public meta section
 

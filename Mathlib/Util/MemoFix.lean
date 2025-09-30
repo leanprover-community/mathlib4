@@ -5,10 +5,10 @@ Authors: Gabriel Ebner, Edward Ayers
 -/
 module
 
-public import Std.Data.HashMap.Basic
-public import Mathlib.Init
+public meta import Std.Data.HashMap.Basic
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # Fixpoint function with memoisation

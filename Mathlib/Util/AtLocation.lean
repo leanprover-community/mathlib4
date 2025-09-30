@@ -5,11 +5,11 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.Location
-public import Lean.Meta.Tactic.Simp.Main
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.Location
+public meta import Lean.Meta.Tactic.Simp.Main
 
-@[expose] public section
+public meta section
 
 /-!
 # Rewriting at specified locations

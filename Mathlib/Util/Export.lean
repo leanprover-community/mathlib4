@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
-public import Lean.CoreM
-public import Lean.Util.FoldConsts
+public meta import Mathlib.Init
+public meta import Lean.CoreM
+public meta import Lean.Util.FoldConsts
 
-@[expose] public section
+public meta section
 
 /-!
 A rudimentary export format, adapted from

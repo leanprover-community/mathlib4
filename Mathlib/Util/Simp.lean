@@ -5,11 +5,11 @@ Authors: Paul Lezeau
 -/
 module
 
-public import Lean.Meta.Tactic.Simp.Types
-public import Mathlib.Init
-public import Qq
+public meta import Lean.Meta.Tactic.Simp.Types
+public meta import Mathlib.Init
+public meta import Qq
 
-@[expose] public section
+public meta section
 
 /-! # Additional simp utilities
 

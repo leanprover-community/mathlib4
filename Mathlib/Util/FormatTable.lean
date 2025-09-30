@@ -5,9 +5,9 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Data.String.Defs
+public meta import Mathlib.Data.String.Defs
 
-@[expose] public section
+public meta section
 
 /-!
 # Format Table

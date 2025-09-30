@@ -5,10 +5,10 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.DeclarationRange
+public meta import Mathlib.Init
+public meta import Lean.Elab.DeclarationRange
 
-@[expose] public section
+public meta section
 
 /-!
 # `addRelatedDecl`

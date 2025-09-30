@@ -5,11 +5,11 @@ Authors: Patrick Massot, Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Command
-public import Mathlib.Util.AssertExistsExt
+public meta import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Mathlib.Util.AssertExistsExt
 
-@[expose] public section
+public meta section
 
 /-!
 # User commands to assert the (non-)existence of declarations or instances.

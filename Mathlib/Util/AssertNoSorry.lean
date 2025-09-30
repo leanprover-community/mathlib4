@@ -5,11 +5,11 @@ Authors: David Renshaw
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Util.CollectAxioms
-public import Lean.Elab.Command
+public meta import Mathlib.Init
+public meta import Lean.Util.CollectAxioms
+public meta import Lean.Elab.Command
 
-@[expose] public section
+public meta section
 
 /-!
 # Defines the `assert_no_sorry` command.

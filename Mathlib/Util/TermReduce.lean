@@ -5,10 +5,10 @@ Authors: Kyle Miller, Gabriel Ebner, Yuyang Zhao
 -/
 module
 
-public import Lean.Meta.Tactic.Delta
-public import Mathlib.Lean.Expr.Basic
+public meta import Lean.Meta.Tactic.Delta
+public meta import Mathlib.Lean.Expr.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Term elaborators for reduction

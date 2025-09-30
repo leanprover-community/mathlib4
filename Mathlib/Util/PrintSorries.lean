@@ -5,9 +5,9 @@ Authors: Henrik Böving, Yaël Dillies, Kyle Miller
 -/
 module
 
-public import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Expr.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Tracking uses of `sorry`

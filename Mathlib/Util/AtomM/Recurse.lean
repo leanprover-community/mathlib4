@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Util.AtomM
+public meta import Mathlib.Util.AtomM
 
-@[expose] public section
+public meta section
 
 /-!
 # Running `AtomM` metaprograms recursively

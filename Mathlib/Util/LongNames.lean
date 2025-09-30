@@ -5,11 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Lean.Name
-public import Mathlib.Lean.Expr.Basic
-public import Lean.Elab.Command
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Lean.Elab.Command
 
-@[expose] public section
+public meta section
 
 /-!
 # Commands `#long_names` and `#long_instances`

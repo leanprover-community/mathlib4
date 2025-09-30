@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
-public import Batteries.Tactic.Lint
+public meta import Mathlib.Init
+public meta import Batteries.Tactic.Lint
 
 public meta section
 

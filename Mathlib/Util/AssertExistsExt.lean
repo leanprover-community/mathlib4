@@ -5,10 +5,10 @@ Authors: Damiano Testa
 -/
 module
 
-public import Lean.Environment
-public import Mathlib.Init
+public meta import Lean.Environment
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # Environment extension for tracking existence of declarations and imports
