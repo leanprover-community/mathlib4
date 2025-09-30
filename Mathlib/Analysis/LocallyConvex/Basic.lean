@@ -155,25 +155,13 @@ theorem absorbs_iff_eventually_nhdsNE_zero :
     Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, MapsTo (c • ·) t s := by
   rw [absorbs_iff_eventually_cobounded_mapsTo, ← Filter.inv_cobounded₀]; rfl
 
-@[deprecated (since := "2025-03-03")]
-alias absorbs_iff_eventually_nhdsWithin_zero := absorbs_iff_eventually_nhdsNE_zero
-
 alias ⟨Absorbs.eventually_nhdsNE_zero, _⟩ := absorbs_iff_eventually_nhdsNE_zero
-
-@[deprecated (since := "2025-03-03")]
-alias Absorbs.eventually_nhdsWithin_zero := Absorbs.eventually_nhdsNE_zero
 
 theorem absorbent_iff_eventually_nhdsNE_zero :
     Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
   forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
 
-@[deprecated (since := "2025-03-03")]
-alias absorbent_iff_eventually_nhdsWithin_zero := absorbent_iff_eventually_nhdsNE_zero
-
 alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
-
-@[deprecated (since := "2025-03-03")]
-alias Absorbent.eventually_nhdsWithin_zero := Absorbent.eventually_nhdsNE_zero
 
 theorem absorbs_iff_eventually_nhds_zero (h₀ : 0 ∈ s) :
     Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s := by

@@ -67,12 +67,6 @@ theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : H
     (hg : HasProd g b) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
   simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
 
-@[deprecated (since := "2025-03-10")]
-alias HasSum.prod_mk := HasSum.prodMk
-
-@[to_additive existing HasSum.prodMk, deprecated (since := "2025-03-10")]
-alias HasProd.prod_mk := HasProd.prodMk
-
 end ProdCodomain
 
 section ContinuousMul
