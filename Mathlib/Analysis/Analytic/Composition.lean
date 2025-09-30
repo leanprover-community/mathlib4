@@ -916,7 +916,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
         have := j.2
         grind
       rw [this]
-      apply mul_pos (by grind) hn
+      exact mul_pos (by grind) hn
     · calc
       ∑ j : Fin c.length, c.blocksFun j
       _ < ∑ j : Fin c.length, n := by
