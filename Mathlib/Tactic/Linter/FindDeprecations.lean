@@ -95,6 +95,9 @@ def getDeprecatedInfo (nm : Name) (verbose? : Bool) :
       -- retrieve the module where the declaration is located
       if let some mod ← findModuleOf? nm
       then
+        -- We filter here based on the top dir of the declaration.
+        unless repos.contains mod.getRoot do
+          return none
         if verbose? then
           logInfo
             s!"In the module '{mod}', the declaration {nm} at {rg.pos}--{rg.endPos} \
