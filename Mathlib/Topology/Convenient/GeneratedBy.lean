@@ -96,8 +96,14 @@ end WithGeneratedByTopology
 
 end Topology
 
+variable {tY} in
 lemma TopologicalSpace.generatedBy_le : generatedBy X ≤ tY :=
   fun U hU ↦ WithGeneratedByTopology.continuous_equiv.isOpen_preimage U hU
+
+omit tY in
+lemma TopologicalSpace.generatedBy_mono {t₁ t₂ : TopologicalSpace Y} (h : t₁ ≤ t₂) :
+    t₁.generatedBy X ≤ t₂.generatedBy X :=
+  iSup₂_le fun i f ↦ le_iSup₂_of_le i ⟨f, continuous_le_rng h @f.2⟩ le_rfl
 
 namespace Topology
 
@@ -114,6 +120,10 @@ namespace IsGeneratedBy
 
 attribute [continuity] continuous_equiv_symm
 
+section
+
+variable {tY}
+
 lemma le_generatedBy [IsGeneratedBy X Y] : tY ≤ .generatedBy X :=
   fun U hU ↦ continuous_equiv_symm.isOpen_preimage U hU
 
@@ -123,6 +133,8 @@ lemma generatedBy_eq [IsGeneratedBy X Y] : .generatedBy X = tY :=
 lemma iff_le_generatedBy :
     IsGeneratedBy X Y ↔ tY ≤ .generatedBy X :=
   ⟨fun _ ↦ le_generatedBy, fun h ↦ ⟨by rwa [continuous_def]⟩⟩
+
+end
 
 section
 
