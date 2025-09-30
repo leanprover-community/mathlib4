@@ -10,6 +10,7 @@ public meta import Lean.Elab.Command
 public meta import Lean.Compiler.CSimpAttr
 public meta import Lean.Util.FoldConsts
 public meta import Lean.Data.AssocList
+import all Init.Data.Nat.Basic  -- for `Nat.recCompiled`
 
 public meta section
 

@@ -11,7 +11,7 @@ public import Lean.Meta.Tactic.Rewrite
 public import Batteries.Tactic.Alias
 public import Lean.Elab.Binders
 
-@[expose] public section
+public section
 
 /-!
 # Additional operations on Expr and related types

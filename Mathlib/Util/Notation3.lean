@@ -14,6 +14,7 @@ public meta import Batteries.Linter.UnreachableTactic
 public meta import Batteries.Util.ExtendedBinder
 public meta import Batteries.Lean.Syntax
 public meta import Lean.Elab.AuxDef
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 public meta section
 
@@ -117,7 +118,7 @@ structure MatchState where
   foldState : Std.HashMap Name (Array Term)
 
 /-- A matcher is a delaboration function that transforms `MatchState`s. -/
-def Matcher := MatchState → DelabM MatchState
+@[expose] def Matcher := MatchState → DelabM MatchState
   deriving Inhabited
 
 /-- The initial state. -/
