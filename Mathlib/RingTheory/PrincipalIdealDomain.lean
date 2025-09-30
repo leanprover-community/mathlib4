@@ -490,8 +490,8 @@ theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealR
 /-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
 (Namely, the union of the chain is such an upper bound.)
 
-If you want the existence of a maximal non-principal ideal see `Ideal.exists_maximal_not_principal`.
--/
+If you want the existence of a maximal non-principal ideal see
+`Ideal.exists_maximal_not_isPrincipal`. -/
 theorem nonPrincipals_zorn (hR : ¬IsPrincipalIdealRing R) (c : Set (Ideal R))
     (hs : c ⊆ nonPrincipals R) (hchain : IsChain (· ≤ ·) c) :
     ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
@@ -504,7 +504,7 @@ theorem nonPrincipals_zorn (hR : ¬IsPrincipalIdealRing R) (c : Set (Ideal R))
     exact hs hJc ⟨hsSupJ ▸ ⟨x, hx⟩⟩
   · simpa [Set.not_nonempty_iff_eq_empty.1 H, isPrincipalIdealRing_iff] using hR
 
-theorem exists_maximal_not_principal (hR : ¬IsPrincipalIdealRing R) :
+theorem exists_maximal_not_isPrincipal (hR : ¬IsPrincipalIdealRing R) :
     ∃ I : Ideal R, Maximal (¬·.IsPrincipal) I :=
   zorn_le₀ _ (nonPrincipals_zorn hR)
 
