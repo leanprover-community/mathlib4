@@ -693,3 +693,25 @@ theorem IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedS
 theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isEquivalent_nat hf h.symm, fun hg => summable_of_isEquivalent_nat hg h⟩
+
+namespace Module.Basis
+
+variable {ι R M : Type*} [Finite ι]
+  [NontriviallyNormedField R] [CompleteSpace R]
+  [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [T2Space M]
+  [Module R M] [ContinuousSMul R M] (B : Module.Basis ι R M)
+
+-- Note that Finsupp has no topology so we need the coercion, see
+-- https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/TVS.20and.20NormedSpace.20on.20Finsupp.2C.20DFinsupp.2C.20DirectSum.2C.20.2E.2E/near/512890984
+theorem continuous_coe_repr : Continuous (fun m : M => ⇑(B.repr m)) :=
+  have := Finite.of_basis B
+  LinearMap.continuous_of_finiteDimensional B.equivFun.toLinearMap
+
+-- Note: this could be generalized if we had some typeclass to indicate "each of the projections
+-- into the basis is continuous".
+theorem continuous_toMatrix : Continuous fun (v : ι → M) => B.toMatrix v :=
+  let _ := Fintype.ofFinite ι
+  have := Finite.of_basis B
+  LinearMap.continuous_of_finiteDimensional B.toMatrixEquiv.toLinearMap
+
+end Module.Basis
