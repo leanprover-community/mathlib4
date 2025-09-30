@@ -480,7 +480,8 @@ lemma supDegree_mul
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   apply supDegree_eq_of_max
   · rw [← AddSubsemigroup.coe_set_mk (Set.range D), ← AddHom.srange_mk _ hadd, SetLike.mem_coe]
-    exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq)
+    · exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq)
+    · exact (AddHom.srange ⟨D, hadd⟩).add_mem
   · simp_rw [Finsupp.mem_support_iff, apply_supDegree_add_supDegree hD hadd]
     exact hpq
   · have := addLeftMono_of_addLeftStrictMono B

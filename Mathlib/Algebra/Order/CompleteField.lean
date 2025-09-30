@@ -150,7 +150,7 @@ section InducedMap
 variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
   [ConditionallyCompleteLinearOrderedField β] [ConditionallyCompleteLinearOrderedField γ]
 
-/-- The induced order preserving function from a linear ordered field to a conditionally complete
+/-- The induced order-preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the
 input. -/
 def inducedMap (x : α) : β :=

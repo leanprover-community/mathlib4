@@ -194,7 +194,7 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
       have h_lt : 0 < ((n / m1 : ℕ) : ℝ) / (n : ℝ) :=
         div_pos (cast_pos.mpr (Nat.div_pos (le_trans (le_max_left _ _) hn) (PNat.pos m1)))
           (cast_pos.mpr hn0)
-      rw [← rpow_natCast, ← rpow_add hL0', ← neg_div, div_add_div_same, Nat.cast_add,
+      rw [← rpow_natCast, ← rpow_add hL0', ← neg_div, ← add_div, Nat.cast_add,
         add_neg_cancel_right, Nat.cast_mul, ← rpow_mul (apply_nonneg μ _), mul_one_div,
         mul_div_assoc, rpow_mul (le_of_lt hL0')]
       exact rpow_lt_rpow (apply_nonneg μ _) hm1 h_lt
