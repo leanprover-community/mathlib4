@@ -18,6 +18,20 @@ Let `G` be a group acting on another (not necessarily abelian) group `A`, in thi
 
 -/
 
+universe u
+
 namespace groupCohomology
+
+section basic
+
+abbrev NonAbelianRep (G : Type u) [Monoid G] := Action MonCat.{u} G
+
+variable (G : Type u) [Monoid G]
+
+instance : CoeSort (NonAbelianRep G) (Type u) := ⟨fun V ↦ V.V⟩
+
+instance (A : NonAbelianRep G) : MulAction G A := sorry
+
+end basic
 
 end groupCohomology
