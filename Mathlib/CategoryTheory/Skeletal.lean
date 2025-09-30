@@ -365,10 +365,18 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
     { hom := mapNatTrans h.hom
       inv := mapNatTrans h.inv }
 
-theorem map_fromThinSkeleton_toThinSkeleton [Quiver.IsThin D] (F : C ⥤ D) :
+theorem fromThinSkeleton_comp_toThinSkeleton_eq [Quiver.IsThin D] (F : C ⥤ D) :
     fromThinSkeleton C ⋙ F ⋙ toThinSkeleton D = map F :=
-  Functor.eq_of_iso skeletal <| NatIso.ofComponents fun X ↦ Quotient.recOnSubsingleton X fun x ↦
-    (eqToIso <| Quotient.sound <| isIsomorphicFunctorObj _ <| Quotient.mk_out x)
+  Functor.eq_of_iso skeletal <|
+    Functor.isoWhiskerLeft (fromThinSkeleton C) (Iso.refl _) ≪≫
+      Functor.isoWhiskerRight (equivalence C).unitIso.symm (map F) ≪≫
+      Functor.leftUnitor (map F)
+
+noncomputable def isoCompFromThinSkeleton [Quiver.IsThin D] (F : C ⥤ D) :
+    map F ⋙ fromThinSkeleton D ≅ fromThinSkeleton C ⋙ F  :=
+  Functor.isoWhiskerRight (eqToIso <| fromThinSkeleton_comp_toThinSkeleton_eq F).symm _ ≪≫
+    Functor.isoWhiskerLeft (fromThinSkeleton C ⋙ F) (equivalence D).counitIso ≪≫
+    Functor.rightUnitor (fromThinSkeleton C ⋙ F)
 
 /-- `fromThinSkeleton C` exhibits the thin skeleton as a skeleton. -/
 lemma thinSkeleton_isSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C) where

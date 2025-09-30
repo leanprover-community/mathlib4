@@ -156,12 +156,23 @@ def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsI
 /--
 Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` gives a new mono
 factorisation `X ⟶ I' ⟶ Y` of `f`.
+Implementation note: We add a variable `m : I' ⟶ Y` which satisfies `m = inv g ≫ F.m` so that we
+can definitionally control the field `m` of the mono factorisation.
 -/
 @[simps]
-def ofIsoI (F : MonoFactorisation f) {I' : C} (g : F.I ⟶ I') [IsIso g] : MonoFactorisation f where
+def ofIsoI' (F : MonoFactorisation f) {I'} (g : F.I ⟶ I') [IsIso g]
+    (m : I' ⟶ Y) [Mono m] (h : m = inv g ≫ F.m) :
+    MonoFactorisation f where
   I := I'
-  m := inv g ≫ F.m
+  m := m
   e := F.e ≫ g
+
+/--
+Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` gives a new mono
+factorisation `X ⟶ I' ⟶ Y` of `f`.
+-/
+def ofIsoI (F : MonoFactorisation f) {I' : C} (g : F.I ⟶ I') [IsIso g] : MonoFactorisation f :=
+  ofIsoI' F g (inv g ≫ F.m) (by cat_disch)
 
 end MonoFactorisation
 
@@ -228,11 +239,22 @@ def ofArrowIso {f g : Arrow C} {F : MonoFactorisation f.hom} (hF : IsImage F) (s
 /--
 Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
 the induced mono factorisation by the isomorphism is also an image.
+Implementation note: We add a variable `m : I' ⟶ Y` which satisfies `m = inv g ≫ F.m` so that we
+can definitionally control the field `m` of the mono factorisation.
 -/
 @[simps]
-def ofIsoI {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (g : F.I ⟶ I') [IsIso g] :
-    IsImage (F.ofIsoI g) where
+def ofIsoI' {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (g : F.I ⟶ I') [IsIso g]
+    (m : I' ⟶ Y) [Mono m] (h : m = inv g ≫ F.m) :
+    IsImage (F.ofIsoI' g m h) where
   lift F' := inv g ≫ hF.lift F'
+
+/--
+Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
+the induced mono factorisation by the isomorphism is also an image.
+-/
+def ofIsoI {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (g : F.I ⟶ I') [IsIso g] :
+    IsImage (F.ofIsoI g) :=
+  ofIsoI' hF g (inv g ≫ F.m) (by cat_disch)
 
 end IsImage
 
@@ -262,12 +284,24 @@ variable {f} in
 /--
 Given an image factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` induces a new
 image factorisation `X ⟶ I' ⟶ Y` of `f`.
+Implementation note: We add a variable `m : I' ⟶ Y` which satisfies `m = inv g ≫ F.m` so that we
+can definitionally control the field `m` of the mono factorisation.
 -/
 @[simps]
-def ofIsoI (F : ImageFactorisation f) {I' : C} (g : F.F.I ⟶ I') [IsIso g] :
+def ofIsoI' (F : ImageFactorisation f) {I' : C} (g : F.F.I ⟶ I') [IsIso g]
+    (m : I' ⟶ Y) [Mono m] (h : m = inv g ≫ F.F.m) :
     ImageFactorisation f where
-  F := F.F.ofIsoI g
-  isImage := F.isImage.ofIsoI g
+  F := F.F.ofIsoI' g m h
+  isImage := F.isImage.ofIsoI' g m h
+
+variable {f} in
+/--
+Given an image factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` induces a new
+image factorisation `X ⟶ I' ⟶ Y` of `f`.
+-/
+def ofIsoI (F : ImageFactorisation f) {I' : C} (g : F.F.I ⟶ I') [IsIso g] :
+    ImageFactorisation f :=
+  ofIsoI' F g (inv g ≫ F.F.m) (by cat_disch)
 
 end ImageFactorisation
 
