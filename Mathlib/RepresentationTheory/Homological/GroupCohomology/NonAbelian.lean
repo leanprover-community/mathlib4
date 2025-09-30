@@ -95,9 +95,9 @@ end H1
 
 section connectHom
 
-#synth Limits.HasZeroMorphisms AddGrp.{u}
-
 variable {G : Type u} [Group G] (S : ShortComplex (NonAbelianRep G))
+
+
 
 end connectHom
 
