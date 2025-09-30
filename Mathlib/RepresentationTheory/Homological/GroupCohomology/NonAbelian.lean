@@ -39,6 +39,8 @@ instance : CoeSort (NonAbelianRep G) (Type u) := ⟨fun V ↦ V.V⟩
 
 instance (A : NonAbelianRep G) : DistribMulAction G A := sorry
 
+instance (A B : NonAbelianRep G) : Coe (A ⟶ B) (A →+[G] B) := sorry
+
 end basic
 
 section H0
@@ -126,6 +128,16 @@ variable {G : Type u} [Group G] (S : ShortComplex (NonAbelianRep G)) (hS : S.Exa
 def δ₀₁ : H0 G S.X₃ → H1 G S.X₁ := sorry
 
 def δ₀₁_zero : δ₀₁ S 0 = 0 := sorry
+
+theorem exact₁ : Function.Exact (H0.map (S.f : S.X₁ →+[G] S.X₂)) (H0.map (S.g : S.X₂ →+[G] S.X₃)) :=
+  sorry
+
+theorem exact₂ : Function.Exact (H0.map (S.g : S.X₂ →+[G] S.X₃)) (δ₀₁ S) := sorry
+
+theorem exact₃ : Function.Exact (δ₀₁ S) (H1.map (S.f : S.X₁ →+[G] S.X₂)) := sorry
+
+theorem exact₄ : Function.Exact (H1.map (S.f : S.X₁ →+[G] S.X₂)) (H1.map (S.g : S.X₂ →+[G] S.X₃)) :=
+  sorry
 
 end connectHom
 
