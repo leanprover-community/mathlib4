@@ -265,6 +265,16 @@ theorem memLp_const_iff_enorm
   simp_all [MemLp, aestronglyMeasurable_const,
     eLpNorm_const_lt_top_iff_enorm hc hp_ne_zero hp_ne_top]
 
+theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ :=
+  (memLp_const_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top).trans (or_congr_left enorm_eq_zero)
+
+@[deprecated memLp_const (since := "2025-09-30")]
+alias memLp_const_enorm := memLp_const
+
+@[deprecated memLp_const (since := "2025-09-30")]
+alias memLp_top_const := memLp_const
+
 end Const
 
 variable {f : α → F}
