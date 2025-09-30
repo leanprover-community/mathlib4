@@ -9,12 +9,14 @@ import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.Algebra.AffineSubspace
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
 import Mathlib.LinearAlgebra.Dimension.LinearMap
+
 
 /-!
 # Finite-dimensional normed spaces over complete fields
