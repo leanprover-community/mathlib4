@@ -402,6 +402,53 @@ lemma continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F
     Continuous φ ↔ ∀ i, Continuous (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
 
+
+variable (E F n K)
+
+/-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup norm on the `i`-th derivative. -/
+protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
+  (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (iteratedFDeriv_toBoundedContinuousFunctionₗ 𝕜 i)
+
+/-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup of the
+`ContDiffMapSupportedIn.seminorm k`for `k ≤ i`. -/
+protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
+  (Finset.Iic i).sup (ContDiffMapSupportedIn.seminorm 𝕜 E F n K)
+
+protected theorem withSeminorms :
+    WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
+  let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
+    SeminormFamily.sigma fun i ↦ fun _ ↦
+      (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (iteratedFDeriv_toBoundedContinuousFunctionₗ 𝕜 i)
+  have : WithSeminorms p :=
+    withSeminorms_iInf fun i ↦ LinearMap.withSeminorms_induced (norm_withSeminorms _ _) _
+  exact this.congr_equiv (Equiv.sigmaUnique _ _).symm
+
+protected theorem withSeminorms' :
+    WithSeminorms (ContDiffMapSupportedIn.seminorm' 𝕜 E F n K) :=
+  (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K).partial_sups
+
+variable {E F n K}
+
+@[simp]
+protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
+      ‖(f.iteratedFDeriv' i : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+  rfl
+
+protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
+  ext f
+  rw [ContDiffMapSupportedIn.seminorm_apply,
+      coe_iteratedFDeriv'_of_gt hin]
+  exact norm_zero
+
+theorem norm_toBoundedContinuousFunctionₗ (f : 𝓓^{n}_{K}(E, F)) :
+    ‖toBoundedContinuousFunctionₗ 𝕜 f‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
+  simp only [BoundedContinuousFunction.norm_eq_iSup_norm, toBoundedContinuousFunctionₗ_apply_apply,
+    ContDiffMapSupportedIn.seminorm_apply]
+  simp only [toBoundedContinuousFunction_apply, iteratedFDeriv'_apply, CharP.cast_eq_zero,
+  zero_le, ↓reduceIte, norm_iteratedFDeriv_zero]
+
 end Topology
 
 end ContDiffMapSupportedIn
