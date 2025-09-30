@@ -163,6 +163,17 @@ theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (-f) a b :=
   hf.fun_neg
 
+theorem fun_sub (hf : AbsolutelyContinuousOnInterval f a b)
+    (hg : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (fun x ↦ f x - g x) a b := by
+  simp_rw [fun x ↦ show f x - g x = f x + (-(g x)) by abel]
+  exact hf.fun_add (hg.fun_neg)
+
+theorem sub (hf : AbsolutelyContinuousOnInterval f a b)
+    (hg : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (f - g) a b :=
+  hf.fun_sub hg
+
 theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
     (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α • f x) a b := by
@@ -176,17 +187,6 @@ theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M 
 theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α * f x) a b :=
   hf.const_smul α
-
-theorem fun_sub (hf : AbsolutelyContinuousOnInterval f a b)
-    (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x - g x) a b := by
-  simp_rw [fun x ↦ show f x - g x = f x + (-(g x)) by abel]
-  exact hf.fun_add (hg.fun_neg)
-
-theorem sub (hf : AbsolutelyContinuousOnInterval f a b)
-    (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (f - g) a b :=
-  hf.fun_sub hg
 
 lemma uniformity_comap_totalLengthFilter :
     uniformity F = comap (fun x ↦ (1, fun _ ↦ x)) (totalLengthFilter):= by
