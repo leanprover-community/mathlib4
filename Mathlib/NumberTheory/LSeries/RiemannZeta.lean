@@ -200,11 +200,11 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
 lemma two_riemannZeta_eq_tsum_int_inv_even_pow {k : ℕ} (hk : 2 ≤ k) (hk2 : Even k) :
     2 * riemannZeta k = ∑' (n : ℤ), ((n : ℂ) ^ k)⁻¹ := by
   have hkk : 1 < k := by linarith
-  rw [tsum_nat_eq_zero_two_pnat]
+  rw [tsum_int_eq_zero_add_two_mul_tsum_pnat]
   · have h0 : (0 ^ k : ℂ)⁻¹ = 0 := by simp; omega
     norm_cast
     simp [h0, zeta_eq_tsum_one_div_nat_add_one_cpow (s := k) (by simp [hkk]),
-      tsum_pnat_eq_tsum_succ' (f := fun n => ((n : ℂ) ^ k)⁻¹)]
+      tsum_pnat_eq_tsum_succ (f := fun n => ((n : ℂ) ^ k)⁻¹)]
   · simp [Even.neg_pow hk2]
   · exact (Summable.of_nat_of_neg (by simp [hkk]) (by simp [hkk])).of_norm
 
