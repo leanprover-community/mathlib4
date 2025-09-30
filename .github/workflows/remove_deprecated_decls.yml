@@ -53,12 +53,6 @@ jobs:
         parse_date_safely() {
           local input="$1"
 
-          # Basic shell injection protection - reject inputs with dangerous characters
-          if [[ "$input" =~ [\;\&\|\`\$\(\)] ]]; then
-            echo "Error: Invalid characters in date input: $input" >&2
-            return 1
-          fi
-
           # Try to parse with date -d and extract YYYY-MM-DD format
           local parsed_date
           if parsed_date=$(date -d "$input" +%Y-%m-%d 2>/dev/null); then
