@@ -146,11 +146,11 @@ mul-order-isomorphic to the value group of the valuation induced by the relation
 def ValueGroup₀Iso :
     MonoidWithZeroHom.ValueGroup₀ (valuation R) ≃*o ValueGroupWithZero R := by
   refine ⟨.ofBijective (OrderMonoidIso.withZeroUnits.toMonoidHom.comp
-    MonoidWithZeroHom.valueGroup₀_MonoidWithZeroHom.toMonoidHom)
+    MonoidWithZeroHom.valueGroup₀.MonoidWithZeroHom.toMonoidHom)
       ⟨OrderMonoidIso.withZeroUnits.injective.comp
-       MonoidWithZeroHom.valueGroup₀_MonoidWithZeroHom_strictMono.injective, ?_⟩,
+       MonoidWithZeroHom.valueGroup₀.MonoidWithZeroHom_strictMono.injective, ?_⟩,
       (OrderMonoidIso.withZeroUnits.strictMono.comp
-      MonoidWithZeroHom.valueGroup₀_MonoidWithZeroHom_strictMono).le_iff_le⟩
+      MonoidWithZeroHom.valueGroup₀.MonoidWithZeroHom_strictMono).le_iff_le⟩
   intro x
   obtain ⟨γ, rfl⟩ := OrderMonoidIso.withZeroUnits.surjective x
   induction γ using WithZero.recZeroCoe with
