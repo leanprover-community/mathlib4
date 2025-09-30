@@ -37,7 +37,6 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
 lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
     (@algebraMap R α _ (Equiv.semiring e) (Equiv.algebra R e)) r = e.symm ((algebraMap R β) r) := by
   let _ := Equiv.semiring e
-  let _ := Equiv.algebra R e
   simp only [Algebra.algebraMap_eq_smul_one]
   change e.symm (r • e 1) = e.symm (r • 1)
   simp only [Equiv.one_def, apply_symm_apply]

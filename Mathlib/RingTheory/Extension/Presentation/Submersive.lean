@@ -247,7 +247,7 @@ lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite
   have : Nat.card σ' ≤ Nat.card ι' :=
     card_relations_le_card_vars_of_isFinite Q
   simp only [Nat.card_sum]
-  omega
+  cutsat
 
 section
 
@@ -382,9 +382,7 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
     simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
       RingHom.mapMatrix_apply, Matrix.map_apply,
       Presentation.baseChange_toGenerators, MvPolynomial.pderiv_map]
-  rw [h]
-  erw [← RingHom.map_det, aeval_map_algebraMap]
-  rw [P.algebraMap_apply]
+  rw [h, ← RingHom.map_det, Generators.algebraMap_apply, aeval_map_algebraMap, P.algebraMap_apply]
   apply aeval_one_tmul
 
 end BaseChange
