@@ -164,7 +164,7 @@ end Scheme.Opens
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! I₀ X f]
 def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
-    (hU : ⨆ i, U i = ⊤) : X.OpenCover where
+    (hU : TopologicalSpace.IsOpenCover U) : X.OpenCover where
   I₀ := s
   X i := U i
   f i := (U i).ι
@@ -759,16 +759,6 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
   rw [Scheme.Hom.appTop, ← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
 
 end MorphismRestrict
-
-/-- The open cover of a scheme `X` from an open cover of the underlying topological space. -/
-def openCoverOfIsOpenCover {X : Scheme.{u}} {ι : Type v} (U : ι → X.Opens)
-    (hU : TopologicalSpace.IsOpenCover U) : X.OpenCover where
-  I₀ := ι
-  X x := (U x).toScheme
-  f x := (U x).ι
-  idx x := (hU.exists_mem x).choose
-  covers x := Scheme.Opens.range_ι _ ▸ (hU.exists_mem x).choose_spec
-  map_prop := inferInstance
 
 /-- The restriction of an open cover to an open subset. -/
 @[simps! I₀ X f]
