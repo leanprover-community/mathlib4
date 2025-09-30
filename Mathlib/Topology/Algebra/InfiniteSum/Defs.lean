@@ -138,6 +138,7 @@ apply to more general summation filters.)
 noncomputable irreducible_def tprod (f : β → α) (L := unconditional β) :=
   if h : Multipliable f L then
     if L.HasSupport ∧ (mulSupport f ∩ L.support).Finite then finprod (L.support.mulIndicator f)
+    else if HasProd f 1 L then 1
     else h.choose
   else 1
 
@@ -273,7 +274,7 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
   -- This is quite delicate because of the fiddly special-casing for finite products.
   classical
   rw [tprod_def, dif_pos ha]
-  split_ifs with h
+  split_ifs with h h'
   · convert hasProd_prod_support_of_ne_finset_one (s := h.2.toFinset) (L := L) _ using 2
     · simp only [Set.inter_eq_left.mpr (show ↑h.2.toFinset ⊆ L.support by simp)]
       simp only [Set.Finite.coe_toFinset, Finset.toFinset_coe]
@@ -282,6 +283,7 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
       · simp
     · grind [Set.Finite.mem_toFinset, mem_mulSupport]
     · exact h.1
+  · exact h'
   · exact ha.choose_spec
 
 variable [T2Space α] [L.NeBot]

@@ -97,9 +97,10 @@ instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L where
   eventually_le_support' := by simp
 
 lemma eventually_mem_or_not_mem (L : SummationFilter β) [HasSupport L] (b : β) :
-    (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) :=
-  or_iff_not_imp_left.mpr fun hb ↦ by
-    filter_upwards [L.eventually_le_support] with a ha using notMem_subset ha hb
+    (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) := by
+  rw [or_iff_not_imp_left]
+  intro hb
+  filter_upwards [L.eventually_le_support] with a ha using notMem_subset ha hb
 
 end has_support
 
@@ -113,7 +114,8 @@ for the intended applications, and this avoids requiring a `DecidableEq` instanc
   filter := L.filter.map (Finset.map f)
 
 @[simp] lemma support_map (L : SummationFilter β) [L.NeBot] (f : β ↪ γ) :
-    (L.map f).support = f '' L.support := ext fun c ↦ by
+    (L.map f).support = f '' L.support := by
+  ext c
   rcases em (c ∈ range f) with ⟨b, rfl⟩ | hc
   · simp [support]
   · exact ⟨fun hc' ↦ have := hc'.exists; by grind, by grind⟩
@@ -142,7 +144,7 @@ instance (L : SummationFilter β) [HasSupport L] (f : γ ↪ β) : HasSupport (L
     filter_upwards [L.eventually_le_support] with a using Set.preimage_mono
 
 instance (L : SummationFilter β) [LeAtTop L] (f : γ ↪ β) : LeAtTop (L.comap f) where
-  le_atTop' := support_eq_univ_iff.mp (by simp)
+  le_atTop' := by rw [← support_eq_univ_iff]; simp
 
 end map_comap
 

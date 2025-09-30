@@ -456,10 +456,10 @@ theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
 theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
   rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
 
-open scoped Classical in
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}
     (hf : mulSupport f ⊆ Set.range g) : ∏' c, f (g c) = ∏' b, f b := by
+  classical
   have : mulSupport f = g '' mulSupport (f ∘ g) := by
     rw [mulSupport_comp_eq_preimage, Set.image_preimage_eq_iff.2 hf]
   rw [← Function.comp_def]
@@ -476,8 +476,7 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
       show (unconditional β).HasSupport by infer_instance,
       show (unconditional γ).HasSupport by infer_instance, true_and,
       if_neg hf_fin, if_neg hf_fin', Multipliable]
-    have := funext fun a => propext <| hg.hasProd_iff (mulSupport_subset_iff'.1 hf) (a := a)
-    simp [this]
+    simp [hg.hasProd_iff (mulSupport_subset_iff'.1 hf)]
 
 @[to_additive]
 theorem Equiv.tprod_eq (e : γ ≃ β) (f : β → α) : ∏' c, f (e c) = ∏' b, f b :=
