@@ -408,14 +408,14 @@ variable (E) in
 /-- Class used to create an inner product structure space on the fibers of a fiber bundle, without
 creating diamonds. Use as follows:
 * `instance : RiemannianBundle E := ⟨g⟩` where `g : RiemannianMetric E` registers the inner product
-space on the fibers;
+  space on the fibers;
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
-`g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
-that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
+  `g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
+  that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
-`g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
-fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
-`[IsContinuousRiemannianBundle]` instances.
+  `g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
+  fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
+  `[IsContinuousRiemannianBundle]` instances.
 -/
 class RiemannianBundle where
   /-- The family of inner products on the fibers -/
@@ -426,7 +426,7 @@ a `NormedAddCommGroup` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
-As this instance is quite specific and very costly because of higher order unification, we
+As this instance is quite specific and very costly because of higher-order unification, we
 also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     NormedAddCommGroup (E b) :=
@@ -437,7 +437,7 @@ an `InnerProductSpace ℝ` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
-As this instance is quite specific and very costly because of higher order unification, we
+As this instance is quite specific and very costly because of higher-order unification, we
 also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     InnerProductSpace ℝ (E b) :=

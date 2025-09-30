@@ -28,7 +28,7 @@ When the inequalities are over a dense linear order, `linarith` is a decision pr
 prove `False` if and only if the inequalities are unsatisfiable. `linarith` will also run on some
 types like `ℤ` that are not dense orders, but it will fail to prove `False` on some unsatisfiable
 problems. It will run over concrete types like `ℕ`, `ℚ`, and `ℝ`, as well as abstract types that
-are instances of `LinearOrderedCommRing`.
+are instances of `CommRing`, `LinearOrder` and `IsStrictOrderedRing`.
 
 ## Algorithm sketch
 
@@ -68,7 +68,7 @@ There are two oracles that can be used in `linarith` so far.
   set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
   by counting how many copies of each original comparison appear in the history.
   This oracle was historically implemented earlier, and is sometimes faster on small states, but it
-  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and can not handle
+  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and cannot handle
   large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
 
 2. **Simplex Algorithm (default).**
@@ -374,7 +374,7 @@ Equivalently, it can prove a linear inequality by assuming its negation and prov
 In theory, `linarith` should prove any goal that is true in the theory of linear arithmetic over
 the rationals. While there is some special handling for non-dense orders like `Nat` and `Int`,
 this tactic is not complete for these theories and will not prove every true goal. It will solve
-goals over arbitrary types that instantiate `LinearOrderedCommRing`.
+goals over arbitrary types that instantiate `CommRing`, `LinearOrder` and `IsStrictOrderedRing`.
 
 An example:
 ```lean
@@ -417,7 +417,7 @@ optional arguments:
   (`true` by default.)
 * `restrict_type` (not yet implemented in mathlib4)
   will only use hypotheses that are inequalities over `tp`. This is useful
-  if you have e.g. both integer and rational valued inequalities in the local context, which can
+  if you have e.g. both integer- and rational-valued inequalities in the local context, which can
   sometimes confuse the tactic.
 
 A variant, `nlinarith`, does some basic preprocessing to handle some nonlinear goals.

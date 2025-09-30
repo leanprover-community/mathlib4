@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Localization.Module
 /-!
 # ℤ-lattices
 
-Let `E` be a finite dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
+Let `E` be a finite-dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
 norm that is also a `FloorRing`, e.g. `ℝ`. A (full) `ℤ`-lattice `L` of `E` is a discrete
 subgroup of `E` such that `L` spans `E` over `K`.
 
@@ -401,7 +401,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     refine measure_mono_null this
       (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ ?_)
     refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0)
-      (AffineSubspace.mem_mk'_iff_vsub_mem.not.mpr ?_)).symm
+      (AffineSubspace.mem_mk'.not.mpr ?_)).symm
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
@@ -444,7 +444,7 @@ variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
 
-theorem Zlattice.FG [hs : IsZLattice K L] : L.FG := by
+theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
   obtain ⟨s, ⟨h_incl, ⟨h_span, h_lind⟩⟩⟩ := exists_linearIndependent K (L : Set E)
   -- Let `s` be a maximal `K`-linear independent family of elements of `L`. We show that
   -- `L` is finitely generated (as a ℤ-module) because it fits in the exact sequence
@@ -479,8 +479,10 @@ theorem Zlattice.FG [hs : IsZLattice K L] : L.FG := by
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.setFinite h_lind)
 
+@[deprecated (since := "2025-08-11")] alias Zlattice.FG := ZLattice.FG
+
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
-  Module.Finite.iff_fg.mpr (Zlattice.FG K L)
+  Module.Finite.iff_fg.mpr (ZLattice.FG K L)
 
 instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
@@ -517,7 +519,6 @@ instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
-  have : Module.Free ℤ L := module_free K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
@@ -669,6 +670,19 @@ theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup 
 
 end NormedLinearOrderedField
 
+section Basis
+
+variable {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L]
+
+/--
+Return an arbitrary `ℤ`-basis of a lattice `L` of `ι → ℝ` indexed by `ι`.
+-/
+def IsZLattice.basis : Basis ι ℤ L :=
+  (Free.chooseBasis ℤ L).reindex (Fintype.equivOfCardEq
+    (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
+
+end Basis
+
 section comap
 
 variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [NormedSpace K E]
@@ -706,6 +720,10 @@ instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K
     rw [ZLattice.coe_comap, LinearEquiv.coe_coe, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,
       ← Submodule.map_span, IsZLattice.span_top, Submodule.map_top, LinearEquivClass.range]
 
+@[simp]
+theorem ZLattice.comap_toAddSubgroup (e : F →ₗ[K] E) :
+    (ZLattice.comap K L e).toAddSubgroup = L.toAddSubgroup.comap e.toAddMonoidHom := rfl
+
 theorem ZLattice.comap_comp {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
     (e : F →ₗ[K] E) (e' : G →ₗ[K] F) :
     (ZLattice.comap K (ZLattice.comap K L e) e') = ZLattice.comap K L (e ∘ₗ e') :=
@@ -718,9 +736,9 @@ def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
   LinearEquiv.ofBijective
     ((e.symm.toLinearMap.restrictScalars ℤ).restrict
       (fun _ h ↦ by simpa [← SetLike.mem_coe] using h))
-    ⟨fun _ _ h ↦ Subtype.ext_iff_val.mpr (e.symm.injective (congr_arg Subtype.val h)),
+    ⟨fun _ _ h ↦ Subtype.ext_iff.mpr (e.symm.injective (congr_arg Subtype.val h)),
     fun ⟨x, hx⟩ ↦ ⟨⟨e x, by rwa [← SetLike.mem_coe, ZLattice.coe_comap] at hx⟩,
-      by simp [Subtype.ext_iff_val]⟩⟩
+      by simp [Subtype.ext_iff]⟩⟩
 
 @[simp]
 theorem ZLattice.comap_equiv_apply (e : F ≃ₗ[K] E) (x : L) :

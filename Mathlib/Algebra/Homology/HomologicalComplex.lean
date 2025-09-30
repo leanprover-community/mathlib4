@@ -55,8 +55,8 @@ The composite of any two differentials `d i j ≫ d j k` must be zero.
 structure HomologicalComplex (c : ComplexShape ι) where
   X : ι → V
   d : ∀ i j, X i ⟶ X j
-  shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by aesop_cat
-  d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by aesop_cat
+  shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by cat_disch
+  d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by cat_disch
 
 namespace HomologicalComplex
 
@@ -214,7 +214,7 @@ commuting with the differentials.
 @[ext]
 structure Hom (A B : HomologicalComplex V c) where
   f : ∀ i, A.X i ⟶ B.X i
-  comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by aesop_cat
+  comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by cat_disch
 
 @[reassoc (attr := simp)]
 theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
@@ -269,7 +269,7 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
 
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
-    Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
+    Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun _ => 0}⟩
@@ -359,19 +359,19 @@ lemma XIsoOfEq_hom_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n
 lemma XIsoOfEq_inv_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
     φ.f n' ≫ (L.XIsoOfEq h).inv = (K.XIsoOfEq h).inv ≫ φ.f n := by subst h; simp
 
--- Porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i j'` are both allowed, then we must have `j = j'`,
 and so the differentials only differ by an `eqToHom`.
 -/
+@[simp]
 theorem d_comp_eqToHom {i j j' : ι} (rij : c.Rel i j) (rij' : c.Rel i j') :
     C.d i j' ≫ eqToHom (congr_arg C.X (c.next_eq rij' rij)) = C.d i j := by
   obtain rfl := c.next_eq rij rij'
   simp only [eqToHom_refl, comp_id]
 
--- Porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i' j` are both allowed, then we must have `i = i'`,
 and so the differentials only differ by an `eqToHom`.
 -/
+@[simp]
 theorem eqToHom_comp_d {i i' j : ι} (rij : c.Rel i j) (rij' : c.Rel i' j) :
     eqToHom (congr_arg C.X (c.prev_eq rij rij')) ≫ C.d i' j = C.d i j := by
   obtain rfl := c.prev_eq rij rij'
@@ -496,7 +496,7 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 which commute with the differentials. -/
 @[simps]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
-    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by aesop_cat) :
+    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where
   hom :=
     { f := fun i => (f i).hom

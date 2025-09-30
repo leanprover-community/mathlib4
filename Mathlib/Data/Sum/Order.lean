@@ -333,6 +333,36 @@ theorem not_inr_le_inl [LE α] [LE β] {a : α} {b : β} : ¬toLex (inr b) ≤ t
 theorem not_inr_lt_inl [LT α] [LT β] {a : α} {b : β} : ¬toLex (inr b) < toLex (inl a) :=
   lex_inr_inl
 
+/-- `toLex` promoted to a `RelIso` between `<` relations. -/
+def toLexRelIsoLT [LT α] [LT β] :
+    Sum.Lex (· < · : α → α → Prop) (· < · : β → β → Prop) ≃r (· < · : α ⊕ₗ β → _ → _) where
+  toFun := toLex
+  invFun := ofLex
+  map_rel_iff' := .rfl
+
+@[simp]
+theorem toLexRelIsoLT_coe [LT α] [LT β] : ⇑(toLexRelIsoLT (α := α) (β := β)) = toLex :=
+  rfl
+
+@[simp]
+theorem toLexRelIsoLT_symm_coe [LT α] [LT β] : ⇑(toLexRelIsoLT (α := α) (β := β)).symm = ofLex :=
+  rfl
+
+/-- `toLex` promoted to a `RelIso` between `≤` relations. -/
+def toLexRelIsoLE [LE α] [LE β] :
+    Sum.Lex (· ≤ · : α → α → Prop) (· ≤ · : β → β → Prop) ≃r (· ≤ · : α ⊕ₗ β → _ → _) where
+  toFun := toLex
+  invFun := ofLex
+  map_rel_iff' := .rfl
+
+@[simp]
+theorem toLexRelIsoLE_coe [LE α] [LE β] : ⇑(toLexRelIsoLE (α := α) (β := β)) = toLex :=
+  rfl
+
+@[simp]
+theorem toLexRelIsoLE_symm_coe [LE α] [LE β] : ⇑(toLexRelIsoLE (α := α) (β := β)).symm = ofLex :=
+  rfl
+
 section Preorder
 
 variable [Preorder α] [Preorder β]
@@ -649,7 +679,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
   { Equiv.sumComm α β with
     map_rel_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
-      · simp
+      · simp only [ge_iff_le]
         change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)

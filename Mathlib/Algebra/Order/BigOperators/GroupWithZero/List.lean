@@ -45,12 +45,8 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
     · apply h
       simp
     · grind
-    · apply prod_nonneg
-      simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-      intro a ha
-      apply h0
-      simp [ha]
-    · apply (h0 _ _).trans (h _ _) <;> simp
+    · grind [prod_nonneg]
+    · apply (h0 _ _).trans (h _ _) <;> simp only [mem_cons, true_or]
 
 theorem prod_map_le_pow_length₀ {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : List L}
     (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
@@ -90,10 +86,7 @@ theorem prod_map_lt_prod_map {ι : Type*} {s : List ι} (hs : s ≠ [])
         apply h
         simp [hi]
     · apply prod_pos
-      simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-      intro a ha
-      apply h0
-      simp [ha]
+      grind
     · apply le_of_lt ((h0 _ _).trans (h _ _)) <;> simp
 
 end List

@@ -95,7 +95,7 @@ theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   · rw [if_neg h]
     simp
 
-theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) :
+theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : p ^ pow ∣ n) :
     pow ≤ p.maxPowDiv n := by
   have ⟨c, hc⟩ := h
   have : 0 < c := by

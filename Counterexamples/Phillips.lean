@@ -282,7 +282,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have ε_pos : 0 < ε := ht
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
-    rw [div_le_iff₀' (show (0 : ℝ) < 2 by norm_num), hε]
+    rw [div_le_iff₀' (show (0 : ℝ) < 2 by simp), hε]
     convert hF (s n) u using 2
     · dsimp
       ext x
@@ -451,7 +451,7 @@ end
 
 We construct a subset of `ℝ²`, given as a family of sets, which is large along verticals (i.e.,
 it only misses a countable set along each vertical) but small along horizontals (it is countable
-along horizontals). Such a set can not be measurable as it would contradict Fubini theorem.
+along horizontals). Such a set cannot be measurable as it would contradict Fubini theorem.
 We need the continuum hypothesis to construct it.
 -/
 

@@ -117,7 +117,7 @@ instance (F : C ⥤ D ⥤ E) [F.PreservesZeroMorphisms] (Y : D) :
 
 omit [HasZeroMorphisms C] in
 @[simp] lemma whiskerRight_zero {F G : C ⥤ D} (H : D ⥤ E) [H.PreservesZeroMorphisms] :
-    whiskerRight (0 : F ⟶ G) H = 0 := by aesop_cat
+    whiskerRight (0 : F ⟶ G) H = 0 := by cat_disch
 
 end ZeroMorphisms
 

@@ -221,11 +221,11 @@ variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
 
 lemma StrictAnti.mem_upperBounds_image (hf : StrictAnti f) :
     f a ∈ upperBounds (f '' s) ↔ a ∈ lowerBounds s := by
-  simp [upperBounds, lowerBounds, hf.le_iff_le]
+  simp [upperBounds, lowerBounds, hf.le_iff_ge]
 
 lemma StrictAnti.mem_lowerBounds_image (hf : StrictAnti f) :
     f a ∈ lowerBounds (f '' s) ↔ a ∈ upperBounds s := by
-  simp [upperBounds, lowerBounds, hf.le_iff_le]
+  simp [upperBounds, lowerBounds, hf.le_iff_ge]
 
 lemma StrictAnti.map_isLeast (hf : StrictAnti f) : IsLeast (f '' s) (f a) ↔ IsGreatest s a := by
   simp [IsLeast, IsGreatest, hf.injective.eq_iff, hf.mem_lowerBounds_image]
