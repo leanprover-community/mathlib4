@@ -3,7 +3,6 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.Extension
 
 /-!
@@ -99,7 +98,8 @@ lemma bracket_sub_bracket_mem_kernel {s : M →ₗ[R] S.L} (hs : S.proj.toLinear
 
 section ofTwoCocycle
 
-variable [LieRing V] [LieAlgebra R V] (h : IsLieAbelian V) (c : twoCocycle R L V)
+variable [LieRing V] [LieAlgebra R V] [LieRingModule L V] [LieModule R L V]
+[LieModule.IsTrivial L V] (h : IsLieAbelian V) (c : twoCocycle R L V)
 
 /-- The Lie algebra map inclusion of a central extension derived from a 2-cocycle. -/
 @[simps]
@@ -180,8 +180,8 @@ def Equiv.ofCoboundary (c' : twoCocycle R L V) (x : oneCochain R L V)
   proj_comm := by ext; simp
 
 /-- Construct a cocycle from a module-split central extension. -/
-@[simps]
-def twoCocycleOfSplitting (E : Extension R N M) (hE : E.IsCentral) {s : M →ₗ[R] E.L}
+def twoCocycleOfSplitting [LieRingModule M N] [LieModule R M N] [LieModule.IsTrivial M N]
+    (E : Extension R N M) (hE : E.IsCentral) {s : M →ₗ[R] E.L}
     (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) (p : E.L →ₗ[R] N) :
     twoCocycle R M N where
   val := {
@@ -195,23 +195,33 @@ def twoCocycleOfSplitting (E : Extension R N M) (hE : E.IsCentral) {s : M →ₗ
     property _ := by simp }
   property := by
     ext x y z
-    simp only [d₂₃_apply_apply, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.zero_apply,
-      Pi.ofNat_apply]
+    simp only [d₂₃_apply_apply, LinearMap.zero_apply, Pi.zero_apply]
     have := lie_jacobi (s x) (s y) (s z)
     rw [E.bracket_eq_of_sub_mem_kernel hE (s x) ⁅s y, s z⁆ (s ⁅y, z⁆),
       E.bracket_eq_of_sub_mem_kernel hE (s y) ⁅s z, s x⁆ (s ⁅z, x⁆),
-      E.bracket_eq_of_sub_mem_kernel hE (s z) ⁅s x, s y⁆ (s ⁅x, y⁆)] at this
-    · simp [← map_add, this]
+      E.bracket_eq_of_sub_mem_kernel hE (s z) ⁅s x, s y⁆ (s ⁅x, y⁆), ← lie_skew (s z),
+      ← sub_eq_add_neg, sub_eq_zero] at this
+    · simp only [trivial_lie_zero, sub_self, add_zero, zero_sub]
+      change -p ⁅s ⁅x, y⁆, s z⁆ + p ⁅s ⁅x, z⁆, s y⁆ - p ⁅s ⁅y, z⁆, s x⁆ = 0
+      rw [← this, ← lie_skew (s x), ← lie_skew (s y), ← lie_skew x, map_add]
+      simp only [neg_add, map_neg, neg_neg, neg_lie]
+      simp
     · exact E.bracket_sub_bracket_mem_kernel hs x y
     · exact E.bracket_sub_bracket_mem_kernel hs z x
     · exact E.bracket_sub_bracket_mem_kernel hs y z
+
+lemma twoCocycleOfSplitting_coe_apply_apply [LieRingModule M N] [LieModule R M N]
+    [LieModule.IsTrivial M N] (E : Extension R N M) (hE : E.IsCentral) {s : M →ₗ[R] E.L}
+    (hs : ↑E.proj ∘ₗ s = LinearMap.id) (p : E.L →ₗ[R] N) (a b : M) :
+    (E.twoCocycleOfSplitting hE hs p).val a b = p ⁅s a, s b⁆ := rfl
 
 @[simp]
 lemma twoCocycleOfSplitting_ofTwoCocycle :
     (ofTwoCocycle h c).twoCocycleOfSplitting (isCentral_ofTwoCocycle h c)
       (ofTwoCocycle_section_comp_proj h c) (sectionTwoCocycleLeft h c) = c := by
   ext x y
-  simp [sectionTwoCocycleLeft, bracket_ofTwoCocycleAlg]
+  simp only [sectionTwoCocycleLeft, ofTwoCocycle_L, twoCochain_val_apply]
+  exact rfl
 
 lemma proj_comp_equiv_comp_section (E E' : Extension R N M) (e : Equiv E E') {s : M →ₗ[R] E.L}
     (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) :

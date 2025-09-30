@@ -103,9 +103,9 @@ class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop
 @[to_additive]
 instance [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] :
     IsCancelSMul G P where
-  left_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
+  left_cancel' a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
     (IsOrderedCancelSMul.le_of_smul_le_smul_left a c b h.ge)
-  right_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
+  right_cancel' a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
     (IsOrderedCancelSMul.le_of_smul_le_smul_right b a c h.ge)
 
 @[to_additive]

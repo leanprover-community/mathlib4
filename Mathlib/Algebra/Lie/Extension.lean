@@ -3,8 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.CochainTrivial
-import Mathlib.Algebra.Lie.Ideal
+import Mathlib.Algebra.Lie.Cochain
 import Mathlib.Algebra.Module.TransferInstance
 
 /-!
@@ -154,11 +153,13 @@ end Equiv
 /-- A one-field structure giving a type synonym for a direct product. We use this to describe an
 alternative Lie algebra structure on the product, where the bracket is shifted by a 2-cocycle. -/
 structure ofTwoCocycleAlg {R L V} [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup V]
-    [Module R V] (c : twoCocycle R L V) where
+    [Module R V] [LieRingModule L V] [LieModule R L V] [LieModule.IsTrivial L V]
+    (c : twoCocycle R L V) where
   /-- The underlying type. -/
   carrier : L × V
 
-variable [AddCommGroup V] [Module R V] (c : twoCocycle R L V)
+variable [AddCommGroup V] [Module R V] [LieRingModule L V] [LieModule R L V]
+[LieModule.IsTrivial L V] (c : twoCocycle R L V)
 
 /-- An equivalence between the direct product and the corresponding one-field structure. This is
 used to transfer the additive and scalar-multiple structure on the direct product to the type
@@ -205,7 +206,7 @@ instance : LieRing (ofTwoCocycleAlg c) where
     refine Equiv.congr_arg ?_
     simp only [Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk, lie_lie, Prod.mk_add_mk, sub_add_cancel,
       Prod.mk.injEq, true_and]
-    rw [(mem_twoCocycle_iff_Jacobi_like R L V c.1).mp c.2]
+    exact (mem_twoCocycle_iff_of_trivial R L V c).mp c.2 x.1.1 y.1.1 z.1.1
 
 lemma bracket_ofTwoCocycleAlg {c : twoCocycle R L V} (x y : ofTwoCocycleAlg c) :
     ⁅x, y⁆ = ofProd c (⁅((ofProd c).symm x).1, ((ofProd c).symm y).1⁆,
@@ -234,17 +235,18 @@ lemma surjective_of_cocycle : Function.Surjective (twoCocycleProj c) :=
 def LieEquiv.ofCoboundary (c' : twoCocycle R L V) (x : oneCochain R L V)
     (h : c' = c + d₁₂ R L V x) :
     LieEquiv R (ofTwoCocycleAlg c) (ofTwoCocycleAlg c') where
-  toFun y := ofProd c' (((ofProd c).symm y).1, ((ofProd c).symm y).2 + x ((ofProd c).symm y).1)
+  toFun y := ofProd c' (((ofProd c).symm y).1, ((ofProd c).symm y).2 - x ((ofProd c).symm y).1)
   map_add' _ _ := by
     simp only [← of_add]
     exact Equiv.congr_arg (by simp; abel)
   map_smul' _ _ := by
     simp only [← of_smul]
-    simp
+    simp [smul_sub]
   map_lie' {a b} := by
     refine (Equiv.apply_eq_iff_eq_symm_apply (ofProd c')).mpr ?_
-    simp [bracket_ofTwoCocycleAlg, h]
-  invFun z := ofProd c (((ofProd c').symm z).1, ((ofProd c').symm z).2 - x ((ofProd c').symm z).1)
+    simp [bracket_ofTwoCocycleAlg, h, d₁₂_apply_apply]
+    abel
+  invFun z := ofProd c (((ofProd c').symm z).1, ((ofProd c').symm z).2 + x ((ofProd c').symm z).1)
   left_inv y := by simp
   right_inv z := by simp
 

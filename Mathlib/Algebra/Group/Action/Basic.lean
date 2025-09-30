@@ -202,38 +202,3 @@ lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
 
 end MulDistribMulAction
-
-section IsCancelSMul
-
-/-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
-class IsLeftCancelVAdd (G P : Type*) [VAdd G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
-
-/-- A scalar multiplication is left-cancellative if it is pointwise injective on the left. -/
-@[to_additive]
-class IsLeftCancelSMul (G P : Type*) [SMul G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a • b = a • c → b = c
-
-@[to_additive]
-instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
-  left_cancel := IsLeftCancelMul.mul_left_cancel
-
-/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
-class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
-  protected right_cancel : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
-
-/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
-@[to_additive]
-class IsCancelSMul (G P : Type*) [SMul G P] : Prop extends IsLeftCancelSMul G P where
-  protected right_cancel : ∀ (a b : G) (c : P), a • c = b • c → a = b
-
-@[to_additive]
-instance [CancelMonoid G] : IsCancelSMul G G where
-  left_cancel := IsLeftCancelMul.mul_left_cancel
-  right_cancel _ _ _ := mul_right_cancel
-
-@[to_additive]
-instance (G P : Type*) [Group G] [MulAction G P] : IsLeftCancelSMul G P where
-  left_cancel a _ _ := (smul_left_cancel_iff a).mp
-
-end IsCancelSMul
