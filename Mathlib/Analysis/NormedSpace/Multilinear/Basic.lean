@@ -825,7 +825,6 @@ protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fu
 
 end ContinuousMultilinearMap
 
-
 open ContinuousMultilinearMap
 
 namespace MultilinearMap
