@@ -78,9 +78,13 @@ variable {G} in
 def cohomologous {A : NonAbelianRep G} (f g : Z1 G A) : Prop :=
   ∃ a : A, ∀ h : G, g h = - a + f h + (h • a)
 
-def setoid (G : Type u) [Monoid G] (A : NonAbelianRep G) : Setoid (Z1 G A) :=
+instance setoid (A : NonAbelianRep G) : Setoid (Z1 G A) :=
   { r := cohomologous,
-    iseqv := sorry }
+    iseqv := {
+      refl := fun f => ⟨0, fun h => by simp⟩,
+      symm := sorry,
+      trans := sorry
+    } }
 
 end Z1
 
@@ -90,6 +94,16 @@ def H1 (A : NonAbelianRep G) : Pointed where
 
 instance : Zero (H1 G A) := ⟨⟦0⟧⟩
 instance : Inhabited (H1 G A) := ⟨0⟩
+
+def H1.map {G : Type u} [Monoid G] {A B : NonAbelianRep G} (f : A →+[G] B) : H1 G A ⟶ H1 G B where
+  toFun := Quotient.map (fun z : Z1 G A => ⟨f ∘ z, fun g h => by simp [z.prop, map_smul]⟩)
+    (fun z1 z2 ⟨a, ha⟩ => ⟨f a, fun h => by simp [ha, map_smul]⟩)
+  map_point := sorry
+
+open CategoryTheory
+
+def H1.map_one {G : Type u} [Monoid G] {A : NonAbelianRep G} :
+    H1.map 1 = 𝟙 (H1 G A) := sorry
 
 end H1
 
