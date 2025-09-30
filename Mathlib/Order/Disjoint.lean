@@ -16,7 +16,7 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 * `Disjoint x y`: two elements of a lattice are disjoint if their `inf` is the bottom element.
 * `Codisjoint x y`: two elements of a lattice are codisjoint if their `join` is the top element.
 * `IsCompl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
-  non distributive lattice, an element can have several complements.
+  non-distributive lattice, an element can have several complements.
 * `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
 
 -/
