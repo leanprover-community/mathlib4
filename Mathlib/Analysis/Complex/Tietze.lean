@@ -9,13 +9,13 @@ import Mathlib.Topology.TietzeExtension
 import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
 import Mathlib.Analysis.Normed.Module.RCLike.Basic
 /-!
-# Finite dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
+# Finite-dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
 
 There are two main results here:
 
-- `RCLike.instTietzeExtensionTVS`: finite dimensional topological vector spaces over `ℝ` (or `ℂ`)
+- `RCLike.instTietzeExtensionTVS`: finite-dimensional topological vector spaces over `ℝ` (or `ℂ`)
   have the Tietze extension property.
-- `BoundedContinuousFunction.exists_norm_eq_restrict_eq`: when mapping into a finite dimensional
+- `BoundedContinuousFunction.exists_norm_eq_restrict_eq`: when mapping into a finite-dimensional
   normed vector space over `ℝ` (or `ℂ`), the extension can be chosen to preserve the norm of the
   bounded continuous function it extends.
 
