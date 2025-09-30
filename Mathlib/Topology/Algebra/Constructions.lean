@@ -173,7 +173,7 @@ lemma isOpenMap_map {f : M →* N} (hf_inj : Function.Injective f) (hf : IsOpenM
   simp only [embedProduct, OneHom.coe_mk, Set.mem_preimage, Set.mem_image, Prod.mk.injEq,
     Prod.map, Prod.exists, MulOpposite.exists, MonoidHom.coe_mk]
   refine ⟨fun ⟨a, b, h, ha, hb⟩ ↦ ⟨⟨a, b, hf_inj ?_, hf_inj ?_⟩, ?_⟩,
-          fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩ <;>
-    simp_all
+    fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩
+  all_goals simp_all
 
 end Units
