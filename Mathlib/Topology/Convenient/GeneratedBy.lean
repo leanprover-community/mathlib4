@@ -207,16 +207,52 @@ instance : IsGeneratedBy X (PUnit.{v + 1}) := by
   rw [iff_le_generatedBy]
   exact Eq.le (by subsingleton)
 
+
+omit [TopologicalSpace Z]
+/-- Any topology coinduced by an `X`-generated topology is `X`-generated. -/
+lemma coinduced [IsGeneratedBy X Y] (f : Y → Z) :
+    @IsGeneratedBy _ X _ Z (tY.coinduced f) := by
+  let _ := tY.coinduced f
+  refine iff_le_generatedBy.2 ?_
+  exact ((equiv_symm_comp_continuous_iff (X := X) f).2 continuous_coinduced_rng).coinduced_le
+
+/-- Suprema of `X`-generated topologies are `X`-generated. -/
+protected lemma iSup {Y : Type*} {κ : Sort*} {t : κ → TopologicalSpace Y}
+    (h : ∀ k, @IsGeneratedBy _ X _ Y (t k)) : @IsGeneratedBy _ X _ Y (⨆ k, t k) :=
+  iff_le_generatedBy.2 <| iSup_le_iff.2 fun k ↦
+    (h k).le_generatedBy.trans <| generatedBy_mono <| le_iSup t k
+
+/-- Suprema of `X`-generated topologies are `X`-generated. -/
+protected lemma sup {Y : Type*} {t₁ t₂ : TopologicalSpace Y}
+    (h₁ : @IsGeneratedBy _ X _ Y t₁) (h₂ : @IsGeneratedBy _ X _ Y t₂) :
+    @IsGeneratedBy _ X _ Y (t₁ ⊔ t₂) := by
+  rw [sup_eq_iSup]
+  exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
+
 end IsGeneratedBy
 
 lemma IsQuotientMap.isGeneratedBy {f : Y → Z} (hf : IsQuotientMap f) [IsGeneratedBy X Y] :
-    IsGeneratedBy X Z where
-  continuous_equiv_symm := by
-    rw [continuous_def]
-    intro U hU
-    rw [WithGeneratedByTopology.isOpen_iff] at hU
-    rw [← hf.isOpen_preimage, IsGeneratedBy.isOpen_iff X]
-    intro i g
-    exact hU ⟨f ∘ g, hf.continuous.comp g.continuous⟩
+    IsGeneratedBy X Z :=
+  hf.2 ▸ IsGeneratedBy.coinduced f
 
 end Topology
+
+/-- Quotients of `X`-generated spaces are `X`-generated. -/
+instance Quot.isGeneratedBy [IsGeneratedBy X Y] {r : Y → Y → Prop} :
+    IsGeneratedBy X (Quot r) :=
+  isQuotientMap_quot_mk.isGeneratedBy
+
+/-- Quotients of `X`-generated spaces are `X`-generated. -/
+instance Quotient.isGeneratedBy [IsGeneratedBy X Y] {s : Setoid Y} :
+    IsGeneratedBy X (Quotient s) :=
+  isQuotientMap_quotient_mk'.isGeneratedBy
+
+/-- Disjoint unions of `X`-generated spaces are `X`-generated. -/
+instance Sum.isGeneratedBy [IsGeneratedBy X Y] [IsGeneratedBy X Z] :
+    IsGeneratedBy X (Y ⊕ Z) :=
+  IsGeneratedBy.sup (.coinduced Sum.inl) (.coinduced Sum.inr)
+
+/-- Disjoint unions of `X`-generated spaces are `X`-generated. -/
+instance Sigma.isGeneratedBy {κ : Type*} {Y : κ → Type*} [∀ k, TopologicalSpace (Y k)]
+    [∀ k, IsGeneratedBy X (Y k)] : IsGeneratedBy X (Σ k, Y k) :=
+  .iSup fun _ ↦ .coinduced _
