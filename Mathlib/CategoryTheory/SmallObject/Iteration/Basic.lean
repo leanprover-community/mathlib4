@@ -48,7 +48,7 @@ file `SmallObject.TransfiniteIteration`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
 (and it is not in certain applications). Then, two isomorphic
-objects `X` and `Y` may have non isomorphic successors. This is
+objects `X` and `Y` may have non-isomorphic successors. This is
 the reason why we make an extensive use of equalities in
 `C` and in `Arrow C` in the definitions.
 
