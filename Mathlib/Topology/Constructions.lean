@@ -403,11 +403,11 @@ theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
   (h.comp continuous_subtype_val).subtype_mk _
 
 theorem IsOpenMap.subtype_map {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y} (hs : IsOpen s)
-    (hst : ∀ x, s x → t (f x)) : IsOpenMap (Subtype.map f hst) :=
+    (hst : ∀ x, x ∈ s → f x ∈ t) : IsOpenMap (Subtype.map f hst) :=
   (hf.comp hs.isOpenMap_subtype_val).subtype_mk _
 
 theorem IsClosedMap.subtype_map {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
-    (hs : IsClosed s) (hst : ∀ x, s x → t (f x)) : IsClosedMap (Subtype.map f hst) :=
+    (hs : IsClosed s) (hst : ∀ x, x ∈ s → f x ∈ t) : IsClosedMap (Subtype.map f hst) :=
   (hf.comp hs.isClosedMap_subtype_val).subtype_mk _
 
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
