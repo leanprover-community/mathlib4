@@ -44,7 +44,7 @@ theorem GoodProducts.linearIndependentEmpty {I} [LinearOrder I] :
     LinearIndependent ℤ (eval (∅ : Set (I → Bool))) := linearIndependent_empty_type
 
 /-- The empty list as a `Products` -/
-def Products.nil : Products I := ⟨[], by simp only [List.chain'_nil]⟩
+def Products.nil : Products I := ⟨[], by simp only [List.isChain_nil]⟩
 
 theorem Products.lt_nil_empty {I} [LinearOrder I] : { m : Products I | m < Products.nil } = ∅ := by
   ext ⟨m, hm⟩
@@ -83,7 +83,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     apply hll
     have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩} := by
       simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_setOf_eq]
-    apply Submodule.span_mono (Set.image_subset _ he)
+    grw [← he]
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 

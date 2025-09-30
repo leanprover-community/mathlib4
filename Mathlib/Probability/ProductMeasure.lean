@@ -35,7 +35,7 @@ theorem to construct the measure over a product indexed by `ℕ`, which is `infi
 is an implementation detail and should not be used directly. Then we construct the product measure
 over an arbitrary type by extending `piContent μ` thanks to Carathéodory's theorem. The key lemma
 to do so is `piContent_tendsto_zero`, which states that `piContent μ (A n)` tends to zero if
-`A` is a non increasing sequence of sets satisfying `⋂ n, A n = ∅`.
+`A` is a nonincreasing sequence of sets satisfying `⋂ n, A n = ∅`.
 We prove this lemma by reducing to the case of an at most countable product,
 in which case `piContent μ` is known to be a true measure (see `piContent_eq_measure_pi` and
 `piContent_eq_infinitePiNat`).
@@ -153,9 +153,9 @@ lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ
     (μ (n + 1)).map (piSingleton n) = Measure.pi (fun i : Ioc n (n + 1) ↦ μ i) := by
   refine (Measure.pi_eq fun s hs ↦ ?_).symm
   have : Subsingleton (Ioc n (n + 1)) := by rw [Nat.Ioc_succ_singleton]; infer_instance
-  rw [Fintype.prod_subsingleton _ ⟨n + 1, mem_Ioc.2 (by omega)⟩,
+  rw [Fintype.prod_subsingleton _ ⟨n + 1, mem_Ioc.2 (by cutsat)⟩,
     Measure.map_apply (by fun_prop) (.univ_pi hs)]
-  congr with x
+  congr 1 with x
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, forall_const, Subtype.forall,
     Nat.Ioc_succ_singleton, mem_singleton]
   exact ⟨fun h ↦ h (n + 1) rfl, fun h a b ↦ b.symm ▸ h⟩
@@ -176,12 +176,12 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
       all_goals fun_prop
     · have : (restrict₂ (Ioc_subset_Iic_self (a := a))) ∘ (IicProdIoc (X := X) n (n + 1)) =
           (IocProdIoc a n (n + 1)) ∘ (Prod.map (restrict₂ Ioc_subset_Iic_self) id) := rfl
-      rw [const_apply, partialTraj_succ_of_le (by omega), map_const, prod_const_comp, id_comp,
+      rw [const_apply, partialTraj_succ_of_le (by cutsat), map_const, prod_const_comp, id_comp,
         ← map_comp_right, this, map_comp_right, ← map_prod_map, hind, Kernel.map_id, map_apply,
         prod_apply, const_apply, const_apply, Measure.map_piSingleton,
         Measure.pi_prod_map_IocProdIoc]
       any_goals fun_prop
-      all_goals omega
+      all_goals cutsat
   · have : IsEmpty (Ioc a b) := by simpa [hba] using Subtype.isEmpty_false
     ext x s ms
     by_cases hs : s.Nonempty
@@ -396,6 +396,32 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · rw [univ_eq_attach, prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
+
+lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
+    MeasurePreserving (Function.eval i) (infinitePi μ) (μ i) where
+  measurable := by fun_prop
+  map_eq := by
+    ext s hs
+    have : @Function.eval ι X i =
+        (@Function.eval ({i} : Finset ι) (fun j ↦ X j) ⟨i, by simp⟩) ∘
+        (Finset.restrict {i}) := by ext; simp
+    rw [this, ← map_map, infinitePi_map_restrict, (measurePreserving_eval _ _).map_eq]
+    all_goals fun_prop
+
+lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
+    (hf : ∀ i, Measurable (f i)) :
+    haveI (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
+      isProbabilityMeasure_map (hf i).aemeasurable
+    (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
+  have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
+    isProbabilityMeasure_map (hf i).aemeasurable
+  refine eq_infinitePi _ fun s t ht ↦ ?_
+  rw [map_apply (by fun_prop) (.pi s.countable_toSet ht)]
+  have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =
+      (s : Set ι).pi (fun i ↦ (f i) ⁻¹' (t i)) := by ext x; simp
+  rw [this, infinitePi_pi _ (fun i hi ↦ hf i (ht i hi))]
+  refine Finset.prod_congr rfl fun i hi ↦ ?_
+  rw [map_apply (by fun_prop) (ht i hi)]
 
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product. -/

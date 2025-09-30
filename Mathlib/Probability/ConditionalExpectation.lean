@@ -75,6 +75,4 @@ theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
       (setIntegral_congr_ae (hle₂ _ hms) _ : ∫ x in s, u x ∂μ = ∫ x in s, v x ∂μ)]
     filter_upwards [huv] with x hx _ using hx
 
-@[deprecated (since := "2025-01-21")] alias condexp_indep_eq := condExp_indep_eq
-
 end MeasureTheory

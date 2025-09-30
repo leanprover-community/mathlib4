@@ -1,13 +1,12 @@
 /-
 Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Geometry.Manifold.Algebra.Monoid
 import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-
 
 /-!
 # Differentiability of functions in vector bundles
@@ -210,8 +209,6 @@ end coordChange
 variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
   [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 
--- FIXME: should this (and ContMDiffWithinAt.change_section_trivialization)
--- be named `coordChange` instead?
 lemma MDifferentiableWithinAt.change_section_trivialization
     {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
     {e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e']
@@ -280,7 +277,7 @@ theorem Trivialization.mdifferentiableAt_totalSpace_iff
   rw [Trivialization.mdifferentiableAt_snd_comp_iff₂ IB
     (FiberBundle.mem_trivializationAt_proj_source) he hf]
 
-/-- Characterization of differentiable sections a vector bundle in terms
+/-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within at set. -/
 theorem Trivialization.mdifferentiableWithinAt_section_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
@@ -306,31 +303,25 @@ theorem Trivialization.mdifferentiableAt_section_iff
 variable {IB} in
 /-- Differentiability of a section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
-theorem mdifferentiableOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+theorem Trivialization.mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
     MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
       MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) a := by
-  -- golfing useful?
-  constructor
-  · intro h x hx
-    have : MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x :=
-      (h x hx).mdifferentiableAt <| ha.mem_nhds hx
-    exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mp this).mdifferentiableWithinAt
-  · intro h x hx
-    have : MDifferentiableAt IB 𝓘(𝕜, F) (fun x ↦ (e { proj := x, snd := s x }).2) x :=
-      (h x hx).mdifferentiableAt <| ha.mem_nhds hx
-    exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mpr this).mdifferentiableWithinAt
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩ <;>
+  have := (h x hx).mdifferentiableAt <| ha.mem_nhds hx
+  · exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mp this).mdifferentiableWithinAt
+  · exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mpr this).mdifferentiableWithinAt
 
 variable {IB} in
 /-- For any trivialization `e`, the differentiability of a section on `e.baseSet`
 can be determined using `e`. -/
-theorem mdifferentiableOn_section_of_mem_baseSet₀ {s : ∀ x, E x}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+theorem Trivialization.mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] :
     MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
       MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
-  mdifferentiableOn_section_of_mem_baseSet e.open_baseSet (subset_refl _)
+  e.mdifferentiableOn_section_iff e.open_baseSet subset_rfl
 
 end
 
@@ -338,23 +329,20 @@ section operations
 
 variable {𝕜 B B' F M : Type*} {E : B → Type*}
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
-  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
-  (I : ModelWithCorners 𝕜 EB HB) -- (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
-  -- [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
-  -- {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  -- {n : ℕ∞}
-
-variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
-
-variable [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
-
-variable {I V}
+variable
+  -- Let `E` be a fiber bundle with base `B` and fiber `F` (a vector space over `𝕜`)
+  [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
+  [NormedAddCommGroup F] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [FiberBundle F E]
+  -- Moreover let `E` be a vector bundle
+  [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
+  -- Let the base `B` be charted over a fixed model space `HB`
+  {HB : Type*} [TopologicalSpace HB] [ChartedSpace HB B]
+  -- Moreover let `HB` be modelled on a normed space `EB` so that `B` (and hence `E`) have
+  -- differentiable structures
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {I : ModelWithCorners 𝕜 EB HB}
 
 variable {f : B → 𝕜} {a : 𝕜} {s t : Π x : B, E x} {u : Set B} {x₀ : B}
 
-omit [ContMDiffVectorBundle 1 F E I] in
 lemma mdifferentiableWithinAt_add_section
     (hs : MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) u x₀)
     (ht : MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t x)) u x₀) :
@@ -365,11 +353,9 @@ lemma mdifferentiableWithinAt_add_section
   · apply eventually_of_mem (U := e.baseSet)
     · exact mem_nhdsWithin_of_mem_nhds <|
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
-    · intro x hx
-      apply (e.linear 𝕜 hx).1
-  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1
+    · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
+  · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
 
-omit [ContMDiffVectorBundle 1 F E I] in
 lemma mdifferentiableAt_add_section
     (hs : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x₀)
     (ht : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t x)) x₀) :
@@ -398,9 +384,8 @@ lemma mdifferentiableWithinAt_neg_section
   · apply eventually_of_mem (U := e.baseSet)
     · exact mem_nhdsWithin_of_mem_nhds <|
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
-    · intro x hx
-      apply (e.linear 𝕜 hx).map_neg
-  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg
+    · exact fun x hx ↦ (e.linear 𝕜 hx).map_neg ..
+  · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg ..
 
 lemma mdifferentiableAt_neg_section
     (hs : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
@@ -454,8 +439,7 @@ lemma MDifferentiableWithinAt.smul_section
   · apply eventually_of_mem (U := e.baseSet)
     · exact mem_nhdsWithin_of_mem_nhds <|
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
-    · intro x hx
-      apply (e.linear 𝕜 hx).2
+    · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
 
 lemma MDifferentiableAt.smul_section (hf : MDifferentiableAt I 𝓘(𝕜) f x₀)
@@ -501,7 +485,7 @@ lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι �
       (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u x₀ := by
   classical
   induction s using Finset.induction_on with
-  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt (n := 1) le_rfl
+  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt le_rfl
   | insert i s hi h =>
     simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section (hs i) h
 
@@ -520,6 +504,113 @@ lemma MDifferentiable.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : 
     (hs : ∀ i, MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x))) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
   fun x₀ ↦ .sum_section fun i ↦ (hs i) x₀
+
+/-- The scalar product `ψ • s` of a differentiable function `ψ : M → 𝕜` and a section `s` of a
+vector bundle `V → M` is differentiable once `s` is differentiable on an open set containing
+`tsupport ψ`.
+
+See `ContMDiffOn.smul_section_of_tsupport` for the analogous result about `C^n` sections. -/
+lemma MDifferentiableOn.smul_section_of_tsupport {s : Π (x : B), E x} {ψ : B → 𝕜}
+    (hψ : MDifferentiableOn I 𝓘(𝕜) ψ u) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u)
+    (hs : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) u) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+  apply mdifferentiable_of_mdifferentiableOn_union_of_isOpen (hψ.smul_section hs) ?_ ?_ ht
+      (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
+  · apply ((mdifferentiable_zeroSection _ _).mdifferentiableOn (s := (tsupport ψ)ᶜ)).congr
+    intro y hy
+    simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
+  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
+
+variable {ι : Type*} {t : ι → (x : B) → E x}
+
+open Function
+
+/-- The sum of a locally finite collection of sections is differentiable if each section is.
+Version at a point within a set. -/
+lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
+    MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u x₀ := by
+  obtain ⟨u', hu', hfin⟩ := ht x₀
+  -- All sections `t i` but a finite set `s` vanish near `x₀`: choose a neighbourhood `u` of `x₀`
+  -- and a finite set `s` of sections which don't vanish.
+  let s := {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ u').Nonempty}
+  have := hfin.fintype
+  have : MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) (u ∩ u') x₀ :=
+     MDifferentiableWithinAt.sum_section fun i ↦ ((ht' i).mono inter_subset_left)
+  apply (mdifferentiableWithinAt_inter hu').mp
+  apply this.congr' (fun y hy ↦ ?_) inter_subset_right (mem_of_mem_nhds hu')
+  rw [TotalSpace.mk_inj, tsum_eq_sum']
+  refine support_subset_iff'.mpr fun i hi ↦ ?_
+  by_contra! h
+  have : i ∈ s.toFinset := by
+    refine Set.mem_toFinset.mpr ?_
+    simp only [s, ne_eq, Set.mem_setOf_eq]
+    use y
+    simp [h, hy]
+  exact hi this
+
+/-- The sum of a locally finite collection of sections is differentiable at `x`
+if each section is. -/
+lemma MDifferentiableAt.sum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) x₀ := by
+  simp_rw [← mdifferentiableWithinAt_univ] at ht' ⊢
+  exact .sum_section_of_locallyFinite ht ht'
+
+/-- The sum of a locally finite collection of sections is differentiable on a set `u`
+if each section is. -/
+lemma MDifferentiableOn.sum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
+    MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u :=
+  fun x hx ↦ .sum_section_of_locallyFinite ht (ht' · x hx)
+
+/-- The sum of a locally finite collection of sections is differentiable if each section is. -/
+lemma MDifferentiable.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x))) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
+  fun x ↦ .sum_section_of_locallyFinite ht fun i ↦ ht' i x
+
+lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
+    MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
+  apply (MDifferentiableWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
+      (fun y hy ↦ ?_) (by grind) trivial
+  rw [← tsum_eq_finsum]
+  choose U hu hfin using ht y
+  have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
+    intro x hx
+    rw [Set.mem_setOf] at hx ⊢
+    use y
+    simpa using ⟨hx, mem_of_mem_nhds hu⟩
+  exact Set.Finite.subset hfin this
+
+lemma MDifferentiableAt.finsum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) x₀ := by
+  simp_rw [← mdifferentiableWithinAt_univ] at ht' ⊢
+  exact .finsum_section_of_locallyFinite ht ht'
+
+lemma MDifferentiableOn.finsum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
+    MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u :=
+  fun x hx ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x hx
+
+lemma MDifferentiable.finsum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x))) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
+  fun x ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x
 
 end operations
 
@@ -554,7 +645,7 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.
 
-Note that the differentiability of `ϕ` can not be always be stated as differentiability of a map
+Note that the differentiability of `ϕ` cannot be always be stated as differentiability of a map
 into a manifold, as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁`
 and `b₂` are globally smooth, but we want to apply this lemma with only local information.
 Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
@@ -592,7 +683,7 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.
 
-Note that the differentiability of `ϕ` can not be always be stated as differentiability of a map
+Note that the differentiability of `ϕ` cannot be always be stated as differentiability of a map
 into a manifold, as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁`
 and `b₂` are globally smooth, but we want to apply this lemma with only local information.
 Therefore, we formulate it using differentiability of `ϕ` read in coordinates.

@@ -23,8 +23,6 @@ by the given command.
   The `#print sorries` command itself shouldn't be generalized, since `sorry` is a special concept,
   representing unfinished proofs, and it has special support for "go to definition", etc.
 * Move to ImportGraph?
-
-copy-pasted from #25179
 -/
 
 open Lean Meta Elab Command

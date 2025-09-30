@@ -138,7 +138,7 @@ theorem gramSchmidt_mem_span (f : ι → E) :
     (Submodule.sum_mem _ fun k hk => ?_)
   let hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
   exact smul_mem _ _
-    (span_mono (image_subset f <| Set.Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
+    (span_mono (image_mono <| Set.Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
 termination_by j => j
 
 theorem span_gramSchmidt_Iic (f : ι → E) (c : ι) :
@@ -149,9 +149,9 @@ theorem span_gramSchmidt_Iic (f : ι → E) (c : ι) :
 theorem span_gramSchmidt_Iio (f : ι → E) (c : ι) :
     span 𝕜 (gramSchmidt 𝕜 f '' Set.Iio c) = span 𝕜 (f '' Set.Iio c) :=
   span_eq_span (Set.image_subset_iff.2 fun _ hi =>
-    span_mono (image_subset _ <| Iic_subset_Iio.2 hi) <| gramSchmidt_mem_span _ _ le_rfl) <|
+    span_mono (image_mono <| Iic_subset_Iio.2 hi) <| gramSchmidt_mem_span _ _ le_rfl) <|
       Set.image_subset_iff.2 fun _ hi =>
-        span_mono (image_subset _ <| Iic_subset_Iio.2 hi) <| mem_span_gramSchmidt _ _ le_rfl
+        span_mono (image_mono <| Iic_subset_Iio.2 hi) <| mem_span_gramSchmidt _ _ le_rfl
 
 /-- `gramSchmidt` preserves span of vectors. -/
 theorem span_gramSchmidt (f : ι → E) : span 𝕜 (range (gramSchmidt 𝕜 f)) = span 𝕜 (range f) :=
@@ -286,7 +286,7 @@ theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
   refine span_eq_span
     (Set.image_subset_iff.2 fun i hi => smul_mem _ _ <| subset_span <| mem_image_of_mem _ hi)
     (Set.image_subset_iff.2 fun i hi =>
-      span_mono (image_subset _ <| singleton_subset_set_iff.2 hi) ?_)
+      span_mono (image_mono <| singleton_subset_set_iff.2 hi) ?_)
   simp only [coe_singleton, Set.image_singleton]
   by_cases h : gramSchmidt 𝕜 f i = 0
   · simp [h]
