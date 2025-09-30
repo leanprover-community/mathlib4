@@ -771,6 +771,39 @@ info: mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s m : TangentSpace 𝓘(𝕜
 #guard_msgs in
 #check mfderiv[s] f m
 
+variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
+variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
+
+/--
+info: mfderiv I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m))
+  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))
+-/
+#guard_msgs in
+#check mfderiv% (T% X) x
+
+/--
+info: mfderiv I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x))
+  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))
+-/
+#guard_msgs in
+#check mfderiv% (T% σ) x
+
+variable {t : Set E} {p : E}
+
+/--
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) t
+  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))
+-/
+#guard_msgs in
+#check mfderiv[t] (T% σ') p
+
+/--
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x))
+  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' x (σ' x))
+-/
+#guard_msgs in
+#check mfderiv[t] (T% σ')
+
 section errors
 
 -- Test an error message, about mismatched types.
@@ -819,5 +852,39 @@ but is expected to have type
 #check mfderiv[s'] f m
 
 end errors
+
+section
+
+/--
+error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check mfderiv% X x
+
+/--
+error: Term σ is a dependent function, of type (x : M) → V x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check mfderiv% σ x
+
+variable {t : Set E} {p : E}
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check mfderiv[t] σ' p
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check mfderiv[t] σ'
+
+end
 
 end mfderiv
