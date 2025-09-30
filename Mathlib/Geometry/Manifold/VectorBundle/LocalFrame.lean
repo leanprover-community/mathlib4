@@ -14,9 +14,9 @@ import Mathlib.Geometry.Manifold.Elaborators
 Let `V → M` be a finite rank smooth vector bundle with standard fiber `F`.
 Given a basis `b` for `F` and a local trivialisation `e` for `V`,
 we construct a **smooth local frame** on `V` w.r.t. `e` and `b`,
-i.e. a collection of sections `s_i` of `V` which is smooth on `e.baseSet` such that `{s_i x}` is a
+i.e. a collection of sections `sᵢ` of `V` which is smooth on `e.baseSet` such that `{sᵢ x}` is a
 basis of `V x` for each `x ∈ e.baseSet`. Any section `s` of `e` can be uniquely written as
-`s = ∑ i, f^i s_i` near `x`, and `s` is smooth at `x` iff the functions `f^i` are.
+`s = ∑ i, f^i sᵢ` near `x`, and `s` is smooth at `x` iff the functions `f^i` are.
 
 The latter statement holds in many cases, but not for every vector bundle. In this file, we prove
 it for local frames induced by a trivialisation, for finite rank bundles over a complete field.
@@ -208,8 +208,6 @@ lemma repr_apply_zero_at (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} (ht
   simp [hs.repr_congr (t' := 0) ht]
 
 variable (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} [VectorBundle 𝕜 F V]
-
-set_option linter.style.commandStart false
 
 /-- Given a local frame `s i ` on `u`, if a section `t` has `C^k` coefficients on `u` w.r.t. `s i`,
 then `t` is `C^n` on `u`. -/
