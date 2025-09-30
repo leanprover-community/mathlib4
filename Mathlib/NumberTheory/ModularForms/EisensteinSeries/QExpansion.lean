@@ -54,7 +54,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f
     iteratedDerivWithin k (fun z ↦ cexp (2 * π * I * z / p) ^ n) ℍₒ) ℍₒ := by
   apply SummableLocallyUniformlyOn_of_locally_bounded isOpen_upperHalfPlaneSet
   intro K hK hKc
-  haveI : CompactSpace K := isCompact_univ_iff.mp (isCompact_iff_isCompact_univ.mp hKc)
+  have : CompactSpace K := isCompact_univ_iff.mp (isCompact_iff_isCompact_univ.mp hKc)
   let c : ContinuousMap K ℂ := ⟨fun r : K ↦ Complex.exp (2 * π * I * r / p), by fun_prop⟩
   let r : ℝ := ‖mkOfCompact c‖
   have hr : ‖r‖ < 1 := by
@@ -68,8 +68,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f
     (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), ?_⟩
   intro n z hz
   have h0 := pow_le_pow_left₀ (by apply norm_nonneg _) (norm_coe_le_norm (mkOfCompact c) ⟨z, hz⟩) n
-  simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ←
-    exp_nsmul', Pi.smul_apply,
+  simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ← exp_nsmul', Pi.smul_apply,
     iteratedDerivWithin_cexp_mul_const k n p isOpen_upperHalfPlaneSet (hK hz), smul_eq_mul,
     norm_mul, norm_pow, Complex.norm_div, norm_ofNat, norm_real, Real.norm_eq_abs, norm_I, mul_one,
     norm_natCast, abs_norm, ge_iff_le, r, c] at *
@@ -111,7 +110,7 @@ lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) :
 theorem contDiffOn_tsum_cexp (k : ℕ∞) :
     ContDiffOn ℂ k (fun z : ℂ ↦ ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ :=
   contDiffOn_of_differentiableOn_deriv fun m _ z hz ↦
-  ((summableUniformlyOn_differentiableOn isOpen_upperHalfPlaneSet
+  ((SummableLocallyUniformlyOn.differentiableOn isOpen_upperHalfPlaneSet
   (summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' m)
   (fun n _ hz ↦ differentiableAt_iteratedDerivWithin_cexp n m
     isOpen_upperHalfPlaneSet hz)) z hz).congr (fun z hz ↦
