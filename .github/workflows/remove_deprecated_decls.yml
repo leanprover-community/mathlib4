@@ -173,7 +173,11 @@ jobs:
         branch: "deprecated-decls"
         base: master
         title: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
-        body: "I am happy to remove some deprecated declarations for you! Please check if there are any remaining stray comments or other issues before merging."
+        body: |
+          I am happy to remove some deprecated declarations for you!
+          Please check if there are any remaining stray comments or other issues before merging.
+
+          [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
     - name: Send Zulip message
       if: steps.pr.outcome == 'success'
