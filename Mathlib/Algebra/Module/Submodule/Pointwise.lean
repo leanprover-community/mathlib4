@@ -172,7 +172,8 @@ instance : IsOrderedAddMonoid (Submodule R M) :=
   { add_le_add_left := fun _a _b => sup_le_sup_left }
 
 instance : CanonicallyOrderedAdd (Submodule R M) where
-  exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+  exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add := fun _a _b => le_sup_left
 
 section
@@ -196,7 +197,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 
 open Pointwise
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 
