@@ -260,4 +260,22 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
 
 end Module
 
+protected theorem support_subset (f : 𝓓^{n}_{K}(E, F)) : support f ⊆ K :=
+  support_subset_iff'.mpr f.zero_on_compl
+
+protected theorem tsupport_subset (f : 𝓓^{n}_{K}(E, F)) : tsupport f ⊆ K :=
+  closure_minimal f.support_subset K.isCompact.isClosed
+
+protected theorem hasCompactSupport (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport f :=
+  HasCompactSupport.intro K.isCompact f.zero_on_compl
+
+/-- Inclusion of unbundled `n`-times continuously differentiable function with support included
+in a compact `K` into the space `𝓓^{n}_{K}`. -/
+protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : support f ⊆ K) :
+    𝓓^{n}_{K}(E, F) where
+  toFun := f
+  contDiff' := hf
+  zero_on_compl' := support_subset_iff'.mp hsupp
+
+
 end ContDiffMapSupportedIn
