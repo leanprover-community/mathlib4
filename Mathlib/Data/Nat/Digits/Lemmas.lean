@@ -28,7 +28,7 @@ theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
     l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
       l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
     by simp [this]
-  congr; ext; simp [pow_succ]; ring
+  congr; ext; ring
 
 theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
     ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
@@ -257,7 +257,7 @@ theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b 
       rw [Nat.ofDigits_mod_eq_head! _ _]
       exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
           Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
-  · rcases n with _ | _ <;> simp_all [show b = 0 by omega]
+  · rcases n with _ | _ <;> simp_all [show b = 0 by cutsat]
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by
