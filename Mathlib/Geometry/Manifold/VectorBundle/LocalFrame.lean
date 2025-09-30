@@ -331,8 +331,8 @@ is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_localFrame_baseSet
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) :
-    CMDiff[e.baseSet] n (T% b.localFrame e i) := by
-  rw [contMDiffOn_section_of_mem_baseSet₀]
+    CMDiff[e.baseSet] n (T% (b.localFrame e i)) := by
+  rw [e.contMDiffOn_section_baseSet_iff]
   apply (contMDiffOn_const (c := b i)).congr
   intro y hy
   simp [localFrame, hy, localFrame_toBasis_at]
@@ -358,7 +358,7 @@ omit [IsManifold I 0 M] in
 lemma _root_.contMDiffAt_localFrame_of_mem
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) {x : M} (hx : x ∈ e.baseSet) :
-    CMDiffAt n (T% b.localFrame e i) x :=
+    CMDiffAt n (T% (b.localFrame e i)) x :=
   (b.localFrame_isLocalFrameOn_baseSet I n e).contMDiffAt e.open_baseSet hx _
 
 @[simp]
@@ -502,8 +502,7 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
   simp only [aux]
 
   -- step 2: `s` read in trivialization `e` is `C^k`
-  have h₁ : CMDiffAt k (fun x ↦ (e (s x)).2) x := by
-    exact contMDiffAt_section_of_mem_baseSet hxe |>.1 hs
+  have h₁ : CMDiffAt k (fun x ↦ (e (s x)).2) x := e.contMDiffAt_section_iff hxe |>.1 hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
   let basl : F →ₗ[𝕜] 𝕜 := {
@@ -708,7 +707,6 @@ variable (b e) in
 lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
     ((localExtensionOn b e x v) x) = v := by
   simp [localExtensionOn, hx]
-  nth_rw 2 [← (b.localFrame_toBasis_at e hx).sum_repr v]
 
 omit [IsManifold I 0 M] in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
