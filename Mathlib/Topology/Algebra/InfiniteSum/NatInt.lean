@@ -548,8 +548,8 @@ lemma tprod_zero_pnat_eq_tprod_nat [TopologicalSpace G] [IsTopologicalGroup G] [
     f 0 * ∏' n : ℕ+, f ↑n = ∏' n, f n := by
   simpa [hf.tprod_eq_zero_mul] using tprod_pnat_eq_tprod_succ
 
-@[to_additive tsum_nat_eq_zero_two_pnat]
-theorem tprod_nat_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
+@[to_additive tsum_int_eq_zero_add_two_mul_tsum_pnat]
+theorem tprod_int_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
     [T2Space G] {f : ℤ → G} (hf : ∀ n : ℤ, f (-n) = f n) (hf2 : Multipliable f) :
     ∏' n, f n = f 0 * (∏' n : ℕ+, f n) ^ 2 := by
   have hf3 : Multipliable fun n : ℕ ↦ f n :=
