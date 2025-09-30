@@ -259,6 +259,9 @@ elab:max "MDiffAt[" s:term:arg "]" f:term:arg : term => do
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {ef} is a dependent function, of type {etype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     -- TODO: check that `estype` and src are compatible/the same!
     return ← mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
@@ -273,6 +276,9 @@ elab:max "MDiffAt" t:term:arg : term => do
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {e} is a dependent function, of type {etype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
@@ -287,6 +293,9 @@ elab:max "MDiff[" s:term:arg "]" t:term:arg : term => do
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {et} is a dependent function, of type {etype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     -- TODO: check that `estype` and src are compatible/the same!
     return ← mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
@@ -300,6 +309,9 @@ elab:max "MDiff" t:term:arg : term => do
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {e} is a dependent function, of type {etype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     return ← mkAppM ``MDifferentiable #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
@@ -318,6 +330,9 @@ elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   match eftype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {ef} is a dependent function, of type {eftype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     -- TODO: check `estype` and src are compatible
     return ← mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
@@ -335,6 +350,9 @@ elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {e} is a dependent function, of type {etype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
@@ -352,6 +370,9 @@ elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   match eftype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {ef} is a dependent function, of type {eftype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     -- TODO: check `estype` and src are compatible
     return ← mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
@@ -368,6 +389,9 @@ elab:max "CMDiff" nt:term:arg f:term:arg : term => do
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+      if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {e} is a dependent function, of type {etype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
@@ -382,6 +406,9 @@ elab:max "mfderiv[" s:term:arg "]" t:term:arg : term => do
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {e} is a dependent function, of type {etype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     -- TODO: check `estype` and src are compatible
     return ← mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
@@ -395,6 +422,9 @@ elab:max "mfderiv%" t:term:arg : term => do
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {e} is a dependent function, of type {etype}\n\
+      Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     let tgtI ← find_model tgt (src, srcI)
     return ← mkAppM `mfderiv #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."

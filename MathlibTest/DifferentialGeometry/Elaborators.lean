@@ -117,6 +117,8 @@ variable {f : M → M'} {s : Set M} {m : M}
 #check MDiff[s] f
 
 -- Testing an error message.
+section
+
 /--
 error: Function expected at
   MDifferentiableOn I I' f s
@@ -156,6 +158,8 @@ Note: Expected a function because this term is being applied to the argument
 -/
 #guard_msgs in
 #check MDiff f m
+
+end
 
 -- Function from a manifold into a normed space.
 variable {g : M → E}
@@ -294,6 +298,74 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 -/
 #guard_msgs in
 #check MDiffAt (T% σ')
+
+/-! Error messages in case of a forgotten `T%`. -/
+section
+
+/--
+error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiff X
+
+/--
+error: Term σ is a dependent function, of type (x : M) → V x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiff σ
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiff σ'
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiff[s] σ'
+
+/--
+error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiffAt (X)
+
+/--
+error: Term σ is a dependent function, of type (x : M) → V x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiffAt ((σ))
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiff[s] σ'
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiffAt σ'
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiffAt[s] σ'
+
+end
 
 end differentiability
 
@@ -490,6 +562,77 @@ Note: Expected a function because this term is being applied to the argument
 #check CMDiff k' f m
 
 end coercions
+
+/-! Error messages for a missing `T%` elaborator. -/
+section dependent
+
+variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
+variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+
+/--
+error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiff 0 X
+
+/--
+error: Term σ is a dependent function, of type (x : M) → V x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiff 0 σ
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiff 0 σ'
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiff[s] 0 σ'
+
+/--
+error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiffAt 0 (X)
+
+/--
+error: Term σ is a dependent function, of type (x : M) → V x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiffAt 0 ((σ))
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiff[s] 0 σ'
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiffAt 0 σ'
+
+/--
+error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+Note: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check CMDiffAt[s] 0 σ'
+
+end dependent
 
 -- Function from a manifold into a normed space.
 variable {g : M → E}
