@@ -124,8 +124,10 @@ lemma mono (hs : IsLocalFrameOn I F n s u) (hu'u : u' ⊆ u) : IsLocalFrameOn I 
     exact hs.generating (hu'u hx)
   contMDiffOn i := (hs.contMDiffOn i).mono hu'u
 
+-- TODO think: is this bracketing behaviour desired!
+-- in any case, add a test and a nicer error message!
 lemma contMDiffAt (hs : IsLocalFrameOn I F n s u) (hu : IsOpen u) (hx : x ∈ u) (i : ι) :
-    CMDiffAt n (T% s i) x :=
+    CMDiffAt n (T% (s i)) x :=
   (hs.contMDiffOn i).contMDiffAt <| hu.mem_nhds hx
 
 /-- Given a local frame `{s i}` on `U ∋ x`, returns the basis `{s i}` of `V x` -/
