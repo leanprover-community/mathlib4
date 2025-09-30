@@ -32,7 +32,7 @@ hopefully fast enough to always run.
 This has no dedicated support for product manifolds (or product vector spaces) yet;
 adding this is left for future changes. (It would need to make a choice between e.g. the
 trivial model with corners on a product `E × F` and the product of the trivial models on `E` and
-`F`).
+`F`). In these settings, the elaborators should be avoided (for now).
 
 Secondly, this file adds an elaborator to ease working with sections in a fibre bundle,
 converting a section `s : Π x : M, Π V x` to a non-dependent function into the total space of the
