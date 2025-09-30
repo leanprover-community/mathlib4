@@ -235,16 +235,16 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 
-/-- `AffineScheme.forgetToScheme` creates limits for cospans. -/
-noncomputable def forgetToScheme_createsLimits {X Y Z : AffineScheme.{u}}
-    (f : X ⟶ Z) (g : Y ⟶ Z) : CreatesLimit (cospan f g) AffineScheme.forgetToScheme.{u} :=
+/-- The forgetful functor `AffineScheme ⥤ Scheme` creates small limits. -/
+def forgetToSchemeCreatesLimits {I : Type u} [Category.{u} I] (D : I ⥤ AffineScheme.{u}) :
+    CreatesLimit D forgetToScheme.{u} :=
   createsLimitOfReflectsIsomorphismsOfPreserves
 
-/-- `AffineScheme.forgetToScheme.op` creates colimits for spans. -/
-noncomputable def forgetToScheme_op_createsColimits {X Y Z : AffineScheme.{u}}
-    (f : X ⟶ Z) (g : Y ⟶ Z) : CreatesColimit (span f.op g.op) AffineScheme.forgetToScheme.{u}.op :=
-  let : PreservesColimits AffineScheme.forgetToScheme.{u}.op := preservesColimits_op _
-  createsColimitOfReflectsIsomorphismsOfPreserves
+/-- The opposite of the forgetful functor `AffineSchemeᵒᵖ ⥤ Schemeᵒᵖ` creates small colimits. -/
+def forgetToSchemeCreatesColimits {I : Type u} [Category.{u} I] (D : I ⥤ AffineScheme.{u}ᵒᵖ) :
+    CreatesColimit D forgetToScheme.{u}.op := by
+  let : PreservesColimits forgetToScheme.{u}.op := preservesColimits_op _
+  exact createsColimitOfReflectsIsomorphismsOfPreserves
 
 end AffineScheme
 
