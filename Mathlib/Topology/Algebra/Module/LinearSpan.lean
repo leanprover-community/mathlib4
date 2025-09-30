@@ -92,7 +92,7 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
   have t₂_smul (s : Finset ι) : @ContinuousSMul 𝕜 E _ _ (t₂ s) :=
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
-  simp_rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
+  simp only [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
   conv in Continuous _ => rw [Seminorm.continuous_iff one_pos, nhds_iInf]
   conv in Continuous _ =>
     rw [letI := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
