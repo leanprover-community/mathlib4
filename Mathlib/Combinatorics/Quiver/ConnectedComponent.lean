@@ -14,7 +14,7 @@ For a quiver `V`, define the type `WeaklyConnectedComponent V` as the quotient o
 the relation which identifies `a` with `b` if there is a path from `a` to `b` in `Symmetrify V`.
 (These zigzags can be seen as a proof-relevant analogue of `EqvGen`.)
 
-We reuse `Quiver.IsPreconnected V` for strong (directed) connectivity, i.e. `∀ i j, Nonempty 
+We reuse `Quiver.IsPreconnected V` for strong (directed) connectivity, i.e. `∀ i j, Nonempty
 (Path i j)`.
 We also define:
 * `Quiver.IsPreconnectedPos V`: every pair of vertices is connected by a path of positive length.
