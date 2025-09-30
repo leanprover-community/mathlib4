@@ -624,3 +624,19 @@ theorem map_injective_of_flat_left_right (h₁ : Function.Injective i₁) (h₂ 
   simpa [h] using map_injective_of_flat_flat' i₁ i₂ h₁ h₂
 
 end IsTensorProduct
+
+section IsSMulRegular
+
+variable {R S M N : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Module.Flat R S]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+
+theorem IsSMulRegular.of_flat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f) {x : R}
+    (reg : IsSMulRegular M x) : IsSMulRegular N (algebraMap R S x) := by
+  have h := hf.map_id_injective_of_flat_left hf (LinearMap.lsmul R M x) reg
+  rwa [hf.map_id_lsmul_eq_lsmul_algebraMap] at h
+
+theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
+    IsSMulRegular S (algebraMap R S x) :=
+  reg.of_flat_of_isBaseChange (IsBaseChange.linearMap R S)
+
+end IsSMulRegular

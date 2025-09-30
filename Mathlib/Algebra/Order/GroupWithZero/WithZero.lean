@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
 
 # Covariant instances on `WithZero`
@@ -27,7 +26,7 @@ theory. These instances enable lemmas such as `mul_pos` to fire on `ℤᵐ⁰`.
 
 assert_not_exists Ring
 
--- this makes `mul_lt_mul_left`, `mul_pos` etc. work on `ℤᵐ⁰`
+-- this makes `mul_lt_mul_iff_right₀`, `mul_pos` etc. work on `ℤᵐ⁰`
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     PosMulStrictMono (WithZero α) where
   elim := @fun

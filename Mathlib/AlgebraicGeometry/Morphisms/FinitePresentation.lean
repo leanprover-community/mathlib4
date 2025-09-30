@@ -97,17 +97,17 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
     have inst : QuasiCompact (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
     convert (this (Y.affineCover.pullbackHom f i) (hs.preimage_of_isOpenEmbedding
-      ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding)
-      ⟨_, rfl⟩).preimage_of_isOpenEmbedding (Y.affineCover.map i).isoOpensRange.inv.isOpenEmbedding
-    refine .trans ?_ ((Scheme.homeoOfIso (Y.affineCover.map i).isoOpensRange).image_eq_preimage _)
+      ((Y.affineCover.pullbackCover f).f i).isOpenEmbedding)
+      ⟨_, rfl⟩).preimage_of_isOpenEmbedding (Y.affineCover.f i).isoOpensRange.inv.isOpenEmbedding
+    refine .trans ?_ ((Scheme.homeoOfIso (Y.affineCover.f i).isoOpensRange).image_eq_preimage _)
     apply Set.image_injective.mpr Subtype.val_injective
     rw [Set.image_preimage_eq_inter_range, ← Set.image_comp, ← Set.image_comp,
       Subtype.range_coe_subtype, Set.setOf_mem_eq]
     change _ = (Y.affineCover.pullbackHom f i ≫
-      (Y.affineCover.map i).isoOpensRange.hom ≫ Opens.ι _).base.hom '' _
+      (Y.affineCover.f i).isoOpensRange.hom ≫ Opens.ι _).base.hom '' _
     rw [Scheme.Hom.isoOpensRange_hom_ι, Cover.pullbackHom_map, Scheme.comp_base, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range]
-    simp only [coe_opensRange, Cover.pullbackCover_obj, Cover.pullbackCover_map,
+    simp only [coe_opensRange, Cover.pullbackCover_X, Cover.pullbackCover_f,
       IsOpenImmersion.range_pullback_fst_of_right, TopologicalSpace.Opens.map_obj,
       TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.coe_mk,
       Set.image_inter_preimage]
@@ -117,10 +117,10 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
     let 𝒰 := X.affineCover.finiteSubcover
     rw [← 𝒰.isOpenCover_opensRange.iUnion_inter s, Set.image_iUnion]
     refine .iUnion fun i ↦ ?_
-    have inst : QuasiCompact (𝒰.map i ≫ f) :=
+    have inst : QuasiCompact (𝒰.f i ≫ f) :=
       HasAffineProperty.iff_of_isAffine.mpr (inferInstanceAs (CompactSpace (Spec _)))
-    convert this (hs.preimage_of_isOpenEmbedding (𝒰.map i).isOpenEmbedding) _
-      (𝒰.map i ≫ f) ⟨_, rfl⟩
+    convert this (hs.preimage_of_isOpenEmbedding (𝒰.f i).isOpenEmbedding) _
+      (𝒰.f i ≫ f) ⟨_, rfl⟩
     rw [Scheme.comp_base, ← TopCat.Hom.hom, ← TopCat.Hom.hom, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range, coe_opensRange]
   obtain ⟨S, rfl⟩ := hX
