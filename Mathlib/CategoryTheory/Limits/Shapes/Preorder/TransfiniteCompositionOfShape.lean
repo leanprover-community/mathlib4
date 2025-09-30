@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
-import Mathlib.Data.Fin.SuccPred
+import Mathlib.Data.Fin.SuccPredOrder
 import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.Interval.Set.Final
 
@@ -51,7 +51,7 @@ structure TransfiniteCompositionOfShape [SuccOrder J] [WellFoundedLT J] where
   incl : F ⟶ (Functor.const _).obj Y
   /-- the colimit of `F` identifies to `Y` -/
   isColimit : IsColimit (Cocone.mk Y incl)
-  fac : isoBot.inv ≫ incl.app ⊥ = f := by aesop_cat
+  fac : isoBot.inv ≫ incl.app ⊥ = f := by cat_disch
 
 namespace TransfiniteCompositionOfShape
 

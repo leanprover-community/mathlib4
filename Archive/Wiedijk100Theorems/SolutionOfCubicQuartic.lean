@@ -115,8 +115,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d = a * (y ^ 3 + 3 * p * y - 2 * q) := by
-    rw [hp, hq]
-    simp [field_simps, y, ha, h9, h54]; ring
+    simp [hp, hq, field, h9, h54]; ring
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   rw [h₁, h₂, cubic_depressed_eq_zero_iff hω hp_nonzero hr hs3 ht]
   simp_rw [y, eq_sub_iff_add_eq]
@@ -130,8 +129,6 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
       x = s - b / (3 * a) ∨ x = s * ω - b / (3 * a) ∨ x = s * ω ^ 2 - b / (3 * a) := by
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
     intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
-  have hi2 : (2 : K) ≠ 0 := Invertible.ne_zero _
-  have hi3 : (3 : K) ≠ 0 := Invertible.ne_zero _
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz; rw [hpz]
   have hb3 : b ^ 3 = 3 * a * b * c := by rw [pow_succ, hb2]; ring
@@ -141,8 +138,8 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
       a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) := by
         field_simp; ring
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
-        simp only [hb2, hb3]; field_simp [ha]; ring
-      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring
+        simp only [hb2, hb3]; field_simp; ring
+      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; simp [field, h54]; ring
   have h₃ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by
     intro x
@@ -214,8 +211,7 @@ theorem quartic_eq_zero_iff (ha : a ≠ 0)
   have h256 : (256 : K) = 2 ^ 8 := by norm_num
   have h₁ : a * x ^ 4 + b * x ^ 3 + c * x ^ 2 + d * x + e =
       a * (y ^ 4 + p * y ^ 2 + q * y + r) := by
-    rw [hp, hq, hr]
-    simp [field_simps, y, ha, h4, h8, h16, h256]; ring
+    simp [hp, hq, hr, field, y, h4, h8, h16, h256]; ring
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   rw [h₁, h₂, quartic_depressed_eq_zero_iff hq_nonzero hu hs hv hw]
   simp_rw [y, eq_sub_iff_add_eq]
@@ -237,9 +233,8 @@ theorem quartic_eq_zero_iff_of_q_eq_zero (ha : a ≠ 0)
   have h16 : (16 : K) = 2 ^ 4 := by norm_num
   have h256 : (256 : K) = 2 ^ 8 := by norm_num
   have h₁ : a * x ^ 4 + b * x ^ 3 + c * x ^ 2 + d * x + e = a * (y ^ 4 + p * y ^ 2 + r) := by
-    rw [hp, hr]
-    simp [field_simps, y, ha, h4, h8, h16, h256]
-    linear_combination (1048576 * a ^ 10 * x + 262144 * a ^ 9 * b) * hqz
+    simp only [hp, hr, y, h4, h8, h16, h256]
+    linear_combination (norm := (field_simp; ring)) (4 * a * x + b) * hqz / a ^ 3 / 2 ^ 5
   rw [h₁, ha.isUnit.mul_right_eq_zero]
   calc
     _ ↔ 1 * (y ^ 2 * y ^ 2) + p * y ^ 2 + r = 0 := by

@@ -58,9 +58,6 @@ theorem support_integralNormalization_subset :
   intro
   simp +contextual [sum_def, integralNormalization, coeff_monomial, mem_support_iff]
 
-@[deprecated (since := "2024-11-30")]
-alias integralNormalization_support := support_integralNormalization_subset
-
 theorem integralNormalization_coeff_degree {i : ℕ} (hi : p.degree = i) :
     (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, if_pos hi]
 

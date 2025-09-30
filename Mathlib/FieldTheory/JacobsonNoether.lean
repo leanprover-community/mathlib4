@@ -28,7 +28,7 @@ the noncommutative division algebra `D` with center `k`.
   being a field `L`), if the center of `D` over `L` is `L`,
   then there exist an element `x` of `D \ L` that is separable over `L`.
 
-## Notations
+## Notation
 
 - `D` is a noncommutative division algebra
 - `k` is the center of `D`
@@ -126,8 +126,8 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
     by_cases h_pos : 0 < t
-    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by omega)) h_pos
-      omega
+    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by cutsat)) h_pos
+      cutsat
     · suffices h_find: Nat.find h_exist = 1 by
         rwa [h_find]
       rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
@@ -163,7 +163,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
   obtain ⟨r, hr⟩ := exists_pow_mem_center_of_inseparable p d insep
   apply_fun (· ^ (p ^ r)) at deq
-  rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
+  rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _), one_pow,
     GroupWithZero.conj_pow₀ ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
     right_eq_add] at deq
   exact one_ne_zero deq
@@ -175,7 +175,7 @@ open Subring Algebra in
   that is separable over `L`. -/
 theorem exists_separable_and_not_isCentral' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
-  (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
+    (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
   have hcenter : Subalgebra.center L D = ⊥ := le_bot_iff.mp IsCentral.out
   have ntrivial : Subring.center D ≠ ⊤ :=

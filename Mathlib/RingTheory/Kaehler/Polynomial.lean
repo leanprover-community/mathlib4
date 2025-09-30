@@ -8,7 +8,7 @@ import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
-# The Kaehler differential module of polynomial algebras
+# The Kähler differential module of polynomial algebras
 -/
 
 open Algebra Module

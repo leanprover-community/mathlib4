@@ -277,9 +277,8 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
     rw [mem_filter] at hx
     rw [hx.2]
   · exact fun i => measurableSet_fiber _ _
-  · grind [Finset.mem_filter]
-  · grind [Set.disjoint_iff, Set.subset_def, Set.mem_inter_iff, Set.mem_singleton_iff,
-      Set.mem_preimage]
+  · grind
+  · grind [Set.disjoint_iff]
 
 theorem setToSimpleFunc_congr' (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
     (hf : Integrable f μ) (hg : Integrable g μ)

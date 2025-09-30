@@ -36,7 +36,7 @@ Moreover, we also prove the unique norm extension theorem: if `K` is a field com
 to a nontrivial nonarchimedean multiplicative norm and `L/K` is an algebraic extension, then the
 spectral norm on `L` is a nonarchimedean multiplicative norm, and any power-multiplicative
 `K`-algebra norm on `L` coincides with the spectral norm. More over, if `L/K` is finite, then `L`
-is a complete space. This result is [S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis*
+is a complete space. This result is [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
 (Theorem 3.2.4/2)][bosch-guntzer-remmert].
 
 As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
@@ -128,7 +128,7 @@ theorem spectralValueTerms_nonneg (p : R[X]) (n : ℕ) : 0 ≤ spectralValueTerm
   · exact rpow_nonneg (norm_nonneg _) _
   · exact le_refl _
 
-/-- The spectral value of a polyomial is nonnegative. -/
+/-- The spectral value of a polynomial is nonnegative. -/
 theorem spectralValue_nonneg (p : R[X]) : 0 ≤ spectralValue p :=
   iSup_nonneg (spectralValueTerms_nonneg p)
 
@@ -210,7 +210,7 @@ variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 
 open Nat in
 /-- The norm of any root of `p` is bounded by the spectral value of `p`. See
-[S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
+[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
 [bosch-guntzer-remmert]. -/
 theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) {p : K[X]} (hp : p.Monic) {x : L} (hx : aeval x p = 0) :
@@ -245,8 +245,8 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
         · have : p.natDegree = p.natDegree - n + n := by rw [Nat.sub_add_cancel (le_of_lt hn)]
           rw [map_smul_eq_mul, hf_pm _ (succ_le_iff.mp (pos_iff_ne_zero.mpr hn0)),
             hf_pm _ (succ_le_iff.mpr h_deg), this, pow_add]
-          exact (mul_lt_mul_right (pow_pos (lt_of_le_of_ne (apply_nonneg _ _) (Ne.symm hx0)) _)).mpr
-            (hn_lt n hn)
+          gcongr
+          exact hn_lt n hn
       set g := fun i : ℕ ↦ p.coeff i • x ^ i
       obtain ⟨m, hm_in, hm⟩ : ∃ (m : ℕ) (_ : 0 < p.natDegree → m < p.natDegree),
           f ((Finset.range p.natDegree).sum g) ≤ f (g m) := by
@@ -266,7 +266,7 @@ open Multiset
 
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
 value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
-maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis*
+maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
 (Proposition 3.1.2/1(2))][bosch-guntzer-remmert]. -/
 theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 = 1) (p : K[X]) (s : Multiset L)
@@ -345,7 +345,7 @@ end BddBySpectralValue
 section spectralNorm
 
 section NormedField
-/- In this section we prove [S. Bosch, U. Güntzer, R. Remmert,*Non-Archimedean Analysis*
+/- In this section we prove [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
 (Theorem 3.2.1/2)][bosch-guntzer-remmert]. -/
 
 open IntermediateField
@@ -508,7 +508,7 @@ def spectralAlgNorm_of_finiteDimensional_normal [IsUltrametricDist K] : AlgebraN
   map_zero' := by rw [spectralNorm_eq_invariantExtension K L, map_zero]
   add_le'   := by rw [spectralNorm_eq_invariantExtension]; exact map_add_le_add _
   neg'      := by rw [spectralNorm_eq_invariantExtension]; exact map_neg_eq_map _
-  mul_le'   :=  by
+  mul_le'   := by
     simp only [spectralNorm_eq_invariantExtension]
     exact map_mul_le_mul (invariantExtension K L)
   smul'     := by
@@ -852,11 +852,11 @@ def seminormedAddCommGroup [CompleteSpace K] : SeminormedAddCommGroup L := by
 
 /-- `L` with the spectral norm is a `normed_space` over `K`. -/
 def normedSpace [CompleteSpace K] : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
-   letI _ := seminormedAddCommGroup K L
-   {(inferInstance : Module K L) with
-     norm_smul_le r x := by
-       change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
-       exact le_of_eq (map_smul_eq_mul _ _ _)}
+  letI _ := seminormedAddCommGroup K L
+  {(inferInstance : Module K L) with
+    norm_smul_le r x := by
+      change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
+      exact le_of_eq (map_smul_eq_mul _ _ _)}
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 def metricSpace [CompleteSpace K] : MetricSpace L := (normedField K L).toMetricSpace

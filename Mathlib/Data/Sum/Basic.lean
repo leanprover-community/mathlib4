@@ -21,6 +21,14 @@ lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by 
 
 namespace Sum
 
+@[simp]
+theorem elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
+    Sum.elim f g ∘ Sum.swap = Sum.elim g f := by
+  ext x
+  cases x with
+  | inl x => simp
+  | inr x => simp
+
 -- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
 attribute [simp] Sum.forall Sum.exists
 
@@ -208,14 +216,10 @@ theorem Injective.sumElim {γ : Sort*} {f : α → γ} {g : β → γ} (hf : Inj
   | inr _, inl _, h => (hfg _ _ h.symm).elim
   | inr _, inr _, h => congr_arg inr <| hg h
 
-@[deprecated (since := "2025-02-20")] alias Injective.sum_elim := Injective.sumElim
-
 theorem Injective.sumMap {f : α → β} {g : α' → β'} (hf : Injective f) (hg : Injective g) :
     Injective (Sum.map f g)
   | inl _, inl _, h => congr_arg inl <| hf <| inl.inj h
   | inr _, inr _, h => congr_arg inr <| hg <| inr.inj h
-
-@[deprecated (since := "2025-02-20")] alias Injective.sum_map := Injective.sumMap
 
 theorem Surjective.sumMap {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
     Surjective (Sum.map f g)
@@ -226,13 +230,9 @@ theorem Surjective.sumMap {f : α → β} {g : α' → β'} (hf : Surjective f) 
     let ⟨x, hx⟩ := hg y
     ⟨inr x, congr_arg inr hx⟩
 
-@[deprecated (since := "2025-02-20")] alias Surjective.sum_map := Surjective.sumMap
-
 theorem Bijective.sumMap {f : α → β} {g : α' → β'} (hf : Bijective f) (hg : Bijective g) :
     Bijective (Sum.map f g) :=
   ⟨hf.injective.sumMap hg.injective, hf.surjective.sumMap hg.surjective⟩
-
-@[deprecated (since := "2025-02-20")] alias Bijective.sum_map := Bijective.sumMap
 
 end Function
 
