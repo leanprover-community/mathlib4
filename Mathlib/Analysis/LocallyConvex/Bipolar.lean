@@ -38,6 +38,11 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
+/-
+When `B` is left-separating, the closure of the empty set is the singleton `{0}`. This is in
+contrast to the closed absolutely convex hull of the empty set, which is again the empty set.
+c.f. `closureOperator_polar_gc_nonempty` below.
+-/
 example (h : SeparatingLeft B) : B.polar_gc.closureOperator (∅ : Set E) = {0} := by
   simp only [GaloisConnection.closureOperator_apply, Function.comp_apply, polar_empty,
     OrderDual.ofDual_toDual, (B.flip.polar_univ h)]
