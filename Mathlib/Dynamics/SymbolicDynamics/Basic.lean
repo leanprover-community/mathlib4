@@ -141,7 +141,7 @@ variable {A G : Type*} [Monoid G]
 @[to_additive] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
   ext h; simp [mulShift]
 
-@[to_additive] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
+@[to_additive addShift_mul] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
   mulShift (g₁ * g₂) x = mulShift g₁ (mulShift g₂ x) := by
   ext h; simp [mulShift, mul_assoc]
 
@@ -151,7 +151,8 @@ section ShiftTopology  -- add only topology on A
 
 variable {A G : Type*} [Monoid G] [TopologicalSpace A]
 
-@[to_additive] lemma continuous_mulShift (g : G) : Continuous (mulShift (A := A) (G := G) g) := by
+@[to_additive] lemma continuous_mulShift (g : G) :
+    Continuous (mulShift (A := A) (G := G) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   continuity
 
@@ -393,7 +394,6 @@ variable {A G : Type*} [Monoid G] [IsRightCancelMul G] [Inhabited A] [DecidableE
 /-- On the translated support, `patternToConfig` agrees with `p` at the preimage. -/
 @[to_additive addPatternToConfig_apply_of_mem]
 lemma patternToConfig_apply_of_mem
-    {A G : Type*} [Monoid G] [IsRightCancelMul G] [DecidableEq G] [Inhabited A]
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
     patternToConfig (A := A) (G := G) p v (w * v) = p.data ⟨w, hw⟩ := by
   classical
@@ -445,7 +445,6 @@ lemma patternToConfig_apply_of_mem
 /-- “Occurrence = cylinder translated by `g`”. -/
 @[to_additive addOccursAt_eq_cylinder]
 lemma occursAt_eq_cylinder
-    {A G : Type*} [Monoid G] [IsRightCancelMul G] [Inhabited A] [DecidableEq G]
     (p : Pattern A G) (g : G) :
     { x | p.occursIn x g } = cylinder (p.support.image (· * g)) (patternToConfig p g) := by
   classical
