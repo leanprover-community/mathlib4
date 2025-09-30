@@ -1,5 +1,4 @@
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.FunProp.Attr
 
 open Lean.Elab.Command Mathlib.Command.MinImports in
 run_cmd liftTermElabM do
