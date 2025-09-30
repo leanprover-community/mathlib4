@@ -22,29 +22,55 @@ universe u
 
 namespace groupCohomology
 
+namespace NonAbelian
+
 section basic
 
-abbrev NonAbelianRep (G : Type u) [Monoid G] := Action MonCat.{u} G
+abbrev NonAbelianRep (G : Type u) [Monoid G] := Action AddGrp.{u} G
 
 variable (G : Type u) [Monoid G]
 
 instance : CoeSort (NonAbelianRep G) (Type u) := ⟨fun V ↦ V.V⟩
 
-instance (A : NonAbelianRep G) : MulAction G A := sorry
+variable (A : NonAbelianRep G)
+
+instance : AddGroup A := inferInstance
+
+instance (A : NonAbelianRep G) : DistribMulAction G A := sorry
 
 end basic
 
+section H0
+
+variable {G : Type u} [Monoid G] (A : NonAbelianRep G)
+
+def H0 : AddSubmonoid A where
+  carrier := setOf fun v => ∀ g : G, g • v = v
+  add_mem' := sorry
+  zero_mem' := sorry
+
+end H0
+
 section H1
 
-def Z1 (G : Type u) [Monoid G] (V : NonAbelianRep G) :=
-  { f : G → V // ∀ g h : G, f (g * h) = f g * (g • f h) }
+def Z1 (G : Type u) [Monoid G] (A : NonAbelianRep G) :=
+  { f : G → A // ∀ g h : G, f (g * h) = f g + (g • f h : A)}
 
-def Z1.setoid (G : Type u) [Group G] (V : NonAbelianRep G) : Setoid (Z1 G V) :=
-  { r := fun f g ↦ ∃ a : V, ∀ h : G, g.val h = a⁻¹ * (f.val h) * (h • a),
+instance CoeFunZ1 (G : Type u) [Monoid G] (A : NonAbelianRep G) : CoeFun (Z1 G A) (fun _ ↦ G → A) :=
+  ⟨fun f ↦ f.val⟩
+
+def cohomologous {G : Type u} [Group G] {A : NonAbelianRep G} (f g : Z1 G A) : Prop :=
+  ∃ a : A, ∀ h : G, g h = - a + f h + (h • a)
+
+def Z1.setoid (G : Type u) [Group G] (A : NonAbelianRep G) : Setoid (Z1 G A) :=
+  { r := cohomologous,
     iseqv := sorry }
-def H1 (V : NonAbelianRep G) : Pointed where
-  X :=
+
+-- def H1 (V : NonAbelianRep G) : Pointed where
+--   X :=
 
 end H1
+
+end NonAbelian
 
 end groupCohomology
