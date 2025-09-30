@@ -67,7 +67,7 @@ noncomputable section
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G V : Type*}
+variable {𝕜 𝕜' D E F G R V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -295,6 +295,9 @@ instance instNeg : Neg 𝓢(E, F) :=
   ⟨fun f =>
     ⟨-f, (f.smooth _).neg, fun k n =>
       ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
+
+@[simp]
+theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
 
 end Neg
 
@@ -541,6 +544,38 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   · simp
   exact Finset.le_sup hN
 
+section Multiplication
+
+variable [NormedField 𝕜] [NormedRing R] -- should be NonUnitalNormedRing
+  [NormedSpace 𝕜 R] [NormedAlgebra ℝ R] -- should be NormedSpace
+  [IsScalarTower 𝕜 R R] [SMulCommClass 𝕜 R R]
+
+theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth := by
+  constructor
+  · exact hf.1.mul hg.1
+  intro n
+  rcases hf.norm_iteratedFDeriv_le_uniform_aux n with ⟨k1, C1, hC1, h1⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨k2, C2, hC2, h2⟩
+  use k1 + k2
+  use ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C1 * C2)
+  intro x
+  apply le_trans (norm_iteratedFDeriv_mul_le hf.1 hg.1 x (right_eq_inf.mp rfl))
+  have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
+  simp_rw [mul_assoc ((n : ℝ) + 1), ← this, Finset.sum_mul]
+  refine Finset.sum_le_sum fun i hi => ?_
+  rw [one_mul]
+  move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n / 2) : ℝ)]
+  gcongr ?_ * ?_
+  swap
+  · norm_cast
+    exact i.choose_le_middle n
+  simp only [Finset.mem_range] at hi
+  grw [h1 i (Nat.le_of_lt_succ hi) x, h2 (n - i) (by simp only [tsub_le_self]) x]
+  grind
+
+end Multiplication
+
 lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
     (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
@@ -713,7 +748,7 @@ variable {σ : 𝕜 →+* 𝕜'}
 /-- Create a semilinear map between Schwartz spaces.
 
 Note: This is a helper definition for `mkCLM`. -/
-def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
+def mkLM (A : 𝓢(D, E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
     (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
@@ -732,7 +767,7 @@ def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + 
 /-- Create a continuous semilinear map between Schwartz spaces.
 
 For an example of using this definition, see `fderivCLM`. -/
-def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
+def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
     (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
@@ -804,12 +839,7 @@ where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate g
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
     𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
   refine mkCLM (fun f x => B (f x) (g x))
-    (fun _ _ _ => by
-      simp only [map_add, Pi.add_apply,
-        ContinuousLinearMap.add_apply])
-    (fun _ _ _ => by
-      simp only [map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-        RingHom.id_apply])
+    (fun _ _ _ => by simp) (fun _ _ _ => by simp)
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
       ((f.smooth ⊤).prodMk hg.1)) ?_
   rintro ⟨k, n⟩
@@ -849,6 +879,44 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   rw [pow_add]
   move_mul [(1 + ‖x‖) ^ l]
   gcongr
+  simp
+
+@[simp]
+theorem bilinLeftCLM_apply_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) (x : D) : bilinLeftCLM B hg f x = B (f x) (g x) := rfl
+
+variable (E) in
+def smulLeftCLM {g : D → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) :=
+    bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+
+@[simp]
+theorem smulLeftCLM_apply_apply {g : D → 𝕜} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) (x : D) : smulLeftCLM E hg f x = (g x) • f x := rfl
+
+variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R] [IsScalarTower 𝕜 R R]
+  [SMulCommClass 𝕜 R R]
+
+@[simp]
+theorem smulLeftCLM_mul {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM E hg₁ ∘L smulLeftCLM E hg₂ = smulLeftCLM E (hg₁.mul hg₂) := by
+  ext f x
+  simp [smul_smul]
+
+def _root_.ContinuousLinearMap.smul (c : 𝕜) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) where
+  toFun f := c • f
+  map_add' := DistribSMul.smul_add c
+  map_smul' := smul_comm c
+  cont := continuous_const_smul c
+
+@[simp]
+theorem _root_.ContinuousLinearMap.smulCLM_apply (c : 𝕜) (f : 𝓢(D, E)) :
+    ContinuousLinearMap.smul c f = c • f := rfl
+
+@[simp]
+theorem smulLeftCLM_const (c : 𝕜) :
+    smulLeftCLM E (Function.HasTemperateGrowth.const c (E := D)) = ContinuousLinearMap.smul c := by
+  ext
   simp
 
 end Multiplication
@@ -968,7 +1036,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
-  mkCLM (fderiv ℝ) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
+  mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => fderiv_const_smul f.differentiableAt a)
     (fun f => (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
@@ -984,7 +1052,7 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
-  mkCLM deriv (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
+  mkCLM (deriv ·) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => deriv_const_smul a f.differentiableAt)
     (fun f => (contDiff_succ_iff_deriv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by

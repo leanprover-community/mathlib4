@@ -29,14 +29,14 @@ variable
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space. -/
 noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
-  refine mkCLM (fun (f : V → E) ↦ 𝓕 f) ?_ ?_ ?_ ?_
+  refine mkCLM (𝓕 ·) ?_ ?_ ?_ ?_
   · intro f g x
-    simp only [fourierIntegral_eq, Pi.add_apply, smul_add]
+    simp only [fourierIntegral_eq, add_apply, smul_add]
     rw [integral_add]
     · exact (fourierIntegral_convergent_iff _).2 f.integrable
     · exact (fourierIntegral_convergent_iff _).2 g.integrable
   · intro c f x
-    simp only [fourierIntegral_eq, Pi.smul_apply, RingHom.id_apply, smul_comm _ c, integral_smul]
+    simp only [fourierIntegral_eq, smul_apply, smul_comm _ c, integral_smul, RingHom.id_apply]
   · intro f
     exact Real.contDiff_fourierIntegral (fun n _ ↦ integrable_pow_mul volume f n)
   · rintro ⟨k, n⟩
@@ -75,10 +75,30 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
         apply Finset.le_sup this (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2 (E := V) (F := E))
     _ = _ := by simp [mul_assoc]
 
-@[simp] lemma fourierTransformCLM_apply (f : 𝓢(V, E)) :
-    fourierTransformCLM 𝕜 f = 𝓕 f := rfl
+noncomputable
+def fourierTransform (f : 𝓢(V, E)) : 𝓢(V, E) := fourierTransformCLM ℝ f
 
-variable [CompleteSpace E]
+@[simp]
+theorem fourierTransform_apply (f : 𝓢(V, E)) (x : V) : f.fourierTransform x = 𝓕 f x := rfl
+
+@[simp]
+theorem fourierTransformCLM_apply (f : 𝓢(V, E)) :
+    fourierTransformCLM 𝕜 f = f.fourierTransform := rfl
+
+variable
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G]
+
+variable [CompleteSpace E] [CompleteSpace F]
+
+/-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_bilin_fourierIntegral_eq_flip (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (g ξ) ∂volume = ∫ x, M (f x) (𝓕 g x) ∂volume := by
+  have := VectorFourier.integral_bilin_fourierIntegral_eq_flip M (μ := volume) (ν := volume)
+    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
+  simp only [flip_innerₗ] at this
+  exact this
 
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
@@ -101,11 +121,16 @@ noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
   continuous_invFun := ContinuousLinearMap.continuous _
 
 @[simp] lemma fourierTransformCLE_apply (f : 𝓢(V, E)) :
-    fourierTransformCLE 𝕜 f = 𝓕 f := rfl
+    fourierTransformCLE 𝕜 f = f.fourierTransform := rfl
+
+noncomputable
+def fourierTransformInv (f : 𝓢(V, E)) : 𝓢(V, E) := (fourierTransformCLE ℝ).symm f
+
+@[simp] lemma fourierTransformInv_apply (f : 𝓢(V, E)) (x : V) :
+    f.fourierTransformInv x = 𝓕⁻ f x :=
+  (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
 
 @[simp] lemma fourierTransformCLE_symm_apply (f : 𝓢(V, E)) :
-    (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := by
-  ext x
-  exact (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
+    (fourierTransformCLE 𝕜).symm f = f.fourierTransformInv := rfl
 
 end SchwartzMap
