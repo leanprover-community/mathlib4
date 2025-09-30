@@ -262,7 +262,7 @@ private def indepMatroid : IndepMatroid A where
     rw [← isTranscendenceBasis_iff_maximal] at B_base ⊢
     cases subsingleton_or_nontrivial R
     · rw [isTranscendenceBasis_iff_of_subsingleton] at B_base ⊢
-      by_contra!
+      by_contra this
       have ⟨b, hb⟩ := B_base
       exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr

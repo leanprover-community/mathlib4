@@ -687,6 +687,12 @@ theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor
   isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
     (fun _ _ f x ↦ congr_fun (i.hom.naturality f.op) x) hP
 
+/-- The property of being separated for some presieve is preserved under isomorphisms. -/
+theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparatedFor P R) :
+    IsSeparatedFor P' R := by
+  intro x t₁ t₂ ht₁ ht₂
+  simpa using congrArg (i.hom.app _) <| hP (x.map i.inv) _ _ (ht₁.map i.inv) (ht₂.map i.inv)
+
 /-- If a presieve `R` on `X` has a subsieve `S` such that:
 
 * `P` is a sheaf for `S`.
