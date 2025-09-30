@@ -29,15 +29,13 @@ jobs:
         id: get-branch-sha
         run: |
           # Check if the branch exists remotely
-          if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
-            # Fetch the branch and get its SHA
-            git fetch origin "$BRANCH_NAME"
+          if git fetch origin "$BRANCH_NAME" then
             SHA=$(git rev-parse "origin/$BRANCH_NAME")
             echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
-            echo "sha=$SHA" >> $GITHUB_OUTPUT
+            echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
           else
             echo "Branch '$BRANCH_NAME' does not exist"
-            echo "sha=" >> $GITHUB_OUTPUT
+            echo "sha=" >>" ${GITHUB_OUTPUT}"
           fi
 
       - name: Get PR and labels
@@ -81,15 +79,15 @@ jobs:
           if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ]; then
             # Branch exists, compare the file
             if git diff --quiet HEAD "origin/$BRANCH_NAME" -- lake-manifest.json; then
-              echo "has_diff=false" >> $GITHUB_OUTPUT
+              echo "has_diff=false" >> $"{GITHUB_OUTPUT}"
               echo "No differences in lake-manifest.json"
             else
-              echo "has_diff=true" >> $GITHUB_OUTPUT
+              echo "has_diff=true" >> $"{GITHUB_OUTPUT}"
               echo "Differences found in lake-manifest.json"
             fi
           else
             # Branch doesn't exist, consider it as different
-            echo "has_diff=true" >> $GITHUB_OUTPUT
+            echo "has_diff=true" >> $"{GITHUB_OUTPUT}"
             echo "Branch does not exist, treating as different"
           fi
 
