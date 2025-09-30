@@ -193,9 +193,6 @@ theorem mabs_div_le_of_le_of_le {a b lb ub : G} (hal : lb ≤ a) (hau : a ≤ ub
     (hbu : b ≤ ub) : |a / b|ₘ ≤ ub / lb :=
   mabs_div_le_iff.2 ⟨div_le_div'' hau hbl, div_le_div'' hbu hal⟩
 
-@[deprecated (since := "2025-03-02")]
-alias dist_bdd_within_interval := abs_sub_le_of_le_of_le
-
 @[to_additive]
 theorem eq_of_mabs_div_le_one (h : |a / b|ₘ ≤ 1) : a = b :=
   eq_of_mabs_div_eq_one (le_antisymm h (one_le_mabs (a / b)))

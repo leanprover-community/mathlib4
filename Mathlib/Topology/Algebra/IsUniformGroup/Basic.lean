@@ -95,11 +95,6 @@ lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ]
     simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
     exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
 
-@[deprecated (since := "2025-03-30")]
-alias IsUniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
-@[to_additive existing, deprecated (since := "2025-03-30")]
-alias IsUniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
-
 @[to_additive]
 protected theorem IsUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [IsUniformGroup γ]
     {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) : @IsUniformGroup β (u.comap f) _ :=

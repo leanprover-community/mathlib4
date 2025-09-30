@@ -41,14 +41,10 @@ variable {α : Type*} {β : Type*}
 class IsUniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
   uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2
 
-@[deprecated (since := "2025-03-26")] alias UniformGroup := IsUniformGroup
-
 /-- A uniform additive group is an additive group in which addition
   and negation are uniformly continuous. -/
 class IsUniformAddGroup (α : Type*) [UniformSpace α] [AddGroup α] : Prop where
   uniformContinuous_sub : UniformContinuous fun p : α × α => p.1 - p.2
-
-@[deprecated (since := "2025-03-26")] alias UniformAddGroup := IsUniformAddGroup
 
 attribute [to_additive] IsUniformGroup
 
@@ -496,11 +492,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
-@[deprecated (since := "2025-03-30")]
-alias uniformAddGroup_of_addCommGroup := isUniformAddGroup_of_addCommGroup
-@[to_additive existing, deprecated (since := "2025-03-30")]
-alias uniformGroup_of_commGroup := isUniformGroup_of_commGroup
-
 open Set
 
 end

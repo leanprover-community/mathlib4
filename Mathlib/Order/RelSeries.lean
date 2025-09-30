@@ -900,9 +900,6 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
 lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
 
-@[deprecated (since := "2025-03-01")]
-alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
-
 lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
   obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
