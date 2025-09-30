@@ -16,7 +16,7 @@ the usual way this is considered.
 
 * `Complex.sameRay_iff` : Two complex numbers are on the same ray iff one of them is zero, or they
   have the same argument.
-* `Complex.abs_add_eq/Complex.abs_sub_eq`: If two non zero complex numbers have the same argument,
+* `Complex.abs_add_eq/Complex.abs_sub_eq`: If two nonzero complex numbers have the same argument,
   then the triangle inequality is an equality.
 
 -/

@@ -79,7 +79,7 @@ vanish, then the order is at at least that integer.
 a nonzero coefficient in that degree, and all coefficients below that degree vanish.
 
 - `MvPowerSeries.order_monomial`, `MvPowerSeries.order_monomial_of_ne_zero`: the order of a
-monomial, with a non zero coefficient
+monomial, with a nonzero coefficient
 
 - `MvPowerSeries.min_order_le_add`: the order of a sum of two power series is at least the minimum
 of their orders.

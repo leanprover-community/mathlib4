@@ -21,15 +21,15 @@ The definition is pretty technical, but it amounts to the edges between `s` and 
 The literature contains several definitions which are equivalent up to scaling `ε` by some constant
 when the partition is equitable.
 
-A partition `P` of the vertices is `ε`-uniform if the proportion of non `ε`-uniform pairs of parts
-is less than `ε`.
+A partition `P` of the vertices is `ε`-uniform if the proportion of `ε`-uniform pairs of parts is
+greater than `(1 - ε)`.
 
 ## Main declarations
 
 * `SimpleGraph.IsUniform`: Graph uniformity of a pair of finsets of vertices.
 * `SimpleGraph.nonuniformWitness`: `G.nonuniformWitness ε s t` and `G.nonuniformWitness ε t s`
   together witness the non-uniformity of `s` and `t`.
-* `Finpartition.nonUniforms`: Non uniform pairs of parts of a partition.
+* `Finpartition.nonUniforms`: Nonuniform pairs of parts of a partition.
 * `Finpartition.IsUniform`: Uniformity of a partition.
 * `Finpartition.nonuniformWitnesses`: For each non-uniform pair of parts of a partition, pick
   witnesses of non-uniformity and dump them all together.
