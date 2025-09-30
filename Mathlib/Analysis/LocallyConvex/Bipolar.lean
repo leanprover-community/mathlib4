@@ -88,7 +88,7 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
   obtain ⟨f₀, hf₀⟩ := B.dualEmbedding_surjective g
   -- Then, by construction, `f₀` is in the polar of `s`
   have hg₃ : f₀ ∈ (B.polar (E := WeakBilin B) s) := by
-    simp [← hf₀, WeakBilin.eval] at hg₁
+    simp only [← hf₀, WeakBilin.eval, coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mk'] at hg₁
     intro x₂ hx₂
     let l := conj (B x₂ f₀) / ‖B x₂ f₀‖
     have lnorm : ‖l‖ ≤ 1 := by
