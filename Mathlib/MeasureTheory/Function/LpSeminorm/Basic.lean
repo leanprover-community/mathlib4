@@ -273,6 +273,9 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
 alias memLp_const_enorm := memLp_const
 
 @[deprecated memLp_const (since := "2025-09-30")]
+alias memLp_top_const_enorm := memLp_const
+
+@[deprecated memLp_const (since := "2025-09-30")]
 alias memLp_top_const := memLp_const
 
 end Const
