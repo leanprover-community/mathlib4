@@ -322,38 +322,28 @@ lemma deriv_n_neg_1_then_order_gt_zero (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
         exact Hn'
   }
 
-theorem factorial_mul_Deriv (r : ℕ) (z z₀ : ℂ) (f: ℂ → ℂ) :
-   f z  = (z - z₀)^r * (deriv f z₀) := by {
-    sorry
-   }
+-- theorem factorial_mul_Deriv (r : ℕ) (z z₀ : ℂ) (f: ℂ → ℂ) :
+--    f z  = (z - z₀)^r * (deriv f z₀) := by {
+--     sorry
+--    }
 
-theorem factorial_mul_Deriv' (r : ℕ) (z₀ : ℂ) (f: ℂ → ℂ) :
-    deriv^[r] f z₀ = (r.factorial) * (deriv f z₀) := by
-  induction r with
-  | zero =>
-    sorry
-  | succ k ih => sorry
+-- theorem factorial_mul_Deriv' (r : ℕ) (z₀ : ℂ) (f: ℂ → ℂ) :
+--     deriv^[r] f z₀ = (r.factorial) * (deriv f z₀) := by
+--   induction r with
+--   | zero =>
+--     sorry
+--   | succ k ih => sorry
 
-lemma  existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
+lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
   (hf : AnalyticAt ℂ R z) (hf : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
   (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
-  ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, deriv^[k] R z = k.factorial*(z- z₀)^(r-k) * (R₁ z +
-    (z-z₀)*R₂ z) := by {
+  ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, deriv^[k] R z =
+   (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by {
       intros k hkr
       induction' k with k IH
       sorry
       sorry
     }
-
-
-
-
-
-
-
-
-
-
 
 
 
