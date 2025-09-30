@@ -1,9 +1,12 @@
 import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib
+import Mathlib.GroupTheory.FreeGroup.Basic
+import Batteries.Data.List.Lemmas
+
+
 
 variable {α X : Type*} [Fintype α]   [DecidableEq α]
 
-abbrev n := Fintype.card α
+--abbrev n := Fintype.card α
 
 variable  [MulAction (FreeGroup α) X]
 
@@ -35,6 +38,13 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
       . left
         constructor
         . intro h
+          have h4  : FreeGroup.IsReduced g.toWord := by
+            sorry
+          sorry
+        . sorry
+
+
+
           --- TODO lemma über aufeinanderfolgende buchstaben in g.toWord: wenn g[n].1 = g[n+1].1 → g[n].2 = !g[n+1].2
       . sorry
     .
@@ -57,9 +67,10 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
             simp_rw [hg]
             have h_head : head = (a, false) := by
               rw [hg] at h2
-              simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
-                getElem?_pos, List.getElem_cons_zero, Option.some.injEq] at h2
-              exact h2
+              sorry
+              --simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
+              --  getElem?_pos, List.getElem_cons_zero, Option.some.injEq] at h2
+              --exact h2
             by_cases hC : a = w.1
             . simp_rw [h1 hC, show (head.2 = false) by simp [h_head]]
               simp
@@ -81,7 +92,7 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
 
 
 
-
+#exit
 
 
 
