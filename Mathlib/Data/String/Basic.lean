@@ -16,8 +16,6 @@ Supplementary theorems about the `String` type.
 
 namespace String
 
-@[simp] theorem endPos_empty : "".endPos = 0 := rfl
-
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
 def ltb (s₁ s₂ : Iterator) : Bool :=
   if s₂.hasNext then
