@@ -293,9 +293,6 @@ end VectorBundle
 
 variable {n : WithTop ℕ∞}
 
--- TODO: fix pretty-printing of my new elaborators!
-set_option linter.style.commandStart false
-
 variable [IsContMDiffRiemannianBundle IB n F E]
 
 section helper

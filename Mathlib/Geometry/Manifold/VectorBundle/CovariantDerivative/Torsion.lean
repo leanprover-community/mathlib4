@@ -48,8 +48,6 @@ lemma torsion_antisymm : torsion f X Y = - torsion f Y X := by
   rw [VectorField.mlieBracket_swap]
   module
 
-set_option linter.style.commandStart false -- new delaborators confuse the pretty-printer
-
 namespace IsCovariantDerivativeOn
 
 variable [h : IsManifold I ∞ M]

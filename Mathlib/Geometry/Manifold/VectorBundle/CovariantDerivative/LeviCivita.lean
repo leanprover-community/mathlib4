@@ -151,8 +151,6 @@ lemma product_congr_right₂ {x} (h : Y x = Y' x + Y'' x) :
     product I X Y x = product I X Y' x + product I X Y'' x := by
   rw [product_apply, h, inner_add_right, ← product_apply]
 
-set_option linter.style.commandStart false -- custom elaborators not handled well yet
-
 /- XXX: writing `hY.inner_bundle hZ` or writing `by apply MDifferentiable.inner_bundle hY hZ`
 yields an error
 synthesized type class instance is not definitionally equal to expression inferred by typing rules,

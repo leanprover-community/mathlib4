@@ -106,8 +106,6 @@ variable [Fintype ι]
 
 variable (hs : IsOrthonormalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
 
-set_option linter.style.commandStart false
-
 omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E] in
 variable (t) in

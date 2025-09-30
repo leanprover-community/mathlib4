@@ -207,8 +207,6 @@ lemma repr_apply_zero_at (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} (ht
 
 variable (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} [VectorBundle 𝕜 F V]
 
-set_option linter.style.commandStart false
-
 /-- Given a local frame `s i ` on `u`, if a section `t` has `C^k` coefficients on `u` w.r.t. `s i`,
 then `t` is `C^n` on `u`. -/
 lemma contMDiffOn_of_repr [Fintype ι] (h : ∀ i, CMDiff[u] n (hs.repr i t)) :
