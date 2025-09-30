@@ -308,16 +308,22 @@ end Module
 
 section IsScalarTower
 
-variable [ZeroLEOneClass 𝕜] [Module 𝕜 E]
+variable [Module 𝕜 E]
 variable (R : Type*) [Semiring R] [PartialOrder R] [Module R E]
 variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
 
 /-- Lift the convexity of a set up through a scalar tower. -/
-theorem Convex.lift [SMulPosMono R 𝕜] {s : Set E} (hs : Convex 𝕜 s) : Convex R s := by
+theorem Convex.lift_of_smul_of_nonneg_right {s : Set E} (hs : Convex 𝕜 s)
+    (h : ∀ ⦃r : R⦄, 0 ≤ r → 0 ≤ r • (1 : 𝕜)) : Convex R s := by
   intro x hx y hy a b ha hb hab
   suffices (a • (1 : 𝕜)) • x + (b • (1 : 𝕜)) • y ∈ s by simpa using this
   refine hs hx hy ?_ ?_ (by simpa [add_smul] using congr($(hab) • (1 : 𝕜)))
-  all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
+  all_goals exact h ‹_›
+
+/-- Lift the convexity of a set up through a scalar tower. -/
+theorem Convex.lift [ZeroLEOneClass 𝕜] [SMulPosMono R 𝕜] {s : Set E} (hs : Convex 𝕜 s) :
+    Convex R s := Convex.lift_of_smul_of_nonneg_right R hs (fun _ hr => by
+    simpa using smul_le_smul_of_nonneg_right hr (zero_le_one' 𝕜))
 
 end IsScalarTower
 
@@ -611,6 +617,13 @@ lemma convex_of_nonneg_algebraMap {s : Set M} (halg : ∀ ⦃r : R⦄, 0 ≤ r �
     using 2
   · rw [algebraMap_smul]
   · rw [algebraMap_smul]
+
+lemma convex_of_nonneg_algebraMap' {s : Set M} (halg : ∀ ⦃r : R⦄, 0 ≤ r → 0 ≤ algebraMap R A r)
+    (hs : Convex A s) : Convex R s := by
+  apply Convex.lift_of_smul_of_nonneg_right R hs
+  intro r hr
+  rw [← Algebra.algebraMap_eq_smul_one]
+  exact halg hr
 
 lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
     (halg : ∀ ⦃a : A⦄, 0 ≤ a → ∃ (r : R), 0 ≤ r ∧ algebraMap R A r = a) (hs : Convex R s) :
