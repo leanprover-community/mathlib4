@@ -243,8 +243,9 @@ theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
 /-- The degree of a vertex is at most the number of edges. -/
-theorem degree_le_card_edgeFinset [DecidableEq V] [Fintype G.edgeSet] :
+theorem degree_le_card_edgeFinset [Fintype G.edgeSet] :
     G.degree v ≤ #G.edgeFinset := by
+  classical
   rw [← card_incidenceFinset_eq_degree]
   exact card_le_card (G.incidenceFinset_subset v)
 
@@ -359,7 +360,7 @@ lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [Decidable
   by_cases hne : Nonempty V
   · apply le_minDegree_of_forall_le_degree
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
-  · rw [not_nonempty_iff] at hne
+  · push_neg at hne
     simp
 
 /-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
@@ -408,7 +409,7 @@ theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀
     G.maxDegree ≤ k := by
   by_cases hV : IsEmpty V
   · simp
-  · have := not_isEmpty_iff.1 hV
+  · push_neg at hV
     obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
     exact hv ▸ h _
 
@@ -420,7 +421,7 @@ lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
 lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree := by
   by_cases he : IsEmpty V
   · simp
-  · rw [not_isEmpty_iff] at he
+  · push_neg at he
     exact he.elim fun v ↦ (minDegree_le_degree _ v).trans (degree_le_maxDegree _ v)
 
 @[simp]
