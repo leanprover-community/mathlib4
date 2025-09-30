@@ -196,6 +196,13 @@ instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
 theorem hom_zero_zero (f : ⦋0⦌ ⟶ ⦋0⦌) : f = 𝟙 _ := by
   apply Subsingleton.elim
 
+@[simp]
+lemma eqToHom_toOrderHom {x y : SimplexCategory} (h : x = y) :
+  SimplexCategory.Hom.toOrderHom (eqToHom h) =
+    (Fin.castOrderIso (congrArg (fun t ↦ t.len + 1) h)).toOrderEmbedding.toOrderHom := by
+  subst h
+  rfl
+
 end Init
 
 section Generators
