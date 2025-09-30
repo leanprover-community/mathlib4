@@ -125,7 +125,7 @@ lemma mono (hs : IsLocalFrameOn I F n s u) (hu'u : u' ⊆ u) : IsLocalFrameOn I 
   contMDiffOn i := (hs.contMDiffOn i).mono hu'u
 
 lemma contMDiffAt (hs : IsLocalFrameOn I F n s u) (hu : IsOpen u) (hx : x ∈ u) (i : ι) :
-    CMDiffAt n (T% s i) x :=
+    CMDiffAt n (T% (s i)) x :=
   (hs.contMDiffOn i).contMDiffAt <| hu.mem_nhds hx
 
 /-- Given a local frame `{s i}` on `U ∋ x`, returns the basis `{s i}` of `V x` -/
@@ -329,7 +329,7 @@ is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_localFrame_baseSet
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) :
-    CMDiff[e.baseSet] n (T% b.localFrame e i) := by
+    CMDiff[e.baseSet] n (T% (b.localFrame e i)) := by
   rw [contMDiffOn_section_of_mem_baseSet₀]
   apply (contMDiffOn_const (c := b i)).congr
   intro y hy
@@ -356,7 +356,7 @@ omit [IsManifold I 0 M] in
 lemma _root_.contMDiffAt_localFrame_of_mem
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) {x : M} (hx : x ∈ e.baseSet) :
-    CMDiffAt n (T% b.localFrame e i) x :=
+    CMDiffAt n (T% (b.localFrame e i)) x :=
   (b.localFrame_isLocalFrameOn_baseSet I n e).contMDiffAt e.open_baseSet hx _
 
 @[simp]

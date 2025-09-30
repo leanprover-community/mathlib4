@@ -66,7 +66,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
   let ι : Type _ := Basis.ofVectorSpaceIndex ℝ F
   classical
   have sum_phi {s : Finset ι} (σ : ι → Π x : M, V x)
-      (hσ : ∀ i, MDiffAt  (T% σ i) x):
+      (hσ : ∀ i, MDiffAt  (T% (σ i)) x):
       φ (fun x' ↦ ∑ i ∈ s, σ i x') x = ∑ i ∈ s, φ (σ i) x := by
     induction s using Finset.induction_on with
     | empty =>
@@ -87,7 +87,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
   let t := trivializationAt F V x
   let s := b.localFrame (trivializationAt F V x)
   let c := Basis.localFrame_repr I t b
-  have hs (i) : MDiffAt (T% s i) x:=
+  have hs (i) : MDiffAt (T% (s i)) x:=
     (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt le_rfl
   have hc {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) (i) :
       MDiffAt ((c i) σ) x :=

@@ -207,14 +207,14 @@ variable (b e) in
 /-- Each orthonormal frame `s^i ∈ Γ(E)` of a `C^k` vector bundle, defined by a local
 trivialisation `e`, is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_orthonormalFrame_baseSet (i : ι) :
-    CMDiff[e.baseSet] n (T% b.orthonormalFrame e i) := by
+    CMDiff[e.baseSet] n (T% (b.orthonormalFrame e i)) := by
   apply IsLocalFrameOn.contMDiffOn
   exact (b.orthonormalFrame_isOrthonormalFrameOn e).toIsLocalFrameOn
 
 omit [IsManifold IB n B] in
 variable (b e) in
 lemma _root_.contMDiffAt_orthonormalFrame_of_mem (i : ι) {x : B} (hx : x ∈ e.baseSet) :
-    CMDiffAt n (T% b.orthonormalFrame e i) x :=
+    CMDiffAt n (T% (b.orthonormalFrame e i)) x :=
   -- bug: if I change this to a by apply, and put #check after the `by`, it works, but #check' fails
   -- #check' contMDiffOn_orthonormalFrame_baseSet
   (contMDiffOn_orthonormalFrame_baseSet b e i).contMDiffAt <| e.open_baseSet.mem_nhds hx
@@ -224,7 +224,7 @@ omit [ContMDiffVectorBundle n F E IB] [IsContMDiffRiemannianBundle IB n F E] in
 variable [ContMDiffVectorBundle 1 F E IB] [IsContMDiffRiemannianBundle IB 1 F E] in
 variable (b e) in
 lemma _root_.mdifferentiableAt_orthonormalFrame_of_mem (i : ι) {x : B} (hx : x ∈ e.baseSet) :
-    MDiffAt (T% b.orthonormalFrame e i) x := by
+    MDiffAt (T% (b.orthonormalFrame e i)) x := by
   apply ContMDiffAt.mdifferentiableAt _ le_rfl
   exact (contMDiffOn_orthonormalFrame_baseSet b e i).contMDiffAt <| e.open_baseSet.mem_nhds hx
 
