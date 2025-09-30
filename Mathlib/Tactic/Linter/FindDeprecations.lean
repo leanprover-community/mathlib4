@@ -95,6 +95,8 @@ def getDeprecatedInfo (nm : Name) (verbose? : Bool) :
       -- retrieve the module where the declaration is located
       if let some mod ← findModuleOf? nm
       then
+        unless repos.contains mod.getRoot do
+          return none
         if verbose? then
           logInfo
             s!"In the module '{mod}', the declaration {nm} at {rg.pos}--{rg.endPos} \
@@ -121,6 +123,7 @@ def deprecatedHashMap (oldDate newDate : String) :
   for (nm, _) in (← getEnv).constants.map₁ do
     if let some ⟨modName, decl, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
     then
+      dbg_trace modName
       unless repos.contains modName.getRoot do continue
       if !(oldDate ≤ since && since ≤ newDate) then
         continue
