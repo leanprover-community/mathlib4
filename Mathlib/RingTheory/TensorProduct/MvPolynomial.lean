@@ -241,8 +241,7 @@ lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
   induction p using MvPolynomial.induction_on with
   | C a =>
-    simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
-      RingHomCompTriple.comp_apply]
+    simp only [algHom_C, Algebra.TensorProduct.algebraMap_apply]
     rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
   | add p q hp hq => simp [hp, hq, tmul_add]
   | mul_X p i h => simp [h]

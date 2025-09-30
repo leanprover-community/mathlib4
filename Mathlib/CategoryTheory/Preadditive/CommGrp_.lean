@@ -24,18 +24,18 @@ open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory
 variable {C : Type u} [Category.{v} C] [Preadditive C] [CartesianMonoidalCategory C]
 
 @[simps]
-instance (X : C) : Grp_Class X where
+instance (X : C) : GrpObj X where
   one := 0
   mul := fst _ _ + snd _ _
   inv := -𝟙 X
-  one_mul' := by simp [← leftUnitor_hom]
-  mul_one' := by simp [← rightUnitor_hom]
-  mul_assoc' := by simp [add_assoc]
+  one_mul := by simp [← leftUnitor_hom]
+  mul_one := by simp [← rightUnitor_hom]
+  mul_assoc := by simp [add_assoc]
 
 variable [BraidedCategory C]
 
-instance (X : C) : IsCommMon X where
-  mul_comm' := by simp [add_comm]
+instance (X : C) : IsCommMonObj X where
+  mul_comm := by simp [add_comm]
 
 variable (C) in
 /-- The canonical functor from an additive category into its commutative group objects. This is
@@ -61,18 +61,18 @@ def commGrpEquivalenceAux : CommGrp_.forget C ⋙ toCommGrp C ≅
   refine NatIso.ofComponents (fun _ => CommGrp_.mkIso (Iso.refl _) ?_ ?_) ?_
   · exact ((IsZero.iff_id_eq_zero _).2 (Subsingleton.elim _ _)).eq_of_src _ _
   · simp only [Functor.comp_obj, CommGrp_.forget_obj, toCommGrp_obj_X, Functor.id_obj,
-    toCommGrp_obj_grp, mul_def, Iso.refl_hom, Category.comp_id, tensorHom_id, id_whiskerRight,
-    Category.id_comp]
+      toCommGrp_obj_grp, mul_def, Iso.refl_hom, Category.comp_id, tensorHom_id, id_whiskerRight,
+      Category.id_comp]
     apply monoidal_hom_ext
     · simp only [comp_add, lift_fst, lift_snd, add_zero]
-      convert (Mon_Class.lift_comp_one_right _ 0).symm
+      convert (MonObj.lift_comp_one_right _ 0).symm
       · simp
       · infer_instance
     · simp only [comp_add, lift_fst, lift_snd, zero_add]
-      convert (Mon_Class.lift_comp_one_left 0 _).symm
+      convert (MonObj.lift_comp_one_left 0 _).symm
       · simp
       · infer_instance
-  · aesop_cat
+  · cat_disch
 
 /-- An additive category is equivalent to its category of commutative group objects. -/
 @[simps!]

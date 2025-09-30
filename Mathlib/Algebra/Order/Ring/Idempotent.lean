@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.BooleanAlgebra.Defs
 import Mathlib.Order.Hom.Basic
 
 /-!

@@ -1,43 +1,37 @@
 import Mathlib.Tactic.SuccessIfFailWithMsg
 example : True := by
-  success_if_fail_with_msg "no goals to be solved" trivial; trivial
+  success_if_fail_with_msg "No goals to be solved" trivial; trivial
   trivial
 
 example : Nat → Nat → True := by
-  success_if_fail_with_msg "no goals to be solved"
-    intro
-    intro
+  success_if_fail_with_msg "No goals to be solved"
+    intro _ _
     trivial
     trivial
   intros; trivial
 
 /--
-info: Update with tactic error message: "no goals to be solved"
+info: Update with tactic error message: ⏎
+  "No goals to be solved"
 ---
 error: tactic '
-  intro
-  intro
+  intro _ _
   trivial
   trivial' failed, but got different error message:
 
-no goals to be solved
+No goals to be solved
 -/
 #guard_msgs in
 example : Nat → Nat → True := by
-  success_if_fail_with_msg "no goals"
-    intro
-    intro
+  success_if_fail_with_msg "No goals"
+    intro _ _
     trivial
     trivial
   intros; trivial
 
-
-
 def err (t : Bool) := if t then
-  "tactic 'rewrite' failed, equality or iff proof expected
-  n ≤ n.succ
-n : Nat
-⊢ True"
+  "Invalid rewrite argument: Expected an equality or iff proof or definition name, but `Nat.le_succ n` is a proof of
+  n ≤ n.succ"
   else
     "not that message
 ⊢ True"

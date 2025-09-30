@@ -5,7 +5,8 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
+import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers
@@ -64,7 +65,7 @@ protected theorem abs_neg : ∀ x : EReal, (-x).abs = x.abs
 @[simp]
 theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   induction x, y using induction₂_symm_neg with
-  | top_zero => simp only [zero_mul, mul_zero, abs_zero]
+  | top_zero => simp only [mul_zero, abs_zero]
   | top_top => rfl
   | symm h => rwa [mul_comm, EReal.mul_comm]
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
@@ -97,10 +98,10 @@ theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> 
 @[simp]
 theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
   induction x, y using induction₂_symm_neg with
-  | top_zero => simp only [zero_mul, mul_zero, sign_zero]
+  | top_zero => simp only [mul_zero, sign_zero]
   | top_top => rfl
   | symm h => rwa [mul_comm, EReal.mul_comm]
-  | coe_coe => simp only [← coe_mul, sign_coe, _root_.sign_mul, ENNReal.ofReal_mul (abs_nonneg _)]
+  | coe_coe => simp only [← coe_mul, sign_coe, _root_.sign_mul]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, sign_top, one_mul, sign_pos (EReal.coe_pos.2 h)]
   | neg_left h => rw [neg_mul, sign_neg, sign_neg, h, neg_mul]
@@ -142,7 +143,7 @@ instance : CommMonoidWithZero EReal :=
   { inferInstanceAs (MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
-      simp only [mul_assoc, abs_mul, eq_self_iff_true, sign_mul, and_self_iff]
+      simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
     mul_comm := EReal.mul_comm }
 
 instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by

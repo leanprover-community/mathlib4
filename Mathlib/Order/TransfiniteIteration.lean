@@ -11,7 +11,7 @@ import Mathlib.Order.SuccPred.Limit
 
 Given `φ : I → I` where `[SupSet I]`, we define the `j`th transfinite iteration of `φ`
 for any `j : J`, with `J` a well-ordered type: this is `transfiniteIterate φ j : I → I`.
-If `i₀ : I`, then `transfiniteIterate φ ⊥ i₀ = i₀`; if `j` is a non maximal element,
+If `i₀ : I`, then `transfiniteIterate φ ⊥ i₀ = i₀`; if `j` is a non-maximal element,
 then `transfiniteIterate φ (Order.succ j) i₀ = φ (transfiniteIterate φ j i₀)`; and
 if `j` is a limit element, `transfiniteIterate φ j i₀` is the supremum
 of the `transfiniteIterate φ l i₀` for `l < j`.
@@ -50,7 +50,7 @@ lemma transfiniteIterate_bot [OrderBot J] (i₀ : I) :
   dsimp [transfiniteIterate]
   simp only [isMin_iff_eq_bot, SuccOrder.limitRecOn_isMin, id_eq]
 
-lemma transfiniteIterate_succ (i₀ : I) (j : J) (hj : ¬ IsMax j):
+lemma transfiniteIterate_succ (i₀ : I) (j : J) (hj : ¬ IsMax j) :
     transfiniteIterate φ (Order.succ j) i₀ =
       φ (transfiniteIterate φ j i₀) := by
   dsimp [transfiniteIterate]

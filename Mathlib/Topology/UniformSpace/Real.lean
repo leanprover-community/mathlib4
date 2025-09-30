@@ -27,7 +27,7 @@ instance Real.instCompleteSpace : CompleteSpace ℝ := by
   refine ⟨c.lim, fun s h => ?_⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
-  simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
+  simp only [mem_map, mem_atTop_sets]
   exact this.imp fun N hN n hn => hε (hN n hn)
 
 namespace NNReal
@@ -43,6 +43,7 @@ instance : TopologicalSpace ℝ≥0 := inferInstance
 instance : CompleteSpace ℝ≥0 :=
   isClosed_Ici.completeSpace_coe
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 

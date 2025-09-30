@@ -172,7 +172,7 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f �
 instance comp_id_lift : p.IsHomLift f (𝟙 a ≫ φ) := by
   simp_all
 
-instance id_comp_lift  : p.IsHomLift f (φ ≫ 𝟙 b) := by
+instance id_comp_lift : p.IsHomLift f (φ ≫ 𝟙 b) := by
   simp_all
 
 instance lift_id_comp : p.IsHomLift (𝟙 R ≫ f) φ := by

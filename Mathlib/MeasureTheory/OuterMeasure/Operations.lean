@@ -51,7 +51,7 @@ instance instInhabited : Inhabited (OuterMeasure α) :=
 instance instAdd : Add (OuterMeasure α) :=
   ⟨fun m₁ m₂ =>
     { measureOf := fun s => m₁ s + m₂ s
-      empty := show m₁ ∅ + m₂ ∅ = 0 by simp [OuterMeasure.empty]
+      empty := show m₁ ∅ + m₂ ∅ = 0 by simp
       mono := fun {_ _} h => add_le_add (m₁.mono h) (m₂.mono h)
       iUnion_nat := fun s _ =>
         calc
@@ -77,10 +77,10 @@ instance instSMul : SMul R (OuterMeasure α) :=
       empty := by simp only [measure_empty]; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
-        exact mul_left_mono (m.mono h)
+        exact mul_right_mono (m.mono h)
       iUnion_nat := fun s _ => by
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
-        exact mul_left_mono (measure_iUnion_le _) }⟩
+        exact mul_right_mono (measure_iUnion_le _) }⟩
 
 @[simp]
 theorem coe_smul (c : R) (m : OuterMeasure α) : ⇑(c • m) = c • ⇑m :=
@@ -139,9 +139,12 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_trans _ _ _ hab hbc s := le_trans (hab s) (hbc s)
   le_antisymm _ _ hab hba := ext fun s => le_antisymm (hab s) (hba s)
 
+instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure α) where
+  add_le_add_left _ _ h _ s := add_le_add_left (h s) _
+
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
-    bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, coe_bot, zero_le] }
+    bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, zero_le] }
 
 theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
   ⟨fun h => bot_unique fun s => (measure_mono <| subset_univ s).trans_eq h, fun h => h.symm ▸ rfl⟩
@@ -268,7 +271,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
   toFun m :=
     { measureOf := fun s => m (f '' s)
       empty := by simp
-      mono := fun {_ _} h => m.mono <| image_subset f h
+      mono := fun {_ _} h => by gcongr
       iUnion_nat := fun s _ => by simpa only [image_iUnion] using measure_iUnion_le _ }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

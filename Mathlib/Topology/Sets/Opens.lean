@@ -125,7 +125,7 @@ theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _r
 theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
   ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
 
-/-- The galois coinsertion between sets and opens. -/
+/-- The Galois coinsertion between sets and opens. -/
 def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice s hs := ⟨s, interior_eq_iff_isOpen.mp <| le_antisymm interior_subset hs⟩
   gc := gc
@@ -332,7 +332,7 @@ lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (�
     IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
   convert TopologicalSpace.IsTopologicalBasis.sigma hB
   simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
-  aesop
+  simp
 
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
@@ -354,7 +354,7 @@ theorem isCompactElement_iff (s : Opens α) :
       H (fun i => U i) (fun i => (U i).isOpen) (by simpa using show (s : Set α) ⊆ ↑(iSup U) from hU)
     refine ⟨t, Set.Subset.trans ht ?_⟩
     simp only [Set.iUnion_subset_iff]
-    show ∀ i ∈ t, U i ≤ t.sup U
+    change ∀ i ∈ t, U i ≤ t.sup U
     exact fun i => Finset.le_sup
 
 /-- The preimage of an open set, as an open set. -/

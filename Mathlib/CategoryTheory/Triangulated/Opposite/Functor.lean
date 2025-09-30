@@ -36,7 +36,7 @@ namespace Pretriangulated.Opposite
 -/
 noncomputable scoped instance commShiftFunctorOpInt : F.op.CommShift ℤ :=
   inferInstanceAs ((PullbackShift.functor
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
       (OppositeShift.functor ℤ F)).CommShift ℤ)
 
 variable {F}
@@ -44,23 +44,23 @@ variable {F}
 noncomputable scoped instance commShift_natTrans_op_int {G : C ⥤ D} [G.CommShift ℤ] (τ : F ⟶ G)
     [NatTrans.CommShift τ ℤ] : NatTrans.CommShift (NatTrans.op τ) ℤ :=
   inferInstanceAs (NatTrans.CommShift (PullbackShift.natTrans
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
       (OppositeShift.natTrans ℤ τ)) ℤ)
 
 noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommShift ℤ] (adj : F ⊣ G)
     [Adjunction.CommShift adj ℤ] : Adjunction.CommShift adj.op ℤ := by
   have eq : adj.op = PullbackShift.adjunction
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
       (OppositeShift.adjunction ℤ adj) := by
     ext
     dsimp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
       NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans,
       OppositeShift.adjunction, OppositeShift.natTrans, NatTrans.OppositeShift.natIsoId,
       NatTrans.OppositeShift.natIsoComp, OppositeShift.functor]
-    simp only [Int.reduceNeg, Category.comp_id, Category.id_comp]
+    simp only [Category.comp_id, Category.id_comp]
   rw [eq]
   exact inferInstanceAs (Adjunction.CommShift (PullbackShift.adjunction
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
       (OppositeShift.adjunction ℤ adj)) ℤ)
 
 end Pretriangulated.Opposite
@@ -68,16 +68,16 @@ end Pretriangulated.Opposite
 namespace Functor
 
 @[reassoc]
-lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
+lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     (F.op.commShiftIso n).hom.app X =
       (F.map ((shiftFunctorOpIso C n m h).hom.app X).unop).op ≫
         ((F.commShiftIso m).inv.app X.unop).op ≫
         (shiftFunctorOpIso D n m h).inv.app (op (F.obj X.unop)) := by
-  obtain rfl : m = -n := by omega
+  obtain rfl : m = -n := by cutsat
   rfl
 
 @[reassoc]
-lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
+lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     (F.op.commShiftIso n).inv.app X =
       (shiftFunctorOpIso D n m h).hom.app (op (F.obj X.unop)) ≫
         ((F.commShiftIso m).hom.app X.unop).op ≫
@@ -148,8 +148,8 @@ lemma map_opShiftFunctorEquivalence_counitIso_inv_app_unop (X : Cᵒᵖ) (n : �
     ← F.map_comp, ← unop_comp, Iso.inv_hom_id_app,
     map_opShiftFunctorEquivalence_counitIso_hom_app_unop]
   dsimp
-  simp only [map_id, assoc, Iso.unop_hom_inv_id_app_assoc, ← Functor.map_comp_assoc,
-    ← unop_comp, Iso.inv_hom_id_app_assoc, ← unop_comp_assoc, ← op_comp,
+  simp only [map_id, assoc, ← Functor.map_comp_assoc,
+    ← unop_comp, Iso.inv_hom_id_app_assoc, ← op_comp,
     Iso.inv_hom_id_app]
   simp
 
