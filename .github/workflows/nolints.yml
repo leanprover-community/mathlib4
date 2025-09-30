@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: "0 0 * * 0" # At 00:00 UTC on Sunday.
   workflow_dispatch:
+  push:
+    branches:
+      - refactor-update_nolints
 
 jobs:
   build:
@@ -14,10 +17,6 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
-
-      # The Hoskinson runners may not have jq installed, so do that now.
-      - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@f0e10f46ff84f4d32178b4b76e1ef180b16f82c3 # v3.1.1
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -40,31 +39,20 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: true
 
-      - name: build mathlib
-        id: build
-        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
-        with:
-          linters: lean
-          run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
-
       - name: update nolints.json
         shell: bash
         run: |
           env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+          touch TESTING_FILE
 
-      - name: configure git setup
-        run: |
-          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib4.git"
-          git config user.email "leanprover.community@gmail.com"
-          git config user.name "leanprover-community-bot"
-
-          # By default, github actions overrides the credentials used to access any
-          # github url so that it uses the github-actions[bot] user.  We want to access
-          # github using a different username.
-          git config --unset http.https://github.com/.extraheader
-
-      - name: file a new PR to update nolints.json
-        run: ./scripts/update_nolints_CI.sh
-        env:
-          DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
+          author: "leanprover-community-bot <leanprover.community@gmail.com>"
+          commit-message: "chore(scripts): update nolints.json"
+          branch: "nolints"
+          base: master
+          title: "chore(scripts): update nolints.json"
+          body: "I am happy to remove some nolints for you!"
+          labels: "auto-merge-after-CI"
