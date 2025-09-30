@@ -32,7 +32,7 @@ other version for completeness.
 
 open Polynomial Finset Nat
 
-variable {n i j k p : ℕ} {A K : Type*} {ζ : A}
+variable {n i j p : ℕ} {A K : Type*} {ζ : A}
 
 variable [CommRing A] [IsDomain A]
 
@@ -51,34 +51,34 @@ theorem associated_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (hj : j.C
       use ∑ i ∈ range m, (ζ ^ j) ^ i
       rw [mul_geom_sum, ← pow_mul, ← pow_mod_orderOf, ← hζ.eq_orderOf, hm, pow_one]
 
-/-- Given an `n`-th primitive root of unity `ζ`, we have that `ζ ^ j - 1` and `ζ ^ j - 1` are
+/-- Given an `n`-th primitive root of unity `ζ`, we have that `ζ ^ j - 1` and `ζ ^ i - 1` are
   associated for all `i` and `j` coprime with `n`. -/
 theorem associated_pow_sub_one_pow_of_coprime (hζ : IsPrimitiveRoot ζ n)
-    (hk : k.Coprime n) (hj : j.Coprime n) : Associated (ζ ^ j - 1) (ζ ^ k - 1) := by
+    (hi : i.Coprime n) (hj : j.Coprime n) : Associated (ζ ^ j - 1) (ζ ^ i - 1) := by
   suffices ∀ {j}, (j.Coprime n) → Associated (ζ - 1) (ζ ^ j - 1) by
     grind [Associated.trans, Associated.symm]
   exact hζ.associated_pow_sub_one_of_coprime
 
-/-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `∑ i ∈ range k, ζ ^ i`
-  is a unit for all `i` and `j` coprime with `n`. This is the unit given by
+/-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `∑ i ∈ range j, ζ ^ i`
+  is a unit for all `j` coprime with `n`. This is the unit given by
   `associated_pow_sub_one_pow_of_coprime` (see
   `pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum` below). -/
-theorem geom_sum_isUnit (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (hk : k.Coprime n) :
-    IsUnit (∑ i ∈ range k, ζ ^ i) := by
-  obtain ⟨u, hu⟩ := hζ.associated_pow_sub_one_pow_of_coprime hk (coprime_one_left n)
+theorem geom_sum_isUnit (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (hj : j.Coprime n) :
+    IsUnit (∑ i ∈ range j, ζ ^ i) := by
+  obtain ⟨u, hu⟩ := hζ.associated_pow_sub_one_pow_of_coprime hj (coprime_one_left n)
   convert u.isUnit
   apply mul_right_injective₀ (show 1 - ζ ≠ 0 by grind [sub_one_ne_zero])
   grind [mul_neg_geom_sum]
 
 /-- The explicit formula giving `associated_pow_sub_one_pow_of_coprime` above. -/
 theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum (hζ : IsPrimitiveRoot ζ n)
-    (hn : 2 ≤ n) : (ζ ^ j - 1) * ∑ i ∈ range k, ζ ^ i = (ζ ^ k - 1) * ∑ i ∈ range j, ζ ^ i := by
+    (hn : 2 ≤ n) : (ζ ^ j - 1) * ∑ k ∈ range i, ζ ^ k = (ζ ^ i - 1) * ∑ k ∈ range j, ζ ^ k := by
   apply mul_left_injective₀ (hζ.sub_one_ne_zero (by omega))
   grind [geom_sum_mul]
 
 theorem pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one (hζ : IsPrimitiveRoot ζ n)
-    (hn : 2 ≤ n) (hk : k.Coprime n) (hj : j.Coprime n) : (ζ ^ j - 1) =
-      (hζ.geom_sum_isUnit hn hj).unit * (hζ.geom_sum_isUnit hn hk).unit⁻¹ * (ζ ^ k - 1) := by
+    (hn : 2 ≤ n) (hi : i.Coprime n) (hj : j.Coprime n) : (ζ ^ j - 1) =
+      (hζ.geom_sum_isUnit hn hj).unit * (hζ.geom_sum_isUnit hn hi).unit⁻¹ * (ζ ^ i - 1) := by
   grind [IsUnit.mul_val_inv, pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum, IsUnit.unit_spec]
 
 /-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `ζ - 1` and
@@ -108,6 +108,5 @@ lemma associated_sub_one_mem_nthRootsFinset_sub (hζ : IsPrimitiveRoot ζ p) (hp
   obtain ⟨u, h⟩ := hζ.associated_pow_add_sub_sub_one hp.two_le j H
   simp only [hij, add_tsub_cancel_of_le] at h
   rw [← h, associated_mul_unit_right_iff]
-
 
 end IsPrimitiveRoot
