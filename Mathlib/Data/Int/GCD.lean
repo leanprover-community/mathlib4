@@ -10,7 +10,6 @@ import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Data.Int.Basic
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 
