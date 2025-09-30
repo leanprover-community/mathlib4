@@ -211,7 +211,7 @@ omit [IsManifold I ∞ M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
   simp only [rhs_aux]
-  congr
+  congr 2
   exact product_swap I Z Y
 
 omit [IsManifold I ∞ M] in
@@ -508,7 +508,7 @@ lemma leviCivitaRhs_smulY_const [CompleteSpace E] {a : ℝ}
 lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
     leviCivitaRhs' I X (f • Y) Z x =
-      f x • leviCivitaRhs' I X Y Z x + (bar _ <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
+      f x • leviCivitaRhs' I X Y Z x + ((bar _).toFun <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs']
   simp_rw [rhs_aux_smulX I Y Z X f]
   simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul, Pi.mul_apply]
@@ -516,13 +516,13 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
 
   -- TODO: is there a better abstraction for this kind of "Lie bracket conv mode"?
   have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
-      - bar _ (((mfderiv I 𝓘(ℝ, ℝ) f x) (X x))) • ⟪Z, Y⟫ x + f x • ⟪Z, mlieBracket I Y X⟫ x := by
+      - (bar _).toFun (((mfderiv% f x) (X x))) • ⟪Z, Y⟫ x + f x • ⟪Z, mlieBracket I Y X⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_left (W := X) hf hY, inner_add_right]
     congr
     · simp [bar]; rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
-      bar _ (((mfderiv I 𝓘(ℝ, ℝ) f x) (Z x))) • ⟪X, Y⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
+      (bar _).toFun (((mfderiv% f x) (Z x))) • ⟪X, Y⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_right (V := Z) hf hY, inner_add_right]
     congr
     · simp [bar]; rw [real_inner_smul_right]
@@ -540,20 +540,22 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
   set dfx := (mfderiv I 𝓘(ℝ, ℝ) f x)
   set H := (bar (f x)) (dfx (X x)) with H_eq
   set K := (bar (f x)) (dfx (Z x)) with K_eq
-  change f x * A + bar _ (dfx (X x)) * G1 + f x * B - (f x * C + bar _ (dfx (Z x)) * G2)
+  change f x * A + (bar _).toFun (dfx (X x)) * G1 + f x * B
+    - (f x * C + (bar _).toFun (dfx (Z x)) * G2)
     - f x * D - (-H * G1 + f x * E) + (K * G2 + f x * F) = _
+  dsimp
   rw [← H_eq, ← K_eq]
   ring
 
 lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
     leviCivitaRhs I X (f • Y) Z x =
-      f x • leviCivitaRhs I X Y Z x + (bar _ <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
+      f x • leviCivitaRhs I X Y Z x + ((bar _).toFun <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs, Pi.smul_apply, leviCivitaRhs'_smulY_apply I hf hX hY hZ]
   rw [smul_add, smul_comm]
   congr 1
   rw [← smul_eq_mul]
-  match_scalars
+  dsimp
   field_simp
 
 lemma leviCivitaRhs'_addZ_apply [CompleteSpace E]
@@ -592,10 +594,6 @@ lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
   simp only [leviCivitaRhs', rhs_aux_smulX, Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulY_apply _ _ hf hZ hX, rhs_aux_smulZ_apply _ _ hf hY hZ]
 
-  set A := rhs_aux I X Y Z x
-  set B := rhs_aux I Y Z X x
-  set C := rhs_aux I Z X Y x
-
   -- Apply the product rule for the lie bracket.
   -- Let's encapsulate the going into the product and back out again.
   have h1 : ⟪Y, mlieBracket I X (f • Z)⟫ x =
@@ -611,14 +609,16 @@ lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
   rw [h1, h2, product_smul_left, product_swap I X Z]
   erw [product_smul_right]
   simp
-
-  set D := ⟪Y, mlieBracket I X Z⟫ x
-  set E := ⟪Z, mlieBracket I Y X⟫ x with E_eq
-  set F := ⟪X, mlieBracket I Z Y⟫ x
-  letI dfX : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
-  set G := dfX * ⟪Y, Z⟫ x
-  letI dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
-  set H := dfY * ⟪X, Z⟫ x
+  -- set A := rhs_aux I X Y Z x
+  -- set B := rhs_aux I Y Z X x
+  -- set C := rhs_aux I Z X Y x
+  -- set D := ⟪Y, mlieBracket I X Z⟫ x
+  -- set E := ⟪Z, mlieBracket I Y X⟫ x with E_eq
+  -- set F := ⟪X, mlieBracket I Z Y⟫ x
+  -- letI dfX : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
+  -- set G := dfX * ⟪Y, Z⟫ x
+  -- letI dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
+  -- set H := dfY * ⟪X, Z⟫ x
   ring
 
 lemma leviCivitaRhs'_smulZ [CompleteSpace E] {f : M → ℝ}
@@ -836,11 +836,13 @@ lemma isCovariantDerivativeOn_lcCandidateAux_of_nonempty [FiniteDimensional ℝ 
     trans ∑ i, (g x • leviCivitaRhs I X σ (Z i) x • Z i x)
         + ∑ i, ((bar (g x)) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x)) • ⟪σ, Z i⟫ x) • Z i x
     · simp only [← Finset.sum_add_distrib, add_smul, smul_assoc]
+      dsimp
     have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidateAux I e o X σ) x := by
       simp only [lcCandidateAux, hE, ↓reduceDIte, Pi.smul_apply', Finset.smul_sum]
       congr
     rw [this]
     simp_rw [← hZ', smul_assoc, Finset.smul_sum]
+    dsimp
 
 /-- The candidate definition `lcCandidateAux` is a covariant derivative
 on each local trivialisation's domain. -/

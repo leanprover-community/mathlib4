@@ -342,7 +342,7 @@ structure IsCovariantDerivativeOn [IsManifold I 1 M]
     f X (σ + σ') x = f X σ x + f X σ' x
   leibniz {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {g : M → 𝕜} {x}
     (hX : MDiffAt (T% X) x) (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial):
-    f X (g • σ) x = (g • f X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) g x (X x)) • σ x
+    f X (g • σ) x = (g • f X σ) x + ((bar _).toFun (mfderiv I 𝓘(𝕜) g x (X x))) • σ x
   smul_const_σ {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x} (a : 𝕜)
     (hX : MDiffAt (T% X) x) (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     f X (a • σ) x = a • f X σ x
@@ -557,7 +557,8 @@ def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
         congr
         ext i
         rw [(h i).leibniz hX hσ hg]
-        simp_rw [Pi.smul_apply', smul_add, add_left_inj]
+        simp_rw [Pi.smul_apply', smul_add]
+        dsimp
         rw [smul_comm]
       _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x)
         + ∑ i ∈ s, f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x := by
@@ -880,8 +881,8 @@ lemma differenceAux_smul_eq
     differenceAux cov cov' X ((f : M → ℝ) • σ) x = f x • differenceAux cov cov' X σ x:=
   calc _
     _ = cov X ((f : M → ℝ) • σ) x - cov' X ((f : M → ℝ) • σ) x := rfl
-    _ = (f x • cov X σ x +  (bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ x)
-        - (f x • cov' X σ x +  (bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ x) := by
+    _ = (f x • cov X σ x +  ((bar _).toFun <| mfderiv I 𝓘(ℝ) f x (X x)) • σ x)
+        - (f x • cov' X σ x +  ((bar _).toFun <| mfderiv I 𝓘(ℝ) f x (X x)) • σ x) := by
       simp [hcov.leibniz hX hσ hf, hcov'.leibniz hX hσ hf]
     _ = f x • cov X σ x - f x • cov' X σ x := by simp
     _ = f x • (cov X σ x - cov' X σ x) := by simp [smul_sub]

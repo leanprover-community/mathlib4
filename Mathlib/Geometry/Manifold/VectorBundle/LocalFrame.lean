@@ -14,9 +14,9 @@ import Mathlib.Geometry.Manifold.Elaborators
 Let `V → M` be a finite rank smooth vector bundle with standard fiber `F`.
 Given a basis `b` for `F` and a local trivialisation `e` for `V`,
 we construct a **smooth local frame** on `V` w.r.t. `e` and `b`,
-i.e. a collection of sections `s_i` of `V` which is smooth on `e.baseSet` such that `{s_i x}` is a
+i.e. a collection of sections `sᵢ` of `V` which is smooth on `e.baseSet` such that `{sᵢ x}` is a
 basis of `V x` for each `x ∈ e.baseSet`. Any section `s` of `e` can be uniquely written as
-`s = ∑ i, f^i s_i` near `x`, and `s` is smooth at `x` iff the functions `f^i` are.
+`s = ∑ i, f^i sᵢ` near `x`, and `s` is smooth at `x` iff the functions `f^i` are.
 
 The latter statement holds in many cases, but not for every vector bundle. In this file, we prove
 it for local frames induced by a trivialisation, for finite rank bundles over a complete field.
@@ -330,7 +330,7 @@ lemma contMDiffOn_localFrame_baseSet
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) :
     CMDiff[e.baseSet] n (T% (b.localFrame e i)) := by
-  rw [contMDiffOn_section_of_mem_baseSet₀]
+  rw [e.contMDiffOn_section_baseSet_iff]
   apply (contMDiffOn_const (c := b i)).congr
   intro y hy
   simp [localFrame, hy, localFrame_toBasis_at]
@@ -500,8 +500,7 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
   simp only [aux]
 
   -- step 2: `s` read in trivialization `e` is `C^k`
-  have h₁ : CMDiffAt k (fun x ↦ (e (s x)).2) x := by
-    exact contMDiffAt_section_of_mem_baseSet hxe |>.1 hs
+  have h₁ : CMDiffAt k (fun x ↦ (e (s x)).2) x := e.contMDiffAt_section_iff hxe |>.1 hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
   let basl : F →ₗ[𝕜] 𝕜 := {
@@ -706,7 +705,6 @@ variable (b e) in
 lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
     ((localExtensionOn b e x v) x) = v := by
   simp [localExtensionOn, hx]
-  nth_rw 2 [← (b.localFrame_toBasis_at e hx).sum_repr v]
 
 omit [IsManifold I 0 M] in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
