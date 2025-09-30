@@ -153,6 +153,8 @@ to infer the expected type. This supports the following cases:
 
 Further cases can be added as necessary.
 This implementation is not maximally robust yet, but already useful.
+
+TODO: document what `baseInfo` is and how to use it!
 -/
 -- FIXME: better failure when trying to find a `NormedField` instance
 def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
