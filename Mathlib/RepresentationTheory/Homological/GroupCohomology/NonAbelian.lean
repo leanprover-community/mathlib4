@@ -65,7 +65,7 @@ theorem H0.map_comp {A B C : NonAbelianRep G} (f : A →+[G] B) (g : B →+[G] C
 theorem H0.map_injective_of_injective {A B : NonAbelianRep G} (f : A →+[G] B)
     (hf : Function.Injective f) : Function.Injective (H0.map f) := sorry
 
-def H0Functor : (NonAbelianRep G) ⥤ AddGrp := sorry
+-- def H0Functor : (NonAbelianRep G) ⥤ AddGrp := sorry
 
 end H0
 
@@ -117,7 +117,7 @@ theorem H1.map_zero {A B : NonAbelianRep G} (f : A →+[G] B) :
 theorem H1.map_comp {A B C : NonAbelianRep G} (f : A →+[G] B) (g : B →+[G] C) :
     H1.map (g.comp f) = (H1.map g).comp (H1.map f) := sorry
 
-def H1Functor : NonAbelianRep G ⥤ Pointed := sorry
+-- def H1Functor : NonAbelianRep G ⥤ Pointed := sorry
 
 end H1
 
