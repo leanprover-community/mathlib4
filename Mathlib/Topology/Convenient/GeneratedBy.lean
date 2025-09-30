@@ -84,7 +84,7 @@ lemma continuous_from_iff (g : WithGeneratedByTopology X Y → Z) :
   exact forall_congr' (fun i ↦ forall_congr'
     (fun f ↦ (by rw [continuous_coinduced_dom]; simp [equiv, Equiv.refl])))
 
-@[continuity]
+@[continuity, fun_prop]
 lemma continuous_equiv : Continuous (equiv (X := X) (Y := Y)) := by
   rw [continuous_def]
   intro U hU
@@ -207,25 +207,24 @@ instance : IsGeneratedBy X (PUnit.{v + 1}) := by
   rw [iff_le_generatedBy]
   exact Eq.le (by subsingleton)
 
-
 omit [TopologicalSpace Z]
 /-- Any topology coinduced by an `X`-generated topology is `X`-generated. -/
 lemma coinduced [IsGeneratedBy X Y] (f : Y → Z) :
-    @IsGeneratedBy _ X _ Z (tY.coinduced f) := by
+    IsGeneratedBy X (tY := tY.coinduced f) := by
   let _ := tY.coinduced f
   refine iff_le_generatedBy.2 ?_
   exact ((equiv_symm_comp_continuous_iff (X := X) f).2 continuous_coinduced_rng).coinduced_le
 
 /-- Suprema of `X`-generated topologies are `X`-generated. -/
 protected lemma iSup {Y : Type*} {κ : Sort*} {t : κ → TopologicalSpace Y}
-    (h : ∀ k, @IsGeneratedBy _ X _ Y (t k)) : @IsGeneratedBy _ X _ Y (⨆ k, t k) :=
+    (h : ∀ k, IsGeneratedBy X (tY := t k)) : @IsGeneratedBy _ X _ Y (⨆ k, t k) :=
   iff_le_generatedBy.2 <| iSup_le_iff.2 fun k ↦
-    (h k).le_generatedBy.trans <| generatedBy_mono <| le_iSup t k
+    (h k).le_generatedBy.trans <| TopologicalSpace.generatedBy_mono <| le_iSup t k
 
 /-- Suprema of `X`-generated topologies are `X`-generated. -/
 protected lemma sup {Y : Type*} {t₁ t₂ : TopologicalSpace Y}
-    (h₁ : @IsGeneratedBy _ X _ Y t₁) (h₂ : @IsGeneratedBy _ X _ Y t₂) :
-    @IsGeneratedBy _ X _ Y (t₁ ⊔ t₂) := by
+    (h₁ : IsGeneratedBy X (tY := t₁)) (h₂ : @IsGeneratedBy _ X _ Y t₂) :
+    IsGeneratedBy X (tY := t₁ ⊔ t₂) := by
   rw [sup_eq_iSup]
   exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
 
@@ -233,7 +232,7 @@ end IsGeneratedBy
 
 lemma IsQuotientMap.isGeneratedBy {f : Y → Z} (hf : IsQuotientMap f) [IsGeneratedBy X Y] :
     IsGeneratedBy X Z :=
-  hf.2 ▸ IsGeneratedBy.coinduced f
+  hf.eq_coinduced ▸ IsGeneratedBy.coinduced f
 
 end Topology
 
