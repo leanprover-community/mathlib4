@@ -486,6 +486,34 @@ variable (R M Nₗ) in
 /-- A shorthand for the type of `R`-bilinear `Nₗ`-valued maps on `M`. -/
 protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
 
+variable (R) in
+structure IsBilinearMap (R : Type*) {E F G : Type*} [Semiring R]
+    [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
+    [Module R E] [Module R F] [Module R G] (f : E → F → G) : Prop where
+  add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
+  smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y
+  add_right : ∀ (x : E) (y₁ y₂ : F), f x (y₁ + y₂) = f x y₁ + f x y₂
+  smul_right : ∀ (c : R) (x : E) (y : F), f x (c • y) = c • f x y
+
+lemma BilinMap.isBilinearMap (f : LinearMap.BilinMap R M Nₗ) :
+    IsBilinearMap R (f.toFun · : M → M → Nₗ) where
+  add_left := by intros; simp
+  add_right := by intros; simp
+  smul_left := by intros; simp
+  smul_right := by intros; simp
+
+def IsBilinearMap.toLinearMap {f : M → Pₗ → Qₗ} (hf : IsBilinearMap R f) :
+    M →ₗ[R] Pₗ →ₗ[R] Qₗ :=
+  LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
+
+def IsBilinearMap.toBilinMap {f : M → M → Mₗ} (hf : IsBilinearMap R f) :
+    LinearMap.BilinMap R M Mₗ :=
+  hf.toLinearMap
+
+variable (R M Mₗ) in
+lemma isBilinearMap_eval : IsBilinearMap R (fun (e : M) (φ : M →ₗ[R] Mₗ) ↦ φ e) := by
+  constructor <;> simp
+
 variable (R M) in
 /-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
