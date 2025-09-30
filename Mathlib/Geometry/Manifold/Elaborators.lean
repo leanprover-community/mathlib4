@@ -271,7 +271,7 @@ elab:max "MDiffAt" t:term:arg : term => do
     return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
-/-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f`,
+/-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f s`,
 trying to determine `I` and `J` from the local context. -/
 elab:max "MDiff[" s:term:arg "]" t:term:arg : term => do
   let es ← Term.elabTerm s none
@@ -378,7 +378,7 @@ elab:max "mfderiv[" s:term:arg "]" t:term:arg : term => do
     return ← mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
   | _ => throwError m!"Term {e} is not a function."
 
-/-- `mfderiv f x` elaborates to `mfderiv I J f x`,
+/-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
 elab:max "mfderiv%" t:term:arg : term => do
   let e ← Term.elabTerm t none
