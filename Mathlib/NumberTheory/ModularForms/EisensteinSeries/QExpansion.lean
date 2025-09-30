@@ -90,7 +90,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' (k : ℕ) :
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion k 1 (p := 1)
     (by norm_num) h0
 
-theorem differenetiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : IsOpen s)
+theorem differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : IsOpen s)
     {r : ℂ} (hr : r ∈ s) :
     DifferentiableAt ℂ (iteratedDerivWithin a (fun z ↦ cexp (2 * π * I * z) ^ n) s) r := by
   apply DifferentiableOn.differentiableAt _ (hs.mem_nhds hr)
@@ -105,7 +105,7 @@ lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) :
   · exact fun x hx => summable_geometric_iff_norm_lt_one.mpr
       (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨x, hx⟩)
   · exact fun n _ _ => summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' n
-  · exact fun n l z hl hz => differenetiableAt_iteratedDerivWithin_cexp n l
+  · exact fun n l z hl hz => differentiableAt_iteratedDerivWithin_cexp n l
       isOpen_upperHalfPlaneSet hz
 
 theorem contDiffOn_tsum_cexp (k : ℕ∞) :
@@ -113,7 +113,7 @@ theorem contDiffOn_tsum_cexp (k : ℕ∞) :
   contDiffOn_of_differentiableOn_deriv fun m _ z hz ↦
   ((summableUniformlyOn_differentiableOn isOpen_upperHalfPlaneSet
   (summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' m)
-  (fun n _ hz ↦ differenetiableAt_iteratedDerivWithin_cexp n m
+  (fun n _ hz ↦ differentiableAt_iteratedDerivWithin_cexp n m
     isOpen_upperHalfPlaneSet hz)) z hz).congr (fun z hz ↦
     iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩) (iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩)
 
