@@ -34,18 +34,17 @@ namespace SummationFilter
 /-- Typeclass asserting that a summation filter `L` is consistent with unconditional summation,
 so that any unconditionally-summable function is `L`-summable with the same sum. -/
 class LeAtTop (L : SummationFilter β) : Prop where
-  private le_atTop' : L.filter ≤ atTop
+  le_atTop : L.filter ≤ atTop
 
-lemma le_atTop (L : SummationFilter β) [L.LeAtTop] : L.filter ≤ atTop :=
-  LeAtTop.le_atTop'
+export LeAtTop (le_atTop)
 
 /-- Typeclass asserting that a summation filter is non-vacuous (if this is not satisfied, then
 every function is summable with every possible sum simultaneously). -/
 class NeBot (L : SummationFilter β) : Prop where
-  private ne_bot' : L.filter.NeBot
+  ne_bot : L.filter.NeBot
 
 /-- Makes the `NeBot` instance visible to the typeclass machinery. -/
-instance (L : SummationFilter β) [L.NeBot] : L.filter.NeBot := NeBot.ne_bot'
+instance (L : SummationFilter β) [L.NeBot] : L.filter.NeBot := NeBot.ne_bot
 
 section support
 
@@ -71,8 +70,8 @@ lemma support_eq_univ_iff {L : SummationFilter β} :
 @[simp] lemma support_eq_univ (L : SummationFilter β) [L.LeAtTop] : L.support = univ :=
   support_eq_univ_iff.mpr L.le_atTop
 
-instance [IsEmpty β] (L : SummationFilter β) : L.LeAtTop where
-  le_atTop' := support_eq_univ_iff.mp <| Subsingleton.elim ..
+instance [IsEmpty β] (L : SummationFilter β) : L.LeAtTop :=
+  ⟨support_eq_univ_iff.mp <| Subsingleton.elim ..⟩
 
 /-- Decidability instance: useful when working with `Finset` sums / products. -/
 instance (L : SummationFilter β) [L.LeAtTop] : DecidablePred (· ∈ L.support) :=
@@ -87,14 +86,11 @@ is a sufficient condition for `L`-summation to behave well on finitely-supported
 finitely-supported `f` is `L`-summable with the sum `∑ᶠ x ∈ L.support, f x` (and similarly for
 products). -/
 class HasSupport (L : SummationFilter β) : Prop where
-  private eventually_le_support' : ∀ᶠ s in L.filter, ↑s ⊆ L.support
+  eventually_le_support : ∀ᶠ s in L.filter, ↑s ⊆ L.support
 
-lemma eventually_le_support (L : SummationFilter β) [HasSupport L] :
-    ∀ᶠ s in L.filter, ↑s ⊆ L.support :=
-  HasSupport.eventually_le_support'
+export HasSupport (eventually_le_support)
 
-instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L where
-  eventually_le_support' := by simp
+instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L := ⟨by simp⟩
 
 lemma eventually_mem_or_not_mem (L : SummationFilter β) [HasSupport L] (b : β) :
     (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) := by
@@ -121,13 +117,13 @@ for the intended applications, and this avoids requiring a `DecidableEq` instanc
   · exact ⟨fun hc' ↦ have := hc'.exists; by grind, by grind⟩
 
 /-- If `L` has well-defined support, then so does its map along an embedding. -/
-instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L.map f) where
-  eventually_le_support' := by
-    by_cases h : L.NeBot
-    · simp only [map_filter, eventually_map, Finset.coe_map, image_subset_iff, support_map]
-      filter_upwards [L.eventually_le_support] with a using by grind
-    · have : L.filter = ⊥ := by contrapose! h; exact ⟨⟨h⟩⟩
-      simp [this]
+instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L.map f) := by
+  constructor
+  by_cases h : L.NeBot
+  · simp only [map_filter, eventually_map, Finset.coe_map, image_subset_iff, support_map]
+    filter_upwards [L.eventually_le_support] with a using by grind
+  · have : L.filter = ⊥ := by contrapose! h; exact ⟨⟨h⟩⟩
+    simp [this]
 
 /-- Pullback of a summation filter along an embedding. -/
 @[simps] def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where
@@ -138,13 +134,13 @@ instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L
   simp [support]
 
 /-- If `L` has well-defined support, then so does its comap along an embedding. -/
-instance (L : SummationFilter β) [HasSupport L] (f : γ ↪ β) : HasSupport (L.comap f) where
-  eventually_le_support' := by
-    simp only [support_comap, comap_filter, eventually_map, Finset.coe_preimage]
-    filter_upwards [L.eventually_le_support] with a using Set.preimage_mono
+instance (L : SummationFilter β) [HasSupport L] (f : γ ↪ β) : HasSupport (L.comap f) := by
+  constructor
+  simp only [support_comap, comap_filter, eventually_map, Finset.coe_preimage]
+  filter_upwards [L.eventually_le_support] with a using Set.preimage_mono
 
-instance (L : SummationFilter β) [LeAtTop L] (f : γ ↪ β) : LeAtTop (L.comap f) where
-  le_atTop' := by rw [← support_eq_univ_iff]; simp
+instance (L : SummationFilter β) [LeAtTop L] (f : γ ↪ β) : LeAtTop (L.comap f) :=
+  ⟨by rw [← support_eq_univ_iff]; simp⟩
 
 end map_comap
 
@@ -193,7 +189,7 @@ lemma SummationFilter.eq_unconditional_of_finite {β} [Finite β]
     rw [(isTop_iff_eq_top.mpr rfl).atTop_eq (a := Finset.univ), ← Finset.top_eq_univ,
       Ici_top, principal_singleton]
   have hL := L.le_atTop
-  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr <| NeBot.ne_bot'.1
+  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr <| NeBot.ne_bot.ne'
   cases L with | mk F =>
   simp only [unconditional, hAtTop] at *
   congr 1
