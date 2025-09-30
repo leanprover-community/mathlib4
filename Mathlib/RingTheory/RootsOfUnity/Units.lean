@@ -32,11 +32,9 @@ other version for completeness.
 
 open Polynomial Finset Nat
 
-variable {n i j k p : ℕ} {A B K L : Type*} {ζ : A}
+variable {n i j k p : ℕ} {A K : Type*} {ζ : A}
 
-variable [CommRing A] [CommRing B] [Algebra A B]
-
-variable [Field K] [Field L] [Algebra K L] [IsDomain A] [Algebra A K] [IsFractionRing A K]
+variable [CommRing A] [IsDomain A]
 
 namespace IsPrimitiveRoot
 
