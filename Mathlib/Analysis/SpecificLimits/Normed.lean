@@ -272,7 +272,7 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
       convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
       simp
     linarith
-  · simp [tsum_eq_zero_of_not_summable hx]
+  · simp only [tsum_eq_zero_of_not_summable hx, norm_zero]
     nontriviality R
     have : 1 ≤ ‖(1 : R)‖ := one_le_norm_one R
     have : 0 ≤ (1 - ‖x‖) ⁻¹ := inv_nonneg.2 (by linarith)
