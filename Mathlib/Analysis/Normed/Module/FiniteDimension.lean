@@ -680,7 +680,7 @@ theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSp
 open Nat Asymptotics in
 theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
     [NormOneClass F] [NormMulClass F] {k : ℕ} {r : F} (hr : ‖r‖ < 1) {u : ℕ → F}
-    (hu : u =O[atTop] (fun n ↦ ((n ^ k : ℕ) : F))) : Summable fun n : ℕ ↦ ‖u n * r ^ n‖ := by
+    (hu : u =O[atTop] fun n ↦ ((n ^ k : ℕ) : F)) : Summable fun n : ℕ ↦ ‖u n * r ^ n‖ := by
   rcases exists_between hr with ⟨r', hrr', h⟩
   apply summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h).norm
   calc
@@ -690,8 +690,8 @@ theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
       filter_upwards [eventually_norm_pow_le r] with n hn
       simp
   _ =O[atTop] fun n ↦ ‖((n : F) ^ k)‖ * ‖r‖ ^ n := by
-      simpa [Nat.cast_pow] using (isBigO_norm_left.mpr
-      (isBigO_norm_right.mpr hu)).mul (isBigO_refl (fun n => (‖r‖ ^ n)) atTop)
+      simpa [Nat.cast_pow] using
+        (isBigO_norm_left.mpr (isBigO_norm_right.mpr hu)).mul (isBigO_refl (fun n ↦ (‖r‖ ^ n)) atTop)
   _ =O[atTop] fun n ↦ ‖r' ^ n‖ := by
       convert isBigO_norm_right.mpr (isBigO_norm_left.mpr
         (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)

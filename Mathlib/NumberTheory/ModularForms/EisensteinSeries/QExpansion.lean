@@ -14,8 +14,7 @@ Q-expansions.
 
 -/
 
-open Set Metric TopologicalSpace Function Filter Complex
- EisensteinSeries
+open Set Metric TopologicalSpace Function Filter Complex EisensteinSeries
 
 open _root_.UpperHalfPlane hiding I
 
@@ -28,7 +27,7 @@ lemma iteratedDerivWithin_cexp_mul_const (k m : ℕ) (p : ℝ) {S : Set ℂ} (hs
     (fun s ↦ (2 * π * I * m / p) ^ k * cexp (2 * π * I * m * s / p)) S := by
   apply EqOn.trans (iteratedDerivWithin_of_isOpen hs)
   intro x hx
-  have : (fun s ↦ cexp (2 * π * I * m * s / p)) = (fun s ↦ cexp (((2 * π * I * m) / p) * s)) := by
+  have : (fun s ↦ cexp (2 * π * I * m * s / p)) = fun s ↦ cexp (((2 * π * I * m) / p) * s) := by
     ext z
     ring_nf
   simp only [this, iteratedDeriv_cexp_const_mul]
@@ -36,7 +35,7 @@ lemma iteratedDerivWithin_cexp_mul_const (k m : ℕ) (p : ℝ) {S : Set ℂ} (hs
 
 private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
     (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
-    (fun n ↦ f n * (2 * π * I * n / p) ^ k) =O[atTop] (fun n ↦ (↑(n ^ (l + k)) : ℝ)) := by
+    (fun n ↦ f n * (2 * π * I * n / p) ^ k) =O[atTop] fun n ↦ (↑(n ^ (l + k)) : ℝ) := by
   have h0 : (fun n : ℕ ↦ (2 * π * I * n / p) ^ k) =O[atTop] (fun n ↦ ((n ^ k) : ℝ)) := by
     have h1 : (fun n : ℕ ↦ (2 * π * I * n / p) ^ k) =
       (fun n : ℕ ↦ ((2 * π * I / p) ^ k) * n ^ k) := by
@@ -82,8 +81,8 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f
 /-- This is a version of `summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion` for level one
 and q-expansion coefficients all `1`. -/
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' (k : ℕ) :
-    SummableLocallyUniformlyOn (fun n ↦ iteratedDerivWithin k
-    (fun z ↦ cexp (2 * π * I * z) ^ n) ℍₒ) ℍₒ := by
+    SummableLocallyUniformlyOn
+      (fun n ↦ iteratedDerivWithin k (fun z ↦ cexp (2 * π * I * z) ^ n) ℍₒ) ℍₒ := by
   have h0 : (fun n : ℕ ↦ (1 : ℂ)) =O[atTop] (fun n ↦ ((n ^ 1) : ℝ)) := by
     simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast,
       eventually_atTop, ge_iff_le]
@@ -99,8 +98,8 @@ theorem differenetiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs
     apply this.congr (iteratedDerivWithin_of_isOpen hs)
   fun_prop
 
-lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) : iteratedDerivWithin k (fun z ↦
-    ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ z =
+lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) :
+    iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ z =
     ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * π * I * s) ^ n) ℍₒ z := by
   rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet (by simpa using z.2)]
   · exact fun x hx => summable_geometric_iff_norm_lt_one.mpr
@@ -114,7 +113,7 @@ theorem contDiffOn_tsum_cexp (k : ℕ∞) :
   contDiffOn_of_differentiableOn_deriv fun m _ z hz ↦
   ((summableUniformlyOn_differentiableOn isOpen_upperHalfPlaneSet
   (summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' m)
-  (fun n _ hz => differenetiableAt_iteratedDerivWithin_cexp n m
+  (fun n _ hz ↦ differenetiableAt_iteratedDerivWithin_cexp n m
     isOpen_upperHalfPlaneSet hz)) z hz).congr (fun z hz ↦
     iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩) (iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩)
 

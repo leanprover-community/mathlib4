@@ -197,7 +197,7 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
       (by rwa [← ofReal_natCast, ofReal_re, ← Nat.cast_one, Nat.cast_lt] : 1 < re k),
     cpow_natCast]
 
-lemma two_riemannZeta_eq_tsum_int_inv_even_pow {k : ℕ} (hk : 2 ≤ k) (hk2 : Even k) :
+lemma two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even {k : ℕ} (hk : 2 ≤ k) (hk2 : Even k) :
     2 * riemannZeta k = ∑' (n : ℤ), ((n : ℂ) ^ k)⁻¹ := by
   have hkk : 1 < k := by linarith
   rw [tsum_nat_eq_zero_two_pnat]
