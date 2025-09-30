@@ -304,15 +304,15 @@ elab:max "MDiff" t:term:arg : term => do
     return ← mkAppM ``MDifferentiable #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
--- TODO: say something about the expected type of `n` being in ℕ or WithTop ℕ∞!
 /-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
 trying to determine `I` and `J` from the local context.
+`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
 The argument `x` can be omitted. -/
 elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTerm nt wtn
+  let ne ← Term.elabTermEnsuringType nt wtn
   let _estype ← inferType es >>= instantiateMVars
   let eftype ← inferType ef >>= instantiateMVars
   match eftype with
@@ -325,6 +325,7 @@ elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
 
 /-- `CMDiffAt n f x` elaborates to `ContMDiffAt I J n f x`
 trying to determine `I` and `J` from the local context.
+`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
 The argument `x` can be omitted. -/
 elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
@@ -339,7 +340,8 @@ elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   | _ => throwError m!"Term {e} is not a function."
 
 /-- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
@@ -356,14 +358,12 @@ elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   | _ => throwError m!"Term {ef} is not a function."
 
 /-- `CMDiff n f` elaborates to `ContMDiff I J n f`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 elab:max "CMDiff" nt:term:arg f:term:arg : term => do
   let e ← Term.elabTerm f none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  -- TODO: add a test demonstrating this having this line instead would change behaviour.
-  -- and decide on which behaviour I prefer!
-  -- let ne ← Term.elabTermEnsuringType nt wtn
-  let ne ← Term.elabTerm nt wtn
+  let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
   | .forallE _ src tgt _ =>

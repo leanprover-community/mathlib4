@@ -319,11 +319,29 @@ section error
 -- yields a parse error, "unexpected toekn '/--'; expected term"
 -- #check CMDiffAt[s] f
 
-/-- error: Term m is not a function. -/
+/--
+error: type mismatch
+  f
+has type
+  M → M' : Type (max u_10 u_4)
+but is expected to have type
+  WithTop ℕ∞ : Type
+---
+error: Term m is not a function.
+-/
 #guard_msgs in
 #check CMDiffAt[s] f m
 
-/-- error: Term m is not a function. -/
+/--
+error: type mismatch
+  f
+has type
+  M → M' : Type (max u_10 u_4)
+but is expected to have type
+  WithTop ℕ∞ : Type
+---
+error: Term m is not a function.
+-/
 #guard_msgs in
 #check CMDiffAt[s] f m
 
@@ -402,8 +420,7 @@ Note: Expected a function because this term is being applied to the argument
 
 end
 
--- Tests for coercions from ℕ or ℕ∞ to Withtop ℕ∞.
--- TODO: decide on the correct behaviour and update the tests accordingly!
+/-! Tests for coercions from `ℕ` or `ℕ∞` to `WithTop ℕ∞` -/
 section coercions
 
 variable {k : ℕ} {k' : ℕ∞}
@@ -420,29 +437,11 @@ variable {k : ℕ} {k' : ℕ∞}
 #guard_msgs in
 #check CMDiffAt[s] 37 f
 
-/--
-error: Application type mismatch: In the application
-  ContMDiffWithinAt I I' k
-the argument
-  k
-has type
-  ℕ : Type
-but is expected to have type
-  WithTop ℕ∞ : Type
--/
+/-- info: ContMDiffWithinAt I I' (↑k) f s : M → Prop -/
 #guard_msgs in
 #check CMDiffAt[s] k f
 
-/--
-error: Application type mismatch: In the application
-  ContMDiffWithinAt I I' k'
-the argument
-  k'
-has type
-  ℕ∞ : Type
-but is expected to have type
-  WithTop ℕ∞ : Type
--/
+/-- info: ContMDiffWithinAt I I' (↑k') f s m : Prop -/
 #guard_msgs in
 #check CMDiffAt[s] k' f m
 
@@ -474,28 +473,18 @@ Note: Expected a function because this term is being applied to the argument
 #guard_msgs in
 #check CMDiff[s] k' f m
 
-/--
-error: Application type mismatch: In the application
-  ContMDiff I I' k
-the argument
-  k
-has type
-  ℕ : Type
-but is expected to have type
-  WithTop ℕ∞ : Type
--/
+/-- info: ContMDiff I I' (↑k) f : Prop -/
 #guard_msgs in
 #check CMDiff k f
 
 /--
-error: Application type mismatch: In the application
-  ContMDiff I I' k'
-the argument
-  k'
-has type
-  ℕ∞ : Type
-but is expected to have type
-  WithTop ℕ∞ : Type
+error: Function expected at
+  ContMDiff I I' (↑k') f
+but this term has type
+  Prop
+
+Note: Expected a function because this term is being applied to the argument
+  m
 -/
 #guard_msgs in
 #check CMDiff k' f m
