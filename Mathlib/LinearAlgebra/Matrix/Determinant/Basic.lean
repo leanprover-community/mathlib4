@@ -471,11 +471,7 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
 
 theorem det_eq_zero_of_not_linearIndependent_rows [IsDomain R] {A : Matrix m m R}
     (hA : ¬ LinearIndependent R (fun i ↦ A i)) :
-    det A = 0 := by
-  obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
-  have h0 := A.det_updateRow_sum i c
-  rwa [det_eq_zero_of_row_eq_zero (i := i) (fun j ↦ by simp [hc0]), smul_eq_mul, eq_comm,
-    mul_eq_zero_iff_left hci] at h0
+    det A = 0 := detRowAlternating.map_linearDependent A hA
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
     LinearIndependent R (fun i ↦ A i) := by
