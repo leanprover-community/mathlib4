@@ -37,5 +37,8 @@ jobs:
           branch: "nolints"
           base: master
           title: "chore(scripts): update nolints.json"
-          body: "I am happy to remove some nolints for you!"
+          body: |
+            I am happy to remove some nolints for you!
+
+            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"
