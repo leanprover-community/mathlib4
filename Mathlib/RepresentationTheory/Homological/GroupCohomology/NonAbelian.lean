@@ -54,7 +54,7 @@ def H0 (A : NonAbelianRep G) : AddSubmonoid A where
 
 instance (A : NonAbelianRep G) : DistribMulAction G (H0 A) := sorry
 
-def H0_map (A B : NonAbelianRep G) (f : A →[G] B) : H0 A →[G] H0 B := sorry
+def H0.map (A B : NonAbelianRep G) (f : A →+[G] B) : H0 A →+[G] H0 B := sorry
 
 end H0
 

@@ -37,7 +37,10 @@ instance : HasZeroObject Grp :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
 @[to_additive AddGrp.hasZeroMorphisms]
-instance : HasZeroMorphisms Grp := sorry
+instance : HasZeroMorphisms Grp where
+  zero _ _ := ⟨ofHom 1⟩
+  comp_zero := by rfl_cat
+  zero_comp _ _ _ f := hom_ext (MonoidHom.ext fun x ↦ MonoidHom.map_one (Hom.hom f))
 
 end Grp
 
@@ -58,8 +61,8 @@ instance : HasZeroObject CommGrp :=
 
 @[to_additive AddCommGrp.hasZeroMorphisms]
 instance : HasZeroMorphisms CommGrp where
-  zero _ _ := sorry
-  comp_zero := sorry
-  zero_comp := sorry
+  zero _ _ := ⟨ofHom 1⟩
+  comp_zero := by rfl_cat
+  zero_comp _ _ _ f := hom_ext (MonoidHom.ext fun x ↦ MonoidHom.map_one (Hom.hom f))
 
 end CommGrp
