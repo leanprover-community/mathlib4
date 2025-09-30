@@ -288,6 +288,12 @@ theorem toTemperedDistribution_apply {p : ENNReal} [hp : Fact (1 ≤ p)] (f : Lp
   unfold Lp.toTemperedDistribution Lp.toTemperedDistribution_aux
   simp [toWOT_apply, lpPairing_eq_integral]
 
+theorem injective_toTemperedDistribution {p : ENNReal} [hp : Fact (1 ≤ p)] :
+    Function.Injective (_root_.toTemperedDistribution 𝕜 V)
+
+#check ae_eq_zero_of_integral_contDiff_smul_eq_zero
+
+
 variable (𝕜 F V μ) in
 /-- The natural embedding of L^p into tempered distributions. -/
 def toTemperedDistributionCLM (p : ENNReal) [hp : Fact (1 ≤ p)] :
