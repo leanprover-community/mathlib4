@@ -34,4 +34,17 @@ instance (A : NonAbelianRep G) : MulAction G A := sorry
 
 end basic
 
+section H1
+
+def Z1 (G : Type u) [Monoid G] (V : NonAbelianRep G) :=
+  { f : G → V // ∀ g h : G, f (g * h) = f g * (g • f h) }
+
+def Z1.setoid (G : Type u) [Group G] (V : NonAbelianRep G) : Setoid (Z1 G V) :=
+  { r := fun f g ↦ ∃ a : V, ∀ h : G, g.val h = a⁻¹ * (f.val h) * (h • a),
+    iseqv := sorry }
+def H1 (V : NonAbelianRep G) : Pointed where
+  X :=
+
+end H1
+
 end groupCohomology
