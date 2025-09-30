@@ -737,16 +737,33 @@ variable [CommSemiring A] [Algebra R A]
 variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra R C]
 
-/-- `includeLeft` is compatible with `AlgebraTensorModule.distribBaseChange` and `lTensor`. -/
+lemma distribBaseChange_includeLeft_lTensor_tmul (a : A) (b : B) :
+    (AlgebraTensorModule.distribBaseChange R A B C)
+      ((includeLeft (R := R) (A := B) (B := C)).toLinearMap.lTensor A (a ⊗ₜ[R] b)) =
+    (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)) (a ⊗ₜ[R] b) := by
+  simp [one_def]
+
+/-- The composition of `(id A) ⊗[R] includeLeft : A ⊗[R] B → A ⊗[R] (B ⊗[R] C)`
+with `AlgebraTensorModule.distribBaseChange : A ⊗[R] (B ⊗[R] C) ≃ (A ⊗[R] B) ⊗[R] (A ⊗[R] C)`
+can be written as `includeLeft : A ⊗[R] B → (A ⊗[R] B) ⊗ (A ⊗[R] C)`, as `R`-linear maps. -/
 lemma distribBaseChange_includeLeft_lTensor :
     ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
       ((includeLeft (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
-    (includeLeft (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
+    (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
   ext
   simp [one_def]
 
+lemma distribBaseChange_includeRight_lTensor_tmul (a : A) (c : C) :
+    (AlgebraTensorModule.distribBaseChange R A B C)
+      ((includeRight (R := R) (A := B) (B := C)).toLinearMap.lTensor A (a ⊗ₜ c)) =
+    (includeRight (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)) (a ⊗ₜ c) := by
+  simp only [includeRight_apply, LinearMap.lTensor_tmul, AlgHom.toLinearMap_apply,
+    TensorProduct.AlgebraTensorModule.distribBaseChange_tmul, includeRight_apply, one_def]
+  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', smul_tmul, smul_tmul']
 
-/-- `includeRight` is compatible with `AlgebraTensorModule.distribBaseChange` and `lTensor`. -/
+/-- The composition of `(id A) ⊗[R] includeRight : A ⊗[R] C → A ⊗[R] (B ⊗[R] C)`
+with `AlgebraTensorModule.distribBaseChange : A ⊗[R] (B ⊗[R] C) ≃ (A ⊗[R] B) ⊗[R] (A ⊗[R] C)`
+can be written as `includeRight : A ⊗[R] C → (A ⊗[R] B) ⊗ (A ⊗[R] C)`, as `R`-linear maps. -/
 lemma distribBaseChange_includeRight_lTensor :
     ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
       ((includeRight (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
@@ -755,12 +772,7 @@ lemma distribBaseChange_includeRight_lTensor :
   intro x
   induction x using TensorProduct.induction_on with
   | zero => simp only [map_zero]
-  | tmul a _ =>
-    simp only [includeRight_apply, LinearMap.comp_apply, LinearMap.lTensor_tmul,
-      AlgHom.toLinearMap_apply, LinearEquiv.coe_coe, LinearEquiv.restrictScalars_apply,
-      TensorProduct.AlgebraTensorModule.distribBaseChange_tmul, AlgHom.coe_restrictScalars',
-      includeRight_apply, one_def]
-    rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', smul_tmul, smul_tmul']
+  | tmul _ _ => exact distribBaseChange_includeRight_lTensor_tmul _ _ _ _ _ _
   | add _ _ hx hy =>
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       LinearEquiv.restrictScalars_apply] at hx hy
