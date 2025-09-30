@@ -1,5 +1,4 @@
 import Mathlib.Geometry.Manifold.Elaborators
-
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
