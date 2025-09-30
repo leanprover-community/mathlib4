@@ -473,4 +473,100 @@ protected theorem continuous_iff {X : Type*} [TopologicalSpace X] (φ : X → �
 
 end Topology
 
+section fderiv
+
+open Distributions
+
+/-- Wrapper for `fderiv` on `𝓓^{n}_{K}(E, F)`, as a map into `𝓓^{n-1}_{K}(E, E →L[ℝ] F)` -/
+protected noncomputable def fderiv' (f : 𝓓^{n}_{K}(E, F)) :
+    𝓓^{n-1}_{K}(E, E →L[ℝ] F) :=
+  if hn : n = 0 then 0 else
+    .of_support_subset
+    (f.contDiff.fderiv_right <|
+    (by exact_mod_cast (tsub_add_cancel_of_le <| ENat.one_le_iff_ne_zero.mpr hn).le))
+    ((support_fderiv_subset ℝ).trans f.tsupport_subset)
+
+@[simp]
+lemma fderiv'_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
+    f.fderiv' x = if n = 0 then 0 else fderiv ℝ f x := by
+  rw [ContDiffMapSupportedIn.fderiv']
+  split_ifs <;> rfl
+
+@[simp]
+lemma coe_fderiv'_of_ne (hn : n ≠ 0) (f : 𝓓^{n}_{K}(E, F)) :
+    f.fderiv' = fderiv ℝ f := by
+  ext : 1
+  rw [fderiv'_apply]
+  exact if_neg hn
+
+@[simp]
+lemma coe_fderiv'_zero (f : 𝓓^{0}_{K}(E, F)) :
+    f.fderiv' = 0 := by
+  ext : 1
+  rw [fderiv'_apply]
+  exact if_pos rfl
+
+/-- Bundling of `fderiv` as a `𝕜`-linear map. -/
+@[simps]
+noncomputable def fderivₗ' {n : ℕ∞} : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-1}_{K}(E, E →L[ℝ] F) where
+  toFun f := f.fderiv'
+  map_add' f₁ f₂ := by
+    ext : 1
+    simp only [fderiv'_apply, add_apply]
+    split_ifs with hn
+    · rw [add_zero]
+    · rw [← ne_eq, ← ENat.one_le_iff_ne_zero] at hn
+      exact fderiv_add
+        (f₁.contDiff.differentiable (by exact_mod_cast hn)).differentiableAt
+        (f₂.contDiff.differentiable (by exact_mod_cast hn)).differentiableAt
+  map_smul' c f := by
+    ext : 1
+    simp only [fderiv'_apply, smul_apply]
+    split_ifs with hn
+    · rw [smul_zero]
+    · rw [← ne_eq, ← ENat.one_le_iff_ne_zero] at hn
+      exact fderiv_const_smul (f.contDiff.differentiable (by exact_mod_cast hn)).differentiableAt c
+
+theorem _root_.ENat.eq_zero_or_add_one (i : ℕ∞) : i = 0 ∨ ∃ k, i = k + 1 := by
+  refine or_iff_not_imp_left.mpr fun h ↦ ⟨i - 1, ?_⟩
+  rw [tsub_add_cancel_of_le (ENat.one_le_iff_ne_zero.mpr h)]
+
+theorem seminorm_fderiv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E (E →L[ℝ] F) (n - 1) K i f.fderiv' =
+      ContDiffMapSupportedIn.seminorm 𝕜 E F n K (i+1) f := by
+  simp_rw [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm]
+  refine iSup_congr fun x ↦ ?_
+  simp only [toBoundedContinuousFunction_apply]
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [iteratedFDeriv'_zero]
+  · rcases lt_or_ge (i : ℕ∞) n with (hin|hin)
+    · have hin' : i + 1 ≤ n := by
+        exact Order.add_one_le_of_lt hin
+      have hin'' : i ≤ n - 1 := by
+        refine ENat.le_sub_of_add_le_left (ENat.one_ne_top) (add_comm _ (1 : ℕ∞) ▸ hin')
+      simp [hin', hin'', hn, ← norm_iteratedFDeriv_fderiv]
+    · have hin' : n - 1 < i:= by
+        refine (ENat.add_one_le_iff ?_).mp ?_
+        · refine ENat.sub_ne_top_iff.mpr (Or.inl (ne_top_of_le_ne_top (ENat.coe_ne_top i) hin))
+        · rw [tsub_add_cancel_of_le (ENat.one_le_iff_ne_zero.mpr hn )]
+          exact hin
+      have hin'' : n < i + 1 := by
+        exact lt_of_tsub_lt_tsub_right hin'
+      simp [hin', hin'']
+
+/-- Bundling of `fderiv'` as continuous `𝕜`-linear map. -/
+@[simps! apply]
+noncomputable def fderivCLM' : 𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n-1}_{K}(E, E →L[ℝ] F) where
+  toLinearMap := fderivₗ' 𝕜
+  cont := by
+    refine Seminorm.continuous_from_bounded  (τ₁₂ := RingHom.id 𝕜)
+      (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K)
+      (ContDiffMapSupportedIn.withSeminorms 𝕜 E (E →L[ℝ] F) (n-1) K) _
+      fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩
+    simp only [Seminorm.comp_apply, fderivₗ'_apply,
+      Finset.sup_singleton, one_smul]
+    rw [seminorm_fderiv']
+
+end fderiv
+
 end ContDiffMapSupportedIn
