@@ -34,7 +34,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
   -- `V` vector bundle
 
--- Tests for the T% elaborator, inserting calls to TotalSpace.mk' automatically.
+/-! Tests for the `T%` elaborator, inserting calls to `TotalSpace.mk'` automatically. -/
 section TotalSpace
 
 variable {σ : Π x : M, V x}
@@ -85,7 +85,7 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 
 end TotalSpace
 
--- Elaborators for MDifferentiable{WithinAt,At,On}.
+/-! Tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 
 -- Start with some basic tests: a simple function, both in applied and unapplied form.
@@ -297,6 +297,14 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 
 end differentiability
 
+/-! Tests for the custom elaborators for `ContMDiff{WithinAt,At,On}` -/
+section smoothness
+
+-- TODO: add actual tests!
+
+end smoothness
+
+/-! Tests for the custom elaborators for `mfderiv` and `mfderivWithin` -/
 section mfderiv
 
 variable {EM' : Type*} [NormedAddCommGroup EM']
