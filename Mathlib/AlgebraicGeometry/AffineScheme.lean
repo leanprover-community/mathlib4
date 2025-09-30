@@ -10,7 +10,6 @@ import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.Topology.Sheaves.CommRingCat
-import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Affine schemes
