@@ -163,8 +163,8 @@ theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (-f) a b :=
   hf.fun_neg
 
-theorem const_smul {M : Type*} [SeminormedRing M] [ContinuousMul M] [Module M F]
-    [NormSMulClass M F] (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
+theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+    (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α • f x) a b := by
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.const_mul ‖α‖)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
