@@ -684,7 +684,7 @@ lemma exists_valuation_div_valuation_eq (γ : ValueGroupWithZero R) :
   induction γ using ValueGroupWithZero.ind with | mk a b
   use a, b
   simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
-  
+
 lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGroupWithZero R)ˣ) :
     ∃ (a b : posSubmonoid R), valuation R a / valuation _ (b : R) = γ := by
   obtain ⟨a, b, hab⟩ := exists_valuation_div_valuation_eq γ.val
