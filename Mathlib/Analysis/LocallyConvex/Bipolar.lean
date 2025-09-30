@@ -116,9 +116,7 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
       map_one, one_mul]
     rfl
   -- From which it follows that `x` can't be in the bipolar of `s`
-  by_contra hc
-  rw [Set.mem_compl_iff, not_not] at hc
-  exact ((lt_iff_le_not_ge.mp one_lt_x_f₀).2)
+  exact fun hc ↦ ((lt_iff_le_not_ge.mp one_lt_x_f₀).2)
     (Preorder.le_trans (RCLike.re ((B x) f₀)) ‖(B x) f₀‖ 1
       (RCLike.re_le_norm ((B x) f₀)) (hc f₀ hg₃))
 
