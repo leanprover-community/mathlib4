@@ -54,16 +54,15 @@ theorem mem_span_iff_continuous_of_finite {f : ι → E →ₗ[𝕜] 𝕜} (φ :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔ Continuous[⨅ i, induced (f i) t𝕜, t𝕜] φ := by
   let _ := ⨅ i, induced (f i) t𝕜
   constructor
-  · exact Submodule.span_induction
+  refine ⟨Submodule.span_induction
       (Set.forall_mem_range.mpr fun i ↦ continuous_iInf_dom continuous_induced_dom) continuous_zero
-      (fun _ _ _ _ ↦ .add) (fun c _ _ h ↦ h.const_smul c)
-  · intro φ_cont
-    refine mem_span_of_iInf_ker_le_ker fun x hx ↦ ?_
-    simp_rw [Submodule.mem_iInf, LinearMap.mem_ker] at hx ⊢
-    have : Inseparable x 0 := by
-      -- Maybe missing lemmas about `Inseparable`?
-      simp_rw [Inseparable, nhds_iInf, nhds_induced, hx, map_zero]
-    simpa only [map_zero] using (this.map φ_cont).eq
+      (fun _ _ _ _ ↦ .add) (fun c _ _ h ↦ h.const_smul c), fun φ_cont ↦ ?_⟩
+  apply mem_span_of_iInf_ker_le_ker fun x hx ↦ ?_
+  simp_rw [Submodule.mem_iInf, LinearMap.mem_ker] at hx ⊢
+  have : Inseparable x 0 := by
+    -- Maybe missing lemmas about `Inseparable`?
+    simp_rw [Inseparable, nhds_iInf, nhds_induced, hx, map_zero]
+  simpa [map_zero] using (this.map φ_cont).eq
 
 end TopologicalRing
 
