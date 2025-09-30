@@ -24,10 +24,10 @@ open CategoryTheory MonObj
 
 namespace GrpTypeEquivalenceGrp
 
-instance grpGroup (A : Type u) [Grp_Class A] : Group A :=
+instance grpGroup (A : Type u) [GrpObj A] : Group A :=
   { MonTypeEquivalenceMon.monMonoid A with
     inv := ι[A]
-    inv_mul_cancel a := congr_fun (Grp_Class.left_inv A) a }
+    inv_mul_cancel a := congr_fun (GrpObj.left_inv A) a }
 
 /-- Converting a group object in `Type u` into a group. -/
 noncomputable def functor : Grp_ (Type u) ⥤ Grp.{u} where

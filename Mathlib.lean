@@ -905,6 +905,7 @@ import Mathlib.Algebra.Order.Module.Basic
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.Equiv
 import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Module.HahnEmbedding
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Algebra.Order.Module.PositiveLinearMap
@@ -1208,6 +1209,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
+import Mathlib.AlgebraicGeometry.EllipticCurve.Reduction
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.Fiber
@@ -3025,6 +3027,7 @@ import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Limits
 import Mathlib.Condensed.Light.Module
+import Mathlib.Condensed.Light.Small
 import Mathlib.Condensed.Light.TopCatAdjunction
 import Mathlib.Condensed.Light.TopComparison
 import Mathlib.Condensed.Limits
@@ -3071,8 +3074,12 @@ import Mathlib.Data.Bundle
 import Mathlib.Data.Char
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
+import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Complex.ExponentialBounds
+import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Data.Complex.Norm
+import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
@@ -4363,6 +4370,7 @@ import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 import Mathlib.LinearAlgebra.TensorPower.Basic
 import Mathlib.LinearAlgebra.TensorPower.Pairing
+import Mathlib.LinearAlgebra.TensorPower.Symmetric
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
@@ -6273,6 +6281,7 @@ import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Topology.Algebra.Group.AddTorsor
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.Group.Compact

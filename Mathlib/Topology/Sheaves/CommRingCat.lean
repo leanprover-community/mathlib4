@@ -251,7 +251,7 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
 /-- The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
 values in some topological commutative ring `T`.
 
-For example, we could construct the presheaf of continuous complex valued functions of `X` as
+For example, we could construct the presheaf of continuous complex-valued functions of `X` as
 ```
 presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```

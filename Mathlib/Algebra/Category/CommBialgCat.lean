@@ -185,7 +185,7 @@ lemma CommAlgCat.mul_op_of_unop_hom {A : Type u} [CommRing A] [Bialgebra R A] :
     μ[op <| CommAlgCat.of R A].unop.hom = comulAlgHom R A := rfl
 
 instance {A : Type u} [CommRing A] [Bialgebra R A] [IsCocomm R A] :
-    IsCommMon (Opposite.op <| CommAlgCat.of R A) where
+    IsCommMonObj (Opposite.op <| CommAlgCat.of R A) where
   mul_comm := by ext; exact comm_comul R _
 
 instance {A B : Type u} [CommRing A] [Bialgebra R A] [CommRing B] [Bialgebra R B]
@@ -226,5 +226,5 @@ lemma commBialgCatEquivComonCommAlgCat_inverse_map_unop_hom
     f.unop.hom.unop.hom := rfl
 
 instance {A : CommBialgCat.{u} R} [IsCocomm R A] :
-    IsCommMon ((commBialgCatEquivComonCommAlgCat R).functor.obj A).unop.X :=
-  inferInstanceAs <| IsCommMon <| op <| CommAlgCat.of R A
+    IsCommMonObj ((commBialgCatEquivComonCommAlgCat R).functor.obj A).unop.X :=
+  inferInstanceAs <| IsCommMonObj <| op <| CommAlgCat.of R A
