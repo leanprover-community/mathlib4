@@ -110,5 +110,8 @@ jobs:
           branch: ${{ env.BRANCH_NAME }}
           base: master
           title: "${{ env.pr_title }}"
-          body: "This PR updates the Mathlib dependencies."
+          body: |
+            This PR updates the Mathlib dependencies.
+
+            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"
