@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # The category of (commutative) (additive) groups has a zero object.
@@ -35,6 +36,12 @@ theorem isZero_of_subsingleton (G : Grp) [Subsingleton G] : IsZero G := by
 instance : HasZeroObject Grp :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
+@[to_additive AddGrp.hasZeroMorphisms]
+instance : HasZeroMorphisms Grp where
+  zero _ _ := ⟨ofHom 1⟩
+  comp_zero := by rfl_cat
+  zero_comp _ _ _ f := hom_ext (MonoidHom.ext fun x ↦ MonoidHom.map_one (Hom.hom f))
+
 end Grp
 
 namespace CommGrp
@@ -51,5 +58,11 @@ theorem isZero_of_subsingleton (G : CommGrp) [Subsingleton G] : IsZero G := by
 @[to_additive AddCommGrp.hasZeroObject]
 instance : HasZeroObject CommGrp :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
+
+@[to_additive AddCommGrp.hasZeroMorphisms]
+instance : HasZeroMorphisms CommGrp where
+  zero _ _ := ⟨ofHom 1⟩
+  comp_zero := by rfl_cat
+  zero_comp _ _ _ f := hom_ext (MonoidHom.ext fun x ↦ MonoidHom.map_one (Hom.hom f))
 
 end CommGrp

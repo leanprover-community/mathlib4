@@ -3,6 +3,7 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
+import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.CategoryTheory.Category.Pointed.Basic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
@@ -19,6 +20,8 @@ Let `G` be a group acting on another (not necessarily abelian) group `A`, in thi
 -/
 
 universe u
+
+open CategoryTheory
 
 namespace groupCohomology
 
@@ -42,12 +45,16 @@ end basic
 
 section H0
 
-variable {G : Type u} [Monoid G] (A : NonAbelianRep G)
+variable {G : Type u} [Monoid G]
 
-def H0 : AddSubmonoid A where
+def H0 (A : NonAbelianRep G) : AddSubmonoid A where
   carrier := setOf fun v => ∀ g : G, g • v = v
   add_mem' := sorry
   zero_mem' := sorry
+
+instance (A : NonAbelianRep G) : DistribMulAction G (H0 A) := sorry
+
+def H0.map (A B : NonAbelianRep G) (f : A →+[G] B) : H0 A →+[G] H0 B := sorry
 
 end H0
 
@@ -98,6 +105,10 @@ def H1.map_one {G : Type u} [Monoid G] {A : NonAbelianRep G} :
     H1.map 1 = 𝟙 (H1 G A) := sorry
 
 end H1
+
+section connectHom
+
+end connectHom
 
 end NonAbelian
 
