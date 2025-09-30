@@ -325,7 +325,7 @@ section
 
 variable [HasImage f]
 
-/-- Some factorisation of `f` through a monomorphism (selected with choice). -/
+/-- Some image factorisation of `f` through a monomorphism (selected with choice). -/
 def Image.imageFactorisation : ImageFactorisation f :=
   Classical.choice HasImage.exists_image
 

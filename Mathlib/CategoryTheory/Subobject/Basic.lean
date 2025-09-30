@@ -494,6 +494,10 @@ theorem lower_comm (F : MonoOver Y ⥤ MonoOver X) :
     toThinSkeleton _ ⋙ lower F = F ⋙ toThinSkeleton _ :=
   rfl
 
+/--
+Applying `lower F` and then `representative` is isomorphic to first applying `representative`
+and then applying `F`.
+-/
 def isoLowerRepresentative (F : MonoOver Y ⥤ MonoOver X) :
     lower F ⋙ representative ≅ representative ⋙ F :=
   ThinSkeleton.isoCompFromThinSkeleton _
