@@ -206,7 +206,7 @@ def _root_.Homeomorph.toOpenPartialHomeomorphOfImageEq (e : X ≃ₜ Y) (s : Set
 _root_.Homeomorph.toPartialHomeomorphOfImageEq := _root_.Homeomorph.toOpenPartialHomeomorphOfImageEq
 
 /-- A homeomorphism induces an open partial homeomorphism on the whole space -/
-@[simps! (config := mfld_cfg)]
+@[simps! (attr := mfld_simps) -fullyApplied]
 def _root_.Homeomorph.toOpenPartialHomeomorph (e : X ≃ₜ Y) : OpenPartialHomeomorph X Y :=
   e.toOpenPartialHomeomorphOfImageEq univ isOpen_univ univ <|
     by rw [image_univ, e.surjective.range_eq]
@@ -630,7 +630,7 @@ theorem restrOpen_source (s : Set X) (hs : IsOpen s) : (e.restrOpen s hs).source
 make sure that the restriction is well defined whatever the set s, since open partial homeomorphisms
 are by definition defined on open sets. In applications where `s` is open, this coincides with the
 restriction of partial equivalences. -/
-@[simps! (config := mfld_cfg) apply symm_apply, simps! -isSimp source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply symm_apply, simps! -isSimp source target]
 protected def restr (s : Set X) : OpenPartialHomeomorph X Y :=
   e.restrOpen (interior s) isOpen_interior
 
@@ -660,7 +660,7 @@ theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s :=
   simp [e.open_source.interior_eq, ← inter_assoc]
 
 /-- The identity on the whole space as an open partial homeomorphism. -/
-@[simps! (config := mfld_cfg) apply, simps! -isSimp source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply, simps! -isSimp source target]
 protected def refl (X : Type*) [TopologicalSpace X] : OpenPartialHomeomorph X X :=
   (Homeomorph.refl X).toOpenPartialHomeomorph
 
@@ -705,7 +705,7 @@ section ofSet
 variable {s : Set X} (hs : IsOpen s)
 
 /-- The identity partial equivalence on a set `s` -/
-@[simps! (config := mfld_cfg) apply, simps! -isSimp source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply, simps! -isSimp source target]
 def ofSet (s : Set X) (hs : IsOpen s) : OpenPartialHomeomorph X X where
   toPartialEquiv := PartialEquiv.ofSet s
   open_source := hs
@@ -951,8 +951,7 @@ lemma restr_eqOnSource_restr {s' : Set X}
     e.restr s ≈ e.restr s' := by
   constructor
   · simpa [e.restr_source]
-  · simp
-    exact fun ⦃x⦄ ↦ congrFun rfl
+  · simp [Set.eqOn_refl]
 
 lemma restr_inter_source : e.restr (e.source ∩ s) ≈ e.restr s :=
   e.restr_eqOnSource_restr (by simp [interior_eq_iff_isOpen.mpr e.open_source])
@@ -964,7 +963,7 @@ section Prod
 
 /-- The product of two open partial homeomorphisms, as an open partial homeomorphism on the product
 space. -/
-@[simps! (config := mfld_cfg) toPartialEquiv apply,
+@[simps! (attr := mfld_simps) -fullyApplied toPartialEquiv apply,
   simps! -isSimp source target symm_apply]
 def prod (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
     OpenPartialHomeomorph (X × Y) (X' × Y') where
@@ -1183,7 +1182,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 
 /-- If an open partial homeomorphism has source and target equal to univ, then it induces a
 homeomorphism between the whole spaces, expressed in this definition. -/
-@[simps (config := mfld_cfg) apply symm_apply]
+@[simps (attr := mfld_simps) -fullyApplied apply symm_apply]
 -- TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
@@ -1296,7 +1295,7 @@ variable (f : X → Y) (h : IsOpenEmbedding f)
 /-- An open embedding of `X` into `Y`, with `X` nonempty, defines an open partial homeomorphism
 whose source is all of `X`. The converse is also true; see
 `OpenPartialHomeomorph.to_isOpenEmbedding`. -/
-@[simps! (config := mfld_cfg) apply source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply source target]
 noncomputable def toOpenPartialHomeomorph [Nonempty X] : OpenPartialHomeomorph X Y :=
   OpenPartialHomeomorph.ofContinuousOpen (h.isEmbedding.injective.injOn.toPartialEquiv f univ)
     h.continuous.continuousOn h.isOpenMap isOpen_univ

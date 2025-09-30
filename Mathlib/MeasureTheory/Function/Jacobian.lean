@@ -1003,7 +1003,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       have I : |(f' x).det| ≤ |(A n).det| + ε :=
         calc
           |(f' x).det| = |(A n).det + ((f' x).det - (A n).det)| := by congr 1; abel
-          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add _ _
+          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add_le _ _
           _ ≤ |(A n).det| + ε := add_le_add le_rfl ((hδ (A n)).2.1 _ hx)
       calc
         ENNReal.ofReal |(f' x).det| ≤ ENNReal.ofReal (|(A n).det| + ε) :=
