@@ -81,7 +81,7 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
   letI t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
   suffices
       Continuous[t₁, t𝕜] φ ↔ ∃ s : Finset ι, Continuous[t₂ s, t𝕜] φ by
-    simp_rw [this, ← mem_span_iff_continuous_of_finite, Submodule.span_range_eq_iSup,
+    simp only [Submodule.span_range_eq_iSup, this, ← mem_span_iff_continuous_of_finite,
       iSup_subtype]
     rw [Submodule.mem_iSup_iff_exists_finset]
   have t₁_group : @IsTopologicalAddGroup E t₁ _ :=
