@@ -7,6 +7,7 @@ import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Adjunction between `Γ` and `Spec`
@@ -568,5 +569,28 @@ instance : LocallyRingedSpace.Γ.IsRightAdjoint :=
   ΓSpec.locallyRingedSpaceAdjunction.rightOp.isRightAdjoint
 
 instance : Scheme.Γ.IsRightAdjoint := ΓSpec.adjunction.rightOp.isRightAdjoint
+
+/-- `Scheme.Γ.rightOp : Scheme ⥤ CommRingCatᵒᵖ` preserves limits of diagrams consisting of
+affine schemes. -/
+instance Scheme.preservesLimit_rightOp_Γ.{v, w}
+    {I : Type w} [Category.{v} I] (D : I ⥤ Scheme.{u}) [∀ i, IsIso (D.obj i).toSpecΓ] :
+    Limits.PreservesLimit D Scheme.Γ.rightOp := by
+  let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
+  have : ∀ i, IsIso (α.app i) := ‹_›
+  have : IsIso α := NatIso.isIso_of_isIso_app α
+  suffices Limits.PreservesLimit ((D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec) Scheme.Γ.rightOp from
+    Limits.preservesLimit_of_iso_diagram _ (asIso α).symm
+  have := monadicCreatesLimits.{v, w} Scheme.Spec.{u}
+  suffices Limits.PreservesLimit (D ⋙ Scheme.Γ.rightOp) (Scheme.Spec ⋙ Scheme.Γ.rightOp) from
+    preservesLimit_comp_of_createsLimit _ _
+  exact Limits.preservesLimit_of_natIso _ (NatIso.op Scheme.SpecΓIdentity)
+
+/-- `Scheme.Γ : Schemeᵒᵖ ⥤ CommRingCat` preserves colimits of diagrams consisting of
+affine schemes. -/
+instance Scheme.preservesColimit_Γ.{v, w}
+    {I : Type w} [Category.{v} I] (D : I ⥤ Scheme.{u}ᵒᵖ) [∀ i, IsIso (D.obj i).unop.toSpecΓ] :
+    Limits.PreservesColimit D Scheme.Γ := by
+  have (i : _) : IsIso (D.leftOp.obj i).toSpecΓ := Functor.leftOp_obj D _ ▸ inferInstance
+  exact Limits.preservesColimit_of_rightOp D Scheme.Γ
 
 end AlgebraicGeometry
