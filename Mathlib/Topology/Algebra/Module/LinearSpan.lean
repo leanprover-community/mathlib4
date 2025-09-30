@@ -95,7 +95,7 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
   simp only [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
   conv in Continuous _ => rw [Seminorm.continuous_iff one_pos, nhds_iInf]
   conv in Continuous _ =>
-    rw [letI := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
+    rw [let _ := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
   rw [Filter.mem_iInf_finite]
 
 end NontriviallyNormedField
