@@ -611,15 +611,6 @@ variable [PartialOrder R] [PartialOrder A]
 
 lemma convex_of_nonneg_algebraMap {s : Set M} (halg : ∀ ⦃r : R⦄, 0 ≤ r → 0 ≤ algebraMap R A r)
     (hs : Convex A s) : Convex R s := by
-  simp only [Convex, StarConvex] at hs ⊢
-  intro u hu v hv a b ha hb hab
-  convert hs hu hv (halg ha) (halg hb) (by rw [← algebraMap.coe_add, hab, algebraMap.coe_one])
-    using 2
-  · rw [algebraMap_smul]
-  · rw [algebraMap_smul]
-
-lemma convex_of_nonneg_algebraMap' {s : Set M} (halg : ∀ ⦃r : R⦄, 0 ≤ r → 0 ≤ algebraMap R A r)
-    (hs : Convex A s) : Convex R s := by
   apply Convex.lift_of_smul_of_nonneg_right R hs
   intro r hr
   rw [← Algebra.algebraMap_eq_smul_one]
