@@ -66,7 +66,7 @@ theorem assoc_flip (X : D) [ModObj M X] : M ⊴ₗ γ ≫ γ =
 
 variable (M) in
 /-- The action of a monoid object on itself. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev regular : ModObj M M where
   smul := μ
 
