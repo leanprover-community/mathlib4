@@ -115,7 +115,7 @@ structure ImplicitFunData (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Typ
   range_rightDeriv : range rightDeriv = ⊤
   isCompl_ker : IsCompl (ker leftDeriv) (ker rightDeriv)
 
-@[deprecated (since := "2025-07-29")] alias ImplicitFunctionData := ImplicitFunData
+@[deprecated (since := "2025-09-30")] alias ImplicitFunctionData := ImplicitFunData
 
 namespace ImplicitFunData
 
@@ -154,7 +154,7 @@ such that `f (φ y z) = y` and `g (φ y z) = z`. -/
 def implicitFun : F → G → E :=
   Function.curry <| φ.toPartialHomeomorph.symm
 
-@[deprecated (since := "2025-07-29")] noncomputable alias implicitFunction := implicitFun
+@[deprecated (since := "2025-09-30")] noncomputable alias implicitFunction := implicitFun
 
 @[simp]
 theorem toPartialHomeomorph_coe : ⇑φ.toPartialHomeomorph = φ.prodFun :=
@@ -174,39 +174,39 @@ theorem prodFun_implicitFun :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFun p.1 p.2) = p :=
   φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h => h
 
-@[deprecated (since := "2025-07-29")] alias prod_map_implicitFunction := prodFun_implicitFun
+@[deprecated (since := "2025-09-30")] alias prod_map_implicitFunction := prodFun_implicitFun
 
 theorem leftFun_implicitFun :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFun p.1 p.2) = p.1 :=
   φ.prodFun_implicitFun.mono fun _ => congr_arg Prod.fst
 
-@[deprecated (since := "2025-07-29")] alias left_map_implicitFunction := leftFun_implicitFun
+@[deprecated (since := "2025-09-30")] alias left_map_implicitFunction := leftFun_implicitFun
 
 theorem rightFun_implicitFun :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFun p.1 p.2) = p.2 :=
   φ.prodFun_implicitFun.mono fun _ => congr_arg Prod.snd
 
-@[deprecated (since := "2025-07-29")] alias right_map_implicitFunction := rightFun_implicitFun
+@[deprecated (since := "2025-09-30")] alias right_map_implicitFunction := rightFun_implicitFun
 
 theorem implicitFun_apply_image :
     ∀ᶠ x in 𝓝 φ.pt, φ.implicitFun (φ.leftFun x) (φ.rightFun x) = x :=
   φ.hasStrictFDerivAt.eventually_left_inverse
 
-@[deprecated (since := "2025-07-29")] alias implicitFunction_apply_image := implicitFun_apply_image
+@[deprecated (since := "2025-09-30")] alias implicitFunction_apply_image := implicitFun_apply_image
 
-theorem leftFun_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
-    φ.leftFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.leftFun φ.pt := by
-  have := φ.left_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
+theorem leftFun_implicitFun' : ∀ᶠ x in 𝓝 φ.pt,
+    φ.leftFun (φ.implicitFun (φ.leftFun φ.pt) (φ.rightFun x)) = φ.leftFun φ.pt := by
+  have := φ.leftFun_implicitFun.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
   rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
 
-theorem rightFun_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
-    φ.rightFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.rightFun x := by
-  have := φ.right_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
+theorem rightFun_implicitFun' : ∀ᶠ x in 𝓝 φ.pt,
+    φ.rightFun (φ.implicitFun (φ.leftFun φ.pt) (φ.rightFun x)) = φ.rightFun x := by
+  have := φ.rightFun_implicitFun.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
   rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
 
-theorem leftFun_eq_iff_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
-    φ.leftFun x = φ.leftFun φ.pt ↔ φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x) = x := by
-  filter_upwards [φ.implicitFunction_apply_image, φ.leftFun_implicitFunction] with x hx₁ hx₂
+theorem leftFun_eq_iff_implicitFun : ∀ᶠ x in 𝓝 φ.pt,
+    φ.leftFun x = φ.leftFun φ.pt ↔ φ.implicitFun (φ.leftFun φ.pt) (φ.rightFun x) = x := by
+  filter_upwards [φ.implicitFun_apply_image, φ.leftFun_implicitFun'] with x hx₁ hx₂
   constructor <;> exact fun h => by rwa [← h]
 
 theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
@@ -224,7 +224,7 @@ theorem hasStrictFDerivAt_implicitFun (g'inv : G →L[𝕜] E)
   simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply] at hg'inv hg'invf ⊢
   simp [ContinuousLinearEquiv.eq_symm_apply, *]
 
-@[deprecated (since := "2025-07-29")]
+@[deprecated (since := "2025-09-30")]
 alias implicitFunction_hasStrictFDerivAt := hasStrictFDerivAt_implicitFun
 
 end ImplicitFunData
@@ -272,7 +272,7 @@ def implicitFunDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f
   range_rightDeriv := LinearMap.range_eq_of_proj (Classical.choose_spec hker)
   isCompl_ker := LinearMap.isCompl_of_proj (Classical.choose_spec hker)
 
-@[deprecated (since := "2025-07-29")]
+@[deprecated (since := "2025-09-30")]
 noncomputable alias implicitFunctionDataOfComplemented := implicitFunDataOfComplemented
 
 /-- A partial homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f` to vertical
@@ -286,7 +286,7 @@ def implicitFunOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = 
     (hker : (ker f').ClosedComplemented) : F → ker f' → E :=
   (implicitFunDataOfComplemented f f' hf hf' hker).implicitFun
 
-@[deprecated (since := "2025-07-29")]
+@[deprecated (since := "2025-09-30")]
 noncomputable alias implicitFunctionOfComplemented := implicitFunOfComplemented
 
 end Defs
@@ -336,7 +336,7 @@ theorem map_implicitFunOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (hf' : 
         hf.mem_implicitToPartialHomeomorphOfComplemented_target hf' hker).mono
     fun ⟨_, _⟩ h => congr_arg Prod.fst h
 
-@[deprecated (since := "2025-07-29")]
+@[deprecated (since := "2025-09-30")]
 alias map_implicitFunctionOfComplemented_eq := map_implicitFunOfComplemented_eq
 
 /-- Any point in some neighborhood of `a` can be represented as
@@ -347,7 +347,7 @@ theorem eq_implicitFunOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : rang
       (hf.implicitToPartialHomeomorphOfComplemented f f' hf' hker x).snd = x :=
   (implicitFunDataOfComplemented f f' hf hf' hker).implicitFun_apply_image
 
-@[deprecated (since := "2025-07-29")]
+@[deprecated (since := "2025-09-30")]
 alias eq_implicitFunctionOfComplemented := eq_implicitFunOfComplemented
 
 @[simp]
@@ -358,7 +358,7 @@ theorem implicitFunOfComplemented_apply_image (hf : HasStrictFDerivAt f f' a)
       (hf.implicitToPartialHomeomorphOfComplemented f f' hf' hker).left_inv
       (hf.mem_implicitToPartialHomeomorphOfComplemented_source hf' hker)
 
-@[deprecated (since := "2025-07-29")]
+@[deprecated (since := "2025-09-30")]
 alias implicitFunctionOfComplemented_apply_image := implicitFunOfComplemented_apply_image
 
 theorem to_implicitFunOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
@@ -377,7 +377,7 @@ theorem to_implicitFunOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : rang
       LinearMap.map_coe_ker, ContinuousLinearMap.zero_apply]
   simp only [implicitFunDataOfComplemented, map_sub, sub_self]
 
-@[deprecated (since := "2025-07-29")]
+@[deprecated (since := "2025-09-30")]
 alias to_implicitFunctionOfComplemented := to_implicitFunOfComplemented
 
 end Complemented
@@ -391,7 +391,7 @@ In this section we prove the following version of the implicit function theorem.
 function `φ : F → ker f' → E` such that for `(y, z)` close to `(f a, 0)` we have `f (φ y z) = y` and
 the derivative of `φ (f a)` at zero is the embedding `ker f' → E`.
 
-This version deduces that `ker f'` is a complemented subspace from the fact that `F` is a finite
+This version deduces that `ker f'` is a complemented subspace from the fact that `F` is a finite-
 dimensional space, then applies the previous version.
 
 Note that a map with these properties is not unique. E.g., different choices of a subspace
@@ -417,7 +417,7 @@ def implicitToPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : range f' 
 def implicitFun (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) : F → ker f' → E :=
   Function.curry <| (hf.implicitToPartialHomeomorph f f' hf').symm
 
-@[deprecated (since := "2025-07-29")] noncomputable alias implicitFunction := implicitFun
+@[deprecated (since := "2025-09-30")] noncomputable alias implicitFunction := implicitFun
 
 variable {f f'}
 
@@ -457,11 +457,11 @@ theorem tendsto_implicitFun (hf : HasStrictFDerivAt f f' a) (hf' : range f' = �
   rw [implicitToPartialHomeomorph_self]
   exact h₁.prodMk_nhds h₂
 
-@[deprecated (since := "2025-07-29")] alias tendsto_implicitFunction := tendsto_implicitFun
+@[deprecated (since := "2025-09-30")] alias tendsto_implicitFunction := tendsto_implicitFun
 
 alias _root_.Filter.Tendsto.implicitFun := tendsto_implicitFun
 
-@[deprecated (since := "2025-07-29")]
+@[deprecated (since := "2025-09-30")]
 alias _root_.Filter.Tendsto.implicitFunction := tendsto_implicitFun
 
 /-- `HasStrictFDerivAt.implicitFun` sends `(z, y)` to a point in `f ⁻¹' z`. -/
@@ -470,7 +470,7 @@ theorem map_implicitFun_eq (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤
   have := FiniteDimensional.complete 𝕜 F
   map_implicitFunOfComplemented_eq ..
 
-@[deprecated (since := "2025-07-29")] alias map_implicitFunction_eq := map_implicitFun_eq
+@[deprecated (since := "2025-09-30")] alias map_implicitFunction_eq := map_implicitFun_eq
 
 @[simp]
 theorem implicitFun_apply_image (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
@@ -478,7 +478,7 @@ theorem implicitFun_apply_image (hf : HasStrictFDerivAt f f' a) (hf' : range f' 
   have := FiniteDimensional.complete 𝕜 F
   apply implicitFunOfComplemented_apply_image
 
-@[deprecated (since := "2025-07-29")] alias implicitFunction_apply_image := implicitFun_apply_image
+@[deprecated (since := "2025-09-30")] alias implicitFunction_apply_image := implicitFun_apply_image
 
 /-- Any point in some neighborhood of `a` can be represented as `HasStrictFDerivAt.implicitFun` of
 some point. -/
@@ -488,14 +488,14 @@ theorem eq_implicitFun (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
   have := FiniteDimensional.complete 𝕜 F
   eq_implicitFunOfComplemented ..
 
-@[deprecated (since := "2025-07-29")] alias eq_implicitFunction := eq_implicitFun
+@[deprecated (since := "2025-09-30")] alias eq_implicitFunction := eq_implicitFun
 
 theorem to_implicitFun (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     HasStrictFDerivAt (hf.implicitFun f f' hf' (f a)) (ker f').subtypeL 0 :=
   have := FiniteDimensional.complete 𝕜 F
   to_implicitFunOfComplemented ..
 
-@[deprecated (since := "2025-07-29")] alias to_implicitFunction := to_implicitFun
+@[deprecated (since := "2025-09-30")] alias to_implicitFunction := to_implicitFun
 
 end FiniteDimensional
 
@@ -506,7 +506,7 @@ section ProdDomain
 
 Here we identify `E` with `E₁ × E₂`, `G` with `E₁` and `g : E → G` with the first projection. Now
 given `f : E₁ × E₂ → F` and its two partial derivatives, the second invertible, we may construct an
-instance of the `ImplicitFunctionData` data structure and extract `ψ : E₁ → E₂` with the desired
+instance of the `implicitFunData` data structure and extract `ψ : E₁ → E₂` with the desired
 properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunOfProdDomain`. A formula
 for the first derivative of `ψ` is immediately derived.
 -/
@@ -517,23 +517,23 @@ variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
 
 /-- Given linear maps `f₁ : E₁ →L[𝕜] F` and `f₂ : E₂ ≃L[𝕜] F` (the second invertible) and that
 `HasStrictFDerivAt f (f₁.coprod f₂) x`, we prove that the kernels of `f : E → F` and `g : E → G` in
-the original formulation are complementary and construct an object of type `ImplicitFunctionData`
-thereby permitting use of the general machinery provided above. -/
+the original formulation are complementary and construct an object of type `implicitFunData` thereby
+permitting use of the general machinery provided above. -/
 def implicitFunDataOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
     {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
-    ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁ where
+    ImplicitFunData 𝕜 (E₁ × E₂) F E₁ where
   leftFun := f
   rightFun := Prod.fst
   pt := x
   leftDeriv := f₁.coprod f₂
-  left_has_deriv := dfx
+  hasStrictFDerivAt_leftFun := dfx
   rightDeriv := ContinuousLinearMap.fst 𝕜 E₁ E₂
-  right_has_deriv := hasStrictFDerivAt_fst
-  left_range := by
+  hasStrictFDerivAt_rightFun := hasStrictFDerivAt_fst
+  range_leftDeriv := by
     rw [ContinuousLinearMap.range_coprod]
     convert sup_top_eq _
     exact LinearEquivClass.range f₂
-  right_range := Submodule.range_fst
+  range_rightDeriv := Submodule.range_fst
   isCompl_ker := by
     constructor
     · rw [Submodule.disjoint_def]
@@ -548,14 +548,14 @@ def implicitFunDataOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
 def implicitFunOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
     {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
     E₁ → E₂ :=
-  fun u => (dfx.implicitFunDataOfProdDomain.implicitFunction (f x) u).2
+  fun u => (dfx.implicitFunDataOfProdDomain.implicitFun (f x) u).2
 
 theorem hasStrictFDerivAt_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
     {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
     HasStrictFDerivAt dfx.implicitFunOfProdDomain (-f₂.symm ∘L f₁) x₁ := by
   set ψ' : E₁ →L[𝕜] E₂ := -f₂.symm ∘L f₁
   apply HasStrictFDerivAt.snd (f₂' := (ContinuousLinearMap.id 𝕜 E₁).prod ψ')
-  apply dfx.implicitFunDataOfProdDomain.implicitFunction_hasStrictFDerivAt
+  apply dfx.implicitFunDataOfProdDomain.hasStrictFDerivAt_implicitFun
   · apply ContinuousLinearMap.fst_comp_prod
   · change f₁ + f₂ ∘L ψ' = 0
     simp [ψ', ← ContinuousLinearMap.comp_assoc]
@@ -564,7 +564,7 @@ theorem image_eq_iff_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x : E₁ 
     {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
     ∀ᶠ y in 𝓝 x, f y = f x ↔ dfx.implicitFunOfProdDomain y.1 = y.2 := by
   let φ := dfx.implicitFunDataOfProdDomain
-  filter_upwards [φ.leftFun_eq_iff_implicitFunction, φ.rightFun_implicitFunction] with y h h'
+  filter_upwards [φ.leftFun_eq_iff_implicitFun, φ.rightFun_implicitFun'] with y h h'
   exact Iff.trans h ⟨congrArg _, by aesop⟩
 
 theorem tendsto_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
