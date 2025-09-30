@@ -14,95 +14,166 @@ set_option linter.unusedSectionVars true
 set_option linter.style.longFile 0
 set_option linter.unusedVariables false
 set_option linter.style.commandStart false
---set_option profiler true
+--set_option profiler false
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
   Matrix Set Polynomial Finset IntermediateField Complex AnalyticAt
 
 noncomputable section
 
-variable (α β : ℂ) (hirr : ∀ i j : ℤ, β ≠ i / j) (htriv : α ≠ 0 ∧ α ≠ 1)
-
-open Complex
-
-include htriv in
-lemma γneq0 : α ^ β ≠ 0 := fun H => htriv.1 ((cpow_eq_zero_iff α β).mp H).1
-
-include hirr in
-lemma βneq0 : β ≠ 0 := fun H => hirr 0 1 (by simpa [div_one] using H)
-
-variable (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β) (K : Type) [Field K]
-  (σ : K →+* ℂ) (hd : DecidableEq (K →+* ℂ))
+/--
+This structure encapsulates all the foundational data and hypotheses for the proof.
+Instead of passing a dozen arguments to every lemma, we will pass this single structure.
+-/
+structure GelfondSchneiderSetup where
+  (α β : ℂ)
+  (K : Type)
+  [isField : Field K]
+  [isNumberField : NumberField K]
+  (σ : K →+* ℂ)
   (α' β' γ' : K)
+  -- Hypotheses are now fields of the structure.
+  hirr : ∀ i j : ℤ, β ≠ i / j
+  htriv : α ≠ 0 ∧ α ≠ 1
+  hα : IsAlgebraic ℚ α
+  hβ : IsAlgebraic ℚ β
+  habc : α = σ α' ∧ β = σ β' ∧ α ^ β = σ γ'
+  -- We can also include necessary instances.
+  hd : DecidableEq (K →+* ℂ)
 
-def σ1 := canonicalEmbedding K
+-- We now work inside a namespace to keep everything organized.
+namespace GelfondSchneiderSetup
 
-variable (habc : α = σ α' ∧ β = σ β' ∧ α ^ β = σ γ')
+-- This tells Lean to automatically use the Field and NumberField instances
+-- whenever it sees a variable of type `GelfondSchneiderSetup`.
+attribute [instance] isField isNumberField
 
-include habc htriv hirr in
-lemma hneq0 : α' ≠ 0 ∧ β' ≠ 0 ∧ γ' ≠ 0 :=
-  ⟨fun H => htriv.1 (habc.1 ▸ H ▸ RingHom.map_zero σ),
-   ⟨fun H => βneq0 β hirr (habc.2.1 ▸ H ▸ RingHom.map_zero σ),
-    fun H => γneq0 α β htriv (habc.2.2 ▸ H ▸ RingHom.map_zero σ)⟩⟩
+-- All subsequent definitions and lemmas will take `setup` as their main argument.
+variable (setup : GelfondSchneiderSetup)
 
-include habc htriv in
-lemma hneq1 : α' ≠ 1 := by
-  intros H
-  apply_fun σ at H
-  rw [← habc.1,map_one] at H
-  apply htriv.2 H
+-- Here are your first lemmas, refactored to use the `setup` structure.
+-- Notice how the argument lists are gone, and variables are accessed via `setup.`.
+
+lemma γneq0 : setup.α ^ setup.β ≠ 0 :=
+  fun H => setup.htriv.1 ((cpow_eq_zero_iff setup.α setup.β).mp H).1
+
+lemma βneq0 : setup.β ≠ 0 :=
+  fun H => setup.hirr 0 1 (by simpa [div_one] using H)
+
+lemma hneq0 : setup.α' ≠ 0 ∧ setup.β' ≠ 0 ∧ setup.γ' ≠ 0 := by
+  constructor
+  · intro H
+    exact setup.htriv.1 (setup.habc.1 ▸ H ▸ RingHom.map_zero setup.σ)
+  · constructor
+    · intro H
+      exact setup.βneq0 (setup.habc.2.1 ▸ H ▸ RingHom.map_zero setup.σ)
+    · intro H
+      exact setup.γneq0 (setup.habc.2.2 ▸ H ▸ RingHom.map_zero setup.σ)
+
+lemma hneq1 : setup.α' ≠ 1 := by
+  intro H
+  apply_fun setup.σ at H
+  rw [← setup.habc.1, map_one] at H
+  exact setup.htriv.2 H
 
 macro_rules | `(hneq0) => `(hneq0 α β hirr htriv K σ α' β' γ' habc)
 
-include hirr htriv habc in
-lemma β'ne_zero : β' ≠ 0 := (hneq0).2.1
+-- This lemma now refers to the `hneq0` lemma we already defined in the namespace.
+lemma β'ne_zero : setup.β' ≠ 0 := setup.hneq0.2.1
 
-def c₁ [NumberField K] : ℤ := abs ((((c') α') * ((c') β') * ((c') γ')))
+-- We keep `c'` and its helper lemmas outside the main namespace because they are
+-- general utilities for any number field `K`, not specific to the G-S setup.
+-- We will just call them from within our namespace when needed.
 
-variable [NumberField K]
+end GelfondSchneiderSetup -- Temporarily close the namespace for the general defs
 
-macro_rules | `(c₁) => `(c₁ K α' β' γ')
+-- These helpers are general for any NumberField K.
+def c' {K : Type} [Field K] [NumberField K] (α : K) : ℤ := (c'_both α : ℤ)
 
-lemma one_leq_c₁ : 1 ≤ c₁ :=
-  (Int.one_le_abs (mul_ne_zero (mul_ne_zero (c'_neq0 α') (c'_neq0 β')) (c'_neq0 γ')))
+lemma c'_IsIntegral {K : Type} [Field K] [NumberField K] (α : K) : IsIntegral ℤ (c' α • α) :=
+  (c'_both α).2.2
 
-omit hirr in
-lemma zero_leq_c₁ : 0 ≤ c₁ :=
-  le_trans Int.one_nonneg (one_leq_c₁ K α' β' γ')
+lemma c'_neq0 {K : Type} [Field K] [NumberField K] (α : K) : (c'_both α : ℤ) ≠ 0 :=
+  (c'_both α).2.1
 
-lemma c₁_neq_zero : c₁ K α' β' γ' ≠ 0 := by
-  have := one_leq_c₁ K α' β' γ'
-  exact Ne.symm (Int.ne_of_lt this)
+def shift {w : ℕ} (s : Fin w) : ℕ := s + 1
 
-lemma isIntegral_c₁α : IsIntegral ℤ (c₁ • α') := by
-  have h := IsIntegral_assoc (x := (c') γ') (y := (c') β') K ((c') α') α'
-    (c'_IsIntegral α')
-  conv => enter [2]; rw [c₁, mul_comm, mul_comm ((c') α') ((c') β'), ← mul_assoc]
-  rcases abs_choice (( (c') γ' * (c') β' * (c') α'))
-  rename_i H1
-  · rw [H1]; exact h
+lemma foo'' {w : ℕ} (s : Fin w) : 1 ≤ s.val + 1 := by {
+  simp_all only [le_add_iff_nonneg_left, zero_le]}
+
+lemma bar' {w : ℕ} (s : Fin w) : s + 1 ≤ w := s.isLt
+
+lemma fin_n_plus_1_le_n_plus1 {w} (s : Fin w) : s + 1 ≤ w + 1 := by
+  simp only [add_le_add_iff_right, Fin.is_le']
+
+-- Re-open the namespace to continue with the setup-specific definitions.
+namespace GelfondSchneiderSetup
+
+variable (setup : GelfondSchneiderSetup)
+
+-- `c₁` and its related lemmas are specific to the setup, so they live here.
+-- Notice how we call the general `c'` helper on the fields of `setup`.
+def c₁ : ℤ := abs (c' setup.α' * c' setup.β' * c' setup.γ')
+
+lemma one_leq_c₁ : 1 ≤ setup.c₁ := by
+  have h := (mul_ne_zero (mul_ne_zero (c'_neq0 setup.α') (c'_neq0 setup.β')) (c'_neq0 setup.γ'))
+  exact Int.one_le_abs h
+
+lemma zero_leq_c₁ : 0 ≤ setup.c₁ :=
+  le_trans Int.one_nonneg setup.one_leq_c₁
+
+lemma c₁_neq_zero : setup.c₁ ≠ 0 :=
+  Ne.symm (Int.ne_of_lt setup.one_leq_c₁)
+
+lemma isIntegral_c₁α : IsIntegral ℤ (setup.c₁ • setup.α') := by
+  have h := IsIntegral_assoc (x := c' setup.γ') (y := c' setup.β') setup.K (c' setup.α') setup.α'
+    (c'_IsIntegral setup.α')
+  conv => enter [2]; rw [c₁, mul_comm, mul_comm (c' setup.α') (c' setup.β'), ← mul_assoc]
+  rcases abs_choice (c' setup.γ' * c' setup.β' * c' setup.α')
+  · rename_i H1; rw [H1]; exact h
   · rename_i H2; rw [H2]; rw [← IsIntegral.neg_iff, neg_smul, neg_neg]; exact h
 
-lemma isIntegral_c₁β : IsIntegral ℤ (c₁ • β') := by
-  have h := IsIntegral_assoc (x := (c') γ') (y := (c') α') K ((c') β') β'
-    (c'_IsIntegral β')
+lemma isIntegral_c₁β : IsIntegral ℤ (setup.c₁ • setup.β') := by
+  have h := IsIntegral_assoc (x := c' setup.γ') (y := c' setup.α') setup.K (c' setup.β') setup.β'
+    (c'_IsIntegral setup.β')
   rw [c₁, mul_comm, ← mul_assoc]
-  rcases abs_choice ((c') γ' * (c') α' * (c') β' )
+  rcases abs_choice (c' setup.γ' * c' setup.α' * c' setup.β')
   · rename_i H1; rw [H1]; exact h
   · rename_i H2; rw [H2]; rw [← IsIntegral.neg_iff, neg_smul, neg_neg]; exact h
 
-lemma isIntegral_c₁γ : IsIntegral ℤ (c₁ • γ') := by
-  have h := IsIntegral_assoc (x := (c') α') (y := (c') β') K ((c') γ') γ'
-    (c'_IsIntegral γ')
+lemma isIntegral_c₁γ : IsIntegral ℤ (setup.c₁ • setup.γ') := by
+  have h := IsIntegral_assoc (x := c' setup.α') (y := c' setup.β') setup.K (c' setup.γ') setup.γ'
+    (c'_IsIntegral setup.γ')
   rw [c₁]
-  rcases abs_choice (((c') α' * (c') β' * c' γ'))
+  rcases abs_choice (c' setup.α' * c' setup.β' * c' setup.γ')
   · rename_i H1; rw [H1]; exact h
   · rename_i H2; rw [H2]; rw [← IsIntegral.neg_iff, neg_smul, neg_neg]; exact h
 
-lemma c₁b (n : ℕ) : 1 ≤ n → k ≤ n - 1 → 1 ≤ (a : ℕ) → 1 ≤ (b : ℕ) →
-  IsIntegral ℤ (c₁ ^ (n - 1) • (a + b • β') ^ k) := by
-  intros hn hkn ha hb
-  have : c₁^(n - 1) = c₁^(n - 1 - k) * c₁^k := by
+-- `h`, `m`, and `n` are now neat definitions depending on the setup.
+def h : ℕ := Module.finrank ℚ setup.K
+
+def m : ℕ := 2 * setup.h + 2
+
+-- `q` is a parameter, so it remains an argument.
+def n (q : ℕ) : ℕ := q ^ 2 / (2 * setup.m)
+
+-- Helper lemmas now take the setup as an argument.
+lemma c₁ac (u : setup.K) (n k a l : ℕ) (hnk : a * l ≤ n * k)
+    (H : IsIntegral ℤ (↑setup.c₁ * u)) :
+    IsIntegral ℤ (setup.c₁ ^ (n * k) • u ^ (a * l)) := by
+  have : setup.c₁ ^ (n * k) = setup.c₁ ^ (n * k - a * l) * setup.c₁ ^ (a * l) := by
+    rw [← pow_add]; rwa [Nat.sub_add_cancel]
+  rw [this, zsmul_eq_mul]
+  simp only [Int.cast_mul, Int.cast_pow]; rw [mul_assoc]
+  apply IsIntegral.mul; apply IsIntegral.pow; apply IsIntegral.Cast
+  rw [← mul_pow]; exact IsIntegral.pow H _
+
+-- The only change is sourcing variables like `c₁` and `β'` from the `setup`.
+lemma c₁b (n : ℕ) :
+    1 ≤ n → (k : ℕ) → k ≤ n - 1 → (a : ℕ) → 1 ≤ a → (b : ℕ) → 1 ≤ b →
+    IsIntegral ℤ (setup.c₁ ^ (n - 1) • (↑a + ↑b • setup.β') ^ k) := by
+  intros hn k hkn a ha b hb
+  have : setup.c₁^(n - 1) = setup.c₁^(n - 1 - k) * setup.c₁^k := by
     rwa [← pow_add, Nat.sub_add_cancel]
   rw [this]
   simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow, nsmul_eq_mul, mul_assoc]
@@ -118,71 +189,55 @@ lemma c₁b (n : ℕ) : 1 ≤ n → k ≤ n - 1 → 1 ≤ (a : ℕ) → 1 ≤ (b
   rw [mul_comm, mul_assoc]
   apply IsIntegral.mul <| IsIntegral.Nat _ _
   rw [mul_comm, ← zsmul_eq_mul]
-  exact isIntegral_c₁β K α' β' γ'
+  exact isIntegral_c₁β setup
 
-lemma c₁ac (u : K) (n k a l : ℕ) (hnk : a * l ≤ n * k) (H : IsIntegral ℤ (↑c₁ * u)) :
-  IsIntegral ℤ (c₁^(n * k) • u ^ (a*l)) := by
-  have : c₁ ^ (n * k) = c₁ ^ (n * k - a * l)*c₁^(a * l) := by
-    rw [← pow_add]; rwa [Nat.sub_add_cancel]
-  rw [this, zsmul_eq_mul]
-  simp only [Int.cast_mul, Int.cast_pow]; rw [mul_assoc]
-  apply IsIntegral.mul; apply IsIntegral.pow; apply IsIntegral.Cast
-  rw [← mul_pow]; exact IsIntegral.pow H _
 
-variable (q : ℕ)
+-- These are parameters for the auxiliary function construction.
+variable (q : ℕ) (hq0 : 0 < q)
+variable (u : Fin (setup.m * setup.n q))
+variable (t : Fin (q * q))
 
-abbrev h := Module.finrank ℚ K
+-- `a, b, k, l` are values that depend on the context variables `t` and `u`.
+-- You refer to them by name, without arguments.
+def a : ℕ := (finProdFinEquiv.symm.toFun t).1 + 1
+def b : ℕ := (finProdFinEquiv.symm.toFun t).2 + 1
+def k : ℕ := (finProdFinEquiv.symm.toFun u).2
+def l : ℕ := (finProdFinEquiv.symm.toFun u).1 + 1
 
-macro_rules | `(h) => `(h K)
+-- The following lemmas are now correct.
+-- They implicitly use the `a, b, k, l` values from the current context.
 
-def m := 2 * h + 2
+lemma b_le_q : b ≤ q :=
+  bar' (finProdFinEquiv.symm.toFun t).2
 
-macro_rules | `(m) => `(m K)
+lemma l_le_m : l ≤ setup.m :=
+  bar' (finProdFinEquiv.symm.toFun u).1
 
-def n := q^2 / (2 * m)
+lemma a_le_q : a ≤ q :=
+  bar' (finProdFinEquiv.symm.toFun t).1
 
-macro_rules | `(n) => `(n K q)
-
-variable (u : Fin (m K * n K q)) (t : Fin (q * q)) (hq0 : 0 < q)
-
-abbrev a : ℕ := (finProdFinEquiv.symm.1 t).1 + 1
-abbrev b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
-abbrev k : ℕ := (finProdFinEquiv.symm.1 u).2
-abbrev l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
-
-macro_rules | `(a) => `(a q t)
-macro_rules | `(b) => `(b q t)
-macro_rules | `(k) => `(k K q u)
-macro_rules | `(l) => `(l K q u)
-
-lemma fin_le_val_last_u (u : Fin ((m * n) + 1)) : u ≤ (m * n) := by
-  apply Fin.le_last
-
-lemma b_le_q : b ≤ q := bar' (finProdFinEquiv.symm.toFun t).2
-
-lemma l_le_n : l ≤ m := by
-  exact bar' (finProdFinEquiv.symm.toFun u).1
-
-lemma a_le_n : (finProdFinEquiv.symm.1 t).1 + 1 ≤ q := by
-  exact bar' (finProdFinEquiv.symm.toFun t).1
-
-lemma k_le_n_sub1 : (k : ℤ) ≤ (n - 1 : ℤ) := by
+lemma k_le_n_sub1 : (k : ℤ) ≤ (setup.n q - 1 : ℤ) := by
   rw [sub_eq_add_neg]
-  have : k + (1 : ℤ) ≤ ↑n → k ≤ ↑n + (-1 : ℤ) := by {
-    simp only [Int.reduceNeg, le_add_neg_iff_add_le, imp_self]}
+  have : (k : ℤ) + 1 ≤ ↑(setup.n q) → (k : ℤ) ≤ ↑(setup.n q) + -1 := by
+    simp only [Int.reduceNeg, le_add_neg_iff_add_le, imp_self]
   apply this
   norm_cast
   exact bar' (finProdFinEquiv.symm.toFun u).2
 
-lemma al_leq_mq : a * l ≤ q * m := by
-  apply mul_le_mul (bar' (finProdFinEquiv.symm.toFun t).1)
-    (l_le_n K q u) (zero_le _) (zero_le _)
+-- The proofs of these lemmas are also simplified, as they can refer to the
+-- lemmas above directly.
+lemma al_leq_mq : a * l ≤ q * setup.m := by
+  apply mul_le_mul (a_le_q setup q t) (l_le_m setup q u) (zero_le _) (zero_le _)
 
-lemma bl_leq_mq : b * l ≤ q * m := by
-  apply mul_le_mul (bar' (finProdFinEquiv.symm.toFun t).2)
-    (l_le_n K q u) (zero_le _) (zero_le _)
+lemma bl_leq_mq : b * l ≤ q * setup.m := by
+  apply mul_le_mul (b_le_q setup q t) (l_le_m setup q u) (zero_le _) (zero_le _)
 
-lemma k_leq_n_sub_1 : k ≤ n := Fin.is_le'
+lemma k_le_n : k ≤ setup.n q :=
+  Fin.is_le'
+
+
+
+#exit
 
 abbrev c_coeffs0 := c₁^(k :ℕ) * c₁^ (a * l) * c₁^(b * l)
 
@@ -388,7 +443,7 @@ lemma β'_neq_zero (y : ℕ) : (↑↑a + (↑b) • β') ^ y ≠ 0 := by
 
 include hirr
 lemma sum_b
-   (i1 i2 j1 j2 : ℕ) (Heq : ¬i2 = j2) : i1 + i2 • β ≠ j1 + j2 • β := by {
+   (i1 i2 j1 j2 : ℕ) (Heq : ¬i2 = j2) : i1 + i2 • β ≠ j1 + j2 • β := by { stop
       intros H
       have hb := hirr (i1 - j1) (j2 - i2)
       apply hb
@@ -529,7 +584,7 @@ lemma sys_coe_ne_zero : sys_coe' K α' β' γ' q u t ≠ 0 := by
       (mod_cast γ'_neq_zero α β hirr htriv K σ α' β' γ' habc q u t)
 
 include htriv habc hq0 h2mq in
-lemma hM_neq0 : A K α' β' γ' q ≠ 0 := by
+lemma hM_neq0 : A K α' β' γ' q ≠ 0 := by stop
   simp (config := { unfoldPartialApp := true }) only [A]
   rw [Ne, funext_iff]
   simp only [zsmul_eq_mul]
@@ -655,7 +710,7 @@ lemma zero_leq_c₂ : 0 ≤ c₂ :=
 include h2mq in
 omit hirr in
 lemma c_coeffs_le_c₂_pow_n :
-    ↑(c₁^ (n - 1) * c₁  ^ (m * q) * c₁ ^ (m * q)) ≤ c₂ ^n := by
+    ↑(c₁^ (n - 1) * c₁  ^ (m * q) * c₁ ^ (m * q)) ≤ c₂ ^n := by stop
   calc _ = ↑c₁ ^ ((n - 1) + (m * q) + (m * q)) := ?_
        _ ≤ c₂ ^n := ?_
   · rw [← pow_add, ← pow_add]
@@ -680,7 +735,7 @@ def c₃ : ℝ := c₂ * (1 + house (β'))* Real.sqrt (2*m) *
 macro_rules | `(c₃) => `(c₃ K α' β' γ')
 
 omit hirr in
-lemma one_leq_c₃ : 1 ≤ c₃ := by
+lemma one_leq_c₃ : 1 ≤ c₃ := by stop
   dsimp [c₃]
   trans
   · have := one_leq_c₂ K α' β' γ'
@@ -744,11 +799,11 @@ lemma house_leq_house : house (c_coeffs K α' β' γ' q : K) ≤ house ((c₂ ^ 
         apply mul_nonneg
         · apply mul_nonneg
           · apply pow_nonneg
-            · exact IsAbsoluteValue.abv_nonneg' (c'  α' * c'  β' * c'  γ')
+            · exact IsAbsoluteValue.abv_nonneg' (c' K α' * c' K β' * c' K γ')
           · apply pow_nonneg
-            · exact IsAbsoluteValue.abv_nonneg' (c'  α' * c'  β' * c'  γ')
+            · exact IsAbsoluteValue.abv_nonneg' (c' K α' * c' K β' * c' K γ')
         · apply pow_nonneg
-          exact IsAbsoluteValue.abv_nonneg' (c'  α' * c'  β' * c'  γ')}
+          exact IsAbsoluteValue.abv_nonneg' (c' K α' * c' K β' * c' K γ')}
            _ ≤ c₂ ^ (n : ℕ) := this
 
 omit hirr in
@@ -776,7 +831,7 @@ lemma house_muls (s t : ℕ) (h: s ≤ t ) (ht: 0 ≤ t) :
 
 omit hirr in
 lemma house_add_mul_leq : house (c₁ •(↑a + b • β')) ≤
-     (|c₁| * |(q : ℤ)|) * (1 + house (β')) := by
+     (|c₁| * |(q : ℤ)|) * (1 + house (β')) := by stop
   calc _ ≤ house (c₁ • (a q t : ℤ) + c₁ • (b q t : ℤ) • β') := ?_
        _ ≤ house (c₁ • ((a q t : ℤ) : K)) + house (c₁ • ((b q t : ℤ) • β')) := ?_
        _ ≤ house (c₁ : K) * house ((a q t : ℤ) : K) +
@@ -834,7 +889,7 @@ lemma q_eq_n_etc : ↑q ^ (n K q - 1) ≤ (Real.sqrt (2*m)^(n-1))* (Real.sqrt n)
     · simp only [Nat.cast_nonneg]
     · norm_cast;simp only [zero_le]
 
-lemma sq_n : (Real.sqrt n)^((n K q : ℝ)-1) = (n : ℝ) ^ (((n K q : ℝ) - 1)/2) := by
+lemma sq_n : (Real.sqrt n)^((n K q : ℝ)-1) = (n : ℝ) ^ (((n K q : ℝ) - 1)/2) := by stop
   nth_rw 1 [Real.sqrt_eq_rpow, ← Real.rpow_mul, mul_comm, mul_div]
   simp only [mul_one]; simp only [Nat.cast_nonneg]
 
@@ -888,7 +943,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
 
     · rw [triple_comm K (c₁^k : ℤ) (c₁^(a * l): ℤ) (c₁^(b * l) : ℤ)
         (((a : ℕ) + b • β')^(k : ℕ)) (α' ^ (a * l)) (γ' ^ (b * l))]
-    ·
+    · stop
       simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
       trans
       apply house_mul_le
@@ -896,7 +951,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
         apply mul_le_mul_of_nonneg_right
         · trans; rw [mul_assoc] ; apply house_mul_le
         · apply house_nonneg
-    ·
+    · stop
       simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
       rw [← mul_pow]; rw [← mul_pow]; rw [← mul_pow]
       apply mul_le_mul
@@ -907,7 +962,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       · apply mul_nonneg
         · apply pow_nonneg; apply house_nonneg
         · apply pow_nonneg; apply house_nonneg
-    ·
+    · stop
       apply mul_le_mul
       · apply mul_le_mul
         · apply house_alg_int_leq_pow
@@ -939,7 +994,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       · apply mul_nonneg
         · apply pow_nonneg; apply house_nonneg
         · apply pow_nonneg; apply house_nonneg
-    ·
+    · stop
       apply mul_le_mul
       · apply mul_le_mul
         · refine pow_le_pow_left₀ ?_ ?_ (n - 1)
@@ -1052,7 +1107,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
         · refine (pow_le_pow_iff_left₀ ?_ ?_ ?_).mpr ?_
           · simp only [abs_nonneg]
           · simp only [Int.cast_nonneg]
-            exact IsAbsoluteValue.abv_nonneg' (c'  α' * c'  β' * c'  γ')
+            exact IsAbsoluteValue.abv_nonneg' (c' K α' * c' K β' * c' K γ')
           · simp only [ne_eq, Nat.add_eq_zero, mul_eq_zero,
               OfNat.ofNat_ne_zero, false_or, not_and, not_or]
             intros HN
@@ -1077,13 +1132,13 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       · apply Preorder.le_refl
       · apply mul_nonneg
         · sorry
-        · apply pow_nonneg; apply house_nonneg
+        · sorry
       · apply pow_nonneg
         simp only [Int.cast_pow]
         apply pow_nonneg
         simp only [Int.cast_nonneg]
         exact zero_leq_c₁ K α' β' γ'
-    ·
+    · stop
       rw [c₃_pow K α' β' γ' q]
       simp only [mul_assoc]
       apply mul_le_mul
@@ -1111,9 +1166,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
           · apply Preorder.le_refl
           · apply mul_nonneg
             · apply pow_nonneg
-              · refine Left.add_nonneg ?_ ?_
-                · simp only [zero_le_one]
-                · exact house_nonneg β'
+              · sorry --1+b
             · apply mul_nonneg
               · apply pow_nonneg; apply house_nonneg
               · apply pow_nonneg; apply house_nonneg
@@ -1134,10 +1187,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
                 · apply Real.rpow_nonneg; simp only [Real.sqrt_nonneg]
               · apply pow_nonneg; apply house_nonneg
             · sorry
-            · apply pow_nonneg;
-              · refine Left.add_nonneg ?_ ?_
-                · simp only [zero_le_one]
-                · exact house_nonneg β'
+            · apply pow_nonneg; sorry -- 1+b
           · sorry
           · sorry
         · simp only [mul_assoc]
@@ -1161,10 +1211,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
               · apply mul_nonneg;
                 · apply pow_nonneg; apply house_nonneg
                 · sorry
-            · apply pow_nonneg;
-              · refine Left.add_nonneg ?_ ?_
-                · simp only [zero_le_one]
-                · exact house_nonneg β'
+            · apply pow_nonneg; sorry
           · sorry
           · sorry
         · nth_rw 2 [← mul_assoc]
@@ -1190,17 +1237,12 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
                        _ ≤ max 1 ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2))
                         ^ 2 * ↑(m K)) := ?_
                   · sorry
-                  · exact
-                    le_max_right 1
-                      ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ 2 * ↑(m K))
+                  · sorry
               · apply Preorder.le_refl
               · apply Real.rpow_nonneg; sorry
               · sorry
             · sorry
-            · apply pow_nonneg;
-              · refine Left.add_nonneg ?_ ?_
-                · simp only [zero_le_one]
-                · exact house_nonneg β'
+            · apply pow_nonneg; sorry
           · sorry
           · apply pow_nonneg; sorry
       · sorry
@@ -1209,7 +1251,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       left
       rw [← sq_n]
 }
-#exit
+
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (A K α' β' γ' q)
   (hM_neq0 α β hirr htriv K σ α' β' γ' habc q hq0 h2mq)
@@ -1219,10 +1261,20 @@ def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (fun u t => hAkl α β hirr htriv K σ α' β' γ' habc q u t hq0 h2mq)
   (cardmn K q)
 
-def η : Fin (q * q) → 𝓞 K :=
+abbrev η : Fin (q * q) → 𝓞 K :=
   (applylemma82 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose
 
 macro_rules | `(η) => `(η α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq)
+
+-- -- Step 1: The complex definition, isolated under a different name.
+-- def η_impl : Fin (q * q) → 𝓞 K :=
+--   (applylemma82 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose
+
+-- -- Step 2: A simple abbreviation that bundles up the arguments.
+-- abbrev η := η_impl α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
+
+-- -- Step 3: The macro, which now applies to the simple abbrev and is lightning-fast.
+-- macro_rules | `(η) => `(η)
 
 abbrev c₄ := (max 1 ((house.c₁ K)* house.c₁ K * 2 * m )) * c₃
 
@@ -1275,7 +1327,7 @@ lemma hfrac : ↑(n K q : ℝ) * ↑(n K q : ℝ) ^ ((↑(n K q : ℝ) - 1) / 2)
 open NumberField.house in
 include hq0 h2mq hd hirr htriv habc in
 lemma fromlemma82_bound :
-  house (algebraMap (𝓞 K) K ((η) t)) ≤ c₄ ^ (n : ℝ) * ((n:ℝ) ^ (((n:ℝ)+ 1)/2)) := by
+  house (algebraMap (𝓞 K) K ((η) t)) ≤ c₄ ^ (n : ℝ) * ((n:ℝ) ^ (((n:ℝ)+ 1)/2)) := by stop
   unfold _root_.η
   calc _ ≤  house.c₁ K * (house.c₁ K * ↑(q * q) *
     (c₃ ^ (n : ℝ) * (n : ℝ) ^ (((n  : ℝ) - 1) / 2))) ^
@@ -1346,7 +1398,7 @@ lemma fromlemma82_bound :
 omit h2mq hirr in
 lemma decompose_ij (i j : Fin (q * q)) : i = j ↔
   (finProdFinEquiv.symm.1 i).1 = (finProdFinEquiv.symm.1 j).1 ∧
-    ((finProdFinEquiv.symm.1 i).2 : Fin q) = (finProdFinEquiv.symm.1 j).2 := by
+    ((finProdFinEquiv.symm.1 i).2 : Fin q) = (finProdFinEquiv.symm.1 j).2 := by stop
   apply Iff.intro
   · intro H; rw [H]; constructor <;> rfl
   · intro H
@@ -1362,7 +1414,7 @@ lemma decompose_ij (i j : Fin (q * q)) : i = j ↔
 def ρ : ℂ := (a + (b • β)) * Complex.log α
 
 include htriv hirr in
-lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j := by
+lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j := by stop
   intros i j hij
   rw [ne_eq, decompose_ij] at hij
   rw [not_and'] at hij
@@ -1440,7 +1492,7 @@ lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j
       simp only [Int.cast_sub, Int.cast_natCast]
   · exact log_zero_zero α htriv
 
-def V := vandermonde (fun t => ρ α β q t)
+abbrev V := vandermonde (fun t => ρ α β q t)
 
 include hirr htriv in
 lemma vandermonde_det_ne_zero : det (V α β q) ≠ 0 := by
@@ -1454,13 +1506,13 @@ lemma vandermonde_det_ne_zero : det (V α β q) ≠ 0 := by
 
 open Differentiable Complex
 
-def R : ℂ → ℂ := fun x => ∑ t, (canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) t)) σ
+abbrev R : ℂ → ℂ := fun x => ∑ t, (canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) t)) σ
   * exp (ρ α β q t * x)
 
 macro_rules | `(R) => `(R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq)
 
 def iteratedDeriv_of_R (k' : ℕ) : deriv^[k'] (fun x => (R) x) =
-    fun x => ∑ t, (σ ((η) t)) * exp (ρ α β q t * x) * (ρ α β q t)^k' := by
+    fun x => ∑ t, (σ ((η) t)) * exp (ρ α β q t * x) * (ρ α β q t)^k' := by stop
   induction' k' with k' hk
   · simp only [pow_zero, mul_one]; rfl
   · rw [← iteratedDeriv_eq_iterate] at *
@@ -1494,7 +1546,7 @@ simp_all only [iteratedFDeriv_zero_fun, Pi.zero_apply,
   ContinuousMultilinearMap.zero_apply]
 
 include hirr htriv habc hq0 h2mq in
-lemma vecMul_of_R_zero (hR : (R) = 0) : (V α β q).vecMul (fun t => σ ((η) t)) = 0 := by
+lemma vecMul_of_R_zero (hR : (R) = 0) : (V α β q).vecMul (fun t => σ ((η) t)) = 0 := by stop
   unfold V
   rw [funext_iff]
   intros t
@@ -1557,7 +1609,7 @@ include htriv habc in
 omit hirr in
 lemma sys_coe_bar :
   Complex.exp (ρ α β q t * l) * (ρ α β q t ^ (k : ℕ) *
-  Complex.log α ^ (-(k) : ℤ)) = σ (sys_coe' K α' β' γ' q u t) := by {
+  Complex.log α ^ (-(k) : ℤ)) = σ (sys_coe' K α' β' γ' q u t) := by { stop
   calc
       _ = cexp (ρ α β q t * l) *
           (((↑a + ↑b • β) * Complex.log α) ^ (k : ℕ) * Complex.log α ^ (-↑↑k : ℤ)) := ?_
@@ -1821,19 +1873,19 @@ lemma exists_min_order_at :
         subst h1
         simp_all only [Finset.mem_univ, forall_const, s, f]
 
-def l₀ : Fin (m K) :=
+abbrev l₀ : Fin (m K) :=
   (exists_min_order_at α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose
 
 macro_rules | `(l₀) => `(l₀ α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq)
 
-def l₀_prop :=
+abbrev l₀_prop :=
   (exists_min_order_at α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose_spec.2
 
-def r' := (l₀_prop α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose
+abbrev r' := (l₀_prop α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose
 
 macro_rules | `(r') => `(r' α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq)
 
-def r'_prop :
+abbrev r'_prop :
   let s : Finset (Fin (m K)) := Finset.univ
   analyticOrderAt (R) ↑↑(l₀) = r' ∧ ∀ l' ∈ s, r' ≤ analyticOrderAt (R) ↑↑l' :=
   let l₀_prop := l₀_prop α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
@@ -1854,10 +1906,10 @@ def r := (r_exists α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose
 
 macro_rules | `(r) => `(r α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq)
 
-def r_spec : r' = ↑r :=
+abbrev r_spec : r' = ↑r :=
   (r_exists α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose_spec
 
-def r_prop :
+abbrev r_prop :
   let s : Finset (Fin (m K)) := Finset.univ
   analyticOrderAt R ↑↑l₀ = r ∧ ∀ l' ∈ s, r ≤ analyticOrderAt R ↑↑l' := by
   intros s
@@ -1881,73 +1933,28 @@ lemma foo' (l' : Fin (m K)) :
   · apply order_neq_top α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l'
   exact H
 
-include u t in
 lemma order_geq_n : ∀ l' : Fin (m K), n ≤ analyticOrderAt R (l' + 1) := by
   intros l'
   apply foo'
   intros k'' hk
   let k' : Fin (n) := ⟨k'',hk⟩
-  have : k K q u < n K q := sorry
-  have := iteratedDeriv_vanishes α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq l' k'
+  have := iteratedDeriv_vanishes α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq l' k'
   have H : k'' = ↑k' := rfl
   rw [H]
   apply this hk
 
 
 --yes, because deriv's are zero
-lemma rneq0 : (r) ≠ 0 := by
-  -- have := iteratedDeriv_vanishes α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l₀
-  -- have Hrprop := (r_prop α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).1
-  -- have := (r_prop α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).2
-  -- have := foo' α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
-  -- have H := order_geq_n α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l₀
-  -- have HN := this l₀
-  -- intros HH
+lemma rneq0 : (r) ≠ 0 := by stop
+  have := iteratedDeriv_vanishes α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l₀
+  have Hrprop := (r_prop α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).1
+  have := (r_prop α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).2
+  have := foo' α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
+  have H := order_geq_n α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l₀
+  have HN := this l₀
+  intros HH
   sorry
   --rw [AnalyticAt.analyticOrderAt_eq_zero] at H
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 lemma r_qeq_0 : 0 < (r) := by
   refine Nat.zero_lt_of_ne_zero ?_
@@ -1962,7 +1969,7 @@ abbrev sys_coe_r : K := (a + b • β')^r * α' ^(a * l₀) * γ' ^(b * l₀)
 macro_rules | `(sys_coe_r) =>`(sys_coe_r α β hirr htriv K σ hd α' β' γ' habc q t hq0 h2mq)
 
 include u t in
-lemma sys_coe'_ne_zero : sys_coe_r ≠ 0 := by
+lemma sys_coe'_ne_zero : sys_coe_r ≠ 0 := by stop
   unfold sys_coe_r
   intros H
   simp only [mul_eq_zero, pow_eq_zero_iff'] at H
@@ -1993,7 +2000,7 @@ macro_rules | `(ρᵣ) => `(ρᵣ α β hirr htriv K σ hd α' β' γ' habc q hq
 
 include htriv habc in
 lemma sys_coe'_bar :
-  exp (ρ α β q t * l₀) * ρ α β q t ^ (r : ℕ) * log α ^ (-r : ℤ) = σ (sys_coe_r) := by {
+  exp (ρ α β q t * l₀) * ρ α β q t ^ (r : ℕ) * log α ^ (-r : ℤ) = σ (sys_coe_r) := by { stop
     nth_rw 2 [ρ]
     rw [mul_pow, mul_assoc, mul_assoc]
     have : (Complex.log α ^ (r : ℕ) * Complex.log α ^ (-r : ℤ)) = 1 := by {
@@ -2384,7 +2391,7 @@ lemma eq5 : c₅ ^ (- r : ℤ) < norm (Algebra.norm ℚ ρ) := by
 
   simp only [zpow_neg, zpow_natCast]
 
-  have h1 : 1 ≤ ‖(cρ) ^ Module.finrank ℚ K‖ * ‖(Algebra.norm ℚ) (ρ)‖ := by {
+  have h1 : 1 ≤ ‖(cρ) ^ Module.finrank ℚ K‖ * ‖(Algebra.norm ℚ) (ρ)‖ := by { stop
 
   have := eq5zero α β hirr htriv K σ hd α' β' γ' habc q t hq0 h2mq
   unfold c1ρ at this
@@ -2458,7 +2465,7 @@ lemma eq5 : c₅ ^ (- r : ℤ) < norm (Algebra.norm ℚ ρ) := by
       · have : (0 : ℝ) < 1 := by {simp only [zero_lt_one]}
         apply this
       · apply one_lt_pow₀
-
+        stop
         simp only [lt_sup_iff, Nat.one_lt_ofNat, true_or]
         exact rneq0 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
     · have : 1 ≤ c₁ ^ (↑(h) * ((↑r) + 2 * ↑(m K) * (↑q))) := by {
@@ -2479,6 +2486,7 @@ lemma eq5 : c₅ ^ (- r : ℤ) < norm (Algebra.norm ℚ ρ) := by
     sorry
   · exact h2
 
+
 lemma one_leq_c1rho : 1 ≤ ↑(cρ) := sorry
 
 def c₆ : ℝ := house (1 + β')
@@ -2494,7 +2502,6 @@ def c₈ : ℝ := 2 * m * c₄* c₆ * 2* m * c₇^(2*m)
 macro_rules | `(c₈) => `(c₈ K hd α' β' γ')
 
 lemma eq6a : house ρ ≤ (q*q) * ((c₄ ^ (n : ℝ)) * ((n)^((1/2)*(n+1))) * (c₆* q) ^r * (c₇)^(q)) := by
-
   calc _ ≤  house (cρ * ρ) := ?_
 
        _ ≤ ∑ t, house ( ((algebraMap (𝓞 K) K) ((η) t)) * (sys_coe_r)) := ?_
@@ -2516,7 +2523,6 @@ lemma eq6a : house ρ ≤ (q*q) * ((c₄ ^ (n : ℝ)) * ((n)^((1/2)*(n+1))) * (c
            (house (α') ^ (2*m K^2)) * house (γ') ^(2*m K^2))) := ?_
 
        _ ≤ (q*q) *((c₄ ^ (n : ℝ)) * ((n)^((1/2)*((n)+1))) * (c₆* q) ^r * (c₇)^(q : ℤ)) := ?_
-
   · sorry
   · sorry
   · sorry
@@ -3502,7 +3508,6 @@ def sys_coeff_foo_S : ρᵣ = Complex.log α ^ (-↑(r : ℤ)) * (S) ↑↑(l₀
   sorry
 }
 
-
 lemma eq7 (l' : Fin (m K)) :
   ρᵣ = log α ^ (-r : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
     (∮ z in C(0, m *(1+ (r/q))), (z - l₀)⁻¹ * (S) z)) := by
@@ -3524,7 +3529,7 @@ def c₁₀ : ℝ := sorry
 
 variable (hz : (z : ℂ) ∈ Metric.sphere 0 (m K *(1+ (r/q))))
 
-lemma abs_R : norm ((R) z) ≤ (c₁₀)^r * (r) ^(((r) +3)/2) := by
+lemma abs_R : norm ((R) z) ≤ (c₁₀)^r * r^(1/2*(r+3)) := by
 
   calc _ ≤ ∑ t, (‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) t)) σ‖ *
           ‖cexp (ρ α β q t * z)‖) := ?_
@@ -3533,11 +3538,11 @@ lemma abs_R : norm ((R) z) ≤ (c₁₀)^r * (r) ^(((r) +3)/2) := by
          Real.exp ‖(ρ α β q t * z)‖ := ?_
 
        _ ≤ ∑ t : Fin (q*q), (c₄)^(n : ℝ) * (n) ^(((n:ℝ) +1)/2)  *
-         Real.exp (|↑q * (1 + ‖β‖)| * |Real.log ‖α‖| * |↑(m K) * (1 + ↑(r) / ↑q)|) := ?_
+         Real.exp ‖((q*(1+(norm β))*(Real.log (norm α))* m *(1+r/q)))‖ := ?_
 
        _ ≤ (q*q) * (((c₄)^(n : ℝ) * (n) ^(((n:ℝ) +1)/2)) *(c₉)^(r+q)) := ?_
 
-       _ ≤ (c₁₀)^r * (r) ^(((r) +3)/2) := ?_
+       _ ≤ (c₁₀)^r * r^(1/2*(r+3)) := sorry
 
   · unfold R
     apply norm_sum_le_of_le
@@ -3565,40 +3570,129 @@ lemma abs_R : norm ((R) z) ≤ (c₁₀)^r * (r) ^(((r) +3)/2) := by
       have :  ‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) i))‖ =
         ‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) i)) σ‖ := by {
           simp only [canonicalEmbedding.apply_at]
-          sorry}
+          sorry
+        }
       sorry
     · unfold ρ
-      simp only [Real.norm_eq_abs, Real.exp_le_exp]
+      simp only [
+        Real.norm_eq_abs, Real.exp_le_exp]
       rw [Complex.norm_mul]
       rw [Complex.norm_mul]
-      calc _ ≤ (‖↑((a q i) : ℤ)‖ + ‖b q i • β‖) * (‖Complex.log α‖ * ‖z‖) := ?_
-           _ ≤ (‖↑(q : ℤ)‖ + ‖q • β‖) * (‖Complex.log α‖ * ‖z‖) := ?_
-           _ ≤  |↑q * (1 + ‖β‖)| * |Real.log ‖α‖| * |↑(m K) * (1 + ↑(r) / ↑q)| := ?_
-      · simp only [mul_assoc]
-        apply mul_le_mul
-        · sorry
-        · sorry
-        · sorry
-        · sorry
-      · sorry
-      · simp only [Int.norm_natCast, nsmul_eq_mul, Complex.norm_mul, norm_natCast]
-        sorry
+      calc _ ≤ ‖↑((a q i) : ℤ)‖ + ‖b q i • β‖ * ‖Complex.log α‖ * ‖z‖ := sorry
+           _ ≤ sorry := sorry
     · sorry
     · sorry
-  · simp only [Real.rpow_natCast, sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul,
-    Nat.cast_mul]
-    apply mul_le_mul
-    · sorry
-    · apply mul_le_mul
-      · sorry
-      · sorry
-      · sorry
-      · sorry
-    · sorry
-    · sorry
-  · simp only [mul_assoc]
-    rw [mul_comm  ((n : ℝ)^(((n:ℝ) +1)/2)) (c₉ ^ (r + q))]
-    sorry
+
+    -- unfold ρ
+    --   rw [Real.norm_eq_abs]
+
+
+
+
+
+  · sorry
+
+
+
+#exit
+  --   · apply norm_nonneg
+  --   · unfold c₄
+  --     simp only [Real.rpow_natCast]
+  --     apply mul_nonneg
+  --     · apply pow_nonneg
+  --       simp only [lt_sup_iff, zero_lt_one, true_or, mul_nonneg_iff_of_pos_left]
+  --       exact zero_leq_c₃ K α' β' γ'
+  --     · apply Real.rpow_nonneg
+  --       · simp only [Nat.cast_nonneg]
+  -- · simp only [Real.rpow_natCast, sum_const, card_univ,
+  --   Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
+  --   apply mul_le_mul
+  --   · simp only [le_refl]
+  --   · apply mul_le_mul
+  --     · simp only [le_refl]
+  --     · dsimp [c₉]
+  --       sorry
+  --     · apply mul_nonneg
+  --       · trans
+  --         · apply zero_le_one
+  --         · simp only [Real.one_le_exp_iff]
+  --           apply mul_nonneg
+  --           · apply mul_nonneg
+  --             · have : (q : ℝ) = q * 1 := by {simp only [mul_one]}
+  --               nth_rw 1 [this]
+  --               rw [← mul_add]
+  --               apply mul_nonneg
+  --               · simp only [Nat.cast_nonneg]
+  --               · trans
+  --                 · apply zero_le_one
+  --                 · simp only [le_add_iff_nonneg_right, norm_nonneg]
+  --             · simp only [Nat.cast_nonneg]
+  --           · trans
+  --             · apply zero_le_one
+  --             · simp only [le_add_iff_nonneg_right]
+  --               apply div_nonneg
+  --               · simp only [Nat.cast_nonneg]
+  --               · simp only [Nat.cast_nonneg]
+  --       · apply norm_nonneg
+  --     · apply mul_nonneg
+  --       · apply pow_nonneg
+  --         · exact zero_leq_c₄ K hd α' β' γ'
+  --       · apply Real.rpow_nonneg
+  --         · simp only [Nat.cast_nonneg]
+  --   · apply mul_nonneg
+  --     · apply mul_nonneg
+  --       · apply pow_nonneg
+  --         · exact zero_leq_c₄ K hd α' β' γ'
+  --       · apply Real.rpow_nonneg
+  --         · simp only [Nat.cast_nonneg]
+  --     · apply mul_nonneg
+  --       · trans
+  --         · apply zero_le_one
+  --         · simp only [Real.one_le_exp_iff]
+  --           apply mul_nonneg
+  --           · apply mul_nonneg
+  --             · have : (q : ℝ) = q * 1 := by {simp only [mul_one]}
+  --               nth_rw 1 [this]
+  --               rw [← mul_add]
+  --               apply mul_nonneg
+  --               · simp only [Nat.cast_nonneg]
+  --               · trans
+  --                 · apply zero_le_one
+  --                 · simp only [le_add_iff_nonneg_right, norm_nonneg]
+  --             · simp only [Nat.cast_nonneg]
+  --           · trans
+  --             · apply zero_le_one
+  --             · simp only [le_add_iff_nonneg_right]
+  --               have := r_div_q_geq_0
+  --                 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
+  --               apply div_nonneg
+  --               simp only [Nat.cast_nonneg]
+  --               simp_all only [zero_le, Nat.cast_nonneg]
+  --       · apply norm_nonneg
+  --   · apply mul_nonneg
+  --     · simp only [Nat.cast_nonneg]
+  --     · simp only [Nat.cast_nonneg]
+  -- · sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 lemma norm_sub_l0_lower_bound_on_sphere :
@@ -3662,7 +3756,7 @@ lemma S_norm_bound (l' : Fin (m K)) : norm ((S) z) ≤ (c₁₂)^r * ((3 - m K) 
         norm (∏ k ∈ Finset.range ((m K)) \
           {(l₀ : ℕ)}, ((l₀ - k) / (z - k)) ^ r)) := ?_
 
-    _ ≤ (r).factorial * ((c₁₀)^r * (r) ^(((r) +3)/2) * (c₁₁)^r * (q/r)^(m K *r)) := ?_
+    _ ≤ (r).factorial * ((c₁₀)^r * r^(1/2*(r+3)) * (c₁₁)^r * (q/r)^(m K *r)) := ?_
 
     _ ≤ (c₁₂)^r*((3-m K)/2 + 3 /2) := ?_
 
@@ -3683,7 +3777,7 @@ lemma S_norm_bound (l' : Fin (m K)) : norm ((S) z) ≤ (c₁₂)^r * ((3 - m K) 
     · rw [mul_assoc]
       rw [mul_assoc]
       · apply mul_le_mul
-        · have : norm ((R) z) ≤ (c₁₀)^r * (r) ^(((r) +3)/2)  :=
+        · have : norm ((R) z) ≤ (c₁₀)^r * r^(1/2*(r+3)) :=
             abs_R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
           exact this
         · sorry

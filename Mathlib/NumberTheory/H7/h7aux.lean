@@ -161,3 +161,22 @@ lemma house_leq_one_pow (α : K) (n : ℕ) (hn : n ≠ 0) (hα0 : α ≠ 0)
   (H : IsIntegral ℤ α) :
   1 ≤ house α ^ n :=
 (house_gt_one_of_isIntegral H hα0).trans (house_leq_pow_pow α n hn hα0 H)
+
+
+def shift {w : ℕ} (s : Fin w) : ℕ := s + 1
+
+lemma foo'' {w : ℕ} (s : Fin w) : 1 ≤ s.val + 1 := by {
+  simp_all only [le_add_iff_nonneg_left, zero_le]}
+
+lemma bar' {w : ℕ} (s : Fin w) : s + 1 ≤ w := s.isLt
+
+lemma fin_n_plus_1_le_n_plus1 {w} (s : Fin w) : s + 1 ≤ w + 1 := by
+  simp only [add_le_add_iff_right, Fin.is_le']
+
+
+abbrev c' [Field K] [NumberField K] (α : K) : ℤ := (c'_both α : ℤ)
+
+lemma c'_IsIntegral (α : K) :
+  IsIntegral ℤ ((c' ) α • α) := (c'_both α).2.2
+
+lemma c'_neq0 (α : K) : (c'_both α : ℤ) ≠ 0 := (c'_both α).2.1
