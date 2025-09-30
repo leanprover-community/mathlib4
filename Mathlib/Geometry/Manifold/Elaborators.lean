@@ -30,11 +30,11 @@ The search for models with corners uses the local context and is (almost) only s
 hopefully fast enough to always run.
 
 This has no dedicated support for product manifolds (or product vector spaces) yet;
-adding this is left for future changes. (It would make need to make a choice between e.g. the
+adding this is left for future changes. (It would need to make a choice between e.g. the
 trivial model with corners on a product `E × F` and the product of the trivial models on `E` and
 `F`).
 
-Secondly, this space adds an elaborator to ease working with sections in a fibre bundle,
+Secondly, this file adds an elaborator to ease working with sections in a fibre bundle,
 converting a section `s : Π x : M, Π V x` to a non-dependent function into the total space of the
 bundle.
 ```lean
@@ -67,9 +67,9 @@ the following.
 - extend the elaborators to support `PartialHomeomorph`s and `PartialEquiv`s
 
 - fix pretty-printing: currently, the `commandStart` linter expects some different formatting
-- better error messages: forgetting e.g. the `T%` elaborator yields cryptic errors
+- better error messages (as needed)
 - further testing and fixing of edge cases
-- added tests for all of the above
+- add tests for all of the above
 - add delaborators for these elaborators
 
 -/
@@ -424,7 +424,7 @@ elab:max "CMDiff" nt:term:arg f:term:arg : term => do
     return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
 
-/-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f x`,
+/-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f u x`,
 trying to determine `I` and `J` from the local context. -/
 elab:max "mfderiv[" s:term:arg "]" t:term:arg : term => do
   let es ← Term.elabTerm s none
