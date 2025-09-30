@@ -372,4 +372,36 @@ noncomputable def iteratedFDeriv_toBoundedContinuousFunctionₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
   toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ' 𝕜 i
 
+section Topology
+
+noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
+  ⨅ (i : ℕ), induced (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i) inferInstance
+
+noncomputable instance uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F) := .replaceTopology
+  (⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i) inferInstance)
+  toTopologicalSpace_iInf.symm
+
+protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F)) =
+    ⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i)
+      inferInstance :=
+  UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
+
+instance : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
+  rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
+  refine isUniformAddGroup_iInf (fun i ↦ ?_)
+  exact IsUniformAddGroup.comap _
+
+instance : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
+  refine continuousSMul_iInf
+    (fun i ↦ continuousSMul_induced (iteratedFDeriv_toBoundedContinuousFunctionₗ 𝕜 i))
+
+instance : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
+  LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
+
+lemma continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
+    Continuous φ ↔ ∀ i, Continuous (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i ∘ φ) := by
+  simp_rw [continuous_iInf_rng, continuous_induced_rng]
+
+end Topology
+
 end ContDiffMapSupportedIn
