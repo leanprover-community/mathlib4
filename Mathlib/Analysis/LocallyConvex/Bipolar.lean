@@ -50,7 +50,7 @@ section RCLike
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
@@ -59,7 +59,7 @@ The Bipolar Theorem: The bipolar of a set coincides with its closed absolutely c
 [Conway, *A course in functional analysis*, Chapter V. 1.8][conway1990]
 -/
 open scoped ComplexConjugate
-theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
+theorem flip_polar_polar_eq {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   refine subset_antisymm ?_ <| closedAbsConvexHull_min (E := WeakBilin B)
     (subset_bipolar B s) (polar_absConvex _) (polar_isClosed B.flip _)
