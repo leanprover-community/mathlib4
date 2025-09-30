@@ -83,6 +83,11 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #guard_msgs in
 #check (T% X) x
 
+-- Applying the same elaborator twice is fine (and idempotent).
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (T% X)) x
+
 end TotalSpace
 
 /-! Tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
@@ -115,8 +120,8 @@ error: Application type mismatch: The argument
 has type
   M
 of sort `Type u_4` but is expected to have type
-  Type ?u.60421
-of sort `Type (?u.60421 + 1)` in the application
+  Type ?u.63950
+of sort `Type (?u.63950 + 1)` in the application
   @modelWithCornersSelf a✝
 -/
 #guard_msgs in

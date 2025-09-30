@@ -135,6 +135,10 @@ elab:max "T% " t:term:arg : term => do
     let ut ← tgt.getUniverse
     -- TODO: can `tgt` depend on `x` in a way that is not a function application?
     -- Check that `x` is not a bound variable in `tgt`!
+    -- xxx: is this check fine or overzealous?
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {tgt} has loose bound variables¬
+      Note: applying the 'T%' elaborator twice makes no sense."
     let trivBundle := mkAppN (.const `Bundle.Trivial [us, ut]) #[src, tgt]
     return ← withLocalDecl x BinderInfo.default src fun x ↦ do
       let body := mkAppN (.const ``Bundle.TotalSpace.mk' [us, ut, ut])
