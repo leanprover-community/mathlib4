@@ -9,22 +9,23 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 /-!
 # Exactness properties of the difference map for tensor products
 
-For an `R`-algebra `S`, we collect some properties of the `R`-linear map `S →ₗ[R] S ⊗[R] S` defined
-by `s ↦ s ⊗ₜ[R] 1 - 1 ⊗ₜ[R] s`.
+For an `R`-algebra `S`, we collect certain properties of the `R`-linear map `S →ₗ[R] S ⊗[R] S` given
+by `s ↦ (s ⊗ₜ[R] 1) - (1 ⊗ₜ[R] s)`.
 
-## Main definitions
+## Main definitions (in the namespace `Algebra.TensorProduct`)
 
-* `Algebra.TensorProduct.includeLeftSubRight`: The `R`-linear map sending `s : S` to
-  `s ⊗ₜ[R] 1 - 1 ⊗ₜ[R] s`.
+* `includeLeftSubRight`: The `R`-linear map sending `s : S` to `s ⊗ₜ[R] 1 - 1 ⊗ₜ[R] s`.
+* `Exact.IncludeLeftSubRight`: Exactness of the sequence `R → S → S ⊗[R] S` with the right map given
+  by `includeLeftSubRight`
+* `toEqLocusOfInclusion`: The ring map from `R` to the equalizer locus in `S` of the two maps
+  `s ↦ s ⊗ₜ (1 : S)` and `s ↦ (1 : S) ⊗ₜ s`.
 
-## Main results
+## Main results (in the namespace `Algebra.TensorProduct`)
 
-* `Algebra.TensorProduct.Exact.includeLeftSubRight_of_section`: If the algebra map
-  `R → S` has a section, then the sequence `R → S → S ⊗[R] S` is exact.
-* `Algebra.TensorProduct.Exact.includeLeftSubRight_of_faithfullyFlat`: For a faithfully flat algebra
-  `S` over `R`, the sequence `R → S → S ⊗[R] S` is exact.
-* `Algebra.TensorProduct.toEqLocusOfInclusion_surjective`: When the exactness condition holds,
-  the map from `R` to the equalizer locus is surjective.
+* `Exact.includeLeftSubRight_of_faithfullyFlat`: `Exact.IncludeLeftSubRight` holds when `S` is
+  faithfully flat over `R`.
+* `toEqLocusOfInclusion_surjective`: If `Exact.IncludeLeftSubRight` holds, then the ring map
+  `toEqLocusOfInclusion` is surjective.
 
 -/
 
@@ -40,8 +41,6 @@ def includeLeftSubRight : S →ₗ[R] S ⊗[R] S :=
   (includeLeft (R := R) (S := R) (A := S) (B := S)).toLinearMap -
     (includeRight (R := R) (A:= S) (B := S)).toLinearMap
 
-variable (R) in
-/-- Explicit evaluation of `includeLeftSubRight R S` at `s : S`. -/
 @[simp]
 lemma includeLeftSubRight_apply (s : S) : includeLeftSubRight R S s = s ⊗ₜ[R] 1 - 1 ⊗ₜ[R] s :=
   rfl
@@ -53,8 +52,8 @@ lemma includeLeftSubRight_zero_of_mem_range {s : S} (hs : s ∈ Set.range ⇑(Al
   simp [includeLeftSubRight, ← hr]
 
 /-- `includeLeftSubRight` is compatible with `distribBaseChange` and `lTensor`. -/
-lemma includeLeftSubRight_distribBaseChange (S : Type*) [Ring S] [Algebra R S] (T : Type*)
-    [CommRing T] [Algebra R T] : (includeLeftSubRight T (T ⊗[R] S)).restrictScalars R =
+lemma includeLeftSubRight_distribBaseChange (T : Type*) [CommRing T] [Algebra R T] :
+    (includeLeftSubRight T (T ⊗[R] S)).restrictScalars R =
     ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).restrictScalars R).toLinearMap ∘ₗ
       ((includeLeftSubRight R S).lTensor T) := by
   simp only [includeLeftSubRight, LinearMap.lTensor_sub, LinearMap.comp_sub,
@@ -72,23 +71,21 @@ then the maps `R → S` and `includeLeftSubRight R S` form an exact pair. -/
 lemma Exact.includeLeftSubRight_of_section (g : AlgHom R S R) :
     Exact.IncludeLeftSubRight R S := by
   intro s
-  constructor
-  · intro hs
-    use g s
-    apply (TensorProduct.lid R S).symm.injective
-    rw [lid_symm_apply, lid_symm_apply, ← mul_one ((algebraMap R S) (g s)),
-      ← Algebra.smul_def, ← TensorProduct.smul_tmul, smul_eq_mul, mul_one, ← id_eq (1 : S),
-      ← AlgHom.coe_id R S, ← map_tmul,
-      sub_eq_zero.mp ((includeLeftSubRight_apply R s).symm.trans hs), map_tmul, map_one,
-      AlgHom.coe_id, id_eq]
-  · exact includeLeftSubRight_zero_of_mem_range
+  refine ⟨?_, includeLeftSubRight_zero_of_mem_range⟩
+  intro hs
+  use g s
+  apply (TensorProduct.lid R S).symm.injective
+  rw [lid_symm_apply, lid_symm_apply, ← mul_one ((algebraMap R S) (g s)),
+    ← Algebra.smul_def, ← TensorProduct.smul_tmul, smul_eq_mul, mul_one, ← id_eq (1 : S),
+    ← AlgHom.coe_id R S, ← map_tmul, sub_eq_zero.mp ((includeLeftSubRight_apply s).symm.trans hs),
+    map_tmul, map_one, AlgHom.coe_id, id_eq]
 
 section FaithfullyFlat
 
 variable (R S : Type*) [CommRing R]
 
-/-- For an `R`-algebra `S`, if there is a faithfully flat `R`-algebra `T` such that `T → T ⊗[R] S`
-satisfies `Exact.IncludeLeftSubRight`, so does `R → S`. -/
+/-- For an `R`-algebra `S`, if there is a faithfully flat `R`-algebra `T` such that the `T`-algebra
+`T ⊗[R] S` satisfies `Exact.IncludeLeftSubRight`, so does `R → S`. -/
 lemma Exact.includeLeftSubRight_desc_faithfullyFlat [Ring S] [Algebra R S]
     (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
     (h : Exact.IncludeLeftSubRight T (TensorProduct R T S)) :
@@ -146,7 +143,7 @@ lemma toEqLocusOfInclusion_surjective (h : Exact.IncludeLeftSubRight R S) :
     Function.Surjective (toEqLocusOfInclusion R S) := by
   intro s
   have s_mem : s.val ∈ Set.range ⇑(Algebra.linearMap R S) :=
-    (h s.val).mp ((includeLeftSubRight_apply R s.val).symm ▸ sub_eq_zero.mpr s.property)
+    (h s.val).mp ((includeLeftSubRight_apply (R := R) s.val).symm ▸ sub_eq_zero.mpr s.property)
   use (Set.mem_range.mp s_mem).choose
   ext
   nth_rw 5 [← (Set.mem_range.mp s_mem).choose_spec]
