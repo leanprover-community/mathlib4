@@ -449,6 +449,28 @@ theorem norm_toBoundedContinuousFunctionₗ (f : 𝓓^{n}_{K}(E, F)) :
   simp only [toBoundedContinuousFunction_apply, iteratedFDeriv'_apply, CharP.cast_eq_zero,
   zero_le, ↓reduceIte, norm_iteratedFDeriv_zero]
 
+/-- The inclusion of the space  `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
+functions as a continuous `𝕜`-linear map. -/
+@[simps!]
+noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
+  { toLinearMap := toBoundedContinuousFunctionₗ 𝕜
+    cont := show Continuous (toBoundedContinuousFunctionₗ 𝕜) by
+      refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+        (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
+      simp [Seminorm.comp_apply, coe_normSeminorm, norm_toBoundedContinuousFunctionₗ,
+        one_smul, Finset.sup_singleton] }
+
+protected theorem continuous_iff {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
+    Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous
+      (toBoundedContinuousFunctionₗ 𝕜 ∘ ContDiffMapSupportedIn.iteratedFDeriv' i ∘ φ) := by
+  simp_rw [continuous_iInf_rng, continuous_induced_rng]
+  constructor <;> intro H i
+  · exact fun _ ↦ H i
+  · by_cases hin : i ≤ n
+    · exact H i hin
+    · simp [iteratedFDeriv_toBoundedContinuousFunctionₗ, iteratedFDerivₗ'_eq_iteratedFDeriv',
+            coe_iteratedFDeriv'_of_gt' (lt_of_not_ge hin), continuous_zero]
+
 end Topology
 
 end ContDiffMapSupportedIn
