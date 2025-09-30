@@ -11,12 +11,12 @@ on:
       raw_from_date:
         description: 'starting date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "3 months ago"'
         required: false
-        default: '2025-05-23'
+        default: ''
         type: string
       raw_to_date:
         description: 'ending date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "2 weeks ago"'
         required: false
-        default: '2025-05-23'
+        default: ''
         type: string
       dry_run:
         description: 'if true, only log the outdated declarations, do not remove them and open a PR'
@@ -34,8 +34,8 @@ jobs:
       id: process_dates
       shell: bash
       env:
-        RAW_FROM_DATE: ${{ inputs.raw_from_date }}
-        RAW_TO_DATE: ${{ inputs.raw_to_date }}
+        RAW_FROM_DATE: 2025-05-23 #${{ inputs.raw_from_date }}
+        RAW_TO_DATE: 2025-05-23 #${{ inputs.raw_to_date }}
       run: |
         set -euo pipefail
 
