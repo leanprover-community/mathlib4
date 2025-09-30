@@ -155,7 +155,7 @@ lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by 
   · refine le_algebraMap_of_spectrum_le fun r hr => ?_
     calc r ≤ ‖r‖ := Real.le_norm_self r
       _ ≤ ‖a‖ := spectrum.norm_le_norm_of_mem hr
-  · rw [not_nontrivial_iff_subsingleton] at nontriv
+  · push_neg at nontriv
     simp
 
 lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
@@ -371,6 +371,24 @@ lemma rpow_neg_one_le_one {a : A} (ha : 1 ≤ a) : a ^ (-1 : ℝ) ≤ 1 := by
   lift a to Aˣ using isUnit_of_le isUnit_one zero_le_one ha
   rw [rpow_neg_one_eq_inv a (zero_le_one.trans ha)]
   exact inv_le_one ha
+
+protected lemma _root_.IsStrictlyPositive.of_le {a b : A} (ha : IsStrictlyPositive a)
+    (hab : a ≤ b) : IsStrictlyPositive b :=
+  ⟨ha.nonneg.trans hab, CStarAlgebra.isUnit_of_le ha.isUnit ha.nonneg hab⟩
+
+theorem _root_.IsStrictlyPositive.add_nonneg {a b : A}
+    (ha : IsStrictlyPositive a) (hb : 0 ≤ b) : IsStrictlyPositive (a + b) :=
+  IsStrictlyPositive.of_le ha ((le_add_iff_nonneg_right a).mpr hb)
+
+theorem _root_.IsStrictlyPositive.nonneg_add {a b : A}
+    (ha : 0 ≤ a) (hb : IsStrictlyPositive b) : IsStrictlyPositive (a + b) :=
+  add_comm a b ▸ hb.add_nonneg ha
+
+@[grind ←, aesop 90% apply]
+lemma _root_.isStrictlyPositive_add {a b : A}
+    (h : IsStrictlyPositive a ∧ 0 ≤ b ∨ 0 ≤ a ∧ IsStrictlyPositive b) :
+    IsStrictlyPositive (a + b) := by
+  grind [IsStrictlyPositive.add_nonneg, IsStrictlyPositive.nonneg_add]
 
 end CStarAlgebra
 

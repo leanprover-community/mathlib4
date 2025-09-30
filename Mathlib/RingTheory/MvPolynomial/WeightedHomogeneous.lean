@@ -272,7 +272,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     intro j hjs
     exact h j (Finset.mem_insert_of_mem hjs)
 
-/-- A non zero weighted homogeneous polynomial of weighted degree `n` has weighted total degree
+/-- A nonzero weighted-homogeneous polynomial of weighted degree `n` has weighted total degree
   `n`. -/
 theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
     (h : φ ≠ 0) : weightedTotalDegree' w φ = n := by

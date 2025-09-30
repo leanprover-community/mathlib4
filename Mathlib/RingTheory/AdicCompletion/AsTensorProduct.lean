@@ -7,7 +7,7 @@ import Mathlib.Algebra.FiveLemma
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.AdicCompletion.Exactness
-import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.Tensor
 
 /-!
 

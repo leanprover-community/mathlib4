@@ -133,6 +133,6 @@ theorem _root_.IsCoprime.wronskian_eq_zero_iff
   mpr hdab := by
     obtain ⟨hda, hdb⟩ := hdab
     rw [wronskian]
-    rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
+    rw [hda, hdb]; simp only [mul_zero, zero_mul, sub_self]
 
 end Polynomial
