@@ -22,7 +22,7 @@ universe u
 
 namespace groupCohomology
 
-namespace nonAbelian
+namespace NonAbelian
 
 section basic
 
@@ -47,6 +47,8 @@ def H0 : AddSubmonoid A where
 
 end H0
 
-end nonAbelian
+
+
+end NonAbelian
 
 end groupCohomology
