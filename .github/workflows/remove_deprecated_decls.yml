@@ -34,8 +34,8 @@ jobs:
       id: process_dates
       shell: bash
       env:
-        RAW_FROM_DATE: 2025-05-23 # ${{ inputs.raw_from_date }}
-        RAW_TO_DATE: 2025-05-23 # ${{ inputs.raw_to_date }}
+        RAW_FROM_DATE: '2025-05-23' # ${{ inputs.raw_from_date }}
+        RAW_TO_DATE: '2025-05-23' # ${{ inputs.raw_to_date }}
       run: |
         set -euo pipefail
 
