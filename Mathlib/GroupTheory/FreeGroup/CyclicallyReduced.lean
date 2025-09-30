@@ -63,8 +63,8 @@ theorem flatten_replicate (n : ℕ) (h : IsCyclicallyReduced L) :
   | 0, _ => simp
   | n + 1, [] => simp
   | n + 1, (head :: tail) =>
-    rw [isCyclicallyReduced_iff, IsReduced, List.chain'_flatten (by simp)]
-    refine ⟨⟨by simpa [IsReduced] using h.isReduced, List.chain'_replicate_of_rel _ h.2⟩,
+    rw [isCyclicallyReduced_iff, IsReduced, List.isChain_flatten (by simp)]
+    refine ⟨⟨by simpa [IsReduced] using h.isReduced, List.isChain_replicate_of_rel _ h.2⟩,
       fun _ ha _ hb ↦ ?_⟩
     rw [Option.mem_def, List.getLast?_flatten_replicate (h := by simp +arith)] at ha
     rw [Option.mem_def, List.head?_flatten_replicate (h := by simp +arith)] at hb
