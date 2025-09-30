@@ -724,10 +724,8 @@ variable {A} in
 theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 := rfl
 
 variable (T) in
-/-- `TensorProduct.rid` is compatible with `LinearMap.lTensor`. -/
-lemma rid_lTensor [Semiring T] [Algebra R T] :
-    (Algebra.linearMap S (S ⊗[R] T)).restrictScalars R ∘ₗ
-      (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R T).lTensor S := by
+lemma rid_lTensor : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R ∘ₗ
+    (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R B).lTensor S := by
   ext
   simp
 
@@ -742,24 +740,31 @@ variable [Semiring C] [Algebra R C]
 /-- `includeLeft` is compatible with `AlgebraTensorModule.distribBaseChange` and `lTensor`. -/
 lemma distribBaseChange_includeLeft_lTensor :
     ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
-      ((includeLeft (R := R) (S := R) (A := B) (B := C)).toLinearMap.lTensor A) =
-    (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
+      ((includeLeft (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
+    (includeLeft (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
   ext
-  simp [AlgebraTensorModule.distribBaseChange, TensorProduct.one_def]
+  simp [one_def]
+
 
 /-- `includeRight` is compatible with `AlgebraTensorModule.distribBaseChange` and `lTensor`. -/
 lemma distribBaseChange_includeRight_lTensor :
     ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
       ((includeRight (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
     ((includeRight (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)).restrictScalars R).toLinearMap := by
-  ext a _
-  simp only [AlgebraTensorModule.distribBaseChange, LinearEquiv.trans_symm,
-    AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp, curry_apply,
-    LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Function.comp_apply,
-    LinearMap.lTensor_tmul, AlgHom.toLinearMap_apply, includeRight_apply,
-    LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, AlgebraTensorModule.assoc_symm_tmul,
-    AlgebraTensorModule.cancelBaseChange_symm_tmul, AlgHom.coe_restrictScalars', one_def]
-  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', smul_tmul, smul_tmul']
+  apply LinearMap.ext
+  intro x
+  induction x using TensorProduct.induction_on with
+  | zero => simp only [map_zero]
+  | tmul a _ =>
+    simp only [includeRight_apply, LinearMap.comp_apply, LinearMap.lTensor_tmul,
+      AlgHom.toLinearMap_apply, LinearEquiv.coe_coe, LinearEquiv.restrictScalars_apply,
+      TensorProduct.AlgebraTensorModule.distribBaseChange_tmul, AlgHom.coe_restrictScalars',
+      includeRight_apply, one_def]
+    rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', smul_tmul, smul_tmul']
+  | add _ _ hx hy =>
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearEquiv.restrictScalars_apply] at hx hy
+    simp [hx, hy, tmul_add]
 
 end DistribBaseChange
 
