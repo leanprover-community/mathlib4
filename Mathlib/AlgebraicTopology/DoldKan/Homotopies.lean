@@ -104,11 +104,7 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
     (hσ' q n m hnm : X _⦋n⦌ ⟶ X _⦋m⦌) =
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
         eqToHom (by congr) := by
-  simp only [hσ', hσ]
-  split_ifs
-  · omega
-  · have h' := tsub_eq_of_eq_add ha
-    congr
+  grind [hσ', hσ]
 
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
     (hσ' q n (n + 1) rfl : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
@@ -127,14 +123,14 @@ def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
 theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   unfold Hσ
   rw [nullHomotopicMap'_f_of_not_rel_left (c_mk 1 0 rfl) cs_down_0_not_rel_left]
-  rcases q with (_|q)
+  rcases q with (_ | q)
   · rw [hσ'_eq (show 0 = 0 + 0 by rfl) (c_mk 1 0 rfl)]
     simp only [pow_zero, Fin.mk_zero, one_zsmul, eqToHom_refl, Category.comp_id]
     -- This `erw` is needed to show `0 + 1 = 1`.
     erw [ChainComplex.of_d]
     rw [AlternatingFaceMapComplex.objD, Fin.sum_univ_two, Fin.val_zero, Fin.val_one, pow_zero,
       pow_one, one_smul, neg_smul, one_smul, comp_add, comp_neg, add_neg_eq_zero,
-      ← Fin.castSucc_zero, ← Fin.succ_zero_eq_one, δ_comp_σ_self, δ_comp_σ_succ]
+      ← Fin.succ_zero_eq_one, δ_comp_σ_succ, δ_comp_σ_self' X (by rw [Fin.castSucc_zero'])]
   · rw [hσ'_eq_zero (Nat.succ_pos q) (c_mk 1 0 rfl), zero_comp]
 
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/

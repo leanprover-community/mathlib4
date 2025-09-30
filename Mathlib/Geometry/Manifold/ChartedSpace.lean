@@ -9,8 +9,8 @@ import Mathlib.Topology.Connected.LocPathConnected
 /-!
 # Charted spaces
 
-A smooth manifold is a topological space `M` locally modelled on a euclidean space (or a euclidean
-half-space for manifolds with boundaries, or an infinite dimensional vector space for more general
+A smooth manifold is a topological space `M` locally modelled on a Euclidean space (or a Euclidean
+half-space for manifolds with boundaries, or an infinite-dimensional vector space for more general
 notions of manifolds), i.e., the manifold is covered by open subsets on which there are local
 homeomorphisms (the charts) going to a model space `H`, and the changes of charts should be smooth
 maps.
@@ -102,9 +102,9 @@ In the definition of a charted space, the model space is written as an explicit 
 can be several model spaces for a given topological space. For instance, a complex manifold
 (modelled over `ℂ^n`) will also be seen sometimes as a real manifold modelled over `ℝ^(2n)`.
 
-## Notations
+## Notation
 
-In the locale `Manifold`, we denote the composition of partial homeomorphisms with `≫ₕ`, and the
+In the scope `Manifold`, we denote the composition of partial homeomorphisms with `≫ₕ`, and the
 composition of partial equivs with `≫`.
 -/
 
@@ -124,7 +124,7 @@ the arrow. -/
 
 @[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
-open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
+open Set PartialHomeomorph Manifold
 
 /-! ### Structure groupoids -/
 
@@ -342,7 +342,7 @@ one gets a groupoid. `Pregroupoid` bundles the properties needed for this constr
 groupoid of smooth functions with smooth inverses as an application. -/
 structure Pregroupoid (H : Type*) [TopologicalSpace H] where
   /-- Property describing membership in this groupoid: the pregroupoid "contains"
-    all functions `H → H` having the pregroupoid property on some `s : Set H` -/
+  all functions `H → H` having the pregroupoid property on some `s : Set H` -/
   property : (H → H) → Set H → Prop
   /-- The pregroupoid property is stable under composition -/
   comp : ∀ {f g u v}, property f u → property g v →
@@ -390,12 +390,8 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      -- Porting note: was
-      -- convert he.2
-      -- rw [A.1]
-      -- rfl
+      convert he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
-      exact he.2
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : PartialHomeomorph H H} :
     e ∈ PG.groupoid ↔ PG.property e e.source ∧ PG.property e.symm e.target :=
@@ -510,14 +506,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
     convert closedUnderRestriction' G.id_mem hs
-    -- Porting note: was
-    -- change s = _ ∩ _
-    -- rw [hs.interior_eq]
-    -- simp only [mfld_simps]
-    ext
-    · rw [PartialHomeomorph.restr_apply, PartialHomeomorph.refl_apply, id, ofSet_apply, id_eq]
-    · simp [hs]
-    · simp [hs.interior_eq]
+    ext <;> simp [hs.interior_eq]
   · intro h
     constructor
     intro e he s hs
@@ -589,7 +578,6 @@ section
 
 variable (H) [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
--- Porting note: Added `(H := H)` to avoid typeclass instance problem.
 theorem mem_chart_target (x : M) : chartAt H x x ∈ (chartAt H x).target :=
   (chartAt H x).map_source (mem_chart_source _ _)
 
@@ -647,9 +635,6 @@ theorem ChartedSpace.secondCountable_of_sigmaCompact [SecondCountableTopology H]
     countable_cover_nhds_of_sigmaCompact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
 
-@[deprecated (since := "2024-11-13")] alias
-ChartedSpace.secondCountable_of_sigma_compact := ChartedSpace.secondCountable_of_sigmaCompact
-
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
 is locally compact. -/
 theorem ChartedSpace.locallyCompactSpace [LocallyCompactSpace H] : LocallyCompactSpace M := by
@@ -683,7 +668,7 @@ theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathCo
   let e := chartAt H x
   let t := s ∩ e.source
   have ht : t ∈ 𝓝 x := Filter.inter_mem hs (chart_source_mem_nhds _ _)
-  refine ⟨e.symm '' pathComponentIn (e x) (e '' t), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
+  refine ⟨e.symm '' pathComponentIn (e '' t) (e x), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
   · nth_rewrite 1 [← e.left_inv (mem_chart_source _ _)]
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
@@ -766,7 +751,7 @@ We keep this as a definition (not an instance) to avoid instance search trying t
 `DiscreteTopology` or `Unique` instances.
 -/
 def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
-    [DiscreteTopology M] [h: Unique H] : ChartedSpace H M where
+    [DiscreteTopology M] [h : Unique H] : ChartedSpace H M where
   atlas :=
     letI f := fun x : M ↦ PartialHomeomorph.const
       (isOpen_discrete {x}) (isOpen_discrete {h.default})
@@ -812,8 +797,6 @@ def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 
 section
-
--- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
 
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
   instInhabitedProd
@@ -869,7 +852,7 @@ theorem prodChartedSpace_chartAt :
 
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by
   ext1
-  · simp [prodChartedSpace, atlas, ChartedSpace.atlas]
+  · simp [atlas, ChartedSpace.atlas]
   · ext1
     simp only [prodChartedSpace_chartAt, chartAt_self_eq, refl_prod_refl]
     rfl
@@ -932,7 +915,7 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
 open scoped Classical in
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
   if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
-  simp only [not_nonempty_iff] at h
+  push_neg at h
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
@@ -1196,6 +1179,38 @@ theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G 
     G.maximalAtlas M ⊆ G'.maximalAtlas M :=
   fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
 
+private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G]
+    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
+    (e.restr s).symm ≫ₕ e' ∈ G := by
+  have hs'' : IsOpen (e '' (e.source ∩ s)) := by
+    rw [isOpen_image_iff_of_subset_source _ inter_subset_left]
+    exact e.open_source.inter hs
+  have : (e.restr (e.source ∩ s)).symm ≫ₕ e' ∈ G := by
+    apply G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').1 hs'')
+    exact e.restr_symm_trans (e.open_source.inter hs) hs'' inter_subset_left
+  refine G.mem_of_eqOnSource this ?_
+  exact EqOnSource.trans' (Setoid.symm e.restr_inter_source).symm' (eqOnSource_refl e')
+
+private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G]
+    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
+    e'.symm ≫ₕ e.restr s ∈ G := by
+  have hs'' : IsOpen (e' '' (e'.source ∩ s)) := by
+    rw [isOpen_image_iff_of_subset_source e' inter_subset_left]
+    exact e'.open_source.inter hs
+  have ht : IsOpen (e'.target ∩ e'.symm ⁻¹' s) := by
+    rw [← image_source_inter_eq']
+    exact isOpen_image_source_inter e' hs
+  exact G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').2 ht) (e.symm_trans_restr e' hs)
+
+/-- If a structure groupoid `G` is closed under restriction, for any chart `e` in the maximal atlas,
+the restriction `e.restr s` to an open set `s` is also in the maximal atlas. -/
+theorem restr_mem_maximalAtlas [ClosedUnderRestriction G]
+    {e : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) {s : Set M} (hs : IsOpen s) :
+    e.restr s ∈ G.maximalAtlas M :=
+  fun _e' he' ↦ ⟨restr_mem_maximalAtlas_aux1 G he he' hs, restr_mem_maximalAtlas_aux2 G he he' hs⟩
+
 end MaximalAtlas
 
 section Singleton
@@ -1293,9 +1308,8 @@ lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he :
 every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chart_eq`?
 lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
-    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
-  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert he')⟩
+    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht :=
+  chart_eq ht he'
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/
@@ -1336,7 +1350,7 @@ end TopologicalSpace.Opens
 NB. We cannot deduce membership in `atlas H s` in general: by definition, this atlas contains
 precisely the restriction of each preferred chart at `x ∈ s` --- whereas `atlas H M`
 can contain more charts than these. -/
-lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
+lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : PartialHomeomorph M H}
     (he : e ∈ atlas H M) {s : Opens M} (hs : Nonempty s) {G : StructureGroupoid H} [HasGroupoid M G]
     [ClosedUnderRestriction G] : e.subtypeRestr hs ∈ G.maximalAtlas s := by
   intro e' he'
@@ -1347,6 +1361,9 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
   -- the transition functions of the restriction are the restriction of the transition function.
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
          G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
+
+@[deprecated (since := "2025-08-17")] alias StructureGroupoid.restriction_in_maximalAtlas :=
+  StructureGroupoid.subtypeRestr_mem_maximalAtlas
 
 /-! ### Structomorphisms -/
 
@@ -1425,7 +1442,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by rw [trans_of_set']
         _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by rw [restr_trans]
         _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s := by
-          simp only [EqOnSource.restr, trans_assoc, _root_.refl]
+          simp only [trans_assoc, _root_.refl]
         _ ≈ F₂ := by simp only [F₂, feq, _root_.refl]
       have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }
@@ -1453,7 +1470,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
           Opens.partialHomeomorphSubtypeCoe_source, preimage_univ, inter_self, subtypeRestr_source,
           goal, s]
         exact Subtype.coe_preimage_self _ |>.symm, by intro _ _; rfl⟩
-  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he hs)
+  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.subtypeRestr_mem_maximalAtlas he hs)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
 def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
@@ -1471,11 +1488,13 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
         -- with `c'` yields a chart in the maximal atlas of `s`.
         fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
-  · have : IsEmpty s := not_nonempty_iff.mp h
+  · push_neg at h
     have : IsEmpty t := isEmpty_coe_sort.mpr
-      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp this))
+      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
     exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
 
 end HasGroupoid
+
+set_option linter.style.longFile 1700

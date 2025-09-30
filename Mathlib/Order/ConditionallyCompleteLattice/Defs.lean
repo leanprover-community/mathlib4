@@ -94,9 +94,9 @@ class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyComp
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
 open scoped Classical in
-/-- A well founded linear order is conditionally complete, with a bottom element. -/
+/-- A well-founded linear order is conditionally complete, with a bottom element. -/
 noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
-  [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
+    [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
     ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with
     sInf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
@@ -122,10 +122,6 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
       simp only [B, dite_false, upperBounds_empty, univ_nonempty, dite_true]
       exact le_antisymm bot_le (WellFounded.min_le _ (mem_univ _))
     csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
-
-namespace OrderDual
-
-end OrderDual
 
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this

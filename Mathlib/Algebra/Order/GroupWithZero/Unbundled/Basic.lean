@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.Monotone.Basic
@@ -14,8 +14,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 /-!
 # Lemmas on the monotone multiplication typeclasses
 
-This file builds on `Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs` by proving several lemmas
-that do not immediately follow from the typeclass specifications.
+This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by proving several
+lemmas that do not immediately follow from the typeclass specifications.
 -/
 
 open Function
@@ -41,7 +41,7 @@ theorem mul_neg_of_pos_of_neg [PosMulStrictMono α] (ha : 0 < a) (hb : b < 0) : 
 
 @[simp]
 theorem mul_pos_iff_of_pos_left [PosMulStrictMono α] [PosMulReflectLT α] (h : 0 < a) :
-    0 < a * b ↔ 0 < b := by simpa using mul_lt_mul_left (b := 0) h
+    0 < a * b ↔ 0 < b := by simpa using mul_lt_mul_iff_right₀ (b := 0) h
 
 /-- Assumes right covariance. -/
 theorem Right.mul_pos [MulPosStrictMono α] (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
@@ -52,7 +52,7 @@ theorem mul_neg_of_neg_of_pos [MulPosStrictMono α] (ha : a < 0) (hb : 0 < b) : 
 
 @[simp]
 theorem mul_pos_iff_of_pos_right [MulPosStrictMono α] [MulPosReflectLT α] (h : 0 < b) :
-    0 < a * b ↔ 0 < a := by simpa using mul_lt_mul_right (b := 0) h
+    0 < a * b ↔ 0 < a := by simpa using mul_lt_mul_iff_left₀ (b := 0) h
 
 /-- Assumes left covariance. -/
 theorem Left.mul_nonneg [PosMulMono α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
@@ -209,29 +209,29 @@ theorem pos_and_pos_or_neg_and_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (h
     exact mul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 theorem neg_of_mul_pos_right [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : a ≤ 0) : b < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.1.not_le ha).2
+  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.1.not_ge ha).2
 
 theorem neg_of_mul_pos_left [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : b ≤ 0) : a < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.2.not_le ha).1
+  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.2.not_ge ha).1
 
 theorem neg_iff_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b) : a < 0 ↔ b < 0 :=
   ⟨neg_of_mul_pos_right hab ∘ le_of_lt, neg_of_mul_pos_left hab ∘ le_of_lt⟩
 
 theorem Left.neg_of_mul_neg_right [PosMulMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun b0 : b ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun b0 : b ≥ 0 => (Left.mul_nonneg a0 b0).not_gt h
 
 alias neg_of_mul_neg_right := Left.neg_of_mul_neg_right
 
 theorem Right.neg_of_mul_neg_right [MulPosMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_gt h
 
 theorem Left.neg_of_mul_neg_left [PosMulMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun a0 : a ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun a0 : a ≥ 0 => (Left.mul_nonneg a0 b0).not_gt h
 
 alias neg_of_mul_neg_left := Left.neg_of_mul_neg_left
 
 theorem Right.neg_of_mul_neg_left [MulPosMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_gt h
 
 end LinearOrder
 
@@ -261,41 +261,41 @@ lemma one_le_of_le_mul_right₀ [MulPosReflectLE α] (hb : 0 < b) (h : b ≤ a *
 
 @[simp]
 lemma le_mul_iff_one_le_right [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) : a ≤ a * b ↔ 1 ≤ b :=
-  Iff.trans (by rw [mul_one]) (mul_le_mul_left a0)
+  Iff.trans (by rw [mul_one]) (mul_le_mul_iff_right₀ a0)
 
 @[simp]
 theorem lt_mul_iff_one_lt_right [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :
     a < a * b ↔ 1 < b :=
-  Iff.trans (by rw [mul_one]) (mul_lt_mul_left a0)
+  Iff.trans (by rw [mul_one]) (mul_lt_mul_iff_right₀ a0)
 
 @[simp]
 lemma mul_le_iff_le_one_right [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) : a * b ≤ a ↔ b ≤ 1 :=
-  Iff.trans (by rw [mul_one]) (mul_le_mul_left a0)
+  Iff.trans (by rw [mul_one]) (mul_le_mul_iff_right₀ a0)
 
 @[simp]
 theorem mul_lt_iff_lt_one_right [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :
     a * b < a ↔ b < 1 :=
-  Iff.trans (by rw [mul_one]) (mul_lt_mul_left a0)
+  Iff.trans (by rw [mul_one]) (mul_lt_mul_iff_right₀ a0)
 
 /-! Lemmas of the form `a ≤ b * a ↔ 1 ≤ b` and `a * b ≤ b ↔ a ≤ 1`, assuming right covariance. -/
 
 @[simp]
 lemma le_mul_iff_one_le_left [MulPosMono α] [MulPosReflectLE α] (a0 : 0 < a) : a ≤ b * a ↔ 1 ≤ b :=
-  Iff.trans (by rw [one_mul]) (mul_le_mul_right a0)
+  Iff.trans (by rw [one_mul]) (mul_le_mul_iff_left₀ a0)
 
 @[simp]
 theorem lt_mul_iff_one_lt_left [MulPosStrictMono α] [MulPosReflectLT α] (a0 : 0 < a) :
     a < b * a ↔ 1 < b :=
-  Iff.trans (by rw [one_mul]) (mul_lt_mul_right a0)
+  Iff.trans (by rw [one_mul]) (mul_lt_mul_iff_left₀ a0)
 
 @[simp]
 lemma mul_le_iff_le_one_left [MulPosMono α] [MulPosReflectLE α] (b0 : 0 < b) : a * b ≤ b ↔ a ≤ 1 :=
-  Iff.trans (by rw [one_mul]) (mul_le_mul_right b0)
+  Iff.trans (by rw [one_mul]) (mul_le_mul_iff_left₀ b0)
 
 @[simp]
 theorem mul_lt_iff_lt_one_left [MulPosStrictMono α] [MulPosReflectLT α] (b0 : 0 < b) :
     a * b < b ↔ a < 1 :=
-  Iff.trans (by rw [one_mul]) (mul_lt_mul_right b0)
+  Iff.trans (by rw [one_mul]) (mul_lt_mul_iff_left₀ b0)
 
 /-! Lemmas of the form `1 ≤ b → a ≤ a * b`.
 
@@ -350,6 +350,10 @@ variable [MonoidWithZero M₀]
 
 section Preorder
 variable [Preorder M₀] {a b : M₀} {m n : ℕ}
+
+@[simp] lemma pow_succ_nonneg [PosMulMono M₀] (ha : 0 ≤ a) : ∀ n, 0 ≤ a ^ (n + 1)
+  | 0 => (pow_one a).symm ▸ ha
+  | _ + 1 => pow_succ a _ ▸ mul_nonneg (pow_succ_nonneg ha _) ha
 
 @[simp] lemma pow_nonneg [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 0 ≤ a) : ∀ n, 0 ≤ a ^ n
   | 0 => pow_zero a ▸ zero_le_one
@@ -442,13 +446,14 @@ lemma Bound.le_self_pow_of_pos [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 �
     a ≤ a ^ n := le_self_pow₀ ha hn.ne'
 
 @[mono, gcongr, bound]
-theorem pow_le_pow_left₀ [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
+theorem pow_le_pow_left₀ [PosMulMono M₀] [MulPosMono M₀]
     (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
   | 0 => by simp
-  | n + 1 => by simpa only [pow_succ']
-      using mul_le_mul hab (pow_le_pow_left₀ ha hab _) (pow_nonneg ha _) (ha.trans hab)
+  | 1 => by simpa using hab
+  | n + 2 => by simpa only [pow_succ']
+      using mul_le_mul hab (pow_le_pow_left₀ ha hab _) (pow_succ_nonneg ha _) (ha.trans hab)
 
-lemma pow_left_monotoneOn [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] :
+lemma pow_left_monotoneOn [PosMulMono M₀] [MulPosMono M₀] :
     MonotoneOn (fun a : M₀ ↦ a ^ n) {x | 0 ≤ x} :=
   fun _a ha _b _ hab ↦ pow_le_pow_left₀ ha hab _
 
@@ -506,23 +511,32 @@ lemma sq_pos_of_pos [PosMulStrictMono M₀] (ha : 0 < a) : 0 < a ^ 2 := by
   simpa only [sq] using mul_pos ha ha
 
 section strict_mono
-variable [ZeroLEOneClass M₀] [PosMulStrictMono M₀]
+variable [PosMulStrictMono M₀]
 
-@[simp] lemma pow_pos (ha : 0 < a) : ∀ n, 0 < a ^ n
+@[simp] lemma pow_succ_pos (ha : 0 < a) : ∀ n, 0 < a ^ (n + 1)
+  | 0 => by simpa using ha
+  | _ + 1 => pow_succ a _ ▸ mul_pos (pow_succ_pos ha _) ha
+
+@[simp] lemma pow_pos [ZeroLEOneClass M₀] (ha : 0 < a) : ∀ n, 0 < a ^ n
   | 0 => by nontriviality; rw [pow_zero]; exact zero_lt_one
   | _ + 1 => pow_succ a _ ▸ mul_pos (pow_pos ha _) ha
 
 @[gcongr, bound]
 lemma pow_lt_pow_left₀ [MulPosMono M₀] (hab : a < b)
     (ha : 0 ≤ a) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < b ^ n
-  | n + 1, _ => by
+  | 1, _ => by simpa using hab
+  | n + 2, _ => by
     simpa only [pow_succ] using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
-      (pow_le_pow_left₀ ha hab.le _) hab ha (pow_pos (ha.trans_lt hab) _)
+      (pow_le_pow_left₀ ha hab.le _) hab ha (pow_succ_pos (ha.trans_lt hab) _)
 
 /-- See also `pow_left_strictMono₀` and `Nat.pow_left_strictMono`. -/
 lemma pow_left_strictMonoOn₀ [MulPosMono M₀] (hn : n ≠ 0) :
     StrictMonoOn (· ^ n : M₀ → M₀) {a | 0 ≤ a} :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left₀ hab ha hn
+
+section ZeroLEOneClass
+
+variable [ZeroLEOneClass M₀]
 
 /-- See also `pow_right_strictMono'`. -/
 lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (a ^ ·) :=
@@ -541,12 +555,18 @@ lemma pow_le_pow_iff_right₀ (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
 lemma lt_self_pow₀ (h : 1 < a) (hm : 1 < m) : a < a ^ m := by
   simpa only [pow_one] using pow_lt_pow_right₀ h hm
 
+end ZeroLEOneClass
+
 lemma pow_right_strictAnti₀ (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ ·) :=
   strictAnti_nat_of_succ_lt fun n => by
+    have : ZeroLEOneClass M₀ := ⟨(h₀.trans h₁).le⟩
     simpa only [pow_succ, mul_one] using mul_lt_mul_of_pos_left h₁ (pow_pos h₀ n)
 
+lemma pow_le_pow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ m ≤ a ^ n ↔ n ≤ m :=
+  (pow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
+
 lemma pow_lt_pow_iff_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) : a ^ m < a ^ n ↔ n < m :=
-  (pow_right_strictAnti₀ h₀ h₁).lt_iff_lt
+  (pow_right_strictAnti₀ h₀ h₁).lt_iff_gt
 
 lemma pow_lt_pow_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
   (pow_lt_pow_iff_right_of_lt_one₀ h₀ h₁).2 hmn
@@ -591,7 +611,7 @@ lemma StrictMono.mul [PosMulStrictMono M₀] [MulPosStrictMono M₀] (hf : Stric
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder M₀] [ZeroLEOneClass M₀] [PosMulStrictMono M₀] {a b : M₀}
+variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}
   {m n : ℕ}
 
 lemma pow_le_pow_iff_left₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
@@ -607,8 +627,12 @@ lemma pow_left_inj₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n �
     a ^ n = b ^ n ↔ a = b :=
   (pow_left_strictMonoOn₀ hn).eq_iff_eq ha hb
 
+section ZeroLEOneClass
+
+variable [ZeroLEOneClass M₀]
+
 lemma pow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by
-  obtain ha₁ | ha₁ := ha₁.lt_or_lt
+  obtain ha₁ | ha₁ := ha₁.lt_or_gt
   · exact (pow_right_strictAnti₀ ha₀ ha₁).injective
   · exact (pow_right_strictMono₀ ha₁).injective
 
@@ -647,17 +671,18 @@ lemma one_le_sq_iff₀ (ha : 0 ≤ a) : 1 ≤ a ^ 2 ↔ 1 ≤ a :=
 lemma one_lt_sq_iff₀ (ha : 0 ≤ a) : 1 < a ^ 2 ↔ 1 < a :=
   one_lt_pow_iff_of_nonneg ha (Nat.succ_ne_zero _)
 
+end ZeroLEOneClass
+
 variable [MulPosMono M₀]
 
 lemma lt_of_pow_lt_pow_left₀ (n : ℕ) (hb : 0 ≤ b) (h : a ^ n < b ^ n) : a < b :=
   lt_of_not_ge fun hn => not_lt_of_ge (pow_le_pow_left₀ hb hn _) h
 
 lemma le_of_pow_le_pow_left₀ (hn : n ≠ 0) (hb : 0 ≤ b) (h : a ^ n ≤ b ^ n) : a ≤ b :=
-  le_of_not_lt fun h1 => not_le_of_lt (pow_lt_pow_left₀ h1 hb hn) h
+  le_of_not_gt fun h1 => not_le_of_gt (pow_lt_pow_left₀ h1 hb hn) h
 
-@[simp]
-lemma sq_eq_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b :=
-  pow_left_inj₀ ha hb (by decide)
+lemma sq_eq_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b := by
+  simp [ha, hb]
 
 lemma lt_of_mul_self_lt_mul_self₀ (hb : 0 ≤ b) : a * a < b * b → a < b := by
   simp only [← sq]
@@ -716,35 +741,72 @@ section GroupWithZero
 variable [GroupWithZero G₀]
 
 section Preorder
-variable [Preorder G₀] [ZeroLEOneClass G₀]
+variable [Preorder G₀] {a b c : G₀}
+
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel_left`. -/
+lemma mul_inv_left_le (hb : 0 ≤ b) : a * (a⁻¹ * b) ≤ b := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel_left`. -/
+lemma le_mul_inv_left (hb : b ≤ 0) : b ≤ a * (a⁻¹ * b) := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel_left`. -/
+lemma inv_mul_left_le (hb : 0 ≤ b) : a⁻¹ * (a * b) ≤ b := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel_left`. -/
+lemma le_inv_mul_left (hb : b ≤ 0) : b ≤ a⁻¹ * (a * b) := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `b ≠ 0`. See `mul_inv_cancel_right`. -/
+lemma mul_inv_right_le (ha : 0 ≤ a) : a * b * b⁻¹ ≤ a := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `b ≠ 0`. See `mul_inv_cancel_right`. -/
+lemma le_mul_inv_right (ha : a ≤ 0) : a ≤ a * b * b⁻¹ := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `b ≠ 0`. See `inv_mul_cancel_right`. -/
+lemma inv_mul_right_le (ha : 0 ≤ a) : a * b⁻¹ * b ≤ a := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `b ≠ 0`. See `inv_mul_cancel_right`. -/
+lemma le_inv_mul_right (ha : a ≤ 0) : a ≤ a * b⁻¹ * b := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma mul_div_mul_right_le (h : 0 ≤ a / b) : a * c / (b * c) ≤ a / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma le_mul_div_mul_right (h : a / b ≤ 0) : a / b ≤ a * c / (b * c) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]
+
+end Preorder
+
+section Preorder
+variable [Preorder G₀] [ZeroLEOneClass G₀] {a b c : G₀}
 
 /-- See `div_self` for the version with equality when `a ≠ 0`. -/
 lemma div_self_le_one (a : G₀) : a / a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel`. -/
+lemma mul_inv_le_one : a * a⁻¹ ≤ 1 := by simpa only [div_eq_mul_inv] using div_self_le_one a
+
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel`. -/
+lemma inv_mul_le_one : a⁻¹ * a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
 end Preorder
 
 section PartialOrder
 variable [PartialOrder G₀]
 
-namespace Right
-variable [MulPosReflectLT G₀] {a b c : G₀}
-
-lemma inv_pos : 0 < a⁻¹ ↔ 0 < a := by
-  suffices ∀ a : G₀, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
-  intro a ha
-  apply lt_of_mul_lt_mul_right _ ha.le
-  apply lt_of_mul_lt_mul_right _ ha.le
-  simpa [ha.ne']
-
-variable (G₀) in
-/-- For a group with zero, `MulPosReflectLT G₀` implies `MulPosStrictMono G₀`. -/
-theorem _root_.MulPosReflectLT.toMulPosStrictMono : MulPosStrictMono G₀ where
-  elim := by
-    rintro ⟨a, ha⟩ b c hlt
-    apply lt_of_mul_lt_mul_right _ (inv_pos.2 ha).le
-    simpa [ha.ne']
-
-end Right
+section PosMulReflectLT
 
 variable [PosMulReflectLT G₀] {a b c : G₀}
 
@@ -772,7 +834,21 @@ theorem PosMulReflectLT.toPosMulStrictMono : PosMulStrictMono G₀ where
     apply lt_of_mul_lt_mul_left _ (inv_pos_of_pos ha).le
     simpa [ha.ne']
 
-attribute [local instance] PosMulReflectLT.toPosMulStrictMono
+variable (G₀) in
+/-- For a group with zero, `PosMulReflectLT G₀`
+allows us to upgrade `MulPosMono G₀` to `MulPosReflectLE G₀`.
+The other implication holds without the `PosMulReflectLT G₀` assumption,
+see `MulPosReflectLT.toMulPosStrictMono` for a stronger version below.
+
+This theorem shows that in the presence of the assumption `PosMulReflectLT G₀`,
+it makes no sense to optimize between assumptions `MulPosMono G₀`, `MulPosStrictMono G₀`,
+`MulPosReflectLT G₀`, and `MulPosReflectLE G₀`. -/
+theorem MulPosReflectLE.of_posMulReflectLT_of_mulPosMono [MulPosMono G₀] : MulPosReflectLE G₀ where
+  elim := by
+    rintro ⟨a, ha⟩ b c h
+    simpa [ha.ne'] using mul_le_mul_of_nonneg_right h (inv_nonneg.2 ha.le)
+
+attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulReflectLT.toPosMulReflectLE
 
 lemma div_pos (ha : 0 < a) (hb : 0 < b) : 0 < a / b := by
   rw [div_eq_mul_inv]; exact mul_pos ha (inv_pos.2 hb)
@@ -780,26 +856,13 @@ lemma div_pos (ha : 0 < a) (hb : 0 < b) : 0 < a / b := by
 lemma div_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a / b := by
   rw [div_eq_mul_inv]; exact mul_nonneg ha (inv_nonneg.2 hb)
 
-lemma div_nonpos_of_nonpos_of_nonneg [MulPosMono G₀] (ha : a ≤ 0) (hb : 0 ≤ b) : a / b ≤ 0 := by
-  rw [div_eq_mul_inv]; exact mul_nonpos_of_nonpos_of_nonneg ha (inv_nonneg.2 hb)
-
-lemma zpow_nonneg [ZeroLEOneClass G₀] (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
-  | (n : ℕ) => by rw [zpow_natCast]; exact pow_nonneg ha _
-  |-(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
-
-lemma zpow_pos [ZeroLEOneClass G₀] (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
-  | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
-  |-(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
-
 /-- See `le_inv_mul_iff₀'` for a version with multiplication on the other side. -/
-lemma le_inv_mul_iff₀ (hc : 0 < c) : a ≤ c⁻¹ * b ↔ c * a ≤ b where
-  mp h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_left h hc.le
-  mpr h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_left h (inv_nonneg.2 hc.le)
+lemma le_inv_mul_iff₀ (hc : 0 < c) : a ≤ c⁻¹ * b ↔ c * a ≤ b := by
+  rw [← mul_le_mul_iff_of_pos_left hc, mul_inv_cancel_left₀ hc.ne']
 
 /-- See `inv_mul_le_iff₀'` for a version with multiplication on the other side. -/
-lemma inv_mul_le_iff₀ (hc : 0 < c) : c⁻¹ * b ≤ a ↔ b ≤ c * a where
-  mp h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_left h hc.le
-  mpr h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_left h (inv_nonneg.2 hc.le)
+lemma inv_mul_le_iff₀ (hc : 0 < c) : c⁻¹ * b ≤ a ↔ b ≤ c * a := by
+  rw [← mul_le_mul_iff_of_pos_left hc, mul_inv_cancel_left₀ hc.ne']
 
 lemma one_le_inv_mul₀ (ha : 0 < a) : 1 ≤ a⁻¹ * b ↔ a ≤ b := by rw [le_inv_mul_iff₀ ha, mul_one]
 lemma inv_mul_le_one₀ (ha : 0 < a) : a⁻¹ * b ≤ 1 ↔ b ≤ a := by rw [inv_mul_le_iff₀ ha, mul_one]
@@ -812,15 +875,6 @@ lemma one_le_inv₀ (ha : 0 < a) : 1 ≤ a⁻¹ ↔ a ≤ 1 := by simpa using on
 lemma inv_le_one₀ (ha : 0 < a) : a⁻¹ ≤ 1 ↔ 1 ≤ a := by simpa using inv_mul_le_one₀ ha (b := 1)
 
 @[bound] alias ⟨_, Bound.one_le_inv₀⟩ := one_le_inv₀
-
-@[bound]
-lemma inv_le_one_of_one_le₀ [ZeroLEOneClass G₀] (ha : 1 ≤ a) : a⁻¹ ≤ 1 :=
-  (inv_le_one₀ <| zero_lt_one.trans_le ha).2 ha
-
-lemma one_le_inv_iff₀ [ZeroLEOneClass G₀] : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 where
-  mp h := ⟨inv_pos.1 (zero_lt_one.trans_le h),
-    inv_inv a ▸ (inv_le_one₀ <| zero_lt_one.trans_le h).2 h⟩
-  mpr h := (one_le_inv₀ h.1).2 h.2
 
 /-- One direction of `le_inv_mul_iff₀` where `c` is allowed to be `0` (but `b` must be nonnegative).
 -/
@@ -836,13 +890,63 @@ lemma inv_mul_le_of_le_mul₀ (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b * c) : 
   · simp [hc]
   · rwa [inv_mul_le_iff₀ hb]
 
+/-- See `lt_inv_mul_iff₀'` for a version with multiplication on the other side. -/
+lemma lt_inv_mul_iff₀ (hc : 0 < c) : a < c⁻¹ * b ↔ c * a < b := by
+  rw [← mul_lt_mul_iff_of_pos_left hc, mul_inv_cancel_left₀ hc.ne']
+
+/-- See `inv_mul_lt_iff₀'` for a version with multiplication on the other side. -/
+lemma inv_mul_lt_iff₀ (hc : 0 < c) : c⁻¹ * b < a ↔ b < c * a := by
+  rw [← mul_lt_mul_iff_of_pos_left hc, mul_inv_cancel_left₀ hc.ne']
+
+/-- See `inv_lt_iff_one_lt_mul₀` for a version with multiplication on the other side. -/
+lemma inv_lt_iff_one_lt_mul₀' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := by
+  rw [← inv_mul_lt_iff₀ ha, mul_one]
+
+lemma one_lt_inv_mul₀ (ha : 0 < a) : 1 < a⁻¹ * b ↔ a < b := by rw [lt_inv_mul_iff₀ ha, mul_one]
+lemma inv_mul_lt_one₀ (ha : 0 < a) : a⁻¹ * b < 1 ↔ b < a := by rw [inv_mul_lt_iff₀ ha, mul_one]
+
+lemma one_lt_inv₀ (ha : 0 < a) : 1 < a⁻¹ ↔ a < 1 := by simpa using one_lt_inv_mul₀ ha (b := 1)
+lemma inv_lt_one₀ (ha : 0 < a) : a⁻¹ < 1 ↔ 1 < a := by simpa using inv_mul_lt_one₀ ha (b := 1)
+
 section ZeroLEOneClass
 
 variable [ZeroLEOneClass G₀]
 
 @[bound]
+lemma inv_lt_one_of_one_lt₀ (ha : 1 < a) : a⁻¹ < 1 := (inv_lt_one₀ <| zero_lt_one.trans ha).2 ha
+
+lemma one_lt_inv_iff₀ : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 where
+  mp h := ⟨inv_pos.1 (zero_lt_one.trans h), inv_inv a ▸ (inv_lt_one₀ <| zero_lt_one.trans h).2 h⟩
+  mpr h := (one_lt_inv₀ h.1).2 h.2
+
+@[bound]
+lemma inv_le_one_of_one_le₀ (ha : 1 ≤ a) : a⁻¹ ≤ 1 :=
+  (inv_le_one₀ <| zero_lt_one.trans_le ha).2 ha
+
+lemma one_le_inv_iff₀ : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 where
+  mp h := ⟨inv_pos.1 (zero_lt_one.trans_le h),
+    inv_inv a ▸ (inv_le_one₀ <| zero_lt_one.trans_le h).2 h⟩
+  mpr h := (one_le_inv₀ h.1).2 h.2
+
+@[bound]
 lemma inv_mul_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 :=
   inv_mul_le_of_le_mul₀ hb zero_le_one <| by rwa [mul_one]
+
+section ZPow
+variable {m n : ℤ}
+
+lemma zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
+  | (n : ℕ) => by rw [zpow_natCast]; exact pow_nonneg ha _
+  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
+
+lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
+  | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
+  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
+
+omit [ZeroLEOneClass G₀] in
+lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
+    StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by cutsat)
 
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
@@ -854,13 +958,19 @@ lemma zpow_right_anti₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) : Antitone fun n : �
   rw [zpow_add_one₀ ha₀.ne']
   exact mul_le_of_le_one_right (zpow_nonneg ha₀.le _) ha₁
 
-section ZPow
-variable {m n : ℤ}
+lemma zpow_right_strictMono₀ (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := by
+  refine strictMono_int_of_lt_succ fun n ↦ ?_
+  rw [zpow_add_one₀ (zero_lt_one.trans ha).ne']
+  exact lt_mul_of_one_lt_right (zpow_pos (zero_lt_one.trans ha) _) ha
+
+lemma zpow_right_strictAnti₀ (ha₀ : 0 < a) (ha₁ : a < 1) : StrictAnti fun n : ℤ ↦ a ^ n := by
+  refine strictAnti_int_of_succ_lt fun n ↦ ?_
+  rw [zpow_add_one₀ ha₀.ne']
+  exact mul_lt_of_lt_one_right (zpow_pos ha₀ _) ha₁
 
 @[gcongr]
 lemma zpow_le_zpow_right₀ (ha : 1 ≤ a) (hmn : m ≤ n) : a ^ m ≤ a ^ n := zpow_right_mono₀ ha hmn
 
-@[gcongr]
 lemma zpow_le_zpow_right_of_le_one₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hmn : m ≤ n) : a ^ n ≤ a ^ m :=
   zpow_right_anti₀ ha₀ ha₁ hmn
 
@@ -875,22 +985,112 @@ lemma zpow_le_one_of_nonpos₀ (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 := by
 lemma one_le_zpow_of_nonpos₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hn : n ≤ 0) : 1 ≤ a ^ n := by
   simpa using zpow_right_anti₀ ha₀ ha₁ hn
 
+@[gcongr]
+lemma zpow_lt_zpow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n :=
+  zpow_right_strictMono₀ ha hmn
+
+lemma zpow_lt_zpow_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
+  zpow_right_strictAnti₀ ha₀ ha₁ hmn
+
+lemma one_lt_zpow₀ (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
+  simpa using zpow_right_strictMono₀ ha hn
+
+lemma zpow_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hn : 0 < n) : a ^ n < 1 := by
+  simpa using zpow_right_strictAnti₀ ha₀ ha₁ hn
+
+lemma zpow_lt_one_of_neg₀ (ha : 1 < a) (hn : n < 0) : a ^ n < 1 := by
+  simpa using zpow_right_strictMono₀ ha hn
+
+lemma one_lt_zpow_of_neg₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hn : n < 0) : 1 < a ^ n := by
+  simpa using zpow_right_strictAnti₀ ha₀ ha₁ hn
+
+@[simp] lemma zpow_le_zpow_iff_right₀ (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
+  (zpow_right_strictMono₀ ha).le_iff_le
+
+@[simp] lemma zpow_lt_zpow_iff_right₀ (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
+  (zpow_right_strictMono₀ ha).lt_iff_lt
+
+lemma zpow_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
+    a ^ m ≤ a ^ n ↔ n ≤ m := (zpow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
+
+lemma zpow_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
+    a ^ m < a ^ n ↔ n < m := (zpow_right_strictAnti₀ ha₀ ha₁).lt_iff_gt
+
+@[simp] lemma one_le_zpow_iff_right₀ (ha : 1 < a) : 1 ≤ a ^ n ↔ 0 ≤ n := by
+  simp [← zpow_le_zpow_iff_right₀ ha]
+
+@[simp] lemma one_lt_zpow_iff_right₀ (ha : 1 < a) : 1 < a ^ n ↔ 0 < n := by
+  simp [← zpow_lt_zpow_iff_right₀ ha]
+
+@[simp] lemma one_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : 1 ≤ a ^ n ↔ n ≤ 0 := by
+  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma one_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : 1 < a ^ n ↔ n < 0 := by
+  simp [← zpow_lt_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma zpow_le_one_iff_right₀ (ha : 1 < a) : a ^ n ≤ 1 ↔ n ≤ 0 := by
+  simp [← zpow_le_zpow_iff_right₀ ha]
+
+@[simp] lemma zpow_lt_one_iff_right₀ (ha : 1 < a) : a ^ n < 1 ↔ n < 0 := by
+  simp [← zpow_lt_zpow_iff_right₀ ha]
+
+@[simp] lemma zpow_le_one_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ n ≤ 1 ↔ 0 ≤ n := by
+  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma zpow_lt_one_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ n < 1 ↔ 0 < n := by
+  simp [← zpow_lt_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
 end ZPow
 
 end ZeroLEOneClass
 
-section MulPosMono
-variable [MulPosMono G₀]
+end PosMulReflectLT
+
+section MulPosReflectLT
+variable [MulPosReflectLT G₀] {a b c : G₀}
+
+namespace Right
+
+lemma inv_pos : 0 < a⁻¹ ↔ 0 < a := by
+  suffices ∀ a : G₀, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
+  intro a ha
+  apply lt_of_mul_lt_mul_right _ ha.le
+  apply lt_of_mul_lt_mul_right _ ha.le
+  simpa [ha.ne']
+
+variable (G₀) in
+/-- For a group with zero, `MulPosReflectLT G₀` implies `MulPosStrictMono G₀`. -/
+theorem _root_.MulPosReflectLT.toMulPosStrictMono : MulPosStrictMono G₀ where
+  elim := by
+    rintro ⟨a, ha⟩ b c hlt
+    apply lt_of_mul_lt_mul_right _ (inv_pos.2 ha).le
+    simpa [ha.ne']
+
+lemma inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
+
+end Right
+
+attribute [local instance] PosMulReflectLT.toPosMulStrictMono
+  MulPosReflectLT.toMulPosStrictMono MulPosReflectLT.toMulPosReflectLE
+
+lemma div_nonpos_of_nonpos_of_nonneg (ha : a ≤ 0) (hb : 0 ≤ b) : a / b ≤ 0 := by
+  rw [div_eq_mul_inv]; exact mul_nonpos_of_nonpos_of_nonneg ha (Right.inv_nonneg.2 hb)
 
 /-- See `le_mul_inv_iff₀'` for a version with multiplication on the other side. -/
-lemma le_mul_inv_iff₀ (hc : 0 < c) : a ≤ b * c⁻¹ ↔ a * c ≤ b where
-  mp h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_right h hc.le
-  mpr h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_right h (inv_nonneg.2 hc.le)
+lemma le_mul_inv_iff₀ (hc : 0 < c) : a ≤ b * c⁻¹ ↔ a * c ≤ b := by
+  rw [← mul_le_mul_iff_of_pos_right hc, inv_mul_cancel_right₀ hc.ne']
 
 /-- See `mul_inv_le_iff₀'` for a version with multiplication on the other side. -/
-lemma mul_inv_le_iff₀ (hc : 0 < c) : b * c⁻¹ ≤ a ↔ b ≤ a * c where
-  mp h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_right h hc.le
-  mpr h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_right h (inv_nonneg.2 hc.le)
+lemma mul_inv_le_iff₀ (hc : 0 < c) : b * c⁻¹ ≤ a ↔ b ≤ a * c := by
+  rw [← mul_le_mul_iff_of_pos_right hc, inv_mul_cancel_right₀ hc.ne']
+
+/-- See `lt_mul_inv_iff₀'` for a version with multiplication on the other side. -/
+lemma lt_mul_inv_iff₀ (hc : 0 < c) : a < b * c⁻¹ ↔ a * c < b := by
+  rw [← mul_lt_mul_iff_of_pos_right hc, inv_mul_cancel_right₀ hc.ne']
+
+/-- See `mul_inv_lt_iff₀'` for a version with multiplication on the other side. -/
+lemma mul_inv_lt_iff₀ (hc : 0 < c) : b * c⁻¹ < a ↔ b < a * c := by
+  rw [← mul_lt_mul_iff_of_pos_right hc, inv_mul_cancel_right₀ hc.ne']
 
 /-- See `le_div_iff₀'` for a version with multiplication on the other side. -/
 lemma le_div_iff₀ (hc : 0 < c) : a ≤ b / c ↔ a * c ≤ b := by
@@ -900,12 +1100,32 @@ lemma le_div_iff₀ (hc : 0 < c) : a ≤ b / c ↔ a * c ≤ b := by
 lemma div_le_iff₀ (hc : 0 < c) : b / c ≤ a ↔ b ≤ a * c := by
   rw [div_eq_mul_inv, mul_inv_le_iff₀ hc]
 
+/-- See `lt_div_iff₀'` for a version with multiplication on the other side. -/
+lemma lt_div_iff₀ (hc : 0 < c) : a < b / c ↔ a * c < b := by
+  rw [div_eq_mul_inv, lt_mul_inv_iff₀ hc]
+
+/-- See `div_lt_iff₀'` for a version with multiplication on the other side. -/
+lemma div_lt_iff₀ (hc : 0 < c) : b / c < a ↔ b < a * c := by
+  rw [div_eq_mul_inv, mul_inv_lt_iff₀ hc]
+
+lemma div_le_div_iff_of_pos_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b := by
+  rw [div_le_iff₀ hc, div_mul_cancel₀ _ hc.ne']
+
+lemma div_lt_div_iff_of_pos_right (hc : 0 < c) : a / c < b / c ↔ a < b := by
+  rw [div_lt_iff₀ hc, div_mul_cancel₀ _ hc.ne']
+
 /-- See `inv_le_iff_one_le_mul₀'` for a version with multiplication on the other side. -/
 lemma inv_le_iff_one_le_mul₀ (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ b * a := by
   rw [← mul_inv_le_iff₀ ha, one_mul]
 
+/-- See `inv_lt_iff_one_lt_mul₀'` for a version with multiplication on the other side. -/
+lemma inv_lt_iff_one_lt_mul₀ (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
+  rw [← mul_inv_lt_iff₀ ha, one_mul]
+
 lemma one_le_div₀ (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff₀ hb, one_mul]
+lemma one_lt_div₀ (hb : 0 < b) : 1 < a / b ↔ b < a := by rw [lt_div_iff₀ hb, one_mul]
 lemma div_le_one₀ (hb : 0 < b) : a / b ≤ 1 ↔ a ≤ b := by rw [div_le_iff₀ hb, one_mul]
+lemma div_lt_one₀ (hb : 0 < b) : a / b < 1 ↔ a < b := by rw [div_lt_iff₀ hb, one_mul]
 
 /-- One direction of `le_mul_inv_iff₀` where `c` is allowed to be `0` (but `b` must be nonnegative).
 -/
@@ -939,197 +1159,103 @@ lemma div_le_one_of_le₀ [ZeroLEOneClass G₀] (h : a ≤ b) (hb : 0 ≤ b) : a
 
 @[mono, gcongr, bound]
 lemma div_le_div_of_nonneg_right (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c := by
-  rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
-  exact mul_le_mul_of_nonneg_right hab (one_div_nonneg.2 hc)
+  rw [div_eq_mul_inv a c, div_eq_mul_inv b c]
+  exact mul_le_mul_of_nonneg_right hab (Right.inv_nonneg.2 hc)
+
+@[gcongr, bound]
+lemma div_lt_div_of_pos_right (h : a < b) (hc : 0 < c) : a / c < b / c := by
+  rw [div_eq_mul_inv a c, div_eq_mul_inv b c]
+  exact mul_lt_mul_of_pos_right h (Right.inv_pos.2 hc)
+
+end MulPosReflectLT
+
+section Both
+
+variable [PosMulReflectLT G₀] [MulPosReflectLT G₀] {a b c d : G₀}
+
+attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulReflectLT.toPosMulReflectLE
+  MulPosReflectLT.toMulPosStrictMono MulPosReflectLT.toMulPosReflectLE
 
 /-- See `inv_anti₀` for the implication from right-to-left with one fewer assumption. -/
 lemma inv_le_inv₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
   rw [inv_le_iff_one_le_mul₀' ha, le_mul_inv_iff₀ hb, one_mul]
-
-@[gcongr, bound]
-lemma inv_anti₀ (hb : 0 < b) (hba : b ≤ a) : a⁻¹ ≤ b⁻¹ := (inv_le_inv₀ (hb.trans_le hba) hb).2 hba
-
-/-- See also `inv_le_of_inv_le₀` for a one-sided implication with one fewer assumption. -/
-lemma inv_le_comm₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := by
-  rw [← inv_le_inv₀ hb (inv_pos.2 ha), inv_inv]
-
-lemma inv_le_of_inv_le₀ (ha : 0 < a) (h : a⁻¹ ≤ b) : b⁻¹ ≤ a :=
-  (inv_le_comm₀ ha <| (inv_pos.2 ha).trans_le h).1 h
-
-/-- See also `le_inv_of_le_inv₀` for a one-sided implication with one fewer assumption. -/
-lemma le_inv_comm₀ (ha : 0 < a) (hb : 0 < b) : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
-  rw [← inv_le_inv₀ (inv_pos.2 hb) ha, inv_inv]
-
-lemma le_inv_of_le_inv₀ (ha : 0 < a) (h : a ≤ b⁻¹) : b ≤ a⁻¹ :=
-  (le_inv_comm₀ ha <| inv_pos.1 <| ha.trans_le h).1 h
-
--- Not a `mono` lemma b/c `div_le_div₀` is strictly more general
-@[gcongr]
-lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
-  rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_le_mul_of_nonneg_left ((inv_le_inv₀ (hc.trans_le h) hc).mpr h) ha
-
-end MulPosMono
-
-/-- See `lt_inv_mul_iff₀'` for a version with multiplication on the other side. -/
-lemma lt_inv_mul_iff₀ (hc : 0 < c) : a < c⁻¹ * b ↔ c * a < b where
-  mp h := by simpa [hc.ne'] using mul_lt_mul_of_pos_left h hc
-  mpr h := by simpa [hc.ne'] using mul_lt_mul_of_pos_left h (inv_pos.2 hc)
-
-/-- See `inv_mul_lt_iff₀'` for a version with multiplication on the other side. -/
-lemma inv_mul_lt_iff₀ (hc : 0 < c) : c⁻¹ * b < a ↔ b < c * a where
-  mp h := by simpa [hc.ne'] using mul_lt_mul_of_pos_left h hc
-  mpr h := by simpa [hc.ne'] using mul_lt_mul_of_pos_left h (inv_pos.2 hc)
-
-/-- See `inv_lt_iff_one_lt_mul₀` for a version with multiplication on the other side. -/
-lemma inv_lt_iff_one_lt_mul₀' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := by
-  rw [← inv_mul_lt_iff₀ ha, mul_one]
-
-lemma one_lt_inv_mul₀ (ha : 0 < a) : 1 < a⁻¹ * b ↔ a < b := by rw [lt_inv_mul_iff₀ ha, mul_one]
-lemma inv_mul_lt_one₀ (ha : 0 < a) : a⁻¹ * b < 1 ↔ b < a := by rw [inv_mul_lt_iff₀ ha, mul_one]
-
-lemma one_lt_inv₀ (ha : 0 < a) : 1 < a⁻¹ ↔ a < 1 := by simpa using one_lt_inv_mul₀ ha (b := 1)
-lemma inv_lt_one₀ (ha : 0 < a) : a⁻¹ < 1 ↔ 1 < a := by simpa using inv_mul_lt_one₀ ha (b := 1)
-
-section ZeroLEOneClass
-
-variable [ZeroLEOneClass G₀]
-
-@[bound]
-lemma inv_lt_one_of_one_lt₀ (ha : 1 < a) : a⁻¹ < 1 := (inv_lt_one₀ <| zero_lt_one.trans ha).2 ha
-
-lemma one_lt_inv_iff₀ : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 where
-  mp h := ⟨inv_pos.1 (zero_lt_one.trans h), inv_inv a ▸ (inv_lt_one₀ <| zero_lt_one.trans h).2 h⟩
-  mpr h := (one_lt_inv₀ h.1).2 h.2
-
-lemma zpow_right_strictMono₀ (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := by
-  refine strictMono_int_of_lt_succ fun n ↦ ?_
-  rw [zpow_add_one₀ (zero_lt_one.trans ha).ne']
-  exact lt_mul_of_one_lt_right (zpow_pos (zero_lt_one.trans ha) _) ha
-
-lemma zpow_right_strictAnti₀ (ha₀ : 0 < a) (ha₁ : a < 1) : StrictAnti fun n : ℤ ↦ a ^ n := by
-  refine strictAnti_int_of_succ_lt fun n ↦ ?_
-  rw [zpow_add_one₀ ha₀.ne']
-  exact mul_lt_of_lt_one_right (zpow_pos ha₀ _) ha₁
-
-variable {m n : ℤ}
-
-@[gcongr]
-lemma zpow_lt_zpow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n :=
-  zpow_right_strictMono₀ ha hmn
-
-@[gcongr]
-lemma zpow_lt_zpow_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
-  zpow_right_strictAnti₀ ha₀ ha₁ hmn
-
-lemma one_lt_zpow₀ (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
-  simpa using zpow_right_strictMono₀ ha hn
-
-lemma zpow_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hn : 0 < n) : a ^ n < 1 := by
-  simpa using zpow_right_strictAnti₀ ha₀ ha₁ hn
-
-lemma zpow_lt_one_of_neg₀ (ha : 1 < a) (hn : n < 0) : a ^ n < 1 := by
-  simpa using zpow_right_strictMono₀ ha hn
-
-lemma one_lt_zpow_of_neg₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hn : n < 0) : 1 < a ^ n := by
-  simpa using zpow_right_strictAnti₀ ha₀ ha₁ hn
-
-@[simp] lemma zpow_le_zpow_iff_right₀ (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
-  (zpow_right_strictMono₀ ha).le_iff_le
-
-@[simp] lemma zpow_lt_zpow_iff_right₀ (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
-  (zpow_right_strictMono₀ ha).lt_iff_lt
-
-lemma zpow_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
-    a ^ m ≤ a ^ n ↔ n ≤ m := (zpow_right_strictAnti₀ ha₀ ha₁).le_iff_le
-
-lemma zpow_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
-    a ^ m < a ^ n ↔ n < m := (zpow_right_strictAnti₀ ha₀ ha₁).lt_iff_lt
-
-@[simp] lemma one_le_zpow_iff_right₀ (ha : 1 < a) : 1 ≤ a ^ n ↔ 0 ≤ n := by
-  simp [← zpow_le_zpow_iff_right₀ ha]
-
-@[simp] lemma one_lt_zpow_iff_right₀ (ha : 1 < a) : 1 < a ^ n ↔ 0 < n := by
-  simp [← zpow_lt_zpow_iff_right₀ ha]
-
-@[simp] lemma one_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : 1 ≤ a ^ n ↔ n ≤ 0 := by
-  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
-
-@[simp] lemma one_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : 1 < a ^ n ↔ n < 0 := by
-  simp [← zpow_lt_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
-
-@[simp] lemma zpow_le_one_iff_right₀ (ha : 1 < a) : a ^ n ≤ 1 ↔ n ≤ 0 := by
-  simp [← zpow_le_zpow_iff_right₀ ha]
-
-@[simp] lemma zpow_lt_one_iff_right₀ (ha : 1 < a) : a ^ n < 1 ↔ n < 0 := by
-  simp [← zpow_lt_zpow_iff_right₀ ha]
-
-@[simp] lemma zpow_le_one_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ n ≤ 1 ↔ 0 ≤ n := by
-  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
-
-@[simp] lemma zpow_lt_one_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ n < 1 ↔ 0 < n := by
-  simp [← zpow_lt_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
-
-end ZeroLEOneClass
-
-section MulPosStrictMono
-variable [MulPosStrictMono G₀]
-
-/-- See `lt_mul_inv_iff₀'` for a version with multiplication on the other side. -/
-lemma lt_mul_inv_iff₀ (hc : 0 < c) : a < b * c⁻¹ ↔ a * c < b where
-  mp h := by simpa [hc.ne'] using mul_lt_mul_of_pos_right h hc
-  mpr h := by simpa [hc.ne'] using mul_lt_mul_of_pos_right h (inv_pos.2 hc)
-
-/-- See `mul_inv_lt_iff₀'` for a version with multiplication on the other side. -/
-lemma mul_inv_lt_iff₀ (hc : 0 < c) : b * c⁻¹ < a ↔ b < a * c where
-  mp h := by simpa [hc.ne'] using mul_lt_mul_of_pos_right h hc
-  mpr h := by simpa [hc.ne'] using mul_lt_mul_of_pos_right h (inv_pos.2 hc)
-
-/-- See `lt_div_iff₀'` for a version with multiplication on the other side. -/
-lemma lt_div_iff₀ (hc : 0 < c) : a < b / c ↔ a * c < b := by
-  rw [div_eq_mul_inv, lt_mul_inv_iff₀ hc]
-
-/-- See `div_lt_iff₀'` for a version with multiplication on the other side. -/
-lemma div_lt_iff₀ (hc : 0 < c) : b / c < a ↔ b < a * c := by
-  rw [div_eq_mul_inv, mul_inv_lt_iff₀ hc]
-
-/-- See `inv_lt_iff_one_lt_mul₀'` for a version with multiplication on the other side. -/
-lemma inv_lt_iff_one_lt_mul₀ (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
-  rw [← mul_inv_lt_iff₀ ha, one_mul]
-
-@[gcongr, bound]
-lemma div_lt_div_of_pos_right (h : a < b) (hc : 0 < c) : a / c < b / c := by
-  rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
-  exact mul_lt_mul_of_pos_right h (one_div_pos.2 hc)
 
 /-- See `inv_strictAnti₀` for the implication from right-to-left with one fewer assumption. -/
 lemma inv_lt_inv₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b⁻¹ ↔ b < a := by
   rw [inv_lt_iff_one_lt_mul₀' ha, lt_mul_inv_iff₀ hb, one_mul]
 
 @[gcongr, bound]
+lemma inv_anti₀ (hb : 0 < b) (hba : b ≤ a) : a⁻¹ ≤ b⁻¹ := (inv_le_inv₀ (hb.trans_le hba) hb).2 hba
+
+@[gcongr, bound]
 lemma inv_strictAnti₀ (hb : 0 < b) (hba : b < a) : a⁻¹ < b⁻¹ :=
   (inv_lt_inv₀ (hb.trans hba) hb).2 hba
+
+/-- See also `inv_le_of_inv_le₀` for a one-sided implication with one fewer assumption. -/
+lemma inv_le_comm₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := by
+  rw [← inv_le_inv₀ hb (inv_pos.2 ha), inv_inv]
 
 /-- See also `inv_lt_of_inv_lt₀` for a one-sided implication with one fewer assumption. -/
 lemma inv_lt_comm₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b ↔ b⁻¹ < a := by
   rw [← inv_lt_inv₀ hb (inv_pos.2 ha), inv_inv]
 
+lemma inv_le_of_inv_le₀ (ha : 0 < a) (h : a⁻¹ ≤ b) : b⁻¹ ≤ a :=
+  (inv_le_comm₀ ha <| (inv_pos.2 ha).trans_le h).1 h
+
 lemma inv_lt_of_inv_lt₀ (ha : 0 < a) (h : a⁻¹ < b) : b⁻¹ < a :=
   (inv_lt_comm₀ ha <| (inv_pos.2 ha).trans h).1 h
+
+/-- See also `le_inv_of_le_inv₀` for a one-sided implication with one fewer assumption. -/
+lemma le_inv_comm₀ (ha : 0 < a) (hb : 0 < b) : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
+  rw [← inv_le_inv₀ (inv_pos.2 hb) ha, inv_inv]
 
 /-- See also `lt_inv_of_lt_inv₀` for a one-sided implication with one fewer assumption. -/
 lemma lt_inv_comm₀ (ha : 0 < a) (hb : 0 < b) : a < b⁻¹ ↔ b < a⁻¹ := by
   rw [← inv_lt_inv₀ (inv_pos.2 hb) ha, inv_inv]
 
+lemma le_inv_of_le_inv₀ (ha : 0 < a) (h : a ≤ b⁻¹) : b ≤ a⁻¹ :=
+  (le_inv_comm₀ ha <| inv_pos.1 <| ha.trans_le h).1 h
+
 lemma lt_inv_of_lt_inv₀ (ha : 0 < a) (h : a < b⁻¹) : b < a⁻¹ :=
   (lt_inv_comm₀ ha <| inv_pos.1 <| ha.trans h).1 h
 
-@[gcongr, bound]
-lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a / c := by
-  rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_lt_mul_of_pos_left ((inv_lt_inv₀ (hc.trans h) hc).2 h) ha
+lemma div_le_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+    a / b ≤ a / c ↔ c ≤ b := by
+  simp only [div_eq_mul_inv, mul_le_mul_iff_right₀ ha, inv_le_inv₀ hb hc]
 
-end MulPosStrictMono
+lemma div_lt_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b :=
+  lt_iff_lt_of_le_iff_le' (div_le_div_iff_of_pos_left ha hc hb)
+    (div_le_div_iff_of_pos_left ha hb hc)
+
+-- Not a `mono` lemma b/c `div_le_div₀` is strictly more general
+lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  gcongr
+  exacts [ha, hc]
+
+@[gcongr, bound]
+lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a / c :=
+  (div_lt_div_iff_of_pos_left ha (hc.trans h) hc).mpr h
+
+@[mono, gcongr, bound]
+lemma div_le_div₀ (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hdb : d ≤ b) : a / b ≤ c / d := by
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  exact mul_le_mul hac ((inv_le_inv₀ (hd.trans_le hdb) hd).2 hdb)
+    (inv_nonneg.2 <| hd.le.trans hdb) hc
+
+@[gcongr]
+lemma div_lt_div₀ (hac : a < c) (hdb : d ≤ b) (hc : 0 ≤ c) (hd : 0 < d) : a / b < c / d := by
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  apply mul_lt_mul hac (by gcongr; assumption) _ hc
+  exact inv_pos.2 (hd.trans_le hdb)
+
+lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a / b < c / d := by
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  exact mul_lt_mul' hac ((inv_lt_inv₀ (hd.trans hdb) hd).2 hdb)
+    (inv_nonneg.2 <| hd.le.trans hdb.le) hc
+
+end Both
+
 end PartialOrder
 
 section LinearOrder
@@ -1154,11 +1280,11 @@ lemma div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0
 
 lemma neg_of_div_neg_right (h : a / b < 0) (ha : 0 ≤ a) : b < 0 :=
   have := PosMulMono.toPosMulReflectLT (α := G₀)
-  lt_of_not_ge fun hb ↦ (div_nonneg ha hb).not_lt h
+  lt_of_not_ge fun hb ↦ (div_nonneg ha hb).not_gt h
 
 lemma neg_of_div_neg_left (h : a / b < 0) (hb : 0 ≤ b) : a < 0 :=
   have := PosMulMono.toPosMulReflectLT (α := G₀)
-  lt_of_not_ge fun ha ↦ (div_nonneg ha hb).not_lt h
+  lt_of_not_ge fun ha ↦ (div_nonneg ha hb).not_gt h
 
 end PosMulMono
 
@@ -1175,7 +1301,7 @@ lemma inv_le_one_iff₀ : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
   simp only [← not_lt, one_lt_inv_iff₀, not_and_or]
 
 lemma zpow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective fun n : ℤ ↦ a ^ n := by
-  obtain ha₁ | ha₁ := ha₁.lt_or_lt
+  obtain ha₁ | ha₁ := ha₁.lt_or_gt
   · exact (zpow_right_strictAnti₀ ha₀ ha₁).injective
   · exact (zpow_right_strictMono₀ ha₁).injective
 
@@ -1191,42 +1317,31 @@ end ZeroLEOne
 
 variable [MulPosStrictMono G₀]
 
-lemma div_le_div_iff_of_pos_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b where
-  mp := le_imp_le_of_lt_imp_lt fun hab ↦ div_lt_div_of_pos_right hab hc
-  mpr hab := div_le_div_of_nonneg_right hab hc.le
-
-lemma div_lt_div_iff_of_pos_right (hc : 0 < c) : a / c < b / c ↔ a < b :=
-  lt_iff_lt_of_le_iff_le <| div_le_div_iff_of_pos_right hc
-
-lemma div_lt_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
-    a / b < a / c ↔ c < b := by simp only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv₀ hb hc]
-
-lemma div_le_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b ≤ a / c ↔ c ≤ b :=
-  le_iff_le_iff_lt_iff_lt.2 (div_lt_div_iff_of_pos_left ha hc hb)
-
-@[mono, gcongr, bound]
-lemma div_le_div₀ (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hdb : d ≤ b) : a / b ≤ c / d := by
-  rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_le_mul hac ((inv_le_inv₀ (hd.trans_le hdb) hd).2 hdb)
-    (inv_nonneg.2 <| hd.le.trans hdb) hc
-
-@[gcongr]
-lemma div_lt_div₀ (hac : a < c) (hdb : d ≤ b) (hc : 0 ≤ c) (hd : 0 < d) : a / b < c / d := by
-  rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_lt_mul hac ((inv_le_inv₀ (hd.trans_le hdb) hd).2 hdb) (inv_pos.2 <| hd.trans_le hdb) hc
-
-lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a / b < c / d := by
-  rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_lt_mul' hac ((inv_lt_inv₀ (hd.trans hdb) hd).2 hdb)
-    (inv_nonneg.2 <| hd.le.trans hdb.le) hc
-
 end GroupWithZero.LinearOrder
 
 section CommGroupWithZero
+
+section Preorder
+variable [CommGroupWithZero G₀] [Preorder G₀] {a b c : G₀}
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma mul_div_mul_left_le (h : 0 ≤ a / b) : c * a / (c * b) ≤ a / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma le_mul_div_mul_left (h : a / b ≤ 0) : a / b ≤ c * a / (c * b) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
+
+end Preorder
+
 variable [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c d : G₀}
 
 attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulMono.toMulPosMono
-  PosMulStrictMono.toMulPosStrictMono
+  PosMulStrictMono.toMulPosStrictMono PosMulReflectLT.toMulPosReflectLT
 
 /-- See `le_inv_mul_iff₀` for a version with multiplication on the other side. -/
 lemma le_inv_mul_iff₀' (hc : 0 < c) : a ≤ c⁻¹ * b ↔ c * a ≤ b := by

@@ -41,14 +41,17 @@ lemma preimage_insertNth_Icc_of_mem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : �
     i.insertNth x ⁻¹' Icc q₁ q₂ = Icc (fun j ↦ q₁ (i.succAbove j)) fun j ↦ q₂ (i.succAbove j) :=
   Set.ext fun p ↦ by simp only [mem_preimage, insertNth_mem_Icc, hx, true_and]
 
-lemma preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : ∀ j, α j}
+lemma preimage_insertNth_Icc_of_notMem {i : Fin (n + 1)} {x : α i} {q₁ q₂ : ∀ j, α j}
     (hx : x ∉ Icc (q₁ i) (q₂ i)) : i.insertNth x ⁻¹' Icc q₁ q₂ = ∅ :=
   Set.ext fun p ↦ by
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and, mem_empty_iff_false]
 
+@[deprecated (since := "2025-05-23")]
+alias preimage_insertNth_Icc_of_not_mem := preimage_insertNth_Icc_of_notMem
+
 end Fin
 
-open Set Fin Matrix Function
+open Fin Matrix
 
 variable {α : Type*}
 

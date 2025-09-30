@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.Stonean.Basic
 import Mathlib.Topology.Category.TopCat.Adjunctions
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 
 /-!
 # Adjunctions involving the category of Stonean spaces

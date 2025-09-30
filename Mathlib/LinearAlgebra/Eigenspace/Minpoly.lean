@@ -53,7 +53,7 @@ theorem aeval_apply_of_hasEigenvector {f : End K V} {p : K[X]} {μ : K} {x : V}
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
-    rw [mul_comm, pow_succ', mul_assoc, map_mul, LinearMap.mul_apply, mul_comm, hna]
+    rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       LinearMap.map_smulₛₗ, RingHom.id_apply, mul_comm]
 
@@ -82,7 +82,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   have h_deg := minpoly.degree_le_of_ne_zero K f p_ne_0 this
   rw [hp, degree_mul, degree_X_sub_C, Polynomial.degree_eq_natDegree p_ne_0] at h_deg
   norm_cast at h_deg
-  omega
+  cutsat
 
 theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot μ :=
   ⟨isRoot_of_hasEigenvalue, hasEigenvalue_of_isRoot⟩

@@ -9,8 +9,8 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 /-!
 # Derivative of the absolute value
 
-This file compiles basic derivability properties of the absolute value, and is largely inspired
-from `Mathlib.Analysis.InnerProductSpace.Calculus`, which is the analogous file for norms derived
+This file compiles basic derivability properties of the absolute value, and is largely inspired from
+`Mathlib/Analysis/InnerProductSpace/Calculus.lean`, which is the analogous file for norms derived
 from an inner product space.
 
 ## Tags
@@ -21,7 +21,7 @@ absolute value, derivative
 open Filter Real Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {n : ℕ∞} {f : E → ℝ} {f' : E →L[ℝ] ℝ} {s : Set E} {x : E}
+variable {n : ℕ∞} {f : E → ℝ} {f' : StrongDual ℝ E} {s : Set E} {x : E}
 
 theorem contDiffAt_abs {x : ℝ} (hx : x ≠ 0) : ContDiffAt ℝ n (|·|) x := contDiffAt_norm ℝ hx
 
@@ -62,7 +62,7 @@ theorem hasDerivAt_abs_pos {x : ℝ} (hx : 0 < x) :
 
 theorem hasStrictDerivAt_abs {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt (|·|) (SignType.sign x : ℝ) x := by
-  obtain hx | hx := hx.lt_or_lt
+  obtain hx | hx := hx.lt_or_gt
   · simpa [hx] using hasStrictDerivAt_abs_neg hx
   · simpa [hx] using hasStrictDerivAt_abs_pos hx
 

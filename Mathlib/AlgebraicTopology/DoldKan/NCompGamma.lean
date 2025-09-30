@@ -36,12 +36,12 @@ variable {C : Type*} [Category C] [Preadditive C]
 theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
     (i : Δ' ⟶ ⦋n⦌) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
     PInfty.f n ≫ X.map i.op = 0 := by
-  induction' Δ' using SimplexCategory.rec with m
+  induction Δ' using SimplexCategory.rec with | _ m
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
         rw [← h] at h₁
         exact h₁ rfl)
   simp only [len_mk] at hk
-  rcases k with _|k
+  rcases k with _ | k
   · change n = m + 1 at hk
     subst hk
     obtain ⟨j, rfl⟩ := eq_δ_of_mono i
@@ -49,39 +49,37 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     have h₃ : 1 ≤ (j : ℕ) := by
       by_contra h
       exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using h)
-    exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by omega)
-  · simp only [Nat.succ_eq_add_one, ← add_assoc] at hk
+    exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by cutsat)
+  · simp only [← add_assoc] at hk
     clear h₂ hi
     subst hk
     obtain ⟨j₁ : Fin (_ + 1), i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
-        have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
-        dsimp at h'
-        omega
+        rw [← SimplexCategory.epi_iff_surjective] at h
+        grind [→ le_of_epi]
     obtain ⟨j₂, i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
-        have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
-        dsimp at h'
-        omega
+        rw [← SimplexCategory.epi_iff_surjective] at h
+        grind [→ le_of_epi]
     by_cases hj₁ : j₁ = 0
     · subst hj₁
       rw [assoc, ← SimplexCategory.δ_comp_δ'' (Fin.zero_le _)]
       simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ j₂.succ_ne_zero, zero_comp]
-      simp only [Nat.succ_eq_add_one, Nat.add, Fin.succ]
-      omega
+      simp only [Fin.succ]
+      cutsat
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
       by_contra
-      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; omega)
+      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; cutsat)
 
 @[reassoc]
 theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}
     (i : Δ ⟶ Δ') [Mono i] :
     Γ₀.Obj.Termwise.mapMono (AlternatingFaceMapComplex.obj X) i ≫ PInfty.f Δ.len =
       PInfty.f Δ'.len ≫ X.map i.op := by
-  induction' Δ using SimplexCategory.rec with n
-  induction' Δ' using SimplexCategory.rec with n'
+  induction Δ using SimplexCategory.rec with | _ n
+  induction Δ' using SimplexCategory.rec with | _ n'
   dsimp
   -- We start with the case `i` is an identity
   by_cases h : n = n'
@@ -96,7 +94,7 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
     simp only [Γ₀.Obj.Termwise.mapMono_δ₀' _ i hi]
     dsimp
     rw [← PInfty.comm _ n, AlternatingFaceMapComplex.obj_d_eq]
-    simp only [eq_self_iff_true, id_comp, if_true, Preadditive.comp_sum]
+    simp only [Preadditive.comp_sum]
     rw [Finset.sum_eq_single (0 : Fin (n + 2))]
     rotate_left
     · intro b _ hb
@@ -116,8 +114,7 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
       exact h (congr_arg SimplexCategory.len h'.symm)
     rw [PInfty_comp_map_mono_eq_zero]
     · exact h
-    · by_contra h'
-      exact hi h'
+    · assumption
 
 variable [HasFiniteCoproducts C]
 
@@ -139,7 +136,7 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
             dsimp only [toKaroubi]
             simp only [← X.map_comp]
             congr 2
-            simp only [eqToHom_refl, id_comp, comp_id, ← op_comp]
+            simp only [← op_comp]
             exact Quiver.Hom.unop_inj (A.fac_pull θ) }
       comm := by
         apply (Γ₀.splitting K[X]).hom_ext
@@ -153,8 +150,7 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
     intro n
     dsimp [N₁, toKaroubi]
     simp only [← Splitting.cofan_inj_id, Splitting.ι_desc, Splitting.ι_desc_assoc, assoc,
-      PInfty_f_idem_assoc, Karoubi.comp_f, NatTrans.comp_app, Γ₂_map_f_app,
-      HomologicalComplex.comp_f, AlternatingFaceMapComplex.map_f, PInfty_f_naturality_assoc,
+      PInfty_f_idem_assoc, PInfty_f_naturality_assoc,
       NatTrans.naturality, Splitting.IndexSet.id_fst, unop_op, len_mk]
 
 end Γ₂N₁
@@ -162,13 +158,13 @@ end Γ₂N₁
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
 @[simps! hom_app inv_app]
 def Γ₂N₂ToKaroubiIso : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
-  (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
+  (Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
 
 namespace Γ₂N₂
 
 /-- The natural transformation `N₂ ⋙ Γ₂ ⟶ 𝟭 (SimplicialObject C)`. -/
 def natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ ⟶ 𝟭 _ :=
-  ((whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
+  ((Functor.whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
     (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans)
 
 theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
@@ -176,7 +172,7 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
       (N₂ ⋙ Γ₂).map P.decompId_i ≫
         (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans).app P.X ≫ P.decompId_p := by
   dsimp only [natTrans]
-  simp only [whiskeringLeft_obj_preimage_app, Functor.id_map, assoc]
+  simp only [whiskeringLeft_obj_preimage_app, Functor.id_map]
 
 end Γ₂N₂
 

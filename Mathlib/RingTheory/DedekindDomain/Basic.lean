@@ -14,10 +14,10 @@ as a Noetherian integrally closed commutative ring (domain) of Krull dimension a
 
 ## Main definitions
 
- - `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
-   Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
-   `isDedekindRing_iff` shows that this does not depend on the choice of field of fractions.
- - `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
+- `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
+  Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
+  `isDedekindRing_iff` shows that this does not depend on the choice of field of fractions.
+- `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
 
 ## Implementation notes
 
@@ -35,7 +35,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags

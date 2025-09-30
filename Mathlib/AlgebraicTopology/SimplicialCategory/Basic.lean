@@ -16,15 +16,15 @@ category of simplicial sets in such a way that morphisms in
 ## TODO
 
 * construct a simplicial category structure on simplicial objects, so
-that it applies in particular to simplicial sets
+  that it applies in particular to simplicial sets
 * obtain the adjunction property `(K ⊗ X ⟶ Y) ≃ (K ⟶ sHom X Y)` when `K`, `X`, and `Y`
-are simplicial sets
+  are simplicial sets
 * develop the notion of "simplicial tensor" `K ⊗ₛ X : C` with `K : SSet` and `X : C`
-an object in a simplicial category `C`
+  an object in a simplicial category `C`
 * define the notion of path between `0`-simplices of simplicial sets
 * deduce the notion of homotopy between morphisms in a simplicial category
 * obtain that homotopies in simplicial categories can be interpreted as given
-by morphisms `Δ[1] ⊗ X ⟶ Y`.
+  by morphisms `Δ[1] ⊗ X ⟶ Y`.
 
 ## References
 * [Daniel G. Quillen, *Homotopical algebra*, II §1][quillen-1967]

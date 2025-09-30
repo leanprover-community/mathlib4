@@ -13,7 +13,7 @@ import Mathlib.Logic.Denumerable
 
 This file proves that ℚ is denumerable.
 
-The fact that ℚ has cardinality ℵ₀ is proved in `Mathlib.Data.Rat.Cardinal`
+The fact that ℚ has cardinality ℵ₀ is proved in `Mathlib/Data/Rat/Cardinal.lean`
 -/
 
 assert_not_exists Module Field

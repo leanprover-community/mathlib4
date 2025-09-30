@@ -55,8 +55,8 @@ def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
 
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
-def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
-    pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
+noncomputable def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
+    pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (Functor.whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
 variable {F}
@@ -72,7 +72,7 @@ noncomputable def pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 noncomputable def pushforwardCompToPresheaf :
-    pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
+    pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (Functor.whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
 lemma pushforward_obj_map_apply (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)

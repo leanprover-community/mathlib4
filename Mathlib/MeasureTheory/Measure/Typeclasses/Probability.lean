@@ -35,9 +35,11 @@ lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α}
   apply (measure_mono (subset_univ _)).trans
   rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with h | h <;> simp [h]
 
-lemma toReal_prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
-    (μ s).toReal ≤ 1 :=
+lemma measureReal_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
+    μ.real s ≤ 1 :=
   ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
+
+@[deprecated (since := "2025-04-19")] alias toReal_prob_le_one := measureReal_le_one
 
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
@@ -86,9 +88,19 @@ instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
-theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
+theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
+
+theorem Measure.isProbabilityMeasure_of_map {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) [IsProbabilityMeasure (μ.map f)] : IsProbabilityMeasure μ where
+  measure_univ := by
+    rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
+    exact IsProbabilityMeasure.measure_univ
+
+theorem Measure.isProbabilityMeasure_map_iff {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) : IsProbabilityMeasure (μ.map f) ↔ IsProbabilityMeasure μ :=
+  ⟨fun _ ↦ isProbabilityMeasure_of_map hf, fun _ ↦ isProbabilityMeasure_map hf⟩
 
 instance IsProbabilityMeasure_comap_equiv (f : β ≃ᵐ α) : IsProbabilityMeasure (μ.comap f) := by
   rw [← MeasurableEquiv.map_symm]; exact isProbabilityMeasure_map f.symm.measurable.aemeasurable
@@ -108,14 +120,14 @@ theorem prob_compl_eq_one_sub (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
 @[simp] lemma prob_compl_eq_zero_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 0 ↔ μ s = 1 := by
   rw [prob_compl_eq_one_sub₀ hs, tsub_eq_zero_iff_le, one_le_prob_iff]
 
-@[simp] lemma prob_compl_eq_zero_iff (hs : MeasurableSet s) : μ sᶜ = 0 ↔ μ s = 1 :=
-  prob_compl_eq_zero_iff₀ hs.nullMeasurableSet
+lemma prob_compl_eq_zero_iff (hs : MeasurableSet s) : μ sᶜ = 0 ↔ μ s = 1 := by
+  simp [hs]
 
 @[simp] lemma prob_compl_eq_one_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 1 ↔ μ s = 0 := by
   rw [← prob_compl_eq_zero_iff₀ hs.compl, compl_compl]
 
-@[simp] lemma prob_compl_eq_one_iff (hs : MeasurableSet s) : μ sᶜ = 1 ↔ μ s = 0 :=
-  prob_compl_eq_one_iff₀ hs.nullMeasurableSet
+lemma prob_compl_eq_one_iff (hs : MeasurableSet s) : μ sᶜ = 1 ↔ μ s = 0 := by
+  simp [hs]
 
 lemma mem_ae_iff_prob_eq_one₀ (hs : NullMeasurableSet s μ) : s ∈ ae μ ↔ μ s = 1 :=
   mem_ae_iff.trans <| prob_compl_eq_zero_iff₀ hs
@@ -144,6 +156,10 @@ instance isProbabilityMeasure_map_up :
 instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.down) :=
   MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
     simp [Function.Surjective.range_eq <| EquivLike.surjective _]
+
+lemma Measure.eq_of_le_of_isProbabilityMeasure {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (hμν : μ ≤ ν) : μ = ν :=
+  eq_of_le_of_measure_univ_eq hμν (by simp)
 
 end IsProbabilityMeasure
 

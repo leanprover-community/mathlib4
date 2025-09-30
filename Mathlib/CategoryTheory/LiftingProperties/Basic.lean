@@ -149,4 +149,35 @@ lemma RetractArrow.rightLiftingProperty
       ⟨by rw [← Category.assoc, ← sq.w, Category.assoc, RetractArrow.i_w, Category.assoc]⟩
     ⟨⟨{ l := sq'.lift ≫ h.r.left}⟩⟩
 
+namespace Arrow
+
+/-- Given a morphism `φ : f ⟶ g` in the category `Arrow C`, this is an
+abbreviation for the `CommSq.LiftStruct` structure for
+the square corresponding to `φ`. -/
+abbrev LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
+
+lemma hasLiftingProperty_iff {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
+    HasLiftingProperty i p ↔
+      ∀ (φ : Arrow.mk i ⟶ Arrow.mk p), Nonempty (LiftStruct φ) := by
+  constructor
+  · intro _ φ
+    have sq : CommSq φ.left i p φ.right := CommSq.mk φ.w
+    exact ⟨{ l := sq.lift }⟩
+  · intro h
+    exact ⟨fun {f g} sq ↦ ⟨h (Arrow.homMk f g sq.w)⟩⟩
+
+end Arrow
+
+/-- Given morphisms `i : A ⟶ B`, `p : X ⟶ Y`, `t : A ⟶ X`,
+this is the property that a lifting exists for all squares
+with `i` on left, `p` on the right and `t` on the top. -/
+def HasLiftingPropertyFixedTop (t : A ⟶ X) : Prop :=
+  ∀ (b : B ⟶ Y) (sq : CommSq t i p b), sq.HasLift
+
+/-- Given morphisms `i : A ⟶ B`, `p : X ⟶ Y`, `b : B ⟶ Y`,
+this is the property that a lifting exists for all squares
+with `i` on left, `p` on the right and `b` on the bottom. -/
+def HasLiftingPropertyFixedBot (b : B ⟶ Y) : Prop :=
+  ∀ (t : A ⟶ X) (sq : CommSq t i p b), sq.HasLift
+
 end CategoryTheory

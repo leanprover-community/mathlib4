@@ -77,8 +77,6 @@ variable {R : Type*} [NonUnitalSemiring R]
 def equiv : R ≃ PreQuasiregular R where
   toFun := .mk
   invFun := PreQuasiregular.val
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 instance instOne : One (PreQuasiregular R) where
   one := equiv 0
@@ -156,14 +154,12 @@ def unitsFstOne_mulEquiv_quasiregular : unitsFstOne R A ≃* (PreQuasiregular A)
         inv := 1 + equiv.symm x⁻¹.val
         val_inv := by
           convert congr((1 + $(inv_add_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, inr_zero, add_zero, mul_add, add_mul,
-              inr_add, inr_mul]
+          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero]
         inv_val := by
           convert congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, inr_zero, add_zero, mul_add, add_mul,
-              inr_add, inr_mul]
+          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero] }
       property := by simp }
@@ -314,7 +310,6 @@ lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ri
 lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
   convert quasispectrum_eq_spectrum_union R a
-  ext x
   simp
 
 lemma mem_quasispectrum_iff {R A : Type*} [Semifield R] [Ring A]
@@ -370,7 +365,6 @@ lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
     quasispectrum R (a : Unitization S A) = quasispectrum R a := by
   rw [quasispectrum_eq_spectrum_union_zero, quasispectrum_eq_spectrum_inr' R S]
-  apply Set.union_eq_self_of_subset_right
   simpa using zero_mem_spectrum_inr _ _ _
 
 end Unitization
@@ -404,6 +398,12 @@ lemma iff_spectrum_nonneg {𝕜 A : Type*} [Semifield 𝕜] [LinearOrder 𝕜] [
 
 alias ⟨_, of_spectrum_nonneg⟩ := iff_spectrum_nonneg
 
+lemma nonneg_of_mem_quasispectrum {𝕜 : Type*} [CommSemiring 𝕜] [PartialOrder 𝕜] [PartialOrder A]
+    [Module 𝕜 A] [NonnegSpectrumClass 𝕜 A] {a : A} (ha : 0 ≤ a) {x : 𝕜}
+    (hx : x ∈ quasispectrum 𝕜 a) : 0 ≤ x := quasispectrum_nonneg_of_nonneg a ha x hx
+
+grind_pattern nonneg_of_mem_quasispectrum => x ∈ quasispectrum 𝕜 a
+
 end NonnegSpectrumClass
 
 lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [CommSemiring 𝕜] [PartialOrder 𝕜]
@@ -411,6 +411,8 @@ lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [CommSemiring 𝕜] [PartialOrd
     [Algebra 𝕜 A] [NonnegSpectrumClass 𝕜 A] ⦃a : A⦄ (ha : 0 ≤ a) ⦃x : 𝕜⦄ (hx : x ∈ spectrum 𝕜 a) :
     0 ≤ x :=
   NonnegSpectrumClass.quasispectrum_nonneg_of_nonneg a ha x (spectrum_subset_quasispectrum 𝕜 a hx)
+
+grind_pattern spectrum_nonneg_of_nonneg => x ∈ spectrum 𝕜 a
 
 /-! ### Restriction of the spectrum -/
 

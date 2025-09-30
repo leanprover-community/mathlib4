@@ -28,7 +28,7 @@ of Patrick Massot.
 * The result is formalized here in slightly more generality, using finsets. That is, if ι is an
   arbitrary index type, g denotes a map from ι to R[X], and if s is an arbitrary finite subset of ι,
   with g i monic for all i ∈ s and for all i,j ∈ s, i ≠ j → g i is coprime to g j, then we have
-  ∃ q ∈ R[X] , r : ι → R[X] such that ∀ i ∈ s, deg(r i) < deg(g i) and
+  ∃ q ∈ R[X], r : ι → R[X] such that ∀ i ∈ s, deg(r i) < deg(g i) and
   f / ∏ g i = q + ∑ (r i) / (g i), where the product and sum are over s.
 
 * The proof is done by proving the two-denominator case and then performing finset induction for an
@@ -41,11 +41,11 @@ of Patrick Massot.
 -/
 
 
-variable (R : Type) [CommRing R] [IsDomain R]
+variable (R : Type*) [CommRing R] [IsDomain R]
 
 open Polynomial
 
-variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
+variable (K : Type*) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
 
@@ -96,7 +96,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
   | empty =>
     refine ⟨f, fun _ : ι => (0 : R[X]), fun i => ?_, by simp⟩
     rintro ⟨⟩
-  | @insert a b hab Hind => ?_
+  | insert a b hab Hind => ?_
   obtain ⟨q₀, r₁, r₂, hdeg₁, _, hf : (↑f : K) / _ = _⟩ :=
     div_eq_quo_add_rem_div_add_rem_div R K f
       (hg a (b.mem_insert_self a) : Monic (g a))
@@ -124,8 +124,6 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     ring
   congr 2
   refine Finset.sum_congr rfl fun x hxb => ?_
-  rw [if_neg]
-  rintro rfl
-  exact hab hxb
+  grind
 
 end NDenominators

@@ -14,11 +14,11 @@ Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
 from finite `Aut F`-sets to finite sets. In this file we collect basic properties
 of the induced functor `H : C ⥤ Action FintypeCat (Aut F)`.
 
-See `Mathlib.CategoryTheory.Galois.Full` for the proof that `H` is (faithfully) full.
+See `Mathlib/CategoryTheory/Galois/Full.lean` for the proof that `H` is (faithfully) full.
 
 -/
 
-universe u v
+universe u
 
 namespace CategoryTheory
 
@@ -26,7 +26,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u} [Category.{v} C] (F : C ⥤ FintypeCat.{u})
+variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u})
 
 /-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
 the forgetful functor from `Action FintypeCat (Aut F)` to `FintypeCat`. -/

@@ -26,7 +26,7 @@ Let `R` be a ring, and `I` be a left ideal of `R`
 
 * `Ideal.jacobson I` is the Jacobson radical, i.e. the infimum of all maximal ideals containing `I`.
 
-* `Ideal.IsLocal I` is the proposition that the jacobson radical of `I` is itself a maximal ideal
+* `Ideal.IsLocal I` is the proposition that the Jacobson radical of `I` is itself a maximal ideal
 
 Furthermore when `I` is a two-sided ideal of `R`
 
@@ -34,9 +34,9 @@ Furthermore when `I` is a two-sided ideal of `R`
 
 ## Main statements
 
-* `mem_jacobson_iff` gives a characterization of members of the jacobson of I
+* `mem_jacobson_iff` gives a characterization of members of the Jacobson of I
 
-* `Ideal.isLocal_of_isMaximal_radical`: if the radical of I is maximal then so is the jacobson
+* `Ideal.isLocal_of_isMaximal_radical`: if the radical of I is maximal then so is the Jacobson
   radical
 
 ## Tags
@@ -158,7 +158,7 @@ theorem eq_jacobson_iff_sInf_maximal' :
 
 /-- An ideal `I` equals its Jacobson radical if and only if every element outside `I`
 also lies outside of a maximal ideal containing `I`. -/
-theorem eq_jacobson_iff_not_mem :
+theorem eq_jacobson_iff_notMem :
     I.jacobson = I ↔ ∀ x ∉ I, ∃ M : Ideal R, (I ≤ M ∧ M.IsMaximal) ∧ x ∉ M := by
   constructor
   · intro h x hx
@@ -171,11 +171,13 @@ theorem eq_jacobson_iff_not_mem :
     push_neg
     exact h x hx
 
+@[deprecated (since := "2025-05-23")] alias eq_jacobson_iff_not_mem := eq_jacobson_iff_notMem
+
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :
     RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h
   unfold Ideal.jacobson
-  -- Porting note: dot notation for `RingHom.ker` does not work
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation for `RingHom.ker` does not work
   have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsMaximal }, RingHom.ker f ≤ J :=
     fun J hJ => le_trans h hJ.left
   refine Trans.trans (map_sInf hf this) (le_antisymm ?_ ?_)
@@ -193,7 +195,7 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
 theorem map_jacobson_of_bijective {f : R →+* S} (hf : Function.Bijective f) :
     map f I.jacobson = (map f I).jacobson :=
   map_jacobson_of_surjective hf.right
-    (le_trans (le_of_eq (f.injective_iff_ker_eq_bot.1 hf.left)) bot_le)
+    (le_trans (le_of_eq ((RingHom.injective_iff_ker_eq_bot f).1 hf.left)) bot_le)
 
 theorem comap_jacobson {f : R →+* S} {K : Ideal S} :
     comap f K.jacobson = sInf (comap f '' { J : Ideal S | K ≤ J ∧ J.IsMaximal }) :=
@@ -214,7 +216,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
     · exact ⟨map f J, Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
         this⟩
   · simp_rw [comap_sInf, le_iInf_iff]
-    intros J hJ
+    intro J hJ
     haveI : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 
@@ -224,43 +226,41 @@ theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson :=
   rw [jacobson, mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 
-/-- The Jacobson radical of a two-sided ideal is two-sided.
-
-It is preferable to use `TwoSidedIdeal.jacobson` instead of this lemma. -/
-theorem jacobson_mul_mem_right {I : Ideal R}
-    (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) :
-    ∀ {x y}, x ∈ I.jacobson → x * y ∈ I.jacobson := by
+/-- The Jacobson radical of a two-sided ideal is two-sided. -/
+instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
   -- Proof generalized from
   -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-definition-and-basic-results/
-  intro x r xJ
-  apply mem_sInf.mpr
-  intro 𝔪 𝔪_mem
-  by_cases r𝔪 : r ∈ 𝔪
-  · apply 𝔪.smul_mem _ r𝔪
-  -- 𝔪₀ := { a : R | a*r ∈ 𝔪 }
-  let 𝔪₀ : Ideal R := Submodule.comap (DistribMulAction.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
-  suffices x ∈ 𝔪₀ by simpa [𝔪₀] using this
-  have I𝔪₀ : I ≤ 𝔪₀ := fun i iI =>
-    𝔪_mem.left (mul_mem_right iI)
-  have 𝔪₀_maximal : IsMaximal 𝔪₀ := by
-    refine isMaximal_iff.mpr ⟨
-      fun h => r𝔪 (by simpa [𝔪₀] using h),
-      fun J b 𝔪₀J b𝔪₀ bJ => ?_⟩
-    let K : Ideal R := Ideal.span {b*r} ⊔ 𝔪
-    have ⟨s, y, y𝔪, sbyr⟩ :=
-      mem_span_singleton_sup.mp <|
-        mul_mem_left _ r <|
-          (isMaximal_iff.mp 𝔪_mem.right).right K (b*r)
-          le_sup_right b𝔪₀
-          (mem_sup_left <| mem_span_singleton_self _)
-    have : 1 - s*b ∈ 𝔪₀ := by
-      rw [mul_one, add_comm, ← eq_sub_iff_add_eq] at sbyr
-      rw [sbyr, ← mul_assoc] at y𝔪
-      simp [𝔪₀, sub_mul, y𝔪]
-    have : 1 - s*b + s*b ∈ J := by
-      apply add_mem (𝔪₀J this) (J.mul_mem_left _ bJ)
-    simpa using this
-  exact mem_sInf.mp xJ ⟨I𝔪₀, 𝔪₀_maximal⟩
+  mul_mem_of_left {x} r xJ := by
+    apply mem_sInf.mpr
+    intro 𝔪 𝔪_mem
+    by_cases r𝔪 : r ∈ 𝔪
+    · apply 𝔪.smul_mem _ r𝔪
+    -- 𝔪₀ := { a : R | a*r ∈ 𝔪 }
+    let 𝔪₀ : Ideal R := Submodule.comap (DistribMulAction.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
+    suffices x ∈ 𝔪₀ by simpa [𝔪₀] using this
+    have I𝔪₀ : I ≤ 𝔪₀ := fun i iI =>
+      𝔪_mem.left (I.mul_mem_right _ iI)
+    have 𝔪₀_maximal : IsMaximal 𝔪₀ := by
+      refine isMaximal_iff.mpr ⟨
+        fun h => r𝔪 (by simpa [𝔪₀] using h),
+        fun J b 𝔪₀J b𝔪₀ bJ => ?_⟩
+      let K : Ideal R := Ideal.span {b*r} ⊔ 𝔪
+      have ⟨s, y, y𝔪, sbyr⟩ :=
+        mem_span_singleton_sup.mp <|
+          mul_mem_left _ r <|
+            (isMaximal_iff.mp 𝔪_mem.right).right K (b*r)
+            le_sup_right b𝔪₀
+            (mem_sup_left <| mem_span_singleton_self _)
+      have : 1 - s*b ∈ 𝔪₀ := by
+        rw [mul_one, add_comm, ← eq_sub_iff_add_eq] at sbyr
+        rw [sbyr, ← mul_assoc] at y𝔪
+        simp [𝔪₀, sub_mul, y𝔪]
+      have : 1 - s*b + s*b ∈ J := by
+        apply add_mem (𝔪₀J this) (J.mul_mem_left _ bJ)
+      simpa using this
+    exact mem_sInf.mp xJ ⟨I𝔪₀, 𝔪₀_maximal⟩
+
+@[deprecated (since := "2025-04-13")] alias jacobson_mul_mem_right := Ideal.instIsTwoSidedJacobson
 
 end Ring
 
@@ -295,7 +295,6 @@ theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsU
 
 /-- An ideal `I` of `R` is equal to its Jacobson radical if and only if
 the Jacobson radical of the quotient ring `R/I` is the zero ideal -/
--- Porting note: changed `Quotient.mk'` to ``
 theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
     I.jacobson = I ↔ jacobson (⊥ : Ideal (R ⧸ I)) = ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -311,7 +310,6 @@ theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
 
 /-- The standard radical and Jacobson radical of an ideal `I` of `R` are equal if and only if
 the nilradical and Jacobson radical of the quotient ring `R/I` coincide -/
--- Porting note: changed `Quotient.mk'` to ``
 theorem radical_eq_jacobson_iff_radical_quotient_eq_jacobson_bot :
     I.radical = I.jacobson ↔ radical (⊥ : Ideal (R ⧸ I)) = jacobson ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -343,7 +341,7 @@ variable [CommRing R]
 
 /-- An ideal `I` is local iff its Jacobson radical is maximal. -/
 class IsLocal (I : Ideal R) : Prop where
-  /-- A ring `R` is local if and only if its jacobson radical is maximal -/
+  /-- A ring `R` is local if and only if its Jacobson radical is maximal -/
   out : IsMaximal (jacobson I)
 
 theorem isLocal_iff {I : Ideal R} : IsLocal I ↔ IsMaximal (jacobson I) :=
@@ -395,7 +393,7 @@ variable {R : Type u} [Ring R]
 
 /-- The Jacobson radical of `I` is the infimum of all maximal (left) ideals containing `I`. -/
 def jacobson (I : TwoSidedIdeal R) : TwoSidedIdeal R :=
-  (asIdeal I).jacobson.toTwoSided (Ideal.jacobson_mul_mem_right <| I.mul_mem_right _ _)
+  (asIdeal I).jacobson.toTwoSided
 
 lemma asIdeal_jacobson (I : TwoSidedIdeal R) : asIdeal I.jacobson = (asIdeal I).jacobson := by
   ext; simp [jacobson]

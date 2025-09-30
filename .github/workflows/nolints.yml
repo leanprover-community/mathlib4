@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build, lint and update nolints and style exceptions
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
       - name: cleanup
         run: |
@@ -33,22 +34,17 @@ jobs:
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
 
       - name: Configure Lean
-        uses: leanprover/lean-action@f3ad22e9ca29cb9475bc9bee9afd1f39bb52bf6d # v1.1.2
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
         with:
           auto-config: false
           use-github-cache: false
           use-mathlib-cache: true
 
-      - name: print lean and lake versions
-        run: |
-          lean --version
-          lake --version
-
       - name: build mathlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
-          linters: gcc
+          linters: lean
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 

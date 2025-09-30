@@ -12,9 +12,9 @@ import Mathlib.Algebra.Star.Basic
 /-!
 # Centroid homomorphisms on Star Rings
 
-When a (non unital, non-associative) semi-ring is equipped with an involutive automorphism the
+When a (nonunital, non-associative) semiring is equipped with an involutive automorphism the
 center of the centroid becomes a star ring in a natural way and the natural mapping of the centre of
-the semi-ring into the centre of the centroid becomes a *-homomorphism.
+the semiring into the centre of the centroid becomes a *-homomorphism.
 
 ## Tags
 
@@ -124,7 +124,7 @@ variable [NonAssocSemiring α] [StarRing α]
 def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α where
   __ := starCenterToCentroid
   invFun T :=
-    ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+    ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
   left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
     NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom,
     starCenterToCentroid_apply, mul_one]

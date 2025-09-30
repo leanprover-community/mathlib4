@@ -23,7 +23,7 @@ typeclass instead.
   between the restricted and original space (in fact, they are definitionally equal,
   but sometimes it is helpful to avoid using this fact, to keep instances from leaking).
 * `RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A`: the ring equivalence
-   between the restricted and original space when the module is an algebra.
+  between the restricted and original space when the module is an algebra.
 
 ## See also
 

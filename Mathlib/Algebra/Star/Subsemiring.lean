@@ -114,7 +114,7 @@ protected def copy (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) : StarSub
   toSubsemiring := Subsemiring.copy S.toSubsemiring s hs
   star_mem' := @fun a ha => hs ▸ (S.star_mem' (by simpa [hs] using ha) : star a ∈ (S : Set R))
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) : (S.copy s hs : Set R) = s :=
   rfl
 
@@ -127,7 +127,7 @@ variable (R)
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
-def center (R) [NonAssocSemiring R][StarRing R] : StarSubsemiring R where
+def center (R) [NonAssocSemiring R] [StarRing R] : StarSubsemiring R where
   toSubsemiring := Subsemiring.center R
   star_mem' := Set.star_mem_center
 

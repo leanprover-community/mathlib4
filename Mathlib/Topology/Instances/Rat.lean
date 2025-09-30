@@ -39,9 +39,6 @@ theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
 theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
   isDenseEmbedding_coe_real.isEmbedding
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe_real := isEmbedding_coe_real
-
 theorem continuous_coe_real : Continuous ((↑) : ℚ → ℝ) :=
   uniformContinuous_coe_real.continuous
 
@@ -57,9 +54,6 @@ theorem Nat.isUniformEmbedding_coe_rat : IsUniformEmbedding ((↑) : ℕ → ℚ
 theorem Nat.isClosedEmbedding_coe_rat : IsClosedEmbedding ((↑) : ℕ → ℚ) :=
   isClosedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
 
-@[deprecated (since := "2024-10-20")]
-alias Nat.closedEmbedding_coe_rat := Nat.isClosedEmbedding_coe_rat
-
 @[norm_cast, simp]
 theorem Int.dist_cast_rat (x y : ℤ) : dist (x : ℚ) y = dist x y := by
   rw [← Int.dist_cast_real, ← Rat.dist_cast]; congr
@@ -69,9 +63,6 @@ theorem Int.isUniformEmbedding_coe_rat : IsUniformEmbedding ((↑) : ℤ → ℚ
 
 theorem Int.isClosedEmbedding_coe_rat : IsClosedEmbedding ((↑) : ℤ → ℚ) :=
   isClosedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
-
-@[deprecated (since := "2024-10-20")]
-alias Int.closedEmbedding_coe_rat := Int.isClosedEmbedding_coe_rat
 
 namespace Rat
 
@@ -113,8 +104,11 @@ namespace NNRat
 instance : MetricSpace ℚ≥0 :=
   Subtype.metricSpace
 
+set_option linter.style.commandStart false in
 @[simp ←, push_cast]
 lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
+
+set_option linter.style.commandStart false in
 @[simp ←, push_cast]
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 
@@ -127,6 +121,6 @@ instance : ContinuousSub ℚ≥0 :=
       continuous_const).subtype_mk _⟩
 
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
-instance : HasContinuousInv₀ ℚ≥0 := inferInstance
+instance : ContinuousInv₀ ℚ≥0 := inferInstance
 
 end NNRat

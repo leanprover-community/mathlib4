@@ -13,7 +13,7 @@ A polynomial law `f : PolynomialLaw R M N`, with notation `f : M →ₚₗₗ[R]
 is a “law” that assigns a natural map `PolynomialLaw.toFun' f S : S ⊗[R] M → S ⊗[R] N`
 for every `R`-algebra `S`.
 
-For type theoretic reasons, if `R : Type u`, then the definition of the polynomial map `f`
+For type-theoretic reasons, if `R : Type u`, then the definition of the polynomial map `f`
 is restricted to `R`-algebras `S` such that `S : Type u`.
 Using the fact that a module is the direct limit of its finitely generated submodules, that a
 finitely generated subalgebra is a quotient of a polynomial ring in the universe `u`, plus
@@ -37,7 +37,7 @@ only assumes `R` is a commutative semiring.
 
 ## References
 
- * [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
+* [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
 Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
@@ -51,7 +51,7 @@ open scoped TensorProduct
 open LinearMap TensorProduct AlgHom
 
 /-- A polynomial law `M →ₚₗ[R] N` between `R`-modules is a functorial family of maps
-   `S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
+`S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
 
 For universe reasons, `S` has to be restricted to the same universe as `R`. -/
 @[ext]
@@ -138,23 +138,23 @@ theorem one_smul : (1 : R) • f = f := by
   ext S; simp only [smul_def, Pi.smul_apply, _root_.one_smul]
 
 instance : MulAction R (M →ₚₗ[R] N) where
-  one_smul       := one_smul
+  one_smul := one_smul
   mul_smul a b f := by ext; simp only [smul_def, mul_smul]
 
 instance : AddCommMonoid (M →ₚₗ[R] N) where
   add_assoc f g h := by ext; simp only [add_def, add_assoc]
-  zero_add f      := by ext; simp only [add_def, zero_add, zero_def]
-  add_zero f      := by ext; simp only [add_def, add_zero, zero_def]
-  nsmul n f       := (n : R) • f
-  nsmul_zero f    := by simp only [Nat.cast_zero, zero_smul f]
-  nsmul_succ n f  := by simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
-  add_comm f g    := by ext; simp only [add_def, add_comm]
+  zero_add f := by ext; simp only [add_def, zero_add, zero_def]
+  add_zero f := by ext; simp only [add_def, add_zero, zero_def]
+  nsmul n f := (n : R) • f
+  nsmul_zero f := by simp only [Nat.cast_zero, zero_smul f]
+  nsmul_succ n f := by simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
+  add_comm f g := by ext; simp only [add_def, add_comm]
 
 instance : Module R (M →ₚₗ[R] N) where
-  smul_zero a    := rfl
+  smul_zero a := rfl
   smul_add a f g := by ext; simp only [smul_def, add_def, smul_add]
-  add_smul       := add_smul
-  zero_smul      := zero_smul
+  add_smul := add_smul
+  zero_smul := zero_smul
 
 end CommSemiring
 
@@ -176,10 +176,10 @@ theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
 
 instance : AddCommGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
-  zsmul_zero' f   := by simp only [Int.cast_zero, zero_smul]
-  zsmul_succ' n f := by simp only [Int.ofNat_eq_coe, Nat.cast_succ, Int.cast_add, Int.cast_natCast,
+  zsmul_zero' f := by simp only [Int.cast_zero, zero_smul]
+  zsmul_succ' n f := by simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast,
     Int.cast_one, add_smul, _root_.one_smul]
-  zsmul_neg' n f  := by
+  zsmul_neg' n f := by
     ext S _ _ m
     rw [neg_def]
     simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, _root_.add_smul,
@@ -187,13 +187,13 @@ instance : AddCommGroup (M →ₚₗ[R] N) where
       Int.cast_one, _root_.one_smul, add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add,
       smul_smul, neg_mul, one_mul]
     rw [add_comm]
-  neg_add_cancel f  := by
+  neg_add_cancel f := by
     ext S _ _ m
     simp only [add_def_apply, neg_def, Pi.smul_apply, zero_def, Pi.zero_apply]
     nth_rewrite 2 [← _root_.one_smul (M := R) (b := f.toFun' S m)]
     rw [← _root_.add_smul]
     simp only [neg_add_cancel, _root_.zero_smul]
-  add_comm f g    := by ext; simp only [add_def, add_comm]
+  add_comm f g := by ext; simp only [add_def, add_comm]
 
 end CommRing
 
@@ -217,14 +217,14 @@ theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : 
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
   convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
-  · simp only [Function.comp_apply, lid_symm_apply, includeRight_lid]
+  · simp only [includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
 /-- The map ground assigning a function `M → N` to a polynomial map `f : M →ₚₗ[R] N` as a
   linear map. -/
 def lground : (M →ₚₗ[R] N) →ₗ[R] (M → N) where
-  toFun         := ground
-  map_add' x y  := by ext m; simp [ground]
+  toFun := ground
+  map_add' x y := by ext m; simp [ground]
   map_smul' r x := by ext m; simp [ground]
 
 theorem ground_id : (id : M →ₚₗ[R] M).ground = _root_.id := by
@@ -247,13 +247,12 @@ variable (f : M →ₚₗ[R] N) (g : N →ₚₗ[R] P) (h : P →ₚₗ[R] Q)
 /-- Composition of polynomial maps. -/
 def comp (g : N →ₚₗ[R] P) (f : M →ₚₗ[R] N) : M →ₚₗ[R] P where
   toFun' S _ _ := (g.toFun' S).comp (f.toFun' S)
-  isCompat' φ  := by ext; simp only [Function.comp_apply, isCompat_apply']
+  isCompat' φ := by ext; simp only [Function.comp_apply, isCompat_apply']
 
 theorem comp_toFun' (S : Type u) [CommSemiring S] [Algebra R S] :
-  (g.comp f).toFun' S = (g.toFun' S).comp (f.toFun' S) := rfl
+    (g.comp f).toFun' S = (g.toFun' S).comp (f.toFun' S) := rfl
 
-theorem comp_assoc : h.comp (g.comp f) = (h.comp g).comp f := by
-  ext; simp only [comp_toFun'] ; rfl
+theorem comp_assoc : h.comp (g.comp f) = (h.comp g).comp f := rfl
 
 theorem comp_id : g.comp id = g := by ext; rfl
 

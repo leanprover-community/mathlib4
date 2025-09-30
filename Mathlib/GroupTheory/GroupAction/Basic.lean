@@ -87,12 +87,12 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
   simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
     Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
-    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, orbit_nonempty, implies_true]
+    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, nonempty_orbit, implies_true]
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
     DecidablePred fun b : β => b ∈ MulAction.fixedBy β m := fun b ↦ by
-  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def]
+  simp only [MulAction.mem_fixedBy]
   infer_instance
 
 end FixedPoints
@@ -120,7 +120,7 @@ variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
   apply Subsingleton.elim ..
 
 /-- If a group acts nontrivially, then the type is nontrivial -/
-@[to_additive "If a subgroup acts nontrivially, then the type is nontrivial."]
+@[to_additive /-- If a subgroup acts nontrivially, then the type is nontrivial. -/]
 theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
     Nontrivial α :=
   (subsingleton_or_nontrivial α).resolve_left fun _ ↦ h fixedPoints_of_subsingleton
@@ -134,10 +134,10 @@ theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
   (smul_orbit_subset g a).antisymm <|
     calc
       orbit G a = g • g⁻¹ • orbit G a := (smul_inv_smul _ _).symm
-      _ ⊆ g • orbit G a := Set.image_subset _ (smul_orbit_subset _ _)
+      _ ⊆ g • orbit G a := Set.image_mono (smul_orbit_subset _ _)
 
 /-- The action of a group on an orbit is transitive. -/
-@[to_additive "The action of an additive group on an orbit is transitive."]
+@[to_additive /-- The action of an additive group on an orbit is transitive. -/]
 instance (a : α) : IsPretransitive G (orbit G a) :=
   ⟨by
     rintro ⟨_, g, rfl⟩ ⟨_, h, rfl⟩
@@ -157,11 +157,11 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
   simp_rw [orbitRel_apply]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
     simpa using gp
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
     refine mem_orbit _ (⟨⟨gv, ?_⟩, ?_⟩ : H.subgroupOf K)
     · exact gp.2
@@ -172,8 +172,8 @@ variable (G α)
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
-@[to_additive "An additive action is pretransitive if and only if the quotient by
-`AddAction.orbitRel` is a subsingleton."]
+@[to_additive /-- An additive action is pretransitive if and only if the quotient by
+`AddAction.orbitRel` is a subsingleton. -/]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -184,8 +184,8 @@ theorem pretransitive_iff_subsingleton_quotient :
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
-@[to_additive "If `α` is non-empty, an additive action is pretransitive if and only if the
-quotient has exactly one element."]
+@[to_additive /-- If `α` is non-empty, an additive action is pretransitive if and only if the
+quotient has exactly one element. -/]
 theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
   rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]
@@ -244,14 +244,46 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
+variable {g h k : G} {a b c : α}
+
+/-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
+def stabilizerEquivStabilizer (hg : b = g • a) : stabilizer G a ≃* stabilizer G b :=
+  ((MulAut.conj g).subgroupMap (stabilizer G a)).trans
+    (MulEquiv.subgroupCongr (by
+      rw [hg, stabilizer_smul_eq_stabilizer_map_conj g a, ← MulEquiv.toMonoidHom_eq_coe]))
+
+theorem stabilizerEquivStabilizer_apply (hg : b = g • a) (x : stabilizer G a) :
+    stabilizerEquivStabilizer hg x = MulAut.conj g x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_symm_apply (hg : b = g • a) (x : stabilizer G b) :
+    (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_trans (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
+    (H : k = h * g) :
+    (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh) =
+      stabilizerEquivStabilizer hk := by
+  ext; simp [stabilizerEquivStabilizer_apply, H]
+
+theorem stabilizerEquivStabilizer_one :
+    stabilizerEquivStabilizer (one_smul G a).symm = MulEquiv.refl (stabilizer G a) := by
+  ext; simp [stabilizerEquivStabilizer_apply]
+
+theorem stabilizerEquivStabilizer_symm (hg : b = g • a) :
+    (stabilizerEquivStabilizer hg).symm =
+      stabilizerEquivStabilizer (eq_inv_smul_iff.mpr hg.symm) := by
+  ext x; simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_inv (hg : b = g⁻¹ • a) :
+    stabilizerEquivStabilizer hg =
+      (stabilizerEquivStabilizer (inv_smul_eq_iff.mp hg.symm)).symm := by
+  ext; simp [stabilizerEquivStabilizer]
+
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
-  let g : G := Classical.choose h
-  have hg : g • b = a := Classical.choose_spec h
-  have this : stabilizer G a = (stabilizer G b).map (MulAut.conj g).toMonoidHom := by
-    rw [← hg, stabilizer_smul_eq_stabilizer_map_conj]
-  (MulEquiv.subgroupCongr this).trans ((MulAut.conj g).subgroupMap <| stabilizer G b).symm
+  (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
 
 end Stabilizer
 
@@ -260,6 +292,7 @@ end MulAction
 namespace AddAction
 variable {G α : Type*} [AddGroup G] [AddAction G α]
 
+variable {g h k : G} {a b c : α}
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toMul.toAddMonoidHom := by
@@ -268,18 +301,53 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
+variable {g h k : G} {a b c : α}
+
+/-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
+def stabilizerEquivStabilizer (hg : b = g +ᵥ a) : stabilizer G a ≃+ stabilizer G b :=
+  AddEquiv.trans ((AddAut.conj g).toMul.addSubgroupMap _)
+    (AddEquiv.addSubgroupCongr (by
+      rw [hg, stabilizer_vadd_eq_stabilizer_map_conj g a, ← AddEquiv.toAddMonoidHom_eq_coe]))
+
+theorem stabilizerEquivStabilizer_apply (hg : b = g +ᵥ a) (x : stabilizer G a) :
+    stabilizerEquivStabilizer hg x = (AddAut.conj g).toMul x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer G b) :
+    (stabilizerEquivStabilizer hg).symm x = (AddAut.conj (-g)).toMul x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_trans
+    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g) :
+    (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh)
+      = stabilizerEquivStabilizer hk := by
+  ext; simp [stabilizerEquivStabilizer_apply, H]
+
+theorem stabilizerEquivStabilizer_zero :
+    stabilizerEquivStabilizer (zero_vadd G a).symm = AddEquiv.refl (stabilizer G a) := by
+  ext; simp [stabilizerEquivStabilizer_apply]
+
+theorem stabilizerEquivStabilizer_symm (hg : b = g +ᵥ a) :
+    (stabilizerEquivStabilizer hg).symm =
+      stabilizerEquivStabilizer (eq_neg_vadd_iff.mpr hg.symm) := by
+  ext; simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_neg (hg : b = -g +ᵥ a) :
+    stabilizerEquivStabilizer hg =
+      (stabilizerEquivStabilizer (neg_vadd_eq_iff.mp hg.symm)).symm := by
+  ext; simp [stabilizerEquivStabilizer]
+
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃+ stabilizer G b :=
-  let g : G := Classical.choose h
-  have hg : g +ᵥ b = a := Classical.choose_spec h
-  have this : stabilizer G a = (stabilizer G b).map (AddAut.conj g).toMul.toAddMonoidHom := by
-    rw [← hg, stabilizer_vadd_eq_stabilizer_map_conj]
-  (AddEquiv.addSubgroupCongr this).trans ((AddAut.conj g).addSubgroupMap <| stabilizer G b).symm
+  (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
 
 end AddAction
 
-attribute [to_additive existing] MulAction.stabilizer_smul_eq_stabilizer_map_conj
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizer
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_trans
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_one
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_inv
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel
 
 theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :
@@ -294,7 +362,7 @@ variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
 @[to_additive
-  "To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions."]
+  /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
   constructor

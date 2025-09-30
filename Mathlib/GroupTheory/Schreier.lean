@@ -3,10 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.Transfer
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Schreier's Lemma
@@ -57,8 +57,6 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 end CommGroup
 
 namespace Subgroup
-
-open MemRightTransversals
 
 variable {G : Type*} [Group G] {H : Subgroup G} {R S : Set G}
 
@@ -159,7 +157,7 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
   obtain ⟨T, hT₀, hT⟩ := exists_finset_card_le_mul H hS
   calc
-    Group.rank H ≤ #T := Group.rank_le H hT
+    Group.rank H ≤ #T := Group.rank_le hT
     _ ≤ H.index * #S := hT₀
     _ = H.index * Group.rank G := congr_arg (H.index * ·) hS₀
 
@@ -177,7 +175,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ]
   -- We have `h1 : [G' : Z(G) ∩ G'] ∣ [G : Z(G)]`
-  have h1 := relindex_dvd_index_of_normal (center G) (_root_.commutator G)
+  have h1 := relIndex_dvd_index_of_normal (center G) (_root_.commutator G)
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine mul_dvd_mul ?_ h1
   -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`

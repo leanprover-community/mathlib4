@@ -23,12 +23,10 @@ Our definition of `MeasureTheory.Measure.toFinite` ensures some extra properties
 
 ## Main definitions
 
-In these definitions and the results below, `μ` is an s-finite measure (`SFinite μ`).
+In this definition and the results below, `μ` is an s-finite measure (`SFinite μ`).
 
 * `MeasureTheory.Measure.toFinite`: a finite measure with `μ ≪ μ.toFinite` and `μ.toFinite ≪ μ`.
   If `μ ≠ 0`, this is a probability measure.
-* `MeasureTheory.Measure.densityToFinite` (deprecated, use `MeasureTheory.Measure.rnDeriv`):
-  the Radon-Nikodym derivative of `μ.toFinite` with respect to `μ`.
 
 ## Main statements
 
@@ -51,8 +49,10 @@ noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure �
   if IsFiniteMeasure μ then μ else (exists_isFiniteMeasure_absolutelyContinuous μ).choose
 
 /-- A finite measure obtained from an s-finite measure `μ`, such that
-`μ = μ.toFinite.withDensity μ.densityToFinite` (see `withDensity_densitytoFinite`).
-If `μ` is non-zero, this is a probability measure. -/
+`μ = μ.toFinite.withDensity (μ.rnDeriv µ.toFinite)`
+(see `MeasureTheory.Measure.withDensity_rnDeriv_eq` along with
+`MeasureTheory.absolutelyContinuous_toFinite`). If `μ` is non-zero, then `μ.toFinite` is a
+probability measure. -/
 noncomputable def Measure.toFinite (μ : Measure α) [SFinite μ] : Measure α :=
   μ.toFiniteAux[|univ]
 
@@ -104,9 +104,6 @@ lemma absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] : μ ≪ μ.t
 lemma sfiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n : ℕ) :
     sfiniteSeq μ n ≪ μ.toFinite :=
   (sfiniteSeq_le μ n).absolutelyContinuous.trans (absolutelyContinuous_toFinite μ)
-
-@[deprecated (since := "2024-10-11")]
-alias sFiniteSeq_absolutelyContinuous_toFinite := sfiniteSeq_absolutelyContinuous_toFinite
 
 lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ :=
   Measure.ae_le_iff_absolutelyContinuous.mp ae_toFinite.le

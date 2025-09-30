@@ -181,9 +181,9 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Typ
 
 /-- Given a group `α` acting on a type `β`, and a function `f : β → M`, we "automorphize" `f` to a
   function `β ⧸ α → M` by summing over `α` orbits, `b ↦ ∑' (a : α), f(a • b)`. -/
-@[to_additive "Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
+@[to_additive /-- Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
   we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
-  `b ↦ ∑' (a : α), f(a • b)`."]
+  `b ↦ ∑' (a : α), f(a • b)`. -/]
 noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
     Quotient (MulAction.orbitRel α β) → M := by
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
@@ -196,6 +196,8 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   ext
   congr 1
   simp only [mul_smul]
+
+-- we can't use `to_additive`, because it tries to translate `•` into `+ᵥ`
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
@@ -218,7 +220,7 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
-lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β → M)
+lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β → M)
     (g : Quotient (AddAction.orbitRel α β) → R) :
     AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
@@ -235,17 +237,15 @@ lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β 
   simp_rw [H₁]
   exact tsum_const_smul'' _
 
-attribute [to_additive existing MulAction.automorphize_smul_left] AddAction.automorphize_smul_left
-
 section
 
 variable {G : Type*} [Group G] {Γ : Subgroup G}
 
 /-- Given a subgroup `Γ` of a group `G`, and a function `f : G → M`, we "automorphize" `f` to a
   function `G ⧸ Γ → M` by summing over `Γ` orbits, `g ↦ ∑' (γ : Γ), f(γ • g)`. -/
-@[to_additive "Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
+@[to_additive /-- Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
   automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
-  `g ↦ ∑' (γ : Γ), f(γ • g)`."]
+  `g ↦ ∑' (γ : Γ), f(γ • g)`. -/]
 noncomputable def QuotientGroup.automorphize (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
@@ -269,8 +269,5 @@ lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R)
   AddAction.automorphize_smul_left f g
 
 end
-
-attribute [to_additive existing QuotientGroup.automorphize_smul_left]
-  QuotientAddGroup.automorphize_smul_left
 
 end automorphize

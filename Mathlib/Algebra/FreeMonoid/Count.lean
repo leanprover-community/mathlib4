@@ -20,7 +20,7 @@ variable {α : Type*} (p : α → Prop) [DecidablePred p]
 
 namespace FreeMonoid
 /-- `List.countP` lifted to free monoids -/
-@[to_additive "`List.countP` lifted to free additive monoids"]
+@[to_additive /-- `List.countP` lifted to free additive monoids -/]
 def countP' (l : FreeMonoid α) : ℕ := l.toList.countP p
 
 @[to_additive]
@@ -54,7 +54,7 @@ theorem count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) :
     count x l = Multiplicative.ofAdd (l.toList.count x) := rfl
 
 theorem count_of [DecidableEq α] (x y : α) :
-    count x (of y) = Pi.mulSingle (f := fun _ => Multiplicative ℕ) x (Multiplicative.ofAdd 1) y :=
+    count x (of y) = Pi.mulSingle (M := fun _ => Multiplicative ℕ) x (Multiplicative.ofAdd 1) y :=
   by simp only [count, eq_comm, countP_of, ofAdd_zero, Pi.mulSingle_apply]
 
 end FreeMonoid

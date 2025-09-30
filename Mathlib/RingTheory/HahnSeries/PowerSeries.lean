@@ -16,17 +16,17 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 we get the more familiar semiring of formal power series with coefficients in `R`.
 
 ## Main Definitions
-  * `toPowerSeries` the isomorphism from `HahnSeries ℕ R` to `PowerSeries R`.
-  * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `HahnSeries ℕ R`.
+* `toPowerSeries` the isomorphism from `HahnSeries ℕ R` to `PowerSeries R`.
+* `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `HahnSeries ℕ R`.
 
 ## Instances
-  * For `Finite σ`, the instance `NoZeroDivisors (HahnSeries (σ →₀ ℕ) R)`,
+* For `Finite σ`, the instance `NoZeroDivisors (HahnSeries (σ →₀ ℕ) R)`,
   deduced from the case of `MvPowerSeries`
   The case of `HahnSeries ℕ R` is taken care of by `instNoZeroDivisors`.
 
 ## TODO
-  * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
-    `X : R[X]` and `X : PowerSeries R`
+* Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
+  `X : R[X]` and `X : PowerSeries R`
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -49,7 +49,7 @@ variable [Semiring R]
 @[simps]
 def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
-  invFun f := ⟨fun n => PowerSeries.coeff R n f, .of_linearOrder _⟩
+  invFun f := ⟨fun n => PowerSeries.coeff n f, .of_linearOrder _⟩
   left_inv f := by
     ext
     simp
@@ -61,7 +61,7 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     simp
   map_mul' f g := by
     ext n
-    simp only [PowerSeries.coeff_mul, PowerSeries.coeff_mk, coeff_mul, isPWO_support]
+    simp only [PowerSeries.coeff_mul, PowerSeries.coeff_mk, coeff_mul]
     classical
     refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
       sum_filter_ne_zero _
@@ -72,11 +72,11 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
 theorem coeff_toPowerSeries {f : HahnSeries ℕ R} {n : ℕ} :
-    PowerSeries.coeff R n (toPowerSeries f) = f.coeff n :=
+    PowerSeries.coeff n (toPowerSeries f) = f.coeff n :=
   PowerSeries.coeff_mk _ _
 
 theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
-    (HahnSeries.toPowerSeries.symm f).coeff n = PowerSeries.coeff R n f :=
+    (HahnSeries.toPowerSeries.symm f).coeff n = PowerSeries.coeff n f :=
   rfl
 
 variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
@@ -92,8 +92,7 @@ variable {Γ} {R}
 theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
   embDomain_injective.comp toPowerSeries.symm.injective
 
-/-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
-failures elsewhere -/
+-- Not `@[simp]` since the RHS is more complicated and it makes linter failures elsewhere
 theorem ofPowerSeries_apply (x : PowerSeries R) :
     ofPowerSeries Γ R x =
       HahnSeries.embDomain
@@ -104,12 +103,12 @@ theorem ofPowerSeries_apply (x : PowerSeries R) :
   rfl
 
 theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
-    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff R n x := by simp [ofPowerSeries_apply]
+    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff n x := by simp [ofPowerSeries_apply]
 
 @[simp]
-theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnSeries.C r := by
+theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C r) = HahnSeries.C r := by
   ext n
-  simp only [ofPowerSeries_apply, C, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, ne_eq,
+  simp only [ofPowerSeries_apply, C, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     coeff_single]
   split_ifs with hn
   · subst hn
@@ -123,7 +122,7 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnS
 @[simp]
 theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
   ext n
-  simp only [coeff_single, ofPowerSeries_apply, RingHom.coe_mk]
+  simp only [coeff_single, ofPowerSeries_apply]
   split_ifs with hn
   · rw [hn]
     convert embDomain_coeff (a := 1) <;> simp
@@ -141,7 +140,7 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
 /-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.
-After importing `Mathlib.Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed
+After importing `Mathlib/Algebra/Order/Pi.lean` the ring `HahnSeries (σ → ℕ) R` could be constructed
 instead.
 -/
 @[simps]
@@ -179,11 +178,11 @@ instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
   toMvPowerSeries.toMulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R)
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
-    MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
+    MvPowerSeries.coeff n (toMvPowerSeries f) = f.coeff n :=
   rfl
 
 theorem coeff_toMvPowerSeries_symm {f : MvPowerSeries σ R} {n : σ →₀ ℕ} :
-    (HahnSeries.toMvPowerSeries.symm f).coeff n = MvPowerSeries.coeff R n f :=
+    (HahnSeries.toMvPowerSeries.symm f).coeff n = MvPowerSeries.coeff n f :=
   rfl
 
 end Semiring

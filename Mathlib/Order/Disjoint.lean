@@ -16,7 +16,7 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 * `Disjoint x y`: two elements of a lattice are disjoint if their `inf` is the bottom element.
 * `Codisjoint x y`: two elements of a lattice are codisjoint if their `join` is the top element.
 * `IsCompl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
-  non distributive lattice, an element can have several complements.
+  non-distributive lattice, an element can have several complements.
 * `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
 
 -/
@@ -60,14 +60,14 @@ theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot
 @[simp]
 theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
 
-theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
+@[gcongr] theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
   fun h _ ha hc ↦ h (ha.trans h₁) (hc.trans h₂)
 
 theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
   Disjoint.mono h le_rfl
 
-theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
-  Disjoint.mono le_rfl
+theorem Disjoint.mono_right (h : b ≤ c) : Disjoint a c → Disjoint a b :=
+  Disjoint.mono le_rfl h
 
 @[simp]
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
@@ -208,8 +208,6 @@ def Codisjoint (a b : α) : Prop :=
 theorem codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 
-@[deprecated (since := "2024-11-23")] alias Codisjoint_comm := codisjoint_comm
-
 @[symm]
 theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
   codisjoint_comm.1
@@ -223,7 +221,7 @@ theorem codisjoint_top_left : Codisjoint ⊤ a := fun _ htop _ ↦ htop
 @[simp]
 theorem codisjoint_top_right : Codisjoint a ⊤ := fun _ _ htop ↦ htop
 
-theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
+@[gcongr] theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
   fun h _ ha hc ↦ h (h₁.trans ha) (h₂.trans hc)
 
 theorem Codisjoint.mono_left (h : a ≤ b) : Codisjoint a c → Codisjoint b c :=
@@ -598,7 +596,9 @@ lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
 
 export ComplementedLattice (exists_isCompl)
 
-instance Subsingleton.instComplementedLattice
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
   refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]

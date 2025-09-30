@@ -17,8 +17,8 @@ to the finset `{a, b, c}` when `a < b` and `b < c`.
 
 * Do the same for `Set` without too much duplication of code (TODO)
 * Provide a definition which would take as an input an order
-isomorphism `e : Fin (n + 1) ≃o s` (with `s : Set α` (or `Finset α`)) and
-extend it to an order isomorphism `Fin (n + 2) ≃o Finset.insert i s` when `i < e 0` (TODO).
+  isomorphism `e : Fin (n + 1) ≃o s` (with `s : Set α` (or `Finset α`)) and
+  extend it to an order isomorphism `Fin (n + 2) ≃o Finset.insert i s` when `i < e 0` (TODO).
 
 -/
 
@@ -42,7 +42,7 @@ section
 variable (a b : α) (hab : a < b)
 
 /-- This is the order isomorphism from `Fin 2` to a finset `{a, b}` when `a < b`. -/
-noncomputable def orderIsoPair  :
+noncomputable def orderIsoPair :
     Fin 2 ≃o ({a, b} : Finset α) :=
   StrictMono.orderIsoOfSurjective ![⟨a, by simp⟩, ⟨b, by simp⟩]
     (strictMono_vecEmpty.vecCons hab) (fun ⟨x, hx⟩ ↦ by

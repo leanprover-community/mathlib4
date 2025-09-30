@@ -140,7 +140,7 @@ theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable
 
 theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
- .biInter hs.countable h
+  .biInter hs.countable h
 
 theorem Finset.measurableSet_biInter {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
@@ -249,7 +249,7 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   classical
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
-    else insert_diff_self_of_not_mem ha ▸ h.diff (.singleton _),
+    else insert_diff_self_of_notMem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=

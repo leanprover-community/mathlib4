@@ -113,7 +113,7 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
   have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) :=
     tendsto_nhdsWithin_iff.2 ⟨hφ, Eventually.of_forall (fun i ↦ (φ i).rOut_pos)⟩
   have := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
-  simp only [Function.comp] at this
+  simp only at this
   apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (Module.finrank ℝ G)) this
   · filter_upwards with i using
       hg.integrableOn_isCompact (isCompact_closedBall _ _)
@@ -127,7 +127,7 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
     simp only [mem_preimage, mem_ball, dist_zero_right] at hx
     simpa [dist_eq_norm_sub'] using hx.le
   · filter_upwards [h'φ] with i hi x
-    rw [abs_of_nonneg (nonneg_normed _ _), addHaar_closedBall_center]
+    rw [abs_of_nonneg (nonneg_normed _ _), addHaar_real_closedBall_center]
     exact (φ i).normed_le_div_measure_closedBall_rOut _ _ hi _
 
 end ContDiffBump

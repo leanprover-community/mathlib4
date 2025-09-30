@@ -11,6 +11,8 @@ import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+import Mathlib.RingTheory.Support
 
 /-!
 
@@ -59,13 +61,12 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
   refine { __ := IsLocalizedModule.iso p.asIdeal.primeCompl f, map_smul' := ?_ }
   intro r x
   obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective p.asIdeal.primeCompl r
-  apply ((Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
+  apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
   simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
     algebraMap_end_apply, AlgEquiv.toRingEquiv_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
     IsLocalization.map_id_mk']
-  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
-    IsLocalization.map_id_mk']
+  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
@@ -224,5 +225,140 @@ lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Flat
   let e : freeLocus R M ≃ₜ PrimeSpectrum R :=
     (Homeomorph.setCongr freeLocus_eq_univ).trans (Homeomorph.Set.univ (PrimeSpectrum R))
   convert isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
+
+@[simp]
+lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :
+    rankAtStalk (R := R) M = 0 := by
+  ext p
+  exact Module.finrank_zero_of_subsingleton
+
+lemma nontrivial_of_rankAtStalk_pos (h : 0 < rankAtStalk (R := R) M) :
+    Nontrivial M := by
+  by_contra! hn
+  simp at h
+
+lemma rankAtStalk_eq_of_equiv {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
+    rankAtStalk (R := R) M = rankAtStalk N := by
+  ext p
+  exact IsLocalizedModule.mapEquiv p.asIdeal.primeCompl
+    (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M)
+    (LocalizedModule.mkLinearMap p.asIdeal.primeCompl N) _ e |>.finrank_eq
+
+/-- If `M` is `R`-free, its rank at stalks is constant and agrees with the `R`-rank of `M`. -/
+@[simp]
+lemma rankAtStalk_eq_finrank_of_free [Module.Free R M] :
+    rankAtStalk (R := R) M = Module.finrank R M := by
+  ext p
+  simp [rankAtStalk, finrank_of_isLocalizedModule_of_free _ p.asIdeal.primeCompl
+    (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M)]
+
+lemma rankAtStalk_self [Nontrivial R] : rankAtStalk (R := R) R = 1 := by
+  simp
+
+open LocalizedModule Localization
+
+/-- The rank of `Π i, M i` at a prime `p` is the sum of the ranks of `M i` at `p`. -/
+lemma rankAtStalk_pi {ι : Type*} [Finite ι] (M : ι → Type*)
+    [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, Module.Flat R (M i)]
+    [∀ i, Module.Finite R (M i)] (p : PrimeSpectrum R) :
+    rankAtStalk (Π i, M i) p = ∑ᶠ i, rankAtStalk (M i) p := by
+  cases nonempty_fintype ι
+  let f : (Π i, M i) →ₗ[R] Π i, LocalizedModule p.asIdeal.primeCompl (M i) :=
+    .pi (fun i ↦ mkLinearMap p.asIdeal.primeCompl (M i) ∘ₗ LinearMap.proj i)
+  let e : LocalizedModule p.asIdeal.primeCompl (Π i, M i) ≃ₗ[Localization.AtPrime p.asIdeal]
+      Π i, LocalizedModule p.asIdeal.primeCompl (M i) :=
+    IsLocalizedModule.linearEquiv p.asIdeal.primeCompl
+      (mkLinearMap _ _) f |>.extendScalarsOfIsLocalization p.asIdeal.primeCompl _
+  have (i : ι) : Free (Localization.AtPrime p.asIdeal)
+      (LocalizedModule p.asIdeal.primeCompl (M i)) :=
+    free_of_flat_of_isLocalRing
+  simp_rw [rankAtStalk, e.finrank_eq, Module.finrank_pi_fintype, finsum_eq_sum_of_fintype]
+
+lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R) :
+    rankAtStalk M p =
+      finrank (Localization.AtPrime p.asIdeal) (Localization.AtPrime p.asIdeal ⊗[R] M) := by
+  let e : LocalizedModule p.asIdeal.primeCompl M ≃ₗ[Localization.AtPrime p.asIdeal]
+      Localization.AtPrime p.asIdeal ⊗[R] M :=
+    LocalizedModule.equivTensorProduct p.asIdeal.primeCompl M
+  rw [rankAtStalk, e.finrank_eq]
+
+variable [Flat R M] [Module.Finite R M]
+
+attribute [local instance] free_of_flat_of_isLocalRing
+
+lemma rankAtStalk_eq_zero_iff_notMem_support (p : PrimeSpectrum R) :
+    rankAtStalk M p = 0 ↔ p ∉ support R M := by
+  rw [notMem_support_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ Module.finrank_zero_of_subsingleton⟩
+  apply subsingleton_of_rank_zero (R := Localization.AtPrime p.asIdeal)
+  dsimp [rankAtStalk] at h
+  simp [← finrank_eq_rank, h]
+
+lemma rankAtStalk_pos_iff_mem_support (p : PrimeSpectrum R) :
+    0 < rankAtStalk M p ↔ p ∈ support R M :=
+  Nat.pos_iff_ne_zero.trans (rankAtStalk_eq_zero_iff_notMem_support _).not_left
+
+lemma rankAtStalk_eq_zero_iff_subsingleton :
+    rankAtStalk (R := R) M = 0 ↔ Subsingleton M := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ rankAtStalk_eq_zero_of_subsingleton⟩
+  simp_rw [← support_eq_empty_iff (R := R), Set.eq_empty_iff_forall_notMem]
+  intro p
+  rw [← rankAtStalk_eq_zero_iff_notMem_support, h, Pi.zero_apply]
+
+variable (M) in
+/-- The rank of `M × N` at `p` is equal to the sum of the ranks. -/
+lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
+    [Module.Flat R N] [Module.Finite R N] :
+    rankAtStalk (R := R) (M × N) = rankAtStalk M + rankAtStalk N := by
+  ext p
+  let e : LocalizedModule p.asIdeal.primeCompl (M × N) ≃ₗ[Localization.AtPrime p.asIdeal]
+      LocalizedModule p.asIdeal.primeCompl M × LocalizedModule p.asIdeal.primeCompl N :=
+    IsLocalizedModule.linearEquiv p.asIdeal.primeCompl (mkLinearMap _ _)
+      (.prodMap (mkLinearMap _ M) (mkLinearMap _ N)) |>.extendScalarsOfIsLocalization
+      p.asIdeal.primeCompl _
+  simp [rankAtStalk, e.finrank_eq]
+
+lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSpectrum S) :
+    rankAtStalk (S ⊗[R] M) p = rankAtStalk M ((algebraMap R S).specComap p) := by
+  let q : PrimeSpectrum R := (algebraMap R S).specComap p
+  let e : LocalizedModule p.asIdeal.primeCompl (S ⊗[R] M) ≃ₗ[Localization.AtPrime p.asIdeal]
+      Localization.AtPrime p.asIdeal ⊗[Localization.AtPrime q.asIdeal]
+        LocalizedModule q.asIdeal.primeCompl M :=
+    LocalizedModule.equivTensorProduct _ _ ≪≫ₗ
+      (AlgebraTensorModule.cancelBaseChange R S _ _ M) ≪≫ₗ
+      (AlgebraTensorModule.cancelBaseChange R _ _ _ M).symm ≪≫ₗ
+      (AlgebraTensorModule.congr (LinearEquiv.refl _ _)
+        (LocalizedModule.equivTensorProduct _ M).symm)
+  rw [rankAtStalk, e.finrank_eq]
+  apply Module.finrank_baseChange
+
+/-- See `rankAtStalk_tensorProduct_of_isScalarTower` for a hetero-basic version. -/
+lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
+    [Module.Flat R N] : rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
+  ext p
+  let e : Localization.AtPrime p.asIdeal ⊗[R] (M ⊗[R] N) ≃ₗ[Localization.AtPrime p.asIdeal]
+      (Localization.AtPrime p.asIdeal ⊗[R] M) ⊗[Localization.AtPrime p.asIdeal]
+        (Localization.AtPrime p.asIdeal ⊗[R] N) :=
+    (AlgebraTensorModule.assoc _ _ _ _ _ _).symm ≪≫ₗ
+      (AlgebraTensorModule.cancelBaseChange _ _ _ _ _).symm
+  rw [rankAtStalk_eq_finrank_tensorProduct, e.finrank_eq, finrank_tensorProduct,
+    ← rankAtStalk_eq_finrank_tensorProduct, ← rankAtStalk_eq_finrank_tensorProduct, Pi.mul_apply]
+
+lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algebra R S]
+    (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
+    [Module.Finite S N] [Module.Flat S N] (p : PrimeSpectrum S) :
+    rankAtStalk (N ⊗[R] M) p = rankAtStalk N p * rankAtStalk M ((algebraMap R S).specComap p) := by
+  simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,
+    rankAtStalk_tensorProduct, rankAtStalk_baseChange]
+
+/-- The rank of a module `M` at a prime `p` is equal to the dimension
+of `κ(p) ⊗[R] M` as a `κ(p)`-module. -/
+lemma rankAtStalk_eq (p : PrimeSpectrum R) :
+    rankAtStalk M p = finrank p.asIdeal.ResidueField (p.asIdeal.ResidueField ⊗[R] M) := by
+  let k := p.asIdeal.ResidueField
+  let e : k ⊗[Localization.AtPrime p.asIdeal] (Localization.AtPrime p.asIdeal ⊗[R] M) ≃ₗ[k]
+      k ⊗[R] M :=
+    AlgebraTensorModule.cancelBaseChange _ _ _ _ _
+  rw [← e.finrank_eq, finrank_baseChange, rankAtStalk_eq_finrank_tensorProduct]
 
 end Module

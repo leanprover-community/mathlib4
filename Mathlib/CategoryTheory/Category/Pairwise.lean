@@ -82,7 +82,7 @@ instance : CategoryStruct (Pairwise ι) where
 section
 
 open Lean Elab Tactic in
-/-- A helper tactic for `aesop_cat` and `Pairwise`. -/
+/-- A helper tactic for `cat_disch` and `Pairwise`. -/
 def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
@@ -91,7 +91,7 @@ instance : Category (Pairwise ι) where
 
 end
 
-variable {α : Type v} (U : ι → α)
+variable {α : Type u} (U : ι → α)
 
 section
 

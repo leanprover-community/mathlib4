@@ -46,7 +46,7 @@ Any metric space is a T1 topological space and a uniform space (see `Topological
 `UniformSpace`), where the topology and uniformity come from the metric.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric.
-This eg ensures that we do not get a diamond when doing
+This e.g. ensures that we do not get a diamond when doing
 `[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
@@ -103,11 +103,11 @@ theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
 /-- Characterize the equality of points as the vanishing of the nonnegative distance -/
 @[simp]
 theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
+  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, dist_eq_zero]
 
 @[simp]
 theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, zero_eq_dist]
+  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, zero_eq_dist]
 
 namespace Metric
 

@@ -11,10 +11,10 @@ import Mathlib.RepresentationTheory.FDRep
 In this file we prove Tannaka duality for finite groups.
 
 The theorem can be formulated as follows: for any integral domain `k`, a finite group `G` can be
-recovered from `FDRep k G`, the monoidal category of finite dimensional `k`-linear representations
+recovered from `FDRep k G`, the monoidal category of finite-dimensional `k`-linear representations
 of `G`, and the monoidal forgetful functor `forget : FDRep k G ⥤ FGModuleCat k`.
 
-More specifically, the main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
+The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
 ## Reference
 
@@ -99,20 +99,22 @@ def leftRegular : Representation k G (G → k) where
 @[simp]
 lemma leftRegular_apply (s t : G) (f : G → k) : leftRegular s f t = f (s⁻¹ * t) := rfl
 
-variable [Fintype G]
-
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
 @[simp]
-def rightFDRep : FDRep k G := FDRep.of rightRegular
+def rightFDRep [Finite G] : FDRep k G := FDRep.of rightRegular
 
 end definitions
 
-variable [Fintype G]
+variable [Finite G]
 
-lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
+lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := by
   intro s t h
+  classical
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
+
+@[deprecated (since := "2025-04-27")]
+alias equivHom_inj := equivHom_injective
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
@@ -128,7 +130,7 @@ lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
     let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
     α (f * g) = (α f) * (α g) := by
   have nat := η.hom.hom.naturality mulRepHom
-  have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ η.hom.hom.app Y) :=
+  have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ₘ η.hom.hom.app Y) :=
     η.hom.isMonoidal.tensor X Y
   rw [tensor] at nat
   apply_fun (Hom.hom · (f ⊗ₜ[k] g)) at nat
@@ -146,6 +148,78 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
   have := η.inv_hom_id
   apply_fun (fun x ↦ (x.hom.app rightFDRep).hom (1 : G → k)) at this
   exact this
+
+/-- For `v : X` and `G` a finite group, the `G`-equivariant linear map from the right
+regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
+@[simps]
+def sumSMulInv [Fintype G] {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
+  toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
+  map_add' _ _ := by simp [add_smul, sum_add_distrib]
+  map_smul' _ _ := by simp [smul_sum, smul_smul]
+
+omit [Finite G] in
+lemma sumSMulInv_single_id [Fintype G] [DecidableEq G] {X : FDRep k G} (v : X) :
+    ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
+  simp
+
+/-- For `v : X` and `G` a finite group, the representation morphism from the right
+regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
+@[simps]
+def ofRightFDRep [Fintype G] (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
+  hom := ofHom (sumSMulInv v)
+  comm t := by
+    ext f
+    let φ_term (X : FDRep k G) (f : G → k) v s := (f s) • (X.ρ s⁻¹ v)
+    have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (rightRegular t f) v)
+    simpa [φ_term] using this
+
+lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
+    (h : η₁.hom.hom.app rightFDRep = η₂.hom.hom.app rightFDRep) : η₁ = η₂ := by
+  have := Fintype.ofFinite G
+  classical
+  ext X v
+  have h1 := η₁.hom.hom.naturality (ofRightFDRep X v)
+  have h2 := η₂.hom.hom.naturality (ofRightFDRep X v)
+  rw [h, ← h2] at h1
+  simpa using congr(($h1).hom (single 1 1))
+
+/-- `leftRegular` as a morphism `rightFDRep k G ⟶ rightFDRep k G` in `FDRep k G`. -/
+def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
+  hom := ofHom (leftRegular s)
+  comm _ := by
+    ext f
+    funext _
+    apply congrArg f
+    exact mul_assoc ..
+
+lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
+    ∃ (s : G), (η.hom.hom.app rightFDRep).hom = rightRegular s := by
+  classical
+  obtain ⟨s, hs⟩ := ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η)).eq_piEvalAlgHom
+  refine ⟨s, (basisFun k G).ext fun u ↦ ?_⟩
+  simp only [rightFDRep, forget_obj]
+  ext t
+  have nat := η.hom.hom.naturality (leftRegularFDRepHom t⁻¹)
+  calc
+    _ = leftRegular t⁻¹ ((η.hom.hom.app rightFDRep).hom (single u 1)) 1 := by simp
+    _ = (η.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 :=
+      congrFun congr(($nat.symm).hom (single u 1)) 1
+    _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
+      congr($hs (leftRegular t⁻¹ (single u 1)))
+    _ = _ := by by_cases u = t * s <;> simp_all [single_apply]
+
+lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := by
+  intro η
+  obtain ⟨s, h⟩ := toRightFDRepComp_in_rightRegular η
+  exact ⟨s, toRightFDRepComp_injective (hom_ext h.symm)⟩
+
+variable (k G) in
+/-- Tannaka duality for finite groups:
+
+A finite group `G` is isomorphic to `Aut (forget k G)`, where `k` is any integral domain,
+and `forget k G` is the monoidal forgetful functor `FDRep k G ⥤ FGModuleCat k G`. -/
+def equiv [IsDomain k] : G ≃* Aut (forget k G) :=
+  MulEquiv.ofBijective (equivHom k G) ⟨equivHom_injective, equivHom_surjective⟩
 
 end FiniteGroup
 

@@ -6,6 +6,7 @@ Authors: Simon Hudon, Patrick Massot
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.Pi
 import Mathlib.Tactic.Common
 
 /-!
@@ -20,6 +21,7 @@ This file defines instances for `MulActionWithZero` and related structures on `P
 * `Algebra.GroupWithZero.Action.Units`
 -/
 
+assert_not_exists Ring
 
 universe u v
 
@@ -31,21 +33,21 @@ variable {f : I → Type v}
 namespace Pi
 
 instance smulZeroClass (α) {n : ∀ i, Zero <| f i} [∀ i, SMulZeroClass α <| f i] :
-  @SMulZeroClass α (∀ i : I, f i) (@Pi.instZero I f n) where
+    @SMulZeroClass α (∀ i : I, f i) (@Pi.instZero I f n) where
   smul_zero _ := funext fun _ => smul_zero _
 
 instance smulZeroClass' {g : I → Type*} {n : ∀ i, Zero <| g i} [∀ i, SMulZeroClass (f i) (g i)] :
-  @SMulZeroClass (∀ i, f i) (∀ i : I, g i) (@Pi.instZero I g n) where
+    @SMulZeroClass (∀ i, f i) (∀ i : I, g i) (@Pi.instZero I g n) where
   smul_zero := by intros; ext x; exact smul_zero _
 
 instance distribSMul (α) {n : ∀ i, AddZeroClass <| f i} [∀ i, DistribSMul α <| f i] :
-  @DistribSMul α (∀ i : I, f i) (@Pi.addZeroClass I f n) where
+    @DistribSMul α (∀ i : I, f i) (@Pi.addZeroClass I f n) where
   smul_zero _ := funext fun _ => smul_zero _
   smul_add _ _ _ := funext fun _ => smul_add _ _ _
 
 instance distribSMul' {g : I → Type*} {n : ∀ i, AddZeroClass <| g i}
-  [∀ i, DistribSMul (f i) (g i)] :
-  @DistribSMul (∀ i, f i) (∀ i : I, g i) (@Pi.addZeroClass I g n) where
+    [∀ i, DistribSMul (f i) (g i)] :
+    @DistribSMul (∀ i, f i) (∀ i : I, g i) (@Pi.addZeroClass I g n) where
   smul_zero := by intros; ext x; exact smul_zero _
   smul_add := by intros; ext x; exact smul_add _ _ _
 
@@ -58,15 +60,34 @@ instance distribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ 
     @DistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.addMonoid I g n) :=
   { Pi.mulAction', Pi.distribSMul' with }
 
+instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
+    SMulWithZero α (∀ i, f i) :=
+  { Pi.instSMul with
+    smul_zero := fun _ => funext fun _ => smul_zero _
+    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
+
+instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
+    [∀ i, SMulWithZero (g i) (f i)] : SMulWithZero (∀ i, g i) (∀ i, f i) :=
+  { Pi.smul' with
+    smul_zero := fun _ => funext fun _ => smul_zero _
+    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
+
+instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
+    [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
+  { Pi.mulAction _, Pi.smulWithZero _ with }
+
+instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
+    [∀ i, MulActionWithZero (g i) (f i)] : MulActionWithZero (∀ i, g i) (∀ i, f i) :=
+  { Pi.mulAction', Pi.smulWithZero' with }
+
 theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
     [DecidableEq I] (i : I) (r : α) (x : f i) : single i (r • x) = r • single i x :=
   single_op (fun i : I => (r • · : f i → f i)) (fun _ => smul_zero _) _ _
 
--- Porting note: Lean4 cannot infer the non-dependent function `f := fun _ => β`
 /-- A version of `Pi.single_smul` for non-dependent functions. It is useful in cases where Lean
 fails to apply `Pi.single_smul`. -/
 theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β] [DecidableEq I] (i : I)
-    (r : α) (x : β) : single (f := fun _ => β) i (r • x) = r • single (f := fun _ => β) i x :=
+    (r : α) (x : β) : single (M := fun _ => β) i (r • x) = r • single (M := fun _ => β) i x :=
   single_smul (f := fun _ => β) i r x
 
 theorem single_smul₀ {g : I → Type*} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]

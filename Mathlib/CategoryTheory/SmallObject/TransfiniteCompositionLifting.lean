@@ -45,7 +45,7 @@ F.obj j     | p
 This is constructed by transfinite induction on `j`:
 * When `j = ⊥`, this is `f`;
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
-`F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
+  `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
 * When `j` is a limit element, we use the "continuity" of `F`.
 
 -/
@@ -90,8 +90,8 @@ F.obj j     | p
 structure SqStruct (j : J) where
   /-- a morphism `F.obj j ⟶ X` -/
   f' : F.obj j ⟶ X
-  w₁ : F.map (homOfLE bot_le) ≫ f' = f := by aesop_cat
-  w₂ : f' ≫ p = c.ι.app j ≫ g := by aesop_cat
+  w₁ : F.map (homOfLE bot_le) ≫ f' = f := by cat_disch
+  w₂ : f' ≫ p = c.ι.app j ≫ g := by cat_disch
 
 namespace SqStruct
 
@@ -183,13 +183,18 @@ lemma map_lift {i : J} (hij : i < j) :
 end wellOrderInductionData
 
 variable {p} [SuccOrder J] [WellFoundedLT J]
-  (hF : ∀ (j : J) (_ : ¬IsMax j), HasLiftingProperty (F.map (homOfLE (Order.le_succ j))) p)
+
+section
+
+variable (hF : ∀ (j : J) (_ : ¬IsMax j),
+  HasLiftingPropertyFixedBot (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g))
 
 open wellOrderInductionData in
 /-- The projective system `sqFunctor c p f g` has a `WellOrderInductionData` structure. -/
 noncomputable def wellOrderInductionData :
     (sqFunctor c p f g).WellOrderInductionData where
   succ j hj sq' :=
+    have := hF j hj sq'.f'
     have := hF j hj
     { f' := sq'.sq.lift
       w₁ := by
@@ -197,7 +202,7 @@ noncomputable def wellOrderInductionData :
         simp only [← sq'.w₁]
         conv_rhs => rw [← sq'.sq.fac_left, ← F.map_comp_assoc]
         rfl }
-  map_succ j hj sq' := by aesop_cat
+  map_succ j hj sq' := by cat_disch
   lift j hj s := lift hj s
   map_lift j hj s i hij := map_lift hj s hij
 
@@ -219,8 +224,17 @@ lemma hasLift : sq.HasLift := by
     fac_left := by rw [hl, hs]
     fac_right := hc.hom_ext (fun j ↦ by rw [reassoc_of% (hl j), SqStruct.w₂])}⟩⟩
 
+lemma hasLiftingPropertyFixedBot_ι_app_bot : HasLiftingPropertyFixedBot (c.ι.app ⊥) p g :=
+  fun _ sq ↦ hasLift hc hF sq
+
+end
+
+variable {c} (hF : ∀ (j : J) (_ : ¬IsMax j),
+  HasLiftingProperty (F.map (homOfLE (Order.le_succ j))) p)
+
+include hc hF
 lemma hasLiftingProperty_ι_app_bot : HasLiftingProperty (c.ι.app ⊥) p where
-  sq_hasLift sq := hasLift hc hF sq
+  sq_hasLift sq := hasLift hc (fun j hj _ _ ↦ by have := hF j hj; infer_instance) sq
 
 end transfiniteComposition
 

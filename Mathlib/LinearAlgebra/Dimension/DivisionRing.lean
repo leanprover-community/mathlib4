@@ -22,7 +22,7 @@ For vector spaces (i.e. modules over a field), we have
   `Module.rank (V/V₁) + Module.rank V₁ = Module.rank V`.
 * `rank_range_add_rank_ker`: the rank-nullity theorem.
 
-See also `Mathlib.LinearAlgebra.Dimension.ErdosKaplansky` for the Erdős-Kaplansky theorem.
+See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
 
 -/
 
@@ -46,9 +46,9 @@ variable [AddCommGroup V'] [Module K V']
 variable [AddCommGroup V₁] [Module K V₁]
 
 /-- If a vector space has a finite dimension, the index set of `Basis.ofVectorSpace` is finite. -/
-theorem Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
+theorem Module.Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
     (Basis.ofVectorSpaceIndex K V).Finite :=
-  finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
+  Set.finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
 
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
@@ -84,24 +84,18 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rw [← rank_prod', rank_eq_of_surjective hf]
   congr 1
   apply LinearEquiv.rank_eq
-  let L : V₁ →ₗ[K] ker (coprod db eb) := by -- Porting note: this is needed to avoid a timeout
-    refine LinearMap.codRestrict _ (prod cd (-ce)) ?_
-    · intro c
-      simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, Pi.prod, coprod_apply,
-        neg_neg, map_neg, neg_apply]
-      exact LinearMap.ext_iff.1 eq c
+  let L : V₁ →ₗ[K] ker (coprod db eb) :=
+    LinearMap.codRestrict _ (prod cd (-ce)) <| by
+      simpa [add_eq_zero_iff_eq_neg] using LinearMap.ext_iff.1 eq
   refine LinearEquiv.ofBijective L ⟨?_, ?_⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
   · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap,
       Submodule.map_top, range_subtype]
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)
-    simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, SetLike.mem_coe,
+    simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker,
       Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
-    intro hde
-    rcases h hde with ⟨c, h₁, h₂⟩
-    refine ⟨c, h₁, ?_⟩
-    rw [h₂, _root_.neg_neg]
+    grind
 
 end
 
@@ -158,7 +152,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
       _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.
-    rwa [← Finset.insert_erase i_mem_s, Finset.sum_insert (Finset.not_mem_erase _ _)] at dependent
+    rwa [← Finset.insert_erase i_mem_s, Finset.sum_insert (Finset.notMem_erase _ _)] at dependent
 
 /-- A finite family of vectors is linearly independent if and only if
 its cardinality equals the dimension of its span. -/
@@ -186,7 +180,7 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
 
 theorem linearIndependent_iff_card_le_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
     LinearIndependent K b ↔ Fintype.card ι ≤ (Set.range b).finrank K := by
-  rw [linearIndependent_iff_card_eq_finrank_span, (finrank_range_le_card _).le_iff_eq]
+  rw [linearIndependent_iff_card_eq_finrank_span, (finrank_range_le_card _).ge_iff_eq']
 
 /-- A family of `finrank K V` vectors forms a basis if they span the whole space. -/
 noncomputable def basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)

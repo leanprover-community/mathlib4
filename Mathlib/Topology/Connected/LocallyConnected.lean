@@ -18,14 +18,14 @@ open Set Topology
 
 universe u v
 
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [TopologicalSpace α]
+variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [TopologicalSpace α]
   {s t u v : Set α}
 
 section LocallyConnectedSpace
 
 /-- A topological space is **locally connected** if each neighborhood filter admits a basis
 of connected *open* sets. Note that it is equivalent to each point having a basis of connected
-(non necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
+(not necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
 equivalence later in `locallyConnectedSpace_iff_connected_basis`. -/
 class LocallyConnectedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/
@@ -35,9 +35,6 @@ theorem locallyConnectedSpace_iff_hasBasis_isOpen_isConnected :
     LocallyConnectedSpace α ↔
       ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id :=
   ⟨@LocallyConnectedSpace.open_connected_basis _ _, LocallyConnectedSpace.mk⟩
-
-@[deprecated (since := "2024-11-18")] alias locallyConnectedSpace_iff_open_connected_basis :=
-  locallyConnectedSpace_iff_hasBasis_isOpen_isConnected
 
 theorem locallyConnectedSpace_iff_subsets_isOpen_isConnected :
     LocallyConnectedSpace α ↔
@@ -51,9 +48,6 @@ theorem locallyConnectedSpace_iff_subsets_isOpen_isConnected :
   · exact fun h => ⟨fun U => ⟨fun hU =>
       let ⟨V, hVU, hV⟩ := h U hU
       ⟨V, hV, hVU⟩, fun ⟨V, ⟨hV, hxV, _⟩, hVU⟩ => mem_nhds_iff.mpr ⟨V, hVU, hV, hxV⟩⟩⟩
-
-@[deprecated (since := "2024-11-18")] alias locallyConnectedSpace_iff_open_connected_subsets :=
-  locallyConnectedSpace_iff_subsets_isOpen_isConnected
 
 /-- A space with discrete topology is a locally connected space. -/
 instance (priority := 100) DiscreteTopology.toLocallyConnectedSpace (α) [TopologicalSpace α]
@@ -134,9 +128,6 @@ lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] 
   rw [h.nhds_eq_comap]
   exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
     (h.isOpen_range.mem_nhds <| mem_range_self _) |>.comap _
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locallyConnectedSpace := IsOpenEmbedding.locallyConnectedSpace
 
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=

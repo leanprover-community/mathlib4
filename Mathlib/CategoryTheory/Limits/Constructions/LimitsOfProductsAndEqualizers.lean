@@ -266,15 +266,13 @@ theorem hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbac
 lemma preservesFiniteLimits_of_preservesTerminal_and_pullbacks [HasTerminal C]
     [HasPullbacks C] (G : C ⥤ D) [PreservesLimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesLimitsOfShape WalkingCospan G] : PreservesFiniteLimits G := by
-  haveI : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
-  haveI : PreservesLimitsOfShape (Discrete WalkingPair) G :=
+  have : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
+  have : PreservesLimitsOfShape (Discrete WalkingPair) G :=
     preservesBinaryProducts_of_preservesTerminal_and_pullbacks G
-  haveI : PreservesLimitsOfShape WalkingParallelPair G :=
-      preservesEqualizers_of_preservesPullbacks_and_binaryProducts G
-  apply
-    @preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts _ _ _ _ _ _ G _ ?_
-  refine ⟨fun n ↦ ?_⟩
-  apply preservesFiniteProducts_of_preserves_binary_and_terminal G
+  have : PreservesLimitsOfShape WalkingParallelPair G :=
+    preservesEqualizers_of_preservesPullbacks_and_binaryProducts G
+  have : PreservesFiniteProducts G := .of_preserves_binary_and_terminal _
+  exact preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts G
 
 attribute [local instance] preservesFiniteLimits_of_preservesTerminal_and_pullbacks in
 /-- If a functor creates terminal objects and pullbacks, it creates finite limits.
@@ -374,7 +372,7 @@ we know a colimit of `F` exists.
 (This assumes the existence of all coequalizers, which is technically stronger than needed.)
 -/
 theorem hasColimit_of_coequalizer_and_coproduct (F : J ⥤ C) [HasColimit (Discrete.functor F.obj)]
-    [HasColimit (Discrete.functor fun f : Σp : J × J, p.1 ⟶ p.2 => F.obj f.1.1)]
+    [HasColimit (Discrete.functor fun f : Σ p : J × J, p.1 ⟶ p.2 => F.obj f.1.1)]
     [HasCoequalizers C] : HasColimit F :=
   HasColimit.mk (colimitCoconeOfCoequalizerAndCoproduct F)
 
