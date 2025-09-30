@@ -32,16 +32,13 @@ structure GelfondSchneiderSetup where
   [isNumberField : NumberField K]
   (σ : K →+* ℂ)
   (α' β' γ' : K)
-  -- Hypotheses are now fields of the structure.
   hirr : ∀ i j : ℤ, β ≠ i / j
   htriv : α ≠ 0 ∧ α ≠ 1
   hα : IsAlgebraic ℚ α
   hβ : IsAlgebraic ℚ β
   habc : α = σ α' ∧ β = σ β' ∧ α ^ β = σ γ'
-  -- We can also include necessary instances.
   hd : DecidableEq (K →+* ℂ)
 
--- We now work inside a namespace to keep everything organized.
 namespace GelfondSchneiderSetup
 
 -- This tells Lean to automatically use the Field and NumberField instances
@@ -50,9 +47,6 @@ attribute [instance] isField isNumberField
 
 -- All subsequent definitions and lemmas will take `setup` as their main argument.
 variable (setup : GelfondSchneiderSetup)
-
--- Here are your first lemmas, refactored to use the `setup` structure.
--- Notice how the argument lists are gone, and variables are accessed via `setup.`.
 
 lemma γneq0 : setup.α ^ setup.β ≠ 0 :=
   fun H => setup.htriv.1 ((cpow_eq_zero_iff setup.α setup.β).mp H).1
@@ -78,41 +72,8 @@ lemma hneq1 : setup.α' ≠ 1 := by
 
 macro_rules | `(hneq0) => `(hneq0 α β hirr htriv K σ α' β' γ' habc)
 
--- This lemma now refers to the `hneq0` lemma we already defined in the namespace.
 lemma β'ne_zero : setup.β' ≠ 0 := setup.hneq0.2.1
 
--- We keep `c'` and its helper lemmas outside the main namespace because they are
--- general utilities for any number field `K`, not specific to the G-S setup.
--- We will just call them from within our namespace when needed.
-
-end GelfondSchneiderSetup -- Temporarily close the namespace for the general defs
-
--- These helpers are general for any NumberField K.
-def c' {K : Type} [Field K] [NumberField K] (α : K) : ℤ := (c'_both α : ℤ)
-
-lemma c'_IsIntegral {K : Type} [Field K] [NumberField K] (α : K) : IsIntegral ℤ (c' α • α) :=
-  (c'_both α).2.2
-
-lemma c'_neq0 {K : Type} [Field K] [NumberField K] (α : K) : (c'_both α : ℤ) ≠ 0 :=
-  (c'_both α).2.1
-
-def shift {w : ℕ} (s : Fin w) : ℕ := s + 1
-
-lemma foo'' {w : ℕ} (s : Fin w) : 1 ≤ s.val + 1 := by {
-  simp_all only [le_add_iff_nonneg_left, zero_le]}
-
-lemma bar' {w : ℕ} (s : Fin w) : s + 1 ≤ w := s.isLt
-
-lemma fin_n_plus_1_le_n_plus1 {w} (s : Fin w) : s + 1 ≤ w + 1 := by
-  simp only [add_le_add_iff_right, Fin.is_le']
-
--- Re-open the namespace to continue with the setup-specific definitions.
-namespace GelfondSchneiderSetup
-
-variable (setup : GelfondSchneiderSetup)
-
--- `c₁` and its related lemmas are specific to the setup, so they live here.
--- Notice how we call the general `c'` helper on the fields of `setup`.
 def c₁ : ℤ := abs (c' setup.α' * c' setup.β' * c' setup.γ')
 
 lemma one_leq_c₁ : 1 ≤ setup.c₁ := by
@@ -204,42 +165,33 @@ def b : ℕ := (finProdFinEquiv.symm.toFun t).2 + 1
 def k : ℕ := (finProdFinEquiv.symm.toFun u).2
 def l : ℕ := (finProdFinEquiv.symm.toFun u).1 + 1
 
--- The following lemmas are now correct.
--- They implicitly use the `a, b, k, l` values from the current context.
-
-lemma b_le_q : b ≤ q :=
+lemma b_le_q : b  q t ≤ q :=
   bar' (finProdFinEquiv.symm.toFun t).2
 
-lemma l_le_m : l ≤ setup.m :=
+lemma l_le_m : l setup q u ≤ setup.m :=
   bar' (finProdFinEquiv.symm.toFun u).1
 
-lemma a_le_q : a ≤ q :=
+lemma a_le_q : a q t ≤ q :=
   bar' (finProdFinEquiv.symm.toFun t).1
 
-lemma k_le_n_sub1 : (k : ℤ) ≤ (setup.n q - 1 : ℤ) := by
+lemma k_le_n_sub1 : (k setup q u : ℤ) ≤ (setup.n q - 1 : ℤ) := by
   rw [sub_eq_add_neg]
-  have : (k : ℤ) + 1 ≤ ↑(setup.n q) → (k : ℤ) ≤ ↑(setup.n q) + -1 := by
+  have : (k setup q u : ℤ) + 1 ≤ ↑(setup.n q) → (k setup q u : ℤ) ≤ ↑(setup.n q) + -1 := by
     simp only [Int.reduceNeg, le_add_neg_iff_add_le, imp_self]
   apply this
   norm_cast
   exact bar' (finProdFinEquiv.symm.toFun u).2
 
--- The proofs of these lemmas are also simplified, as they can refer to the
--- lemmas above directly.
-lemma al_leq_mq : a * l ≤ q * setup.m := by
-  apply mul_le_mul (a_le_q setup q t) (l_le_m setup q u) (zero_le _) (zero_le _)
+lemma al_leq_mq : a q t * l setup q u ≤ q * setup.m := by
+  apply mul_le_mul (a_le_q q t) (l_le_m setup q u) (zero_le _) (zero_le _)
 
-lemma bl_leq_mq : b * l ≤ q * setup.m := by
-  apply mul_le_mul (b_le_q setup q t) (l_le_m setup q u) (zero_le _) (zero_le _)
+lemma bl_leq_mq : b q t * l setup q u ≤ q * setup.m := by
+  apply mul_le_mul (b_le_q q t) (l_le_m setup q u) (zero_le _) (zero_le _)
 
-lemma k_le_n : k ≤ setup.n q :=
-  Fin.is_le'
+lemma k_le_n : k setup q u  ≤ setup.n q := Fin.is_le'
 
 
-
-#exit
-
-abbrev c_coeffs0 := c₁^(k :ℕ) * c₁^ (a * l) * c₁^(b * l)
+abbrev c_coeffs0 := c₁^(k : ℕ) * c₁^ (a * l) * c₁^(b * l)
 
 macro_rules | `(c_coeffs0) => `(c_coeffs0 K α' β' γ' q u t)
 

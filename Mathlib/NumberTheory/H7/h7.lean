@@ -1209,7 +1209,10 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       left
       rw [← sq_n]
 }
+
 #exit
+
+
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (A K α' β' γ' q)
   (hM_neq0 α β hirr htriv K σ α' β' γ' habc q hq0 h2mq)
