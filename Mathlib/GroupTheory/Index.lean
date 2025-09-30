@@ -39,9 +39,16 @@ Several theorems proved in this file are known as Lagrange's theorem.
 assert_not_exists Field
 
 @[to_additive]
+lemma Subgroup.toSubmonoid_zpowers {G : Type*} [Group G] (g : G) :
+    (Subgroup.zpowers g).toSubmonoid = Submonoid.powers g ⊔ Submonoid.powers g⁻¹ := by
+  rw [zpowers_eq_closure, closure_toSubmonoid, Submonoid.closure_union, Submonoid.powers_eq_closure,
+    Submonoid.powers_eq_closure, Set.inv_singleton]
+
+@[to_additive]
 lemma Submonoid.powers_le_zpowers {G : Type*} [Group G] (g : G) :
     Submonoid.powers g ≤ (Subgroup.zpowers g).toSubmonoid := by
-  simp [powers_le]
+  rw [Subgroup.toSubmonoid_zpowers]
+  exact le_sup_left
 
 open scoped Pointwise
 
@@ -536,12 +543,12 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by
   suffices ∃ n₁ n₂, n₁ < n₂ ∧ n₂ ≤ H.index ∧ ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hlt, hle, he⟩
-    refine ⟨n₂ - n₁, by omega, by omega, ?_⟩
+    refine ⟨n₂ - n₁, by cutsat, by cutsat, ?_⟩
     rw [eq_comm, QuotientGroup.eq, ← zpow_natCast, ← zpow_natCast, ← zpow_neg, ← zpow_add,
         add_comm] at he
     rw [← zpow_natCast]
     convert he
-    omega
+    cutsat
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩
