@@ -67,7 +67,6 @@ the following.
 - fix pretty-printing: currently, the `commandStart` linter expects some different formatting
 - better error messages: forgetting e.g. the `T%` elaborator yields cryptic errors
 - further testing and fixing of edge cases
-- add test for the difference between `CMDiff` and `ContMDiff%` (and decide on one behaviour)
 - added tests for all of the above
 - add delaborators for these elaborators
 
@@ -361,6 +360,9 @@ trying to determine `I` and `J` from the local context. -/
 elab:max "CMDiff" nt:term:arg f:term:arg : term => do
   let e ← Term.elabTerm f none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  -- TODO: add a test demonstrating this having this line instead would change behaviour.
+  -- and decide on which behaviour I prefer!
+  -- let ne ← Term.elabTermEnsuringType nt wtn
   let ne ← Term.elabTerm nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
