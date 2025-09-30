@@ -616,4 +616,26 @@ end infinite
 
 end fderiv
 
+section finite
+
+variable {n : ℕ}
+
+protected theorem withSeminorms_of_finite : WithSeminorms
+    (fun _ : Fin 1 ↦ (ContDiffMapSupportedIn.seminorm' 𝕜 E F n K n)) := by
+  refine (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K).congr ?_ ?_
+  · intro _
+    use Finset.Iic n, 1
+    rw [one_smul]
+    rfl
+  · intro i
+    use {0}, 1
+    rw [one_smul, Finset.sup_singleton, Seminorm.comp_id]
+    rcases le_or_gt i n with (hin|hin)
+    · rw [← Finset.mem_Iic] at hin
+      exact Finset.le_sup (α := Seminorm 𝕜 𝓓^{n}_{K}(E, F)) hin
+    · rw [ContDiffMapSupportedIn.seminorm_eq_bot 𝕜 (by norm_cast)]
+      exact bot_le
+
+end finite
+
 end ContDiffMapSupportedIn
