@@ -320,7 +320,7 @@ variable [FunLike F R[X] S[X]]
 open scoped Classical in
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
 to a `RatFunc R →* RatFunc S`,
-on the condition that `φ` maps non zero divisors to non zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     RatFunc R →* RatFunc S where
@@ -367,7 +367,7 @@ theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S
 
 /-- Lift a ring homomorphism that maps polynomials `φ : R[X] →+* S[X]`
 to a `RatFunc R →+* RatFunc S`,
-on the condition that `φ` maps non zero divisors to non zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     RatFunc R →+* RatFunc S :=
@@ -392,7 +392,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
 
 -- TODO: Generalize to `FunLike` classes,
 /-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
-on the condition that `φ` maps non zero divisors to non zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ) : RatFunc R →*₀ G₀ where
   toFun f :=
@@ -616,7 +616,7 @@ variable {L R S : Type*} [Field L] [CommRing R] [IsDomain R] [CommSemiring S] [A
 
 /-- Lift an algebra homomorphism that maps polynomials `φ : K[X] →ₐ[S] R[X]`
 to a `RatFunc K →ₐ[S] RatFunc R`,
-on the condition that `φ` maps non zero divisors to non zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def mapAlgHom (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) : RatFunc K →ₐ[S] RatFunc R :=
   { mapRingHom φ hφ with
@@ -660,13 +660,13 @@ variable (K)
 
 /-- `RatFunc K` is the field of fractions of the polynomials over `K`. -/
 instance : IsFractionRing K[X] (RatFunc K) where
-  map_units' y := by
+  map_units y := by
     rw [← ofFractionRing_algebraMap]
     exact (toFractionRingRingEquiv K).symm.toRingHom.isUnit_map (IsLocalization.map_units _ y)
   exists_of_eq {x y} := by
     rw [← ofFractionRing_algebraMap, ← ofFractionRing_algebraMap]
     exact fun h ↦ IsLocalization.exists_of_eq ((toFractionRingRingEquiv K).symm.injective h)
-  surj' := by
+  surj := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z
     simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
