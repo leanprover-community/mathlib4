@@ -269,6 +269,8 @@ hypothesis, where that prefunctor the central hypothesis is conjugated by the is
 @[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
+-- TODO: fix non-terminal simp (acting on two goals, with different large simp sets)
+set_option linter.flexible false in
 /-- A computation about `toNerve₂.mk'`. -/
 theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
   refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
@@ -409,6 +411,8 @@ instance nerveFunctor₂.faithful : nerveFunctor₂.{u, u}.Faithful :=
   Functor.Faithful.of_comp_iso
     (G := oneTruncation₂) (H := ReflQuiv.forget) OneTruncation₂.ofNerve₂.natIso
 
+-- TODO: fix non-terminal simp (large simp sets)
+set_option linter.flexible false in
 instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
   map_surjective := by
     intro X Y F

@@ -13,6 +13,9 @@ Since every pair of elements are comparable in a linear order, intervals over th
 better behaved. This file collects their properties under this assumption.
 -/
 
+-- TODO: fix the linter errors in this file
+set_option linter.flexible false in
+
 assert_not_exists RelIso
 
 open Function
@@ -439,6 +442,8 @@ theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d =
     tauto
   · tauto
 
+-- TODO: find a good way to fix the non-terminal simp
+set_option linter.flexible false in
 theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;> simp [*] at h₁ h₂
@@ -512,6 +517,8 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
     tauto
   · tauto
 
+-- TODO: fix a good way to fix the linter; the exact only applies to one of five goals
+set_option linter.flexible false in
 theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
   rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;> simp [*] at h₁ h₂

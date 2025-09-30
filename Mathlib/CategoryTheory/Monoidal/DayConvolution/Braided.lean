@@ -145,6 +145,8 @@ lemma hexagon_forward (H : C ⥤ V)
   rw [← this, whiskerLeft_comp_assoc]
   simp [← Functor.map_comp]
 
+-- There is a non-terminal simp in `simp [← Functor.map_comp]`.
+set_option linter.flexible false in
 variable (F G) in
 lemma hexagon_reverse (H : C ⥤ V)
     [DayConvolution F G] [DayConvolution G H] [DayConvolution F (G ⊛ H)]

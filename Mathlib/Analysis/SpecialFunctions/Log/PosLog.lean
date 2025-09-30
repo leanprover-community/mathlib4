@@ -126,6 +126,9 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 /-!
 ## Estimates for Sums
 -/
+
+-- TODO: non-terminal simp followed by positivity
+set_option linter.flexible false in
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
 just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :

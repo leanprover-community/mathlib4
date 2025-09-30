@@ -40,6 +40,8 @@ of some code.
 
 -/
 
+-- TODO: revisit this after #13791 is merged
+set_option linter.flexible false
 
 open Encodable Denumerable
 
