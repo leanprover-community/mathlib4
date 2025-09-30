@@ -6,7 +6,7 @@ Authors: Bhavik Mehta
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Nat
 import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Nat.Prime.Pow
+import Mathlib.Data.Nat.Log
 
 /-!
 # Prime powers
@@ -77,45 +77,31 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   conv => { lhs; rw [← (pow_one p)] }
   exact Nat.pow_le_pow_right hp.one_lt.le hk
 
-theorem isPrimePow_nat_iff_minFac_pow (n : ℕ) :
-    IsPrimePow n ↔ 2 ≤ n ∧ ∃ k : ℕ, 0 < k ∧ n.minFac ^ k = n := by
+theorem isPrimePow_nat_iff_bounded' (n : ℕ) :
+    IsPrimePow n ↔ ∃ k : ℕ, k ≤ n ∧ ∃ p : ℕ, p ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
   rw [isPrimePow_nat_iff_bounded]
   constructor
   · rintro ⟨p, hp, k, hk, hp', hk', rfl⟩
-    refine ⟨le_trans (Nat.Prime.two_le hp') hp, ⟨k, hk', ?_⟩⟩
-    · congr
-      exact Nat.Prime.pow_minFac hp' (Nat.ne_zero_of_lt hk')
-  · rintro ⟨hn, ⟨k, hk, heq⟩⟩
-    refine ⟨n.minFac, Nat.minFac_le (by grind), ⟨k, ⟨?_, Nat.minFac_prime (by grind), hk, heq⟩⟩⟩
-    · have two_le_minFac : 2 ≤ n.minFac := by
-        apply Nat.Prime.two_le
-        grind [Nat.minFac_prime_iff]
-      rw [← heq]
-      calc
-        k ≤ 2 ^ k := by
-          apply le_of_lt
-          apply Nat.lt_two_pow_self
-        _ ≤ _ := by
-          exact Nat.pow_le_pow_left two_le_minFac k
+    exact ⟨k, hk, ⟨p, hp, hp', hk', rfl⟩⟩
+  · rintro ⟨k, hk, ⟨p, hp, hp', hk', rfl⟩⟩
+    exact ⟨p, hp, k, hk, hp', hk', rfl⟩
 
-theorem isPrimePow_nat_iff_minFac_pow_bounded (n : ℕ) :
-    IsPrimePow n ↔ 2 ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ 0 < k ∧ n.minFac ^ k = n := by
-  rw [isPrimePow_nat_iff_minFac_pow]
+theorem isPrimePow_nat_iff_bounded_log (n : ℕ) :
+    IsPrimePow n
+      ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ ∃ p : ℕ, p ≤ n ∧ p ^ k = n ∧ p.Prime := by
+  rw [isPrimePow_nat_iff]
   constructor
-  · rintro ⟨hn, ⟨k, hk, heq⟩⟩
-    refine ⟨hn, ⟨k, ?_, hk, heq⟩⟩
-    calc
-      k ≤ 2 ^ k := by
-        apply le_of_lt
-        apply Nat.lt_two_pow_self
-      _ ≤ _ := by
-        rw [←heq]
-        exact Nat.pow_le_pow_left (Nat.Prime.two_le (Nat.minFac_prime (by grind))) k
-  · rintro ⟨hn, ⟨k, hk, hk', heq⟩⟩
-    exact ⟨hn, ⟨k, hk', heq⟩⟩
+  · rintro ⟨p, k, hp', hk', rfl⟩
+    refine ⟨k, ?_, hk', ⟨p, Nat.le_pow hk', rfl, hp'⟩⟩
+    · calc
+        k = Nat.log 2 (2 ^ k) := by simp
+        _ ≤ Nat.log 2 (p ^ k) := Nat.log_mono Nat.one_lt_two Nat.AtLeastTwo.prop
+                                   (Nat.pow_le_pow_left (Nat.Prime.two_le hp') k)
+  · rintro ⟨k, hk, hk', ⟨p, hp, rfl, hp'⟩⟩
+    exact ⟨p, k, hp', hk', rfl⟩
 
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
-  decidable_of_iff' _ (isPrimePow_nat_iff_minFac_pow_bounded n)
+  decidable_of_iff' _ (isPrimePow_nat_iff_bounded_log n)
 
 theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by
   grind [isPrimePow_nat_iff, Nat.dvd_prime_pow, Nat.pow_eq_one]
