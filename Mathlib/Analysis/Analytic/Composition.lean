@@ -914,9 +914,9 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
     · have : ∑ j : Fin c.length, c.blocksFun j = 0 := by
         apply Finset.sum_eq_zero (fun j hj ↦ ?_)
         have := j.2
-        omega
+        grind
       rw [this]
-      apply mul_pos (by omega) hn
+      apply mul_pos (by grind) hn
     · calc
       ∑ j : Fin c.length, c.blocksFun j
       _ < ∑ j : Fin c.length, n := by
