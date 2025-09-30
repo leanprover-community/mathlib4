@@ -365,6 +365,11 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
     { hom := mapNatTrans h.hom
       inv := mapNatTrans h.inv }
 
+theorem map_fromThinSkeleton_toThinSkeleton [Quiver.IsThin D] (F : C ⥤ D) :
+    fromThinSkeleton C ⋙ F ⋙ toThinSkeleton D = map F :=
+  Functor.eq_of_iso skeletal <| NatIso.ofComponents fun X ↦ Quotient.recOnSubsingleton X fun x ↦
+    (eqToIso <| Quotient.sound <| isIsomorphicFunctorObj _ <| Quotient.mk_out x)
+
 /-- `fromThinSkeleton C` exhibits the thin skeleton as a skeleton. -/
 lemma thinSkeleton_isSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C) where
   skel := skeletal

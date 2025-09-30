@@ -493,6 +493,10 @@ theorem lower_comm (F : MonoOver Y ⥤ MonoOver X) :
     toThinSkeleton _ ⋙ lower F = F ⋙ toThinSkeleton _ :=
   rfl
 
+theorem lower_representative (F : MonoOver Y ⥤ MonoOver X) :
+    representative ⋙ F ⋙ toThinSkeleton _ = lower F :=
+  ThinSkeleton.map_fromThinSkeleton_toThinSkeleton _
+
 /-- An adjunction between `MonoOver A` and `MonoOver B` gives an adjunction
 between `Subobject A` and `Subobject B`. -/
 def lowerAdjunction {A : C} {B : D} {L : MonoOver A ⥤ MonoOver B} {R : MonoOver B ⥤ MonoOver A}
@@ -695,6 +699,39 @@ left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
+
+/-- `exists f` applied to a subobject `x` is isomorphic to the image of `x.arrow ≫ f`. -/
+def isoImageExists (f : X ⟶ Y) (x : Subobject X) :
+    (image (x.arrow ≫ f)) ≅ ((«exists» f).obj x : C) :=
+  have : representative ⋙ (MonoOver.exists f) ⋙ toThinSkeleton _ = «exists» f :=
+    lower_representative (MonoOver.«exists» f)
+  -- (lower_representative (MonoOver.«exists» f)) ▸ (underlyingIso _).symm
+  this ▸ (underlyingIso _).symm
+
+/-- `exists f` is the image factorisation of `x.arrow ≫ f`. -/
+def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
+    ImageFactorisation (x.arrow ≫ f) :=
+  .ofIsoI (Image.imageFactorisation (x.arrow ≫ f)) (isoImageExists f x).hom
+
+/-- For any morphism `f : X ⟶ Y` and subobject `x` of `X`, `Subobject.existsπ f x` is the first
+    projection in the following commutative square:
+
+    ```
+    (x : C) ------existsπ f y-----> ((exists f).obj x : C)
+       |                                      |
+    x.arrow                        ((exists f).obj x).arrow
+       |                                      |
+       v                                      v
+       X ------------------f----------------> Y
+    ```
+-/
+def existsπ (f : X ⟶ Y) (x : Subobject X) :
+    (x : C) ⟶ ((«exists» f).obj x : C) :=
+  (imageFactorisation f x).F.e
+
+lemma existsstr (f : X ⟶ Y) (x : Subobject X) :
+    x.arrow ≫ f = existsπ f y ≫ ((«exists» f).obj x).arrow :=
+  sorry
 
 end Exists
 

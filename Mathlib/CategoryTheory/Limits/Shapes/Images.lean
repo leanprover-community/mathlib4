@@ -153,6 +153,16 @@ def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsI
   m_mono := mono_comp _ _
   fac := by simp only [fac_assoc, Arrow.w, IsIso.inv_comp_eq, Category.assoc]
 
+/--
+Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` gives a new mono
+factorisation `X ⟶ I' ⟶ Y` of `f`.
+-/
+@[simps]
+def ofIsoI (F : MonoFactorisation f) {I' : C} (g : F.I ⟶ I') [IsIso g] : MonoFactorisation f where
+  I := I'
+  m := inv g ≫ F.m
+  e := F.e ≫ g
+
 end MonoFactorisation
 
 variable {f}
@@ -215,6 +225,15 @@ def ofArrowIso {f g : Arrow C} {F : MonoFactorisation f.hom} (hF : IsImage F) (s
     simpa only [MonoFactorisation.ofArrowIso_m, Arrow.inv_right, ← Category.assoc,
       IsIso.comp_inv_eq] using hF.lift_fac (F'.ofArrowIso (inv sq))
 
+/--
+Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
+the induced mono factorisation by the isomorphism is also an image.
+-/
+@[simps]
+def ofIsoI {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (g : F.I ⟶ I') [IsIso g] :
+    IsImage (F.ofIsoI g) where
+  lift F' := inv g ≫ hF.lift F'
+
 end IsImage
 
 variable (f)
@@ -239,6 +258,17 @@ def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [Is
   F := F.F.ofArrowIso sq
   isImage := F.isImage.ofArrowIso sq
 
+variable {f} in
+/--
+Given an image factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` induces a new
+image factorisation `X ⟶ I' ⟶ Y` of `f`.
+-/
+@[simps]
+def ofIsoI (F : ImageFactorisation f) {I' : C} (g : F.F.I ⟶ I') [IsIso g] :
+    ImageFactorisation f where
+  F := F.F.ofIsoI g
+  isImage := F.isImage.ofIsoI g
+
 end ImageFactorisation
 
 /-- `HasImage f` means that there exists an image factorisation of `f`. -/
@@ -260,6 +290,10 @@ instance (priority := 100) mono_hasImage (f : X ⟶ Y) [Mono f] : HasImage f :=
 section
 
 variable [HasImage f]
+
+/-- Some factorisation of `f` through a monomorphism (selected with choice). -/
+def Image.imageFactorisation : ImageFactorisation f :=
+  Classical.choice HasImage.exists_image
 
 /-- Some factorisation of `f` through a monomorphism (selected with choice). -/
 def Image.monoFactorisation : MonoFactorisation f :=

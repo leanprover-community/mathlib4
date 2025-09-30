@@ -15,7 +15,7 @@ The quotient with respect to this relation defines a functor from our category t
 -/
 
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
@@ -58,5 +58,14 @@ def isomorphismClasses : Cat.{v, u} ⥤ Type u where
 theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :
     IsIsomorphic X Y ↔ Nonempty (X ⟶ Y) :=
   (Groupoid.isoEquivHom X Y).nonempty_congr
+
+section
+
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
+
+lemma isIsomorphicFunctorObj {X Y} (h : IsIsomorphic X Y) : IsIsomorphic (F.obj X) (F.obj Y) :=
+  h.elim fun e ↦ ⟨F.mapIso e⟩
+
+end
 
 end CategoryTheory
