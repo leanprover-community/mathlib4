@@ -534,23 +534,24 @@ theorem splits_iff_card_roots {p : K[X]} :
     simp only [RingHom.id_apply, map_id]
     exact (C_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
 
-theorem Splits.eval₂_derivative [DecidableEq L] {P : K[X]} {f : K →+* L} (hP : P.Splits f) (x : L) :
+theorem eval₂_derivative_of_splits [DecidableEq L] {P : K[X]} {f : K →+* L} (hP : P.Splits f)
+    (x : L) :
     eval₂ f x P.derivative = f (P.leadingCoeff) *
       ((P.map f).roots.map fun a ↦ (((P.map f).roots.erase a).map (x - ·)).prod).sum := by
   conv_lhs => rw [← eval_map, ← derivative_map, eq_prod_roots_of_splits hP]
   classical
   simp [derivative_prod, eval_multisetSum, eval_multiset_prod]
 
-theorem Splits.aeval_derivative [Algebra K L] [DecidableEq L] {P : K[X]}
+theorem aeval_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
     (hP : P.Splits (algebraMap K L)) (r : L) :
     aeval r P.derivative = algebraMap K L P.leadingCoeff *
       ((P.aroots L).map fun a ↦ (((P.aroots L).erase a).map (r - ·)).prod).sum :=
-  hP.eval₂_derivative r
+  eval₂_derivative_of_splits hP r
 
-theorem Splits.eval_derivative [DecidableEq K] {P : K[X]} (hP : P.Splits (.id K)) (r : K) :
+theorem eval_derivative_of_splits [DecidableEq K] {P : K[X]} (hP : P.Splits (.id K)) (r : K) :
     eval r P.derivative = P.leadingCoeff *
       (P.roots.map fun a ↦ ((P.roots.erase a).map (r - ·)).prod).sum := by
-  simpa using hP.eval₂_derivative r
+  simpa using eval₂_derivative_of_splits r
 
 /-- Let `P` be a monic polynomial over `K` that splits over `L`. Let `r : L` be a root of `P`.
 Then $P'(r) = \prod_{a}(r-a)$, where the product in the RHS is taken over all roots of `P` in `L`,
@@ -564,23 +565,23 @@ theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
   nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
   rw [eval_multiset_prod_X_sub_C_derivative hr]
 
-theorem Splits.eval_derivative_eq_eval_mul_sum {p : K[X]} {x : K}
+theorem eval_derivative_eq_eval_mul_sum_of_splits {p : K[X]} {x : K}
     (h : p.Splits (.id K)) (hx : p.eval x ≠ 0) :
     p.derivative.eval x = p.eval x * (p.roots.map fun z ↦ 1 / (x - z)).sum := by
   classical
   suffices p.roots.map (fun z ↦ p.leadingCoeff * ((p.roots.erase z).map (fun w ↦ x - w) ).prod) =
       p.roots.map fun i ↦ p.leadingCoeff * ((x - i)⁻¹ * (p.roots.map (fun z ↦ x - z)).prod) by
     nth_rw 2 [p.eq_prod_roots_of_splits_id h]
-    simp [h.eval_derivative, ← Multiset.sum_map_mul_left, this, eval_multiset_prod, mul_comm,
-      mul_left_comm]
+    simp [eval_derivative_of_splits h, ← Multiset.sum_map_mul_left, this, eval_multiset_prod,
+      mul_comm, mul_left_comm]
   refine Multiset.map_congr rfl fun z hz ↦ ?_
   rw [← Multiset.prod_map_erase hz, inv_mul_cancel_left₀]
   aesop (add simp sub_eq_zero)
 
-theorem Splits.eval_derivative_div_eval_of_ne_zero {p : K[X]} {x : K}
+theorem eval_derivative_div_eval_of_ne_zero_of_splits {p : K[X]} {x : K}
     (h : p.Splits (.id K)) (hx : p.eval x ≠ 0) :
     p.derivative.eval x / p.eval x = (p.roots.map fun z ↦ 1 / (x - z)).sum := by
-  rw [h.eval_derivative_eq_eval_mul_sum hx]
+  rw [eval_derivative_eq_eval_mul_sum_of_splits h hx]
   exact mul_div_cancel_left₀ _ hx
 
 /-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
