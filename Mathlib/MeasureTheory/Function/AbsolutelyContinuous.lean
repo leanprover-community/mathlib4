@@ -69,9 +69,9 @@ def totalLengthFilter : Filter (ℕ × (ℕ → F × F)) := Filter.comap
   (fun E ↦ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2) (𝓝 0)
 
 lemma hasBasis_totalLengthFilter : totalLengthFilter.HasBasis (fun (ε : ℝ) => 0 < ε)
-    (fun (ε : ℝ) => 
+    (fun (ε : ℝ) =>
       {E : ℕ × (ℕ → F × F) | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε}) := by
-  convert Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1 
+  convert Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1
   ext ε E
   simp only [mem_setOf_eq, zero_sub, zero_add, mem_preimage, mem_Ioo, iff_and_self]
   suffices 0 ≤ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 by grind
