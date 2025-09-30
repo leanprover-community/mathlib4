@@ -61,9 +61,8 @@ The Bipolar Theorem: The bipolar of a set coincides with its closed absolutely c
 open scoped ComplexConjugate
 theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
-  refine le_antisymm ?_ <| closedAbsConvexHull_min
+  refine subset_antisymm ?_ <| closedAbsConvexHull_min (E := WeakBilin B)
     (subset_bipolar B s) (polar_absConvex _) (polar_isClosed B.flip _)
-  simp only [Set.le_eq_subset]
   rw [← Set.compl_subset_compl]
   -- Let `x` be an element not in `(closedAbsConvexHull 𝕜) s`
   intro x hx
