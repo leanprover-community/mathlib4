@@ -41,7 +41,6 @@ import Mathlib.Tactic.Coe
 import Mathlib.Tactic.CongrExclamation
 import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
-import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
@@ -144,7 +143,6 @@ register_hint (priority := 800) simp_all?
 register_hint (priority := 600) exact?
 register_hint (priority := 1000) decide
 register_hint (priority := 200) omega
-register_hint (priority := 300) continuity
 register_hint (priority := 200) fun_prop
 
 end Hint
