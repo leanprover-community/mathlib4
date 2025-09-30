@@ -60,21 +60,35 @@ end H0
 
 section H1
 
-def Z1 (G : Type u) [Monoid G] (A : NonAbelianRep G) :=
+variable (G : Type u) [Monoid G] (A : NonAbelianRep G)
+
+def Z1 :=
   { f : G → A // ∀ g h : G, f (g * h) = f g + (g • f h : A)}
 
-instance CoeFunZ1 (G : Type u) [Monoid G] (A : NonAbelianRep G) : CoeFun (Z1 G A) (fun _ ↦ G → A) :=
+namespace Z1
+
+instance zero : Zero (Z1 G A) := ⟨⟨0, fun g h => by simp⟩⟩
+instance inhabited : Inhabited (Z1 G A) := ⟨0⟩
+
+instance coeFun : CoeFun (Z1 G A) (fun _ ↦ G → A) :=
   ⟨fun f ↦ f.val⟩
 
-def cohomologous {G : Type u} [Group G] {A : NonAbelianRep G} (f g : Z1 G A) : Prop :=
+variable {G} in
+def cohomologous {A : NonAbelianRep G} (f g : Z1 G A) : Prop :=
   ∃ a : A, ∀ h : G, g h = - a + f h + (h • a)
 
-def Z1.setoid (G : Type u) [Group G] (A : NonAbelianRep G) : Setoid (Z1 G A) :=
+def setoid (G : Type u) [Monoid G] (A : NonAbelianRep G) : Setoid (Z1 G A) :=
   { r := cohomologous,
     iseqv := sorry }
 
--- def H1 (V : NonAbelianRep G) : Pointed where
---   X :=
+end Z1
+
+def H1 (A : NonAbelianRep G) : Pointed where
+  X := Quotient (Z1.setoid G A)
+  point := ⟦0⟧
+
+instance : Zero (H1 G A) := ⟨⟦0⟧⟩
+instance : Inhabited (H1 G A) := ⟨0⟩
 
 end H1
 
