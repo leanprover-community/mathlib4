@@ -1057,7 +1057,7 @@ end NumDenom
 section Char
 
 instance [Field K] {p : ℕ} [CharP K p] : CharP (RatFunc K) p :=
-  charP_of_injective_algebraMap'' K p
+  charP_of_injective_algebraMap' K p
 
 instance [Field K] {p : ℕ} [ExpChar K p] : ExpChar (RatFunc K) p :=
   expChar_of_injective_algebraMap' K p
