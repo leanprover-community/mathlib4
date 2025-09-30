@@ -3,6 +3,9 @@ name: Remove outdated deprecated declarations
 on:
   schedule:
   - cron: "5 4 * * 1" # At 04:05, on Monday
+  push:
+   branches:
+   - remove_deprecations_linter_dev_upstream
   workflow_dispatch:
     inputs:
       raw_from_date:
@@ -159,29 +162,21 @@ jobs:
         lake build "${tmplean}"
         echo "::endgroup::"
 
-    - name: configure git setup
-      if: toJson(inputs.dry_run) != 'true'
-      run: |
-        git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib4.git"
-        git config user.email "leanprover.community@gmail.com"
-        git config user.name "leanprover-community-bot"
-
-        # By default, github actions overrides the credentials used to access any
-        # github url so that it uses the github-actions[bot] user.  We want to access
-        # github using a different username.
-        git config --unset http.https://github.com/.extraheader
-
-    - name: file a new PR to remove outdated deprecated declarations
-      if: toJson(inputs.dry_run) != 'true'
+    - name: Create Pull Request
       id: pr
-      run: ./scripts/remove_deprecated_decls_CI.sh "${DEPRECATION_DATE_FROM}" "${DEPRECATION_DATE_TO}"
-      env:
-        DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
-        DEPRECATION_DATE_FROM: ${{ steps.process_dates.outputs.from_date }}
-        DEPRECATION_DATE_TO: ${{ steps.process_dates.outputs.to_date }}
+      if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' }}
+      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+      with:
+        token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
+        author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
+        commit-message: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
+        branch: "deprecated-decls"
+        base: master
+        title: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
+        body: "I am happy to remove some deprecated declarations for you! Please check if there are any remaining stray comments or other issues before merging."
 
     - name: Send Zulip message
-      if: steps.pr.outcome == 'success' && steps.pr.outputs.message
+      if: steps.pr.outcome == 'success'
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -190,4 +185,6 @@ jobs:
         to: 'nightly-testing'
         type: 'stream'
         topic: 'Mathlib `remove outdated deprecated declarations`'
-        content: '${{ steps.pr.outputs.message }}'
+        content: |
+          Please review #${{ steps.pr.outputs.pull-request-number }}, which removes deprecated declarations between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}.
+          Pay special attention to whether there are stray comments that can also be deleted.
