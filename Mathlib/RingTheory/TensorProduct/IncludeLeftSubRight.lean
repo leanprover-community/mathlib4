@@ -9,10 +9,10 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 /-!
 # Exactness properties of the difference map for tensor products
 
-For an `R`-algebra `S`, we collect certain properties of the `R`-linear map `S →ₗ[R] S ⊗[R] S` given
+For an `R`-algebra `S`, we collect some properties of the `R`-linear map `S →ₗ[R] S ⊗[R] S` given
 by `s ↦ (s ⊗ₜ[R] 1) - (1 ⊗ₜ[R] s)`.
 
-## Main definitions (in the namespace `Algebra.TensorProduct`)
+## Main definitions
 
 * `includeLeftSubRight`: The `R`-linear map sending `s : S` to `s ⊗ₜ[R] 1 - 1 ⊗ₜ[R] s`.
 * `ExactIncludeLeftSubRight`: Exactness of the sequence `R → S → S ⊗[R] S` with the right map given
@@ -20,12 +20,12 @@ by `s ↦ (s ⊗ₜ[R] 1) - (1 ⊗ₜ[R] s)`.
 * `toEqLocusOfInclusion`: The ring map from `R` to the equalizer locus in `S` of the two maps
   `s ↦ s ⊗ₜ (1 : S)` and `s ↦ (1 : S) ⊗ₜ s`.
 
-## Main results (in the namespace `Algebra.TensorProduct`)
+## Main results
 
-* `exactIncludeLeftSubRight_of_faithfullyFlat`: `ExactIncludeLeftSubRight` holds when `S` is
-  faithfully flat over `R`.
-* `toEqLocusOfInclusion_surjective`: If `ExactIncludeLeftSubRight` holds, then the ring map
-  `toEqLocusOfInclusion` is surjective.
+* `exactIncludeLeftSubRight_of_faithfullyFlat`: `ExactIncludeLeftSubRight R S` is true for any
+  faithfully flat `R`-algebras `S`.
+* `toEqLocusOfInclusion_surjective`: /-- If `ExactIncludeLeftSubRight R S` is true, then
+  `toEqLocusOfInclusion R S` is surjective. -/
 
 -/
 
@@ -111,7 +111,7 @@ lemma ExactIncludeLeftSubRight_desc_faithfullyFlat [Ring S] [Algebra R S]
     simp only [includeLeftSubRight_distribBaseChange]
     rfl
 
-/-- `ExactIncludeLeftSubRight` is true for any faithfully flat algebras. -/
+/-- `ExactIncludeLeftSubRight R S` is true for any faithfully flat `R`-algebras `S`. -/
 lemma exactIncludeLeftSubRight_of_faithfullyFlat [CommRing S] [Algebra R S]
     [Module.FaithfullyFlat R S] : ExactIncludeLeftSubRight R S :=
   ExactIncludeLeftSubRight_desc_faithfullyFlat _ _ _
