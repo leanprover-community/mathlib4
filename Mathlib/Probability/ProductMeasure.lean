@@ -35,7 +35,7 @@ theorem to construct the measure over a product indexed by `ℕ`, which is `infi
 is an implementation detail and should not be used directly. Then we construct the product measure
 over an arbitrary type by extending `piContent μ` thanks to Carathéodory's theorem. The key lemma
 to do so is `piContent_tendsto_zero`, which states that `piContent μ (A n)` tends to zero if
-`A` is a non increasing sequence of sets satisfying `⋂ n, A n = ∅`.
+`A` is a nonincreasing sequence of sets satisfying `⋂ n, A n = ∅`.
 We prove this lemma by reducing to the case of an at most countable product,
 in which case `piContent μ` is known to be a true measure (see `piContent_eq_measure_pi` and
 `piContent_eq_infinitePiNat`).
