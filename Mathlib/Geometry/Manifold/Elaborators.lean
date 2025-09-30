@@ -161,7 +161,8 @@ Return an expression describing the found model with corners.
 
 `baseInfo` is only used for the first case, a model with corners on the total space of the vector
 bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
-and the model with corners on the base: these are required to construct the right model with corners.
+and the model with corners on the base: these are required to construct the right model with
+corners.
 
 This implementation is not maximally robust yet.
 -/
@@ -258,6 +259,25 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
       return I
     throwError "Couldn’t find models with corners"
 
+/-- If `etype` is a non-dependent function between spaces `src` and `tgt`, try to find a model with
+corners on both `src` and `tgt`. If successful, return both models.
+
+`ef` is the term having type `etype`: this is used only for better diagnostics.
+If `estype` is `some`, we verify that `src` and `estype` are def-eq. (TODO: implement this!) -/
+-- TODO: pass in an additional type, to be checked equivalent to `src`, and validate this!
+def _find_models (etype eterm : Expr) (_estype : Option Expr) :
+    TermElabM (Option (Expr × Expr)) := do
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    if Lean.Expr.hasLooseBVars tgt then
+      throwError m!"Term {eterm} is a dependent function, of type {etype}\n\
+      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
+    let tgtI ← find_model tgt (src, srcI)
+    -- TODO: check that `estype` and src are defeq!
+    return some (srcI, tgtI)
+  | _ => return none
+
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
 The argument x can be omitted. -/
@@ -266,16 +286,9 @@ elab:max "MDiffAt[" s:term:arg "]" f:term:arg : term => do
   let ef ← Term.elabTerm f none
   let etype ← inferType ef >>= instantiateMVars
   let _estype ← inferType ef >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {ef} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    -- TODO: check that `estype` and src are compatible/the same!
-    return ← mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
-  | _ => throwError m!"Term {ef} is not a function."
+  match ← _find_models etype ef _estype with
+  | some (srcI, tgtI) => return ← mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
+  | none => throwError m!"Term {ef} is not a function."
 
 /-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
 trying to determine `I` and `J` from the local context.
@@ -283,15 +296,9 @@ The argument `x` can be omitted. -/
 elab:max "MDiffAt" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {e} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
-  | _ => throwError m!"Term {e} is not a function."
+  match ← _find_models etype e none with
+  | some (srcI, tgtI) => return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
+  | none => throwError m!"Term {e} is not a function."
 
 -- This implement is more robust (in theory), but currently fails tests.
 -- TODO: investigate why, fix this and replace `MDiffAt` by this one!
@@ -320,31 +327,18 @@ elab:max "MDiff[" s:term:arg "]" t:term:arg : term => do
   let et ← Term.elabTerm t none
   let _estype ← inferType es >>= instantiateMVars
   let etype ← inferType et >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {et} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    -- TODO: check that `estype` and src are compatible/the same!
-    return ← mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
-  | _ => throwError m!"Term {et} is not a function."
+  match ← _find_models etype et _estype with
+  | some (srcI, tgtI) => return ← mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
+  | none => throwError m!"Term {et} is not a function."
 
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
 trying to determine `I` and `J` from the local context. -/
 elab:max "MDiff" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {e} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM ``MDifferentiable #[srcI, tgtI, e]
-  | _ => throwError m!"Term {e} is not a function."
+  match ← _find_models etype e none with
+  | some (srcI, tgtI) => return ← mkAppM ``MDifferentiable #[srcI, tgtI, e]
+  | none => throwError m!"Term {e} is not a function."
 
 /-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
 trying to determine `I` and `J` from the local context.
@@ -357,16 +351,9 @@ elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let ne ← Term.elabTermEnsuringType nt wtn
   let _estype ← inferType es >>= instantiateMVars
   let eftype ← inferType ef >>= instantiateMVars
-  match eftype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {ef} is a dependent function, of type {eftype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    -- TODO: check `estype` and src are compatible
-    return ← mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
-  | _ => throwError m!"Term {ef} is not a function."
+  match ← _find_models eftype ef _estype with
+  | some (srcI, tgtI) => return ← mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
+  | none => throwError m!"Term {ef} is not a function."
 
 /-- `CMDiffAt n f x` elaborates to `ContMDiffAt I J n f x`
 trying to determine `I` and `J` from the local context.
@@ -377,15 +364,9 @@ elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   let wtn ← Term.elabTerm (← ``(WithTop ℕ∞)) none
   let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {e} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
-  | _ => throwError m!"Term {e} is not a function."
+  match ← _find_models etype e none with
+  | some (srcI, tgtI) => return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
+  | none => throwError m!"Term {e} is not a function."
 
 /-- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`,
 trying to determine `I` and `J` from the local context.
@@ -397,16 +378,9 @@ elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let ne ← Term.elabTermEnsuringType nt wtn
   let _estype ← inferType es >>= instantiateMVars
   let eftype ← inferType ef >>= instantiateMVars
-  match eftype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {ef} is a dependent function, of type {eftype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    -- TODO: check `estype` and src are compatible
-    return ← mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
-  | _ => throwError m!"Term {ef} is not a function."
+  match ← _find_models eftype ef _estype with
+  | some (srcI, tgtI) => return ← mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
+  | none => throwError m!"Term {ef} is not a function."
 
 /-- `CMDiff n f` elaborates to `ContMDiff I J n f`,
 trying to determine `I` and `J` from the local context.
@@ -416,15 +390,9 @@ elab:max "CMDiff" nt:term:arg f:term:arg : term => do
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
   let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-      if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {e} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
-  | _ => throwError m!"Term {e} is not a function."
+  match ← _find_models etype e none with
+  | some (srcI, tgtI) => return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
+  | none => throwError m!"Term {e} is not a function."
 
 /-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f u x`,
 trying to determine `I` and `J` from the local context. -/
@@ -433,30 +401,17 @@ elab:max "mfderiv[" s:term:arg "]" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
   let _estype ← inferType es >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {e} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    -- TODO: check `estype` and src are compatible
-    return ← mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
-  | _ => throwError m!"Term {e} is not a function."
+  match ← _find_models etype e _estype with
+  | some (srcI, tgtI) => return ← mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
+  | none => throwError m!"Term {e} is not a function."
 
 /-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
 elab:max "mfderiv%" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {e} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM `mfderiv #[srcI, tgtI, e]
-  | _ => throwError m!"Term {e} is not a function."
+  match ← _find_models etype e none with
+  | some (srcI, tgtI) => return ← mkAppM ``mfderiv #[srcI, tgtI, e]
+  | none => throwError m!"Term {e} is not a function."
 
 end Manifold
