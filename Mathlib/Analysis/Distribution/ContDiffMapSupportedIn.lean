@@ -277,5 +277,99 @@ protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : s
   contDiff' := hf
   zero_on_compl' := support_subset_iff'.mp hsupp
 
+protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi : i ≤ n) :
+    ∃ C, ∀ x, ‖iteratedFDeriv ℝ i f x‖ ≤ C :=
+  Continuous.bounded_above_of_compact_support
+    (f.contDiff.continuous_iteratedFDeriv <| (WithTop.le_coe rfl).mpr hi)
+    (f.hasCompactSupport.iteratedFDeriv i)
+
+
+/-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
+as a `𝕜`-linear map. -/
+@[simps]
+noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F  where
+  toFun f := f
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- Wrapper for `iteratedFDeriv i` on `𝓓^{n}_{K}(E, F)`,
+as a map into `𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F)`. -/
+noncomputable def iteratedFDeriv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) :=
+  if hi : i ≤ n then
+    .of_support_subset
+    (f.contDiff.iteratedFDeriv_right <| (WithTop.coe_le_coe.mpr ((tsub_add_cancel_of_le hi).le)))
+    ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
+  else 0
+
+@[simp]
+lemma iteratedFDeriv'_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
+    f.iteratedFDeriv' i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
+  rw [ContDiffMapSupportedIn.iteratedFDeriv']
+  split_ifs <;> rfl
+
+@[simp]
+lemma coe_iteratedFDeriv'_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+    f.iteratedFDeriv' i = iteratedFDeriv ℝ i f := by
+  ext : 1
+  rw [iteratedFDeriv'_apply]
+  exact dif_pos hin
+
+@[simp]
+lemma coe_iteratedFDeriv'_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) :
+    f.iteratedFDeriv' i = 0 := by
+  ext : 1
+  rw [iteratedFDeriv'_apply]
+  exact dif_neg (not_le_of_gt hin)
+
+@[simp]
+lemma coe_iteratedFDeriv'_of_gt' {i : ℕ} (hin : i > n) :
+    (iteratedFDeriv' i : 𝓓^{n}_{K}(E, F) → _) = 0 := by
+  ext : 2
+  rw [iteratedFDeriv'_apply]
+  exact dif_neg (not_le_of_gt hin)
+
+lemma iteratedFDeriv'_add (i : ℕ) {f g : 𝓓^{n}_{K}(E, F)} :
+    (f + g).iteratedFDeriv' i = f.iteratedFDeriv' i + g.iteratedFDeriv' i := by
+  ext : 1
+  simp only [iteratedFDeriv'_apply, add_apply]
+  split_ifs with hin
+  · refine iteratedFDeriv_add_apply (ContDiff.contDiffAt ?_) (ContDiff.contDiffAt ?_)
+    · exact f.contDiff.of_le (by exact_mod_cast hin)
+    · exact g.contDiff.of_le (by exact_mod_cast hin)
+  · rw [add_zero]
+
+lemma iteratedFDeriv'_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)} :
+    (c • f).iteratedFDeriv' i = c • f.iteratedFDeriv' i := by
+  ext : 1
+  simp only [iteratedFDeriv'_apply, smul_apply]
+  split_ifs with hin
+  · apply iteratedFDeriv_const_smul_apply
+    refine ContDiff.contDiffAt <| f.contDiff.of_le (by exact_mod_cast hin)
+  · rw [smul_zero]
+
+/-- Wrapper for iteratedFDeriv' as a `𝕜`-linear map. -/
+@[simps]
+noncomputable def iteratedFDerivₗ' (i : ℕ) :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) where
+  toFun f := f.iteratedFDeriv' i
+  map_add' _ _ := iteratedFDeriv'_add i
+  map_smul' _ _ := iteratedFDeriv'_smul 𝕜 i
+
+lemma iteratedFDerivₗ'_eq_iteratedFDeriv' (i : ℕ) :
+  (iteratedFDerivₗ' 𝕜 i : 𝓓^{n}_{K}(E, F) → _) = (iteratedFDeriv' i : _) := by
+  congr
+
+lemma iteratedFDeriv'_zero (i : ℕ) :
+    (0 : 𝓓^{n}_{K}(E, F)).iteratedFDeriv' i = 0 :=
+  map_zero (iteratedFDerivₗ' ℝ i)
+
+/-- The composition of `ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ` and
+`ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
+of maps is used a lot for defining and using the topology on `ContDiffMapSupportedIn`, and Lean
+takes a long time to infer the type of `toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
+noncomputable def iteratedFDeriv_toBoundedContinuousFunctionₗ (i : ℕ) :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
+  toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ' 𝕜 i
 
 end ContDiffMapSupportedIn
