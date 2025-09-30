@@ -30,6 +30,14 @@ namespace Finset
 
 section Decidable
 
+/-- `LocallyFiniteOrder` instance for `Finset α`.
+
+We provide an optimized definition for `Finset.Icc (s : Finset α) t`,
+then define the other intervals based on `Icc`.
+
+We do not define, e.g., `Finset.Ico` based on `Finset.ssubsets`,
+because it would require more code without performance gain.
+-/
 instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (Finset α) :=
   .ofIcc _ (fun s t ↦
     if s ⊆ t then
