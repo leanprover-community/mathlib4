@@ -239,7 +239,7 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
 def forgetToSchemeCreatesLimits : CreatesLimits forgetToScheme.{u} :=
   ⟨⟨createsLimitOfReflectsIsomorphismsOfPreserves⟩⟩
 
-/-- The opposite of the forgetful functor `AffineSchemeᵒᵖ ⥤ Schemeᵒᵖ` creates small colimits. -/
+/-- The opposite of the forgetful functor `AffineScheme ⥤ Scheme` creates small colimits. -/
 def forgetToSchemeCreatesColimits : CreatesColimits forgetToScheme.{u}.op :=
   let : PreservesColimits forgetToScheme.{u}.op := preservesColimits_op _
   ⟨⟨createsColimitOfReflectsIsomorphismsOfPreserves⟩⟩
