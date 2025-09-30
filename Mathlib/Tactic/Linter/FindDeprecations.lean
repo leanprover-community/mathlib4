@@ -32,7 +32,7 @@ For reporting, the script assumes there is no sub-dir of the `repo` dir that con
 `repo` as a substring.
 However, the script should still remove old deprecations correctly even if that happens.
 -/
-def repos : NameSet := .ofArray #[`Mathlib, `Archive, `Counterexamples]
+def repos : NameSet := .ofArray #[`Archive, `Counterexamples]
 
 /--
 The main structure containing the information a deprecated declaration.
