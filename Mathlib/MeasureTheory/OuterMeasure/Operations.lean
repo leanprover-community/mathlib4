@@ -139,6 +139,9 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_trans _ _ _ hab hbc s := le_trans (hab s) (hbc s)
   le_antisymm _ _ hab hba := ext fun s => le_antisymm (hab s) (hba s)
 
+instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure α) where
+  add_le_add_left _ _ h _ s := add_le_add_left (h s) _
+
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
     bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, zero_le] }
