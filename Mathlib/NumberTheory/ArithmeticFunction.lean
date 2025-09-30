@@ -51,16 +51,15 @@ to form the Dirichlet ring.
 
 ## Notation
 
-All notation is localized in the namespace `ArithmeticFunction`.
-
-The arithmetic functions `ζ`, `σ`, `ω`, `Ω`, `μ` and `ϕ` have Greek letter names.
-Note that we make use of `ϕ` (`\varphi`) for Euler's totient function to
-distinguish it from `Nat.totient`'s notation `φ`.
+The notation of the arithmetic functions `ζ`, `σ`, `ω`, `Ω`, `μ`
+is localized in the namespace `ArithmeticFunction`.
 
 In addition, there are separate locales `ArithmeticFunction.zeta` for `ζ`,
 `ArithmeticFunction.sigma` for `σ`, `ArithmeticFunction.omega` for `ω`,
 `ArithmeticFunction.Omega` for `Ω`, `ArithmeticFunction.Moebius` for `μ`,
 and `ArithmeticFunction.Totient` for `ϕ` to allow for selective access to these notations.
+Note that we make use of `ϕ` (`\varphi`) for Euler's totient function to
+distinguish it from `Nat.totient`'s notation `φ`.
 
 The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation
 `∏ᵖ p ∣ n, f p` when applied to `n`.
@@ -1293,8 +1292,6 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
     rw [dif_pos (Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal hx)),
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
 
-section Totient
-
 /-- `ϕ` is the `ArithmeticFunction` version of the Euler's totient function,
 a wrapper of `Nat.totient`. -/
 def totient : ArithmeticFunction ℕ where
@@ -1302,10 +1299,9 @@ def totient : ArithmeticFunction ℕ where
   map_zero' := Nat.totient_zero
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "ϕ" => ArithmeticFunction.totient
-
-@[inherit_doc]
 scoped[ArithmeticFunction.Totient] notation "ϕ" => ArithmeticFunction.totient
+
+open ArithmeticFunction.Totient
 
 /-- Fall back to `Nat.totient`.
 Added as a `simp` lemma so that `simp` can make use of the existing lemmas for `Nat.totient`. -/
@@ -1314,8 +1310,6 @@ theorem totient_apply {n : ℕ} : ϕ n = n.totient := rfl
 
 @[arith_mult]
 theorem isMultiplicative_totient : IsMultiplicative ϕ := ⟨rfl, totient_mul⟩
-
-end Totient
 
 /-- `ArithmeticFunction` version of `Nat.sum_totient`. -/
 @[simp]
