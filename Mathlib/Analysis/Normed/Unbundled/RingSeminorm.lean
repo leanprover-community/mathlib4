@@ -264,7 +264,7 @@ instance [DecidableEq R] : Inhabited (RingNorm R) :=
 end NonUnitalRing
 
 /-- The `NormedRing` structure on a ring `R` determined by a `RingNorm` -/
--- See note |reducible non instances]
+-- See note |reducible non-instances]
 abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
   __ := ‹Ring R›
   __ := f.toAddGroupNorm.toNormedAddCommGroup

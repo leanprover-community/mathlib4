@@ -23,6 +23,7 @@ import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Algebra.Algebra.Spectrum.Pi
 import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+import Mathlib.Algebra.Algebra.StrictPositivity
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Centralizer
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
@@ -495,6 +496,8 @@ import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Shrink
 import Mathlib.Algebra.GroupWithZero.Subgroup
+import Mathlib.Algebra.GroupWithZero.Submonoid.CancelMulZero
+import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 import Mathlib.Algebra.GroupWithZero.Torsion
@@ -676,6 +679,7 @@ import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.Lattice
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.LinearMap.DivisionRing
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LinearMap.Prod
@@ -1329,6 +1333,8 @@ import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Augmented
+import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Basic
+import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Monoidal
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
@@ -1757,6 +1763,7 @@ import Mathlib.Analysis.Normed.Affine.Simplex
 import Mathlib.Analysis.Normed.Algebra.Basic
 import Mathlib.Analysis.Normed.Algebra.DualNumber
 import Mathlib.Analysis.Normed.Algebra.Exponential
+import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 import Mathlib.Analysis.Normed.Algebra.MatrixExponential
 import Mathlib.Analysis.Normed.Algebra.QuaternionExponential
 import Mathlib.Analysis.Normed.Algebra.Spectrum
@@ -1985,6 +1992,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Integral
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Sigmoid
 import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Stirling
@@ -2640,6 +2648,7 @@ import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Noetherian
 import Mathlib.CategoryTheory.ObjectProperty.Basic
 import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 import Mathlib.CategoryTheory.ObjectProperty.Extensions
@@ -2647,6 +2656,7 @@ import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Mathlib.CategoryTheory.ObjectProperty.Retract
 import Mathlib.CategoryTheory.ObjectProperty.Shift
+import Mathlib.CategoryTheory.ObjectProperty.Small
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.PUnit
@@ -3780,6 +3790,7 @@ import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.Galois.GaloisClosure
 import Mathlib.FieldTheory.Galois.Infinite
 import Mathlib.FieldTheory.Galois.IsGaloisGroup
+import Mathlib.FieldTheory.Galois.NormalBasis
 import Mathlib.FieldTheory.Galois.Profinite
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
@@ -4602,6 +4613,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.Lebesgue
@@ -4882,6 +4894,7 @@ import Mathlib.NumberTheory.MulChar.Basic
 import Mathlib.NumberTheory.MulChar.Duality
 import Mathlib.NumberTheory.MulChar.Lemmas
 import Mathlib.NumberTheory.Multiplicity
+import Mathlib.NumberTheory.Niven
 import Mathlib.NumberTheory.NumberField.AdeleRing
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.CMField
@@ -5263,6 +5276,7 @@ import Mathlib.Probability.Distributions.Uniform
 import Mathlib.Probability.HasLaw
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
+import Mathlib.Probability.Independence.CharacteristicFunction
 import Mathlib.Probability.Independence.Conditional
 import Mathlib.Probability.Independence.InfinitePi
 import Mathlib.Probability.Independence.Integrable
@@ -5377,6 +5391,7 @@ import Mathlib.RingTheory.AdicCompletion.Exactness
 import Mathlib.RingTheory.AdicCompletion.Functoriality
 import Mathlib.RingTheory.AdicCompletion.LocalRing
 import Mathlib.RingTheory.AdicCompletion.Noetherian
+import Mathlib.RingTheory.AdicCompletion.Topology
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Adjoin.FG
@@ -5499,6 +5514,7 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Flat.Stability
+import Mathlib.RingTheory.Flat.Tensor
 import Mathlib.RingTheory.Flat.TorsionFree
 import Mathlib.RingTheory.FractionalIdeal.Basic
 import Mathlib.RingTheory.FractionalIdeal.Extended
@@ -5909,6 +5925,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.Valuation.ValuativeRel
 import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+import Mathlib.RingTheory.Valuation.ValuativeRel.Trivial
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Compare
 import Mathlib.RingTheory.WittVector.Complete
@@ -5929,6 +5946,7 @@ import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod
+import Mathlib.RingTheory.ZMod.Torsion
 import Mathlib.RingTheory.ZMod.UnitsCyclic
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Cardinal.Arithmetic
