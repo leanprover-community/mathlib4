@@ -209,7 +209,7 @@ instance : IsGeneratedBy X (PUnit.{v + 1}) := by
 
 omit [TopologicalSpace Z]
 /-- Any topology coinduced by an `X`-generated topology is `X`-generated. -/
-lemma coinduced [IsGeneratedBy X Y] (f : Y → Z) :
+protected lemma coinduced [IsGeneratedBy X Y] (f : Y → Z) :
     IsGeneratedBy X (tY := tY.coinduced f) := by
   let _ := tY.coinduced f
   refine iff_le_generatedBy.2 ?_
