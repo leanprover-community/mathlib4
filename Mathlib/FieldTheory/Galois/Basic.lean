@@ -122,6 +122,18 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   apply Nat.card_congr
   exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
 
+/-- A galois extension with finite galois group is finite dimensional.
+The dimension is then equal to the order of the galois group via `IsGalois.card_aut_eq_finrank`. -/
+lemma finiteDimensional_of_finite [IsGalois F E] [Finite (E ≃ₐ[F] E)] : FiniteDimensional F E := by
+  by_contra H
+  obtain ⟨K, h₁, h₂⟩ := exists_lt_finrank_of_infinite_dimensional H (Nat.card (E ≃ₐ[F] E))
+  let K' := normalClosure F K E
+  have : IsGalois F K' := ⟨⟩
+  have := Nat.card_le_card_of_surjective _
+    (AlgEquiv.restrictNormalHom_surjective (F := F) (K₁ := K') (E := E))
+  rw [IsGalois.card_aut_eq_finrank] at this
+  exact (this.trans_lt h₂).not_ge (finrank_le_of_le_right K.le_normalClosure)
+
 end IsGalois
 
 end
@@ -185,6 +197,10 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     carrier := MulAction.fixedPoints M E
     algebraMap_mem' := fun a g => smul_algebraMap g a }
 
+@[simp] lemma FixedPoints.mem_intermediateField_iff
+    {M : Type*} [Monoid M] [MulSemiringAction M E] [SMulCommClass M F E] {x : E} :
+    x ∈ FixedPoints.intermediateField (F := F) M ↔ ∀ m : M, m • x = x := .rfl
+
 namespace IntermediateField
 
 /-- The intermediate field fixed by a subgroup. -/
@@ -242,6 +258,12 @@ lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
 @[simp] lemma fixingSubgroup_bot : fixingSubgroup (⊥ : IntermediateField F E) = ⊤ := by
   ext
   simp [mem_bot]
+
+theorem fixingSubgroup_sup {K L : IntermediateField F E} :
+    (K ⊔ L).fixingSubgroup = K.fixingSubgroup ⊓ L.fixingSubgroup := by
+  ext φ
+  exact ⟨fun h ↦ ⟨fixingSubgroup_antitone le_sup_left h, fixingSubgroup_antitone le_sup_right h⟩,
+    by simp [← Subgroup.zpowers_le, ← IntermediateField.le_iff_le]⟩
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
@@ -556,6 +578,59 @@ instance (priority := 100) IsAlgClosure.isGalois (k K : Type*) [Field k] [Field 
     [IsAlgClosure k K] [CharZero k] : IsGalois k K where
 
 end IsAlgClosure
+
+
+section restrictRestrictAlgEquivMapHom
+
+namespace IntermediateField
+
+/--
+The map from the `Gal(E/L)` to `Gal(K/F)` where `E/L/F` and `E/K/F` are two towers of
+extensions induced by the restriction to `K`. Note that we do require `K/F` to be normal but not
+`E/L`. If this is the case (and everything is finite dimensional) and `K ∩ L = F` then this
+map is surjective, see `IntermediateField.restrictRestrictMapHom_surjective`.
+This map is injective if the compositum of `K` and `L` is `E`,
+see `IntermediateField.restrictRestrictAlgEquivMapHom_injective`.
+-/
+noncomputable def restrictRestrictAlgEquivMapHom (F K L E : Type*) [Field F] [Field K] [Field L]
+    [Field E] [Algebra F K] [Algebra F L] [Algebra F E] [Algebra K E] [Algebra L E]
+    [IsScalarTower F K E] [IsScalarTower F L E] [Normal F K] :
+    (E ≃ₐ[L] E) →* (K ≃ₐ[F] K) :=
+  (AlgEquiv.restrictNormalHom K).comp (MulSemiringAction.toAlgAut (E ≃ₐ[L] E) F E)
+
+variable {F E : Type*} [Field F] [Field E] [Algebra F E] (K L : IntermediateField F E) [Normal F K]
+
+@[simp]
+theorem restrictRestrictAlgEquivMapHom_apply (φ : E ≃ₐ[L] E) (x : K) :
+    restrictRestrictAlgEquivMapHom F K L E φ x = φ x := by
+  simp [restrictRestrictAlgEquivMapHom, AlgEquiv.restrictNormalHom_apply]
+
+theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
+    Function.Injective (restrictRestrictAlgEquivMapHom F K L E) := by
+  refine (injective_iff_map_eq_one _).mpr fun φ hφ ↦ ?_
+  suffices h : MulSemiringAction.toAlgAut (E ≃ₐ[↥L] E) F E φ = 1 by rwa [AlgEquiv.ext_iff] at h ⊢
+  rw [← Subgroup.mem_bot, ← fixingSubgroup_top, ← h, fixingSubgroup_sup]
+  exact ⟨fun x ↦ (hφ ▸ restrictRestrictAlgEquivMapHom_apply K L φ x).symm, φ.commutes⟩
+
+theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [FiniteDimensional L E]
+    [IsGalois L E] (h : K ⊓ L = ⊥) :
+    Function.Surjective (restrictRestrictAlgEquivMapHom F K L E) := by
+  suffices fixedField (restrictRestrictAlgEquivMapHom F K L E).range = ⊥ from
+     MonoidHom.range_eq_top.mp <|
+      fixingSubgroup_fixedField (restrictRestrictAlgEquivMapHom F K L E).range ▸
+        this ▸ fixingSubgroup_bot
+  refine eq_bot_iff.mpr fun ⟨x, hx₁⟩ hx₂ ↦ ?_
+  obtain ⟨⟨y, hy⟩, rfl⟩ : x ∈ Set.range (algebraMap L E) := by
+    refine mem_bot.mp <| (IsGalois.mem_bot_iff_fixed _).mpr fun φ ↦ ?_
+    rw [← restrictRestrictAlgEquivMapHom_apply K L φ ⟨x, hx₁⟩]
+    rw [mem_fixedField_iff] at hx₂
+    exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩
+  obtain ⟨z, rfl⟩ : y ∈ (⊥ : IntermediateField F E) := h ▸ mem_inf.mpr ⟨hx₁, hy⟩
+  exact mem_bot.mp ⟨z, rfl⟩
+
+end IntermediateField
+
+end restrictRestrictAlgEquivMapHom
 
 namespace Algebra
 

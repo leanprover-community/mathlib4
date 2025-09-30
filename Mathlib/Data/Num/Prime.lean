@@ -39,15 +39,17 @@ def minFacAux (n : PosNum) : ℕ → PosNum → PosNum
 
 theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
     (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 := by
-  induction' fuel with fuel ih generalizing k <;> rw [minFacAux, Nat.minFacAux]
-  · rw [Nat.zero_add, Nat.sqrt_lt] at h
+  induction fuel generalizing k <;> rw [minFacAux, Nat.minFacAux]
+  case zero =>
+    rw [Nat.zero_add, Nat.sqrt_lt] at h
     simp only [h, ite_true]
-  simp_rw [← mul_to_nat]
-  simp only [cast_lt, dvd_to_nat]
-  split_ifs <;> try rfl
-  rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
-    simp only [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
-      add_left_comm, ← one_add_one_eq_two]
+  case succ fuel ih =>
+    simp_rw [← mul_to_nat]
+    simp only [cast_lt, dvd_to_nat]
+    split_ifs <;> try rfl
+    rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
+      simp only [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
+        add_left_comm, ← one_add_one_eq_two]
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
 def minFac : PosNum → PosNum
