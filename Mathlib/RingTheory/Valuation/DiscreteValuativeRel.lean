@@ -61,7 +61,7 @@ lemma IsDiscrete.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Com
       rw [← LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered] at H
       rw [nonempty_orderIso_withZeroMul_int_iff] at H
       exact H.left
-  · rw [isNontrivial_iff_nontrivial_units, not_nontrivial_iff_subsingleton] at h
+  · rw [isNontrivial_iff_nontrivial_units] at h; push_neg at h
     refine ⟨⟨0, zero_lt_one, fun y hy ↦ ?_⟩⟩
     contrapose! hy
     have : 1 = Units.mk0 y hy.ne' := Subsingleton.elim _ _

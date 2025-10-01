@@ -160,7 +160,7 @@ theorem mem_lookup_iff {a : α} {b : β a} {s : AList β} :
 
 theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.entries) :
     s₁.lookup a = s₂.lookup a :=
-  perm_dlookup _ s₁.nodupKeys s₂.nodupKeys p
+  perm_dlookup _ s₁.nodupKeys p
 
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome

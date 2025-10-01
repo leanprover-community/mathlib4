@@ -38,7 +38,7 @@ private theorem aux (f : E → 𝔸) (f' : E →L[𝕜] 𝔸) (x : E) (n : ℕ) 
   simp only [Nat.pred_eq_sub_one, add_tsub_cancel_right, tsub_self, pow_zero, one_smul]
   simp_rw [smul_comm (_ : 𝔸) (_ : 𝔸ᵐᵒᵖ), smul_smul, ← pow_succ']
   congr! 5 with x hx
-  simp [Nat.lt_succ_iff] at hx
+  simp only [Finset.mem_range, Nat.lt_succ_iff] at hx
   rw [tsub_add_eq_add_tsub hx]
 
 theorem HasStrictFDerivAt.fun_pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :

@@ -272,9 +272,8 @@ lemma Algebra.algebraMap_intTrace (x : B) :
     ← AlgEquiv.commutes (FractionRing.algEquiv B L)]
   apply Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv
-  apply IsLocalization.ringHom_ext A⁰
-  simp only [AlgEquiv.toRingEquiv_eq_coe, ← AlgEquiv.coe_ringHom_commutes, RingHom.comp_assoc,
-    AlgHom.comp_algebraMap_of_tower, ← IsScalarTower.algebraMap_eq, RingHom.comp_assoc]
+  ext
+  exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
 lemma Algebra.algebraMap_intTrace_fractionRing (x : B) :
     algebraMap A (FractionRing A) (Algebra.intTrace A B x) =
@@ -399,9 +398,8 @@ lemma Algebra.algebraMap_intNorm (x : B) :
     ← AlgEquiv.commutes (FractionRing.algEquiv B L)]
   apply Algebra.norm_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv
-  apply IsLocalization.ringHom_ext A⁰
-  simp only [AlgEquiv.toRingEquiv_eq_coe, ← AlgEquiv.coe_ringHom_commutes, RingHom.comp_assoc,
-    AlgHom.comp_algebraMap_of_tower, ← IsScalarTower.algebraMap_eq, RingHom.comp_assoc]
+  ext
+  exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
 @[simp]
 lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
