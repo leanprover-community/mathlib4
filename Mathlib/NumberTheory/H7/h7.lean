@@ -14,6 +14,7 @@ set_option linter.unusedSectionVars true
 set_option linter.style.longFile 0
 set_option linter.unusedVariables false
 set_option linter.style.commandStart false
+set_option linter.style.cdot false
 --set_option profiler true
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
@@ -888,8 +889,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
 
     · rw [triple_comm K (c₁^k : ℤ) (c₁^(a * l): ℤ) (c₁^(b * l) : ℤ)
         (((a : ℕ) + b • β')^(k : ℕ)) (α' ^ (a * l)) (γ' ^ (b * l))]
-    ·
-      simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
+    · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
       trans
       apply house_mul_le
       · rw [← mul_assoc]
@@ -1209,6 +1209,10 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       left
       rw [← sq_n]
 }
+
+
+
+
 
 #exit
 
