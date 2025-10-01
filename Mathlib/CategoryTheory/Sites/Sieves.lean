@@ -331,6 +331,13 @@ lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
 lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
   rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
 
+lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback F).map F ≤ R :=
+  fun _ _ ⟨hu⟩ ↦ hu
+
+@[simp]
+lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
+  le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
+
 end
 
 end FunctorPushforward
@@ -783,6 +790,17 @@ theorem functorPullback_comp (R : Sieve ((F ⋙ G).obj X)) :
     R.functorPullback (F ⋙ G) = (R.functorPullback G).functorPullback F := by
   ext
   rfl
+
+lemma generate_functorPullback_le {X : C} (R : Presieve (F.obj X)) :
+     generate (R.functorPullback F) ≤ functorPullback F (generate R) := by
+  rw [generate_le_iff]
+  intro Z g hg
+  exact le_generate _ _ hg
+
+lemma functorPullback_pullback {X Y : C} (f : X ⟶ Y) (S : Sieve (F.obj Y)) :
+    functorPullback F (pullback (F.map f) S) = pullback f (functorPullback F S) := by
+  ext
+  simp
 
 theorem functorPushforward_extend_eq {R : Presieve X} :
     (generate R).arrows.functorPushforward F = R.functorPushforward F := by

@@ -48,7 +48,7 @@ theorem length_cons {x : α} {s : Seq α} (h : s.Terminates) :
 @[simp]
 theorem length'_cons (x : α) (s : Seq α) :
     (cons x s).length' = s.length' + 1 := by
-  by_cases h : (cons x s).Terminates <;>  have h' := h <;> rw [terminates_cons_iff] at h'
+  by_cases h : (cons x s).Terminates <;> have h' := h <;> rw [terminates_cons_iff] at h'
   · simp [length'_of_terminates h, length'_of_terminates h', length_cons h']
   · simp [length'_of_not_terminates h, length'_of_not_terminates h']
 
@@ -186,7 +186,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     rw [take, head_eq_some hy]
     simp
     right
-    apply ih (by omega)
+    apply ih (by cutsat)
     rwa [get?_tail]
 
 theorem length_take_le {s : Seq α} {n : ℕ} : (s.take n).length ≤ n := by
@@ -486,7 +486,7 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | succ k ih =>
     simp [Seq.get?_tail, drop]
     convert ih using 2
-    omega
+    cutsat
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
@@ -722,7 +722,7 @@ theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) : (s.set m x).get?
 
 theorem drop_set_of_lt (s : Seq α) {m n : ℕ} (h : m < n) : (s.set m x).drop n = s.drop n := by
   ext1 i
-  simp [get?_set_of_ne _ _ (show n + i ≠ m by omega)]
+  simp [get?_set_of_ne _ _ (show n + i ≠ m by cutsat)]
 
 end Update
 
