@@ -513,29 +513,34 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     apply hx
     rwa [Set.mem_smul_set_iff_inv_smul_mem]
 
+theorem _root_.Set.ncard_range_of_injective {α β : Type*} {f : α → β} (hf : Function.Injective f) :
+    (Set.range f).ncard = Nat.card α := by
+  rw [← Set.image_univ, Set.ncard_image_of_injective Set.univ hf, Set.ncard_univ]
+
+theorem _root_.Set.ncard_union_eq_iff {α : Type*} {s t : Set α} (hs : s.Finite := by toFinite_tac)
+    (ht : t.Finite := by toFinite_tac) : (s ∪ t).ncard = s.ncard + t.ncard ↔ Disjoint s t := by
+  rw [← Set.ncard_union_add_ncard_inter s t hs ht, left_eq_add,
+    Set.ncard_eq_zero (hs.inter_of_left t), Set.disjoint_iff_inter_eq_empty]
+
+theorem _root_.Set.ncard_union_lt {α : Type*} {s t : Set α} (hs : s.Finite := by toFinite_tac)
+    (ht : t.Finite := by toFinite_tac) (h : ¬ Disjoint s t) :
+    (s ∪ t).ncard < s.ncard + t.ncard :=
+  (Set.ncard_union_le s t).lt_of_ne (mt (Set.ncard_union_eq_iff hs ht).mp h)
+
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     [Finite α]
     (hs : IsPreprimitive (fixingSubgroup M s) (ofFixingSubgroup M s))
     {g : M} (ha : s ∪ g • s ≠ ⊤) :
     IsPreprimitive (fixingSubgroup M (s ∩ g • s)) (ofFixingSubgroup M (s ∩ g • s)) := by
-  classical
-  have hts : s ∩ g • s ≤ s := Set.inter_subset_left
-  have : IsPretransitive ↥(fixingSubgroup M (s ∩ g • s)) ↥(ofFixingSubgroup M (s ∩ g • s)) :=
-    IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
-  apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion M hts)
-  rw [show Nat.card (ofFixingSubgroup M (s ∩ g • s)) = Set.ncard (s ∩ g • s)ᶜ by
-    rw [← Nat.card_coe_set_eq]; congr]
-  rw [← Set.image_univ,
-    Set.ncard_image_of_injective _ ofFixingSubgroup_of_inclusion_injective, Set.ncard_coe]
-  rw [show ((ofFixingSubgroup M s : Set α)).ncard = sᶜ.ncard by
-    rfl]
-  rw [Set.compl_inter, ← Nat.add_lt_add_iff_right, Set.ncard_union_add_ncard_inter,
-      ← Set.compl_union, two_mul, add_assoc]
-  simp only [add_lt_add_iff_left]
-  rwa [← add_lt_add_iff_left, Set.ncard_add_ncard_compl,
-    Set.ncard_smul_set, ← add_assoc, Set.ncard_add_ncard_compl,
-    lt_add_iff_pos_right, Set.ncard_pos, Set.nonempty_compl]
+  have := IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
+  apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion M Set.inter_subset_left)
+  rw [show Nat.card (ofFixingSubgroup M (s ∩ g • s)) = (s ∩ g • s)ᶜ.ncard from
+    Nat.card_coe_set_eq _, Set.ncard_range_of_injective ofFixingSubgroup_of_inclusion_injective,
+    show Nat.card (ofFixingSubgroup M s) = sᶜ.ncard from Nat.card_coe_set_eq _, Set.compl_inter]
+  refine (Set.ncard_union_lt sᶜ.toFinite (g • s)ᶜ.toFinite ?_).trans_le ?_
+  · rwa [Set.disjoint_compl_right_iff_subset, Set.compl_subset_iff_union]
+  · rw [← Set.smul_set_compl, Set.ncard_smul_set, two_mul]
 
 end TwoCriteria
 
