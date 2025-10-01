@@ -42,7 +42,6 @@ lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
     | bot => simp
     | coe b => norm_cast; exact WithTop.add_le_add_right_iff a b c
 
-omit [UnivLE.{v, w}] in
 lemma WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
     a + 1 ≤ 0 ↔ a = ⊥ := by
   induction a with
