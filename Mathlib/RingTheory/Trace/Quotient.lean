@@ -43,8 +43,7 @@ lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
   congr 1
   ext i j
   simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
-    basisQuotient_apply, LinearMap.mul_apply',
-    AddMonoidHom.mapMatrix_apply, AddMonoidHom.coe_coe, Matrix.map_apply, ← map_mul,
+    basisQuotient_apply, LinearMap.mul_apply', Matrix.map_apply, ← map_mul,
     basisQuotient_repr]
 
 end IsLocalRing
@@ -201,7 +200,7 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
     Submonoid.map_le_of_le_comap _ <| p.primeCompl_le_nonZeroDivisors.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
-  haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors S e
+  haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
   haveI : NoZeroSMulDivisors Rₚ Sₚ := by
     rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
       RingHom.ker_eq_bot_iff_eq_zero]

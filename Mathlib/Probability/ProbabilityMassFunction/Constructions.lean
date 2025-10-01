@@ -20,7 +20,7 @@ by allowing the "sum equals 1" constraint to be in terms of `Finset.sum` instead
 `normalize` constructs a `PMF α` by normalizing a function `f : α → ℝ≥0∞` by its sum,
 and `filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
 
-`bernoulli` represents the bernoulli distribution on `Bool`.
+`bernoulli` represents the Bernoulli distribution on `Bool`.
 
 -/
 

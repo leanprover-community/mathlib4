@@ -147,7 +147,7 @@ lemma _root_.Frequently.le_expGrowthSup (h : ∃ᶠ n : ℕ in atTop, exp (a * n
 
 lemma expGrowthSup_zero : expGrowthSup 0 = ⊥ := by
   rw [← linearGrowthSup_bot, expGrowthSup_def]
-  congr
+  congr 1
   ext _
   rw [comp_apply, Pi.zero_apply, Pi.bot_apply, log_zero]
 
@@ -158,7 +158,7 @@ lemma expGrowthInf_zero : expGrowthInf 0 = ⊥ := by
 
 lemma expGrowthInf_top : expGrowthInf ⊤ = ⊤ := by
   rw [← linearGrowthInf_top, expGrowthInf_def]
-  congr
+  rfl
 
 lemma expGrowthSup_top : expGrowthSup ⊤ = ⊤ := by
   apply top_le_iff.1

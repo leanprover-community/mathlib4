@@ -39,18 +39,17 @@ namespace AlgebraicGeometry
 variable (P P' : MorphismProperty Scheme.{u})
 
 /--
-If `P` is local at the source, every quasi compact scheme is dominated by an
+If `P` is local at the source, every quasi-compact scheme is dominated by an
 affine scheme via `p : Y ⟶ X` such that `p` satisfies `P`.
 -/
 lemma Scheme.exists_hom_isAffine_of_isLocalAtSource (X : Scheme.{u}) [CompactSpace X]
     [IsLocalAtSource P] [P.ContainsIdentities] :
     ∃ (Y : Scheme.{u}) (p : Y ⟶ X), Surjective p ∧ P p ∧ IsAffine Y := by
   let 𝒰 := X.affineCover.finiteSubcover
-  let p : ∐ (fun i : 𝒰.J ↦ 𝒰.obj i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.map i)
-  have (i : 𝒰.J) : IsAffine (𝒰.obj i) := inferInstanceAs <| IsAffine (X.affineCover.obj _)
+  let p : ∐ (fun i : 𝒰.I₀ ↦ 𝒰.X i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.f i)
   refine ⟨_, p, ⟨fun x ↦ ?_⟩, ?_, inferInstance⟩
   · obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
-    use (Sigma.ι (fun i ↦ X.affineCover.finiteSubcover.obj i) i).base x
+    use (Sigma.ι (fun i ↦ X.affineCover.finiteSubcover.X i) i).base x
     rw [← Scheme.comp_base_apply, Sigma.ι_desc]
   · rw [IsLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
     exact fun i ↦ by simpa [p] using IsLocalAtSource.of_isOpenImmersion _
@@ -66,7 +65,7 @@ lemma IsLocalAtTarget.descendsAlong [IsLocalAtTarget P] [P'.IsStableUnderBaseCha
   wlog hZ : ∃ R, Z = Spec R generalizing X Y Z
   · rw [IsLocalAtTarget.iff_of_openCover (P := P) Z.affineCover]
     intro i
-    let ι := Z.affineCover.map i
+    let ι := Z.affineCover.f i
     let e : pullback (pullback.snd f ι) (pullback.snd g ι) ≅
         pullback (pullback.fst f g) (pullback.fst f ι) :=
       pullbackLeftPullbackSndIso f ι (pullback.snd g ι) ≪≫
@@ -165,8 +164,8 @@ nonrec lemma HasRingHomProperty.descendsAlong [HasRingHomProperty P Q]
   wlog hY : ∃ S, Y = Spec S generalizing Y
   · rw [IsLocalAtSource.iff_of_openCover (P := P) Y.affineCover]
     intro i
-    have heq : pullback.fst (Spec.map φ) (Y.affineCover.map i ≫ g) =
-        pullback.map _ _ _ _ (𝟙 _) (Y.affineCover.map i) (𝟙 _) (by simp) (by simp) ≫
+    have heq : pullback.fst (Spec.map φ) (Y.affineCover.f i ≫ g) =
+        pullback.map _ _ _ _ (𝟙 _) (Y.affineCover.f i) (𝟙 _) (by simp) (by simp) ≫
           pullback.fst (Spec.map φ) g := (pullback.lift_fst _ _ _).symm
     exact this _ (heq ▸ AlgebraicGeometry.IsLocalAtSource.comp hf _) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hY

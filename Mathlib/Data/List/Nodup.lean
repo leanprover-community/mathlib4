@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
+import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -101,16 +102,10 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
   constructor
   · intro h i j hij hj
     rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
-    exact h _ _ (by omega) hj hij
+    exact h _ _ (by cutsat) hj hij
   · intro h i j hi hj hij
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj
-
-set_option linter.deprecated false in
-@[deprecated nodup_iff_getElem?_ne_getElem? (since := "2025-02-17")]
-theorem nodup_iff_get?_ne_get? {l : List α} :
-    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
-  simp [nodup_iff_getElem?_ne_getElem?]
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
@@ -251,7 +246,7 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
   | nil => simp
   | cons a l ih =>
     by_cases hl : l = []
-    · aesop
+    · simp_all
     · simp_all only [List.tail_reverse, List.nodup_reverse,
         List.dropLast_cons_of_ne_nil hl, List.tail_cons]
       simp only [length_cons, Nat.zero_lt_succ, getElem?_eq_getElem,
@@ -368,7 +363,7 @@ theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α �
 
 theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl : l.Nodup)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
-  grind
+  grind [List.pairwise_iff_forall_sublist]
 
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (l.take n).elem

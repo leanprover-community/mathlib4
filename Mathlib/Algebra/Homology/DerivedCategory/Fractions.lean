@@ -136,7 +136,7 @@ lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
     {X Y : CochainComplex C ℤ} (a b : ℤ)
     [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] (f : Q.obj X ⟶ Q.obj Y) :
     ∃ (Y' : CochainComplex C ℤ) ( _ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
-    (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)) , f = Q.map g ≫ inv (Q.map s) := by
+    (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)), f = Q.map g ≫ inv (Q.map s) := by
   obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE f a
   have : IsIso (Q.map (CochainComplex.truncLEMap s b)) := by
     rw [isIso_Q_map_iff_quasiIso] at hs
@@ -164,7 +164,7 @@ lemma subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE (X Y : CochainComplex C �
     ext i
     by_cases hi : a < i
     · apply (X'.isZero_of_isStrictlyLE a i hi).eq_of_src
-    · apply (Y.isZero_of_isStrictlyGE b i (by omega)).eq_of_tgt
+    · apply (Y.isZero_of_isStrictlyGE b i (by cutsat)).eq_of_tgt
   rw [this, Q.map_zero, comp_zero]
 
 end DerivedCategory

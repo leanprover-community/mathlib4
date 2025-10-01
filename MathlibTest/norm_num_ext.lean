@@ -7,10 +7,12 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
@@ -292,7 +294,7 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
   rintro x ⟨dx, hd⟩
   revert x dx
   rw [Multiplicative.ofAdd.surjective.forall₂]
-  intros x dx h
+  intro x dx h
   simp_rw [← ofAdd_add, Multiplicative.ofAdd.injective.eq_iff] at h
   cases x
   · simp [isUnit_one]
@@ -454,6 +456,24 @@ example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
 
+section even_odd
+
+example : Even 16 := by norm_num1
+example : ¬Even 17 := by norm_num1
+example : Even (16 : ℤ) := by norm_num1
+example : ¬Even (17 : ℤ) := by norm_num1
+example : Even (-20 : ℤ) := by norm_num1
+example : ¬Even (-21 : ℤ) := by norm_num1
+
+example : Odd 5 := by norm_num1
+example : ¬Odd 4 := by norm_num1
+example : Odd (5 : ℤ) := by norm_num1
+example : ¬Odd (4 : ℤ) := by norm_num1
+example : Odd (-5 : ℤ) := by norm_num1
+example : ¬Odd (-4 : ℤ) := by norm_num1
+
+end even_odd
+
 section mod
 
 example : (5 : ℕ) % 4 = 1 := by norm_num1
@@ -477,6 +497,19 @@ example : (2 : ℤ) ∣ 4 := by norm_num1
 example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
 example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
+
+example : 10 ≡ 7 [MOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [MOD 5]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD 5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD 5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD 50]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD -3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD -5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD -5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD -50]) := by norm_num1
 
 end mod
 
