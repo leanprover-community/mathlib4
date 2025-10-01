@@ -943,8 +943,7 @@ theorem symm_trans_restr (e' : OpenPartialHomeomorph X Y) (hs : IsOpen s) :
     congr 1
     nth_rw 2 [← interior_eq_iff_isOpen.mpr e'.open_target]
     rw [← interior_inter, ← inter_assoc, inter_self, interior_eq_iff_isOpen.mpr ht]
-  · simp
-    exact fun ⦃x⦄ ↦ congrFun rfl
+  · simp [Set.eqOn_refl]
 
 lemma restr_eqOnSource_restr {s' : Set X}
     (hss' : e.source ∩ interior s = e.source ∩ interior s') :
