@@ -161,6 +161,8 @@ instance RelCWComplex.Subcomplex.finite_subcomplex_of_finite [T2Space X] [RelCWC
 
 section Lattice
 
+/-- Auxiliary definition used to define `sup` in the `DistribLattice` structure on `Subcomplex C`.
+-/
 @[simps -isSimp]
 protected def RelCWComplex.Subcomplex.sup [RelCWComplex C D] (E F : Subcomplex C) :
     Subcomplex C where
@@ -171,6 +173,8 @@ protected def RelCWComplex.Subcomplex.sup [RelCWComplex C D] (E F : Subcomplex C
     simp [mem_union, iUnion_or, iUnion_union_distrib, ← union, ← union_assoc _ D, union_comm,
       union_assoc]
 
+/-- Auxiliary definition used to define `inf` in the `DistribLattice` structure on `Subcomplex C`.
+-/
 @[simps -isSimp]
 protected def RelCWComplex.Subcomplex.inf [RelCWComplex C D] (E F : Subcomplex C) :
     Subcomplex C where
@@ -226,7 +230,8 @@ instance RelCWComplex.Subcomplex.instDistribLattice [RelCWComplex C D] :
       rw [← union_inter_distrib_left]
     }
 
-/-- Auxiliary definition used to define `top` in `Subcomplex C`. -/
+/-- Auxiliary definition used to define `top` in the `CompletelyDistribLattice` structure on
+`Subcomplex C`. -/
 @[simps -isSimp]
 protected def RelCWComplex.Subcomplex.top' [T2Space X] [RelCWComplex C D] : Subcomplex C where
   carrier := C
@@ -234,7 +239,8 @@ protected def RelCWComplex.Subcomplex.top' [T2Space X] [RelCWComplex C D] : Subc
   closed' := isClosed
   union' := by simp [← union_iUnion_openCell_eq_complex]
 
-/-- Auxiliary definition used to define `bot` in `Subcomplex C`. -/
+/-- Auxiliary definition used to define `bot` in the `CompletelyDistribLattice` structure on
+`Subcomplex C`. -/
 @[simps -isSimp]
 protected def RelCWComplex.Subcomplex.bot' [RelCWComplex C D] : Subcomplex C where
   carrier := D
@@ -242,7 +248,8 @@ protected def RelCWComplex.Subcomplex.bot' [RelCWComplex C D] : Subcomplex C whe
   closed' := isClosedBase C
   union' := by simp
 
-/-- Auxiliary definition used to define `sSup` in `Subcomplex C`. -/
+/-- Auxiliary definition used to define `sSup` in the `CompletelyDistribLattice` structure on
+`Subcomplex C`. -/
 @[simps! -isSimp]
 protected def RelCWComplex.Subcomplex.sSup' [T2Space X] [RelCWComplex C D]
     (S : Set (Subcomplex C)) : Subcomplex C :=
@@ -272,7 +279,8 @@ protected def RelCWComplex.Subcomplex.sSup' [T2Space X] [RelCWComplex C D]
         rw [iUnion_comm]
       · simp_all)
 
-/-- Auxiliary definition used to define `sInf` in `Subcomplex C`. -/
+/-- Auxiliary definition used to define `sInf` in the `CompletelyDistribLattice` structure on
+`Subcomplex C`. -/
 @[simps -isSimp]
 protected def RelCWComplex.Subcomplex.sInf' [T2Space X] [RelCWComplex C D]
     (S : Set (Subcomplex C)) : Subcomplex C where
@@ -304,6 +312,7 @@ protected def RelCWComplex.Subcomplex.sInf' [T2Space X] [RelCWComplex C D]
         mem_univ, iUnion_true, iInter_coe_set, inter_univ]
       exact union_iUnion_openCell_eq_complex
 
+/-- An auxiliary definition to provide a `CompletelyDistribLattice` instance on subcomplexes. -/
 protected def RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms [T2Space X]
     [RelCWComplex C D] : CompletelyDistribLattice.MinimalAxioms (Subcomplex C) :=
   { __ := (inferInstance : DistribLattice (Subcomplex C))
@@ -473,10 +482,10 @@ instance RelCWComplex.Subcomplex.finiteType_finite_iSup_of_finiteType [T2Space X
     simp only [cell_def, iSup_I] at h ⊢
     exact Finite.Set.finite_iUnion _
 
-/-- A nonempty intersection of subcomplexes where one is finite dimensional is again a
-finite-dimensional subcomplex. -/
+/-- An intersection of subcomplexes where one is finite dimensional is again a finite-dimensional
+subcomplex. -/
 lemma RelCWComplex.Subcomplex.finiteDimensional_iInf_of_exists_finiteDimensional
-    [T2Space X] [RelCWComplex C D] {J : Type*} [Nonempty J] {f : J → Subcomplex C} (j : J)
+    [T2Space X] [RelCWComplex C D] {J : Type*} {f : J → Subcomplex C} (j : J)
     [hf : FiniteDimensional (f j : Set X)] :
     FiniteDimensional (((⨅ j : J, f j) : Subcomplex C) : Set X) where
   eventually_isEmpty_cell := by
@@ -498,9 +507,9 @@ instance RelCWComplex.Subcomplex.finiteDimensional_iInf_of_finiteDimensional
   let j := Classical.choice (α := J) inferInstance
   finiteDimensional_iInf_of_exists_finiteDimensional j
 
-/-- A nonempty intersection of subcomplexes where one is of finite type is again of finite type. -/
+/-- An intersection of subcomplexes where one is of finite type is again of finite type. -/
 lemma RelCWComplex.Subcomplex.finiteType_iInf_of_exists_finiteType
-    [T2Space X] [RelCWComplex C D] {J : Type*} [Nonempty J] {f : J → Subcomplex C} (j : J)
+    [T2Space X] [RelCWComplex C D] {J : Type*} {f : J → Subcomplex C} (j : J)
     [hf : FiniteType (f j : Set X)] :
     FiniteType (((⨅ j : J, f j) : Subcomplex C) : Set X) where
   finite_cell := by
@@ -517,9 +526,9 @@ instance RelCWComplex.Subcomplex.finiteType_iInf_of_finiteType
   let j := Classical.choice (α := J) inferInstance
   finiteType_iInf_of_exists_finiteType j
 
-/-- A nonempty intersection of subcomplexes where one is finite is again a finite subcomplex. -/
+/-- An intersection of subcomplexes where one is finite is again a finite subcomplex. -/
 lemma RelCWComplex.Subcomplex.finite_iInf_of_exists_finite
-    [T2Space X] [RelCWComplex C D] {J : Type*} [Nonempty J] {f : J → Subcomplex C} (j : J)
+    [T2Space X] [RelCWComplex C D] {J : Type*} {f : J → Subcomplex C} (j : J)
     [hf : Finite (f j : Set X)] :
     Finite (((⨅ j : J, f j) : Subcomplex C) : Set X) :=
   let _ := finiteDimensional_iInf_of_exists_finiteDimensional (f := f) j
