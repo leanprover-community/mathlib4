@@ -70,8 +70,8 @@ scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
 
 open Distributions
 
-/-- `BoundedContinuousMapClass B E F` states that `B` is a type of `n`-times continously
-differentiable functions with support in the compact `K`. -/
+/-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of `n`-times continously
+differentiable functions `E → F` with support in the compact `K`. -/
 class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
