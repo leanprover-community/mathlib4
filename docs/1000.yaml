@@ -1141,6 +1141,10 @@ Q999783:
 
 Q1008566:
   title: Gauss–Lucas theorem
+  decls:
+    - Polynomial.rootSet_derivative_subset_convexHull_rootSet
+    - Polynomial.eq_centerMass_of_eval_derivative_eq_zero
+  authors: Yury Kudryashov, Aristotle AI
 
 Q1032886:
   title: Hales–Jewett theorem
