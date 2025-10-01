@@ -266,7 +266,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
     nnnorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod' (M := NNRealˣ) _ _
-  swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by simp; positivity)
+  swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith only [hq'])
   · simp [Complex.card_primitiveRoots]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, Units.val_mk0,

@@ -81,7 +81,7 @@ theorem lhopital_zero_right_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasD
     apply eventually_nhdsWithin_of_forall
     intro x hx
     have := cmp x hx
-    simp
+    try simp
     linarith [this]
 
 theorem lhopital_zero_right_on_Ico (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)

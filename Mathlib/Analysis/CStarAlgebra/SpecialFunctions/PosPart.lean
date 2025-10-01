@@ -63,7 +63,7 @@ lemma exists_sum_four_nonneg {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder
     fin_cases i
     all_goals
       constructor
-      · simp only [Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero]
+      · simp
         cfc_tac
     · exact CStarAlgebra.norm_posPart_le _ |>.trans <| realPart.norm_le a
     · exact CStarAlgebra.norm_posPart_le _ |>.trans <| imaginaryPart.norm_le a
