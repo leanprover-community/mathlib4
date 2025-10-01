@@ -125,13 +125,10 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · exact Submodule.instSubsingletonQuotient
-    · by_contra!
-      rw [not_subsingleton_iff_nontrivial] at this
-      replace := quotSMulTop_nontrivial mem M
-      exact false_of_nontrivial_of_subsingleton (QuotSMulTop x ↑M)
-
+    refine ⟨fun h ↦ Submodule.instSubsingletonQuotient, fun h ↦ ?_⟩
+    by_contra!
+    rw [not_subsingleton_iff_nontrivial] at this
+    exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial mem M)) h
   have aux (n : ℕ) : projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) ≤ n ↔
     projectiveDimension M + 1 ≤ n := by
     match n with
@@ -142,6 +139,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       simp only [CharP.cast_eq_zero, this, projectiveDimension_eq_bot_iff,
         ModuleCat.isZero_iff_subsingleton, sub]
+      -- For fym
       sorry
     | n + 1 =>
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
