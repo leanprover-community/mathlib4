@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luigi Massacci
 -/
 
-import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
@@ -129,6 +129,105 @@ theorem copy_eq (f : 𝓓^{n}(E, F)) (f' : E → F) (h : f' = f) : f.copy f' h =
 @[simp]
 theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}(E, F)) (x : E) :
    (f : BoundedContinuousFunction E F) x  = (f x) := rfl
+
+section AddCommGroup
+
+instance : Zero 𝓓^{n}(E, F) where
+  zero := TestFunction.mk 0 contDiff_zero_fun HasCompactSupport.zero
+
+@[simp]
+lemma coe_zero : (0 : 𝓓^{n}(E, F)) = (0 : E → F) :=
+  rfl
+
+@[simp]
+lemma zero_apply (x : E) : (0 : 𝓓^{n}(E, F)) x = 0 :=
+  rfl
+
+instance : Add 𝓓^{n}(E, F) where
+  add f g := TestFunction.mk (f + g) (f.contDiff.add g.contDiff) (f.compact_supp.add g.compact_supp)
+
+@[simp]
+lemma coe_add (f g : 𝓓^{n}(E, F)) : (f + g : 𝓓^{n}(E, F)) = (f : E → F) + g :=
+  rfl
+
+@[simp]
+lemma add_apply (f g : 𝓓^{n}(E, F)) (x : E) : (f + g) x = f x + g x :=
+  rfl
+
+instance : Neg 𝓓^{n}(E, F) where
+  neg f := TestFunction.mk (-f) (f.contDiff.neg) (f.compact_supp.neg)
+
+instance instSub : Sub 𝓓^{n}(E, F) :=
+  ⟨fun f g =>
+    ⟨f - g, (f.contDiff').sub (g.contDiff'),
+    sub_eq_add_neg (f : E → F) g ▸ f.compact_supp.add g.compact_supp.neg
+    ⟩
+  ⟩
+
+instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+   SMul R 𝓓^{n}(E, F) :=
+  ⟨fun c f ↦
+    TestFunction.mk (c • (f : E → F)) (f.contDiff.const_smul c)  f.compact_supp.smul_left
+  ⟩
+
+@[simp]
+lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
+    (c : R) (f : 𝓓^{n}(E, F)) : (c • f : 𝓓^{n}(E, F)) = c • (f : E → F) :=
+  rfl
+
+@[simp]
+lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
+    (c : R) (f : 𝓓^{n}(E, F)) (x : E) : (c • f) x = c • (f x) :=
+  rfl
+
+instance instNSMul : SMul ℕ 𝓓^{n}(E, F) :=
+ ⟨fun c f ↦
+    {
+      toFun := c • f
+      contDiff' := (f.contDiff').const_smul c
+      compact_supp' := f.compact_supp.smul_left
+    }
+  ⟩
+
+instance instZSMul : SMul ℤ 𝓓^{n}(E, F) :=
+ ⟨fun c f ↦
+    {
+      toFun := c • f
+      contDiff' := (f.contDiff').const_smul c
+      compact_supp' := f.compact_supp.smul_left
+    }
+  ⟩
+
+instance : AddCommGroup 𝓓^{n}(E, F) :=
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
+
+variable (E F K n)
+
+/-- Coercion as an additive homomorphism. -/
+def coeHom : 𝓓^{n}(E, F) →+ E → F where
+  toFun f := f
+  map_zero' := coe_zero
+  map_add' _ _ := rfl
+
+variable {E F}
+
+theorem coe_coeHom : (coeHom E F n : 𝓓^{n}(E, F) → E → F) = DFunLike.coe :=
+  rfl
+
+theorem coeHom_injective : Function.Injective (coeHom E F n) := by
+  rw [coe_coeHom]
+  exact DFunLike.coe_injective
+
+end AddCommGroup
+
+section Module
+
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    Module R 𝓓^{n}(E, F) :=
+  (coeHom_injective n).module R (coeHom E F n) fun _ _ => rfl
+
+end Module
 
 end TestFunction
 #min_imports
