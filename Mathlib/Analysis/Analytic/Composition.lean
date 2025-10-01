@@ -917,8 +917,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
         grind
       rw [this]
       exact mul_pos (by grind) hn
-    · calc
-      ∑ j : Fin c.length, c.blocksFun j
+    · calc ∑ j : Fin c.length, c.blocksFun j
       _ < ∑ j : Fin c.length, n := by
         apply Finset.sum_lt_sum (fun j hj ↦ (hi j).le)
         exact ⟨⟨0, h'c⟩, Finset.mem_univ _, hi _⟩
