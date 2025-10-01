@@ -7,7 +7,7 @@ import Mathlib.Analysis.Complex.SummableUniformlyOn
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 
 /-!
-# Einstein series Q-expansions
+# Einstein series q-expansions
 
 We give some identities for q-expansions of Eisenstein series that will be used in describing their
 Q-expansions.
@@ -63,7 +63,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f
     intro x
     have h1 : cexp (2 * π * I * (x / p)) = cexp (2 * π * I * x / p) := by
       ring_nf
-    simpa using h1 ▸ UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨((x : ℂ) / p) , by aesop⟩
+    simpa using h1 ▸ norm_exp_two_pi_I_lt_one ⟨((x : ℂ) / p) , by aesop⟩
   refine ⟨_, by simpa using (summable_norm_mul_geometric_of_norm_lt_one' hr
     (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), ?_⟩
   intro n z hz
@@ -85,7 +85,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' (k : ℕ) :
   have h0 : (fun n : ℕ ↦ (1 : ℂ)) =O[atTop] (fun n ↦ ((n ^ 1) : ℝ)) := by
     simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast,
       eventually_atTop, ge_iff_le]
-    refine ⟨1, 1, fun b hb => by norm_cast; simp [hb]⟩
+    refine ⟨1, 1, fun b hb ↦ by norm_cast; simp [hb]⟩
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion k 1 (p := 1)
     (by norm_num) h0
 
@@ -101,20 +101,19 @@ lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) :
     iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ z =
     ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * π * I * s) ^ n) ℍₒ z := by
   rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet (by simpa using z.2)]
-  · exact fun x hx => summable_geometric_iff_norm_lt_one.mpr
+  · exact fun x hx ↦ summable_geometric_iff_norm_lt_one.mpr
       (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨x, hx⟩)
-  · exact fun n _ _ => summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' n
-  · exact fun n l z hl hz => differentiableAt_iteratedDerivWithin_cexp n l
+  · exact fun n _ _ ↦ summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' n
+  · exact fun n l z hl hz ↦ differentiableAt_iteratedDerivWithin_cexp n l
       isOpen_upperHalfPlaneSet hz
 
 theorem contDiffOn_tsum_cexp (k : ℕ∞) :
     ContDiffOn ℂ k (fun z : ℂ ↦ ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ :=
   contDiffOn_of_differentiableOn_deriv fun m _ z hz ↦
-  ((SummableLocallyUniformlyOn.differentiableOn isOpen_upperHalfPlaneSet
-  (summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' m)
-  (fun n _ hz ↦ differentiableAt_iteratedDerivWithin_cexp n m
-    isOpen_upperHalfPlaneSet hz)) z hz).congr (fun z hz ↦
-    iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩) (iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩)
+  (((summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' m).differentiableOn
+  isOpen_upperHalfPlaneSet (fun n _ hz ↦ differentiableAt_iteratedDerivWithin_cexp n m
+  isOpen_upperHalfPlaneSet hz)) z hz).congr (fun z hz ↦ iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩)
+  (iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩)
 
 private lemma iteratedDerivWithin_tsum_exp_eq' {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     iteratedDerivWithin k (fun z ↦ (((π : ℂ) * I) -
@@ -140,7 +139,7 @@ private lemma iteratedDerivWithin_tsum_exp_eq' {k : ℕ} (hk : 1 ≤ k) (z : ℍ
   congr
   ext n
   have := exp_nsmul' (p := 1) (a := 2 * π * I) (n := n)
-  simp only [div_one] at this
+  simp_rw [div_one] at this
   simpa [this, ofReal_one, div_one, one_mul, UpperHalfPlane.coe] using
     iteratedDerivWithin_cexp_mul_const k n 1 isOpen_upperHalfPlaneSet z.2
 
@@ -151,15 +150,13 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
     -(2 * π * I) ^ (k + 1) * ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
     rw [← iteratedDerivWithin_tsum_exp_eq' hk z,
       ← iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow hk (by simpa using z.2)]
-    exact iteratedDerivWithin_congr (fun x hx => by (simpa using pi_mul_cot_pi_q_exp ⟨x, hx⟩))
+    exact iteratedDerivWithin_congr (fun x hx ↦ by (simpa using pi_mul_cot_pi_q_exp ⟨x, hx⟩))
       (by simpa using z.2)
   simp_rw [(eq_inv_mul_iff_mul_eq₀ (by simp [Nat.factorial_ne_zero])).mpr this, ← tsum_mul_left]
   congr
   ext n
-  have h3 : (k ! : ℂ) ≠ 0 := by
-      norm_cast
-      apply Nat.factorial_ne_zero
-  rw [show (-2 * π * I) ^ (k + 1) = (-1)^ (k + 1) * (2 * π * I) ^ (k + 1) by rw [← neg_pow]; ring]
+  have h3 : (k ! : ℂ) ≠ 0 := by simp [Nat.factorial_ne_zero]
+  rw [show (-2 * π * I) ^ (k + 1) = (-1) ^ (k + 1) * (2 * π * I) ^ (k + 1) by rw [← neg_pow]; ring]
   field_simp [h3]
   ring_nf
   simp [Nat.mul_two]
@@ -171,7 +168,6 @@ theorem summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
   apply ((summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion 0 k (p := 1)
     (f := fun n ↦ (n ^ k : ℂ)) (by norm_num)
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
-  intro b
   grind [ofReal_one, div_one, ← Complex.exp_nsmul, nsmul_eq_mul, iteratedDerivWithin_zero,
     Pi.smul_apply, smul_eq_mul, mul_eq_mul_left_iff, pow_eq_zero_iff', Nat.cast_eq_zero]
 
