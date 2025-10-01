@@ -52,6 +52,7 @@ import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GeneralizeProofs
@@ -142,5 +143,6 @@ register_hint (priority := 800) simp_all?
 register_hint (priority := 600) exact?
 register_hint (priority := 1000) decide
 register_hint (priority := 200) omega
+register_hint (priority := 200) fun_prop
 
 end Hint
