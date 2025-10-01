@@ -178,7 +178,7 @@ theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
   rfl
 
 @[ext]
-lemma functor_ext {I : Type u₁} (G F : Discrete I ⥤ C) (h : (i : I) → G.obj ⟨i⟩ = F.obj ⟨i⟩) :
+lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.obj ⟨i⟩ = F.obj ⟨i⟩) :
     G = F := by
   fapply Functor.ext
   · intro I; rw [h]
