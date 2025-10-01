@@ -102,7 +102,7 @@ theorem isPrimePow_nat_iff_bounded_log_minFac (n : ℕ) :
   constructor
   · rintro ⟨k, hkle, hk_pos, p, hle, heq, hprime⟩
     refine ⟨k, hkle, hk_pos, ?_⟩
-    · rw [heq, Nat.Prime.pow_minFac hprime hk_pos.ne']
+    rw [heq, hprime.pow_minFac hk_pos.ne']
   · rintro ⟨k, hkle, hk_pos, heq⟩
     refine ⟨k, hkle, hk_pos, n.minFac, Nat.minFac_le ?_, heq, ?_⟩
     · grind [Nat.minFac_prime_iff, nonpos_iff_eq_zero, Nat.log_zero_right, lt_self_iff_false]
