@@ -13,7 +13,19 @@ finite-dimensional definition (concerning the `mfderiv` being injective): future
 prove that our definition implies the latter, and that both are equivalent for finite-dimensional
 manifolds.
 
+This definition can be conveniently formulated in terms of local properties: `f` is an immersion at
+`x` iff there exist suitable charts near `x` and `f x` such that `f` has a nice form w.r.t. these
+charts. Most results below can be deduced from more abstract results about such local properties.
+This shortens the overall argument, as the definition of submersions has the same general form.
+
 ## Main definitions
+* `LocalSourceTargetPropertyAt` captures a local property of the above form: for each `f: M → N`,
+  `x : M` and charts `φ` of `M` around `x` and `ψ` of `N` around `f x`, the local property is either
+  safisfied or not. We ask that the property be stable under restriction of `φ` and local near `x`.
+* `LiftSourceTargetPropertyAt f x P`, where `P` is a `LocalSourceTargetPropertyAt`,
+   defines a local property of functions of the above shape:
+  `f` has this property at `x` if there exist charts `φ` and `ψ` such that `P f φ ψ` holds.
+
 * `IsImmersionAt F I I' n f x` means a map `f : M → M'` between `C^n` manifolds `M` and `M'`
   is an immersion at `x : M`: there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`,
   respectively, such that in these charts, `f` looks like `u ↦ (u, 0)`, w.r.t. some equivalence
@@ -23,10 +35,6 @@ manifolds.
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
-
-## Implementation notes
-
-TODO say something about local properties here!
 
 ## TODO
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
