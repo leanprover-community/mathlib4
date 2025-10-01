@@ -337,28 +337,6 @@ theorem mem_toGrothendieck_sieves_of_superset (K : Coverage C) {X : C} {S : Siev
 
 end Coverage
 
-/-- The induced coverage by a Grothendieck topology as a precoverage. -/
-abbrev GrothendieckTopology.toPrecoverage (J : GrothendieckTopology C) : Precoverage C :=
-  (Coverage.ofGrothendieck C J).toPrecoverage
-
-@[simp]
-lemma GrothendieckTopology.mem_toPrecoverage (J : GrothendieckTopology C) {S : C} (R : Presieve S) :
-    R ∈ J.toPrecoverage S ↔ Sieve.generate R ∈ J S := .rfl
-
-instance (J : GrothendieckTopology C) : J.toPrecoverage.HasIsos where
-  mem_coverings_of_isIso f hf := by simp
-
-instance (J : GrothendieckTopology C) : J.toPrecoverage.IsStableUnderComposition where
-  comp_mem_coverings {ι} S X f hf σ Y g hg := by
-    rw [GrothendieckTopology.mem_toPrecoverage, ← Presieve.bindOfArrows_ofArrows]
-    exact J.bindOfArrows hf hg
-
-instance (J : GrothendieckTopology C) : J.toPrecoverage.IsStableUnderBaseChange where
-  mem_coverings_of_isPullback {ι} S X f hf Y g P p₁ p₂ h := by
-    rw [GrothendieckTopology.mem_toPrecoverage, ← Sieve.ofArrows,
-      Sieve.ofArrows_eq_pullback_of_isPullback _ h]
-    exact J.pullback_stable _ hf
-
 /-- Any pretopology is a coverage. -/
 def Pretopology.toCoverage [HasPullbacks C] (J : Pretopology C) : Coverage C where
   coverings := J
