@@ -37,8 +37,6 @@ variable (G : Type u) [Monoid G]
 
 instance : CoeSort (NonAbelianRep G) (Type u) := ⟨fun V ↦ V.V⟩
 
-variable (A : NonAbelianRep G)
-
 instance (A : NonAbelianRep G) : DistribMulAction G A  where
   smul_zero _ :=  map_zero _
   smul_add := by
@@ -167,6 +165,27 @@ theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
 -- Add the natural equivalence between δ₀₁ and the original map
 
 end connectHom₀₁
+
+
+section compatibility
+
+variable {G : Type u} [Group G] {k : Type u} [CommRing k] (A : Rep k G)
+
+-- Why can't this be found automatically?
+instance : MulAction G A := Action.instMulAction A
+
+-- should be moved
+instance : DistribMulAction G A where
+  smul_zero _ := map_zero _
+  smul_add _ := map_add _
+
+def H0Iso (A : Rep k G) : groupCohomology.H0 A ≃+ H0 G A := sorry
+
+def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A := sorry
+
+theorem H1Iso_zero : H1Iso A 0 = 0 := sorry
+
+end compatibility
 
 section connectHom₁₂
 
