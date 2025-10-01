@@ -142,7 +142,19 @@ variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGr
     {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
     (hfg : Function.Exact f g)
 
-def δ₀₁ : H0 G C → H1 G A := sorry
+noncomputable def δ₀₁_aux (b : B) (c : H0 G C) (hb : g b = c) : Z1 G A := ⟨fun s ↦
+    (Equiv.ofInjective f hf).symm
+      ⟨-b + s • b, ((hfg _).mp (by simp [hb, c.prop s]))⟩,
+    fun g h ↦ hf (by simp [Equiv.apply_ofInjective_symm, mul_smul, ← add_assoc])⟩
+
+theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
+    Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') := sorry
+
+noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
+    ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
+
+  -- refine Function.extend (fun ⟨x, hx⟩ ↦ ⟨g x, hx⟩ : g ⁻¹' (H0 G C) → H0 G C)
+  --   (?_ : _ → H1 G A) ?_
 
 -- def δ₀₁_zero : δ₀₁ 0 = 0 := sorry
 
