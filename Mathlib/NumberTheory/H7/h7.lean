@@ -276,8 +276,8 @@ macro_rules | `(c_coeffs) => `(c_coeffs K α' β' γ' q)
 
 open Nat in include hq0 h2mq in omit hq0 h2mq in
 lemma c₁IsInt0 :
-  IsIntegral ℤ (c_coeffs0 • sys_coe' K α' β' γ' q u t) := by
-  unfold c_coeffs0
+  IsIntegral ℤ (c_coeffs • sys_coe' K α' β' γ' q u t) := by
+  unfold c_coeffs
   rw [triple_comm K (c₁^(k) : ℤ) (c₁^(a*l) : ℤ) (c₁^(b*l) : ℤ)
     (((a : ℕ) + b • β')^(k : ℕ)) (α' ^ (a * l)) (γ' ^ (b * (l)))]
   rw [mul_assoc]
@@ -1214,7 +1214,6 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
 
 
 
-#exit
 
 
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
@@ -1668,7 +1667,7 @@ lemma l_plus_one_lt_m : ∀ (l' : Fin (m K)), ↑l' + 1 < m K := sorry
 
 include hirr htriv habc hq0 h2mq
 lemma deriv_sum_blah :
-  σ (c_coeffs0 K α' β' γ' q u t) * ((log α)^ (-k : ℤ) * deriv^[k] R l) =
+  σ (c_coeffs K α' β' γ' q) * ((log α)^ (-k : ℤ) * deriv^[k] R l) =
     σ ((A K α' β' γ' q *ᵥ (η)) u) := by {
     have := sys_coe_foo α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
     rw [this]
@@ -1678,18 +1677,18 @@ lemma deriv_sum_blah :
     congr
     simp only [map_sum, map_mul]
     rw [mul_sum]
+
     rw [Finset.sum_congr rfl]
+
     intros x hx
     simp (config := { unfoldPartialApp := true }) only [A]
+
     simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
     simp only [Int.cast_mul, Int.cast_pow]
     simp only [mul_assoc]
     rw [mul_comm  (a:= (↑(η α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq x))) (b:=
           ((↑(a q x) + b q x • β') ^ k K q u * (α' ^ (a q x * l K q u) * γ' ^ (b q x * l K q u))))]
     simp only [mul_assoc]
-    congr
-    sorry
-    sorry
     }
 
 
@@ -1700,7 +1699,7 @@ lemma iteratedDeriv_vanishes :
   deriv^[k] (R) (l) = 0 := by
   --intros l' k' hl
   intros hk
-  have h1 := deriv_sum_blah α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  have h1 := deriv_sum_blah α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
   have : (σ (c_coeffs0 K α' β' γ' q u t) * (log α)^(-k : ℤ)) * deriv^[k] R l =
     (σ (c_coeffs0 K α' β' γ' q u t) * (log α)^(-k : ℤ)) * 0 → deriv^[k] R l = 0 := by {
       apply mul_left_cancel₀
@@ -3555,11 +3554,11 @@ lemma abs_R : norm ((R) z) ≤ (c₁₀)^r * (r) ^(((r) +3)/2) := by
     apply mul_le_mul
     · have lemma82 := fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q i hq0 h2mq
       unfold house at lemma82
-      have :  ‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) i))‖ =
-        ‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) i)) σ‖ := by {
-          simp only [canonicalEmbedding.apply_at]
-          sorry
-        }
+      -- have :  ‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) i))‖ =
+      --   ‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) i)) σ‖ := by {
+      --     simp only [canonicalEmbedding.apply_at]
+      --     sorry
+      --   }
       sorry
     · apply Complex.norm_exp_le_exp_norm
     · simp only [norm_nonneg]

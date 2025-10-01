@@ -15,6 +15,8 @@ set_option linter.style.longFile 0
 set_option linter.unusedSectionVars false
 set_option linter.unusedVariables false
 set_option linter.style.commandStart false
+set_option linter.style.longLine false
+set_option linter.style.cdot false
 --set_option profiler false
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
@@ -1471,7 +1473,7 @@ lemma iteratedDeriv_of_R_is_zero (hR : setup.R q hq0 h2mq = 0) :
   ∀ z k', deriv^[k'] (fun z => setup.R q hq0 h2mq z) z = 0 := by
 intros z k'
 rw [hR]
-simp only [Pi.zero_apply, iteratedDeriv_zero]
+simp only [Pi.zero_apply]
 rw [← iteratedDeriv_eq_iterate]
 rw [iteratedDeriv]
 simp_all only [iteratedFDeriv_zero_fun, Pi.zero_apply,
@@ -1533,20 +1535,26 @@ lemma sys_coe_bar :
           Complex.log setup.α) ^ (setup.k q u : ℕ)
           * Complex.log setup.α ^ (-↑(setup.k q u) : ℤ)) := ?_
 
-      _ = cexp (setup.ρ q t * (setup.l q u)) * ( (↑(a q t) + ↑(b q t) • setup.β)^ (setup.k q u : ℕ) *
-          (Complex.log setup.α) ^ (setup.k q u : ℕ) * Complex.log setup.α ^ (-(setup.k q u) : ℤ)) := ?_
+      _ = cexp (setup.ρ q t * (setup.l q u)) *
+        ( (↑(a q t) + ↑(b q t) • setup.β)^ (setup.k q u : ℕ) *
+          (Complex.log setup.α) ^ (setup.k q u : ℕ) *
+        Complex.log setup.α ^ (-(setup.k q u) : ℤ)) := ?_
 
-      _ = cexp (setup.ρ q t * setup.l q u) * ( (↑(a q t) + ↑(b q t) • setup.β)^ (setup.k q u : ℕ) *
-          ((Complex.log setup.α) ^ (setup.k q u : ℕ) * Complex.log setup.α ^ (-(setup.k q u) : ℤ))) := ?_
+      _ = cexp (setup.ρ q t * setup.l q u) *
+        ( (↑(a q t) + ↑(b q t) • setup.β)^ (setup.k q u : ℕ) *
+          ((Complex.log setup.α) ^ (setup.k q u : ℕ)
+          * Complex.log setup.α ^ (-(setup.k q u) : ℤ))) := ?_
 
-      _ = cexp (setup.ρ q t * setup.l q u) * ( (↑(a q t) + ↑(b q t) • setup.β)^ (setup.k q u : ℕ)) := ?_
+      _ = cexp (setup.ρ q t * setup.l q u) *
+      ( (↑(a q t) + ↑(b q t) • setup.β)^ (setup.k q u : ℕ)) := ?_
 
       _ = setup.σ (setup.sys_coe' q u t) := ?_
 
   · nth_rw 2 [ρ]
   · rw [mul_pow]
   · rw [mul_assoc]
-  ·  have  : (Complex.log setup.α ^ (setup.k q u) * Complex.log setup.α ^ (-(setup.k q u) : ℤ)) = 1 := by {
+  ·  have  : (Complex.log setup.α ^ (setup.k q u) *
+         Complex.log setup.α ^ (-(setup.k q u) : ℤ)) = 1 := by {
        simp only [zpow_neg, zpow_natCast]
        refine Complex.mul_inv_cancel ?_
        by_contra H
@@ -1556,11 +1564,10 @@ lemma sys_coe_bar :
      rw [this]
      rw [mul_one]
   · unfold sys_coe'
-    have h1 : σ ((↑a+ ↑b • β') ^ ((k) : ℕ)) =
-      (↑a + ↑b * β) ^ ((k) : ℕ) := by {
+    have h1 : setup.σ ((↑(a q t)+ ↑(b q t) • setup.β') ^ ((setup.k q u) : ℕ)) =
+      (↑(a q t) + ↑(b q t) * setup.β) ^ ((setup.k q u) : ℕ) := by {
       simp only [nsmul_eq_mul, map_pow, map_add, map_natCast, map_mul]
-      simp_all only [ne_eq, map_eq_zero, Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
-        Fin.coe_divNat, Nat.cast_add, Nat.cast_one, Fin.coe_modNat, a, b]}
+      rw [setup.habc.2.1]}
     rw [map_mul]
     rw [map_mul]
     unfold a b k at *
@@ -1570,15 +1577,15 @@ lemma sys_coe_bar :
     simp only [nsmul_eq_mul, map_pow,
       mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
     left
-    have : σ α' ^ (a * (l)) * σ γ' ^ (b * (l)) =
-    α ^ (a * (l)) * (σ γ')^ (b * (l)) := by {rw [habc.1]}
+    have : setup.σ setup.α' ^ (a q t * setup.l q u) * setup.σ setup.γ' ^ (b q t * setup.l q u) =
+    setup.α ^ (a q t * setup.l q u) * (setup.σ setup.γ')^ (b q t * setup.l q u) := by {rw [setup.habc.1]}
     unfold a b l at *
     rw [this]
-    have : σ γ' = α^β := by {rw [habc.2.2]}
+    have : setup.σ setup.γ' = setup.α^setup.β := by {rw [setup.habc.2.2]}
     rw [this]
     rw [ρ]
-    have : α ^ ((a q t * setup.l q u)) * α ^ (↑(b q t * setup.l q u) * β) =
-      α ^ ((a q t * setup.l q u) + (↑(b q t * setup.l q u) * β)) := by {
+    have : setup.α ^ ((a q t * setup.l q u)) * setup.α ^ (↑(b q t * setup.l q u) * setup.β) =
+      setup.α ^ ((a q t * setup.l q u) + (↑(b q t * setup.l q u) * setup.β)) := by {
         rw [cpow_add]
         · rw [cpow_nat_mul]
           simp only [mul_eq_mul_right_iff, pow_eq_zero_iff',
@@ -1587,23 +1594,24 @@ lemma sys_coe_bar :
           left
           rw [cpow_nat_mul]
           simp only [cpow_natCast]
-          exact pow_mul' α a (l)
-        · exact htriv.1}
+          exact pow_mul' setup.α (a q t) (setup.l q u)
+        · exact setup.htriv.1}
     rw [cpow_nat_mul] at this
     unfold a b l at *
     rw [this]; clear this
     rw [cpow_def_of_ne_zero]
-    have : Complex.log α * (↑a * ↑(l) + ↑(b * (l)) * β) =
-       (↑a + b • β) *
-        Complex.log α * ↑(l) := by {
+    have : Complex.log setup.α * (↑(a q t) * ↑(setup.l q u) + ↑(b q t * (setup.l q u)) * setup.β) =
+       (↑(a q t) + b q t • setup.β) *
+        Complex.log setup.α * ↑(setup.l q u) := by {
       nth_rw 4 [mul_comm]
-      have : ( ↑((l) * b) * β) = ( ↑((b * β) * (l))) := by {
-        simp only [Nat.cast_mul, mul_rotate (↑(l)) (↑b) β]}
+      have : ( ↑((setup.l q u) * (b q t)) * setup.β) =
+        ( ↑(((b q t) * setup.β) * (setup.l q u))) := by {
+        simp only [Nat.cast_mul, mul_rotate (↑(setup.l q u)) (↑(b q t)) setup.β]}
       rw [this]
-      have : (↑a * ↑(l) + ((b * β) * (l))) =
-        ((↑a  + (b * β)) * (l)) :=
+      have : (↑(a q t) * ↑(setup.l q u) + ((b q t * setup.β) * (setup.l q u))) =
+        ((↑(a q t)  + (b q t * setup.β)) * (setup.l q u)) :=
         Eq.symm (RightDistribClass.right_distrib
-          (↑a) (↑b * β) ↑(l))
+          (↑(a q t)) (↑(b q t) * setup.β) ↑(setup.l q u))
       rw [this]
       simp only [nsmul_eq_mul]
       nth_rw 1 [← mul_assoc]
@@ -1612,33 +1620,33 @@ lemma sys_coe_bar :
       nth_rw 5 [mul_comm]}
     unfold a b l at *
     rw [this]
-    · exact htriv.1}
+    · exact setup.htriv.1}
 
-#exit
-
-include hirr htriv habc hq0 h2mq in
-lemma sys_coe_foo :(log α)^(-(k) : ℤ) * deriv^[k] (R) (l) =
-     ∑ t, σ ↑((η) t) * σ (sys_coe' K α' β' γ' q u t) := by
+include hq0 h2mq in
+lemma sys_coe_foo :(Complex.log setup.α)^(-(setup.k q u) : ℤ) *
+ deriv^[setup.k q u] (setup.R q hq0 h2mq) (setup.l q u) =
+     ∑ t, setup.σ ↑((setup.η q hq0 h2mq) t) * setup.σ (setup.sys_coe' q u t) := by
   rw [iteratedDeriv_of_R, mul_sum, Finset.sum_congr rfl]
   intros t ht
   rw [mul_assoc, mul_comm, mul_assoc]
   simp only [mul_eq_mul_left_iff, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
   left
-  have := sys_coe_bar α β htriv K σ α' β' γ' habc q u t
+  have := sys_coe_bar setup q hq0 u t h2mq
   unfold l at this
   rw [mul_assoc]
   unfold l
   exact this
 
-lemma l_plus_one_lt_m : ∀ (l' : Fin (m K)), ↑l' + 1 < m K := sorry
+lemma l_plus_one_lt_m : ∀ (l' : Fin (setup.m)), ↑l' + 1 < setup.m := sorry
 
-include hirr htriv habc hq0 h2mq
 lemma deriv_sum_blah :
-  σ (c_coeffs0 K α' β' γ' q u t) * ((log α)^ (-k : ℤ) * deriv^[k] R l) =
-    σ ((A K α' β' γ' q *ᵥ (η)) u) := by {
-    have := sys_coe_foo α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
+  setup.σ (setup.c_coeffs0 q u t) *
+  ((Complex.log setup.α)^ (-(setup.k q u) : ℤ) *
+  deriv^[setup.k q u] (setup.R q hq0 h2mq) (setup.l q u)) =
+    setup.σ ((setup.A q *ᵥ (setup.η q hq0 h2mq)) u) := by {
+    have := sys_coe_foo setup q hq0 u h2mq
     rw [this]
-    unfold mulVec
+    unfold Matrix.mulVec
     unfold dotProduct
     simp only [← map_mul, ← map_sum]
     congr
@@ -1650,42 +1658,42 @@ lemma deriv_sum_blah :
     simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
     simp only [Int.cast_mul, Int.cast_pow]
     simp only [mul_assoc]
-    rw [mul_comm  (a:= (↑(η α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq x))) (b:=
-          ((↑(a q x) + b q x • β') ^ k K q u * (α' ^ (a q x * l K q u) * γ' ^ (b q x * l K q u))))]
+    rw [mul_comm  (a:= (↑(setup.η q hq0 h2mq x)))
+    (b:=
+          ((↑(a q x) + b q x • setup.β') ^ setup.k q u *
+           (setup.α' ^ (a q x * setup.l q u) * setup.γ' ^ (b q x * setup.l q u))))]
     simp only [mul_assoc]
     congr
     sorry
     sorry
     }
 
-#exit
-include α β σ hq0 h2mq hd hirr htriv σ α' β' γ' habc h2mq u t in
-lemma iteratedDeriv_vanishes :
+lemma iteratedDeriv_vanishes (k :ℕ) :
   --∀ (l' : Fin (m K)) (k' : Fin (n)),
-   k < n →
-  deriv^[k] (R) (l) = 0 := by
+   k < setup.n q → deriv^[k] (setup.R q hq0 h2mq) (setup.l q u) = 0 := by
   --intros l' k' hl
   intros hk
-  have h1 := deriv_sum_blah α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  have : (σ (c_coeffs0 K α' β' γ' q u t) * (log α)^(-k : ℤ)) * deriv^[k] R l =
-    (σ (c_coeffs0 K α' β' γ' q u t) * (log α)^(-k : ℤ)) * 0 → deriv^[k] R l = 0 := by {
+  have h1 := deriv_sum_blah setup q hq0 u t h2mq
+  have : (setup.σ (setup.c_coeffs q u) *
+   (Complex.log setup.α)^(-k : ℤ)) * deriv^[k] (setup.R q hq0 h2mq) l =
+    (setup.σ (setup.c_coeffs0 q u t) *
+    (Complex.log setup.α)^(-k : ℤ)) * 0 → deriv^[k] (setup.R q hq0 h2mq) l = 0 := by {
       apply mul_left_cancel₀
       by_contra H
-      simp only [Int.cast_mul, Int.cast_pow, map_mul, map_pow, map_intCast, zpow_neg,
-          zpow_natCast, mul_eq_zero, pow_eq_zero_iff', Int.cast_eq_zero, ne_eq, not_or,
-          or_self_right, inv_eq_zero] at H
+      simp only [Int.cast_mul, Int.cast_pow, map_mul, map_pow, map_intCast, zpow_neg, zpow_natCast,
+        mul_eq_zero, pow_eq_zero_iff', Int.cast_eq_zero, ne_eq, not_or, inv_eq_zero] at H
       rcases H with ⟨h1, h2⟩
-      · apply c₁neq0 K α' β' γ'; assumption
-      ·  apply c₁neq0 K α' β' γ'; rename_i h2; exact h2.1
-      · apply c₁neq0 K α' β' γ'; rename_i h2; exact h2.1
-      ·  apply (log_zero_zero α htriv); rename_i h2; exact h2.1
+      · apply setup.c₁neq0; assumption
+      ·  apply setup.c₁neq0; rename_i h2; exact h2.1
+      · apply setup.c₁neq0; rename_i h2; exact h2.1
+      ·  apply setup.log_zero_zero; rename_i h2; exact h2.1
         }
   rw [this] ;
   rw [mul_zero]
   rw [mul_assoc]
   rw [h1]
   simp only [map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
-  have hMt0 := (applylemma82 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose_spec.2.1
+  have hMt0 := (applylemma82 setup q hq0 h2mq).choose_spec.2.1
   rw [funext_iff] at hMt0
   unfold η
   simp only at this
@@ -1695,7 +1703,7 @@ lemma iteratedDeriv_vanishes :
   Real.rpow_natCast, Pi.zero_apply]
 
 
-lemma R_analyt_at_point (point : ℕ) : AnalyticAt ℂ (R) point := by
+lemma R_analyt_at_point (point : ℂ) : AnalyticAt ℂ (setup.R q hq0 h2mq) point := by
   apply Differentiable.analyticAt
   unfold R
   apply Differentiable.fun_sum
@@ -1704,7 +1712,7 @@ lemma R_analyt_at_point (point : ℕ) : AnalyticAt ℂ (R) point := by
   · apply differentiable_const
   · apply (differentiable_exp.comp ((differentiable_const _).mul differentiable_fun_id))
 
-lemma anever : ∀ (z : ℂ), AnalyticAt ℂ (R) z := by
+lemma anever : ∀ (z : ℂ), AnalyticAt ℂ (setup.R q hq0 h2mq) z := by
   intros z
   unfold R
   apply Differentiable.analyticAt
@@ -1714,17 +1722,15 @@ lemma anever : ∀ (z : ℂ), AnalyticAt ℂ (R) z := by
   (differentiable_const _).mul
     (differentiable_exp.comp ((differentiable_const _).mul differentiable_fun_id))
 
-
-include htriv habc in
-lemma order_neq_top : ∀ (l' : Fin (m K)), analyticOrderAt (R) (l' + 1) ≠ ⊤ := by {
+lemma order_neq_top : ∀ (l' : Fin (setup.m)), analyticOrderAt (setup.R q hq0 h2mq) (l' + 1) ≠ ⊤ := by {
   intros l' H
   rw [← zero_iff_order_inf] at H
-  apply R_nonzero α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
+  apply setup.R_nonzero q hq0 h2mq
   rw [funext_iff]
   intros z
   exact H z
   intros z
-  exact anever α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z}
+  exact setup.anever q hq0 h2mq z}
 
 include htriv habc in
 lemma order_neq_top_min_one : ∀ z : ℂ,
