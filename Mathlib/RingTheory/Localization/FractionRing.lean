@@ -583,7 +583,6 @@ noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 
-
 instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := by
   rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq R A]
   exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
