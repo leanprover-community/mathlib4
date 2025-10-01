@@ -197,6 +197,16 @@ end compatibility
 
 section connectHom₁₂
 
+variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
+  {B C : Type*} [AddGroup B] [AddGroup C] [DistribMulAction G B] [DistribMulAction G C]
+  {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
+  (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
+
+def δ₁₂ : H1 G C → groupCohomology A 2 := by
+  sorry
+
+
+
 end connectHom₁₂
 
 end NonAbelian
