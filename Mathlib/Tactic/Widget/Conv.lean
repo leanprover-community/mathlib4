@@ -6,7 +6,6 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Data.String.Defs
 import Batteries.Tactic.Lint
-import Batteries.Lean.Position
 
 /-! # Conv widget
 
@@ -134,6 +133,6 @@ open scoped Json in
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
 in the goal. -/
 elab stx:"conv?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+  let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

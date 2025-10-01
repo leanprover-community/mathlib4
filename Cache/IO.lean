@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.15"
+  "0.1.16-pre2"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -317,6 +317,11 @@ def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
+     -- this is needed for packages using the module system:
+    (packageDir / LIBDIR / path.withExtension "olean.private", false),
+    (packageDir / LIBDIR / path.withExtension "olean.private.hash", false),
+    (packageDir / LIBDIR / path.withExtension "olean.server", false),
+    (packageDir / LIBDIR / path.withExtension "olean.server.hash", false),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
