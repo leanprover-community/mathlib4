@@ -191,11 +191,42 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
     M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := by
   sorry
 
-lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nontrivial N] (n : ℕ)
+omit [IsLocalRing R] in
+lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.Finite R N] (n : ℕ)
     (h : support R N ⊆ {p | Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ p.1))) M n)}) :
     Subsingleton (Ext.{w} N M n) := by
-
-  sorry
+  refine (IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
+    (motive := fun L ↦ (support R L ⊆ {p | Subsingleton
+      (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ p.1))) M n)} →
+      Subsingleton (Ext.{w} (ModuleCat.of R L) M n))) R Nfin) ?_ ?_ ?_ h
+  · intro N _ _ _ sub _
+    let _ : HasProjectiveDimensionLT (ModuleCat.of R N) 0 :=
+      (ModuleCat.isZero_of_iff_subsingleton.mpr sub).hasProjectiveDimensionLT_zero
+    exact HasProjectiveDimensionLT.subsingleton (ModuleCat.of R N) 0 n n.zero_le M
+  · intro N _ _ _ p e h
+    have mem : p ∈ support R N := by
+      rw [e.support_eq, Module.mem_support_iff_of_finite, Ideal.annihilator_quotient]
+    let e' : ModuleCat.of R N ≅ ModuleCat.of R (Shrink.{v, u} (R ⧸ p.asIdeal)) :=
+      (e.trans (Shrink.linearEquiv R _).symm).toModuleIso
+    have := (((extFunctor.{w} n).mapIso e'.op).app M).addCommGroupIsoToAddEquiv.subsingleton_congr
+    simp only [extFunctor, extFunctorObj_obj_coe] at this
+    simpa [← this] using h mem
+  · intro N₁ _ _ _ N₂ _ _ _ N₃ _ _ _ f g inj surj exac h1 h3 h2
+    simp only [Module.support_of_exact exac inj surj, Set.union_subset_iff] at h2
+    let S : ShortComplex (ModuleCat.{v} R) := {
+      f := ModuleCat.ofHom f
+      g := ModuleCat.ofHom g
+      zero := by
+        rw [← ModuleCat.ofHom_comp, exac.linearMap_comp_eq_zero]
+        rfl }
+    have S_exact : S.ShortExact := {
+      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
+      mono_f := (ModuleCat.mono_iff_injective S.f).mpr inj
+      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surj }
+    have := (Ext.contravariant_sequence_exact₂' S_exact M n).isZero_X₂
+      ((@AddCommGrp.isZero_of_subsingleton _ (h3 h2.2)).eq_zero_of_src _)
+      ((@AddCommGrp.isZero_of_subsingleton _ (h1 h2.1)).eq_zero_of_tgt _)
+    exact AddCommGrp.subsingleton_of_isZero this
 
 open Pointwise in
 lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
