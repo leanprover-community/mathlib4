@@ -836,8 +836,7 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     · exact h_left hs ht hu
     · exact h_right hs ht hu
   · rintro _ t u ⟨s, hs, rfl⟩ ht hu
-    specialize h hs ht hu
-    convert h
+    convert h hs ht hu
     · exact (h_left hs ht hu).symm
     · exact (h_right hs ht hu).symm
 
