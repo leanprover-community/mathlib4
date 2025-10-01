@@ -68,6 +68,44 @@ variable [UnivLE.{v, w}]
 local instance hasExt_of_small [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
+instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
+    [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{w} N M i) := by
+  induction i generalizing N
+  · exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R)).trans ModuleCat.homLinearEquiv).symm
+  · rename_i n ih _
+    rcases Module.Finite.exists_fin' R N with ⟨m, f', hf'⟩
+    let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
+      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
+    have surjf : Function.Surjective f := by simpa [f] using hf'
+    let S : ShortComplex (ModuleCat.{v} R) := {
+      f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
+      g := ModuleCat.ofHom.{v} f
+      zero := by
+        ext x
+        simp }
+    have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) := by
+      intro x
+      simp [S]
+    have S_exact : S.ShortExact := {
+      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
+      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
+      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
+    let _ : Module.Finite R S.X₂ := by
+      simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
+    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+    let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+    have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
+    have : Subsingleton (Ext S.X₂ M (n + 1)) :=
+      subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
+    have epi := (Ext.contravariant_sequence_exact₃' S_exact M n (n + 1) (add_comm 1 n)).epi_f
+      (Limits.IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton _)
+    have surj : Function.Surjective (S_exact.extClass.precomp M (add_comm 1 n)) :=
+      (AddCommGrp.epi_iff_surjective _).mp epi
+    let f : Ext S.X₁ M n →ₗ[R] Ext S.X₃ M (n + 1) := {
+      __ := S_exact.extClass.precomp M (add_comm 1 n)
+      map_smul' r x := by simp }
+    exact Module.Finite.of_surjective f surj
+
 variable {R}
 
 omit [UnivLE.{v, w}] in
@@ -158,15 +196,15 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nontrivial N] 
   sorry
 
 open Pointwise in
-lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) (n : ℕ) (p : Ideal R) [p.IsPrime]
-    (ne : p ≠ maximalIdeal R) (h : ∀ q > p, q.IsPrime →
+lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
+    (p : Ideal R) [p.IsPrime] (ne : p ≠ maximalIdeal R) (h : ∀ q > p, q.IsPrime →
       Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (n + 1))) :
     Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ p))) M n) := by
   have plt : p < maximalIdeal R :=  lt_of_le_of_ne (le_maximalIdeal_of_isPrime p) ne
   obtain ⟨x, hx, nmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ p := Set.exists_of_ssubset plt
   let _ : Small.{v} (QuotSMulTop x (R ⧸ p)) :=
     small_of_surjective (Submodule.Quotient.mk_surjective _)
-  let _ : Module.Finite R (Shrink.{v, u} (R ⧸ p)) :=
+  let fin : Module.Finite R (Shrink.{v, u} (R ⧸ p)) :=
     Module.Finite.equiv (Shrink.linearEquiv R _).symm
   let _ : Nontrivial (QuotSMulTop x (Shrink.{v, u} (R ⧸ p))) :=
     quotSMulTop_nontrivial hx _
@@ -191,14 +229,19 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) (n : ℕ) (p : Ideal R) [
     ext
     simp [S]
   simp only [S, this, AddCommGrp.epi_iff_surjective, AddCommGrp.hom_ofHom] at epi
-  have : Function.Surjective (x • (LinearMap.id (R := R) (M := Ext S.X₂ M n))) := by
-
-    sorry
-  have : x ∈ (Module.annihilator R (Ext S.X₂ M n)).jacobson := by
-    sorry
+  have surj : Function.Surjective (x • (LinearMap.id (R := R) (M := Ext S.X₂ M n))) := by
+    intro a
+    rcases epi a with ⟨b, hb⟩
+    simp only [ModuleCat.smulShortComplex_X₁, ModuleCat.smulShortComplex_X₂, Ext.mk₀_smul,
+      Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hb
+    use b
+    simpa using hb
+  have : x ∈ (Module.annihilator R (Ext S.X₂ M n)).jacobson :=
+    (IsLocalRing.maximalIdeal_le_jacobson _) hx
   by_contra ntr
   let _ : Nontrivial (Ext S.X₂ M n) := not_subsingleton_iff_nontrivial.mp ntr
-  --absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
+  let _ : Module.Finite R S.X₂ := fin
+  absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
 
   sorry
 
