@@ -202,22 +202,25 @@ end LocalProperties
 -- XXX: should the next three definitions be a class instead?
 -- Are these slice charts canonical enough that we want the typeclass system to kick in?
 
-variable (I I' M M') in
+variable (F I I' M M') in
 /-- The local property of being an immersion at `x` -/
-def ImmersionAtProp (equiv : (E × F) ≃L[𝕜] E') :
+def ImmersionAtProp :
     ((M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) :=
-  fun f domChart codChart ↦
+  fun f domChart codChart ↦ ∃ equiv : (E × F) ≃L[𝕜] E',
     EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target
 
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a "nice" local property. -/
-lemma ImmersionAtPropIsNice (equiv : (E × F) ≃L[𝕜] E') :
-    IsLocalSourceTargetProperty (ImmersionAtProp I I' M M' equiv) where
+lemma ImmersionAtPropIsNice : IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
   mono_source f φ ψ s hs hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
+    obtain ⟨equiv, hf⟩ := hf
+    use equiv
     exact hf.mono (by simpa using this)
   congr f g φ ψ s hs hfg hf := by
+    obtain ⟨equiv, hf⟩ := hf
+    use equiv
     apply EqOn.trans ?_ (hf.mono (by simp))
     intro x hx
     set Φ := (φ.restr s).extend I
@@ -237,8 +240,7 @@ NB. We don't know the particular atlasses used for `M` and `N`, so asking for `�
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
 -/
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
-  ∃ equiv : (E × F) ≃L[𝕜] E',
-  LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp I I' M M' equiv)
+  LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M')
 
 namespace IsImmersionAt
 
@@ -252,9 +254,8 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorp
     (hsource : f '' domChart.source ⊆ codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
-  use equiv, domChart, codChart
-  simp only [ImmersionAtProp]
-  exact ⟨hx, hfx, hdomChart, hcodChart, hsource, hwrittenInExtend⟩
+  use domChart, codChart
+  exact ⟨hx, hfx, hdomChart, hcodChart, hsource, equiv, hwrittenInExtend⟩
 
 /-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
@@ -269,14 +270,8 @@ lemma mk_of_continuousAt (f : M → M') (x : M) (hf : ContinuousAt f x)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x :=
-  ⟨equiv, LiftSourceTargetPropertyAt.mk_of_continuousAt hf (ImmersionAtPropIsNice equiv) _ _
-    hx hfx hdomChart hcodChart hwrittenInExtend⟩
-
-/-- A linear equivalence `E × F ≃L[𝕜] E'` which belongs to the data of an immersion `f` at `x`:
-the particular equivalence is arbitrary, but this choice matches the witnesses given by
-`h.domChart` and `h.codChart`. -/
-noncomputable def equiv (h : IsImmersionAt F I I' n f x) : (E × F) ≃L[𝕜] E' :=
-  Classical.choose h
+  LiftSourceTargetPropertyAt.mk_of_continuousAt hf ImmersionAtPropIsNice _ _ hx hfx hdomChart
+    hcodChart ⟨equiv, hwrittenInExtend⟩
 
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.codChart` and `h.equiv`,
@@ -284,7 +279,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
 noncomputable def domChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M H :=
-  Classical.choose (Classical.choose_spec h)
+  Classical.choose h
 
 /-- A choice of chart on the co-domain `N` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.domChart` and `h.equiv`,
@@ -292,34 +287,42 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
 noncomputable def codChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M' H' :=
-  Classical.choose (Classical.choose_spec (Classical.choose_spec h))
+  Classical.choose (Classical.choose_spec h)
 
 lemma mem_domChart_source (h : IsImmersionAt F I I' n f x) : x ∈ h.domChart.source :=
-  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).1
+  (Classical.choose_spec (Classical.choose_spec h)).1
 
 lemma mem_codChart_source (h : IsImmersionAt F I I' n f x) : f x ∈ h.codChart.source :=
-  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.1
+  (Classical.choose_spec (Classical.choose_spec h)).2.1
 
 lemma domChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
     h.domChart ∈ IsManifold.maximalAtlas I n M :=
-  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.1
+  (Classical.choose_spec (Classical.choose_spec h)).2.2.1
 
 lemma codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
     h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
-  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.1
+  (Classical.choose_spec (Classical.choose_spec h)).2.2.2.1
 
 lemma map_source_subset_source (h : IsImmersionAt F I I' n f x) :
     f '' h.domChart.source ⊆ h.codChart.source :=
-  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2.1
+  (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.1
+
+/-- A linear equivalence `E × F ≃L[𝕜] E'` which belongs to the data of an immersion `f` at `x`:
+the particular equivalence is arbitrary, but this choice matches the witnesses given by
+`h.domChart` and `h.codChart`. -/
+noncomputable def equiv (h : IsImmersionAt F I I' n f x) : (E × F) ≃L[𝕜] E' :=
+  Classical.choose (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2
 
 lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
     EqOn ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
       (h.domChart.extend I).target :=
-  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2.2
+  Classical.choose_spec (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2
 
 lemma property (h : IsImmersionAt F I I' n f x) :
-    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp I I' M M' h.equiv) :=
-  Classical.choose_spec h
+    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') :=
+  ⟨h.domChart, h.codChart, h.mem_domChart_source, h.mem_codChart_source,
+    h.domChart_mem_maximalAtlas, h.codChart_mem_maximalAtlas, h.map_source_subset_source,
+    (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2⟩
 
 /-- Roig and Domingues [roigdomingues1992] only require this condition on the local charts:
 in our setting, this is *slightly* weaker than `map_source_subset_source`: the latter implies
@@ -358,8 +361,7 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
 then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[nhds x] g) :
     IsImmersionAt F I I' n g x :=
-  ⟨h.equiv, LiftSourceTargetPropertyAt.congr_of_eventuallyEq (ImmersionAtPropIsNice h.equiv)
-    h.property h'⟩
+  LiftSourceTargetPropertyAt.congr_of_eventuallyEq ImmersionAtPropIsNice h.property h'
 
 end IsImmersionAt
 
