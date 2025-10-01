@@ -37,14 +37,7 @@ variable (G : Type u) [Monoid G]
 
 instance : CoeSort (NonAbelianRep G) (Type u) := ⟨fun V ↦ V.V⟩
 
-variable (A : NonAbelianRep G)
-
-instance (A : NonAbelianRep G) : DistribMulAction G A  where
-  smul_zero _ :=  map_zero _
-  smul_add := by
-    intro a x y
-    apply map_add
-
+instance (A : NonAbelianRep G) : DistribMulAction G A := sorry
 
 instance (A B : NonAbelianRep G) : Coe (A ⟶ B) (A →+[G] B) := sorry
 
@@ -56,14 +49,28 @@ variable (G : Type u) [Monoid G]
 
 def H0 (A : Type*) [AddGroup A] [DistribMulAction G A] : AddSubgroup A where
   carrier := setOf fun v => ∀ g : G, g • v = v
-  add_mem' := by simp +contextual
-  zero_mem' := by simp
-  neg_mem' := by simp +contextual
+  add_mem' := by
+    intro a b ha hb g
+    simp [ha g, hb g, -Pi.add_apply]
+  zero_mem' := by
+    intro g
+    simp
+  neg_mem' := by
+    intro a ha g
+    simp [ha g]
 
 variable {G}
 
 def H0.map {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A] [DistribMulAction G B]
-    (f : A →+[G] B) : H0 G A →+ H0 G B := sorry
+    (f : A →+[G] B) : H0 G A →+ H0 G B := by
+  refine { toFun := fun v ↦ ⟨f v.val, fun g ↦ ?_ ⟩, map_add' := fun v w ↦ ?_, map_zero' := ?_ }
+  · calc
+    g • f ↑v = f (g • ↑v) := by rw [map_smul]
+      _= f ( ↑v) := by rw[v.property ]
+  · ext
+    simp[map_zero]
+  · ext
+    simp[map_add]
 
 variable (G) in
 theorem H0.map_id (A : Type*) [AddGroup A] [DistribMulAction G A] :
@@ -101,9 +108,9 @@ def cohomologous (f g : Z1 G A) : Prop :=
 instance setoid : Setoid (Z1 G A) where
   r := cohomologous
   iseqv := {
-    refl := fun f ↦ ⟨0, fun h ↦ by simp⟩,
-    symm := fun ⟨a, ha⟩ ↦ ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩,
-    trans := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
+    refl := fun f => ⟨0, fun h => by simp⟩,
+    symm := sorry,
+    trans := sorry
   }
 
 end Z1
@@ -143,31 +150,19 @@ variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGr
     {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
     (hfg : Function.Exact f g)
 
-noncomputable def δ₀₁_aux (b : B) (c : H0 G C) (hb : g b = c) : Z1 G A := ⟨fun s ↦
-    (Equiv.ofInjective f hf).symm
-      ⟨-b + s • b, ((hfg _).mp (by simp [hb, c.prop s]))⟩,
-    fun g h ↦ hf (by simp [Equiv.apply_ofInjective_symm, mul_smul, ← add_assoc])⟩
+def δ₀₁ : H0 G C → H1 G A := sorry
 
-theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
-    Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') := sorry
+-- def δ₀₁_zero : δ₀₁ 0 = 0 := sorry
 
-noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
-    ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
+-- theorem exact₁ : Function.Exact (H0.map (S.f : S.X₁ →+[G] S.X₂)) (H0.map (S.g : S.X₂ →+[G] S.X₃)) :=
+--   sorry
 
-def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
+-- theorem exact₂ : Function.Exact (H0.map (S.g : S.X₂ →+[G] S.X₃)) (δ₀₁ S) := sorry
 
-theorem exact₁ : Function.Exact (H0.map f) (H0.map g) :=
-  sorry
+-- theorem exact₃ : Function.Exact (δ₀₁ S) (H1.map (S.f : S.X₁ →+[G] S.X₂)) := sorry
 
-theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := sorry
-
-theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
-
-theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
-
-variable (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
-
--- def δ₁₂ : H1 G C → H2 G A := sorry
+-- theorem exact₄ : Function.Exact (H1.map (S.f : S.X₁ →+[G] S.X₂)) (H1.map (S.g : S.X₂ →+[G] S.X₃)) :=
+--   sorry
 
 end connectHom
 
