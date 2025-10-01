@@ -293,7 +293,6 @@ def ofIsoI {f : X ⟶ Y} (F : ImageFactorisation f) {I' : C} (e : F.F.I ≅ I') 
   F := F.F.ofIsoI e
   isImage := F.isImage.ofIsoI e
 
-variable {f} in
 /--
 Copying an image factorisation to another image factorisation with propositionally equal fields.
 This is useful when one needs precise control of the `m` and `e` fields.
