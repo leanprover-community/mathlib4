@@ -484,7 +484,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     ext i
     simp only [mul_smul, smul_apply, inv_smul_eq_iff]
     simp only [← smul_apply _ _ i, hgy, hgx]
-    simp [smul_apply]
+    simp only [succ_eq_add_one, smul_apply]
     rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
     · simp [snoc_castSucc, ← hg, subgroup_smul_def]
     · simpa only [snoc_last, ← hg, subgroup_smul_def] using g.prop
