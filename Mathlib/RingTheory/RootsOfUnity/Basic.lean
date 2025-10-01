@@ -96,6 +96,8 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f
   rintro _ ⟨ζ, h, rfl⟩
   simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, MonoidHom.map_one]
 
+instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
+
 @[norm_cast]
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
     (((ζ ^ m :) : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by
@@ -243,7 +245,7 @@ section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
 
--- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
+-- simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
     ζ ∈ rootsOfUnity (p ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]

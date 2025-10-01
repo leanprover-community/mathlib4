@@ -225,7 +225,7 @@ lemma mem_codiscrete' {S : Set X} :
 
 lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
-  simp [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
+  simp only [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
     mem_codiscreteWithin]
   congr! with x hx
   constructor

@@ -31,10 +31,10 @@ theorem reduceOption_nil : @reduceOption α [] = [] :=
 @[simp]
 theorem reduceOption_map {l : List (Option α)} {f : α → β} :
     reduceOption (map (Option.map f) l) = map f (reduceOption l) := by
-  induction' l with hd tl hl
-  · simp only [reduceOption_nil, map_nil]
-  · cases hd <;>
-      simpa [Option.map_some, map, eq_self_iff_true, reduceOption_cons_of_some] using hl
+  induction l with
+  | nil => simp only [reduceOption_nil, map_nil]
+  | cons hd tl hl =>
+    cases hd <;> simpa [Option.map_some, map, eq_self_iff_true, reduceOption_cons_of_some] using hl
 
 theorem reduceOption_append (l l' : List (Option α)) :
     (l ++ l').reduceOption = l.reduceOption ++ l'.reduceOption :=
@@ -52,9 +52,7 @@ theorem reduceOption_eq_nil_iff (l : List (Option α)) :
   constructor
   · intro h
     exact ⟨l.length, eq_replicate_of_mem h⟩
-  · intro ⟨_, h⟩
-    simp_rw [h, mem_replicate]
-    tauto
+  · grind
 
 theorem reduceOption_eq_singleton_iff (l : List (Option α)) (a : α) :
     l.reduceOption = [a] ↔ ∃ m n, l = replicate m none ++ some a :: replicate n none := by
@@ -96,9 +94,9 @@ theorem reduceOption_eq_concat_iff (l : List (Option α)) (l' : List α) (a : α
 
 theorem reduceOption_length_eq {l : List (Option α)} :
     l.reduceOption.length = (l.filter Option.isSome).length := by
-  induction' l with hd tl hl
-  · simp_rw [reduceOption_nil, filter_nil, length]
-  · cases hd <;> simp [hl]
+  induction l with
+  | nil => simp_rw [reduceOption_nil, filter_nil, length]
+  | cons hd tl hl => cases hd <;> simp [hl]
 
 theorem length_eq_reduceOption_length_add_filter_none {l : List (Option α)} :
     l.length = l.reduceOption.length + (l.filter Option.isNone).length := by
@@ -116,16 +114,18 @@ theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
   rw [Nat.lt_iff_le_and_ne, and_iff_right (reduceOption_length_le l), Ne,
     reduceOption_length_eq_iff]
-  induction l <;> simp
-  rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
+  induction l
+  · simp
+  · grind [cases Option]
 
 theorem reduceOption_singleton (x : Option α) : [x].reduceOption = x.toList := by cases x <;> rfl
 
 theorem reduceOption_concat (l : List (Option α)) (x : Option α) :
     (l.concat x).reduceOption = l.reduceOption ++ x.toList := by
-  induction' l with hd tl hl generalizing x
-  · cases x <;> simp [Option.toList]
-  · simp only [concat_eq_append, reduceOption_append] at hl
+  induction l generalizing x with
+  | nil => cases x <;> simp [Option.toList]
+  | cons hd tl hl =>
+    simp only [concat_eq_append, reduceOption_append] at hl
     cases hd <;> simp [hl, reduceOption_append]
 
 theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
@@ -138,8 +138,5 @@ theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOpt
 theorem reduceOption_getElem?_iff {l : List (Option α)} {x : α} :
     (∃ i : ℕ, l[i]? = some (some x)) ↔ ∃ i : ℕ, l.reduceOption[i]? = some x := by
   rw [← mem_iff_getElem?, ← mem_iff_getElem?, reduceOption_mem_iff]
-
-@[deprecated (since := "2025-02-21")]
-alias reduceOption_get?_iff := reduceOption_getElem?_iff
 
 end List

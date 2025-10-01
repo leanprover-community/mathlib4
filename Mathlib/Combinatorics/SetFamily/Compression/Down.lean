@@ -24,7 +24,7 @@ when the resulting set is not already in `𝒜`.
 
 ## Notation
 
-`𝓓 a 𝒜` is notation for `Down.compress a 𝒜` in locale `SetFamily`.
+`𝓓 a 𝒜` is notation for `Down.compress a 𝒜` in scope `SetFamily`.
 
 ## References
 
