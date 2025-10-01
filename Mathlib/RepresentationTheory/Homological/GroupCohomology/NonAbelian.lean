@@ -149,9 +149,33 @@ variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGr
     {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
     (hfg : Function.Exact f g)
 
-def δ₀₁ : H0 G C → H1 G A := sorry
+noncomputable def δ₀₁_aux (b : B) (c : H0 G C) (hb : g b = c) : Z1 G A := ⟨fun s ↦
+    (Equiv.ofInjective f hf).symm
+      ⟨-b + s • b, ((hfg _).mp (by simp [hb, c.prop s]))⟩,
+    fun g h ↦ hf (by simp [Equiv.apply_ofInjective_symm, mul_smul, ← add_assoc])⟩
 
--- def δ₀₁_zero : δ₀₁ 0 = 0 := sorry
+theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
+    Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') := sorry
+
+noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
+    ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
+
+def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
+
+theorem exact₁ : Function.Exact (H0.map f) (H0.map g) :=
+  sorry
+
+theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := sorry
+
+theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
+
+theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
+
+end connectHom
+
+section exact
+
+variable {G : Type u} [Group G] (S : ShortComplex (NonAbelianRep G)) (hS : S.Exact)
 
 -- theorem exact₁ : Function.Exact (H0.map (S.f : S.X₁ →+[G] S.X₂)) (H0.map (S.g : S.X₂ →+[G] S.X₃)) :=
 --   sorry
@@ -163,7 +187,23 @@ def δ₀₁ : H0 G C → H1 G A := sorry
 -- theorem exact₄ : Function.Exact (H1.map (S.f : S.X₁ →+[G] S.X₂)) (H1.map (S.g : S.X₂ →+[G] S.X₃)) :=
 --   sorry
 
-end connectHom
+end exact
+
+section compatibility
+
+variable {G : Type u} [Group G] (k : Type u) [Field k] (A : Rep k G)
+
+theorem H0_eq_H0 (A : Rep k G) : H0 G A = groupCohomology.H0 A := sorry
+
+theorem H1_eq_H1 (A : Rep k G) : H1 G A = groupCohomology.H1 A := sorry
+
+end compatibility
+
+section exact
+
+theorem exact₅ (A : Rep k G) : Function.Exact (H1.map (S.g : S.X₂ →+[G] S.X₃)) sorry := sorry
+
+end exact
 
 end NonAbelian
 
