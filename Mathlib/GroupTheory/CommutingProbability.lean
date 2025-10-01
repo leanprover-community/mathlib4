@@ -139,7 +139,7 @@ private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
 
 private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
   | 0 | 1 | 2 | 3 => by decide
-  | n + 4 => by omega
+  | n + 4 => by cutsat
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
@@ -194,7 +194,7 @@ theorem commProb_reciprocal (n : ℕ) :
   · have := div_two_lt h0
     rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
         commProb_odd (by decide)]
-    field_simp [h0, h2.two_dvd]
+    simp [field, h2.two_dvd]
     norm_num
   · have := div_four_lt h0 h1
     rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]

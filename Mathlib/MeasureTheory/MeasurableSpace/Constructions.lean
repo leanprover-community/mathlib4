@@ -472,10 +472,11 @@ instance Prod.instMeasurableSingletonClass
     MeasurableSingletonClass (α × β) :=
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ .prod (.singleton a) (.singleton b)⟩
 
-theorem measurable_from_prod_countable' [Countable β]
-    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y))
-    (h'f : ∀ y y' x, y' ∈ measurableAtom y → f (x, y') = f (x, y)) :
-    Measurable f := fun s hs => by
+/-- See `measurable_from_prod_countable_left` for a version where we assume that singletons are
+measurable instead of reasoning about `measurableAtom`. -/
+theorem measurable_from_prod_countable_left' [Countable β] {f : α × β → γ}
+    (hf : ∀ y, Measurable fun x => f (x, y))
+    (h'f : ∀ y y' x, y' ∈ measurableAtom y → f (x, y') = f (x, y)) : Measurable f := fun s hs => by
   have : f ⁻¹' s = ⋃ y, ((fun x => f (x, y)) ⁻¹' s) ×ˢ (measurableAtom y : Set β) := by
     ext1 ⟨x, y⟩
     simp only [mem_preimage, mem_iUnion, mem_prod]
@@ -485,17 +486,36 @@ theorem measurable_from_prod_countable' [Countable β]
   rw [this]
   exact .iUnion (fun y ↦ (hf y hs).prod (.measurableAtom_of_countable y))
 
-theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
-    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
+/-- See `measurable_from_prod_countable_right` for a version where we assume that singletons are
+measurable instead of reasoning about `measurableAtom`. -/
+lemma measurable_from_prod_countable_right' [Countable α] {f : α × β → γ}
+    (hf : ∀ x, Measurable fun y => f (x, y))
+    (h'f : ∀ x x' y, x' ∈ measurableAtom x → f (x', y) = f (x, y)) : Measurable f := by
+  change Measurable ((fun p ↦ f (p.2, p.1)) ∘ Prod.swap)
+  exact (measurable_from_prod_countable_left' hf h'f).comp measurable_swap
+
+@[deprecated (since := "2025-08-17")]
+alias measurable_from_prod_countable' := measurable_from_prod_countable_left'
+
+/-- For the version where the first space in the product is countable,
+see `measurable_from_prod_countable_right`. -/
+theorem measurable_from_prod_countable_left [Countable β] [MeasurableSingletonClass β]
+    {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
-  measurable_from_prod_countable' hf (by simp +contextual)
+  measurable_from_prod_countable_left' hf (by simp +contextual)
+
+/-- For the version where the second space in the product is countable,
+see `measurable_from_prod_countable_left`. -/
+lemma measurable_from_prod_countable_right [Countable α] [MeasurableSingletonClass α]
+    {f : α × β → γ} (hf : ∀ x, Measurable fun y => f (x, y)) : Measurable f :=
+  measurable_from_prod_countable_right' hf (by simp +contextual)
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
 @[measurability]
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
     (h : ∀ x, ∃ n, p n x) : Measurable fun x => f (Nat.find (h x)) x :=
-  have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable fun n => hf n
+  have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable_left fun n => hf n
   this.comp (Measurable.prodMk measurable_id (measurable_find h hp))
 
 /-- Let `t i` be a countable covering of a set `T` by measurable sets. Let `f i : t i → β` be a

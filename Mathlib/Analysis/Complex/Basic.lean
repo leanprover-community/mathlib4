@@ -3,11 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Complex.Order
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Complex.Module
-import Mathlib.Data.Complex.Order
-import Mathlib.Topology.Algebra.InfiniteSum.Field
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
@@ -40,6 +39,10 @@ We also register the fact that `ℂ` is an `RCLike` field.
 
 
 assert_not_exists Absorbs
+
+/-- A shortcut instance to ensure computability; otherwise we get the noncomputable instance
+`Complex.instNormedField.toNormedModule.toModule`. -/
+instance Complex.instModuleSelf : Module ℂ ℂ := delta% inferInstance
 
 noncomputable section
 
@@ -78,9 +81,6 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
 -- normed ring structure and that file does not know about rings
 @[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
   ext; exact norm_intCast n
-
-@[deprecated (since := "2025-02-16")] alias comap_abs_nhds_zero := comap_norm_nhds_zero
-@[deprecated (since := "2025-02-16")] alias continuous_abs := continuous_norm
 
 @[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
@@ -128,9 +128,6 @@ theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
 
 instance : ProperSpace ℂ := lipschitz_equivRealProd.properSpace
   equivRealProdCLM.toHomeomorph.isProperMap
-
-@[deprecated (since := "2025-02-16")] alias tendsto_abs_cocompact_atTop :=
-  tendsto_norm_cocompact_atTop
 
 /-- The `normSq` function on `ℂ` is proper. -/
 theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
@@ -222,7 +219,7 @@ theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
 instance : ContinuousStar ℂ :=
   ⟨conjLIE.continuous⟩
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
   continuous_star
 
@@ -507,10 +504,6 @@ end tsum
 end RCLike
 
 namespace Complex
-
-@[deprecated (since := "2025-02-16")] alias hasProd_abs := HasProd.norm
-@[deprecated (since := "2025-02-16")] alias multipliable_abs := Multipliable.norm
-@[deprecated (since := "2025-02-16")] alias abs_tprod := norm_tprod
 
 /-!
 We have to repeat the lemmas about `RCLike.re` and `RCLike.im` as they are not syntactic

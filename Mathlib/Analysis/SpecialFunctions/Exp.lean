@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Complex.Asymptotics
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 /-!
@@ -80,7 +80,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
     convert exp_bound hx.out.le hn using 1
-    field_simp [mul_comm]
+    simp [field]
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
@@ -144,11 +144,9 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
   have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
     nth_rw 2 [mul_comm]
-    field_simp [mul_assoc]
+    field_simp
   rw [hrr]
   exact div_two_lt_of_pos hε
-
-@[deprecated (since := "2025-02-11")] alias UniformlyContinuousOn.cexp := UniformContinuousOn.cexp
 
 end ComplexContinuousExpComp
 
@@ -296,7 +294,7 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
   · convert (H (-b) (-c) (neg_pos.mpr h)).neg using 1
     · ext x
       field_simp
-      rw [← neg_add (b * exp x) c, neg_div_neg_eq]
+      rw [← neg_add (b * exp x) c, div_neg, neg_neg]
     · rw [neg_zero]
 
 /-- `Real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/

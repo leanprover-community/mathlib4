@@ -39,6 +39,7 @@ instance instIsOrderedCancelMonoid [CommMonoid β] [PartialOrder β] [IsOrderedC
 @[to_additive]
 instance instCanonicallyOrderedMul [Mul β] [LE β] [CanonicallyOrderedMul β] :
     CanonicallyOrderedMul (Germ l β) where
+  le_mul_self x y := inductionOn₂ x y fun _ _ ↦ Eventually.of_forall fun _ ↦ le_mul_self
   le_self_mul x y := inductionOn₂ x y fun _ _ ↦ Eventually.of_forall fun _ ↦ le_self_mul
 
 end Filter.Germ

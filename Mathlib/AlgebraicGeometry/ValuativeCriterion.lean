@@ -24,7 +24,7 @@ import Mathlib.RingTheory.Valuation.LocalSubring
   it is qcqs and of fintite type and satisfies the valuative criterion.
 
 ## Future projects
-Show that it suffices to check discrete valuation rings when the base is noetherian.
+Show that it suffices to check discrete valuation rings when the base is Noetherian.
 
 -/
 
@@ -261,7 +261,7 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     constructor
     refine ⟨S.i₂ ≫ pullback.fst _ _, ?_, ?_⟩
     · simp [← S.commSq.w_assoc]
-    · simp
+    · simp only [Category.assoc]
       apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
       · simp
       · simp only [Category.assoc, pullback.diagonal_snd, Category.comp_id]
