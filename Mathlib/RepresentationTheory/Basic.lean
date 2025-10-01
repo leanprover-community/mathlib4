@@ -482,17 +482,16 @@ noncomputable instance :
   inferInstanceAs <| HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
 
 theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
-    x • y = (x * y : MonoidAlgebra k G) := -- by
-  -- Porting note: trouble figuring out the motive
-  x.induction_on (p := fun z => z • y = z * y)
-    (fun g => by
-      change asAlgebraHom (ofMulAction k G G) _ _ = _
-      ext
-      -- Porting note: single_mul_apply not firing in simp without parentheses
-      simp [(MonoidAlgebra.single_mul_apply)]
-    )
-    (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
-    simp [← hx]
+    x • y = (x * y : MonoidAlgebra k G) := by
+  induction x using MonoidAlgebra.induction_on with
+  | hM g =>
+    change asAlgebraHom (ofMulAction k G G) _ _ = _
+    ext
+    -- Porting note: single_mul_apply not firing in simp without parentheses, probably due to the
+    -- defeq abuse in `change` above.
+    simp [(MonoidAlgebra.single_mul_apply)]
+  | hadd x y hx hy => simp only [hx, hy, add_mul, add_smul]
+  | hsmul r x hx => simp [← hx]
 
 /-- If we equip `k[G]` with the `k`-linear `G`-representation induced by the left regular action of
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural

@@ -41,7 +41,7 @@ instance (X : C) : MonoidalCategory (X ⟶ X) where
   associator f g h := α_ f g h
   leftUnitor f := λ_ f
   rightUnitor f := ρ_ f
-  tensor_comp := by
+  tensorHom_comp_tensorHom := by
     intros
     dsimp only
     rw [Bicategory.whiskerLeft_comp, Bicategory.comp_whiskerRight, Category.assoc, Category.assoc,

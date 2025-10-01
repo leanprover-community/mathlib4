@@ -213,7 +213,7 @@ def addRelRelData : Ineq → Ineq → Name
   | lt, lt => ``add_lt_add
 
 /-- Finite inductive type extending `Mathlib.Ineq`: a type of inequality (`eq`, `le` or `lt`),
-together with, in the case of `lt`, a boolean, typically representing the strictness (< or ≤) of
+together with, in the case of `lt`, a Boolean, typically representing the strictness (< or ≤) of
 some other inequality. -/
 protected inductive WithStrictness : Type
   | eq : Ineq.WithStrictness
