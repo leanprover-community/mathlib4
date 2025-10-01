@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luigi Massacci
 -/
 
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
+import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Continuously differentiable functions supported in a compact
@@ -229,5 +229,36 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
 
 end Module
 
+variable (n : ℕ∞) (F)
+
+def ContDiffMapSupportedIn.toTestFunction (K : Compacts E) : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(E, F)
+    where
+  toFun f := TestFunction.mk f (f.contDiff) (f.hasCompactSupport)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+def ContDiffMapSupportedIn.toTestFunction_apply {K : Compacts E} (f : 𝓓^{n}_{K}(E, F)) (x : E) :
+  (toTestFunction 𝕜 F n K f) x = f x := rfl
+
+open ContDiffMapSupportedIn
+
+noncomputable def originalTop : TopologicalSpace 𝓓^{n}(E, F) :=
+  ⨆ (K : Compacts E), coinduced (toTestFunction 𝕜 F n K) (inferInstance)
+
+variable (E)
+noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(E, F) :=
+  sInf {t : TopologicalSpace 𝓓^{n}(E, F)
+       | originalTop ℝ F n ≤ t ∧ @LocallyConvexSpace ℝ 𝓓^{n}(E, F) _ _ _ _ t}
+
+noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(E, F) := by
+  apply LocallyConvexSpace.sInf
+  simp only [mem_setOf_eq, and_imp, imp_self, implies_true]
+
+theorem continuous_toTestFunction (K : Compacts E) :
+    Continuous (toTestFunction 𝕜 F n K) := by
+  apply continuous_iff_coinduced_le.2
+  have : originalTop 𝕜 F n ≤ TestFunction.topologicalSpace E F n := by
+    exact le_sInf (by aesop)
+  exact le_trans (le_sSup (by aesop)) this
+
 end TestFunction
-#min_imports
