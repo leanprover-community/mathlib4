@@ -144,11 +144,8 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
   swap
-  · apply IsLocalization.ringHom_ext (M := A⁰); ext
-    simp only [AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
-      RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
-    rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
-      ← IsScalarTower.algebraMap_apply]
+  · ext
+    exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
   simp only [AlgEquiv.toRingEquiv_eq_coe, map_mul, AlgEquiv.coe_ringEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, AlgEquiv.algebraMap_eq_apply]
 
@@ -852,7 +849,7 @@ theorem not_dvd_differentIdeal_iff
         apply Ideal.ramificationIdx_spec
         · simp [Ideal.map_le_iff_le_comap]
         · contrapose! H
-          rw [← pow_one P, show 1 = 2 - 1 by norm_num]
+          rw [← pow_one P, show 1 = 2 - 1 by simp]
           apply pow_sub_one_dvd_differentIdeal _ _ _ hp
           simpa [Ideal.dvd_iff_le] using H
   · intro H

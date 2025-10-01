@@ -115,7 +115,8 @@ variable [Archimedean S] [ExistsAddOfLE S]
 
 theorem isEquiv_of_lt_one_imp (hv : v.IsNontrivial) (h : ∀ x, v x < 1 → w x < 1) : v.IsEquiv w := by
   refine isEquiv_iff_lt_one_iff.2 fun a ↦ ?_
-  rcases eq_or_ne a 0 with (rfl | ha₀) <;> try simp
+  rcases eq_or_ne a 0 with (rfl | ha₀)
+  · simp
   refine ⟨h a, fun hw ↦ ?_⟩
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
   have hpow (n : ℕ) (hv : 1 ≤ v a) : w x₀ < w a ^ n := by
@@ -156,18 +157,19 @@ open Filter
 open scoped Topology
 
 variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
-  [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [_i : OrderTopology S]
+  [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [OrderTopology S]
   {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
   {a b : R} {i : ι}
 
 /--
-- `v i, w`: absolute values on a field $R$.
+Suppose that
+- `v i` and `w` are absolute values on a field `R`.
 - `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
 - `v i` is inequivalent to `w` via the divergent point `b : R`.
 - `w a = 1`.
 
 Then there is a common divergent point `k` causing both `v i` and `w` to be inequivalent to
-each `v j` for `j ≠ i`
+each `v j` for `j ≠ i`.
 -/
 private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
     (haw : w a = 1) (hb : 1 < v i b) (hbw : w b < 1) :
@@ -176,9 +178,9 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
   have hcᵢ : Tendsto (fun n ↦ (v i) (c n)) atTop atTop := by
     simpa [c] using Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha)
   have hcⱼ (j : ι) (hj : j ≠ i) : Tendsto (fun n ↦ (v j) (c n)) atTop (𝓝 0) := by
-    simpa [c] using tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj) |>.mul_const _
-  simp_rw [_i.topology_eq_generate_intervals, TopologicalSpace.tendsto_nhds_generateFrom_iff,
-    mem_atTop_sets, Set.mem_preimage] at hcⱼ
+    simpa [c] using (tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj)).mul_const _
+  simp_rw [OrderTopology.topology_eq_generate_intervals,
+    TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using tendsto_atTop_atTop.1 hcᵢ 2
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
   let r := Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h
@@ -187,7 +189,8 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
   · simpa using hrₙ j hj _ <| Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
 
 /--
-- `v i, w`: absolute values on `R`.
+Suppose that
+- `v i` and `w` are absolute values on a field `R`.
 - `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
 - `v i` is inequivalent to `w` via the divergent point `b : R`.
 - `1 < w a`.
@@ -209,8 +212,8 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   have hcₙ : atTop.Tendsto (fun n ↦ w (c n)) (𝓝 (w b)) := by
     have : w a⁻¹ < 1 := map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ haw
     simpa [c] using (tendsto_div_one_add_pow_nhds_one this).mul_const (w b)
-  simp_rw [_i.topology_eq_generate_intervals, TopologicalSpace.tendsto_nhds_generateFrom_iff,
-    mem_atTop_sets, Set.mem_preimage] at hcⱼ
+  simp_rw [OrderTopology.topology_eq_generate_intervals,
+    TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_const_lt hb hcᵢ
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
   choose rN hrN using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_lt_const hbw hcₙ
@@ -218,57 +221,57 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   refine ⟨c r, hr₁ r ?_, fun j hj ↦ ?_, ?_⟩
   · exact le_max_iff.2 <| .inl <|
       Finset.le_sup_dite_pos (p := fun j ↦ j = i) (f := fun _ _ ↦ r₁) (Finset.mem_univ _) rfl
-  · exact hrₙ j hj _ <| le_max_iff.2 <| Or.inl <|
+  · exact hrₙ j hj _ <| le_max_iff.2 <| .inl <|
       Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
   · exact hrN _ <| le_max_iff.2 (.inr le_rfl)
 
 open Fintype Subtype in
 /--
 If `v : ι → AbsoluteValue R S` is a finite collection of non-trivial and pairwise inequivalent
-absolute values, then for any `v i` there is some `a : R` such that `1 < v i a` while all other
-`v j a < 1`.
+absolute values, then for any `i` there is some `a : R` such that `1 < v i a` and
+`v j a < 1` for all `j ≠ i`.
 -/
 theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
     ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
-  let P (ι : Type u_3) [Fintype ι] : Prop := [DecidableEq ι] →
+  let P (ι : Type _) [Fintype ι] : Prop := [DecidableEq ι] →
     ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
       (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
-  -- Use strong induction on the index
+  -- Use strong induction on the index.
   revert hv h; refine induction_subsingleton_or_nontrivial (P := P) ι (fun ι _ _ _ v h hv i ↦ ?_)
     (fun ι _ _ ih _ v h hv i ↦ ?_) v
-  · -- If `ι` is trivial this follows immediately from `(v i).IsNontrivial`
+  · -- If `ι` is trivial this follows immediately from `(v i).IsNontrivial`.
     let ⟨a, ha⟩ := (h i).exists_abv_gt_one
     exact ⟨a, ha, fun j hij ↦ absurd (Subsingleton.elim i j) hij.symm⟩
   · rcases eq_or_ne (card ι) 2 with (hc | hc)
-    · -- If `ι` has two elements this is `exists_one_lt_lt_one_of_not_isEquiv`
+    · -- If `ι` has two elements this is `exists_one_lt_lt_one_of_not_isEquiv`.
       let ⟨j, hj⟩ := (Nat.card_eq_two_iff' i).1 <| card_eq_nat_card ▸ hc
       let ⟨a, ha⟩ := (v i).exists_one_lt_lt_one_of_not_isEquiv (h i) (h j) (hv hj.1.symm)
       exact ⟨a, ha.1, fun _ h ↦ hj.2 _ h ▸ ha.2⟩
     have hlt : 2 < card ι := Nat.lt_of_le_of_ne (one_lt_card_iff_nontrivial.2 ‹_›) hc.symm
-    -- Choose another distinguished index `j ≠ i`
+    -- Otherwise, choose another distinguished index `j ≠ i`.
     let ⟨j, hj⟩ := exists_ne i
-    -- Apply induction first the subcollection `v i` for `i ≠ j`
+    -- Apply induction first on the subcollection `v i` for `i ≠ j` to get `a : K`
     let ⟨a, ha⟩ := ih {k : ι // k ≠ j} (card_subtype_lt fun a ↦ a rfl) (restrict _ v)
       (fun i ↦ h _) (hv.comp_of_injective val_injective) ⟨i, hj.symm⟩
-    -- Then apply induction next to the subcollection `v i, v k`.
-    let ⟨b, hb⟩ := ih {k : ι // k = i ∨ k = j} (by linarith [card_subtype_or_eq hj.symm])
+    -- Then apply induction next to the subcollection `{v i, v j}` to get `b : K`.
+    let ⟨b, hb⟩ := ih {k : ι // k = i ∨ k = j} (by linarith [card_subtype_eq_or_eq_of_ne hj.symm])
       (restrict _ v) (fun _ ↦ h _) (hv.comp_of_injective val_injective) ⟨i, .inl rfl⟩
     rcases eq_or_ne (v j a) 1 with (ha₁ | ha₁)
-    · -- If `v j a = 1` then use the sequence `a ^ n * b` in the applied lemma
+    · -- If `v j a = 1` then take a large enough value from the sequence `a ^ n * b`.
       let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_eq_one ha.1 ha.2 ha₁ hb.1 (hb.2 ⟨j, .inr rfl⟩
-        (coe_ne_coe.1 hj))
+        (by grind))
       refine ⟨c, hc.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (coe_ne_coe.1 hk)
+      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (by grind)
     rcases ha₁.lt_or_gt with (ha_lt | ha_gt)
-    · -- If `v j a < 1` then `a` works
+    · -- If `v j a < 1` then `a` works as the divergent point.
       refine ⟨a, ha.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact ha_lt; exact ha.2 ⟨k, h⟩ (by simpa using hk)
-    · -- If `1 < v j a` then use the sequence `b / (1 + a ^ (-n))` in the applied lemma
+      rcases eq_or_ne k j with (rfl | h); try exact ha_lt; exact ha.2 ⟨k, h⟩ (by grind)
+    · -- If `1 < v j a` then take a large enough value from the sequence `b / (1 + a ^ (-n))`.
       let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_one_lt ha.1 ha.2 ha_gt hb.1 (hb.2 ⟨j, .inr rfl⟩
-        (coe_ne_coe.1 hj))
+        (by grind))
       refine ⟨c, hc.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (coe_ne_coe.1 hk)
+      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (by grind)
 
 end LinearOrderedField
 
