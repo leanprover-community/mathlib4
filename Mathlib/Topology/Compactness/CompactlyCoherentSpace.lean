@@ -228,8 +228,7 @@ lemma le {X : Type*} [t : TopologicalSpace X] :
 
 lemma continuous_rng_of_compactSpace {f : X → k Y} [CompactSpace X] :
     Continuous f ↔ Continuous ((CompactCoherentification.mk Y).symm ∘ f) := by
-  rw [continuous_iff_continuousOn_univ, continuousOn_rng_of_isCompact isCompact_univ,
-    ← continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ, continuousOn_rng_of_isCompact isCompact_univ, continuousOn_univ]
 
 /-- If a map `f : X → Y` is continuous on every compact subset of `X` then it is continuous when
 viewed as a map from `CompactCoherentification X` to `CompactCoherentification Y`. -/
