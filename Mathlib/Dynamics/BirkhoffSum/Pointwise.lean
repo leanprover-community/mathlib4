@@ -204,9 +204,9 @@ lemma birkhoffSum_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable 
 lemma birkhoffMax_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) {n} :
     Integrable (birkhoffMax f φ n) μ := by
   unfold birkhoffMax
-  induction' n with n hn
-  · simpa
-  · simpa using Integrable.sup hn (birkhoffSum_integrable μ hf hφ)
+  induction n with
+  | zero => simpa
+  | succ n hn => simpa using Integrable.sup hn (birkhoffSum_integrable μ hf hφ)
 
 lemma birkhoffMaxDiff_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) {n} :
     Integrable (birkhoffMaxDiff f φ n) μ := by
