@@ -152,7 +152,9 @@ noncomputable def δ₀₁_aux (b : B) (c : H0 G C) (hb : g b = c) : Z1 G A := �
     fun g h ↦ hf (by simp [Equiv.apply_ofInjective_symm, mul_smul, ← add_assoc])⟩
 
 theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
-    Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') := sorry
+    Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') :=
+  ⟨(Equiv.ofInjective f hf).symm ⟨- b + b', (hfg _).mp (by rw [map_add, map_neg, hb, hb',
+    neg_add_cancel])⟩, fun h ↦ hf (by simp [δ₀₁_aux, Equiv.apply_ofInjective_symm, ← add_assoc])⟩
 
 noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
     ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
