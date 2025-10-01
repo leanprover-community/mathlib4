@@ -71,13 +71,26 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 /-! Local properties which require a particular choice of both the source and target chart -/
 section LocalProperties
 
+/-- Structure recording good behaviour of a property of functions `M → M'` w.r.t. to choices
+of a chart on both `M` and `M'`. Currently, good behaviour means being stable under restriction
+of the domain chart, and locality in the target. (This list might be extended in the future.)
+
+Motivating examples are immersions and submersions of smooth manifolds. -/
+structure LocalPropertyAt (f : M → M') (x : M)
+    (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) where
+  mono_source : ∀ f : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
+    ∀ s : Set M, P f φ ψ → P f (φ.restr s) ψ
+  congr : ∀ f g : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
+    ∀ s : Set M, IsOpen s → EqOn f g s → P f (φ.restr s) ψ → P g (φ.restr s) ψ
+
 variable (I I' n) in
 /-- A property of smooth functions `M → M'` which is local at both the source and target:
 a property `P` is local at `x` iff there exist charts `φ` and `ψ` of `M` and `N` around
 `x` and `f x`, respectively, such that `f` satisfies the property w.r.t. `φ` and `ψ`.
 
-The motivating example are smooth immersions: in this case, the condition is that `f` look like
-the inclusion `u ↦ (u, 0)` in the charts `φ` and `ψ`.
+The motivating example are smooth immersions and submersions: the corresponding condition is that
+`f` look like the inclusion `u ↦ (u, 0)` (resp. a projection `(u, v) ↦ u`)
+in the charts `φ` and `ψ`.
 -/
 def LocalAtSourceTargetPropertyAt (f : M → M') (x : M)
     (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) : Prop :=
@@ -87,16 +100,6 @@ def LocalAtSourceTargetPropertyAt (f : M → M') (x : M)
     codChart ∈ IsManifold.maximalAtlas I' n M' ∧
     f '' domChart.source ⊆ codChart.source ∧
     P f domChart codChart
-
-/-- A `LocalAtSourceTargetPropertyAt` is *nice* if it is preserved under restriction of the
-domain chart and stable under congruence: both of these properties are satisfied for immersions
-and submersions. (This list may be extended, if more hypotheses turn out to be useful). -/
-structure IsNiceLocalPropertyAt (f : M → M') (x : M)
-    (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) where
-  mono_source : ∀ f : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
-    ∀ s : Set M, P f φ ψ → P f (φ.restr s) ψ
-  congr : ∀ f g : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
-    ∀ s : Set M, IsOpen s → EqOn f g s → P f (φ.restr s) ψ → P g (φ.restr s) ψ
 
 namespace LocalAtSourceTargetPropertyAt
 
@@ -143,7 +146,7 @@ lemma property (h : LocalAtSourceTargetPropertyAt I I' n f x P) : P f h.domChart
 /-- If `P` is monotone w.r.t. restricting `domChart`, then it suffices to prove continuity of `f`
 at `x` (instead of a relation between the chart's sources). -/
 lemma mk_of_continuousAt (hf : ContinuousAt f x)
-    (hP : IsNiceLocalPropertyAt f x P)
+    (hP : LocalPropertyAt f x P)
     (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph M' H')
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
@@ -167,7 +170,7 @@ lemma mk_of_continuousAt (hf : ContinuousAt f x)
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 if `f` has property `P` at `x` and `f` and `g` are eventually equal near `x`,
 then `g` has property `P` at `x`. -/
-lemma congr_of_eventuallyEq (hP : IsNiceLocalPropertyAt f x P)
+lemma congr_of_eventuallyEq (hP : LocalPropertyAt f x P)
     (hf : LocalAtSourceTargetPropertyAt I I' n f x P)
     (h' : f =ᶠ[nhds x] g) : LocalAtSourceTargetPropertyAt I I' n g x P := by
   obtain ⟨s', hxs', hfg⟩ := h'.exists_mem
@@ -202,7 +205,7 @@ def ImmersionAtProp (equiv : (E × F) ≃L[𝕜] E') :
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a "nice" local property. -/
 lemma ImmersionAtPropIsNice (f : M → M') (x) (equiv : (E × F) ≃L[𝕜] E') :
-    IsNiceLocalPropertyAt f x (ImmersionAtProp I I' equiv) where
+    LocalPropertyAt f x (ImmersionAtProp I I' equiv) where
   mono_source f φ ψ s hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
     exact hf.mono (by simpa using this)
@@ -306,7 +309,6 @@ lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
       (h.domChart.extend I).target :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2.2
 
--- XXX: extract the immersion property as separate declaration?
 lemma property (h : IsImmersionAt F I I' n f x) :
     LocalAtSourceTargetPropertyAt I I' n f x (ImmersionAtProp I I' h.equiv) :=
   Classical.choose_spec h
