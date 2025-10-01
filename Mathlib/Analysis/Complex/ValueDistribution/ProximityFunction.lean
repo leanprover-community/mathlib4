@@ -19,7 +19,7 @@ The proximity function is a logarithmically weighted measure quantifying how wel
 function `f` approximates the constant function `a` on the circle of radius `R` in the complex
 plane.  The definition ensures that large values correspond to good approximation.
 
-See Section~VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section~1.1 of
+See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 -/
@@ -74,7 +74,7 @@ lemma proximity_top : proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := b
   simp [proximity]
 
 /-!
-## Elementary Properties of the Counting Function
+## Elementary Properties of the Proximity Function
 -/
 
 /--

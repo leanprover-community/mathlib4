@@ -17,8 +17,8 @@ precise statement.
 
 Jensen's Formula, formulated in `MeromorphicOn.circleAverage_log_norm` below, generalizes this to
 the setting where `g` is merely meromorphic. In that case, the `circleAverage (log ‖g ·‖) c R`
-equals `log `‖meromorphicTrailingCoeffAt g c‖` plus a correction term that accounts for the zeros
-and poles of `g` within the ball.
+equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that accounts for the zeros and
+poles of `g` within the ball.
 -/
 
 open Filter MeromorphicAt MeromorphicOn Metric Real
