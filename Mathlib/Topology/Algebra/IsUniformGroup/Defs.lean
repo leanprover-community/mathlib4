@@ -5,7 +5,6 @@ Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.Algebra.Group.Basic
-import Batteries.Tactic.Instances
 
 /-!
 # Uniform structure on topological groups
