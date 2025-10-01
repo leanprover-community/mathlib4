@@ -192,10 +192,10 @@ instance instSub : Sub 𝓓^{n}_{K}(E, F) :=
 
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
    SMul R 𝓓^{n}_{K}(E, F) :=
-⟨fun c f ↦
-  ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
-    rw [← smul_zero c]
-    exact f.zero_on_compl.comp_left⟩
+  ⟨fun c f ↦
+    ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
+      rw [← smul_zero c]
+      exact f.zero_on_compl.comp_left⟩
 
 @[simp]
 lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]

@@ -229,8 +229,7 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
 
 end Module
 
-variable (n : ℕ∞) (F)
-
+variable (F n)
 def ContDiffMapSupportedIn.toTestFunction (K : Compacts E) : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(E, F)
     where
   toFun f := TestFunction.mk f (f.contDiff) (f.hasCompactSupport)
@@ -243,7 +242,7 @@ def ContDiffMapSupportedIn.toTestFunction_apply {K : Compacts E} (f : 𝓓^{n}_{
 open ContDiffMapSupportedIn
 
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(E, F) :=
-  ⨆ (K : Compacts E), coinduced (toTestFunction 𝕜 F n K) (inferInstance)
+  ⨆ (K : Compacts E), coinduced (@toTestFunction 𝕜 E F _ _ _ _ _ _ _ n K) (inferInstance)
 
 variable (E)
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(E, F) :=
@@ -255,10 +254,43 @@ noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(E, F) := by
   simp only [mem_setOf_eq, and_imp, imp_self, implies_true]
 
 theorem continuous_toTestFunction (K : Compacts E) :
-    Continuous (toTestFunction 𝕜 F n K) := by
+    Continuous (@toTestFunction 𝕜 E F _ _ _ _ _ _ _ n K) := by
   apply continuous_iff_coinduced_le.2
   have : originalTop 𝕜 F n ≤ TestFunction.topologicalSpace E F n := by
     exact le_sInf (by aesop)
   exact le_trans (le_sSup (by aesop)) this
+
+protected theorem continuous_iff_continuous_comp {V : Type*} [AddCommMonoid V] [Module ℝ V]
+    [t : TopologicalSpace V] [LocallyConvexSpace ℝ V] (f : 𝓓^{n}(E, F) →ₗ[ℝ] V) :
+    Continuous f ↔
+  ∀ K : Compacts E, Continuous (f ∘ @toTestFunction 𝕜 E F _ _ _ _ _ _ _ n K) := by
+  rw [continuous_iff_le_induced]
+  have : TestFunction.topologicalSpace E F n ≤ induced f t
+        ↔ originalTop ℝ F n ≤ induced f t := by
+      constructor <;> refine fun h ↦ ?_
+      · refine le_trans (le_sInf (fun _ _ ↦ ?_)) h
+        simp_all only [mem_setOf_eq]
+      · refine sInf_le ?_
+        simp only [mem_setOf_eq, LocallyConvexSpace.induced f, and_true, h]
+  rw [this, originalTop, iSup_le_iff]
+  simp_rw [← @coinduced_le_iff_le_induced _ _ f _ t,
+    coinduced_compose, ← continuous_iff_coinduced_le]
+  rfl
+
+protected theorem continuous_from_bounded {V : Type*} [NormedAddCommGroup V]
+    [NormedSpace ℝ V] [LocallyConvexSpace ℝ V] (f : 𝓓^{n}(E, F) →ₗ[ℝ] V)
+    (hb : ∀ K : Compacts E, ∃ k : ℕ, ∃ C : ℝ≥0, ∀ φ : 𝓓^{n}_{K}(E, F),
+      ‖f (toTestFunction ℝ F n K φ)‖ ≤ C • (φ.seminorm' ℝ _ _ n K k)):
+    Continuous f := by
+    rw [TestFunction.continuous_iff_continuous_comp ℝ]
+    intro K
+    apply continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms' ℝ E F n K)
+              (norm_withSeminorms ℝ V) (f.comp (toTestFunction ℝ F n K))
+    intro _
+    obtain ⟨k, C, h⟩ := hb K
+    refine ⟨{k}, C, le_def.mpr (fun φ ↦ ?_)⟩
+    simp only [Seminorm.comp_apply, LinearMap.coe_comp, Function.comp_apply, coe_normSeminorm,
+      Finset.sup_singleton, Seminorm.smul_apply]
+    exact h φ
 
 end TestFunction
