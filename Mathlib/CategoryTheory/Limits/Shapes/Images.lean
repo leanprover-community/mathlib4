@@ -156,23 +156,26 @@ def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsI
 /--
 Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` gives a new mono
 factorisation `X ⟶ I' ⟶ Y` of `f`.
-Implementation note: We add a variable `m : I' ⟶ Y` which satisfies `m = inv g ≫ F.m` so that we
-can definitionally control the field `m` of the mono factorisation.
 -/
 @[simps]
-def ofIsoI' (F : MonoFactorisation f) {I'} (g : F.I ⟶ I') [IsIso g]
-    (m : I' ⟶ Y) [Mono m] (h : m = inv g ≫ F.m) :
+def ofIsoI (F : MonoFactorisation f) {I'} (e : F.I ≅ I') :
     MonoFactorisation f where
   I := I'
-  m := m
-  e := F.e ≫ g
+  m := e.inv ≫ F.m
+  e := F.e ≫ e.hom
 
 /--
-Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` gives a new mono
-factorisation `X ⟶ I' ⟶ Y` of `f`.
+Copying a mono factorisation to another mono factorisation with propositionally equal fields.
+This is useful when one needs precise control of the `m` and `e` fields.
 -/
-def ofIsoI (F : MonoFactorisation f) {I' : C} (g : F.I ⟶ I') [IsIso g] : MonoFactorisation f :=
-  ofIsoI' F g (inv g ≫ F.m) (by cat_disch)
+@[simps]
+def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
+    (hm : m = F.m := by cat_disch) (he : e = F.e := by cat_disch) :
+    MonoFactorisation f where
+  I := F.I
+  m := m
+  e := e
+  m_mono := by rw [hm]; infer_instance
 
 end MonoFactorisation
 
@@ -239,22 +242,22 @@ def ofArrowIso {f g : Arrow C} {F : MonoFactorisation f.hom} (hF : IsImage F) (s
 /--
 Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
 the induced mono factorisation by the isomorphism is also an image.
-Implementation note: We add a variable `m : I' ⟶ Y` which satisfies `m = inv g ≫ F.m` so that we
-can definitionally control the field `m` of the mono factorisation.
 -/
 @[simps]
-def ofIsoI' {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (g : F.I ⟶ I') [IsIso g]
-    (m : I' ⟶ Y) [Mono m] (h : m = inv g ≫ F.m) :
-    IsImage (F.ofIsoI' g m h) where
-  lift F' := inv g ≫ hF.lift F'
+def ofIsoI {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (e : F.I ≅ I') :
+    IsImage (F.ofIsoI e) where
+  lift F' := e.inv ≫ hF.lift F'
 
 /--
-Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
-the induced mono factorisation by the isomorphism is also an image.
+Copying a mono factorisation to another mono factorisation with propositionally equal fields
+preserves the property of being an image.
+This is useful when one needs precise control of the `m` and `e` fields.
 -/
-def ofIsoI {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (g : F.I ⟶ I') [IsIso g] :
-    IsImage (F.ofIsoI g) :=
-  ofIsoI' hF g (inv g ≫ F.m) (by cat_disch)
+@[simps]
+def copy {F : MonoFactorisation f} (hF : IsImage F) (m : F.I ⟶ Y) (e : X ⟶ F.I)
+    (hm : m = F.m := by cat_disch) (he : e = F.e := by cat_disch) :
+    IsImage (F.copy m e) where
+  lift := hF.lift
 
 end IsImage
 
@@ -280,28 +283,27 @@ def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [Is
   F := F.F.ofArrowIso sq
   isImage := F.isImage.ofArrowIso sq
 
-variable {f} in
 /--
 Given an image factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` induces a new
 image factorisation `X ⟶ I' ⟶ Y` of `f`.
-Implementation note: We add a variable `m : I' ⟶ Y` which satisfies `m = inv g ≫ F.m` so that we
-can definitionally control the field `m` of the mono factorisation.
 -/
 @[simps]
-def ofIsoI' (F : ImageFactorisation f) {I' : C} (g : F.F.I ⟶ I') [IsIso g]
-    (m : I' ⟶ Y) [Mono m] (h : m = inv g ≫ F.F.m) :
+def ofIsoI {f : X ⟶ Y} (F : ImageFactorisation f) {I' : C} (e : F.F.I ≅ I') :
     ImageFactorisation f where
-  F := F.F.ofIsoI' g m h
-  isImage := F.isImage.ofIsoI' g m h
+  F := F.F.ofIsoI e
+  isImage := F.isImage.ofIsoI e
 
 variable {f} in
 /--
-Given an image factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` induces a new
-image factorisation `X ⟶ I' ⟶ Y` of `f`.
+Copying an image factorisation to another image factorisation with propositionally equal fields.
+This is useful when one needs precise control of the `m` and `e` fields.
 -/
-def ofIsoI (F : ImageFactorisation f) {I' : C} (g : F.F.I ⟶ I') [IsIso g] :
-    ImageFactorisation f :=
-  ofIsoI' F g (inv g ≫ F.F.m) (by cat_disch)
+@[simps]
+def copy {f : X ⟶ Y} (F : ImageFactorisation f) (m : F.F.I ⟶ Y) (e : X ⟶ F.F.I)
+    (hm : m = F.F.m := by cat_disch) (he : e = F.F.e := by cat_disch) :
+    ImageFactorisation f where
+  F := F.F.copy m e
+  isImage := F.isImage.copy m e
 
 end ImageFactorisation
 

@@ -739,15 +739,18 @@ def isoExistsImage (f : X ⟶ Y) (x : Subobject X) :
 /-- `exists f` is the image factorisation of `x.arrow ≫ f`. -/
 def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
     ImageFactorisation (x.arrow ≫ f) :=
-  have :
+  have h :
     (isoExistsImage f x).hom ≫ ((Image.imageFactorisation (x.arrow ≫ f)).F.m) =
       ((«exists» f).obj x).arrow :=
     Over.w ((isoExistsRepresentative f).app x).hom
-  ImageFactorisation.ofIsoI'
-    (Image.imageFactorisation (x.arrow ≫ f))
-    (isoExistsImage f x).inv
+  let :=
+    ImageFactorisation.ofIsoI
+      (Image.imageFactorisation (x.arrow ≫ f))
+      (isoExistsImage f x).symm
+  ImageFactorisation.copy this
     ((«exists» f).obj x).arrow
-    (by rw [this.symm]; simp)
+    this.F.e
+    (by rw [h.symm]; simp [this])
 
 /--
 For any morphism `f : X ⟶ Y` and subobject `x` of `X`, `Subobject.existsπ f x` is the first
