@@ -425,8 +425,7 @@ def glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme.{u}} (f : ∀ x, 𝒰.X x
   rintro ⟨i, j⟩
   dsimp
   change pullback.fst _ _ ≫ f _ = (_ ≫ _) ≫ f _
-  simp [pullbackSymmetry_hom_comp_fst]
-  exact hf _ _
+  simpa [pullbackSymmetry_hom_comp_fst] using hf _ _
 
 theorem hom_ext (𝒰 : OpenCover.{v} X) {Y : Scheme} (f₁ f₂ : X ⟶ Y)
     (h : ∀ x, 𝒰.f x ≫ f₁ = 𝒰.f x ≫ f₂) : f₁ = f₂ := by
