@@ -24,6 +24,10 @@ manifolds.
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
 
+## Implementation notes
+
+TODO say something about local properties here!
+
 ## TODO
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
@@ -195,8 +199,9 @@ def ImmersionAtProp (equiv : (E × F) ≃L[𝕜] E') :
     EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target
 
+omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a "nice" local property. -/
-def ImmersionAtPropIsNice (f : M → M') (x) (equiv : (E × F) ≃L[𝕜] E') :
+lemma ImmersionAtPropIsNice (f : M → M') (x) (equiv : (E × F) ≃L[𝕜] E') :
     IsNiceLocalPropertyAt f x (ImmersionAtProp I I' equiv) where
   mono_source f φ ψ s hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
