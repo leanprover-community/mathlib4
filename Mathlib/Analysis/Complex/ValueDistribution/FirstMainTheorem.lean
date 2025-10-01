@@ -59,7 +59,7 @@ First part of the First Main Theorem: Away from zero, the difference between the
 functions of `f` and `f⁻¹` equals `log ‖leadCoefficient f 0‖`.
 -/
 @[simp]
-theorem characteristic_sub_characteristic_inv_at_zero (hf : MeromorphicOn f ⊤) (hR : R ≠ 0) :
+theorem characteristic_sub_characteristic_inv_at_zero (hf : MeromorphicOn f Set.univ) (hR : R ≠ 0) :
     characteristic f ⊤ R - characteristic f⁻¹ ⊤ R = log ‖meromorphicTrailingCoeffAt f 0‖ := by
   calc characteristic f ⊤ R - characteristic f⁻¹ ⊤ R
   _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) R  := by simp
@@ -78,7 +78,7 @@ Complement to the first part of the First Main Theorem: At 0, the difference bet
 characteristic functions of `f`  and `f⁻¹` equals `log ‖f 0‖`.
 -/
 @[simp]
-theorem characteristic_sub_characteristic_inv_off_zero (h : MeromorphicOn f ⊤) :
+theorem characteristic_sub_characteristic_inv_off_zero (h : MeromorphicOn f Set.univ) :
     characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0 = log ‖f 0‖ := by
   calc characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0
   _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) 0 := by simp
