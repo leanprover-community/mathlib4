@@ -17,7 +17,7 @@ We gather miscellaneous results about units given by sums of powers of roots of 
 * `IsPrimitiveRoot.associated_pow_sub_one_of_coprime` : given an `n`-th primitive root of unity `ζ`,
   we have that `ζ - 1` and `ζ ^ j - 1` are associated for all `j` coprime with `n`.
 * `IsPrimitiveRoot.associated_pow_sub_one_pow_of_coprime` : given an `n`-th primitive root of unity
-  `ζ`, we have that `ζ ^ j - 1` and `ζ ^ j - 1` are associated for all `i` and `j` coprime with `n`.
+  `ζ`, we have that `ζ ^ i - 1` and `ζ ^ j - 1` are associated for all `i` and `j` coprime with `n`.
 * `IsPrimitiveRoot.associated_pow_add_sub_sub_one` : given an `n`-th primitive root of unity `ζ`,
   where `2 ≤ n`, we have that `ζ - 1` and `ζ ^ (i + j) - ζ ^ i` are associated for all and `j`
   coprime with `n` and all `i`.
