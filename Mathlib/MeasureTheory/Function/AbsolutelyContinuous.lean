@@ -47,7 +47,7 @@ absolutely continuous
 -/
 
 variable {F : Type*}
-variable [SeminormedAddCommGroup F]
+variable [PseudoMetricSpace F]
 
 open Set Filter Function
 
@@ -115,7 +115,6 @@ def AbsolutelyContinuousOnInterval (f : ℝ → F) (a b : ℝ) :=
 any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`, `b i` are
 all in `uIcc a b` for `i < n`,  if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
 `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`. -/
-
 theorem absolutelyContinuousOnInterval_iff (f : ℝ → F) (a b : ℝ) :
     AbsolutelyContinuousOnInterval f a b ↔
     ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ E, E ∈ disjWithin a b →
@@ -189,7 +188,7 @@ theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInter
   hf.const_smul α
 
 lemma uniformity_comap_totalLengthFilter :
-    uniformity F = comap (fun x ↦ (1, fun _ ↦ x)) (totalLengthFilter):= by
+    uniformity F = comap (fun x ↦ (1, fun _ ↦ x)) totalLengthFilter := by
   refine Filter.HasBasis.eq_of_same_basis Metric.uniformity_basis_dist ?_
   convert hasBasis_totalLengthFilter.comap _
   simp
@@ -230,7 +229,7 @@ theorem exists_pos_bound (hf : AbsolutelyContinuousOnInterval f a b) :
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
 theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
-    {f : ℝ → M} {g : ℝ → F} {a b : ℝ}
+    {f : ℝ → M} {g : ℝ → F}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ f x • g x) a b := by
   obtain ⟨C, _, hC⟩ := hf.exists_pos_bound
@@ -339,7 +338,7 @@ theorem boundedVariationOn {f : ℝ → F} {a b : ℝ} (hf : AbsolutelyContinuou
     simp only [eVariationOn, iSup_le_iff]
     intro p
     obtain ⟨hp₁, hp₂⟩ := p.2.property
-    have vf: ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) ≤ 1 := by
+    have vf : ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) ≤ 1 := by
       suffices ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) < 1 by
         linarith
       apply hδ₂ (p.1, (fun i ↦ (p.2.val i, p.2.val (i + 1))))
@@ -373,8 +372,8 @@ theorem boundedVariationOn {f : ℝ → F} {a b : ℝ} (hf : AbsolutelyContinuou
   rw [v_sum]
   simp only [ne_eq, ENNReal.sum_eq_top, Finset.mem_range, not_exists, not_and]
   intro i hi
-  suffices eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) ≤ 1 by
-    intro hC; simp [hC] at this
+  suffices eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) ≤ 1 from
+    fun hC ↦ by simp [hC] at this
   apply v_each
   · convert h_mono (show 0 ≤ i by omega); simp
   · convert h_mono (show i ≤ i + 1 by omega); norm_cast
