@@ -64,6 +64,27 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   {n : WithTop ℕ∞}
 
+section
+
+variable (I I' n) in
+/-- A property of smooth functions `M → M'` which is local at both the source and target:
+a property `P` is local at `x` iff there exist charts `φ` and `ψ` of `M` and `N` around
+`x` and `f x`, respectively, such that `f` satisfies the property w.r.t. `φ` and `ψ`.
+
+The motivating example are smooth immersions: in this case, the condition is that `f` look like
+the inclusion `u ↦ (u, 0)` in the charts `φ` and `ψ`.
+-/
+def LocalAtSourceTargetPropertyAt (f : M → M') (x : M)
+    (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) : Prop :=
+  ∃ domChart : PartialHomeomorph M H, ∃ codChart : PartialHomeomorph M' H',
+    x ∈ domChart.source ∧ f x ∈ codChart.source ∧
+    domChart ∈ IsManifold.maximalAtlas I n M ∧
+    codChart ∈ IsManifold.maximalAtlas I' n M' ∧
+    f '' domChart.source ⊆ codChart.source ∧
+    P f domChart codChart
+
+end
+
 -- XXX: should the next three definitions be a class instead?
 -- Are these slice charts canonical enough that we want the typeclass system to kick in?
 
@@ -77,17 +98,23 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 -/
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
   ∃ equiv : (E × F) ≃L[𝕜] E',
-  ∃ domChart : PartialHomeomorph M H, ∃ codChart : PartialHomeomorph M' H',
-    x ∈ domChart.source ∧ f x ∈ codChart.source ∧
-    domChart ∈ IsManifold.maximalAtlas I n M ∧
-    codChart ∈ IsManifold.maximalAtlas I' n M' ∧
-    f '' domChart.source ⊆ codChart.source ∧
+  LocalAtSourceTargetPropertyAt I I' n f x (fun f domChart codChart ↦
     EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target
+      (domChart.extend I).target)
 
 namespace IsImmersionAt
 
 variable {f g : M → M'} {x : M}
+
+lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorph M H)
+    (codChart : PartialHomeomorph M' H')
+    (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
+    (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
+    (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
+    (hsource : f '' domChart.source ⊆ codChart.source)
+    (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
+      (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
+  use equiv, domChart, codChart
 
 /-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
