@@ -214,8 +214,7 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
   | limit b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
-    have : ⨆ a : Iio b, _ = _ :=
-      iSup_eq_bsup.{max u v, max u v} (f := fun x (_ : x < b) ↦ derivFamily f x)
+    have : ⨆ a : Iio b, _ = _ := iSup_Iio_eq_bsup (f := fun x (_ : x < b) ↦ derivFamily f x)
     rw [derivFamily_limit f hb, this]
     exact
       bsup_lt_ord_of_isRegular.{u, v} hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' =>
