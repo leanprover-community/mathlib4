@@ -108,7 +108,8 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       → IsMultiplyPretransitive G α 2)
     ∧ (IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)
       → IsMultiplyPreprimitive G α 2) := by
-  induction' n using Nat.strong_induction_on with n hrec generalizing α G
+  induction n using Nat.strong_induction_on generalizing α G with
+  | h n hrec =>
   have : Finite α := Or.resolve_right (finite_or_infinite α) (fun _ ↦ by
       simp [Nat.card_eq_zero_of_infinite] at hsn')
   have hs_ne_top : s ≠ ⊤ := by
@@ -248,8 +249,8 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
     IsMultiplyPreprimitive G α (n + 2) := by
   have hα : Finite α := Or.resolve_right (finite_or_infinite α) (fun _ ↦ by
     simp [Nat.card_eq_zero_of_infinite] at hsn')
-  induction' n with n hrec generalizing α hα G
-  · -- case n = 0
+  induction n generalizing α hα G with
+  | zero => -- case n = 0
     have : IsPretransitive G α := hG.toIsPretransitive
     simp only [zero_add, Set.ncard_eq_one] at hsn
     obtain ⟨a, rfl⟩ := hsn
@@ -267,42 +268,42 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
       rw [htb]
       refine IsPreprimitive.of_surjective
         (conjMap_ofFixingSubgroup_bijective (hst := hst)).surjective
-  -- Induction step
-  suffices ∃ (a : α) (t : Set (SubMulAction.ofStabilizer G a)),
-    a ∈ s ∧ s = insert a (Subtype.val '' t) by
-    obtain ⟨a, t, _, hst⟩ := this
-    have ha' : a ∉ Subtype.val '' t := by
-      intro h; rw [Set.mem_image] at h ; obtain ⟨x, hx⟩ := h
-      apply x.prop; rw [hx.right]; exact Set.mem_singleton a
-    have ht_prim : IsPreprimitive (stabilizer G a) (SubMulAction.ofStabilizer G a) := by
-      rw [← is_one_preprimitive_iff]
-      rw [← isMultiplyPreprimitive_succ_iff_ofStabilizer]
-      · apply is_two_preprimitive hG hsn hsn' hprim
-      · norm_num
-    have : IsPreprimitive ↥(fixingSubgroup G (insert a (Subtype.val '' t)))
-        (ofFixingSubgroup G (insert a (Subtype.val '' t))) :=
-      IsPreprimitive.of_surjective
-        (ofFixingSubgroup_of_eq_bijective (hst := hst)).surjective
-    have hGs' : IsPreprimitive (fixingSubgroup (stabilizer G a) t)
-      (ofFixingSubgroup (stabilizer G a) t) :=
-      IsPreprimitive.of_surjective
-        ofFixingSubgroup_insert_map_bijective.surjective
-    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G (a := a) _ (Nat.le_add_left 1 (n + 1))]
-    refine hrec ht_prim ?_ ?_ hGs' Subtype.finite
-    · -- t.card = Nat.succ n
-      rw [← Set.ncard_image_of_injective t Subtype.val_injective]
-      apply Nat.add_right_cancel
-      rw [← Set.ncard_insert_of_notMem ha', ← hst, hsn]
-    · -- n + 2 < Nat.card (SubMulAction.ofStabilizer G α a)
-      rw [← Nat.add_lt_add_iff_right, nat_card_ofStabilizer_add_one_eq]
-      exact hsn'
-  -- ∃ a t, a ∈ s ∧ s = insert a (Subtype.val '' t)
-  suffices s.Nonempty by
-    obtain ⟨a, ha⟩ := this
-    use a, Subtype.val ⁻¹' s, ha
-    ext x
-    by_cases hx : x = a <;> simp [hx, mem_ofStabilizer_iff, ha]
-  rw [← Set.ncard_pos, hsn]; apply Nat.succ_pos
+  | succ n hrec => -- Induction step
+    suffices ∃ (a : α) (t : Set (SubMulAction.ofStabilizer G a)),
+      a ∈ s ∧ s = insert a (Subtype.val '' t) by
+      obtain ⟨a, t, _, hst⟩ := this
+      have ha' : a ∉ Subtype.val '' t := by
+        intro h; rw [Set.mem_image] at h ; obtain ⟨x, hx⟩ := h
+        apply x.prop; rw [hx.right]; exact Set.mem_singleton a
+      have ht_prim : IsPreprimitive (stabilizer G a) (SubMulAction.ofStabilizer G a) := by
+        rw [← is_one_preprimitive_iff]
+        rw [← isMultiplyPreprimitive_succ_iff_ofStabilizer]
+        · apply is_two_preprimitive hG hsn hsn' hprim
+        · norm_num
+      have : IsPreprimitive ↥(fixingSubgroup G (insert a (Subtype.val '' t)))
+          (ofFixingSubgroup G (insert a (Subtype.val '' t))) :=
+        IsPreprimitive.of_surjective
+          (ofFixingSubgroup_of_eq_bijective (hst := hst)).surjective
+      have hGs' : IsPreprimitive (fixingSubgroup (stabilizer G a) t)
+        (ofFixingSubgroup (stabilizer G a) t) :=
+        IsPreprimitive.of_surjective
+          ofFixingSubgroup_insert_map_bijective.surjective
+      rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G (a := a) _ (Nat.le_add_left 1 (n + 1))]
+      refine hrec ht_prim ?_ ?_ hGs' Subtype.finite
+      · -- t.card = Nat.succ n
+        rw [← Set.ncard_image_of_injective t Subtype.val_injective]
+        apply Nat.add_right_cancel
+        rw [← Set.ncard_insert_of_notMem ha', ← hst, hsn]
+      · -- n + 2 < Nat.card (SubMulAction.ofStabilizer G α a)
+        rw [← Nat.add_lt_add_iff_right, nat_card_ofStabilizer_add_one_eq]
+        exact hsn'
+    -- ∃ a t, a ∈ s ∧ s = insert a (Subtype.val '' t)
+    suffices s.Nonempty by
+      obtain ⟨a, ha⟩ := this
+      use a, Subtype.val ⁻¹' s, ha
+      ext x
+      by_cases hx : x = a <;> simp [hx, mem_ofStabilizer_iff, ha]
+    rw [← Set.ncard_pos, hsn]; apply Nat.succ_pos
 
 end Jordan
 
