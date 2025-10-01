@@ -194,7 +194,7 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
 lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nontrivial N] (n : ℕ)
     (h : support R N ⊆ {p | Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ p.1))) M n)}) :
     Subsingleton (Ext.{w} N M n) := by
-  --For wjt
+
   sorry
 
 open Pointwise in
@@ -237,7 +237,6 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   let _ : Nontrivial (Ext S.X₂ M n) := not_subsingleton_iff_nontrivial.mp ntr
   let _ : Module.Finite R S.X₂ := fin
   absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
-  have : ⊤ ≤ x • (⊤ : Submodule R (Ext S.X₂ M n)) := sorry
   rw [eq_comm, eq_top_iff]
   intro y hy
   rcases epi y with ⟨z, hz⟩
