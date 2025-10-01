@@ -65,8 +65,7 @@ lemma hasProdUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i
   have h1 := hr.tsum_eqOn hK
   simp only [hasSumUniformlyOn_iff_tendstoUniformlyOn] at hr
   refine ((hr K hK).comp_cexp ?_).congr ?_
-  · simp +contextual [← h1 _]
-    exact hg K hK
+  · simpa +contextual [← h1 _] using hg K hK
   · filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn K hK i hi y)]
 
 lemma multipliableUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i x)) 𝔖)
