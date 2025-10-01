@@ -8,7 +8,13 @@ import Mathlib.Probability.Kernel.Composition.Comp
 /-!
 # Irreducibility of kernels
 
-A kernel is irreducible if there is a positive probability of reaching any
+A kernel `κ : Kernel α α` is `φ`-irreducible, for a given measure `φ` on `α`,
+if for every measurable set `A` with positive measure under `φ`,
+there exists a positive integer `n` such that for every `a : α`, we have `κ.pow n a A > 0`.
+
+When the kernel `κ` is the transition kernel of a Markov chain,
+this precisely means that the Markov chain is irreducible,
+that is, there is a positive probability of reaching any
 (positive measure) set of states from any other state within a finite number of steps.
 
 ## Main definitions
