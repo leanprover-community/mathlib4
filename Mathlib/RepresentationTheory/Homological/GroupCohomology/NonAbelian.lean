@@ -56,15 +56,9 @@ variable (G : Type u) [Monoid G]
 
 def H0 (A : Type*) [AddGroup A] [DistribMulAction G A] : AddSubgroup A where
   carrier := setOf fun v => ∀ g : G, g • v = v
-  add_mem' := by
-    intro a b ha hb g
-    simp [ha g, hb g, -Pi.add_apply]
-  zero_mem' := by
-    intro g
-    simp
-  neg_mem' := by
-    intro a ha g
-    simp [ha g]
+  add_mem' := by simp +contextual
+  zero_mem' := by simp
+  neg_mem' := by simp +contextual
 
 variable {G}
 
@@ -107,9 +101,9 @@ def cohomologous (f g : Z1 G A) : Prop :=
 instance setoid : Setoid (Z1 G A) where
   r := cohomologous
   iseqv := {
-    refl := fun f => ⟨0, fun h => by simp⟩,
-    symm := sorry,
-    trans := sorry
+    refl := fun f ↦ ⟨0, fun h ↦ by simp⟩,
+    symm := fun ⟨a, ha⟩ ↦ ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩,
+    trans := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
   }
 
 end Z1
@@ -142,7 +136,7 @@ theorem H1.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
 
 end H1
 
-section connectHom
+section connectHom₀₁
 
 variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
@@ -162,17 +156,7 @@ noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
 
 def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
 
-end connectHom
-
-section exact
-
-variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
-    [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
-    {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
-    (hfg : Function.Exact f g)
-
-theorem exact₁ : Function.Exact (H0.map f) (H0.map g) :=
-  sorry
+theorem exact₁ : Function.Exact (H0.map f) (H0.map g) := sorry
 
 theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := sorry
 
@@ -180,55 +164,13 @@ theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
 
 theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
 
-end exact
+-- Add the natural equivalence between δ₀₁ and the original map
 
-section compatibility
+end connectHom₀₁
 
-variable {G : Type u} [Group G] (k : Type u) [Field k] (A : Rep k G)
+section connectHom₁₂
 
-theorem H0_eq_H0 (A : Rep k G) : H0 G A = groupCohomology.H0 A := sorry
-
-theorem H1_eq_H1 (A : Rep k G) : H1 G A = groupCohomology.H1 A := sorry
-
-end compatibility
-
-section exact
-
-theorem exact₅ (A : Rep k G) : Function.Exact (H1.map (S.g : S.X₂ →+[G] S.X₃)) sorry := sorry
-
-end exact
-
-section exact
-
-variable {G : Type u} [Group G] (S : ShortComplex (NonAbelianRep G)) (hS : S.Exact)
-
--- theorem exact₁ : Function.Exact (H0.map (S.f : S.X₁ →+[G] S.X₂)) (H0.map (S.g : S.X₂ →+[G] S.X₃)) :=
---   sorry
-
--- theorem exact₂ : Function.Exact (H0.map (S.g : S.X₂ →+[G] S.X₃)) (δ₀₁ S) := sorry
-
--- theorem exact₃ : Function.Exact (δ₀₁ S) (H1.map (S.f : S.X₁ →+[G] S.X₂)) := sorry
-
--- theorem exact₄ : Function.Exact (H1.map (S.f : S.X₁ →+[G] S.X₂)) (H1.map (S.g : S.X₂ →+[G] S.X₃)) :=
---   sorry
-
-end exact
-
-section compatibility
-
-variable {G : Type u} [Group G] (k : Type u) [Field k] (A : Rep k G)
-
-theorem H0_eq_H0 (A : Rep k G) : H0 G A = groupCohomology.H0 A := sorry
-
-theorem H1_eq_H1 (A : Rep k G) : H1 G A = groupCohomology.H1 A := sorry
-
-end compatibility
-
-section exact
-
-theorem exact₅ (A : Rep k G) : Function.Exact (H1.map (S.g : S.X₂ →+[G] S.X₃)) sorry := sorry
-
-end exact
+end connectHom₁₂
 
 end NonAbelian
 
