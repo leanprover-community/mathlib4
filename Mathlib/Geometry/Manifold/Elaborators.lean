@@ -78,13 +78,6 @@ open scoped Bundle Manifold ContDiff
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
-/-- Try to infer the universe of an expression `e` -/
-def _root_.Lean.Expr.getUniverse (e : Expr) : TermElabM (Level) := do
-    if let .sort (.succ u) ← whnfR <|← instantiateMVars <|← inferType e then
-      return u
-    else
-      throwError m!"Could not find universe of {e}."
-
 /-- Call `mkApp` recursively with 12 arguments -/
 @[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
   mkApp6 (mkApp6 f a b c d e g) e₁ e₂ e₃ e₄ e₅ e₆
@@ -130,18 +123,15 @@ elab:max "T% " t:term:arg : term => do
       | _ => pure ()
   | .forallE x src tgt _ =>
     trace[TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
-    let us ← src.getUniverse
-    let ut ← tgt.getUniverse
     -- TODO: can `tgt` depend on `x` in a way that is not a function application?
     -- Check that `x` is not a bound variable in `tgt`!
     -- xxx: is this check fine or overzealous?
     if Lean.Expr.hasLooseBVars tgt then
       throwError m!"Term {tgt} has loose bound variables¬
       Hint: applying the 'T%' elaborator twice makes no sense."
-    let trivBundle := mkAppN (.const `Bundle.Trivial [us, ut]) #[src, tgt]
+    let trivBundle ← mkAppOptM ``Bundle.Trivial #[src, tgt]
     return ← withLocalDecl x BinderInfo.default src fun x ↦ do
-      let body := mkAppN (.const ``Bundle.TotalSpace.mk' [us, ut, ut])
-        #[src, trivBundle, tgt, x, .app e x]
+      let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[src, trivBundle, tgt, x, e.app x]
       mkLambdaFVars #[x] body
   | _ => pure ()
   return e
