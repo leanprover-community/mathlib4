@@ -8,7 +8,7 @@ open Lake DSL
 
 require "leanprover-community" / "batteries" @ git "modsys"
 require quote4 from git "https://github.com/Kha/quote4" @ "modulize-nightly"
-require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "aesop" @ git "modulize"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.75-pre2" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
