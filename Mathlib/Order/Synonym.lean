@@ -10,10 +10,13 @@ import Mathlib.Order.Basic
 /-!
 # Type synonyms
 
-This file provides two type synonyms for order theory:
+This file provides three type synonyms for order theory:
+
 * `OrderDual α`: Type synonym of `α` to equip it with the dual order (`a ≤ b` becomes `b ≤ a`).
 * `Lex α`: Type synonym of `α` to equip it with its lexicographic order. The precise meaning depends
   on the type we take the lex of. Examples include `Prod`, `Sigma`, `List`, `Finset`.
+* `Colex α`: Type synonym of `α` to equip it with its colexicographic order. The precise meaning
+  depends on the type we take the colex of. Examples include `Finset`.
 
 ## Notation
 
@@ -25,8 +28,10 @@ The general rule for notation of `Lex` types is to append `ₗ` to the usual not
 
 One should not abuse definitional equality between `α` and `αᵒᵈ`/`Lex α`. Instead, explicit
 coercions should be inserted:
+
 * `OrderDual`: `OrderDual.toDual : α → αᵒᵈ` and `OrderDual.ofDual : αᵒᵈ → α`
 * `Lex`: `toLex : α → Lex α` and `ofLex : Lex α → α`.
+* `Colex`: `toColex : α → Colex α` and `ofColex : Colex α → α`.
 
 ## See also
 
