@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-! # Smooth immersions and embeddings
 
@@ -35,10 +37,10 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
-
-## TODO
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
+
+## TODO
 * `IsImmersionAt.prodMap`: the product of two immersions is an immersion
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
 * If `f: M → M'` is a map between Banach manifolds, `mfderiv I I' f x` splitting implies `f` is an
@@ -360,6 +362,45 @@ lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =�
     IsImmersionAt F I I' n g x :=
   ⟨h.equiv, LiftSourceTargetPropertyAt.congr_of_eventuallyEq (ImmersionAtPropIsNice f x h.equiv)
     h.property h'⟩
+
+/-- This lemma is marked private since `h.domChart` is an arbitrary representative:
+`continuousAt` is part of the public API -/
+private theorem continuousOn (h : IsImmersionAt F I I' n f x) :
+    ContinuousOn f h.domChart.source := by
+  have mapsto : MapsTo f h.domChart.source h.codChart.source :=
+    fun x hx ↦ by apply h.map_source_subset_source; use x
+  rw [← h.domChart.continuousOn_writtenInExtend_iff le_rfl mapsto (I' := I') (I := I),
+    ← h.domChart.extend_target_eq_image_source]
+  have : ContinuousOn (h.equiv ∘ fun x ↦ (x, 0)) (h.domChart.extend I).target := by fun_prop
+  exact this.congr h.writtenInCharts
+
+/-- A `C^k` immersion at `x` is continuous at `x`. -/
+theorem continuousAt (h : IsImmersionAt F I I' n f x) : ContinuousAt f x :=
+  h.continuousOn.continuousAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
+
+variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
+
+/-- This lemma is marked private since `h.domChart` is an arbitrary representative:
+`contMDiffAt` is part of the public API -/
+private theorem contMDiffOn (h : IsImmersionAt F I I' n f x) :
+    ContMDiffOn I I' n f h.domChart.source := by
+  have mapsto : MapsTo f h.domChart.source h.codChart.source :=
+    fun x hx ↦ by apply h.map_source_subset_source; use x
+  rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
+    h.codChart_mem_maximalAtlas le_rfl mapsto,
+    ← h.domChart.extend_target_eq_image_source]
+  have : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E') n (h.equiv ∘ fun x ↦ (x, 0)) := by
+    have : ContMDiff (𝓘(𝕜, E × F)) 𝓘(𝕜, E') n h.equiv := by
+      rw [contMDiff_iff_contDiff]
+      exact h.equiv.contDiff
+    apply this.comp
+    rw [contMDiff_iff_contDiff, contDiff_prod_iff]
+    exact ⟨contDiff_id, contDiff_const (c := (0 : F))⟩
+  exact this.contMDiffOn.congr h.writtenInCharts
+
+/-- A `C^k` immersion at `x` is `C^k` at `x`. -/
+theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
+  h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
 end IsImmersionAt
 
