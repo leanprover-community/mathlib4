@@ -162,13 +162,14 @@ variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue 
   {a b : R} {i : ι}
 
 /--
-- `v i, w`: absolute values on a field `R`.
+Suppose that
+- `v i` and `w` are absolute values on a field `R`.
 - `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
 - `v i` is inequivalent to `w` via the divergent point `b : R`.
 - `w a = 1`.
 
 Then there is a common divergent point `k` causing both `v i` and `w` to be inequivalent to
-each `v j` for `j ≠ i`
+each `v j` for `j ≠ i`.
 -/
 private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
     (haw : w a = 1) (hb : 1 < v i b) (hbw : w b < 1) :
@@ -226,8 +227,8 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
 open Fintype Subtype in
 /--
 If `v : ι → AbsoluteValue R S` is a finite collection of non-trivial and pairwise inequivalent
-absolute values, then for any `v i` there is some `a : R` such that `1 < v i a` while all other
-`v j a < 1`.
+absolute values, then for any `i` there is some `a : R` such that `1 < v i a` and
+`v j a < 1` for all `j ≠ i`.
 -/
 theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
