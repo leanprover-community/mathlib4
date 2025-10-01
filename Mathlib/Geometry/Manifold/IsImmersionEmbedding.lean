@@ -87,7 +87,7 @@ Motivating examples are immersions and submersions of smooth manifolds. -/
 structure LocalSourceTargetPropertyAt (f : M → M') (x : M)
     (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) where
   mono_source : ∀ f : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
-    ∀ s : Set M, P f φ ψ → P f (φ.restr s) ψ
+    ∀ s : Set M, IsOpen s → P f φ ψ → P f (φ.restr s) ψ
   congr : ∀ f g : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
     ∀ s : Set M, IsOpen s → EqOn f g s → P f (φ.restr s) ψ → P g (φ.restr s) ψ
 
@@ -173,7 +173,7 @@ lemma mk_of_continuousAt (hf : ContinuousAt f x)
   exact ⟨domChart.restr s, codChart,
     by rw [domChart.restr_source, interior_eq_iff_isOpen.mpr hsopen]; exact mem_inter hx hxs, hfx,
     restr_mem_maximalAtlas (G := contDiffGroupoid n I) hdomChart hsopen, hcodChart, this,
-    hP.mono_source _ _ _ _ hfP⟩
+    hP.mono_source _ _ _ _ hsopen hfP⟩
 
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 if `f` has property `P` at `x` and `f` and `g` are eventually equal near `x`,
@@ -193,7 +193,7 @@ lemma congr_of_eventuallyEq (hP : LocalSourceTargetPropertyAt f x P)
       exact (hfg.mono this).image_eq.symm.le
     · exact Subset.trans (image_mono (by simp)) hf.map_source_subset_source
   · apply hP.congr _ _ _ _ _ hs (hfg.mono hss')
-    exact hP.mono_source _ _ _ _ hf.property
+    exact hP.mono_source _ _ _ _ hs hf.property
 
 end LiftSourceTargetPropertyAt
 
@@ -214,7 +214,7 @@ omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a "nice" local property. -/
 lemma ImmersionAtPropIsNice (f : M → M') (x) (equiv : (E × F) ≃L[𝕜] E') :
     LocalSourceTargetPropertyAt f x (ImmersionAtProp I I' equiv) where
-  mono_source f φ ψ s hf := by
+  mono_source f φ ψ s hs hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
     exact hf.mono (by simpa using this)
   congr f g φ ψ s hs hfg hf := by
