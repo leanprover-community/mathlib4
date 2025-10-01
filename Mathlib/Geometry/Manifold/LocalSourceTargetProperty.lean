@@ -7,14 +7,14 @@ import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 
 /-! # Local properties of smooth functions which depend on both the source and target
 
-In this file, we consider "local properties" of functions `f : M → N` between manifolds,
-which depend on both the source and the target: more precisely, `f` has such a property if and only
-if there is a suitable pair of charts on `M` and `N`, respectively, such that `f` read in these
-charts has a particular form.
-The motivating example of this vague description are smooth immersions and submersions: `f : M → N`
-is an immersion at `x` iff there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`,
-respectively, such that in these charts, `f` looks like `u ↦ (u, 0)`. Similarly, `f` is a submersion
-iff it looks like a projection `(u, v) ↦ u` in suitable charts near `x` and `f x`.
+In this file, we consider local properties of functions between manifolds, which depend on both the
+source and the target: more precisely, properties `P` of functions `f : M → N` such that
+`f` has property `P` if and only if there is a suitable pair of charts on `M` and `N`, respectively,
+such that `f` read in these charts has a particular form.
+The motivating example of this general description are immersions and submersions:
+`f : M → N` is an immersion at `x` iff there are charts `φ` and `ψ` of `M` and `N` around `x` and
+`f x`, respectively, such that in these charts, `f` looks like `u ↦ (u, 0)`. Similarly, `f` is a
+submersion at `x` iff it looks like a projection `(u, v) ↦ u` in suitable charts near `x` and `f x`.
 
 Studying such local properties allows proving several lemmas about immersions and submersions
 only once. In `IsImmersionEmbedding.lean`, we prove that being an immersion at `x` is indeed a
@@ -46,12 +46,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {n : WithTop ℕ∞}
 
-/-! Local properties which require a particular choice of both the source and target chart -/
-section LocalProperties
-
-/-- Structure recording good behaviour of a property of functions `M → M'` w.r.t. to choices
-of a chart on both `M` and `M'`. Currently, good behaviour means being stable under restriction
-of the domain chart, and locality in the target. (This list might be extended in the future.)
+/-- Structure recording good behaviour of a property of functions `M → N` w.r.t. to compatible
+choices of both a chart on `M` and `N`. Currently, we ask for the property being stable under
+restriction of the domain chart, and local in the target.
 
 Motivating examples are immersions and submersions of smooth manifolds. -/
 structure IsLocalSourceTargetProperty
@@ -62,7 +59,7 @@ structure IsLocalSourceTargetProperty
     ∀ s : Set M, IsOpen s → EqOn f g s → P f (φ.restr s) ψ → P g (φ.restr s) ψ
 
 variable (I I' n) in
-/-- A property of smooth functions `M → M'` which is local at both the source and target:
+/-- A property of smooth functions `M → N` which is local at both the source and target:
 a property `P` is local at `x` iff there exist charts `φ` and `ψ` of `M` and `N` around
 `x` and `f x`, respectively, such that `f` satisfies the property w.r.t. `φ` and `ψ`.
 
@@ -166,5 +163,3 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
     exact hP.mono_source _ _ _ _ hs hf.property
 
 end LiftSourceTargetPropertyAt
-
-end LocalProperties
