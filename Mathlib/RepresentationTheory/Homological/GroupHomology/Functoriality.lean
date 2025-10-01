@@ -21,8 +21,15 @@ We also provide extra API for these maps in degrees 0, 1, 2.
   induced by a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
 * `groupHomology.map f φ n` is the map `Hₙ(G, A) ⟶ Hₙ(H, B)` induced by a group homomorphism
   `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
-* `groupHomology.H1CoresCoinf A S` is the short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`
-  for a normal subgroup `S ≤ G` and a `G`-representation `A`.
+* `groupHomology.coresNatTrans f n`: given a group homomorphism `f : G →* H`, this is a natural
+  transformation of `n`th group homology functors which sends `A : Rep k H` to the "corestriction"
+  map `Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)` induced by `f` and the identity map on `Res(f)(A)`.
+* `groupHomology.coinfNatTrans f n`: given a normal subgroup `S ≤ G`, this is a natural
+  transformation of `n`th group homology functors which sends `A : Rep k G` to the "coinflation"
+  map `Hₙ(G, A) ⟶ Hₙ(G ⧸ S, A_S)` induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`.
+* `groupHomology.H1CoresCoinf A S` is the (exact) short complex
+  `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` for a normal subgroup `S ≤ G` and a `G`-representation
+  `A`, defined using the corestriction and coinflation map in degree 1.
 
 -/
 
@@ -350,6 +357,23 @@ lemma map₁_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
 
 section CoresCoinf
 
+/-!
+### Exactness of the corestriction-coinflation sequence in degree 1
+
+Given a group homomorphism `f : G →* H`, the `n`th corestriction map is the map
+`Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)` induced by `f` and the identity map on `Res(f)(A)`. Similarly, given
+a normal subgroup `S ≤ G`, we define the `n`th coinflation map `Hₙ(G, A) ⟶ Hₙ(G ⧸ S, A_S)` as the
+map induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`.
+
+In particular, for `S ≤ G` normal and `A : Rep k G`, the corestriction map
+`Hₙ(S, Res(ι)(A)) ⟶ Hₙ(G, A)` and the coinflation map `Hₙ(G, A) ⟶ Hₙ(G ⧸ S, A_S)` form a short
+complex, where `ι : S →* G` is the natural inclusion. In this section we define this short complex
+for degree 1, `groupHomology.H1CoresCoinf A S`, and prove it is exact.
+
+We do this first when `A` is `S`-trivial, and then extend to the general case.
+
+-/
+
 variable (A) (S : Subgroup G) [S.Normal]
 
 section OfTrivial
@@ -370,7 +394,8 @@ instance mapCycles₁_quotientGroupMk'_epi :
       simp [← QuotientGroup.mk_inv, apply_eq_of_coe_eq A.ρ S (s a)⁻¹ a⁻¹ (by simp [hs])]
 
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, this is the
-short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. -/
+short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. (This is a simplified expression for the
+degree 1 corestriction-coinflation sequence when `A` is `S`-trivial.) -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1CoresCoinfOfTrivial :
     ShortComplex (ModuleCat k) where
@@ -464,7 +489,9 @@ previous assumptions. -/
 
 end OfTrivial
 
-/-- The short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`. -/
+/-- The short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`. The first map is the
+"corestriction" map induced by the inclusion `ι : S →* G` and the identity on `Res(ι)(A)`, and the
+second map is the "coinflation" map induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`. -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1CoresCoinf :
     ShortComplex (ModuleCat k) where
@@ -500,7 +527,8 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
     sum_sum_index, add_smul, sub_sub_sub_eq, lsingle, singleAddHom] using add_comm _ _
 
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the map
-`H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` is an epimorphism. -/
+`H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S` is an
+epimorphism. -/
 instance : Epi (H1CoresCoinf A S).g := by
   rw [ModuleCat.epi_iff_surjective]
   intro x
@@ -534,8 +562,9 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
     Function.comp_def, (QuotientGroup.eq_one_iff <| Subtype.val _).2 (Subtype.prop _)]
     using Submodule.finsuppSum_mem _ _ _ _ fun _ _ => single_one_mem_boundaries₁ _
 
-/-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
-`H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` is exact. `simp`s squeezed for performance. -/
+/-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the degree 1
+corestriction-coinflation sequence `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` is exact. `simp`s
+squeezed for performance. -/
 theorem H1CoresCoinf_exact :
     (H1CoresCoinf A S).Exact := by
   rw [ShortComplex.moduleCat_exact_iff_ker_sub_range]
@@ -762,8 +791,9 @@ instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
 
 variable {G}
 
-/-- Given a group homomorphism `f : G →* H`, this is a natural transformation between the functors
-sending `A : Rep k H` to `Hₙ(G, Res(f)(A))` and to `Hₙ(H, A)`. -/
+/-- Given a group homomorphism `f : G →* H` this sends `A : Rep k H` to the `n`th
+"corestriction" map `Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)` induced by `f` and the identity
+map on `Res(f)(A)`. -/
 @[simps]
 noncomputable def coresNatTrans (n : ℕ) :
     Action.res (ModuleCat k) f ⋙ functor k G n ⟶ functor k H n where
@@ -773,8 +803,8 @@ noncomputable def coresNatTrans (n : ℕ) :
     chainsMap, congr (MonoidHom.comp_id _) chainsMap, Category.id_comp
     (X := (Action.res _ _).obj _)]
 
-/-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
-sending `A : Rep k G` to `Hₙ(G, A)` and to `Hₙ(G ⧸ S, A_S)`. -/
+/-- Given a normal subgroup `S ≤ G`, this sends `A : Rep k G` to the `n`th "coinflation" map
+`Hₙ(G, A) ⟶ Hₙ(G ⧸ S, A_S)` induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`. -/
 @[simps]
 noncomputable def coinfNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
     functor k G n ⟶ quotientToCoinvariantsFunctor k S ⋙ functor k (G ⧸ S) n where
