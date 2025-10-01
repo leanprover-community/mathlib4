@@ -1670,7 +1670,7 @@ lemma deriv_sum_blah :
 
 lemma iteratedDeriv_vanishes (k :ℕ) :
   --∀ (l' : Fin (m K)) (k' : Fin (n)),
-   k < setup.n q → deriv^[k] (setup.R q hq0 h2mq) (setup.l q u) = 0 := by
+   k < setup.n q → deriv^[k] (setup.R q hq0 h2mq) (setup.l q u) = 0 := by stop
   --intros l' k' hl
   intros hk
   have h1 := deriv_sum_blah setup q hq0 u t h2mq
@@ -1702,7 +1702,7 @@ lemma iteratedDeriv_vanishes (k :ℕ) :
     Int.cast_eq_zero, ne_eq, not_or, or_self_right, inv_eq_zero, Nat.cast_mul,
   Real.rpow_natCast, Pi.zero_apply]
 
-#exit
+
 lemma R_analyt_at_point (point : ℂ) : AnalyticAt ℂ (setup.R q hq0 h2mq) point := by
   apply Differentiable.analyticAt
   unfold R
@@ -1732,37 +1732,36 @@ lemma order_neq_top : ∀ (l' : Fin (setup.m)), analyticOrderAt (setup.R q hq0 h
   intros z
   exact setup.anever q hq0 h2mq z}
 
-include htriv habc in
 lemma order_neq_top_min_one : ∀ z : ℂ,
-  analyticOrderAt (R) z ≠ ⊤ := by {
+  analyticOrderAt (setup.R q hq0 h2mq) z ≠ ⊤ := by {
   intros l' H
   rw [← zero_iff_order_inf] at H
-  apply R_nonzero α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
+  apply setup.R_nonzero
   rw [funext_iff]
   intros z
   exact H z
   intros z
-  exact anever α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z}
+  exact setup.anever q hq0 h2mq z}
 
 lemma Rorder_exists (z : ℂ) :
-  ∃ r, (analyticOrderAt (R) z) = some r := by
-  have : (analyticOrderAt (R) z) ≠ ⊤ := by
-   exact order_neq_top_min_one α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z
+  ∃ r, (analyticOrderAt (setup.R q hq0 h2mq) z) = some r := by
+  have : (analyticOrderAt (setup.R q hq0 h2mq) z) ≠ ⊤ := by
+   exact setup.order_neq_top_min_one q hq0 h2mq z
   revert this
-  cases'(analyticOrderAt (R) z) with r
+  cases'(analyticOrderAt (setup.R q hq0 h2mq) z) with r
   · intro this_1; simp_all only [ne_eq, not_true_eq_false]
   · intros hr; use r; rfl
 
 def R_order (z : ℂ) : ℕ :=
-  (Rorder_exists α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z).choose
+  (Rorder_exists setup q hq0 h2mq z).choose
 
 def R_order_prop {z : ℂ} :=
-  (Rorder_exists α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z).choose_spec
+  (Rorder_exists setup q hq0 h2mq z).choose_spec
 
 lemma R_order_eq (z) :
-  (analyticOrderAt (R) z)
-    = R_order α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z :=
-    (Rorder_exists α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z).choose_spec
+  (analyticOrderAt (setup.R q hq0 h2mq) z)
+    = setup.R_order q hq0 h2mq z :=
+    (Rorder_exists setup q hq0 h2mq z).choose_spec
 
 omit hirr  htriv habc [NumberField K] hq0 h2mq in
 lemma exists_mem_finset_min' {γ : Type _} {β : Type _} [LinearOrder γ]
