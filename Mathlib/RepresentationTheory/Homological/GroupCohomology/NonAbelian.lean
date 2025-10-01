@@ -80,7 +80,8 @@ theorem H0.map_id (A : Type*) [AddGroup A] [DistribMulAction G A] :
 
 theorem H0.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
-    (f : A →+[G] B) (g : B →+[G] C) : H0.map (g.comp f) = (H0.map g).comp (H0.map f) := sorry
+    (f : A →+[G] B) (g : B →+[G] C) : H0.map (g.comp f) = (H0.map g).comp (H0.map f) := by
+      constructor
 
 theorem H0.map_injective_of_injective {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A]
     [DistribMulAction G B] (f : A →+[G] B) (hf : Function.Injective f) :
@@ -111,8 +112,8 @@ instance setoid : Setoid (Z1 G A) where
   r := cohomologous
   iseqv := {
     refl := fun f => ⟨0, fun h => by simp⟩,
-    symm := sorry,
-    trans := sorry
+    symm := fun ⟨a, ha⟩ ↦ ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩,
+    trans := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
   }
 
 end Z1
@@ -163,7 +164,9 @@ theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : 
 noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
     ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
 
-def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
+def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := by
+  unfold Function.Injective at hf
+  sorry
 
 theorem exact₁ : Function.Exact (H0.map f) (H0.map g) := sorry
 
