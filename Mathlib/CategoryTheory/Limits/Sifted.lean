@@ -143,7 +143,7 @@ variable (X Y : C ⥤ Type u)
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
 `externalProductCompDiagIso`, the comparison map `colimit.pre (X ⊠ Y) (diag C)` identifies with the
 product comparison map for the colimit functor. -/
-lemma factorization_prod_comparison_colim :
+lemma factorization_prodComparison_colim :
     (HasColimit.isoOfNatIso ((externalProductCompDiagIso _ _).app (X, Y)).symm).hom ≫
       colimit.pre (X ⊠ Y) (diag C) ≫
         (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <| curriedTensor <| Type u).hom =
@@ -159,7 +159,7 @@ variable [IsSifted C]
 /-- If `C` is sifted, the canonical product comparison map for the `colim` functor
 `(C ⥤ Type) ⥤ Type` is an isomorphism. -/
 instance : IsIso (CartesianMonoidalCategory.prodComparison colim X Y) := by
-  rw [← factorization_prod_comparison_colim]
+  rw [← factorization_prodComparison_colim]
   infer_instance
 
 instance colim_preservesLimits_pair_of_sSifted {X Y : C ⥤ Type u} :
@@ -197,6 +197,8 @@ end
 
 section
 
+variable (C)
+
 open Opposite in
 open scoped MonoidalCategory.ExternalProduct in
 /-- If the `colim` functor `(C ⥤ Type) ⥤ Type` preserves binary products, then `C` is sifted or
@@ -216,11 +218,8 @@ theorem isSiftedOrEmpty_of_colim_preservesBinaryProducts
 
 lemma isSiftedOrEmpty_of_colim_preservesFiniteProducts
     [h : PreservesFiniteProducts (colim : (C ⥤ Type u) ⥤ Type u)] :
-    IsSiftedOrEmpty C := by
-  rcases Finite.exists_equiv_fin WalkingPair with ⟨_, ⟨e⟩⟩
-  haveI : PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u) :=
-    preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) _
-  exact isSiftedOrEmpty_of_colim_preservesBinaryProducts
+    IsSiftedOrEmpty C :=
+  isSiftedOrEmpty_of_colim_preservesBinaryProducts C
 
 lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
     [PreservesLimitsOfShape (Discrete (Fin 0)) (colim : (C ⥤ Type u) ⥤ Type u)] :
@@ -241,23 +240,19 @@ lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
 theorem of_colim_preservesFiniteProducts
     [h : PreservesFiniteProducts (colim : (C ⥤ Type u) ⥤ Type u)] :
     IsSifted C := by
-  have := @isSiftedOrEmpty_of_colim_preservesFiniteProducts _ _ h
-  have := @nonempty_of_colim_preservesLimitsOfShapeFinZero _ _ (h.preserves 0)
+  have := isSiftedOrEmpty_of_colim_preservesFiniteProducts C
+  have := nonempty_of_colim_preservesLimitsOfShapeFinZero C
   constructor
+
+variable {C}
 
 /-- Auxiliary version of `IsSifted.of_final_functor_from_sifted` where everything is a
 small category. -/
 theorem of_final_functor_from_sifted'
-    {D : Type u} [SmallCategory.{u} D] [IsSifted C] (F : C ⥤ D) [Final F] : IsSifted D := by
-  refine @of_colim_preservesFiniteProducts _ _ (⟨fun n => ⟨fun {K} ↦ ?_⟩⟩)
-  let colimCompIso :
-      (whiskeringLeft _ _ _).obj F ⋙ colim (J := C) (C := Type _) ≅ colim (J := D) :=
-    NatIso.ofComponents
-      (fun c ↦ Final.colimitIso F _)
-      (fun _ ↦ by
-        apply colimit.hom_ext
-        simp [comp_obj, ι_colimMap, ι_colimMap_assoc])
-  apply preservesLimit_of_natIso K colimCompIso
+    {D : Type u} [SmallCategory D] [IsSifted C] (F : C ⥤ D) [Final F] : IsSifted D := by
+  have : PreservesFiniteProducts (colim : (D ⥤ Type u) ⥤ _) :=
+    ⟨fun n ↦ preservesLimitsOfShape_of_natIso (Final.colimIso F)⟩
+  exact of_colim_preservesFiniteProducts D
 
 end
 
@@ -271,9 +266,7 @@ variable {C : Type u} [Category.{v} C]
 theorem IsSifted.of_final_functor_from_sifted {D : Type u₁} [Category.{v₁} D] [h₁ : IsSifted C]
     (F : C ⥤ D) [Final F] : IsSifted D := by
   rw [isSifted_iff_asSmallIsSifted] at h₁ ⊢
-  let : AsSmall.{max u₁ v₁} C ⥤ AsSmall.{max u v} D :=
-    AsSmall.equiv.inverse ⋙ F ⋙ AsSmall.equiv.functor
-  have _ : Final this := by infer_instance
-  apply of_final_functor_from_sifted' this
+  exact of_final_functor_from_sifted' <|
+    AsSmall.equiv.{_, _, max u₁ v₁}.inverse ⋙ F ⋙ AsSmall.equiv.{_, _, max u v}.functor
 
 end CategoryTheory
