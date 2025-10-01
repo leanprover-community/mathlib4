@@ -327,4 +327,3 @@ theorem IsTight_of_isRelativelyCompact (hcomp : IsCompact (closure S)) :
 end
 
 end MeasureTheory
-#min_imports
