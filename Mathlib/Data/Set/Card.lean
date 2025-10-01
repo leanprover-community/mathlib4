@@ -827,6 +827,10 @@ theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, 
   have hle := encard_le_encard_of_injOn hf f_inj
   to_encard_tac; rwa [ht.cast_ncard_eq, (ht.finite_of_encard_le hle).cast_ncard_eq]
 
+theorem ncard_range_of_injective {α β : Type*} {f : α → β} (hf : Function.Injective f) :
+    (range f).ncard = Nat.card α := by
+  rw [← image_univ, ncard_image_of_injective univ hf, ncard_univ]
+
 /-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
 
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
@@ -915,6 +919,16 @@ theorem ncard_union_eq (h : Disjoint s t) (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : (s ∪ t).ncard = s.ncard + t.ncard := by
   to_encard_tac
   rw [hs.cast_ncard_eq, ht.cast_ncard_eq, (hs.union ht).cast_ncard_eq, encard_union_eq h]
+
+theorem ncard_union_eq_iff {α : Type*} {s t : Set α} (hs : s.Finite := by toFinite_tac)
+    (ht : t.Finite := by toFinite_tac) : (s ∪ t).ncard = s.ncard + t.ncard ↔ Disjoint s t := by
+  rw [← ncard_union_add_ncard_inter s t hs ht, left_eq_add,
+    ncard_eq_zero (hs.inter_of_left t), disjoint_iff_inter_eq_empty]
+
+theorem ncard_union_lt {α : Type*} {s t : Set α} (hs : s.Finite := by toFinite_tac)
+    (ht : t.Finite := by toFinite_tac) (h : ¬ Disjoint s t) :
+    (s ∪ t).ncard < s.ncard + t.ncard :=
+  (ncard_union_le s t).lt_of_ne (mt (ncard_union_eq_iff hs ht).mp h)
 
 theorem ncard_diff_add_ncard_of_subset (h : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
     (t \ s).ncard + s.ncard = t.ncard := by

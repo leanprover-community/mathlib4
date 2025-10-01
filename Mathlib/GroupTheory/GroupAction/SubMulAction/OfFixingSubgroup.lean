@@ -490,20 +490,6 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
       rw [mul_smul, mul_smul, smul_eq_iff_eq_inv_smul g]
       exact hk _ (Set.mem_smul_set_iff_inv_smul_mem.mp hy.2)
 
-theorem _root_.Set.ncard_range_of_injective {α β : Type*} {f : α → β} (hf : Function.Injective f) :
-    (Set.range f).ncard = Nat.card α := by
-  rw [← Set.image_univ, Set.ncard_image_of_injective Set.univ hf, Set.ncard_univ]
-
-theorem _root_.Set.ncard_union_eq_iff {α : Type*} {s t : Set α} (hs : s.Finite := by toFinite_tac)
-    (ht : t.Finite := by toFinite_tac) : (s ∪ t).ncard = s.ncard + t.ncard ↔ Disjoint s t := by
-  rw [← Set.ncard_union_add_ncard_inter s t hs ht, left_eq_add,
-    Set.ncard_eq_zero (hs.inter_of_left t), Set.disjoint_iff_inter_eq_empty]
-
-theorem _root_.Set.ncard_union_lt {α : Type*} {s t : Set α} (hs : s.Finite := by toFinite_tac)
-    (ht : t.Finite := by toFinite_tac) (h : ¬ Disjoint s t) :
-    (s ∪ t).ncard < s.ncard + t.ncard :=
-  (Set.ncard_union_le s t).lt_of_ne (mt (Set.ncard_union_eq_iff hs ht).mp h)
-
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     [Finite α]
