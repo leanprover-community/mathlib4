@@ -230,6 +230,16 @@ lemma condExpKernel_ae_eq_trim_condExp
     stronglyMeasurable_condExp]
   exact condExpKernel_ae_eq_condExp hm hs
 
+lemma condDistrib_apply_ae_eq_condExpKernel_map {β γ : Type*} {mβ : MeasurableSpace β}
+    {mγ : MeasurableSpace γ} [StandardBorelSpace β] [Nonempty β] {X : Ω → β} {Y : Ω → γ}
+    (hX : Measurable X) (hY : Measurable Y) {s : Set β} (hs : MeasurableSet s) :
+    (fun a ↦ condDistrib X Y μ (Y a) s)
+      =ᵐ[μ] fun a ↦ (condExpKernel μ (mγ.comap Y)).map X a s := by
+  simp_rw [Kernel.map_apply' _ hX _ hs]
+  filter_upwards [condDistrib_ae_eq_condExp hY hX (μ := μ) hs,
+    condExpKernel_ae_eq_condExp hY.comap_le (μ := μ) (hX hs)] with a ha₁ ha₂
+  rw [← measureReal_eq_measureReal_iff, ha₁, ha₂]
+
 theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :
     μ[f|m ⊓ mΩ] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω := by
