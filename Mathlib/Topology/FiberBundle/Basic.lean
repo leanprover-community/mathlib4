@@ -81,11 +81,11 @@ dimension, the transition function between two trivializations is not automatica
 map from the base `B` to the endomorphisms `F →L[R] F` of the fiber (considered with the
 operator-norm topology), and so the definition needs to be modified by restricting consideration to
 a family of trivializations (constituting the data) which are all mutually-compatible in this sense.
-The PRs https://github.com/leanprover-community/mathlib4/pull/13052 and
-https://github.com/leanprover-community/mathlib4/pull/13175 implemented this change.
+The PRs https://github.com/leanprover-community/mathlib/pull/13052 and
+https://github.com/leanprover-community/mathlib/pull/13175 implemented this change.
 
 There is still the choice about whether to hold this data at the level of fiber bundles or of vector
-bundles. As of PR https://github.com/leanprover-community/mathlib4/pull/17505, the data is all held
+bundles. As of PR https://github.com/leanprover-community/mathlib/pull/17505, the data is all held
 in `FiberBundle`, with `VectorBundle` a (propositional) mixin stating fiberwise-linearity.
 
 This allows bundles to carry instances of typeclasses in which the scalar field, `R`, does not
@@ -136,7 +136,7 @@ A drawback is that some silly constructions will typecheck: in the case of the t
 can add two vectors in different tangent spaces (as they both are elements of `F` from the point of
 view of Lean). To solve this, one could mark the tangent space as irreducible, but then one would
 lose the identification of the tangent space to `F` with `F`. There is however a big advantage of
-this situation: even if Lean can not check that two basepoints are defeq, it will accept the fact
+this situation: even if Lean cannot check that two basepoints are defeq, it will accept the fact
 that the tangent spaces are the same. For instance, if two maps `f` and `g` are locally inverse to
 each other, one can express that the composition of their derivatives is the identity of
 `TangentSpace I x`. One could fear issues as this composition goes from `TangentSpace I x` to

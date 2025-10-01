@@ -82,8 +82,8 @@ variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [MulOneClass M₃
 /-- The equivalence `(M₁ →* N) ≃ (M₂ →* N)` obtained by postcomposition with
 a multiplicative equivalence `e : M₁ ≃* M₂`. -/
 @[to_additive (attr := simps)
-"The equivalence `(M₁ →+ N) ≃ (M₂ →+ N)` obtained by postcomposition with
-an additive equivalence `e : M₁ ≃+ M₂`."]
+/-- The equivalence `(M₁ →+ N) ≃ (M₂ →+ N)` obtained by postcomposition with
+an additive equivalence `e : M₁ ≃+ M₂`. -/]
 def monoidHomCongrLeftEquiv (e : M₁ ≃* M₂) : (M₁ →* N) ≃ (M₂ →* N) where
   toFun f := f.comp e.symm.toMonoidHom
   invFun f := f.comp e.toMonoidHom
@@ -93,8 +93,8 @@ def monoidHomCongrLeftEquiv (e : M₁ ≃* M₂) : (M₁ →* N) ≃ (M₂ →* 
 /-- The equivalence `(M →* N₁) ≃ (M →* N₂)` obtained by postcomposition with
 a multiplicative equivalence `e : N₁ ≃* N₂`. -/
 @[to_additive (attr := simps)
-"The equivalence `(M →+ N₁) ≃ (M →+ N₂)` obtained by postcomposition with
-an additive equivalence `e : N₁ ≃+ N₂`."]
+/-- The equivalence `(M →+ N₁) ≃ (M →+ N₂)` obtained by postcomposition with
+an additive equivalence `e : N₁ ≃+ N₂`. -/]
 def monoidHomCongrRightEquiv (e : N₁ ≃* N₂) : (M →* N₁) ≃ (M →* N₂) where
   toFun := e.toMonoidHom.comp
   invFun := e.symm.toMonoidHom.comp
@@ -134,8 +134,8 @@ variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [MulOneClass M₃
 /-- The isomorphism `(M₁ →* N) ≃* (M₂ →* N)` obtained by postcomposition with
 a multiplicative equivalence `e : M₁ ≃* M₂`. -/
 @[to_additive (attr := simps! apply)
-"The isomorphism `(M₁ →+ N) ≃+ (M₂ →+ N)` obtained by postcomposition with
-an additive equivalence `e : M₁ ≃+ M₂`."]
+/-- The isomorphism `(M₁ →+ N) ≃+ (M₂ →+ N)` obtained by postcomposition with
+an additive equivalence `e : M₁ ≃+ M₂`. -/]
 def monoidHomCongrLeft (e : M₁ ≃* M₂) : (M₁ →* N) ≃* (M₂ →* N) where
   __ := e.monoidHomCongrLeftEquiv
   map_mul' f g := by ext; simp
@@ -143,8 +143,8 @@ def monoidHomCongrLeft (e : M₁ ≃* M₂) : (M₁ →* N) ≃* (M₂ →* N) w
 /-- The isomorphism `(M →* N₁) ≃* (M →* N₂)` obtained by postcomposition with
 a multiplicative equivalence `e : N₁ ≃* N₂`. -/
 @[to_additive (attr := simps! apply)
-"The isomorphism `(M →+ N₁) ≃+ (M →+ N₂)` obtained by postcomposition with
-an additive equivalence `e : N₁ ≃+ N₂`."]
+/-- The isomorphism `(M →+ N₁) ≃+ (M →+ N₂)` obtained by postcomposition with
+an additive equivalence `e : N₁ ≃+ N₂`. -/]
 def monoidHomCongrRight (e : N₁ ≃* N₂) : (M →* N₁) ≃* (M →* N₂) where
   __ := e.monoidHomCongrRightEquiv
   map_mul' f g := by ext; simp

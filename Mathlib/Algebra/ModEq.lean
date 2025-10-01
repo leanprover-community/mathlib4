@@ -252,6 +252,26 @@ theorem not_modEq_iff_ne_mod_zmultiples :
     ¬a ≡ b [PMOD p] ↔ (a : α ⧸ AddSubgroup.zmultiples p) ≠ b :=
   modEq_iff_eq_mod_zmultiples.not
 
+/-- If `a ≡ b [PMOD p]`, then mod `n • p` there are `n` cases. -/
+theorem modEq_nsmul_cases (n : ℕ) (hn : n ≠ 0) :
+    a ≡ b [PMOD p] ↔ ∃ i < n, a ≡ b + i • p [PMOD (n • p)] := by
+  simp_rw [← sub_modEq_iff_modEq_add, modEq_comm (b := b)]
+  simp_rw [AddCommGroup.ModEq, sub_right_comm, sub_eq_iff_eq_add (b := _ • _), ← natCast_zsmul,
+    smul_smul, ← add_smul]
+  constructor
+  · rintro ⟨k, hk⟩
+    refine ⟨(k % n).toNat, ?_⟩
+    rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ (mod_cast hn))]
+    refine ⟨?_, k / n, ?_⟩
+    · refine Int.emod_lt_of_pos _ ?_
+      cutsat
+    · rw [hk, Int.ediv_mul_add_emod]
+  · rintro ⟨k, _, j, hj⟩
+    rw [hj]
+    exact ⟨_, rfl⟩
+
+alias ⟨ModEq.nsmul_cases, _⟩ := AddCommGroup.modEq_nsmul_cases
+
 end AddCommGroup
 
 @[simp]

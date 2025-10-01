@@ -38,7 +38,7 @@ and permit to manipulate them in a relatively smooth way:
 
   * `SubMulAction.conjMap_ofFixingSubgroup`:
   the equivariant map between `SubMulAction.ofFixingSubgroup M t`
-  and `SubMulAction.ofFIxingSubgroup M s`
+  and `SubMulAction.ofFixingSubgroup M s`
   induced by `g : M` such that `g • t = s`.
 
   * `SubMulAction.ofFixingSubgroup_of_inclusion`:
@@ -47,7 +47,7 @@ and permit to manipulate them in a relatively smooth way:
   as an equivariant map.
 
   * `SubMulAction.ofFixingSubgroup_of_singleton`:
-  the identity map from `SubMulAction.ofStablizer M a`
+  the identity map from `SubMulAction.ofStabilizer M a`
   to `SubMulAction.ofFixingSubgroup M {a}`.
 
   * `SubMulAction.ofFixingSubgroup_of_eq`:
@@ -131,10 +131,8 @@ theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
 
 @[to_additive]
 theorem of_fixingSubgroupEmpty_mapScalars_surjective :
-    Surjective (fixingSubgroup M (∅ : Set α)).subtype := fun g ↦ by
-  suffices g ∈ fixingSubgroup M (∅ : Set α) by
-    exact ⟨⟨g, this⟩, rfl⟩
-  simp [mem_fixingSubgroup_iff]
+    Surjective (fixingSubgroup M (∅ : Set α)).subtype :=
+  fun g ↦ ⟨⟨g, by simp⟩, rfl⟩
 
 end Empty
 
@@ -470,51 +468,27 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     IsPretransitive (fixingSubgroup M (s ∩ g • s)) (ofFixingSubgroup M (s ∩ g • s)) := by
   rw [Ne, Set.top_eq_univ, ← Set.compl_empty_iff, ← Ne, ← Set.nonempty_iff_ne_empty] at ha
   obtain ⟨a, ha⟩ := ha
+  rw [Set.compl_union] at ha
   have ha' : a ∈ (s ∩ g • s)ᶜ := by
     rw [Set.compl_inter]
-    apply Set.mem_union_left
-    rw [Set.compl_union] at ha
-    apply Set.mem_of_mem_inter_left ha
+    exact Set.mem_union_left _ ha.1
   rw [MulAction.isPretransitive_iff_base (⟨a, ha'⟩ : ofFixingSubgroup M (s ∩ g • s))]
   rintro ⟨x, hx⟩
   rw [mem_ofFixingSubgroup_iff, Set.mem_inter_iff, not_and_or] at hx
   rcases hx with hx | hx
-  · obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq
-      ⟨a, (by intro ha'; apply ha; apply Set.mem_union_left _ ha')⟩
-      ⟨x, hx⟩
-    use ⟨k, (by
-      rw [mem_fixingSubgroup_iff] at hk ⊢
-      intro y  hy
-      apply hk
-      apply Set.mem_of_mem_inter_left hy)⟩
+  · obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨a, ha.1⟩ ⟨x, hx⟩
+    use ⟨k, fun ⟨y, hy⟩ ↦ hk ⟨y, hy.1⟩⟩
+    rwa [Subtype.ext_iff] at hkax ⊢
+  · have hg'x : g⁻¹ • x ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr hx
+    have hg'a : g⁻¹ • a ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr ha.2
+    obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨g⁻¹ • a, hg'a⟩ ⟨g⁻¹ • x, hg'x⟩
+    use ⟨g * k * g⁻¹, ?_⟩
     · simp only [← SetLike.coe_eq_coe] at hkax ⊢
-      exact hkax
-  · suffices hg'x : g⁻¹ • x ∈ ofFixingSubgroup M s by
-      suffices hg'a : g⁻¹ • a ∈ ofFixingSubgroup M s by
-        obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨g⁻¹ • a, hg'a⟩ ⟨g⁻¹ • x, hg'x⟩
-        use ⟨g * k * g⁻¹, (by
-          rw [mem_fixingSubgroup_iff] at hk ⊢
-          intro y hy
-          simp [← smul_smul, smul_eq_iff_eq_inv_smul g]
-          apply hk
-          rw [← Set.mem_smul_set_iff_inv_smul_mem]
-          exact Set.mem_of_mem_inter_right hy)⟩
-        · simp only [← SetLike.coe_eq_coe] at hkax ⊢
-          simp only [SetLike.val_smul] at hkax ⊢
-          rw [← smul_eq_iff_eq_inv_smul] at hkax
-          change (g * k * g⁻¹) • a = x
-          simp only [← smul_smul]
-          exact hkax
-      rw [mem_ofFixingSubgroup_iff]
-      rw [← Set.mem_smul_set_iff_inv_smul_mem]
-      intro h
-      apply ha
-      apply Set.mem_union_right _ h
-    rw [mem_ofFixingSubgroup_iff]
-    intro h
-    apply hx
-    rw [Set.mem_smul_set_iff_inv_smul_mem]
-    exact h
+      rwa [SetLike.val_smul, Subgroup.mk_smul, eq_inv_smul_iff, smul_smul, smul_smul] at hkax
+    · rw [mem_fixingSubgroup_iff] at hk ⊢
+      intro y hy
+      rw [mul_smul, mul_smul, smul_eq_iff_eq_inv_smul g]
+      exact hk _ (Set.mem_smul_set_iff_inv_smul_mem.mp hy.2)
 
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
@@ -522,23 +496,14 @@ theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     (hs : IsPreprimitive (fixingSubgroup M s) (ofFixingSubgroup M s))
     {g : M} (ha : s ∪ g • s ≠ ⊤) :
     IsPreprimitive (fixingSubgroup M (s ∩ g • s)) (ofFixingSubgroup M (s ∩ g • s)) := by
-  classical
-  have hts : s ∩ g • s ≤ s := Set.inter_subset_left
-  have : IsPretransitive ↥(fixingSubgroup M (s ∩ g • s)) ↥(ofFixingSubgroup M (s ∩ g • s)) :=
-    IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
-  apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion M hts)
-  rw [show Nat.card (ofFixingSubgroup M (s ∩ g • s)) = Set.ncard (s ∩ g • s)ᶜ by
-    rw [← Nat.card_coe_set_eq]; congr]
-  rw [← Set.image_univ,
-    Set.ncard_image_of_injective _ ofFixingSubgroup_of_inclusion_injective, Set.ncard_coe]
-  rw [show ((ofFixingSubgroup M s : Set α)).ncard = sᶜ.ncard by
-    rfl]
-  rw [Set.compl_inter, ← Nat.add_lt_add_iff_right, Set.ncard_union_add_ncard_inter,
-      ← Set.compl_union, two_mul, add_assoc]
-  simp only [add_lt_add_iff_left]
-  rwa [← add_lt_add_iff_left, Set.ncard_add_ncard_compl,
-    Set.ncard_smul_set, ← add_assoc, Set.ncard_add_ncard_compl,
-    lt_add_iff_pos_right, Set.ncard_pos, Set.nonempty_compl]
+  have := IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
+  apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion M Set.inter_subset_left)
+  rw [show Nat.card (ofFixingSubgroup M (s ∩ g • s)) = (s ∩ g • s)ᶜ.ncard from
+    Nat.card_coe_set_eq _, Set.ncard_range_of_injective ofFixingSubgroup_of_inclusion_injective,
+    show Nat.card (ofFixingSubgroup M s) = sᶜ.ncard from Nat.card_coe_set_eq _, Set.compl_inter]
+  refine (Set.ncard_union_lt sᶜ.toFinite (g • s)ᶜ.toFinite ?_).trans_le ?_
+  · rwa [Set.disjoint_compl_right_iff_subset, Set.compl_subset_iff_union]
+  · rw [← Set.smul_set_compl, Set.ncard_smul_set, two_mul]
 
 end TwoCriteria
 

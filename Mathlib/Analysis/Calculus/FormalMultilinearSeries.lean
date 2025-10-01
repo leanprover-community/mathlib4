@@ -12,7 +12,7 @@ In this file we define `FormalMultilinearSeries 𝕜 E F` to be a family of `n`-
 all `n`, designed to model the sequence of derivatives of a function. In other files we use this
 notion to define `C^n` functions (called `contDiff` in `mathlib`) and analytic functions.
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
@@ -46,14 +46,7 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E[×n]→L[𝕜] F
--- The `AddCommMonoid` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) :=
-  inferInstanceAs <| AddCommMonoid <| ∀ n : ℕ, E[×n]→L[𝕜] F
-
-instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
-  ⟨0⟩
+deriving AddCommMonoid, Inhabited
 
 section Module
 
@@ -203,7 +196,7 @@ def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : Form
 theorem unshift_shift {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {z : F} :
     (p.unshift z).shift = p := by
   ext1 n
-  simp [shift, unshift]
+  simp only [shift, Nat.succ_eq_add_one, unshift]
   exact LinearIsometryEquiv.apply_symm_apply (continuousMultilinearCurryRightEquiv' 𝕜 n E F) (p n)
 
 end FormalMultilinearSeries

@@ -163,7 +163,7 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
     Function.Injective (lift R ι G f g Hg) := by
   cases isEmpty_or_nonempty ι
   · apply Function.injective_of_subsingleton
-  intros z w eq
+  intro z w eq
   obtain ⟨i, x, y, rfl, rfl⟩ := exists_of₂ z w
   simp_rw [lift_of] at eq
   rw [injective _ eq]
