@@ -516,9 +516,7 @@ namespace NumberField.InfinitePlace
 
 variable {K : Type*} [Field K] {v w : InfinitePlace K}
 
-/--
-If $v$ and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`.
--/
+/-- If `v` and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`. -/
 theorem rpow_one_of_rpow_eq {t : ℝ} (h : (fun x => w x ^ t) = v) : t = 1 := by
   let ⟨ψ, hψ⟩ := v.2
   let ⟨φ, hφ⟩ := w.2
@@ -537,9 +535,7 @@ variable (v)
 theorem exists_apply_one_lt : ∃ x, 1 < v x :=
   ⟨2, let ⟨ψ, hψ⟩ := v.2; by simp [coe_apply, ← hψ, map_ofNat]⟩
 
-/--
-Infinite places are represented by non-trivial absolute values.
--/
+/-- Infinite places are represented by non-trivial absolute values. -/
 theorem isNontrivial : v.1.IsNontrivial :=
   let ⟨x, hx⟩ := v.exists_apply_one_lt
   ⟨x, v.pos_iff.1 <| by linarith, by linarith [v.coe_apply _ ▸ hx]⟩
@@ -549,14 +545,7 @@ variable {v}
 noncomputable instance [NumberField K] : DecidableEq (InfinitePlace K) :=
   (Fintype.equivFin _).decidableEq
 
-/-!
-
-## Weak approximation for infinite places
-
--/
-
-open scoped Topology in
-open Filter in
+open Topology Filter in
 variable (K) in
 /--
 *Weak approximation for infinite places*
@@ -582,17 +571,15 @@ theorem denseRange_algebraMap_pi [NumberField K] :
     refine tendsto_finset_sum _ fun w _ ↦ ?_
     by_cases hw : v = w
     · -- Because `1 / (1 + aᵥ ^ (-n)) → 1` in `WithAbs v.1`.
-      rw [← hw]; simp only [Pi.single_apply v (z v), if_true, RingEquiv.symm_apply_apply]
-      nth_rw 2 [← one_mul (z v)]
-      have : v (a v)⁻¹ < 1 := by simpa [inv_lt_one_iff₀] using .inr (hx v).1
-      exact (WithAbs.tendsto_one_div_one_add_pow_nhds_one (hw ▸ this)).mul_const _
+      rw [← hw, Pi.single_apply v (z v), if_pos rfl]
+      have : v (a v)⁻¹ < 1 := by simpa [← inv_pow, inv_lt_one_iff₀] using .inr (hx v).1
+      simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one this).mul_const (z v)
     · -- And `1 / (1 + aᵥ ^ (-n)) → 0` in `WithAbs w.1` when `w ≠ v`.
       simp only [Pi.single_apply w (z w), hw, if_false]
-      rw [← zero_mul <| (WithAbs.equiv v.1).symm (WithAbs.equiv w.1 (z w))]
       have : 1 < v (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
         ⟨v.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 v hw⟩
-      exact (tendsto_zero_iff_norm_tendsto_zero.2 <| by
-        simpa [WithAbs.norm_eq_abv] using v.1.tendsto_div_one_add_pow_nhds_zero this).mul_const _
+      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 <|
+        v.1.tendsto_div_one_add_pow_nhds_zero this).mul_const ((WithAbs.equiv v.1).symm _)
   -- So taking a sufficiently large index of the sequence `yₙ` gives the desired term.
   let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
   exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
