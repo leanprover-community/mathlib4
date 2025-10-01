@@ -49,9 +49,15 @@ variable (G : Type u) [Monoid G]
 
 def H0 (A : Type*) [AddGroup A] [DistribMulAction G A] : AddSubgroup A where
   carrier := setOf fun v => ∀ g : G, g • v = v
-  add_mem' := sorry
-  zero_mem' := sorry
-  neg_mem' := sorry
+  add_mem' := by
+    intro a b ha hb g
+    simp [ha g, hb g, -Pi.add_apply]
+  zero_mem' := by
+    intro g
+    simp
+  neg_mem' := by
+    intro a ha g
+    simp [ha g]
 
 variable {G}
 
