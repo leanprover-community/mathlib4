@@ -1702,7 +1702,7 @@ lemma iteratedDeriv_vanishes (k :ℕ) :
     Int.cast_eq_zero, ne_eq, not_or, or_self_right, inv_eq_zero, Nat.cast_mul,
   Real.rpow_natCast, Pi.zero_apply]
 
-
+#exit
 lemma R_analyt_at_point (point : ℂ) : AnalyticAt ℂ (setup.R q hq0 h2mq) point := by
   apply Differentiable.analyticAt
   unfold R
