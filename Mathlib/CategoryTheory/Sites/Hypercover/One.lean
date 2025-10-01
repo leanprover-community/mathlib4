@@ -128,7 +128,7 @@ def multifork (F : Cᵒᵖ ⥤ A) :
     dsimp
     simp only [← F.map_comp, ← op_comp, E.w])
 
-/-- The trivial pre-`1`-hypercover of `S` where a single component `S`. -/
+/-- The trivial pre-`1`-hypercover of `S` with a single component `S`. -/
 @[simps toPreZeroHypercover I₁ Y p₁ p₂]
 def trivial (S : C) : PreOneHypercover.{w} S where
   __ := PreZeroHypercover.singleton (𝟙 S)
