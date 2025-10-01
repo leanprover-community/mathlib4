@@ -9,6 +9,7 @@ public meta import Lean.Elab.Tactic.Induction
 public meta import Batteries.Tactic.OpenPrivate
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Batteries.Data.List.Basic
+import all Lean.Elab.Tactic.Induction
 
 public meta section
 
@@ -71,7 +72,6 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     subgoals := subgoals.push g
   pure subgoals
 
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 /-- The `induction'` tactic is similar to the `induction` tactic in Lean 4 core,
 but with slightly different syntax (such as, no requirement to name the constructors).
 

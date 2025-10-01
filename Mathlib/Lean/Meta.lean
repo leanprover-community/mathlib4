@@ -10,9 +10,9 @@ public import Lean.Elab.Term
 public import Lean.Elab.Tactic.Basic
 public import Lean.Meta.Tactic.Assert
 public import Lean.Meta.Tactic.Clear
-public import Batteries.CodeAction
+public import Batteries.CodeAction  -- to enable the hole code action
 
-@[expose] public section -- to enable the hole code action
+public section
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 

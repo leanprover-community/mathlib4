@@ -5,7 +5,7 @@ Authors: Damiano Testa, Anne Baanen
 -/
 module
 
-public meta import ImportGraph.Imports
+public meta import ImportGraph.Meta
 public meta import Mathlib.Init
 
 public meta section

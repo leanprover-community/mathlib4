@@ -6,6 +6,7 @@ Authors: Gabriel Ebner
 module
 
 public meta import Mathlib.Init
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 public meta section
 

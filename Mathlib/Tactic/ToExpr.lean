@@ -48,7 +48,7 @@ private def toExprMData (md : MData) : Expr := Id.run do
   return e
 
 instance : ToExpr MData where
-  toExpr := toExprMData
+  toExpr := private toExprMData
   toTypeExpr := mkConst ``MData
 
 deriving instance ToExpr for MVarId

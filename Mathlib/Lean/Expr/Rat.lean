@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public import Batteries.Tactic.Alias
+public meta import Mathlib.Init
+public meta import Batteries.Tactic.Alias
 
-@[expose] public section
+public meta section
 
 /-!
 # Additional operations on Expr and rational numbers
