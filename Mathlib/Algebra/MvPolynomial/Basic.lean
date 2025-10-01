@@ -582,7 +582,7 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 
 @[simp]
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
-  single_eq_of_ne fun h => by cases Finsupp.single_eq_zero.1 h
+  single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
 @[simp]
 theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
@@ -666,12 +666,12 @@ theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ)
 @[simp]
 theorem coeff_mul_monomial (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (m + s) (p * monomial s r) = coeff m p * r :=
-  AddMonoidAlgebra.mul_single_apply_aux p _ _ _ _ fun _a _ => add_left_inj _
+  AddMonoidAlgebra.mul_single_apply_aux p r fun _a _ => add_left_inj _
 
 @[simp]
 theorem coeff_monomial_mul (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (s + m) (monomial s r * p) = r * coeff m p :=
-  AddMonoidAlgebra.single_mul_apply_aux p _ _ _ _ fun _a _ => add_right_inj _
+  AddMonoidAlgebra.single_mul_apply_aux p r fun _a _ => add_right_inj _
 
 @[simp]
 theorem coeff_mul_X (m) (s : σ) (p : MvPolynomial σ R) :
@@ -728,7 +728,6 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
   classical
   split_ifs with h
   · conv_rhs => rw [← coeff_mul_monomial _ s]
-    congr with t
     rw [tsub_add_cancel_of_le h]
   · contrapose! h
     rw [← mem_support_iff] at h

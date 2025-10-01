@@ -189,9 +189,7 @@ end IntFractPair
 
 
 theorem coe_of_h_rat_eq (v_eq_q : v = (↑q : K)) : (↑((of q).h : ℚ) : K) = (of v).h := by
-  unfold of IntFractPair.seq1
-  rw [← IntFractPair.coe_of_rat_eq v_eq_q]
-  simp
+  simp_all
 
 theorem coe_of_s_get?_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     (((of q).s.get? n).map (Pair.map (↑)) : Option <| Pair K) = (of v).s.get? n := by
@@ -297,7 +295,7 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
         sub_add_eq_sub_sub_swap, sub_right_comm, sub_self, zero_sub]
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left
     have : 0 ≤ ifp.fr.num := Rat.num_nonneg.mpr this
-    omega
+    cutsat
 
 end IntFractPair
 

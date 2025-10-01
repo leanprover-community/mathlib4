@@ -19,7 +19,7 @@ of the characteristic function `characteristic f ⊤` under modifications of `f`
   the function `f` and `f - const` agree up to a constant, see Proposition 2.2 on p. 168 of [Lang,
   *Introduction to Complex Hyperbolic Spaces*][MR886677]
 
-See Section~VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section~1.1 of
+See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 

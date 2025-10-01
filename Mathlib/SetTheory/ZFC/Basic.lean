@@ -718,7 +718,7 @@ theorem pair_injective : Function.Injective2 pair := by
 theorem pair_inj {x y x' y' : ZFSet} : pair x y = pair x' y' ↔ x = x' ∧ y = y' :=
   pair_injective.eq_iff
 
-/-- The cartesian product, `{(a, b) | a ∈ x, b ∈ y}` -/
+/-- The Cartesian product, `{(a, b) | a ∈ x, b ∈ y}` -/
 def prod : ZFSet.{u} → ZFSet.{u} → ZFSet.{u} :=
   pairSep fun _ _ => True
 

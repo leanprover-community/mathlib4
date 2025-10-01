@@ -236,8 +236,8 @@ theorem IsIntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : 
 
 theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
     I.comap (algebraMap R A) = ⊥ → I = ⊥ := by
-  -- Porting note: `imp_of_not_imp_not` seems not existing
-  contrapose; exact (IsIntegralClosure.comap_ne_bot S)
+  contrapose
+  exact IsIntegralClosure.comap_ne_bot S
 
 end IsIntegralClosure
 
@@ -318,6 +318,12 @@ theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Idea
   have ⟨P', hP, hP', hP''⟩ := exists_ideal_comap_le_prime P I hIP
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
+
+instance nonempty_primesOver [Nontrivial S] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S]
+    (P : Ideal R) [P.IsPrime] :
+    Nonempty (primesOver P S) := by
+  obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by simp)
+  exact ⟨Q, ⟨hQ₁, (liesOver_iff _ _).mpr hQ₂.symm⟩⟩
 
 /-- `comap (algebraMap R S)` is a surjection from the max spec of `S` to max spec of `R`.
 `hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/

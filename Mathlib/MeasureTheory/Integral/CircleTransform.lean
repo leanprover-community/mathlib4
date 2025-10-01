@@ -37,7 +37,7 @@ If `f` is differentiable and `w` is in the interior of the ball, then the integr
 def circleTransform (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • (circleMap z R θ - w)⁻¹ • f (circleMap z R θ)
 
-/-- The derivative of `circleTransform` w.r.t `w`. -/
+/-- The derivative of `circleTransform` w.r.t. `w`. -/
 def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • ((circleMap z R θ - w) ^ 2)⁻¹ • f (circleMap z R θ)
 
@@ -105,9 +105,6 @@ theorem continuousOn_norm_circleTransformBoundingFunction {R r : ℝ} (hr : r < 
     · simpa only [inv_pow] using continuousOn_prod_circle_transform_function hr
   exact this.norm
 
-@[deprecated (since := "2025-02-17")] alias continuousOn_abs_circleTransformBoundingFunction :=
-  continuousOn_norm_circleTransformBoundingFunction
-
 theorem norm_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 0 ≤ r) (z : ℂ) :
     ∃ x : closedBall z r ×ˢ [[0, 2 * π]], ∀ y : closedBall z r ×ˢ [[0, 2 * π]],
     ‖circleTransformBoundingFunction R z y‖ ≤ ‖circleTransformBoundingFunction R z x‖ := by
@@ -118,9 +115,6 @@ theorem norm_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 
     (nonempty_closedBall.2 hr').prod nonempty_uIcc
   have := IsCompact.exists_isMaxOn comp none (cts.mono <| prod_mono_right (subset_univ _))
   simpa [isMaxOn_iff] using this
-
-@[deprecated (since := "2025-02-17")] alias abs_circleTransformBoundingFunction_le :=
-  norm_circleTransformBoundingFunction_le
 
 /-- The derivative of a `circleTransform` is locally bounded. -/
 theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ → ℂ} (hx : x ∈ ball z R)
