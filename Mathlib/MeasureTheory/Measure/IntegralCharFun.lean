@@ -148,7 +148,7 @@ lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddComm
     [NormedSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] (L : StrongDual ℝ E) {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |L x|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFunDual μ (t • L)‖ := by
-  have : IsProbabilityMeasure (μ.map L) := isProbabilityMeasure_map (by fun_prop)
+  have : IsProbabilityMeasure (μ.map L) := Measure.isProbabilityMeasure_map (by fun_prop)
   convert measureReal_abs_gt_le_integral_charFun (μ := μ.map L) hr with x
   · rw [map_measureReal_apply (by fun_prop)]
     · simp
@@ -161,7 +161,8 @@ lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCom
     [InnerProductSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] {a : E} {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖ := by
-  have : IsProbabilityMeasure (μ.map (fun x ↦ ⟪a, x⟫)) := isProbabilityMeasure_map (by fun_prop)
+  have : IsProbabilityMeasure (μ.map (fun x ↦ ⟪a, x⟫)) :=
+    Measure.isProbabilityMeasure_map (by fun_prop)
   convert measureReal_abs_gt_le_integral_charFun (μ := μ.map (fun x ↦ ⟪a, x⟫)) hr with x
   · rw [map_measureReal_apply (by fun_prop)]
     · simp

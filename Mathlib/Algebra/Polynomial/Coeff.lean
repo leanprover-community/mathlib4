@@ -139,7 +139,6 @@ theorem coeff_X_mul_zero (p : R[X]) : coeff (X * p) 0 = 0 := by simp
 theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
     coeff (C x * X ^ k : R[X]) n = if n = k then x else 0 := by
   rw [C_mul_X_pow_eq_monomial, coeff_monomial]
-  congr 1
   simp [eq_comm]
 
 theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by

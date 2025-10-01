@@ -81,7 +81,7 @@ class IsFilteredOrEmpty : Prop where
 3. there exists some object. -/
 @[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered : Prop extends IsFilteredOrEmpty C where
-  /-- a filtered category must be non empty -/
+  /-- a filtered category must be non-empty -/
   -- This should be an instance but it causes significant slowdown
   [nonempty : Nonempty C]
 
@@ -499,7 +499,7 @@ class IsCofilteredOrEmpty : Prop where
 3. there exists some object. -/
 @[stacks 04AZ]
 class IsCofiltered : Prop extends IsCofilteredOrEmpty C where
-  /-- a cofiltered category must be non empty -/
+  /-- a cofiltered category must be non-empty -/
   -- This should be an instance but it causes significant slowdown
   [nonempty : Nonempty C]
 

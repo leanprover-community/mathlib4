@@ -55,7 +55,7 @@ def isLimitMapConeBinaryFanOfPreservesKernels {X Y Z : C} (π₁ : Z ⟶ X) (π�
     (BinaryBicone.isBilimitOfKernelInl (F.mapBinaryBicone bc)
     (isLimitMapConeForkEquiv' F bc.inl_snd (isLimitOfPreserves F hf))).isLimit
 
-/-- A kernel preserving functor between preadditive categories preserves any pair being a limit. -/
+/-- A kernel-preserving functor between preadditive categories preserves any pair being a limit. -/
 lemma preservesBinaryProduct_of_preservesKernels
     [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] {X Y : C} :
     PreservesLimit (pair X Y) F where
@@ -66,7 +66,7 @@ lemma preservesBinaryProduct_of_preservesKernels
 
 attribute [local instance] preservesBinaryProduct_of_preservesKernels
 
-/-- A kernel preserving functor between preadditive categories preserves binary products. -/
+/-- A kernel-preserving functor between preadditive categories preserves binary products. -/
 lemma preservesBinaryProducts_of_preservesKernels
     [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
     PreservesLimitsOfShape (Discrete WalkingPair) F where
@@ -135,7 +135,7 @@ def isColimitMapCoconeBinaryCofanOfPreservesCokernels {X Y Z : C} (ι₁ : X ⟶
       (BinaryBicone.isBilimitOfCokernelFst (F.mapBinaryBicone bc)
           (isColimitMapCoconeCoforkEquiv' F bc.inr_fst (isColimitOfPreserves F hf))).isColimit
 
-/-- A cokernel preserving functor between preadditive categories preserves any pair being
+/-- A cokernel-preserving functor between preadditive categories preserves any pair being
 a colimit. -/
 lemma preservesCoproduct_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] {X Y : C} :
@@ -148,7 +148,7 @@ lemma preservesCoproduct_of_preservesCokernels
 
 attribute [local instance] preservesCoproduct_of_preservesCokernels
 
-/-- A cokernel preserving functor between preadditive categories preserves binary coproducts. -/
+/-- A cokernel-preserving functor between preadditive categories preserves binary coproducts. -/
 lemma preservesBinaryCoproducts_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] :
     PreservesColimitsOfShape (Discrete WalkingPair) F where

@@ -138,6 +138,16 @@ theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
   simp [← dotProduct_comp_equiv_symm, Function.comp_def _ e.symm]
 
+theorem dotProduct_sum {ι : Type*} (u : m → α) (s : Finset ι) (v : ι → (m → α)) :
+    u ⬝ᵥ ∑ i ∈ s, v i = ∑ i ∈ s, u ⬝ᵥ v i := by
+  simp only [dotProduct, Finset.sum_apply, Finset.mul_sum]
+  rw [Finset.sum_comm]
+
+theorem sum_dotProduct {ι : Type*} (s : Finset ι) (u : ι → (m → α)) (v : m → α) :
+    (∑ i ∈ s, u i) ⬝ᵥ v = ∑ i ∈ s, u i ⬝ᵥ v := by
+  simp only [dotProduct, Finset.sum_apply, Finset.sum_mul]
+  rw [Finset.sum_comm]
+
 end NonUnitalNonAssocSemiring
 
 section NonUnitalNonAssocSemiringDecidable
