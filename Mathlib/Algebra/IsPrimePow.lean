@@ -80,7 +80,7 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
 
 theorem isPrimePow_nat_iff_bounded_log (n : ℕ) :
     IsPrimePow n
-      ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ ∃ p : ℕ, p ≤ n ∧ p ^ k = n ∧ p.Prime := by
+      ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ ∃ p : ℕ, p ≤ n ∧ n = p ^ k ∧ p.Prime := by
   rw [isPrimePow_nat_iff]
   constructor
   · rintro ⟨p, k, hp', hk', rfl⟩
@@ -102,12 +102,11 @@ theorem isPrimePow_nat_iff_bounded_log_minFac (n : ℕ) :
   constructor
   · rintro ⟨k, hkle, hk_pos, p, hle, heq, hprime⟩
     refine ⟨k, hkle, hk_pos, ?_⟩
-    · rw [← heq, Nat.Prime.pow_minFac hprime hk_pos.ne']
+    · rw [heq, Nat.Prime.pow_minFac hprime hk_pos.ne']
   · rintro ⟨k, hkle, hk_pos, heq⟩
-    refine ⟨k, hkle, hk_pos, n.minFac, Nat.minFac_le ?_, ?_, ?_⟩
+    refine ⟨k, hkle, hk_pos, n.minFac, Nat.minFac_le ?_, heq, ?_⟩
     · grind [Nat.minFac_prime_iff, nonpos_iff_eq_zero, Nat.log_zero_right, lt_self_iff_false]
-    · exact id (Eq.symm heq)
-    · refine Nat.minFac_prime_iff.mpr (by grind)
+    · grind [Nat.minFac_prime_iff]
 
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
   decidable_of_iff' _ (isPrimePow_nat_iff_bounded_log_minFac n)
