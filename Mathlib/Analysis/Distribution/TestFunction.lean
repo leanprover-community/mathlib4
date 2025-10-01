@@ -231,17 +231,20 @@ end Module
 
 variable (n : ℕ∞) (F)
 
+/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(E, F)` as a linear map. -/
 def ContDiffMapSupportedIn.toTestFunction (K : Compacts E) : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(E, F)
     where
   toFun f := TestFunction.mk f (f.contDiff) (f.hasCompactSupport)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-def ContDiffMapSupportedIn.toTestFunction_apply {K : Compacts E} (f : 𝓓^{n}_{K}(E, F)) (x : E) :
+theorem ContDiffMapSupportedIn.toTestFunction_apply {K : Compacts E} (f : 𝓓^{n}_{K}(E, F)) (x : E) :
   (toTestFunction 𝕜 F n K f) x = f x := rfl
 
 open ContDiffMapSupportedIn
 
+/-- The original topology on `𝓓^{n}(E, F)`, defined as the supremum over all compacts of the
+topologies from each `𝓓^{n}_{K}(E, F)`. -/
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(E, F) :=
   ⨆ (K : Compacts E), coinduced (toTestFunction 𝕜 F n K) (inferInstance)
 
