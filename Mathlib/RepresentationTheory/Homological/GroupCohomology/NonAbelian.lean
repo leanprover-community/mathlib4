@@ -65,15 +65,24 @@ def H0.map {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A] [Distr
 
 variable (G) in
 theorem H0.map_id (A : Type*) [AddGroup A] [DistribMulAction G A] :
-    H0.map (.id _) = .id (H0 G A) := sorry
+    H0.map (.id _) = .id (H0 G A) := by
+    apply AddMonoidHom.ext
+    intro x
+    simp [H0.map, H0]
+
 
 theorem H0.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
-    (f : A →+[G] B) (g : B →+[G] C) : H0.map (g.comp f) = (H0.map g).comp (H0.map f) := sorry
+    (f : A →+[G] B) (g : B →+[G] C) : H0.map (g.comp f) = (H0.map g).comp (H0.map f) := by
+      constructor
 
 theorem H0.map_injective_of_injective {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A]
     [DistribMulAction G B] (f : A →+[G] B) (hf : Function.Injective f) :
-    Function.Injective (H0.map f) := sorry
+    Function.Injective (H0.map f) := by
+    intro a₁ a₂ h
+    apply Subtype.ext
+    apply hf
+    exact congr_arg Subtype.val h
 
 -- def H0Functor : (NonAbelianRep G) ⥤ AddGrp := sorry
 
@@ -99,7 +108,11 @@ def cohomologous (f g : Z1 G A) : Prop :=
 instance setoid : Setoid (Z1 G A) where
   r := cohomologous
   iseqv := {
+<<<<<<< HEAD
+    refl := fun f => ⟨0, fun h => by simp⟩,
+=======
     refl := fun f ↦ ⟨0, fun h ↦ by simp⟩,
+>>>>>>> d850b5a27f3dcf624f8ed6601e67330f463e5353
     symm := fun ⟨a, ha⟩ ↦ ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩,
     trans := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
   }
@@ -152,7 +165,9 @@ theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : 
 noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
     ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
 
-def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
+def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := by
+  unfold Function.Injective at hf
+  sorry
 
 theorem exact₁ : Function.Exact (H0.map f) (H0.map g) := sorry
 
@@ -204,9 +219,21 @@ instance : Coe (A ⟶ B) (A →+[G] B) := ⟨Action.Hom.toDistribMulActionHom⟩
 theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
     H0Iso B ∘ (groupCohomology.map (.id G) f 0) = (H0.map f) ∘ H0Iso A := sorry
 
-def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, sorry⟩
+def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, fun x y => by
+  symm
+  rw [← sub_eq_zero, add_sub_right_comm, sub_add_comm]
+  exact ((mem_cocycles₁_def f).mp f.2 x y)⟩
+
+open ConcreteCategory MorphismProperty
 -- cocycle first, CategoryTheory.ConcreteCategory.surjective_eq_epimorphisms
-def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A := sorry
+noncomputable def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A where
+  toFun := Quotient.mk _ ∘ CocycleToZ1 ∘ Function.surjInv (f := (groupCohomology.H1π A).hom) (by
+    rw [← MorphismProperty.surjective, ConcreteCategory.surjective_eq_epimorphisms,
+        MorphismProperty.epimorphisms]
+    infer_instance)
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
 
 theorem H1Iso_zero : H1Iso A 0 = 0 := sorry
 
