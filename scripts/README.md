@@ -97,6 +97,7 @@ to learn about it as well!
   `*-pr-testing-NNNN` branch.
 - `update_nolints_CI.sh`
   Update the `nolints.json` file to remove unneeded entries. Automatically run once a week.
+- `remove_deprecated_decls_CI.sh` Create a PR after running the deprecations linter in CI.
 - `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
   This script downloads a .json file with proposed assignments and makes the
   corresponding github API calls.
