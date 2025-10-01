@@ -160,20 +160,20 @@ theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : 
 noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
     ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
 
-  -- refine Function.extend (fun ⟨x, hx⟩ ↦ ⟨g x, hx⟩ : g ⁻¹' (H0 G C) → H0 G C)
-  --   (?_ : _ → H1 G A) ?_
+def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
 
--- def δ₀₁_zero : δ₀₁ 0 = 0 := sorry
+theorem exact₁ : Function.Exact (H0.map f) (H0.map g) :=
+  sorry
 
--- theorem exact₁ : Function.Exact (H0.map (S.f : S.X₁ →+[G] S.X₂)) (H0.map (S.g : S.X₂ →+[G] S.X₃)) :=
---   sorry
+theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := sorry
 
--- theorem exact₂ : Function.Exact (H0.map (S.g : S.X₂ →+[G] S.X₃)) (δ₀₁ S) := sorry
+theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
 
--- theorem exact₃ : Function.Exact (δ₀₁ S) (H1.map (S.f : S.X₁ →+[G] S.X₂)) := sorry
+theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
 
--- theorem exact₄ : Function.Exact (H1.map (S.f : S.X₁ →+[G] S.X₂)) (H1.map (S.g : S.X₂ →+[G] S.X₃)) :=
---   sorry
+variable (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
+
+-- def δ₁₂ : H1 G C → H2 G A := sorry
 
 end connectHom
 
