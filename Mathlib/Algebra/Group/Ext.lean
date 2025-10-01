@@ -37,7 +37,7 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
     m₁ = m₂ := by
   have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) this
-  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+  let f : @MonoidHom M M m₁.toMulOne m₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.npow = m₂.npow := by
@@ -111,7 +111,7 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     (h_inv : (letI := m₁; Inv.inv : M → M) = (letI := m₂; Inv.inv : M → M)) : m₁ = m₂ := by
   have h_mon := Monoid.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) h_mon
-  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+  let f : @MonoidHom M M m₁.toMulOne m₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.zpow = m₂.zpow := by
@@ -133,7 +133,7 @@ theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄
     (h_mul : (letI := g₁; HMul.hMul : G → G → G) = (letI := g₂; HMul.hMul : G → G → G)) :
     g₁ = g₂ := by
   have h₁ : g₁.one = g₂.one := congr_arg (·.one) (Monoid.ext h_mul)
-  let f : @MonoidHom G G g₁.toMulOneClass g₂.toMulOneClass :=
+  let f : @MonoidHom G G g₁.toMulOne g₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   exact
