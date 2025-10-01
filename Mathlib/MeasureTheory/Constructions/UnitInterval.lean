@@ -125,4 +125,25 @@ lemma volume_uIoo : volume (uIoo x y) = edist y x := by
   simp only [uIoo, volume_apply, image_subtype_val_Ioo, Icc.coe_inf, Icc.coe_sup, Real.volume_Ioo,
     max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
 
+open Function
+
+@[fun_prop]
+lemma measurable_uncurry_sSup {α : Type*} [MeasurableSpace α] {f : α → I → ℝ}
+    (hf : ∀ a, Monotone (f a)) (hfm : ∀ i, Measurable (fun e ↦ f e i)) :
+    Measurable (uncurry fun s (t : I) ↦ sSup {x | f s x < t}) := by
+  refine measurable_of_Ioi fun a ↦ ?_
+  simp only [preimage, uncurry, mem_Ioi]
+  rw [sSup_eq_iUnion_rat hf a]
+  refine MeasurableSet.iUnion
+    <| fun q ↦ MeasurableSet.iUnion <| fun q_mem ↦ MeasurableSet.iUnion ?_
+  intro hq
+  refine measurableSet_lt ?_ measurable_snd.subtype_val
+  fun_prop
+
+@[fun_prop]
+lemma measurable_sSup {α : Type*} [MeasurableSpace α] {f : α → I → ℝ}
+    (hf : ∀ a, Monotone (f a)) (hfm : ∀ i, Measurable (fun e ↦ f e i)) (t : I) :
+    Measurable (fun s ↦ sSup {x | f s x < t}) :=
+  (measurable_uncurry_sSup hf hfm).of_uncurry_right
+
 end unitInterval

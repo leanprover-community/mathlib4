@@ -5322,6 +5322,7 @@ import Mathlib.Probability.Kernel.MeasurableLIntegral
 import Mathlib.Probability.Kernel.Posterior
 import Mathlib.Probability.Kernel.Proper
 import Mathlib.Probability.Kernel.RadonNikodym
+import Mathlib.Probability.Kernel.Representation
 import Mathlib.Probability.Kernel.SetIntegral
 import Mathlib.Probability.Kernel.WithDensity
 import Mathlib.Probability.Martingale.Basic
