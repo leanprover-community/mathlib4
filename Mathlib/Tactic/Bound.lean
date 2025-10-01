@@ -241,13 +241,13 @@ faster since it is more specialized (not built atop `aesop`).
 
 The variant `bound?` prints the proof it found as a Try this suggestion.
 -/
-macro (name := bound) "bound" c:Aesop.tactic_clause* (" [" term,* "]")? : tactic =>
+macro (name := boundTactic) "bound" c:Aesop.tactic_clause* (" [" term,* "]")? : tactic =>
 `(tactic|
   aesop $c* (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
 
 -- Elaborating `bound?` to use `aesop?`'s proof script generation
 @[inherit_doc bound]
-macro (name := bound?) "bound?" c:Aesop.tactic_clause* (" [" term,* "]")? : tactic =>
+macro (name := boundTactic?) "bound?" c:Aesop.tactic_clause* (" [" term,* "]")? : tactic =>
 `(tactic|
   aesop? $c* (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
 
