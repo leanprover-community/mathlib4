@@ -153,8 +153,11 @@ noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
     ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
 
 def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := by
-  unfold Function.Injective at hf
-  sorry
+  apply Quotient.eq_iff_equiv.mpr
+  convert δ₀₁_aux_well_defined hf hfg _ 0 0 _ g.map_zero
+  refine Subtype.ext (funext fun s ↦ hf ?_)
+  simp [δ₀₁_aux, Equiv.apply_ofInjective_symm]
+  exact map_zero _
 
 theorem exact₁ : Function.Exact (H0.map f) (H0.map g) := sorry
 
