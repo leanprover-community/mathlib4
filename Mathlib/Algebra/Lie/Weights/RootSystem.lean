@@ -456,9 +456,8 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a
-      have h_eq : i.1 = -j.1 := Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left <| by
-        have := congr_arg Weight.toFun a
-        simp at this; exact this)
+      have h_eq : i.1 = -j.1 := Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left
+        (congr_arg Weight.toFun a))
       have := s₂ i j h₁ h₂
       rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
       simp at this
