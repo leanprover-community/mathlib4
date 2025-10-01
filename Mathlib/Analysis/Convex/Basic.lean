@@ -604,7 +604,7 @@ variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower 
 variable [PartialOrder R] [PartialOrder A]
 
 lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
-    (halg : ∀ ⦃a : A⦄, 0 ≤ a → ∃ (r : R), 0 ≤ r ∧ algebraMap R A r = a) (hs : Convex R s) :
+    (halg : Set.Ici 0 ⊆ algebraMap R A '' Set.Ici 0) (hs : Convex R s) :
     Convex A s := by
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
