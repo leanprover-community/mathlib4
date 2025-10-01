@@ -201,8 +201,8 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   by_cases h_bot : x = ⊥
   · refine tendsto_nhds_of_eventually_eq ?_
     rw [h_bot, nhds_bot_basis.eventually_iff]
-    simp [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and]
-    exact ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
+    simpa [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and] using
+      ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
   refine ENNReal.continuous_ofReal.continuousAt.comp' <| continuousOn_toReal.continuousAt
     <| (toFinite _).isClosed.compl_mem_nhds ?_
   simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
