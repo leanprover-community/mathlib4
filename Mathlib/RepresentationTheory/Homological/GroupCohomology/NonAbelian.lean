@@ -76,7 +76,11 @@ def H0.map {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A] [Distr
 
 variable (G) in
 theorem H0.map_id (A : Type*) [AddGroup A] [DistribMulAction G A] :
-    H0.map (.id _) = .id (H0 G A) := sorry
+    H0.map (.id _) = .id (H0 G A) := by
+    apply AddMonoidHom.ext
+    intro x
+    simp [H0.map, H0]
+
 
 theorem H0.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
