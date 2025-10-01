@@ -83,6 +83,36 @@ def LocalAtSourceTargetPropertyAt (f : M → M') (x : M)
     f '' domChart.source ⊆ codChart.source ∧
     P f domChart codChart
 
+structure IsNiceLocalPropertyAt (f : M → M') (x : M)
+    (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) where
+  mono_source : ∀ f : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
+    ∀ s : Set M, P f φ ψ → P f (φ.restr s) ψ
+
+/-- If `P` is monotone w.r.t. restricting `domChart`, then it suffices to prove continuity of `f`
+at `x` (instead of a relation between the chart's sources). -/
+lemma LocalAtSourceTargetPropertyAt.mk_of_continuousAt {f : M → M'} {x : M} (hf : ContinuousAt f x)
+    {P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop}
+    (hP : IsNiceLocalPropertyAt f x P)
+    (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph M' H')
+    (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
+    (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
+    (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
+    (hfP : P f domChart codChart) : LocalAtSourceTargetPropertyAt I I' n f x P := by
+  obtain ⟨s, hs, hsopen, hxs⟩ := mem_nhds_iff.mp <|
+    hf.preimage_mem_nhds (codChart.open_source.mem_nhds hfx)
+  have : f '' (domChart.restr s).source ⊆ codChart.source := by
+    refine Subset.trans ?_ (image_subset_iff.mpr hs)
+    gcongr
+    rw [domChart.restr_source' _ hsopen]
+    exact inter_subset_right
+  have hmono : ((domChart.restr s).extend I).target ⊆ (domChart.extend I).target := by
+    have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
+    simpa using this
+  exact ⟨domChart.restr s, codChart,
+    by rw [domChart.restr_source, interior_eq_iff_isOpen.mpr hsopen]; exact mem_inter hx hxs, hfx,
+    restr_mem_maximalAtlas (G := contDiffGroupoid n I) hdomChart hsopen, hcodChart, this,
+    hP.mono_source _ _ _ _ hfP⟩
+
 end
 
 -- XXX: should the next three definitions be a class instead?
@@ -129,20 +159,11 @@ lemma mk_of_continuousAt (f : M → M') (x : M) (hf : ContinuousAt f x)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
-  obtain ⟨s, hs, hsopen, hxs⟩ := mem_nhds_iff.mp <|
-    hf.preimage_mem_nhds (codChart.open_source.mem_nhds hfx)
-  have : f '' (domChart.restr s).source ⊆ codChart.source := by
-    refine Subset.trans ?_ (image_subset_iff.mpr hs)
-    gcongr
-    rw [domChart.restr_source' _ hsopen]
-    exact inter_subset_right
-  have hmono : ((domChart.restr s).extend I).target ⊆ (domChart.extend I).target := by
-    have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
-    simpa using this
-  exact ⟨equiv, domChart.restr s, codChart,
-    by rw [domChart.restr_source, interior_eq_iff_isOpen.mpr hsopen]; exact mem_inter hx hxs, hfx,
-    restr_mem_maximalAtlas (G := contDiffGroupoid n I) hdomChart hsopen, hcodChart, this,
-    hwrittenInExtend.mono hmono⟩
+  use equiv
+  refine LocalAtSourceTargetPropertyAt.mk_of_continuousAt hf ?hP _ _
+    hx hfx hdomChart hcodChart hwrittenInExtend
+  have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
+  exact { mono_source f φ ψ s hf:= hf.mono (by simpa using this) }
 
 /-- A linear equivalence `E × F ≃L[𝕜] E'` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
