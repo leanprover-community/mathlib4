@@ -221,8 +221,7 @@ noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
       (fun x ↦ (Classical.choose_spec (hg (c' x))).symm) hcc'
   exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
 
-
--- theorem exact₅ : Function.Exact (H1.map g) δ₁₂ := sorry
+theorem exact₅ : Function.Exact (H1.map g) (δ₁₂ hf hg hfg) := sorry
 
 end connectHom₁₂
 
