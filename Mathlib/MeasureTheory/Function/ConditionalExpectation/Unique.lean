@@ -108,22 +108,14 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
       MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hfm.mk f) s (μ.trim hm) := by
     intro hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
-    -- Porting note: `rw [IntegrableOn]` fails with
-    -- synthesized type class instance is not definitionally equal to expression inferred by typing
-    -- rules, synthesized m0 inferred m
-    unfold IntegrableOn
-    rw [restrict_trim hm _ hs]
+    rw [IntegrableOn, restrict_trim hm _ hs]
     refine Integrable.trim hm ?_ hfm.stronglyMeasurable_mk
     exact Integrable.congr (hf_int_finite s hs hμs) (ae_restrict_of_ae hfm.ae_eq_mk)
   have hg_mk_int_finite (s) :
       MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hgm.mk g) s (μ.trim hm) := by
     intro hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
-    -- Porting note: `rw [IntegrableOn]` fails with
-    -- synthesized type class instance is not definitionally equal to expression inferred by typing
-    -- rules, synthesized m0 inferred m
-    unfold IntegrableOn
-    rw [restrict_trim hm _ hs]
+    rw [IntegrableOn, restrict_trim hm _ hs]
     refine Integrable.trim hm ?_ hgm.stronglyMeasurable_mk
     exact Integrable.congr (hg_int_finite s hs hμs) (ae_restrict_of_ae hgm.ae_eq_mk)
   have hfg_mk_eq :
@@ -189,10 +181,6 @@ theorem lintegral_enorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g :
     ofReal_integral_norm_eq_lintegral_enorm hgi, ENNReal.ofReal_le_ofReal_iff]
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
   · positivity
-
-@[deprecated (since := "2025-01-21")]
-alias lintegral_nnnorm_le_of_forall_fin_meas_integral_eq :=
-  lintegral_enorm_le_of_forall_fin_meas_integral_eq
 
 end IntegralNormLE
 

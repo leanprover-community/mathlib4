@@ -24,14 +24,14 @@ range.
 
 ## Main definitions
 
-* `InitialSeg r s`: Type of initial segment embeddings of `r` into `s` , denoted by `r ≼i s`.
-* `PrincipalSeg r s`: Type of principal segment embeddings of `r` into `s` , denoted by `r ≺i s`.
+* `InitialSeg r s`: Type of initial segment embeddings of `r` into `s`, denoted by `r ≼i s`.
+* `PrincipalSeg r s`: Type of principal segment embeddings of `r` into `s`, denoted by `r ≺i s`.
 
 The lemmas `Ordinal.type_le_iff` and `Ordinal.type_lt_iff` tell us that `≼i` corresponds to the `≤`
 relation on ordinals, while `≺i` corresponds to the `<` relation. This prompts us to think of
 `PrincipalSeg` as a "strict" version of `InitialSeg`.
 
-## Notations
+## Notation
 
 These notations belong to the `InitialSeg` locale.
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Split
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Box additive functions
@@ -116,16 +116,16 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     ι →ᵇᵃ[I₀] M := by
   classical
   refine ⟨f, ?_⟩
-  replace hf : ∀ I : Box ι, ↑I ≤ I₀ → ∀ s, (∑ J ∈ (splitMany I s).boxes, f J) = f I := by
-    intro I hI s
-    induction' s using Finset.induction_on with a s _ ihs
-    · simp
-    rw [splitMany_insert, inf_split, ← ihs, biUnion_boxes, sum_biUnion_boxes]
-    refine Finset.sum_congr rfl fun J' hJ' => ?_
-    by_cases h : a.2 ∈ Ioo (J'.lower a.1) (J'.upper a.1)
-    · rw [sum_split_boxes]
-      exact hf _ ((WithTop.coe_le_coe.2 <| le_of_mem _ hJ').trans hI) h
-    · rw [split_of_notMem_Ioo h, top_boxes, Finset.sum_singleton]
+  replace hf (I : Box ι) (hI : ↑I ≤ I₀) (s) : ∑ J ∈ (splitMany I s).boxes, f J = f I := by
+    induction s using Finset.induction_on with
+    | empty => simp
+    | insert a s _ ihs =>
+      rw [splitMany_insert, inf_split, ← ihs, biUnion_boxes, sum_biUnion_boxes]
+      refine Finset.sum_congr rfl fun J' hJ' => ?_
+      by_cases h : a.2 ∈ Ioo (J'.lower a.1) (J'.upper a.1)
+      · rw [sum_split_boxes]
+        exact hf _ ((WithTop.coe_le_coe.2 <| le_of_mem _ hJ').trans hI) h
+      · rw [split_of_notMem_Ioo h, top_boxes, Finset.sum_singleton]
   intro I hI π hπ
   have Hle : ∀ J ∈ π, ↑J ≤ I₀ := fun J hJ => (WithTop.coe_le_coe.2 <| π.le_of_mem hJ).trans hI
   rcases hπ.exists_splitMany_le with ⟨s, hs⟩

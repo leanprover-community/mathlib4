@@ -21,15 +21,15 @@ The definition is pretty technical, but it amounts to the edges between `s` and 
 The literature contains several definitions which are equivalent up to scaling `ε` by some constant
 when the partition is equitable.
 
-A partition `P` of the vertices is `ε`-uniform if the proportion of non `ε`-uniform pairs of parts
-is less than `ε`.
+A partition `P` of the vertices is `ε`-uniform if the proportion of `ε`-uniform pairs of parts is
+greater than `(1 - ε)`.
 
 ## Main declarations
 
 * `SimpleGraph.IsUniform`: Graph uniformity of a pair of finsets of vertices.
 * `SimpleGraph.nonuniformWitness`: `G.nonuniformWitness ε s t` and `G.nonuniformWitness ε t s`
   together witness the non-uniformity of `s` and `t`.
-* `Finpartition.nonUniforms`: Non uniform pairs of parts of a partition.
+* `Finpartition.nonUniforms`: Nonuniform pairs of parts of a partition.
 * `Finpartition.IsUniform`: Uniformity of a partition.
 * `Finpartition.nonuniformWitnesses`: For each non-uniform pair of parts of a partition, pick
   witnesses of non-uniformity and dump them all together.
@@ -421,7 +421,7 @@ lemma unreduced_edges_subset :
   simp only [mem_filter, regularityReduced_adj, not_and, not_exists,
     not_le, mem_biUnion, mem_union, mem_product, Prod.exists, mem_offDiag, and_imp,
     or_assoc, and_assoc, P.mk_mem_nonUniforms, Finpartition.mk_mem_sparsePairs, mem_interedges_iff]
-  intros hx hy h h'
+  intro hx hy h h'
   replace h' := h' h
   obtain ⟨U, hU, hx⟩ := P.exists_mem hx
   obtain ⟨V, hV, hy⟩ := P.exists_mem hy

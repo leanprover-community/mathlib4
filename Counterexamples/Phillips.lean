@@ -360,7 +360,7 @@ theorem discretePart_apply (f : BoundedAdditiveMeasure α) (s : Set α) :
 
 theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α) (s : Set α)
     (hs : s.Countable) : f.continuousPart s = 0 := by
-  simp [continuousPart]
+  simp only [continuousPart, restrict_apply]
   convert f.apply_countable s hs using 2
   ext x
   simp [and_comm]
@@ -451,7 +451,7 @@ end
 
 We construct a subset of `ℝ²`, given as a family of sets, which is large along verticals (i.e.,
 it only misses a countable set along each vertical) but small along horizontals (it is countable
-along horizontals). Such a set can not be measurable as it would contradict Fubini theorem.
+along horizontals). Such a set cannot be measurable as it would contradict Fubini theorem.
 We need the continuum hypothesis to construct it.
 -/
 

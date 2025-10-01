@@ -94,8 +94,8 @@ instance IsCyclic.commutative [Group α] [IsCyclic α] :
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive
-      "A cyclic group is always commutative. This is not an `instance` because often we have
-      a better proof of `AddCommGroup`."]
+      /-- A cyclic group is always commutative. This is not an `instance` because often we have
+      a better proof of `AddCommGroup`. -/]
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
   { hg with mul_comm := commutative.comm }
 
@@ -105,10 +105,10 @@ instance [Group G] (H : Subgroup G) [IsCyclic H] : IsMulCommutative H :=
 variable [Group α] [Group G] [Group G']
 
 /-- A non-cyclic multiplicative group is non-trivial. -/
-@[to_additive "A non-cyclic additive group is non-trivial."]
+@[to_additive /-- A non-cyclic additive group is non-trivial. -/]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
-  exact @isCyclic_of_subsingleton _ _ (not_nontrivial_iff_subsingleton.mp nc)
+  exact @isCyclic_of_subsingleton _ _ nc
 
 @[to_additive]
 theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
@@ -150,7 +150,7 @@ theorem Subgroup.eq_bot_or_eq_top_of_prime_card
   rwa [Nat.dvd_prime hp.1, ← eq_bot_iff_card, card_eq_iff_eq_top] at this
 
 /-- Any non-identity element of a finite group of prime order generates the group. -/
-@[to_additive "Any non-identity element of a finite group of prime order generates the group."]
+@[to_additive /-- Any non-identity element of a finite group of prime order generates the group. -/]
 theorem zpowers_eq_top_of_prime_card {p : ℕ}
     [hp : Fact p.Prime] (h : Nat.card G = p) {g : G} (hg : g ≠ 1) : zpowers g = ⊤ := by
   subst h
@@ -176,7 +176,7 @@ theorem powers_eq_top_of_prime_card {p : ℕ}
   simp [mem_powers_of_prime_card h hg]
 
 /-- A finite group of prime order is cyclic. -/
-@[to_additive "A finite group of prime order is cyclic."]
+@[to_additive /-- A finite group of prime order is cyclic. -/]
 theorem isCyclic_of_prime_card {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α = p) : IsCyclic α := by
   have : Finite α := Nat.finite_of_card_ne_zero (h ▸ hp.1.ne_zero)
@@ -185,7 +185,7 @@ theorem isCyclic_of_prime_card {p : ℕ} [hp : Fact p.Prime]
   exact ⟨g, fun g' ↦ mem_zpowers_of_prime_card h hg⟩
 
 /-- A finite group of order dividing a prime is cyclic. -/
-@[to_additive "A finite group of order dividing a prime is cyclic."]
+@[to_additive /-- A finite group of order dividing a prime is cyclic. -/]
 theorem isCyclic_of_card_dvd_prime {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α ∣ p) : IsCyclic α := by
   rcases (Nat.dvd_prime hp.out).mp h with h | h
@@ -212,6 +212,12 @@ theorem MulEquiv.isCyclic (e : G ≃* G') :
 theorem orderOf_eq_card_of_forall_mem_zpowers {g : α} (hx : ∀ x, x ∈ zpowers g) :
     orderOf g = Nat.card α := by
   rw [← Nat.card_zpowers, (zpowers g).eq_top_iff'.mpr hx, card_top]
+
+@[to_additive]
+theorem orderOf_eq_card_of_forall_mem_powers {g : α} (hx : ∀ x, x ∈ Submonoid.powers g) :
+    orderOf g = Nat.card α := by
+  rw [orderOf_eq_card_of_forall_mem_zpowers]
+  exact fun x ↦ Submonoid.powers_le_zpowers _ (hx _)
 
 @[to_additive]
 theorem orderOf_eq_card_of_zpowers_eq_top {g : G} (h : Subgroup.zpowers g = ⊤) :
@@ -263,7 +269,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
           exact mod_cast (Nat.find_spec hex).2
         have hk₃ : g ^ (k % Nat.find hex : ℤ) ∈ H :=
           (Subgroup.mul_mem_cancel_right H hk₂).1 <| by
-            rw [← zpow_add, Int.emod_add_ediv, hk]; exact hx
+            rw [← zpow_add, Int.emod_add_mul_ediv, hk]; exact hx
         have hk₄ : k % Nat.find hex = (k % Nat.find hex).natAbs := by
           rw [Int.natAbs_of_nonneg
               (Int.emod_nonneg _ (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
@@ -275,7 +281,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
                 rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1))
               ⟨Nat.pos_of_ne_zero h, hk₅⟩
         ⟨k / (Nat.find hex : ℤ),
-          Subtype.ext_iff_val.2
+          Subtype.ext_iff.2
             (by
               suffices g ^ ((Nat.find hex : ℤ) * (k / Nat.find hex : ℤ)) = x by simpa [zpow_mul]
               rw [Int.mul_ediv_cancel'
@@ -399,7 +405,6 @@ variable [DecidableEq α]
 @[to_additive]
 theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
     Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
-  simp_rw [← SetLike.mem_coe] at ha
   simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
 
 @[to_additive]
@@ -523,7 +528,7 @@ lemma IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ} (hd 
   classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
 
 /-- A finite group of prime order is simple. -/
-@[to_additive "A finite group of prime order is simple."]
+@[to_additive /-- A finite group of prime order is simple. -/]
 theorem isSimpleGroup_of_prime_card {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α = p) : IsSimpleGroup α := by
   subst h
@@ -542,8 +547,8 @@ variable [Group G] [Group G']
 /-- A group is commutative if the quotient by the center is cyclic.
   Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
-      "A group is commutative if the quotient by the center is cyclic.
-      Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance."]
+      /-- A group is commutative if the quotient by the center is cyclic.
+      Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
@@ -565,7 +570,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
 @[to_additive
-      "A group is commutative if the quotient by the center is cyclic."]
+      /-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G :=
   { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }
@@ -688,14 +693,13 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   orders of `g` are `1`, `p`, or `p ^ 2`. It can't be the former because `g ≠ 1`, and it can't
   the latter because the group isn't cyclic. -/
   have := (Nat.mem_divisors (m := p ^ 2)).mpr ⟨hα ▸ orderOf_dvd_natCard (x := g), by aesop⟩
-  simp? [Nat.divisors_prime_pow hp 2] at this says
-    simp only [Nat.divisors_prime_pow hp 2, Nat.reduceAdd, Finset.mem_map, Finset.mem_range,
-      Function.Embedding.coeFn_mk] at this
-  obtain ⟨a, ha, ha'⟩ := this
+  have : ∃ a < 3, p ^ a = orderOf g := by
+    simpa [Nat.divisors_prime_pow hp 2] using this
+  obtain ⟨a, ha, ha'⟩ := by simpa using this
   interval_cases a
-  · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by aesop
-  · aesop
-  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by omega
+  · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by simp_all
+  · simp_all
+  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by cutsat
 
 end Exponent
 
@@ -748,7 +752,7 @@ noncomputable def mulEquivOfCyclicCardEq [Group G] [Group G'] [hG : IsCyclic G]
   zmodCyclicMulEquiv hG |>.symm.trans (zmodCyclicMulEquiv hH)
 
 /-- Two groups of the same prime cardinality are isomorphic. -/
-@[to_additive "Two additive groups of the same prime cardinality are isomorphic."]
+@[to_additive /-- Two additive groups of the same prime cardinality are isomorphic. -/]
 noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Group G] [Group G']
     [Fact p.Prime] (hG : Nat.card G = p) (hH : Nat.card G' = p) : G ≃* G' := by
   have hGcyc := isCyclic_of_prime_card hG
@@ -829,8 +833,8 @@ variable (hg' : orderOf g' ∣ orderOf (g : G))
 /-- If `g` generates the group `G` and `g'` is an element of another group `G'` whose order
 divides that of `g`, then there is a homomorphism `G →* G'` mapping `g` to `g'`. -/
 @[to_additive
-   "If `g` generates the additive group `G` and `g'` is an element of another additive group `G'`
-   whose order divides that of `g`, then there is a homomorphism `G →+ G'` mapping `g` to `g'`."]
+/-- If `g` generates the additive group `G` and `g'` is an element of another additive group `G'`
+whose order divides that of `g`, then there is a homomorphism `G →+ G'` mapping `g` to `g'`. -/]
 noncomputable
 def monoidHomOfForallMemZpowers : G →* G' where
   toFun x := g' ^ (Classical.choose <| mem_zpowers_iff.mp <| hg x)
@@ -859,8 +863,8 @@ include hg
 
 /-- Two group homomorphisms `G →* G'` are equal if and only if they agree on a generator of `G`. -/
 @[to_additive
-   "Two homomorphisms `G →+ G'` of additive groups are equal if and only if they agree
-   on a generator of `G`."]
+/-- Two homomorphisms `G →+ G'` of additive groups are equal if and only if they agree
+on a generator of `G`. -/]
 lemma MonoidHom.eq_iff_eq_on_generator (f₁ f₂ : G →* G') : f₁ = f₂ ↔ f₁ g = f₂ g := by
   rw [DFunLike.ext_iff]
   refine ⟨fun H ↦ H g, fun H x ↦ ?_⟩
@@ -869,8 +873,8 @@ lemma MonoidHom.eq_iff_eq_on_generator (f₁ f₂ : G →* G') : f₁ = f₂ ↔
 
 /-- Two group isomorphisms `G ≃* G'` are equal if and only if they agree on a generator of `G`. -/
 @[to_additive
-   "Two isomorphisms `G ≃+ G'` of additive groups are equal if and only if they agree
-   on a generator of `G`."]
+/-- Two isomorphisms `G ≃+ G'` of additive groups are equal if and only if they agree
+on a generator of `G`. -/]
 lemma MulEquiv.eq_iff_eq_on_generator (f₁ f₂ : G ≃* G') : f₁ = f₂ ↔ f₁ g = f₂ g :=
   (Function.Injective.eq_iff toMonoidHom_injective).symm.trans <|
     MonoidHom.eq_iff_eq_on_generator hg ..
@@ -882,8 +886,8 @@ variable (hg' : ∀ x, x ∈ zpowers g') (h : orderOf g = orderOf g')
 /-- Given two groups that are generated by elements `g` and `g'` of the same order,
 we obtain an isomorphism sending `g` to `g'`. -/
 @[to_additive
-   "Given two additive groups that are generated by elements `g` and `g'` of the same order,
-   we obtain an isomorphism sending `g` to `g'`."]
+/-- Given two additive groups that are generated by elements `g` and `g'` of the same order,
+we obtain an isomorphism sending `g` to `g'`. -/]
 noncomputable
 def mulEquivOfOrderOfEq : G ≃* G' := by
   refine MonoidHom.toMulEquiv (monoidHomOfForallMemZpowers hg h.symm.dvd)
@@ -980,8 +984,8 @@ theorem not_isCyclic_prod_of_infinite_nontrivial (M N : Type*) [Group M] [Group 
 
 /-- The product of two finite groups is cyclic iff
 both of them are cyclic and their orders are coprime. -/
-@[to_additive AddGroup.isAddCyclic_prod_iff "The product of two finite additive groups is cyclic iff
-both of them are cyclic and their orders are coprime."]
+@[to_additive AddGroup.isAddCyclic_prod_iff /-- The product of two finite additive groups is cyclic
+iff both of them are cyclic and their orders are coprime. -/]
 theorem Group.isCyclic_prod_iff {M N : Type*} [Group M] [Group N] :
     IsCyclic (M × N) ↔ IsCyclic M ∧ IsCyclic N ∧ (Nat.card M).Coprime (Nat.card N) := by
   refine ⟨fun h ↦ ⟨isCyclic_left_of_prod M N, isCyclic_right_of_prod M N, ?_⟩, fun ⟨hM, hN, h⟩ ↦ ?_⟩
