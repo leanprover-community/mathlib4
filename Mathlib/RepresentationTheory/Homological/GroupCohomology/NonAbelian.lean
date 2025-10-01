@@ -136,7 +136,7 @@ theorem H1.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
 
 end H1
 
-section connectHom
+section connectHom₀₁
 
 variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
@@ -156,8 +156,7 @@ noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
 
 def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
 
-theorem exact₁ : Function.Exact (H0.map f) (H0.map g) :=
-  sorry
+theorem exact₁ : Function.Exact (H0.map f) (H0.map g) := sorry
 
 theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := sorry
 
@@ -165,11 +164,13 @@ theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
 
 theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
 
-variable (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
+-- Add the natural equivalence between δ₀₁ and the original map
 
--- def δ₁₂ : H1 G C → H2 G A := sorry
+end connectHom₀₁
 
-end connectHom
+section connectHom₁₂
+
+end connectHom₁₂
 
 end NonAbelian
 
