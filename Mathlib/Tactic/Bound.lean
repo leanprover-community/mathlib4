@@ -246,7 +246,7 @@ macro (name := boundTactic) "bound" c:Aesop.tactic_clause* (" [" term,* "]")? : 
   aesop $c* (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
 
 -- Elaborating `bound?` to use `aesop?`'s proof script generation
-@[inherit_doc bound]
+@[inherit_doc boundTactic]
 macro (name := boundTactic?) "bound?" c:Aesop.tactic_clause* (" [" term,* "]")? : tactic =>
 `(tactic|
   aesop? $c* (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
