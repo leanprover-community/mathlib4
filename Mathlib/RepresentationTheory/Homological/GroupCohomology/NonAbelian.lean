@@ -65,24 +65,15 @@ def H0.map {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A] [Distr
 
 variable (G) in
 theorem H0.map_id (A : Type*) [AddGroup A] [DistribMulAction G A] :
-    H0.map (.id _) = .id (H0 G A) := by
-    apply AddMonoidHom.ext
-    intro x
-    simp [H0.map, H0]
-
+    H0.map (.id _) = .id (H0 G A) := AddMonoidHom.ext fun x ↦ by simp [H0.map, H0]
 
 theorem H0.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
-    (f : A →+[G] B) (g : B →+[G] C) : H0.map (g.comp f) = (H0.map g).comp (H0.map f) := by
-      constructor
+    (f : A →+[G] B) (g : B →+[G] C) : H0.map (g.comp f) = (H0.map g).comp (H0.map f) := rfl
 
 theorem H0.map_injective_of_injective {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A]
     [DistribMulAction G B] (f : A →+[G] B) (hf : Function.Injective f) :
-    Function.Injective (H0.map f) := by
-    intro a₁ a₂ h
-    apply Subtype.ext
-    apply hf
-    exact congr_arg Subtype.val h
+    Function.Injective (H0.map f) := fun _ _ h ↦ Subtype.ext (hf (congr_arg Subtype.val h))
 
 -- def H0Functor : (NonAbelianRep G) ⥤ AddGrp := sorry
 
@@ -108,11 +99,7 @@ def cohomologous (f g : Z1 G A) : Prop :=
 instance setoid : Setoid (Z1 G A) where
   r := cohomologous
   iseqv := {
-<<<<<<< HEAD
-    refl := fun f => ⟨0, fun h => by simp⟩,
-=======
     refl := fun f ↦ ⟨0, fun h ↦ by simp⟩,
->>>>>>> d850b5a27f3dcf624f8ed6601e67330f463e5353
     symm := fun ⟨a, ha⟩ ↦ ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩,
     trans := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
   }
