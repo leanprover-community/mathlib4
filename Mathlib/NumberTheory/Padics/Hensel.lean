@@ -301,24 +301,28 @@ private theorem newton_seq_dist {n k : ℕ} (hnk : n ≤ k) :
   let ⟨_, hex'⟩ := hex
   rw [hex']; apply newton_seq_dist_aux
 
-private theorem bound_deriv : Tendsto (‖F.derivative.aeval a‖ * T ^ 2 ^ ·) atTop (𝓝 0) := by
+private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.aeval a‖ * T ^ 2 ^ n) atTop (𝓝 0) := by
   rw [← mul_zero ‖F.derivative.aeval a‖]
   exact
     tendsto_const_nhds.mul
       (Tendsto.comp (tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _) (T_lt_one hnorm))
         (Nat.tendsto_pow_atTop_atTop_of_one_lt (by simp)))
 
-private theorem bound_deriv_sq : Tendsto (‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ ·) atTop (𝓝 0) := by
+private theorem bound :
+    ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.aeval a‖ * T ^ 2 ^ n < ε := fun hε ↦
+  eventually_atTop.1 <| (bound' hnorm).eventually <| gt_mem_nhds hε
+
+private theorem bound'_sq :
+    Tendsto (fun n : ℕ => ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n) atTop (𝓝 0) := by
   rw [← mul_zero ‖F.derivative.aeval a‖, sq]
   simp only [mul_assoc]
   apply Tendsto.mul
   · apply tendsto_const_nhds
-  · apply bound_deriv
+  · apply bound'
     assumption
 
 private theorem newton_seq_is_cauchy : IsCauSeq norm newton_seq := fun _ε hε ↦
-  ((bound_deriv hnorm).eventually_lt_const hε).exists_forall_of_atTop.imp
-  <| by grind [newton_seq_dist]
+  (bound hnorm hε).imp fun _N hN _j hj ↦ (newton_seq_dist hnorm hj).trans_lt <| hN le_rfl
 
 private def newton_cau_seq : CauSeq ℤ_[p] norm := ⟨_, newton_seq_is_cauchy hnorm⟩
 
@@ -335,7 +339,7 @@ private theorem soln_deriv_norm : ‖F.derivative.aeval soln‖ = ‖F.derivativ
 
 private theorem newton_seq_norm_tendsto_zero :
     Tendsto (fun i => ‖F.aeval (newton_cau_seq hnorm i)‖) atTop (𝓝 0) :=
-  squeeze_zero (fun _ => norm_nonneg _) (newton_seq_norm_le hnorm) (bound_deriv_sq hnorm)
+  squeeze_zero (fun _ => norm_nonneg _) (newton_seq_norm_le hnorm) (bound'_sq hnorm)
 
 private theorem newton_seq_dist_tendsto' :
     Tendsto (fun n => ‖newton_cau_seq hnorm n - a‖) atTop (𝓝 ‖soln - a‖) :=

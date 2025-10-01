@@ -20,8 +20,8 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 * `SzemerediRegularity.stepBound`: During the inductive step, a partition of size `n` is blown to
   size at most `stepBound n`.
 * `SzemerediRegularity.initialBound`: The size of the partition we start the induction with.
-* `SzemerediRegularity.szBound`: The upper bound on the size of the partition produced by our
-  version of Szemerédi's regularity lemma.
+* `SzemerediRegularity.bound`: The upper bound on the size of the partition produced by our version
+  of Szemerédi's regularity lemma.
 
 ## References
 
@@ -181,18 +181,18 @@ theorem hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
 
 /-- An explicit bound on the size of the equipartition whose existence is given by Szemerédi's
 regularity lemma. -/
-noncomputable def szBound : ℕ :=
+noncomputable def bound : ℕ :=
   (stepBound^[⌊4 / ε ^ 5⌋₊] <| initialBound ε l) *
     16 ^ (stepBound^[⌊4 / ε ^ 5⌋₊] <| initialBound ε l)
 
-theorem initialBound_le_szBound : initialBound ε l ≤ szBound ε l :=
+theorem initialBound_le_bound : initialBound ε l ≤ bound ε l :=
   (id_le_iterate_of_id_le le_stepBound _ _).trans <| Nat.le_mul_of_pos_right _ <| by positivity
 
-theorem le_szBound : l ≤ szBound ε l :=
-  (le_initialBound ε l).trans <| initialBound_le_szBound ε l
+theorem le_bound : l ≤ bound ε l :=
+  (le_initialBound ε l).trans <| initialBound_le_bound ε l
 
-theorem szBound_pos : 0 < szBound ε l :=
-  (initialBound_pos ε l).trans_le <| initialBound_le_szBound ε l
+theorem bound_pos : 0 < bound ε l :=
+  (initialBound_pos ε l).trans_le <| initialBound_le_bound ε l
 
 variable {ι 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s t : Finset ι} {x : 𝕜}
 
@@ -243,15 +243,15 @@ def evalInitialBound : PositivityExt where eval {u α} _ _ e := do
 
 example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by positivity
 
-/-- Extension for the `positivity` tactic: `SzemerediRegularity.szBound` is always positive. -/
-@[positivity SzemerediRegularity.szBound _ _]
+/-- Extension for the `positivity` tactic: `SzemerediRegularity.bound` is always positive. -/
+@[positivity SzemerediRegularity.bound _ _]
 def evalBound : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
-  | 0, ~q(ℕ), ~q(SzemerediRegularity.szBound $ε $l) =>
+  | 0, ~q(ℕ), ~q(SzemerediRegularity.bound $ε $l) =>
     assertInstancesCommute
-    pure (.positive q(SzemerediRegularity.szBound_pos $ε $l))
-  | _, _, _ => throwError "not szBound"
+    pure (.positive q(SzemerediRegularity.bound_pos $ε $l))
+  | _, _, _ => throwError "not bound"
 
-example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.szBound ε l := by positivity
+example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.bound ε l := by positivity
 
 end Mathlib.Meta.Positivity
