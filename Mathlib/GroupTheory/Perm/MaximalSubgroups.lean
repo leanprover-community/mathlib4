@@ -428,4 +428,3 @@ theorem isCoatom_stabilizer (s : Set α)
     rwa [compl_compl]
 
 end Equiv.Perm
-
