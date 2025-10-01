@@ -77,7 +77,11 @@ theorem H0.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
 
 theorem H0.map_injective_of_injective {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A]
     [DistribMulAction G B] (f : A →+[G] B) (hf : Function.Injective f) :
-    Function.Injective (H0.map f) := sorry
+    Function.Injective (H0.map f) := by
+    intro a₁ a₂ h
+    apply Subtype.ext
+    apply hf
+    exact congr_arg Subtype.val h
 
 -- def H0Functor : (NonAbelianRep G) ⥤ AddGrp := sorry
 
