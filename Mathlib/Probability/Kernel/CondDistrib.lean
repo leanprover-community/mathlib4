@@ -172,7 +172,7 @@ lemma condDistrib_ae_eq_of_measure_eq_compProd
 
 lemma condDistrib_ae_eq_iff_measure_eq_compProd
     (X : α → β) (hY : AEMeasurable Y μ) (κ : Kernel β Ω) [IsFiniteKernel κ] :
-  (condDistrib Y X μ =ᵐ[μ.map X] κ) ↔ μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ := by
+    (condDistrib Y X μ =ᵐ[μ.map X] κ) ↔ μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ := by
   refine ⟨fun h ↦ ?_, condDistrib_ae_eq_of_measure_eq_compProd X hY⟩
   rw [Measure.compProd_congr h.symm, compProd_map_condDistrib hY]
 
