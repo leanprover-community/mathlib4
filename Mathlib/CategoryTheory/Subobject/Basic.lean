@@ -757,7 +757,7 @@ For any morphism `f : X ⟶ Y` and subobject `x` of `X`, `Subobject.existsπ f x
 projection in the following commutative square:
 
 ```
-(x : C) ------existsπ f y-----> ((exists f).obj x : C)
+(x : C) ------existsπ f x-----> ((exists f).obj x : C)
    |                                      |
 x.arrow                        ((exists f).obj x).arrow
    |                                      |
