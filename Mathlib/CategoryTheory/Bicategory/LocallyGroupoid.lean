@@ -156,12 +156,8 @@ pseudofunctor using `CategoryTheory.Pseudofunctor.mkOfLax`. -/
 noncomputable def Pseudofunctor.ofLaxFunctorToLocallyGroupoid
     {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B] (F : LaxFunctor B' B) :
     F.PseudoCore where
-  mapIdIso x :=
-    { hom := inv <| F.mapId x
-      inv := F.mapId x}
-  mapCompIso f g :=
-    { hom := inv <| F.mapComp f g
-      inv := F.mapComp f g}
+  mapIdIso x := asIso (inv <| F.mapId x)
+  mapCompIso f g := asIso (inv <| F.mapComp f g)
 
 /-- If `B` is a (2,1)-category, then every oplax functor `F` from a bicategory to `B` defines
 a `CategoryTheory.OplaxFunctor.PseudoCore` structure on `F` that can be used to promote `F`
@@ -170,11 +166,7 @@ to a pseudofunctor using `CategoryTheory.Pseudofunctor.mkOfOplax`. -/
 noncomputable def Pseudofunctor.ofOplaxFunctorToLocallyGroupoid
     {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B] (F : OplaxFunctor B' B) :
     F.PseudoCore where
-  mapIdIso x :=
-    { hom := F.mapId x
-      inv := inv <| F.mapId x}
-  mapCompIso f g :=
-    { hom := F.mapComp f g
-      inv := inv <| F.mapComp f g}
+  mapIdIso x := asIso (F.mapId x)
+  mapCompIso f g := asIso (F.mapComp f g)
 
 end CategoryTheory.Bicategory
