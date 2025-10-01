@@ -176,8 +176,8 @@ instance : MulAction G A := Action.instMulAction A
 
 -- should be moved
 instance : DistribMulAction G A where
-  smul_zero := sorry
-  smul_add := sorry
+  smul_zero _ := map_zero _
+  smul_add _ := map_add _
 
 def H0Iso (A : Rep k G) : groupCohomology.H0 A ≃+ H0 G A := sorry
 
