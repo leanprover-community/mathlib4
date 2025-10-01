@@ -33,14 +33,13 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
-  have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
   constructor
   · use i
-    simp [field, mul_comm (i : ℂ), mul_comm (n : ℂ)]
+    simp (discharger := norm_cast) [field]
   · simp only [forall_exists_index]
+    have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
     rintro l k hk
-    have hz : π ≠ 0 := pi_pos.ne'
-    field_simp [hz, I_ne_zero] at hk
+    field_simp at hk
     norm_cast at hk
     have : n ∣ l * i := by rw [← Int.natCast_dvd_natCast, hk]; apply dvd_mul_right
     exact hi.symm.dvd_of_dvd_mul_right this
@@ -121,7 +120,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h
   obtain ⟨i, h, hin, rfl⟩ := h
   rw [mul_comm, ← mul_assoc, Complex.exp_mul_I]
-  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?isCoprime, by omega⟩
+  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?isCoprime, by cutsat⟩
   case isCoprime =>
     replace hin := Nat.isCoprime_iff_coprime.mpr hin
     split_ifs
@@ -153,11 +152,9 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   constructor
   · push_neg at h₂
     rify at h₂
-    rw [lt_div_iff₀ (by positivity)]
-    linear_combination Real.pi * h₂
+    linear_combination h₂
   · rify at h
-    rw [div_le_iff₀ (by positivity)]
-    linear_combination 2 * Real.pi * h + (n:ℝ) * Real.pi_pos
+    linear_combination 2 * h + (n:ℝ) * one_pos (α := ℝ)
 
 lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n]
     (hζ : ζ ∈ rootsOfUnity n ℂ) :

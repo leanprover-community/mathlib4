@@ -18,8 +18,7 @@ Define the Pareto measure over the reals.
 * `paretoPDF`: `ℝ≥0∞`-valued pdf,
   `paretoPDF t r = ENNReal.ofReal (paretoPDFReal t r)`.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
-* `paretoCDFReal`: the CDF given by the definition of CDF in `ProbabilityTheory.CDF` applied to the
-  Pareto measure.
+
 -/
 
 open scoped ENNReal NNReal
@@ -55,7 +54,7 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
   · intro a (_ : a < _)
-    simp only [paretoPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
+    simp only [paretoPDF_eq, ENNReal.ofReal_eq_zero]
     rw [if_neg (by linarith)]
 
 /-- The Pareto pdf is measurable. -/
@@ -128,7 +127,7 @@ lemma isProbabilityMeasure_paretoMeasure (ht : 0 < t) (hr : 0 < r) :
 section ParetoCDF
 
 /-- CDF of the Pareto distribution equals the integral of the PDF. -/
-lemma paretoCDFReal_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
+lemma cdf_paretoMeasure_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     cdf (paretoMeasure t r) x = ∫ x in Iic x, paretoPDFReal t r x := by
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
   rw [cdf_eq_real, paretoMeasure, measureReal_def, withDensity_apply _ measurableSet_Iic]
@@ -136,10 +135,16 @@ lemma paretoCDFReal_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
   · exact ae_of_all _ fun _ ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
   · fun_prop
 
-lemma paretoCDFReal_eq_lintegral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
+@[deprecated (since := "2025-08-28")] alias paretoCDFReal_eq_integral :=
+  cdf_paretoMeasure_eq_integral
+
+lemma cdf_paretoMeasure_eq_lintegral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     cdf (paretoMeasure t r) x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF t r x) := by
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
   rw [cdf_eq_real, paretoMeasure, measureReal_def, withDensity_apply _ measurableSet_Iic]
+
+@[deprecated (since := "2025-08-28")] alias paretoCDFReal_eq_lintegral :=
+  cdf_paretoMeasure_eq_lintegral
 
 end ParetoCDF
 end ProbabilityTheory

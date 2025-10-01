@@ -108,7 +108,7 @@ immediate predecessors and what conditions are added to each of them.
 Each section is labelled with a corresponding bundled ordered ring typeclass in mind. Mixins for
 relating the order structures and ring structures are added as needed.
 
-TODO: the mixin assumptiosn can be relaxed in most cases
+TODO: the mixin assumptions can be relaxed in most cases
 
 -/
 
@@ -373,7 +373,6 @@ end Monotone
 lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE R] [MulPosMono R]
     [AddLeftMono R] [AddLeftReflectLE R]
     (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   exact add_le_add_left (mul_le_mul_of_nonneg_right hab hd) _
@@ -390,7 +389,6 @@ variable [AddLeftReflectLT R]
 lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddLeftStrictMono R]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   gcongr

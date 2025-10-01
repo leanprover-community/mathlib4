@@ -307,10 +307,7 @@ instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
 
 @[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
-    ((x ^ n : s) : R) = (x : R) ^ n := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [pow_succ, ih]
+    ((x ^ n : s) : R) = (x : R) ^ n := rfl
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
@@ -399,6 +396,9 @@ theorem restrict_apply (f : R →+* S) {s : σR} (x : s) : f.domRestrict s x = f
 /-- The subsemiring of elements `x : R` such that `f x = g x` -/
 def eqLocusS (f g : R →+* S) : Subsemiring R :=
   { (f : R →* S).eqLocusM g, (f : R →+ S).eqLocusM g with carrier := { x | f x = g x } }
+
+@[simp]
+theorem mem_eqLocusS {f g : R →+* S} {x : R} : x ∈ f.eqLocusS g ↔ f x = g x := Iff.rfl
 
 @[simp]
 theorem eqLocusS_same (f : R →+* S) : f.eqLocusS f = ⊤ :=
