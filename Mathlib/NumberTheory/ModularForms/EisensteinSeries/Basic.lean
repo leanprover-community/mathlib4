@@ -23,16 +23,19 @@ noncomputable section
 
 namespace ModularForm
 
-open EisensteinSeries CongruenceSubgroup
+open EisensteinSeries CongruenceSubgroup Matrix.SpecialLinearGroup
 
 /-- This defines Eisenstein series as modular forms of weight `k`, level `Γ(N)` and congruence
 condition given by `a : Fin 2 → ZMod N`. -/
 def eisensteinSeries_MF {k : ℤ} {N : ℕ} [NeZero N] (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
-    ModularForm (Gamma N) k where
+    ModularForm Γ(N) k where
   toFun := eisensteinSeries_SIF a k
   slash_action_eq' := (eisensteinSeries_SIF a k).slash_action_eq'
   holo' := eisensteinSeries_SIF_MDifferentiable hk a
-  bdd_at_infty' := isBoundedAtImInfty_eisensteinSeries_SIF a hk
+  bdd_at_cusps' {c} hc := by
+    rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
+    rw [OnePoint.isBoundedAt_iff_forall_SL2Z hc]
+    exact fun γ hγ ↦ isBoundedAtImInfty_eisensteinSeries_SIF a hk γ
 
 /-- Normalised Eisenstein series of level 1 and weight `k`,
 here they have been scaled by `1/2` since we sum over coprime pairs. -/

@@ -282,11 +282,11 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
   set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
-    simp [s', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
+    simpa [s', map_eq_image, image_preimage, filter_eq_self] using
+      fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
-    simp [t', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
+    simpa [t', map_eq_image, image_preimage, filter_eq_self] using
+      fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
   have := four_functions_theorem_aux (extend g (f₁ ∘ (↑)) 0) (extend g (f₂ ∘ (↑)) 0)
