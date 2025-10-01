@@ -84,14 +84,10 @@ def _root_.Valuation.IsEquiv.orderIso {K : Type*} [Ring K] {Γ₀ Γ₀' : Type*
     rw [this]
     rfl
 
-theorem _root_.WithVal.valued_surjective {K : Type*} [Ring K] {Γ₀ : Type*}
-    [LinearOrderedCommGroupWithZero Γ₀]
-    (v : Valuation K Γ₀) : Function.Surjective (Valued.v : (WithVal v) → Γ₀) := by
-  sorry
-
 def _root_.Valuation.IsEquiv.uniformEquiv {K : Type*} [DivisionRing K] {Γ₀ Γ₀' : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀'] [Nontrivial Γ₀]
-    {v : Valuation K Γ₀} {v' : Valuation K Γ₀'} (h : v.IsEquiv v') :
+    {v : Valuation K Γ₀} {v' : Valuation K Γ₀'} (hv : Function.Surjective v)
+    (hv' : Function.Surjective v') (h : v.IsEquiv v') :
     WithVal v ≃ᵤ WithVal v' := by
   apply Equiv.toUniformEquivOfIsUniformInducing (WithVal.equivWithVal v v')
   rw [isUniformInducing_iff_uniformSpace]
@@ -99,7 +95,7 @@ def _root_.Valuation.IsEquiv.uniformEquiv {K : Type*} [DivisionRing K] {Γ₀ Γ
   simp [uniformity_comap, (Valued.hasBasis_uniformity _ _).mem_iff]
   constructor
   · rintro ⟨t, ⟨γ, hγ⟩, htu⟩
-    obtain ⟨a, ha⟩ := WithVal.valued_surjective v' γ
+    obtain ⟨a, ha⟩ := hv' γ
     have : Valued.v (h.orderIso.symm a) ≠ 0 := by
       rw [← WithVal.apply_equiv]
       simp
@@ -119,7 +115,7 @@ def _root_.Valuation.IsEquiv.uniformEquiv {K : Type*} [DivisionRing K] {Γ₀ Γ
     simp
     rw [← ha]
     have : p.2 - p.1 < h.orderIso.symm a := hp
-    rw [← WithVal.apply_equiv, ← WithVal.apply_equiv]
+    rw [← WithVal.apply_equiv]
     have h'' := h.orderIso.toOrderIso.lt_symm_apply (x := p.2 - p.1) (y := a)
     have h' : h.orderIso.toOrderIso.symm = h.orderIso.symm.toOrderIso := rfl
     rw [h'] at h''
@@ -133,7 +129,7 @@ def _root_.Valuation.IsEquiv.uniformEquiv {K : Type*} [DivisionRing K] {Γ₀ Γ
       rw [Prod.map_injective]
       exact ⟨RingEquiv.injective _, RingEquiv.injective _⟩
     constructor
-    · obtain ⟨a, ha⟩ := WithVal.valued_surjective v γ
+    · obtain ⟨a, ha⟩ := hv γ
       have : Valued.v (h.orderIso a) ≠ 0 := by
         rw [← WithVal.apply_equiv]
         simp
@@ -165,13 +161,54 @@ def _root_.Valuation.IsEquiv.uniformEquiv {K : Type*} [DivisionRing K] {Γ₀ Γ
       exact this
     · rw [Set.preimage_image_eq _ hinj]
 
-theorem valuation_equiv_toRatpadicValuation (𝔭 : HeightOneSpectrum ℤ) :
-    (𝔭.valuation ℚ).IsEquiv (𝔭.toRatpadicValuation) := sorry
+theorem _root_.Rat.surjective_padicValuation (p : ℕ) [Fact (p.Prime)] :
+    Function.Surjective (Rat.padicValuation p) := by
+  intro x
+  induction x with
+  | zero => simp
+  | coe x =>
+    simp [Rat.padicValuation, -WithZero.exp_neg]
+    induction x with | ofAdd x
+    simp [WithZero.exp, -ofAdd_neg]
+    by_cases hx : 0 ≤ x
+    · use (p ^ x.natAbs)⁻¹
+      rcases eq_or_ne x 0 with (h | h)
+      · simp [h]
+      · have : ((p : ℚ) ^ x.natAbs)⁻¹  ≠ 0 := by
+          apply inv_ne_zero
+          apply pow_ne_zero
+          simp
+          exact (Fact.out : p.Prime).ne_zero
+        simp [this, hx]
+    · use p ^ x.natAbs
+      rcases eq_or_ne x 0 with (h | h)
+      · simp [h]
+      · have : ((p : ℚ) ^ x.natAbs) ≠ 0 := by
+          apply pow_ne_zero
+          simpa using (Fact.out : p.Prime).ne_zero
+        simp [this, padicValRat.pow (show (p : ℚ) ≠ 0 by simp [(Fact.out : p.Prime).ne_zero])]
+        simp at hx
+        have : |x| = -x := by
+          simp
+          linarith
+        simp [this]
 
--- prove this by showing valuations are equivalent?
+theorem valuation_equiv_toRatpadicValuation (𝔭 : HeightOneSpectrum ℤ) :
+    (𝔭.valuation ℚ).IsEquiv (𝔭.toRatpadicValuation) := by
+  rw [Valuation.isEquiv_iff_val_lt_one]
+  intro x
+  induction x with
+  | div a b =>
+    simp
+    have := IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap (K := ℚ) 𝔭 a
+    erw [this]
+    simp [toRatpadicValuation, Rat.padicValuation]
+    sorry
+
 noncomputable def withValEquiv (𝔭 : HeightOneSpectrum ℤ) :
     WithVal (𝔭.valuation ℚ) ≃ᵤ WithVal 𝔭.toRatpadicValuation :=
-  Valuation.IsEquiv.uniformEquiv 𝔭.valuation_equiv_toRatpadicValuation
+  Valuation.IsEquiv.uniformEquiv (𝔭.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
+    𝔭.valuation_equiv_toRatpadicValuation
 
 noncomputable
 def adicCompletionRatEquiv (𝔭 : HeightOneSpectrum ℤ) :
