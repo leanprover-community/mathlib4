@@ -10,7 +10,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 # Einstein series q-expansions
 
 We give some identities for q-expansions of Eisenstein series that will be used in describing their
-Q-expansions.
+q-expansions.
 
 -/
 
