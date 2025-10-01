@@ -334,16 +334,40 @@ lemma isOpen_isImmersionAt : IsOpen {x | IsImmersionAt F I J n f x} := by
 lemma aux {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ}
     {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
     EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
-  --⟨fun h ↦ aux1 h hs ht, fun ⟨h, h'⟩ ↦ aux2 h h'⟩
   ⟨fun h ↦ ⟨aux1 h ht, aux2 h hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
-    (h : IsImmersionAt F I J n f x) (h' : IsImmersionAt F' I' J' n g x') :
+    (hf : IsImmersionAt F I J n f x) (hg : IsImmersionAt F' I' J' n g x') :
     IsImmersionAt (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
+  set P := ImmersionAtProp F I J M N
+  set Q := ImmersionAtProp F' I' J' M' N'
+  set R := ImmersionAtProp (F × F') (I.prod I') (J.prod J') (M × M') (N × N')
+  -- This is the key proof: immersions are stable under products.
+  have key : ∀ {f : M → N}, ∀ {φ₁ : PartialHomeomorph M H}, ∀ {ψ₁ : PartialHomeomorph N G},
+      ∀ {g : M' → N'}, ∀ {φ₂ : PartialHomeomorph M' H'}, ∀ {ψ₂ : PartialHomeomorph N' G'},
+      P f φ₁ ψ₁ → Q g φ₂ ψ₂ → R (Prod.map f g) (φ₁.prod φ₂) (ψ₁.prod ψ₂) := by
+    rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
+    use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (equiv₁.prodCongr equiv₂)
+    rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target]
+    set C := ((ψ₁.extend J).prod (ψ₂.extend J')) ∘
+      Prod.map f g ∘ ((φ₁.extend I).prod (φ₂.extend I')).symm
+    have hC : C = Prod.map ((ψ₁.extend J) ∘ f ∘ (φ₁.extend I).symm)
+        ((ψ₂.extend J') ∘ g ∘ (φ₂.extend I').symm) := by
+      ext x <;> simp [C]
+    set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
+      (equiv₁.prodCongr equiv₂)) ∘ (·, 0))
+    have hΦ: Φ = Prod.map (equiv₁ ∘ (·, 0)) (equiv₂ ∘ (·, 0)) := by ext x <;> simp [Φ]
+    rw [hC, hΦ]
+    exact hfprop.prodMap hgprop
+  -- Now, this step should be a straightforward application... not sure why this fails!
   sorry
+  -- convert LiftSourceTargetPropertyAt.prodMap hprop hf hg
+  -- apply LiftSourceTargetPropertyAt.prodMap hprop hf.property hg.property
+  -- don't understand yet why this fails!
+  -- old proof, unabstracted
   /- use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (h.equiv.prodCongr h'.equiv)
   use h.domChart.prod h'.domChart, h.codChart.prod h'.codChart
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩

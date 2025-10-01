@@ -193,6 +193,52 @@ lemma congr_iff_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[n
     LiftSourceTargetPropertyAt I I' n f x P ↔ LiftSourceTargetPropertyAt I I' n g x P :=
   ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
 
+lemma prodMap [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    {Q : (N → N') → PartialHomeomorph N G → PartialHomeomorph N' G' → Prop}
+    {R : ((M × N) → (M' × N')) → PartialHomeomorph (M × N) (H × G) →
+      PartialHomeomorph (M' × N') (H' × G') → Prop}
+    -- TODO: reorder so hf is the first explicit argument
+    (h : ∀ {f : M → M'}, ∀ {φ₁ : PartialHomeomorph M H}, ∀ {ψ₁ : PartialHomeomorph M' H'},
+      ∀ {g : N → N'}, ∀ {φ₂ : PartialHomeomorph N G}, ∀ {ψ₂ : PartialHomeomorph N' G'},
+      P f φ₁ ψ₁ → Q g φ₂ ψ₂ → R (Prod.map f g) (φ₁.prod φ₂) (ψ₁.prod ψ₂))
+    (hf : LiftSourceTargetPropertyAt I I' n f x P) {g : N → N'} {y : N}
+    (hg : LiftSourceTargetPropertyAt J J' n g y Q) :
+    LiftSourceTargetPropertyAt (I.prod J) (I'.prod J') n (Prod.map f g) (x, y) R := by
+  use hf.domChart.prod hg.domChart, hf.codChart.prod hg.codChart
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp [hf.mem_domChart_source, hg.mem_domChart_source]
+  · simp [mem_codChart_source hf, mem_codChart_source hg]
+  · exact IsManifold.mem_maximalAtlas_prod
+      (domChart_mem_maximalAtlas hf) (domChart_mem_maximalAtlas hg)
+  · apply IsManifold.mem_maximalAtlas_prod
+      (codChart_mem_maximalAtlas hf) (codChart_mem_maximalAtlas hg)
+  · rw [PartialHomeomorph.prod_toPartialEquiv, PartialEquiv.prod_source, prodMap_image_prod]
+    exact prod_mono (map_source_subset_source hf) (map_source_subset_source hg)
+  · exact h hf.property hg.property
+
+lemma prodMap [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    {Q : (N → N') → PartialHomeomorph N G → PartialHomeomorph N' G' → Prop}
+    {R : ((M × N) → (M' × N')) → PartialHomeomorph (M × N) (H × G) →
+      PartialHomeomorph (M' × N') (H' × G') → Prop}
+    -- TODO: reorder so hf is the first explicit argument
+    (h : ∀ {f : M → M'}, ∀ {φ₁ : PartialHomeomorph M H}, ∀ {ψ₁ : PartialHomeomorph M' H'},
+      ∀ {g : N → N'}, ∀ {φ₂ : PartialHomeomorph N G}, ∀ {ψ₂ : PartialHomeomorph N' G'},
+      P f φ₁ ψ₁ → Q g φ₂ ψ₂ → R (Prod.map f g) (φ₁.prod φ₂) (ψ₁.prod ψ₂))
+    (hf : LiftSourceTargetPropertyAt I I' n f x P) {g : N → N'} {y : N}
+    (hg : LiftSourceTargetPropertyAt J J' n g y Q) :
+    LiftSourceTargetPropertyAt (I.prod J) (I'.prod J') n (Prod.map f g) (x, y) R := by
+  use hf.domChart.prod hg.domChart, hf.codChart.prod hg.codChart
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp [hf.mem_domChart_source, hg.mem_domChart_source]
+  · simp [mem_codChart_source hf, mem_codChart_source hg]
+  · exact IsManifold.mem_maximalAtlas_prod
+      (domChart_mem_maximalAtlas hf) (domChart_mem_maximalAtlas hg)
+  · apply IsManifold.mem_maximalAtlas_prod
+      (codChart_mem_maximalAtlas hf) (codChart_mem_maximalAtlas hg)
+  · rw [PartialHomeomorph.prod_toPartialEquiv, PartialEquiv.prod_source, prodMap_image_prod]
+    exact prod_mono (map_source_subset_source hf) (map_source_subset_source hg)
+  · exact h hf.property hg.property
+
 end LiftSourceTargetPropertyAt
 
 end Manifold
