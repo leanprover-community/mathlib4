@@ -374,7 +374,7 @@ theorem fromThinSkeleton_comp_toThinSkeleton_eq [Quiver.IsThin D] (F : C ⥤ D) 
 
 /--
 Applying `map F` and then `fromThinSkeleton` is isomorphic to first applying `fromThinSkeleton`
-and then applying `F`
+and then applying `F`.
 -/
 noncomputable def isoCompFromThinSkeleton [Quiver.IsThin D] (F : C ⥤ D) :
     map F ⋙ fromThinSkeleton D ≅ fromThinSkeleton C ⋙ F  :=
