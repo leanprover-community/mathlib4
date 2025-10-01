@@ -318,41 +318,38 @@ theorem iSup_eq_iSup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι
     iSup (familyOfBFamily' r ho f) = iSup (familyOfBFamily' r' ho' f) :=
   iSup_eq_of_range_eq (by simp)
 
-@[deprecated (since := "2025-10-01")] alias sup_eq_sup := iSup_eq_iSup
-
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
-    `o : Ordinal.{u}`. This is a special case of `iSup` over the family provided by
-    `familyOfBFamily`. -/
+`o : Ordinal.{u}`. This is a special case of `iSup` over the family provided by
+`familyOfBFamily`. -/
 def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
   iSup (familyOfBFamily o f)
 
 @[simp]
-theorem sup_eq_bsup {o : Ordinal} (f : ∀ a < o, Ordinal) :
+theorem iSup_eq_bsup {o : Ordinal} (f : ∀ a < o, Ordinal) :
     iSup (familyOfBFamily o f) = bsup o f :=
   rfl
 
-theorem iSup_eq_bsup {o : Ordinal} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
+theorem iSup'_eq_bsup {o : Ordinal} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
     (f : ∀ a < o, Ordinal) : iSup (familyOfBFamily' r ho f) = bsup o f :=
   iSup_eq_iSup r _ ho _ f
-
-@[deprecated (since := "2025-10-01")] alias sup_eq_bsup' := iSup_eq_bsup
 
 theorem sSup_eq_bsup {o : Ordinal} (f : ∀ a < o, Ordinal) : sSup (brange o f) = bsup o f := by
   congr
   rw [range_familyOfBFamily]
 
 @[simp]
-theorem bsup_eq_iSup {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal) :
+theorem bsup'_eq_iSup {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal) :
     bsup _ (bfamilyOfFamily' r f) = iSup f := by
-  simp +unfoldPartialApp only [← iSup_eq_bsup r, enum_typein, familyOfBFamily', bfamilyOfFamily']
+  simp +unfoldPartialApp only [← iSup'_eq_bsup r, enum_typein, familyOfBFamily', bfamilyOfFamily']
+
+@[simp]
+theorem bsup_eq_iSup {ι} (f : ι → Ordinal) : bsup _ (bfamilyOfFamily f) = iSup f :=
+  bsup'_eq_iSup _ f
 
 theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
     (f : ι → Ordinal.{max u v}) :
     bsup.{_, v} _ (bfamilyOfFamily' r f) = bsup.{_, v} _ (bfamilyOfFamily' r' f) := by
-  rw [bsup_eq_iSup, bsup_eq_iSup]
-
-@[deprecated (since := "2025-10-01")] alias bsup_eq_sup := bsup_eq_iSup
-@[deprecated (since := "2025-10-01")] alias bsup_eq_sup' := bsup_eq_iSup
+  rw [bsup'_eq_iSup, bsup'_eq_iSup]
 
 @[congr]
 theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
@@ -381,7 +378,7 @@ theorem IsNormal.bsup {f : Ordinal → Ordinal} (H : IsNormal f) {o : Ordinal} :
     ∀ (g : ∀ a < o, Ordinal), o ≠ 0 → f (bsup o g) = bsup o fun a h => f (g a h) :=
   inductionOn o fun α r _ g h => by
     haveI := type_ne_zero_iff_nonempty.1 h
-    rw [← iSup_eq_bsup r, IsNormal.map_iSup H, ← iSup_eq_bsup r] <;> rfl
+    rw [← iSup'_eq_bsup r, IsNormal.map_iSup H, ← iSup'_eq_bsup r] <;> rfl
 
 theorem lt_bsup_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} :
     (∀ i h, f i h ≠ bsup.{_, v} o f) ↔ ∀ i h, f i h < bsup.{_, v} o f :=
@@ -390,7 +387,7 @@ theorem lt_bsup_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} 
 theorem bsup_not_succ_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}}
     (hf : ∀ {i : Ordinal} (h : i < o), f i h ≠ bsup.{_, v} o f) (a) :
     a < bsup.{_, v} o f → succ a < bsup.{_, v} o f := by
-  rw [← sup_eq_bsup] at *
+  rw [← iSup_eq_bsup] at *
   exact succ_lt_iSup_of_ne_iSup fun i => hf _
 
 @[simp]
@@ -420,7 +417,7 @@ theorem bsup_const {o : Ordinal.{u}} (ho : o ≠ 0) (a : Ordinal.{max u v}) :
 
 @[simp]
 theorem bsup_one (f : ∀ a < (1 : Ordinal), Ordinal) : bsup 1 f = f 0 zero_lt_one := by
-  simp_rw [← sup_eq_bsup, ciSup_unique, familyOfBFamily, familyOfBFamily', typein_one_toType]
+  simp_rw [← iSup_eq_bsup, ciSup_unique, familyOfBFamily, familyOfBFamily', typein_one_toType]
 
 theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f ⊆ brange o' g) : bsup.{u, max v w} o f ≤ bsup.{v, max u w} o' g :=
@@ -435,6 +432,12 @@ theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Or
 
 theorem iSup_Iio_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : Iio o, f a.1 a.2 = bsup o f := by
   simp_rw [Iio, bsup, iSup, range_familyOfBFamily, brange, range, Subtype.exists, mem_setOf]
+
+@[deprecated (since := "2025-10-01")] alias sup_eq_sup := iSup_eq_iSup
+@[deprecated (since := "2025-10-01")] alias sup_eq_bsup' := iSup'_eq_bsup
+@[deprecated (since := "2025-10-01")] alias sup_eq_bsup := iSup_eq_bsup
+@[deprecated (since := "2025-10-01")] alias bsup_eq_sup' := bsup'_eq_iSup
+@[deprecated (since := "2025-10-01")] alias bsup_eq_sup := bsup_eq_iSup
 
 end bsup
 
@@ -617,7 +620,7 @@ theorem bsup_eq_blsub (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) :
 
 theorem lsub_eq_blsub' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
     (f : ∀ a < o, Ordinal) : lsub (familyOfBFamily' r ho f) = blsub o f :=
-  iSup_eq_bsup r ho fun a ha => succ (f a ha)
+  iSup'_eq_bsup r ho fun a ha => succ (f a ha)
 
 theorem lsub_eq_lsub {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
     [IsWellOrder ι' r'] {o} (ho : type r = o) (ho' : type r' = o)
@@ -633,7 +636,7 @@ theorem lsub_eq_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
 @[simp]
 theorem blsub_eq_lsub' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r]
     (f : ι → Ordinal.{max u v}) : blsub.{_, v} _ (bfamilyOfFamily' r f) = lsub.{_, v} f :=
-  bsup_eq_iSup r (succ ∘ f)
+  bsup'_eq_iSup r (succ ∘ f)
 
 theorem blsub_eq_blsub {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
     (f : ι → Ordinal.{max u v}) :
@@ -676,7 +679,7 @@ theorem blsub_le_bsup_succ {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) 
 
 theorem bsup_eq_blsub_or_succ_bsup_eq_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     bsup.{_, v} o f = blsub.{_, v} o f ∨ succ (bsup.{_, v} o f) = blsub.{_, v} o f := by
-  rw [← sup_eq_bsup, ← lsub_eq_blsub]
+  rw [← iSup_eq_bsup, ← lsub_eq_blsub]
   exact sup_eq_lsub_or_sup_succ_eq_lsub _
 
 theorem bsup_succ_le_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
@@ -696,7 +699,7 @@ theorem bsup_succ_eq_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) 
 
 theorem bsup_eq_blsub_iff_succ {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     bsup.{_, v} o f = blsub.{_, v} o f ↔ ∀ a < blsub.{_, v} o f, succ a < blsub.{_, v} o f := by
-  rw [← sup_eq_bsup, ← lsub_eq_blsub]
+  rw [← iSup_eq_bsup, ← lsub_eq_blsub]
   apply sup_eq_lsub_iff_succ
 
 theorem bsup_eq_blsub_iff_lt_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
