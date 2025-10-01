@@ -41,6 +41,24 @@ lemma prod_prodMkLeft_comp_prod_deterministic {β' ε : Type*}
   · exact measurable_measure_prodMk_left hs
   · exact Kernel.measurable_coe _ hs
 
+/-- If `κ` was deterministic, this would be true even if `η.prodMkRight β` was a more general
+kernel since `Kernel.deterministic f hf ×ₖ κ` would be deterministic and commute with copying.
+Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
+lemma prod_prodMkRight_comp_deterministic_prod {β' ε : Type*}
+    {mβ' : MeasurableSpace β'} {mε : MeasurableSpace ε}
+    (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
+    (ξ : Kernel (ε × β) δ) [IsSFiniteKernel ξ] {f : γ → ε} (hf : Measurable f) :
+    (ξ ×ₖ η.prodMkRight β) ∘ₖ (deterministic f hf ×ₖ κ)
+      = (ξ ∘ₖ (deterministic f hf ×ₖ κ)) ×ₖ (η ∘ₖ deterministic f hf) := by
+  ext ω s hs
+  rw [prod_apply' _ _ _ hs, comp_apply' _ _ _ hs, lintegral_deterministic_prod,
+    lintegral_comp, lintegral_deterministic_prod]
+  · congr with b
+    rw [prod_apply' _ _ _ hs, prodMkRight_apply, comp_deterministic_eq_comap, comap_apply]
+  · exact (measurable_measure_prodMk_left hs).lintegral_kernel
+  · exact measurable_measure_prodMk_left hs
+  · exact Kernel.measurable_coe _ hs
+
 end ProbabilityTheory.Kernel
 
 namespace MeasureTheory.Measure
