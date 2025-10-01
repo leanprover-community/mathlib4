@@ -75,16 +75,23 @@ lemma avgRisk_const_left' (hl : Measurable (uncurry ℓ)) (μ : Measure 𝓧) [S
     avgRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := by
   rw [avgRisk_const_left, lintegral_lintegral_swap (by fun_prop)]
 
-lemma avgRisk_const_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (ν : Measure 𝓨) (π : Measure Θ) :
+/-- See `avgRisk_const_right` for a simpler result when `P` is a Markov kernel. -/
+lemma avgRisk_const_right' (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (ν : Measure 𝓨) (π : Measure Θ) :
     avgRisk ℓ P (Kernel.const 𝓧 ν) π = ∫⁻ θ, P θ .univ * ∫⁻ y, ℓ θ y ∂ν ∂π := by
   simp [avgRisk, Kernel.const_comp]
+
+/-- See `avgRisk_const_right'` for a similar result when `P` is not a Markov kernel. -/
+lemma avgRisk_const_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsMarkovKernel P]
+    (ν : Measure 𝓨) (π : Measure Θ) :
+    avgRisk ℓ P (Kernel.const 𝓧 ν) π = ∫⁻ θ, ∫⁻ y, ℓ θ y ∂ν ∂π := by
+  simp [avgRisk_const_right']
 
 /-- See `bayesRisk_le_iInf` for a simpler result when `P` is a Markov kernel. -/
 lemma bayesRisk_le_iInf' (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧) (π : Measure Θ) :
     bayesRisk ℓ P π ≤ ⨅ y, ∫⁻ θ, ℓ θ y * P θ .univ ∂π := by
   simp_rw [le_iInf_iff, bayesRisk]
   refine fun y ↦ iInf_le_of_le (Kernel.const _ (Measure.dirac y)) ?_
-  simp only [iInf_pos, avgRisk_const_right, mul_comm]
+  simp only [iInf_pos, avgRisk_const_right', mul_comm]
   gcongr with θ
   rw [lintegral_dirac' _ (by fun_prop)]
 
@@ -193,7 +200,7 @@ lemma bayesRisk_of_subsingleton' [SFinite π] (hl : Measurable (uncurry ℓ)) :
     bayesRisk ℓ P π = ⨅ y, ∫⁻ θ, ℓ θ y * P θ .univ ∂π := by
   refine le_antisymm (bayesRisk_le_iInf' hl _ _) ?_
   rw [bayesRisk_eq_iInf_measure_of_subsingleton]
-  simp only [avgRisk_const_right, le_iInf_iff]
+  simp only [avgRisk_const_right', le_iInf_iff]
   refine fun μ hμ ↦ (iInf_le_lintegral (μ := μ) _).trans_eq ?_
   rw [lintegral_lintegral_swap]
   · congr with θ
