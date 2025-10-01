@@ -162,8 +162,6 @@ theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
 
 theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
 
--- Add the natural equivalence between δ₀₁ and the original map
-
 end connectHom₀₁
 
 
@@ -194,10 +192,29 @@ variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
   {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
   (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
 
-def δ₁₂ : H1 G C → groupCohomology A 2 := by
+noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x)) :
+    LinearMap.ker (ModuleCat.Hom.hom (d₂₃ A)) := by
+  refine ⟨fun st ↦ (Equiv.ofInjective f hf).symm ⟨(b st.1) + st.1 • (b st.2) - b (st.1 * st.2),
+    (hfg _).mp (by simp [← hbc, c.prop])⟩, funext fun ⟨x, y, z⟩ ↦ hf ?_⟩
   sorry
 
+theorem δ₁₂_aux_well_defined (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
+    (hbc' : ∀ (x : G), c' x = g (b' x)) (hcc' : Z1.cohomologous c c') :
+    ((δ₁₂_aux hf hfg b c hbc) - (δ₁₂_aux hf hfg b' c' hbc') : (ModuleCat.of k (G × G → A))) ∈
+    (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := sorry
 
+noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
+  refine (H2Iso A).symm.hom ∘ Quotient.lift (Submodule.Quotient.mk ∘
+    (fun c ↦ ((δ₁₂_aux hf hfg (fun x ↦ Classical.choose (hg (c x))) c
+      (fun x ↦ (Classical.choose_spec (hg (c x))).symm)))))
+        (fun c c' (hcc' : Z1.cohomologous c c') ↦ ?_)
+  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined hf hfg (fun x ↦ Classical.choose (hg (c x)))
+    (fun x ↦ Classical.choose (hg (c' x))) c c' (fun x ↦ (Classical.choose_spec (hg (c x))).symm)
+      (fun x ↦ (Classical.choose_spec (hg (c' x))).symm) hcc'
+  exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
+
+
+-- theorem exact₅ : Function.Exact (H1.map g) δ₁₂ := sorry
 
 end connectHom₁₂
 
