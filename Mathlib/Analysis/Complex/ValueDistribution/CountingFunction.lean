@@ -15,9 +15,11 @@ of the three main functions used in Value Distribution Theory.
 
 The counting function of a meromorphic function `f` is a logarithmically weighted measure of the
 number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`, counting
-multiplicities.  See Section~VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677]
-or Section~1.1 of [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and
-Diophantine Approximation*][MR3156076] for a detailed discussion.
+multiplicities.
+
+See Section VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
+[Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
+Approximation*][MR3156076] for a detailed discussion.
 
 ## Implementation Notes
 
@@ -96,23 +98,25 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
 /--
 Alternate presentation of the finsum that appears in the definition of the counting function.
 -/
-lemma countingFunction_finsum_eq_finsum_add {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
+lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
     (hD : D.support.Finite) :
-    ∑ᶠ u, D u * (log R - log ‖u‖) = ∑ᶠ u, D u * log (R * ‖u‖⁻¹) + D 0 * log R := by
-  by_cases h : 0 ∈ D.support
-  · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset := fun x ↦ by
-      simp +contextual
+    ∑ᶠ u, D u * (log R - log ‖c - u‖) = ∑ᶠ u, D u * log (R * ‖c - u‖⁻¹) + D c * log R := by
+  by_cases h : c ∈ D.support
+  · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
+      fun x ↦ by simp +contextual
     simp only [finsum_eq_sum_of_support_subset _ this,
-      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), norm_zero,
-      log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
+      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
+      norm_zero, log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
     refine Finset.sum_congr rfl fun x hx ↦ ?_
     simp only [Finset.mem_sdiff, Finset.notMem_singleton] at hx
-    simp [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr hx.2)), sub_eq_add_neg]
+    rw [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr (sub_eq_zero.not.2 hx.2.symm))), log_inv]
+    ring
   · simp_all only [mem_support, Decidable.not_not, Int.cast_zero, zero_mul, add_zero]
     refine finsum_congr fun x ↦ ?_
-    by_cases h₁ : x = 0
+    by_cases h₁ : c = x
     · simp_all
-    · simp [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr h₁)), sub_eq_add_neg]
+    · rw [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr (sub_eq_zero.not.2 h₁))), log_inv]
+      ring
 
 /--
 Evaluation of the logarithmic counting function at zero yields zero.
