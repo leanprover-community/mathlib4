@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.Algebra.Group.Basic
+import Batteries.Tactic.Instances
 
 /-!
 # Uniform structure on topological groups
@@ -120,6 +121,11 @@ class inductive IsLeftOrRightUniformGroup (G : Type*) [UniformSpace G] [Group G]
 | right [IsRightUniformGroup G] : IsLeftOrRightUniformGroup G
 | left [IsLeftUniformGroup G] : IsLeftOrRightUniformGroup G
 
+attribute [instance 10] IsRightUniformAddGroup.toIsTopologicalAddGroup
+attribute [instance 10] IsRightUniformGroup.toIsTopologicalGroup
+attribute [instance 10] IsLeftUniformAddGroup.toIsTopologicalAddGroup
+attribute [instance 10] IsLeftUniformGroup.toIsTopologicalGroup
+
 attribute [instance] IsLeftOrRightUniformAddGroup.left
 attribute [instance] IsLeftOrRightUniformAddGroup.right
 attribute [instance] IsLeftOrRightUniformGroup.left
@@ -140,7 +146,7 @@ In other words, this instance only appears in lemmas assuming `IsLeftOrRightUnif
 it will have an instance of either `IsLeftUniformAddGroup` or `IsRightUniformAddGroup`.
 
 In other words, this instance only appears in lemmas assuming `IsLeftOrRightUniformAddGroup G`. -/]
-instance (priority := low) : IsTopologicalGroup G := by
+instance (priority := 0) : IsTopologicalGroup G := by
   rcases ‹IsLeftOrRightUniformGroup G› <;> infer_instance
 
 variable (Gₗ Gᵣ)
