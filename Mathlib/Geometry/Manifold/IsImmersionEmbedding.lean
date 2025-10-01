@@ -131,10 +131,8 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorp
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 This version does not assume that `f` maps `φ.source` to `ψ.source`,
 but that `f` is continuous at `x`. -/
-lemma mk_of_continuousAt (f : M → M') (x : M) (hf : ContinuousAt f x)
-    (equiv : (E × F) ≃L[𝕜] E')
-    (domChart : PartialHomeomorph M H)
-    (codChart : PartialHomeomorph M' H')
+lemma mk_of_continuousAt {f : M → M'} {x : M} (hf : ContinuousAt f x) (equiv : (E × F) ≃L[𝕜] E')
+    (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph M' H')
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
