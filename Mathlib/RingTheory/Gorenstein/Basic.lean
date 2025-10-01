@@ -25,7 +25,7 @@ import Mathlib.RingTheory.CohenMacaulay.Basic
 
 section ENat
 
-lemma WithTop.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
+lemma ENat.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
     a + c ≤ b + c ↔ a ≤ b := by
   induction a with
   | top => simp only [_root_.top_add, top_le_iff]; exact WithTop.add_coe_eq_top_iff
@@ -40,13 +40,17 @@ lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
   | coe a =>
     induction b with
     | bot => simp
-    | coe b => norm_cast; exact WithTop.add_le_add_right_iff a b c
+    | coe b =>
+      norm_cast
+      exact ENat.add_le_add_right_iff a b c
 
 lemma WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
     a + 1 ≤ 0 ↔ a = ⊥ := by
   induction a with
   | bot => simp
-  | coe a => norm_cast; simp
+  | coe a =>
+    norm_cast
+    simp
 
 end ENat
 
@@ -229,21 +233,19 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
     ext
     simp [S]
   simp only [S, this, AddCommGrp.epi_iff_surjective, AddCommGrp.hom_ofHom] at epi
-  have surj : Function.Surjective (x • (LinearMap.id (R := R) (M := Ext S.X₂ M n))) := by
-    intro a
-    rcases epi a with ⟨b, hb⟩
-    simp only [ModuleCat.smulShortComplex_X₁, ModuleCat.smulShortComplex_X₂, Ext.mk₀_smul,
-      Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hb
-    use b
-    simpa using hb
   have : x ∈ (Module.annihilator R (Ext S.X₂ M n)).jacobson :=
     (IsLocalRing.maximalIdeal_le_jacobson _) hx
   by_contra ntr
   let _ : Nontrivial (Ext S.X₂ M n) := not_subsingleton_iff_nontrivial.mp ntr
   let _ : Module.Finite R S.X₂ := fin
   absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
-
-  sorry
+  have : ⊤ ≤ x • (⊤ : Submodule R (Ext S.X₂ M n)) := sorry
+  rw [eq_comm, eq_top_iff]
+  intro y hy
+  rcases epi y with ⟨z, hz⟩
+  simp only [ModuleCat.smulShortComplex_X₁, ModuleCat.smulShortComplex_X₂, Ext.mk₀_smul,
+      Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
+  simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
 
 lemma injectiveDimension_eq_sSup (M : ModuleCat.{v} R) :
     injectiveDimension M = ⨆ n ∈ {i | Nontrivial
