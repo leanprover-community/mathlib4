@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Nat
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Log
+import Mathlib.Data.Nat.Prime.Pow
 
 /-!
 # Prime powers
@@ -91,8 +92,25 @@ theorem isPrimePow_nat_iff_bounded_log (n : ℕ) :
   · rintro ⟨k, hk, hk', ⟨p, hp, rfl, hp'⟩⟩
     exact ⟨p, k, hp', hk', rfl⟩
 
+theorem isPrimePow_nat_iff_bounded_log_minFac (n : ℕ) :
+    IsPrimePow n
+      ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ n = n.minFac ^ k := by
+  rw [isPrimePow_nat_iff_bounded_log]
+  by_cases h : n = 1
+  · subst h
+    simp
+  constructor
+  · rintro ⟨k, hkle, hk_pos, p, hle, heq, hprime⟩
+    refine ⟨k, hkle, hk_pos, ?_⟩
+    · rw [← heq, Nat.Prime.pow_minFac hprime hk_pos.ne']
+  · rintro ⟨k, hkle, hk_pos, heq⟩
+    refine ⟨k, hkle, hk_pos, n.minFac, Nat.minFac_le ?_, ?_, ?_⟩
+    · grind [Nat.minFac_prime_iff, nonpos_iff_eq_zero, Nat.log_zero_right, lt_self_iff_false]
+    · exact id (Eq.symm heq)
+    · refine Nat.minFac_prime_iff.mpr (by grind)
+
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
-  decidable_of_iff' _ (isPrimePow_nat_iff_bounded_log n)
+  decidable_of_iff' _ (isPrimePow_nat_iff_bounded_log_minFac n)
 
 theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by
   grind [isPrimePow_nat_iff, Nat.dvd_prime_pow, Nat.pow_eq_one]
