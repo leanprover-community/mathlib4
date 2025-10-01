@@ -854,8 +854,8 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
     CondIndepFun (mγ.comap k) hk.comap_le g f μ
       ↔ condDistrib g (fun ω ↦ (f ω, k ω)) μ
           =ᵐ[μ.map (fun ω ↦ (f ω, k ω))] (condDistrib g k μ).prodMkLeft β := by
-  rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) (hf.prodMk hk).aemeasurable
-    hg.aemeasurable, condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib hg hf hk,
+  rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) _ hg.aemeasurable,
+    condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib hg hf hk,
     Measure.compProd_eq_comp_prod]
   let e : γ × β' × β ≃ᵐ (β × γ) × β' := MeasurableEquiv.prodAssoc.symm.trans
       (MeasurableEquiv.prodComm.trans MeasurableEquiv.prodAssoc.symm)
