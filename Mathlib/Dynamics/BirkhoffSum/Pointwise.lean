@@ -161,13 +161,12 @@ lemma birkhoffMaxDiff_tendsto_of_mem_divergentSet {f : α → α} {x φ} (hx : x
   obtain ⟨N, hN⟩ := tendsto_atTop_atTop.mp (birkhoffMax_tendsto_top_mem_divergentSet hx') 0
   exact tendsto_atTop_of_eventually_const (i₀ := N) fun i hi ↦ inf_of_le_left (hN i hi)
 
-/-- The filter of non-negative real numbers. -/
-abbrev nonneg : Filter ℝ := ⨅ ε > 0, 𝓟 (Set.Iio ε)
+def limsup_le {α β} [LT β] (u : α → β) (f : Filter α) (a : β) : Prop :=
+  ∀ ε > a, ∀ᶠ x in f, u x < ε
 
 lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x φ}
-    (hx : x ∉ divergentSet f φ) : Tendsto (birkhoffAverage ℝ f φ · x) atTop nonneg := by
+    (hx : x ∉ divergentSet f φ) : limsup_le (birkhoffAverage ℝ f φ · x) atTop 0 := by
   /- it suffices to show there are upper bounds ≤ ε for all ε > 0 -/
-  simp only [tendsto_iInf, gt_iff_lt, tendsto_principal, Set.mem_Iio, eventually_atTop, ge_iff_le]
   intro ε hε
   /- from `hx` hypothesis, the birkhoff sums are bounded above -/
   simp only [divergentSet, Set.mem_preimage, birkhoffSup, Set.mem_singleton_iff, iSup_eq_top,
@@ -188,6 +187,7 @@ lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x 
     exact (inv_smul_lt_iff_of_pos (Nat.cast_pos.mpr (Nat.zero_lt_succ n))).mpr
         ((hM n).trans_lt this)
   /- conclusion -/
+  apply eventually_atTop.mpr
   use N + 1
   intro n hn
   specialize upperBound n.pred (Nat.le_pred_of_lt hn)
@@ -287,7 +287,7 @@ lemma divergentSet_zero_meas_of_condexp_neg [hμ : IsProbabilityMeasure μ]
 lemma ae_tendsTo_birkhoffAverage_of_condExp_neg [hμ : IsProbabilityMeasure μ]
     (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) (hφ' : Measurable φ)
     (h : ∀ᵐ x ∂μ, (μ[φ|invariants f]) x < 0) :
-    ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f φ · x) atTop nonneg := by
+    ∀ᵐ x ∂μ, limsup_le (birkhoffAverage ℝ f φ · x) atTop 0 := by
   apply Eventually.mono _ fun _ ↦ birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet
   apply ae_iff.mpr
   simp only [not_not, Set.setOf_mem_eq]
@@ -305,7 +305,7 @@ variable {α : Type*} {f : α → α} [MeasurableSpace α] (μ : Measure α := b
 /-- The time average is a.e., eventually not much less than the conditional expectation. -/
 lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
     (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) (hφ' : Measurable φ) :
-    ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f φ · x - (μ[φ|invariants f] x + ε)) atTop nonneg := by
+    ∀ᵐ x ∂μ, limsup_le (birkhoffAverage ℝ f φ · x - (μ[φ|invariants f] x + ε)) atTop 0 := by
   -- Let `ψ` denote the difference between `φ` and the conditional expectation of `φ` plus `ε`.
   let ψ := φ - (μ[φ|invariants f] + fun _ ↦ ε)
   have ψ_integrable : Integrable ψ μ := hφ.sub (integrable_condExp.add (integrable_const _))
@@ -323,7 +323,7 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
     _ = - μ[fun _ ↦ ε|invariants f] := by simp
     _ = - fun _ ↦ ε := by rw [condExp_const <| invariants_le f]
   -- For typical points the time average of `ψ` is eventually non-negative.
-  have limsup_nonpos : ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f ψ · x) atTop nonneg := by
+  have limsup_nonpos : ∀ᵐ x ∂μ, limsup_le (birkhoffAverage ℝ f ψ · x) atTop 0 := by
     suffices ∀ᵐ x ∂μ, μ[ψ|invariants f] x < 0 from
       ae_tendsTo_birkhoffAverage_of_condExp_neg μ hf ψ_integrable ψ_measurable this
     exact condexpψ_const.mono fun x hx ↦ by simp [hx, hε]
@@ -331,8 +331,7 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
   refine limsup_nonpos.mono fun x hx => ?_
   suffices ∀ (n : ℕ), n ≠ 0 →
       birkhoffAverage ℝ f ψ n x = birkhoffAverage ℝ f φ n x - (μ[φ|invariants f] x + ε) by
-    simp only [tendsto_iInf, gt_iff_lt, tendsto_principal, Set.mem_Iio, eventually_atTop,
-      ge_iff_le] at hx ⊢
+    simp only [limsup_le, eventually_atTop] at hx ⊢
     intro r hr
     obtain ⟨n, hn⟩ := hx r hr
     refine ⟨n + 1, fun k hk ↦ ?_⟩
@@ -358,8 +357,7 @@ private lemma ae_tendsTo_birkhoffAverage_condExp_aux
     have p₂ := ae_tendsTo_birkhoffAverage_sub_condExp_nonneg μ hδ hf hφ.neg hφ'.neg
     have : μ[-φ|invariants f] =ᵐ[μ] - μ[φ|invariants f] := condExp_neg _ _
     refine ((p₁.and p₂).and this).mono fun x ⟨⟨hx₁, hx₂⟩, hx₃⟩ => ?_
-    simp only [tendsto_iInf, gt_iff_lt, tendsto_principal, Set.mem_Iio, eventually_atTop,
-      ge_iff_le] at hx₁ hx₂ ⊢
+    simp only [limsup_le, eventually_atTop] at hx₁ hx₂ ⊢
     obtain ⟨n₁, hn₁⟩ := hx₁ δ hδ
     obtain ⟨n₂, hn₂⟩ := hx₂ δ hδ
     simp_rw [δ] at hn₁ hn₂ ⊢
