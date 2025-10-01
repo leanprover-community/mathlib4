@@ -185,9 +185,13 @@ noncomputable def H0Iso (A : Rep k G) : groupCohomology.H0 A ≃+ H0 G A where
   right_inv := sorry
   map_add' := sorry
 
+-- naturality of H0Iso
+
 def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A := sorry
 
 theorem H1Iso_zero : H1Iso A 0 = 0 := sorry
+
+-- naturality of H1Iso
 
 end compatibility
 
