@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Yongxi Lin. All rights reserved.
+Copyright (c) 2025 Yongxi Lin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongxi Lin, Thomas Zhu
 -/
@@ -9,8 +9,15 @@ import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.ContinuousMap.CompactlySupported.Basic
 
-/-! This file contains definitions and lemmas related to integrals of compactly supported continuous
+/-!
+# Integral of compactly supported continuous functions
+
+This file contains definitions and theorems related to integrals of compactly supported continuous
 functions.
+
+## Main results
+
+- `integrable`: compactly supported continuous functions are integrable.
 -/
 
 open scoped ENNReal NNReal
@@ -20,7 +27,7 @@ variable {X : Type*}
 
 namespace CompactlySupportedContinuousMap
 
-lemma integrable {X E : Type*} [MeasurableSpace X]
+theorem integrable {X E : Type*} [MeasurableSpace X]
     [TopologicalSpace X] [NormedAddCommGroup E] (f : C_c(X, E))
     {μ : Measure X} [OpensMeasurableSpace X] [IsFiniteMeasureOnCompacts μ] :
     Integrable f μ :=

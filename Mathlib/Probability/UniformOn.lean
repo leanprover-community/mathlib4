@@ -3,8 +3,8 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Bhavik Mehta
 -/
+import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.Probability.ConditionalProbability
-import Mathlib.MeasureTheory.Measure.Count
 
 /-!
 # Classical probability
@@ -187,5 +187,16 @@ theorem uniformOn_add_compl_eq (u t : Set Ω) (hs : s.Finite) :
       ← uniformOn_disjoint_union (hs.inter_of_left _) (hs.inter_of_left _)
       (disjoint_compl_right.mono inf_le_right inf_le_right)]
   simp [uniformOn_inter_self hs]
+
+variable {α β : Type*} {m : MeasurableSpace α} {f : α → β}
+variable [Nonempty α] [ConditionallyCompleteLattice β]
+
+@[simp] lemma essSup_uniformOn_eq_ciSup [Finite α] (hf : BddAbove (Set.range f)) :
+    essSup f (uniformOn Set.univ) = ⨆ a, f a :=
+  essSup_eq_ciSup (by simpa [uniformOn, cond_apply]) hf
+
+@[simp] lemma essInf_cond_count_eq_ciInf [Finite α] (hf : BddBelow (Set.range f)) :
+    essInf f (uniformOn Set.univ) = ⨅ a, f a :=
+  essInf_eq_ciInf (by simpa [uniformOn, cond_apply]) hf
 
 end ProbabilityTheory
