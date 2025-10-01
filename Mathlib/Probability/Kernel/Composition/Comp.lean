@@ -16,7 +16,8 @@ a kernel from `α` to `γ`.
 * `comp (η : Kernel β γ) (κ : Kernel α β) : Kernel α γ`: composition of 2 kernels.
   We define a notation `η ∘ₖ κ = comp η κ`.
   `∫⁻ c, g c ∂((η ∘ₖ κ) a) = ∫⁻ b, ∫⁻ c, g c ∂(η b) ∂(κ a)`
-* `pow (κ : Kernel α α) : Kernel α α`: iterated composition of a kernel with itself.
+* `pow (κ : Kernel α α) (n : ℕ) : Kernel α α`:
+  iterated `n`-fold composition of a kernel with itself.
 
 ## Main statements
 
