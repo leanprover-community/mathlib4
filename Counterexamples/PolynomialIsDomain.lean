@@ -57,11 +57,12 @@ instance : CommSemiring NatMaxAdd where
 instance : IsDomain NatMaxAdd := NatMaxAdd.mulEquiv.isDomain
 
 theorem natCast_eq_one (n : ℕ) : ∀ [NeZero n], (n : NatMaxAdd) = 1 := by
-  induction' n with n ih
-  · intro; exact (NeZero.ne 0 rfl).elim
-  obtain _ | n := n
-  · intro; rfl
-  · rw [Nat.cast_succ, ih]; intro; rfl
+  induction n with
+  | zero => intro; exact (NeZero.ne 0 rfl).elim
+  | succ n ih =>
+    obtain _ | n := n
+    · intro; rfl
+    · rw [Nat.cast_succ, ih]; intro; rfl
 
 theorem not_isCancelAdd : ¬ IsCancelAdd NatMaxAdd := fun h ↦ by cases @h.1.1 1 0 1 rfl
 
