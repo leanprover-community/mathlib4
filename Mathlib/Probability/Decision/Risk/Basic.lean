@@ -135,7 +135,8 @@ end Const
 
 section Bounds
 
-/-- See `avgRisk_le_mul` for the usual case in which `κ` is a Markov kernel. -/
+/-- See `avgRisk_le_mul` for the usual case in which `π` is a probability measure and the kernels
+are Markov. -/
 lemma avgRisk_le_mul' (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ)
     {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     avgRisk ℓ P κ π ≤ C * κ.bound * P.bound * π Set.univ :=
@@ -151,24 +152,35 @@ lemma avgRisk_le_mul' (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure
     exact Kernel.measure_le_bound P θ Set.univ
   _ = C * κ.bound * P.bound * π Set.univ := by simp
 
-lemma avgRisk_le_mul (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ]
-    (π : Measure Θ) {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    avgRisk ℓ P κ π ≤ C * P.bound * π Set.univ := by
-  refine (avgRisk_le_mul' P κ π hℓC).trans_eq ?_
+lemma avgRisk_le_mul (P : Kernel Θ 𝓧) [IsMarkovKernel P] (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ]
+    (π : Measure Θ) [IsProbabilityMeasure π] {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
+    avgRisk ℓ P κ π ≤ C := by
+  refine (avgRisk_le_mul' P κ π hℓC).trans ?_
+  rcases isEmpty_or_nonempty Θ
+  · simp
+  · rcases isEmpty_or_nonempty 𝓧 <;> simp
+
+/-- For a bounded loss, the Bayes risk with respect to a prior is bounded by a constant.
+See `bayesRisk_le_mul` for the usual cases where all measures are probability measures. -/
+lemma bayesRisk_le_mul' [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧) (π : Measure Θ)
+    {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
+    bayesRisk ℓ P π ≤ C * P.bound * π Set.univ := by
+  refine (bayesRisk_le_avgRisk ℓ P (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) π).trans ?_
+  refine (avgRisk_le_mul' P (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) π hℓC).trans ?_
   rcases isEmpty_or_nonempty 𝓧 <;> simp
 
 /-- For a bounded loss, the Bayes risk with respect to a prior is bounded by a constant. -/
-lemma bayesRisk_le_mul [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧) (π : Measure Θ)
-    {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    bayesRisk ℓ P π ≤ C * P.bound * π Set.univ :=
-  (bayesRisk_le_avgRisk ℓ P (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) π).trans <|
-    avgRisk_le_mul P (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) π hℓC
+lemma bayesRisk_le_mul [Nonempty 𝓨] (P : Kernel Θ 𝓧) [IsMarkovKernel P]
+    (π : Measure Θ) [IsProbabilityMeasure π] {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
+    bayesRisk ℓ P π ≤ C := by
+  refine (bayesRisk_le_mul' P π hℓC).trans ?_
+  rcases isEmpty_or_nonempty Θ <;> simp
 
 /-- For a bounded loss, the Bayes risk with respect to a prior is finite. -/
-lemma bayesRisk_lt_top [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
+lemma bayesRisk_lt_top [Nonempty 𝓨] (P : Kernel Θ 𝓧)
     [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     bayesRisk ℓ P π < ∞ := by
-  refine (bayesRisk_le_mul P π hℓC).trans_lt ?_
+  refine (bayesRisk_le_mul' P π hℓC).trans_lt ?_
   simp [ENNReal.mul_lt_top_iff, P.bound_lt_top]
 
 end Bounds
