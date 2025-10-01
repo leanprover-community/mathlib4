@@ -15,9 +15,11 @@ of the three main functions used in Value Distribution Theory.
 
 The counting function of a meromorphic function `f` is a logarithmically weighted measure of the
 number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`, counting
-multiplicities.  See Section~VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677]
-or Section~1.1 of [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and
-Diophantine Approximation*][MR3156076] for a detailed discussion.
+multiplicities.
+
+See Section VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
+[Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
+Approximation*][MR3156076] for a detailed discussion.
 
 ## Implementation Notes
 
