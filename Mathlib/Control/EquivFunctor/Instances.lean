@@ -34,7 +34,9 @@ instance EquivFunctorFinset : EquivFunctor Finset where
   map e s := s.map e.toEmbedding
   map_refl' α := by ext; simp
   map_trans' k h := by
-    ext _ a; simp; constructor <;> intro h'
+    ext _ a
+    simp
+    constructor <;> intro h'
     · let ⟨a, ha₁, ha₂⟩ := h'
       rw [← ha₂]; simpa
     · exists (Equiv.symm k) ((Equiv.symm h) a)

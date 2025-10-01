@@ -161,7 +161,8 @@ def tupleSucc : (Fin E.order → R) →ₗ[R] Fin E.order → R where
     split_ifs with h <;> simp [h, mul_add, sum_add_distrib]
   map_smul' x y := by
     ext i
-    split_ifs with h <;> simp [h, mul_sum]
+    split_ifs with h <;>
+      simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply, h, ↓reduceDIte, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl
 
 end CommSemiring

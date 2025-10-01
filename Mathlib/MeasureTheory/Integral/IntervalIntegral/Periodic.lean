@@ -328,7 +328,10 @@ theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
   rcases n with n | n
   · simp [← this n]
   · conv_rhs => rw [negSucc_zsmul]
-    have h₀ : Int.negSucc n • T + (n + 1) • T = 0 := by simp; linarith
+    have h₀ : Int.negSucc n • T + (n + 1) • T = 0 := by
+      simp only [zsmul_eq_mul, Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev,
+        nsmul_eq_mul]
+      linarith
     rw [integral_symm, ← (hf.nsmul (n + 1)).funext, neg_inj]
     simp_rw [integral_comp_add_right, h₀, zero_add, this (n + 1), add_comm T,
       hf.intervalIntegral_add_eq ((n + 1) • T) 0, zero_add]

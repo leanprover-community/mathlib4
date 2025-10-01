@@ -275,7 +275,8 @@ set_option linter.flexible false in
 theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
   refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
     (fun X Y g ↦ eq_of_heq (heq_eqRec_iff_heq.2 <| heq_eqRec_iff_heq.2 ?_))
-  simp [oneTruncation₂]
+  simp only [oneTruncation₂, ReflQuiv.of_val, toNerve₂.mk'_app, toNerve₂.mk.app_zero, Cat.of_α,
+    toNerve₂.mk.app_one, Nat.reduceAdd, Fin.isValue]
   refine Quiver.heq_of_homOfEq_ext ?_ ?_ (f' := F.map g) ?_
   · exact ComposableArrows.ext₀ rfl
   · exact ComposableArrows.ext₀ rfl
