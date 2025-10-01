@@ -161,6 +161,8 @@ lemma birkhoffMaxDiff_tendsto_of_mem_divergentSet {f : α → α} {x φ} (hx : x
   obtain ⟨N, hN⟩ := tendsto_atTop_atTop.mp (birkhoffMax_tendsto_top_mem_divergentSet hx') 0
   exact tendsto_atTop_of_eventually_const (i₀ := N) fun i hi ↦ inf_of_le_left (hN i hi)
 
+/-- Condition that `a` is an upper bound for `limsup u f`, when it exists.
+See `Filter.limsup_le_iff` for the proof of this equivalence. -/
 def limsup_le {α β} [LT β] (u : α → β) (f : Filter α) (a : β) : Prop :=
   ∀ ε > a, ∀ᶠ x in f, u x < ε
 
