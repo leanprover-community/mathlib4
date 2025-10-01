@@ -51,14 +51,28 @@ variable (G : Type u) [Monoid G]
 
 def H0 (A : Type*) [AddGroup A] [DistribMulAction G A] : AddSubgroup A where
   carrier := setOf fun v => ∀ g : G, g • v = v
-  add_mem' := by simp +contextual
-  zero_mem' := by simp
-  neg_mem' := by simp +contextual
+  add_mem' := by
+    intro a b ha hb g
+    simp [ha g, hb g, -Pi.add_apply]
+  zero_mem' := by
+    intro g
+    simp
+  neg_mem' := by
+    intro a ha g
+    simp [ha g]
 
 variable {G}
 
 def H0.map {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A] [DistribMulAction G B]
-    (f : A →+[G] B) : H0 G A →+ H0 G B := sorry
+    (f : A →+[G] B) : H0 G A →+ H0 G B := by
+  refine { toFun := fun v ↦ ⟨f v.val, fun g ↦ ?_ ⟩, map_add' := fun v w ↦ ?_, map_zero' := ?_ }
+  · calc
+    g • f ↑v = f (g • ↑v) := by rw [map_smul]
+      _= f ( ↑v) := by rw[v.property ]
+  · ext
+    simp[map_zero]
+  · ext
+    simp[map_add]
 
 variable (G) in
 theorem H0.map_id (A : Type*) [AddGroup A] [DistribMulAction G A] :
@@ -96,9 +110,9 @@ def cohomologous (f g : Z1 G A) : Prop :=
 instance setoid : Setoid (Z1 G A) where
   r := cohomologous
   iseqv := {
-    refl := fun f ↦ ⟨0, fun h ↦ by simp⟩,
-    symm := fun ⟨a, ha⟩ ↦ ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩,
-    trans := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
+    refl := fun f => ⟨0, fun h => by simp⟩,
+    symm := sorry,
+    trans := sorry
   }
 
 end Z1
@@ -241,8 +255,7 @@ noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
       (fun x ↦ (Classical.choose_spec (hg (c' x))).symm) hcc'
   exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
 
-
--- theorem exact₅ : Function.Exact (H1.map g) δ₁₂ := sorry
+theorem exact₅ : Function.Exact (H1.map g) (δ₁₂ hf hg hfg) := sorry
 
 end connectHom₁₂
 
