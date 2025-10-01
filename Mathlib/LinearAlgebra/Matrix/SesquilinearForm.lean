@@ -314,23 +314,24 @@ a module with a fixed basis.
 variable [CommSemiring R]
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂]
   [Module R N₂]
-variable {σ₁ : R →+* R} {σ₂ : R →+* R}
+variable {σ₁ : R →+* R} {σ₂ : R →+* R} [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
 
 section
 
-variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂) [Fintype n] [Fintype m] [DecidableEq m]
-  [DecidableEq n]
+variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂)
 
-/-- `LinearMap.toMatrix₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
-`n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
+/-- `LinearMap.toMatrix₂ b₁ b₂` is the equivalence between `R`-sesquilinear maps
+`M₁ →ₛₗ[σ₁] M₂ →ₗ[R] N₂` and `n`-by-`m` matrices with entries in `N₂`,
+if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively. -/
 noncomputable def LinearMap.toMatrix₂ : (M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
   (b₁.equivFun.arrowCongr (b₂.equivFun.arrowCongr (LinearEquiv.refl R N₂))).trans
     (LinearMap.toMatrixₛₗ₂' R)
 
 variable (σ₁) in
-/-- `Matrix.toLinearMapₛₗ₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
-`n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
+/-- `Matrix.toLinearMapₛₗ₂ b₁ b₂` is the equivalence between `R`-sesquilinear maps
+`M₁ →ₛₗ[σ₁] M₂ →ₗ[R] N₂` and `n`-by-`m` matrices with entries in `N₂`,
+if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively; this is the reverse direction of `LinearMap.toMatrix₂ b₁ b₂`. -/
 noncomputable def Matrix.toLinearMapₛₗ₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₛₗ[σ₁] M₂ →ₗ[R] N₂ :=
   (LinearMap.toMatrix₂ b₁ b₂).symm
