@@ -313,12 +313,12 @@ theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
 
 section bsup
 
-set_option linter.deprecated false in
-theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
-    [IsWellOrder ι' r'] {o : Ordinal.{u}} (ho : type r = o) (ho' : type r' = o)
-    (f : ∀ a < o, Ordinal.{max u v}) :
-    sup.{_, v} (familyOfBFamily' r ho f) = sup.{_, v} (familyOfBFamily' r' ho' f) :=
+theorem iSup_eq_iSup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
+    [IsWellOrder ι' r'] {o : Ordinal} (ho : type r = o) (ho' : type r' = o) (f : ∀ a < o, Ordinal) :
+    iSup (familyOfBFamily' r ho f) = iSup (familyOfBFamily' r' ho' f) :=
   iSup_eq_of_range_eq (by simp)
+
+@[deprecated (since := "2025-10-01")] alias sup_eq_sup := iSup_eq_iSup
 
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
     `o : Ordinal.{u}`. This is a special case of `iSup` over the family provided by
@@ -334,7 +334,7 @@ theorem sup_eq_bsup {o : Ordinal} (f : ∀ a < o, Ordinal) :
 @[simp]
 theorem iSup_eq_bsup {o : Ordinal} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
     (f : ∀ a < o, Ordinal.{max u v}) : iSup (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
-  sup_eq_sup r _ ho _ f
+  iSup_eq_iSup r _ ho _ f
 
 @[deprecated (since := "2025-10-01")] alias sup_eq_bsup' := iSup_eq_bsup
 
