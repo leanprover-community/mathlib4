@@ -238,9 +238,7 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 -/
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
   ∃ equiv : (E × F) ≃L[𝕜] E',
-  LiftSourceTargetPropertyAt I I' n f x (fun f domChart codChart ↦
-    EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target)
+  LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp I I' equiv)
 
 namespace IsImmersionAt
 
@@ -255,6 +253,8 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorp
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
   use equiv, domChart, codChart
+  simp only [ImmersionAtProp]
+  exact ⟨hx, hfx, hdomChart, hcodChart, hsource, hwrittenInExtend⟩
 
 /-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
