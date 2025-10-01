@@ -3,8 +3,7 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.Abelian
 
 /-!
 # Lie algebra cohomology in low degree
@@ -14,12 +13,13 @@ general theory of Lie algebra cohomology.
 
 ## Main definitions
 * `LieAlgebra.oneCochain`: an abbreviation for a linear map.
-* `LieAlgebra.twoCochain`: a structure describing 2-cochains.
+* `LieAlgebra.twoCochain`: a submodule of bilinear maps, giving 2-cochains.
 * `LieAlgebra.d₁₂`: The coboundary map taking 1-cochains to 2-cochains.
 * `LieAlgebra.d₂₃`: A coboundary map taking 2-cochains to a space containing 3-cochains.
+* `LieAlgebra.twoCocycle`: The submodule of 2-cocycles.
 
 ## TODO
-* cocycles, cohomology
+* coboundaries, cohomology
 * comparison to the Chevalley-Eilenberg complex.
 * construction and classification of central extensions
 
@@ -32,17 +32,25 @@ namespace LieAlgebra
 
 variable (R : Type*) [CommRing R]
 variable (L : Type*) [LieRing L] [LieAlgebra R L]
-variable (M : Type*) [AddCommGroup M] [LieRingModule L M] [Module R M] [LieModule R L M]
+variable (M : Type*) [AddCommGroup M] [Module R M]
 
+set_option linter.unusedVariables false in
 /-- Lie algebra 1-cochains over `L` with coefficients in the module `M`. -/
-abbrev oneCochain := L →ₗ[R] M
+@[nolint unusedArguments]
+abbrev oneCochain [LieRingModule L M] [LieModule R L M] := L →ₗ[R] M
 
+set_option linter.unusedVariables false in
 /-- Lie algebra 2-cochains over `L` with coefficients in the module `M`. -/
-def twoCochain : Submodule R (L →ₗ[R] L →ₗ[R] M) where
+@[nolint unusedArguments]
+def twoCochain [LieRingModule L M] [LieModule R L M] : Submodule R (L →ₗ[R] L →ₗ[R] M) where
   carrier := {c | ∀ x, c x x = 0}
   add_mem' {a b} ha hb x := by simp [ha x, hb x]
   zero_mem' := by simp
   smul_mem' t {c} hc x := by simp [hc x]
+
+section
+
+variable {R L M} [LieRingModule L M] [LieModule R L M]
 
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
@@ -54,17 +62,34 @@ instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_add a := a.1.map_add
   map_smulₛₗ a := a.1.map_smul
 
-omit [LieRingModule L M] [LieModule R L M] in
+@[simp]
+lemma twoCochain_alt (a : twoCochain R L M) (x : L) :
+    a x x = 0 :=
+  a.2 x
+
+lemma twoCochain_skew (a : twoCochain R L M) (x y : L) : - a x y = a y x := by
+  rw [neg_eq_iff_add_eq_zero, add_comm]
+  simpa [map_add, twoCochain_alt a x, twoCochain_alt a y] using twoCochain_alt a (x + y)
+
+@[simp]
+lemma twoCochain_val_apply (a : twoCochain R L M) (x : L) :
+    a.val x = a x :=
+  rfl
+
 @[simp]
 lemma add_apply_apply (a b : twoCochain R L M) (x y : L) :
     (a + b) x y = a x y + b x y := by
   rfl
 
-omit [LieRingModule L M] [LieModule R L M] in
+
 @[simp]
 lemma smul_apply_apply (r : R) (a : twoCochain R L M) (x y : L) :
     (r • a) x y = r • (a x y) := by
   rfl
+
+end
+
+variable [LieRingModule L M] [LieModule R L M]
 
 /-- The coboundary operator taking degree 1 cochains to degree 2 cochains. -/
 @[simps]
@@ -80,6 +105,14 @@ def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
     property x := by simp }
   map_add' _ _ := by ext; simp; abel
   map_smul' _ _ := by ext; simp [smul_sub]
+
+@[simp]
+lemma d₁₂_apply_apply (f : oneCochain R L M) (x y : L) :
+    (d₁₂ R L M) f x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := rfl
+
+lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R L M) (x y : L) :
+    (d₁₂ R L M) f x y = - f ⁅x, y⁆ := by
+  simp
 
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
 @[simps]
@@ -102,5 +135,29 @@ lemma coboundary_of_coboundary : (d₂₃ R L M) ∘ₗ (d₁₂ R L M) = 0 := b
   simp only [lie_lie, sub_add_cancel, map_sub, ← lie_skew x y, ← lie_skew x z, ← lie_skew y z,
     lie_neg, map_neg, this]
   abel
+
+/-- A Lie 2-cocycle is a 2-cochain that is annihilated by the coboundary map. -/
+def twoCocycle : Submodule R (twoCochain R L M) := LinearMap.ker (d₂₃ R L M)
+
+lemma mem_twoCocycle_iff (a : twoCochain R L M) : a ∈ twoCocycle R L M ↔ (d₂₃ R L M) a = 0 := by
+  simp [twoCocycle]
+
+lemma mem_twoCocycle_iff_of_trivial [LieModule.IsTrivial L M] (a : twoCochain R L M) :
+    a ∈ twoCocycle R L M ↔
+      ∀ (x y z : L), a x ⁅y, z⁆ = a ⁅x, y⁆ z + a y ⁅x, z⁆ := by
+  constructor
+  · intro h x y z
+    rw [mem_twoCocycle_iff] at h
+    have : (d₂₃ R L M) a x y z = 0 := (congrArg (fun b ↦ b x y z = 0) h).mpr rfl
+    simp only [d₂₃_apply_apply, trivial_lie_zero, sub_self, add_zero, zero_sub] at this
+    rw [sub_eq_zero] at this
+    rw [← twoCochain_skew a _ x, ← twoCochain_skew a _ y, ← this]
+    abel
+  · intro h
+    ext x y z
+    simp only [d₂₃_apply_apply, trivial_lie_zero, sub_self, add_zero, zero_sub,
+      LinearMap.zero_apply, Pi.zero_apply]
+    rw [← twoCochain_skew a x, ← twoCochain_skew a y, h x y z]
+    abel
 
 end LieAlgebra
