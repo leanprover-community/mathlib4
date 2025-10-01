@@ -46,8 +46,9 @@ We use the the `ε`-`δ` definition to prove that
 absolutely continuous
 -/
 
-variable {F : Type*}
-variable [PseudoMetricSpace F]
+variable {X F : Type*}
+variable [PseudoMetricSpace X]
+variable [SeminormedAddCommGroup F]
 
 open Set Filter Function
 
@@ -58,19 +59,19 @@ namespace AbsolutelyContinuousOnInterval
 /-- The filter on the collection of all the finite sequences of `uIoc` intervals induced by the
 function that maps the finite sequence of the intervals to the total length of the intervals.
 Details:
-1. Technically the filter is on `ℕ × (ℕ → F × F)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
-is represented by any `E : ℕ × (ℕ → F × F)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)` for
+1. Technically the filter is on `ℕ × (ℕ → X × X)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
+is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)` for
 `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
-2. For a sequence `G : ℕ → ℕ × (ℕ → F × F)`, `G` convergence along `totalLengthFilter` means that
+2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, `G` convergence along `totalLengthFilter` means that
 the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
 tends to `0` as `j` tends to infinity.
 -/
-def totalLengthFilter : Filter (ℕ × (ℕ → F × F)) := Filter.comap
+def totalLengthFilter : Filter (ℕ × (ℕ → X × X)) := Filter.comap
   (fun E ↦ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2) (𝓝 0)
 
 lemma hasBasis_totalLengthFilter : totalLengthFilter.HasBasis (fun (ε : ℝ) => 0 < ε)
     (fun (ε : ℝ) =>
-      {E : ℕ × (ℕ → F × F) | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε}) := by
+      {E : ℕ × (ℕ → X × X) | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε}) := by
   convert Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1
   ext ε E
   simp only [mem_setOf_eq, zero_sub, zero_add, mem_preimage, mem_Ioo, iff_and_self]
@@ -95,10 +96,6 @@ lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
     and_imp, Prod.forall]
   exact fun (n I h _ i hi) ↦ ⟨habcd (h i hi).left, habcd (h i hi).right⟩
 
-end AbsolutelyContinuousOnInterval
-
-open AbsolutelyContinuousOnInterval
-
 /-- `AbsolutelyContinuousOnInterval f a b`: A function `f` is *absolutely continuous* on `uIcc a b`
 if the function which (intuitively) maps `uIoc (a i) (b i)`, `i < n` to
 `∑ i ∈ Finset.range n, dist (f (a i)) (f (b i))` tendsto `𝓝 0` wrt `totalLengthFilter` restricted
@@ -106,7 +103,7 @@ to `disjWithin a b`. This is equivalent to the traditional `ε`-`δ` definition:
 there is `δ > 0` such that for any finite disjoint collection of intervals `uIoc (a i) (b i)` for
 `i < n` where `a i`, `b i` are all in `uIcc a b` for `i < n`, if
 `∑ i ∈ range n, dist (a i) (b i) < δ`, then `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`. -/
-def AbsolutelyContinuousOnInterval (f : ℝ → F) (a b : ℝ) :=
+def _root_.AbsolutelyContinuousOnInterval (f : ℝ → X) (a b : ℝ) :=
   Tendsto (fun E ↦ ∑ i ∈ Finset.range E.1, dist (f (E.2 i).1) (f (E.2 i).2))
     (totalLengthFilter ⊓ 𝓟 (disjWithin a b)) (𝓝 0)
 
@@ -115,7 +112,7 @@ def AbsolutelyContinuousOnInterval (f : ℝ → F) (a b : ℝ) :=
 any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`, `b i` are
 all in `uIcc a b` for `i < n`,  if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
 `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`. -/
-theorem absolutelyContinuousOnInterval_iff (f : ℝ → F) (a b : ℝ) :
+theorem _root_.absolutelyContinuousOnInterval_iff (f : ℝ → X) (a b : ℝ) :
     AbsolutelyContinuousOnInterval f a b ↔
     ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ E, E ∈ disjWithin a b →
     ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < δ →
@@ -124,9 +121,7 @@ theorem absolutelyContinuousOnInterval_iff (f : ℝ → F) (a b : ℝ) :
     Filter.HasBasis.eventually_iff (hasBasis_totalLengthFilter.inf_principal _),
     imp.swap, abs_of_nonneg (Finset.sum_nonneg (fun _ _ ↦ dist_nonneg))]
 
-namespace AbsolutelyContinuousOnInterval
-
-variable {f g : ℝ → F} {a b c d : ℝ}
+variable {f g : ℝ → X} {a b c d : ℝ}
 
 theorem symm (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval f b a := by
@@ -137,6 +132,8 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
   simp only [AbsolutelyContinuousOnInterval, Tendsto] at *
   refine le_trans (Filter.map_mono ?_) hf
   gcongr; exact disjWithin_mono habcd
+
+variable {f g : ℝ → F}
 
 theorem fun_add (hf : AbsolutelyContinuousOnInterval f a b)
     (hg : AbsolutelyContinuousOnInterval g a b) :
@@ -188,7 +185,7 @@ theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInter
   hf.const_smul α
 
 lemma uniformity_comap_totalLengthFilter :
-    uniformity F = comap (fun x ↦ (1, fun _ ↦ x)) totalLengthFilter := by
+    uniformity X = comap (fun x ↦ (1, fun _ ↦ x)) totalLengthFilter := by
   refine Filter.HasBasis.eq_of_same_basis Metric.uniformity_basis_dist ?_
   convert hasBasis_totalLengthFilter.comap _
   simp
@@ -219,21 +216,14 @@ theorem exists_bound (hf : AbsolutelyContinuousOnInterval f a b) :
     ∃ (C : ℝ), ∀ x ∈ uIcc a b, ‖f x‖ ≤ C :=
   isCompact_Icc.exists_bound_of_continuousOn (hf.continuousOn)
 
-/-- If `f` is absolutely continuous on `uIcc a b`, then `f` is bounded on `uIcc a b` by a positive
-number. -/
-theorem exists_pos_bound (hf : AbsolutelyContinuousOnInterval f a b) :
-    ∃ (C : ℝ), C > 0 ∧ ∀ x ∈ uIcc a b, ‖f x‖ ≤ C := by
-  obtain ⟨C, hC⟩ := hf.exists_bound
-  exact ⟨max C 1, by simp, fun x hx ↦ by simp [hC x hx]⟩
-
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
 theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
     {f : ℝ → M} {g : ℝ → F}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ f x • g x) a b := by
-  obtain ⟨C, _, hC⟩ := hf.exists_pos_bound
-  obtain ⟨D, _, hD⟩ := hg.exists_pos_bound
+  obtain ⟨C, hC⟩ := hf.exists_bound
+  obtain ⟨D, hD⟩ := hg.exists_bound
   unfold AbsolutelyContinuousOnInterval at hf hg
   apply squeeze_zero' ?_ ?_
     (by simpa using (hg.const_mul C).add (hf.const_mul D))
@@ -259,38 +249,31 @@ theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
 theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
-    {f : ℝ → M} {g : ℝ → F} {a b : ℝ}
+    {f : ℝ → M} {g : ℝ → F}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (f • g) a b :=
   hf.fun_smul hg
 
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
 on `uIcc a b`. -/
-theorem fun_mul {f g : ℝ → ℝ} {a b : ℝ}
+theorem fun_mul {f g : ℝ → ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
   hf.fun_smul hg
 
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
 on `uIcc a b`. -/
-theorem mul {f g : ℝ → ℝ} {a b : ℝ}
+theorem mul {f g : ℝ → ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
   hf.fun_mul hg
 
-end AbsolutelyContinuousOnInterval
-
 /-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
-theorem LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → F} {a b : ℝ} {K : ℝ≥0}
+theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K : ℝ≥0}
     (hfK : LipschitzOnWith K f (uIcc a b)) : AbsolutelyContinuousOnInterval f a b := by
   rw [absolutelyContinuousOnInterval_iff]
   intro ε hε
-  use ε / (K + 1)
-  refine ⟨by positivity, ?_⟩
-  intro (n, I) hnI₁ hnI₂
-  simp only [disjWithin, mem_setOf_eq] at hnI₁
-  simp only at hnI₂
-  simp only [LipschitzOnWith] at hfK
+  refine ⟨ε / (K + 1), by positivity, fun (n, I) hnI₁ hnI₂ ↦ ?_⟩
   calc
     _ ≤ ∑ i ∈ Finset.range n, K * dist (I i).1 (I i).2 := by
       apply Finset.sum_le_sum
@@ -303,20 +286,26 @@ theorem LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → F} {a b : �
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field_simp
 
-namespace AbsolutelyContinuousOnInterval
-
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
-theorem boundedVariationOn {f : ℝ → F} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b) :
+theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     BoundedVariationOn f (uIcc a b) := by
+  -- We may assume wlog that `a ≤ b`.
   wlog hab₀ : a ≤ b generalizing a b
   · specialize @this b a hf.symm (by linarith)
     rwa [uIcc_comm]
   rw [uIcc_of_le hab₀]
+  -- Split the cases `a = b` (which is trivial) and `a < b`.
   rcases hab₀.eq_or_lt with rfl | hab
   · simp [BoundedVariationOn]
+  -- Now remains the case `a < b`.
+  -- Use the `ε`-`δ` definition of AC to get a `δ > 0` such that whenever a finite set of disjoint
+  --   intervals `uIoc (a i) (b i)`, `i < n` have total length `< δ` and `a i, b i` are all in
+  --  `[a, b]`, we have `∑ i ∈ range n, dist (f (a i)) (f (b i)) < 1`.
   rw [absolutelyContinuousOnInterval_iff] at hf
   obtain ⟨δ, hδ₁, hδ₂⟩ := hf 1 (by linarith)
   have hab₁ : 0 < b - a := by linarith
+  -- Split `[a, b]` into subintervals `[a + i * δ', a + (i + 1) * δ']` for `i = 0, ..., n`, where
+  --   `a + (n + 1) * δ' = b` and `δ' < δ`.
   obtain ⟨n, hn⟩ := exists_nat_one_div_lt (div_pos hδ₁ hab₁)
   set δ' := (b - a) / (n + 1)
   have hδ₃ : δ' < δ := by
@@ -327,23 +316,23 @@ theorem boundedVariationOn {f : ℝ → F} {a b : ℝ} (hf : AbsolutelyContinuou
     apply Monotone.mul_const Nat.mono_cast
     simp only [δ']
     refine div_nonneg ?_ ?_ <;> linarith
+  -- The variation of `f` on `[a, b]` is the sum of the variations on these subintervals.
   have v_sum : eVariationOn f (Icc a b) =
       ∑ i ∈ Finset.range (n + 1), eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) := by
     convert eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono |>.symm
     · simp
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field_simp; abel
     · norm_cast
+  -- The variation of `f` on any subinterval `[x, y]` of `[a, b]` of length `< δ` is `≤ 1`.
   have v_each (x y : ℝ) (_ : a ≤ x) (_ : x ≤ y) (_ : y < x + δ) (_ : y ≤ b) :
       eVariationOn f (Icc x y) ≤ 1 := by
     simp only [eVariationOn, iSup_le_iff]
     intro p
     obtain ⟨hp₁, hp₂⟩ := p.2.property
-    have vf : ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) ≤ 1 := by
-      suffices ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) < 1 by
-        linarith
+    -- Focus on a partition `p` of `[x, y]` and show its variation with `f` is `≤ 1`.
+    have vf : ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) < 1 := by
       apply hδ₂ (p.1, (fun i ↦ (p.2.val i, p.2.val (i + 1))))
-      · simp only [disjWithin, mem_setOf_eq]
-        constructor
+      · constructor
         · have : Icc x y ⊆ uIcc a b := by rw [uIcc_of_le hab₀]; gcongr
           intro i hi
           constructor <;> exact this (hp₂ _)
@@ -351,14 +340,14 @@ theorem boundedVariationOn {f : ℝ → F} {a b : ℝ} (hf : AbsolutelyContinuou
           convert hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
           rw [uIoc_of_le (hp₁ (by omega))]
           rfl
-      · simp only
-        suffices p.2.val p.1 - p.2.val 0 < δ by
+      · suffices p.2.val p.1 - p.2.val 0 < δ by
           convert this
           rw [← Finset.sum_range_sub]
           congr; ext i
           rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
           linarith [@hp₁ i (i + 1) (by omega)]
         linarith [mem_Icc.mp (hp₂ p.1), mem_Icc.mp (hp₂ 0)]
+    -- Reduce edist in the goal to dist and clear up
     have veq: (∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
         ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) := by
       rw [ENNReal.toReal_sum (by simp [edist_ne_top])]
@@ -366,14 +355,16 @@ theorem boundedVariationOn {f : ℝ → F} {a b : ℝ} (hf : AbsolutelyContinuou
     have not_top : ∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i)) ≠ ⊤ := by
       simp [edist_ne_top]
     rw [← ENNReal.ofReal_toReal not_top]
-    convert ENNReal.ofReal_le_ofReal (veq.symm ▸ vf)
+    convert ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
     simp
-  unfold BoundedVariationOn
-  rw [v_sum]
-  simp only [ne_eq, ENNReal.sum_eq_top, Finset.mem_range, not_exists, not_and]
+  -- Reduce to goal that the variation of `f` on each of these subintervals is finite.
+  simp only [BoundedVariationOn, v_sum, ne_eq, ENNReal.sum_eq_top, Finset.mem_range, not_exists,
+    not_and]
   intro i hi
+  -- Reduce finiteness to `≤ 1`.
   suffices eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) ≤ 1 from
     fun hC ↦ by simp [hC] at this
+  -- Verify that `[a + i * δ', a + (i + 1) * δ']` is indeed a subinterval of `[a, b]`
   apply v_each
   · convert h_mono (show 0 ≤ i by omega); simp
   · convert h_mono (show i ≤ i + 1 by omega); norm_cast
