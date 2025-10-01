@@ -18,7 +18,7 @@ import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 -/
 
-open MeasureTheory BigOperators NNReal ENNReal Function Filter Set
+open MeasureTheory BigOperators Real NNReal ENNReal Function Filter Set
 
 namespace MeasureTheory.VectorMeasure
 
@@ -136,18 +136,13 @@ theorem restrict_comm_variation (s : Set X) (μ : VectorMeasure X V) :
             simp_all [disjoint_iff_inter_eq_empty]; rw [← ha.1]
             exact subset_eq_empty (inter_subset_inter inter_subset_left inter_subset_left) this
         simp [ciSup_const (hι := Nonempty.intro iQ), Q]
-
-        intro A hA B hB hAB
+        sorry
       · use P
         have iP : IsInnerPart t P := sorry
         simp [ciSup_const (hι := Nonempty.intro iP)]
         simp_all only [↓reduceIte]
         refine Finset.sum_congr rfl (by intro x hx; congr; apply inter_eq_self_of_subset_left; aesop)
     · simp [restrict_not_measurable μ hsm, restrict_not_measurable μ.variation hsm]
-
-lemma variation_neg {E} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    (μ : VectorMeasure X E) : (-μ).variation = μ.variation := by
-  simp [variation]
 
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.variation := by
   intro s hs
@@ -157,5 +152,14 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.variation := 
     0 < ‖μ s‖ₑ := enorm_pos.mpr hc
     _ ≤ μ.variation s := norm_measure_le_variation μ s
     _ = 0 := hs
+
+
+lemma variation_neg {E} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (μ : VectorMeasure X E) : (-μ).variation = μ.variation := by
+  simp [variation]
+
+lemma variation_ennrealToMeasure_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (c : ℝ) (μ : VectorMeasure X E) :
+    (c • μ).variation.ennrealToMeasure = nnabs c • μ.variation.ennrealToMeasure := by sorry
 
 end MeasureTheory.VectorMeasure

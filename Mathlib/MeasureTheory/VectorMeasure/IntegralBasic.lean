@@ -24,7 +24,8 @@ import Mathlib.MeasureTheory.VectorMeasure.Integral
 -/
 noncomputable section
 
-open ENNReal Filter Set TopologicalSpace Topology MeasureTheory VectorMeasure ContinuousLinearMap
+open ENNReal Filter Set TopologicalSpace Topology MeasureTheory
+open Real VectorMeasure ContinuousLinearMap
 
 namespace VectorMeasure
 
@@ -450,17 +451,40 @@ theorem integral_finset_sum_measure {ι} {f : α → E}
     refine integral_add_measure B hf.1 ?_
     apply Integrable.mono_measure
     · exact (integrable_finset_sum_measure.2 hf.2)
-    · apply Finset.le_sum_of_subadditive (fun (μ : VectorMeasure α F) => μ.variation.ennrealToMeasure)
+    · refine Finset.le_sum_of_subadditive (fun (μ : VectorMeasure α F)
+        => μ.variation.ennrealToMeasure) (by simp) ?_ t μ
+      intro x y; exact triangle_inequality_ennrealToMeasure x y
+
+theorem integral_finset_sum_pairing {ι} (B : ι → E →L[ℝ] F →L[ℝ] G) {s : Finset ι} :
+    ∫ a, f a ∂(VectorMeasureWithPairing.mk (∑ i ∈ s, B i) μ) =
+    ∑ i ∈ s, ∫ a, f a ∂(VectorMeasureWithPairing.mk (B i) μ) := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons i t h ih =>
+    rw [Finset.sum_cons, Finset.sum_cons, ← ih]
+    exact integral_add_pairing (B i) (∑ i ∈ t, B i)
 
 @[simp]
 theorem integral_smul_measure (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ) :
+    ∫ x, f x ∂(VectorMeasureWithPairing.mk B (c • μ))
+    = c • ∫ x, f x ∂(VectorMeasureWithPairing.mk B μ) := by
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral, hG]
+  simp [integral_eq_setToFun, ← setToFun_smul_left, weightedVectorSMul_smul_measure,
+    variation_ennrealToMeasure_smul]; symm
+  apply setToFun_congr_smul_measure
+  simp
+
+@[simp]
+theorem integral_smul_pairing (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ) :
     ∫ x, f x ∂(VectorMeasureWithPairing.mk (c • B) μ)
     = c • ∫ x, f x ∂(VectorMeasureWithPairing.mk B μ) := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral, hG]
   simp_rw [integral_eq_setToFun, ← setToFun_smul_left]
-  have hdfma : DominatedFinMeasAdditive μ (weightedSMul (c • μ) : Set α → G →L[ℝ] G) c.toReal :=
-    mul_one c.toReal ▸ (dominatedFinMeasAdditive_weightedSMul (c • μ)).of_smul_measure hc
+  have hdfma : DominatedFinMeasAdditive μ.variation.ennrealToMeasure
+    (weightedVectorSMul (c • B) μ : Set α → G →L[ℝ] G) c :=
+    mul_one c ▸ (dominatedFinMeasAdditive_weightedSMul (c • μ)).of_smul_measure hc
   have hdfma_smul := dominatedFinMeasAdditive_weightedSMul (F := G) (c • μ)
   rw [← setToFun_congr_smul_measure c hc hdfma hdfma_smul f]
   exact setToFun_congr_left' _ _ (fun s _ _ => weightedSMul_smul_measure μ c) f
@@ -470,7 +494,7 @@ theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α �
     (VectorMeasure.map Bμ.vectorMeasure φ)) = ∫ x, f (φ x) ∂Bμ := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral, hG]
-  by_cases hfi : Integrable f (Measure.map φ μ); swap
+  by_cases hfi : Integrable f (VectorMeasure.map Bμ.vectorMeasure φ); swap
   · rw [integral_undef hfi, integral_undef]
     exact fun hfφ => hfi ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hfφ)
   borelize G
@@ -527,13 +551,41 @@ lemma integral_domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulActio
 
 theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
-    ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) = ∫ x in s, f x ∂μ := by
+    ∫ x : s, f (x : α)Measure.comap ∂( Subtype.val μ) = ∫ x in s, f x ∂μ := by
   rw [← map_comap_subtype_coe hs]
   exact ((MeasurableEmbedding.subtype_coe hs).integral_map _).symm
 
-attribute [local instance] Measure.Subtype.measureSpace in
-theorem integral_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (f : α → G) :
-    ∫ x : s, f x = ∫ x in s, f x := integral_subtype_comap hs f
+@[simp]
+theorem integral_dirac' [MeasurableSpace α] (f : α → E) (a : α) (hfm : StronglyMeasurable f) :
+    ∫ x, f x ∂Measure.dirac a = f a := by
+  borelize E
+  calc
+    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a :=
+      integral_congr_ae <| ae_eq_dirac' hfm.measurable
+    _ = f a := by simp
+
+@[simp]
+theorem integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α) :
+    ∫ x, f x ∂Measure.dirac a = f a :=
+  calc
+    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a := integral_congr_ae <| ae_eq_dirac f
+    _ = f a := by simp
+
+theorem setIntegral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : StronglyMeasurable f) (a : α)
+    {s : Set α} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
+    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
+  rw [restrict_dirac' hs]
+  split_ifs
+  · exact integral_dirac' _ _ hf
+  · exact integral_zero_measure _
+
+theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
+    (s : Set α) [Decidable (a ∈ s)] :
+    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
+  rw [restrict_dirac]
+  split_ifs
+  · exact integral_dirac _ _
+  · exact integral_zero_measure _
 
 theorem integral_countable' [Countable α] [MeasurableSingletonClass α]
     (hf : Integrable f Bμ.vectorMeasure.variation.ennrealToMeasure) :
