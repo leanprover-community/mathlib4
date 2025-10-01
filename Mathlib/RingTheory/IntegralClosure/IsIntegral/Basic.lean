@@ -203,7 +203,7 @@ theorem Algebra.finite_adjoin_of_finite_of_isIntegral {s : Set A} (hf : s.Finite
     (hi : ∀ x ∈ s, IsIntegral R x) : Module.Finite R (adjoin R s) :=
   Module.Finite.iff_fg.mpr <| fg_adjoin_of_finite hf hi
 
-theorem Algebra.finite_adjoin_simple_of_isIntegral {x : A} (hi : IsIntegral R x) :
+theorem Algebra.finite_adjoin_simple_of_isIntegral {x : B} (hi : IsIntegral R x) :
     Module.Finite R (adjoin R {x}) :=
   Module.Finite.iff_fg.mpr hi.fg_adjoin_singleton
 

@@ -3,7 +3,7 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.RingTheory.Artinian.Ring
+import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
@@ -16,7 +16,7 @@ In this file we collect results about algebras over Artinian rings.
 namespace IsArtinianRing
 
 variable {R A : Type*}
-variable [CommRing R] [IsArtinianRing R] [CommRing A] [Algebra R A]
+variable [CommRing R] [IsArtinianRing R] [Ring A] [Algebra R A]
 
 open nonZeroDivisors
 
@@ -28,7 +28,7 @@ theorem isUnit_of_isIntegral_of_nonZeroDivisor {a : A}
   let b : B := ⟨a, Algebra.self_mem_adjoin_singleton R a⟩
   haveI : Module.Finite R B := Algebra.finite_adjoin_simple_of_isIntegral hi
   haveI : IsArtinianRing B := isArtinian_of_tower R inferInstance
-  have hinj : Function.Injective (B.subtype) := Subtype.val_injective
+  have hinj : Function.Injective B.subtype := Subtype.val_injective
   have hb : b ∈ B⁰ := comap_nonZeroDivisors_le_of_injective hinj ha
   (isUnit_of_mem_nonZeroDivisors hb).map B.subtype
 
