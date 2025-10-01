@@ -142,14 +142,10 @@ theorem sound (w : List (α × Bool)) (h : IsReduced w) :
     intro h
     rw [cons_append]
     split
-    case isTrue =>
-      apply ih
-      apply h.infix
-      exists [a], [b]
+    case isTrue => exact ih (h.infix ⟨[a], [b], rfl⟩)
     case isFalse h' =>
       rw [isCyclicallyReduced_cons_append_iff]
       exact ⟨h, by simpa using h'⟩
 
 end reduceCyclically
-
 end FreeGroup
