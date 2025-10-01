@@ -6,6 +6,7 @@ Authors: Joseph Hua
 import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Free groupoid on a category
@@ -133,6 +134,32 @@ theorem lift_comp {H : Type u₂} [Groupoid.{v₂} H] (φ : C ⥤ G) (ψ : G ⥤
   symm
   apply lift_unique
   rw [← Functor.assoc, lift_spec]
+
+instance : IsGroupoid (⊤ : MorphismProperty C).Localization where
+  all_isIso {X Y} f := by
+    have : MorphismProperty.isomorphisms (⊤ : MorphismProperty C).Localization = ⊤ := by
+      apply Localization.Construction.morphismProperty_is_top'
+      · intro X Y f
+        exact Iso.isIso_hom (Localization.Construction.wIso _ trivial)
+      · simp only [MorphismProperty.isomorphisms.iff]
+        infer_instance
+    convert_to MorphismProperty.isomorphisms (⊤ : MorphismProperty C).Localization f
+    rw [this]
+    trivial
+
+instance : Groupoid (⊤ : MorphismProperty C).Localization :=
+  Groupoid.ofIsGroupoid
+
+instance : (of C).IsLocalization ⊤ :=
+  Functor.IsLocalization.mk' _ _
+  { inverts _ := inferInstance
+    lift F _ := lift F
+    fac _ _ := lift_spec ..
+    uniq F G h := by rw [lift_unique (of C ⋙ G) F h, ← lift_unique (of C ⋙ G) G rfl] }
+  { inverts _ := inferInstance
+    lift F _ := lift F
+    fac _ _ := lift_spec ..
+    uniq F G h := by rw [lift_unique (of C ⋙ G) F h, ← lift_unique (of C ⋙ G) G rfl] }
 
 end UniversalProperty
 
