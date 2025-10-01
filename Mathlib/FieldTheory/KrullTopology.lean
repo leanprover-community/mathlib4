@@ -43,7 +43,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
   intermediate field `L`, the `[L : k]` as a natural number is equal to the index of the
   fixing subgroup of `L`.
 
-## Notations
+## Notation
 
 - In docstrings, we will write `Gal(L/E)` to denote the fixing subgroup of an intermediate field
   `E`. That is, `Gal(L/E)` is the subgroup of `L ≃ₐ[K] L` consisting of automorphisms that fix

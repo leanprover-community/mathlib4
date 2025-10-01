@@ -724,7 +724,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     omega
   -- Thus the image of `B` under `f` is all of `I`, except for exactly one element.
   have card_eq : (I \ B.image f).card = 1 := by
-    rw [card_sdiff, cI, card_image_of_injOn f_inj, cB]
+    rw [card_sdiff_of_subset, cI, card_image_of_injOn f_inj, cB]
     · omega
     · rw [← coe_subset, coe_image]
       exact f_maps.image_subset
