@@ -331,15 +331,13 @@ theorem sup_eq_bsup {o : Ordinal} (f : ∀ a < o, Ordinal) :
     iSup (familyOfBFamily o f) = bsup o f :=
   rfl
 
-@[simp]
 theorem iSup_eq_bsup {o : Ordinal} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
-    (f : ∀ a < o, Ordinal.{max u v}) : iSup (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
+    (f : ∀ a < o, Ordinal) : iSup (familyOfBFamily' r ho f) = bsup o f :=
   iSup_eq_iSup r _ ho _ f
 
 @[deprecated (since := "2025-10-01")] alias sup_eq_bsup' := iSup_eq_bsup
 
-theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
-    sSup (brange o f) = bsup.{_, v} o f := by
+theorem sSup_eq_bsup {o : Ordinal} (f : ∀ a < o, Ordinal) : sSup (brange o f) = bsup o f := by
   congr
   rw [range_familyOfBFamily]
 
@@ -348,14 +346,13 @@ theorem bsup_eq_iSup {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (
     bsup _ (bfamilyOfFamily' r f) = iSup f := by
   simp +unfoldPartialApp only [← iSup_eq_bsup r, enum_typein, familyOfBFamily', bfamilyOfFamily']
 
-@[deprecated (since := "2025-10-01")] alias bsup_eq_sup' := bsup_eq_iSup
-
 theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
     (f : ι → Ordinal.{max u v}) :
     bsup.{_, v} _ (bfamilyOfFamily' r f) = bsup.{_, v} _ (bfamilyOfFamily' r' f) := by
   rw [bsup_eq_iSup, bsup_eq_iSup]
 
 @[deprecated (since := "2025-10-01")] alias bsup_eq_sup := bsup_eq_iSup
+@[deprecated (since := "2025-10-01")] alias bsup_eq_sup' := bsup_eq_iSup
 
 @[congr]
 theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
