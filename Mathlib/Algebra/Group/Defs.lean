@@ -1152,10 +1152,10 @@ theorem div_mul_cancel (a b : G) : a / b * b = a := by
 
 @[to_additive]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
-  { inv_inv := fun a ↦ inv_eq_of_mul (inv_mul_cancel a)
+  { inv_inv := by exact fun a ↦ inv_eq_of_mul (inv_mul_cancel a)
     mul_inv_rev :=
-      fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_inv_cancel]
-    inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
+      by exact fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_inv_cancel]
+    inv_eq_of_mul := by exact fun _ _ ↦ inv_eq_of_mul }
 
 -- see Note [lower instance priority]
 @[to_additive]

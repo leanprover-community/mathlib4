@@ -18,6 +18,7 @@ public meta import Mathlib.Lean.Name
 public meta import Mathlib.Tactic.Eqns -- just to copy the attribute
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Mathlib.Tactic.ToAdditive.GuessName
+public meta import Lean.Meta.CoeAttr
 
 public meta section
 
@@ -880,9 +881,9 @@ partial def transformDeclAux
     else
       trace[to_additive_detail] "Already visited {tgt} as translation of {src}."
     return
-  let srcDecl ← getConstInfo src
+  let srcDecl ← withoutExporting do getConstInfo src
   -- we first unfold all auxlemmas, since they are not always able to be additivized on their own
-  let srcDecl ← MetaM.run' do declUnfoldAuxLemmas srcDecl
+  let srcDecl ← withoutExporting do MetaM.run' do declUnfoldAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclAux cfg pre tgt_pre n
@@ -897,6 +898,8 @@ partial def transformDeclAux
   if !pre.isPrefixOf src then
     insertTranslation src tgt
   -- now transform the source declaration
+  -- expose target body when source body is exposed
+  withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
   let trgDecl : ConstantInfo ← MetaM.run' <|
     if src == pre then
       updateDecl tgt srcDecl cfg.reorder cfg.dontTranslate
@@ -909,7 +912,7 @@ partial def transformDeclAux
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails
-    MetaM.run' <| check value
+    withoutExporting <| MetaM.run' <| check value
   catch
     | Exception.error _ msg => throwError "@[to_additive] failed. \
       The translated value is not type correct. For help, see the docstring \
@@ -1177,7 +1180,7 @@ def elabToAdditive : Syntax → CoreM Config
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
 partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name)
-    (argInfo : ArgInfo) : TermElabM (Array Name) := do
+    (argInfo : ArgInfo) : TermElabM (Array Name) := withoutExporting do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute

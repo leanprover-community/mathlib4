@@ -170,7 +170,7 @@ structure FunctionTheorem where
   form : TheoremForm
   deriving Inhabited, BEq
 
-private local instance : Ord Name := ⟨Name.quickCmp⟩
+local instance : Ord Name := ⟨Name.quickCmp⟩
 
 set_option linter.style.docString.empty false in
 /-- -/

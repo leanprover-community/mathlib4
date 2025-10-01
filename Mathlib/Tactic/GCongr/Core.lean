@@ -11,6 +11,7 @@ public meta import Batteries.Tactic.Exact
 public meta import Mathlib.Lean.Elab.Term
 public meta import Mathlib.Tactic.GCongr.ForwardAttr
 public meta import Mathlib.Order.Defs.Unbundled
+import all Lean.Meta.Tactic.Apply
 
 public meta section
 
@@ -418,7 +419,6 @@ def relImpRelLemma (arity : Nat) : List GCongrLemma :=
 
 end Trans
 
-open private isDefEqApply throwApplyError reorderGoals from Lean.Meta.Tactic.Apply in
 /--
 `Lean.MVarId.applyWithArity` is a copy of `Lean.MVarId.apply`, where the arity of the
 applied function is given explicitly instead of being inferred.

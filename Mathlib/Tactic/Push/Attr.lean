@@ -110,6 +110,9 @@ initialize registerBuiltinAttribute {
   name := `pushAttr
   descr := "attribute for push"
   add := fun declName stx kind => MetaM.run' do
+    -- Make sure `mkSimpTheoremFromConst` aux decls are sufficiently visible, like in
+    -- `addSimpTheorem`.
+    withExporting (isExporting := !isPrivateName declName) do
     let inv := !stx[1].isNone
     let isOnly := !stx[2].isNone
     let prio ← getAttrParamOptPrio stx[3]

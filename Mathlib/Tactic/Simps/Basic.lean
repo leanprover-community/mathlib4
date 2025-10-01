@@ -73,7 +73,7 @@ private def NameStruct.toName (n : NameStruct) : Name :=
     | [x] => s!"{x}_def"
     | e => "_".intercalate e
 
-instance : Coe NameStruct Name where coe := NameStruct.toName
+private instance : Coe NameStruct Name where coe := NameStruct.toName
 
 /-- `update nm s isPrefix` adds `s` to the last component of `nm`,
 either as prefix or as suffix (specified by `isPrefix`).
@@ -1058,7 +1058,7 @@ If `todo` is non-empty, it will generate exactly the names in `todo`.
 was just used. In that case we need to apply these projections before we continue changing `lhs`.
 `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
 -/
-partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
+private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
     (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments

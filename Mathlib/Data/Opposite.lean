@@ -41,7 +41,7 @@ attribute [pp_nodot] Opposite.unop
 /-- Make sure that `Opposite.op a` is pretty-printed as `op a` instead of `{ unop := a }` or
 `⟨a⟩`. -/
 @[app_unexpander Opposite.op]
-protected def Opposite.unexpander_op : Lean.PrettyPrinter.Unexpander
+protected meta def Opposite.unexpander_op : Lean.PrettyPrinter.Unexpander
   | s => pure s
 
 @[inherit_doc]

@@ -103,22 +103,22 @@ inductive IProp : Type
   | and' : AndKind → IProp → IProp → IProp -- p ∧ q, p ↔ q, p = q
   | or : IProp → IProp → IProp   -- p ∨ q
   | imp : IProp → IProp → IProp  -- p → q
-  deriving Lean.ToExpr, DecidableEq
+  deriving Lean.ToExpr
 
 /-- Constructor for `p ∧ q`. -/
-@[match_pattern] def IProp.and : IProp → IProp → IProp := .and' .and
+@[match_pattern, expose] def IProp.and : IProp → IProp → IProp := .and' .and
 
 /-- Constructor for `p ↔ q`. -/
-@[match_pattern] def IProp.iff : IProp → IProp → IProp := .and' .iff
+@[match_pattern, expose] def IProp.iff : IProp → IProp → IProp := .and' .iff
 
 /-- Constructor for `p = q`. -/
-@[match_pattern] def IProp.eq : IProp → IProp → IProp := .and' .eq
+@[match_pattern, expose] def IProp.eq : IProp → IProp → IProp := .and' .eq
 
 /-- Constructor for `¬ p`. -/
-@[match_pattern] def IProp.not (a : IProp) : IProp := a.imp .false
+@[match_pattern, expose] def IProp.not (a : IProp) : IProp := a.imp .false
 
 /-- Constructor for `xor p q`. -/
-@[match_pattern] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
+@[match_pattern, expose] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
 
 instance : Inhabited IProp := ⟨IProp.true⟩
 

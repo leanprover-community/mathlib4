@@ -45,7 +45,7 @@ namespace Simps
 /-- The type of methods to find arguments for automatic projections for `simps`.
 We partly define this as a separate definition so that the unused arguments linter doesn't complain.
 -/
-def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
+@[expose] def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
 
 /-- Find arguments for a notation class -/
 def defaultfindArgs : findArgType := fun _ className args ↦ do

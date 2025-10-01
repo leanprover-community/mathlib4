@@ -123,7 +123,7 @@ See also
   one for syntax of the form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 @[term_elab setBuilder]
-def elabSetBuilder : TermElab
+meta def elabSetBuilder : TermElab
   | `({ $x:ident | $p }), expectedType? => do
     elabTerm (← `(setOf fun $x:ident ↦ $p)) expectedType?
   | `({ $x:ident : $t | $p }), expectedType? => do
@@ -134,7 +134,7 @@ def elabSetBuilder : TermElab
 
 /-- Unexpander for set builder notation. -/
 @[app_unexpander setOf]
-def setOf.unexpander : Lean.PrettyPrinter.Unexpander
+meta def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
   | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
@@ -175,7 +175,7 @@ macro (priority := low - 1) "{" pat:term " | " p:term "}" : term =>
 
 /-- Pretty printing for set-builder notation with pattern matching. -/
 @[app_unexpander setOf]
-def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
+meta def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
       if x == y then
         `({ $pat:term | $p:term })

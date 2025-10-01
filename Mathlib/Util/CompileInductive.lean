@@ -10,7 +10,6 @@ public meta import Lean.Elab.Command
 public meta import Lean.Compiler.CSimpAttr
 public meta import Lean.Util.FoldConsts
 public meta import Lean.Data.AssocList
-import all Init.Data.Nat.Basic  -- for `Nat.recCompiled`
 
 public meta section
 
@@ -259,10 +258,10 @@ compile_inductive% Option
 -- as any.
 private unsafe def Float.valUnsafe : Float → floatSpec.float := unsafeCast
 private unsafe def Float.mkUnsafe : floatSpec.float → Float := unsafeCast
-@[implemented_by Float.valUnsafe] private def Float.valImpl (x : Float) : floatSpec.float := x.1
-@[implemented_by Float.mkUnsafe] private def Float.mkImpl (x : floatSpec.float) : Float := ⟨x⟩
-@[csimp] private theorem Float.val_eq : @Float.val = Float.valImpl := rfl
-@[csimp] private theorem Float.mk_eq : @Float.mk = Float.mkImpl := rfl
+@[implemented_by Float.valUnsafe] def Float.valImpl (x : Float) : floatSpec.float := x.1
+@[implemented_by Float.mkUnsafe] def Float.mkImpl (x : floatSpec.float) : Float := ⟨x⟩
+@[csimp] theorem Float.val_eq : @Float.val = Float.valImpl := (rfl)
+@[csimp] theorem Float.mk_eq : @Float.mk = Float.mkImpl := (rfl)
 
 -- These types need manual implementations because the default implementation in `compileStruct`
 -- uses `Expr.proj` which has an invalid IR type.
