@@ -102,7 +102,7 @@ theorem erase_right_comm {a b : α} {s : Finset α} : erase (erase s a) b = eras
   grind
 
 theorem erase_inj {x y : α} (s : Finset α) (hx : x ∈ s) : s.erase x = s.erase y ↔ x = y := by
-  grind [!eq_of_mem_of_notMem_erase]
+  grind [eq_of_mem_of_notMem_erase]
 
 theorem erase_injOn (s : Finset α) : Set.InjOn s.erase s := fun _ _ _ _ => (erase_inj s ‹_›).mp
 

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.Star.Real
 import Mathlib.Topology.Algebra.StarSubalgebra
+import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.Lattice
 import Mathlib.Topology.ContinuousMap.Weierstrass
@@ -454,6 +455,14 @@ theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLik
   ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (Subalgebra.separatesPoints_monotone le_sup_left (polynomialFunctions_separatesPoints s))
 
+open StarAlgebra in
+lemma ContinuousMap.elemental_id_eq_top {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜) [CompactSpace s] :
+    elemental 𝕜 (ContinuousMap.restrict s (.id 𝕜)) = ⊤ := by
+  rw [StarAlgebra.elemental, ← polynomialFunctions.starClosure_topologicalClosure,
+    polynomialFunctions.starClosure_eq_adjoin_X]
+  congr
+  exact Polynomial.toContinuousMap_X_eq_id.symm
+
 /-- An induction principle for `C(s, 𝕜)`. -/
 @[elab_as_elim]
 theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
@@ -577,7 +586,7 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     refine fun hf ↦ ⟨?_, nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf⟩
     exact adjoin_le_starAlgebra_adjoin _ _ hf
 
--- the statement should be in terms of non unital subalgebras, but we lack API
+-- the statement should be in terms of nonunital subalgebras, but we lack API
 open RingHom Filter Topology in
 theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebra K A]
     [TopologicalSpace K] [T1Space K] [TopologicalSpace A] [ContinuousSub A] [ContinuousSMul K A]
@@ -626,6 +635,11 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
   simp only [Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe, RingHom.mem_ker,
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
   exact map_zero f
+
+open NonUnitalStarAlgebra in
+lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜) [Fact (0 ∈ s)]
+    [CompactSpace s] : elemental 𝕜 (ContinuousMapZero.id s) = ⊤ :=
+  SetLike.ext'_iff.mpr (adjoin_id_dense s).closure_eq
 
 /-- An induction principle for `C(s, 𝕜)₀`. -/
 @[elab_as_elim]
