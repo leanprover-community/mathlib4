@@ -164,8 +164,6 @@ theorem AEMeasurable.ae_eq_of_forall_setLIntegral_eq {f g : α → ℝ≥0∞} (
     rw [EventuallyEq, ae_restrict_iff' hg'.measurableSet.compl] at h2
     filter_upwards [h1, h2] with x h1 h2 hx
     rw [h1 (Set.inter_subset_left hx), h2 (Set.inter_subset_right hx)]
-  have := hf'.sigmaFinite_restrict
-  have := hg'.sigmaFinite_restrict
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hf.restrict hg.restrict
     fun u hu huμ ↦ ?_
   rw [Measure.restrict_restrict hu]

@@ -113,7 +113,7 @@ theorem prod_dite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, 
     ∏ x ∈ s, (if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
-    · intros _ _ h
+    · intro _ _ h
       rw [dif_neg]
       exact h.symm
     · simp [h]
@@ -125,7 +125,7 @@ theorem prod_dite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι,
     ∏ x ∈ s, (if h : x = a then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
-    · intros _ _ h
+    · intro _ _ h
       rw [dif_neg]
       exact h
     · simp [h]
@@ -213,7 +213,7 @@ theorem dvd_prod_of_mem (f : ι → M) {a : ι} {s : Finset ι} (ha : a ∈ s) :
 theorem prod_update_of_notMem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∉ s) (f : ι → M)
     (b : M) : ∏ x ∈ s, Function.update f i b x = ∏ x ∈ s, f x := by
   apply prod_congr rfl
-  intros j hj
+  intro j hj
   have : j ≠ i := by
     rintro rfl
     exact h hj

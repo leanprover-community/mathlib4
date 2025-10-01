@@ -113,6 +113,11 @@ theorem unmop_id_mop {X : C} : (𝟙 (mop X)).unmop = 𝟙 X := rfl
 @[simp]
 theorem mop_id_unmop {X : Cᴹᵒᵖ} : (𝟙 (unmop X)).mop = 𝟙 X := rfl
 
+-- aesop prefers this lemma as a safe apply over Quiver.Hom.unmop_inj
+lemma MonoidalOpposite.hom_ext {x y : Cᴹᵒᵖ} {f g : x ⟶ y} (h : f.unmop = g.unmop) :
+    f = g :=
+  Quiver.Hom.unmop_inj h
+
 variable (C)
 
 /-- The identity functor on `C`, viewed as a functor from `C` to its monoidal opposite. -/
@@ -153,6 +158,7 @@ instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   whiskerRight f X := (f.unop ▷ X.unop).op
   tensorHom f g := (f.unop ⊗ₘ g.unop).op
   tensorHom_def _ _ := Quiver.Hom.unop_inj (tensorHom_def' _ _)
+  tensorHom_comp_tensorHom _ _ _ _ := Quiver.Hom.unop_inj <| by simp
   tensorUnit := op (𝟙_ C)
   associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op
   leftUnitor X := (λ_ (unop X)).symm.op
@@ -232,6 +238,7 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   whiskerRight f X := (X.unmop ◁ f.unmop).mop
   tensorHom f g := (g.unmop ⊗ₘ f.unmop).mop
   tensorHom_def _ _ := Quiver.Hom.unmop_inj (tensorHom_def' _ _)
+  tensorHom_comp_tensorHom _ _ _ _ := Quiver.Hom.unmop_inj <| by simp
   tensorUnit := mop (𝟙_ C)
   associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
   leftUnitor X := (ρ_ (unmop X)).mop
@@ -239,8 +246,7 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   associator_naturality f g h := Quiver.Hom.unmop_inj <| by simp
   leftUnitor_naturality f := Quiver.Hom.unmop_inj <| by simp
   rightUnitor_naturality f := Quiver.Hom.unmop_inj <| by simp
-  -- Porting note: Changed `by coherence` to `by simp` below
-  triangle X Y := Quiver.Hom.unmop_inj <| by simp
+  triangle X Y := Quiver.Hom.unmop_inj <| by dsimp; monoidal_coherence
   pentagon W X Y Z := Quiver.Hom.unmop_inj <| by dsimp; monoidal_coherence
 
 -- it would be nice if we could autogenerate all of these somehow

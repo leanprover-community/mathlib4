@@ -246,7 +246,7 @@ noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFuncto
 lemma invariantsAdjunction_homEquiv_apply_hom
     {X : ModuleCat k} {Y : Rep k G} (f : (trivialFunctor k G).obj X ⟶ Y) :
     ((invariantsAdjunction k G).homEquiv _ _ f).hom =
-      f.hom.hom.codRestrict _ (by intros _ _; exact (hom_comm_apply f _ _).symm) := rfl
+      f.hom.hom.codRestrict _ (by intro _ _; exact (hom_comm_apply f _ _).symm) := rfl
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_symm_apply_hom

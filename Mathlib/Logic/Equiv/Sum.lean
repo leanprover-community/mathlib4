@@ -126,7 +126,7 @@ end Perm
 
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ PUnit.{u + 1} ⊕ PUnit.{v + 1} :=
-  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
+  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit), Sum.elim (fun _ => false) fun _ => true,
     fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/

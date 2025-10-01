@@ -3,10 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Analysis.Complex.Liouville
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!
@@ -28,8 +28,8 @@ open scoped ComplexConjugate
 
 namespace Complex
 
-/-- **Fundamental theorem of algebra**: every non constant complex polynomial
-  has a root -/
+/-- **Fundamental theorem of algebra**: every nonconstant complex polynomial
+  has a root. -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   by_contra! hf'
   /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
