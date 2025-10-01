@@ -218,8 +218,10 @@ exponential objects in `D` by applying the reflector to them, even though they a
 essential image of `i`; if you need better control over definitional equality, use
 `cartesianClosedOfReflective'` instead. -/
 def cartesianClosedOfReflective : CartesianClosed D :=
-  cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i) <| NatIso.ofComponents
-    (fun X ↦ (@asIso _ _ _ _ _ <| Functor.essImage.unit_isIso X.2).symm) (by simp)
+  cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
+    (NatIso.ofComponents (fun X ↦
+      have := Functor.essImage.unit_isIso X.2
+      (asIso ((reflectorAdjunction i).unit.app X.obj)).symm))
 
 variable [BraidedCategory C]
 
