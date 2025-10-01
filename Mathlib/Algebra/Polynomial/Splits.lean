@@ -552,7 +552,7 @@ theorem aeval_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
 theorem eval_derivative_of_splits [DecidableEq K] {P : K[X]} (hP : P.Splits (.id K)) (r : K) :
     eval r P.derivative = P.leadingCoeff *
       (P.roots.map fun a ↦ ((P.roots.erase a).map (r - ·)).prod).sum := by
-  simpa using eval₂_derivative_of_splits r
+  simpa using eval₂_derivative_of_splits hP r
 
 /-- Let `P` be a monic polynomial over `K` that splits over `L`. Let `r : L` be a root of `P`.
 Then $P'(r) = \prod_{a}(r-a)$, where the product in the RHS is taken over all roots of `P` in `L`,
