@@ -332,12 +332,12 @@ def Image.imageFactorisation : ImageFactorisation f :=
 
 /-- Some factorisation of `f` through a monomorphism (selected with choice). -/
 def Image.monoFactorisation : MonoFactorisation f :=
-  (Classical.choice HasImage.exists_image).F
+  (Image.imageFactorisation f).F
 
 /-- The witness of the universal property for the chosen factorisation of `f` through
 a monomorphism. -/
 def Image.isImage : IsImage (Image.monoFactorisation f) :=
-  (Classical.choice HasImage.exists_image).isImage
+  (Image.imageFactorisation f).isImage
 
 /-- The categorical image of a morphism. -/
 def image : C :=
