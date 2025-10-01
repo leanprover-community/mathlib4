@@ -168,9 +168,8 @@ protected def RelCWComplex.Subcomplex.sup [RelCWComplex C D] (E F : Subcomplex C
   I n := E.I n ∪ F.I n
   closed' := (closed E).union (closed F)
   union' := by
-    simp only [iUnion_coe_set, mem_union, iUnion_or, iUnion_union_distrib, ← union]
-    rw [union_assoc, ← union_assoc _ D, union_comm _ D, union_assoc, ← union_assoc _ D,
-      union_self]
+    simp [mem_union, iUnion_or, iUnion_union_distrib, ← union, ← union_assoc _ D, union_comm,
+      union_assoc]
 
 @[simps -isSimp]
 protected def RelCWComplex.Subcomplex.inf [RelCWComplex C D] (E F : Subcomplex C) :
@@ -184,12 +183,8 @@ protected def RelCWComplex.Subcomplex.inf [RelCWComplex C D] (E F : Subcomplex C
       union_self, ← union_inter_distrib_left]
     congrm D ∪ ?_
     apply subset_antisymm
-    · refine Subset.trans ?_ iUnion_inter_subset
-      apply iUnion_mono
-      intro n
-      refine Subset.trans ?_ iUnion_inter_subset
-      apply iUnion_mono
-      intro i
+    · refine Subset.trans (iUnion_mono fun n ↦ ?_) iUnion_inter_subset
+      refine Subset.trans (iUnion_mono fun i ↦ ?_) iUnion_inter_subset
       simp only [subset_inter_iff, iUnion_subset_iff, subset_refl, implies_true, and_true]
       exact fun hi hi' ↦ subset_iUnion_of_subset hi Subset.rfl
     · intro x
@@ -293,22 +288,20 @@ protected def RelCWComplex.Subcomplex.sInf' [T2Space X] [RelCWComplex C D]
       simp_rw [iUnion_subtype, mem_iInter]
       ext x
       simp only [mem_iUnion, exists_prop, iInter_coe_set, mem_iInter]
-      constructor
-      · intro ⟨n, i, hi, hx⟩ E hE
-        exact ⟨n, i, hi E hE, hx⟩
-      · intro h'
-        let ⟨E, hE⟩ := Classical.choice h
-        obtain ⟨n, i, hi, hx⟩ := h' E hE
-        use n, i
-        refine ⟨?_, hx⟩
-        intro F hF
-        obtain ⟨m, j, hj, hx'⟩ := h' F hF
-        suffices (⟨n, i⟩ : Σ n, cell C n) = ⟨m, j⟩ by aesop
-        apply eq_of_not_disjoint_openCell
-        rw [not_disjoint_iff]
-        exact ⟨x, hx, hx'⟩
+      refine ⟨fun ⟨n, i, hi, hx⟩ E hE ↦ ⟨n, i, hi E hE, hx⟩, ?_⟩
+      intro h'
+      let ⟨E, hE⟩ := Classical.choice h
+      obtain ⟨n, i, hi, hx⟩ := h' E hE
+      use n, i
+      refine ⟨?_, hx⟩
+      intro F hF
+      obtain ⟨m, j, hj, hx'⟩ := h' F hF
+      suffices (⟨n, i⟩ : Σ n, cell C n) = ⟨m, j⟩ by aesop
+      apply eq_of_not_disjoint_openCell
+      rw [not_disjoint_iff]
+      exact ⟨x, hx, hx'⟩
     · simp_all only [nonempty_subtype, not_exists, iUnion_coe_set, iInter_of_empty, iInter_univ,
-      mem_univ, iUnion_true, iInter_coe_set, inter_univ]
+        mem_univ, iUnion_true, iInter_coe_set, inter_univ]
       exact union_iUnion_openCell_eq_complex
 
 protected def RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms [T2Space X]
@@ -340,25 +333,17 @@ protected def RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms [T2
         · simp only [union_iUnion, union_iInter]
           ext x
           simp only [mem_iUnion, mem_iInter]
-          constructor
-          · intro hE
-            use (fun i ↦ (hE i).choose)
-            intro i
-            exact (hE i).choose_spec
-          · intro ⟨g, hg⟩ i
-            use g i, hg i
+          exact ⟨fun hE ↦ ⟨(fun i ↦ (hE i).choose), fun i ↦ (hE i).choose_spec⟩,
+            fun ⟨g, hg⟩ i ↦ ⟨g i, hg i ⟩⟩
         · simp_all only [not_forall, not_nonempty_iff, isEmpty_pi, iUnion_of_empty, union_empty]
-          apply subset_antisymm
-          · obtain ⟨a, ha⟩ := h'
-            apply iInter_subset_of_subset a
-            simp
-          · apply subset_iInter
-            intro i
-            exact subset_union_left
+          refine subset_antisymm ?_ (subset_iInter (fun ?_ ↦ subset_union_left))
+          obtain ⟨a, ha⟩ := h'
+          apply iInter_subset_of_subset a
+          simp
       · simp_all only [not_nonempty_iff, mem_range, IsEmpty.exists_iff, iInter_of_empty,
         iInter_univ, inter_univ, iUnion_exists, iUnion_iUnion_eq', coe_sInf']
         ext x
-        simp [mem_union, mem_iUnion, exists_const, iff_or_self]
+        simp only [mem_union, mem_iUnion, exists_const, iff_or_self]
         exact fun h ↦ base_subset_complex h
     }
 
@@ -370,13 +355,13 @@ instance RelCWComplex.Subcomplex.instCompletelyDistribLattice [T2Space X]
 @[simp]
 lemma RelCWComplex.Subcomplex.coe_top [T2Space X] [RelCWComplex C D] :
     (⊤ : Subcomplex C) = C := by
-  simp [instCompletelyDistribLattice, CompletelyDistribLattice.MinimalAxioms]
+  simp only [instCompletelyDistribLattice, CompletelyDistribLattice.MinimalAxioms]
   rfl
 
 @[simp]
 lemma RelCWComplex.Subcomplex.top_I [T2Space X] [RelCWComplex C D] (n : ℕ) :
     (⊤ : Subcomplex C).I n = univ := by
-  simp [instCompletelyDistribLattice, CompletelyDistribLattice.MinimalAxioms]
+  simp only [instCompletelyDistribLattice, CompletelyDistribLattice.MinimalAxioms]
   rfl
 
 @[simp]
