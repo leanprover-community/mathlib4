@@ -105,7 +105,8 @@ theorem splits_of_splits_mul' {f g : K[X]} (hfg : (f * g).map i ≠ 0) (h : Spli
     Or.inr @fun g hgi hg =>
       Or.resolve_left h hfg hgi (by rw [Polynomial.map_mul]; exact hg.trans (dvd_mul_left _ _))⟩
 
-theorem splits_map_iff (j : L →+* F) {f : K[X]} : Splits j (f.map i) ↔ Splits (j.comp i) f := by
+theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
+    Splits j (f.map i) ↔ Splits (j.comp i) f := by
   simp [Splits, Polynomial.map_map]
 
 theorem splits_one : Splits i 1 :=
@@ -590,12 +591,7 @@ theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
   nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
   rw [coeff_zero_eq_eval_zero, eval_multiset_prod, Multiset.map_map]
   simp_rw [Function.comp_apply, eval_sub, eval_X, zero_sub, eval_C]
-  conv_lhs =>
-    congr
-    congr
-    ext
-    rw [neg_eq_neg_one_mul]
-  simp only [splits_iff_card_roots.1 hP, neg_mul, one_mul, Multiset.prod_map_neg]
+  simp only [splits_iff_card_roots.1 hP, Multiset.prod_map_neg]
 
 /-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the sum of the roots. -/
 theorem sum_roots_eq_nextCoeff_of_monic_of_split {P : K[X]} (hmo : P.Monic)

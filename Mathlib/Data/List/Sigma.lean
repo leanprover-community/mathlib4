@@ -205,8 +205,9 @@ theorem mem_dlookup_iff {a : α} {b : β a} {l : List (Sigma β)} (nd : l.NodupK
     b ∈ dlookup a l ↔ Sigma.mk a b ∈ l :=
   ⟨of_mem_dlookup, mem_dlookup nd⟩
 
-theorem perm_dlookup (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys)
-    (p : l₁ ~ l₂) : dlookup a l₁ = dlookup a l₂ := by
+theorem perm_dlookup (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (p : l₁ ~ l₂) :
+    dlookup a l₁ = dlookup a l₂ := by
+  have nd₂ := (perm_nodupKeys p).mp nd₁
   ext b; simp only [← Option.mem_def, mem_dlookup_iff nd₁, mem_dlookup_iff nd₂, p.mem_iff]
 
 theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁ : l₁.NodupKeys)
@@ -308,9 +309,10 @@ theorem lookupAll_eq_dlookup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) :
 theorem lookupAll_nodup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) : (lookupAll a l).Nodup := by
   (rw [lookupAll_eq_dlookup a h]; apply Option.toList_nodup)
 
-theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys)
+theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys)
     (p : l₁ ~ l₂) : lookupAll a l₁ = lookupAll a l₂ := by
-  simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ nd₂ p]
+  have nd₂ := (perm_nodupKeys p).mp nd₁
+  simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ p]
 
 theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
     (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
@@ -463,7 +465,7 @@ theorem notMem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
   induction l with
   | nil => simp
   | cons hd tl ih =>
-    simp? at nd says simp only [nodupKeys_cons] at nd
+    simp only [nodupKeys_cons] at nd
     by_cases h : a = hd.1
     · subst h
       simp [nd.1]
@@ -673,7 +675,7 @@ theorem NodupKeys.kunion (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys) : (ku
   induction l₁ generalizing l₂ with
   | nil => simp only [nil_kunion, nd₂]
   | cons s l₁ ih =>
-    simp? at nd₁ says simp only [nodupKeys_cons] at nd₁
+    simp only [nodupKeys_cons] at nd₁
     simp [nd₁.1, nd₂, ih nd₁.2 (nd₂.kerase s.1)]
 
 theorem Perm.kunion_right {l₁ l₂ : List (Sigma β)} (p : l₁ ~ l₂) (l) :

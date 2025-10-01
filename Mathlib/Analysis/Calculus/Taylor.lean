@@ -346,7 +346,7 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
   have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x₀ x)) (Icc x₀ x) := by
     refine hf.differentiableOn_iteratedDerivWithin ?_ hu
     norm_cast
-    norm_num
+    simp
   obtain ⟨x', h1, h2⟩ := taylor_mean_remainder_lagrange hx hf.of_succ (hd.mono Ioo_subset_Icc_self)
   use x', h1
   rw [h2, iteratedDeriv_eq_iteratedFDeriv, iteratedDerivWithin_eq_iteratedFDerivWithin,

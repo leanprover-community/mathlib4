@@ -25,7 +25,14 @@ This file contains basic facts on inclusion of and set operations on intervals
 (where the precise statements depend on the order's properties;
 statements requiring `LinearOrder` are in `Mathlib/Order/Interval/Set/LinearOrder.lean`).
 
-TODO: This is just the beginning; a lot of rules are missing
+A conscious decision was made not to list all possible inclusion relations.
+Monotonicity results and "self" results *are* included.
+Most use cases can suffice with a transitive combination of those, for example:
+```
+theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
+  (Ico_subset_Ico_left h).trans Ico_subset_Ici_self
+```
+Logical equivalences, such as `Icc_subset_Ici_iff`, are however stated.
 -/
 
 assert_not_exists RelIso
@@ -674,7 +681,6 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
   refine ⟨fun h ↦ ?_, subsingleton_Icc_of_ge⟩
   contrapose! h
-  simp only [not_subsingleton_iff]
   exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
 
 @[simp]
