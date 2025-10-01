@@ -541,7 +541,6 @@ theorem comap_conj_nhds_one :
   rw [← (comap_injective φ.surjective).eq_iff, comap_comap, comap_comap, conj_φ, snd_φ,
       ← uniformity_eq_comap_inv_mul_nhds_one, ← uniformity_eq_comap_mul_inv_nhds_one]
 
-set_option profiler true in
 open Prod (snd) in
 /-- Note: this assumes `[IsLeftUniformGroup β] [IsRightUniformGroup β]` instead of the more typical
 (and equivalent) `[IsUniformGroup β]` because this is used in the proof of said equivalence. -/
