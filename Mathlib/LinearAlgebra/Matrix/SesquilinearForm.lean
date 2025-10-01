@@ -329,13 +329,15 @@ noncomputable def LinearMap.toMatrix₂ : (M₁ →ₛₗ[σ₁] M₂ →ₛₗ[
     (LinearMap.toMatrixₛₗ₂' R)
 
 variable (σ₁) in
-/-- `Matrix.toLinearMap₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
+/-- `Matrix.toLinearMapₛₗ₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
 `n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively; this is the reverse direction of `LinearMap.toMatrix₂ b₁ b₂`. -/
 noncomputable def Matrix.toLinearMapₛₗ₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₛₗ[σ₁] M₂ →ₗ[R] N₂ :=
   (LinearMap.toMatrix₂ b₁ b₂).symm
 
-noncomputable abbrev Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[R] M₂ →ₗ[R] N₂ :=
+/-- `Matrix.toLinearMap₂ b₁ b₂` is the same as `Matrix.toLinearMapₛₗ₂ b₁ b₂` but with
+`σ₁ := RingHom.id R` to avoid having to specify it. -/
+noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[R] M₂ →ₗ[R] N₂ :=
   (LinearMap.toMatrix₂ b₁ b₂).symm
 
 -- We make this and not `LinearMap.toMatrix₂` a `simp` lemma to avoid timeouts
