@@ -23,6 +23,34 @@ import Mathlib.RingTheory.CohenMacaulay.Basic
 
 -/
 
+section ENat
+
+lemma WithTop.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
+    a + c ≤ b + c ↔ a ≤ b := by
+  induction a with
+  | top => simp only [_root_.top_add, top_le_iff]; exact WithTop.add_coe_eq_top_iff
+  | coe a => induction b with
+    | top => simp
+    | coe b => norm_cast; exact Nat.add_le_add_iff_right
+
+lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
+    a + c ≤ b + c ↔ a ≤ b := by
+  induction a with
+  | bot => simp
+  | coe a =>
+    induction b with
+    | bot => simp
+    | coe b => norm_cast; exact WithTop.add_le_add_right_iff a b c
+
+omit [UnivLE.{v, w}] in
+lemma WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
+    a + 1 ≤ 0 ↔ a = ⊥ := by
+  induction a with
+  | bot => simp
+  | coe a => norm_cast; simp
+
+end ENat
+
 universe v u
 
 variable (R : Type u) [CommRing R]
@@ -52,35 +80,27 @@ lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R
 
 variable [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
 
-lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) : a + c ≤ b + c ↔ a ≤ b := by
-  --For fym
-  sorry
-
 lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · --quotSMulTop_nontrivial
-      --For fym
-      sorry
-    · --For fym
-      sorry
+    · exact Submodule.instSubsingletonQuotient
+    · by_contra!
+      rw [not_subsingleton_iff_nontrivial] at this
+      replace := quotSMulTop_nontrivial mem M
+      exact false_of_nontrivial_of_subsingleton (QuotSMulTop x ↑M)
+
   have aux (n : ℕ) : projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) ≤ n ↔
     projectiveDimension M + 1 ≤ n := by
     match n with
     | 0 =>
-      have : projectiveDimension M + 1 ≤ 0 ↔ projectiveDimension M = ⊥ := by
-        refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-        apply WithBot.lt_coe_bot.mp
-        simp
-        --For fym
-        sorry
+      have : projectiveDimension M + 1 ≤ 0 ↔ projectiveDimension M = ⊥ :=
+        WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M)
       rw [projectiveDimension_le_iff]
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       simp only [CharP.cast_eq_zero, this, projectiveDimension_eq_bot_iff,
         ModuleCat.isZero_iff_subsingleton, sub]
-
       sorry
     | n + 1 =>
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
