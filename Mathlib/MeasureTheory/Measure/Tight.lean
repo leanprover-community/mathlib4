@@ -300,7 +300,7 @@ theorem IsTight_of_isRelativelyCompact (hcomp : IsCompact (closure S)) :
   use bigK
   constructor
   -- Compactness first
-  · refine isCompact_of_totallyBounded_isClosed ?_ ?_
+  · refine TotallyBounded.isCompact_of_isClosed ?_ ?_
     --Totally bounded
     · refine Metric.totallyBounded_iff.mpr ?_
       intro δ δpos
