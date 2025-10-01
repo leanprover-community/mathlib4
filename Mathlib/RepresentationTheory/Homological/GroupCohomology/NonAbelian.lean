@@ -103,7 +103,10 @@ instance setoid : Setoid (Z1 G A) where
   iseqv := {
     refl := fun f => ⟨0, fun h => by simp⟩,
     symm := sorry,
-    trans := sorry
+    trans := by
+      intro f g h ⟨h1, h1_eq⟩ ⟨h2, h2_eq⟩
+      refine ⟨h1 + h2, fun g' => ?_⟩
+      simp [h1_eq g', h2_eq g', add_assoc]
   }
 
 end Z1
