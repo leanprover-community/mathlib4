@@ -33,23 +33,13 @@ lemma prod_prodMkLeft_comp_prod_deterministic {β' ε : Type*}
     (ξ ×ₖ η.prodMkLeft β) ∘ₖ (κ ×ₖ deterministic f hf)
       = (ξ ∘ₖ (κ ×ₖ deterministic f hf)) ×ₖ (η ∘ₖ deterministic f hf) := by
   ext ω s hs
-  simp_rw [prod_apply, comp_apply, Kernel.prod_apply]
-  rw [Measure.prod_apply hs, Measure.bind_apply hs, MeasureTheory.lintegral_prod,
-    Measure.lintegral_bind,
-    MeasureTheory.lintegral_prod]
+  rw [prod_apply' _ _ _ hs, comp_apply' _ _ _ hs, lintegral_prod_deterministic,
+    lintegral_comp, lintegral_prod_deterministic]
   · congr with b
-    rw [deterministic_apply, lintegral_dirac', lintegral_dirac']
-    · rw [prod_apply' _ _ _ hs]
-      simp [Measure.dirac_bind (Kernel.measurable _)]
-    · refine (Measurable.lintegral_kernel ?_).comp measurable_prodMk_left
-      exact measurable_measure_prodMk_left hs
-    · exact (Kernel.measurable_coe _ hs).comp measurable_prodMk_left
-  · refine (Measurable.lintegral_kernel ?_).aemeasurable
-    exact measurable_measure_prodMk_left hs
-  · fun_prop
-  · exact (measurable_measure_prodMk_left hs).aemeasurable
-  · exact (Kernel.measurable_coe _ hs).aemeasurable
-  · fun_prop
+    rw [prod_apply' _ _ _ hs, prodMkLeft_apply, comp_deterministic_eq_comap, comap_apply]
+  · exact (measurable_measure_prodMk_left hs).lintegral_kernel
+  · exact measurable_measure_prodMk_left hs
+  · exact Kernel.measurable_coe _ hs
 
 end ProbabilityTheory.Kernel
 
