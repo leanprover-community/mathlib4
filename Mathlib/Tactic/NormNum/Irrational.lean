@@ -201,7 +201,7 @@ private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_
     Irrational (x ^ y) := by
   rcases hx_isNNRat with ⟨hx_inv, hx_eq⟩
   apply Irrational.of_inv
-  rw [← Real.inv_rpow (by simp [hx_eq]; positivity)]
+  rw [← Real.inv_rpow (by simpa [hx_eq] using by positivity)]
   apply irrational_rpow_rat_rat_of_num (x_num := x_den) (x_den := x_num) _ hy_isNNRat
     (Nat.coprime_comm.mp hx_coprime) hy_coprime hd1 hd2
   refine ⟨invertibleOfNonzero (fun _ ↦ ?_), by simp [hx_eq]⟩
