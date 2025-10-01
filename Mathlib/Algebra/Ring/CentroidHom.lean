@@ -13,7 +13,7 @@ import Mathlib.Algebra.Ring.Subsemiring.Basic
 /-!
 # Centroid homomorphisms
 
-Let `A` be a (non unital, non associative) algebra. The centroid of `A` is the set of linear maps
+Let `A` be a (nonunital, non-associative) algebra. The centroid of `A` is the set of linear maps
 `T` on `A` such that `T` commutes with left and right multiplication, that is to say, for all `a`
 and `b` in `A`,
 $$
@@ -599,7 +599,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing α]
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- A prime associative ring has commutative centroid. -/
 abbrev commRing
     (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
