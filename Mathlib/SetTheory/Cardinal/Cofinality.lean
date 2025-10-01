@@ -257,8 +257,7 @@ theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
 
 theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← Ordinal.sup] at *
-  rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
+  rw [← iSup_eq_lsub_iff_lt_iSup] at H
   rw [H]
   exact cof_lsub_le_lift f
 
@@ -269,7 +268,7 @@ theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
 
 theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : iSup f < c :=
-  (sup_le_lsub.{u, v} f).trans_lt (lsub_lt_ord_lift hι hf)
+  (iSup_le_lsub f).trans_lt (lsub_lt_ord_lift hι hf)
 
 theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → iSup f < c :=
