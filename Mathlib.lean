@@ -3910,6 +3910,7 @@ import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
+import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
