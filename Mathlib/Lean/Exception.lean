@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Lean.Exception
 
-@[expose] public section
+public section
 
 /-!
 # Additional methods for working with `Exception`s

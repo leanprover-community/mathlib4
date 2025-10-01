@@ -10,7 +10,7 @@ public meta import Mathlib.Lean.Elab.Tactic.Meta
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header
 
-@[expose] public meta section
+public meta section
 
 /-! # Executing actions using the infotree
 

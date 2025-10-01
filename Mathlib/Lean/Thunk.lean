@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Init
 
-@[expose] public section
+public section
 
 /-!
 # Basic facts about `Thunk`.

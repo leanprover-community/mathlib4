@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Set.Operations
 
-@[expose] public section
+public section
 
 /-!
 # Additional Expr recognizers needing theory imports

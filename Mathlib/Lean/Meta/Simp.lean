@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Lean.Elab.Tactic.Simp
 
-@[expose] public section
+public section
 
 /-!
 # Helper functions for using the simplifier.

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Init
 
-@[expose] public section
+public section
 
 /-!
 # Additional functions using `CoreM` state.

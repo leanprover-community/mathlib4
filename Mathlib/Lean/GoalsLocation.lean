@@ -9,7 +9,7 @@ public import Mathlib.Init
 public import Lean.Meta.Tactic.Util
 public import Lean.SubExpr
 
-@[expose] public section
+public section
 
 /-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
 

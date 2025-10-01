@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
-@[expose] public section
+public section
 
 /-!
 # Matching with a RefinedDiscrTree

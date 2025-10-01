@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Init
 
-@[expose] public section
+public section
 
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`

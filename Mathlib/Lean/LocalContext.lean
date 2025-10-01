@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Lean.LocalContext
 
-@[expose] public section
+public section
 
 /-!
 # Additional methods about `LocalContext`

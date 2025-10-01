@@ -9,7 +9,7 @@ module
 public import Lean.Expr
 public import Mathlib.Util.MemoFix
 
-@[expose] public section
+public section
 
 /-!
 # ReplaceRec

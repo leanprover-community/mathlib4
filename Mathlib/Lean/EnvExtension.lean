@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Lean.ScopedEnvExtension
 
-@[expose] public section
+public section
 
 /-!
 # Helper function for environment extensions and attributes.

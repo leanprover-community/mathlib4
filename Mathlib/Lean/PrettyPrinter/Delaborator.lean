@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Lean.PrettyPrinter.Delaborator.Basic
 
-@[expose] public section
+public section
 
 /-!
 # Additions to the delaborator

@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Lean.Meta.DiscrTree
 
-@[expose] public section
+public section
 
 /-!
 # Additions to `Lean.Meta.DiscrTree`

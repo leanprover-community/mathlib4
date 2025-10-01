@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Lean.Elab.SyntheticMVars
 
-@[expose] public section
+public section
 
 /-!
 # Additions to `Lean.Elab.Term`

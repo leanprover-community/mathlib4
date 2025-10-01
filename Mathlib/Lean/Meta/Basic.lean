@@ -9,7 +9,7 @@ public import Mathlib.Init
 public import Lean.Meta.AppBuilder
 public import Lean.Meta.Basic
 
-@[expose] public section
+public section
 
 /-!
 # Additions to `Lean.Meta.Basic`

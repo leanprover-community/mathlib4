@@ -9,7 +9,7 @@ public import Lean.Meta.Tactic.Cleanup
 public import Lean.Meta.Tactic.Refl
 public import Mathlib.Logic.IsEmpty
 
-@[expose] public section
+public section
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`

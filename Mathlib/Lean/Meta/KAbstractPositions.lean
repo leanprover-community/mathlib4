@@ -10,7 +10,7 @@ public import Lean.HeadIndex
 public import Lean.Meta.ExprLens
 public import Lean.Meta.Check
 
-@[expose] public section
+public section
 
 /-!
 
