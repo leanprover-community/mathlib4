@@ -120,17 +120,22 @@ def H1.map {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A]
 
 variable (G) in
 theorem H1.map_id (A : Type*) [AddGroup A] [DistribMulAction G A] :
-    H1.map (.id _) = 𝟙 (H1 G A) :=
-  sorry
+    H1.map (.id _) = @id (H1 G A) := funext fun a ↦ by
+  induction a using Quotient.ind
+  refine Quotient.eq.mpr ⟨0, fun _ ↦ by simp⟩
 
 theorem H1.map_zero {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A]
-    [DistribMulAction G B] (f : A →+[G] B) : H1.map f 0 = 0 := sorry
+    [DistribMulAction G B] (f : A →+[G] B) : H1.map f 0 = 0 := by
+  change H1.map f ⟦0⟧ = ⟦0⟧
+  rw [H1.map, Quotient.map_mk]
+  congr 1
+  exact Subtype.ext (funext fun x ↦ f.map_zero)
+
 
 theorem H1.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
-    (f : A →+[G] B) (g : B →+[G] C) : H1.map (g.comp f) = (H1.map g).comp (H1.map f) := sorry
-
--- def H1Functor : NonAbelianRep G ⥤ Pointed := sorry
+    (f : A →+[G] B) (g : B →+[G] C) : H1.map (g.comp f) = (H1.map g).comp (H1.map f) := funext
+  fun a ↦ by induction a using Quotient.ind with | _ => rfl
 
 end H1
 
