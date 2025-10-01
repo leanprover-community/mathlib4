@@ -71,7 +71,7 @@ lemma coinvariantsKer_leftRegular_eq_ker :
       ext g
       by_cases hg : g = 1
       · simp_all [linearCombination, sum_apply']
-      · simp_all [sum_apply', single_eq_of_ne (Ne.symm hg)]
+      · simp_all [sum_apply']
     rw [this]
     exact Submodule.finsuppSum_mem _ _ _ _ fun g _ =>
       Coinvariants.mem_ker_of_eq g (single 1 (x g)) _ (by simp)
@@ -175,8 +175,9 @@ noncomputable def resolution.π (g : G) :
 lemma resolution_quasiIso (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     QuasiIso (resolution.π k g) where
   quasiIsoAt m := by
-    induction' m with m _
-    · simp only [resolution.π]
+    induction m with
+    | zero =>
+      simp only [resolution.π]
       rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros' _ rfl rfl rfl]
       constructor
       · apply (Action.forget (ModuleCat k) _).reflects_exact_of_faithful
@@ -187,7 +188,8 @@ lemma resolution_quasiIso (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) :
         intro x
         use single 1 x
         simp [ChainComplex.toSingle₀Equiv]
-    · rw [quasiIsoAt_iff_exactAt' (hL := ChainComplex.exactAt_succ_single_obj ..),
+    | succ m _ =>
+      rw [quasiIsoAt_iff_exactAt' (hL := ChainComplex.exactAt_succ_single_obj ..),
           HomologicalComplex.exactAt_iff' _ (m + 2) (m + 1) m (by simp) (by simp)]
       apply (Action.forget (ModuleCat k) _).reflects_exact_of_faithful
       rw [ShortComplex.moduleCat_exact_iff_range_eq_ker]
