@@ -545,7 +545,7 @@ variable {v}
 noncomputable instance [NumberField K] : DecidableEq (InfinitePlace K) :=
   (Fintype.equivFin _).decidableEq
 
-open Topology Filter in
+open Filter in
 variable (K) in
 /--
 *Weak approximation for infinite places*
