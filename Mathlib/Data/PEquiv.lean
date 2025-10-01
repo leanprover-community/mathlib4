@@ -386,17 +386,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
           have hf := @mem_iff_mem _ _ f a b
           have hg := @mem_iff_mem _ _ g a b
           simp only [Option.mem_def] at *
-          split_ifs with h1 h2 h2 <;> try simp [hf]
-          · contrapose! h2
-            rw [h2]
-            rw [← h1, hf, h2] at hg
-            simp only [true_iff] at hg
-            rw [hg]
-          · contrapose! h1
-            rw [h1] at hf h2
-            rw [← h2] at hg
-            simp only [iff_true] at hf hg
-            rw [hf, hg] }
+          grind }
     inf_le_left := fun _ _ _ _ => by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
     inf_le_right := fun _ _ _ _ => by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
     le_inf := fun f g h fg gh a b => by
