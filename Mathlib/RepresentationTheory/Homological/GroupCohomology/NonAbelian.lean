@@ -37,7 +37,9 @@ variable (G : Type u) [Monoid G]
 
 instance : CoeSort (NonAbelianRep G) (Type u) := ⟨fun V ↦ V.V⟩
 
-instance (A : NonAbelianRep G) : DistribMulAction G A := sorry
+instance (A : NonAbelianRep G) : DistribMulAction G A  where
+  smul_zero _ :=  map_zero _
+  smul_add _ := map_add _
 
 instance (A B : NonAbelianRep G) : Coe (A ⟶ B) (A →+[G] B) := sorry
 
@@ -143,28 +145,100 @@ theorem H1.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
 
 end H1
 
-section connectHom
+section connectHom₀₁
 
 variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
     {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
     (hfg : Function.Exact f g)
 
-def δ₀₁ : H0 G C → H1 G A := sorry
+noncomputable def δ₀₁_aux (b : B) (c : H0 G C) (hb : g b = c) : Z1 G A := ⟨fun s ↦
+    (Equiv.ofInjective f hf).symm
+      ⟨-b + s • b, ((hfg _).mp (by simp [hb, c.prop s]))⟩,
+    fun g h ↦ hf (by simp [Equiv.apply_ofInjective_symm, mul_smul, ← add_assoc])⟩
 
--- def δ₀₁_zero : δ₀₁ 0 = 0 := sorry
+theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
+    Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') := sorry
 
--- theorem exact₁ : Function.Exact (H0.map (S.f : S.X₁ →+[G] S.X₂)) (H0.map (S.g : S.X₂ →+[G] S.X₃)) :=
---   sorry
+noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
+    ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
 
--- theorem exact₂ : Function.Exact (H0.map (S.g : S.X₂ →+[G] S.X₃)) (δ₀₁ S) := sorry
+def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
 
--- theorem exact₃ : Function.Exact (δ₀₁ S) (H1.map (S.f : S.X₁ →+[G] S.X₂)) := sorry
+theorem exact₁ : Function.Exact (H0.map f) (H0.map g) := sorry
 
--- theorem exact₄ : Function.Exact (H1.map (S.f : S.X₁ →+[G] S.X₂)) (H1.map (S.g : S.X₂ →+[G] S.X₃)) :=
---   sorry
+theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := sorry
 
-end connectHom
+theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
+
+theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
+
+end connectHom₀₁
+
+
+section compatibility
+
+variable {G : Type u} [Group G] {k : Type u} [CommRing k] (A : Rep k G)
+
+-- Why can't this be found automatically?
+instance : MulAction G A := Action.instMulAction A
+
+-- should be moved
+instance : DistribMulAction G A where
+  smul_zero _ := map_zero _
+  smul_add _ := map_add _
+
+open CategoryTheory
+
+noncomputable def H0Iso (A : Rep k G) : groupCohomology.H0 A ≃+ H0 G A where
+  toFun := (groupCohomology.H0Iso A).hom
+  invFun := (groupCohomology.H0Iso A).inv
+  left_inv := sorry
+  right_inv := sorry
+  map_add' := sorry
+
+-- naturality of H0Iso
+
+def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A := sorry
+
+theorem H1Iso_zero : H1Iso A 0 = 0 := sorry
+
+-- naturality of H1Iso
+
+end compatibility
+
+section connectHom₁₂
+
+variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
+  {B C : Type*} [AddGroup B] [AddGroup C] [DistribMulAction G B] [DistribMulAction G C]
+  {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
+  (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
+
+noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x)) :
+    LinearMap.ker (ModuleCat.Hom.hom (d₂₃ A)) := by
+  refine ⟨fun st ↦ (Equiv.ofInjective f hf).symm ⟨(b st.1) + st.1 • (b st.2) - b (st.1 * st.2),
+    (hfg _).mp (by simp [← hbc, c.prop])⟩, funext fun ⟨x, y, z⟩ ↦ hf ?_⟩
+  sorry
+
+theorem δ₁₂_aux_well_defined (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
+    (hbc' : ∀ (x : G), c' x = g (b' x)) (hcc' : Z1.cohomologous c c') :
+    ((δ₁₂_aux hf hfg b c hbc) - (δ₁₂_aux hf hfg b' c' hbc') : (ModuleCat.of k (G × G → A))) ∈
+    (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := sorry
+
+noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
+  refine (H2Iso A).symm.hom ∘ Quotient.lift (Submodule.Quotient.mk ∘
+    (fun c ↦ ((δ₁₂_aux hf hfg (fun x ↦ Classical.choose (hg (c x))) c
+      (fun x ↦ (Classical.choose_spec (hg (c x))).symm)))))
+        (fun c c' (hcc' : Z1.cohomologous c c') ↦ ?_)
+  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined hf hfg (fun x ↦ Classical.choose (hg (c x)))
+    (fun x ↦ Classical.choose (hg (c' x))) c c' (fun x ↦ (Classical.choose_spec (hg (c x))).symm)
+      (fun x ↦ (Classical.choose_spec (hg (c' x))).symm) hcc'
+  exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
+
+
+-- theorem exact₅ : Function.Exact (H1.map g) δ₁₂ := sorry
+
+end connectHom₁₂
 
 end NonAbelian
 
