@@ -9,7 +9,7 @@ import Mathlib.Algebra.Ring.Equiv
 import Mathlib.RingTheory.Polynomial.Opposites
 
 /-!
-# A commutative semiring without cancellative addition that is a domain
+# A commutative semiring that is a domain whose polynomial semiring is not a domain
 
 `NatMaxAdd` is the natural numbers equipped with the usual multiplication but with maximum as
 addition. Under these operations it is a commutative semiring that is a domain, but
@@ -66,6 +66,8 @@ theorem not_isCancelAdd : ¬ IsCancelAdd NatMaxAdd := fun h ↦ by cases @h.1.1 
 
 theorem not_isDomain_polynomial : ¬ IsDomain NatMaxAdd[X] :=
   Polynomial.isDomain_iff.not.mpr fun h ↦ not_isCancelAdd h.2
+
+theorem noZeroDivisors_polynomial : NoZeroDivisors NatMaxAdd[X] := inferInstance
 
 end NatMaxAdd
 

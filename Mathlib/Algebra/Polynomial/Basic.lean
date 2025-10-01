@@ -1168,6 +1168,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R[X] where
 
 instance [IsCancelAdd R] [IsDomain R] : IsDomain R[X] where
 
+/-- See also `Polynomial.isDomain_iff`. -/
 theorem noZeroDivisors_iff : NoZeroDivisors R[X] ↔ NoZeroDivisors R where
   mp _ := C_injective.noZeroDivisors _ C_0 fun _ _ ↦ C_mul
   mpr _ := inferInstance
