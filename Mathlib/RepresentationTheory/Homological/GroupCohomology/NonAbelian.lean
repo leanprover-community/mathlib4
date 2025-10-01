@@ -162,6 +162,15 @@ noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
 
 def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := sorry
 
+end connectHom
+
+section exact
+
+variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
+    [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
+    {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
+    (hfg : Function.Exact f g)
+
 theorem exact₁ : Function.Exact (H0.map f) (H0.map g) :=
   sorry
 
@@ -171,7 +180,23 @@ theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
 
 theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
 
-end connectHom
+end exact
+
+section compatibility
+
+variable {G : Type u} [Group G] (k : Type u) [Field k] (A : Rep k G)
+
+theorem H0_eq_H0 (A : Rep k G) : H0 G A = groupCohomology.H0 A := sorry
+
+theorem H1_eq_H1 (A : Rep k G) : H1 G A = groupCohomology.H1 A := sorry
+
+end compatibility
+
+section exact
+
+theorem exact₅ (A : Rep k G) : Function.Exact (H1.map (S.g : S.X₂ →+[G] S.X₃)) sorry := sorry
+
+end exact
 
 section exact
 
