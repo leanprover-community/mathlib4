@@ -14,7 +14,8 @@ import Mathlib.RingTheory.Polynomial.Opposites
 `NatMaxAdd` is the natural numbers equipped with the usual multiplication but with maximum as
 addition. Under these operations it is a commutative semiring that is a domain, but
 `1 + 1 = 1 + 0 = 1` in this semiring so addition is not cancellative.
-As a consequence, the polynomial semiring `NatMaxAdd[X]` is not a domain.
+As a consequence, the polynomial semiring `NatMaxAdd[X]` is not a domain,
+even though it has no zero-divisors other than 0.
 -/
 
 /-- A type synonym for ℕ equipped with maximum as addition. -/
