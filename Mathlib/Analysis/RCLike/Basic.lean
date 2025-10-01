@@ -167,7 +167,7 @@ theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
   algebraMap.coe_inj _ _
 
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
-  algebraMap.coe_eq_zero_iff x
+  algebraMap.coe_eq_zero_iff _ _ _
 
 theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
   ofReal_eq_zero.not

@@ -72,10 +72,6 @@ theorem charZero_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semirin
     (h : Function.Injective (algebraMap R A)) [CharZero R] : CharZero A :=
   charZero_of_injective_ringHom h
 
-theorem charZero_of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
-    [Algebra R A] [FaithfulSMul R A] [CharZero R] : CharZero A :=
-  charZero_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A)
-
 /-- If `R →+* A` is injective, and `A` is of characteristic `p`, then `R` is also of
 characteristic `p`. Similar to `RingHom.charZero`. -/
 theorem RingHom.charP {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
