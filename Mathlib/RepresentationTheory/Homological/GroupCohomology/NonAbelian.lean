@@ -39,10 +39,7 @@ instance : CoeSort (NonAbelianRep G) (Type u) := ⟨fun V ↦ V.V⟩
 
 instance (A : NonAbelianRep G) : DistribMulAction G A  where
   smul_zero _ :=  map_zero _
-  smul_add := by
-    intro a x y
-    apply map_add
-
+  smul_add _ := map_add _
 
 instance (A B : NonAbelianRep G) : Coe (A ⟶ B) (A →+[G] B) := sorry
 
@@ -177,11 +174,22 @@ instance : DistribMulAction G A where
   smul_zero _ := map_zero _
   smul_add _ := map_add _
 
-def H0Iso (A : Rep k G) : groupCohomology.H0 A ≃+ H0 G A := sorry
+open CategoryTheory
+
+noncomputable def H0Iso (A : Rep k G) : groupCohomology.H0 A ≃+ H0 G A where
+  toFun := (groupCohomology.H0Iso A).hom
+  invFun := (groupCohomology.H0Iso A).inv
+  left_inv := sorry
+  right_inv := sorry
+  map_add' := sorry
+
+-- naturality of H0Iso
 
 def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A := sorry
 
 theorem H1Iso_zero : H1Iso A 0 = 0 := sorry
+
+-- naturality of H1Iso
 
 end compatibility
 
