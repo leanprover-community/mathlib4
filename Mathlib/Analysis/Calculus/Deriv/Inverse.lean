@@ -87,7 +87,7 @@ theorem PartialHomeomorph.hasDerivAt_symm (f : PartialHomeomorph 𝕜 𝕜) {a f
 theorem HasDerivWithinAt.eventually_ne (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c :=
   h.hasFDerivWithinAt.eventually_ne
-    ⟨‖f'‖⁻¹, fun z => by field_simp [norm_smul, mt norm_eq_zero.1 hf']⟩
+    ⟨‖f'‖⁻¹, fun z => by simp [norm_smul]; field_simp; rfl⟩
 
 theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by

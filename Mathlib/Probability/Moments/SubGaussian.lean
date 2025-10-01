@@ -27,7 +27,7 @@ If `𝔼[X] = 0` then properties (i)-(iv) are equivalent to (v) in that same sen
 Property (v) implies that `X` has expectation zero.
 
 The name sub-Gaussian is used by various authors to refer to any one of (i)-(v). We will say that a
-random variable has sub-Gaussian moment generating function (mgf) with constant `K₅` to mean that
+random variable has sub-Gaussian moment-generating function (mgf) with constant `K₅` to mean that
 property (v) holds with that constant. The function `exp (K₅ * t^2 / 2)` which appears in
 property (v) is the mgf of a Gaussian with variance `K₅`.
 That property (v) is the most convenient one to work with if one wants to prove concentration
@@ -50,20 +50,20 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
 
 ## Main definitions
 
-* `Kernel.HasSubgaussianMGF`: a random variable `X` has a sub-Gaussian moment generating function
+* `Kernel.HasSubgaussianMGF`: a random variable `X` has a sub-Gaussian moment-generating function
   with parameter `c` with respect to a kernel `κ` and a measure `ν` if for `ν`-almost all `ω'`,
-  for all `t : ℝ`, the moment generating function of `X` with respect to `κ ω'` is bounded by
+  for all `t : ℝ`, the moment-generating function of `X` with respect to `κ ω'` is bounded by
   `exp (c * t ^ 2 / 2)`.
-* `HasCondSubgaussianMGF`: a random variable `X` has a conditionally sub-Gaussian moment generating
+* `HasCondSubgaussianMGF`: a random variable `X` has a conditionally sub-Gaussian moment-generating
   function with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all
-  `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment generating function of `X` conditioned
+  `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment-generating function of `X` conditioned
   on `m` is almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
   The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
   sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
   to the sigma-algebra `m`.
-* `HasSubgaussianMGF`: a random variable `X` has a sub-Gaussian moment generating function
+* `HasSubgaussianMGF`: a random variable `X` has a sub-Gaussian moment-generating function
   with parameter `c` with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)`
-  is `μ`-integrable and the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)`
+  is `μ`-integrable and the moment-generating function of `X` is bounded by `exp (c * t ^ 2 / 2)`
   for all `t : ℝ`.
   This is equivalent to `Kernel.HasSubgaussianMGF` with a constant kernel.
   See `HasSubgaussianMGF_iff_kernel`.
@@ -131,9 +131,9 @@ variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'
 
 /-! ### Sub-Gaussian with respect to a kernel and a measure -/
 
-/-- A random variable `X` has a sub-Gaussian moment generating function with parameter `c`
+/-- A random variable `X` has a sub-Gaussian moment-generating function with parameter `c`
 with respect to a kernel `κ` and a measure `ν` if for `ν`-almost all `ω'`, for all `t : ℝ`,
-the moment generating function of `X` with respect to `κ ω'` is bounded by `exp (c * t ^ 2 / 2)`.
+the moment-generating function of `X` with respect to `κ ω'` is bounded by `exp (c * t ^ 2 / 2)`.
 This implies in particular that `X` has expectation 0. -/
 structure Kernel.HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
     (κ : Kernel Ω' Ω) (ν : Measure Ω' := by volume_tac) : Prop where
@@ -404,7 +404,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
           (κ ω')[fun ω ↦ exp (t * Y ω) ^ (q : ℝ)] ^ (1 / (q : ℝ)) := by
         simp_rw [mul_add, exp_add]
         apply integral_mul_le_Lp_mul_Lq_of_nonneg
-        · exact ⟨by field_simp [p, q], by positivity, by positivity⟩
+        · exact ⟨by simp [field, p, q], by positivity, by positivity⟩
         · exact ae_of_all _ fun _ ↦ exp_nonneg _
         · exact ae_of_all _ fun _ ↦ exp_nonneg _
         · simpa using (hlX t)
@@ -417,8 +417,10 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
         · exact hmY (t * q)
       _ = exp ((cX.sqrt + cY.sqrt) ^ 2 * t ^ 2 / 2) := by
         simp_rw [← exp_mul, ← exp_add]
-        field_simp [p, q]
-        ring }
+        simp only [NNReal.coe_div, NNReal.coe_add, coe_sqrt, one_div, inv_div, exp_eq_exp, p, q]
+        field_simp
+        linear_combination t ^ 2 * (-√↑cY * Real.sq_sqrt cX.coe_nonneg
+            -√↑cX * Real.sq_sqrt cY.coe_nonneg) }
 
 variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : ℝ≥0}
 
@@ -502,15 +504,15 @@ end Kernel
 
 section Conditional
 
-/-! ### Conditionally sub-Gaussian moment generating function -/
+/-! ### Conditionally sub-Gaussian moment-generating function -/
 
 variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {hm : m ≤ mΩ} [StandardBorelSpace Ω]
   {μ : Measure Ω} [IsFiniteMeasure μ] {X : Ω → ℝ} {c : ℝ≥0}
 
 variable (m) (hm) in
-/-- A random variable `X` has a conditionally sub-Gaussian moment generating function
+/-- A random variable `X` has a conditionally sub-Gaussian moment-generating function
 with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all `t : ℝ`,
-`exp (t * X)` is `μ`-integrable and the moment generating function of `X` conditioned on `m` is
+`exp (t * X)` is `μ`-integrable and the moment-generating function of `X` conditioned on `m` is
 almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
 This implies in particular that `X` has expectation 0.
 
@@ -561,18 +563,18 @@ end HasCondSubgaussianMGF
 
 end Conditional
 
-/-! ### Sub-Gaussian moment generating function -/
+/-! ### Sub-Gaussian moment-generating function -/
 
 variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {c : ℝ≥0}
 
-/-- A random variable `X` has a sub-Gaussian moment generating function with parameter `c`
+/-- A random variable `X` has a sub-Gaussian moment-generating function with parameter `c`
 with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)` is `μ`-integrable and
-the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
+the moment-generating function of `X` is bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
 This implies in particular that `X` has expectation 0.
 
 This is equivalent to `Kernel.HasSubgaussianMGF X c (Kernel.const Unit μ) (Measure.dirac ())`,
 as proved in `HasSubgaussianMGF_iff_kernel`.
-Properties about sub-Gaussian moment generating functions should be proved first for
+Properties about sub-Gaussian moment-generating functions should be proved first for
 `Kernel.HasSubgaussianMGF` when possible. -/
 structure HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0) (μ : Measure Ω := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ
@@ -745,11 +747,11 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
     convert variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
     · exact isProbabilityMeasure_tilted (hi u)
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
-  _ = (‖b - a‖₊ / 2) ^ 2 := by field_simp
+  _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]
 
 /-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
 that has expectation zero and is almost surely in `Set.Icc a b` for some `a ≤ b`, then `X` has a
-sub-Gaussian moment generating function with parameter `((b - a) / 2) ^ 2`. -/
+sub-Gaussian moment-generating function with parameter `((b - a) / 2) ^ 2`. -/
 lemma hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] {a b : ℝ}
     (hm : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hc : μ[X] = 0) :
     HasSubgaussianMGF X ((‖b - a‖₊ / 2) ^ 2) μ where
@@ -822,14 +824,14 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
     induction n with
     | zero => simp [h0]
     | succ n =>
-      specialize hn fun i hi ↦ h_subG i (by omega)
+      specialize hn fun i hi ↦ h_subG i (by cutsat)
       simp_rw [Finset.sum_range_succ _ (n + 1)]
-      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by omega))
+      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by cutsat))
       refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
       refine Finset.measurable_fun_sum (Finset.range (n + 1)) fun m hm ↦
         ((h_adapted m).mono (ℱ.mono ?_)).measurable
       simp only [Finset.mem_range] at hm
-      omega
+      cutsat
 
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]

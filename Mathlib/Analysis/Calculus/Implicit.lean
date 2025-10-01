@@ -21,7 +21,7 @@ Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit 
 `f (g z y) = z`, where `f : E → F` is a function strictly differentiable at `a` such that its
 derivative `f'` is surjective and has a `complemented` kernel.
 
-Finally, if the codomain of `f` is a finite dimensional space, then we can automatically prove
+Finally, if the codomain of `f` is a finite-dimensional space, then we can automatically prove
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
@@ -336,10 +336,10 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
 end Complemented
 
 /-!
-### Finite dimensional case
+### Finite-dimensional case
 
 In this section we prove the following version of the implicit function theorem. Consider a map
-`f : E → F` from a Banach normed space to a finite dimensional space.
+`f : E → F` from a Banach normed space to a finite-dimensional space.
 Take a point `a : E` such that `f` is strictly differentiable at `a` and its derivative `f'`
 is surjective. Then there exists a function `φ : F → ker f' → E` such that for `(y, z)`
 close to `(f a, 0)` we have `f (φ y z) = y` and the derivative of `φ (f a)` at zero is the
@@ -358,7 +358,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] {E :
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [FiniteDimensional 𝕜 F] (f : E → F) (f' : E →L[𝕜] F) {a : E}
 
-/-- Given a map `f : E → F` to a finite dimensional space with a surjective derivative `f'`,
+/-- Given a map `f : E → F` to a finite-dimensional space with a surjective derivative `f'`,
 returns a partial homeomorphism between `E` and `F × ker f'`. -/
 def implicitToPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     PartialHomeomorph E (F × ker f') :=
@@ -380,7 +380,6 @@ theorem implicitToPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : r
 @[simp]
 theorem implicitToPartialHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (y : ker f') : hf.implicitToPartialHomeomorph f f' hf' (y + a) = (f (y + a), y) :=
-  -- Porting note: had to add `haveI` (here and below)
   haveI := FiniteDimensional.complete 𝕜 F
   implicitToPartialHomeomorphOfComplemented_apply_ker ..
 
