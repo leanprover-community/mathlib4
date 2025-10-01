@@ -97,8 +97,7 @@ theorem isPrimePow_nat_iff_bounded_log_minFac (n : ℕ) :
       ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ n = n.minFac ^ k := by
   rw [isPrimePow_nat_iff_bounded_log]
   obtain rfl | h := eq_or_ne n 1
-  · subst h
-    simp
+  · simp
   constructor
   · rintro ⟨k, hkle, hk_pos, p, hle, heq, hprime⟩
     refine ⟨k, hkle, hk_pos, ?_⟩
