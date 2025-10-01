@@ -24,6 +24,14 @@ that is, there is a positive probability of reaching any
 * `ProbabilityTheory.Kernel.IsStronglyIrreducible`:
   strong irreducibility of a given kernel with respect to a measure `φ`.
 
+## Main statements
+
+* `isIrreducible_of_le_measure`: If a kernel `κ` is irreducible with respect to a measure `φ₂`,
+  then it is also irreducible with respect to any measure `φ₁` with `φ₁ ≤ φ₂`.
+* `isStronglyIrreducible_of_le_measure`: If a kernel `κ` is strongly irreducible
+  with respect to a measure `φ₂`,
+  then it is also strongly irreducible with respect to any measure `φ₁` with `φ₁ ≤ φ₂`.
+
 ## References
 
 * [C Robert, G Casella, *Monte Carlo Statistical Methods*][robertcasella2004]
@@ -55,14 +63,20 @@ instance {φ : Measure α} {κ : Kernel α α} [IsStronglyIrreducible φ κ] :
   { irreducible := fun _ hs hsp ↦ by
       use 1; simpa using IsStronglyIrreducible.strongly_irreducible hs hsp }
 
-instance isIrreducible_of_smul_measure {c : ℝ≥0∞}
-    {φ : Measure α} {κ : Kernel α α} [hκ : IsIrreducible φ κ] :
+instance {φ : Measure α} [Subsingleton α] :
+    IsStronglyIrreducible φ Kernel.id :=
+  { strongly_irreducible := fun s hs hsp a ↦ by
+      have ha : a ∈ s :=
+        Subsingleton.mem_iff_nonempty.mpr
+          <| MeasureTheory.nonempty_of_measure_ne_zero (μ := φ) (ne_of_lt hsp).symm
+      simp [id_apply, ha] }
+
+instance {c : ℝ≥0∞} {φ : Measure α} {κ : Kernel α α} [hκ : IsIrreducible φ κ] :
     IsIrreducible (c • φ) κ :=
   { irreducible := fun s hs hsp ↦ by
       simpa using hκ.irreducible hs <| by simp_all }
 
-instance isStronglyIrreducible_of_smul_measure {c : ℝ≥0∞}
-    {φ : Measure α} {κ : Kernel α α} [hκ : IsStronglyIrreducible φ κ] :
+instance {c : ℝ≥0∞} {φ : Measure α} {κ : Kernel α α} [hκ : IsStronglyIrreducible φ κ] :
     IsStronglyIrreducible (c • φ) κ :=
   { strongly_irreducible := fun s hs hsp ↦ by
       simpa using hκ.strongly_irreducible hs <| by simp_all }
