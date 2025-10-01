@@ -70,7 +70,7 @@ instance homGroupoid (a b : Pith B) :
     Groupoid.{w₁} (a ⟶ b) := inferInstanceAs <| Groupoid <| Core _
 
 @[ext]
-lemma hom₂_ext {a b : Pith B} {x y : a ⟶ b} {f g : x ⟶ y} {h : f.iso.hom = g.iso.hom} :
+lemma hom₂_ext {a b : Pith B} {x y : a ⟶ b} {f g : x ⟶ y} (h : f.iso.hom = g.iso.hom) :
     f = g := CoreHom.ext <| Iso.ext h
 
 @[simp, reassoc]
