@@ -821,7 +821,7 @@ theorem quadratic_root_cos_pi_div_five :
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
                  _ = sin (2 * θ) := by rw [sin_two_mul]
                  _ = sin (π - 2 * θ) := by rw [sin_pi_sub]
-                 _ = sin (2 * θ + θ) := by congr; simp [hθ]; linarith
+                 _ = sin (2 * θ + θ) := by congr; linarith
                  _ = sin (2 * θ) * c + cos (2 * θ) * s := sin_add (2 * θ) θ
                  _ = 2 * s * c * c + cos (2 * θ) * s := by rw [sin_two_mul]
                  _ = 2 * s * c * c + (2 * c ^ 2 - 1) * s := by rw [cos_two_mul]

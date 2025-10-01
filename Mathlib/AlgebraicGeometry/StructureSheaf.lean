@@ -765,7 +765,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   -- Next we show that some power of `f` is a linear combination of the `h i`
   obtain ⟨n, hn⟩ : f ∈ (Ideal.span (h '' ↑t)).radical := by
     rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.zeroLocus_span]
-    simp [PrimeSpectrum.basicOpen_eq_zeroLocus_compl] at ht_cover
+    simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl] at ht_cover
     replace ht_cover : (PrimeSpectrum.zeroLocus {f})ᶜ ⊆
         ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ := ht_cover
     rw [Set.compl_subset_comm] at ht_cover

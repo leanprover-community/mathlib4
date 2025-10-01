@@ -209,13 +209,13 @@ protected theorem StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by 
 
 @[symm]
 protected theorem StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ := by
-  simp [StateEq]; intros
+  simp only [StateEq, and_imp]; intros
   constructor <;> (symm; assumption)
 
 @[trans]
 protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₃ → ζ₁ ≃[t] ζ₃ := by
-  simp [StateEq]; intros
+  simp only [StateEq, and_imp]; intros
   constructor
   · simp_all only
   · trans ζ₂ <;> assumption
@@ -227,7 +227,7 @@ instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t 
 @[trans]
 protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
-  simp [StateEq]; intros
+  simp only [StateEq, and_imp]; intros
   trans ζ₂ <;> assumption
 
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
@@ -236,7 +236,7 @@ instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs
 /-- Writing the same value to register `t` gives `≃[t + 1]` from `≃[t]`. -/
 theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t] ζ₂) (v : Word) :
     write t v ζ₁ ≃[t + 1] write t v ζ₂ := by
-  simp [StateEq, StateEqRs] at *
+  simp only [StateEq, StateEqRs, write] at *
   constructor; · exact h.1
   intro r hr
   have hr : r ≤ t := Register.le_of_lt_succ hr
@@ -249,7 +249,7 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
 /-- Writing the same value to any register preserves `≃[t]/ac`. -/
 theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t]/ac ζ₂)
     (r : Register) (v : Word) : write r v ζ₁ ≃[t]/ac write r v ζ₂ := by
-  simp [StateEqRs] at *
+  simp only [StateEqRs, write] at *
   intro r' hr'
   specialize h r' hr'
   congr
@@ -257,7 +257,7 @@ theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : 
 /-- `≃[t + 1]` with writing to register `t` implies `≃[t]`. -/
 theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
     (h : ζ₁ ≃[t + 1] write t v ζ₂) : ζ₁ ≃[t] ζ₂ := by
-  simp [StateEq, StateEqRs] at *
+  simp only [StateEq, write, StateEqRs] at *
   constructor; · exact h.1
   intro r hr
   obtain ⟨_, h⟩ := h
@@ -313,10 +313,10 @@ theorem compiler_correctness
     have hζ₃ : ζ₃ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := calc
       ζ₃ = outcome (compile map e_s₂ (t + 1)) ζ₂ := by simp_all
       _ ≃[t + 1] { ζ₂ with ac := ν₂ } := by apply e_ih_s₂ <;> assumption
-      _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simp [StateEq]; apply hζ₂
+      _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simpa [StateEq]
     have hζ₃_ν₂ : ζ₃.ac = ν₂ := by simp_all [StateEq]
     have hζ₃_ν₁ : read t ζ₃ = ν₁ := by
-      simp [StateEq, StateEqRs] at hζ₃ ⊢
+      simp only [StateEq, StateEqRs, write, read] at hζ₃ ⊢
       obtain ⟨_, hζ₃⟩ := hζ₃
       specialize hζ₃ t (Register.lt_succ_self _)
       simp_all

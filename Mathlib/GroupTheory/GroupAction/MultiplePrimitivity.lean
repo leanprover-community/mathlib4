@@ -316,7 +316,7 @@ theorem isMultiplyPreprimitive_congr
   · intro s hs
     let t := f '' s
     let ψ : fixingSubgroup M s → fixingSubgroup N t := fun ⟨g, hg⟩ ↦ ⟨φ g, by
-      simp [mem_fixingSubgroup_iff] at hg ⊢
+      simp only [mem_fixingSubgroup_iff] at hg ⊢
       intro y hy
       suffices ∃ x ∈ s, y = f x by
         obtain ⟨x, hx, rfl⟩ := this
