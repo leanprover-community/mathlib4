@@ -831,10 +831,8 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     simp only [Kernel.prod_apply_prod, Kernel.id_apply, Measure.dirac_apply' _ hs]
     rw [@Measure.dirac_apply' _ (mγ.comap k) _ _ (hk_meas hs)]
     congr
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · intro s t u hs ht hu
-    specialize h (s := k ⁻¹' s) (hk_meas hs) ht hu
-    convert h
+  refine ⟨fun h s t u hs ht hu ↦ ?_, fun h ↦ ?_⟩
+  · convert h (hk_meas hs) ht hu
     · exact h_left hs ht hu
     · exact h_right hs ht hu
   · rintro _ t u ⟨s, hs, rfl⟩ ht hu
