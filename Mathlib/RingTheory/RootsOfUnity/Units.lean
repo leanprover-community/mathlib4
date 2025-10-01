@@ -8,7 +8,7 @@ import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 /-!
 # Cyclotomic units.
 
-We gather miscellaneous results about units given by sums of powers of roots of unit, the so called
+We gather miscellaneous results about units given by sums of powers of roots of unit, the so-called
 *cyclotomic units*.
 
 
