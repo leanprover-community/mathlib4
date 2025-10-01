@@ -37,7 +37,14 @@ variable (G : Type u) [Monoid G]
 
 instance : CoeSort (NonAbelianRep G) (Type u) := ⟨fun V ↦ V.V⟩
 
-instance (A : NonAbelianRep G) : DistribMulAction G A := sorry
+variable (A : NonAbelianRep G)
+
+instance (A : NonAbelianRep G) : DistribMulAction G A  where
+  smul_zero _ :=  map_zero _
+  smul_add := by
+    intro a x y
+    apply map_add
+
 
 instance (A B : NonAbelianRep G) : Coe (A ⟶ B) (A →+[G] B) := sorry
 
