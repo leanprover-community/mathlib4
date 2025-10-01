@@ -3,6 +3,7 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
@@ -91,17 +92,6 @@ namespace SchwartzMap
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
 
-theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
-  constructor
-  · exact smooth f ⊤
-  intro n
-  rcases f.decay 0 n with ⟨C, Cpos, hC⟩
-  use 0, C
-  intro x
-  specialize hC x
-  simp only [pow_zero, one_mul, mul_one] at hC ⊢
-  assumption
-
 section pairing
 
 variable [NormedSpace ℝ V] [SMulCommClass ℝ 𝕜 V]
@@ -122,36 +112,6 @@ end pairing
 
 open scoped ENNReal
 open MeasureTheory
-
-section integration_by_parts
-
-variable [NormedSpace ℝ V]
-
-theorem memLp_of_bilin (L : E →L[ℝ] F →L[ℝ] V) (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F)) (p : ℝ≥0∞) :
-    MemLp (fun x ↦ L (f x) (g x)) p := by
-  exact MeasureTheory.MemLp.of_bilin (r := p) (L · ·) ‖L‖₊ (f.memLp p) (g.memLp ∞)
-    (L.aestronglyMeasurable_comp₂ (f.memLp p).1 (g.memLp ∞).1) (.of_forall fun _ ↦ L.le_opNorm₂ _ _)
-
-theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x := by
-  simp only [hasDerivAt_deriv_iff]
-  exact f.differentiableAt
-
-theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
-    (L : E →L[ℝ] F →L[ℝ] V) :
-    ∫ (x : ℝ), (L (f x)) (deriv g x) = -∫ (x : ℝ), (L (deriv f x)) (g x) := by
-  apply MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable f.hasDerivAt
-    g.hasDerivAt
-  all_goals rw [← memLp_one_iff_integrable]
-  · exact (memLp_of_bilin L f (derivCLM ℝ g) 1)
-  · exact (memLp_of_bilin L (derivCLM ℝ f) g 1)
-  · exact (memLp_of_bilin L f g 1)
-
-theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F)) (g : 𝓢(ℝ, F →L[𝕜] V)) :
-    ∫ (x : ℝ), (g x) (deriv f x) = -∫ (x : ℝ), (deriv g x) (f x) :=
-  integral_bilinear_deriv_right_eq_neg_left g f
-    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
-
-end integration_by_parts
 
 end SchwartzMap
 
@@ -288,11 +248,6 @@ theorem toTemperedDistribution_apply {p : ENNReal} [hp : Fact (1 ≤ p)] (f : Lp
   unfold Lp.toTemperedDistribution Lp.toTemperedDistribution_aux
   simp [toWOT_apply, lpPairing_eq_integral]
 
-theorem injective_toTemperedDistribution {p : ENNReal} [hp : Fact (1 ≤ p)] :
-    Function.Injective (_root_.toTemperedDistribution 𝕜 V)
-
-#check ae_eq_zero_of_integral_contDiff_smul_eq_zero
-
 
 variable (𝕜 F V μ) in
 /-- The natural embedding of L^p into tempered distributions. -/
@@ -319,6 +274,27 @@ def toTemperedDistributionCLM (p : ENNReal) [hp : Fact (1 ≤ p)] :
 @[simp]
 theorem toTemperedDistributionCLM_apply {p : ENNReal} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     toTemperedDistributionCLM 𝕜 F V μ p f = toTemperedDistribution 𝕜 V f := rfl
+
+variable [FiniteDimensional ℝ E] [NormedSpace ℝ F] [CompleteSpace F] [IsLocallyFiniteMeasure μ]
+
+theorem injective_toTemperedDistributionCLM {p : ENNReal} [hp : Fact (1 ≤ p)] :
+    LinearMap.ker (MeasureTheory.Lp.toTemperedDistributionCLM 𝕜 F F μ p) = ⊥ := by
+  refine LinearMap.ker_eq_bot'.mpr ?_
+  intro f hf
+  rw [eq_zero_iff_ae_eq_zero]
+  apply ae_eq_zero_of_integral_contDiff_smul_eq_zero
+  · exact MemLp.locallyIntegrable (μ := μ) (Lp.memLp f) hp.elim
+  · intro g g_smooth g_cpt
+    have hg1 : HasCompactSupport (fun (x : E) ↦ g x • (ContinuousLinearMap.id 𝕜 F)) := by
+      apply g_cpt.smul_right
+    have hg2 : ContDiff ℝ ∞ (fun (x : E) ↦ g x • (ContinuousLinearMap.id 𝕜 F)) := by fun_prop
+    have : (fun x ↦ (((hg1.toSchwartzMap hg2).toLp (1 - p⁻¹)⁻¹ μ) x) (f x)) =ᵐ[μ]
+        g • f := by
+      filter_upwards [coeFn_toLp (hg1.toSchwartzMap hg2) (1 - p⁻¹)⁻¹ μ] with x hgg
+      simp [hgg]
+    have hf_applied : (toTemperedDistributionCLM 𝕜 F F μ p) f (hg1.toSchwartzMap hg2) = 0 := by
+      rw [hf, ContinuousLinearMapWOT.zero_apply]
+    simpa [integral_congr_ae this] using hf_applied
 
 end MeasureTheory.Lp
 
