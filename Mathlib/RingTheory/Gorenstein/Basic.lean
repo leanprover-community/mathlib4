@@ -43,6 +43,7 @@ local instance hasExt_of_small [Small.{v} R] : CategoryTheory.HasExt.{w} (Module
 
 variable {R}
 
+omit [UnivLE.{v, w}] in
 lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R M] :
     x ∈ Module.annihilator R (QuotSMulTop x M) := by
   refine mem_annihilator.mpr (fun m ↦ ?_)
