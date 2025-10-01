@@ -107,6 +107,7 @@ theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y 
             . intro h
 
 
+
       . rw [← mul_smul]
         rw [← mul_assoc]
         simp only [FreeGroup.mul_mk]
