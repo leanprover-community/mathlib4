@@ -828,8 +828,7 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     refine lintegral_congr_ae ?_
     filter_upwards [condDistrib_apply_ae_eq_condExpKernel_map hf hk ht,
       condDistrib_apply_ae_eq_condExpKernel_map hg hk hu] with a haX haT
-    simp_rw [Kernel.prod_apply_prod]
-    simp only [Kernel.id_apply, Measure.dirac_apply' _ hs]
+    simp only [Kernel.prod_apply_prod, Kernel.id_apply, Measure.dirac_apply' _ hs]
     rw [@Measure.dirac_apply' _ (mγ.comap k) _ _ (hk_meas hs)]
     congr
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
