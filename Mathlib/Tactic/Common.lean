@@ -108,6 +108,7 @@ import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.Reap
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.PrintSorries
