@@ -101,9 +101,9 @@ def cohomologous (f g : Z1 G A) : Prop :=
 instance setoid : Setoid (Z1 G A) where
   r := cohomologous
   iseqv := {
-    refl := fun f => ⟨0, fun h => by simp⟩,
-    symm := sorry,
-    trans := sorry
+    refl := fun f ↦ ⟨0, fun h ↦ by simp⟩,
+    symm := fun ⟨a, ha⟩ ↦ ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩,
+    trans := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
   }
 
 end Z1
