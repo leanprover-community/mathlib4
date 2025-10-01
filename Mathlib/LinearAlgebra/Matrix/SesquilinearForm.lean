@@ -367,8 +367,12 @@ theorem LinearMap.toMatrix₂Aux_eq (B : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ
   Matrix.ext fun i j => by rw [LinearMap.toMatrix₂_apply, LinearMap.toMatrix₂Aux_apply]
 
 @[simp]
-theorem LinearMap.toMatrix₂_symm :
+theorem LinearMap.toMatrix₂_symm' :
     (LinearMap.toMatrix₂ b₁ b₂).symm = Matrix.toLinearMapₛₗ₂ σ₁ (N₂ := N₂) b₁ b₂ :=
+  rfl
+
+theorem LinearMap.toMatrix₂_symm :
+    (LinearMap.toMatrix₂ b₁ b₂).symm = Matrix.toLinearMap₂ (N₂ := N₂) b₁ b₂ :=
   rfl
 
 @[simp]
