@@ -152,7 +152,7 @@ instance : Top (Subring R) :=
 theorem mem_top (x : R) : x ∈ (⊤ : Subring R) :=
   Set.mem_univ x
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
   rfl
 
@@ -277,6 +277,7 @@ instance : Bot (Subring R) :=
 instance : Inhabited (Subring R) :=
   ⟨⊥⟩
 
+@[norm_cast]
 theorem coe_bot : ((⊥ : Subring R) : Set R) = Set.range ((↑) : ℤ → R) :=
   RingHom.coe_range (Int.castRingHom R)
 
@@ -291,7 +292,7 @@ instance : Min (Subring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubgroup ⊓ t.toAddSubgroup with carrier := s ∩ t }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_inf (p p' : Subring R) : ((p ⊓ p' : Subring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 
@@ -554,12 +555,12 @@ theorem mem_closure_iff {s : Set R} {x} :
       clear _hx _hy
       induction hx, hy using AddSubgroup.closure_induction₂ with
       | mem _ _ hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
-      | one_left => simp
-      | one_right => simp
-      | mul_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
-      | inv_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
-      | inv_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
+      | zero_left => simp
+      | zero_right => simp
+      | add_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
+      | add_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
+      | neg_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
+      | neg_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
     fun h => by
       induction h using AddSubgroup.closure_induction with
       | mem x hx =>
@@ -567,9 +568,9 @@ theorem mem_closure_iff {s : Set R} {x} :
         | mem _ h => exact subset_closure h
         | one => exact one_mem _
         | mul _ _ _ _ h₁ h₂ => exact mul_mem h₁ h₂
-      | one => exact zero_mem _
-      | mul _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
-      | inv _ _ h => exact neg_mem h⟩
+      | zero => exact zero_mem _
+      | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
+      | neg _ _ h => exact neg_mem h⟩
 
 lemma closure_le_centralizer_centralizer (s : Set R) :
     closure s ≤ centralizer (centralizer s) :=
@@ -590,12 +591,12 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
   | mem _ hx =>
     obtain ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
     exact ⟨[l], by simp [h]; clear_aux_decl; tauto⟩
-  | one => exact ⟨[], List.forall_mem_nil _, rfl⟩
-  | mul _ _ _ _ hL hM =>
+  | zero => exact ⟨[], List.forall_mem_nil _, rfl⟩
+  | add _ _ _ _ hL hM =>
     obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
     exact ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
       rw [List.map_append, List.sum_append, HL2, HM2]⟩
-  | inv _ _ hL =>
+  | neg _ _ hL =>
     obtain ⟨L, hL⟩ := hL
     exact ⟨L.map (List.cons (-1)),
       List.forall_mem_map.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
@@ -814,6 +815,9 @@ def eqLocus (f g : R →+* S) : Subring R :=
   { (f : R →* S).eqLocusM g, (f : R →+ S).eqLocus g with carrier := { x | f x = g x } }
 
 @[simp]
+theorem mem_eqLocus {f g : R →+* S} {x : R} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
+
+@[simp]
 theorem eqLocus_same (f : R →+* S) : f.eqLocus f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
@@ -926,8 +930,9 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
   have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
   rcases exists_list_of_mem_closure hx with ⟨L, HL, rfl⟩
   clear hx
-  induction' L with hd tl ih
-  · exact h0
+  induction L with
+  | nil => exact h0
+  | cons hd tl ih => ?_
   rw [List.forall_mem_cons] at HL
   suffices C (List.prod hd) by
     rw [List.map_cons, List.sum_cons]
@@ -938,20 +943,23 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
     ∃ L : List R, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L)
   · rw [HP]
     clear HP HL hd
-    induction' L with hd tl ih
-    · exact h1
-    rw [List.forall_mem_cons] at HL'
-    rw [List.prod_cons]
-    exact hs _ HL'.1 _ (ih HL'.2)
+    induction L with
+    | nil => exact h1
+    | cons hd tl ih =>
+      rw [List.forall_mem_cons] at HL'
+      rw [List.prod_cons]
+      exact hs _ HL'.1 _ (ih HL'.2)
   · rw [HP]
     clear HP HL hd
-    induction' L with hd tl ih
-    · exact hneg1
-    rw [List.prod_cons, neg_mul_eq_mul_neg]
-    rw [List.forall_mem_cons] at HL'
-    exact hs _ HL'.1 _ (ih HL'.2)
-  induction' hd with hd tl ih
-  · exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
+    induction L with
+    | nil => exact hneg1
+    | cons hd tl ih =>
+      rw [List.prod_cons, neg_mul_eq_mul_neg]
+      rw [List.forall_mem_cons] at HL'
+      exact hs _ HL'.1 _ (ih HL'.2)
+  induction hd with
+  | nil => exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
+  | cons hd tl ih => ?_
   rw [List.forall_mem_cons] at HL
   rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> rcases HL.1 with hhd | hhd
   · exact

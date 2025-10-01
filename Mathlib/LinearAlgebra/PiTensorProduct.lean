@@ -29,9 +29,9 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 * `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
   a single `PiTensorProduct`.
 
-## Notations
+## Notation
 
-* `⨂[R] i, s i` is defined as localized notation in locale `TensorProduct`.
+* `⨂[R] i, s i` is defined as localized notation in scope `TensorProduct`.
 * `⨂ₜ[R] i, f i` with `f : ∀ i, s i` is defined globally as the tensor product of all the `f i`'s.
 
 ## Implementation notes
@@ -833,7 +833,7 @@ variable (N : ι ⊕ ι₂ → Type*) [∀ i, AddCommMonoid (N i)] [∀ i, Modul
 
 /-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
 `PiTensorProduct` indexed by a `Sum` type. If `N` is a constant family of
-modules, use the non-dependant version `PiTensorProduct.tmulEquiv` instead. -/
+modules, use the non-dependent version `PiTensorProduct.tmulEquiv` instead. -/
 def tmulEquivDep :
     (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) ≃ₗ[R] ⨂[R] i, N i :=
   LinearEquiv.ofLinear

@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
 
@@ -55,7 +56,7 @@ instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_on
 variable (K E)
 variable [NormedAddCommGroup E] [NormedSpace K E]
 
-/-- A finite dimensional vector space over an `RCLike` is a proper metric space.
+/-- A finite-dimensional vector space over an `RCLike` is a proper metric space.
 
 This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
 `RCLike ?x`. -/
@@ -76,9 +77,9 @@ end FiniteDimensional
 namespace RCLike
 
 @[simp, rclike_simps]
-theorem reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
+theorem reCLM_norm : ‖(reCLM : StrongDual ℝ K)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
-  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : K →L[ℝ] ℝ) (1 : K)
+  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : StrongDual ℝ K) (1 : K)
   simp
 
 @[simp, rclike_simps]

@@ -127,14 +127,9 @@ theorem IsPreprimitive.of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] 
 theorem isTrivialBlock_of_card_le_two
     [Finite X] (hX : Nat.card X ≤ 2) (B : Set X) :
     IsTrivialBlock B := by
-  rcases le_or_gt B.ncard 1 with h1 | h1
-  · apply Or.inl
-    rwa [← Set.ncard_le_one_iff_subsingleton]
-  · apply Or.inr
-    rw [Set.eq_univ_iff_ncard]
-    apply le_antisymm _ (le_trans hX h1)
-    rw [← Set.ncard_univ]
-    exact Set.ncard_le_ncard B.subset_univ
+  rw [IsTrivialBlock, ← B.ncard_le_one_iff_subsingleton, B.eq_univ_iff_ncard]
+  have := B.ncard_le_card
+  grind
 
 variable [Group G] [MulAction G X]
 
@@ -367,7 +362,7 @@ theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
     apply hB.eq_univ_of_card_lt
     -- It remains to show that Nat.card β < Set.ncard B * 2
     apply lt_of_lt_of_le hf'
-    rw [mul_comm, mul_le_mul_right Nat.succ_pos']
+    rw [mul_comm, mul_le_mul_iff_left₀ Nat.succ_pos']
     apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
 
 /- The finiteness assumption is necessary :

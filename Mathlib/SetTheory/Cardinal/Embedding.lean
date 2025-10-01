@@ -87,5 +87,4 @@ theorem restrictSurjective_of_le_natCard [Finite α] (hmn : m ≤ n) (hn : n ≤
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   exact Fin.Embedding.restrictSurjective_of_add_le_natCard hn
 
-
 end Fin.Embedding

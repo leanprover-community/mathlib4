@@ -206,7 +206,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
       simp only
       rw [← Nat.cast_one, ← Nat.cast_add, ← hs]
       apply congr_arg₂ _ _ rfl
-      rw [show s = g⁻¹ • s' from by ext; simp [hs'],
+      rw [show s = g⁻¹ • s' from by simp [hs'],
         ← Set.image_smul, (MulAction.injective g⁻¹).encard_image, hst]
       rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
       exact notMem_val_image M t
@@ -326,7 +326,7 @@ theorem isMultiplyPreprimitive_congr
   · intro s hs
     let t := f '' s
     let ψ : fixingSubgroup M s → fixingSubgroup N t := fun ⟨g, hg⟩ ↦ ⟨φ g, by
-      simp [mem_fixingSubgroup_iff] at hg ⊢
+      simp only [mem_fixingSubgroup_iff] at hg ⊢
       intro y hy
       suffices ∃ x ∈ s, y = f x by
         obtain ⟨x, hx, rfl⟩ := this

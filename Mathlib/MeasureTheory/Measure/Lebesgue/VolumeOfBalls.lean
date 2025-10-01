@@ -3,38 +3,38 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Integral.Gamma
 import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-!
 # Volume of balls
 
-Let `E` be a finite dimensional normed `ℝ`-vector space equipped with a Haar measure `μ`. We
+Let `E` be a finite-dimensional normed `ℝ`-vector space equipped with a Haar measure `μ`. We
 prove that
 `μ (Metric.ball 0 1) = (∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)`
-for any real number `p` with `0 < p`, see `MeasureTheorymeasure_unitBall_eq_integral_div_gamma`. We
+for any real number `p` with `0 < p`, see `MeasureTheory.measure_unitBall_eq_integral_div_gamma`. We
 also prove the corresponding result to compute `μ {x : E | g x < 1}` where `g : E → ℝ` is a function
 defining a norm on `E`, see `MeasureTheory.measure_lt_one_eq_integral_div_gamma`.
 
 Using these formulas, we compute the volume of the unit balls in several cases.
 
 * `MeasureTheory.volume_sum_rpow_lt` / `MeasureTheory.volume_sum_rpow_le`: volume of the open and
-  closed balls for the norm `Lp` over a real finite dimensional vector space with `1 ≤ p`. These
+  closed balls for the norm `Lp` over a real finite-dimensional vector space with `1 ≤ p`. These
   are computed as `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r}` and
   `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) ≤ r}` since the spaces `PiLp` do not have a
   `MeasureSpace` instance.
 
 * `Complex.volume_sum_rpow_lt_one` / `Complex.volume_sum_rpow_lt`: same as above but for complex
-  finite dimensional vector space.
+  finite-dimensional vector space.
 
 * `EuclideanSpace.volume_ball` / `EuclideanSpace.volume_closedBall` : volume of open and closed
-  balls in a finite dimensional Euclidean space.
+  balls in a finite-dimensional Euclidean space.
 
 * `InnerProductSpace.volume_ball` / `InnerProductSpace.volume_closedBall`: volume of open and closed
-  balls in a finite dimensional real inner product space.
+  balls in a finite-dimensional real inner product space.
 
 * `Complex.volume_ball` / `Complex.volume_closedBall`: volume of open and closed balls in `ℂ`.
 -/
@@ -60,7 +60,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
         Nat.cast_one]
       rw [integral_rpow_mul_exp_neg_rpow hp (by linarith), sub_add_cancel,
         Real.Gamma_add_one (ne_of_gt (by positivity))]
-      field_simp; ring
+      field_simp
     rw [integral_fun_norm_addHaar μ (fun x => Real.exp (-x ^ p)), nsmul_eq_mul, smul_eq_mul,
       mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_measureReal _]
     exact ne_of_lt measure_ball_lt_top
@@ -98,8 +98,6 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
   let ν : Measure F := @Measure.map E F mE _ φ μ
-  have : IsAddHaarMeasure ν :=
-    @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
     · congr!
@@ -141,8 +139,6 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
   let ν : Measure F := @Measure.map E F mE _ φ μ
-  have : IsAddHaarMeasure ν :=
-    @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert addHaar_closedBall_eq_addHaar_ball ν 0 r using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
     · congr!
@@ -390,12 +386,9 @@ lemma volume_ball_of_dim_odd {k : ℕ} (hk : finrank ℝ E = 2 * k + 1) (x : E) 
   have : Nontrivial E := Module.nontrivial_of_finrank_pos (R := ℝ) (hk ▸ (2 * k).succ_pos)
   rw [volume_ball, hk, pow_succ (√π), pow_mul, sq_sqrt pi_nonneg, mul_div_assoc, mul_div_assoc]
   congr 3
-  simp? [add_div, add_right_comm, -one_div, Gamma_nat_add_one_add_half] says
-    simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one, add_div, ne_eq,
-      OfNat.ofNat_ne_zero, not_false_eq_true, mul_div_cancel_left₀, add_right_comm,
-      Gamma_nat_add_one_add_half]
+  suffices √π / (↑(2 * k + 1)‼ * √π / 2 ^ (k + 1)) = 2 ^ (k + 1) / ↑(2 * k + 1)‼ by
+    simpa [add_div, add_right_comm, -one_div, Gamma_nat_add_one_add_half]
   field_simp
-  ring
 
 lemma volume_closedBall_of_dim_odd {k : ℕ} (hk : finrank ℝ E = 2 * k + 1) (x : E) (r : ℝ) :
     volume (closedBall x r) =

@@ -12,7 +12,7 @@ In this file we define `FormalMultilinearSeries 𝕜 E F` to be a family of `n`-
 all `n`, designed to model the sequence of derivatives of a function. In other files we use this
 notion to define `C^n` functions (called `contDiff` in `mathlib`) and analytic functions.
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
@@ -196,7 +196,7 @@ def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : Form
 theorem unshift_shift {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {z : F} :
     (p.unshift z).shift = p := by
   ext1 n
-  simp [shift, unshift]
+  simp only [shift, Nat.succ_eq_add_one, unshift]
   exact LinearIsometryEquiv.apply_symm_apply (continuousMultilinearCurryRightEquiv' 𝕜 n E F) (p n)
 
 end FormalMultilinearSeries

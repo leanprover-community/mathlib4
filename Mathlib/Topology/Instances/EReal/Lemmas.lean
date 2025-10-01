@@ -201,8 +201,8 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   by_cases h_bot : x = ⊥
   · refine tendsto_nhds_of_eventually_eq ?_
     rw [h_bot, nhds_bot_basis.eventually_iff]
-    simp [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and]
-    exact ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
+    simpa [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and] using
+      ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
   refine ENNReal.continuous_ofReal.continuousAt.comp' <| continuousOn_toReal.continuousAt
     <| (toFinite _).isClosed.compl_mem_nhds ?_
   simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
@@ -469,7 +469,7 @@ private lemma continuousAt_mul_top_top :
   rw [_root_.eventually_nhds_iff]
   use (Set.Ioi ((max x 0) : EReal)) ×ˢ (Set.Ioi 1)
   split_ands
-  · intros p p_in_prod
+  · intro p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi, max_lt_iff] at p_in_prod
     rcases p_in_prod with ⟨⟨p1_gt_x, p1_pos⟩, p2_gt_1⟩
     have := mul_le_mul_of_nonneg_left (le_of_lt p2_gt_1) (le_of_lt p1_pos)
@@ -486,7 +486,7 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
   rw [_root_.eventually_nhds_iff]
   use (Set.Ioi ((2*(max (x+1) 0)/a : ℝ) : EReal)) ×ˢ (Set.Ioi ((a/2 : ℝ) : EReal))
   split_ands
-  · intros p p_in_prod
+  · intro p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi] at p_in_prod
     rcases p_in_prod with ⟨p1_gt, p2_gt⟩
     have p1_pos : 0 < p.1 := by
