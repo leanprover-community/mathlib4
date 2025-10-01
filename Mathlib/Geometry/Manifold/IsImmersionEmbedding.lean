@@ -76,7 +76,7 @@ of a chart on both `M` and `M'`. Currently, good behaviour means being stable un
 of the domain chart, and locality in the target. (This list might be extended in the future.)
 
 Motivating examples are immersions and submersions of smooth manifolds. -/
-structure LocalPropertyAt (f : M → M') (x : M)
+structure LocalSourceTargetPropertyAt (f : M → M') (x : M)
     (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) where
   mono_source : ∀ f : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
     ∀ s : Set M, P f φ ψ → P f (φ.restr s) ψ
@@ -92,7 +92,7 @@ The motivating example are smooth immersions and submersions: the corresponding 
 `f` look like the inclusion `u ↦ (u, 0)` (resp. a projection `(u, v) ↦ u`)
 in the charts `φ` and `ψ`.
 -/
-def LocalAtSourceTargetPropertyAt (f : M → M') (x : M)
+def LiftSourceTargetPropertyAt (f : M → M') (x : M)
     (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) : Prop :=
   ∃ domChart : PartialHomeomorph M H, ∃ codChart : PartialHomeomorph M' H',
     x ∈ domChart.source ∧ f x ∈ codChart.source ∧
@@ -101,7 +101,7 @@ def LocalAtSourceTargetPropertyAt (f : M → M') (x : M)
     f '' domChart.source ⊆ codChart.source ∧
     P f domChart codChart
 
-namespace LocalAtSourceTargetPropertyAt
+namespace LiftSourceTargetPropertyAt
 
 variable {f g : M → M'} {x : M}
   {P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop}
@@ -109,49 +109,49 @@ variable {f g : M → M'} {x : M}
 /-- A choice of chart on the domain `M` of a local property of `f` at `x`:
 w.r.t. this chart and `h.codChart`, `f` has the local property `P` at `x`.
 The particular chart is arbitrary, but this choice matches the witness given by `h.codChart`. -/
-noncomputable def domChart (h : LocalAtSourceTargetPropertyAt I I' n f x P) :
+noncomputable def domChart (h : LiftSourceTargetPropertyAt I I' n f x P) :
     PartialHomeomorph M H :=
   Classical.choose h
 
 /-- A choice of chart on the co-domain `N` of a local property of `f` at `x`:
 w.r.t. this chart and `h.domChart`, `f` has the local property `P` at `x`
 The particular chart is arbitrary, but this choice matches the witness given by `h.domChart`. -/
-noncomputable def codChart (h : LocalAtSourceTargetPropertyAt I I' n f x P) :
+noncomputable def codChart (h : LiftSourceTargetPropertyAt I I' n f x P) :
     PartialHomeomorph M' H' :=
   Classical.choose (Classical.choose_spec h)
 
-lemma mem_domChart_source (h : LocalAtSourceTargetPropertyAt I I' n f x P) :
+lemma mem_domChart_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
     x ∈ h.domChart.source :=
   (Classical.choose_spec (Classical.choose_spec h)).1
 
-lemma mem_codChart_source (h : LocalAtSourceTargetPropertyAt I I' n f x P) :
+lemma mem_codChart_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
     f x ∈ h.codChart.source :=
   (Classical.choose_spec (Classical.choose_spec h)).2.1
 
-lemma domChart_mem_maximalAtlas (h : LocalAtSourceTargetPropertyAt I I' n f x P) :
+lemma domChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I I' n f x P) :
     h.domChart ∈ IsManifold.maximalAtlas I n M :=
   (Classical.choose_spec (Classical.choose_spec h)).2.2.1
 
-lemma codChart_mem_maximalAtlas (h : LocalAtSourceTargetPropertyAt I I' n f x P) :
+lemma codChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I I' n f x P) :
     h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
   (Classical.choose_spec (Classical.choose_spec h)).2.2.2.1
 
-lemma map_source_subset_source (h : LocalAtSourceTargetPropertyAt I I' n f x P) :
+lemma map_source_subset_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
     f '' h.domChart.source ⊆ h.codChart.source :=
   (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.1
 
-lemma property (h : LocalAtSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.codChart :=
+lemma property (h : LiftSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.codChart :=
   (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2
 
 /-- If `P` is monotone w.r.t. restricting `domChart`, then it suffices to prove continuity of `f`
 at `x` (instead of a relation between the chart's sources). -/
 lemma mk_of_continuousAt (hf : ContinuousAt f x)
-    (hP : LocalPropertyAt f x P)
+    (hP : LocalSourceTargetPropertyAt f x P)
     (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph M' H')
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
-    (hfP : P f domChart codChart) : LocalAtSourceTargetPropertyAt I I' n f x P := by
+    (hfP : P f domChart codChart) : LiftSourceTargetPropertyAt I I' n f x P := by
   obtain ⟨s, hs, hsopen, hxs⟩ := mem_nhds_iff.mp <|
     hf.preimage_mem_nhds (codChart.open_source.mem_nhds hfx)
   have : f '' (domChart.restr s).source ⊆ codChart.source := by
@@ -170,9 +170,9 @@ lemma mk_of_continuousAt (hf : ContinuousAt f x)
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 if `f` has property `P` at `x` and `f` and `g` are eventually equal near `x`,
 then `g` has property `P` at `x`. -/
-lemma congr_of_eventuallyEq (hP : LocalPropertyAt f x P)
-    (hf : LocalAtSourceTargetPropertyAt I I' n f x P)
-    (h' : f =ᶠ[nhds x] g) : LocalAtSourceTargetPropertyAt I I' n g x P := by
+lemma congr_of_eventuallyEq (hP : LocalSourceTargetPropertyAt f x P)
+    (hf : LiftSourceTargetPropertyAt I I' n f x P)
+    (h' : f =ᶠ[nhds x] g) : LiftSourceTargetPropertyAt I I' n g x P := by
   obtain ⟨s', hxs', hfg⟩ := h'.exists_mem
   obtain ⟨s, hss', hs, hxs⟩ := mem_nhds_iff.mp hxs'
   refine ⟨hf.domChart.restr s, hf.codChart, ?_, ?_, ?_, hf.codChart_mem_maximalAtlas, ?_, ?_⟩
@@ -187,7 +187,7 @@ lemma congr_of_eventuallyEq (hP : LocalPropertyAt f x P)
   · apply hP.congr _ _ _ _ _ hs (hfg.mono hss')
     exact hP.mono_source _ _ _ _ hf.property
 
-end LocalAtSourceTargetPropertyAt
+end LiftSourceTargetPropertyAt
 
 end LocalProperties
 
@@ -205,7 +205,7 @@ def ImmersionAtProp (equiv : (E × F) ≃L[𝕜] E') :
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a "nice" local property. -/
 lemma ImmersionAtPropIsNice (f : M → M') (x) (equiv : (E × F) ≃L[𝕜] E') :
-    LocalPropertyAt f x (ImmersionAtProp I I' equiv) where
+    LocalSourceTargetPropertyAt f x (ImmersionAtProp I I' equiv) where
   mono_source f φ ψ s hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
     exact hf.mono (by simpa using this)
@@ -230,7 +230,7 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 -/
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
   ∃ equiv : (E × F) ≃L[𝕜] E',
-  LocalAtSourceTargetPropertyAt I I' n f x (fun f domChart codChart ↦
+  LiftSourceTargetPropertyAt I I' n f x (fun f domChart codChart ↦
     EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target)
 
@@ -261,7 +261,7 @@ lemma mk_of_continuousAt (f : M → M') (x : M) (hf : ContinuousAt f x)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x :=
-  ⟨equiv, LocalAtSourceTargetPropertyAt.mk_of_continuousAt hf (ImmersionAtPropIsNice f x equiv) _ _
+  ⟨equiv, LiftSourceTargetPropertyAt.mk_of_continuousAt hf (ImmersionAtPropIsNice f x equiv) _ _
     hx hfx hdomChart hcodChart hwrittenInExtend⟩
 
 /-- A linear equivalence `E × F ≃L[𝕜] E'` which belongs to the data of an immersion `f` at `x`:
@@ -310,7 +310,7 @@ lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2.2
 
 lemma property (h : IsImmersionAt F I I' n f x) :
-    LocalAtSourceTargetPropertyAt I I' n f x (ImmersionAtProp I I' h.equiv) :=
+    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp I I' h.equiv) :=
   Classical.choose_spec h
 
 /-- Roig and Domingues [roigdomingues1992] only require this condition on the local charts:
@@ -350,7 +350,7 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
 then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[nhds x] g) :
     IsImmersionAt F I I' n g x :=
-  ⟨h.equiv, LocalAtSourceTargetPropertyAt.congr_of_eventuallyEq (ImmersionAtPropIsNice f x h.equiv)
+  ⟨h.equiv, LiftSourceTargetPropertyAt.congr_of_eventuallyEq (ImmersionAtPropIsNice f x h.equiv)
     h.property h'⟩
 
 end IsImmersionAt
