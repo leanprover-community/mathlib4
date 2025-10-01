@@ -178,7 +178,7 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
   have hcᵢ : Tendsto (fun n ↦ (v i) (c n)) atTop atTop := by
     simpa [c] using Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha)
   have hcⱼ (j : ι) (hj : j ≠ i) : Tendsto (fun n ↦ (v j) (c n)) atTop (𝓝 0) := by
-    simpa [c] using tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj) |>.mul_const _
+    simpa [c] using (tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj)).mul_const _
   simp_rw [OrderTopology.topology_eq_generate_intervals,
     TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using tendsto_atTop_atTop.1 hcᵢ 2
@@ -189,7 +189,8 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
   · simpa using hrₙ j hj _ <| Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
 
 /--
-- `v i, w`: absolute values on `R`.
+Suppose that
+- `v i` and `w` are absolute values on a field `R`.
 - `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
 - `v i` is inequivalent to `w` via the divergent point `b : R`.
 - `1 < w a`.
@@ -233,7 +234,7 @@ absolute values, then for any `i` there is some `a : R` such that `1 < v i a` an
 theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
     ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
-  let P (ι : Type u_3) [Fintype ι] : Prop := [DecidableEq ι] →
+  let P (ι : Type _) [Fintype ι] : Prop := [DecidableEq ι] →
     ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
       (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
   -- Use strong induction on the index.
@@ -254,23 +255,23 @@ theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     let ⟨a, ha⟩ := ih {k : ι // k ≠ j} (card_subtype_lt fun a ↦ a rfl) (restrict _ v)
       (fun i ↦ h _) (hv.comp_of_injective val_injective) ⟨i, hj.symm⟩
     -- Then apply induction next to the subcollection `{v i, v j}` to get `b : K`.
-    let ⟨b, hb⟩ := ih {k : ι // k = i ∨ k = j} (by linarith [card_subtype_or_eq hj.symm])
+    let ⟨b, hb⟩ := ih {k : ι // k = i ∨ k = j} (by linarith [card_subtype_eq_or_eq_of_ne hj.symm])
       (restrict _ v) (fun _ ↦ h _) (hv.comp_of_injective val_injective) ⟨i, .inl rfl⟩
     rcases eq_or_ne (v j a) 1 with (ha₁ | ha₁)
     · -- If `v j a = 1` then take a large enough value from the sequence `a ^ n * b`.
       let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_eq_one ha.1 ha.2 ha₁ hb.1 (hb.2 ⟨j, .inr rfl⟩
-        (coe_ne_coe.1 hj))
+        (by grind))
       refine ⟨c, hc.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (coe_ne_coe.1 hk)
+      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (by grind)
     rcases ha₁.lt_or_gt with (ha_lt | ha_gt)
     · -- If `v j a < 1` then `a` works as the divergent point.
       refine ⟨a, ha.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact ha_lt; exact ha.2 ⟨k, h⟩ (by simpa using hk)
+      rcases eq_or_ne k j with (rfl | h); try exact ha_lt; exact ha.2 ⟨k, h⟩ (by grind)
     · -- If `1 < v j a` then take a large enough value from the sequence `b / (1 + a ^ (-n))`.
       let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_one_lt ha.1 ha.2 ha_gt hb.1 (hb.2 ⟨j, .inr rfl⟩
-        (coe_ne_coe.1 hj))
+        (by grind))
       refine ⟨c, hc.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (coe_ne_coe.1 hk)
+      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (by grind)
 
 end LinearOrderedField
 
