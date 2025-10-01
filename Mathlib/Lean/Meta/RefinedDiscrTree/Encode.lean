@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Lean.Meta.DiscrTree
+public import Lean.Meta.LazyDiscrTree
+import all Lean.Meta.DiscrTree
 
-@[expose] public section
+public section
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s
@@ -67,8 +69,6 @@ private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry Meta
     modify ({ · with computedKeys := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
     return .lam
 
-open private toNatLit? from Lean.Meta.DiscrTree in
-
 @[inline]
 private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM Key := do
   withLams lambdas (← go)
@@ -86,7 +86,7 @@ where
   match e.getAppFn with
   | .const n _ =>
     unless root do
-      if let some v := toNatLit? e then
+      if let some v := LazyDiscrTree.MatchClone.toNatLit? e then
         return .lit v
     if e.getAppNumArgs != 0 then
       setEAsPrevious

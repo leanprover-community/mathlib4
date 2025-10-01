@@ -8,7 +8,7 @@ module
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Lean.Meta.CompletionName
 
-@[expose] public section
+public section
 
 /-!
 # Constructing a RefinedDiscrTree
@@ -163,12 +163,12 @@ private structure InitResults (α : Type) where
 namespace InitResults
 
 /-- Combine two initial results. -/
-protected def append (x y : InitResults α) : InitResults α :=
+private protected def append (x y : InitResults α) : InitResults α :=
   let { tree := xv, errors := xe } := x
   let { tree := yv, errors := ye } := y
   { tree := xv ++ yv, errors := xe ++ ye }
 
-instance : Append (InitResults α) where
+private instance : Append (InitResults α) where
   append := InitResults.append
 
 end InitResults

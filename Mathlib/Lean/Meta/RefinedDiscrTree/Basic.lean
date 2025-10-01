@@ -6,8 +6,9 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Init
+public import Lean.Meta
 
-@[expose] public section
+public section
 
 /-!
 # Basic Definitions for `RefinedDiscrTree`
@@ -68,7 +69,8 @@ private nonrec def Key.hash : Key → UInt64
   | .«forall»            => 4
   | .proj name idx nargs => mixHash (hash nargs) <| mixHash (hash name) (hash idx)
 
-instance : Hashable Key := ⟨Key.hash⟩
+instance : Hashable Key where
+  hash := private Key.hash
 
 private def Key.format : Key → Format
   | .star                   => f!"*"
@@ -84,7 +86,8 @@ private def Key.format : Key → Format
   | .forall                 => "∀"
   | .proj name idx nargs    => f!"⟨{name}.{idx}, {nargs}⟩"
 
-instance : ToFormat Key := ⟨Key.format⟩
+instance : ToFormat Key where
+  format := private Key.format
 
 /--
 Converts an entry (i.e., `List Key`) to the discrimination tree into
@@ -182,7 +185,8 @@ private def StackEntry.format : StackEntry → Format
   | .star => f!".star"
   | .expr info => f!".expr {info.expr}"
 
-instance : ToFormat StackEntry := ⟨StackEntry.format⟩
+instance : ToFormat StackEntry where
+  format := private StackEntry.format
 
 /-- A `LazyEntry` represents a snapshot of the computation of encoding an `Expr` as `Array Key`.
 This is used for computing the keys one by one. -/
@@ -237,7 +241,8 @@ private def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
     parts := parts.push f!"todo: {info.expr}"
   return Format.joinSep parts.toList ", "
 
-instance : ToFormat LazyEntry := ⟨LazyEntry.format⟩
+instance : ToFormat LazyEntry where
+  format := private LazyEntry.format
 
 /-- Array index of a `Trie α` in the `tries` of a `RefinedDiscrTree`. -/
 abbrev TrieIndex := Nat
@@ -314,6 +319,7 @@ where
     else
       Format.joinSep lines.toList "\n"
 
-instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨format⟩
+instance [ToFormat α] : ToFormat (RefinedDiscrTree α) where
+  format := private format
 
 end Lean.Meta.RefinedDiscrTree
