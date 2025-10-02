@@ -236,7 +236,7 @@ The canonical map `(s.X ×[X] Uᵢ) ×[s.X] (s.X ×[X] Uⱼ) ⟶ (Uᵢ ×[Z] Y) 
 
 This is used in `gluedLift`. -/
 def gluedLiftPullbackMap (i j : 𝒰.I₀) :
-    pullback ((𝒰.pullbackCover s.fst).f i) ((𝒰.pullbackCover s.fst).f j) ⟶
+    pullback ((𝒰.pullback₁ s.fst).f i) ((𝒰.pullback₁ s.fst).f j) ⟶
       (gluing 𝒰 f g).V ⟨i, j⟩ := by
   refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
   refine pullback.map _ _ _ _ ?_ (𝟙 _) (𝟙 _) ?_ ?_
@@ -269,7 +269,7 @@ to glue these into a map `s.X ⟶ Uᵢ ×[Z] Y`, we need to show that the maps a
 maps factors through `gluedLiftPullbackMap`.
 -/
 def gluedLift : s.pt ⟶ (gluing 𝒰 f g).glued := by
-  fapply (𝒰.pullbackCover s.fst).glueMorphisms
+  fapply Cover.glueMorphisms (𝒰.pullback₁ s.fst)
   · exact fun i ↦ (pullbackSymmetry _ _).hom ≫
       pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition ≫ (gluing 𝒰 f g).ι i
   intro i j
@@ -286,19 +286,19 @@ def gluedLift : s.pt ⟶ (gluing 𝒰 f g).glued := by
     exact pullback.condition_assoc _
 
 theorem gluedLift_p1 : gluedLift 𝒰 f g s ≫ p1 𝒰 f g = s.fst := by
-  rw [← cancel_epi (𝒰.pullbackCover s.fst).fromGlued]
+  rw [← cancel_epi (Cover.fromGlued <| 𝒰.pullback₁ s.fst)]
   apply Multicoequalizer.hom_ext
   intro b
   simp_rw [Cover.fromGlued, Multicoequalizer.π_desc_assoc, gluedLift, ← Category.assoc]
-  simp_rw [(𝒰.pullbackCover s.fst).ι_glueMorphisms]
+  simp_rw [Cover.ι_glueMorphisms (𝒰.pullback₁ s.fst)]
   simp [p1, pullback.condition]
 
 theorem gluedLift_p2 : gluedLift 𝒰 f g s ≫ p2 𝒰 f g = s.snd := by
-  rw [← cancel_epi (𝒰.pullbackCover s.fst).fromGlued]
+  rw [← cancel_epi (Cover.fromGlued <| 𝒰.pullback₁ s.fst)]
   apply Multicoequalizer.hom_ext
   intro b
   simp_rw [Cover.fromGlued, Multicoequalizer.π_desc_assoc, gluedLift, ← Category.assoc]
-  simp_rw [(𝒰.pullbackCover s.fst).ι_glueMorphisms]
+  simp_rw [(Cover.ι_glueMorphisms <| 𝒰.pullback₁ s.fst)]
   simp [p2]
 
 /-- (Implementation)
@@ -332,9 +332,9 @@ theorem lift_comp_ι (i : 𝒰.I₀) :
           (by rw [← pullback.condition_assoc, Category.assoc, p_comm]) ≫
         (gluing 𝒰 f g).ι i =
       (pullback.fst _ _ : pullback (p1 𝒰 f g) (𝒰.f i) ⟶ _) := by
-  apply ((gluing 𝒰 f g).openCover.pullbackCover (pullback.fst _ _)).hom_ext
+  apply Cover.hom_ext ((gluing 𝒰 f g).openCover.pullback₁ (pullback.fst _ _))
   intro j
-  dsimp only [Cover.pullbackCover, Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+  dsimp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
     PreZeroHypercover.pullback₁_X, PreZeroHypercover.pullback₁_f]
   trans pullbackFstιToV 𝒰 f g i j ≫ fV 𝒰 f g j i ≫ (gluing 𝒰 f g).ι _
   · rw [← show _ = fV 𝒰 f g j i ≫ _ from (gluing 𝒰 f g).glue_condition j i]
@@ -398,9 +398,11 @@ def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
   refine ⟨gluedLift 𝒰 f g s, gluedLift_p1 𝒰 f g s, gluedLift_p2 𝒰 f g s, ?_⟩
   intro m h₁ h₂
   simp_rw [PullbackCone.mk_pt, PullbackCone.mk_π_app] at h₁ h₂
-  apply (𝒰.pullbackCover s.fst).hom_ext
+  apply Cover.hom_ext <| 𝒰.pullback₁ s.fst
   intro i
-  rw [gluedLift, (𝒰.pullbackCover s.fst).ι_glueMorphisms, 𝒰.pullbackCover_f]
+  rw [gluedLift, (Cover.ι_glueMorphisms <| 𝒰.pullback₁ s.fst)]
+  dsimp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+    PreZeroHypercover.pullback₁_X, PullbackCone.mk_pt, PreZeroHypercover.pullback₁_f, gluing_ι]
   rw [← cancel_epi
     (pullbackRightPullbackFstIso (p1 𝒰 f g) (𝒰.f i) m ≪≫ pullback.congrHom h₁ rfl).hom,
     Iso.trans_hom, Category.assoc, pullback.congrHom_hom, pullback.lift_fst_assoc,
@@ -439,12 +441,12 @@ instance base_affine_hasPullback {C : CommRingCat} {X Y : Scheme} (f : X ⟶ Spe
       @hasPullback_symmetry _ _ _ _ _ _ _ <| affine_affine_hasPullback _ _)
 
 instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
-    (i : Z.affineCover.I₀) : HasPullback ((Z.affineCover.pullbackCover f).f i ≫ f) g := by
-  simp only [Cover.pullbackCover_X, Cover.pullbackCover_f, pullback.condition]
-  exact hasPullback_assoc_symm f (Z.affineCover.f i) (Z.affineCover.f i) g
+    (i : Z.affineCover.I₀) : HasPullback ((Z.affineCover.pullback₁ f).f i ≫ f) g := by
+  simpa [pullback.condition] using
+    hasPullback_assoc_symm f (Z.affineCover.f i) (Z.affineCover.f i) g
 
 instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
-  hasPullback_of_cover (Z.affineCover.pullbackCover f) f g
+  hasPullback_of_cover (Z.affineCover.pullback₁ f) f g
 
 instance : HasPullbacks Scheme :=
   hasPullbacks_of_hasLimit_cospan _
@@ -508,7 +510,7 @@ def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ 
 /-- (Implementation). Use `openCoverOfBase` instead. -/
 @[simps! f]
 def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
-  apply (openCoverOfLeft (𝒰.pullbackCover f) f g).bind
+  apply (openCoverOfLeft (𝒰.pullback₁ f) f g).bind
   intro i
   haveI := ((IsPullback.of_hasPullback (pullback.snd g (𝒰.f i))
     (pullback.snd f (𝒰.f i))).paste_horiz (IsPullback.of_hasPullback _ _)).flip
@@ -543,7 +545,7 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       PullbackCone.π_app_right, IsPullback.cone_snd, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
-variable (f : X ⟶ Y) (𝒰 : Y.OpenCover) (𝒱 : ∀ i, ((𝒰.pullbackCover f).X i).OpenCover)
+variable (f : X ⟶ Y) (𝒰 : Y.OpenCover) (𝒱 : ∀ i, ((𝒰.pullback₁ f).X i).OpenCover)
 
 /--
 Given `𝒰 i` covering `Y` and `𝒱 i j` covering `𝒰 i`, this is the open cover

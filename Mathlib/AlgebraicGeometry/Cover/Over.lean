@@ -60,7 +60,7 @@ variable {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) [W.Ov
   [𝒰.Over S] [f.IsOver S]
 
 /-- The pullback of a cover of `S`-schemes along a morphism of `S`-schemes. This is not
-definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here we take
+definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullback₁`, as here we take
 the pullback in `Over S`, whose underlying scheme is only isomorphic but not equal to the
 pullback in `Scheme`. -/
 @[simps]
@@ -71,9 +71,9 @@ def Cover.pullbackCoverOver : W.Cover (precoverage P) where
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun j ↦ ?_⟩
-    · obtain ⟨i, hy⟩ := (𝒰.pullbackCover f).exists_eq x
+    · obtain ⟨i, hy⟩ := Cover.exists_eq (𝒰.pullback₁ f) x
       use i
-      exact (mem_range_iff_of_surjective ((𝒰.pullbackCover f).f i) _
+      exact (mem_range_iff_of_surjective ((𝒰.pullback₁ f).f i) _
         ((PreservesPullback.iso (Over.forget S) (f.asOver S) ((𝒰.f _).asOver S)).inv)
         (PreservesPullback.iso_inv_fst _ _ _) x).mp hy
     · dsimp only
@@ -96,9 +96,9 @@ def Cover.pullbackCoverOver' : W.Cover (precoverage P) where
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun j ↦ ?_⟩
-    · obtain ⟨i, hy⟩ := (𝒰.pullbackCover' f).exists_eq x
+    · obtain ⟨i, hy⟩ := Cover.exists_eq (𝒰.pullback₂ f) x
       use i
-      exact (mem_range_iff_of_surjective ((𝒰.pullbackCover' f).f _) _
+      exact (mem_range_iff_of_surjective ((𝒰.pullback₂ f).f _) _
         ((PreservesPullback.iso (Over.forget S) ((𝒰.f _).asOver S) (f.asOver S)).inv)
         (PreservesPullback.iso_inv_snd _ _ _) x).mp hy
     · dsimp only
@@ -129,9 +129,9 @@ def Cover.pullbackCoverOverProp : W.Cover (precoverage P) where
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun j ↦ ?_⟩
-    · obtain ⟨i, hy⟩ := (𝒰.pullbackCover f).exists_eq x
+    · obtain ⟨i, hy⟩ := Cover.exists_eq (𝒰.pullback₁ f) x
       use i
-      exact (mem_range_iff_of_surjective ((𝒰.pullbackCover f).f i) _
+      exact (mem_range_iff_of_surjective ((𝒰.pullback₁ f).f i) _
         ((PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
           (f.asOverProp S) ((𝒰.f _).asOverProp S)).inv)
         (PreservesPullback.iso_inv_fst _ _ _) x).mp hy
@@ -160,9 +160,9 @@ def Cover.pullbackCoverOverProp' : W.Cover (precoverage P) where
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun j ↦ ?_⟩
-    · obtain ⟨i, hy⟩ := (𝒰.pullbackCover' f).exists_eq x
+    · obtain ⟨i, hy⟩ := Cover.exists_eq (𝒰.pullback₂ f) x
       use i
-      exact (mem_range_iff_of_surjective ((𝒰.pullbackCover' f).f i) _
+      exact (mem_range_iff_of_surjective ((𝒰.pullback₂ f).f i) _
         ((PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
           ((𝒰.f _).asOverProp S) (f.asOverProp S)).inv)
         (PreservesPullback.iso_inv_snd _ _ _) x).mp hy

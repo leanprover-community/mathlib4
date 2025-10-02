@@ -121,9 +121,9 @@ section BaseChange
 variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover (precoverage P))
     [Category 𝒰.I₀] [𝒰.LocallyDirected] {Y : Scheme.{u}} (f : Y ⟶ X)
 
-instance : Category (𝒰.pullbackCover f).I₀ := inferInstanceAs <| Category 𝒰.I₀
+instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs <| Category 𝒰.I₀
 
-instance locallyDirectedPullbackCover : (𝒰.pullbackCover f).LocallyDirected where
+instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ f) where
   trans {i j} hij := pullback.map f (𝒰.f i) f (𝒰.f j) (𝟙 _) (𝒰.trans hij) (𝟙 _)
     (by simp) (by simp)
   trans_id i := by simp
@@ -153,7 +153,7 @@ instance locallyDirectedPullbackCover : (𝒰.pullbackCover f).LocallyDirected w
     let iso : pullback f (𝒰.f i) ≅ pullback (pullback.snd f (𝒰.f j)) (𝒰.trans hij) :=
       pullback.congrHom rfl (by simp) ≪≫ (pullbackLeftPullbackSndIso _ _ _).symm
     rw [← P.cancel_left_of_respectsIso iso.inv]
-    simp only [pullbackCover_X, Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
+    simp [Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
       Category.assoc, iso]
     convert P.pullback_fst _ _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]

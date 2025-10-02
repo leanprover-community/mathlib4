@@ -56,7 +56,7 @@ variable [W.IsStableUnderBaseChange] [Scheme.IsJointlySurjectivePreserving W]
 
 instance [P.RespectsLeft Q] [Q.IsStableUnderBaseChange] :
     (sourceLocalClosure W P).RespectsLeft Q := by
-  refine ⟨fun {X Y} Z f hf g ⟨𝒰, hg⟩ ↦ ⟨𝒰.pullbackCover f, fun i ↦ ?_⟩⟩
+  refine ⟨fun {X Y} Z f hf g ⟨𝒰, hg⟩ ↦ ⟨𝒰.pullback₁ f, fun i ↦ ?_⟩⟩
   simpa [pullback.condition_assoc] using
     RespectsLeft.precomp (Q := Q) _ (Q.pullback_snd _ _ hf) _ (hg i)
 
@@ -70,14 +70,14 @@ instance [P.RespectsIso] : (sourceLocalClosure W P).RespectsIso where
 instance [P.RespectsIso] [P.RespectsLeft @IsOpenImmersion] :
     IsLocalAtSource (sourceLocalClosure IsOpenImmersion P) where
   iff_of_openCover' {X Y} f 𝒰 := by
-    refine ⟨fun ⟨𝒱, h⟩ ↦ fun i ↦ ⟨𝒱.pullbackCover (𝒰.f i), fun j ↦ ?_⟩, fun h ↦ ?_⟩
+    refine ⟨fun ⟨𝒱, h⟩ ↦ fun i ↦ ⟨𝒱.pullback₁ (𝒰.f i), fun j ↦ ?_⟩, fun h ↦ ?_⟩
     · simpa [pullback.condition_assoc] using
         RespectsLeft.precomp (Q := @IsOpenImmersion) _ inferInstance _ (h j)
     · choose 𝒱 h𝒱 using h
       exact ⟨𝒰.bind 𝒱, fun i ↦ h𝒱 _ _⟩
 
 instance [P.IsStableUnderBaseChange] : (sourceLocalClosure W P).IsStableUnderBaseChange := by
-  refine .mk' fun X Y S f g _ ⟨𝒰, hg⟩ ↦ ⟨𝒰.pullbackCover (pullback.snd f g), fun i ↦ ?_⟩
+  refine .mk' fun X Y S f g _ ⟨𝒰, hg⟩ ↦ ⟨𝒰.pullback₁ (pullback.snd f g), fun i ↦ ?_⟩
   simpa [← pullbackLeftPullbackSndIso_hom_fst, P.cancel_left_of_respectsIso] using
     P.pullback_fst _ _ (hg i)
 
@@ -88,7 +88,7 @@ instance [W.ContainsIdentities] [P.ContainsIdentities] :
 instance [W.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.IsStableUnderComposition] :
     (sourceLocalClosure W P).IsStableUnderComposition := by
   refine ⟨fun {X Y Z} f g ⟨𝒰, hf⟩ ⟨𝒱, hg⟩ ↦ ?_⟩
-  refine ⟨𝒰.bind fun i ↦ (𝒱.pullbackCover (𝒰.f i ≫ f)), fun ⟨l, r⟩ ↦ ?_⟩
+  refine ⟨𝒰.bind fun i ↦ (𝒱.pullback₁ (𝒰.f i ≫ f)), fun ⟨l, r⟩ ↦ ?_⟩
   simpa [← pullbackRightPullbackFstIso_inv_snd_fst_assoc, pullback.condition_assoc] using
     P.comp_mem _ _ (P.pullback_snd _ _ (hf _)) (hg r)
 

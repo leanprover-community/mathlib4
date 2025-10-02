@@ -156,8 +156,8 @@ def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineO
 
 /-- The pullback of the affine refinement is the pullback of the affine cover. -/
 def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
-    (𝒰.affineRefinement.openCover.pullbackCover f).X i ≅
-      ((𝒰.X i.1).affineCover.pullbackCover (𝒰.pullbackHom f i.1)).X i.2 :=
+    (𝒰.affineRefinement.openCover.pullback₁ f).X i ≅
+      ((𝒰.X i.1).affineCover.pullback₁ (𝒰.pullbackHom f i.1)).X i.2 :=
   pullbackSymmetry _ _ ≪≫ (pullbackRightPullbackFstIso _ _ _).symm ≪≫
     pullbackSymmetry _ _ ≪≫ asIso (pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _)
       (by simp [Cover.pullbackHom]) (by simp))
@@ -165,13 +165,15 @@ def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCo
 @[reassoc]
 lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_map (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
     (𝒰.pullbackCoverAffineRefinementObjIso f i).inv ≫
-      (𝒰.affineRefinement.openCover.pullbackCover f).f i =
-      ((𝒰.X i.1).affineCover.pullbackCover (𝒰.pullbackHom f i.1)).f i.2 ≫
-        (𝒰.pullbackCover f).f i.1 := by
-  simp only [Cover.pullbackCover_X,
+      (𝒰.affineRefinement.openCover.pullback₁ f).f i =
+      ((𝒰.X i.1).affineCover.pullback₁ (𝒰.pullbackHom f i.1)).f i.2 ≫
+        (𝒰.pullback₁ f).f i.1 := by
+  simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+    PreZeroHypercover.pullback₁_X, AffineOpenCover.openCover_X, AffineOpenCover.openCover_f,
     pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv, Iso.symm_inv, Category.assoc,
-    Cover.pullbackCover_f, pullbackSymmetry_inv_comp_fst, IsIso.inv_comp_eq, limit.lift_π_assoc,
-    PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app, pullbackSymmetry_hom_comp_fst]
+    PreZeroHypercover.pullback₁_f, pullbackSymmetry_inv_comp_fst, IsIso.inv_comp_eq,
+    limit.lift_π_assoc, PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app,
+    pullbackSymmetry_hom_comp_fst]
   convert pullbackSymmetry_inv_comp_snd_assoc
     ((𝒰.X i.1).affineCover.f i.2) (pullback.fst _ _) _ using 2
   exact pullbackRightPullbackFstIso_hom_snd _ _ _
@@ -182,7 +184,8 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
     (𝒰.pullbackCoverAffineRefinementObjIso f i).inv ≫
       𝒰.affineRefinement.openCover.pullbackHom f i =
       (𝒰.X i.1).affineCover.pullbackHom (𝒰.pullbackHom f i.1) i.2 := by
-  simp only [Cover.pullbackCover_X, Cover.pullbackHom,
+  simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+    PreZeroHypercover.pullback₁_X, Cover.pullbackHom, AffineOpenCover.openCover_X,
     AffineOpenCover.openCover_f, pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv,
     Iso.symm_inv, Category.assoc, pullbackSymmetry_inv_comp_snd, IsIso.inv_comp_eq, limit.lift_π,
     PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]

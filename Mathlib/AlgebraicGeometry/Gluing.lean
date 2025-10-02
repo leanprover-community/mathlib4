@@ -440,8 +440,9 @@ theorem hom_ext (𝒰 : OpenCover.{v} X) {Y : Scheme} (f₁ f₂ : X ⟶ Y)
 theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.X x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.f x) (𝒰.f y) ≫ f x = pullback.snd _ _ ≫ f y)
     (x : 𝒰.I₀) : 𝒰.f x ≫ 𝒰.glueMorphisms f hf = f x := by
-  refine (𝒰.ulift.pullbackCover (𝒰.f x)).hom_ext _ _ fun i ↦ ?_
-  dsimp only [ulift_I₀, ulift_X, ulift_f, pullbackCover_X, pullbackCover_f]
+  refine Cover.hom_ext (𝒰.ulift.pullback₁ (𝒰.f x)) _ _ fun i ↦ ?_
+  dsimp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+    PreZeroHypercover.pullback₁_X, ulift_X, ulift_f, PreZeroHypercover.pullback₁_f]
   simp_rw [pullback.condition_assoc, ← ulift_f, ← ι_fromGlued, Category.assoc, glueMorphisms,
     IsIso.hom_inv_id_assoc, ulift_f, hf]
   erw [Multicoequalizer.π_desc]

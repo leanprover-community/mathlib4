@@ -166,40 +166,23 @@ nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y 
     refine ⟨fun x ↦ ⟨some <| 𝒰.idx x, 𝒰.covers x⟩, ?_⟩
     rintro (i|i) <;> simp [hf, 𝒰.map_prop]
 
-/-- Given a cover on `X`, we may pull them back along a morphism `W ⟶ X` to obtain
-a cover of `W`.
-
-Note that this requires the (unnecessary) assumptions that the pullback exists and that `P`
-preserves joint surjectivity. This is needed, because we don't know these in general at this
-stage of the import tree, but this API is used in the case of `P = IsOpenImmersion` to
-obtain these results in the general case. -/
-@[simps!]
-abbrev Cover.pullbackCover [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
-    {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X)
-    [∀ x, HasPullback f (𝒰.f x)] : W.Cover (precoverage P) :=
-  𝒰.pullback₁ f
+@[deprecated (since := "2025-10-02")]
+alias Cover.pullbackCover := Precoverage.ZeroHypercover.pullback₁
 
 /-- The family of morphisms from the pullback cover to the original cover. -/
 def Cover.pullbackHom [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
     {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) (i) [∀ x, HasPullback f (𝒰.f x)] :
-    (𝒰.pullbackCover f).X i ⟶ 𝒰.X i :=
+    (𝒰.pullback₁ f).X i ⟶ 𝒰.X i :=
   pullback.snd f (𝒰.f i)
 
 @[reassoc (attr := simp)]
 lemma Cover.pullbackHom_map [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
     {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X)
     [∀ (x : 𝒰.I₀), HasPullback f (𝒰.f x)] (i) :
-    𝒰.pullbackHom f i ≫ 𝒰.f i = (𝒰.pullbackCover f).f i ≫ f := pullback.condition.symm
+    𝒰.pullbackHom f i ≫ 𝒰.f i = (𝒰.pullback₁ f).f i ≫ f := pullback.condition.symm
 
-/-- Given a cover on `X`, we may pull them back along a morphism `f : W ⟶ X` to obtain
-a cover of `W`. This is similar to `Scheme.Cover.pullbackCover`, but here we
-take `pullback (𝒰.map x) f` instead of `pullback f (𝒰.map x)`. -/
-@[simps!]
-abbrev Cover.pullbackCover' [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
-    {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X)
-    [∀ x, HasPullback (𝒰.f x) f] :
-    W.Cover (precoverage P) :=
-  𝒰.pullback₂ f
+@[deprecated (since := "2025-10-02")]
+alias Cover.pullbackCover' := Precoverage.ZeroHypercover.pullback₂
 
 /--
 An affine cover of `X` consists of a jointly surjective family of maps into `X` from
@@ -215,12 +198,21 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   X (j : I₀) : CommRingCat.{u}
   /-- the components map to `S` -/
   f (j : I₀) : Spec (X j) ⟶ S
-  /-- given a point of `x : S`, `f x` is the index of the component which contains `x` -/
+  /-- given a point of `x : S`, `idx x` is the index of the component which contains `x` -/
   idx (x : S) : I₀
   /-- the components cover `S` -/
   covers (x : S) : x ∈ Set.range (f (idx x)).base
   /-- the component maps satisfy `P` -/
   map_prop (j : I₀) : P (f j) := by infer_instance
+
+@[deprecated (since := "2025-09-19")]
+alias AffineCover.J := AffineCover.I₀
+
+@[deprecated (since := "2025-09-19")]
+alias AffineCover.obj := AffineCover.X
+
+@[deprecated (since := "2025-09-19")]
+alias AffineCover.map := AffineCover.f
 
 /-- The cover associated to an affine cover. -/
 @[simps]
