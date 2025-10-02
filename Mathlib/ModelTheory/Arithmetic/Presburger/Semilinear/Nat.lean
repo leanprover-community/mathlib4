@@ -42,7 +42,7 @@ open Set Pointwise AddSubmonoid Matrix
 
 /-! ### Semilinear sets in `ℕ ^ k` are closed under intersection -/
 
-/-- Any subtractive `AddSubmonoid` in `ℕ ^ k` is linear. -/
+/-- Any subtractive `AddSubmonoid` in `ℕ ^ k` is finitely generated. -/
 theorem Nat.addSubmonoidFG_of_subtractive [Finite ι] {P : AddSubmonoid (ι → ℕ)}
     (hP : ∀ x ∈ P, ∀ y, x + y ∈ P → y ∈ P) : P.FG := by
   have hpwo := Pi.isPWO { x | x ∈ P ∧ x ≠ 0 }
