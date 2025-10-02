@@ -225,9 +225,15 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
-lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[nhds x] g) :
+lemma congr_of_eventuallyEq {x : M} (hf : IsImmersionAt F I I' n f x) (hfg : f =ᶠ[nhds x] g) :
     IsImmersionAt F I I' n g x :=
-  LiftSourceTargetPropertyAt.congr_of_eventuallyEq ImmersionAtPropIsNice h.property h'
+  LiftSourceTargetPropertyAt.congr_of_eventuallyEq ImmersionAtPropIsNice hf.property hfg
+
+/-- If `f = g` on some neighbourhood of `x`,
+then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
+lemma congr_iff {x : M} (hfg : f =ᶠ[nhds x] g) :
+    IsImmersionAt F I I' n f x ↔ IsImmersionAt F I I' n g x :=
+  ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
 end IsImmersionAt
 
