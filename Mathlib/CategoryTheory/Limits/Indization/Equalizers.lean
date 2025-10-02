@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
-import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
+import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 
 /-!
 # Equalizers of ind-objects
