@@ -438,7 +438,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
   rw [← hn]
   exact ringKrullDim_le_of_surjective _ Ideal.Quotient.mk_surjective
 
-lemma injectiveDimension_eq_sSup (M : ModuleCat.{v} R) :
+lemma injectiveDimension_eq_sInf (M : ModuleCat.{v} R) :
     injectiveDimension M = sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i →
       Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)} := by
   simp only [injectiveDimension]
@@ -448,9 +448,11 @@ lemma injectiveDimension_eq_sSup (M : ModuleCat.{v} R) :
   · let _ := h i hi
     exact HasInjectiveDimensionLT.subsingleton M i i (le_refl i) _
   · rw [hasInjectiveDimensionLT_iff]
-    intro j hj N
-
-    sorry
+    intro j hj N e
+    apply @Subsingleton.eq_zero _ _ ?_ e
+    apply ext_vanish_of_residueField_vanish M i _ j hj N
+    intro k hk
+    exact h k (lt_of_lt_of_le hi (Nat.cast_le.mpr hk))
 
 end
 
