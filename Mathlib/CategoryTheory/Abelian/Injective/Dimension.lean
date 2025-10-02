@@ -143,7 +143,7 @@ lemma injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
 lemma injective_iff_hasInjectiveDimensionLT_one (X : C) :
     Injective X ↔ HasInjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
-  exact ⟨fun _ ↦ inferInstance, fun _ ↦ Injective_iff_subsingleton_ext_one.2
+  exact ⟨fun _ ↦ inferInstance, fun _ ↦ injective_iff_subsingleton_ext_one.2
     (HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
 end
