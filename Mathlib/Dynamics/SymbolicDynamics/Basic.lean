@@ -79,7 +79,7 @@ Thus the file develops the theory ambiently, and subshifts reuse it by restricti
 For `Y : Subshift A G`, cylinders and occurrence sets *inside `Y`* are simply
 preimages of the ambient ones under the inclusion `Y → (G → A)`. For example:
 
-`{ y : Y | ∀ i ∈ U, (y : G → A) i = (x : G → A) i } = (Subtype.val) ⁻¹’ (cylinder U (x : G → A)).`
+`{ y : Y | ∀ i ∈ U, (y : G → A) i = (x : G → A) i } = (Subtype.val) ⁻¹' (cylinder U (x : G → A)).`
 
 Shift invariance guarantees that the ambient shift restricts to `Y`.
 
