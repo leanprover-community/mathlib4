@@ -109,7 +109,7 @@ noncomputable def nerve₂.seagull (C : Type u) [Category C] :
 instance (C : Type u) [Category C] : Mono (nerve₂.seagull C) where
   right_cancellation {X} (f g : X → ComposableArrows C 2) eq := by
     ext x
-    simp [nerve₂.seagull] at eq
+    simp only [nerve₂.seagull, prod.comp_lift] at eq
     have eq1 := congr($eq ≫ prod.fst)
     have eq2 := congr($eq ≫ prod.snd)
     simp only [limit.lift_π, BinaryFan.mk_fst, BinaryFan.mk_snd] at eq1 eq2

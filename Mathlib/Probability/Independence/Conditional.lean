@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
+import Mathlib.Probability.Kernel.CompProdEqIff
+import Mathlib.Probability.Kernel.Composition.Lemmas
 import Mathlib.Probability.Kernel.Condexp
 
 /-!
@@ -736,6 +738,57 @@ lemma condIndepFun_self_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace
     {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
     CondIndepFun (mβ'.comap Z) hZ.comap_le X Z μ :=
   condIndepFun_of_measurable_right hX (comap_measurable Z)
+
+/-- Two random variables are conditionally independent iff they satisfy the almost sure equality
+of conditional expectations `μ⟦f ⁻¹' s ∩ g ⁻¹' t | m'⟧ =ᵐ[μ] μ⟦f ⁻¹' s | m'⟧ * μ⟦g ⁻¹' t | m'⟧`
+for all measurable sets `s` and `t` (see `condIndepFun_iff_condExp_inter_preimage_eq_mul`).
+Here, this is phrased with Markov kernels associated to the conditional expectations, and the
+almost sure equality is expressed as equality of the composition-product with the measure, which is
+equivalent to a.e. equality. See `condIndepFun_iff_map_prod_eq_prod_map_map` for the a.e. equality
+version with kernels.
+
+For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+theorem condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
+    CondIndepFun m' hm' f g μ
+      ↔ (μ.trim hm') ⊗ₘ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
+        = (μ.trim hm') ⊗ₘ ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g) :=
+  Kernel.indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg
+
+/-- Two random variables are conditionally independent iff they satisfy the almost sure equality
+of conditional expectations `μ⟦f ⁻¹' s ∩ g ⁻¹' t | m'⟧ =ᵐ[μ] μ⟦f ⁻¹' s | m'⟧ * μ⟦g ⁻¹' t | m'⟧`
+for all measurable sets `s` and `t` (see `condIndepFun_iff_condExp_inter_preimage_eq_mul`).
+Here, this is phrased with Markov kernels associated to the conditional expectations.
+
+For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+theorem condIndepFun_iff_map_prod_eq_prod_map_map
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
+    (hf : Measurable f) (hg : Measurable g) :
+    CondIndepFun m' hm' f g μ
+      ↔ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
+        =ᵐ[μ.trim hm'] (condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g := by
+  rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg, ← Kernel.compProd_eq_iff]
+
+/-- Two random variables are conditionally independent with respect to `m'` iff the law of
+`(id, f, g)` under `μ`, in which the identity is to the space with σ-algebra `m'`, can be written
+as a product involving the conditional expectations of `f` and `g` given `m'`.
+
+For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
+    CondIndepFun m' hm' f g μ
+      ↔ @Measure.map _ _ _ (m'.prod _) (fun ω ↦ (ω, f ω, g ω)) μ
+        = (Kernel.id ×ₖ ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g))
+          ∘ₘ μ.trim hm' := by
+  rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg]
+  congr!
+  · rw [Measure.compProd_map (by fun_prop), compProd_trim_condExpKernel,
+      Measure.map_map (by fun_prop) ((measurable_id.mono le_rfl hm').prodMk measurable_id)]
+    rfl
+  · rw [Measure.compProd_eq_comp_prod]
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}

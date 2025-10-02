@@ -18,7 +18,7 @@ is also a charted space over `H × F`.
 
 Now, we define `ContMDiffVectorBundle` as the `Prop` of having `C^n` transition functions.
 Recall the structure groupoid `contMDiffFiberwiseLinear` on `B × F` consisting of `C^n`, fiberwise
-linear partial homeomorphisms.  We show that our definition of "`C^n` vector bundle" implies
+linear open partial homeomorphisms.  We show that our definition of "`C^n` vector bundle" implies
 `HasGroupoid` for this groupoid, and show (by a "composition" of `HasGroupoid` instances) that
 this means that a `C^n` vector bundle is a `C^n` manifold.
 
@@ -59,7 +59,7 @@ fields, etc.
 
 assert_not_exists mfderiv
 
-open Bundle Set PartialHomeomorph
+open Bundle Set OpenPartialHomeomorph
 
 open Function (id_def)
 
@@ -80,14 +80,15 @@ variable [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)] [∀ x, Topolo
 /-- A fiber bundle `E` over a base `B` with model fiber `F` is naturally a charted space modelled on
 `B × F`. -/
 instance FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace F E) where
-  atlas := (fun e : Trivialization F (π F E) => e.toPartialHomeomorph) '' trivializationAtlas F E
-  chartAt x := (trivializationAt F E x.proj).toPartialHomeomorph
+  atlas :=
+    (fun e : Trivialization F (π F E) => e.toOpenPartialHomeomorph) '' trivializationAtlas F E
+  chartAt x := (trivializationAt F E x.proj).toOpenPartialHomeomorph
   mem_chart_source x :=
     (trivializationAt F E x.proj).mem_source.mpr (mem_baseSet_trivializationAt F E x.proj)
   chart_mem_atlas _ := mem_image_of_mem _ (trivialization_mem_atlas F E _)
 
 theorem FiberBundle.chartedSpace'_chartAt (x : TotalSpace F E) :
-    chartAt (B × F) x = (trivializationAt F E x.proj).toPartialHomeomorph :=
+    chartAt (B × F) x = (trivializationAt F E x.proj).toOpenPartialHomeomorph :=
   rfl
 
 /- Porting note: In Lean 3, the next instance was inside a section with locally reducible
@@ -103,8 +104,8 @@ instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F 
 
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
     chartAt (ModelProd HB F) x =
-      (trivializationAt F E x.proj).toPartialHomeomorph ≫ₕ
-        (chartAt HB x.proj).prod (PartialHomeomorph.refl F) := by
+      (trivializationAt F E x.proj).toOpenPartialHomeomorph ≫ₕ
+        (chartAt HB x.proj).prod (OpenPartialHomeomorph.refl F) := by
   dsimp only [chartAt_comp, prodChartedSpace_chartAt, FiberBundle.chartedSpace'_chartAt,
     chartAt_self_eq]
   rw [Trivialization.coe_coe, Trivialization.coe_fst' _ (mem_baseSet_trivializationAt F E x.proj)]
@@ -153,7 +154,7 @@ theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y
 theorem FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F E} {y}
     (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
     writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) (trivializationAt F E x.proj x)
-      (trivializationAt F E x.proj).toPartialHomeomorph.symm y = y :=
+      (trivializationAt F E x.proj).toOpenPartialHomeomorph.symm y = y :=
   writtenInExtChartAt_chartAt_symm_comp _ hy
 
 /-! ### Regularity of maps in/out fiber bundles
@@ -181,7 +182,7 @@ theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x�
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
-  · simp_rw [Function.comp, PartialHomeomorph.coe_coe, Trivialization.coe_coe]
+  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_coe, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
   · simp only [mfld_simps]
@@ -377,7 +378,7 @@ variable (e e')
 variable (IB) in
 theorem Trivialization.contMDiffOn_symm_trans :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n
-      (e.toPartialHomeomorph.symm ≫ₕ e'.toPartialHomeomorph) (e.target ∩ e'.target) := by
+      (e.toOpenPartialHomeomorph.symm ≫ₕ e'.toOpenPartialHomeomorph) (e.target ∩ e'.target) := by
   have Hmaps : MapsTo Prod.fst (e.target ∩ e'.target) (e.baseSet ∩ e'.baseSet) := fun x hx ↦
     ⟨e.mem_target.1 hx.1, e'.mem_target.1 hx.2⟩
   rw [mapsTo_inter] at Hmaps
@@ -386,7 +387,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
     (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
   rintro ⟨b, x⟩ hb
   refine Prod.ext ?_ rfl
-  have : (e.toPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet := by
+  have : (e.toOpenPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet := by
     simp_all only [Trivialization.mem_target, mfld_simps]
   exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
@@ -425,9 +426,9 @@ instance ContMDiffFiberwiseLinear.hasGroupoid :
     rw [mem_contMDiffFiberwiseLinear_iff]
     refine ⟨_, _, e.open_baseSet.inter e'.open_baseSet, contMDiffOn_coordChangeL e e',
       contMDiffOn_symm_coordChangeL e e', ?_⟩
-    refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
-    · simp only [e.symm_trans_source_eq e', FiberwiseLinear.partialHomeomorph, trans_toPartialEquiv,
-        symm_toPartialEquiv]
+    refine OpenPartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
+    · simp only [FiberwiseLinear.openPartialHomeomorph, trans_toPartialEquiv, symm_toPartialEquiv,
+        e.symm_trans_source_eq e']
     · rintro ⟨b, v⟩ hb
       exact (e.apply_symm_apply_eq_coordChangeL e' hb.1 v).symm
 
@@ -489,8 +490,8 @@ theorem Trivialization.contMDiffOn (e : Trivialization F (π F E)) [MemTrivializ
   exact (this.1.prodMk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
 theorem Trivialization.contMDiffOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
-    ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toPartialHomeomorph.symm e.target := by
-  rw [e.contMDiffOn_iff e.toPartialHomeomorph.symm_mapsTo]
+    ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toOpenPartialHomeomorph.symm e.target := by
+  rw [e.contMDiffOn_iff e.toOpenPartialHomeomorph.symm_mapsTo]
   refine ⟨contMDiffOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
