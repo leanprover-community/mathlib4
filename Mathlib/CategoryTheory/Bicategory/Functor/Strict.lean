@@ -22,8 +22,6 @@ isomorphism `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`
 
 -/
 
-set_option linter.style.commandStart false
-
 namespace CategoryTheory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
