@@ -160,9 +160,6 @@ instance mulAction_op_of_left [Group G] [MulAction G M] : MulAction (Gᵐᵒᵖ)
 
 instance SmoothRightGAction_of_Left
   [MulAction G M]
-  [LieGroup I_G ⊤ G]
-  [IsManifold I_M ⊤ M]
-
   [SmoothLeftGAction n I_G I_M G M] :
   SmoothRightGAction n I_G I_M G M where
 
