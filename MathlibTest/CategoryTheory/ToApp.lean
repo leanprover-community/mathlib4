@@ -25,7 +25,7 @@ theorem pentagon_hom_hom_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (
   eq_of_inv_eq_inv (by simp)
 
 example {a b c d e : Cat} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) (X : ↑a) :
-    𝟙 (((g ≫ h) ≫ i).obj (f.obj X)) = i.map (𝟙 ((f ≫ g ≫ h).obj X)) :=
+    𝟙 (i.obj (h.obj (g.obj (f.obj X)))) = i.map (𝟙 (h.obj (g.obj (f.obj X)))) :=
   pentagon_hom_hom_inv_inv_hom_app f g h i X
 
 @[to_app]
