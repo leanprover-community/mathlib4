@@ -43,6 +43,8 @@ theorem foo {P : K[X]} (hP : P ∣ cyclotomic n K) (hPirr : Irreducible P) (hPmo
       ← ZMod.natCast_eq_natCast_iff]
     simpa using Units.val_inj.mpr <| pow_orderOf_eq_one (unitOfCoprime _ hn)
 
+#min_imports
+
 #exit
 
 include hK in
