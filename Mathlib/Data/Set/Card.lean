@@ -168,7 +168,7 @@ theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ 
     fun ⟨_,⟨n₀,hs, hle⟩⟩ ↦ by rwa [hs, Nat.cast_le]⟩
 
 @[simp]
-theorem encard_prod : (s ×ˢ t).encard = s.encard * t.encard := by
+theorem encard_prod {s : Set α} {t : Set β} : (s ×ˢ t).encard = s.encard * t.encard := by
   unfold encard
   simp [ENat.card_congr (Equiv.Set.prod ..)]
 
@@ -622,7 +622,7 @@ theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 :=
   apply encard_singleton_inter
 
 @[simp]
-theorem ncard_prod : (s ×ˢ t).ncard = s.ncard * t.ncard := by
+theorem ncard_prod {s : Set α} {t : Set β} : (s ×ˢ t).ncard = s.ncard * t.ncard := by
   simp [ncard, ENat.toNat_mul]
 
 @[simp]
