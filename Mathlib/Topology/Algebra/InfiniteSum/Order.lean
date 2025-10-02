@@ -191,15 +191,20 @@ theorem HasProd.le_one [L.NeBot] (h : ∀ i, g i ≤ 1) (ha : HasProd g a L) : a
   hasProd_le h ha hasProd_one
 
 @[to_additive tsum_nonneg]
-theorem one_le_tprod [L.NeBot] (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏'[L] i, g i := by
+theorem one_le_tprod (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏'[L] i, g i := by
   by_cases hg : Multipliable g L
-  · exact hg.hasProd.one_le h
+  · by_cases hL : L.NeBot
+    · exact hg.hasProd.one_le h
+    · simpa [tprod_bot hL] using one_le_finprod' h
   · rw [tprod_eq_one_of_not_multipliable hg]
 
 @[to_additive]
-theorem tprod_le_one [L.NeBot] (h : ∀ i, f i ≤ 1) : ∏'[L] i, f i ≤ 1 := by
+theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏'[L] i, f i ≤ 1 := by
   by_cases hf : Multipliable f L
-  · exact hf.hasProd.le_one h
+  · by_cases hL : L.NeBot
+    · exact hf.hasProd.le_one h
+    · simp only [tprod_bot hL]
+      exact finprod_induction (· ≤ 1) le_rfl (fun _ _ ↦ mul_le_one') h
   · rw [tprod_eq_one_of_not_multipliable hf]
 
 @[to_additive]
@@ -420,10 +425,9 @@ def evalTsum : PositivityExt where eval {u α} zα pα e := do
       let oα' ← synthInstanceQ q(PartialOrder $α)
       let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
       let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
-      let instNeBot ← synthInstanceQ q(SummationFilter.NeBot $L)
       assertInstancesCommute
       return .nonnegative
-        q(@tsum_nonneg $ι $α $L $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $instNeBot $pr)
+        q(@tsum_nonneg $ι $α $L $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
   | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity
