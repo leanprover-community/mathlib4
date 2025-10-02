@@ -407,8 +407,15 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
   apply ext_subsingleton_of_support_subset
   intro p _
   simp only [Set.mem_setOf_eq]
-  --induction on `dim(R⧸p)`
-  --fym
+  have (n : ℕ) : ringKrullDim (R ⧸ p.1) ≤ n →
+    Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p.asIdeal))) M i) := by
+    induction n
+    · --p = maximalIdeal R
+      --fym
+      sorry
+    · --fym
+      sorry
+
   sorry
 
 lemma injectiveDimension_eq_sSup (M : ModuleCat.{v} R) :
