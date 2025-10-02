@@ -1057,11 +1057,13 @@ end Comparison
 
 variable (C)
 
-/-- `HasEqualizers` represents a choice of equalizer for every pair of morphisms -/
+/-- A category `HasEqualizers` if it has all limits of shape `WalkingParallelPair`, i.e. if it has
+an equalizer for every parallel pair of morphisms. -/
 abbrev HasEqualizers :=
   HasLimitsOfShape WalkingParallelPair C
 
-/-- `HasCoequalizers` represents a choice of coequalizer for every pair of morphisms -/
+/-- A category `HasCoequalizers` if it has all colimits of shape `WalkingParallelPair`, i.e. if it
+has a coequalizer for every parallel pair of morphisms. -/
 abbrev HasCoequalizers :=
   HasColimitsOfShape WalkingParallelPair C
 

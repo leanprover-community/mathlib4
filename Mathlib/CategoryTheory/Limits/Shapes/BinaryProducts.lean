@@ -821,12 +821,14 @@ end CoprodLemmas
 
 variable (C)
 
-/-- `HasBinaryProducts` represents a choice of product for every pair of objects. -/
+/-- A category `HasBinaryProducts` if it has all limits of shape `Discrete WalkingPair`,
+i.e. if it has a product for every pair of objects. -/
 @[stacks 001T]
 abbrev HasBinaryProducts :=
   HasLimitsOfShape (Discrete WalkingPair) C
 
-/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects. -/
+/-- A category `HasBinaryCoproducts` if it has all colimit of shape `Discrete WalkingPair`,
+i.e. if it has a coproduct for every pair of objects. -/
 @[stacks 04AP]
 abbrev HasBinaryCoproducts :=
   HasColimitsOfShape (Discrete WalkingPair) C

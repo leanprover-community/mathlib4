@@ -660,11 +660,13 @@ end
 
 variable (C)
 
-/-- `HasWideEqualizers` represents a choice of wide equalizer for every family of morphisms -/
+/-- A category `HasWideEqualizers` if it has all limits of shape `WalkingParallelFamily J`, i.e.
+if it has a wide equalizer for every family of parallel morphisms. -/
 abbrev HasWideEqualizers :=
   ∀ J, HasLimitsOfShape (WalkingParallelFamily.{w} J) C
 
-/-- `HasWideCoequalizers` represents a choice of wide coequalizer for every family of morphisms -/
+/-- A category `HasWideCoequalizers` if it has all colimits of shape `WalkingParallelFamily J`, i.e.
+if it has a wide coequalizer for every family of parallel morphisms. -/
 abbrev HasWideCoequalizers :=
   ∀ J, HasColimitsOfShape (WalkingParallelFamily.{w} J) C
 

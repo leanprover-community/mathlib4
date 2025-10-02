@@ -512,12 +512,14 @@ end PushoutSymmetry
 
 variable (C)
 
-/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms. -/
+/-- A category `HasPullbacks` if it has all limits of shape `WalkingCospan`, i.e. if it has a
+pullback for every pair of morphisms with the same codomain. -/
 @[stacks 001W]
 abbrev HasPullbacks :=
   HasLimitsOfShape WalkingCospan C
 
-/-- `HasPushouts` represents a choice of pushout for every pair of morphisms -/
+/-- A category `HasPushouts` if it has all colimits of shape `WalkingSpace`, i.e. if it has a
+pushout for every pair of morphisms with the same domain. -/
 abbrev HasPushouts :=
   HasColimitsOfShape WalkingSpan C
 
