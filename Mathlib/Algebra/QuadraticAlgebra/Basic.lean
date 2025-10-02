@@ -6,11 +6,27 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.QuadraticAlgebra.Defs
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.Tactic.FieldSimp
 
 /-! # Quadratic algebras : involution and norm.
 
-Let `R` be a commutative ring.
+Let `R` be a commutative ring. We define:
 
+* `QuadraticAlgebra.star` : the quadratic involution
+
+* `QuadraticAlgebra.norm` : the norm
+
+We prove :
+
+* `QuadraticAlgebra.isUnit_iff_norm_isUnit`:
+  `w : QuadraticAlgebra R a b` is a unit iff `w.norm` is a unit in `R`.
+
+* `QuadraticAlgebra.norm_mem_nonZero_divisors_iff`:
+  `w : QuadraticAlgebra R a b` isn't a zero divisor iff
+  `w.norm` isn't a zero divisor in `R`.
+
+* If `R` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra R a b` is a field.
+`
 -/
 
 namespace QuadraticAlgebra
@@ -345,4 +361,30 @@ theorem norm_mem_nonZeroDivisors_iff {z : QuadraticAlgebra R a b} :
 
 end norm
 
+section field
+
+variable [Field R]
+
+-- TODO : make computable by giving the explicit formula for the inverse
+noncomputable instance [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)] :
+    Field (QuadraticAlgebra R a b) := by
+  apply Field.ofIsUnitOrEqZero
+  intro w
+  rw [or_iff_not_imp_left, isUnit_iff_norm_isUnit, isUnit_iff_ne_zero, ne_eq, not_not]
+  intro hw
+  rw [norm_def] at hw
+  by_cases h : w.im = 0
+  · simp [h] at hw
+    aesop
+  · exfalso
+    rw [← pow_two, sub_eq_zero, ← eq_sub_iff_add_eq] at hw
+    apply Hab.out (- w.re / w.im)
+    field_simp
+    rw [hw]
+    field_simp
+    ring
+
+end field
+
 end QuadraticAlgebra
+
