@@ -397,9 +397,17 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
 lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ i > n, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
     ∀ i > n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M i) := by
-  --reduce to fg using ext_subsingleton_of_quotients
-  --use ext_subsingleton_of_support_subset
-  --proof for all `N = R⧸p` using induction on `dim(R⧸p)`
+  intro i hi N
+  have : i = i - 1 + 1 := by omega
+  rw [this]
+  apply ext_subsingleton_of_quotients
+  rw [← this]
+  intro I
+  let _ : Module.Finite R (Shrink.{v, u} (R ⧸ I)) := sorry
+  apply ext_subsingleton_of_support_subset
+  intro p _
+  simp only [Set.mem_setOf_eq]
+  --induction on `dim(R⧸p)`
   --fym
   sorry
 
