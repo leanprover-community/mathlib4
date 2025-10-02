@@ -488,10 +488,8 @@ variable (f)
 
 section
 
-/--
-`HasWideEqualizer f` represents a particular choice of limiting cone for the parallel family of
-morphisms `f`.
--/
+/-- A family `f` of parallel morphisms has a wide equalizer if the diagram `parallelFamily f` has a
+limit. -/
 abbrev HasWideEqualizer :=
   HasLimit (parallelFamily f)
 
@@ -574,15 +572,14 @@ end
 
 section
 
-/-- `HasWideCoequalizer f g` represents a particular choice of colimiting cocone
-for the parallel family of morphisms `f`.
--/
+/-- A family `f` of parallel morphisms has a wide coequalizer if the diagram `parallelFamily f` has
+a colimit. -/
 abbrev HasWideCoequalizer :=
   HasColimit (parallelFamily f)
 
 variable [HasWideCoequalizer f]
 
-/-- If a wide coequalizer of `f`, we can access an arbitrary choice of such by
+/-- If a wide coequalizer of `f` exists, we can access an arbitrary choice of such by
     saying `wideCoequalizer f`. -/
 abbrev wideCoequalizer : C :=
   colimit (parallelFamily f)

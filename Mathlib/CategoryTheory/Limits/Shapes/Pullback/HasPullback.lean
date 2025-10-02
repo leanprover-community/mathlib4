@@ -76,15 +76,13 @@ open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Ho
 
 variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
-/-- `HasPullback f g` represents a particular choice of limiting cone
-for the pair of morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`.
--/
+/-- Two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z` have a pullback if the diagram `cospan f g` has a
+limit. -/
 abbrev HasPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasLimit (cospan f g)
 
-/-- `HasPushout f g` represents a particular choice of colimiting cocone
-for the pair of morphisms `f : X ⟶ Y` and `g : X ⟶ Z`.
--/
+/-- Two morphisms `f : X ⟶ Y` and `g : X ⟶ Z` have a pushout if the diagram `span f g` has a
+colimit. -/
 abbrev HasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :=
   HasColimit (span f g)
 
