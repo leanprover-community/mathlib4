@@ -790,7 +790,7 @@ lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
     rfl
   · rw [Measure.compProd_eq_comp_prod]
 
-/-- Two random variables `f, g` are conditionally independent given a third `k` if the
+/-- Two random variables `f, g` are conditionally independent given a third `k` iff the
 joint distribution of `k, f, g` factors into a product of their conditional distributions
 given `k`. -/
 theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
