@@ -10,6 +10,9 @@ import Mathlib.Logic.Small.Basic
 /-!
 # Smallness of a property of objects
 
+In this file, given `P : ObjectProperty C`, we define
+`ObjectProperty.Small.{w} P` as an abbreviation for `Small.{w} (Subtype P)`.
+
 -/
 
 universe w v u
@@ -20,23 +23,24 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A property of objects is small relative to a universe `w`
 if the corresponding subtype is. -/
+@[pp_with_univ]
 protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtype P)
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     Small.{w} P.FullSubcategory :=
   small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.1, x.2⟩, rfl⟩)
 
-lemma small_of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
+lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
     ObjectProperty.Small.{w} P :=
   small_of_injective (Subtype.map_injective h Function.injective_id)
 
 instance {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] :
     ObjectProperty.Small.{w} (P ⊓ Q) :=
-  small_of_le inf_le_right
+  Small.of_le inf_le_right
 
 instance {P Q : ObjectProperty C} [ObjectProperty.Small.{w} P] :
     ObjectProperty.Small.{w} (P ⊓ Q) :=
-  small_of_le inf_le_left
+  Small.of_le inf_le_left
 
 instance {P Q : ObjectProperty C} [ObjectProperty.Small.{w} P] [ObjectProperty.Small.{w} Q] :
     ObjectProperty.Small.{w} (P ⊔ Q) :=
@@ -51,6 +55,9 @@ instance {α : Type*} (P : α → ObjectProperty C)
   small_of_surjective (f := fun (x : Σ a, Subtype (P a)) ↦ ⟨x.2.1, by aesop⟩)
     (fun ⟨x, hx⟩ ↦ by aesop)
 
+/-- A property of objects is essentially small relative to a universe `w`
+if it is contained in the closure by isomorphisms of a small property. -/
+@[pp_with_univ]
 protected class EssentiallySmall (P : ObjectProperty C) : Prop where
   exists_small_le' (P) : ∃ (Q : ObjectProperty C) (_ : ObjectProperty.Small.{w} Q),
     P ≤ Q.isoClosure
@@ -89,7 +96,7 @@ lemma EssentiallySmall.exists_small (P : ObjectProperty C) [P.IsClosedUnderIsomo
   obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_small_le P
   exact ⟨Q, inferInstance, le_antisymm hQ₂ (by rwa [isoClosure_le_iff])⟩
 
-lemma essentiallySmall_of_le {P Q : ObjectProperty C}
+lemma EssentiallySmall.of_le {P Q : ObjectProperty C}
     [ObjectProperty.EssentiallySmall.{w} Q] (h : P ≤ Q) :
     ObjectProperty.EssentiallySmall.{w} P where
   exists_small_le' := by

@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 import Mathlib.Order.TransfiniteIteration
+import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Closure of a property of objects under limits of certain shapes
@@ -13,7 +14,7 @@ import Mathlib.Order.TransfiniteIteration
 In this file, given a property `P` of objects in a category `C` and
 family of categories `J : α → Type _`, we introduce the closure
 `P.limitsClosure J` of `P` under limits of shapes `J a` for all `a : α`,
-and under certain small circumstances, we show that its essentially small.
+and under certain smallness assumptions, we show that its essentially small.
 
 -/
 universe w w' t v' u' v u
@@ -40,32 +41,29 @@ lemma le_limitsClosure : P ≤ P.limitsClosure J :=
 instance : (P.limitsClosure J).IsClosedUnderIsomorphisms where
   of_iso e hX := .of_isoClosure e hX
 
-lemma limitsOfShape_limitsClosure (a : α) :
-    (P.limitsClosure J).limitsOfShape (J a) ≤ P.limitsClosure J := by
-  rintro X ⟨hX⟩
-  exact .of_limitPresentation hX.toLimitPresentation hX.prop_diag_obj
+instance (a : α) : (P.limitsClosure J).IsClosedUnderLimitsOfShape (J a) where
+  limitsOfShape_le := by
+    rintro X ⟨hX⟩
+    exact .of_limitPresentation hX.toLimitPresentation hX.prop_diag_obj
 
 variable {P J} in
 lemma limitsClosure_le {Q : ObjectProperty C} [Q.IsClosedUnderIsomorphisms]
-    (h₁ : P ≤ Q) (h₂ : ∀ (a : α), Q.limitsOfShape (J a) ≤ Q) :
+    [∀ (a : α), Q.IsClosedUnderLimitsOfShape (J a)] (h : P ≤ Q) :
     P.limitsClosure J ≤ Q := by
   intro X hX
   induction hX with
-  | of_mem X hX => exact h₁ _ hX
+  | of_mem X hX => exact h _ hX
   | of_isoClosure e hX hX' => exact Q.prop_of_iso e hX'
-  | of_limitPresentation pres h h' =>
-    exact h₂ _ _ ⟨{ toLimitPresentation := pres, prop_diag_obj := h' }⟩
+  | of_limitPresentation pres h h' => exact Q.prop_of_isLimit pres.isLimit h'
 
 variable {P} in
 lemma limitsClosure_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.limitsClosure J ≤ Q.limitsClosure J :=
   limitsClosure_le (h.trans (Q.le_limitsClosure J))
-    (fun _ ↦ limitsOfShape_limitsClosure _ _ _)
 
 lemma limitsClosure_isoClosure :
     P.isoClosure.limitsClosure J = P.limitsClosure J := by
-  refine le_antisymm
-    (limitsClosure_le ?_ (fun _ ↦ limitsOfShape_limitsClosure _ _ _))
+  refine le_antisymm (limitsClosure_le ?_)
     (limitsClosure_monotone _ P.le_isoClosure)
   rw [isoClosure_le_iff]
   exact le_limitsClosure P J
@@ -111,7 +109,7 @@ lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     rw [strictLimitsClosureIter, transfiniteIterate_succ _ _ _ hb,
       strictLimitsClosureStep, sup_le_iff, iSup_le_iff]
     exact ⟨hb', fun a ↦ ((strictLimitsOfShape_le_limitsOfShape _ _).trans
-      (limitsOfShape_monotone _ hb')).trans (P.limitsOfShape_limitsClosure J a)⟩
+      (limitsOfShape_monotone _ hb')).trans (limitsOfShape_le _ _)⟩
   | isSuccLimit b hb hb' =>
     simp only [transfiniteIterate_limit _ _ _ hb,
       iSup_le_iff, Subtype.forall, Set.mem_Iio]
@@ -185,12 +183,14 @@ lemma isoClosure_strictLimitsClosureIter_eq_limitsClosure :
   refine le_antisymm ?_ ?_
   · rw [isoClosure_le_iff]
     exact P.strictLimitsClosureIter_le_limitsClosure J κ.ord
-  · refine limitsClosure_le
-      ((P.le_strictLimitsClosureIter J κ.ord).trans (le_isoClosure _)) (fun a ↦ ?_)
-    conv_rhs => rw [← P.strictLimitsClosureStep_strictLimitsClosureIter_eq_self J κ h]
-    rw [limitsOfShape_isoClosure, ← isoClosure_strictLimitsOfShape,
-      strictLimitsClosureStep]
-    exact monotone_isoClosure ((le_trans (by rfl) (le_iSup _ a)).trans le_sup_right)
+  · have (a : α) :
+        (P.strictLimitsClosureIter J κ.ord).isoClosure.IsClosedUnderLimitsOfShape (J a) := ⟨by
+      conv_rhs => rw [← P.strictLimitsClosureStep_strictLimitsClosureIter_eq_self J κ h]
+      rw [limitsOfShape_isoClosure, ← isoClosure_strictLimitsOfShape,
+        strictLimitsClosureStep]
+      exact monotone_isoClosure ((le_trans (by rfl) (le_iSup _ a)).trans le_sup_right)⟩
+    refine limitsClosure_le
+      ((P.le_strictLimitsClosureIter J κ.ord).trans (le_isoClosure _))
 
 lemma isEssentiallySmall_limitsClosure
     [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] [Small.{w} α]
@@ -201,8 +201,15 @@ lemma isEssentiallySmall_limitsClosure
     rw [limitsClosure_isoClosure,
       ← Q.isoClosure_strictLimitsClosureIter_eq_limitsClosure J κ h]
     infer_instance
-  exact essentiallySmall_of_le (limitsClosure_monotone J hQ₂)
+  exact .of_le (limitsClosure_monotone J hQ₂)
 
 end
+
+instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] [Small.{w} α]
+    [∀ a, Small.{w} (J a)] [∀ a, LocallySmall.{w} (J a)] :
+    ObjectProperty.EssentiallySmall.{w} (P.limitsClosure J) := by
+  obtain ⟨κ, h₁, h₂⟩ := HasCardinalLT.exists_regular_cardinal_forall J
+  have : Fact κ.IsRegular := ⟨h₁⟩
+  exact isEssentiallySmall_limitsClosure P J κ h₂
 
 end CategoryTheory.ObjectProperty

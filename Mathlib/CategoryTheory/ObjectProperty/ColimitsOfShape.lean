@@ -22,13 +22,18 @@ Under certain circumstances, the type of objects satisfying
 introduced is to deduce that the full subcategory of `P.colimitsOfShape J`
 is essentially small.
 
+By requiring `P.colimitsOfShape J ≤ P`, we introduce a typeclass
+`P.IsClosedUnderColimitsOfShape J`.
+
 ## TODO
 
-* refactor `ClosedUnderColimitsOfShape J P` to make it a typeclass which
-would say that `P.colimitsOfShape J ≤ J`.
 * refactor `ObjectProperty.ind` by saying that it is the supremum
 of `P.colimitsOfShape J` for a filtered category `J`
 (generalize also to `κ`-filtered categories?)
+* formalize the closure of `P` under finite colimits (which require
+iterating over `ℕ`), and more generally the closure under colimits
+indexed by a category whose type of arrows has a cardinality
+that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
@@ -54,7 +59,7 @@ lemma strictColimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
   exact ⟨F, fun j ↦ h _ (hF j)⟩
 
 /-- A structure expressing that `X : C` is the colimit of a functor
-`diag : J ⥤ C` such that `P (diag.obj j)` hold for all `j`. -/
+`diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
 structure ColimitOfShape (X : C) extends ColimitPresentation J X where
   prop_diag_obj (j : J) : P (diag.obj j)
 
@@ -64,12 +69,11 @@ variable {P J}
 
 /-- If `F : J ⥤ C` is a functor that has a colimit and is such that for all `j`,
 `F.obj j` satisfies a property `P`, then this structure expresses that `colimit F`
-is indeed a colimits of objects satisfying `P`. -/
+is indeed a colimit of objects satisfying `P`. -/
+@[simps toColimitPresentation]
 noncomputable def colimit (F : J ⥤ C) [HasColimit F] (hF : ∀ j, P (F.obj j)) :
     P.ColimitOfShape J (colimit F) where
-  diag := F
-  ι := _
-  isColimit := colimit.isColimit _
+  toColimitPresentation := .colimit F
   prop_diag_obj := hF
 
 /-- If `X` is a colimit indexed by `J` of objects satisfying a property `P`, then
@@ -81,7 +85,7 @@ def ofIso {X : C} (h : P.ColimitOfShape J X) {Y : C} (e : X ≅ Y) :
   prop_diag_obj := h.prop_diag_obj
 
 /-- If `X` is a colimit indexed by `J` of objects satisfying a property `P`,
-it is also a colimit indexed by `J` of objects satisfyind `Q` if `P ≤ Q`. -/
+it is also a colimit indexed by `J` of objects satisfying `Q` if `P ≤ Q`. -/
 @[simps toColimitPresentation]
 def ofLE {X : C} (h : P.ColimitOfShape J X) {Q : ObjectProperty C} (hPQ : P ≤ Q) :
     Q.ColimitOfShape J X where
@@ -132,7 +136,7 @@ lemma colimitsOfShape_isoClosure :
   intro X ⟨h⟩
   choose obj h₁ h₂ using h.prop_diag_obj
   exact
-   ⟨{ toColimitPresentation := h.chgDiag (h.diag.isoCopyObj obj (fun j ↦ (h₂ j).some)).symm
+   ⟨{ toColimitPresentation := h.changeDiag (h.diag.isoCopyObj obj (fun j ↦ (h₂ j).some)).symm
       prop_diag_obj := h₁ }⟩
 
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [LocallySmall.{w} J] :
@@ -143,4 +147,50 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 
-end CategoryTheory.ObjectProperty
+/-- A property of objects satisfies `P.IsClosedUnderColimitsOfShape J` if it
+is stable by colimits of shape `J`. -/
+@[mk_iff]
+class IsClosedUnderColimitsOfShape (P : ObjectProperty C) (J : Type u') [Category.{v'} J] where
+  colimitsOfShape_le (P J) : P.colimitsOfShape J ≤ P
+
+variable {P J} in
+lemma IsClosedUnderColimitsOfShape.mk' [P.IsClosedUnderIsomorphisms]
+    (h : P.strictColimitsOfShape J ≤ P) :
+    P.IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    conv_rhs => rw [← P.isoClosure_eq_self]
+    rw [← isoClosure_strictColimitsOfShape]
+    exact monotone_isoClosure h
+
+export IsClosedUnderColimitsOfShape (colimitsOfShape_le)
+
+section
+
+variable {J} [P.IsClosedUnderColimitsOfShape J]
+
+variable {P} in
+lemma ColimitOfShape.prop {X : C} (h : P.ColimitOfShape J X) : P X :=
+  P.colimitsOfShape_le J _ ⟨h⟩
+
+lemma prop_of_isColimit {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
+    (hF : ∀ (j : J), P (F.obj j)) : P c.pt :=
+  P.colimitsOfShape_le J _ ⟨{ diag := _, ι := _, isColimit := hc, prop_diag_obj := hF }⟩
+
+lemma prop_colimit (F : J ⥤ C) [HasColimit F] (hF : ∀ (j : J), P (F.obj j)) :
+    P (colimit F) :=
+  P.prop_of_isColimit (colimit.isColimit F) hF
+
+end
+
+end ObjectProperty
+
+namespace Limits
+
+@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape :=
+  ObjectProperty.IsClosedUnderColimitsOfShape
+@[deprecated (since := "2025-09-22")] alias closedUnderColimitsOfShape_of_colimit :=
+  ObjectProperty.IsClosedUnderColimitsOfShape.mk'
+@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape.colimit :=
+  ObjectProperty.prop_colimit
+
+end CategoryTheory.Limits

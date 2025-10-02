@@ -65,7 +65,7 @@ protected def pointwiseMulAction : MulAction M (AddSubmonoid A) where
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMulAction
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_pointwise_smul (m : M) (S : AddSubmonoid A) : ↑(m • S) = m • (S : Set A) := rfl
 
 lemma smul_mem_pointwise_smul (a : A) (m : M) (S : AddSubmonoid A) : a ∈ S → m • a ∈ m • S :=
