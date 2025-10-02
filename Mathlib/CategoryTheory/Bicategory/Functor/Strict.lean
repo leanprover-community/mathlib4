@@ -27,8 +27,7 @@ variable {B C : Type*} [Bicategory B] [Bicategory C]
 
 namespace Pseudofunctor
 
-/-- A strict pseudofunctor between bicategories is one such that `mapId` and `mapComp` are
-given by `eqToIso _`. -/
+/-- A pseudofunctor is strict if `mapId` and `mapComp` are given by `eqToIso _`. -/
 class IsStrict (F : Pseudofunctor B C) : Prop where
   map_id : ∀ (b : B), F.map (𝟙 b) = 𝟙 (F.obj b) := by cat_disch
   map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), F.map (f ≫ g) = F.map f ≫ F.map g := by
