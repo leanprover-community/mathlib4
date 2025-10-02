@@ -102,7 +102,7 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
   constructor
   · intro h i j hij hj
     rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
-    exact h _ _ (by omega) hj hij
+    exact h _ _ (by cutsat) hj hij
   · intro h i j hi hj hij
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj

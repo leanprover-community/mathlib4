@@ -18,7 +18,7 @@ If `A` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
 
 -/
 
-universe w w' v' u' v u
+universe w w' v u
 
 namespace CategoryTheory
 
