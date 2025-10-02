@@ -23,10 +23,10 @@ local property of this form.
 ## Main definitions and results
 
 * `LocalSourceTargetPropertyAt` captures a local property of the above form: for each `f: M → N`,
-  `x : M` and charts `φ` of `M` around `x` and `ψ` of `N` around `f x`, the local property is either
-  safisfied or not. We ask that the property be stable under restriction of `φ` and local near `x`.
+  and pair of charts `φ` of `M` and `ψ` of `N`, the local property is either safisfied or not.
+  We ask that the property be stable under congruence and under restriction of `φ`.
 * `LiftSourceTargetPropertyAt f x P`, where `P` is a `LocalSourceTargetPropertyAt`,
-   defines a local property of functions of the above shape:
+  defines a local property of functions of the above shape:
   `f` has this property at `x` if there exist charts `φ` and `ψ` such that `P f φ ψ` holds.
 * `LiftSourceTargetPropertyAt.congr_of_eventuallyEq`: if `f` has property `P` at `x`
   and `g` equals `f` near `x`, then `g` also has property `P` at `x`.
@@ -118,8 +118,9 @@ lemma map_source_subset_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
 lemma property (h : LiftSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.codChart :=
   (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2
 
-/-- If `P` is monotone w.r.t. restricting `domChart`, then it suffices to prove continuity of `f`
-at `x` (instead of a relation between the chart's sources). -/
+/-- If `P` is a nice local property, by monotonicity w.r.t. restricting `domChart`,
+if `f` is continuous at `x`, to prove `LiftSourceTargetPropertyAt I I' n f x P`
+we need not check the condition `f '' domChart.source ⊆ codChart.source`. -/
 lemma mk_of_continuousAt (hf : ContinuousAt f x)
     (hP : IsLocalSourceTargetProperty P)
     (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph M' H')
