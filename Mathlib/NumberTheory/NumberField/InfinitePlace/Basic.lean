@@ -361,7 +361,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
   · intro ψ hψ
     have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
     have main : w = InfinitePlace.mk ψ.toRingHom := by
-      simp at hψ
+      simp only [RingHom.toRatAlgHom_apply] at hψ
       rw [← norm_embedding_eq, hψ] at h
       contrapose! h
       exact h₂ h.symm

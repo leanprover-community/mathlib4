@@ -332,7 +332,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
 
 @[simp] lemma range_extendLeft_zero (c : OrderedFinpartition n) :
     range (c.extendLeft.emb 0) = {0} := by
-  simp [extendLeft]
+  simp only [extendLeft, cases_zero]
   apply @range_const _ _ (by simp; infer_instance)
 
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
@@ -665,7 +665,6 @@ def extendEquiv (n : ℕ) :
       ext
       · exact A
       · refine (Fin.heq_fun_iff A).mpr (fun i ↦ ?_)
-        simp
         induction i using Fin.induction with
         | zero => change 1 = c.partSize 0; simp [c.partSize_eq_one_of_range_emb_eq_singleton h]
         | succ i => simp only [cons_succ, val_succ]; rfl
