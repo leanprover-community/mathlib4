@@ -102,12 +102,12 @@ elab:max "T% " t:term:arg : term => do
   | .forallE x base (mkApp3 (.const ``Bundle.Trivial _) E E' _) _ =>
     trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle"
     if ← withReducible (isDefEq E base) then
-      return ← withLocalDecl x BinderInfo.default base fun x ↦ do
+      return ← withLocalDeclD x base fun x ↦ do
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
         mkLambdaFVars #[x] body
   | .forallE x base (mkApp12 (.const ``TangentSpace _) _k _ E _ _ _H _ _I _M _ _ _x) _ =>
     trace[Elab.DiffGeo.TotalSpaceMk] "Vector field"
-    return ← withLocalDecl x BinderInfo.default base fun x ↦ do
+    return ← withLocalDeclD x base fun x ↦ do
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
       mkLambdaFVars #[x] body
   | .forallE x base (.app V _) _ =>
@@ -117,7 +117,7 @@ elab:max "T% " t:term:arg : term => do
       match decltype with
       | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ =>
         if ← withReducible (isDefEq E V) then
-          return ← withLocalDecl x BinderInfo.default base fun x ↦ do
+          return ← withLocalDeclD x base fun x ↦ do
             let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, .app e x]
             mkLambdaFVars #[x] body
       | _ => pure ()
@@ -130,7 +130,7 @@ elab:max "T% " t:term:arg : term => do
       throwError "Term {tgt} has loose bound variables¬
       Hint: applying the 'T%' elaborator twice makes no sense."
     let trivBundle ← mkAppOptM ``Bundle.Trivial #[src, tgt]
-    return ← withLocalDecl x BinderInfo.default src fun x ↦ do
+    return ← withLocalDeclD x src fun x ↦ do
       let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[src, trivBundle, tgt, x, e.app x]
       mkLambdaFVars #[x] body
   | _ => pure ()
