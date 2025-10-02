@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jingting Wang
+Authors: Jiedong Jiang, Jingting Wang
 -/
 import Mathlib.CategoryTheory.Action.Limits
 import Mathlib.Algebra.Category.Grp.Zero
@@ -118,6 +118,8 @@ def H1 := Quotient (Z1.setoid G A)
 instance : Zero (H1 G A) := ⟨⟦0⟧⟩
 instance : Inhabited (H1 G A) := ⟨0⟩
 
+lemma zero_def : (0 : H1 G A) = ⟦0⟧ := rfl
+
 variable {G}
 
 def H1.map {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A]
@@ -133,10 +135,8 @@ theorem H1.map_id (A : Type*) [AddGroup A] [DistribMulAction G A] :
 
 theorem H1.map_zero {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G A]
     [DistribMulAction G B] (f : A →+[G] B) : H1.map f 0 = 0 := by
-  change H1.map f ⟦0⟧ = ⟦0⟧
-  rw [H1.map, Quotient.map_mk]
-  congr 1
-  exact Subtype.ext (funext fun x ↦ f.map_zero)
+  simp only [H1.map, zero_def, Quotient.map_mk]
+  exact congrArg _ <| Subtype.ext (funext fun x ↦ f.map_zero)
 
 
 theorem H1.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
@@ -153,16 +153,17 @@ variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGr
     {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
     (hfg : Function.Exact f g)
 
+attribute [local simp] Equiv.apply_ofInjective_symm
+
 @[simps]
 noncomputable def δ₀₁_aux (b : B) (c : H0 G C) (hb : g b = c) : Z1 G A := ⟨fun s ↦
-    (Equiv.ofInjective f hf).symm
-      ⟨-b + s • b, ((hfg _).mp (by simp [hb, c.prop s]))⟩,
-    fun g h ↦ hf (by simp [Equiv.apply_ofInjective_symm, mul_smul, ← add_assoc])⟩
+  (Equiv.ofInjective f hf).symm ⟨-b + s • b, ((hfg _).mp (by simp [hb, c.prop s]))⟩,
+    fun g h ↦ hf (by simp [mul_smul, ← add_assoc])⟩
 
 theorem δ₀₁_aux_well_defined_1 (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
     Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') :=
   ⟨(Equiv.ofInjective f hf).symm ⟨- b + b', (hfg _).mp (by rw [map_add, map_neg, hb, hb',
-    neg_add_cancel])⟩, fun h ↦ hf (by simp [δ₀₁_aux, Equiv.apply_ofInjective_symm, ← add_assoc])⟩
+    neg_add_cancel])⟩, fun h ↦ hf (by simp [δ₀₁_aux, ← add_assoc])⟩
 
 noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
     ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
@@ -172,29 +173,28 @@ theorem δ₀₁_eq_of_map (b : B) (c : H0 G C) (hb : g b = c) :
   Quotient.eq_iff_equiv.mpr (δ₀₁_aux_well_defined_1 ..)
 
 theorem δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 :=
-  (δ₀₁_eq_of_map hf hg hfg 0 0 (map_zero _)).trans (
-    congrArg (f := Quotient.mk (show Setoid (Z1 G A) from inferInstance))
-      (Subtype.ext (funext fun x ↦ hf (by simp [δ₀₁_aux, Equiv.apply_ofInjective_symm]))))
+  (δ₀₁_eq_of_map hf hg hfg 0 0 (map_zero _)).trans (congrArg _ <| Subtype.ext <|
+    funext fun x ↦ hf <| by simp [δ₀₁_aux])
 
 include hf hfg in
 theorem exact₁ : Function.Exact (H0.map f) (H0.map g) :=
   fun y ↦ ⟨fun h ↦ ⟨⟨(Equiv.ofInjective f hf).symm ⟨y, (hfg _).mp congr(Subtype.val $h)⟩,
-    fun g ↦ hf (by simpa only [map_smul, Equiv.apply_ofInjective_symm] using y.2 g)⟩,
-      Subtype.ext (Equiv.apply_ofInjective_symm _ _)⟩,
-        fun ⟨x, hx⟩ ↦ Subtype.ext ((hfg _).mpr ⟨x.1, congr(Subtype.val $hx)⟩)⟩
+    fun g ↦ hf (by simpa [map_smul] using y.2 g)⟩, Subtype.ext (Equiv.apply_ofInjective_symm _ _)⟩,
+      fun ⟨x, hx⟩ ↦ Subtype.ext ((hfg _).mpr ⟨x.1, congr(Subtype.val $hx)⟩)⟩
 
 theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := by
   refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ (δ₀₁_eq_of_map (hb := congr(Subtype.val $hx)) ..).trans
-    <| congrArg (f := Quotient.mk (show Setoid (Z1 G A) from inferInstance)) <| Subtype.ext <|
-      funext <| fun s ↦ hf (by simp [δ₀₁_aux, Equiv.apply_ofInjective_symm, x.2 s])⟩
+    <| congrArg _ <| Subtype.ext <| funext <| fun s ↦ hf (by simp [δ₀₁_aux, x.2 s])⟩
   obtain ⟨b, hb⟩ := hg y
-  rw [δ₀₁_eq_of_map (hb := hb)] at h
-  obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
+  obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp ((δ₀₁_eq_of_map (hb := hb) ..).symm.trans h)
   refine ⟨⟨b + f x, fun h ↦ (neg_add_eq_zero.mp ?_).symm⟩,
     Subtype.ext (by simpa [H0.map, hfg.apply_apply_eq_zero])⟩
-  simpa [δ₀₁_aux, Equiv.apply_ofInjective_symm, ← add_assoc] using congr(f $(hx h)).symm
+  simpa [δ₀₁_aux, ← add_assoc] using congr(f $(hx h)).symm
 
-theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
+theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := by
+  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
+  · sorry
+  · sorry
 
 theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
 
@@ -270,6 +270,8 @@ variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
   {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
   (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
 
+attribute [local simp] Equiv.apply_ofInjective_symm
+
 noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x)) :
     LinearMap.ker (ModuleCat.Hom.hom (d₂₃ A)) := by
   refine ⟨fun st ↦ (Equiv.ofInjective f hf).symm
@@ -283,7 +285,7 @@ noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c 
     (b x) + (x • b y + x • y • b z + -(x • b (y * z))) := by
       refine (AddSubgroup.mem_center_iff.mp (hA ((hfg _).mp ?_ : _ ∈ f.range)) (b x)).symm
       simp [← hbc, c.prop, ← add_assoc]
-  simp [Equiv.apply_ofInjective_symm, sub_eq_add_neg, mul_smul, ← add_assoc, this, mul_assoc]
+  simp [sub_eq_add_neg, mul_smul, ← add_assoc, this, mul_assoc]
 
 theorem δ₁₂_aux_well_defined_1 (b b' : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
     (hbc' : ∀ (x : G), c x = g (b' x)) :
@@ -322,8 +324,7 @@ theorem δ₁₂_aux_well_defined_2 (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ 
   refine Submodule.add_mem _ ⟨fun _ ↦ 0, funext fun ⟨h, h'⟩ ↦ hf ?_⟩ (δ₁₂_aux_well_defined_1 ..)
   have : b h + h • b h' + -b (h * h') + -t' = -t' + (b h + h • b h' + -b (h * h')) :=
     (AddSubgroup.mem_center_iff.mp (hA ((hfg _).mp (by simp [← hbc, c.prop, add_assoc]))) _).symm
-  simp [δ₁₂_aux, Equiv.apply_ofInjective_symm, b'', sub_eq_add_neg, neg_add_rev, ← add_assoc,
-    mul_smul, this]
+  simp [δ₁₂_aux, b'', sub_eq_add_neg, neg_add_rev, ← add_assoc, mul_smul, this]
 
 noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
   refine (H2Iso A).symm.hom ∘ Quotient.lift (Submodule.Quotient.mk ∘
