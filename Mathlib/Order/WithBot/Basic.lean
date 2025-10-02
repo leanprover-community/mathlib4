@@ -65,6 +65,8 @@ theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
 
+theorem coe_eq_coe : (a : WithBot α) = (b : WithBot α) ↔ a = b := coe_inj
+
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
 def unbotD (d : α) (x : WithBot α) : α :=
@@ -77,8 +79,6 @@ theorem unbotD_bot {α} (d : α) : unbotD d ⊥ = d :=
 @[simp]
 theorem unbotD_coe {α} (d x : α) : unbotD d x = x :=
   rfl
-
-theorem coe_eq_coe : (a : WithBot α) = (b : WithBot α) ↔ a = b := coe_inj
 
 theorem unbotD_eq_iff {d y : α} {x : WithBot α} : unbotD d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
   induction x <;> simp [@eq_comm _ d]
@@ -190,6 +190,9 @@ lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
 lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x := by grind
 
 @[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_bot := eq_bot_iff_forall_ne
+
+theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x, x ≠ ⊥ → p x) ↔ ∀ x : α, p x := by
+  simp [ne_bot_iff_exists]
 
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
@@ -777,6 +780,9 @@ lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x
   WithBot.eq_bot_iff_forall_ne
 
 @[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_top := eq_top_iff_forall_ne
+
+theorem forall_ne_top {p : WithTop α → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : α, p x := by
+  simp [ne_top_iff_exists]
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x

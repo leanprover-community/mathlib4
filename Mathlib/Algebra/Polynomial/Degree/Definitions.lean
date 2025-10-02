@@ -91,9 +91,8 @@ theorem degree_eq_bot : degree p = ⊥ ↔ p = 0 :=
 theorem degree_ne_bot : degree p ≠ ⊥ ↔ p ≠ 0 := degree_eq_bot.not
 
 theorem degree_eq_natDegree (hp : p ≠ 0) : degree p = (natDegree p : WithBot ℕ) := by
-  let ⟨n, hn⟩ := not_forall.1 (mt Option.eq_none_iff_forall_not_mem.2 (mt degree_eq_bot.1 hp))
-  have hn : degree p = some n := Classical.not_not.1 hn
-  rw [natDegree, hn]; rfl
+  lift p.degree to ℕ using degree_ne_bot.mpr hp with d hd
+  simp [natDegree, ← hd, Nat.cast_withBot]
 
 theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
     p.degree = n ↔ p.natDegree = n := by rw [degree_eq_natDegree hp]; exact WithBot.coe_eq_coe
