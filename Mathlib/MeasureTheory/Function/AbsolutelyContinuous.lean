@@ -182,7 +182,7 @@ theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInter
     AbsolutelyContinuousOnInterval (fun x ↦ α * f x) a b :=
   hf.const_smul α
 
-lemma uniformity_comap_totalLengthFilter :
+lemma uniformity_eq_comap_totalLengthFilter :
     uniformity X = comap (fun x ↦ (1, fun _ ↦ x)) totalLengthFilter := by
   refine Filter.HasBasis.eq_of_same_basis Metric.uniformity_basis_dist ?_
   convert hasBasis_totalLengthFilter.comap _
