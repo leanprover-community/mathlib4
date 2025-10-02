@@ -806,4 +806,28 @@ def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v 
 
 end Incidence
 
+section Subsingleton
+
+theorem subsingleton_iff_subsingleton : Subsingleton V ↔ Subsingleton (SimpleGraph V) := by
+  refine ⟨fun _ ↦ Unique.instSubsingleton, fun h ↦ ?_⟩
+  contrapose! h
+  rw [not_subsingleton_iff_nontrivial] at h ⊢
+  exact instNontrivial
+
+theorem nontrivial_iff_nontrivial : Nontrivial V ↔ Nontrivial (SimpleGraph V) := by
+  refine ⟨fun _ ↦ instNontrivial, fun h ↦ ?_⟩
+  contrapose! h
+  rw [not_nontrivial_iff_subsingleton] at h ⊢
+  exact Unique.instSubsingleton
+
+theorem nontrivial_of_ne_bot {G : SimpleGraph V} (h : G ≠ ⊥) : Nontrivial V := by
+  contrapose! h
+  exact subsingleton_iff_subsingleton.mp (not_nontrivial_iff_subsingleton.mp h) |>.allEq _ _
+
+theorem nontrivial_of_ne_top {G : SimpleGraph V} (h : G ≠ ⊤) : Nontrivial V := by
+  contrapose! h
+  exact subsingleton_iff_subsingleton.mp (not_nontrivial_iff_subsingleton.mp h) |>.allEq _ _
+
+end Subsingleton
+
 end SimpleGraph
