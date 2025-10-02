@@ -161,7 +161,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
     if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
       if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
         trace[MDiffElab] m!"This is the total space of the tangent bundle of {M}"
-        let srcIT : Term ← PrettyPrinter.delab I
+        let srcIT : Term ← Term.exprToSyntax I
         let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
         let res ← Term.elabTerm resTerm none
         trace[MDiffElab] m!"Found model: {res}"
@@ -185,9 +185,9 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
           if Kok then break
         unless Kok do throwError
           m!"Couldn’t find a normed space structure on {F} in local context"
-        let kT : Term ← PrettyPrinter.delab K
-        let srcIT : Term ← PrettyPrinter.delab srcI
-        let FT : Term ← PrettyPrinter.delab F
+        let kT : Term ← Term.exprToSyntax K
+        let srcIT : Term ← Term.exprToSyntax srcI
+        let FT : Term ← Term.exprToSyntax F
         let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
         let I ← Term.elabTerm iTerm none
         trace[MDiffElab] m!"Found model: {I}"
@@ -216,8 +216,8 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
       | _ => pure ()
       if Hok || Kok then break
     if Kok then
-      let eT : Term ← PrettyPrinter.delab e
-      let eK : Term ← PrettyPrinter.delab K
+      let eT : Term ← Term.exprToSyntax e
+      let eK : Term ← Term.exprToSyntax K
       let iTerm : Term ← ``(𝓘($eK, $eT))
       let I ← Term.elabTerm iTerm none
       trace[MDiffElab] m!"Found model: {I}"
@@ -241,7 +241,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
         | _ => pure ()
     else
       trace[MDiffElab] m!"Hoping {e} is a normed field"
-      let eT : Term ← PrettyPrinter.delab e
+      let eT : Term ← Term.exprToSyntax e
       let iTerm : Term ← `(𝓘($eT, $eT))
       let I ← Term.elabTerm iTerm none
       trace[MDiffElab] m!"Found model: {I}"
