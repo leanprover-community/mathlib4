@@ -245,7 +245,7 @@ lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X,
     IsNilpotent s := by
   choose fn hfn using h
   have : Fintype 𝒰.I₀ := Fintype.ofFinite 𝒰.I₀
-  /- the maximum of all `fn i` (exists, because `𝒰.J` is finite) -/
+  /- the maximum of all `fn i` (exists, because `𝒰.I₀` is finite) -/
   let N : ℕ := Finset.sup Finset.univ fn
   have hfnleN (i : 𝒰.I₀) : fn i ≤ N := Finset.le_sup (Finset.mem_univ i)
   use N
