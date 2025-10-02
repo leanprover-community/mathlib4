@@ -62,8 +62,11 @@ indexed by finsupps, making it difficult to turn into the appropriate normal for
 def preprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
-  let simps : Array Name := #[``Algebra.algebraMap_eq_smul_one, ``Polynomial.C_eq_smul_one,
-    ``Polynomial.monomial_eq_smul, ``MvPolynomial.C_eq_smul_one, ]
+  let simps : Array Name := #[``Algebra.algebraMap_eq_smul_one,
+    ``Polynomial.C_eq_smul_one, ``Polynomial.monomial_eq_smul,
+    ``Polynomial.map_add, ``Polynomial.map_mul, ``Polynomial.map_pow,
+    ``Polynomial.map_C, ``Polynomial.map_X, ``Polynomial.map_natCast,
+    ``MvPolynomial.C_eq_smul_one, ]
   for thm in simps do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
