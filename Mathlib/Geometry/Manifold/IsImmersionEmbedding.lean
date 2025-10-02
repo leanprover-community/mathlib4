@@ -82,7 +82,7 @@ def ImmersionAtProp :
 
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a "nice" local property. -/
-lemma ImmersionAtPropIsNice : IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
+lemma isLocalSourceTargetProperty_immersionAtProp : IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
   mono_source {f φ ψ s} hs hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
     obtain ⟨equiv, hf⟩ := hf
