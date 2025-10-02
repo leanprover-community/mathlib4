@@ -60,7 +60,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-local instance small_of_quotient [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
+local instance small_of_quotient' [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
@@ -78,7 +78,7 @@ universe w
 
 variable [UnivLE.{v, w}]
 
-local instance hasExt_of_small [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
+local instance hasExt_of_small' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
@@ -288,7 +288,7 @@ universe w
 
 variable [Small.{v} R] [UnivLE.{v, w}]
 
-local instance hasExt_of_small' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
+local instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
@@ -302,8 +302,6 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
       (AlgEquiv.quotientBot R R).toLinearEquiv
     let φ := Ext.linearEquiv₀ (R := R) (X := ModuleCat.of R (Shrink (R ⧸ (⊥ : Ideal R)))) (Y := M)
 
-    -- let ψ := LinearEquiv.arrowCongr e₀ (LinearEquiv.refl R ↥M)
-    --fym
     sorry
   · rename_i n hn _ _
     match rs with
