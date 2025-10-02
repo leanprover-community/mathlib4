@@ -16,6 +16,13 @@ import Mathlib.Algebra.Category.Grp.Injective
 Given an abelian group `A`, then `i : A ⟶ ∏_{A⋆} ℚ ⧸ ℤ` defined by `i : a ↦ c ↦ c a` is an
 injective presentation for `A`, hence category of abelian groups has enough injectives.
 
+## Main results
+
+- `AddCommGrp.enoughInjectives` : the category of abelian groups (written additively) has
+  enough injectives.
+- `CommGrp.enoughInjectives` : the category of abelian groups (written multiplicatively) has
+  enough injectives.
+
 ## Implementation notes
 
 This file is split from `Mathlib/Algebra/Category/Grp/Injective.lean` to prevent import loops.

@@ -10,6 +10,7 @@ import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Big operators on a finset in ordered groups
@@ -242,7 +243,7 @@ lemma prod_min_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι �
 
 theorem abs_sum_le_sum_abs {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     (f : ι → G) (s : Finset ι) :
-    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
+    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add_le s f
 
 theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     {f : ι → G} {s : Finset ι}
@@ -260,7 +261,7 @@ variable [CommMonoid α] [LE α] [MulLeftMono α] {s : Finset ι} {f : ι → α
 @[to_additive (attr := simp)]
 lemma mulLECancellable_prod :
     MulLECancellable (∏ i ∈ s, f i) ↔ ∀ ⦃i⦄, i ∈ s → MulLECancellable (f i) := by
-  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+  induction s using Finset.cons_induction <;> simp [*]
 
 end CommMonoid
 
@@ -363,30 +364,39 @@ end DoubleCounting
 
 section CanonicallyOrderedMul
 
-variable [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] [CanonicallyOrderedMul M]
-  {f : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
 
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
 See also `Finset.single_le_prod'`. -/
-@[to_additive "In a canonically-ordered additive monoid, a sum bounds each of its terms.
+@[to_additive /-- In a canonically-ordered additive monoid, a sum bounds each of its terms.
 
-See also `Finset.single_le_sum`."]
-lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
+See also `Finset.single_le_sum`. -/]
+lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
     f i ≤ ∏ j ∈ s, f j :=
+  have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   single_le_prod' (fun _ _ ↦ one_le _) hi
+
+@[deprecated (since := "2025-09-06")]
+alias _root_.CanonicallyOrderedCommMonoid.single_le_prod := single_le_prod_of_canonicallyOrdered
+
+@[deprecated (since := "2025-09-06")]
+alias _root_.CanonicallyOrderedAddCommMonoid.single_le_sum := single_le_sum_of_canonicallyOrdered
 
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x :=
+  have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   prod_le_prod_of_subset_of_one_le' h fun _ _ _ ↦ one_le _
 
 @[to_additive sum_mono_set]
 theorem prod_mono_set' (f : ι → M) : Monotone fun s ↦ ∏ x ∈ s, f x := fun _ _ hs ↦
+  have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   prod_le_prod_of_subset' hs
 
 @[to_additive sum_le_sum_of_ne_zero]
 theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
     ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x := by
+  have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   classical calc
     ∏ x ∈ s, f x = (∏ x ∈ s with f x = 1, f x) * ∏ x ∈ s with f x ≠ 1, f x := by
       rw [← prod_union, filter_union_filter_neg_eq]
@@ -398,6 +408,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
 
 @[to_additive sum_pos_iff]
 lemma one_lt_prod_iff : 1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
+  have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le _
 
 end CanonicallyOrderedMul
@@ -519,6 +530,21 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : ∏ i
 
 end LinearOrderedCancelCommMonoid
 
+theorem apply_sup_le_sum [SemilatticeSup α] [OrderBot α]
+    [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+    {f : α → β} (zero : f ⊥ = 0) (ih : ∀ {s t}, f (s ⊔ t) ≤ f s + f t)
+    {s : ι → α} (t : Finset ι) :
+    f (t.sup s) ≤ ∑ i ∈ t, f (s i) := by
+  classical
+  refine t.induction_on zero.le fun i t it h ↦ ?_
+  simpa only [sup_insert, Finset.sum_insert it] using ih.trans (by gcongr)
+
+theorem apply_union_le_sum [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+    {f : Set α → β} (zero : f ∅ = 0) (ih : ∀ {s t}, f (s ∪ t) ≤ f s + f t)
+    {s : ι → Set α} (t : Finset ι) :
+    f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
+  Finset.sup_set_eq_biUnion t s ▸ t.apply_sup_le_sum zero (by simpa)
+
 end Finset
 
 namespace Fintype
@@ -576,10 +602,12 @@ namespace Multiset
 
 theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β → Multiset α} :
     i.sum f = i.sup f ↔ ∀ x ∈ i, ∀ y ∈ i, x ≠ y → Disjoint (f x) (f y) := by
-  induction' i using Finset.cons_induction_on with z i hz hr
-  · simp only [Finset.notMem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
+  induction i using Finset.cons_induction_on with
+  | empty =>
+    simp only [Finset.notMem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero]
-  · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
+  | cons z i hz hr =>
+    simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
       forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz

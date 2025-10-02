@@ -163,9 +163,13 @@ noncomputable abbrev toCoinvariantsKer :
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G`-representation on the
 coinvariants of `ρ|_S`. -/
-noncomputable abbrev toCoinvariants :
+noncomputable def toCoinvariants :
     Representation k G (Coinvariants <| ρ.comp S.subtype) :=
   quotient ρ (ker <| ρ.comp S.subtype) fun g => le_comap_ker ρ S g
+
+@[simp]
+lemma toCoinvariants_mk (g : G) (x : V) :
+    toCoinvariants ρ S g (Coinvariants.mk _ x) = Coinvariants.mk _ (ρ g x) := rfl
 
 instance : IsTrivial ((toCoinvariants ρ S).comp S.subtype) where
   out g := by
@@ -405,7 +409,7 @@ noncomputable abbrev coinvariantsTensorMk :
 variable {A B}
 
 lemma coinvariantsTensorMk_apply (a : A) (b : B) :
-  coinvariantsTensorMk A B a b = Coinvariants.mk _ (a ⊗ₜ[k] b) := rfl
+    coinvariantsTensorMk A B a b = Coinvariants.mk _ (a ⊗ₜ[k] b) := rfl
 
 @[ext]
 lemma coinvariantsTensor_hom_ext {M : ModuleCat k}
@@ -416,9 +420,24 @@ lemma coinvariantsTensor_hom_ext {M : ModuleCat k}
 instance (A : Rep k G) : ((coinvariantsTensor k G).obj A).Additive where
 instance (A : Rep k G) : ((coinvariantsTensor k G).obj A).Linear k where
 
+section
+
+variable (k : Type u) {G : Type u} [CommRing k] [Group G]
+
+/-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
+`G ⧸ S`-representation it induces on `A_S`. -/
+@[simps obj_V map_hom]
+noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
+    Rep k G ⥤ Rep k (G ⧸ S) where
+  obj X := X.quotientToCoinvariants S
+  map {X Y} f := {
+    hom := (coinvariantsFunctor k S).map ((Action.res _ S.subtype).map f)
+    comm g := QuotientGroup.induction_on g fun g => by
+      ext; simp [ModuleCat.endRingEquiv, hom_comm_apply] }
+
 section Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (α : Type u) [DecidableEq α]
+variable {k} (A : Rep k G) (α : Type u) [DecidableEq α]
 
 open MonoidalCategory Finsupp ModuleCat.MonoidalCategory
 
@@ -485,4 +504,7 @@ lemma coinvariantsTensorFreeLEquiv_apply (x : (A ⊗ free k G α).ρ.Coinvariant
   rfl
 
 end Finsupp
+
+end
+
 end Rep

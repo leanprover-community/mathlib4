@@ -182,6 +182,23 @@ def objects : Grpd.{v, u} ⥤ Type u where
   obj := Bundled.α
   map F := F.obj
 
+-- TODO: move these up above the Pseudofunctor, or alternatively remove them...
+
+/-- Convert arrows in the category of groupoids to functors,
+which sometimes helps in applying simp lemmas -/
+theorem comp_eq_comp {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g = f ⋙ g :=
+  rfl
+
+/-- Converts identity in the category of groupoids to the functor identity -/
+theorem id_eq_id {C : Grpd.{v, u}} : 𝟙 C = 𝟭 C :=
+  rfl
+
+@[deprecated (since := "2025-09-04")] alias hom_to_functor := comp_eq_comp
+
+@[deprecated "Deprecated in favor of using `CategoryTheory.Grpd.id_eq_id`" (since := "2025-09-04")]
+theorem id_to_functor {C : Grpd.{v, u}} : 𝟭 C = 𝟙 C :=
+  rfl
+
 section Products
 
 /-- Construct the product over an indexed family of groupoids, as a fan. -/

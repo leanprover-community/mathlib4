@@ -43,18 +43,10 @@ theorem LinearOrder.bot_topologicalSpace_eq_generateFrom {α} [LinearOrder α] [
   have : OrderTopology α := ⟨rfl⟩
   exact DiscreteTopology.of_predOrder_succOrder.eq_bot.symm
 
-@[deprecated (since := "2024-11-02")]
-alias bot_topologicalSpace_eq_generateFrom_of_pred_succOrder :=
-  LinearOrder.bot_topologicalSpace_eq_generateFrom
-
 theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOrder α]
     [SuccOrder α] : DiscreteTopology α ↔ OrderTopology α := by
   refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ .of_predOrder_succOrder⟩
   rw [h.eq_bot, LinearOrder.bot_topologicalSpace_eq_generateFrom]
-
-@[deprecated (since := "2024-11-02")]
-alias discreteTopology_iff_orderTopology_of_pred_succ' :=
-  discreteTopology_iff_orderTopology_of_pred_succ
 
 instance OrderTopology.of_discreteTopology [LinearOrder α] [PredOrder α] [SuccOrder α]
     [DiscreteTopology α] : OrderTopology α :=

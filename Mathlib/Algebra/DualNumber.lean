@@ -107,7 +107,7 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
 
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
-nonrec theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
+theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
   ext
   dsimp
   simp only [one_smul, hε]
@@ -149,34 +149,22 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
 @[simp] theorem coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
     (lift.symm F).val = (F.comp (inlAlgHom _ _ _), F ε) := rfl
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
-set_option linter.unusedVariables false in
 /-- When applied to `inl`, `DualNumber.lift` applies the map `f : A →ₐ[R] B`. -/
-@[simp] theorem lift_apply_inl (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) :
+@[simp] theorem lift_apply_inl (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) :
     lift fe (inl a : A[ε]) = fe.val.1 a := by
   rw [lift_apply_apply, fst_inl, snd_inl, map_zero, zero_mul, add_zero]
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
-set_option linter.unusedVariables false in
-@[simp] theorem lift_comp_inlHom (fe : {fe : (A →ₐ[R] B) × B // _}) :
+@[simp] theorem lift_comp_inlHom (fe : {_fe : (A →ₐ[R] B) × B // _}) :
     (lift fe).comp (inlAlgHom R A A) = fe.val.1 :=
   AlgHom.ext <| lift_apply_inl fe
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
-set_option linter.unusedVariables false in
 /-- Scaling on the left is sent by `DualNumber.lift` to multiplication on the left -/
-@[simp] theorem lift_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
+@[simp] theorem lift_smul (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (a • ad) = fe.val.1 a * lift fe ad := by
   rw [← inl_mul_eq_smul, map_mul, lift_apply_inl]
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
-set_option linter.unusedVariables false in
 /-- Scaling on the right is sent by `DualNumber.lift` to multiplication on the right -/
-@[simp] theorem lift_op_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
+@[simp] theorem lift_op_smul (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (MulOpposite.op a • ad) = lift fe ad * fe.val.1 a := by
   rw [← mul_inl_eq_op_smul, map_mul, lift_apply_inl]
 

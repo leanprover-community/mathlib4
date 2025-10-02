@@ -58,8 +58,6 @@ variable {r} {c c₁ c₂ s t : Set α} {a b x y : α}
 @[simp] lemma IsChain.empty : IsChain r ∅ := pairwise_empty _
 @[simp] lemma IsChain.singleton : IsChain r {a} := pairwise_singleton ..
 
-@[deprecated (since := "2024-11-25")] alias isChain_empty := IsChain.empty
-
 theorem Set.Subsingleton.isChain (hs : s.Subsingleton) : IsChain r s :=
   hs.pairwise _
 
@@ -208,7 +206,6 @@ open Classical in
 theorem subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
   else by
-    rw [exists_and_left] at h
     simp [SuccChain, h]
 
 end Chain

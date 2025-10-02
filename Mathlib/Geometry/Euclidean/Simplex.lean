@@ -44,7 +44,8 @@ lemma Equilateral.angle_eq_pi_div_three {s : Simplex ℝ P n} (he : s.Equilatera
     replace hr := hr _ _ h₁₂
     rw [dist_eq_zero] at hr
     exact h₁₂ (s.independent.injective hr)
-  field_simp [mul_comm]
+  field_simp
+  ring
 
 /-- The property of all angles of a simplex being acute. -/
 def AcuteAngled (s : Simplex ℝ P n) : Prop :=

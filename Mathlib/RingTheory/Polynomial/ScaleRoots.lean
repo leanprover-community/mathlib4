@@ -60,7 +60,7 @@ theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) 
     (by intro i
         simp only [coeff_scaleRoots, Polynomial.mem_support_iff]
         intro p_ne_zero ps_zero
-        have := pow_mem hs (p.natDegree - i) _ ps_zero
+        have := (pow_mem hs (p.natDegree - i)).2 _ ps_zero
         contradiction)
 
 @[simp]
@@ -119,7 +119,7 @@ variable [Semiring S] [CommSemiring R] [Semiring A] [Field K]
 theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s : S)
     (hsa : Commute (f s) a) (hf : ∀ s₁ s₂, Commute (f s₁) (f s₂)) :
     eval₂ f (f s * a) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f a p := by
-   calc
+  calc
     _ = (scaleRoots p s).support.sum fun i =>
           f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i := by
       simp [eval₂_eq_sum, sum_def]
@@ -185,7 +185,7 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
   · rw [coeff_mul, Finset.sum_mul]
     apply Finset.sum_congr rfl
     simp only [Finset.mem_antidiagonal, coeff_scaleRoots, Prod.forall]
-    intros a b e
+    intro a b e
     cases lt_or_ge (natDegree p) a with
     | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul]
     | inr ha =>

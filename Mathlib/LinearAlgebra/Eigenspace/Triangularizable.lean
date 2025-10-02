@@ -41,7 +41,7 @@ eigenspace, eigenvector, eigenvalue, eigen
 open Set Function Module Module
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
-   {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+  {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Module.End
 
@@ -180,14 +180,14 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K V ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
     suffices MapsTo (f - algebraMap K (End K V) μ') p p by
-      simp only [Module.End.coe_pow]; exact this.iterate l₀
+      simp only [Module.End.coe_pow, this.iterate l₀]
     intro x hx
     rw [LinearMap.sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)
   have hg₂ : MapsTo g ↑(f.genEigenspace μ k) ↑(f.genEigenspace μ k) :=
     f.mapsTo_genEigenspace_of_comm hfg μ k
   have hg₃ : InjOn g ↑(f.genEigenspace μ k) := by
-    apply LinearMap.injOn_of_disjoint_ker (subset_refl _)
+    apply LinearMap.injOn_of_disjoint_ker subset_rfl
     have this := f.independent_genEigenspace k
     have aux (μ') (_hμ' : μ' ∈ m.support.erase μ) :
         (f.genEigenspace μ') ↑l₀ ≤ (f.genEigenspace μ') k := by
