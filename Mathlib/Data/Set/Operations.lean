@@ -157,7 +157,8 @@ def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
 
 @[simp] lemma rangeFactorization_injective :
-    Injective (Set.rangeFactorization f) ↔ Injective f := by simp [Injective, rangeFactorization]
+    (Set.rangeFactorization f).Injective ↔ f.Injective := by
+  simp [Function.Injective, rangeFactorization]
 
 end Range
 
