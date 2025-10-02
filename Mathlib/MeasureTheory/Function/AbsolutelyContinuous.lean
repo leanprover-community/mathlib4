@@ -46,9 +46,7 @@ We use the the `ε`-`δ` definition to prove that
 absolutely continuous
 -/
 
-variable {X F : Type*}
-variable [PseudoMetricSpace X]
-variable [SeminormedAddCommGroup F]
+variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddCommGroup F]
 
 open Set Filter Function
 
