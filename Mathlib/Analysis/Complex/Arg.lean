@@ -16,7 +16,7 @@ the usual way this is considered.
 
 * `Complex.sameRay_iff` : Two complex numbers are on the same ray iff one of them is zero, or they
   have the same argument.
-* `Complex.abs_add_eq/Complex.abs_sub_eq`: If two non zero complex numbers have the same argument,
+* `Complex.abs_add_eq/Complex.abs_sub_eq`: If two nonzero complex numbers have the same argument,
   then the triangle inequality is an equality.
 
 -/
@@ -57,10 +57,5 @@ theorem norm_add_eq (h : x.arg = y.arg) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
 
 theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ :=
   (sameRay_of_arg_eq h).norm_sub
-
-@[deprecated (since := "2025-02-17")] alias abs_add_eq_iff := norm_add_eq_iff
-@[deprecated (since := "2025-02-17")] alias abs_sub_eq_iff := norm_sub_eq_iff
-@[deprecated (since := "2025-02-17")] alias abs_add_eq := norm_add_eq
-@[deprecated (since := "2025-02-17")] alias abs_sub_eq := norm_sub_eq
 
 end Complex

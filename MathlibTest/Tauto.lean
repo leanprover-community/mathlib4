@@ -119,11 +119,7 @@ variable {p q r : Prop} {α : Type} {x y : α}
 variable (h : x = y)
 variable (h'' : (p ∧ q ↔ q ∨ r) ↔ (r ∧ p ↔ r ∨ q))
 
--- Currently this hits a "failed to show termination error"
--- because it erroneously used a recursive hypothesis.
--- See https://github.com/leanprover-community/mathlib4/issues/1061 and
--- https://github.com/leanprover/lean4/issues/1963
--- example (h' : ¬ y = x) : p ∧ q := by tauto
+example (h' : ¬ y = x) : p ∧ q := by tauto
 
 /-
 example (h' : p ∧ ¬ y = x) : p ∧ q := by tauto

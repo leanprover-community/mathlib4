@@ -52,6 +52,7 @@ theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} 
 
 namespace MeromorphicAt
 
+@[fun_prop]
 lemma id (x : 𝕜) : MeromorphicAt id x := analyticAt_id.meromorphicAt
 
 @[fun_prop]
@@ -216,9 +217,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
         have : (z - x) ^ n * g z ≠ 0 := mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz_ne)) hg_ne'
         rw [← hfg, mul_ne_zero_iff] at this
         exact this.2
-      simp [field]
-      rw [pow_succ', mul_assoc, hfg]
-      ring
+      simp [field, pow_succ', mul_assoc, hfg]
 
 @[fun_prop]
 lemma fun_inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ (f z)⁻¹) x :=

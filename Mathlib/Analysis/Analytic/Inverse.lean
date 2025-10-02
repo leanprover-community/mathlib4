@@ -13,7 +13,7 @@ import Mathlib.Tactic.Positivity
 
 We construct the left and right inverse of a formal multilinear series with invertible linear term,
 we prove that they coincide and study their properties (notably convergence). We deduce that the
-inverse of an analytic partial homeomorphism is analytic.
+inverse of an analytic open partial homeomorphism is analytic.
 
 ## Main statements
 
@@ -27,9 +27,9 @@ inverse of an analytic partial homeomorphism is analytic.
 * `p.radius_rightInv_pos_of_radius_pos`: if a power series has a positive radius of convergence,
   then so does its inverse.
 
-* `PartialHomeomorph.hasFPowerSeriesAt_symm` shows that, if a partial homeomorph has a power series
-  `p` at a point, with invertible linear part, then the inverse also has a power series at the
-  image point, given by `p.leftInv`.
+* `OpenPartialHomeomorph.hasFPowerSeriesAt_symm` shows that, if an open partial homeomorph has a
+  power series `p` at a point, with invertible linear part, then the inverse also has a power series
+  at the image point, given by `p.leftInv`.
 -/
 
 open scoped Topology ENNReal
@@ -270,7 +270,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     simp only [rightInv, neg_inj]
     congr (config := { closePost := false }) 1
     ext v
-    have N : 0 < n + 2 := by norm_num
+    have N : 0 < n + 2 := by simp
     have : ((p 1) fun _ : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
     simp [comp_rightInv_aux1 N, this, comp_rightInv_aux2, -Set.toFinset_setOf]
 
@@ -543,7 +543,7 @@ theorem radius_rightInv_pos_of_radius_pos
     _ ≤ ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i x k‖ :=
       (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i x k‖ := fun k _ => by positivity
       single_le_sum this (by simp [hn]))
-    _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
+    _ ≤ (I + 1) * a := IRec (n + 1) (by simp)
 
 /-- If a a formal multilinear series has a positive radius of convergence, then its left inverse
 also has a positive radius of convergence. -/
@@ -557,7 +557,7 @@ theorem radius_leftInv_pos_of_radius_pos
 end FormalMultilinearSeries
 
 /-!
-### The inverse of an analytic partial homeomorphism is analytic
+### The inverse of an analytic open partial homeomorphism is analytic
 -/
 
 open FormalMultilinearSeries List
@@ -647,10 +647,10 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     exact cauchySeq_finset_of_norm_bounded Z (fun i ↦ le_rfl)
   exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L
 
-/-- If a partial homeomorphism `f` is defined at `a` and has a power series expansion there with
-invertible linear term, then `f.symm` has a power series expansion at `f a`, given by the inverse
-of the initial power series. -/
-theorem PartialHomeomorph.hasFPowerSeriesAt_symm (f : PartialHomeomorph E F) {a : E}
+/-- If an open partial homeomorphism `f` is defined at `a` and has a power series expansion there
+with invertible linear term, then `f.symm` has a power series expansion at `f a`, given by the
+inverse of the initial power series. -/
+theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph E F) {a : E}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.source) {p : FormalMultilinearSeries 𝕜 E F}
     (h : HasFPowerSeriesAt f p a) (hp : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
     HasFPowerSeriesAt f.symm (p.leftInv i a) (f a) := by
@@ -670,7 +670,7 @@ theorem PartialHomeomorph.hasFPowerSeriesAt_symm (f : PartialHomeomorph E F) {a 
     simpa using this.preimage_mem_nhds B
   have D : ∀ᶠ (y : E) in 𝓝 (f.symm (f a)),
       HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f y - f a) y := by
-    simp only [h0, PartialHomeomorph.left_inv]
+    simp only [h0, OpenPartialHomeomorph.left_inv]
     filter_upwards [C, f.open_source.mem_nhds h0] with x hx h'x
     simpa [h'x] using hx
   have E : ∀ᶠ z in 𝓝 (f a), HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f (f.symm z) - f a)
