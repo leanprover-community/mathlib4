@@ -96,6 +96,9 @@ instance inhabited : Inhabited (Z1 G A) := ⟨0⟩
 
 instance coeFun : CoeFun (Z1 G A) (fun _ ↦ G → A) := ⟨fun f ↦ f.val⟩
 
+@[simp]
+lemma zero_apply (g : G) : (0 : Z1 G A) g = 0 := rfl
+
 variable {G} {A} in
 def cohomologous (f g : Z1 G A) : Prop :=
   ∃ a : A, ∀ h : G, g h = - a + f h + (h • a)
@@ -150,12 +153,13 @@ variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGr
     {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
     (hfg : Function.Exact f g)
 
+@[simps]
 noncomputable def δ₀₁_aux (b : B) (c : H0 G C) (hb : g b = c) : Z1 G A := ⟨fun s ↦
     (Equiv.ofInjective f hf).symm
       ⟨-b + s • b, ((hfg _).mp (by simp [hb, c.prop s]))⟩,
     fun g h ↦ hf (by simp [Equiv.apply_ofInjective_symm, mul_smul, ← add_assoc])⟩
 
-theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
+theorem δ₀₁_aux_well_defined_1 (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
     Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') :=
   ⟨(Equiv.ofInjective f hf).symm ⟨- b + b', (hfg _).mp (by rw [map_add, map_neg, hb, hb',
     neg_add_cancel])⟩, fun h ↦ hf (by simp [δ₀₁_aux, Equiv.apply_ofInjective_symm, ← add_assoc])⟩
@@ -163,16 +167,32 @@ theorem δ₀₁_aux_well_defined (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : 
 noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
     ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
 
-def δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 := by
-  apply Quotient.eq_iff_equiv.mpr
-  convert δ₀₁_aux_well_defined hf hfg _ 0 0 _ g.map_zero
-  refine Subtype.ext (funext fun s ↦ hf ?_)
-  simp [δ₀₁_aux, Equiv.apply_ofInjective_symm]
-  exact map_zero _
+theorem δ₀₁_eq_of_map (b : B) (c : H0 G C) (hb : g b = c) :
+    δ₀₁ hf hg hfg c = ⟦δ₀₁_aux hf hfg b c hb⟧ :=
+  Quotient.eq_iff_equiv.mpr (δ₀₁_aux_well_defined_1 ..)
 
-theorem exact₁ : Function.Exact (H0.map f) (H0.map g) := sorry
+theorem δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 :=
+  (δ₀₁_eq_of_map hf hg hfg 0 0 (map_zero _)).trans (
+    congrArg (f := Quotient.mk (show Setoid (Z1 G A) from inferInstance))
+      (Subtype.ext (funext fun x ↦ hf (by simp [δ₀₁_aux, Equiv.apply_ofInjective_symm]))))
 
-theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := sorry
+include hf hfg in
+theorem exact₁ : Function.Exact (H0.map f) (H0.map g) :=
+  fun y ↦ ⟨fun h ↦ ⟨⟨(Equiv.ofInjective f hf).symm ⟨y, (hfg _).mp congr(Subtype.val $h)⟩,
+    fun g ↦ hf (by simpa only [map_smul, Equiv.apply_ofInjective_symm] using y.2 g)⟩,
+      Subtype.ext (Equiv.apply_ofInjective_symm _ _)⟩,
+        fun ⟨x, hx⟩ ↦ Subtype.ext ((hfg _).mpr ⟨x.1, congr(Subtype.val $hx)⟩)⟩
+
+theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := by
+  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ (δ₀₁_eq_of_map (hb := congr(Subtype.val $hx)) ..).trans
+    <| congrArg (f := Quotient.mk (show Setoid (Z1 G A) from inferInstance)) <| Subtype.ext <|
+      funext <| fun s ↦ hf (by simp [δ₀₁_aux, Equiv.apply_ofInjective_symm, x.2 s])⟩
+  obtain ⟨b, hb⟩ := hg y
+  rw [δ₀₁_eq_of_map (hb := hb)] at h
+  obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
+  refine ⟨⟨b + f x, fun h ↦ (neg_add_eq_zero.mp ?_).symm⟩,
+    Subtype.ext (by simpa [H0.map, hfg.apply_apply_eq_zero])⟩
+  simpa [δ₀₁_aux, Equiv.apply_ofInjective_symm, ← add_assoc] using congr(f $(hx h)).symm
 
 theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
 
@@ -290,7 +310,7 @@ theorem δ₁₂_aux_well_defined_1 (b b' : G → B) (c : Z1 G C) (hbc : ∀ (x 
   simp [ha, sub_eq_add_neg, neg_add_rev, add_assoc]
 
 include hg in
-theorem δ₁₂_aux_well_defined (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
+theorem δ₁₂_aux_well_defined_2 (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
     (hbc' : ∀ (x : G), c' x = g (b' x)) (hcc' : Z1.cohomologous c c') :
     ((δ₁₂_aux hf hfg hA b c hbc) - (δ₁₂_aux hf hfg hA b' c' hbc') : (ModuleCat.of k (G × G → A))) ∈
     (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := by
@@ -310,7 +330,7 @@ noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
     (fun c ↦ ((δ₁₂_aux hf hfg hA (fun x ↦ Classical.choose (hg (c x))) c
       (fun x ↦ (Classical.choose_spec (hg (c x))).symm)))))
         (fun c c' (hcc' : Z1.cohomologous c c') ↦ ?_)
-  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined hf hg hfg hA (fun x ↦ Classical.choose (hg (c x)))
+  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined_2 hf hg hfg hA (fun x ↦ Classical.choose (hg (c x)))
     (fun x ↦ Classical.choose (hg (c' x))) c c' (fun x ↦ (Classical.choose_spec (hg (c x))).symm)
       (fun x ↦ (Classical.choose_spec (hg (c' x))).symm) hcc'
   exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
