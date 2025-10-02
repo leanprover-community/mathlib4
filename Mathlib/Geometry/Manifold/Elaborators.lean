@@ -136,6 +136,26 @@ elab:max "T% " t:term:arg : term => do
   | _ => pure ()
   return e
 
+/-- Finds the first local instance of class `c` for which `p inst type` produces `some a`.
+Instantiates mvars in and runs `whnfR` on `type` before passing it to `p`. (Does not validate that
+`c` resolves to a class.) -/
+private def findSomeLocalInstanceOf? (c : Name) {α} (p : Expr → Expr → MetaM (Option α)) :
+    MetaM (Option α) := do
+  (← getLocalInstances).findSomeM? fun inst ↦ do
+    if inst.className == c then
+      let type ← whnfR <|← instantiateMVars <|← inferType inst.fvar
+      p inst.fvar type
+    else return none
+
+/-- Finds the most recent local declaration for which `p fvar type` produces `some a`.
+Skips implementation details; instantiates mvars in and runs `whnfR` on `type` before providing it
+to `p`. -/
+private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : MetaM (Option α) := do
+  (← getLCtx).findDeclRevM? fun decl ↦ do
+    if decl.isImplementationDetail then return none
+    let type ← whnfR <|← instantiateMVars decl.type
+    p decl.toExpr type
+
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the expected type. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -169,22 +189,13 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
 
       trace[Elab.DiffGeo.MDiff] m!"This is a total space with fiber {F}"
       if let some (_src, srcI) := baseInfo then
-        let mut K : Expr := default
-        let mut normedSpaceInst : Expr := default
-        let mut Kok : Bool := false
-        for decl in ← getLocalHyps do
-          let decltype ← whnfR <|← instantiateMVars <|← inferType decl
-          match decltype with
-          | mkApp4 (.const ``NormedSpace _) K' E _ _ =>
-            if E == F then
-              K := K'
-              trace[Elab.DiffGeo.MDiff] m!"{F} is a normed field over {K}"
-              normedSpaceInst := decl
-              Kok := true
-          | _ => pure ()
-          if Kok then break
-        unless Kok do throwError
-          m!"Couldn’t find a normed space structure on {F} in local context"
+        let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
+            match_expr type with
+            | NormedSpace K E _ _ =>
+              if E == F then return some K else return none
+            | _ => return none
+          | throwError "Couldn't find a `NormedSpace` structure on {F} in the local instances."
+        trace[Elab.DiffGeo.MDiff] m!"{F} is a normed field over {K}"
         let kT : Term ← Term.exprToSyntax K
         let srcIT : Term ← Term.exprToSyntax srcI
         let FT : Term ← Term.exprToSyntax F
@@ -194,28 +205,13 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
         return I
       else
         throwError "Having a TotalSpace as source is not yet supported"
-    let mut H : Expr := default
-    let mut Hok : Bool := false
-    let mut K : Expr := default
-    let mut normedSpaceInst : Expr := default
-    let mut Kok : Bool := false
-    for decl in ← getLocalHyps do
-      let decltype ← whnfR <|← instantiateMVars <|← inferType decl
-      match decltype with
-      | mkApp4 (.const ``ChartedSpace _) H' _ M _ =>
-        if M == e then
-          H := H'
-          trace[Elab.DiffGeo.MDiff] m!"H is: {H}"
-          Hok := true
-      | mkApp4 (.const ``NormedSpace _) K' E _ _ =>
-        if E == e then
-          K := K'
-          trace[Elab.DiffGeo.MDiff] m!"Field is: {K}"
-          normedSpaceInst := decl
-          Kok := true
-      | _ => pure ()
-      if Hok || Kok then break
-    if Kok then
+    let K? ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
+      match_expr type with
+      | NormedSpace K E _ _ =>
+        if E == e then return some K else return none
+      | _ => return none
+    if let some K := K? then
+      trace[Elab.DiffGeo.MDiff] "Field is: {K}"
       let eT : Term ← Term.exprToSyntax e
       let eK : Term ← Term.exprToSyntax K
       let iTerm : Term ← ``(𝓘($eK, $eT))
@@ -230,15 +226,21 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
       -- trace[Elab.DiffGeo.MDiff] m!"NormedAddCommGroup  instance is: {normedGroupE}"
       -- return mkAppN (.const `modelWithCornersSelf [uK, ue])
       --   #[K, normedFieldK, e, normedGroupE, normedSpaceInst]
-    else if Hok then
-      for decl in ← getLocalHyps do
-        let decltype ← whnfR <|← instantiateMVars <|← inferType decl
-        match decltype with
-        | mkApp7 (.const ``ModelWithCorners  _) _ _ _ _ _ H' _ =>
-          if H' == H then
-            trace[Elab.DiffGeo.MDiff] m!"Found model: {decl}"
-            return decl
-        | _ => pure ()
+    let H? ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
+      match_expr type with
+      | ChartedSpace H _ M _ =>
+        if M == e then return some H else return none
+      | _ => return none
+    if let some H := H? then
+      trace[Elab.DiffGeo.MDiff] "H is: {H}"
+      let some m ← findSomeLocalHyp? fun fvar type ↦ do
+          match_expr type with
+          | ModelWithCorners _ _ _ _ _ H' _ => do
+            if H' == H then return some fvar else return none
+          | _ => return none
+        | pure
+        trace[Elab.DiffGeo.MDiff] m!"Found model: {m}"
+        return m
     else
       trace[Elab.DiffGeo.MDiff] m!"Hoping {e} is a normed field"
       let eT : Term ← Term.exprToSyntax e
