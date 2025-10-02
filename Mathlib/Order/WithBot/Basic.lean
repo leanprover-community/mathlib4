@@ -194,6 +194,9 @@ lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x
 theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x, x ≠ ⊥ → p x) ↔ ∀ x : α, p x := by
   simp [ne_bot_iff_exists]
 
+theorem exists_ne_bot {p : WithBot α → Prop} : (∃ a ≠ ⊥, p a) ↔ ∃ r : α, p r := by
+  simp [ne_bot_iff_exists]
+
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 
@@ -782,6 +785,9 @@ lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x
 @[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_top := eq_top_iff_forall_ne
 
 theorem forall_ne_top {p : WithTop α → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : α, p x := by
+  simp [ne_top_iff_exists]
+
+theorem exists_ne_top {p : WithTop α → Prop} : (∃ a ≠ ⊤, p a) ↔ ∃ r : α, p r := by
   simp [ne_top_iff_exists]
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
