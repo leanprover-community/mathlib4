@@ -177,78 +177,78 @@ This implementation is not maximally robust yet.
 -/
 -- FIXME: better failure when trying to find a `NormedField` instance
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-    trace[Elab.DiffGeo.MDiff] "Searching a model for: {e}"
-    if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
-      if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
-        trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
-        let srcIT : Term ← Term.exprToSyntax I
-        let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
-        let res ← Term.elabTerm resTerm none
-        trace[Elab.DiffGeo.MDiff] "Found model: {res}"
-        return res
+  trace[Elab.DiffGeo.MDiff] "Searching a model for: {e}"
+  if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
+    if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
+      trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
+      let srcIT : Term ← Term.exprToSyntax I
+      let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
+      let res ← Term.elabTerm resTerm none
+      trace[Elab.DiffGeo.MDiff] "Found model: {res}"
+      return res
 
-      trace[Elab.DiffGeo.MDiff] "This is a total space with fiber {F}"
-      if let some (_src, srcI) := baseInfo then
-        let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
-            match_expr type with
-            | NormedSpace K E _ _ =>
-              if E == F then return some K else return none
-            | _ => return none
-          | throwError "Couldn't find a `NormedSpace` structure on {F} in the local instances."
-        trace[Elab.DiffGeo.MDiff] "{F} is a normed field over {K}"
-        let kT : Term ← Term.exprToSyntax K
-        let srcIT : Term ← Term.exprToSyntax srcI
-        let FT : Term ← Term.exprToSyntax F
-        let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
-        let I ← Term.elabTerm iTerm none
-        trace[Elab.DiffGeo.MDiff] "Found model: {I}"
-        return I
-      else
-        throwError "Having a TotalSpace as source is not yet supported"
-    let K? ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
-      match_expr type with
-      | NormedSpace K E _ _ =>
-        if E == e then return some K else return none
-      | _ => return none
-    if let some K := K? then
-      trace[Elab.DiffGeo.MDiff] "Field is: {K}"
-      let eT : Term ← Term.exprToSyntax e
-      let eK : Term ← Term.exprToSyntax K
-      let iTerm : Term ← ``(𝓘($eK, $eT))
-      let I ← Term.elabTerm iTerm none
-      trace[Elab.DiffGeo.MDiff] "Found model: {I}"
-      return I
-      -- let uK ← K.getUniverse
-      -- let normedFieldK ← synthInstance (.app (.const ``NontriviallyNormedField [uK]) K)
-      -- trace[Elab.DiffGeo.MDiff] "NontriviallyNormedField instance is: {normedFieldK}"
-      -- let ue ← e.getUniverse
-      -- let normedGroupE ← synthInstance (.app (.const ``NormedAddCommGroup  [ue]) e)
-      -- trace[Elab.DiffGeo.MDiff] "NormedAddCommGroup  instance is: {normedGroupE}"
-      -- return mkAppN (.const `modelWithCornersSelf [uK, ue])
-      --   #[K, normedFieldK, e, normedGroupE, normedSpaceInst]
-    let H? ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
-      match_expr type with
-      | ChartedSpace H _ M _ =>
-        if M == e then return some H else return none
-      | _ => return none
-    if let some H := H? then
-      trace[Elab.DiffGeo.MDiff] "H is: {H}"
-      let some m ← findSomeLocalHyp? fun fvar type ↦ do
+    trace[Elab.DiffGeo.MDiff] "This is a total space with fiber {F}"
+    if let some (_src, srcI) := baseInfo then
+      let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
           match_expr type with
-          | ModelWithCorners _ _ _ _ _ H' _ => do
-            if H' == H then return some fvar else return none
+          | NormedSpace K E _ _ =>
+            if E == F then return some K else return none
           | _ => return none
-        | pure
-        trace[Elab.DiffGeo.MDiff] "Found model: {m}"
-        return m
-    else
-      trace[Elab.DiffGeo.MDiff] "Hoping {e} is a normed field"
-      let eT : Term ← Term.exprToSyntax e
-      let iTerm : Term ← `(𝓘($eT, $eT))
+        | throwError "Couldn't find a `NormedSpace` structure on {F} in the local instances."
+      trace[Elab.DiffGeo.MDiff] "{F} is a normed field over {K}"
+      let kT : Term ← Term.exprToSyntax K
+      let srcIT : Term ← Term.exprToSyntax srcI
+      let FT : Term ← Term.exprToSyntax F
+      let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
       let I ← Term.elabTerm iTerm none
       trace[Elab.DiffGeo.MDiff] "Found model: {I}"
       return I
-    throwError "Couldn’t find models with corners"
+    else
+      throwError "Having a TotalSpace as source is not yet supported"
+  let K? ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
+    match_expr type with
+    | NormedSpace K E _ _ =>
+      if E == e then return some K else return none
+    | _ => return none
+  if let some K := K? then
+    trace[Elab.DiffGeo.MDiff] "Field is: {K}"
+    let eT : Term ← Term.exprToSyntax e
+    let eK : Term ← Term.exprToSyntax K
+    let iTerm : Term ← ``(𝓘($eK, $eT))
+    let I ← Term.elabTerm iTerm none
+    trace[Elab.DiffGeo.MDiff] "Found model: {I}"
+    return I
+    -- let uK ← K.getUniverse
+    -- let normedFieldK ← synthInstance (.app (.const ``NontriviallyNormedField [uK]) K)
+    -- trace[Elab.DiffGeo.MDiff] "NontriviallyNormedField instance is: {normedFieldK}"
+    -- let ue ← e.getUniverse
+    -- let normedGroupE ← synthInstance (.app (.const ``NormedAddCommGroup  [ue]) e)
+    -- trace[Elab.DiffGeo.MDiff] "NormedAddCommGroup  instance is: {normedGroupE}"
+    -- return mkAppN (.const `modelWithCornersSelf [uK, ue])
+    --   #[K, normedFieldK, e, normedGroupE, normedSpaceInst]
+  let H? ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
+    match_expr type with
+    | ChartedSpace H _ M _ =>
+      if M == e then return some H else return none
+    | _ => return none
+  if let some H := H? then
+    trace[Elab.DiffGeo.MDiff] "H is: {H}"
+    let some m ← findSomeLocalHyp? fun fvar type ↦ do
+        match_expr type with
+        | ModelWithCorners _ _ _ _ _ H' _ => do
+          if H' == H then return some fvar else return none
+        | _ => return none
+      | pure
+      trace[Elab.DiffGeo.MDiff] "Found model: {m}"
+      return m
+  else
+    trace[Elab.DiffGeo.MDiff] "Hoping {e} is a normed field"
+    let eT : Term ← Term.exprToSyntax e
+    let iTerm : Term ← ``(𝓘($eT, $eT))
+    let I ← Term.elabTerm iTerm none
+    trace[Elab.DiffGeo.MDiff] "Found model: {I}"
+    return I
+  throwError "Couldn’t find models with corners"
 
 /-- If `etype` is a non-dependent function between spaces `src` and `tgt`, try to find a model with
 corners on both `src` and `tgt`. If successful, return both models.
