@@ -22,8 +22,8 @@ theorem tendsto_fib_succ_div_fib_atTop :
     field_simp
   have h₂ := tendsto_pow_atTop_nhds_zero_of_abs_lt_one (r := ψ / φ) <| by
     rw [abs_div, div_lt_one <| by positivity, abs_of_pos goldenRatio_pos, abs_lt]
-    constructor <;>
-    linarith [one_lt_goldenRatio, neg_one_lt_goldenConj, goldenConj_neg]
+    ring_nf
+    bound
   rw [show φ = (φ - ψ * 0) / (1 - 0) by ring, funext h₁]
   exact const_sub _ (const_mul _ h₂) |>.div (const_sub _ h₂) <| by simp
 
