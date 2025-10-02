@@ -418,12 +418,23 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
   simp only [Set.mem_setOf_eq]
   have (n : ℕ) : ringKrullDim (R ⧸ p.1) ≤ n →
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p.asIdeal))) M i) := by
-    induction n
-    · --p = maximalIdeal R
-      --fym
-      sorry
-    · --fym
-      sorry
+    induction n with
+    | zero =>
+      intro hp
+      have : p.1 = maximalIdeal R := by
+        rw [← isMaximal_iff]
+        rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
+        rw [← Ring.krullDimLE_iff] at hp
+        exact Ring.KrullDimLE.isField_of_isDomain
+      exact this ▸ h i hi
+    | succ n ih =>
+      intro hp
+      by_cases hpm : p.1 = maximalIdeal R
+      · rw [hpm]
+        exact h i hi
+      · replace hpm : p.1 < maximalIdeal R :=
+          lt_of_le_of_ne (le_maximalIdeal_of_isPrime p.1) hpm
+        sorry
   rcases exist_nat_eq' R with ⟨n, hn⟩
   apply this n
   rw [← hn]
