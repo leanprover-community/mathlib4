@@ -136,7 +136,6 @@ theorem H1.map_zero {A B : Type*} [AddGroup A] [AddGroup B] [DistribMulAction G 
   simp only [H1.map, zero_def, Quotient.map_mk]
   exact congrArg _ <| Subtype.ext (funext fun x ↦ f.map_zero)
 
-
 theorem H1.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
     (f : A →+[G] B) (g : B →+[G] C) : H1.map (g.comp f) = (H1.map g).comp (H1.map f) := funext
@@ -189,9 +188,26 @@ theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := by
     Subtype.ext (by simpa [H0.map, hfg.apply_apply_eq_zero])⟩
   simpa [δ₀₁_aux, ← add_assoc] using congr(f $(hx h)).symm
 
-theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
+theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := by
+  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ hx ▸ Quotient.eq_iff_equiv.mpr
+    ⟨- (Classical.choose (hg x)), fun h ↦ by simp⟩⟩
+  induction y using Quotient.ind
+  simp only [H1.map, Quotient.map_mk, zero_def] at h
+  obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
+  -- let z : f.range := sorry
+  -- refine ⟨⟨g x, ?_⟩, Quotient.eq_iff_equiv.mpr ⟨(Equiv.ofInjective f hf).symm z , fun h ↦ hf ?_⟩⟩
+  -- · sorry
+  -- · simp [δ₀₁_aux]
+  sorry
 
-theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
+include hfg in
+theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := by
+  refine fun y ↦ ⟨?_, fun ⟨x, hx⟩ ↦ hx ▸ ?_⟩
+  · induction y using Quotient.ind
+    sorry
+  · induction x using Quotient.ind
+    simp [H1.map, zero_def, ← Function.comp_assoc, hfg.comp_eq_zero]
+    congr
 
 end connectHom₀₁
 
