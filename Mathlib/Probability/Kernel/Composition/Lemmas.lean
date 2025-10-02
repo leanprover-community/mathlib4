@@ -23,7 +23,11 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
 
 namespace ProbabilityTheory.Kernel
 
-/-- If `κ` was deterministic, this would be true even if `η.prodMkLeft β` was a more general
+/-- The composition of two product kernels `(ξ ×ₖ η') ∘ₖ (κ ×ₖ ζ)` is the product of the
+compositions, if `ζ` is deterministic and `η'` does not depend on the output of `κ`. That is,
+`η'` has the form `η.prodMkLeft β` for a kernel `η`.
+
+If `κ` was deterministic, this would be true even if `η.prodMkLeft β` was a more general
 kernel since `κ ×ₖ Kernel.deterministic f hf` would be deterministic and commute with copying.
 Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
 lemma prod_prodMkLeft_comp_prod_deterministic {β' ε : Type*}
@@ -41,7 +45,11 @@ lemma prod_prodMkLeft_comp_prod_deterministic {β' ε : Type*}
   · exact measurable_measure_prodMk_left hs
   · exact Kernel.measurable_coe _ hs
 
-/-- If `κ` was deterministic, this would be true even if `η.prodMkRight β` was a more general
+/-- The composition of two product kernels `(ξ ×ₖ η') ∘ₖ (ζ ×ₖ κ)` is the product of the
+compositions, if `ζ` is deterministic and `η'` does not depend on the output of `κ`. That is,
+`η'` has the form `η.prodMkRight β` for a kernel `η`.
+
+If `κ` was deterministic, this would be true even if `η.prodMkRight β` was a more general
 kernel since `Kernel.deterministic f hf ×ₖ κ` would be deterministic and commute with copying.
 Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
 lemma prod_prodMkRight_comp_deterministic_prod {β' ε : Type*}
