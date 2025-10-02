@@ -436,8 +436,29 @@ theorem continuous_ofLp [∀ i, TopologicalSpace (β i)] : Continuous (@ofLp p (
   continuous_id
 
 @[fun_prop, continuity]
+protected lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
+    Continuous (fun f : PiLp p β ↦ f i) := (continuous_apply i).comp (continuous_ofLp p β)
+
+@[fun_prop, continuity]
 theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (∀ i, β i)) :=
   continuous_id
+
+/-- `WithLp.equiv` as a homeomorphism. -/
+def homeomorph [∀ i, TopologicalSpace (β i)] : PiLp p β ≃ₜ (Π i, β i) where
+  toEquiv := WithLp.equiv p (Π i, β i)
+  continuous_toFun := continuous_ofLp p β
+  continuous_invFun := continuous_toLp p β
+
+@[simp]
+lemma toEquiv_homeomorph [∀ i, TopologicalSpace (β i)] :
+    (homeomorph p β).toEquiv = WithLp.equiv p (Π i, β i) := rfl
+
+lemma isOpenMap_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
+    IsOpenMap (fun f : PiLp p β ↦ f i) := (isOpenMap_eval i).comp (homeomorph p β).symm.isOpenMap
+
+instance instProdT0Space [∀ i, TopologicalSpace (β i)] [∀ i, T0Space (β i)] :
+    T0Space (PiLp p β) :=
+  (homeomorph p β).symm.t0Space
 
 instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
     [∀ i, SecondCountableTopology (β i)] : SecondCountableTopology (PiLp p β) :=
@@ -453,6 +474,20 @@ lemma uniformContinuous_ofLp [∀ i, UniformSpace (β i)] :
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)) :=
   uniformContinuous_id
+
+/-- `WithLp.equiv` as a uniform isomorphism. -/
+def uniformEquiv [∀ i, UniformSpace (β i)] : PiLp p β ≃ᵤ (Π i, β i) where
+  toEquiv := WithLp.equiv p (Π i, β i)
+  uniformContinuous_toFun := uniformContinuous_ofLp p β
+  uniformContinuous_invFun := uniformContinuous_toLp p β
+
+@[simp]
+lemma toHomeomorph_uniformEquiv [∀ i, UniformSpace (β i)] :
+    (uniformEquiv p β).toHomeomorph = homeomorph p β := rfl
+
+@[simp]
+lemma toEquiv_uniformEquiv [∀ i, UniformSpace (β i)] :
+    (uniformEquiv p β).toEquiv = WithLp.equiv p (Π i, β i) := rfl
 
 instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
     CompleteSpace (PiLp p β) :=
@@ -521,9 +556,17 @@ lemma lipschitzWith_ofLp [∀ i, PseudoEMetricSpace (β i)] :
     LipschitzWith 1 (@ofLp p (∀ i, β i)) :=
   lipschitzWith_ofLp_aux p β
 
+lemma antilipschitzWith_toLp [∀ i, PseudoEMetricSpace (β i)] :
+    AntilipschitzWith 1 (@toLp p (∀ i, β i)) :=
+  (lipschitzWith_ofLp p β).to_rightInverse (ofLp_toLp p)
+
 theorem antilipschitzWith_ofLp [∀ i, PseudoEMetricSpace (β i)] :
     AntilipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (∀ i, β i)) :=
   antilipschitzWith_ofLp_aux p β
+
+lemma lipschitzWith_toLp [∀ i, PseudoEMetricSpace (β i)] :
+    LipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (@toLp p (∀ i, β i)) :=
+  (antilipschitzWith_ofLp p β).to_rightInverse (ofLp_toLp p)
 
 lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
     Isometry (@ofLp ∞ (∀ i, β i)) :=
@@ -546,6 +589,11 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
           linarith
         simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
           dist_eq_norm, sub_apply] }
+
+lemma isUniformInducing_toLp [∀ i, PseudoEMetricSpace (β i)] :
+    IsUniformInducing (@toLp p (Π i, β i)) :=
+  (antilipschitzWith_toLp p β).isUniformInducing
+    (lipschitzWith_toLp p β).uniformContinuous
 
 section
 variable {β p}
@@ -980,7 +1028,7 @@ variable {𝕜} in
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := continuous_apply i
+  cont := continuous_apply ..
 
 end Fintype
 

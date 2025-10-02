@@ -13,13 +13,13 @@ import Mathlib.Algebra.Order.Group.Synonym
 variable (α : Type*) [Mul α]
 
 /-- `toLex` as a `MulEquiv`. -/
-@[to_additive "`toLex` as a `AddEquiv`."]
+@[to_additive /-- `toLex` as an `AddEquiv`. -/]
 def toLexMulEquiv : α ≃* Lex α where
   toEquiv := toLex
   map_mul' _ _ := by simp
 
 /-- `ofLex` as a `MulEquiv`. -/
-@[to_additive "`ofLex` as a `AddEquiv`."]
+@[to_additive /-- `ofLex` as an `AddEquiv`. -/]
 def ofLexMulEquiv : Lex α ≃* α where
   toEquiv := ofLex
   map_mul' _ _ := by simp

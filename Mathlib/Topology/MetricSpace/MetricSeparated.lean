@@ -77,8 +77,6 @@ This notion is useful, e.g., to define metric outer measures.
 between `x ∈ s` and `y ∈ t` is bounded from below by a positive constant. -/
 def AreSeparated (s t : Set X) := ∃ r, r ≠ 0 ∧ ∀ x ∈ s, ∀ y ∈ t, r ≤ edist x y
 
-@[deprecated (since := "2025-01-21")] alias IsMetricSeparated := AreSeparated
-
 namespace AreSeparated
 
 @[symm]

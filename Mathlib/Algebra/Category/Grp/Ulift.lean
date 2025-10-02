@@ -76,7 +76,7 @@ namespace Grp
 /-- The universe lift functor for groups is fully faithful.
 -/
 @[to_additive
-  "The universe lift functor for additive groups is fully faithful."]
+  /-- The universe lift functor for additive groups is fully faithful. -/]
 def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
   preimage f := Grp.ofHom (MulEquiv.ulift.toMonoidHom.comp
     (f.hom.comp MulEquiv.ulift.symm.toMonoidHom))
@@ -86,14 +86,14 @@ def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
 /-- The universe lift functor for groups is faithful.
 -/
 @[to_additive
-  "The universe lift functor for additive groups is faithful."]
+  /-- The universe lift functor for additive groups is faithful. -/]
 instance : uliftFunctor.{u, v}.Faithful := uliftFunctorFullyFaithful.faithful
 
 
 /-- The universe lift functor for groups is full.
 -/
 @[to_additive
-  "The universe lift functor for additive groups is full."]
+  /-- The universe lift functor for additive groups is full. -/]
 instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 
 @[to_additive]
@@ -110,7 +110,7 @@ noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Categor
 The universe lift for groups preserves limits of arbitrary size.
 -/
 @[to_additive
-  "The universe lift functor for additive groups preserves limits of arbitrary size."]
+  /-- The universe lift functor for additive groups preserves limits of arbitrary size. -/]
 noncomputable instance uliftFunctor_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
 
@@ -118,7 +118,7 @@ noncomputable instance uliftFunctor_preservesLimitsOfSize :
 The universe lift functor on `Grp.{u}` creates `u`-small limits.
 -/
 @[to_additive
-  "The universe lift functor on `AddGrp.{u}` creates `u`-small limits."]
+  /-- The universe lift functor on `AddGrp.{u}` creates `u`-small limits. -/]
 noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
 
@@ -129,7 +129,7 @@ namespace CommGrp
 /-- The universe lift functor for commutative groups is fully faithful.
 -/
 @[to_additive
-  "The universe lift functor for commutative additive groups is fully faithful."]
+  /-- The universe lift functor for commutative additive groups is fully faithful. -/]
 def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
   preimage f := CommGrp.ofHom (MulEquiv.ulift.toMonoidHom.comp
     (f.hom.comp MulEquiv.ulift.symm.toMonoidHom))
@@ -138,12 +138,12 @@ def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
 
 -- The universe lift functor for commutative groups is faithful. -/
 @[to_additive
-  "The universe lift functor for commutative additive groups is faithful."]
+  /-- The universe lift functor for commutative additive groups is faithful. -/]
 instance : uliftFunctor.{u, v}.Faithful := uliftFunctorFullyFaithful.faithful
 
 -- The universe lift functor for commutative groups is full. -/
 @[to_additive
-  "The universe lift functor for commutative additive groups is full."]
+  /-- The universe lift functor for commutative additive groups is full. -/]
 instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 
 @[to_additive]
@@ -159,8 +159,8 @@ noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Categor
 /--
 The universe lift for commutative groups preserves limits of arbitrary size.
 -/
-@[to_additive
-  "The universe lift functor for commutative additive groups preserves limits of arbitrary size."]
+@[to_additive /-- The universe lift functor for commutative additive groups preserves limits of
+  arbitrary size. -/]
 noncomputable instance uliftFunctor_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
 
@@ -168,7 +168,7 @@ noncomputable instance uliftFunctor_preservesLimitsOfSize :
 The universe lift functor on `CommGrp.{u}` creates `u`-small limits.
 -/
 @[to_additive
-  "The universe lift functor on `AddCommGrp.{u}` creates `u`-small limits."]
+  /-- The universe lift functor on `AddCommGrp.{u}` creates `u`-small limits. -/]
 noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
 

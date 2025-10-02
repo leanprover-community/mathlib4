@@ -30,7 +30,7 @@ and `P := R ∩ Q` with finite residue field of cardinality `q`.
   Suppose `S` is a domain and `φ` is a Frobenius at `Q`,
   then `φ ζ = ζ ^ q` for any `m`-th root of unity `ζ` with `q ∤ m`.
 - `AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt`:
-  Suppose `S` is noetherian, `Q` contains all zero-divisors, and the extension is unramified at `Q`.
+  Suppose `S` is Noetherian, `Q` contains all zero-divisors, and the extension is unramified at `Q`.
   Then the Frobenius is unique (if exists).
 
 Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of `S`.
@@ -61,8 +61,7 @@ lemma mk_apply (x) : Ideal.Quotient.mk Q (φ x) = x ^ Nat.card (R ⧸ Q.under R)
   exact H x
 
 lemma finite_quotient : _root_.Finite (R ⧸ Q.under R) := by
-  rw [← not_infinite_iff_finite]
-  intro h
+  by_contra! h
   obtain rfl : Q = ⊤ := by simpa [Nat.card_eq_zero_of_infinite, ← Ideal.eq_top_iff_one] using H 0
   simp only [Ideal.comap_top] at h
   exact not_finite (R ⧸ (⊤ : Ideal R))
@@ -155,7 +154,7 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
   simp only [SubmonoidClass.coe_pow, ← Ideal.Quotient.eq_zero_iff_mem]
   simp [H.mk_apply]
 
-/-- Suppose `S` is noetherian and `Q` is a prime of `S` containing all zero divisors.
+/-- Suppose `S` is Noetherian and `Q` is a prime of `S` containing all zero divisors.
 If `S/R` is unramified at `Q`, then the Frobenius `φ : S →ₐ[R] S` over `Q` is unique. -/
 lemma eq_of_isUnramifiedAt
     (H' : ψ.IsArithFrobAt Q) [Q.IsPrime] (hQ : Q.primeCompl ≤ S⁰)

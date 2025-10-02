@@ -38,10 +38,10 @@ open Function OrderDual Set
 variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 @[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
-    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
+    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp only [iSup]; congr with x; simp
 
 @[simp] lemma iInf_ulift {ι : Type*} [InfSet α] (f : ULift ι → α) :
-    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp [iInf]; congr with x; simp
+    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp only [iInf]; congr with x; simp
 
 section
 
@@ -646,8 +646,8 @@ theorem iInf₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
     ⨅ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨅ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
   simp only [@iInf_comm _ (κ₁ _), @iInf_comm _ ι₁]
 
-/- TODO: this is strange. In the proof below, we get exactly the desired
-   among the equalities, but close does not get it.
+/- TODO: this is strange. In the proof below, we get exactly the desired among the equalities,
+but close does not get it.
 begin
   apply @le_antisymm,
     simp, intros,
@@ -733,8 +733,7 @@ lemma biInf_le_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → α}
     ⨅ i ∈ s, f i ≤ ⨆ i ∈ s, f i :=
   (biInf_le _ hs.choose_spec).trans <| le_biSup _ hs.choose_spec
 
-/- TODO: here is another example where more flexible pattern matching
-   might help.
+/- TODO: here is another example where more flexible pattern matching might help.
 
 begin
   apply @le_antisymm,
@@ -1243,22 +1242,18 @@ theorem iInf_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, InfSet 
 
 theorem unary_relation_sSup_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sSup s a ↔ ∃ r : α → Prop, r ∈ s ∧ r a := by
-  rw [sSup_apply]
   simp
 
 theorem unary_relation_sInf_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sInf s a ↔ ∀ r : α → Prop, r ∈ s → r a := by
-  rw [sInf_apply]
   simp
 
 theorem binary_relation_sSup_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
     sSup s a b ↔ ∃ r : α → β → Prop, r ∈ s ∧ r a b := by
-  rw [sSup_apply]
   simp
 
 theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
     sInf s a b ↔ ∀ r : α → β → Prop, r ∈ s → r a b := by
-  rw [sInf_apply]
   simp
 
 section CompleteLattice

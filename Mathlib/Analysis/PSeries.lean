@@ -138,7 +138,7 @@ variable {u : ℕ → ℕ} {f : ℕ → ℝ≥0∞}
 open NNReal in
 theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : StrictMono u) :
-    ∑' k , f k ≤ ∑ k ∈ range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
+    ∑' k, f k ≤ ∑ k ∈ range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
   rw [ENNReal.tsum_eq_iSup_nat' hu.tendsto_atTop]
   refine iSup_le fun n =>
     (Finset.le_sum_schlomilch hf h_pos hu.monotone n).trans (add_le_add_left ?_ _)
@@ -269,7 +269,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
       nth_rw 1 [← rpow_one 2]
       rw [← division_def, ← rpow_sub zero_lt_two, norm_eq_abs,
         abs_of_pos (rpow_pos_of_pos zero_lt_two _), rpow_lt_one_iff zero_lt_two.le]
-      norm_num
+      simp
     · intro n
       positivity
     · intro m n hm hmn
@@ -377,14 +377,11 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
   · simp only [Ioc_self, sum_empty, sub_self, le_refl]
   intro n hn IH
   rw [sum_Ioc_succ_top hn]
-  apply (add_le_add IH le_rfl).trans
-  simp only [sub_eq_add_neg, add_assoc, Nat.cast_add, Nat.cast_one, le_add_neg_iff_add_le,
-    add_le_iff_nonpos_right, neg_add_le_iff_le_add, add_zero]
+  grw [IH]
+  push_cast
   have A : 0 < (n : α) := by simpa using hk.bot_lt.trans_le hn
   field_simp
-  rw [div_le_div_iff₀ _ A]
-  · linarith
-  · positivity
+  linarith
 
 theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i ∈ Ioo k n, (i ^ 2 : α)⁻¹) ≤ 2 / (k + 1) :=
   calc
@@ -433,6 +430,8 @@ section shifted
 
 open Filter Asymptotics Topology
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
   suffices ∀ (b c : ℝ), Summable (fun n : ℕ ↦ 1 / |n + b| ^ s) →
@@ -452,7 +451,7 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1) := by
       refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' ?_
       filter_upwards [eventually_gt_atTop (-c)] with x hx
-      field_simp [(by linarith : 0 < x + c).ne']
+      simp [field, (by linarith : 0 < x + c).ne']
     apply (one_rpow s ▸ (continuousAt_rpow_const _ s (by simp)).tendsto.comp this).congr'
     filter_upwards [eventually_gt_atTop (-b), eventually_gt_atTop (-c)] with x hb hc
     rw [neg_lt_iff_pos_add] at hb hc

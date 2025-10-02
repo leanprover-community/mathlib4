@@ -70,12 +70,13 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     · exact fun n => h_mul_indicator _ (h_measM_f n)
     · exact fun m n h_le a => mul_le_mul_right' (h_mono_f h_le a) _
 
-/-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
-   then `E[f * g] = E[f] * E[g]`. However, instead of directly using the independence
-   of the random variables, it uses the independence of measurable spaces for the
-   domains of `f` and `g`. This is similar to the sigma-algebra approach to
-   independence. See `lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun` for
-   a more common variant of the product of independent variables. -/
+/--
+If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
+then `E[f * g] = E[f] * E[g]`. However, instead of directly using the independence
+of the random variables, it uses the independence of measurable spaces for the
+domains of `f` and `g`. This is similar to the sigma-algebra approach to
+independence. See `lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun` for
+a more common variant of the product of independent variables. -/
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
     {Mf Mg mΩ : MeasurableSpace Ω} {μ : Measure Ω} (hMf : Mf ≤ mΩ) (hMg : Mg ≤ mΩ)
     (h_ind : Indep Mf Mg μ) (h_meas_f : Measurable[Mf] f) (h_meas_g : Measurable[Mg] g) :
@@ -101,7 +102,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
     · exact fun n m (h_le : n ≤ m) a => mul_le_mul_left' (h_mono_f' h_le a) _
 
 /-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
-   then `E[f * g] = E[f] * E[g]`. -/
+then `E[f * g] = E[f] * E[g]`. -/
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measurable f)
     (h_meas_g : Measurable g) (h_indep_fun : IndepFun f g μ) :
     (∫⁻ ω, (f * g) ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
@@ -110,8 +111,8 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measura
     (Measurable.of_comap_le le_rfl) (Measurable.of_comap_le le_rfl)
 
 /-- If `f` and `g` with values in `ℝ≥0∞` are independent and almost everywhere measurable,
-   then `E[f * g] = E[f] * E[g]` (slightly generalizing
-   `lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun`). -/
+then `E[f * g] = E[f] * E[g]` (slightly generalizing
+`lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun`). -/
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :
     (∫⁻ ω, (f * g) ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ := by

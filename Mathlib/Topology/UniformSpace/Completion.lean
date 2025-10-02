@@ -10,7 +10,7 @@ import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 The goal is to construct a left-adjoint to the inclusion of complete Hausdorff uniform spaces
 into all uniform spaces. Any uniform space `α` gets a completion `Completion α` and a morphism
-(ie. uniformly continuous map) `(↑) : α → Completion α` which solves the universal
+(i.e. uniformly continuous map) `(↑) : α → Completion α` which solves the universal
 mapping problem of factorizing morphisms from `α` to any complete Hausdorff uniform space `β`.
 It means any uniformly continuous `f : α → β` gives rise to a unique morphism
 `Completion.extension f : Completion α → β` such that `f = Completion.extension f ∘ (↑)`.
@@ -156,7 +156,7 @@ theorem isUniformInducing_pureCauchy : IsUniformInducing (pureCauchy : α → Ca
 
 theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) where
   __ := isUniformInducing_pureCauchy
-  injective _a₁ _a₂ h := pure_injective <| Subtype.ext_iff_val.1 h
+  injective _a₁ _a₂ h := pure_injective <| Subtype.ext_iff.1 h
 
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
@@ -324,7 +324,7 @@ theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
 
-/-- The Haudorff completion as an abstract completion. -/
+/-- The Hausdorff completion as an abstract completion. -/
 def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
   space := Completion α
   coe := (↑)
@@ -442,6 +442,14 @@ end CompleteSpace
 theorem extension_coe [T0Space β] (hf : UniformContinuous f) (a : α) :
     (Completion.extension f) a = f a :=
   cPkg.extend_coe hf a
+
+theorem inseparable_extension_coe (hf : UniformContinuous f) (x : α) :
+    Inseparable (Completion.extension f x) (f x) :=
+  cPkg.inseparable_extend_coe hf x
+
+lemma isUniformInducing_extension [CompleteSpace β] (h : IsUniformInducing f) :
+    IsUniformInducing (Completion.extension f) :=
+  cPkg.isUniformInducing_extend h
 
 variable [T0Space β] [CompleteSpace β]
 

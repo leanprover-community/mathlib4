@@ -134,16 +134,16 @@ Note that this requires the target to be a group, and hence fails for products v
 in a ring. See `Multipliable.congr_cofinite₀` for a version applying in this case,
 with an additional non-vanishing hypothesis.
 -/
-@[to_additive "A more general version of `Summable.congr`, allowing the functions to
-disagree on a finite set."]
+@[to_additive /-- A more general version of `Summable.congr`, allowing the functions to
+disagree on a finite set. -/]
 theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg : f =ᶠ[cofinite] g) :
     Multipliable g :=
   hfg.multipliable_compl_iff.mp <| (hfg.multipliable_compl_iff.mpr hf).congr (by simp)
 
 /-- A more general version of `multipliable_congr`, allowing the functions to
 disagree on a finite set. -/
-@[to_additive "A more general version of `summable_congr`, allowing the functions to
-disagree on a finite set."]
+@[to_additive /-- A more general version of `summable_congr`, allowing the functions to
+disagree on a finite set. -/]
 theorem multipliable_congr_cofinite (hfg : f =ᶠ[cofinite] g) :
     Multipliable f ↔ Multipliable g :=
   ⟨fun h ↦ h.congr_cofinite hfg, fun h ↦ h.congr_cofinite (hfg.mono fun _ h' ↦ h'.symm)⟩
@@ -188,9 +188,9 @@ protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multip
 /-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
 Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
 remaining terms. -/
-@[to_additive "Let `f : β → α` be a summable function and let `b ∈ β` be an index.
+@[to_additive /-- Let `f : β → α` be a summable function and let `b ∈ β` be an index.
 Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
-remaining terms."]
+remaining terms. -/]
 protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f)
     (b : β) : ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
@@ -209,8 +209,8 @@ section IsUniformGroup
 variable [CommGroup α] [UniformSpace α]
 
 /-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
-@[to_additive "The **Cauchy criterion** for infinite sums, also known as the
-**Cauchy convergence test**"]
+@[to_additive /-- The **Cauchy criterion** for infinite sums, also known as the
+**Cauchy convergence test** -/]
 theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
@@ -364,8 +364,9 @@ theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he :
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
 whole space. This does not need a multipliability assumption, as otherwise all such products are
 one. -/
-@[to_additive "The sum over the complement of a finset tends to `0` when the finset grows to cover
-the whole space. This does not need a summability assumption, as otherwise all such sums are zero."]
+@[to_additive /-- The sum over the complement of a finset tends to `0` when the finset grows to
+cover the whole space. This does not need a summability assumption, as otherwise all such sums are
+zero. -/]
 theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     Tendsto (fun s : Finset α ↦ ∏' a : { x // x ∉ s }, f a) atTop (𝓝 1) := by
   classical
@@ -379,8 +380,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
 
 /-- Product divergence test: if `f` is unconditionally multipliable, then `f x` tends to one along
 `cofinite`. -/
-@[to_additive "Series divergence test: if `f` is unconditionally summable, then `f x` tends to zero
-along `cofinite`."]
+@[to_additive /-- Series divergence test: if `f` is unconditionally summable, then `f x` tends to
+zero along `cofinite`. -/]
 theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofinite (𝓝 1) := by
   intro e he
   rw [Filter.mem_map]
