@@ -7,10 +7,12 @@ Authors: Calle Sönne
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
-# Strict functors
+# Strict pseudofunctors
 
-In this file we define strict functors between bicategories, which are pseudofunctors such
+In this file we introduce the notion of strict pseudofunctors, which are pseudofunctors such
 that `mapId` and `mapComp` are given by `eqToIso _`.
+
+We implement this notion as a typeclass, `Pseudofunctor.IsStrict`.
 
 To a strict pseudofunctor between strict bicategories we can associate a functor between the
 underlying categories, see `Pseudofunctor.toFunctor`.
