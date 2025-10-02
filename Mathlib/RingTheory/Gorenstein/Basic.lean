@@ -18,6 +18,7 @@ import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.RingTheory.CohenMacaulay.Basic
 import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.GlobalDimension
 /-!
 
 # The Definition of Gorenstein (Local) Ring
