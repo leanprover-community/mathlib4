@@ -24,11 +24,11 @@ namespace Complex
 theorem isOpenMap_exp : IsOpenMap exp :=
   isOpenMap_of_hasStrictDerivAt hasStrictDerivAt_exp exp_ne_zero
 
-/-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and
+/-- `Complex.exp` as an `OpenPartialHomeomorph` with `source = {z | -π < im z < π}` and
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis. -/
-noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
-  PartialHomeomorph.ofContinuousOpen
+noncomputable def expPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ :=
+  OpenPartialHomeomorph.ofContinuousOpen
     { toFun := exp
       invFun := log
       source := {z : ℂ | z.im ∈ Ioo (-π) π}
