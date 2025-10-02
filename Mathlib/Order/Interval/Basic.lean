@@ -377,7 +377,7 @@ theorem map_pure (f : α →o β) (a : α) : (pure a).map f = pure (f a) :=
 
 @[simp]
 theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).map g = s.map (g.comp f) :=
-  WithBot.map_map
+  WithBot.map_map _ _ _
 
 @[simp]
 theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map f.dual := by
