@@ -87,6 +87,20 @@ theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
     unbotD d x = unbotD d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
   induction y <;> simp [unbotD_eq_iff, or_comm]
 
+/-- Apply a function to non-`⊥` elements, and send `⊥` to `d`. -/
+-- (If you think `WithBot` is equivalent to `Option`, this is the equivalent of `Option.elim`.)
+def mapD (d : β) (f : α → β) : WithBot α → β
+| .none => d
+| .some a => f a
+
+@[simp, grind =]
+theorem mapD_bot (d : β) (f : α → β) : mapD d f ⊥ = d :=
+  rfl
+
+@[simp, grind =]
+theorem mapD_coe (d : β) (f : α → β) (a : α) : mapD d f a = f a :=
+  rfl
+
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
@@ -605,6 +619,20 @@ theorem untopD_eq_self_iff {d : α} {x : WithTop α} : untopD d x = d ↔ x = d 
 theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
     untopD d x = untopD d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
   WithBot.unbotD_eq_unbotD_iff
+
+/-- Apply a function to non-`⊤` elements, and send `⊤` to `d`. -/
+-- (If you think `WithTop` is equivalent to `Option`, this is the equivalent of `Option.elim`.)
+def mapD (d : β) (f : α → β) : WithTop α → β
+| .none => d
+| .some a => f a
+
+@[simp, grind =]
+theorem mapD_bot (d : β) (f : α → β) : mapD d f ⊤ = d :=
+  rfl
+
+@[simp, grind =]
+theorem mapD_coe (d : β) (f : α → β) (a : α) : mapD d f a = f a :=
+  rfl
 
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
