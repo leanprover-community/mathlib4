@@ -15,6 +15,8 @@ In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
 
+assert_not_exists Cardinal
+
 open Topology
 open scoped Pointwise
 
@@ -77,7 +79,7 @@ variable (N)
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
-  "Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient."]
+  /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/]
 theorem nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
   (isOpenQuotientMap_mk.map_nhds_eq _).symm
 
@@ -88,8 +90,8 @@ instance instFirstCountableTopology [FirstCountableTopology G] :
 
 /-- The quotient of a second countable topological group by a subgroup is second countable. -/
 @[to_additive
-  "The quotient of a second countable additive topological group by a subgroup is second
-  countable."]
+  /-- The quotient of a second countable additive topological group by a subgroup is second
+  countable. -/]
 instance instSecondCountableTopology [SecondCountableTopology G] :
     SecondCountableTopology (G ⧸ N) :=
   ContinuousConstSMul.secondCountableTopology

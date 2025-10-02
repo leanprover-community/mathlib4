@@ -3,6 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
@@ -78,17 +79,7 @@ instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
 
--- Porting note: proofs had to be provided here, otherwise Lean tries to apply
--- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
 instance : Preadditive (HomologicalComplex V c) where
-  add_comp _ _ _ f f' g := by
-    ext
-    simp only [comp_f, add_f_apply]
-    rw [Preadditive.add_comp]
-  comp_add _ _ _ f g g' := by
-    ext
-    simp only [comp_f, add_f_apply]
-    rw [Preadditive.comp_add]
 
 /-- The `i`-th component of a chain map, as an additive map from chain maps to morphisms. -/
 @[simps!]

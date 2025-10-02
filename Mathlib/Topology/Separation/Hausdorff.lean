@@ -21,7 +21,7 @@ separation axioms, and the related T₂.₅ condition.
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
   T₂.₅ implies T₂.
 
-See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc spaces; and
+See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc. spaces; and
 `Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
 `T6Space`.
 
@@ -571,6 +571,7 @@ theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h 
 end SeparatedFinset
 
 /-- In a `T2Space`, every compact set is closed. -/
+@[aesop 50% apply, grind ←]
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
   isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx =>
     let ⟨_y, hy, hfy⟩ := hs.exists_clusterPt hfs
@@ -667,12 +668,19 @@ theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f :
     (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
   hcont.isClosedMap.isQuotientMap hcont hsurj
 
+theorem isPreirreducible_iff_forall_mem_subset_closure_singleton [R1Space X] {S : Set X} :
+    IsPreirreducible S ↔ ∀ x ∈ S, S ⊆ closure {x} := by
+  constructor
+  · intro h x hx y hy
+    by_contra e
+    obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := r1_separation fun h => e h.specializes.mem_closure
+    exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono inter_subset_right).not_disjoint h'
+  · intro h u v hu hv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩
+    exact ⟨x, hxs, hxu, (specializes_iff_mem_closure.mpr (h x hxs hys)).mem_open hv hyv⟩
+
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
-  refine ⟨fun h x hx y hy => ?_, Set.Subsingleton.isPreirreducible⟩
-  by_contra e
-  obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := t2_separation e
-  exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono inter_subset_right).not_disjoint h'
+  simp [isPreirreducible_iff_forall_mem_subset_closure_singleton, Set.Subsingleton, eq_comm]
 
 -- todo: use `alias` + `attribute [protected]` once we get `attribute [protected]`
 protected lemma IsPreirreducible.subsingleton [T2Space X] {S : Set X} (h : IsPreirreducible S) :

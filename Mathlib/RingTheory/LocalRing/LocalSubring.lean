@@ -53,7 +53,7 @@ protected def copy (S : LocalSubring R) (s : Set R) (hs : s = ↑S.toSubring) : 
 def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S :=
   mk (s.1.map f)
 
-/-- The range of a ringhom from a local ring as a `LocalSubring`. -/
+/-- The range of a ring homomorphism from a local ring as a `LocalSubring`. -/
 @[simps! toSubring]
 def range [IsLocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
   .copy (map f (mk ⊤)) f.range (by ext x; exact congr(x ∈ $(Set.image_univ.symm)))
@@ -96,6 +96,8 @@ instance : Algebra A (ofPrime A P).toSubring := (Subring.inclusion (le_ofPrime A
 
 instance : IsScalarTower A (ofPrime A P).toSubring K := .of_algebraMap_eq (fun _ ↦ rfl)
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The localization of a subring at a prime is indeed isomorphic to its abstract localization. -/
 noncomputable
 def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := by
@@ -111,7 +113,7 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   rw [IsLocalization.mk'_eq_iff_eq]
   congr 1
   ext
-  field_simp [H t, this, mul_comm]
+  simp [field, H t, this, mul_comm]
 
 instance : IsLocalization.AtPrime (ofPrime A P).toSubring P :=
   IsLocalization.isLocalization_of_algEquiv _ (ofPrimeEquiv A P)

@@ -56,6 +56,10 @@ theorem colon_bot : colon ⊥ N = N.annihilator := by
 theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp =>
   mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
 
+theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon J := by
+  calc I = I.colon ⊤ := colon_top.symm
+       _ ≤ I.colon J := colon_mono (le_refl I) le_top
+
 end Semiring
 
 section CommSemiring

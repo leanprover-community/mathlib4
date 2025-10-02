@@ -37,7 +37,7 @@ In this section we construct binary products in `Over X` and binary coproducts i
 explicitly as the pullbacks and pushouts of binary (co)fans in the base category.
 
 For `Over X`, one could construct these binary products from the general theory of arbitrary
-products from the next section, ie
+products from the next section, i.e.
 ```
 (Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans
   (Over.ConstructProducts.conesEquiv _ (pair (Over.mk f) (Over.mk g)))

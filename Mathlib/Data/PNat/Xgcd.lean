@@ -136,7 +136,9 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   constructor <;> intro h <;> simp only [w, succPNat, succ_eq_add_one, z] at * <;>
     simp only [← coe_inj, mul_coe, mk_coe] at *
   · simp_all [← h]; ring
-  · simp [Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
+  · simp only [Nat.mul_add, Nat.add_mul, one_mul, mul_one, ← Nat.add_assoc,
+      Nat.add_right_cancel_iff] at h
+    rw [← h]; ring
 
 /-- `IsReduced` holds if the two entries in the vector are the
 same.  The reduction algorithm will produce a system with this
@@ -399,10 +401,9 @@ theorem gcd_props :
         b = b' * d ∧
           z * a' = succPNat (x * b') ∧
             w * b' = succPNat (y * a') ∧ (z * a : ℕ) = x * b + d ∧ (w * b : ℕ) = y * a + d := by
-  intros d w x y z a' b'
+  intro d w x y z a' b'
   let u := XgcdType.start a b
   let ur := u.reduce
-  have _ : d = ur.a := rfl
   have hb : d = ur.b := u.reduce_isReduced'
   have ha' : (a' : ℕ) = w + x := gcdA'_coe a b
   have hb' : (b' : ℕ) = y + z := gcdB'_coe a b
@@ -410,7 +411,6 @@ theorem gcd_props :
   constructor
   · exact hdet
   have hdet' : (w * z : ℕ) = x * y + 1 := by rw [← mul_coe, hdet, succPNat_coe]
-  have _ : u.v = ⟨a, b⟩ := XgcdType.start_v a b
   let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
     u.reduce_v.trans (XgcdType.start_v a b)
   rw [← hb, ← add_mul, ← add_mul, ← ha', ← hb'] at hv

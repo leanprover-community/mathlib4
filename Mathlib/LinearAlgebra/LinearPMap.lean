@@ -415,15 +415,15 @@ instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
     · simp only [add_domain, inf_assoc]
     · simp only [add_apply, add_assoc]⟩
 
-instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
-  ⟨fun f => by
+instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) where
+  zero_add := fun f => by
     ext x y hxy
     · simp [add_domain]
-    · simp only [add_apply, zero_apply, zero_add],
-  fun f => by
+    · simp [add_apply]
+  add_zero := fun f => by
     ext x y hxy
     · simp [add_domain]
-    · simp only [add_apply, zero_apply, add_zero]⟩
+    · simp [add_apply]
 
 instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
   zero_add f := by
@@ -528,8 +528,8 @@ theorem supSpanSingleton_apply_mk (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x �
       f ⟨x', hx'⟩ + c • y := by
   unfold supSpanSingleton
   rw [sup_apply _ ⟨x', hx'⟩ ⟨c • x, _⟩, mkSpanSingleton'_apply]
-  · exact mem_span_singleton.2 ⟨c, rfl⟩
   · rfl
+  · exact mem_span_singleton.2 ⟨c, rfl⟩
 
 @[simp]
 theorem supSpanSingleton_apply_smul_self (f : E →ₗ.[K] F) {x : E} (y : F) (hx : x ∉ f.domain)
@@ -661,14 +661,10 @@ and sending `p` to `f p.1 + g p.2`. -/
 def coprod (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) : E × F →ₗ.[R] G where
   domain := f.domain.prod g.domain
   toFun :=
-    -- Porting note: This is just
-    -- `(f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun +`
-    -- `  (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun`,
-    HAdd.hAdd
-      (α := f.domain.prod g.domain →ₗ[R] G)
-      (β := f.domain.prod g.domain →ₗ[R] G)
-      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun
-      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun
+    (show f.domain.prod g.domain →ₗ[R] G from
+      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun) +
+    (show f.domain.prod g.domain →ₗ[R] G from
+      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun)
 
 @[simp]
 theorem coprod_apply (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) (x) :

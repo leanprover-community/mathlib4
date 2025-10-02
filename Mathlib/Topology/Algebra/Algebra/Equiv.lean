@@ -20,7 +20,7 @@ are also topological spaces.
 * `ContinuousAlgEquiv R A B`: the type of continuous `R`-algebra isomorphisms
   from `A` to `B` with continuous inverses.
 
-## Notations
+## Notation
 
 `A ≃A[R] B` : notation for `ContinuousAlgEquiv R A B`.
 

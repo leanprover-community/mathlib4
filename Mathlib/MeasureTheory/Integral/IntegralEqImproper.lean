@@ -397,10 +397,6 @@ theorem AECover.integrable_of_lintegral_enorm_bounded [l.NeBot] [l.IsCountablyGe
   refine ⟨hfm, (le_of_tendsto ?_ hbounded).trans_lt ENNReal.ofReal_lt_top⟩
   exact hφ.lintegral_tendsto_of_countably_generated hfm.enorm
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_bounded :=
-  AECover.integrable_of_lintegral_enorm_bounded
-
 theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖ₑ ∂μ) l (𝓝 <| .ofReal I)) :
@@ -410,29 +406,17 @@ theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGe
   refine (ENNReal.ofReal_lt_ofReal_iff (lt_max_of_lt_left zero_lt_one)).2 ?_
   exact lt_max_of_lt_right (lt_add_one I)
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_tendsto :=
-  AECover.integrable_of_lintegral_enorm_tendsto
-
 theorem AECover.integrable_of_lintegral_enorm_bounded' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
     (hbounded : ∀ᶠ i in l, ∫⁻ x in φ i, ‖f x‖ₑ ∂μ ≤ I) : Integrable f μ :=
   hφ.integrable_of_lintegral_enorm_bounded I hfm
     (by simpa only [ENNReal.ofReal_coe_nnreal] using hbounded)
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_bounded' :=
-  AECover.integrable_of_lintegral_enorm_bounded'
-
 theorem AECover.integrable_of_lintegral_enorm_tendsto' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖ₑ ∂μ) l (𝓝 I)) : Integrable f μ :=
   hφ.integrable_of_lintegral_enorm_tendsto I hfm
     (by simpa only [ENNReal.ofReal_coe_nnreal] using htendsto)
-
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_tendsto' :=
-  AECover.integrable_of_lintegral_enorm_tendsto'
 
 theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfi : ∀ i, IntegrableOn f (φ i) μ)
@@ -579,9 +563,12 @@ theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded {I a₀ b₀ : ℝ}
   refine (aecover_Ioc_of_Ioc ha hb).integrable_of_integral_norm_bounded I
     (fun i => (hfi i).restrict) (h.mono fun i hi ↦ ?_)
   rw [Measure.restrict_restrict measurableSet_Ioc]
-  refine le_trans (setIntegral_mono_set (hfi i).norm ?_ ?_) hi <;> apply ae_of_all
-  · simp only [Pi.zero_apply, norm_nonneg, forall_const]
-  · intro c hc; exact hc.1
+  grw [← hi]
+  gcongr
+  · apply ae_of_all
+    simp
+  · exact (hfi i).norm
+  · exact inter_subset_left
 
 theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded_left {I a₀ b : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc (a i) b) (ha : Tendsto a l <| 𝓝 a₀)
@@ -974,10 +961,6 @@ lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
   · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
-
-@[deprecated (since := "2025-01-22")]
-alias _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv :=
-  HasCompactSupport.enorm_le_lintegral_Ici_deriv
 
 end IicFTC
 

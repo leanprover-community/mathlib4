@@ -32,10 +32,10 @@ considered as a subgroup of `G`.
 
 This is the first subgroup appearing in Goursat's lemma. See `Subgroup.goursat`. -/
 @[to_additive
-"For `I` a subgroup of `G × H`, `I.goursatFst` is the kernel of the projection map `I → H`,
+/-- For `I` a subgroup of `G × H`, `I.goursatFst` is the kernel of the projection map `I → H`,
 considered as a subgroup of `G`.
 
-This is the first subgroup appearing in Goursat's lemma. See `AddSubgroup.goursat`."]
+This is the first subgroup appearing in Goursat's lemma. See `AddSubgroup.goursat`. -/]
 def goursatFst : Subgroup G :=
   ((MonoidHom.snd G H).comp I.subtype).ker.map ((MonoidHom.fst G H).comp I.subtype)
 
@@ -45,10 +45,10 @@ considered as a subgroup of `H`.
 
 This is the second subgroup appearing in Goursat's lemma. See `Subgroup.goursat`. -/
 @[to_additive
-"For `I` a subgroup of `G × H`, `I.goursatSnd` is the kernel of the projection map `I → G`,
+/-- For `I` a subgroup of `G × H`, `I.goursatSnd` is the kernel of the projection map `I → G`,
 considered as a subgroup of `H`.
 
-This is the second subgroup appearing in Goursat's lemma. See `AddSubgroup.goursat`."]
+This is the second subgroup appearing in Goursat's lemma. See `AddSubgroup.goursat`. -/]
 def goursatSnd : Subgroup H :=
   ((MonoidHom.fst G H).comp I.subtype).ker.map ((MonoidHom.snd G H).comp I.subtype)
 
@@ -90,13 +90,13 @@ graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 
 `G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively. -/
 @[to_additive
-"**Goursat's lemma** for a subgroup of a product with surjective projections.
+/-- **Goursat's lemma** for a subgroup of a product with surjective projections.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
 subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
 graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 
-`G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively."]
+`G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively. -/]
 lemma goursat_surjective :
     have := normal_goursatFst hI₁
     have := normal_goursatSnd hI₂
@@ -116,11 +116,11 @@ If `I` is a subgroup of `G × H`, then there exist subgroups `G' ≤ G`, `H' ≤
 `M ⊴ G'` and `N ⊴ H'` such that `M × N ≤ I` and the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph
 of an isomorphism `G' ⧸ M ≃ H' ⧸ N`. -/
 @[to_additive
-"**Goursat's lemma** for an arbitrary subgroup.
+/-- **Goursat's lemma** for an arbitrary subgroup.
 
 If `I` is a subgroup of `G × H`, then there exist subgroups `G' ≤ G`, `H' ≤ H` and normal subgroups
 `M ≤ G'` and `N ≤ H'` such that `M × N ≤ I` and the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph
-of an isomorphism `G ⧸ G' ≃ H ⧸ H'`."]
+of an isomorphism `G ⧸ G' ≃ H ⧸ H'`. -/]
 lemma goursat :
     ∃ (G' : Subgroup G) (H' : Subgroup H) (M : Subgroup G') (N : Subgroup H') (_ : M.Normal)
       (_ : N.Normal) (e : G' ⧸ M ≃* H' ⧸ N),
