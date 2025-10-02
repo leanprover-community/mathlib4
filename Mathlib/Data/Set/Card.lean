@@ -666,8 +666,9 @@ theorem ncard_insert_le (a : α) (s : Set α) : (insert a s).ncard ≤ s.ncard +
   rw [(hs.mono (subset_insert a s)).ncard]
   exact Nat.zero_le _
 
-theorem one_le_ncard_insert (a : α) (s : Set α) [Finite ↑s] : 1 ≤ (insert a s).ncard :=
-  Nat.one_le_iff_ne_zero.mpr <| ncard_ne_zero_of_mem (mem_insert a s)
+theorem one_le_ncard_insert (a : α) (s : Set α) (hs : s.Finite := by toFinite_tac) :
+    1 ≤ (insert a s).ncard :=
+  Nat.one_le_iff_ne_zero.mpr <| ncard_ne_zero_of_mem (mem_insert a s) (by simp [hs])
 
 theorem ncard_insert_eq_ite {a : α} [Decidable (a ∈ s)] (hs : s.Finite := by toFinite_tac) :
     ncard (insert a s) = if a ∈ s then s.ncard else s.ncard + 1 := by
