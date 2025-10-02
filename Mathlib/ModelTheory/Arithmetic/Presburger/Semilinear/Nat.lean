@@ -59,7 +59,7 @@ theorem Nat.addSubmonoidFG_of_subtractive [Finite ι] {P : AddSubmonoid (ι → 
     · simp [hx₂]
     refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih => ?_
     simp only [mem_setOf_eq, and_imp] at ih
-    by_cases hy₃ : Minimal { x | x ∈ P ∧ x ≠ 0 } y
+    by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 0 }) y
     · exact mem_closure_of_mem hy₃
     rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩
     rw [← tsub_add_cancel_of_le hz₁.le]
