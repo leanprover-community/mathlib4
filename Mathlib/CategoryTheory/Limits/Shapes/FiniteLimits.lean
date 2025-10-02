@@ -60,6 +60,9 @@ instance (priority := 90) hasFiniteLimits_of_hasLimitsOfSize₀ [HasLimitsOfSize
     HasFiniteLimits C :=
   hasFiniteLimits_of_hasLimitsOfSize C
 
+instance (J : Type) [hJ : SmallCategory J] : Category (ULiftHom (ULift J)) :=
+  (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
+
 /-- We can always derive `HasFiniteLimits C` by providing limits at an
 arbitrary universe. -/
 theorem hasFiniteLimits_of_hasFiniteLimits_of_size
@@ -71,12 +74,7 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
                           (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
       @ULiftHomULiftCategory.equiv J hJ
     apply @hasLimitsOfShape_of_equivalence (ULiftHom (ULift J))
-      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ
-      (@Equivalence.symm J hJ (ULiftHom (ULift J))
-      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) l) _
-    /- Porting note: tried to factor out (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)
-    but when doing that would then find the instance and say it was not definitionally equal to
-    the provided one (the same thing factored out) -/
+      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ l.symm _
 
 /-- A category has all finite colimits if every functor `J ⥤ C` with a `FinCategory J`
 instance and `J : Type` has a colimit.

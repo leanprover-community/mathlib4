@@ -688,12 +688,12 @@ lemma indepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
   have : IndepFun (fun ω ↦ mX.mk X ω.1) (fun ω ↦ mY.mk Y ω.2) (μ.prod ν) :=
     indepFun_prod mX.measurable_mk mY.measurable_mk
   refine this.congr ?_ ?_
-  · change (mX.mk X) ∘ Prod.fst =ᶠ[_] X ∘ Prod.fst
+  · rw [← Function.comp_def, ← Function.comp_def]
     apply ae_eq_comp
     · exact measurable_fst.aemeasurable
     · rw [measurePreserving_fst.map_eq]
       exact (AEMeasurable.ae_eq_mk mX).symm
-  · change (mY.mk Y) ∘ Prod.snd =ᶠ[_] Y ∘ Prod.snd
+  · rw [← Function.comp_def, ← Function.comp_def]
     apply ae_eq_comp
     · exact measurable_snd.aemeasurable
     · rw [measurePreserving_snd.map_eq]
@@ -732,6 +732,16 @@ theorem IndepFun.comp₀ {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β
     (hφ : AEMeasurable φ (μ.map f)) (hψ : AEMeasurable ψ (μ.map g)) :
     IndepFun (φ ∘ f) (ψ ∘ g) μ :=
   Kernel.IndepFun.comp₀ hfg (by simp [hf]) (by simp [hg]) (by simp [hφ]) (by simp [hψ])
+
+lemma indepFun_const_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [IsZeroOrProbabilityMeasure μ] (c : β) (X : Ω → β') :
+    IndepFun (fun _ ↦ c) X μ :=
+  Kernel.indepFun_const_left c X
+
+lemma indepFun_const_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [IsZeroOrProbabilityMeasure μ] (X : Ω → β) (c : β') :
+    IndepFun X (fun _ ↦ c) μ :=
+  Kernel.indepFun_const_right X c
 
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
     [MeasurableNeg β'] (hfg : IndepFun f g μ) :
