@@ -60,6 +60,15 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
+lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
+  have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
+    by_contra eq
+    rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_top] at eq
+    exact ringKrullDim_ne_top eq
+  use ((ringKrullDim R).unbot ringKrullDim_ne_bot).toNat
+  exact (WithBot.coe_unbot (ringKrullDim R) ringKrullDim_ne_bot).symm.trans
+    (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
+
 local instance small_of_quotient' [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
@@ -415,8 +424,10 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
       sorry
     · --fym
       sorry
-
-  sorry
+  rcases exist_nat_eq' R with ⟨n, hn⟩
+  apply this n
+  rw [← hn]
+  exact ringKrullDim_le_of_surjective _ Ideal.Quotient.mk_surjective
 
 lemma injectiveDimension_eq_sSup (M : ModuleCat.{v} R) :
     injectiveDimension M = sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i →
