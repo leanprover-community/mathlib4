@@ -5,6 +5,7 @@ Authors: Kim Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Equalizers and coequalizers
@@ -848,6 +849,36 @@ theorem equalizer.isoSourceOfSelf_inv :
     (equalizer.isoSourceOfSelf f).inv = equalizer.lift (𝟙 X) (by simp) := by
   ext
   simp [equalizer.isoSourceOfSelf]
+
+/--
+If `f` and `g` have an equalizer, then pulling back this equalizer along a morphism `h` gives
+a fork of `h ≫ f` and `h ≫ g`.
+-/
+noncomputable def precompFork {Z : C} (h : Z ⟶ X)
+    [HasEqualizer f g] [HasPullback (equalizer.ι f g) h] :
+    Fork (h ≫ f) (h ≫ g) :=
+  Fork.ofι (pullback.snd (equalizer.ι f g) h) <| by
+    rw [← reassoc_of% pullback.condition, ← reassoc_of% pullback.condition, equalizer.condition]
+
+/-- The pullback of an equalizer is an equalizer -/
+noncomputable def isLimitPrecompFork {Z : C} (h : Z ⟶ X)
+    [HasEqualizer f g] [HasPullback (equalizer.ι f g) h] :
+    IsLimit (precompFork f g h) :=
+  Fork.IsLimit.mk _
+    (fun s ↦ pullback.lift (equalizer.lift (s.ι ≫ h) <| by simp [s.condition]) s.ι)
+    (by simp [precompFork])
+    (fun s m h ↦ by
+      simp only [parallelPair_obj_zero, precompFork, Fork.ofι_pt, Fork.ι_ofι] at h ⊢
+      ext
+      · simp; rw [pullback.condition, reassoc_of% h]
+      · simpa using h)
+
+instance hasEqualizer_precomp_of_hasEqualizer
+    {Z : C} (h : Z ⟶ X) [HasEqualizer f g] [HasPullback (equalizer.ι f g) h] :
+    HasEqualizer (h ≫ f) (h ≫ g) :=
+  HasLimit.mk
+    { cone := precompFork f g h
+      isLimit := isLimitPrecompFork f g h }
 
 section
 
