@@ -37,7 +37,8 @@ Assuming we have a compatible `UniformSpace K` instance
 - `CompleteSpace K`
 - `CompleteSpace 𝒪[K]`
 -/
-class IsNonarchLocalField (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] : Prop extends
+class IsNonarchimedeanLocalField
+    (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] : Prop extends
   IsValuativeTopology K,
   LocallyCompactSpace K,
   ValuativeRel.IsNontrivial K
@@ -46,11 +47,11 @@ open ValuativeRel Valued.integer
 
 open scoped WithZero
 
-namespace IsNonarchLocalField
+namespace IsNonarchimedeanLocalField
 
 section TopologicalSpace
 
-variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchLocalField K]
+variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 
 attribute [local simp] zero_lt_iff
 
@@ -137,7 +138,7 @@ end TopologicalSpace
 section UniformSpace
 
 variable (K : Type*) [Field K] [ValuativeRel K]
-  [UniformSpace K] [IsUniformAddGroup K] [IsNonarchLocalField K]
+  [UniformSpace K] [IsUniformAddGroup K] [IsNonarchimedeanLocalField K]
 
 instance : CompleteSpace K :=
   letI : (Valued.v (R := K)).RankOne :=
@@ -155,4 +156,4 @@ instance : CompleteSpace 𝒪[K] :=
 
 end UniformSpace
 
-end IsNonarchLocalField
+end IsNonarchimedeanLocalField
