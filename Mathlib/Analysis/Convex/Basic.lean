@@ -603,17 +603,8 @@ variable (A : Type*) [Semiring A] [Algebra R A]
 variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
 variable [PartialOrder R] [PartialOrder A]
 
-lemma convex_of_nonneg_algebraMap {s : Set M} (halg : ∀ ⦃r : R⦄, 0 ≤ r → 0 ≤ algebraMap R A r)
-    (hs : Convex A s) : Convex R s := by
-  simp only [Convex, StarConvex] at hs ⊢
-  intro u hu v hv a b ha hb hab
-  convert hs hu hv (halg ha) (halg hb) (by rw [← algebraMap.coe_add, hab, algebraMap.coe_one])
-    using 2
-  · rw [algebraMap_smul]
-  · rw [algebraMap_smul]
-
 lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
-    (halg : ∀ ⦃a : A⦄, 0 ≤ a → ∃ (r : R), 0 ≤ r ∧ algebraMap R A r = a) (hs : Convex R s) :
+    (halg : Set.Ici 0 ⊆ algebraMap R A '' Set.Ici 0) (hs : Convex R s) :
     Convex A s := by
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
@@ -626,15 +617,3 @@ lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
   exact (FaithfulSMul.algebraMap_eq_one_iff R A).mp hab
 
 end CommSemiring
-
-section CommRing
-
-variable {R : Type*} [CommRing R]
-variable {A : Type*} [Ring A] [Algebra R A]
-variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
-variable [PartialOrder R] [PartialOrder A] [IsOrderedRing A] [SMulPosMono R A]
-
-lemma Convex.sMulPosMono_convex {s : Set M} (hs : Convex A s) : Convex R s :=
-  convex_of_nonneg_algebraMap A (fun ⦃_⦄ ↦ algebraMap_nonneg A) hs
-
-end CommRing

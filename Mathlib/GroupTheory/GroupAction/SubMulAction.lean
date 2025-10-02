@@ -295,11 +295,6 @@ lemma subtype_injective :
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-protected alias coeSubtype := SubMulAction.SMulMemClass.coe_subtype
-@[deprecated (since := "2025-02-18")]
-protected alias _root_.SubAddAction.SMulMemClass.coeSubtype := SubAddAction.SMulMemClass.coe_subtype
-
 end SMulMemClass
 
 section MulActionMonoid

@@ -157,8 +157,7 @@ def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛ�
   map_add' _ _ := by
     simp [map_add]
   map_smul' _ _ := by
-    simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
-    rfl
+    simp [LinearMap.map_smulₛₗ, lcompₛₗ]
 
 @[simp]
 theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :

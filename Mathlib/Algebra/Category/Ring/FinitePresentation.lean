@@ -144,7 +144,6 @@ lemma preservesColimit_coyoneda_of_finitePresentation
       (PreservesColimit.preserves hc).some hS f.right (by simp)
     exact ⟨i, Under.homMk g h₁, Under.UnderMorphism.ext h₂⟩
   · intro i j f₁ f₂ e
-    dsimp at *
     obtain ⟨k, hik, hjk, e⟩ := RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit
       R (F ⋙ Under.forget R) { app i := (F.obj i).hom } S.hom ((Under.forget R).mapCocone c)
       (PreservesColimit.preserves hc).some

@@ -51,7 +51,7 @@ theorem integrable_mk {f : α → ε} (hf : AEStronglyMeasurable f μ) :
   exact coeFn_mk f hf
 
 theorem integrable_coeFn {f : α →ₘ[μ] ε} : MeasureTheory.Integrable f μ ↔ Integrable f := by
-  rw [← integrable_mk, mk_coeFn]
+  rw [← integrable_mk f.aestronglyMeasurable, mk_coeFn]
 
 theorem integrable_zero : Integrable (0 : α →ₘ[μ] ε') :=
   (MeasureTheory.integrable_zero α ε' μ).congr (coeFn_mk _ _).symm

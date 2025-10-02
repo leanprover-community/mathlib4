@@ -114,15 +114,14 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     Function.Surjective (pointsPi R X) := by
   intro f
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (i : _) : IsAffine (𝒰.obj i) := isAffine_Spec _
-  have (i : _) : ∃ j, Set.range (f i).base ⊆ (𝒰.map j).opensRange := by
-    refine ⟨𝒰.f ((f i).base (IsLocalRing.closedPoint (R i))), ?_⟩
+  have (i : _) : ∃ j, Set.range (f i).base ⊆ (𝒰.f j).opensRange := by
+    refine ⟨𝒰.idx ((f i).base (IsLocalRing.closedPoint (R i))), ?_⟩
     rintro _ ⟨x, rfl⟩
     exact ((IsLocalRing.specializes_closedPoint x).map (f i).base.hom.2).mem_open
-      (𝒰.map _).opensRange.2 (𝒰.covers _)
+      (𝒰.f _).opensRange.2 (𝒰.covers _)
   choose j hj using this
-  have (j₀ : _) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.obj j₀)
-    (fun i ↦ IsOpenImmersion.lift (𝒰.map j₀) (f i.1) (by rcases i with ⟨i, rfl⟩; exact hj i))
+  have (j₀ : _) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.X j₀)
+    (fun i ↦ IsOpenImmersion.lift (𝒰.f j₀) (f i.1) (by rcases i with ⟨i, rfl⟩; exact hj i))
   choose g hg using this
   simp_rw [funext_iff, pointsPi] at hg
   let R' (j₀) := CommRingCat.of (Π i : { i // j i = j₀ }, R i)
@@ -133,7 +132,7 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     map_mul' _ _ := rfl
     map_add' _ _ := rfl }
   refine ⟨Spec.map (CommRingCat.ofHom e.symm.toRingHom) ≫ inv (sigmaSpec R') ≫
-    Sigma.desc fun j₀ ↦ g j₀ ≫ 𝒰.map j₀, ?_⟩
+    Sigma.desc fun j₀ ↦ g j₀ ≫ 𝒰.f j₀, ?_⟩
   ext i : 1
   have : (Pi.evalRingHom (R ·) i).comp e.symm.toRingHom =
     (Pi.evalRingHom _ ⟨i, rfl⟩).comp (Pi.evalRingHom (R' ·) (j i)) := rfl

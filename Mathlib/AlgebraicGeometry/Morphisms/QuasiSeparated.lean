@@ -179,14 +179,14 @@ instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
   let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _
-  have (i : _) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
+  have (i : _) : IsAffine (𝒰.X i) := by dsimp [𝒰]; infer_instance
   apply HasAffineProperty.of_openCover
     ((Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _)
   rintro ⟨i, j⟩; dsimp at i j
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_
-    (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.map i)) ‹_›) ?_
+    (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.f i)) ‹_›) ?_
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
-      (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
+      (pullbackRightPullbackFstIso g (Z.affineCover.f i) f).hom
   · exact inferInstance
 
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
