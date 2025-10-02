@@ -64,6 +64,13 @@ local instance small_of_quotient [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ 
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
 
+variable {R} in
+lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R M] :
+    x ∈ Module.annihilator R (QuotSMulTop x M) := by
+  refine mem_annihilator.mpr (fun m ↦ ?_)
+  rcases Submodule.Quotient.mk_surjective _ m with ⟨m', hm'⟩
+  simpa [← hm', ← Submodule.Quotient.mk_smul] using Submodule.smul_mem_pointwise_smul m' x ⊤ trivial
+
 section
 
 universe w
@@ -112,13 +119,6 @@ instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     exact Module.Finite.of_surjective f surj
 
 variable {R}
-
-omit [UnivLE.{v, w}] in
-lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R M] :
-    x ∈ Module.annihilator R (QuotSMulTop x M) := by
-  refine mem_annihilator.mpr (fun m ↦ ?_)
-  rcases Submodule.Quotient.mk_surjective _ m with ⟨m', hm'⟩
-  simpa [← hm', ← Submodule.Quotient.mk_smul] using Submodule.smul_mem_pointwise_smul m' x ⊤ trivial
 
 variable [IsNoetherianRing R] [Small.{v} R]
 
@@ -178,11 +178,14 @@ lemma ext_vanish_of_for_all_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finit
       apply hn S.X₁
       simpa [this] using h
 
-variable [IsLocalRing R]
+end
 
-lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R)
+variable {R} [IsLocalRing R] [IsNoetherianRing R]
+
+lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
+  letI := HasExt.standard (ModuleCat.{v} R)
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
@@ -217,7 +220,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
           (hasProjectiveDimensionLT_of_ge M (n + 1) (n + 1 + 1) (Nat.le_add_right _ 1))⟩
       simp only [HasProjectiveDimensionLE, hasProjectiveDimensionLT_iff]
       intro i hi
-      have : ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} M N i) := by
+      have : ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N i) := by
         apply ext_vanish_of_for_all_finite
         intro L _
         have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
@@ -254,8 +257,8 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
         (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
       simpa only [this] using aux n
 
-lemma projectiveDimension_quotient_regular_sequence (M : ModuleCat.{v} R) [Nontrivial M]
-    [Module.Finite R M] (rs : List R) (reg : IsWeaklyRegular M rs)
+lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat.{v} R)
+    [Nontrivial M] [Module.Finite R M] (rs : List R) (reg : IsWeaklyRegular M rs)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M))) =
     projectiveDimension M + rs.length := by
@@ -277,6 +280,15 @@ lemma projectiveDimension_quotient_regular_sequence (M : ModuleCat.{v} R) [Nontr
         ← add_assoc, ← projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular M x this mem.1,
         ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
           mem.2 len]
+
+section
+
+universe w
+
+variable [Small.{v} R] [UnivLE.{v, w}]
+
+local instance hasExt_of_small' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
+  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (rs : List R) :
@@ -384,6 +396,12 @@ lemma injectiveDimension_eq_sSup (M : ModuleCat.{v} R) :
 
   sorry
 
+end
+
+section
+
+variable [Small.{v} R]
+
 lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R)
     (h : injectiveDimension M ≠ ⊤) : supportDim R M ≤ injectiveDimension M := by
 
@@ -396,12 +414,23 @@ lemma injectiveDimension_eq_depth (M : ModuleCat.{v} R) (h : injectiveDimension 
 
 end
 
+variable (R)
+
 class IsGorensteinLocalRing : Prop extends IsLocalRing R, IsNoetherianRing R where
   injdim : injectiveDimension (ModuleCat.of R R) ≠ ⊤
 
+lemma isGorensteinLocalRing_def :
+    IsGorensteinLocalRing R ↔ injectiveDimension (ModuleCat.of R R) ≠ ⊤ :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
 theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing R] :
     IsCohenMacaulayLocalRing R := by
-  sorry
+  have := (isGorensteinLocalRing_def R).mp ‹_›
+  have eq := injectiveDimension_eq_depth (ModuleCat.of R R) this
+  have le := supportDim_le_injectiveDimension (ModuleCat.of R R) this
+  rw [Module.supportDim_self_eq_ringKrullDim, eq] at le
+  apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth R (le_of_le_of_eq le _)
+  simp [IsLocalRing.depth_eq_of_iso (Shrink.linearEquiv.{u} R R).toModuleIso]
 
 /-
 variable {R} in
