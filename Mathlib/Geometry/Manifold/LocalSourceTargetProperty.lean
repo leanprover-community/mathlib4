@@ -55,6 +55,8 @@ structure IsLocalSourceTargetProperty
     (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) : Prop where
   mono_source : ∀ {f : M → M'}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph M' H'},
     ∀ {s : Set M}, IsOpen s → P f φ ψ → P f (φ.restr s) ψ
+  -- Note: the analogous `mono_target` statement is true for both immersions and submersions.
+  -- If and when a future lemma requires it, add this here.
   congr : ∀ {f g : M → M'}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph M' H'},
     ∀ {s : Set M}, EqOn f g s → IsOpen s → φ.source ⊆ s → P f φ ψ → P g φ ψ
 
