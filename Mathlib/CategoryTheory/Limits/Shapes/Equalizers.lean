@@ -860,7 +860,7 @@ noncomputable def precompFork {Z : C} (h : Z ⟶ X)
   Fork.ofι (pullback.snd (equalizer.ι f g) h) <| by
     rw [← reassoc_of% pullback.condition, ← reassoc_of% pullback.condition, equalizer.condition]
 
-/-- The pullback of an equalizer is an equalizer -/
+/-- The pullback of an equalizer is an equalizer. -/
 noncomputable def isLimitPrecompFork {Z : C} (h : Z ⟶ X)
     [HasEqualizer f g] [HasPullback (equalizer.ι f g) h] :
     IsLimit (precompFork f g h) :=
