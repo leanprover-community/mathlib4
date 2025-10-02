@@ -131,7 +131,7 @@ instance [Injective X] : HasInjectiveDimensionLT X 1 := by
   · simp at hi
   · exact e.eq_zero_of_injective
 
-lemma Injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
+lemma injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
     Injective X ↔ ∀ ⦃Y : C⦄, Subsingleton (Ext Y X 1) := by
   refine ⟨fun h ↦ HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl),
     fun h ↦ ⟨fun f g _ ↦ ?_⟩⟩
