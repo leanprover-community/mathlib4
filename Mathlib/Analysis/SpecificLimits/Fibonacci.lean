@@ -12,22 +12,20 @@ import Mathlib.Data.Real.GoldenRatio
 We prove that the ratio of consecutive Fibonacci numbers tends to the golden ratio.
 -/
 
-open Nat Real Filter goldenRatio
+open Nat Real Filter Tendsto goldenRatio
 
 /-- The limit of `fib (n + 1) / fib n` as `n → ∞` is the golden ratio. -/
 theorem tendsto_fib_succ_div_fib_atTop :
     Tendsto (fun n ↦ (fib (n + 1) / fib n : ℝ)) atTop <| nhds φ := by
-  have h₁ n (hn : n ≥ 1) : (fib n : ℝ)⁻¹ * ψ ^ n + φ = fib (n + 1) / fib n := by
-    rw [← fib_succ_sub_goldenRatio_mul_fib, mul_comm, sub_mul, mul_assoc, Field.mul_inv_cancel,
-      mul_one, sub_add_cancel, mul_comm, inv_mul_eq_div]
-    simp only [ne_eq, cast_eq_zero, fib_eq_zero]
-    cutsat
-  have h₂ : ∀ᶠ n in atTop, |(fib n : ℝ)⁻¹| ≤ 1 :=
-    Eventually.of_forall fun n ↦ by simp [cast_inv_le_one]
-  convert Tendsto.congr' (eventually_atTop.mpr ⟨_, h₁⟩) <| Tendsto.add_const _ <|
-    bdd_le_mul_tendsto_zero' _ h₂ <| tendsto_pow_atTop_nhds_zero_of_abs_lt_one <|
-      abs_lt.mpr ⟨neg_one_lt_goldenConj, by linarith [goldenConj_neg]⟩
-  simp
+  have h₁ n : (fib (n + 1) / fib n : ℝ) = (φ - ψ * (ψ / φ) ^ n) / (1 - (ψ / φ) ^ n) := by
+    simp only [coe_fib_eq, pow_succ, div_pow]
+    field_simp
+  have h₂ := tendsto_pow_atTop_nhds_zero_of_abs_lt_one (r := ψ / φ) <| by
+    rw [abs_div, div_lt_one <| by positivity, abs_of_pos goldenRatio_pos, abs_lt]
+    constructor <;>
+    linarith [one_lt_goldenRatio, neg_one_lt_goldenConj, goldenConj_neg]
+  rw [show φ = (φ - ψ * 0) / (1 - 0) by ring, funext h₁]
+  exact const_sub _ (const_mul _ h₂) |>.div (const_sub _ h₂) <| by simp
 
 /-- The limit of `fib n / fib (n + 1)` as `n → ∞` is the negative conjugate of the golden ratio. -/
 theorem tendsto_fib_div_fib_succ_atTop :
