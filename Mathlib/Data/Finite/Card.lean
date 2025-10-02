@@ -129,8 +129,7 @@ theorem card_eq_zero_of_injective [Nonempty α] {f : α → β} (hf : Function.I
 theorem card_eq_zero_of_embedding [Nonempty α] (f : α ↪ β) (h : Nat.card α = 0) : Nat.card β = 0 :=
   card_eq_zero_of_injective f.2 h
 
-theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β :=
-  Nat.card_sum
+@[deprecated (since := "2025-10-02")] alias card_sum := Nat.card_sum
 
 theorem card_image_le {s : Set α} [Finite s] (f : α → β) : Nat.card (f '' s) ≤ Nat.card s :=
   Nat.card_le_card_of_surjective _ Set.imageFactorization_surjective
