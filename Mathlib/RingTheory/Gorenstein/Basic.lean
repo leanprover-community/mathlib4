@@ -395,9 +395,18 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
       Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
   simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
 
+lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
+    (h : ∀ i > n, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
+    ∀ i > n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M i) := by
+  --reduce to fg using ext_subsingleton_of_quotients
+  --use ext_subsingleton_of_support_subset
+  --proof for all `N = R⧸p` using induction on `dim(R⧸p)`
+  --fym
+  sorry
+
 lemma injectiveDimension_eq_sSup (M : ModuleCat.{v} R) :
-    injectiveDimension M = ⨆ n ∈ {i | Nontrivial
-      (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)}, (n : ℕ∞) := by
+    injectiveDimension M = sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i →
+      Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)} := by
 
   sorry
 
