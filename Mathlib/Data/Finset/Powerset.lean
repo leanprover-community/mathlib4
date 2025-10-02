@@ -306,11 +306,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
     constructor
     · classical
       intro h
-      have : map f (filter (fun x => (f x ∈ t)) s) = t := by
-        ext x
-        simp only [mem_map, mem_filter]
-        exact ⟨fun ⟨_y, ⟨_hy₁, hy₂⟩, hy₃⟩ => hy₃ ▸ hy₂,
-          fun hx => let ⟨y, hy⟩ := mem_map.1 (h.1 hx); ⟨y, ⟨hy.1, hy.2 ▸ hx⟩, hy.2⟩⟩
+      have : map f (filter (fun x => (f x ∈ t)) s) = t := by grind
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩

@@ -27,6 +27,7 @@ instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℕ where
   le_of_add_le_add_left := @Nat.le_of_add_le_add_left
 
 instance instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℕ where
+  le_add_self := Nat.le_add_left
   le_self_add := Nat.le_add_right
   exists_add_of_le := Nat.exists_eq_add_of_le
 

@@ -135,7 +135,6 @@ theorem IsUniversalColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (hc : IsUniver
   apply hc c'' α (f ≫ e.inv.1) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα
   intro j
   rw [← Category.comp_id (α.app j)]
-  have : IsIso e.inv.hom := Functor.map_isIso (Cocones.forget _) e.inv
   exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨by simp⟩)
 
 theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKampenColimit c)
@@ -226,7 +225,6 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J �
   · intro k
     rw [← Category.comp_id f]
     refine (H (e.inverse.obj k)).paste_vert ?_
-    have : IsIso (𝟙 (Cocone.whisker e.functor c).pt) := inferInstance
     exact IsPullback.of_vert_isIso ⟨by simp⟩
 
 theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category K] (e : J ≌ K)

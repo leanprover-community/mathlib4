@@ -87,8 +87,7 @@ open ComplexOrder
 
 /-- The family of seminorms defined by the gauges of absolute convex open sets. -/
 noncomputable def gaugeSeminormFamily : SeminormFamily 𝕜 E (AbsConvexOpenSets 𝕜 E) := fun s =>
-  gaugeSeminorm s.coe_balanced (s.coe_convex.sMulPosMono_convex)
-    (absorbent_nhds_zero s.coe_nhds)
+  gaugeSeminorm s.coe_balanced (s.coe_convex.lift ℝ) (absorbent_nhds_zero s.coe_nhds)
 
 variable {𝕜 E}
 
@@ -97,8 +96,7 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
   simp_rw [gaugeSeminorm_toFun]
-  exact gauge_lt_one_eq_self_of_isOpen (s.coe_convex.sMulPosMono_convex)
-    s.coe_zero_mem s.coe_isOpen
+  exact gauge_lt_one_eq_self_of_isOpen (s.coe_convex.lift ℝ) s.coe_zero_mem s.coe_isOpen
 
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] -- [SMulCommClass ℝ 𝕜 E]
 variable [LocallyConvexSpace 𝕜 E]
