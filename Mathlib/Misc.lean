@@ -30,4 +30,3 @@ example {m : ℕ} [NeZero m] {K : Type*} [Field K] [NumberField K] [IsCyclotomic
   let ζ := (IsCyclotomicExtension.zeta_spec m ℚ K).toInteger
   have : RingOfIntegers.exponent ζ = 1 := by
     rw [RingOfIntegers.exponent_eq_one_iff]
-    

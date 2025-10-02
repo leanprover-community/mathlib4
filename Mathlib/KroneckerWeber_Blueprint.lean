@@ -44,4 +44,3 @@ lemma lemma_1_4 {m : ℕ} {K : Type*} [Field K] [NumberField K] [IsGalois ℚ K]
       Algebra.IsUnramifiedAt ℤ Q)
     (E : Type*) [Field E] [CharZero E] [IsCyclotomicExtension {p ^ (m + 1)} ℚ E] :
     Nonempty (K →+* E) := sorry
-
