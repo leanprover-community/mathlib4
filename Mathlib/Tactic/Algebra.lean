@@ -87,43 +87,179 @@ end lemmas
 open Ring in
 mutual
 
-/- If we want to support natural expressions in the exponentes to the fullest extent, we would
-need to create our own version of ExProd and ExBase, essentially reproducing the normal form of
-ring, except with the constants being replaced with `Ring.ExProd`.  -/
+/-- The base `e` of a normalized exponent expression in an algebra context. -/
+inductive ExBase : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q(CommSemiring $R)}
+  {_ : Q(CommSemiring $A)} (_ : Q(Algebra $R $A)), (e : Q($A)) → Type
+  /-- An atomic expression `e` with id `id`. -/
+  | atom {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
+      {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+      {sAlg : Q(Algebra $R $A)} {e : Q($A)} (id : ℕ) : ExBase q($sAlg) e
+  /-- A sum of monomials. -/
+  | sum {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
+      {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+      {sAlg : Q(Algebra $R $A)} {e : Q($A)} (_ : ExSum q($sAlg) e) : ExBase q($sAlg) e
 
-/-- An expression of the form `r • a` -/
-inductive ExSMul : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q(CommSemiring $R)}
-  {_ : Q(CommSemiring $A)} (_ : Q(Algebra $R $A)), (a : Q($A)) → Type
-  | smul
-    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
-      {sR : Q(CommSemiring $R)}
-      {sA : Q(CommSemiring $A)}
-      {sAlg : Q(Algebra $R $A)} {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum q($sR) r)
-      (va : Ring.ExProd q($sA) a)
-      : ExSMul q($sAlg) q($r • $a : $A)
+/-- A monomial in an algebra context, which is a product of powers of `ExBase` expressions,
+terminated by a scalar multiplication. -/
+inductive ExProd : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q(CommSemiring $R)}
+  {_ : Q(CommSemiring $A)} (_ : Q(Algebra $R $A)), (e : Q($A)) → Type
+  /-- A scalar multiplication `r • a` where `r` is a coefficient from the base ring. -/
+  | smul {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
+      {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+      {sAlg : Q(Algebra $R $A)} {r : Q($R)} (vr : Ring.ExSum q($sR) r)
+      : ExProd q($sAlg) q($r • 1 : $A)
+  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
+  and `e` is an `Ring.ExProd` representing a monomial expression in `ℕ`. -/
+  | mul {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
+      {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+      {sAlg : Q(Algebra $R $A)} {x : Q($A)} {e : Q(ℕ)} {b : Q($A)} :
+    ExBase q($sAlg) x → Ring.ExProd Ring.sℕ e → ExProd q($sAlg) b →
+    ExProd q($sAlg) q($x ^ $e * $b)
 
 /-- A polynomial expression, which is a sum of monomials. -/
 inductive ExSum : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q(CommSemiring $R)}
   {_ : Q(CommSemiring $A)} (_ : Q(Algebra $R $A)), (a : Q($A)) → Type
-  -- | unsafeCast {u v : Lean.Level} {A : Q(Type u)} (B : Q(Type v))
-  --   {a : Q($A)} (va : ExSum A a) : ExSum q($B) (q($a):)
   | zero {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
       {sR : Q(CommSemiring $R)}
       {sA : Q(CommSemiring $A)}
       {sAlg : Q(Algebra $R $A)} : ExSum q($sAlg) q(0:$A)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
-  | add {v w: Lean.Level} {R : Q(Type v)} {A : Q(Type w)}
+  | add {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
     {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
     {a b : Q($A)} {sAlg : Q(Algebra $R $A)} :
-    ExSMul q($sAlg) a → ExSum q($sAlg) b →
+    ExProd q($sAlg) a → ExSum q($sAlg) b →
       ExSum q($sAlg) q($a + $b)
+
+end
+
+mutual -- partial only to speed up compilation
+
+/-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
+partial def ExBase.eq
+    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+    {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)} :
+    ExBase sAlg a → ExBase sAlg b → Bool
+  | .atom i, .atom j => i == j
+  | .sum a, .sum b => a.eq b
+  | _, _ => false
+
+@[inherit_doc ExBase.eq]
+partial def ExProd.eq
+    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+    {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)} :
+    ExProd sAlg a → ExProd sAlg b → Bool
+  | .smul vr₁, .smul vr₂ => vr₁.eq vr₂
+  | .mul vx₁ ve₁ vb₁, .mul vx₂ ve₂ vb₂ => vx₁.eq vx₂ && ve₁.eq ve₂ && vb₁.eq vb₂
+  | _, _ => false
+
+@[inherit_doc ExBase.eq]
+partial def ExSum.eq
+    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+    {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)} :
+    ExSum sAlg a → ExSum sAlg b → Bool
+  | .zero, .zero => true
+  | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
+  | _, _ => false
+
+end
+
+mutual -- partial only to speed up compilation
+/--
+A total order on normalized expressions.
+This is not an `Ord` instance because it is heterogeneous.
+-/
+partial def ExBase.cmp
+    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+    {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)} :
+    ExBase sAlg a → ExBase sAlg b → Ordering
+  | .atom i, .atom j => compare i j
+  | .sum a, .sum b => a.cmp b
+  | .atom .., .sum .. => .lt
+  | .sum .., .atom .. => .gt
+
+@[inherit_doc ExBase.cmp]
+partial def ExProd.cmp
+    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+    {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)} :
+    ExProd sAlg a → ExProd sAlg b → Ordering
+  | .smul vr₁, .smul vr₂ => vr₁.cmp vr₂
+  | .mul vx₁ ve₁ vb₁, .mul vx₂ ve₂ vb₂ => (vx₁.cmp vx₂).then (ve₁.cmp ve₂) |>.then (vb₁.cmp vb₂)
+  | .smul .., .mul .. => .lt
+  | .mul .., .smul .. => .gt
+
+@[inherit_doc ExBase.cmp]
+partial def ExSum.cmp
+    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+    {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)} :
+    ExSum sAlg a → ExSum sAlg b → Ordering
+  | .zero, .zero => .eq
+  | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
+  | .zero, .add .. => .lt
+  | .add .., .zero => .gt
+
+end
+
+mutual -- partial only to speed up compilation
+
+/-- Compare the structure of two `ExProd` values, ignoring scalar coefficients.
+This is used by `equateScalarsSum` to determine if two monomials have the same structure. -/
+partial def ExProd.cmpShape
+    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+    {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)} :
+    ExProd sAlg a → ExProd sAlg b → Ordering
+  | .smul _, .smul _ => .eq
+  | .mul vx₁ ve₁ vb₁, .mul vx₂ ve₂ vb₂ => (vx₁.cmp vx₂).then (ve₁.cmp ve₂) |>.then (vb₁.cmpShape vb₂)
+  | .smul .., .mul .. => .lt
+  | .mul .., .smul .. => .gt
+
+end
+
+variable
+    {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+    {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)}
+
+instance : Inhabited (Σ e, (ExBase sAlg) e) := ⟨default, .atom 0⟩
+instance : Inhabited (Σ e, (ExSum sAlg) e) := ⟨_, .zero⟩
+instance : Inhabited (Σ e, (ExProd sAlg) e) := ⟨_, .smul .zero⟩
+
+mutual
+
+/-- Converts `ExBase sAlg` to `ExBase sAlg'`, assuming the algebras are defeq. -/
+partial def ExBase.cast
+    {u v w x : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {R' : Q(Type w)} {A' : Q(Type x)}
+    {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+    {sR' : Q(CommSemiring $R')} {sA' : Q(CommSemiring $A')}
+    {sAlg : Q(Algebra $R $A)} {sAlg' : Q(Algebra $R' $A')} {a : Q($A)} :
+    ExBase sAlg a → Σ a, ExBase sAlg' a
+  | .atom i => ⟨a, .atom i⟩
+  | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
+
+/-- Converts `ExProd sAlg` to `ExProd sAlg'`, assuming the algebras are defeq. -/
+partial def ExProd.cast
+    {u v w x : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {R' : Q(Type w)} {A' : Q(Type x)}
+    {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+    {sR' : Q(CommSemiring $R')} {sA' : Q(CommSemiring $A')}
+    {sAlg : Q(Algebra $R $A)} {sAlg' : Q(Algebra $R' $A')} {a : Q($A)} :
+    ExProd sAlg a → Σ a, ExProd sAlg' a
+  | .smul vr => ⟨_, .smul vr.cast.2⟩
+  | .mul vx ve vb => ⟨_, .mul vx.cast.2 ve vb.cast.2⟩
+
+/-- Converts `ExSum sAlg` to `ExSum sAlg'`, assuming the algebras are defeq. -/
+partial def ExSum.cast
+    {u v w x : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {R' : Q(Type w)} {A' : Q(Type x)}
+    {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+    {sR' : Q(CommSemiring $R')} {sA' : Q(CommSemiring $A')}
+    {sAlg : Q(Algebra $R $A)} {sAlg' : Q(Algebra $R' $A')} {a : Q($A)} :
+    ExSum sAlg a → Σ a, ExSum sAlg' a
+  | .zero => ⟨_, .zero⟩
+  | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
 
 end
 
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A))
 
-def one : Ring.ExSum q($sA) q(Nat.rawCast (nat_lit 1) + 0 : $A) :=
+def _root_.Mathlib.Tactic.Ring.ExSum.one : Ring.ExSum q($sA) q(Nat.rawCast (nat_lit 1) + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast (nat_lit 1) : $A)) 1 none) .zero
 
 /-- WARNING : n should be a natural literal. -/
@@ -134,14 +270,30 @@ def mkNat (n : Q(ℕ)) : Ring.ExSum q($sA) q(Nat.rawCast $n + 0 : $A) :=
 -- def mkInt (rA : Q(Ring $A)) (n : Q(ℤ)) (n' : ℤ) : Ring.ExSum q(inferInstance) q(Int.rawCast $n + 0 : $A) :=
 --   .add (α := q($A)) (sα := q(inferInstance)) (.const (e := q(Int.rawCast $n)) n' none) .zero
 
-def _root_.Mathlib.Tactic.Ring.ExProd.one : Ring.ExProd q($sA) q((nat_lit 1).rawCast : $A) :=
-  .const 1 none
+-- def _root_.Mathlib.Tactic.Ring.ExProd.one : Ring.ExProd q($sA) q((nat_lit 1).rawCast : $A) :=
+--   .const 1 none
 
-def ExSMul.ofExProd (va : Ring.ExProd q($sA) q($a)) : ExSMul q($sAlg) q(((Nat.rawCast (nat_lit 1)) + 0:$R) • $a) :=
-  .smul one va
+-- def ExSMul.ofExProd (va : Ring.ExProd q($sA) q($a)) : ExSMul q($sAlg) q(((Nat.rawCast (nat_lit 1)) + 0:$R) • $a) :=
+--   .smul one va
 
-def ExSMul.toExSum (va : ExSMul q($sAlg) q($a)) : ExSum q($sAlg) q($a + 0) :=
+-- def ExSMul.toExSum (va : ExSMul q($sAlg) q($a)) : ExSum q($sAlg) q($a + 0) :=
+--   .add va .zero
+
+section
+/-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
+def ExBase.toProd {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
+    {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+    {sAlg : Q(Algebra $R $A)} {a : Q($A)} {b : Q(ℕ)}
+    (va : ExBase sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
+    ExProd sAlg q($a ^ $b * ((nat_lit 1).rawCast + 0: $R) • (1: $A)) :=
+  .mul va vb (.smul (.one (sA := sR) ) (sAlg := sAlg))
+
+/-- Embed `ExProd` in `ExSum` by adding 0. -/
+def ExProd.toSum {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
+    {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
+    {sAlg : Q(Algebra $R $A)} {a : Q($A)} (va : ExProd sAlg a) : ExSum sAlg q($a + 0) :=
   .add va .zero
+end
 
 namespace ExSum
 
@@ -160,23 +312,6 @@ structure Result {u : Lean.Level} {A : Q(Type u)} (E : Q($A) → Type) (e : Q($A
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
 
-def evalAtom :
-    AtomM (Result (ExSum q($sAlg)) q($a)) := do
-  let r ← (← read).evalAtom a
-  have e' : Q($A) := r.expr
-  let (i, ⟨a', _⟩) ← addAtomQ e'
-  let ve' : ExSum _ _ := ExSum.add
-    (.ofExProd q($sAlg) _ <|
-      (Ring.ExBase.atom i (e := a')).toProd (Ring.ExProd.mkNat Ring.sℕ 1).2) .zero
-  pure ⟨_, ve',
-  match r.proof? with
-  | none =>
-      -- have : $e =Q $a' := ⟨⟩
-      (q(sorry))
-  | some (p : Q($a = $e')) => (q(sorry))
-
-  ⟩
-
 open NormNum
 
 /--
@@ -189,7 +324,7 @@ inductive Overlap (a : Q($A)) where
   | zero (_ : Q(IsNat $a (nat_lit 0)))
   /-- The expression `e` (the sum of monomials) is equal to another monomial
   (with nonzero leading coefficient). -/
-  | nonzero (_ : Result (ExSMul q($sAlg)) a)
+  | nonzero (_ : Result (ExProd q($sAlg)) a)
 
 /--
 Given monomials `va, vb`, attempts to add them together to get another monomial.
@@ -197,49 +332,25 @@ If the monomials are not compatible, returns `none`.
 For example, `xy + 2xy = 3xy` is a `.nonzero` overlap, while `xy + xz` returns `none`
 and `xy + -xy = 0` is a `.zero` overlap.
 -/
-def evalAddOverlap {a b : Q($A)} (va : ExSMul sAlg a) (vb : ExSMul sAlg b) :
+def evalAddOverlap {a b : Q($A)} (va : ExProd sAlg a) (vb : ExProd sAlg b) :
     OptionT MetaM (Overlap q($sAlg) q($a + $b)) := do
   Lean.Core.checkSystem decl_name%.toString
-  -- IO.println s!"Running evalAddOverlap on {← ppExpr a} and {← ppExpr b}"
   match va, vb with
-  | .smul vr (r := r) (a := a) va, .smul vs (r := s) (a := b) vb => do
-    guard (va.eq vb)
-    -- IO.println "Running Ring.evalAdd"
+  | .smul vr, .smul vs => do
     let ⟨t, vt, pt⟩ ← Ring.evalAdd q($sR) vr vs
-    -- IO.println "Finished Ring.evalAdd"
-    have : $a =Q $b := ⟨⟩
     match vt with
     | .zero .. =>
-      -- IO.println s!"I think {← ppExpr a} + {← ppExpr b} = 0"
       return .zero q(smul_add_left_zero $pt)
     | vt =>
-      -- IO.println s!"I think {← ppExpr a} + {← ppExpr b} ≠ 0"
-      return .nonzero ⟨_, .smul vt va, q(smul_add_smul_same rfl $pt)⟩
+      return .nonzero ⟨_, .smul vt, q(smul_add_smul_same rfl $pt)⟩
+  | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
+    guard (vxa.eq vxb && vea.eq veb)
+    match ← evalAddOverlap va₂ vb₂ with
+    | .zero p => return .zero q(sorry)
+    | .nonzero ⟨_, vc, p⟩ =>
+      return .nonzero ⟨_, .mul vxa vea vc, q(sorry)⟩
+  | _, _ => OptionT.fail
 
-variable {sAlg a b} in
-partial def ExSMul.cmp :
-    ExSMul sAlg a → ExSMul sAlg b → Ordering
-  | .smul vr va, .smul vs vb => (va.cmp vb).then (vr.cmp vs)
-
-partial def ExSum.cmp {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
-  {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a : Q($A)} {b : Q($A)} :
-    ExSum sAlg a → ExSum sAlg b → Ordering
-  | .zero, .zero => .eq
-  | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
-  | .zero, .add .. => .lt
-  | .add .., .zero => .gt
-
-variable {sAlg a b} in
-partial def ExSMul.eq :
-    ExSMul sAlg a → ExSMul sAlg b → Bool
-  | .smul vr va, .smul vs vb => (va.eq vb) && (vr.eq vs)
-
-partial def ExSum.eq {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
-  {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a : Q($A)} {b : Q($A)} :
-    ExSum sAlg a → ExSum sAlg b → Bool
-  | .zero, .zero => true
-  | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ ∧ a₂.eq b₂
-  | _, _ => false
 
 /-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
 
@@ -274,12 +385,16 @@ partial def evalAdd {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
         let ⟨_c, vc, pc⟩ ← evalAdd va vb₂
         return ⟨_, .add vb₁ vc, q(sorry)⟩
 
-partial def evalSMulSMul {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
-  ExSMul sAlg a →
-  MetaM (Result (ExSMul q($sAlg)) q($r • $a))
-  | .smul vs va => do
+partial def evalSMulExProd {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
+  ExProd sAlg a →
+  MetaM (Result (ExProd q($sAlg)) q($r • $a))
+  | .smul vs => do
     let ⟨t, vt, pt⟩ ← Ring.evalMul sR vr vs
-    return ⟨_, .smul vt va, q(sorry)⟩
+    return ⟨_, .smul vt, q(sorry)⟩
+  | .mul (x := x) (e := e) (b := b) vx ve vb => do
+    let ⟨_, vc, pc⟩ ← evalSMulExProd vr vb
+    return ⟨_, .mul vx ve vc, q(sorry)⟩
+
 
 partial def evalSMul {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
   ExSum sAlg a →
@@ -287,30 +402,48 @@ partial def evalSMul {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
   | .zero .. =>
     pure ⟨_, .zero, q(sorry)⟩
   | .add vsmul vt => do
-    let ⟨a, va, pa⟩ ← evalSMulSMul q($sAlg) vr vsmul
+    let ⟨a, va, pa⟩ ← evalSMulExProd q($sAlg) vr vsmul
     let ⟨t, vt, pt⟩ ← evalSMul vr vt
     return ⟨_, .add va vt, q(sorry)⟩
 
-def evalMul₂ {a b : Q($A)} (va : ExSMul sAlg a) (vb : ExSMul sAlg b) :
-    MetaM <| Result (ExSMul sAlg) q($a * $b) := match va, vb with
-  | .smul vr va', .smul vs vb' =>  do
+partial def evalMul₂ {a b : Q($A)} (va : ExProd sAlg a) (vb : ExProd sAlg b) :
+    MetaM <| Result (ExProd sAlg) q($a * $b) := do
+  Lean.Core.checkSystem decl_name%.toString
+  match va, vb with
+  | .smul vr, .smul vs => do
     let ⟨_, vt, pt⟩ ← Ring.evalMul sR vr vs
-    let ⟨_, vc, pc⟩ ← Ring.evalMulProd sA va' vb'
-    return ⟨_, .smul vt vc, q(sorry)⟩
+    return ⟨_, .smul vt, q(sorry)⟩
+  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .smul _ =>
+    let ⟨_, vc, pc⟩ ← evalMul₂ va₃ vb
+    return ⟨_, .mul va₁ va₂ vc, q(sorry)⟩
+  | .smul _, .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
+    let ⟨_, vc, pc⟩ ← evalMul₂ va vb₃
+    return ⟨_, .mul vb₁ vb₂ vc, q(sorry)⟩
+  | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
+    if vxa.eq vxb then
+      if let some (.nonzero ⟨_, ve, pe⟩) ← (Ring.evalAddOverlap Ring.sℕ vea veb).run then
+        let ⟨_, vc, pc⟩ ← evalMul₂ va₂ vb₂
+        return ⟨_, .mul vxa ve vc, q(sorry)⟩
+    if let .lt := (vxa.cmp vxb).then (vea.cmp veb) then
+      let ⟨_, vc, pc⟩ ← evalMul₂ va₂ vb
+      return ⟨_, .mul vxa vea vc, q(sorry)⟩
+    else
+      let ⟨_, vc, pc⟩ ← evalMul₂ va vb₂
+      return ⟨_, .mul vxb veb vc, q(sorry)⟩
 
 /-- Multiplies a monomial `va` to a polynomial `vb` to get a normalized result polynomial.
 
 * `a * 0 = 0`
 * `a * (b₁ + b₂) = (a * b₁) + (a * b₂)`
 -/
-def evalMul₁ {a b : Q($A)} (va : ExSMul sAlg a) (vb : ExSum sAlg b) :
+def evalMul₁ {a b : Q($A)} (va : ExProd sAlg a) (vb : ExSum sAlg b) :
     MetaM <| Result (ExSum sAlg) q($a * $b) := do
   match vb with
   | .zero => return ⟨_, .zero, q(mul_zero $a)⟩
   | .add vb₁ vb₂ =>
     let ⟨_, vb₁', pb₁'⟩ ← evalMul₂ sAlg va vb₁
     let ⟨_, vt, pt⟩ ← evalMul₁ va vb₂
-    let ⟨_, vd, pd⟩ ← evalAdd sAlg vb₁'.toExSum vt
+    let ⟨_, vd, pd⟩ ← evalAdd sAlg vb₁'.toSum vt
     return ⟨_, vd, q(sorry)⟩
 
 /-- Multiplies two polynomials `va, vb` together to get a normalized result polynomial.
@@ -329,16 +462,24 @@ def evalMul {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     let ⟨_, vd, pd⟩ ← evalAdd sAlg vc₁ vc₂
     return ⟨_, vd, q(sorry)⟩
 
+def evalNegProd {a : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A)) (va : ExProd sAlg a) :
+    MetaM <| Result (ExProd sAlg) q(-$a) := do
+  match va with
+  | .smul vr =>
+    let ⟨s, vs, pb⟩ ← Ring.evalNeg sR rR vr
+    return ⟨_, .smul vs, q(sorry)⟩
+  | .mul (x := x) (e := e) vx ve vb =>
+    let ⟨_, vc, pc⟩ ← evalNegProd rR rA vb
+    return ⟨_, .mul vx ve vc, q(sorry)⟩
+
 def evalNeg {a : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A)) (va : ExSum sAlg a) :
     MetaM <| Result (ExSum sAlg) q(-$a) := do
   match va with
-  | .zero => return ⟨_, .zero, (q(sorry))⟩
+  | .zero => return ⟨_, .zero, q(sorry)⟩
   | .add va₁ va₂ =>
-    match va₁ with
-    | .smul vr va =>
-      let ⟨s, vs, pb₁⟩ ← Ring.evalNeg sR rR vr
-      let ⟨b₂, vb₂, pb₂⟩ ← evalNeg rR rA va₂
-      return ⟨_, .add (.smul vs va) vb₂, (q(sorry))⟩
+    let ⟨_, vb₁, pb₁⟩ ← evalNegProd sAlg rR rA va₁
+    let ⟨_, vb₂, pb₂⟩ ← evalNeg rR rA va₂
+    return ⟨_, .add vb₁ vb₂, q(sorry)⟩
 
 def evalSub {a b : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A))
     (va : ExSum sAlg a) (vb : ExSum sAlg b) :
@@ -361,16 +502,15 @@ def evalCast (c : Ring.Cache q($sR)) :
     pure ⟨_, .zero, q(sorry)⟩
   | .isNat _ lit p => do
     assumeInstancesCommute
-    -- Lift the literal to the base ring
-    -- TODO: extract proof
-    pure ⟨_, (ExSMul.smul (mkNat lit) Ring.ExProd.one).toExSum,
+    -- Lift the literal to the base ring as a scalar multiple of 1
+    pure ⟨_, (ExProd.smul (mkNat lit)).toSum,
       (q(by simp [← Algebra.algebraMap_eq_smul_one]; exact ($p).out))⟩
   | .isNegNat rA lit p => do
     let some rR := c.rα | none
     let ⟨r, vr⟩ := Ring.ExProd.mkNegNat sR rR lit.natLit!
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
     assumeInstancesCommute
-    pure ⟨_, (ExSMul.smul vr.toSum Ring.ExProd.one).toExSum, q(sorry)⟩
+    pure ⟨_, (ExProd.smul vr.toSum).toSum, q(sorry)⟩
   -- We don't handle rational expressions in A.
   | _ => none
 
@@ -379,7 +519,7 @@ def evalPow {a : Q($A)} (b : ℕ) (va : ExSum sAlg a) :
   if h0 : b = 0 then
     -- is this the right way to do this?
     let p : Q($b = 0) := by rw[h0]; exact q(rfl)
-    return ⟨_, .add (.smul one .one) .zero, q(sorry)⟩
+    return ⟨_, .add (.smul .one) .zero, q(sorry)⟩
   else
     let ⟨hf, vhf, phf⟩ ← evalPow (b/2) va
     let ⟨hf2, vhf2, phf2⟩ ← evalMul sAlg vhf vhf
@@ -391,6 +531,21 @@ def evalPow {a : Q($A)} (b : ℕ) (va : ExSum sAlg a) :
     else
       let pb : Q($b % 2 = 0) ← mkDecideProofQ q($b % 2 = 0)
       return ⟨hf2, vhf2, q(sorry)⟩
+
+def evalAtom :
+    AtomM (Result (ExSum q($sAlg)) q($a)) := do
+  let r ← (← read).evalAtom a
+  have e' : Q($A) := r.expr
+  let (i, ⟨a', _⟩) ← addAtomQ e'
+  let ve' : ExSum _ _ :=
+    ((ExBase.atom i (e := a')).toProd (Ring.ExProd.mkNat Ring.sℕ 1).2).toSum
+  pure ⟨_, ve',
+  match r.proof? with
+  | none =>
+      -- have : $a =Q $a' := ⟨⟩
+      (q(sorry))
+  | some (p : Q($a = $e')) => (q(sorry))
+  ⟩
 
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
     {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Ring.Cache q($sR))
@@ -667,13 +822,19 @@ elab (name := algebra_over) "algebra" " with " R:term : tactic =>
     let g ← getMainGoal
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
-def ExSMul.equateZero (va : ExSMul q($sAlg) a) : MetaM <| Q($a = 0) × MVarId := match va with
-  | .smul (r := r) vr va => do
+def ExProd.equateZero {a : Q($A)}
+(va : ExProd q($sAlg) a) : MetaM <| Q($a = 0) × MVarId :=
+  match va with
+  | .smul (r := r) vr => do
     let pf ← mkFreshExprMVarQ q($r = 0)
     return ⟨q(sorry), pf.mvarId!⟩
+  | .mul (x := x) (e := e) vx ve vb => do
+    -- For x^e * b = 0, we need b = 0 (assuming x^e ≠ 0)
+    vb.equateZero
 
 def equateZero {a : Q($A)} (va : ExSum q($sAlg) a) :
-    MetaM <| Q($a = 0) × List MVarId := match va with
+    MetaM <| Q($a = 0) × List MVarId :=
+  match va with
   | .zero => do
     return ⟨q(rfl), []⟩
   | .add va₁ va₂ => do
@@ -681,7 +842,26 @@ def equateZero {a : Q($A)} (va : ExSum q($sAlg) a) :
     let ⟨pf', mvars⟩ ← equateZero va₂
     return ⟨q(sorry), id :: mvars⟩
 
-def equateScalars {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) :
+def ExProd.equateScalarsProd {a b : Q($A)} (va : ExProd q($sAlg) a) (vb : ExProd q($sAlg) b) :
+    MetaM <| Q($a = $b) × Option MVarId := do
+  match va, vb with
+  | .smul (r := r) vr, .smul (r := s) vs =>
+    -- For r • 1 = s • 1, we need r = s
+    if vr.eq vs then
+      have : $r =Q $s := ⟨⟩
+      return ⟨q(sorry), none⟩
+    else
+      let pab ← mkFreshExprMVarQ q($r = $s)
+      return ⟨q(sorry), some pab.mvarId!⟩
+  | .mul (x := xa) (e := ea) vxa vea va', .mul (x := xb) (e := eb) vxb veb vb' =>
+    -- For x^e * a' = x^e * b', we need a' = b' (bases and exponents already match)
+    va'.equateScalarsProd vb'
+  | _, _ =>
+    -- This shouldn't happen - the caller should ensure structural equality
+    throwError "equateScalarsProd: structure mismatch"
+
+
+def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) :
     MetaM <| Q($a = $b) × List MVarId := do
   match va, vb with
   | .zero, .zero => do
@@ -692,24 +872,25 @@ def equateScalars {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) 
     let ⟨pf, mvars⟩ ← equateZero _ vb
     return ⟨q(Eq.symm $pf), mvars⟩
   | .add (a := a₁) (b := a₂) va₁ va₂, .add (a := b₁) (b := b₂) vb₁ vb₂ =>
-    match va₁, vb₁ with
-    | .smul (r := r) vr va, .smul (r := s) vs vb =>
-      match va.cmp vb with
-      | .lt =>
-        let pr ← mkFreshExprMVarQ q($r = 0)
-        let ⟨pf, ids⟩ ← equateScalars va₂ (.add (.smul vs vb) vb₂)
-        return ⟨q(sorry), pr.mvarId! :: ids⟩
-      | .gt =>
-        let ps ← mkFreshExprMVarQ q($s = 0)
-        let ⟨pf, ids⟩ ← equateScalars (.add (.smul vr va) va₂) vb₂
-        return ⟨q(sorry), ps.mvarId! :: ids⟩
-      | .eq =>
-        let ⟨pf, ids⟩ ← equateScalars va₂ vb₂
-        if vr.eq vs then
-          have : $r =Q $s := ⟨⟩
-          return ⟨(q(sorry)), ids⟩
-        let pab ← mkFreshExprMVarQ q($r = $s)
-        return ⟨q(sorry), pab.mvarId! :: ids⟩
+    -- Compare the leading terms by shape (ignoring scalar coefficients)
+    match va₁.cmpShape vb₁ with
+    | .lt =>
+      -- va₁ < vb₁ in shape, so va₁ must be 0
+      let ⟨pr, id⟩ ← va₁.equateZero
+      let ⟨pf, ids⟩ ← equateScalarsSum va₂ (.add vb₁ vb₂)
+      return ⟨q(sorry), id :: ids⟩
+    | .gt =>
+      -- vb₁ < va₁ in shape, so vb₁ must be 0
+      let ⟨ps, id⟩ ← vb₁.equateZero
+      let ⟨pf, ids⟩ ← equateScalarsSum (.add va₁ va₂) vb₂
+      return ⟨q(sorry), id :: ids⟩
+    | .eq =>
+      -- The leading terms have the same structure, need to equate coefficients
+      let ⟨pf, ids⟩ ← equateScalarsSum va₂ vb₂
+      let ⟨pab, idOpt⟩ ← va₁.equateScalarsProd sAlg vb₁
+      match idOpt with
+      | none => return ⟨q(sorry), ids⟩
+      | some id => return ⟨q(sorry), id :: ids⟩
 
 #check simpTarget
 
@@ -753,7 +934,7 @@ where
     profileitM Exception "algebra" (← getOptions) do
       let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
       let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂
-      let ⟨pab, mvars⟩ ← equateScalars sAlg va vb
+      let ⟨pab, mvars⟩ ← equateScalarsSum sAlg va vb
       return ⟨q(sorry), mvars⟩
 
 elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic => withMainContext do
