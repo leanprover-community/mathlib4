@@ -46,6 +46,11 @@ class NeBot (L : SummationFilter β) : Prop where
 /-- Makes the `NeBot` instance visible to the typeclass machinery. -/
 instance (L : SummationFilter β) [L.NeBot] : L.filter.NeBot := NeBot.ne_bot
 
+lemma neBot_or_eq_bot (L : SummationFilter β) : L.NeBot ∨ L.filter = ⊥ := by
+  by_cases h : L.filter = ⊥
+  · exact .inr h
+  · exact .inl ⟨⟨h⟩⟩
+
 section support
 
 /-- The support of a summation filter (its `lim inf`, considered as a filter of sets). -/
@@ -72,6 +77,11 @@ lemma support_eq_univ_iff {L : SummationFilter β} :
 
 instance [IsEmpty β] (L : SummationFilter β) : L.LeAtTop :=
   ⟨support_eq_univ_iff.mp <| Subsingleton.elim ..⟩
+
+lemma leAtTop_of_not_NeBot (L : SummationFilter β) (hL : ¬L.NeBot) : L.LeAtTop := by
+  have hLs : L.support = Set.univ := by
+    simp [SummationFilter.support, L.neBot_or_eq_bot.resolve_left hL]
+  exact ⟨L.support_eq_univ_iff.mp hLs⟩
 
 /-- Decidability instance: useful when working with `Finset` sums / products. -/
 instance (L : SummationFilter β) [L.LeAtTop] : DecidablePred (· ∈ L.support) :=

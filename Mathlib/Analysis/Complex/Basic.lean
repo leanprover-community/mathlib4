@@ -458,7 +458,7 @@ theorem summable_conj {f : α → 𝕜} : Summable (fun x => conj (f x)) L ↔ S
   summable_star_iff
 
 variable {𝕜} in
-theorem conj_tsum [L.NeBot] (f : α → 𝕜) : conj (∑'[L] a, f a) = ∑'[L] a, conj (f a) :=
+theorem conj_tsum (f : α → 𝕜) : conj (∑'[L] a, f a) = ∑'[L] a, conj (f a) :=
   tsum_star
 
 @[simp, norm_cast]
@@ -472,11 +472,17 @@ theorem summable_ofReal {f : α → ℝ} : Summable (fun x => (f x : 𝕜)) L �
     ofRealCLM.summable⟩
 
 @[norm_cast]
-theorem ofReal_tsum [L.NeBot] (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) := by
-  by_cases h : Summable f L
-  · exact ContinuousLinearMap.map_tsum ofRealCLM h
-  · rw [tsum_eq_zero_of_not_summable h,
-      tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
+theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) := by
+  by_cases hL : L.NeBot
+  · by_cases h : Summable f L
+    · exact ContinuousLinearMap.map_tsum ofRealCLM h
+    · rw [tsum_eq_zero_of_not_summable h,
+        tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
+  · simp only [tsum_bot hL]
+    by_cases hf : f.support.Finite
+    · exact ofRealCLM.toAddMonoidHom.map_finsum hf
+    · rw [finsum_of_infinite_support hf, finsum_of_infinite_support, ofReal_zero]
+      rwa [← Function.comp_def, Function.support_comp_eq _ (by simp)]
 
 theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x L) : HasSum (fun x => re (f x)) (re x) L :=
   reCLM.hasSum h
@@ -529,7 +535,7 @@ theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (
 theorem summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
   RCLike.summable_conj _
 
-theorem conj_tsum [L.NeBot] (f : α → ℂ) : conj (∑'[L] a, f a) = ∑'[L] a, conj (f a) :=
+theorem conj_tsum (f : α → ℂ) : conj (∑'[L] a, f a) = ∑'[L] a, conj (f a) :=
   RCLike.conj_tsum _
 
 @[simp, norm_cast]
@@ -541,7 +547,7 @@ theorem summable_ofReal {f : α → ℝ} : (Summable (fun x => (f x : ℂ)) L) �
   RCLike.summable_ofReal _
 
 @[norm_cast]
-theorem ofReal_tsum [L.NeBot] (f : α → ℝ) : (↑(∑'[L] a, f a) : ℂ) = ∑'[L] a, ↑(f a) :=
+theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : ℂ) = ∑'[L] a, ↑(f a) :=
   RCLike.ofReal_tsum _ _
 
 theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x L) : HasSum (fun x => (f x).re) x.re L :=

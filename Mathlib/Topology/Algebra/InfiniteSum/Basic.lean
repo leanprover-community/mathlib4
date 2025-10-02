@@ -387,12 +387,9 @@ theorem tprod_eq_prod [L.LeAtTop] {s : Finset β} (hf : ∀ b ∉ s, f b = 1) :
   tprod_eq_prod' <| mulSupport_subset_iff'.2 hf
 
 @[to_additive (attr := simp)]
-theorem tprod_one [L.HasSupport] : ∏'[L] _, (1 : α) = 1 := by
-  simp [tprod_def, multipliable_one, show L.HasSupport by assumption]
-
-@[to_additive (attr := simp)]
-theorem tprod_one' [L.NeBot] [T2Space α] : ∏'[L] _, (1 : α) = 1 := by
-  refine hasProd_one.tprod_eq
+theorem tprod_one : ∏'[L] _, (1 : α) = 1 := by
+  rw [tprod_def, dif_pos multipliable_one, mulSupport_fun_one, Set.empty_inter,
+    Set.mulIndicator_one, finprod_one, eq_true_intro hasProd_one, if_true, ite_self]
 
 @[to_additive (attr := simp)]
 theorem tprod_empty [IsEmpty β] : ∏'[L] b, f b = 1 := by

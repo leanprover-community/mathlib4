@@ -155,6 +155,29 @@ notation3 "∏' "(...)", "r:67:(scoped f => tprod f (unconditional _)) => r
 @[inherit_doc tsum]
 notation3 "∑' "(...)", "r:67:(scoped f => tsum f (unconditional _)) => r
 
+@[to_additive]
+lemma hasProd_bot (hL : ¬L.NeBot) (f : β → α) (a : α) :
+    HasProd f a L := by
+  have : L.filter = ⊥ := by contrapose! hL; exact ⟨⟨hL⟩⟩
+  rw [HasProd, this]
+  exact tendsto_bot
+
+@[to_additive]
+lemma multipliable_bot (hL : ¬L.NeBot) (f : β → α) :
+    Multipliable f L :=
+  ⟨1, hasProd_bot hL ..⟩
+
+@[to_additive]
+lemma tprod_bot (hL : ¬L.NeBot) (f : β → α) : ∏'[L] b, f b = ∏ᶠ b, f b := by
+  simp only [tprod_def, dif_pos (multipliable_bot hL f)]
+  haveI : L.LeAtTop := L.leAtTop_of_not_NeBot hL
+  rw [L.support_eq_univ, Set.inter_univ, Set.mulIndicator_univ]
+  by_cases hf : (mulSupport f).Finite
+  · rw [eq_true_intro hf, if_pos]
+    simp only [and_true]
+    infer_instance
+  · rwa [if_neg (by tauto), if_pos (hasProd_bot hL _ _), finprod_of_infinite_mulSupport]
+
 variable {f : β → α} {a : α} {s : Finset β}
 
 @[to_additive]

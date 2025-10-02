@@ -398,10 +398,12 @@ theorem summable_star_iff : Summable (fun b ↦ star (f b)) L ↔ Summable f L :
 theorem summable_star_iff' : Summable (star f) L ↔ Summable f L :=
   summable_star_iff
 
-theorem tsum_star [T2Space α] [L.NeBot] : star (∑'[L] b, f b) = ∑'[L] b, star (f b) := by
-  by_cases hf : Summable f L
-  · exact hf.hasSum.star.tsum_eq.symm
-  · rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (mt Summable.ofStar hf),
-      star_zero]
+theorem tsum_star [T2Space α] : star (∑'[L] b, f b) = ∑'[L] b, star (f b) := by
+  by_cases hL : L.NeBot
+  · by_cases hf : Summable f L
+    · exact hf.hasSum.star.tsum_eq.symm
+    · rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (mt Summable.ofStar hf),
+        star_zero]
+  · simpa only [tsum_bot hL] using starAddEquiv.map_finsum f
 
 end ContinuousStar
