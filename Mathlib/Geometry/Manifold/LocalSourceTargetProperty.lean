@@ -118,6 +118,13 @@ lemma map_source_subset_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
 lemma property (h : LiftSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.codChart :=
   (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2
 
+omit [ChartedSpace H M] [ChartedSpace H' M'] in
+lemma congr_iff (hP : IsLocalSourceTargetProperty P)
+    {f g : M → M'} {φ : PartialHomeomorph M H} {ψ : PartialHomeomorph M' H'} {s : Set M}
+    (hs : IsOpen s) (hφ : φ.source ⊆ s) (hfg : EqOn f g s) :
+    P f φ ψ ↔ P g φ ψ :=
+  ⟨hP.congr hfg hs hφ, hP.congr hfg.symm hs hφ⟩
+
 /-- If `P` is a nice local property, by monotonicity w.r.t. restricting `domChart`,
 if `f` is continuous at `x`, to prove `LiftSourceTargetPropertyAt I I' n f x P`
 we need not check the condition `f '' domChart.source ⊆ codChart.source`. -/
