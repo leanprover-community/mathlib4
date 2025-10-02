@@ -127,7 +127,7 @@ elab:max "T% " t:term:arg : term => do
     -- Check that `x` is not a bound variable in `tgt`!
     -- xxx: is this check fine or overzealous?
     if Lean.Expr.hasLooseBVars tgt then
-      throwError "Term {tgt} has loose bound variables¬
+      throwError "Term {tgt} has loose bound variables\n\
       Hint: applying the `T%` elaborator twice makes no sense."
     let trivBundle ← mkAppOptM ``Bundle.Trivial #[src, tgt]
     return ← withLocalDeclD x src fun x ↦ do
