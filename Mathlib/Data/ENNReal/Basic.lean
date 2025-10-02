@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Order.WithBot.BooleanAlgebra
 import Mathlib.Tactic.Finiteness
 import Mathlib.Logic.Equiv.WithBot
 
@@ -193,16 +194,6 @@ lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_
 @[simp, norm_cast] lemma coe_inj : (p : ℝ≥0∞) = q ↔ p = q := coe_injective.eq_iff
 
 lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
-
--- TODO move
-theorem _root_.Set.isCompl_range_coe_bot (α : Type*) :
-    IsCompl (range ((↑) : α → WithBot α)) {⊥} :=
-  IsCompl.of_le (fun _ ⟨⟨_, ha⟩, hn⟩ => WithBot.coe_ne_bot <| ha.trans <| eq_of_mem_singleton hn)
-    fun x _ => x.recBotCoe (Or.inr <| mem_singleton _) fun _ => Or.inl <| mem_range_self _
-theorem _root_.Set.isCompl_range_coe_top (α : Type*) :
-    IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
-  IsCompl.of_le (fun _ ⟨⟨_, ha⟩, hn⟩ => WithTop.coe_ne_top <| ha.trans <| eq_of_mem_singleton hn)
-    fun x _ => x.recTopCoe (Or.inr <| mem_singleton _) fun _ => Or.inl <| mem_range_self _
 
 theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_coe_bot ℝ≥0).symm.compl_eq.symm

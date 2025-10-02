@@ -20,7 +20,7 @@ Adding a `bot` or a `top` to an order.
 ## Main declarations
 
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
-
+> FIX ^
 -/
 
 variable {α β γ δ : Type*}

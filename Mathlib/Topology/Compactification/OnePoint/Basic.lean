@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
 -/
 import Mathlib.Data.Fintype.Option
+import Mathlib.Order.WithBot.BooleanAlgebra
 import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Opens
 
@@ -121,7 +122,7 @@ protected def rec {C : OnePoint X → Sort*} (infty : C ∞) (coe : ∀ x : X, C
 @[simp] theorem elim_some (y : Y) (f : X → Y) (x : X) : (some x).elim y f = f x := rfl
 
 theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {∞} :=
-  isCompl_range_some_none X
+  isCompl_range_coe_top X
 
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
   range_some_union_none X
