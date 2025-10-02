@@ -1279,6 +1279,7 @@ import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.Sites.Etale
 import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Mathlib.AlgebraicGeometry.Sites.Pretopology
 import Mathlib.AlgebraicGeometry.Sites.Representability
 import Mathlib.AlgebraicGeometry.Sites.Small
 import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
@@ -5371,6 +5372,7 @@ import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
 import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Hilbert90
