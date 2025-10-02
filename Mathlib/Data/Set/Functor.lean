@@ -139,7 +139,10 @@ as was defined in `Data.Set.Notation`. -/
 attribute [local instance] Set.monad in
 /-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
 theorem coe_eq_image_val (t : Set s) :
-    @Lean.Internal.coeM Set s α _ _ t = (t : Set α) := rfl
+    @Lean.Internal.coeM Set s α _ _ t = Subtype.val '' t := by
+  change ⋃ (x ∈ t), {x.1} = _
+  ext
+  simp
 
 variable {β : Set α} {γ : Set β} {a : α}
 
