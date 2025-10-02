@@ -127,7 +127,7 @@ elab:max "T% " t:term:arg : term => do
     -- Check that `x` is not a bound variable in `tgt`!
     -- xxx: is this check fine or overzealous?
     if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {tgt} has loose bound variables¬
+      throwError "Term {tgt} has loose bound variables¬
       Hint: applying the 'T%' elaborator twice makes no sense."
     let trivBundle ← mkAppOptM ``Bundle.Trivial #[src, tgt]
     return ← withLocalDecl x BinderInfo.default src fun x ↦ do
@@ -177,17 +177,17 @@ This implementation is not maximally robust yet.
 -/
 -- FIXME: better failure when trying to find a `NormedField` instance
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-    trace[Elab.DiffGeo.MDiff] m!"Searching a model for: {e}"
+    trace[Elab.DiffGeo.MDiff] "Searching a model for: {e}"
     if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
       if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
-        trace[Elab.DiffGeo.MDiff] m!"This is the total space of the tangent bundle of {M}"
+        trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
         let srcIT : Term ← Term.exprToSyntax I
         let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
         let res ← Term.elabTerm resTerm none
-        trace[Elab.DiffGeo.MDiff] m!"Found model: {res}"
+        trace[Elab.DiffGeo.MDiff] "Found model: {res}"
         return res
 
-      trace[Elab.DiffGeo.MDiff] m!"This is a total space with fiber {F}"
+      trace[Elab.DiffGeo.MDiff] "This is a total space with fiber {F}"
       if let some (_src, srcI) := baseInfo then
         let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
             match_expr type with
@@ -195,13 +195,13 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
               if E == F then return some K else return none
             | _ => return none
           | throwError "Couldn't find a `NormedSpace` structure on {F} in the local instances."
-        trace[Elab.DiffGeo.MDiff] m!"{F} is a normed field over {K}"
+        trace[Elab.DiffGeo.MDiff] "{F} is a normed field over {K}"
         let kT : Term ← Term.exprToSyntax K
         let srcIT : Term ← Term.exprToSyntax srcI
         let FT : Term ← Term.exprToSyntax F
         let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
         let I ← Term.elabTerm iTerm none
-        trace[Elab.DiffGeo.MDiff] m!"Found model: {I}"
+        trace[Elab.DiffGeo.MDiff] "Found model: {I}"
         return I
       else
         throwError "Having a TotalSpace as source is not yet supported"
@@ -216,14 +216,14 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
       let eK : Term ← Term.exprToSyntax K
       let iTerm : Term ← ``(𝓘($eK, $eT))
       let I ← Term.elabTerm iTerm none
-      trace[Elab.DiffGeo.MDiff] m!"Found model: {I}"
+      trace[Elab.DiffGeo.MDiff] "Found model: {I}"
       return I
       -- let uK ← K.getUniverse
       -- let normedFieldK ← synthInstance (.app (.const ``NontriviallyNormedField [uK]) K)
-      -- trace[Elab.DiffGeo.MDiff] m!"NontriviallyNormedField instance is: {normedFieldK}"
+      -- trace[Elab.DiffGeo.MDiff] "NontriviallyNormedField instance is: {normedFieldK}"
       -- let ue ← e.getUniverse
       -- let normedGroupE ← synthInstance (.app (.const ``NormedAddCommGroup  [ue]) e)
-      -- trace[Elab.DiffGeo.MDiff] m!"NormedAddCommGroup  instance is: {normedGroupE}"
+      -- trace[Elab.DiffGeo.MDiff] "NormedAddCommGroup  instance is: {normedGroupE}"
       -- return mkAppN (.const `modelWithCornersSelf [uK, ue])
       --   #[K, normedFieldK, e, normedGroupE, normedSpaceInst]
     let H? ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
@@ -239,14 +239,14 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
             if H' == H then return some fvar else return none
           | _ => return none
         | pure
-        trace[Elab.DiffGeo.MDiff] m!"Found model: {m}"
+        trace[Elab.DiffGeo.MDiff] "Found model: {m}"
         return m
     else
-      trace[Elab.DiffGeo.MDiff] m!"Hoping {e} is a normed field"
+      trace[Elab.DiffGeo.MDiff] "Hoping {e} is a normed field"
       let eT : Term ← Term.exprToSyntax e
       let iTerm : Term ← `(𝓘($eT, $eT))
       let I ← Term.elabTerm iTerm none
-      trace[Elab.DiffGeo.MDiff] m!"Found model: {I}"
+      trace[Elab.DiffGeo.MDiff] "Found model: {I}"
       return I
     throwError "Couldn’t find models with corners"
 
@@ -261,11 +261,11 @@ def findModels (etype eterm : Expr) (estype : Option Expr) :
   | .forallE _ src tgt _ =>
     let srcI ← findModel src
     if Lean.Expr.hasLooseBVars tgt then
-      throwError m!"Term {eterm} is a dependent function, of type {etype}\n\
+      throwError "Term {eterm} is a dependent function, of type {etype}\n\
       Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     if let some es := estype then
       if !(← isDefEq es (← mkAppM ``Set #[src])) then
-        throwError m!"The domain {src} of {eterm} is not definitionally equal to the carrier
+        throwError "The domain {src} of {eterm} is not definitionally equal to the carrier
         of the type {es} of the set 's' passed in"
     let tgtI ← findModel tgt (src, srcI)
     return some (srcI, tgtI)
@@ -281,7 +281,7 @@ elab:max "MDiffAt[" s:term:arg "]" ppSpace f:term:arg : term => do
   let estype ← whnfR <|← instantiateMVars <|← inferType es
   match ← findModels etype ef estype with
   | some (srcI, tgtI) => return ← mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
-  | none => throwError m!"Term {ef} is not a function."
+  | none => throwError "Term {ef} is not a function."
 
 /-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
 trying to determine `I` and `J` from the local context.
@@ -291,7 +291,7 @@ elab:max "MDiffAt" ppSpace t:term:arg : term => do
   let etype ← whnfR <|← instantiateMVars <|← inferType e
   match ← findModels etype e none with
   | some (srcI, tgtI) => return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
-  | none => throwError m!"Term {e} is not a function."
+  | none => throwError "Term {e} is not a function."
 
 -- This implement is more robust (in theory), but currently fails tests.
 -- TODO: investigate why, fix this and replace `MDiffAt` by this one!
@@ -305,13 +305,13 @@ elab:max "MDiffAt2" ppSpace t:term:arg : term => do
     if let some src := src[0]? then
       let srcI ← findModel src
       if Lean.Expr.occurs src tgt then
-        throwError m!"Term {e} is a dependent function, of type {etype}\n\
+        throwError "Term {e} is a dependent function, of type {etype}\n\
         Hint: you can use the 'T%' elaborator to convert a dependent function \
         to a non-dependent one"
       let tgtI ← findModel tgt (src, srcI)
       return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
     else
-      throwError m!"Term {e} is not a function."
+      throwError "Term {e} is not a function."
 
 /-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f s`,
 trying to determine `I` and `J` from the local context. -/
@@ -322,7 +322,7 @@ elab:max "MDiff[" s:term:arg "]" ppSpace t:term:arg : term => do
   let etype ← whnfR <|← instantiateMVars <|← inferType et
   match ← findModels etype et estype with
   | some (srcI, tgtI) => return ← mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
-  | none => throwError m!"Term {et} is not a function."
+  | none => throwError "Term {et} is not a function."
 
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
 trying to determine `I` and `J` from the local context. -/
@@ -331,7 +331,7 @@ elab:max "MDiff" ppSpace t:term:arg : term => do
   let etype ← whnfR <|← instantiateMVars <|← inferType e
   match ← findModels etype e none with
   | some (srcI, tgtI) => return ← mkAppM ``MDifferentiable #[srcI, tgtI, e]
-  | none => throwError m!"Term {e} is not a function."
+  | none => throwError "Term {e} is not a function."
 
 /-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
 trying to determine `I` and `J` from the local context.
@@ -345,7 +345,7 @@ elab:max "CMDiffAt[" s:term:arg "]" ppSpace nt:term:arg ppSpace f:term:arg : ter
   let eftype ← whnfR <|← instantiateMVars <|← inferType ef
   match ← findModels eftype ef estype with
   | some (srcI, tgtI) => return ← mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
-  | none => throwError m!"Term {ef} is not a function."
+  | none => throwError "Term {ef} is not a function."
 
 /-- `CMDiffAt n f x` elaborates to `ContMDiffAt I J n f x`
 trying to determine `I` and `J` from the local context.
@@ -357,7 +357,7 @@ elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
   let etype ← whnfR <|← instantiateMVars <|← inferType e
   match ← findModels etype e none with
   | some (srcI, tgtI) => return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
-  | none => throwError m!"Term {e} is not a function."
+  | none => throwError "Term {e} is not a function."
 
 /-- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`,
 trying to determine `I` and `J` from the local context.
@@ -370,7 +370,7 @@ elab:max "CMDiff[" s:term:arg "]" ppSpace nt:term:arg ppSpace f:term:arg : term 
   let eftype ← whnfR <|← instantiateMVars <|← inferType ef
   match ← findModels eftype ef estype with
   | some (srcI, tgtI) => return ← mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
-  | none => throwError m!"Term {ef} is not a function."
+  | none => throwError "Term {ef} is not a function."
 
 /-- `CMDiff n f` elaborates to `ContMDiff I J n f`,
 trying to determine `I` and `J` from the local context.
@@ -381,7 +381,7 @@ elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let etype ← whnfR <|← instantiateMVars <|← inferType e
   match ← findModels etype e none with
   | some (srcI, tgtI) => return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
-  | none => throwError m!"Term {e} is not a function."
+  | none => throwError "Term {e} is not a function."
 
 /-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f u x`,
 trying to determine `I` and `J` from the local context. -/
@@ -392,7 +392,7 @@ elab:max "mfderiv[" s:term:arg "]" ppSpace t:term:arg : term => do
   let estype ← whnfR <|← instantiateMVars <|← inferType es
   match ← findModels etype e estype with
   | some (srcI, tgtI) => return ← mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
-  | none => throwError m!"Term {e} is not a function."
+  | none => throwError "Term {e} is not a function."
 
 /-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
@@ -401,7 +401,7 @@ elab:max "mfderiv%" ppSpace t:term:arg : term => do
   let etype ← whnfR <|← instantiateMVars <|← inferType e
   match ← findModels etype e none with
   | some (srcI, tgtI) => return ← mkAppM ``mfderiv #[srcI, tgtI, e]
-  | none => throwError m!"Term {e} is not a function."
+  | none => throwError "Term {e} is not a function."
 
 end Manifold
 
