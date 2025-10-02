@@ -518,9 +518,7 @@ instance [DenselyOrdered X] : DenselyOrdered (Additive X) :=
   denselyOrdered_additive_iff.2 ‹_›
 
 lemma WithZero.denselyOrdered_iff {M : Type*} [Preorder M] [NoMinOrder M] :
-    DenselyOrdered (WithZero M) ↔ DenselyOrdered M :=
-/- We could just inline the proof here with appropriate adjustments:
-```
+    DenselyOrdered (WithZero M) ↔ DenselyOrdered M := by
   constructor <;> intro h <;> constructor
   · intro a b hab
     obtain ⟨c, hc⟩ := exists_between (WithZero.coe_lt_coe.mpr hab)
@@ -528,9 +526,6 @@ lemma WithZero.denselyOrdered_iff {M : Type*} [Preorder M] [NoMinOrder M] :
     | zero => simp at hc
     | coe c => exact ⟨c, by simpa using hc⟩
   · simpa [WithZero.exists, WithZero.forall, exists_lt] using DenselyOrdered.dense
-```
--/
-  WithBot.denselyOrdered_iff
 
 instance {X : Type*} [Preorder X] [NoMinOrder X] [DenselyOrdered X] :
     DenselyOrdered (WithZero X) :=
