@@ -315,7 +315,8 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
     match rs with
     | [] => simp at len
     | x :: rs' =>
-
+      let e := Submodule.quotOfListConsSMulTopEquivQuotSMulTopOuter M x rs'
+      --#check (((extFunctor.{w} n).mapIso ???.op).app M)
       sorry
 
 omit [IsLocalRing R] in
