@@ -337,25 +337,24 @@ elab:max "MDiffAt" ppSpace t:term:arg : term => do
   | some (srcI, tgtI) => return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
   | none => throwError "Term {e} is not a function."
 
--- This implement is more robust (in theory), but currently fails tests.
--- TODO: investigate why, fix this and replace `MDiffAt` by this one!
-/-- `MDiffAt2 f x` elaborates to `MDifferentiableAt I J f x`,
-trying to determine `I` and `J` from the local context.
-The argument `x` can be omitted. -/
-elab:max "MDiffAt2" ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
-  let etype ← whnfR <|← instantiateMVars <|← inferType e
-  forallBoundedTelescope etype (some 1) fun src tgt ↦ do
-    if let some src := src[0]? then
-      let srcI ← findModel src
-      if Lean.Expr.occurs src tgt then
-        throwError "Term {e} is a dependent function, of type {etype}\n\
-        Hint: you can use the `T%` elaborator to convert a dependent function \
-        to a non-dependent one"
-      let tgtI ← findModel tgt (src, srcI)
-      return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
-    else
-      throwError "Term {e} is not a function."
+-- An alternate implementation for `MDiffAt`.
+-- /-- `MDiffAt2 f x` elaborates to `MDifferentiableAt I J f x`,
+-- trying to determine `I` and `J` from the local context.
+-- The argument `x` can be omitted. -/
+-- scoped elab:max "MDiffAt2" ppSpace t:term:arg : term => do
+--   let e ← Term.elabTerm t none
+--   let etype ← whnfR <|← instantiateMVars <|← inferType e
+--   forallBoundedTelescope etype (some 1) fun src tgt ↦ do
+--     if let some src := src[0]? then
+--       let srcI ← findModel (← inferType src)
+--       if Lean.Expr.occurs src tgt then
+--         throwErrorAt t "Term {e} is a dependent function, of type {etype}\n\
+--         Hint: you can use the `T%` elaborator to convert a dependent function \
+--         to a non-dependent one"
+--       let tgtI ← findModel tgt (src, srcI)
+--       mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
+--     else
+--       throwErrorAt t "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
 /-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f s`,
 trying to determine `I` and `J` from the local context. -/
