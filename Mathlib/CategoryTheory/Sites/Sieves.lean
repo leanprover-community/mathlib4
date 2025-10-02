@@ -338,6 +338,9 @@ lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback 
 lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
   le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
 
+lemma map_monotone {R S : Presieve X} (h : R ≤ S) : R.map F ≤ S.map F :=
+  fun _ _ ⟨hf⟩ ↦ ⟨h _ hf⟩
+
 end
 
 end FunctorPushforward
