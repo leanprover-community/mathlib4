@@ -115,7 +115,7 @@ lemma whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁
   whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv
 
 @[to_app (attr := reassoc)]
-lemma mapComp'₀₂₃_hom_comp_mapComp'_whiskerRight (hf : f₀₂ ≫ f₂₃ = f) :
+lemma mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).hom ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ =
     (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
       (α_ _ _ _).inv := by
@@ -123,7 +123,7 @@ lemma mapComp'₀₂₃_hom_comp_mapComp'_whiskerRight (hf : f₀₂ ≫ f₂₃
   simp
 
 @[deprecated (since := "2025-10-02")] alias mapComp'_hom_comp_mapComp'_hom_whiskerRight :=
-  mapComp'₀₂₃_hom_comp_mapComp'_whiskerRight
+  mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight
 
 @[to_app (attr := reassoc)]
 lemma mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
@@ -156,7 +156,7 @@ lemma mapComp'₀₂₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).hom =
     (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
       (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃:= by
-  simp [← mapComp'₀₂₃_hom_comp_mapComp'_whiskerRight_assoc _ _ _ _ _ _ f h₀₂ h₁₃ hf]
+  simp [← mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_assoc _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
