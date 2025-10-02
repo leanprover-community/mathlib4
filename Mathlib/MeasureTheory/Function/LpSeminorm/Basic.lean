@@ -14,6 +14,9 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 /-!
 # Basic theorems about ℒp space
 -/
+
+/- Override 1500 line limit for file length. -/
+set_option linter.style.longFile 0
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
