@@ -146,7 +146,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
 noncomputable def domChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M H :=
-  Classical.choose h
+  LiftSourceTargetPropertyAt.domChart h
 
 /-- A choice of chart on the co-domain `N` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.domChart` and `h.equiv`,
@@ -154,42 +154,39 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
 noncomputable def codChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M' H' :=
-  Classical.choose (Classical.choose_spec h)
+  LiftSourceTargetPropertyAt.codChart h
 
 lemma mem_domChart_source (h : IsImmersionAt F I I' n f x) : x ∈ h.domChart.source :=
-  (Classical.choose_spec (Classical.choose_spec h)).1
+  LiftSourceTargetPropertyAt.mem_domChart_source h
 
 lemma mem_codChart_source (h : IsImmersionAt F I I' n f x) : f x ∈ h.codChart.source :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.1
+  LiftSourceTargetPropertyAt.mem_codChart_source h
 
 lemma domChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
     h.domChart ∈ IsManifold.maximalAtlas I n M :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.2.1
+  LiftSourceTargetPropertyAt.domChart_mem_maximalAtlas h
 
 lemma codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
     h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.2.2.1
+  LiftSourceTargetPropertyAt.codChart_mem_maximalAtlas h
 
 lemma map_source_subset_source (h : IsImmersionAt F I I' n f x) :
     f '' h.domChart.source ⊆ h.codChart.source :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.1
+  LiftSourceTargetPropertyAt.map_source_subset_source h
 
 /-- A linear equivalence `E × F ≃L[𝕜] E'` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
 noncomputable def equiv (h : IsImmersionAt F I I' n f x) : (E × F) ≃L[𝕜] E' :=
-  Classical.choose (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2
+  Classical.choose <| LiftSourceTargetPropertyAt.property h
 
 lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
     EqOn ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
       (h.domChart.extend I).target :=
-  Classical.choose_spec (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2
+  Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
 
 lemma property (h : IsImmersionAt F I I' n f x) :
-    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') :=
-  ⟨h.domChart, h.codChart, h.mem_domChart_source, h.mem_codChart_source,
-    h.domChart_mem_maximalAtlas, h.codChart_mem_maximalAtlas, h.map_source_subset_source,
-    (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2⟩
+    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') := h
 
 /-- Roig and Domingues [roigdomingues1992] only require this condition on the local charts:
 in our setting, this is *slightly* weaker than `map_source_subset_source`: the latter implies
