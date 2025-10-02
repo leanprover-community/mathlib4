@@ -5,7 +5,6 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Geometry.Manifold.Traces
 
 /-!
 # Elaborators for differential geometry
@@ -406,3 +405,33 @@ elab:max "mfderiv%" ppSpace t:term:arg : term => do
   | none => throwError m!"Term {e} is not a function."
 
 end Manifold
+
+section trace
+
+/-!
+### Trace classes
+
+Note that the overall `Elab` trace class does not inherit the trace classes defined in this
+section, since they provide verbose information.
+-/
+
+/--
+Trace class for differential geometry elaborators. Setting this to `true` traces elaboration
+for the `T%` elaborator (`trace.Elab.DiffGeo.TotalSpaceMk`) and the family of `MDiff`-like
+elaborators (`trace.Elab.DiffGeo.MDiff`).
+-/
+initialize registerTraceClass `Elab.DiffGeo
+
+/--
+Trace class for the `T%` elaborator, which converts a section of a vector bundle as a dependent
+function to a non-dependent function into the total space.
+-/
+initialize registerTraceClass `Elab.DiffGeo.TotalSpaceMk (inherited := true)
+
+/--
+Trace class for the `MDiff` elaborator and friends, which infer a model with corners on the domain
+(resp. codomain) of the map in question.
+-/
+initialize registerTraceClass `Elab.DiffGeo.MDiff (inherited := true)
+
+end trace
