@@ -29,32 +29,62 @@ variable (D : J ⥤ P.Comma L R ⊤ ⊤)
 /-- If `P` is closed under limits of shape `J` in `Comma L R`, then when `D` has
 a limit in `Comma L R`, the forgetful functor creates this limit. -/
 noncomputable def forgetCreatesLimitOfClosed
-    (h : ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Comma L R ↦ P f.hom) J)
+    [(P.commaObj L R).IsClosedUnderLimitsOfShape J]
     [HasLimit (D ⋙ forget L R P ⊤ ⊤)] :
     CreatesLimit D (forget L R P ⊤ ⊤) :=
   createsLimitOfFullyFaithfulOfIso
     (⟨limit (D ⋙ forget L R P ⊤ ⊤),
-      ObjectProperty.prop_limit (fun f : Comma L R ↦ P f.hom) _
+      ObjectProperty.prop_limit (P.commaObj L R) _
         fun j ↦ (D.obj j).prop⟩) (Iso.refl _)
 
 /-- If `Comma L R` has limits of shape `J` and `Comma L R` is closed under limits of shape
 `J`, then `forget L R P ⊤ ⊤` creates limits of shape `J`. -/
 noncomputable def forgetCreatesLimitsOfShapeOfClosed [HasLimitsOfShape J (Comma L R)]
-    (h : ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Comma L R ↦ P f.hom) J) :
+    [ObjectProperty.IsClosedUnderLimitsOfShape (P.commaObj L R) J] :
     CreatesLimitsOfShape J (forget L R P ⊤ ⊤) where
-  CreatesLimit := forgetCreatesLimitOfClosed _ _ h
+  CreatesLimit := forgetCreatesLimitOfClosed _ _
 
 lemma hasLimit_of_closedUnderLimitsOfShape
-    (h : ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Comma L R ↦ P f.hom) J)
+    [(P.commaObj L R).IsClosedUnderLimitsOfShape J]
     [HasLimit (D ⋙ forget L R P ⊤ ⊤)] :
     HasLimit D :=
-  haveI : CreatesLimit D (forget L R P ⊤ ⊤) := forgetCreatesLimitOfClosed _ D h
+  haveI : CreatesLimit D (forget L R P ⊤ ⊤) := forgetCreatesLimitOfClosed _ D
   hasLimit_of_created D (forget L R P ⊤ ⊤)
 
-lemma hasLimitsOfShape_of_closedUnderLimitsOfShape [HasLimitsOfShape J (Comma L R)]
-    (h : ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Comma L R ↦ P f.hom) J) :
+instance hasLimitsOfShape_of_closedUnderLimitsOfShape [HasLimitsOfShape J (Comma L R)]
+    [(P.commaObj L R).IsClosedUnderLimitsOfShape J] :
     HasLimitsOfShape J (P.Comma L R ⊤ ⊤) where
-  has_limit _ := hasLimit_of_closedUnderLimitsOfShape _ _ h
+  has_limit _ := hasLimit_of_closedUnderLimitsOfShape _ _
+
+/-- If `P` is closed under colimits of shape `J` in `Comma L R`, then when `D` has
+a colimit in `Comma L R`, the forgetful functor creates this colimit. -/
+noncomputable def forgetCreatesColimitOfClosed
+    [(P.commaObj L R).IsClosedUnderColimitsOfShape J]
+    [HasColimit (D ⋙ forget L R P ⊤ ⊤)] :
+    CreatesColimit D (forget L R P ⊤ ⊤) :=
+  createsColimitOfFullyFaithfulOfIso
+    (⟨colimit (D ⋙ forget L R P ⊤ ⊤),
+      (P.commaObj L R).prop_colimit _ (fun j ↦ (D.obj j).prop)⟩) (Iso.refl _)
+
+variable (J) in
+/-- If `Comma L R` has colimits of shape `J` and `Comma L R` is closed under colimits of shape
+`J`, then `forget L R P ⊤ ⊤` creates colimits of shape `J`. -/
+noncomputable def forgetCreatesColimitsOfShapeOfClosed [HasColimitsOfShape J (Comma L R)]
+    [(P.commaObj L R).IsClosedUnderColimitsOfShape J] :
+    CreatesColimitsOfShape J (forget L R P ⊤ ⊤) where
+  CreatesColimit := forgetCreatesColimitOfClosed _ _
+
+lemma hasColimit_of_closedUnderColimitsOfShape
+    [(P.commaObj L R).IsClosedUnderColimitsOfShape J]
+    [HasColimit (D ⋙ forget L R P ⊤ ⊤)] :
+    HasColimit D :=
+  haveI : CreatesColimit D (forget L R P ⊤ ⊤) := forgetCreatesColimitOfClosed _ D
+  hasColimit_of_created D (forget L R P ⊤ ⊤)
+
+instance hasColimitsOfShape_of_closedUnderColimitsOfShape [HasColimitsOfShape J (Comma L R)]
+    [(P.commaObj L R).IsClosedUnderColimitsOfShape J] :
+    HasColimitsOfShape J (P.Comma L R ⊤ ⊤) where
+  has_colimit _ := hasColimit_of_closedUnderColimitsOfShape _ _
 
 end MorphismProperty.Comma
 
@@ -62,16 +92,16 @@ section
 
 variable {A : Type*} [Category A] {L : A ⥤ T}
 
-lemma CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] [L.Full] {Y : A}
+instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] [L.Full] {Y : A}
     [P.ContainsIdentities] [P.RespectsIso] :
-    ObjectProperty.IsClosedUnderLimitsOfShape (fun f : CostructuredArrow L (L.obj Y) ↦ P f.hom)
-      (Discrete PEmpty.{1}) where
+    (P.costructuredArrowObj L (X := L.obj Y)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) where
   limitsOfShape_le := by
     rintro X ⟨p⟩
     let e : X ≅ CostructuredArrow.mk (𝟙 (L.obj Y)) :=
       p.isLimit.conePointUniqueUpToIso ((IsLimit.postcomposeInvEquiv
         (Functor.emptyExt _ _) _).2 CostructuredArrow.mkIdTerminal)
-    rw [P.costructuredArrow_iso_iff e]
+    rw [MorphismProperty.costructuredArrowObj_iff,
+      P.costructuredArrow_iso_iff e]
     simpa using P.id_mem (L.obj Y)
 
 end
@@ -80,28 +110,40 @@ section
 
 variable {X : T}
 
-lemma Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.RespectsIso] :
-    ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Over X ↦ P f.hom) (Discrete PEmpty.{1}) :=
+instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.RespectsIso] :
+    (P.overObj (X := X)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) :=
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
+
+instance [P.RespectsIso] [P.ContainsIdentities] :
+    (MorphismProperty.commaObj (𝟭 T) (Functor.fromPUnit.{0} X) P).IsClosedUnderLimitsOfShape
+      (Discrete PEmpty.{1}) :=
+  Over.closedUnderLimitsOfShape_discrete_empty _
 
 /-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
 
 Without the cancellation property, this does not in general. Consider for example
 `P = Function.Surjective` on `Type`. -/
-lemma Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
+instance Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
-    ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Over X ↦ P f.hom) WalkingCospan where
+    (P.overObj (X := X)).IsClosedUnderLimitsOfShape WalkingCospan where
   limitsOfShape_le := by
     rintro Y ⟨p⟩
     have ip := p.π.app .left
     have h := IsPullback.of_isLimit_cone <|
         Limits.isLimitOfPreserves (CategoryTheory.Over.forget X) p.isLimit
     dsimp at h
-    rw [show Y.hom = (p.π.app .left).left ≫ (p.diag.obj .left).hom by simp]
+    rw [MorphismProperty.overObj_iff,
+      show Y.hom = (p.π.app .left).left ≫ (p.diag.obj .left).hom by simp]
     apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (p.prop_diag_obj _)
     exact P.of_postcomp _ (p.diag.obj WalkingCospan.one).hom (p.prop_diag_obj .one)
       (by simpa using p.prop_diag_obj .right)
+
+instance [HasPullbacks T] [P.IsStableUnderComposition]
+    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
+    (MorphismProperty.commaObj (𝟭 T) (Functor.fromPUnit.{0} X) P).IsClosedUnderLimitsOfShape
+      WalkingCospan :=
+  Over.closedUnderLimitsOfShape_pullback _
 
 end
 
@@ -114,8 +156,7 @@ noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
   haveI : HasLimitsOfShape (Discrete PEmpty.{1}) (Comma (𝟭 T) (Functor.fromPUnit X)) := by
     change HasLimitsOfShape _ (Over X)
     infer_instance
-  forgetCreatesLimitsOfShapeOfClosed P
-    (Over.closedUnderLimitsOfShape_discrete_empty _)
+  forgetCreatesLimitsOfShapeOfClosed _
 
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
@@ -144,7 +185,6 @@ noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
     inferInstanceAs <| HasLimitsOfShape WalkingCospan (Over X)
   forgetCreatesLimitsOfShapeOfClosed P
-    (Over.closedUnderLimitsOfShape_pullback P)
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `P.Over ⊤ X` has pullbacks -/
@@ -153,7 +193,6 @@ instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposi
   haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
     inferInstanceAs <| HasLimitsOfShape WalkingCospan (Over X)
   hasLimitsOfShape_of_closedUnderLimitsOfShape P
-    (Over.closedUnderLimitsOfShape_pullback P)
 
 end MorphismProperty.Over
 
