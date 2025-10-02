@@ -100,18 +100,18 @@ elab:max "T% " t:term:arg : term => do
   let etype ← whnf <|← instantiateMVars <|← inferType e
   match etype with
   | .forallE x base (mkApp3 (.const ``Bundle.Trivial _) E E' _) _ =>
-    trace[TotalSpaceMk] "Section of a trivial bundle"
+    trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle"
     if ← withReducible (isDefEq E base) then
       return ← withLocalDecl x BinderInfo.default base fun x ↦ do
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
         mkLambdaFVars #[x] body
   | .forallE x base (mkApp12 (.const ``TangentSpace _) _k _ E _ _ _H _ _I _M _ _ _x) _ =>
-    trace[TotalSpaceMk] "Vector field"
+    trace[Elab.DiffGeo.TotalSpaceMk] "Vector field"
     return ← withLocalDecl x BinderInfo.default base fun x ↦ do
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
       mkLambdaFVars #[x] body
   | .forallE x base (.app V _) _ =>
-    trace[TotalSpaceMk] "Section of a bundle as a dependent function"
+    trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
     for decl in ← getLocalHyps do
       let decltype ← whnfR <|← instantiateMVars <|← inferType decl
       match decltype with
@@ -122,7 +122,7 @@ elab:max "T% " t:term:arg : term => do
             mkLambdaFVars #[x] body
       | _ => pure ()
   | .forallE x src tgt _ =>
-    trace[TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
+    trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
     -- TODO: can `tgt` depend on `x` in a way that is not a function application?
     -- Check that `x` is not a bound variable in `tgt`!
     -- xxx: is this check fine or overzealous?
@@ -157,17 +157,17 @@ This implementation is not maximally robust yet.
 -/
 -- FIXME: better failure when trying to find a `NormedField` instance
 def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-    trace[MDiffElab] m!"Searching a model for: {e}"
+    trace[Elab.DiffGeo.MDiff] m!"Searching a model for: {e}"
     if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
       if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
-        trace[MDiffElab] m!"This is the total space of the tangent bundle of {M}"
+        trace[Elab.DiffGeo.MDiff] m!"This is the total space of the tangent bundle of {M}"
         let srcIT : Term ← Term.exprToSyntax I
         let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
         let res ← Term.elabTerm resTerm none
-        trace[MDiffElab] m!"Found model: {res}"
+        trace[Elab.DiffGeo.MDiff] m!"Found model: {res}"
         return res
 
-      trace[MDiffElab] m!"This is a total space with fiber {F}"
+      trace[Elab.DiffGeo.MDiff] m!"This is a total space with fiber {F}"
       if let some (_src, srcI) := baseInfo then
         let mut K : Expr := default
         let mut normedSpaceInst : Expr := default
@@ -178,7 +178,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
           | mkApp4 (.const ``NormedSpace _) K' E _ _ =>
             if E == F then
               K := K'
-              trace[MDiffElab] m!"{F} is a normed field over {K}"
+              trace[Elab.DiffGeo.MDiff] m!"{F} is a normed field over {K}"
               normedSpaceInst := decl
               Kok := true
           | _ => pure ()
@@ -190,7 +190,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
         let FT : Term ← Term.exprToSyntax F
         let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
         let I ← Term.elabTerm iTerm none
-        trace[MDiffElab] m!"Found model: {I}"
+        trace[Elab.DiffGeo.MDiff] m!"Found model: {I}"
         return I
       else
         throwError "Having a TotalSpace as source is not yet supported"
@@ -205,12 +205,12 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
       | mkApp4 (.const ``ChartedSpace _) H' _ M _ =>
         if M == e then
           H := H'
-          trace[MDiffElab] m!"H is: {H}"
+          trace[Elab.DiffGeo.MDiff] m!"H is: {H}"
           Hok := true
       | mkApp4 (.const ``NormedSpace _) K' E _ _ =>
         if E == e then
           K := K'
-          trace[MDiffElab] m!"Field is: {K}"
+          trace[Elab.DiffGeo.MDiff] m!"Field is: {K}"
           normedSpaceInst := decl
           Kok := true
       | _ => pure ()
@@ -220,14 +220,14 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
       let eK : Term ← Term.exprToSyntax K
       let iTerm : Term ← ``(𝓘($eK, $eT))
       let I ← Term.elabTerm iTerm none
-      trace[MDiffElab] m!"Found model: {I}"
+      trace[Elab.DiffGeo.MDiff] m!"Found model: {I}"
       return I
       -- let uK ← K.getUniverse
       -- let normedFieldK ← synthInstance (.app (.const ``NontriviallyNormedField [uK]) K)
-      -- trace[MDiffElab] m!"NontriviallyNormedField instance is: {normedFieldK}"
+      -- trace[Elab.DiffGeo.MDiff] m!"NontriviallyNormedField instance is: {normedFieldK}"
       -- let ue ← e.getUniverse
       -- let normedGroupE ← synthInstance (.app (.const ``NormedAddCommGroup  [ue]) e)
-      -- trace[MDiffElab] m!"NormedAddCommGroup  instance is: {normedGroupE}"
+      -- trace[Elab.DiffGeo.MDiff] m!"NormedAddCommGroup  instance is: {normedGroupE}"
       -- return mkAppN (.const `modelWithCornersSelf [uK, ue])
       --   #[K, normedFieldK, e, normedGroupE, normedSpaceInst]
     else if Hok then
@@ -236,15 +236,15 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
         match decltype with
         | mkApp7 (.const ``ModelWithCorners  _) _ _ _ _ _ H' _ =>
           if H' == H then
-            trace[MDiffElab] m!"Found model: {decl}"
+            trace[Elab.DiffGeo.MDiff] m!"Found model: {decl}"
             return decl
         | _ => pure ()
     else
-      trace[MDiffElab] m!"Hoping {e} is a normed field"
+      trace[Elab.DiffGeo.MDiff] m!"Hoping {e} is a normed field"
       let eT : Term ← Term.exprToSyntax e
       let iTerm : Term ← `(𝓘($eT, $eT))
       let I ← Term.elabTerm iTerm none
-      trace[MDiffElab] m!"Found model: {I}"
+      trace[Elab.DiffGeo.MDiff] m!"Found model: {I}"
       return I
     throwError "Couldn’t find models with corners"
 
