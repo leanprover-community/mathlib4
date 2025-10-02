@@ -177,7 +177,7 @@ This implementation is not maximally robust yet.
 -/
 -- FIXME: better failure when trying to find a `NormedField` instance
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-  trace[Elab.DiffGeo.MDiff] "Searching a model for: {e}"
+  trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
     if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
       trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
