@@ -220,10 +220,9 @@ instance : Coe (A ⟶ B) (A →+[G] B) := ⟨Action.Hom.toDistribMulActionHom⟩
 theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
     H0Iso B ∘ (groupCohomology.map (.id G) f 0) = (H0.map f) ∘ H0Iso A := sorry
 
-def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, fun x y => by
-  symm
+def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, fun x y => Eq.symm (by
   rw [← sub_eq_zero, add_sub_right_comm, sub_add_comm]
-  exact ((mem_cocycles₁_def f).mp f.2 x y)⟩
+  exact ((mem_cocycles₁_def f).mp f.2 x y))⟩
 
 open ConcreteCategory MorphismProperty
 -- cocycle first, CategoryTheory.ConcreteCategory.surjective_eq_epimorphisms
