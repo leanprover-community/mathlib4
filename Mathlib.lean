@@ -5504,6 +5504,7 @@ import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Frobenius
 import Mathlib.RingTheory.Generators
+import Mathlib.RingTheory.GlobalDimension
 import Mathlib.RingTheory.Gorenstein.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.FiniteType
