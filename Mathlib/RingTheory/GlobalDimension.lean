@@ -104,7 +104,7 @@ lemma injective_of_quotients_ext_one_subsingleton [Small.{v} R] (M : ModuleCat.{
   congr
 
 open Limits in
-lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
+lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
     ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M (n + 1)) := by
   induction n generalizing M
@@ -130,6 +130,22 @@ lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ
       exact (@asIso _ _ _ _ _ this).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
     simp only [this] at h ⊢
     exact ih (cokernel f) h
+
+lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
+    (h : ∀ I : Ideal R, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
+    ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M n) := by
+  match n with
+  | 0 =>
+    let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans
+      (AlgEquiv.quotientBot R R).toLinearEquiv
+    have := (Ext.homEquiv₀.subsingleton_congr.mp (h ⊥))
+    rw [ModuleCat.homAddEquiv.subsingleton_congr,
+      ((e₀.congrLeft M R).trans (LinearMap.ringLmapEquivSelf R R M)).subsingleton_congr,
+      ← ModuleCat.isZero_iff_subsingleton] at this
+    intro N
+    rw [Ext.homEquiv₀.subsingleton_congr]
+    exact subsingleton_of_forall_eq 0 (fun y ↦ Limits.IsZero.eq_zero_of_tgt this y)
+  | n + 1 => exact ext_subsingleton_of_quotients' R M n  h
 
 end
 
@@ -161,13 +177,10 @@ lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) : [globalDimension.{v} R �
       using fun h M _ ↦ h M
   tfae_have 2 → 3 := by
     intro h m ge N M
-    have eq : m - 1 + 1 = m := by omega
-    have (I : Ideal R) :
-      Subsingleton (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M (m - 1 + 1)) := by
-      simpa only [eq] using (h (ModuleCat.of R (Shrink.{v, u} (R ⧸ I)))
+    have (I : Ideal R) : Subsingleton (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M m) :=
+      (h (ModuleCat.of R (Shrink.{v, u} (R ⧸ I)))
         (Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm)).1 m ge (Y := M)
-    rw [← eq]
-    exact ext_subsingleton_of_quotients.{v, u, max u (v + 1)} R M (m - 1) this N
+    exact ext_subsingleton_of_quotients.{v, u, max u (v + 1)} R M m this N
   tfae_have 3 → 1 := by
     intro h
     simp only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
