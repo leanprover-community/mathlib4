@@ -856,14 +856,17 @@ section
 variable {f g : X ⟶ Y} {Z : C} (h : Z ⟶ X)
 
 /--
-If `f` and `g` have an equalizer, then pulling back this equalizer along a morphism `h` gives
-a fork of `h ≫ f` and `h ≫ g`.
+Given a fork `s` on `f` and `g`, pulling it back along a morphism `h` gives a fork on `h ≫ f` and
+`h ≫ g`.
 -/
 def precompFork (s : Fork f g) (c : PullbackCone s.ι h) :
     Fork (h ≫ f) (h ≫ g) :=
   Fork.ofι c.snd <| by
     rw [← reassoc_of% c.condition, ← reassoc_of% c.condition, s.condition]
 
+/--
+Any fork on `h ≫ f` and `h ≫ g` lifts to a pullback along `h` of an equalizer of `f` and `g`.
+-/
 def liftPrecomp {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h} (hc : IsLimit c)
     (s' : Fork (h ≫ f) (h ≫ g)) :
     s'.pt ⟶ (precompFork h s c).pt :=
