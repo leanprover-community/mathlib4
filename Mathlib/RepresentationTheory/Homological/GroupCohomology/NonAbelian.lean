@@ -41,7 +41,11 @@ instance (A : NonAbelianRep G) : DistribMulAction G A  where
   smul_zero _ :=  map_zero _
   smul_add _ := map_add _
 
-instance (A B : NonAbelianRep G) : Coe (A ⟶ B) (A →+[G] B) := sorry
+instance (A B : NonAbelianRep G) : Coe (A ⟶ B) (A →+[G] B) where
+  coe f := {
+    __ := f.hom.hom'
+    map_smul' m x := congr($(f.comm m) x)
+  }
 
 end basic
 
@@ -253,7 +257,9 @@ noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c 
     ⟨(b st.1) + st.1 • (b st.2) - b (st.1 * st.2), (hfg _).mp (by simp [← hbc, c.prop])⟩, ?_⟩
   refine funext fun ⟨x, y, z⟩ ↦ hf ?_
   dsimp only [d₂₃, ModuleCat.hom_ofHom, AddHom.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
-  conv => enter [1, 2, 1, 1, 1]; change x • _
+  conv =>
+    enter [1, 2, 1, 1, 1]
+    change x • _
   rw [sub_add_eq_add_sub]
   change _ = f 0
   have : x • b y + x • y • b z + -(x • b (y * z)) + (b x) =
@@ -262,17 +268,31 @@ noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c 
       simp [← hbc, c.prop, ← add_assoc]
   simp [Equiv.apply_ofInjective_symm, sub_eq_add_neg, mul_smul, ← add_assoc, this, mul_assoc]
 
+include hg in
 theorem δ₁₂_aux_well_defined (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
     (hbc' : ∀ (x : G), c' x = g (b' x)) (hcc' : Z1.cohomologous c c') :
     ((δ₁₂_aux hf hfg hA b c hbc) - (δ₁₂_aux hf hfg hA b' c' hbc') : (ModuleCat.of k (G × G → A))) ∈
-    (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := sorry
+    (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := by
+  obtain ⟨t, ht⟩ := hcc'
+  obtain ⟨t', rfl⟩ := hg t
+  obtain a : ∀ (h : G), ∃ (a : A), f a = -b' h + -t' + b h + h • t' := fun h ↦ (hfg _).mp
+    (by simp [← hbc h, ← hbc' h, ht h, ← add_assoc])
+  choose a ha using a
+  refine ⟨a, funext fun ⟨h, h'⟩ ↦ hf ?_⟩
+  simp [δ₁₂_aux, Equiv.apply_ofInjective_symm]
+  conv =>
+    enter [1, 1, 1]
+    change f (h • _)
+    rw [map_smul]
+  simp [ha, sub_eq_add_neg, neg_add_rev, ← add_assoc, mul_smul]
+  sorry
 
 noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
   refine (H2Iso A).symm.hom ∘ Quotient.lift (Submodule.Quotient.mk ∘
     (fun c ↦ ((δ₁₂_aux hf hfg hA (fun x ↦ Classical.choose (hg (c x))) c
       (fun x ↦ (Classical.choose_spec (hg (c x))).symm)))))
         (fun c c' (hcc' : Z1.cohomologous c c') ↦ ?_)
-  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined hf hfg hA (fun x ↦ Classical.choose (hg (c x)))
+  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined hf hg hfg hA (fun x ↦ Classical.choose (hg (c x)))
     (fun x ↦ Classical.choose (hg (c' x))) c c' (fun x ↦ (Classical.choose_spec (hg (c x))).symm)
       (fun x ↦ (Classical.choose_spec (hg (c' x))).symm) hcc'
   exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
