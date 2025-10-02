@@ -224,7 +224,7 @@ def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, fun x 
   rw [← sub_eq_zero, add_sub_right_comm, sub_add_comm]
   exact ((mem_cocycles₁_def f).mp f.2 x y))⟩
 
-open ConcreteCategory MorphismProperty
+open ConcreteCategory MorphismProperty in
 -- cocycle first, CategoryTheory.ConcreteCategory.surjective_eq_epimorphisms
 noncomputable def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A where
   toFun := Quotient.mk _ ∘ CocycleToZ1 ∘ Function.surjInv (f := (groupCohomology.H1π A).hom) (by
@@ -256,9 +256,7 @@ noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c 
     ⟨(b st.1) + st.1 • (b st.2) - b (st.1 * st.2), (hfg _).mp (by simp [← hbc, c.prop])⟩, ?_⟩
   refine funext fun ⟨x, y, z⟩ ↦ hf ?_
   dsimp only [d₂₃, ModuleCat.hom_ofHom, AddHom.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
-  conv =>
-    enter [1, 2, 1, 1, 1]
-    change x • _
+  conv in ((A.ρ _) _) => change x • _
   rw [sub_add_eq_add_sub]
   change _ = f 0
   have : x • b y + x • y • b z + -(x • b (y * z)) + (b x) =
@@ -267,6 +265,30 @@ noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c 
       simp [← hbc, c.prop, ← add_assoc]
   simp [Equiv.apply_ofInjective_symm, sub_eq_add_neg, mul_smul, ← add_assoc, this, mul_assoc]
 
+theorem δ₁₂_aux_well_defined_1 (b b' : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
+    (hbc' : ∀ (x : G), c x = g (b' x)) :
+    ((δ₁₂_aux hf hfg hA b c hbc) - (δ₁₂_aux hf hfg hA b' c hbc') : (ModuleCat.of k (G × G → A))) ∈
+    (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := by
+  obtain a : ∀ (h : G), ∃ (a : A), f a = b h - b' h := fun h ↦ (hfg _).mp
+    (by simp [← hbc h, ← hbc' h])
+  choose a ha using a
+  refine ⟨a, funext fun ⟨h, h'⟩ ↦ hf (sub_eq_zero.mp ?_)⟩
+  simp only [d₁₂_hom_apply, sub_eq_add_neg, map_add, δ₁₂_aux, cocycles₂.val_eq_coe,
+    cocycles₂.coe_mk, Pi.sub_apply, Equiv.apply_ofInjective_symm, neg_add_rev, ← map_neg, neg_neg,
+    ← add_assoc]
+  conv in ((A.ρ _) _) => change h • _
+  have h1 : f (h • a h') + f (-a (h * h')) + f (a h) + b' h + h • b' h' + -b' (h * h') =
+    f (h • a h') + f (a h) + b' h + h • b' h' + -b' (h * h') + f (-a (h * h')) := by
+    conv_lhs =>
+      simp only [add_assoc]
+      rw [← AddSubgroup.mem_center_iff.mp (hA (⟨-a (h * h'), rfl⟩ : f _ ∈ f.range))]
+    simp only [add_assoc]
+  have h2 : f (h • a h') + f (a h) + b' h = f (a h) + b' h + f (h • a h') := by
+    conv_rhs => rw [AddSubgroup.mem_center_iff.mp (hA (⟨h • a h', rfl⟩ : f _ ∈ f.range))]
+    rw [add_assoc]
+  rw [h1, h2]
+  simp [ha, sub_eq_add_neg, neg_add_rev, add_assoc]
+
 include hg in
 theorem δ₁₂_aux_well_defined (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
     (hbc' : ∀ (x : G), c' x = g (b' x)) (hcc' : Z1.cohomologous c c') :
@@ -274,17 +296,14 @@ theorem δ₁₂_aux_well_defined (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ (x
     (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := by
   obtain ⟨t, ht⟩ := hcc'
   obtain ⟨t', rfl⟩ := hg t
-  obtain a : ∀ (h : G), ∃ (a : A), f a = -b' h + -t' + b h + h • t' := fun h ↦ (hfg _).mp
-    (by simp [← hbc h, ← hbc' h, ht h, ← add_assoc])
-  choose a ha using a
-  refine ⟨a, funext fun ⟨h, h'⟩ ↦ hf ?_⟩
-  simp [δ₁₂_aux, Equiv.apply_ofInjective_symm]
-  conv =>
-    enter [1, 1, 1]
-    change f (h • _)
-    rw [map_smul]
-  simp [ha, sub_eq_add_neg, neg_add_rev, ← add_assoc, mul_smul]
-  sorry
+  let b'' : G → B := fun h ↦ (-t' + b h + h • t')
+  have hbc'' : ∀ (x : G), c' x = g (b'' x) := by simpa [b'', ← hbc]
+  rw [← sub_add_sub_cancel _ (δ₁₂_aux hf hfg hA b'' c' hbc'').1 _]
+  refine Submodule.add_mem _ ⟨fun _ ↦ 0, funext fun ⟨h, h'⟩ ↦ hf ?_⟩ (δ₁₂_aux_well_defined_1 ..)
+  have : b h + h • b h' + -b (h * h') + -t' = -t' + (b h + h • b h' + -b (h * h')) :=
+    (AddSubgroup.mem_center_iff.mp (hA ((hfg _).mp (by simp [← hbc, c.prop, add_assoc]))) _).symm
+  simp [δ₁₂_aux, Equiv.apply_ofInjective_symm, b'', sub_eq_add_neg, neg_add_rev, ← add_assoc,
+    mul_smul, this]
 
 noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
   refine (H2Iso A).symm.hom ∘ Quotient.lift (Submodule.Quotient.mk ∘
