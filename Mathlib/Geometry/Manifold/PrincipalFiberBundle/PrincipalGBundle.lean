@@ -8,6 +8,31 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.Topology.FiberBundle.Basic
 
+/-!
+# Principal G-Bundles
+
+This file defines smooth principal bundles with Lie group actions on manifolds.
+
+## Main definitions
+
+* `SmoothLeftGAction`: An `n`-times continuously differentiable left action of a Lie group
+  on a manifold
+* `SmoothRightGAction`: An `n`-times continuously differentiable right action of a Lie group
+  on a manifold
+* `PrincipalBundleCore`: The core structure of a principal bundle, consisting of a fiber bundle
+  with a free and transitive group action on the fibers
+
+## Implementation notes
+
+Right actions are encoded using `MulAction (MulOpposite G)` to maintain compatibility with
+Mathlib's action conventions while preserving the correct associativity for principal bundles.
+
+## References
+
+* Standard reference on principal bundles and connections
+
+-/
+
 open Matrix Bundle Manifold MulAction
 
 open RightActions

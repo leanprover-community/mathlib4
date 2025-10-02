@@ -5,7 +5,43 @@ Authors: Dominic Steinitz
 -/
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Topology.FiberBundle.Basic
-import Mathlib.Topology.FiberBundle.Instances.PrincipalGBundle
+import Mathlib.Geometry.Manifold.PrincipalFiberBundle.PrincipalGBundle
+
+/-!
+# The Hopf Fibration
+
+This file constructs the Hopf fibration as a fiber bundle, which is the canonical example
+of a non-trivial principal S¹-bundle.
+
+## Main definitions
+
+* `xN`, `xS`: The north and south poles of S² ⊂ ℝ³
+* `UN`, `US`: Stereographic coordinate charts for S² from the north and south poles
+* `HopfFibration`: The fiber bundle core defining the Hopf fibration S³ → S²
+
+## Mathematical background
+
+The Hopf fibration is a continuous map π : S³ → S² where:
+- The total space is the 3-sphere S³ ⊂ ℝ⁴
+- The base space is the 2-sphere S² ⊂ ℝ³
+- Each fiber π⁻¹(p) is a circle S¹
+- The structure group is S¹ = U(1) acting freely and transitively on the fibers
+
+This is historically significant as the first example of a non-trivial fiber bundle and
+represents the non-trivial element of the homotopy group π₃(S²).
+
+## Implementation notes
+
+The construction uses stereographic projection charts at the north and south poles to cover
+S². The coordinate change functions encode the non-trivial bundle structure. Many definitions
+currently contain `sorry` and are work in progress.
+
+## References
+
+* H. Hopf, "Über die Abbildungen der dreidimensionalen Sphäre auf die Kugelfläche" (1931)
+* Any standard text on fiber bundles or algebraic topology
+
+-/
 
 open Matrix Bundle Manifold
 open Bundle Topology MulAction Set
