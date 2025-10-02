@@ -123,7 +123,7 @@ theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·)
 @[simp] protected theorem IsChain.diff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
   h.mono Set.diff_subset
 
-protected theorem IsChain.coe_univ {s : Set α} :
+protected theorem IsChain.coe_univ_iff {s : Set α} :
     @IsChain ↑s (r ↑· ↑·) Set.univ ↔ IsChain r s :=
   ⟨fun h a ha b hb hne ↦ @h ⟨a, ha⟩ (by simp) ⟨b, hb⟩ (by simp) (by simp [hne]),
    fun h a _ b _ hne ↦ @h a.1 a.2 b.1 b.2 (Subtype.coe_ne_coe.mpr hne)⟩
