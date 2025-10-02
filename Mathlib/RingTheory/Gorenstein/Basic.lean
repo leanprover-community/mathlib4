@@ -18,7 +18,6 @@ import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.RingTheory.CohenMacaulay.Basic
 import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.LinearAlgebra.FreeModule.PID
 /-!
 
 # The Definition of Gorenstein (Local) Ring
@@ -138,9 +137,13 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
       have : projectiveDimension M + 1 ≤ 0 ↔ projectiveDimension M = ⊥ :=
         WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M)
       rw [projectiveDimension_le_iff]
-      simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
-      simp only [CharP.cast_eq_zero, this, projectiveDimension_eq_bot_iff,
-        ModuleCat.isZero_iff_subsingleton, sub]
+      simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one,
+        CharP.cast_eq_zero, this, projectiveDimension_eq_bot_iff,
+        ModuleCat.isZero_iff_subsingleton, sub, ← IsProjective.iff_projective]
+      refine ⟨fun h ↦ ?_, fun h ↦ Projective.of_free⟩
+      have : Module.Free R (QuotSMulTop x M) := Module.free_of_flat_of_isLocalRing
+      by_contra ntr
+
       sorry
     | n + 1 =>
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
