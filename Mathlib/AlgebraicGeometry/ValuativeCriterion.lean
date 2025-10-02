@@ -24,7 +24,7 @@ import Mathlib.RingTheory.Valuation.LocalSubring
   it is qcqs and of fintite type and satisfies the valuative criterion.
 
 ## Future projects
-Show that it suffices to check discrete valuation rings when the base is noetherian.
+Show that it suffices to check discrete valuation rings when the base is Noetherian.
 
 -/
 
@@ -58,9 +58,9 @@ structure ValuativeCommSq {X Y : Scheme.{u}} (f : X ⟶ Y) where
   [algebra : Algebra R K]
   [isFractionRing : IsFractionRing R K]
   /-- The top map in a valuative commutative map. -/
-  (i₁ : Spec (.of K) ⟶ X)
+  (i₁ : Spec(K) ⟶ X)
   /-- The bottom map in a valuative commutative map. -/
-  (i₂ : Spec (.of R) ⟶ Y)
+  (i₂ : Spec(R) ⟶ Y)
   (commSq : CommSq i₁ (Spec.map (CommRingCat.ofHom (algebraMap R K))) f i₂)
 
 namespace ValuativeCommSq
@@ -88,7 +88,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 lemma ValuativeCriterion.iff {f : X ⟶ Y} :
     ValuativeCriterion f ↔ Existence f ∧ Uniqueness f := by
-  show (∀ _, _) ↔ (∀ _, _) ∧ (∀ _, _)
+  change (∀ _, _) ↔ (∀ _, _) ∧ (∀ _, _)
   simp_rw [← forall_and, unique_iff_subsingleton_and_nonempty, and_comm, CommSq.HasLift.iff]
 
 lemma ValuativeCriterion.eq :
@@ -145,9 +145,9 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
   replace H := H (pullback.snd i₂ f) i₂ (pullback.fst i₂ f) (.of_hasPullback i₂ f)
   let lft := pullback.lift (Spec.map (CommRingCat.ofHom (algebraMap R K))) i₁ w.symm
   obtain ⟨x, h₁, h₂⟩ := @H (lft.base (closedPoint _)) _ (specializes_closedPoint (R := R) _)
-  let e : CommRingCat.of R ≅ (Spec (.of R)).presheaf.stalk ((pullback.fst i₂ f).base x) :=
+  let e : CommRingCat.of R ≅ Spec(R).presheaf.stalk ((pullback.fst i₂ f).base x) :=
     (stalkClosedPointIso (.of R)).symm ≪≫
-      (Spec (.of R)).presheaf.stalkCongr (.of_eq h₂.symm)
+      Spec(R).presheaf.stalkCongr (.of_eq h₂.symm)
   let α := e.hom ≫ (pullback.fst i₂ f).stalkMap x
   have : IsLocalHom e.hom.hom := isLocalHom_of_isIso e.hom
   have : IsLocalHom α.hom := inferInstanceAs
@@ -156,7 +156,7 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
   have hαβ : α ≫ β = CommRingCat.ofHom (algebraMap R K) := by
     simp only [CommRingCat.coe_of, Iso.trans_hom, Iso.symm_hom, TopCat.Presheaf.stalkCongr_hom,
       Category.assoc, α, e, β, stalkClosedPointIso_inv, StructureSheaf.toStalk]
-    show (Scheme.ΓSpecIso (.of R)).inv ≫ (Spec (.of R)).presheaf.germ _ _ _ ≫ _ = _
+    change (Scheme.ΓSpecIso (.of R)).inv ≫ Spec(R).presheaf.germ _ _ _ ≫ _ = _
     simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ_assoc]
     -- `map_top` introduces defeq problems, according to `check_compositions`.
     -- This is probably the cause of the `erw` needed below.
@@ -192,7 +192,7 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
 
 instance stableUnderBaseChange : ValuativeCriterion.Existence.IsStableUnderBaseChange := by
   constructor
-  intros Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
+  intro Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
   let commSq' : ValuativeCommSq f :=
   { R := commSq.R
     K := commSq.K
@@ -261,7 +261,7 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     constructor
     refine ⟨S.i₂ ≫ pullback.fst _ _, ?_, ?_⟩
     · simp [← S.commSq.w_assoc]
-    · simp
+    · simp only [Category.assoc]
       apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
       · simp
       · simp only [Category.assoc, pullback.diagonal_snd, Category.comp_id]
@@ -269,14 +269,14 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
 
 @[stacks 01KZ]
 lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Uniqueness f := by
-  intros S
+  intro S
   constructor
   rintro ⟨l₁, hl₁, hl₁'⟩ ⟨l₂, hl₂, hl₂'⟩
   ext : 1
   dsimp at *
   have h := hl₁'.trans hl₂'.symm
   let Z := pullback (pullback.diagonal f) (pullback.lift l₁ l₂ h)
-  let g : Z ⟶ Spec (.of S.R) := pullback.snd _ _
+  let g : Z ⟶ Spec(S.R) := pullback.snd _ _
   have : IsClosedImmersion g := MorphismProperty.pullback_snd _ _ inferInstance
   have hZ : IsAffine Z := by
     rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
@@ -290,11 +290,11 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
     refine (HasAffineProperty.iff_of_isAffine (P := MorphismProperty.isomorphisms Scheme)).mpr ?_
     exact ⟨hZ, (ConcreteCategory.isIso_iff_bijective _).mpr h⟩
   constructor
-  · let l : Spec (.of S.K) ⟶ Z := by
-      apply pullback.lift S.i₁ (Spec.map (CommRingCat.ofHom (algebraMap S.R S.K)))
-      apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
-      simpa using hl₁.symm
-      simpa using hl₂.symm
+  · let l : Spec(S.K) ⟶ Z :=
+      pullback.lift S.i₁ (Spec.map (CommRingCat.ofHom (algebraMap S.R S.K))) (by
+        apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
+        · simpa using hl₁.symm
+        · simpa using hl₂.symm)
     have hg : l ≫ g = Spec.map (CommRingCat.ofHom (algebraMap S.R S.K)) :=
       pullback.lift_snd _ _ _
     have : Function.Injective ((l ≫ g).appTop) := by
@@ -304,7 +304,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
         RingHom.toMorphismProperty <| fun f ↦ Function.Injective f
       have : (RingHom.toMorphismProperty <| fun f ↦ Function.Injective f).RespectsIso :=
         RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.injective_respectsIso
-      show P _
+      change P _
       rw [← MorphismProperty.arrow_mk_iso_iff (P := P) e]
       exact FaithfulSMul.algebraMap_injective S.R S.K
     rw [Scheme.comp_appTop] at this
@@ -329,7 +329,7 @@ lemma IsProper.eq_valuativeCriterion :
     UniversallyClosed.eq_valuativeCriterion]
   simp_rw [inf_assoc]
   ext X Y f
-  show _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
+  change _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
   tauto
 
 /-- The **valuative criterion** for proper morphisms. -/

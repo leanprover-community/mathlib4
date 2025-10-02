@@ -44,7 +44,7 @@ private noncomputable def normalizedTraceAux (a : K) : F :=
   (Module.finrank F F⟮a⟯ : F)⁻¹ • trace F F⟮a⟯ (AdjoinSimple.gen F a)
 
 private theorem normalizedTraceAux_def (a : K) : normalizedTraceAux F K a =
-  (Module.finrank F F⟮a⟯ : F)⁻¹ • trace F F⟮a⟯ (AdjoinSimple.gen F a) := rfl
+    (Module.finrank F F⟮a⟯ : F)⁻¹ • trace F F⟮a⟯ (AdjoinSimple.gen F a) := rfl
 
 private theorem normalizedTraceAux_map {E : Type*} [Field E] [Algebra F E] (f : E →ₐ[F] K) (a : E) :
     normalizedTraceAux F K (f a) = normalizedTraceAux F E a := by

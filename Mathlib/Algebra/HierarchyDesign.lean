@@ -24,7 +24,7 @@ In any theorem proving environment,
 there are difficult decisions surrounding the design of the "algebraic hierarchy".
 
 There is a danger of exponential explosion in the number of gadgets,
-especially once interactions between algebraic and order/topological/etc structures are considered.
+especially once interactions between algebraic and order/topological/etc. structures are considered.
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
 1. when there is "real mathematics" to be done with them, or
@@ -94,7 +94,7 @@ when applicable:
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
   See `Mathlib/Data/Finsupp/Pointwise.lean` for more examples.
   ```
-  instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
+  instance Finsupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
   See `Mathlib/Algebra/Pointwise.lean` for more examples.

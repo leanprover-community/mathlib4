@@ -109,8 +109,11 @@ theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0
   · apply Eventually.of_forall
     intro x
     apply Tendsto.const_mul (g x)
-    simp [mul_assoc, inv_mul_eq_div, ← neg_div]
-    exact tendsto_one_add_div_pow_exp (-(ε * (g x * g x)))
+    simpa [mul_assoc, inv_mul_eq_div, ← neg_div] using
+      tendsto_one_add_div_pow_exp (-(ε * (g x * g x)))
+
+@[deprecated (since := "2025-05-22")]
+alias tendsto_integral_mul_one_plus_inv_smul_sq_pow := tendsto_integral_mul_one_add_inv_smul_sq_pow
 
 theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hε : 0 < ε)
@@ -159,7 +162,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'| ≤ 6 * √ε := by
   -- if both measures are zero, the result is trivial
   by_cases hPP' : P = 0 ∧ P' = 0
-  · simp only [hPP', integral_zero_measure, sub_self, abs_zero, gt_iff_lt, Nat.ofNat_pos,
+  · simp only [hPP', integral_zero_measure, sub_self, abs_zero, Nat.ofNat_pos,
     mul_nonneg_iff_of_pos_left, (le_of_lt (sqrt_pos_of_pos hε))]
   let const : ℝ := (max (P.real Set.univ) (P'.real Set.univ))
   have pos_of_measure : 0 < const := by
@@ -170,7 +173,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     · exact lt_max_of_lt_right
         (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP'0) (measure_ne_top P' Set.univ))
   -- obtain K, a compact and closed set, which covers E up to a small area of measure at most ε
-  -- wrt to both P and P'
+  -- w.r.t. both P and P'
   obtain ⟨KP, _, hKPco, hKPcl, hKP⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
     (MeasurableSet.univ) (measure_ne_top P Set.univ) (ne_of_gt (ofReal_pos.mpr hε))
   obtain ⟨KP', _, hKP'co, hKP'cl, hKP'⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
@@ -178,12 +181,12 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   let K := KP ∪ KP'
   have hKco := IsCompact.union hKPco hKP'co
   have hKcl := IsClosed.union hKPcl hKP'cl
-  simp [← Set.compl_eq_univ_diff] at hKP hKP'
+  simp only [← Set.compl_eq_univ_diff] at hKP hKP'
   have hKPbound : P (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_left))) hKP
   have hKP'bound : P' (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_right))) hKP'
-  -- stone-weierstrass approximation of f on K
+  -- Stone-Weierstrass approximation of f on K
   obtain ⟨g', hg'A, hg'approx⟩ :=
       ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
       hA f hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))

@@ -3,6 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Units.Opposite
+import Mathlib.Algebra.Regular.Opposite
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Ideal.Prod
@@ -34,9 +36,9 @@ Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodul
 ## Main results
 
 * `IsArtinianRing.primeSpectrum_finite`, `IsArtinianRing.isMaximal_of_isPrime`: there are only
-  finitely prime ideals in a commutative artinian ring, and each of them is maximal.
+  finitely prime ideals in a commutative Artinian ring, and each of them is maximal.
 
-* `IsArtinianRing.equivPi`: a reduced commutative artinian ring `R` is isomorphic to a finite
+* `IsArtinianRing.equivPi`: a reduced commutative Artinian ring `R` is isomorphic to a finite
   product of fields (and therefore is a semisimple ring and a decomposition monoid; moreover
   `R[X]` is also a decomposition monoid).
 
@@ -129,17 +131,16 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsArtinian R P :=
   ⟨fun _ ↦ isArtinian_of_linearEquiv f, fun _ ↦ isArtinian_of_linearEquiv f.symm⟩
 
-instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
-
--- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
--- attribute [local elab_as_elim] Finite.induction_empty_option
 
 open Submodule
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
     (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
-  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_no_descending_seq.1 h.wf).elim' ?_
+  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_isEmpty.1 h.wf).elim' ?_
   have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
   have : ∀ n, (↑) ∘ f '' { m | n ≤ m } ⊆ s := by
     rintro n x ⟨y, _, rfl⟩
@@ -195,7 +196,7 @@ open Function
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
   have h := ‹IsArtinian R M›; contrapose! h
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
-  refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded_of_decreasing_seq
+  refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
   simp_rw [pow_succ, Module.End.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
   refine Submodule.map_strictMono_of_injective (Module.End.iterate_injective s n) (Ne.lt_top ?_)
@@ -205,7 +206,7 @@ theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective 
 theorem bijective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Bijective f :=
   ⟨s, surjective_of_injective_endomorphism f s⟩
 
-/-- A sequence `f` of submodules of an artinian module,
+/-- A sequence `f` of submodules of an Artinian module,
 with the supremum `f (n+1)` and the infimum of `f 0`, ..., `f n` being ⊤,
 is eventually ⊤. -/
 theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
@@ -292,7 +293,6 @@ prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
 instance isArtinian_pi' [IsArtinian R M] : IsArtinian R (ι → M) :=
   isArtinian_pi
 
---Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance isArtinian_finsupp [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
 
@@ -312,7 +312,7 @@ theorem IsArtinian.isSemisimpleModule_iff_jacobson [IsArtinian R M] :
     let f : M →ₗ[R] ∀ m : s, M ⧸ m.1.1 := LinearMap.pi fun m ↦ m.1.1.mkQ
     .of_injective f <| LinearMap.ker_eq_bot.mp <| le_bot_iff.mp fun x hx ↦ by
       rw [← h, Module.jacobson, Submodule.mem_sInf]
-      exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finset_inf.mpr fun i hi ↦
+      exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finsetInf.mpr fun i hi ↦
         (Submodule.Quotient.mk_eq_zero i.1).mp <| congr_fun hx ⟨i, hi⟩⟩
 
 open Submodule Function
@@ -397,7 +397,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
 -- See `Mathlib/RingTheory/Artinian/Ring.lean`
-assert_not_exists IsLocalization LocalRing
+assert_not_exists IsLocalization IsLocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
 
@@ -440,8 +440,8 @@ theorem IsArtinianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScalarT
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
-/-- In a module over an artinian ring, the submodule generated by finitely many vectors is
-artinian. -/
+/-- In a module over an Artinian ring, the submodule generated by finitely many vectors is
+Artinian. -/
 theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M] [IsArtinianRing R]
     {A : Set M} (hA : A.Finite) : IsArtinian R (Submodule.span R A) :=
   isArtinian_of_fg_of_artinian _ (Submodule.fg_def.mpr ⟨A, hA, rfl⟩)
@@ -476,6 +476,70 @@ instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i
   · exact fun ih ↦ RingEquiv.isArtinianRing (.symm .piOptionEquivProd)
 
 namespace IsArtinianRing
+
+section Semiring
+
+variable {R : Type*} [Semiring R]
+
+theorem isUnit_iff_isRightRegular [IsArtinianRing R] {x : R} : IsUnit x ↔ IsRightRegular x := by
+  rw [IsRightRegular, IsUnit.isUnit_iff_mulRight_bijective, Bijective, and_iff_left_of_imp]
+  exact IsArtinian.surjective_of_injective_endomorphism (.toSpanSingleton R R x)
+
+theorem isUnit_iff_isRegular [IsArtinianRing R] {x : R} : IsUnit x ↔ IsRegular x := by
+  rw [isRegular_iff, ← isUnit_iff_isRightRegular, and_iff_right_of_imp (·.isRegular.1)]
+
+theorem isUnit_iff_isLeftRegular [IsArtinianRing Rᵐᵒᵖ] {x : R} : IsUnit x ↔ IsLeftRegular x := by
+  rw [← isRightRegular_op, ← isUnit_op, isUnit_iff_isRightRegular]
+
+theorem isUnit_iff_isRegular_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {x : R} :
+    IsUnit x ↔ IsRegular x := by
+  rw [isRegular_iff, ← isUnit_iff_isLeftRegular, and_iff_left_of_imp (·.isRegular.2)]
+
+end Semiring
+
+section Ring
+
+variable {R : Type*} [Ring R]
+
+open nonZeroDivisors
+
+/-- If an element of an Artinian ring is not a zero divisor then it is a unit. -/
+theorem isUnit_of_mem_nonZeroDivisors [IsArtinianRing R] {a : R} (ha : a ∈ R⁰) : IsUnit a := by
+  rwa [isUnit_iff_isRegular, isRegular_iff_mem_nonZeroDivisors]
+
+theorem isUnit_of_mem_nonZeroDivisors_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {a : R}
+    (ha : a ∈ R⁰) : IsUnit a := by
+  rwa [isUnit_iff_isRegular_of_mulOpposite, isRegular_iff_mem_nonZeroDivisors]
+
+/-- In an Artinian ring, an element is a unit iff it is a non-zero-divisor.
+See also `isUnit_iff_mem_nonZeroDivisors_of_finite`. -/
+theorem isUnit_iff_mem_nonZeroDivisors [IsArtinianRing R] {a : R} : IsUnit a ↔ a ∈ R⁰ := by
+  rw [isUnit_iff_isRegular, isRegular_iff_mem_nonZeroDivisors]
+
+theorem isUnit_iff_mem_nonZeroDivisors_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {a : R} :
+    IsUnit a ↔ a ∈ R⁰ := by
+  rw [isUnit_iff_isRegular_of_mulOpposite, isRegular_iff_mem_nonZeroDivisors]
+
+variable (R)
+
+theorem isUnitSubmonoid_eq [IsArtinianRing R] : IsUnit.submonoid R = R⁰ := by
+  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
+
+@[deprecated (since := "2025-08-26")] alias isUnit_submonoid_eq := isUnitSubmonoid_eq
+
+theorem isUnitSubmonoid_eq_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
+    IsUnit.submonoid R = R⁰ := by
+  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors_of_mulOpposite]
+
+theorem isUnitSubmonoid_eq_nonZeroDivisorsRight [IsArtinianRing R] :
+    IsUnit.submonoid R = nonZeroDivisorsRight R := by
+  ext; rw [← isRightRegular_iff_mem_nonZeroDivisorsRight]; exact isUnit_iff_isRightRegular
+
+theorem nonZeroDivisorsLeft_eq_isUnitSubmonoid [IsArtinianRing Rᵐᵒᵖ] :
+    IsUnit.submonoid R = nonZeroDivisorsLeft R := by
+  ext; rw [← isLeftRegular_iff_mem_nonZeroDivisorsLeft]; exact isUnit_iff_isLeftRegular
+
+end Ring
 
 section CommSemiring
 
@@ -553,7 +617,7 @@ instance : Finite (PrimeSpectrum R) :=
     (I : MaximalSpectrum R) : Field (R ⧸ I.asIdeal) :=
   Ideal.Quotient.field I.asIdeal
 
-/-- The quotient of a commutative artinian ring by its nilradical is isomorphic to
+/-- The quotient of a commutative Artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/
 noncomputable def quotNilradicalEquivPi :
     R ⧸ nilradical R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
@@ -565,7 +629,7 @@ noncomputable def quotNilradicalEquivPi :
       Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <|
       fun hIJ ↦ h <| MaximalSpectrum.ext hIJ)
 
-/-- A reduced commutative artinian ring is isomorphic to a finite product of fields,
+/-- A reduced commutative Artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/
 noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
   .trans (.symm <| .quotientBot R) <| .trans

@@ -15,7 +15,7 @@ We introduce the boundary `∂Δ[n]` of the standard simplex `Δ[n]`.
 
 There isn't yet a complete API for simplices, boundaries, and horns.
 As an example, we should have a function that constructs
-from a non-surjective order preserving function `Fin n → Fin n`
+from a non-surjective order-preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 
@@ -42,9 +42,5 @@ lemma boundary_eq_iSup (n : ℕ) :
   ext
   simp [stdSimplex.face_obj, boundary, Function.Surjective]
   tauto
-
-/-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
-@[deprecated boundary (since := "2025-01-26")]
-abbrev boundaryInclusion (n : ℕ) : (∂Δ[n] : SSet.{u}) ⟶ Δ[n] := ∂Δ[n].ι
 
 end SSet

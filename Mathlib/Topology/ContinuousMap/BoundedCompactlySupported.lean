@@ -19,7 +19,7 @@ section CompactlySupported
 /-- The two-sided ideal of compactly supported functions. -/
 def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
     TwoSidedIdeal (α →ᵇ γ) :=
-  .mk' {z | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right
+  .mk' {z | HasCompactSupport z} .zero .add .neg .mul_left .mul_right
 
 variable {α γ : Type*} [TopologicalSpace α] [NonUnitalNormedRing γ]
 
@@ -29,7 +29,7 @@ scoped[BoundedContinuousFunction] notation
 
 lemma mem_compactlySupported {f : α →ᵇ γ} :
     f ∈ C_cb(α, γ) ↔ HasCompactSupport f :=
-  TwoSidedIdeal.mem_mk' {z : α →ᵇ γ | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right f
+  TwoSidedIdeal.mem_mk' {z : α →ᵇ γ | HasCompactSupport z} .zero .add .neg .mul_left .mul_right f
 
 lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) : ∃ (x : α),
     ‖f x‖ = ‖f‖ := by

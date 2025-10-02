@@ -147,6 +147,6 @@ example (R : Type u) [Ring R] : HasCoequalizers (ModuleCat.{u} R) := by
 instance : HasCoequalizers (ModuleCat.{v} R) where
 
 noncomputable example (R : Type u) [Ring R] :
-  PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGrp) := inferInstance
+    PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGrp) := inferInstance
 
 end ModuleCat

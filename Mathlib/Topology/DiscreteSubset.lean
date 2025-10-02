@@ -127,7 +127,7 @@ theorem Filter.self_mem_codiscreteWithin (U : Set X) :
 
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
-   codiscreteWithin U₁ ≤ codiscreteWithin U := by
+    codiscreteWithin U₁ ≤ codiscreteWithin U := by
   refine (biSup_mono hU).trans <| iSup₂_mono fun _ _ ↦ ?_
   gcongr
 
@@ -225,7 +225,7 @@ lemma mem_codiscrete' {S : Set X} :
 
 lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
-  simp [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
+  simp only [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
     mem_codiscreteWithin]
   congr! with x hx
   constructor

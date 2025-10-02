@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.LinearAlgebra.Finsupp.Supported
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
@@ -43,8 +43,7 @@ theorem support_single_mul_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
     (single x r * f : MonoidAlgebra k G).support = Finset.image (x * ·) f.support := by
   refine subset_antisymm (support_single_mul_subset f _ _) fun y hy => ?_
-  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by
-    simpa only [Finset.mem_image, exists_prop] using hy
+  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by grind
   simp only [mul_apply, mem_support_iff.mp yf, hr, mem_support_iff, sum_single_index,
     Finsupp.sum_ite_eq', Ne, not_false_iff, if_true, zero_mul, ite_self, sum_zero, lx.eq_iff]
 
@@ -52,10 +51,9 @@ theorem support_mul_single_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k
     (hr : ∀ y, y * r = 0 ↔ y = 0) {x : G} (rx : IsRightRegular x) :
     (f * single x r).support = Finset.image (· * x) f.support := by
   refine subset_antisymm (support_mul_single_subset f _ _) fun y hy => ?_
-  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ a * x = y := by
-    simpa only [Finset.mem_image, exists_prop] using hy
+  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ a * x = y := by grind
   simp only [mul_apply, mem_support_iff.mp yf, hr, mem_support_iff, sum_single_index,
-    Finsupp.sum_ite_eq', Ne, not_false_iff, if_true, mul_zero, ite_self, sum_zero, rx.eq_iff]
+    Finsupp.sum_ite_eq', Ne, not_false_iff, if_true, mul_zero, ite_self, rx.eq_iff]
 
 theorem support_mul_single [Mul G] [IsRightCancelMul G] (f : MonoidAlgebra k G) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :

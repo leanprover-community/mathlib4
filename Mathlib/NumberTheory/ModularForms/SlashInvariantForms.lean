@@ -3,7 +3,7 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 import Mathlib.NumberTheory.ModularForms.SlashActions
 
 /-!
@@ -11,13 +11,12 @@ import Mathlib.NumberTheory.ModularForms.SlashActions
 
 This file defines functions that are invariant under a `SlashAction` which forms the basis for
 defining `ModularForm` and `CuspForm`. We prove several instances for such spaces, in particular
-that they form a module.
+that they form a module over `ℝ`, and over `ℂ` if the group is contained in `SL(2, ℝ)`.
 -/
 
+open Complex UpperHalfPlane ModularForm
 
-open Complex UpperHalfPlane
-
-open scoped MatrixGroups ModularForm
+open scoped MatrixGroups
 
 noncomputable section
 
@@ -25,10 +24,13 @@ section SlashInvariantForms
 
 open ModularForm
 
-variable (F : Type*) (Γ : outParam <| Subgroup SL(2, ℤ)) (k : outParam ℤ)
+variable (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k : outParam ℤ)
 
 /-- Functions `ℍ → ℂ` that are invariant under the `SlashAction`. -/
 structure SlashInvariantForm where
+  /-- The underlying function `ℍ → ℂ`.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : ℍ → ℂ
   slash_action_eq' : ∀ γ ∈ Γ, toFun ∣[k] γ = toFun
 
@@ -70,26 +72,32 @@ end SlashInvariantForms
 
 namespace SlashInvariantForm
 
-open SlashInvariantForm
-
-open scoped ModularForm
-
-variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ} [FunLike F ℍ ℂ]
+variable {F : Type*} {Γ : Subgroup <| GL (Fin 2) ℝ} {k : ℤ} [FunLike F ℍ ℂ]
 
 theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ) (hγ : γ ∈ Γ) :
     ↑f ∣[k] γ = ⇑f :=
   SlashInvariantFormClass.slash_action_eq f γ hγ
 
-theorem slash_action_eqn' {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [SlashInvariantFormClass F Γ k]
+theorem slash_action_eqn' {k : ℤ} [Γ.HasDetOne] [SlashInvariantFormClass F Γ k]
     (f : F) {γ} (hγ : γ ∈ Γ) (z : ℍ) :
     f (γ • z) = (γ 1 0 * z + γ 1 1) ^ k * f z := by
-  rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn f γ hγ]
+  have : f (γ • z) = f z * denom γ z ^ k := by
+    simpa [slash_def, σ, mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ (denom_ne_zero _ _)),
+      Subgroup.HasDetOne.det_eq hγ] using congr_fun (slash_action_eqn f γ hγ) z
+  rw [this, denom, mul_comm]
 
 /-- Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
-theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
-    [SlashInvariantFormClass F Γ k] (f : F) {γ : SL(2, ℤ)} (hγ : γ ∈ Γ) (z : ℍ) :
+theorem slash_action_eqn'' {k : ℤ} [Γ.HasDetOne] [SlashInvariantFormClass F Γ k]
+    (f : F) {γ} (hγ : γ ∈ Γ) (z : ℍ) :
     f (γ • z) = (denom γ z) ^ k * f z :=
   SlashInvariantForm.slash_action_eqn' f hγ z
+
+/-- Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
+theorem slash_action_eqn_SL'' {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [SlashInvariantFormClass F Γ k]
+    (f : F) {γ} (hγ : γ ∈ Γ) (z : ℍ) :
+    f (γ • z) = (denom γ z) ^ k * f z :=
+  SlashInvariantForm.slash_action_eqn' f (by simpa using hγ) z
+
 
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
   ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f, .. }⟩
@@ -118,12 +126,15 @@ theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
 
 section smul
 
-variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
+variable [Γ.HasDetOne] {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
+/-- Scalar multiplication by `ℂ`, assuming that `Γ ⊆ SL(2, ℝ)`. -/
 instance instSMul : SMul α (SlashInvariantForm Γ k) where
   smul c f :=
   { toFun := c • ↑f
-    slash_action_eq' γ hγ := by rw [ModularForm.SL_smul_slash, slash_action_eqn f _ hγ]}
+    slash_action_eq' γ hγ := by
+      rw [← smul_one_smul ℂ]
+      simp [-smul_assoc, smul_slash, slash_action_eqn _ _ hγ, σ, Subgroup.HasDetOne.det_eq hγ] }
 
 @[simp]
 theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
@@ -134,6 +145,29 @@ theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) 
   rfl
 
 end smul
+
+section smulℝ
+
+variable {α : Type*} [SMul α ℂ] [SMul α ℝ] [IsScalarTower α ℝ ℂ]
+
+/-- Scalar multiplication by `ℝ`, valid without restrictions on the determinant. -/
+instance instSMulℝ : SMul α (SlashInvariantForm Γ k) where
+  smul c f :=
+  { toFun := c • ↑f
+    slash_action_eq' γ hγ := by
+      rw [← smul_one_smul ℝ, ← smul_one_smul ℂ, smul_slash,
+        Complex.real_smul, mul_one, σ_ofReal, slash_action_eqn _ _ hγ] }
+
+@[simp]
+theorem coe_smulℝ (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
+  rfl
+
+@[simp]
+theorem smul_applyℝ (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) :
+    (n • f) z = n • f z :=
+  rfl
+
+end smulℝ
 
 instance instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
@@ -160,7 +194,7 @@ theorem sub_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f - g) z = f z - 
   rfl
 
 instance : AddCommGroup (SlashInvariantForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smulℝ coe_smulℝ
 
 /-- Additive coercion from `SlashInvariantForm` to `ℍ → ℂ`. -/
 def coeHom : SlashInvariantForm Γ k →+ ℍ → ℂ where
@@ -171,81 +205,80 @@ def coeHom : SlashInvariantForm Γ k →+ ℍ → ℂ where
 theorem coeHom_injective : Function.Injective (@coeHom Γ k) :=
   DFunLike.coe_injective
 
-instance : Module ℂ (SlashInvariantForm Γ k) :=
-  coeHom_injective.module ℂ coeHom fun _ _ => rfl
+instance instModuleComplex [Γ.HasDetOne] {α : Type*} [Semiring α] [Module α ℂ]
+    [IsScalarTower α ℂ ℂ] : Module α (SlashInvariantForm Γ k) :=
+  coeHom_injective.module α _ (fun _ _ ↦ rfl)
+
+instance instModuleReal {α : Type*} [Semiring α] [Module α ℝ] [Module α ℂ] [IsScalarTower α ℝ ℂ] :
+    Module α (SlashInvariantForm Γ k) :=
+  coeHom_injective.module α _ (fun _ _ ↦ rfl)
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
 @[simps -fullyApplied]
-def const (x : ℂ) : SlashInvariantForm Γ 0 where
+def const [Γ.HasDetOne] (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
-  slash_action_eq' A _ := ModularForm.is_invariant_const A x
+  slash_action_eq' g hg := by ext; simp [slash_def, σ, Subgroup.HasDetOne.det_eq hg]
 
-instance : One (SlashInvariantForm Γ 0) where
-  one := { const 1 with toFun := 1 }
+/-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
+@[simps -fullyApplied]
+def constℝ [Γ.HasDetPlusMinusOne] (x : ℝ) : SlashInvariantForm Γ 0 where
+  toFun := Function.const _ x
+  slash_action_eq' g hg := funext fun τ ↦ by simp [slash_apply,
+    Subgroup.HasDetPlusMinusOne.abs_det hg, -Matrix.GeneralLinearGroup.val_det_apply]
+
+instance [Γ.HasDetPlusMinusOne] : One (SlashInvariantForm Γ 0) where
+  one := { constℝ 1 with toFun := 1 }
 
 @[simp]
-theorem one_coe_eq_one : ((1 : SlashInvariantForm Γ 0) : ℍ → ℂ) = 1 :=
+theorem one_coe_eq_one [Γ.HasDetPlusMinusOne] : ((1 : SlashInvariantForm Γ 0) : ℍ → ℂ) = 1 :=
   rfl
 
 instance : Inhabited (SlashInvariantForm Γ k) :=
   ⟨0⟩
 
-/-- The slash invariant form of weight `k₁ + k₂` given by the product of two modular forms of
-weights `k₁` and `k₂`. -/
-def mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)
+/-- The slash invariant form of weight `k₁ + k₂` given by the product of two slash-invariant forms
+of weights `k₁` and `k₂`. -/
+def mul [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : SlashInvariantForm Γ k₁)
     (g : SlashInvariantForm Γ k₂) : SlashInvariantForm Γ (k₁ + k₂) where
   toFun := f * g
-  slash_action_eq' A hA := by rw [ModularForm.mul_slash_SL2,
-    SlashInvariantFormClass.slash_action_eq f A hA, SlashInvariantFormClass.slash_action_eq g A hA]
+  slash_action_eq' A hA := by simp [mul_slash, Subgroup.HasDetPlusMinusOne.abs_det hA,
+    -Matrix.GeneralLinearGroup.val_det_apply, slash_action_eqn f A hA, slash_action_eqn g A hA]
 
 @[simp]
-theorem coe_mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)
+theorem coe_mul [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : SlashInvariantForm Γ k₁)
     (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
   rfl
 
-instance (Γ : Subgroup SL(2, ℤ)) : NatCast (SlashInvariantForm Γ 0) where
-  natCast n := const n
+instance [Γ.HasDetPlusMinusOne] : NatCast (SlashInvariantForm Γ 0) where
+  natCast n := constℝ n
 
 @[simp, norm_cast]
-theorem coe_natCast (n : ℕ) : ⇑(n : SlashInvariantForm Γ 0) = n := rfl
+theorem coe_natCast [Γ.HasDetPlusMinusOne] (n : ℕ) : ⇑(n : SlashInvariantForm Γ 0) = n := rfl
 
-instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
-  intCast z := const z
+instance [Γ.HasDetPlusMinusOne] : IntCast (SlashInvariantForm Γ 0) where
+  intCast z := constℝ z
 
 @[simp, norm_cast]
-theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
+theorem coe_intCast [Γ.HasDetPlusMinusOne] (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
+open ConjAct Pointwise in
 /-- Translating a `SlashInvariantForm` by `g : GL (Fin 2) ℝ`, to obtain a new
-`SlashInvariantForm` of level `SL(2, ℤ) ∩ g⁻¹ Γ g`. -/
-noncomputable def translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
-    SlashInvariantForm (CongruenceSubgroup.conjGL Γ g) k where
+`SlashInvariantForm` of level `g⁻¹ Γ g`. -/
+noncomputable def translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
+    SlashInvariantForm (toConjAct g⁻¹ • Γ) k where
   toFun := f ∣[k] g
   slash_action_eq' j hj := by
-    obtain ⟨y, hy, hy'⟩ := CongruenceSubgroup.mem_conjGL'.mp hj
-    simp only [ModularForm.SL_slash, ← hy', ← SlashAction.slash_mul, mul_assoc,
-      mul_inv_cancel_left]
-    rw [SlashAction.slash_mul, ← ModularForm.SL_slash,
-      SlashInvariantFormClass.slash_action_eq f _ hy]
+    rw [map_inv, Γ.mem_inv_pointwise_smul_iff, toConjAct_smul] at hj
+    simpa [← SlashAction.slash_mul] using congr_arg (· ∣[k] g) (slash_action_eqn f _ hj)
 
 @[simp]
-lemma coe_translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
-    translateGL f g = ⇑f ∣[k] g :=
-  rfl
-
-@[deprecated (since := "2025-05-15")] alias translateGLPos := translateGL
-@[deprecated (since := "2025-05-15")] alias coe_translateGLPos := coe_translateGL
-
-open Pointwise ConjAct in
-/-- Translating a `SlashInvariantForm` by `g : SL(2, ℤ)`, to obtain a new `SlashInvariantForm`
-of level `g⁻¹ Γ g`. -/
-noncomputable def translate [SlashInvariantFormClass F Γ k]
-    (f : F) (g : SL(2, ℤ)) : SlashInvariantForm ((toConjAct g⁻¹) • Γ) k where
-  toFun := f ∣[k] g
-  slash_action_eq' j hj := (translateGL f g).slash_action_eq' j (by simpa using hj)
-
-@[simp]
-lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : SL(2, ℤ)) :
+lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
     translate f g = ⇑f ∣[k] g :=
   rfl
+
+@[deprecated (since := "2025-08-15")] alias translateGL := translate
+@[deprecated (since := "2025-08-15")] alias coe_translateGL := coe_translate
+@[deprecated (since := "2025-05-15")] alias translateGLPos := translate
+@[deprecated (since := "2025-05-15")] alias coe_translateGLPos := coe_translate
 
 end SlashInvariantForm

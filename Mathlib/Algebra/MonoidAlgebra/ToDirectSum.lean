@@ -155,7 +155,7 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
   { toFun := toDirectSum
     map_zero' := toDirectSum_zero
     map_add' := toDirectSum_add }
-  show to_hom (f * g) = to_hom f * to_hom g
+  change to_hom (f * g) = to_hom f * to_hom g
   revert f g
   rw [AddMonoidHom.map_mul_iff]
   ext xi xv yi yv : 4
