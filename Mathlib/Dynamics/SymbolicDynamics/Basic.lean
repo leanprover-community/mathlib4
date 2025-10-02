@@ -209,7 +209,7 @@ variable [TopologicalSpace A] [DiscreteTopology A]
 
 /-- Cylinders are open when `A` is discrete. -/
 lemma isOpen_cylinder (U : Finset G) (x : G → A) :
-    IsOpen (cylinder (A := A) (G := G) U x) := by
+    IsOpen (cylinder U x) := by
   classical
   have hopen : ∀ i ∈ (↑U : Set G), IsOpen ({x i} : Set A) := by
     intro i _; simp
@@ -221,7 +221,7 @@ lemma isOpen_cylinder (U : Finset G) (x : G → A) :
 
 /-- Cylinders are closed when `A` is discrete. -/
 lemma isClosed_cylinder (U : Finset G) (x : G → A) :
-    IsClosed (cylinder (A := A) (G := G) U x) := by
+    IsClosed (cylinder U x) := by
   classical
   have hclosed : ∀ i ∈ (↑U : Set G), IsClosed ({x i} : Set A) := by
     intro i _; simp
@@ -476,7 +476,7 @@ More precisely, if `w ∈ p.support`, then at the translated site `w * v`,
 the configuration `patternToConfig p v` takes the value prescribed by `p` at `w`.
 
 This statement uses `[IsRightCancelMul G]` to identify the preimage of `w * v`
-under right-multiplication by `v`.-/
+under right-multiplication by `v`. -/
 @[to_additive addPatternToConfig_apply_of_mem
   /-- Additive version: on the translated support, `addPatternToConfig` agrees with the pattern. -/]
 lemma patternToConfig_apply_of_mem
