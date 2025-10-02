@@ -429,17 +429,16 @@ def withTopWithBot (f : LatticeHom α β) :
 -- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
 lemma coe_withTopWithBot (f : LatticeHom α β) :
-    ⇑f.withTopWithBot = WithTop.map (WithBot.map f) := rfl
+    ⇑f.withTopWithBot = WithTop.map (WithBot.map f) :=
+  rfl
 
 lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
-    f.withTopWithBot a = a.map (WithTop.map f) := rfl
+    f.withTopWithBot a = a.map (WithBot.map f) :=
+  rfl
 
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
-  DFunLike.coe_injective <| by
-    refine (congr_arg WithBot.map ?_).trans WithTop.map_id
-    rw [withBot_id]
-    rfl
+  DFunLike.coe_injective <| by simp [WithTop.map_id, WithBot.map_id]
 
 @[simp]
 theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
