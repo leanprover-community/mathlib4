@@ -61,6 +61,23 @@ structure IsLocalSourceTargetProperty
     ∀ {s : Set M}, EqOn f g s → IsOpen s → φ.source ⊆ s → P f φ ψ → P g φ ψ
 
 variable (I I' n) in
+/-- Data witnessing the fact that `f` has local property `P` at `x` -/
+structure LocalPresentationAt (f : M → M') (x : M)
+    (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) where
+  /-- A choice of chart on the domain `M` of a local property of `f` at `x`:
+  w.r.t. this chart and `codChart`, `f` has the local property `P` at `x`. -/
+  domChart : PartialHomeomorph M H
+  /-- A choice of chart on the target `M'` of a local property of `f` at `x`:
+  w.r.t. this chart and `domChart`, `f` has the local property `P` at `x`. -/
+  codChart : PartialHomeomorph M' H'
+  mem_domChart_source : x ∈ domChart.source
+  mem_codChart_source : f x ∈ codChart.source
+  domChart_mem_maximalAtlas : domChart ∈ IsManifold.maximalAtlas I n M
+  codChart_mem_maximalAtlas : codChart ∈ IsManifold.maximalAtlas I' n M'
+  map_source_subset_source: f '' domChart.source ⊆ codChart.source
+  property : P f domChart codChart
+
+variable (I I' n) in
 /-- A property of smooth functions `M → N` which is local at both the source and target:
 a property `P` is local at `x` iff there exist charts `φ` and `ψ` of `M` and `N` around
 `x` and `f x`, respectively, such that `f` satisfies the property w.r.t. `φ` and `ψ`.
@@ -71,54 +88,54 @@ in the charts `φ` and `ψ`.
 -/
 def LiftSourceTargetPropertyAt (f : M → M') (x : M)
     (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) : Prop :=
-  ∃ domChart : PartialHomeomorph M H, ∃ codChart : PartialHomeomorph M' H',
-    x ∈ domChart.source ∧ f x ∈ codChart.source ∧
-    domChart ∈ IsManifold.maximalAtlas I n M ∧
-    codChart ∈ IsManifold.maximalAtlas I' n M' ∧
-    f '' domChart.source ⊆ codChart.source ∧
-    P f domChart codChart
+  Nonempty (LocalPresentationAt I I' n f x P)
 
 namespace LiftSourceTargetPropertyAt
 
 variable {f g : M → M'} {x : M}
   {P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop}
 
+/-- A choice of charts witnessing the local property `P` of `f` at `x`. -/
+noncomputable def localPresentationAt (h : LiftSourceTargetPropertyAt I I' n f x P) :
+    LocalPresentationAt I I' n f x P :=
+  Classical.choice h
+
 /-- A choice of chart on the domain `M` of a local property of `f` at `x`:
 w.r.t. this chart and `h.codChart`, `f` has the local property `P` at `x`.
 The particular chart is arbitrary, but this choice matches the witness given by `h.codChart`. -/
 noncomputable def domChart (h : LiftSourceTargetPropertyAt I I' n f x P) :
     PartialHomeomorph M H :=
-  Classical.choose h
+  h.localPresentationAt.domChart
 
 /-- A choice of chart on the co-domain `N` of a local property of `f` at `x`:
 w.r.t. this chart and `h.domChart`, `f` has the local property `P` at `x`
 The particular chart is arbitrary, but this choice matches the witness given by `h.domChart`. -/
 noncomputable def codChart (h : LiftSourceTargetPropertyAt I I' n f x P) :
     PartialHomeomorph M' H' :=
-  Classical.choose (Classical.choose_spec h)
+  h.localPresentationAt.codChart
 
 lemma mem_domChart_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
     x ∈ h.domChart.source :=
-  (Classical.choose_spec (Classical.choose_spec h)).1
+  h.localPresentationAt.mem_domChart_source
 
 lemma mem_codChart_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
     f x ∈ h.codChart.source :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.1
+  h.localPresentationAt.mem_codChart_source
 
 lemma domChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I I' n f x P) :
     h.domChart ∈ IsManifold.maximalAtlas I n M :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.2.1
+  h.localPresentationAt.domChart_mem_maximalAtlas
 
 lemma codChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I I' n f x P) :
     h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.2.2.1
+  h.localPresentationAt.codChart_mem_maximalAtlas
 
 lemma map_source_subset_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
     f '' h.domChart.source ⊆ h.codChart.source :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.1
+  h.localPresentationAt.map_source_subset_source
 
 lemma property (h : LiftSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.codChart :=
-  (Classical.choose_spec (Classical.choose_spec h)).2.2.2.2.2
+  h.localPresentationAt.property
 
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
 lemma congr_iff (hP : IsLocalSourceTargetProperty P)
