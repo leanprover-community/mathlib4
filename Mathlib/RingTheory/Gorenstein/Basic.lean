@@ -121,7 +121,7 @@ lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R
   simpa [← hm', ← Submodule.Quotient.mk_smul] using Submodule.smul_mem_pointwise_smul m' x ⊤ trivial
 
 variable [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
-
+/-
 lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
@@ -143,14 +143,36 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
       refine ⟨fun h ↦ ?_, fun h ↦ Projective.of_free⟩
       have : Module.Free R (QuotSMulTop x M) := Module.free_of_flat_of_isLocalRing
       by_contra ntr
-
-      sorry
+      let _ := not_subsingleton_iff_nontrivial.mp ntr
+      have := mem_quotSMulTop_annihilator x M
+      simp only [annihilator_eq_bot.mpr inferInstance, Submodule.mem_bot] at this
+      simp only [this, IsSMulRegular.zero_iff_subsingleton] at reg
+      absurd ntr
+      infer_instance
     | n + 1 =>
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
       rw [WithBot.add_le_add_right_iff _ _ 1, projectiveDimension_le_iff,
         projectiveDimension_le_iff]
+      let S := M.smulShortComplex x
+      have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
+      refine ⟨fun h ↦ ?_, fun h ↦ S_exact.hasProjectiveDimensionLT_X₃ (n + 1) h
+          (hasProjectiveDimensionLT_of_ge M (n + 1) (n + 1 + 1) (Nat.le_add_right _ 1))⟩
       simp only [HasProjectiveDimensionLE, hasProjectiveDimensionLT_iff]
-
+      intro i hi N e
+      have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
+        (n + 1 + 1) (i + 1) (Nat.add_le_add_right hi 1) N
+      have exac := Ext.contravariant_sequence_exact₁' S_exact N i (i + 1) (add_comm 1 i)
+      have epi := exac.epi_f ((@AddCommGrp.isZero_of_subsingleton _ zero).eq_zero_of_tgt _)
+      have : S.f = x • 𝟙 M := by
+        ext
+        simp [S]
+      simp only [S, this, AddCommGrp.epi_iff_surjective, AddCommGrp.hom_ofHom] at epi
+      apply @Subsingleton.eq_zero _ _ ?_ e
+      have : x ∈ (Module.annihilator R (Ext M N i)).jacobson :=
+        (IsLocalRing.maximalIdeal_le_jacobson _) mem
+      by_contra ntr
+      let _ : Nontrivial (Ext M N i) := not_subsingleton_iff_nontrivial.mp ntr
+      --absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
       sorry
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   by_cases eqbot : N = ⊥
@@ -164,7 +186,8 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
       have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
         (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
       simpa only [this] using aux n
-
+-/
+/-
 lemma projectiveDimension_quotient_regular_sequence (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (rs : List R) (reg : IsWeaklyRegular M rs)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
@@ -188,12 +211,92 @@ lemma projectiveDimension_quotient_regular_sequence (M : ModuleCat.{v} R) [Nontr
         ← add_assoc, ← projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular M x this mem.1,
         ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
           mem.2 len]
+-/
+
+omit [UnivLE.{v, w}] [IsNoetherianRing R] in
+lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R)
+    [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
+    projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) ≤ projectiveDimension M + 1 := by
+  have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
+    refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
+    by_contra!
+    rw [not_subsingleton_iff_nontrivial] at this
+    exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial mem M)) h
+  have aux (n : ℕ) : projectiveDimension M + 1 ≤ n →
+    projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) ≤ n := by
+    match n with
+    | 0 =>
+      have : projectiveDimension M + 1 ≤ 0 ↔ projectiveDimension M = ⊥ :=
+        WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M)
+      rw [projectiveDimension_le_iff]
+      simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one,
+        CharP.cast_eq_zero, this, projectiveDimension_eq_bot_iff,
+        ModuleCat.isZero_iff_subsingleton, sub, ← IsProjective.iff_projective]
+      intro
+      exact Projective.of_free
+    | n + 1 =>
+      nth_rw 1 [← Nat.cast_one, Nat.cast_add]
+      rw [WithBot.add_le_add_right_iff _ _ 1, projectiveDimension_le_iff,
+        projectiveDimension_le_iff]
+      let S := M.smulShortComplex x
+      have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
+      intro h
+      exact S_exact.hasProjectiveDimensionLT_X₃ (n + 1) h
+        (hasProjectiveDimensionLT_of_ge M (n + 1) (n + 1 + 1) (Nat.le_add_right _ 1))
+  refine le_of_forall_ge (fun N ↦ ?_)
+  by_cases eqbot : N = ⊥
+  · simp only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff,
+      ModuleCat.isZero_iff_subsingleton, WithBot.add_eq_bot, WithBot.one_ne_bot, or_false]
+    intro
+    infer_instance
+  · by_cases eqtop : N.unbot eqbot = ⊤
+    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
+      simp [this]
+    · let n := (N.unbot eqbot).toNat
+      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
+        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
+      simpa only [this] using aux n
+
+omit [UnivLE.{v, w}] [IsNoetherianRing R] in
+lemma projectiveDimension_quotient_regular_sequence (M : ModuleCat.{v} R) [Nontrivial M]
+    [Module.Finite R M] (rs : List R) (reg : IsWeaklyRegular M rs)
+    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
+    projectiveDimension (ModuleCat.of R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M))) ≤
+    projectiveDimension M + rs.length := by
+  generalize len : rs.length = n
+  induction n generalizing M rs
+  · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
+    simp [projectiveDimension_eq_of_iso (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso]
+  · rename_i n hn _ _
+    match rs with
+    | [] => simp at len
+    | x :: rs' =>
+      simp only [List.mem_cons, forall_eq_or_imp] at mem
+      let _ : Nontrivial (QuotSMulTop x M) := quotSMulTop_nontrivial mem.1 M
+      simp only [Nat.cast_add, Nat.cast_one]
+      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
+      have : IsSMulRegular M x := ((isWeaklyRegular_cons_iff M _ _).mp reg).1
+      rw [projectiveDimension_eq_of_iso
+        (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x rs').toModuleIso, add_comm _ 1,
+        ← add_assoc]
+      exact le_trans (hn (ModuleCat.of R (QuotSMulTop x M)) rs'
+        ((isWeaklyRegular_cons_iff M _ _).mp reg).2 mem.2 len) (add_le_add_right
+        (projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular M x this mem.1) _)
 
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (rs : List R) :
     (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M rs.length) ≃ₗ[R]
     M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := by
-  sorry
+  generalize len : rs.length = n
+  induction n generalizing M rs
+  · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
+    sorry
+  · rename_i n hn _ _
+    match rs with
+    | [] => simp at len
+    | x :: rs' =>
+
+      sorry
 
 omit [IsLocalRing R] in
 lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.Finite R N] (n : ℕ)
