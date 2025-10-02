@@ -20,8 +20,9 @@ with respect to `μ`.
 ## Sketch of the proof
 
 The main case of the proof is for `μ` a probability measure such that there exists a positive
-`a : ℝ` such that `2⁻¹ < μ {x | ‖x‖ ≤ a} < 1`. If `a` does not exist then the measure is a Dirac
-at `0`, and the result is trivial.
+`a : ℝ` such that `2⁻¹ < μ {x | ‖x‖ ≤ a} < 1`. If `μ` is a probability measure and `a` does not
+exist then we can show that `μ` is supported on a ball with finite radius, and the result is true
+for `C = 1` (for example), since `x ↦ exp (‖x‖ ^ 2)` is bounded.
 We then choose such an `a`.
 
 In order to show the existence of `C` such that `x ↦ exp (C * ‖x‖ ^ 2)` is integrable, we prove as
