@@ -126,7 +126,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
   __ := ‹GeneralizedBooleanAlgebra α›
   __ := GeneralizedBooleanAlgebra.toOrderBot
   sdiff := (· \ ·)
-  sdiff_le_iff y x z :=
+  sdiff_le_iff y x z := by exact
     ⟨fun h =>
       le_of_inf_le_sup_le
         (le_of_eq

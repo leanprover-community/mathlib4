@@ -96,11 +96,11 @@ lemma AntisymmRel.left (h : AntisymmRel r a b) : r a b := h.1
 lemma AntisymmRel.right (h : AntisymmRel r a b) : r b a := h.2
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
-@[gcongr_forward] def exactAntisymmRelLeft : ForwardExt where
+@[gcongr_forward] meta def exactAntisymmRelLeft : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.left #[h])
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r b a`. -/
-@[gcongr_forward] def exactAntisymmRelRight : ForwardExt where
+@[gcongr_forward] meta def exactAntisymmRelRight : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.right #[h])
 
 end Mathlib.Tactic.GCongr
@@ -315,7 +315,7 @@ theorem toAntisymmetrization_mono : Monotone (toAntisymmetrization (α := α) (�
   fun _ _ => id
 
 open scoped Relator in
-private theorem liftFun_antisymmRel (f : α →o β) :
+theorem liftFun_antisymmRel (f : α →o β) :
     ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩
 

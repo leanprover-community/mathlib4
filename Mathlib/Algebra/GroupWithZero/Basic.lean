@@ -296,7 +296,7 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
       · simp [hb]
       apply inv_eq_of_mul
       simp [mul_assoc, ha, hb],
-    inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
+    inv_eq_of_mul := by exact fun _ _ => inv_eq_of_mul }
 
 -- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.toCancelMonoidWithZero : CancelMonoidWithZero G₀ :=
