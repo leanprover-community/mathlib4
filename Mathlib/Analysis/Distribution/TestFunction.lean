@@ -243,10 +243,12 @@ theorem ContDiffMapSupportedIn.toTestFunction_apply {K : Compacts E} (f : 𝓓^{
 
 open ContDiffMapSupportedIn
 
+section Topology
+
 /-- The original topology on `𝓓^{n}(E, F)`, defined as the supremum over all compacts of the
 topologies from each `𝓓^{n}_{K}(E, F)`. -/
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(E, F) :=
-  ⨆ (K : Compacts E), coinduced (@toTestFunction 𝕜 E F _ _ _ _ _ _ _ n K) (inferInstance)
+  ⨆ (K : Compacts E), coinduced (toTestFunction 𝕜 F n K) (inferInstance)
 
 variable (E)
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(E, F) :=
@@ -258,7 +260,7 @@ noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(E, F) := by
   simp only [mem_setOf_eq, and_imp, imp_self, implies_true]
 
 theorem continuous_toTestFunction (K : Compacts E) :
-    Continuous (@toTestFunction 𝕜 E F _ _ _ _ _ _ _ n K) := by
+    Continuous (toTestFunction 𝕜 F n K) := by
   apply continuous_iff_coinduced_le.2
   have : originalTop 𝕜 F n ≤ TestFunction.topologicalSpace E F n := by
     exact le_sInf (by aesop)
@@ -267,7 +269,7 @@ theorem continuous_toTestFunction (K : Compacts E) :
 protected theorem continuous_iff_continuous_comp {V : Type*} [AddCommMonoid V] [Module ℝ V]
     [t : TopologicalSpace V] [LocallyConvexSpace ℝ V] (f : 𝓓^{n}(E, F) →ₗ[ℝ] V) :
     Continuous f ↔
-  ∀ K : Compacts E, Continuous (f ∘ @toTestFunction 𝕜 E F _ _ _ _ _ _ _ n K) := by
+  ∀ K : Compacts E, Continuous (f ∘ toTestFunction 𝕜 F n K) := by
   rw [continuous_iff_le_induced]
   have : TestFunction.topologicalSpace E F n ≤ induced f t
         ↔ originalTop ℝ F n ≤ induced f t := by
@@ -296,5 +298,7 @@ protected theorem continuous_from_bounded {V : Type*} [NormedAddCommGroup V]
     simp only [Seminorm.comp_apply, LinearMap.coe_comp, Function.comp_apply, coe_normSeminorm,
       Finset.sup_singleton, Seminorm.smul_apply]
     exact h φ
+
+end Topology
 
 end TestFunction
