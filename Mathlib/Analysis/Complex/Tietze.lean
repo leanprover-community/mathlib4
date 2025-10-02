@@ -77,7 +77,7 @@ theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w
     TietzeExtension.{u, w} (Metric.ball (0 : E) r) :=
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   .of_homeo <| show (Metric.ball (0 : E) r) ≃ₜ (Metric.ball (0 : E) 1) from
-    PartialHomeomorph.unitBallBall (0 : E) r hr |>.toHomeomorphSourceTarget.symm
+    OpenPartialHomeomorph.unitBallBall (0 : E) r hr |>.toHomeomorphSourceTarget.symm
 
 theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :

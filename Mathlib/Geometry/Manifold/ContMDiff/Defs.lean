@@ -65,8 +65,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
-  {e : PartialHomeomorph M H}
-  {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : WithTop ℕ∞}
+  {e : OpenPartialHomeomorph M H}
+  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : WithTop ℕ∞}
 
 variable (I I') in
 /-- Property in the model space of a model with corners of being `C^n` within at set at a point,
@@ -253,9 +253,9 @@ theorem contMDiffWithinAt_iff_target :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
-  simp_rw [cont, ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
-    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, PartialHomeomorph.refl_apply, id_comp]
+  simp_rw [cont, ContDiffWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.coe_coe,
+    modelWithCornersSelf_coe, chartAt_self_eq, OpenPartialHomeomorph.refl_apply, id_comp]
   rfl
 
 theorem contMDiffAt_iff_target {x : M} :
@@ -284,12 +284,12 @@ theorem contMDiffWithinAt_iff_source :
         apply h.comp (continuousAt_extChartAt x).continuousWithinAt
         intro y hy
         have : (chartAt H x).symm ((chartAt H x) y) = y :=
-          PartialHomeomorph.left_inv _ (by simpa using hy.2)
+          OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
         simpa [this] using hy.1
       apply this.congr
       · intro y hy
         have : (chartAt H x).symm ((chartAt H x) y) = y :=
-          PartialHomeomorph.left_inv _ (by simpa using hy.2)
+          OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
         simp [this]
       · simp
   rw [← this]
@@ -506,8 +506,8 @@ theorem contMDiffOn_iff_target :
         ∀ y : M',
           ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (s ∩ f ⁻¹' (extChartAt I' y).source) := by
   simp only [contMDiffOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
-    PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_trans, extChartAt,
-    PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
+    OpenPartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_trans, extChartAt,
+    OpenPartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor
   · refine fun h' y => ⟨?_, fun x _ => h' x y⟩

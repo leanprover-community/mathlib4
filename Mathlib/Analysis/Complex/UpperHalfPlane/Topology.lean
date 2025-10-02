@@ -9,7 +9,7 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.OpenPartialHomeomorph
 
 /-!
 # Topology on the upper half plane
@@ -128,15 +128,15 @@ end strips
 
 section ofComplex
 
-/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
-def ofComplex : PartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toPartialHomeomorph _).symm
+/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as an `OpenPartialHomeomorph`. -/
+def ofComplex : OpenPartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toOpenPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
 scoped notation "↑ₕ" f => f ∘ ofComplex
 
 @[simp]
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
-  IsOpenEmbedding.toPartialHomeomorph_left_inv ..
+  IsOpenEmbedding.toOpenPartialHomeomorph_left_inv ..
 
 lemma ofComplex_apply_eq_ite (w : ℂ) :
     ofComplex w = if hw : 0 < w.im then ⟨w, hw⟩ else Classical.choice inferInstance := by

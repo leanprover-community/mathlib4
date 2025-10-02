@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Oliver Nash
 -/
-import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.OpenPartialHomeomorph
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Data.Real.Sqrt
@@ -16,14 +16,14 @@ In this file we show that a real (semi)normed vector space is homeomorphic to th
 We formalize it in two ways:
 
 - as a `Homeomorph`, see `Homeomorph.unitBall`;
-- as a `PartialHomeomorph` with `source = Set.univ` and `target = Metric.ball (0 : E) 1`.
+- as an `OpenPartialHomeomorph` with `source = Set.univ` and `target = Metric.ball (0 : E) 1`.
 
 While the former approach is more natural, the latter approach provides us
 with a globally defined inverse function which makes it easier to say
 that this homeomorphism is in fact a diffeomorphism.
 
 We also show that the unit ball `Metric.ball (0 : E) 1` is homeomorphic
-to a ball of positive radius in an affine space over `E`, see `PartialHomeomorph.unitBallBall`.
+to a ball of positive radius in an affine space over `E`, see `OpenPartialHomeomorph.unitBallBall`.
 
 ## Tags
 
@@ -38,7 +38,7 @@ noncomputable section
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
 @[simps -isSimp]
-def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
+def OpenPartialHomeomorph.univUnitBall : OpenPartialHomeomorph E E where
   toFun x := (√(1 + ‖x‖ ^ 2))⁻¹ • x
   invFun y := (√(1 - ‖(y : E)‖ ^ 2))⁻¹ • (y : E)
   source := univ
@@ -74,12 +74,12 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
       (continuousOn_const.sub (continuous_norm.continuousOn.pow _)).sqrt this) continuousOn_id
 
 @[simp]
-theorem PartialHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
-  simp [PartialHomeomorph.univUnitBall_apply]
+theorem OpenPartialHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
+  simp [OpenPartialHomeomorph.univUnitBall_apply]
 
 @[simp]
-theorem PartialHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
-  simp [PartialHomeomorph.univUnitBall_symm_apply]
+theorem OpenPartialHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
+  simp [OpenPartialHomeomorph.univUnitBall_symm_apply]
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
@@ -87,39 +87,39 @@ This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
 In many cases the actual implementation is not important, so we don't mark the projection lemmas
 `Homeomorph.unitBall_apply_coe` and `Homeomorph.unitBall_symm_apply` as `@[simp]`.
 
-See also `Homeomorph.contDiff_unitBall` and `PartialHomeomorph.contDiffOn_unitBall_symm`
+See also `Homeomorph.contDiff_unitBall` and `OpenPartialHomeomorph.contDiffOn_unitBall_symm`
 for smoothness properties that hold when `E` is an inner-product space. -/
 @[simps! -isSimp]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
-  (Homeomorph.Set.univ _).symm.trans PartialHomeomorph.univUnitBall.toHomeomorphSourceTarget
+  (Homeomorph.Set.univ _).symm.trans OpenPartialHomeomorph.univUnitBall.toHomeomorphSourceTarget
 
 @[simp]
 theorem Homeomorph.coe_unitBall_apply_zero :
     (Homeomorph.unitBall (0 : E) : E) = 0 :=
-  PartialHomeomorph.univUnitBall_apply_zero
+  OpenPartialHomeomorph.univUnitBall_apply_zero
 
 variable {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
-namespace PartialHomeomorph
+namespace OpenPartialHomeomorph
 
 /-- Affine homeomorphism `(r • · +ᵥ c)` between a normed space and an add torsor over this space,
-interpreted as a `PartialHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/
+interpreted as an `OpenPartialHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/
 @[simps!]
-def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : PartialHomeomorph E P :=
+def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : OpenPartialHomeomorph E P :=
   ((Homeomorph.smulOfNeZero r hr.ne').trans
-      (IsometryEquiv.vaddConst c).toHomeomorph).toPartialHomeomorphOfImageEq
+      (IsometryEquiv.vaddConst c).toHomeomorph).toOpenPartialHomeomorphOfImageEq
       (ball 0 1) isOpen_ball (ball c r) <| by
     change (IsometryEquiv.vaddConst c) ∘ (r • ·) '' ball (0 : E) 1 = ball c r
     rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
     simp [abs_of_pos hr]
 
-/-- If `r > 0`, then `PartialHomeomorph.univBall c r` is a smooth partial homeomorphism
+/-- If `r > 0`, then `OpenPartialHomeomorph.univBall c r` is a smooth open partial homeomorphism
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`.
-Thus in all cases, it sends `0` to `c`, see `PartialHomeomorph.univBall_apply_zero`. -/
-def univBall (c : P) (r : ℝ) : PartialHomeomorph E P :=
+Thus in all cases, it sends `0` to `c`, see `OpenPartialHomeomorph.univBall_apply_zero`. -/
+def univBall (c : P) (r : ℝ) : OpenPartialHomeomorph E P :=
   if h : 0 < r then univUnitBall.trans' (unitBallBall c r h) rfl
-  else (IsometryEquiv.vaddConst c).toHomeomorph.toPartialHomeomorph
+  else (IsometryEquiv.vaddConst c).toHomeomorph.toOpenPartialHomeomorph
 
 @[simp]
 theorem univBall_source (c : P) (r : ℝ) : (univBall c r).source = univ := by
@@ -150,4 +150,4 @@ theorem continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
 theorem continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c r).symm (ball c r) :=
   (univBall c r).symm.continuousOn.mono <| ball_subset_univBall_target c r
 
-end PartialHomeomorph
+end OpenPartialHomeomorph
