@@ -131,7 +131,7 @@ instance [Injective X] : HasInjectiveDimensionLT X 1 := by
   · simp at hi
   · exact e.eq_zero_of_injective
 
-lemma Injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
+lemma injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
     Injective X ↔ ∀ ⦃Y : C⦄, Subsingleton (Ext Y X 1) := by
   refine ⟨fun h ↦ HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl),
     fun h ↦ ⟨fun f g _ ↦ ?_⟩⟩
@@ -140,10 +140,10 @@ lemma Injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
   obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
   exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
 
-lemma Injective_iff_hasInjectiveDimensionLT_one (X : C) :
+lemma injective_iff_hasInjectiveDimensionLT_one (X : C) :
     Injective X ↔ HasInjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
-  exact ⟨fun _ ↦ inferInstance, fun _ ↦ Injective_iff_subsingleton_ext_one.2
+  exact ⟨fun _ ↦ inferInstance, fun _ ↦ injective_iff_subsingleton_ext_one.2
     (HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
 end

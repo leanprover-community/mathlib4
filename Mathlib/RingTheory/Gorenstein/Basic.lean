@@ -404,13 +404,10 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
 
 lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
-    (h : ∀ i > n, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
-    ∀ i > n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M i) := by
+    (h : ∀ i ≥ n, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
+    ∀ i ≥ n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M i) := by
   intro i hi N
-  have : i = i - 1 + 1 := by omega
-  rw [this]
   apply ext_subsingleton_of_quotients
-  rw [← this]
   intro I
   let _ : Module.Finite R (Shrink.{v, u} (R ⧸ I)) :=
     Module.Finite.equiv (Shrink.linearEquiv R _).symm
@@ -444,8 +441,16 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
 lemma injectiveDimension_eq_sSup (M : ModuleCat.{v} R) :
     injectiveDimension M = sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i →
       Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)} := by
+  simp only [injectiveDimension]
+  congr! 3
+  rename_i n
+  refine ⟨fun h i hi ↦ ?_, fun h i hi ↦ ?_⟩
+  · let _ := h i hi
+    exact HasInjectiveDimensionLT.subsingleton M i i (le_refl i) _
+  · rw [hasInjectiveDimensionLT_iff]
+    intro j hj N
 
-  sorry
+    sorry
 
 end
 
