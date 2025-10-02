@@ -26,3 +26,18 @@ example : Baz.Bar.baz = 1 := rfl
 /-- info: Baz.qux : Nat -/
 #guard_msgs in
 #check Baz.qux
+
+
+/-- Look at this docstring! -/
+@[alias_in Baz] def Foo.Bar.baz5 : Nat := 2
+
+/--
+info: **Alias** of `Foo.Bar.baz5`.
+
+---
+
+Look at this docstring!
+-/
+#guard_msgs in
+open Lean in
+run_cmd logInfo m!"{(← Lean.findDocString? (← getEnv) `Baz.Bar.baz5).get!}"
