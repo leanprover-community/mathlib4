@@ -855,6 +855,16 @@ theorem ContMDiffOn.congr_mono (hf : ContMDiffOn I I' n f s) (h₁ : ∀ y ∈ s
     (hs : s₁ ⊆ s) : ContMDiffOn I I' n f₁ s₁ :=
   (hf.mono hs).congr h₁
 
+theorem ContMDiff.congr (h : ContMDiff I I' n f) (h₁ : ∀ y, f₁ y = f y) :
+    ContMDiff I I' n f₁ := by
+  rw [← contMDiffOn_univ] at h ⊢
+  exact (contMDiffOn_congr fun y _ ↦ h₁ y).mpr h
+
+theorem contMDiff_congr (h₁ : ∀ y, f₁ y = f y) :
+    ContMDiff I I' n f₁ ↔ ContMDiff I I' n f := by
+  simp_rw [← contMDiffOn_univ]
+  exact contMDiffOn_congr fun y _ ↦ h₁ y
+
 /-! ### Locality -/
 
 
