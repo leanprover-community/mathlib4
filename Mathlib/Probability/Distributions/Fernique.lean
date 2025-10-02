@@ -3,8 +3,8 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Algebra.ArithmeticGeometric
 import Mathlib.Analysis.Normed.Lp.WithLp
+import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.Topology.MetricSpace.Polish
@@ -447,7 +447,6 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   · gcongr
     simp only [inv_pow, C]
     field_simp
-    gcongr
     exact logRatio_mono hc'_gt ha_lt hc'
   gcongr _ * ENNReal.ofReal (rexp ?_)
   simp only [ENNReal.toReal_div, neg_mul, neg_le_neg_iff]
