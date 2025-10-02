@@ -121,7 +121,7 @@ lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R
 
 variable [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
 
-lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R) [Nontrivial M]
+lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
@@ -139,7 +139,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       simp only [CharP.cast_eq_zero, this, projectiveDimension_eq_bot_iff,
         ModuleCat.isZero_iff_subsingleton, sub]
-      -- For fym
+
       sorry
     | n + 1 =>
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
