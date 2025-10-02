@@ -118,14 +118,37 @@ section ShiftDefinition
 
 variable {A G : Type*} [Monoid G]
 
-/-- Right-translation shift:
-* In multiplicative notation: `(mulShift g x) h = x (h * g)`.
-* In additive notation (e.g. for `ℤ^d`): `(addShift v x) u = x (u + v)` -/
-@[to_additive]
+/-- The **right-translation shift** on configurations.
+
+We call *configuration* an element of `G → A`.
+
+Given a configuration `x : G → A` and an element `g : G` of the group, the shifted configuration
+`mulShift g x` is defined by `(mulShift g x) h = x (h * g)`.
+
+Intuitively, this moves the whole configuration "in the direction of `g`": the value
+at position `h` in the shifted configuration is the value that was at position
+`h * g` in the original one.
+
+For example, if `G = ℤ` (with addition) and `A = {0,1}`, then
+`addShift 1 x` is the sequence obtained from `x` by shifting every symbol one
+step to the left. -/
+@[to_additive
+  /-- The **right-translation shift** on configurations, in additive notation.
+
+We call *configuration* an element of `G → A`.
+
+Given a configuration `x : G → A` and an element `g : G` of the additive group,
+the shifted configuration `addShift g x` is defined by `(addShift g x) h = x (h + g)`.
+
+Intuitively, this moves the whole configuration "in the direction of `g`": the value
+at position `h` in the shifted configuration is the value that was at position
+`h + g` in the original one.
+
+For example, if `G = ℤ` and `A = {0,1}`, then
+`addShift 1 x` is the sequence obtained from `x` by shifting every symbol one
+step to the left. -/]
 def mulShift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
-
-attribute [inherit_doc SymbolicDynamics.FullShift.mulShift] SymbolicDynamics.FullShift.addShift
 
 
 @[to_additive] lemma mulShift_apply (g h : G) (x : G → A) :
@@ -134,6 +157,7 @@ attribute [inherit_doc SymbolicDynamics.FullShift.mulShift] SymbolicDynamics.Ful
 @[to_additive] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
   ext h; simp [mulShift]
 
+/-- Composition of right-translation shifts corresponds to multiplication in the group. -/
 @[to_additive addShift_mul] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
   mulShift (g₁ * g₂) x = mulShift g₁ (mulShift g₂ x) := by
   ext h; simp [mulShift, mul_assoc]
@@ -141,6 +165,7 @@ attribute [inherit_doc SymbolicDynamics.FullShift.mulShift] SymbolicDynamics.Ful
 
 variable [TopologicalSpace A]
 
+/-- The right-translation shift is continuous. -/
 @[to_additive] lemma continuous_mulShift (g : G) :
     Continuous (mulShift (A := A) (G := G) g) := by
   -- coordinate projections are continuous; composition preserves continuity
@@ -154,10 +179,25 @@ section Cylinders
 
 variable {A G : Type*}
 
-/-- Cylinder fixing `x` on the finite set `U`. -/
+/-- A *cylinder set* is the set of all configurations that agree with a given
+reference configuration `x` on a fixed finite subset `U` of the index set `G`.
+
+The set `U` is called the *support* of the cylinder.
+
+Intuitively, cylinders specify the "letters" on finitely many coordinates, while
+leaving all other coordinates free. For example, in the full shift `{0,1}^ℤ`,
+the cylinder determined by `U = {0,1}` and `x 0 = 1, x 1 = 0` consists of all
+bi-infinite sequences of `0`s and `1`s whose entries on positions `0` and `1`
+respectively are `1` and `0`.
+
+When `A` has the discrete topology, cylinder sets form a basis of clopen sets
+for the product topology on `G → A`. -/
 def cylinder (U : Finset G) (x : G → A) : Set (G → A) :=
   { y | ∀ i ∈ U, y i = x i }
 
+/-- A cylinder set on `U` is the `Set.pi` over `U` of the singletons `{x i}`,
+viewed as a subset of `G → A`. Equivalently, it is the preimage of that product
+of singletons in `U → A` under the restriction map `(G → A) → (U → A)`. -/
 lemma cylinder_eq_set_pi (U : Finset G) (x : G → A) :
     cylinder U x = Set.pi (↑U : Set G) (fun i => ({x i} : Set A)) := by
   ext y; simp [cylinder, Set.pi, Finset.mem_coe]
@@ -167,7 +207,7 @@ lemma mem_cylinder {U : Finset G} {x y : G → A} :
 
 variable [TopologicalSpace A] [DiscreteTopology A]
 
-/-- Cylinders are open (and, dually, closed) when `A` is discrete. -/
+/-- Cylinders are open when `A` is discrete. -/
 lemma isOpen_cylinder (U : Finset G) (x : G → A) :
     IsOpen (cylinder (A := A) (G := G) U x) := by
   classical
@@ -179,6 +219,7 @@ lemma isOpen_cylinder (U : Finset G) (x : G → A) :
     isOpen_set_pi (U.finite_toSet) hopen
   simpa [cylinder_eq_set_pi (A := A) (G := G) U x] using hpi
 
+/-- Cylinders are closed when `A` is discrete. -/
 lemma isClosed_cylinder (U : Finset G) (x : G → A) :
     IsClosed (cylinder (A := A) (G := G) U x) := by
   classical
@@ -198,7 +239,12 @@ section SubshiftDef
 variable (A : Type*) [TopologicalSpace A]
 variable (G : Type*) [Monoid G]
 
-/-- A subshift is a closed, shift-invariant subset. -/
+/-- A subshift on alphabet A is a closed, shift-invariant subset of `G → A`. Formally, it is
+composed of:
+* `carrier`: the underlying set of allowed configurations.
+* `isClosed`: the set is topologically closed in `A^G`.
+* `shiftInvariant`: the set is invariant under all right-translation shifts
+  `(mulShift g)`. -/
 structure Subshift : Type _ where
   /-- The underlying set of configurations. -/
   carrier : Set (G → A)
@@ -230,7 +276,11 @@ attribute [to_additive existing SymbolicDynamics.FullShift.AddSubshift]
 end AddSubshiftDef
 
 
-/-- Example: the full shift on alphabet A. -/
+/-- Example: the **full shift** on alphabet `A` over the (multiplicative) monoid `G`.
+
+It is the subshift whose underlying set is the set of all configurations
+`G → A`.
+-/
 @[to_additive SymbolicDynamics.FullShift.addFullShift]
 def fullShift (A G) [TopologicalSpace A] [Monoid G] : Subshift A G :=
   { carrier := Set.univ,
@@ -239,7 +289,17 @@ def fullShift (A G) [TopologicalSpace A] [Monoid G] : Subshift A G :=
 
 attribute [inherit_doc SymbolicDynamics.FullShift.fullShift] SymbolicDynamics.FullShift.addFullShift
 
-/-- A finite pattern: finite support in `G` and values on it. -/
+/-- A **pattern** is a finite configuration in the full shift `A^G`.
+
+It consists of:
+* a finite subset `support : Finset G` of coordinates, called the support of `p`;
+* an assignment `data : support → A` of symbols to each point in the support.
+
+Intuitively, a pattern is a "partial configuration" (like a finite word),
+specifying finitely many values of a configuration in `G → A`. Patterns are
+the basic building blocks used to define subshifts via forbidden configurations.
+Note that each pattern corresponds to a cylinder, which is the set of configurations
+which agree with this pattern on its support. -/
 structure Pattern (A : Type*) (G : Type*) [Monoid G] where
   /-- Finite support of the pattern. -/
   support : Finset G
@@ -260,7 +320,12 @@ section Dominos
 
 variable (G : Type*) [Monoid G] [DecidableEq G]
 
-/-- The domino supported on `{i,j}` with values `ai`,`aj`. -/
+/-- A **domino** is a pattern supported on exactly two positions `{i, j}`,
+specifying the value `ai` at `i` and the value `aj` at `j`.
+
+In symbolic dynamics, dominos (two-cell patterns) are the simplest nontrivial
+building blocks: they describe local adjacency conditions between two sites
+of a configuration. -/
 @[to_additive addDomino]
 def domino {A : Type*}
     (i j : G) (ai aj : A) : Pattern A G := by
@@ -278,7 +343,15 @@ variable {A : Type*}
 variable {G : Type*}
 variable [Monoid G]
 
-/-- Occurrence of a pattern `p` in `x` at position `g`. -/
+/-- `p.occursIn x g` means that the finite pattern `p` appears in the configuration `x`
+at position `g`.
+
+Formally: for every position `h` in the support of `p`, the value of the configuration
+at `h * g` coincides with the value specified by `p` at `h`.
+
+Intuitively, if you shift the configuration `x` by `g` (using `mulShift g`),
+then on the support of `p` you exactly recover the pattern `p`. This is the basic
+notion of "pattern occurrence" used to define subshifts via forbidden patterns. -/
 @[to_additive Pattern.addOccursIn]
 def Pattern.occursIn (p : Pattern A G) (x : G → A) (g : G) : Prop :=
   ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
@@ -286,20 +359,36 @@ def Pattern.occursIn (p : Pattern A G) (x : G → A) (g : G) : Prop :=
 attribute [inherit_doc SymbolicDynamics.FullShift.Pattern.occursIn]
   SymbolicDynamics.FullShift.Pattern.addOccursIn
 
-/-- Configurations avoiding every pattern in `F`. -/
+/-- `forbids F` is the set of configurations that avoid every pattern in `F`.
+
+Formally: `x ∈ forbids F` if and only if for every pattern `p ∈ F` and every
+group element `g : G`, the pattern `p` does not occur in `x` at position `g`.
+
+Intuitively, `forbids F` is the shift space defined by declaring the finite set
+(or family) of patterns `F` to be *forbidden*. A configuration belongs to the subshift if and only
+it avoids all the forbidden patterns. -/
 @[to_additive addForbids]
 def forbids (F : Set (Pattern A G)) : Set (G → A) :=
   { x | ∀ p ∈ F, ∀ g : G, ¬ p.occursIn x g }
 
 attribute [inherit_doc SymbolicDynamics.FullShift.forbids] SymbolicDynamics.FullShift.addForbids
 
-/-- Shifts move occurrences as expected. -/
+/-- Shifting a configuration commutes with occurrences of a pattern.
+
+Formally: a pattern `p` occurs in the shifted configuration `mulShift h x` at
+position `g` if and only if it occurs in the original configuration `x` at
+position `g * h`. -/
 @[to_additive addOccurs_addShift]
 lemma occurs_shift (p : Pattern A G) (x : G → A) (g h : G) :
     p.occursIn (mulShift h x) g ↔ p.occursIn x (g * h) := by
   constructor <;> intro H u hu <;> simpa [mulShift, mul_assoc] using H u hu
 
-@[to_additive addForbids_addShift_invariant]
+/-- Configurations that avoid a family `F` of patterns are stable under the shift.
+
+Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
+the shifted configuration `mulShift h x` also avoids every `p ∈ F` at every position. -/
+@[to_additive addForbids_addShift_invariant
+  /-- Additive version: configurations avoiding `F` are stable under all additive shifts. -/]
 lemma forbids_shift_invariant (F : Set (Pattern A G)) :
     ∀ h : G, ∀ x ∈ forbids (A := A) (G := G) F, mulShift h x ∈ forbids F := by
   intro h x hx p hp g
@@ -314,9 +403,19 @@ section OccursAt
 
 variable {A : Type*} [Inhabited A]
 variable {G : Type*}
+-- We assume right-cancellation throughout this section for uniqueness of preimages under (_ * v).
 variable [Monoid G] [IsRightCancelMul G] [DecidableEq G]
 
-/-- Extend a pattern by `default` away from its support (anchored at the origin). -/
+/-- Turn a finite pattern into a configuration, by extending it with
+the default symbol outside its support.
+
+Formally: given a pattern `p` with finite support in `G`, we define a configuration
+`patternToOriginConfig p : G → A` by setting
+* `patternToOriginConfig p i = p.data ⟨i, h⟩` if `i ∈ p.support`,
+* `patternToOriginConfig p i = default` otherwise.
+
+This produces a canonical "completion" of the pattern to a configuration,
+filling all unspecified positions with `default`. -/
 @[to_additive addPatternToOriginConfig]
 def patternToOriginConfig (p : Pattern A G) : G → A :=
   fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
@@ -324,14 +423,15 @@ def patternToOriginConfig (p : Pattern A G) : G → A :=
 attribute [inherit_doc SymbolicDynamics.FullShift.patternToOriginConfig]
   SymbolicDynamics.FullShift.addPatternToOriginConfig
 
-/-- Translate a finite pattern `p` so that it occurs at the translate `v`.
+/-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
+a configuration.
 
 On input `h : G`, we proceed as follows:
 * if `h` lies in the right-translate of the support, i.e. `h ∈ p.support.image (· * v)`,
   choose (noncomputably) `w ∈ p.support` with `w * v = h` and return `p.data ⟨w, _⟩`;
 * otherwise return `default`.
 
-This definition does **not** assume cancellation; it only *chooses* a preimage.
+This definition does not assume right-cancellation; it only *chooses* a preimage.
 Uniqueness (and the usual equations such as `patternToConfig p v (w * v) = p.data ⟨w, _⟩`)
 require a right-cancellation hypothesis and are proved in separate lemmas.
 -/
@@ -352,7 +452,15 @@ noncomputable def patternToConfig (p : Pattern A G) (v : G) : G → A :=
 attribute [inherit_doc SymbolicDynamics.FullShift.patternToConfig]
   SymbolicDynamics.FullShift.addPatternToConfig
 
-/-- Restrict a configuration to a finite support, seen as a pattern. -/
+/-- Extract the finite pattern given by restricting a configuration `x : G → A`
+to a finite subset `U : Finset G`.
+
+Formally: the support is `U`, and for each `i ∈ U` the pattern records the value
+`x i`. In other words, `patternFromConfig x U` is the partial configuration of
+`x` visible on the coordinates in `U`.
+
+This is the inverse construction to `patternToOriginConfig` (which extends a
+finite pattern to a configuration by filling with `default`). -/
 @[to_additive addPatternFromConfig]
 def patternFromConfig (x : G → A) (U : Finset G) : Pattern A G :=
   { support := U,
@@ -362,8 +470,15 @@ attribute [inherit_doc SymbolicDynamics.FullShift.patternFromConfig]
   SymbolicDynamics.FullShift.addPatternFromConfig
 
 
-/-- On the translated support, `patternToConfig` agrees with `p` at the preimage. -/
-@[to_additive addPatternToConfig_apply_of_mem]
+/-- On the translated support, `patternToConfig p v` agrees with `p` at the preimage.
+
+More precisely, if `w ∈ p.support`, then at the translated site `w * v`,
+the configuration `patternToConfig p v` takes the value prescribed by `p` at `w`.
+
+This statement uses `[IsRightCancelMul G]` to identify the preimage of `w * v`
+under right-multiplication by `v`.-/
+@[to_additive addPatternToConfig_apply_of_mem
+  /-- Additive version: on the translated support, `addPatternToConfig` agrees with the pattern. -/]
 lemma patternToConfig_apply_of_mem
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
     patternToConfig (A := A) (G := G) p v (w * v) = p.data ⟨w, hw⟩ := by
@@ -413,8 +528,18 @@ lemma patternToConfig_apply_of_mem
             -- push h3 through `p.data`
             simp [h3]
 
-/-- “Occurrence = cylinder translated by `g`”. -/
-@[to_additive addOccursAt_eq_cylinder]
+/-- We call *occurrence set* for pattern `p` and position `g` the set of configurations
+in which a pattern `p` occurs at position `g`.
+
+This proves that it is exactly the cylinder corresponding to the
+pattern obtained by translating `p` by `g`.
+
+Equivalently, `p.occursIn x g` iff on every translated site `w * g` (with `w ∈ p.support`)
+the configuration `x` agrees with the translated pattern `patternToConfig p g`.
+
+(This uses `[IsRightCancelMul G]` to identify the preimage along right-multiplication by `g`.) -/
+@[to_additive addOccursAt_eq_cylinder
+  /-- Additive version: occurrences at `g` coincide with the corresponding cylinder. -/]
 lemma occursAt_eq_cylinder
     (p : Pattern A G) (g : G) :
     { x | p.occursIn x g } = cylinder (p.support.image (· * g)) (patternToConfig p g) := by
@@ -425,14 +550,14 @@ lemma occursAt_eq_cylinder
     rcases Finset.mem_image.mp hu with ⟨w, hw, rfl⟩
     -- want: x (w*g) = patternToConfig p g (w*g)
     have hx : x (w * g) = p.data ⟨w, hw⟩ := H w hw
-    simpa [patternToConfig_apply_of_mem (p:=p) (v:=g) (w:=w) hw] using hx
+    simpa [patternToConfig_apply_of_mem (p := p) (v := g) (w := w) hw] using hx
   · -- ⇐: from the cylinder, recover an occurrence
     intro H u hu
     -- H gives equality with the translated pattern on the image
     have hx : x (u * g) = patternToConfig p g (u * g) :=
       H (u * g) (Finset.mem_image_of_mem (· * g) hu)
     -- rewrite the RHS by the “apply_of_mem” lemma
-    simpa [patternToConfig_apply_of_mem (p:=p) (v:=g) (w:=u) hu] using hx
+    simpa [patternToConfig_apply_of_mem (p := p) (v := g) (w := u) hu] using hx
 
 end OccursAt
 
@@ -449,7 +574,11 @@ lemma occursAt_open (p : Pattern A G) (g : G) :
     IsOpen { x | p.occursIn x g } := by
   rw [occursAt_eq_cylinder]; exact isOpen_cylinder _ _
 
-/-- Avoiding a fixed set of patterns is a closed condition. -/
+/-- Avoiding a fixed family of patterns is a closed condition (in the product topology on `G → A`).
+
+Since each occurrence set `{ x | p.occursIn x v }` is open (when `A` is discrete),
+its complement `{ x | ¬ p.occursIn x v }` is closed; `forbids F` is the intersection
+of these closed sets over `p ∈ F` and `v ∈ G`. -/
 @[to_additive addForbids_closed]
 lemma forbids_closed (F : Set (Pattern A G)) :
     IsClosed (forbids F) := by
@@ -470,7 +599,16 @@ lemma occursAt_closed (p : Pattern A G) (g : G) :
     IsClosed { x | p.occursIn x g } := by
   rw [occursAt_eq_cylinder]; exact isClosed_cylinder _ _
 
-/-- Subshift defined by forbidden patterns. -/
+/-- The subshift defined by a family of forbidden patterns `F`.
+
+This is a standard way to construct subshifts:
+`X_F F` consists of all configurations `x : G → A` in which no pattern
+`p ∈ F` occurs at any position.
+
+Formally:
+* the carrier is `forbids F` (configurations avoiding `F`),
+* it is closed because each occurrence set is open, and
+* it is shift-invariant since avoidance is preserved by shifts. -/
 @[to_additive addX_F]
 def X_F (F : Set (Pattern A G)) : Subshift A G :=
 { carrier := forbids F,
@@ -479,7 +617,10 @@ def X_F (F : Set (Pattern A G)) : Subshift A G :=
 
 attribute [inherit_doc SymbolicDynamics.FullShift.X_F] SymbolicDynamics.FullShift.addX_F
 
-/-- Subshift of finite type defined by a finite family of forbidden patterns. -/
+/-- A subshift of finite type (SFT) is a subshift defined by forbidding
+a *finite* family of patterns.
+
+Formally, `SFT F` is `X_F F` where `F` is a `Finset (Pattern A G)`. -/
 @[to_additive addSFT]
 def SFT (F : Finset (Pattern A G)) : Subshift A G :=
   X_F (F : Set (Pattern A G))
@@ -495,7 +636,7 @@ variable {G : Type*}
 variable [TopologicalSpace A]
 variable [Monoid G]
 
-/-- Patterns with fixed support `U`. -/
+/-- The set of patterns with fixed support `U`. -/
 @[to_additive AddFixedSupport]
 def FixedSupport (A : Type*) (G : Type*) [Monoid G] (U : Finset G) :=
   { p : Pattern A G // p.support = U }
@@ -503,8 +644,18 @@ def FixedSupport (A : Type*) (G : Type*) [Monoid G] (U : Finset G) :=
 attribute [inherit_doc SymbolicDynamics.FullShift.FixedSupport]
   SymbolicDynamics.FullShift.AddFixedSupport
 
-/-- `FixedSupport A G U ≃ (U → A)`; gives finiteness immediately. -/
-@[to_additive addEquivFun]
+/-- An equivalence between patterns with fixed support and functions on that support.
+
+Concretely, `FixedSupport A G U` is the subtype of patterns whose support is
+exactly `U`. Such a pattern is determined uniquely by its values on `U`,
+i.e. by a function `U → A`. This equivalence makes that identification precise:
+
+* `toFun` sends a fixed-support pattern to the function recording its values,
+* `invFun` rebuilds the pattern from a function on `U`.
+
+This shows immediately that `FixedSupport A G U` is finite whenever `U` is. -/
+@[to_additive addEquivFun
+  /-- Additive version: equivalence between fixed-support additive patterns and functions. -/]
 def equivFun {U : Finset G} :
   FixedSupport A G U ≃ (U → A) where
   toFun   := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
@@ -512,14 +663,17 @@ def equivFun {U : Finset G} :
   left_inv := by rintro ⟨p,hU⟩; apply Subtype.ext; cases hU; rfl
   right_inv := by intro f; rfl
 
-attribute [inherit_doc SymbolicDynamics.FullShift.equivFun] SymbolicDynamics.FullShift.addEquivFun
-
+/-- `FixedSupport A G U` is a finite type: there are only finitely many patterns
+with support exactly `U`. This follows from the equivalence with functions `U → A`. -/
 @[to_additive SymbolicDynamics.FullShift.addFintypeFixedSupport] noncomputable
 instance fintypeFixedSupport {U : Finset G} :
     Fintype (FixedSupport A G U) := by
   classical exact Fintype.ofEquiv (U → A) (equivFun (A := A) (G := G) (U := U)).symm
 
-/-- Language on a finite set `U ⊆ G`: patterns obtained by restricting some `x ∈ X`. -/
+/-- The language of a set of configurations `X` on a finite shape `U`.
+
+This is the set of all finite patterns obtained by restricting some configuration
+`x ∈ X` to `U`. -/
 @[to_additive addLanguageOn]
 def languageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, patternFromConfig x U = p }
@@ -528,7 +682,10 @@ attribute [inherit_doc SymbolicDynamics.FullShift.languageOn]
   SymbolicDynamics.FullShift.addLanguageOn
 
 
-/-- Cardinality of the finite-support language. -/
+/-- The cardinality of the language of `X` on a finite set `U`.
+
+That is, the number of distinct patterns supported on `U` which appear
+in some configuration of `X`. Since `U` is finite, this is a finite number. -/
 @[to_additive addLanguageCardOn]
 noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
   classical
@@ -543,7 +700,8 @@ noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
 attribute [inherit_doc SymbolicDynamics.FullShift.languageCardOn]
   SymbolicDynamics.FullShift.addLanguageCardOn
 
-/-- Number of patterns of a subshift on a finite shape `U`. -/
+/-- The number of patterns which appear in the configurations of the carrier
+of a subshift `Y` on a finite set `U`. -/
 @[to_additive addPatternCountOn]
 noncomputable def patternCountOn (Y : Subshift A G) (U : Finset G) : ℕ :=
   languageCardOn (A := A) (G := G) Y.carrier U
