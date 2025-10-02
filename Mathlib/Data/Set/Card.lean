@@ -185,6 +185,12 @@ theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
 theorem encard_diff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.encard = t.encard := by
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self, union_eq_self_of_subset_right h]
 
+theorem encard_diff (h : s ⊆ t) (hs : s.Finite) :
+    (t \ s).encard = t.encard - s.encard := by
+  rw [← @Set.encard_diff_add_encard_of_subset _ s t h]
+  exact AddLECancellable.eq_tsub_of_add_eq
+    (ENat.addLECancellable_of_ne_top (encard_ne_top_iff.mpr hs)) rfl
+
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, ENat.one_le_iff_ne_zero]
 
