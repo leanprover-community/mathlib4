@@ -53,10 +53,10 @@ restriction of the domain chart, and local in the target.
 Motivating examples are immersions and submersions of smooth manifolds. -/
 structure IsLocalSourceTargetProperty
     (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) : Prop where
-  mono_source : ∀ f : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
-    ∀ s : Set M, IsOpen s → P f φ ψ → P f (φ.restr s) ψ
-  congr : ∀ f g : M → M', ∀ φ : PartialHomeomorph M H, ∀ ψ : PartialHomeomorph M' H',
-    ∀ s : Set M, IsOpen s → EqOn f g s → P f (φ.restr s) ψ → P g (φ.restr s) ψ
+  mono_source : ∀ {f : M → M'}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph M' H'},
+    ∀ {s : Set M}, IsOpen s → P f φ ψ → P f (φ.restr s) ψ
+  congr : ∀ {f g : M → M'}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph M' H'},
+    ∀ {s : Set M}, EqOn f g s → IsOpen s → φ.source ⊆ s → P f φ ψ → P g φ ψ
 
 variable (I I' n) in
 /-- A property of smooth functions `M → N` which is local at both the source and target:
@@ -141,7 +141,7 @@ lemma mk_of_continuousAt (hf : ContinuousAt f x)
   exact ⟨domChart.restr s, codChart,
     by rw [domChart.restr_source, interior_eq_iff_isOpen.mpr hsopen]; exact mem_inter hx hxs, hfx,
     restr_mem_maximalAtlas (G := contDiffGroupoid n I) hdomChart hsopen, hcodChart, this,
-    hP.mono_source _ _ _ _ hsopen hfP⟩
+    hP.mono_source hsopen hfP⟩
 
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 if `f` has property `P` at `x` and `f` and `g` are eventually equal near `x`,
@@ -160,7 +160,8 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
         Subset.trans (by simp [interior_eq_iff_isOpen.mpr hs]) hss'
       exact (hfg.mono this).image_eq.symm.le
     · exact Subset.trans (image_mono (by simp)) hf.map_source_subset_source
-  · apply hP.congr _ _ _ _ _ hs (hfg.mono hss')
-    exact hP.mono_source _ _ _ _ hs hf.property
+  · apply hP.congr (hfg.mono hss') hs
+    · grind [PartialHomeomorph.restr_toPartialEquiv, PartialEquiv.restr_source, interior_subset]
+    exact hP.mono_source hs hf.property
 
 end LiftSourceTargetPropertyAt

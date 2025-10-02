@@ -83,20 +83,18 @@ def ImmersionAtProp :
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a "nice" local property. -/
 lemma ImmersionAtPropIsNice : IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
-  mono_source f φ ψ s hs hf := by
+  mono_source {f φ ψ s} hs hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
     obtain ⟨equiv, hf⟩ := hf
     use equiv
     exact hf.mono (by simpa using this)
-  congr f g φ ψ s hs hfg hf := by
+  congr {f g φ ψ s} hfg hs hφ hf := by
     obtain ⟨equiv, hf⟩ := hf
     use equiv
     apply EqOn.trans ?_ (hf.mono (by simp))
     intro x hx
-    set Φ := (φ.restr s).extend I
-    have aux : Φ.source ⊆ s := by
-      simpa only [Φ, PartialHomeomorph.extend_source, PartialHomeomorph.restr_source,
-        interior_eq_iff_isOpen.mpr hs] using inter_subset_right
+    set Φ := φ.extend I
+    have aux : Φ.source ⊆ s := by simpa [Φ]
     have : (f ∘ Φ.symm) x = (g ∘ Φ.symm) x := hfg <| aux (PartialEquiv.map_target _ hx)
     rw [Function.comp_apply, ← this]
     simp [Φ]
