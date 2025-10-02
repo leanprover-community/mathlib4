@@ -290,12 +290,11 @@ theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := Nat.xor_xor_cancel
 @[deprecated Nat.xor_xor_cancel_left (since := "2025-10-02")]
 theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := Nat.xor_xor_cancel_left ..
 
-@[simp]
-theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := by
-  rw [← Nat.xor_self n, xor_right_inj, eq_comm]
+@[deprecated Nat.xor_eq_zero_iff (since := "2025-10-02")]
+theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
 
-theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m :=
-  xor_eq_zero.not
+@[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
+theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
 
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
@@ -328,7 +327,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     · simp only [testBit_xor, hi' _ hj, Bool.bne_false]
 
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
-  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
+  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero_iff.2 h.ne
   exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
 
 @[simp]
