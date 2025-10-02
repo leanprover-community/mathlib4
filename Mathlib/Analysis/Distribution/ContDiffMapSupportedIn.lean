@@ -128,7 +128,7 @@ initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
 theorem ext {f g : 𝓓^{n}_{K}(E, F)} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
-/-- Copy of a `BoundedContDiffMap` with a new `toFun` equal to the old one. Useful to fix
+/-- Copy of a `ContDiffMapSupportedIn` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : 𝓓^{n}_{K}(E, F) where
   toFun := f'

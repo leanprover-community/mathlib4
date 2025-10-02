@@ -46,6 +46,7 @@ noncomputable def testAgainstₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 
 
 /-- `FiniteMeasure.testAgainstCLM` wraps the integral with respect to a finite measure `μ`
 as a continuous `𝕜`-linear map on bounded continuous functions. -/
+@[simps!]
 noncomputable def testAgainstCLM (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →L[𝕜] E :=
@@ -84,6 +85,7 @@ noncomputable def testAgainstₗ {f : X → E} (hf : LocallyIntegrable f μ) (K 
 /-- `LocallyIntegrable.testAgainstCLM` wraps the integral against a locally integrable
 function `f` on a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded
 continuous functions. -/
+@[simps!]
 noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X) :
     (X →ᵇ 𝕜) →L[𝕜] E :=
   (testAgainstₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K))

@@ -5,8 +5,12 @@ Authors: Luigi Massacci
 -/
 
 import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
+import Mathlib.MeasureTheory.Integral.Bochner.Set
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.Order.CompletePartialOrder
-
+import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.Separation.CompletelyRegular
+import Mathlib.MeasureTheory.Integral.TestAgainst
 /-!
 # Continuously differentiable functions supported in a compact
 
@@ -109,10 +113,11 @@ def Simps.apply (f : 𝓓^{n}(E, F)) : E →F  := f
 initialize_simps_projections TestFunction (toFun → apply)
 
 @[ext]
+
 theorem ext {f g : 𝓓^{n}(E, F)} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
-/-- Copy of a `BoundedContDiffMap` with a new `toFun` equal to the old one. Useful to fix
+/-- Copy of a `TestFunction` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : 𝓓^{n}(E, F)) (f' : E → F) (h : f' = f) : 𝓓^{n}(E, F) where
   toFun := f'
@@ -338,5 +343,69 @@ theorem T25Space_TestFunction : T25Space 𝓓^{n}(E, F) :=
     (injective_toBoundedContinuousFunctionCLM ℝ E F n)
     (toBoundedContinuousFunctionCLM ℝ E F n).continuous
 
+
+namespace Measure
+
+open MeasureTheory Module BoundedContinuousFunction
+
+variable [MeasurableSpace E]
+variable (μ : Measure E)
+
+variable {E F}
+
+noncomputable def testAgainst : 𝓓^{n}(E, F) → F := (∫ x, · x ∂μ)
+
+@[simp]
+lemma testAgainst_apply (f : 𝓓^{n}(E, F)) : testAgainst n μ f = (∫ x, f x ∂μ) := by
+  rfl
+
+variable [BorelSpace E] [IsFiniteMeasureOnCompacts μ]
+
+lemma map_integrable (f : 𝓓^{n}(E, F)) : Integrable f μ  := by
+  apply Continuous.integrable_of_hasCompactSupport (map_continuous f) (compact_supp f)
+
+variable {K : Compacts E}
+
+lemma map_integrable' (f : 𝓓^{n}_{K}(E, F)) : Integrable f μ  := by
+  apply Continuous.integrable_of_hasCompactSupport (map_continuous f) (f.hasCompactSupport)
+
+variable [SecondCountableTopology E] [SecondCountableTopology F] [MeasurableSpace F] [BorelSpace F]
+
+noncomputable def testAgainstₗ : 𝓓^{n}(E, F) →ₗ[𝕜] F :=
+  { toFun := testAgainst n μ
+    map_add' := fun f g ↦ integral_add (Measure.map_integrable n μ f) (Measure.map_integrable n μ g)
+    map_smul' := fun c f ↦ integral_smul c f}
+
+variable [CompleteSpace F]
+
+@[simps!]
+noncomputable def testAgainstCLM : 𝓓^{n}(E, F) →L[𝕜] F where
+  toLinearMap := (testAgainstₗ 𝕜 n μ : 𝓓^{n}(E, F) →ₗ[𝕜] F)
+  cont := show Continuous (testAgainstₗ ℝ n μ) by
+    (
+      rw [TestFunction.continuous_iff_continuous_comp ℝ (testAgainstₗ ℝ n μ)]
+      intro K
+      have fin_μ : IsFiniteMeasure (μ.restrict K) := by
+        have : Fact (μ K < ⊤) := fact_iff.mpr <| K.isCompact.measure_lt_top
+        apply Restrict.isFiniteMeasure
+      have : testAgainstₗ ℝ n μ ∘ (toTestFunction ℝ F n K)
+          = (FiniteMeasure.testAgainstCLM (μ.restrict K) ℝ) ∘
+            (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜) := by
+        ext f
+        simp only [testAgainstₗ, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+          testAgainst_apply]
+        simp only [FiniteMeasure.testAgainstCLM_apply,
+          ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM_apply_apply]
+        have : ∫ (x : E) in (K : Set E)ᶜ, f x ∂μ = 0 := by
+          refine setIntegral_eq_zero_of_forall_eq_zero f.zero_on_compl
+        rw [← add_zero (∫ (x : E) in ↑K, f x ∂μ), ← this,
+          integral_add_compl K.isCompact.measurableSet (map_integrable' n μ f)]
+        congr
+      rw [this]
+      apply (FiniteMeasure.testAgainstCLM (μ.restrict K) 𝕜).continuous.comp
+          (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous
+    )
+
+end Measure
 
 end TestFunction
