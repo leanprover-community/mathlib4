@@ -79,8 +79,6 @@ theorem H0.map_injective_of_injective {A B : Type*} [AddGroup A] [AddGroup B] [D
     [DistribMulAction G B] (f : A →+[G] B) (hf : Function.Injective f) :
     Function.Injective (H0.map f) := fun _ _ h ↦ Subtype.ext (hf (congr_arg Subtype.val h))
 
--- def H0Functor : (NonAbelianRep G) ⥤ AddGrp := sorry
-
 end H0
 
 section H1
@@ -191,10 +189,7 @@ theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := by
     Subtype.ext (by simpa [H0.map, hfg.apply_apply_eq_zero])⟩
   simpa [δ₀₁_aux, ← add_assoc] using congr(f $(hx h)).symm
 
-theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := by
-  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
-  · sorry
-  · sorry
+theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := sorry
 
 theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := sorry
 
@@ -230,9 +225,9 @@ variable {A}
 
 def Action.Hom.toDistribMulActionHom (f : A ⟶ B) : A →+[G] B where
   toFun := f
-  map_smul' := sorry
-  map_zero' := sorry
-  map_add' := sorry
+  map_smul' g x := congr($(f.comm g) x)
+  map_zero' := map_zero f.hom.hom
+  map_add' := map_add f.hom.hom
 
 instance : Coe (A ⟶ B) (A →+[G] B) := ⟨Action.Hom.toDistribMulActionHom⟩
 
