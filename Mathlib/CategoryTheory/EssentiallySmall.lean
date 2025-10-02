@@ -268,7 +268,8 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
 
 instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
 
-instance [Small.{w} C] [LocallySmall.{w} C] : Small.{w} (Arrow C) := by
+instance [Small.{w} C] [LocallySmall.{w} C] :
+    Small.{w} (Arrow C) := by
   let φ (f : Arrow C) : Σ (s t : C), s ⟶ t := ⟨_, _, f.hom⟩
   refine small_of_injective (f := φ) ?_
   rintro ⟨s, t, f⟩ ⟨s', t', f'⟩ h
