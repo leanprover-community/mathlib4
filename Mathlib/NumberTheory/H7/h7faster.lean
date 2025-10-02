@@ -1188,7 +1188,6 @@ lemma hAkl : --∀ (k : Fin (m * n)) (l : Fin (q * q)),
 }
 
 
-
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le h7.K
   (h7.A q)
   (h7.hM_neq0 q hq0 h2mq)
@@ -2279,7 +2278,8 @@ lemma eq5zero : 1 ≤ norm (Algebra.norm ℚ ((algebraMap (𝓞 h7.K) h7.K) (h7.
     sorry}
 
   calc 1 ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K := h1
-       _ ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K * ‖(Algebra.norm ℚ) (rho h7 q hq0 h2mq)‖ := ?_
+       _ ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K *
+        ‖(Algebra.norm ℚ) (rho h7 q hq0 h2mq)‖ := ?_
   · nth_rw 1 [← mul_one (‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K)]
     rw [mul_le_mul_left]
     · sorry
@@ -2424,14 +2424,17 @@ lemma eq6a : house (rho h7 q hq0 h2mq) ≤ (q*q) * ((h7.c₄ ^ (h7.n q : ℝ)) *
               house (h7.c₁ • h7.γ') ^ (b q t * h7.l₀ q hq0 h2mq))) := ?_
 
        _ ≤ (∑ t, house (algebraMap (𝓞 h7.K) h7.K ((h7.η q hq0 h2mq) t)) *
-           (house ( h7.c₁ • (a q t + b q t • h7.β')) ^ (h7.r q hq0 h2mq) * house (h7.c₁ • h7.α') ^ (h7.m * q) *
+           (house ( h7.c₁ • (a q t + b q t • h7.β')) ^ (h7.r q hq0 h2mq) *
+           house (h7.c₁ • h7.α') ^ (h7.m * q) *
               house (h7.c₁ • h7.γ') ^  (h7.m * q))) := ?_
 
-       _ ≤  (∑ t : Fin (q*q), (h7.c₄ ^ (h7.n q : ℝ)) * ((h7.n q : ℝ)^(((h7.n q : ℝ)+ 1)/2) ) *
+       _ ≤  (∑ t : Fin (q*q), (h7.c₄ ^ (h7.n q : ℝ)) *
+        ((h7.n q : ℝ)^(((h7.n q : ℝ)+ 1)/2) ) *
            ((Real.sqrt (2*h7.m) * (1 + house (h7.β')))^ (h7.r q hq0 h2mq)*
            (house (h7.α') ^ (2*h7.m^2)) * house (h7.γ') ^(2*h7.m^2))) := ?_
 
-       _ ≤ (q*q) *((h7.c₄ ^ (h7.n q : ℝ)) * ((h7.n q)^((1/2)*((h7.n q)+1))) * (h7.c₆* q) ^(h7.r q hq0 h2mq) * (h7.c₇)^(q : ℤ)) := ?_
+       _ ≤ (q*q) *((h7.c₄ ^ (h7.n q : ℝ)) * ((h7.n q)^((1/2)*((h7.n q)+1))) *
+        (h7.c₆* q) ^(h7.r q hq0 h2mq) * (h7.c₇)^(q : ℤ)) := ?_
   · sorry
   · sorry
   · sorry
@@ -2823,7 +2826,8 @@ def R'prop (l' : Fin (h7.m)) :
   let R'U := R'U h7 q hq0 h2mq l'
   let U := U h7 q hq0 h2mq l'
   (U ∈ nhds (l' + 1 : ℂ)) ∧ ↑↑l' + 1 ∈ U ∧
-  (∀ z ∈ U, (h7.R q hq0 h2mq) z = (z - (↑↑l' + 1)) ^ h7.r q hq0 h2mq * R'U z) ∧ AnalyticOn ℂ R'U U ∧ R'U (↑↑l' + 1) ≠ 0 := by
+  (∀ z ∈ U, (h7.R q hq0 h2mq) z = (z - (↑↑l' + 1)) ^ h7.r q hq0 h2mq * R'U z)
+   ∧ AnalyticOn ℂ R'U U ∧ R'U (↑↑l' + 1) ≠ 0 := by
   intros R'U U
   have := (exists_R'_at_l'_plus_one h7 q hq0 h2mq l').choose_spec.choose_spec
   exact this
@@ -2944,7 +2948,8 @@ lemma R'onC (l' : Fin (h7.m)) :
     apply R'prop.2.1
   · unfold R'R
     rw [mul_comm, mul_assoc]
-    have : (z - (↑↑l' + 1)) ^ (-(h7.r q hq0 h2mq) : ℤ) * (z - (↑↑l' + 1)) ^ (h7.r q hq0 h2mq) = 1 := by
+    have : (z - (↑↑l' + 1)) ^ (-(h7.r q hq0 h2mq) : ℤ) *
+        (z - (↑↑l' + 1)) ^ (h7.r q hq0 h2mq) = 1 := by
       rw [← zpow_natCast]
       simp only [zpow_neg]
       refine inv_mul_cancel₀ ?_
@@ -3403,7 +3408,9 @@ lemma hcauchy (l' : Fin (h7.m)) :
 #print ρᵣ
 
 --#check sys_coe'_bar
-def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq = Complex.log (h7.α) ^ (-(h7.r q hq0 h2mq : ℤ)) * (h7.S q hq0 h2mq) (↑↑(h7.l₀ q hq0 h2mq)) := by {
+def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq =
+ Complex.log (h7.α) ^ (-(h7.r q hq0 h2mq : ℤ)) *
+   (h7.S q hq0 h2mq) (↑↑(h7.l₀ q hq0 h2mq)) := by {
   dsimp [ρᵣ]
   congr
   have HAE : AnalyticAt ℂ (R h7 q hq0 h2mq) (h7.l₀ q hq0 h2mq) :=
@@ -3669,7 +3676,8 @@ lemma S_norm_bound (l' : Fin (h7.m)) : norm (h7.S q hq0 h2mq z) ≤
   calc
     _ = norm ((h7.R q hq0 h2mq z) * ((h7.r q hq0 h2mq).factorial) *
         (((z - (h7.l₀ q hq0 h2mq : ℂ)) ^ (-(h7.r q hq0 h2mq) : ℤ)) *
-        ∏ k ∈ Finset.range (h7.m) \ {↑(h7.l₀ q hq0 h2mq)}, ((h7.l₀ q hq0 h2mq - k) / (z - (k : ℂ))) ^ (h7.r q hq0 h2mq)) : ℂ) := ?_
+        ∏ k ∈ Finset.range (h7.m) \ {↑(h7.l₀ q hq0 h2mq)},
+         ((h7.l₀ q hq0 h2mq - k) / (z - (k : ℂ))) ^ (h7.r q hq0 h2mq)) : ℂ) := ?_
 
     _ = (h7.r q hq0 h2mq).factorial *
         (norm ((h7.R q hq0 h2mq) z) *
@@ -3703,7 +3711,8 @@ lemma S_norm_bound (l' : Fin (h7.m)) : norm (h7.S q hq0 h2mq z) ≤
     · rw [mul_assoc]
       rw [mul_assoc]
       · apply mul_le_mul
-        · have : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^(h7.r q hq0 h2mq) * (h7.r q hq0 h2mq)^(1/2*((h7.r q hq0 h2mq)+3)) :=
+        · have : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^(h7.r q hq0 h2mq) *
+           (h7.r q hq0 h2mq)^(1/2*((h7.r q hq0 h2mq)+3)) :=
             (abs_R h7 q hq0 h2mq)
           exact this
         · sorry
@@ -3835,6 +3844,7 @@ theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ
   --exact use5
   sorry
 
+end GelfondSchneiderSetup
 
 
 
