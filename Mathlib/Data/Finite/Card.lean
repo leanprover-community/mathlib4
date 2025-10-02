@@ -79,12 +79,10 @@ theorem card_option [Finite α] : Nat.card (Option α) = Nat.card α + 1 := by
   haveI := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_option]
 
-theorem card_le_of_injective [Finite β] (f : α → β) (hf : Function.Injective f) :
-    Nat.card α ≤ Nat.card β :=
-  Nat.card_le_card_of_injective f hf
+@[deprecated (since := "2025-10-02")] alias card_le_of_injective := Nat.card_le_card_of_injective
 
 theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
-  card_le_of_injective _ f.injective
+  Nat.card_le_card_of_injective _ f.injective
 
 theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
     Nat.card β ≤ Nat.card α :=
@@ -99,7 +97,7 @@ theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
 theorem card_le_of_injective' {f : α → β} (hf : Function.Injective f)
     (h : Nat.card β = 0 → Nat.card α = 0) : Nat.card α ≤ Nat.card β :=
   (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
-    @card_le_of_injective α β (Nat.finite_of_card_ne_zero h) f hf
+    @Nat.card_le_card_of_injective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- If `f` is an embedding, then `Nat.card α ≤ Nat.card β`. We must also assume
   `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
