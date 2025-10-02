@@ -387,4 +387,3 @@ noncomputable instance [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)] :
 end field
 
 end QuadraticAlgebra
-
