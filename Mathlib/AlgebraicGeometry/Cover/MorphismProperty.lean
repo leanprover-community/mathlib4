@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
@@ -184,40 +184,6 @@ def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover P) (f : Y ⟶ X) (hf : P f := b
     obtain ⟨_ | _⟩ := j
     · exact hf
     · exact 𝒰.map_prop _
-
-/-- A morphism property of schemes is said to preserve joint surjectivity, if
-for any pair of morphisms `f : X ⟶ S` and `g : Y ⟶ S` where `g` satisfies `P`,
-any pair of points `x : X` and `y : Y` with `f x = g y` can be lifted to a point
-of `X ×[S] Y`.
-
-In later files, this will be automatic, since this holds for any morphism `g`
-(see `AlgebraicGeometry.Scheme.isJointlySurjectivePreserving`). But at
-this early stage in the import tree, we only know it for open immersions. -/
-class IsJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) where
-  exists_preimage_fst_triplet_of_prop {X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S} [HasPullback f g]
-    (hg : P g) (x : X) (y : Y) (h : f.base x = g.base y) :
-    ∃ a : ↑(pullback f g), (pullback.fst f g).base a = x
-
-lemma IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
-    [IsJointlySurjectivePreserving P] {X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S} [HasPullback f g]
-    (hf : P f) (x : X) (y : Y) (h : f.base x = g.base y) :
-    ∃ a : ↑(pullback f g), (pullback.snd f g).base a = y := by
-  let iso := pullbackSymmetry f g
-  haveI : HasPullback g f := hasPullback_symmetry f g
-  obtain ⟨a, ha⟩ := exists_preimage_fst_triplet_of_prop hf y x h.symm
-  use (pullbackSymmetry f g).inv.base a
-  rwa [← Scheme.comp_base_apply, pullbackSymmetry_inv_comp_snd]
-
-instance : IsJointlySurjectivePreserving @IsOpenImmersion where
-  exists_preimage_fst_triplet_of_prop {X Y S f g} _ hg x y h := by
-    rw [← show _ = (pullback.fst _ _ : pullback f g ⟶ _).base from
-        PreservesPullback.iso_hom_fst Scheme.forgetToTop f g]
-    have : x ∈ Set.range (pullback.fst f.base g.base) := by
-      rw [TopCat.pullback_fst_range f.base g.base]
-      use y
-    obtain ⟨a, ha⟩ := this
-    use (PreservesPullback.iso forgetToTop f g).inv a
-    rwa [← TopCat.comp_app, Iso.inv_hom_id_assoc]
 
 /-- Given a cover on `X`, we may pull them back along a morphism `W ⟶ X` to obtain
 a cover of `W`.
