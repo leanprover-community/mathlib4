@@ -35,8 +35,8 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*}
 /-!
 ## `analyticGroupoid`
 
-`f ∈ PartialHomeomorph H H` is in `analyticGroupoid I` if `f` and `f.symm` are smooth everywhere,
-analytic on the interior, and map the interior to itself.  This allows us to define
+`f ∈ OpenPartialHomeomorph H H` is in `analyticGroupoid I` if `f` and `f.symm` are smooth
+everywhere, analytic on the interior, and map the interior to itself.  This allows us to define
 `AnalyticManifold` including in cases with boundary.
 -/
 
@@ -85,21 +85,21 @@ rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. 
 def analyticGroupoid : StructureGroupoid H :=
   (analyticPregroupoid I).groupoid
 
-/-- An identity partial homeomorphism belongs to the analytic groupoid. -/
+/-- An identity open partial homeomorphism belongs to the analytic groupoid. -/
 theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
-    PartialHomeomorph.ofSet s hs ∈ analyticGroupoid I := by
+    OpenPartialHomeomorph.ofSet s hs ∈ analyticGroupoid I := by
   rw [analyticGroupoid, mem_groupoid_of_pregroupoid]
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
     simp [h, analyticPregroupoid]
   have hi : AnalyticOn 𝕜 id (univ : Set E) := analyticOn_id
   exact (hi.mono (subset_univ _)).congr (fun x hx ↦ I.right_inv hx.2)
 
-/-- The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to
+/-- The composition of an open partial homeomorphism from `H` to `M` and its inverse belongs to
 the analytic groupoid. -/
-theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
+theorem symm_trans_mem_analyticGroupoid (e : OpenPartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
-  haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.symm_trans_self _
+  haveI : e.symm.trans e ≈ OpenPartialHomeomorph.ofSet e.target e.open_target :=
+    OpenPartialHomeomorph.symm_trans_self _
   StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
@@ -111,15 +111,15 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
       exact (analyticGroupoid I).mem_of_eqOnSource' _ _ (ofSet_mem_analyticGroupoid hs) hes)
 
 /-- `f ∈ analyticGroupoid` iff it and its inverse are analytic within `range I`. -/
-lemma mem_analyticGroupoid {I : ModelWithCorners 𝕜 E H} {f : PartialHomeomorph H H} :
+lemma mem_analyticGroupoid {I : ModelWithCorners 𝕜 E H} {f : OpenPartialHomeomorph H H} :
     f ∈ analyticGroupoid I ↔
       AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' f.source ∩ range I) ∧
       AnalyticOn 𝕜 (I ∘ f.symm ∘ I.symm) (I.symm ⁻¹' f.target ∩ range I) := by
   rfl
 
 /-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
-consists of the partial homeomorphisms which are analytic and have analytic inverse. -/
-theorem mem_analyticGroupoid_of_boundaryless [I.Boundaryless] (e : PartialHomeomorph H H) :
+consists of the open partial homeomorphisms which are analytic and have analytic inverse. -/
+theorem mem_analyticGroupoid_of_boundaryless [I.Boundaryless] (e : OpenPartialHomeomorph H H) :
     e ∈ analyticGroupoid I ↔ AnalyticOnNhd 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
       AnalyticOnNhd 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
   simp only [mem_analyticGroupoid, I.range_eq_univ, inter_univ, I.image_eq]
@@ -131,7 +131,7 @@ theorem mem_analyticGroupoid_of_boundaryless [I.Boundaryless] (e : PartialHomeom
 theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
-    {f : PartialHomeomorph A A} {g : PartialHomeomorph B B}
+    {f : OpenPartialHomeomorph A A} {g : OpenPartialHomeomorph B B}
     (fa : f ∈ analyticGroupoid I) (ga : g ∈ analyticGroupoid J) :
     f.prod g ∈ analyticGroupoid (I.prod J) := by
   have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod
@@ -165,7 +165,7 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
     AnalyticManifold (I.prod J) (M × N) where
   compatible := by
     intro f g ⟨f1, f2, hf1, hf2, fe⟩ ⟨g1, g2, hg1, hg2, ge⟩
-    rw [← fe, ← ge, PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
+    rw [← fe, ← ge, OpenPartialHomeomorph.prod_symm, OpenPartialHomeomorph.prod_trans]
     exact analyticGroupoid_prod (m.toHasGroupoid.compatible f2 g2)
       (n.toHasGroupoid.compatible hf2 hg2)
 
