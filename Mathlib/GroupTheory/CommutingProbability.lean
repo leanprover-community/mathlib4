@@ -110,7 +110,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff₀, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
     H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · apply Finite.card_le_of_surjective
+  · apply Nat.card_le_card_of_surjective
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.mk''_surjective
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'

@@ -84,9 +84,7 @@ theorem card_option [Finite α] : Nat.card (Option α) = Nat.card α + 1 := by
 theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
   Nat.card_le_card_of_injective _ f.injective
 
-theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
-    Nat.card β ≤ Nat.card α :=
-  Nat.card_le_card_of_surjective f hf
+@[deprecated (since := "2025-10-02")] alias card_le_of_surjective := Nat.card_le_card_of_surjective
 
 theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
   haveI := Fintype.ofFinite α
@@ -110,7 +108,7 @@ theorem card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card 
 theorem card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
     (h : Nat.card α = 0 → Nat.card β = 0) : Nat.card β ≤ Nat.card α :=
   (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
-    @card_le_of_surjective α β (Nat.finite_of_card_ne_zero h) f hf
+    @Nat.card_le_card_of_surjective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_eq_zero_of_surjective {f : α → β} (hf : Function.Surjective f) (h : Nat.card β = 0) :
@@ -135,10 +133,10 @@ theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + 
   Nat.card_sum
 
 theorem card_image_le {s : Set α} [Finite s] (f : α → β) : Nat.card (f '' s) ≤ Nat.card s :=
-  card_le_of_surjective _ Set.imageFactorization_surjective
+  Nat.card_le_card_of_surjective _ Set.imageFactorization_surjective
 
 theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ Nat.card α :=
-  card_le_of_surjective _ Set.rangeFactorization_surjective
+  Nat.card_le_card_of_surjective _ Set.rangeFactorization_surjective
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
   classical
