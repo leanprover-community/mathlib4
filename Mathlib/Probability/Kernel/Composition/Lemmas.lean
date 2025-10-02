@@ -21,6 +21,56 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
   {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
   {μ : Measure α} {ν : Measure β} {κ : Kernel α β}
 
+namespace ProbabilityTheory.Kernel
+
+/-- The composition of two product kernels `(ξ ×ₖ η') ∘ₖ (κ ×ₖ ζ)` is the product of the
+compositions `(ξ ∘ₖ (κ ×ₖ ζ)) ×ₖ (η' ∘ₖ (κ ×ₖ ζ))`, if `ζ` is deterministic (of the form
+`.deterministic f hf`) and `η'` does not depend on the output of `κ`.
+That is, `η'` has the form `η.prodMkLeft β` for a kernel `η`.
+
+If `κ` was deterministic, this would be true even if `η.prodMkLeft β` was a more general
+kernel since `κ ×ₖ Kernel.deterministic f hf` would be deterministic and commute with copying.
+Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
+lemma prod_prodMkLeft_comp_prod_deterministic {β' ε : Type*}
+    {mβ' : MeasurableSpace β'} {mε : MeasurableSpace ε}
+    (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
+    (ξ : Kernel (β × ε) δ) [IsSFiniteKernel ξ] {f : γ → ε} (hf : Measurable f) :
+    (ξ ×ₖ η.prodMkLeft β) ∘ₖ (κ ×ₖ deterministic f hf)
+      = (ξ ∘ₖ (κ ×ₖ deterministic f hf)) ×ₖ (η ∘ₖ deterministic f hf) := by
+  ext ω s hs
+  rw [prod_apply' _ _ _ hs, comp_apply' _ _ _ hs, lintegral_prod_deterministic,
+    lintegral_comp, lintegral_prod_deterministic]
+  · congr with b
+    rw [prod_apply' _ _ _ hs, prodMkLeft_apply, comp_deterministic_eq_comap, comap_apply]
+  · exact (measurable_measure_prodMk_left hs).lintegral_kernel
+  · exact measurable_measure_prodMk_left hs
+  · exact Kernel.measurable_coe _ hs
+
+/-- The composition of two product kernels `(ξ ×ₖ η') ∘ₖ (ζ ×ₖ κ)` is the product of the
+compositions, `(ξ ∘ₖ (ζ ×ₖ κ)) ×ₖ (η' ∘ₖ (ζ ×ₖ κ))`, if `ζ` is deterministic (of the form
+`.deterministic f hf`) and `η'` does not depend on the output of `κ`.
+That is, `η'` has the form `η.prodMkRight β` for a kernel `η`.
+
+If `κ` was deterministic, this would be true even if `η.prodMkRight β` was a more general
+kernel since `Kernel.deterministic f hf ×ₖ κ` would be deterministic and commute with copying.
+Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
+lemma prod_prodMkRight_comp_deterministic_prod {β' ε : Type*}
+    {mβ' : MeasurableSpace β'} {mε : MeasurableSpace ε}
+    (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
+    (ξ : Kernel (ε × β) δ) [IsSFiniteKernel ξ] {f : γ → ε} (hf : Measurable f) :
+    (ξ ×ₖ η.prodMkRight β) ∘ₖ (deterministic f hf ×ₖ κ)
+      = (ξ ∘ₖ (deterministic f hf ×ₖ κ)) ×ₖ (η ∘ₖ deterministic f hf) := by
+  ext ω s hs
+  rw [prod_apply' _ _ _ hs, comp_apply' _ _ _ hs, lintegral_deterministic_prod,
+    lintegral_comp, lintegral_deterministic_prod]
+  · congr with b
+    rw [prod_apply' _ _ _ hs, prodMkRight_apply, comp_deterministic_eq_comap, comap_apply]
+  · exact (measurable_measure_prodMk_left hs).lintegral_kernel
+  · exact measurable_measure_prodMk_left hs
+  · exact Kernel.measurable_coe _ hs
+
+end ProbabilityTheory.Kernel
+
 namespace MeasureTheory.Measure
 
 lemma compProd_eq_parallelComp_comp_copy_comp [SFinite μ] :
