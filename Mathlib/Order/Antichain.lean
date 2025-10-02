@@ -41,7 +41,7 @@ namespace IsAntichain
 @[simp] protected theorem empty : IsAntichain r ∅ :=
   pairwise_empty _
 
-@[simp] protected theorem singleton : IsAntichain r { a } :=
+@[simp] protected theorem singleton : IsAntichain r {a} :=
   pairwise_singleton _ _
 
 protected theorem subset (hs : IsAntichain r s) (h : t ⊆ s) : IsAntichain r t :=
