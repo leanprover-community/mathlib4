@@ -443,7 +443,7 @@ theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHo
 @[simp]
 theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withTopWithBot = f.withTopWithBot.comp g.withTopWithBot := by
-  ext; simp [← WithBot.map_comp_map, ← WithTop.map_comp_map]
+  ext; simp
 
 /-- Adjoins a `⊥` to the codomain of a `LatticeHom`. -/
 @[simps]
