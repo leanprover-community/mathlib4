@@ -104,7 +104,6 @@ theorem Orbit.duplicate (x : X) (w : α × Bool) :
       · have h3 : mk (w :: g.toWord) = mk [w] * g := toWord_injective (by simp [toWord_mul])
         rw [h3, ← mul_smul, ← inv_mk, ← mul_assoc, inv_mul_cancel, one_mul]
     · subst h3
-      have hg : g.toWord.head (by grind) = (a, true) := by grind
       use mk (w :: g.toWord)
       constructor
       · simp only [toWord_mk, reduce.cons, reduce_toWord]
