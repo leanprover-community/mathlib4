@@ -274,7 +274,7 @@ def findModels (etype eterm : Expr) (estype : Option Expr) :
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
 The argument x can be omitted. -/
-elab:max "MDiffAt[" s:term:arg "]" ppSpace f:term:arg : term => do
+elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
   let etype ← whnfR <|← instantiateMVars <|← inferType ef
@@ -315,7 +315,7 @@ elab:max "MDiffAt2" ppSpace t:term:arg : term => do
 
 /-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f s`,
 trying to determine `I` and `J` from the local context. -/
-elab:max "MDiff[" s:term:arg "]" ppSpace t:term:arg : term => do
+elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let et ← Term.elabTerm t none
   let estype ← whnfR <|← instantiateMVars <|← inferType es
@@ -337,7 +337,7 @@ elab:max "MDiff" ppSpace t:term:arg : term => do
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
 The argument `x` can be omitted. -/
-elab:max "CMDiffAt[" s:term:arg "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
+elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
@@ -362,7 +362,7 @@ elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
 /-- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`,
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
-elab:max "CMDiff[" s:term:arg "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
+elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
@@ -385,7 +385,7 @@ elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
 
 /-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f u x`,
 trying to determine `I` and `J` from the local context. -/
-elab:max "mfderiv[" s:term:arg "]" ppSpace t:term:arg : term => do
+elab:max "mfderiv[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let e ← Term.elabTerm t none
   let etype ← whnfR <|← instantiateMVars <|← inferType e
