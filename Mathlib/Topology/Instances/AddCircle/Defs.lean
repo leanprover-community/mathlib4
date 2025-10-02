@@ -253,9 +253,9 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
   exact (continuousAt_toIocMod hp.out a hx).codRestrict _
 
-/-- The quotient map `𝕜 → AddCircle p` as a partial homeomorphism. -/
-@[simps] def partialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
-    PartialHomeomorph 𝕜 (AddCircle p) where
+/-- The quotient map `𝕜 → AddCircle p` as an open partial homeomorphism. -/
+@[simps] def openPartialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
+    OpenPartialHomeomorph 𝕜 (AddCircle p) where
   toFun := (↑)
   invFun := fun x ↦ equivIco p a x
   source := Ioo a (a + p)
@@ -278,11 +278,14 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
     exact continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
 
+@[deprecated (since := "2025-08-29")] noncomputable alias
+  partialHomeomorphCoe := openPartialHomeomorphCoe
+
 lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
     IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) := by
   intro a
   obtain ⟨b, hb1, hb2⟩ := exists_between (sub_lt_self a hp.out)
-  exact ⟨partialHomeomorphCoe p b, ⟨hb2, lt_add_of_sub_right_lt hb1⟩, rfl⟩
+  exact ⟨openPartialHomeomorphCoe p b, ⟨hb2, lt_add_of_sub_right_lt hb1⟩, rfl⟩
 
 end Continuity
 
