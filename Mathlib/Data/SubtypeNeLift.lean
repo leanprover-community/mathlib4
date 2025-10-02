@@ -9,7 +9,7 @@ import Mathlib.Logic.Equiv.Defs
 # Extending a function from the complement of a singleton
 
 In this file, we define `Function.subtypeNeLift` which allows to
-extend a (dependant) function defined on the complement of a singleton.
+extend a (dependent) function defined on the complement of a singleton.
 
 -/
 
