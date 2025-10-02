@@ -27,12 +27,12 @@ namespace Pseudofunctor
 /-- A strict pseudofunctor between bicategories is one such that `mapId` and `mapComp` are
 given by `eqToIso _`. -/
 class IsStrict (F : Pseudofunctor B C) : Prop where
-  map_id : ∀ (b : B), F.map (𝟙 b) = 𝟙 (F.obj b) := by aesop_cat
+  map_id : ∀ (b : B), F.map (𝟙 b) = 𝟙 (F.obj b) := by cat_disch
   map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), F.map (f ≫ g) = F.map f ≫ F.map g := by
-    aesop_cat
-  mapId : ∀ (b : B), F.mapId b = eqToIso (map_id b) := by aesop_cat
+    cat_disch
+  mapId : ∀ (b : B), F.mapId b = eqToIso (map_id b) := by cat_disch
   mapComp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), F.mapComp f g = eqToIso (map_comp f g) := by
-    aesop_cat
+    cat_disch
 
 section
 
