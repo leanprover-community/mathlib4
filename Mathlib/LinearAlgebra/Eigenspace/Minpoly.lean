@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
@@ -125,3 +126,30 @@ instance Matrix.instFiniteSpectrum (A : Matrix n n R) : Finite (spectrum R A) :=
   Set.finite_coe_iff.mpr (Matrix.finite_spectrum A)
 
 end FiniteSpectrum
+
+namespace Matrix
+
+open Polynomial Module End
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+variable {K : Type*} [Field K]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {A : Matrix n n K} {B : Matrix n n R}
+
+@[simp]
+theorem _root_.LinearMap.spectrum_toMatrix (b : Basis n R M) (A : M →ₗ[R] M) :
+    spectrum R (LinearMap.toMatrix b b A) = spectrum R A :=
+  AlgEquiv.spectrum_eq (LinearMap.toMatrixAlgEquiv b) A
+
+@[simp]
+theorem spectrum_toLin (b : Basis n R M) : spectrum R (toLin b b B) = spectrum R B :=
+  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv b) B
+
+@[simp]
+theorem spectrum_toLin' : spectrum R (toLin' B) = spectrum R B :=
+  AlgEquiv.spectrum_eq Matrix.toLinAlgEquiv' B
+
+theorem isRoot_minpoly_iff_mem_spectrum {r : K} : IsRoot (minpoly K A) r ↔ r ∈ spectrum K A := by
+  rw [← minpoly_toLin', ← hasEigenvalue_iff_isRoot, hasEigenvalue_iff_mem_spectrum, spectrum_toLin']
+
+end Matrix
