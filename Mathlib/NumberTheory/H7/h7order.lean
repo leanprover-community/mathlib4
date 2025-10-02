@@ -590,3 +590,16 @@ lemma AnalyticOnSubset (f : ℂ → ℂ) (U V : Set ℂ) :
     U ⊆ V → AnalyticOn ℂ f V → AnalyticOn ℂ f U := by {
     unfold AnalyticOn
     exact fun a a_1 x a_2 ↦ AnalyticWithinAt.mono (a_1 x (a a_2)) a}
+
+lemma exists_mem_finset_min' {γ : Type _} {β : Type _} [LinearOrder γ]
+    [DecidableEq γ] (s : Finset β) (f : β → γ) (Hs : s.Nonempty) :
+  ∃ x ∈ s, ∃ y, y = f x ∧ ∀ x' ∈ s, y ≤ f x' := by
+  let y := s.image f |>.min' (image_nonempty.mpr Hs)
+  have : y ∈ Finset.image f s := min'_mem (image f s) (image_nonempty.mpr Hs)
+  rw [Finset.mem_image] at this
+  obtain ⟨x, hx, hy⟩ := this
+  use x, hx, y
+  constructor
+  · exact id (Eq.symm hy)
+  · intros x' hx'
+    apply Finset.min'_le (image f s) (f x') (mem_image_of_mem _ hx')
