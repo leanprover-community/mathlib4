@@ -96,9 +96,9 @@ class Fact (p : Prop) : Prop where
   out : p
 
 library_note "fact non-instances"/--
-In most cases, we should not have global instances of `Fact`; typeclass search only reads the head
-symbol and then tries any instances, which means that adding any such instance will cause slowdowns
-everywhere. We instead make them as lemmata and make them local instances as required.
+In most cases, we should not have global instances of `Fact`; typeclass search is not an
+advanced proof search engine, and adding any such instance has the potential to cause
+slowdownseverywhere. We instead declare them as lemmata and make them local instances as required.
 -/
 
 theorem Fact.elim {p : Prop} (h : Fact p) : p := h.1
