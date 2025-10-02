@@ -82,7 +82,8 @@ def ImmersionAtProp :
 
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a "nice" local property. -/
-lemma isLocalSourceTargetProperty_immersionAtProp : IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
+lemma isLocalSourceTargetProperty_immersionAtProp :
+    IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
   mono_source {f φ ψ s} hs hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
     obtain ⟨equiv, hf⟩ := hf
@@ -136,8 +137,8 @@ lemma mk_of_continuousAt {f : M → M'} {x : M} (hf : ContinuousAt f x) (equiv :
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x :=
-  LiftSourceTargetPropertyAt.mk_of_continuousAt hf ImmersionAtPropIsNice _ _ hx hfx hdomChart
-    hcodChart ⟨equiv, hwrittenInExtend⟩
+  LiftSourceTargetPropertyAt.mk_of_continuousAt hf isLocalSourceTargetProperty_immersionAtProp
+    _ _ hx hfx hdomChart hcodChart ⟨equiv, hwrittenInExtend⟩
 
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.codChart` and `h.equiv`,
@@ -227,7 +228,8 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
 then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq {x : M} (hf : IsImmersionAt F I I' n f x) (hfg : f =ᶠ[nhds x] g) :
     IsImmersionAt F I I' n g x :=
-  LiftSourceTargetPropertyAt.congr_of_eventuallyEq ImmersionAtPropIsNice hf.property hfg
+  LiftSourceTargetPropertyAt.congr_of_eventuallyEq
+    isLocalSourceTargetProperty_immersionAtProp hf.property hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
 then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
