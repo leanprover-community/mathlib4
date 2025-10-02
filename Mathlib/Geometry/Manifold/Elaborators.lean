@@ -76,6 +76,7 @@ open scoped Bundle Manifold ContDiff
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
+open Qq
 
 /-- Call `mkApp` recursively with 12 arguments -/
 @[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
@@ -337,8 +338,7 @@ The argument `x` can be omitted. -/
 elab:max "CMDiffAt[" s:term:arg "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
-  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTermEnsuringType nt wtn
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let estype ← whnfR <|← instantiateMVars <|← inferType es
   let eftype ← whnfR <|← instantiateMVars <|← inferType ef
   match ← findModels eftype ef estype with
@@ -351,8 +351,7 @@ trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
   let e ← Term.elabTerm t none
-  let wtn ← Term.elabTerm (← ``(WithTop ℕ∞)) none
-  let ne ← Term.elabTermEnsuringType nt wtn
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let etype ← whnfR <|← instantiateMVars <|← inferType e
   match ← findModels etype e none with
   | some (srcI, tgtI) => return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
@@ -364,8 +363,7 @@ trying to determine `I` and `J` from the local context.
 elab:max "CMDiff[" s:term:arg "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
-  let wtn ← Term.elabTerm (← ``(WithTop ℕ∞)) none
-  let ne ← Term.elabTermEnsuringType nt wtn
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let estype ← whnfR <|← instantiateMVars <|← inferType es
   let eftype ← whnfR <|← instantiateMVars <|← inferType ef
   match ← findModels eftype ef estype with
@@ -377,8 +375,7 @@ trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let e ← Term.elabTerm f none
-  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTermEnsuringType nt wtn
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let etype ← whnfR <|← instantiateMVars <|← inferType e
   match ← findModels etype e none with
   | some (srcI, tgtI) => return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
