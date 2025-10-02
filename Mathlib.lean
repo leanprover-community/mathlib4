@@ -4636,6 +4636,7 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
+import Mathlib.MeasureTheory.Integral.TestAgainst
 import Mathlib.MeasureTheory.Integral.TorusIntegral
 import Mathlib.MeasureTheory.Integral.VitaliCaratheodory
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
