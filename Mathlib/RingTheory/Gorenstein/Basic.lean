@@ -17,6 +17,8 @@ import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.RingTheory.CohenMacaulay.Basic
+import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.LinearAlgebra.FreeModule.PID
 /-!
 
 # The Definition of Gorenstein (Local) Ring
@@ -125,7 +127,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
-    refine ⟨fun h ↦ Submodule.instSubsingletonQuotient, fun h ↦ ?_⟩
+    refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
     rw [not_subsingleton_iff_nontrivial] at this
     exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial mem M)) h
@@ -139,8 +141,16 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       simp only [CharP.cast_eq_zero, this, projectiveDimension_eq_bot_iff,
         ModuleCat.isZero_iff_subsingleton, sub]
-      -- For fym
+      simp only [iff_false_intro
+            (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial mem M)),
+        iff_false]
+      intro h
+      rw [← IsProjective.iff_projective] at h
+      have : Module.Free R (QuotSMulTop x M) := Module.free_of_flat_of_isLocalRing
       sorry
+
+
+
     | n + 1 =>
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
       rw [WithBot.add_le_add_right_iff _ _ 1, projectiveDimension_le_iff,
