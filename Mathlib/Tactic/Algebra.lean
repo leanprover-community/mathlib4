@@ -19,17 +19,12 @@ attribute [local instance] monadLiftOptionMetaM
 /-
 TODOs:
 * Handle division, inversion, algebraMap.
-* Handle exponents with general natural expressions. Will have to decide what to do with the
-  expression in the base. `Ring` distributes both addition in the exponents and products in the
-  base, having put the base into ring normal form. Here we'd probably want to put the base into
-  algebra normal form, and distribute the exponents into the atoms if it's a single `smul`.
-  For now we might just not normalize the base.
-* `polynomial(_nf)` tactics that do some preprocessing to deal with `monomial` and `Polynomial.C`
 * `match_coefficients` tactic that normalizes polynomials and matches corresponding coefficients.
 * Handle `algebraMap` in some way. Either with a preprocessing step or as a special case in `eval`
 * Handle expressions specific to `Polynomial`: Simplify Polynomial.map (note it sends X ↦ X),
   and handle the Algebra (Polynomial _) (Polynomial _) instance gracefully.
-
+* The new normal form puts the coefficients an the end as `x * y * 1 • r` and `X^n * C a`. We really
+  ought to put it in front.
 -/
 
 section ExSum
@@ -514,23 +509,119 @@ def evalCast (c : Ring.Cache q($sR)) :
   -- We don't handle rational expressions in A.
   | _ => none
 
-def evalPow {a : Q($A)} (b : ℕ) (va : ExSum sAlg a) :
-    MetaM <| Result (ExSum q($sAlg)) q($a ^ $b) := do
-  if h0 : b = 0 then
-    -- is this the right way to do this?
-    let p : Q($b = 0) := by rw[h0]; exact q(rfl)
-    return ⟨_, .add (.smul .one) .zero, q(sorry)⟩
+/--
+The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
+exponent expression. (This has a slightly different normalization than `evalPowAtom` because
+the input types are different.)
+
+* `x ^ e = (x + 0) ^ e * 1`
+-/
+def evalPowProdAtom {a : Q($A)} {b : Q(ℕ)} (va : ExProd sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
+    Result (ExProd sAlg) q($a ^ $b) :=
+  ⟨_, (ExBase.sum va.toSum).toProd vb, q(sorry)⟩
+
+/--
+The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
+exponent expression.
+
+* `x ^ e = x ^ e * 1 + 0`
+-/
+def evalPowAtom {a : Q($A)} {b : Q(ℕ)} (va : ExBase sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
+    Result (ExSum sAlg) q($a ^ $b) :=
+  ⟨_, (va.toProd vb).toSum, q(sorry)⟩
+
+/-- There are several special cases when exponentiating monomials:
+
+* `(r • 1) ^ b = r ^ b • 1 ^ b`
+* `(a * b) ^ e = a ^ e * b ^ e`
+
+In all other cases we use `evalPowProdAtom`.
+-/
+def evalPowProd {a : Q($A)} {b : Q(ℕ)} (va : ExProd sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
+    MetaM <| Result (ExProd sAlg) q($a ^ $b) := do
+  Lean.Core.checkSystem decl_name%.toString
+  let res : OptionT MetaM (Result (ExProd sAlg) q($a ^ $b)) := do
+    match va, vb with
+    | .smul (r := r) vr, vb =>
+      let ⟨r', vr', pr'⟩ ← Ring.evalPow q($sR) vr (Ring.ExSum.add vb .zero)
+      return ⟨_, .smul vr', q(sorry)⟩
+    | .mul vxa₁ vea₁ va₂, vb =>
+      let ⟨_, vc₁, pc₁⟩ ← Ring.evalMulProd Ring.sℕ vea₁ vb
+      let ⟨_, vc₂, pc₂⟩ ← evalPowProd va₂ vb
+      return ⟨_, .mul vxa₁ vc₁ vc₂, q(sorry)⟩
+  return (← res.run).getD (evalPowProdAtom sAlg va vb)
+
+/--
+The main case of exponentiation of ring expressions is when `va` is a polynomial and `n` is a
+nonzero literal expression, like `(x + y)^5`. In this case we work out the polynomial completely
+into a sum of monomials.
+
+* `x ^ 1 = x`
+* `x ^ (2*n) = x ^ n * x ^ n`
+* `x ^ (2*n+1) = x ^ n * x ^ n * x`
+-/
+partial def evalPowNat {a : Q($A)} (va : ExSum sAlg a) (n : Q(ℕ)) :
+    MetaM <| Result (ExSum sAlg) q($a ^ $n) := do
+  let nn := n.natLit!
+  if nn = 1 then
+    return ⟨_, va, q(sorry)⟩
   else
-    let ⟨hf, vhf, phf⟩ ← evalPow (b/2) va
-    let ⟨hf2, vhf2, phf2⟩ ← evalMul sAlg vhf vhf
-    if hb : b % 2 = 1 then
-      -- TODO: turn this into a `rfl` proof?
-      let pb : Q($b % 2 = 1) ← mkDecideProofQ q($b % 2 = 1)
-      let ⟨a', va', pa'⟩ ← evalMul sAlg va vhf2
-      return ⟨a', va', q(sorry)⟩
+    let nm := nn >>> 1
+    have m : Q(ℕ) := mkRawNatLit nm
+    if nn &&& 1 = 0 then
+      let ⟨_, vb, pb⟩ ← evalPowNat va m
+      let ⟨_, vc, pc⟩ ← evalMul sAlg vb vb
+      return ⟨_, vc, q(sorry)⟩
     else
-      let pb : Q($b % 2 = 0) ← mkDecideProofQ q($b % 2 = 0)
-      return ⟨hf2, vhf2, q(sorry)⟩
+      let ⟨_, vb, pb⟩ ← evalPowNat va m
+      let ⟨_, vc, pc⟩ ← evalMul sAlg vb vb
+      let ⟨_, vd, pd⟩ ← evalMul sAlg vc va
+      return ⟨_, vd, q(sorry)⟩
+
+/-- Exponentiates a polynomial `va` by a monomial `vb`, including several special cases.
+
+* `a ^ 1 = a`
+* `0 ^ e = 0` if `0 < e`
+* `(a + 0) ^ b = a ^ b` computed using `evalPowProd`
+* `a ^ b = (a ^ b') ^ k` if `b = b' * k` and `k > 1`
+
+Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
+-/
+partial def evalPow₁ {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
+    MetaM <| Result (ExSum sAlg) q($a ^ $b) := do
+  match va, vb with
+  | va, .const 1 =>
+    haveI : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
+    return ⟨_, va, q(sorry)⟩
+  | .zero, vb => match vb.evalPos with
+    | some p => return ⟨_, .zero, q(sorry)⟩
+    | none => return evalPowAtom sAlg (.sum .zero) vb
+  | ExSum.add va .zero, vb =>
+    let ⟨_, vc, pc⟩ ← evalPowProd sAlg va vb
+    return ⟨_, vc.toSum, q(sorry)⟩
+  | va, vb =>
+    if vb.coeff > 1 then
+      let ⟨k, _, vc, pc⟩ := Ring.extractCoeff vb
+      let ⟨_, vd, pd⟩ ← evalPow₁ va vc
+      let ⟨_, ve, pe⟩ ← evalPowNat sAlg vd k
+      return ⟨_, ve, q(sorry)⟩
+    else
+      return evalPowAtom sAlg (.sum va) vb
+
+/-- Exponentiates two polynomials `va, vb`.
+
+* `a ^ 0 = 1`
+* `a ^ (b₁ + b₂) = a ^ b₁ * a ^ b₂`
+-/
+def evalPow {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.ExSum Ring.sℕ b) :
+    MetaM <| Result (ExSum sAlg) q($a ^ $b) := do
+  match vb with
+  | .zero => return ⟨_, (ExProd.smul (.one (sA := sR))).toSum, q(sorry)⟩
+  | .add vb₁ vb₂ =>
+    let ⟨_, vc₁, pc₁⟩ ← evalPow₁ sAlg va vb₁
+    let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
+    let ⟨_, vd, pd⟩ ← evalMul sAlg vc₁ vc₂
+    return ⟨_, vd, q(sorry)⟩
 
 def evalAtom :
     AtomM (Result (ExSum q($sAlg)) q($a)) := do
@@ -608,15 +699,15 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ ($eb : ℕ)) =>
-      let ⟨blit, pf_isNat⟩ ← try NormNum.deriveNat eb q(Nat.instAddMonoidWithOne) catch
-        | _ => throwError "Failed to normalize {eb} to a natural literal"
-      if ! Expr.isRawNatLit blit then
-        /- This code should be unreachable? -/
-        throwError s!"Failed to normalize {eb} to a natural literal 3"
-      have b : ℕ := blit.natLit!
-      have pb : Q($blit = $b) := q(sorry) -- q(($pf_isNat).out.trans $this)
+
+      -- let ⟨blit, pf_isNat⟩ ← try NormNum.deriveNat eb q(Nat.instAddMonoidWithOne) catch
+      --   | _ => throwError "Failed to normalize {eb} to a natural literal"
+      -- if ! Expr.isRawNatLit blit then
+      --   /- This code should be unreachable? -/
+      --   throwError s!"Failed to normalize {eb} to a natural literal 3"
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
-      let ⟨c, vc, p⟩ ← evalPow sAlg b va
+      let ⟨_, vb, pb⟩ ← Ring.eval Ring.sℕ .nat eb
+      let ⟨c, vc, p⟩ ← evalPow sAlg va vb
       return ⟨c, vc, q(sorry)⟩
     | _ => els
   | _, _, _ =>
@@ -647,6 +738,7 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
     let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
       (simpTheorems := #[thms])
       (congrTheorems := ← getSimpCongrTheorems)
+
     pure <| ←
       r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
@@ -1054,3 +1146,10 @@ example : 2 = 1 := by
 
 
 -- #lint
+
+example (x y : ℚ) (m n : ℕ) : (x + 2) ^ (2 * n+1) = ((x+2)^n)^2 * (x+2) := by
+  algebra
+
+example (x y : ℚ) (m n : ℕ) : (x^n +  1)^2 = 0 := by
+  algebra_nf
+  sorry
