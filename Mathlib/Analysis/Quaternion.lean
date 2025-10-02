@@ -223,10 +223,12 @@ theorem summable_coe {f : α → ℝ} : (Summable (fun a => (f a : ℍ)) L) ↔ 
       (continuous_algebraMap _ _) continuous_re re_coe
 
 @[norm_cast]
-theorem tsum_coe [L.NeBot] (f : α → ℝ) : (∑'[L] a, (f a : ℍ)) = ↑(∑'[L] a, f a) := by
-  by_cases hf : Summable f L
-  · exact (hasSum_coe.mpr hf.hasSum).tsum_eq
-  · simp [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (summable_coe.not.mpr hf)]
+theorem tsum_coe (f : α → ℝ) : (∑'[L] a, (f a : ℍ)) = ↑(∑'[L] a, f a) := by
+  by_cases hL : L.NeBot
+  · by_cases hf : Summable f L
+    · exact (hasSum_coe.mpr hf.hasSum).tsum_eq
+    · simp [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (summable_coe.not.mpr hf)]
+  · simpa [tsum_bot hL] using ((algebraMap ℝ ℍ).map_finsum_of_injective coe_injective f).symm
 
 end infinite_sum
 
