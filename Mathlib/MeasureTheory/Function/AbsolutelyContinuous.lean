@@ -192,7 +192,7 @@ lemma uniformity_eq_comap_totalLengthFilter :
 -/
 theorem uniformlyContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     UniformContinuousOn f (uIcc a b) := by
-  simp only [UniformContinuousOn, Filter.tendsto_iff_comap, uniformity_comap_totalLengthFilter]
+  simp only [UniformContinuousOn, Filter.tendsto_iff_comap, uniformity_eq_comap_totalLengthFilter]
   simp only [AbsolutelyContinuousOnInterval, Filter.tendsto_iff_comap] at hf
   convert Filter.comap_mono hf
   · simp only [comap_inf, comap_principal]
