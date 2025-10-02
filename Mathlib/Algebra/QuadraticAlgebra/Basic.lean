@@ -365,4 +365,3 @@ instance : Field (QuadraticAlgebra R a b) where
 end field
 
 end QuadraticAlgebra
-
