@@ -48,7 +48,11 @@ section SMul
 variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
 
 /-- A set `B` is an extreme subset of `A` if `B ⊆ A` and all points of `B` only belong to open
-segments whose ends are in `B`. -/
+segments whose ends are in `B`.
+
+Our definition only requires that the left endpoint of the segment lies in `B`,
+but by symmetry of open segments, the right endpoint must also lie in `B`.
+See `IsExtreme.right_mem_of_mem_openSegment`. -/
 @[mk_iff]
 structure IsExtreme (A B : Set E) : Prop where
   subset : B ⊆ A
