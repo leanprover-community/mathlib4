@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.AlgebraicGeometry.Limits
-import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
-import Mathlib.CategoryTheory.Limits.MorphismProperty
+import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 # (Co)limits in over categories
@@ -51,8 +51,8 @@ instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
       (WidePushoutShape.Hom.init i)) := by
   rw [mono_iff_injective]
   cases i
-  · simpa using f.left.injective
-  · simpa using g.left.injective
+  · simpa using f.left.isOpenEmbedding.injective
+  · simpa using g.left.isOpenEmbedding.injective
 
 instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f.left] [IsOpenImmersion g.left]
