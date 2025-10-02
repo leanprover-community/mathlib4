@@ -192,7 +192,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
       let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
           match_expr type with
           | NormedSpace K E _ _ =>
-            if E == F then return some K else return none
+            if ← withReducible (pureIsDefEq E F) then return some K else return none
           | _ => return none
         | throwError "Couldn't find a `NormedSpace` structure on {F} in the local instances."
       trace[Elab.DiffGeo.MDiff] "{F} is a normed field over {K}"
@@ -208,7 +208,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   let K? ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
     match_expr type with
     | NormedSpace K E _ _ =>
-      if E == e then return some K else return none
+      if ← withReducible (pureIsDefEq E e) then return some K else return none
     | _ => return none
   if let some K := K? then
     trace[Elab.DiffGeo.MDiff] "Field is: {K}"
@@ -229,14 +229,14 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   let H? ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
     match_expr type with
     | ChartedSpace H _ M _ =>
-      if M == e then return some H else return none
+      if ← withReducible (pureIsDefEq M e) then return some H else return none
     | _ => return none
   if let some H := H? then
     trace[Elab.DiffGeo.MDiff] "H is: {H}"
     let some m ← findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
         | ModelWithCorners _ _ _ _ _ H' _ => do
-          if H' == H then return some fvar else return none
+          if ← withReducible (pureIsDefEq H' H) then return some fvar else return none
         | _ => return none
       | pure
       trace[Elab.DiffGeo.MDiff] "Found model: {m}"
