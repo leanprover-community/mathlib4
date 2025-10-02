@@ -309,9 +309,8 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
   · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
     let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans
       (AlgEquiv.quotientBot R R).toLinearEquiv
-    let φ := Ext.linearEquiv₀ (R := R) (X := ModuleCat.of R (Shrink (R ⧸ (⊥ : Ideal R)))) (Y := M)
-
-    sorry
+    exact ((Ext.linearEquiv₀.trans (ModuleCat.homLinearEquiv.trans (e₀.congrLeft M R))).trans
+      (LinearMap.ringLmapEquivSelf R R M)).trans (Submodule.quotEquivOfEqBot ⊥ rfl).symm
   · rename_i n hn _ _
     match rs with
     | [] => simp at len
@@ -412,7 +411,8 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ)
   apply ext_subsingleton_of_quotients
   rw [← this]
   intro I
-  let _ : Module.Finite R (Shrink.{v, u} (R ⧸ I)) := sorry
+  let _ : Module.Finite R (Shrink.{v, u} (R ⧸ I)) :=
+    Module.Finite.equiv (Shrink.linearEquiv R _).symm
   apply ext_subsingleton_of_support_subset
   intro p _
   simp only [Set.mem_setOf_eq]
