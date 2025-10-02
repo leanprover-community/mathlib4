@@ -140,7 +140,7 @@ lemma injective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
   obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
   exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
 
-lemma Injective_iff_hasInjectiveDimensionLT_one (X : C) :
+lemma injective_iff_hasInjectiveDimensionLT_one (X : C) :
     Injective X ↔ HasInjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ Injective_iff_subsingleton_ext_one.2
