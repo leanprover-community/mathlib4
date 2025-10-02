@@ -163,8 +163,8 @@ end Scheme.Opens
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! I₀ X f]
-def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
-    (hU : ⨆ i, U i = ⊤) : X.OpenCover where
+def Scheme.openCoverOfIsOpenCover {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
+    (hU : TopologicalSpace.IsOpenCover U) : X.OpenCover where
   I₀ := s
   X i := U i
   f i := (U i).ι
@@ -176,6 +176,9 @@ def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     obtain ⟨i, hi⟩ := hx
     use i
     simpa
+
+@[deprecated (since := "2025-09-30")]
+noncomputable alias Scheme.openCoverOfISupEqTop := Scheme.openCoverOfIsOpenCover
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
