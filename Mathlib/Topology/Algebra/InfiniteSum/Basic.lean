@@ -541,12 +541,12 @@ theorem Equiv.tprod_eq_tprod_of_mulSupport {f : β → α} {g : γ → α}
   .symm <| tprod_eq_tprod_of_ne_one_bij _ (Subtype.val_injective.comp e.injective) (by simp) he
 
 @[to_additive]
-theorem tprod_dite_right (P : Prop) [Decidable P] [L.HasSupport] (x : β → ¬P → α) :
+theorem tprod_dite_right (P : Prop) [Decidable P] (x : β → ¬P → α) :
     ∏'[L] b, (if h : P then 1 else x b h) = if h : P then 1 else ∏'[L] b, x b h := by
-  by_cases hP : P <;> simp [hP, tprod_one]
+  by_cases hP : P <;> simp [hP]
 
 @[to_additive]
-theorem tprod_dite_left (P : Prop) [Decidable P] [L.HasSupport] (x : β → P → α) :
+theorem tprod_dite_left (P : Prop) [Decidable P] (x : β → P → α) :
     ∏'[L] b, (if h : P then x b h else 1) = if h : P then ∏'[L] b, x b h else 1 := by
   by_cases hP : P <;> simp [hP]
 
