@@ -297,6 +297,11 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
   generalize len : rs.length = n
   induction n generalizing M rs
   · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
+    let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans
+      (AlgEquiv.quotientBot R R).toLinearEquiv
+    let φ := Ext.linearEquiv₀ (R := R) (X := ModuleCat.of R (Shrink (R ⧸ (⊥ : Ideal R)))) (Y := M)
+
+    -- let ψ := LinearEquiv.arrowCongr e₀ (LinearEquiv.refl R ↥M)
     --fym
     sorry
   · rename_i n hn _ _
