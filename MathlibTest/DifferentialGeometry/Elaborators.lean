@@ -322,63 +322,63 @@ section
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff X
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff σ
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff[s] σ'
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt (X)
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt ((σ))
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff[s] σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt[s] σ'
@@ -591,63 +591,63 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 X
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 σ
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff[s] 0 σ'
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 (X)
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 ((σ))
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff[s] 0 σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt[s] 0 σ'
@@ -877,14 +877,14 @@ section
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv% X x
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv% σ x
@@ -893,14 +893,14 @@ variable {t : Set E} {p : E}
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv[t] σ' p
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv[t] σ'

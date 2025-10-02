@@ -128,7 +128,7 @@ elab:max "T% " t:term:arg : term => do
     -- xxx: is this check fine or overzealous?
     if Lean.Expr.hasLooseBVars tgt then
       throwError "Term {tgt} has loose bound variables¬
-      Hint: applying the 'T%' elaborator twice makes no sense."
+      Hint: applying the `T%` elaborator twice makes no sense."
     let trivBundle ← mkAppOptM ``Bundle.Trivial #[src, tgt]
     return ← withLocalDeclD x src fun x ↦ do
       let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[src, trivBundle, tgt, x, e.app x]
@@ -262,11 +262,11 @@ def findModels (etype eterm : Expr) (estype : Option Expr) :
     let srcI ← findModel src
     if Lean.Expr.hasLooseBVars tgt then
       throwError "Term {eterm} is a dependent function, of type {etype}\n\
-      Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
+      Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one"
     if let some es := estype then
       if !(← isDefEq es (← mkAppM ``Set #[src])) then
         throwError "The domain {src} of {eterm} is not definitionally equal to the carrier
-        of the type {es} of the set 's' passed in"
+        of the type {es} of the set `s` passed in"
     let tgtI ← findModel tgt (src, srcI)
     return some (srcI, tgtI)
   | _ => return none
@@ -306,7 +306,7 @@ elab:max "MDiffAt2" ppSpace t:term:arg : term => do
       let srcI ← findModel src
       if Lean.Expr.occurs src tgt then
         throwError "Term {e} is a dependent function, of type {etype}\n\
-        Hint: you can use the 'T%' elaborator to convert a dependent function \
+        Hint: you can use the `T%` elaborator to convert a dependent function \
         to a non-dependent one"
       let tgtI ← findModel tgt (src, srcI)
       return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
