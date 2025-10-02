@@ -790,6 +790,103 @@ lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
     rfl
   · rw [Measure.compProd_eq_comp_prod]
 
+/-- Two random variables `f, g` are conditionally independent given a third `k` iff the
+joint distribution of `k, f, g` factors into a product of their conditional distributions
+given `k`. -/
+theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
+    {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
+    (hf : Measurable f) (hg : Measurable g) {k : Ω → γ} (hk : Measurable k) :
+    CondIndepFun _ hk.comap_le f g μ ↔
+      μ.map (fun ω ↦ (k ω, f ω, g ω)) =
+        (Kernel.id ×ₖ (condDistrib f k μ ×ₖ condDistrib g k μ)) ∘ₘ μ.map k := by
+  rw [condIndepFun_iff_map_prod_eq_prod_comp_trim hf hg]
+  simp_rw [Measure.ext_prod₃_iff]
+  have hk_meas {s : Set γ} (hs : MeasurableSet s) : MeasurableSet[mγ.comap k] (k ⁻¹' s) :=
+    ⟨s, hs, rfl⟩
+  have h_left {s : Set γ} {t : Set β} {u : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t)
+      (hu : MeasurableSet u) :
+      (μ.map (fun ω ↦ (k ω, f ω, g ω))) (s ×ˢ t ×ˢ u) =
+        (@Measure.map _ _ _ ((mγ.comap k).prod inferInstance)
+          (fun ω ↦ (ω, f ω, g ω)) μ) ((k ⁻¹' s) ×ˢ t ×ˢ u) := by
+    rw [Measure.map_apply (by fun_prop) (hs.prod (ht.prod hu)),
+      Measure.map_apply _ ((hk_meas hs).prod (ht.prod hu))]
+    · simp [Set.mk_preimage_prod]
+    · exact (measurable_id.mono le_rfl hk.comap_le).prodMk (by fun_prop)
+  have h_right {s : Set γ} {t : Set β} {u : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t)
+      (hu : MeasurableSet u) :
+      ((Kernel.id ×ₖ (condDistrib f k μ ×ₖ condDistrib g k μ)) ∘ₘ μ.map k) (s ×ˢ t ×ˢ u) =
+        ((Kernel.id ×ₖ
+          ((condExpKernel μ (mγ.comap k)).map f ×ₖ (condExpKernel μ (mγ.comap k)).map g)) ∘ₘ
+        μ.trim hk.comap_le) ((k ⁻¹' s) ×ˢ t ×ˢ u) := by
+    rw [Measure.bind_apply ((hk_meas hs).prod (ht.prod hu)) (by fun_prop),
+      Measure.bind_apply (hs.prod (ht.prod hu)) (by fun_prop), lintegral_map ?_ (by fun_prop),
+      lintegral_trim]
+    rotate_left
+    · exact Kernel.measurable_coe _ ((hk_meas hs).prod (ht.prod hu))
+    · exact Kernel.measurable_coe _ (hs.prod (ht.prod hu))
+    refine lintegral_congr_ae ?_
+    filter_upwards [condDistrib_apply_ae_eq_condExpKernel_map hf hk ht,
+      condDistrib_apply_ae_eq_condExpKernel_map hg hk hu] with a haX haT
+    simp only [Kernel.prod_apply_prod, Kernel.id_apply, Measure.dirac_apply' _ hs]
+    rw [@Measure.dirac_apply' _ (mγ.comap k) _ _ (hk_meas hs)]
+    congr
+  refine ⟨fun h s t u hs ht hu ↦ ?_, fun h ↦ ?_⟩
+  · convert h (hk_meas hs) ht hu
+    · exact h_left hs ht hu
+    · exact h_right hs ht hu
+  · rintro - t u ⟨s, hs, rfl⟩ ht hu
+    convert h hs ht hu
+    · exact (h_left hs ht hu).symm
+    · exact (h_right hs ht hu).symm
+
+/-- Two random variables `f, g` are conditionally independent given a third `k` iff the
+conditional distribution of `f` given `k` and `g` is equal to the conditional distribution of `f`
+given `k`. -/
+theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
+    {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
+    (hf : Measurable f) (hg : Measurable g) {k : Ω → γ} (hk : Measurable k) :
+    CondIndepFun (mγ.comap k) hk.comap_le g f μ ↔
+      condDistrib f (fun ω ↦ (k ω, g ω)) μ =ᵐ[μ.map (fun ω ↦ (k ω, g ω))]
+        (condDistrib f k μ).prodMkRight _ := by
+  rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) _ hf.aemeasurable,
+    condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib hg hf hk,
+    Measure.compProd_eq_comp_prod]
+  let e : γ × β' × β ≃ᵐ (γ × β') × β := MeasurableEquiv.prodAssoc.symm
+  have h_eq : ((Kernel.id ×ₖ condDistrib g k μ) ×ₖ condDistrib f k μ) ∘ₘ μ.map k =
+      (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (fun a ↦ (k a, g a)) := by
+    calc ((Kernel.id ×ₖ condDistrib g k μ) ×ₖ condDistrib f k μ) ∘ₘ μ.map k
+    _ = (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ (μ.map k ⊗ₘ condDistrib g k μ) := by
+      rw [Measure.compProd_eq_comp_prod, Measure.comp_assoc]
+      congr 2
+      have h := Kernel.prod_prodMkRight_comp_deterministic_prod (condDistrib g k μ)
+        (condDistrib f k μ) Kernel.id measurable_id
+      rw [← Kernel.id] at h
+      simpa using h.symm
+    _ = (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (fun a ↦ (k a, g a)) := by
+      rw [compProd_map_condDistrib hg.aemeasurable]
+  rw [← h_eq]
+  have h1 : μ.map (fun x ↦ ((k x, g x), f x)) = (μ.map (fun a ↦ (k a , g a, f a))).map e := by
+    rw [Measure.map_map (by fun_prop) (by fun_prop)]
+    rfl
+  have h1_symm : μ.map (fun a ↦ (k a , g a, f a)) =
+      (μ.map (fun x ↦ ((k x, g x), f x))).map e.symm := by
+    rw [h1, Measure.map_map (by fun_prop) (by fun_prop), MeasurableEquiv.symm_comp_self,
+      Measure.map_id]
+  have h2 : ((Kernel.id ×ₖ condDistrib g k μ) ×ₖ condDistrib f k μ) ∘ₘ μ.map k =
+      ((Kernel.id ×ₖ (condDistrib g k μ ×ₖ condDistrib f k μ)) ∘ₘ μ.map k).map e := by
+    rw [← Measure.deterministic_comp_eq_map e.measurable, Measure.comp_assoc]
+    congr 2
+    unfold e
+    rw [Kernel.deterministic_comp_eq_map, Kernel.prodAssoc_symm_prod]
+  have h2_symm : (Kernel.id ×ₖ (condDistrib g k μ ×ₖ condDistrib f k μ)) ∘ₘ μ.map k =
+      (((Kernel.id ×ₖ condDistrib g k μ) ×ₖ condDistrib f k μ) ∘ₘ μ.map k).map e.symm := by
+    rw [h2, Measure.map_map (by fun_prop) (by fun_prop), MeasurableEquiv.symm_comp_self,
+      Measure.map_id]
+  rw [h1, h2]
+  exact ⟨fun h ↦ by rw [h], fun h ↦ by rw [h1_symm, h1, h2_symm, h2, h]⟩
+
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
