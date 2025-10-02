@@ -182,7 +182,7 @@ end
 theorem det_eq_det_toMatrix_of_finset [DecidableEq M] {s : Finset M} (b : Basis s A M)
     (f : M →ₗ[A] M) : LinearMap.det f = Matrix.det (LinearMap.toMatrix b b f) := by
   have : ∃ s : Finset M, Nonempty (Basis s A M) := ⟨s, ⟨b⟩⟩
-  rw [LinearMap.coe_det, dif_pos, detAux_def'' _ b] <;> assumption
+  rw [LinearMap.coe_det, dif_pos this, detAux_def'' _ b]
 
 @[simp]
 theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
@@ -300,6 +300,11 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
 /-- If a linear map is invertible, so is its determinant. -/
 theorem isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :
     IsUnit (LinearMap.det f) := IsUnit.map LinearMap.det hf
+
+lemma isUnit_iff_isUnit_det [Module.Finite R M] [Module.Free R M] (f : M →ₗ[R] M) :
+    IsUnit f ↔ IsUnit f.det := by
+  let b := Module.Free.chooseBasis R M
+  rw [← isUnit_toMatrix_iff b, ← det_toMatrix b, Matrix.isUnit_iff_isUnit_det (toMatrix b b f)]
 
 /-- If a linear map has determinant different from `1`, then the space is finite-dimensional. -/
 theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
@@ -426,10 +431,12 @@ theorem LinearEquiv.isUnit_det' {A : Type*} [CommRing A] [Module A M] (f : M ≃
     IsUnit (LinearMap.det (f : M →ₗ[A] M)) :=
   isUnit_of_mul_eq_one _ _ f.det_mul_det_symm
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The determinant of `f.symm` is the inverse of that of `f` when `f` is a linear equiv. -/
 theorem LinearEquiv.det_coe_symm {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M ≃ₗ[𝕜] M) :
     LinearMap.det (f.symm : M →ₗ[𝕜] M) = (LinearMap.det (f : M →ₗ[𝕜] M))⁻¹ := by
-  field_simp [IsUnit.ne_zero f.isUnit_det']
+  simp [field, IsUnit.ne_zero f.isUnit_det']
 
 /-- Builds a linear equivalence from a linear map whose determinant in some bases is a unit. -/
 @[simps]

@@ -42,7 +42,7 @@ respectively.
 * `Equicontinuous.closure`: if a set of functions is equicontinuous, its closure
   *for the topology of pointwise convergence* is also equicontinuous.
 
-## Notations
+## Notation
 
 Throughout this file, we use :
 - `ι`, `κ` for indexing types

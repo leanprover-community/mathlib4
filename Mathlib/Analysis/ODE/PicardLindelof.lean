@@ -29,7 +29,7 @@ equation:
 $$\alpha(t) = x_0 + \int_{t_0}^t f(\tau, \alpha(\tau))\,\mathrm{d}\tau.$$
 This is done via the contraction mapping theorem, applied to the space of Lipschitz continuous
 functions from a closed interval to a Banach space. The needed contraction map is constructed by
-repeated applications of the right hand side of this equation.
+repeated applications of the right-hand side of this equation.
 
 ## Main definitions and results
 

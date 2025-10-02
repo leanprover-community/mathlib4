@@ -37,7 +37,6 @@ variable {V : Type u} (G : SimpleGraph V)
 section WalkCounting
 
 theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {Walk.nil} := by
-  ext p
   simp
 
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
@@ -140,7 +139,6 @@ instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v 
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
-  ext p
   simp [← coe_finsetWalkLength_eq]
 
 /- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th

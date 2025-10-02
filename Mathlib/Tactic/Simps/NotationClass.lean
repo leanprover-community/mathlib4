@@ -91,7 +91,7 @@ in a structure that must be used to trigger the search. -/
 structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
-  /-- `isNotation` is a boolean that specifies whether this is notation
+  /-- `isNotation` is a Boolean that specifies whether this is notation
   (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
   class as hypothesis during type-class synthesis. -/
   isNotation := true

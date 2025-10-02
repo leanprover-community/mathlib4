@@ -24,16 +24,16 @@ More specifically, we introduce
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
-## Notations
+## Notation
 
-In the locale `Manifold`, we introduce the notations
+In the scope `Manifold`, we introduce the notations
 * `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
 * `𝓡∂ n` for `modelWithCornersEuclideanHalfSpace n`.
 
 For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
 map, then the derivative of `f` can be written simply as `mfderiv (𝓡 m) (𝓡∂ n) f` (as to why the
-model with corners can not be implicit, see the discussion in
+model with corners cannot be implicit, see the discussion in
 `Geometry.Manifold.IsManifold`).
 
 ## Implementation notes
@@ -63,7 +63,7 @@ def EuclideanQuadrant (n : ℕ) : Type :=
 
 section
 
-/- Register class instances for euclidean half-space and quadrant, that can not be noticed
+/- Register class instances for Euclidean half-space and quadrant, that cannot be noticed
 without the following reducibility attribute (which is only set in this section). -/
 
 variable {n : ℕ}
@@ -74,15 +74,15 @@ instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
 instance : TopologicalSpace (EuclideanQuadrant n) :=
   instTopologicalSpaceSubtype
 
-instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
-  ⟨⟨0, le_rfl⟩⟩
-
-instance : Inhabited (EuclideanQuadrant n) :=
-  ⟨⟨0, fun _ => le_rfl⟩⟩
-
 instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
 
 instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
+
+instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
+  ⟨0⟩
+
+instance : Inhabited (EuclideanQuadrant n) :=
+  ⟨0⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
@@ -121,7 +121,7 @@ theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
   rw [f.interior_preimage, interior_Ici]
   apply Function.surjective_eval
@@ -129,7 +129,7 @@ theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 @[simp]
 theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ici]
   apply Function.surjective_eval
@@ -137,7 +137,7 @@ theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 @[simp]
 theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ioi]
   apply Function.surjective_eval
@@ -155,7 +155,7 @@ theorem range_euclideanQuadrant (n : ℕ) :
 theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
-  let f : Fin n → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  let f : Fin n → StrongDual ℝ (Π _ : Fin n, ℝ) := fun i ↦ ContinuousLinearMap.proj i
   have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
     ext; simp; rfl
   have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
@@ -169,7 +169,7 @@ end
 
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
-a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
+a model for manifolds with boundary. In the scope `Manifold`, use the shortcut `𝓡∂ n`.
 -/
 def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
@@ -259,7 +259,7 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
 `EuclideanHalfSpace 1`.
 -/
 def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
-    PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+    OpenPartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
@@ -333,7 +333,7 @@ lemma IccLeftChart_extend_bot_mem_frontier :
 `EuclideanHalfSpace 1`.
 -/
 def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
-    PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+    OpenPartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | x < z.val }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩

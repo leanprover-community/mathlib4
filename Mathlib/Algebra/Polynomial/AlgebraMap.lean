@@ -175,9 +175,7 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
-  apply AlgHom.ext
-  intro x
-  congr
+  rfl
 
 /-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
 def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
@@ -244,8 +242,7 @@ lemma eval_map_algebraMap (P : R[X]) (b : B) :
 /-- `mapAlg` is the morphism induced by `R → S`. -/
 theorem mapAlg_eq_map (S : Type v) [Semiring S] [Algebra R S] (p : R[X]) :
     mapAlg R S p = map (algebraMap R S) p := by
-  simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
-  ext; congr
+  rfl
 
 theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
   map_zero (aeval x)
@@ -701,7 +698,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   obtain hi | rfl | hi := lt_trichotomy i l
   · have hj : m < j := by omega
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
-  · omega
+  · cutsat
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
 termination_by Q.natDegree
 

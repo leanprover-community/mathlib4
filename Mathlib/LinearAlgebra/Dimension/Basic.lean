@@ -52,7 +52,7 @@ We define this as the supremum of the cardinalities of linearly independent subs
 The supremum may not be attained, see https://mathoverflow.net/a/263053.
 
 For a free module over any ring satisfying the strong rank condition
-(e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
+(e.g. left-Noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
 In particular this agrees with the usual notion of the dimension of a vector space.
@@ -312,7 +312,7 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
-    Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
+    Subtype.eq <| show x = y from Subtype.ext_iff.1 eq
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/
