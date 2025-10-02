@@ -32,6 +32,8 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 
 -/
 
+assert_not_exists ContinuousLinearMap.hasOpNorm
+
 open Topology
 
 local postfix:max "⋆" => star

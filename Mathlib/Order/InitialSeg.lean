@@ -31,7 +31,7 @@ The lemmas `Ordinal.type_le_iff` and `Ordinal.type_lt_iff` tell us that `≼i` c
 relation on ordinals, while `≺i` corresponds to the `<` relation. This prompts us to think of
 `PrincipalSeg` as a "strict" version of `InitialSeg`.
 
-## Notations
+## Notation
 
 These notations belong to the `InitialSeg` locale.
 

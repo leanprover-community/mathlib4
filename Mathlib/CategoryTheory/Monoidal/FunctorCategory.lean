@@ -49,7 +49,8 @@ Tensor product of natural transformations into `D`, when `D` is monoidal.
 @[simps]
 def tensorHom : tensorObj F F' ⟶ tensorObj G G' where
   app X := α.app X ⊗ₘ β.app X
-  naturality X Y f := by dsimp; rw [← tensor_comp, α.naturality, β.naturality, tensor_comp]
+  naturality X Y f := by
+    dsimp; rw [tensorHom_comp_tensorHom, α.naturality, β.naturality, ← tensorHom_comp_tensorHom]
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.) -/
 @[simps]
