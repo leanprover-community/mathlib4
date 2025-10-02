@@ -259,6 +259,8 @@ noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(E, F) := by
   apply LocallyConvexSpace.sInf
   simp only [mem_setOf_eq, and_imp, imp_self, implies_true]
 
+variable {E F n}
+
 theorem continuous_toTestFunction (K : Compacts E) :
     Continuous (toTestFunction 𝕜 F n K) := by
   apply continuous_iff_coinduced_le.2
@@ -300,5 +302,41 @@ protected theorem continuous_from_bounded {V : Type*} [NormedAddCommGroup V]
     exact h φ
 
 end Topology
+
+variable (E)
+
+@[simps]
+noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}(E, F) →ₗ[𝕜] E →ᵇ F  where
+  toFun f := f
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+lemma to_bcf_comp_eq (K : Compacts E) :
+  (toBoundedContinuousFunctionₗ 𝕜 E F n) ∘ (ContDiffMapSupportedIn.toTestFunction 𝕜 F n K)  =
+    ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ 𝕜 := by rfl
+
+@[simps!]
+noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}(E, F) →L[𝕜] E →ᵇ F  :=
+  { toLinearMap := toBoundedContinuousFunctionₗ 𝕜 E F n
+    cont := show Continuous (toBoundedContinuousFunctionₗ ℝ E F n)
+      by
+        (
+          rw [TestFunction.continuous_iff_continuous_comp ℝ (toBoundedContinuousFunctionₗ ℝ E F n)]
+          intro K
+          rw [to_bcf_comp_eq _ _]
+          exact (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous
+        )
+  }
+
+theorem injective_toBoundedContinuousFunctionCLM :
+    Function.Injective (toBoundedContinuousFunctionCLM 𝕜 E F n) := by
+  intro f g
+  simp [toBoundedContinuousFunctionCLM, toBoundedContinuousFunctionₗ]
+
+theorem T25Space_TestFunction : T25Space 𝓓^{n}(E, F) :=
+  T25Space.of_injective_continuous
+    (injective_toBoundedContinuousFunctionCLM ℝ E F n)
+    (toBoundedContinuousFunctionCLM ℝ E F n).continuous
+
 
 end TestFunction
