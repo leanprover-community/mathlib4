@@ -82,7 +82,7 @@ open Qq
 @[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
   mkApp6 (mkApp6 f a b c d e g) e₁ e₂ e₃ e₄ e₅ e₆
 
-namespace Manifold
+namespace Manifold.Elab
 
 /-- Elaborator for sections in a fibre bundle: converts a section as a dependent function
 to a non-dependent function into the total space. This handles the cases of
@@ -403,7 +403,7 @@ elab:max "mfderiv%" ppSpace t:term:arg : term => do
   | some (srcI, tgtI) => return ← mkAppM ``mfderiv #[srcI, tgtI, e]
   | none => throwError "Term {e} is not a function."
 
-end Manifold
+end Manifold.Elab
 
 section trace
 
