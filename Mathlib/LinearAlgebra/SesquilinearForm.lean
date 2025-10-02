@@ -245,9 +245,8 @@ structure IsPosSemidef [LE R] (B : M →ₛₗ[I₁] M →ₗ[R] R) extends B.Is
 
 variable {B : M →ₛₗ[I₁] M →ₗ[R] R}
 
-lemma IsPosSemidef.isSymm [LE R] (h : B.IsPosSemidef) : B.IsSymm := h.toIsSymm
-
-lemma IsPosSemidef.isNonneg [LE R] (h : B.IsPosSemidef) : B.IsNonneg := h.toIsNonneg
+alias IsPosSemidef.isSymm := IsPosSemidef.toIsSymm
+alias IsPosSemidef.isNonneg := IsPosSemidef.toIsNonneg
 
 lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsNonneg :=
   ⟨fun h ↦ ⟨h.isSymm, h.isNonneg⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
