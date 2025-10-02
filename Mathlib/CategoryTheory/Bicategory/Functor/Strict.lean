@@ -22,6 +22,9 @@ isomorphism `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`
 
 -/
 
+-- this linter rejects `@[to_app (attr := reassoc)]`
+set_option linter.style.commandStart false
+
 namespace CategoryTheory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
@@ -47,7 +50,7 @@ lemma mapComp'_comp_id_hom {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     (F.mapComp' f (𝟙 b₁) f).hom = (ρ_ _).inv ≫ _ ◁ (F.mapId b₁).inv := by
   simp [mapComp'_comp_id]
 
-@[to_app (attr:=reassoc)]
+@[to_app (attr := reassoc)]
 lemma mapComp'_comp_id_inv {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     (F.mapComp' f (𝟙 b₁) f).inv = _ ◁ (F.mapId b₁).hom ≫ (ρ_ _).hom := by
   simp [mapComp'_comp_id]
