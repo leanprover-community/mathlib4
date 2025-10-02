@@ -840,7 +840,7 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     · exact (h_left hs ht hu).symm
     · exact (h_right hs ht hu).symm
 
-/-- Two random variables `f, g` are conditionally independent given a third `k` if the
+/-- Two random variables `f, g` are conditionally independent given a third `k` iff the
 conditional distribution of `f` given `k` and `g` is equal to the conditional distribution of `f`
 given `k`. -/
 theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
