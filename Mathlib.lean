@@ -3921,6 +3921,8 @@ import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.Metrizable
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.PoincareConjecture
+import Mathlib.Geometry.Manifold.PrincipalFiberBundle.HopfFibration
+import Mathlib.Geometry.Manifold.PrincipalFiberBundle.PrincipalGBundle
 import Mathlib.Geometry.Manifold.Riemannian.Basic
 import Mathlib.Geometry.Manifold.Riemannian.PathELength
 import Mathlib.Geometry.Manifold.Sheaf.Basic
@@ -6625,8 +6627,6 @@ import Mathlib.Topology.Exterior
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
 import Mathlib.Topology.FiberBundle.Constructions
-import Mathlib.Topology.FiberBundle.Instances.HopfFibration
-import Mathlib.Topology.FiberBundle.Instances.PrincipalGBundle
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.FiberPartition
