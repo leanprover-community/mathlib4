@@ -167,9 +167,9 @@ Note: This linter can be disabled with `set_option linter.minImports false`
 
 /--
 warning: Imports increased to
-[Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
+[Mathlib.Tactic.NormNum.Basic]
 
-New imports: [Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
+New imports: [Mathlib.Tactic.NormNum.Basic]
 
 Now redundant: [Mathlib.Tactic.Linter.MinImports]
 
@@ -212,6 +212,11 @@ def propose_to_move_this_def : ℕ := 0
 theorem theorem_with_local_def : propose_to_move_this_def = 0 := rfl
 
 -- This definition depends on definitions in two different files, so should not be moved.
+/--
+warning: Consider moving this declaration to the module Mathlib.Tactic.NormNum.Basic.
+
+Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
+-/
 #guard_msgs in
 theorem theorem_with_multiple_dependencies : True :=
   let _ := Mathlib.Meta.FunProp.funPropAttr
