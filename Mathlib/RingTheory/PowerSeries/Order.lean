@@ -387,7 +387,7 @@ theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
     simp only [add_smul, one_smul, pow_succ, order_mul, hn]
 
 theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
-    (φ : ι → R⟦X⟧) (s : Finset ι) : ∑ i ∈ s, (φ i).order = (∏ i ∈ s, φ i).order := by
+    (φ : ι → R⟦X⟧) (s : Finset ι) : (∏ i ∈ s, φ i).order = ∑ i ∈ s, (φ i).order := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih => rw [Finset.sum_cons ha, Finset.prod_cons ha, order_mul, ih]
