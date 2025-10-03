@@ -156,7 +156,7 @@ theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian 
     · exact ae_of_all _ this
   intro x
   rw [← Real.exp_add]
-  gcongr -- `⊢ C' * ‖x‖ ^ 2 ≤ C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2`
+  gcongr -- `⊢ C' * ‖x‖ ^ 2 ≤ C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2` with `ε = (C - C') / C'`
   have h_le : ‖x‖ ^ 2 ≤ (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by
     calc ‖x‖ ^ 2
     _ = ‖x - y + y‖ ^ 2 := by simp
