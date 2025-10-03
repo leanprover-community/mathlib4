@@ -108,8 +108,7 @@ private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
     ext _; simp [Weight.IsZero.eq h_zero]
 
   by_cases h_chi_in_q : χ.toLinear ∈ q
-  · let I := ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero},
-      sl2SubmoduleOfRoot β.2.2
+  · let I := ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot β.2.2
     have genWeightSpace_le_I (β_lin : H →ₗ[K] K) (hβ_in_q : β_lin ∈ q)
         (hβ_ne_zero : β_lin ≠ 0) : genWeightSpace L β_lin ≤ I := by
       by_cases h_trivial : genWeightSpace L β_lin = ⊥
