@@ -34,13 +34,13 @@ noncomputable section
 def e2Summand (m : ℤ) (z : ℍ) : ℂ := ∑' n, eisSummand 2 ![m, n] z
 
 lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n => eisSummand 2 ![m, n] z) := by
-  apply (linear_right_summable z m (k := 2) (by omega)).congr
+  apply (linear_right_summable z m (k := 2) (by grind)).congr
   simp [eisSummand]
 
 @[simp]
 lemma e2Summand_zero_eq_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riemannZeta 2 := by
   simpa [e2Summand, eisSummand] using
-    (two_riemannZeta_eq_tsum_int_inv_even_pow (k := 2) (by omega) (by simp)).symm
+    (two_riemannZeta_eq_tsum_int_inv_even_pow (k := 2) (by grind) (by simp)).symm
 
 theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z := by
   simp only [e2Summand, ← tsum_comp_neg (fun a => eisSummand 2 ![-n, a] z)]
@@ -68,7 +68,7 @@ lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summ
   rw [sum_Icc_of_even_eq_range (e2Summand_even z), Finset.sum_range_succ', mul_add]
   nth_rw 2 [two_mul]
   ring_nf
-  have (a : ℕ) := EisensteinSeries.qExpansion_identity_pnat (k := 1) (by omega)
+  have (a : ℕ) := EisensteinSeries.qExpansion_identity_pnat (k := 1) (by grind)
     ⟨(a + 1) * z, by simpa [show  0 < a + (1 : ℝ) by positivity] using z.2⟩
   simp only [coe_mk_subtype, add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
     Even.neg_pow, Nat.factorial_one, Nat.cast_one, div_one, pow_one, e2Summand, eisSummand,
@@ -76,7 +76,7 @@ lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summ
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, mul_sum, Int.cast_zero,
     zero_mul, add_zero] at *
   congr
-  · simpa using (two_riemannZeta_eq_tsum_int_inv_even_pow (k := 2) (by omega) (by simp)).symm
+  · simpa using (two_riemannZeta_eq_tsum_int_inv_even_pow (k := 2) (by grind) (by simp)).symm
   · ext a
     norm_cast at *
     simp_rw [this a, ← tsum_mul_left, ← tsum_neg,ofReal_mul, ofReal_ofNat, mul_pow, I_sq, neg_mul,
@@ -655,12 +655,11 @@ lemma G2_alt_indexing2_δ (z : ℍ) : ∑' (m : Fin 2 → ℤ), (G2Term z m + δ
   rw [← (finTwoArrowEquiv _).symm.summable_iff] at this
   rw [ Summable.tsum_comm', G2_alt_indexing_δ]
   · apply this.congr
-    intro b
-    simp
-    rfl
+    grind [Fin.isValue, finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.cons_val_fin_one, mul_inv_rev]
   · intro b
     simp only [mul_inv_rev]
-    apply this.prod_factor
+    exact this.prod_factor b
   · intro c
     have H := (G_2_alt_summable_δ z)
     rw [← swap_equiv.summable_iff, ← (finTwoArrowEquiv _).symm.summable_iff] at H
