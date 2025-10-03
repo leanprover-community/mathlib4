@@ -681,7 +681,6 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
   refine ⟨fun h ↦ ?_, subsingleton_Icc_of_ge⟩
   contrapose! h
-  simp only [not_subsingleton_iff]
   exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
 
 @[simp]
