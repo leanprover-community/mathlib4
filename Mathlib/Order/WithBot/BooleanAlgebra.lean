@@ -16,7 +16,15 @@ theorem Set.isCompl_range_coe_bot (α : Type*) :
   IsCompl.of_le (fun _ ⟨⟨_, ha⟩, hn⟩ => WithBot.coe_ne_bot <| ha.trans <| eq_of_mem_singleton hn)
     fun x _ => x.recBotCoe (Or.inr <| mem_singleton _) fun _ => Or.inl <| mem_range_self _
 
+@[simp]
+theorem Set.compl_range_coe_eq_singleton_bot (α : Type*) : (range ((↑) : α → WithBot α))ᶜ = {⊥} :=
+  (isCompl_range_coe_bot α).compl_eq
+
 theorem Set.isCompl_range_coe_top (α : Type*) :
     IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
   IsCompl.of_le (fun _ ⟨⟨_, ha⟩, hn⟩ => WithTop.coe_ne_top <| ha.trans <| eq_of_mem_singleton hn)
     fun x _ => x.recTopCoe (Or.inr <| mem_singleton _) fun _ => Or.inl <| mem_range_self _
+
+@[simp]
+theorem Set.compl_range_coe_eq_singleton_top (α : Type*) : (range ((↑) : α → WithTop α))ᶜ = {⊤} :=
+  (isCompl_range_coe_top α).compl_eq

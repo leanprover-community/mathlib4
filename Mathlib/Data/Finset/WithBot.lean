@@ -47,6 +47,10 @@ def eraseBot : Finset (WithBot α) →o Finset α :=
   (Finset.mapEmbedding (Equiv.withBotNeBot α).toEmbedding).toOrderHom.comp
     ⟨Finset.subtype _, subtype_mono⟩
 
+@[simp]
+theorem mem_eraseBot {s : Finset (WithBot α)} {x : α} : x ∈ eraseBot s ↔ (x : WithBot α) ∈ s := by
+  simp [eraseBot]
+
 -- TODO: reproduce the API from `Finset.eraseNone`.
 
 /-- Given a finset on `α`, lift it to being a finset on `WithTop α`
@@ -62,6 +66,10 @@ attribute [local instance] WithTop.instDecidableEqTop in
 def eraseTop : Finset (WithTop α) →o Finset α :=
   (Finset.mapEmbedding (Equiv.withTopNeTop α).toEmbedding).toOrderHom.comp
     ⟨Finset.subtype _, subtype_mono⟩
+
+@[simp]
+theorem mem_eraseTop {s : Finset (WithTop α)} {x : α} : x ∈ eraseTop s ↔ (x : WithTop α) ∈ s := by
+  simp [eraseTop]
 
 -- TODO: reproduce the API from `Finset.eraseNone`.
 
