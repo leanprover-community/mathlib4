@@ -8,7 +8,6 @@ import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.LiminfLimsup
 
-
 /-!
 # Summation filters
 

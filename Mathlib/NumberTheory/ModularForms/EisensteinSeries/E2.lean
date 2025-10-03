@@ -9,10 +9,8 @@ import Mathlib.Data.Int.Star
 import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
-import Mathlib.NumberTheory.IccSums
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.Topology.Algebra.InfiniteConditionalSum.Basic
 
 /-!
 # Eisenstein Series E2
