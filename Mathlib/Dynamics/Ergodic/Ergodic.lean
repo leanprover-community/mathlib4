@@ -19,7 +19,7 @@ preserving condition is relaxed to quasi-measure-preserving.
 
 # Main definitions:
 
-* `PreErgodic`: the ergodicity condition without the measure preserving condition. This exists
+* `PreErgodic`: the ergodicity condition without the measure-preserving condition. This exists
   to share code between the `Ergodic` and `QuasiErgodic` definitions.
 * `Ergodic`: the definition of ergodic maps / measures.
 * `QuasiErgodic`: the definition of quasi-ergodic maps / measures.
