@@ -999,12 +999,12 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
 def _root_.ContinuousMultilinearMap.flipLinear (f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) :
     G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   MultilinearMap.mkContinuousLinear
-    { toFun := fun x ↦
-        { toFun := fun m ↦ f m x
+    { toFun x := 
+        { toFun m := f m x
           map_update_add' := by simp
           map_update_smul' := by simp }
-      map_add' := fun x y ↦ by ext1; simp
-      map_smul' := fun c x ↦ by ext1; simp } ‖f‖ <| fun x m ↦ by
+      map_add' x y := by ext1; simp
+      map_smul' c x := by ext1; simp } ‖f‖ <| fun x m ↦ by
     simp only [LinearMap.coe_mk, AddHom.coe_mk, MultilinearMap.coe_mk]
     rw [mul_assoc, mul_comm ‖x‖, ← mul_assoc]
     apply ((f m).le_opNorm x).trans
