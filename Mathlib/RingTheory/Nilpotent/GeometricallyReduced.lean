@@ -26,6 +26,10 @@ if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
   Note that their definition differs from the one here, we still need a proof that these are
   equivalent.
 
+## TODO
+- Prove that if `A` is a geometrically reduced `k`-algebra, then for every field extension `K` of
+  `k` the `K`-algebra `K ⊗[k] A` is reduced.
+
 -/
 
 open TensorProduct
