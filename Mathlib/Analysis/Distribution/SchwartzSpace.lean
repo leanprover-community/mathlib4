@@ -67,7 +67,7 @@ noncomputable section
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G V : Type*}
+variable {𝕜 𝕜' R D E F G V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -561,6 +561,38 @@ lemma _root_.Function.HasTemperateGrowth.zero :
 lemma _root_.Function.HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
+
+section Mul
+
+variable [NormedField 𝕜] [NormedRing R] [NormedSpace 𝕜 R] [NormedAlgebra ℝ R]
+  [IsScalarTower 𝕜 R R] [SMulCommClass 𝕜 R R]
+
+/-- The product of two functions of temperate growth is again of temperate growth. -/
+theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth := by
+  constructor
+  · exact hf.1.mul hg.1
+  intro n
+  rcases hf.norm_iteratedFDeriv_le_uniform_aux n with ⟨k1, C1, hC1, h1⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨k2, C2, hC2, h2⟩
+  use k1 + k2
+  use ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C1 * C2)
+  intro x
+  apply le_trans (norm_iteratedFDeriv_mul_le hf.1 hg.1 x (right_eq_inf.mp rfl))
+  have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
+  simp_rw [mul_assoc ((n : ℝ) + 1), ← this, Finset.sum_mul]
+  refine Finset.sum_le_sum fun i hi => ?_
+  rw [one_mul]
+  move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n / 2) : ℝ)]
+  gcongr ?_ * ?_
+  swap
+  · norm_cast
+    exact i.choose_le_middle n
+  simp only [Finset.mem_range] at hi
+  grw [h1 i (Nat.le_of_lt_succ hi) x, h2 (n - i) (by simp only [tsub_le_self]) x]
+  grind
+
+end Mul
 
 lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     Function.HasTemperateGrowth f := by
