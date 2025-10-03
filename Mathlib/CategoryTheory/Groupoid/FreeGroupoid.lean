@@ -59,6 +59,8 @@ inductive FreeGroupoid.redStep : HomRel (Paths (Quiver.Symmetrify V))
 def FreeGroupoid (V) [Q : Quiver V] :=
   CategoryTheory.Quotient (@FreeGroupoid.redStep V Q)
 
+@[deprecated (since := "2025-10-02")] alias _root_.CategoryTheory.FreeGroupoid := FreeGroupoid
+
 namespace FreeGroupoid
 
 open Quiver

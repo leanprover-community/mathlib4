@@ -89,12 +89,7 @@ theorem toLex_covBy_toLex_iff {a₁ a₂ : α} {b₁ b₂ : β} :
   simp only [CovBy, toLex_lt_toLex, toLex.surjective.forall, Prod.forall, isMax_iff_forall_not_lt,
     isMin_iff_forall_not_lt]
   constructor
-  · rintro ⟨ha | ⟨rfl, hb⟩, h₂⟩
-    · refine .inr ⟨⟨ha, fun c hc₁ hc₂ ↦ ?_⟩, fun c hc ↦ ?_, fun c hc ↦ ?_⟩
-      · exact h₂ c b₁ (.inl hc₁) (.inl hc₂)
-      · exact h₂ a₁ c (.inr ⟨rfl, hc⟩) (.inl ha)
-      · exact h₂ a₂ c (.inl ha) (.inr ⟨rfl, hc⟩)
-    · exact .inl ⟨rfl, hb, fun c hc₁ hc₂ ↦ h₂ _ _ (.inr ⟨rfl, hc₁⟩) (.inr ⟨rfl, hc₂⟩)⟩
+  · grind
   · rintro (⟨rfl, hb, h⟩ | ⟨⟨ha, h⟩, hb₁, hb₂⟩)
     · refine ⟨.inr ⟨rfl, hb⟩, fun a b ↦ ?_⟩
       rintro (hlt₁ | ⟨rfl, hlt₁⟩) (hlt₂ | ⟨heq, hlt₂⟩)
