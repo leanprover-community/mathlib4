@@ -21,7 +21,7 @@ that of `Ω` (see `SmallCategoryOfSet.exists_equivalence`).
 
 Given a cardinal `κ : Cardinal.{w}`, we also provide a small family of categories
 `SmallCategoryCardinalLT.categoryFamily κ` which represents (up to isomorphism)
-any category `C` such that `HasCardinalLT C κ`.
+any category `C` such that `HasCardinalLT C κ` holds.
 
 -/
 
