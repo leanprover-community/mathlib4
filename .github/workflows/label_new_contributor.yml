@@ -39,6 +39,10 @@ jobs:
             const issues = await github.paginate(opts)
             const pullRequestCount = issues.length;
 
+            // We could filter out bot users here, with:
+            // const isBot = (github.rest.users.getByUsername(creator).type === "Bot");
+            // But we choose to label PRs by new bot contributors as well.
+
             // Determine if the creator has 5 or fewer pull requests
             if (pullRequestCount <= 5) {
               // Add the "new-contributor" label to the current pull request
