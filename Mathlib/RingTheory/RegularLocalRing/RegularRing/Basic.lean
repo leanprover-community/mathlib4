@@ -3,7 +3,6 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.RegularLocalRing.Defs
 /-!
 
@@ -18,6 +17,7 @@ open IsLocalRing
 
 variable (R : Type*) [CommRing R]
 
+/-- A ring is regular if its localization at any prime `IsRegularLocalRing`. -/
 class IsRegularRing : Prop where
   localization_isRegular : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
     IsRegularLocalRing (Localization.AtPrime p)
