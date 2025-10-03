@@ -265,14 +265,7 @@ theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
   | cons a l IH =>
     cases i with
     | zero => simp
-    | succ i =>
-      rw [nodup_cons] at hl
-      rw [erase_cons_tail]
-      · simp [IH hl.2]
-      · rw [beq_iff_eq]
-        simp only [getElem_cons_succ]
-        simp only [length_cons, Nat.add_lt_add_iff_right] at h
-        exact mt (· ▸ getElem_mem h) hl.1
+    | succ i => grind
 
 theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
     l.erase (l.get i) = l.eraseIdx ↑i := by
