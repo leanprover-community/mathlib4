@@ -3,17 +3,20 @@ name: Remove outdated deprecated declarations
 on:
   schedule:
   - cron: "5 4 * * 1" # At 04:05, on Monday
+  push:
+   branches:
+   - remove_deprecations_linter_dev_upstream
   workflow_dispatch:
     inputs:
       raw_from_date:
-        description: 'starting date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "3 months ago"'
+        description: 'starting date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "5 years ago"'
         required: false
-        default: '2025-01-01'
+        default: '5 years ago'
         type: string
       raw_to_date:
-        description: 'ending date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "2 weeks ago"'
+        description: 'ending date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "6 months ago"'
         required: false
-        default: ''
+        default: '6 months ago'
         type: string
       dry_run:
         description: 'if true, only log the outdated declarations, do not remove them and open a PR'
@@ -75,8 +78,8 @@ jobs:
             from_date=$(parse_date_safely "${RAW_FROM_DATE}")
           fi
         else
-          echo "No raw_from_date provided, using '2025-01-01'"
-          from_date='2025-01-01'
+          echo "No raw_from_date provided, using 5 years ago"
+          from_date=$(date -d '5 years ago' +%Y-%m-%d)
         fi
 
         # Process to_date
@@ -169,7 +172,7 @@ jobs:
         commit-message: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
         branch: "deprecated-decls"
         base: master
-        title: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
+        title: "CI TEST: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
         body: |
           I am happy to remove some deprecated declarations for you!
           Please check if there are any remaining stray comments or other issues before merging.
@@ -177,7 +180,7 @@ jobs:
           [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
     - name: Send Zulip message
-      if: steps.pr.outcome == 'success'
+      if: steps.pr.outcome == 'success' && false
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
