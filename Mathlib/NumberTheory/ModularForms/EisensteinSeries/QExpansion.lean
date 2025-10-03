@@ -51,7 +51,7 @@ open BoundedContinuousFunction in
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f : ℕ → ℂ} {p : ℝ}
     (hp : 0 < p) (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
     SummableLocallyUniformlyOn (fun n ↦ (f n) •
-    iteratedDerivWithin k (fun z ↦ cexp (2 * π * I * z / p) ^ n) ℍₒ) ℍₒ := by
+      iteratedDerivWithin k (fun z ↦ cexp (2 * π * I * z / p) ^ n) ℍₒ) ℍₒ := by
   apply SummableLocallyUniformlyOn_of_locally_bounded isOpen_upperHalfPlaneSet
   intro K hK hKc
   have : CompactSpace K := isCompact_univ_iff.mp (isCompact_iff_isCompact_univ.mp hKc)
@@ -91,7 +91,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp' (k : ℕ) :
 
 theorem differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : IsOpen s)
     {r : ℂ} (hr : r ∈ s) : DifferentiableAt ℂ
-    (iteratedDerivWithin a (fun z ↦ cexp (2 * π * I * z) ^ n) s) r := by
+      (iteratedDerivWithin a (fun z ↦ cexp (2 * π * I * z) ^ n) s) r := by
   apply DifferentiableOn.differentiableAt _ (hs.mem_nhds hr)
   suffices DifferentiableOn ℂ (iteratedDeriv a (fun z ↦ cexp (2 * π * I * z) ^ n)) s by
     apply this.congr (iteratedDerivWithin_of_isOpen hs)
@@ -143,9 +143,9 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
     iteratedDerivWithin_cexp_mul_const k n 1 isOpen_upperHalfPlaneSet z.2
 
 theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
-    ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / (k !)) *
+    ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / k !) *
     ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
-  have :  (-1) ^ k * (k : ℕ)! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) =
+  have : (-1) ^ k * (k : ℕ)! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) =
     -(2 * π * I) ^ (k + 1) * ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
     rw [← iteratedDerivWithin_tsum_exp_aux_eq hk z,
       ← iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow hk (by simpa using z.2)]
@@ -171,7 +171,7 @@ theorem summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
     Pi.smul_apply, smul_eq_mul, mul_eq_mul_left_iff, pow_eq_zero_iff', Nat.cast_eq_zero]
 
 theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
-    ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / (k !)) *
+    ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / k !) *
     ∑' n : ℕ+, n ^ k * cexp (2 * π * I * z) ^ (n : ℕ) := by
   have hk0 : k ≠ 0 := by omega
   rw [EisensteinSeries.qExpansion_identity hk z, ← tsum_zero_pnat_eq_tsum_nat]
