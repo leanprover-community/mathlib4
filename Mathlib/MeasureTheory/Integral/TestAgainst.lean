@@ -37,6 +37,7 @@ namespace FiniteMeasure
 
 /-- `FiniteMeasure.testAgainstₗ` wraps the integral with respect to a finite measure `μ`
 as a `𝕜`-linear map on bounded continuous functions. -/
+@[simps!]
 noncomputable def testAgainstₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →ₗ[𝕜] E where
@@ -73,6 +74,7 @@ variable (𝕜) {μ}
 
 /-- `LocallyIntegrable.testAgainstₗ` wraps the integral against a locally integrable function `f` on
 a fixed compact `K` as a `𝕜`-linear map on scalar valued bounded continuous functions. -/
+@[simps!]
 noncomputable def testAgainstₗ {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X) :
     (X →ᵇ 𝕜) →ₗ[𝕜] E where
   toFun φ := ∫ x, φ x • f x ∂(μ.restrict K)
