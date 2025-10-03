@@ -457,16 +457,10 @@ lemma infinitePi_map_piCurry_symm :
       infinitePi fun p : (i : ι) × κ i ↦ μ p.1 p.2 := by
   apply eq_infinitePi
   intro s t ht
-  rw [map_apply (by fun_prop) (.pi (countable_toSet _) ht)]
   classical
-  have : (piCurry X).symm ⁻¹' s.toSet.pi t = (s.image Sigma.fst).toSet.pi
-      (fun i ↦ (s.preimage (Sigma.mk i) sigma_mk_injective.injOn).toSet.pi fun j ↦ t ⟨i, j⟩) := by
-    ext x
-    simp only [Set.mem_preimage, Set.mem_pi, mem_coe, piCurry_symm_apply, coe_image, coe_preimage,
-      Set.mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
-    exact ⟨fun h i j hij k hik ↦ h _ hik, fun h p hp ↦ h p.1 p.2 hp p.2 hp⟩
-  nth_rw 2 [← Finset.sigma_image_fst_preimage_mk s]
-  rw [this, infinitePi_pi, Finset.prod_sigma]
+  rw [map_apply (by fun_prop) (.pi (countable_toSet _) ht), ← Finset.sigma_image_fst_preimage_mk s,
+    coe_piCurry_symm, Finset.coe_sigma, Set.uncurry_preimage_sigma_pi, infinitePi_pi,
+    Finset.prod_sigma]
   · apply Finset.prod_congr rfl
     simp only [Finset.mem_image, Sigma.exists, exists_and_right, exists_eq_right,
       forall_exists_index]
@@ -475,6 +469,11 @@ lemma infinitePi_map_piCurry_symm :
     simpa using fun j hj ↦ ht _ hj
   · simp only [mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
     exact fun i j hij ↦ MeasurableSet.pi (countable_toSet _) fun k hk ↦ by simp_all
+
+lemma infinitePi_map_piCurry :
+    (infinitePi fun p : (i : ι) × κ i ↦ μ p.1 p.2).map (piCurry X) =
+      infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j := by
+  rw [MeasurableEquiv.map_apply_eq_iff_map_symm_apply_eq, infinitePi_map_piCurry_symm]
 
 end curry
 
