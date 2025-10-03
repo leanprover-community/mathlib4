@@ -161,16 +161,22 @@ section tprod
 variable [T2Space α]
 
 @[to_additive]
-theorem tprod_inv [L.NeBot] : ∏'[L] b, (f b)⁻¹ = (∏'[L] b, f b)⁻¹ := by
-  by_cases hf : Multipliable f L
-  · exact hf.hasProd.inv.tprod_eq
-  · simp [tprod_eq_one_of_not_multipliable hf,
-      tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
+theorem tprod_inv : ∏'[L] b, (f b)⁻¹ = (∏'[L] b, f b)⁻¹ := by
+  by_cases hL : L.NeBot
+  · by_cases hf : Multipliable f L
+    · exact hf.hasProd.inv.tprod_eq
+    · simp [tprod_eq_one_of_not_multipliable hf,
+        tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
+  · rw [tprod_bot hL, tprod_bot hL]
+    exact finprod_inv_distrib f
 
 @[to_additive]
 protected theorem Multipliable.tprod_div [L.NeBot] (hf : Multipliable f L) (hg : Multipliable g L) :
-    ∏'[L] b, (f b / g b) = (∏'[L] b, f b) / ∏'[L] b, g b :=
-  (hf.hasProd.div hg.hasProd).tprod_eq
+    ∏'[L] b, (f b / g b) = (∏'[L] b, f b) / ∏'[L] b, g b := by
+  by_cases  hL : L.NeBot
+  · exact (hf.hasProd.div hg.hasProd).tprod_eq
+  · rw [tprod_bot hL, tprod_bot hL, tprod_bot hL]
+    (expose_names; exact False.elim (hL inst_4))
 
 @[deprecated (since := "2025-04-12")] alias tsum_sub := Summable.tsum_sub
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_div :=
