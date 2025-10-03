@@ -105,25 +105,25 @@ variable [FunLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) HeytingHomClass.toBoundedLatticeHomClass [HeytingAlgebra α]
-    { _ : HeytingAlgebra β} [HeytingHomClass F α β] : BoundedLatticeHomClass F α β :=
+    {_ : HeytingAlgebra β} [HeytingHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹HeytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 
 -- See note [lower instance priority]
 instance (priority := 100) CoheytingHomClass.toBoundedLatticeHomClass [CoheytingAlgebra α]
-    { _ : CoheytingAlgebra β} [CoheytingHomClass F α β] : BoundedLatticeHomClass F α β :=
+    {_ : CoheytingAlgebra β} [CoheytingHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹CoheytingHomClass F α β› with
     map_bot := fun f => by rw [← @sdiff_self α _ ⊤, ← sdiff_self, map_sdiff] }
 
 -- See note [lower instance priority]
 instance (priority := 100) BiheytingHomClass.toHeytingHomClass [BiheytingAlgebra α]
-    { _ : BiheytingAlgebra β} [BiheytingHomClass F α β] : HeytingHomClass F α β :=
+    {_ : BiheytingAlgebra β} [BiheytingHomClass F α β] : HeytingHomClass F α β :=
   { ‹BiheytingHomClass F α β› with
     map_bot := fun f => by rw [← @sdiff_self α _ ⊤, ← sdiff_self, BiheytingHomClass.map_sdiff] }
 
 -- See note [lower instance priority]
 instance (priority := 100) BiheytingHomClass.toCoheytingHomClass [BiheytingAlgebra α]
-    { _ : BiheytingAlgebra β} [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
+    {_ : BiheytingAlgebra β} [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
   { ‹BiheytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 
@@ -135,7 +135,7 @@ variable [EquivLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toHeytingHomClass [HeytingAlgebra α]
-    { _ : HeytingAlgebra β} [OrderIsoClass F α β] : HeytingHomClass F α β :=
+    {_ : HeytingAlgebra β} [OrderIsoClass F α β] : HeytingHomClass F α β :=
   { OrderIsoClass.toBoundedLatticeHomClass with
     map_himp := fun f a b =>
       eq_of_forall_le_iff fun c => by
@@ -145,7 +145,7 @@ instance (priority := 100) OrderIsoClass.toHeytingHomClass [HeytingAlgebra α]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toCoheytingHomClass [CoheytingAlgebra α]
-    { _ : CoheytingAlgebra β} [OrderIsoClass F α β] : CoheytingHomClass F α β :=
+    {_ : CoheytingAlgebra β} [OrderIsoClass F α β] : CoheytingHomClass F α β :=
   { OrderIsoClass.toBoundedLatticeHomClass with
     map_sdiff := fun f a b =>
       eq_of_forall_ge_iff fun c => by
@@ -155,7 +155,7 @@ instance (priority := 100) OrderIsoClass.toCoheytingHomClass [CoheytingAlgebra �
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBiheytingHomClass [BiheytingAlgebra α]
-    { _ : BiheytingAlgebra β} [OrderIsoClass F α β] : BiheytingHomClass F α β :=
+    {_ : BiheytingAlgebra β} [OrderIsoClass F α β] : BiheytingHomClass F α β :=
   { OrderIsoClass.toLatticeHomClass with
     map_himp := fun f a b =>
       eq_of_forall_le_iff fun c => by
@@ -172,9 +172,7 @@ end Equiv
 
 variable [FunLike F α β]
 
--- Porting note: Revisit this issue to see if it works in Lean 4.
-/-- This can't be an instance because of typeclass loops. -/
-lemma BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
+instance BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
     [BoundedLatticeHomClass F α β] : BiheytingHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with
     map_himp := fun f a b => by rw [himp_eq, himp_eq, map_sup, (isCompl_compl.map _).compl_eq]
@@ -248,7 +246,6 @@ instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   map_bot f := f.map_bot'
   map_himp := HeytingHom.map_himp'
 
--- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : HeytingHom α β} : f.toFun = ⇑f :=
   rfl
 
@@ -354,7 +351,6 @@ instance : CoheytingHomClass (CoheytingHom α β) α β where
   map_top f := f.map_top'
   map_sdiff := CoheytingHom.map_sdiff'
 
--- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : CoheytingHom α β} : f.toFun = (f : α → β) :=
   rfl
 
@@ -460,7 +456,6 @@ instance : BiheytingHomClass (BiheytingHom α β) α β where
   map_himp f := f.map_himp'
   map_sdiff f := f.map_sdiff'
 
--- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : BiheytingHom α β} : f.toFun = (f : α → β) :=
   rfl
 

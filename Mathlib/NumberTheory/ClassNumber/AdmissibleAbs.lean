@@ -15,8 +15,8 @@ is finite.
 
 ## Main results
 
- * `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
-   mapping negative `x` to `-x`, is admissible.
+* `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
+  mapping negative `x` to `-x`, is admissible.
 -/
 
 

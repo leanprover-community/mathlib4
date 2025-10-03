@@ -31,9 +31,9 @@ from the natural numbers into it is injective.
 *Warning*: for a semiring `R`, `CharZero R` and `CharP R 0` need not coincide.
 * `CharZero R` requires an injection `ℕ ↪ R`;
 * `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`.
-For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
-`CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
+  For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
+  `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
+  This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
 class CharZero (R) [AddMonoidWithOne R] : Prop where
   /-- An additive monoid with one has characteristic zero if the canonical map `ℕ → R` is
@@ -79,9 +79,6 @@ theorem cast_eq_one {n : ℕ} : (n : R) = 1 ↔ n = 1 := by rw [← cast_one, ca
 @[norm_cast]
 theorem cast_ne_one {n : ℕ} : (n : R) ≠ 1 ↔ n ≠ 1 :=
   cast_eq_one.not
-
-instance (priority := 100) AtLeastTwo.toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
-  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
 
 end Nat
 

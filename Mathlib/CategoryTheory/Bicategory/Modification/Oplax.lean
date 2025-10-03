@@ -15,15 +15,15 @@ A modification `Γ` between oplax transformations `η` and `θ` consists of a fa
 
 ## Main definitions
 
-* `Modification η θ` : modifications between oplax transformations `η` and `θ`
-* `Modification.vcomp η θ` : the vertical composition of oplax transformations `η`
+* `Modification η θ`: modifications between oplax transformations `η` and `θ`
+* `Modification.vcomp η θ`: the vertical composition of oplax transformations `η`
   and `θ`
-* `OplaxTrans.category F G` : the category structure on the oplax transformations
+* `OplaxTrans.category F G`: the category structure on the oplax transformations
   between `F` and `G`
 
 -/
 
-namespace CategoryTheory.Oplax
+namespace CategoryTheory.Oplax.OplaxTrans
 
 open Category Bicategory
 
@@ -47,7 +47,7 @@ structure Modification (η θ : F ⟶ G) where
   naturality :
     ∀ {a b : B} (f : a ⟶ b),
       F.map f ◁ app b ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] Modification.naturality
 
@@ -92,7 +92,7 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
-instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
+scoped instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
   id := Modification.id
   comp := Modification.vcomp
@@ -130,4 +130,4 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
       naturality := fun {a b} f => by
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
 
-end CategoryTheory.Oplax
+end CategoryTheory.Oplax.OplaxTrans

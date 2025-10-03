@@ -134,7 +134,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zmod G
   rcases n with - | n
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
-      { uniq := by simp only [eq_iff_true_of_subsingleton]; trivial }
+      { uniq := by subsingleton }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact

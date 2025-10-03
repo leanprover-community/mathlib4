@@ -19,7 +19,7 @@ Those in the `Linarith` namespace should stay here.
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 universe u
 theorem lt_irrefl {α : Type u} [Preorder α] {a : α} : ¬a < a := _root_.lt_irrefl a
@@ -85,12 +85,11 @@ theorem mul_nonpos [IsOrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b
 theorem sub_nonpos_of_le [IsOrderedRing α] {a b : α} : a ≤ b → a - b ≤ 0 :=
   _root_.sub_nonpos_of_le
 
-theorem sub_neg_of_lt  [IsOrderedRing α] {a b : α} : a < b → a - b < 0 :=
+theorem sub_neg_of_lt [IsOrderedRing α] {a b : α} : a < b → a - b < 0 :=
   _root_.sub_neg_of_lt
 
 end Ring
 
-open Mathlib in
 /-- Finds the name of a multiplicative lemma corresponding to an inequality strength. -/
 def _root_.Mathlib.Ineq.toConstMulName : Ineq → Lean.Name
   | .lt => ``mul_neg
@@ -112,14 +111,14 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
     a * b = 0 := by
   simp [h]
 
-end Linarith
+end Mathlib.Tactic.Linarith
 
 section
-open Function
--- These lemmas can be removed when their originals are ported.
 
+@[deprecated GT.gt.lt (since := "2025-06-16")]
 theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
+@[deprecated GE.ge.le (since := "2025-06-16")]
 theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
 
 end

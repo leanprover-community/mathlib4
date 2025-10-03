@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -20,9 +21,9 @@ We provide the definition and related lemmas about associated primes of modules.
 - `associatedPrimes`: The set of associated primes of a module.
 
 ## Main results
-- `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a noetherian ring, any `ann(x)` is
+- `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a Noetherian ring, any `ann(x)` is
   contained in an associated prime for `x ≠ 0`.
-- `associatedPrimes.eq_singleton_of_isPrimary`: In a noetherian ring, `I.radical` is the only
+- `associatedPrimes.eq_singleton_of_isPrimary`: In a Noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
 ## TODO
@@ -39,6 +40,16 @@ open LinearMap
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the annihilator of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
   I.IsPrime ∧ ∃ x : M, I = ker (toSpanSingleton R M x)
+
+theorem isAssociatedPrime_iff_exists_injective_linearMap :
+    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ (f : R ⧸ I →ₗ[R] M), Function.Injective f := by
+  rw [IsAssociatedPrime]
+  congr! 1
+  refine ⟨fun ⟨_, h⟩ ↦ ⟨Submodule.liftQ _ _ h.le, ker_eq_bot.1 (Submodule.ker_liftQ_eq_bot' _ _ h)⟩,
+    fun ⟨f, h⟩ ↦ ⟨(f ∘ₗ Submodule.mkQ I) 1, ?_⟩⟩
+  have := I.ker_mkQ ▸ ker_comp_of_ker_eq_bot (Submodule.mkQ I) (ker_eq_bot_of_injective h)
+  convert this.symm using 2
+  ext; simp
 
 variable (R)
 
@@ -92,13 +103,62 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
   rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩),
     mem_ker, toSpanSingleton_apply, smul_comm, smul_smul]
 
-theorem associatedPrimes.subset_of_injective (hf : Function.Injective f) :
+namespace associatedPrimes
+
+variable {f} {M'' : Type*} [AddCommGroup M''] [Module R M''] {g : M' →ₗ[R] M''}
+
+/-- If `M → M'` is injective, then the set of associated primes of `M` is
+contained in that of `M'`. -/
+@[stacks 02M3 "first part"]
+theorem subset_of_injective (hf : Function.Injective f) :
     associatedPrimes R M ⊆ associatedPrimes R M' := fun _I h => h.map_of_injective f hf
+
+/-- If `0 → M → M' → M''` is an exact sequence, then the set of associated primes of `M'` is
+contained in the union of those of `M` and `M''`. -/
+@[stacks 02M3 "second part"]
+theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
+    associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
+  rintro p ⟨_, x, hx⟩
+  by_cases h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
+  · obtain ⟨a, ha, y, h⟩ := h
+    left
+    refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
+    · rw [hx] at hb
+      rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
+      apply_fun _ using hf
+      rw [map_smul, map_zero, h, smul_comm, hb, smul_zero]
+    · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb
+      apply_fun f at hb
+      rw [map_smul, map_zero, h, ← mul_smul, ← LinearMap.toSpanSingleton_apply,
+        ← LinearMap.mem_ker, ← hx] at hb
+      contrapose! hb
+      exact p.primeCompl.mul_mem hb ha
+  · push_neg at h
+    right
+    refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
+    · rw [hx] at hb
+      rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
+      rw [← map_smul, hb, map_zero]
+    · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, ← map_smul, ← LinearMap.mem_ker,
+        hfg.linearMap_ker_eq] at hb
+      obtain ⟨y, hy⟩ := hb
+      by_contra! H
+      exact h b H y hy
+
+variable (R M M') in
+/-- The set of associated primes of the product of two modules is equal to
+the union of those of the two modules. -/
+@[stacks 02M3 "third part"]
+theorem prod : associatedPrimes R (M × M') = associatedPrimes R M ∪ associatedPrimes R M' :=
+  (subset_union_of_exact LinearMap.inl_injective .inl_snd).antisymm (Set.union_subset_iff.2
+    ⟨subset_of_injective LinearMap.inl_injective, subset_of_injective LinearMap.inr_injective⟩)
+
+end associatedPrimes
 
 theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
     associatedPrimes R M = associatedPrimes R M' :=
-  le_antisymm (associatedPrimes.subset_of_injective l l.injective)
-    (associatedPrimes.subset_of_injective l.symm l.symm.injective)
+  le_antisymm (associatedPrimes.subset_of_injective l.injective)
+    (associatedPrimes.subset_of_injective l.symm.injective)
 
 theorem associatedPrimes.eq_empty_of_subsingleton [Subsingleton M] : associatedPrimes R M = ∅ := by
   ext; simp only [Set.mem_empty_iff_false, iff_false]

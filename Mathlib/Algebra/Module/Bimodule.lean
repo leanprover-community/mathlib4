@@ -34,11 +34,11 @@ This file is a place to collect results which are specific to bimodules.
 
 ## Main definitions
 
- * `Subbimodule.mk`
- * `Subbimodule.smul_mem`
- * `Subbimodule.smul_mem'`
- * `Subbimodule.toSubmodule`
- * `Subbimodule.toSubmodule'`
+* `Subbimodule.mk`
+* `Subbimodule.smul_mem`
+* `Subbimodule.smul_mem'`
+* `Subbimodule.toSubmodule`
+* `Subbimodule.toSubmodule'`
 
 ## Implementation details
 
@@ -80,7 +80,7 @@ def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p
   { p with
     carrier := p
     smul_mem' := fun ab m =>
-      TensorProduct.induction_on ab (fun _ => by simpa only [zero_smul] using p.zero_mem)
+      TensorProduct.induction_on ab (fun _ => by simp only [zero_smul, SetLike.mem_coe, zero_mem])
         (fun a b hm => by simpa only [TensorProduct.Algebra.smul_def] using hA a (hB b hm))
         fun z w hz hw hm => by simpa only [add_smul] using p.add_mem (hz hm) (hw hm) }
 

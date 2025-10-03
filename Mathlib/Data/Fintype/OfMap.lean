@@ -28,7 +28,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Fintype
 

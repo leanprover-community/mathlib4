@@ -43,7 +43,7 @@ theorem take_splitLength (i : ℕ) : (sz.splitLengths l).take i = (sz.take i).sp
   case succ i hi =>
     cases sz
     · simp
-    · simp only [splitLengths_cons, take_succ_cons, cons.injEq, true_and, hi]
+    · simp only [splitLengths_cons, take_succ_cons, hi]
 
 theorem length_splitLengths_getElem_le {i : ℕ} {hi : i < (sz.splitLengths l).length} :
     (sz.splitLengths l)[i].length ≤ sz[i]'(by simpa using hi) := by
@@ -81,7 +81,7 @@ theorem length_splitLengths_getElem_eq {i : ℕ} (hi : i < sz.length)
   simp only [take_splitLength]
   conv_rhs =>
     rw [List.getElem_take' (hj := i.lt_add_one)]
-    simp (config := {singlePass := true}) only [← map_splitLengths_length l _ h]
+    simp +singlePass only [← map_splitLengths_length l _ h]
     rw [getElem_map]
 
 theorem splitLengths_length_getElem {α : Type*} (l : List α) (sz : List ℕ)
@@ -98,6 +98,6 @@ theorem length_mem_splitLengths {α : Type*} (l : List α) (sz : List ℕ) (b : 
   intro i hi
   have := length_splitLengths_getElem_le l sz (hi := hi)
   have := h (sz[i]'(by simpa using hi)) (getElem_mem ..)
-  omega
+  cutsat
 
 end List

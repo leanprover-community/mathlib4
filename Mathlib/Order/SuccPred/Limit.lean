@@ -16,11 +16,6 @@ any others. They are so named since they can't be the successors of anything sma
 For some applications, it is desirable to exclude minimal elements from being successor limits, or
 maximal elements from being predecessor limits. As such, we also provide `Order.IsSuccLimit` and
 `Order.IsPredLimit`, which exclude these cases.
-
-## TODO
-
-The plan is to eventually replace `Ordinal.IsLimit` and `Cardinal.IsLimit` with the common
-predicate `Order.IsSuccLimit`.
 -/
 
 
@@ -89,6 +84,9 @@ protected theorem _root_.IsMin.not_isSuccLimit (h : IsMin a) : ¬ IsSuccLimit a 
 
 protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := fun h _ hab =>
   not_isMin_of_lt hab.lt h
+
+theorem IsSuccLimit.nonempty_Iio (h : IsSuccLimit a) : (Set.Iio a).Nonempty :=
+  not_isMin_iff.1 h.1
 
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
   isMin_bot.isSuccPrelimit
@@ -273,7 +271,7 @@ theorem IsSuccPrelimit.le_iff_forall_le (h : IsSuccPrelimit a) : a ≤ b ↔ ∀
   use fun ha c hc ↦ hc.le.trans ha
   intro H
   by_contra! ha
-  exact h b ⟨ha, fun c hb hc ↦ (H c hc).not_lt hb⟩
+  exact h b ⟨ha, fun c hb hc ↦ (H c hc).not_gt hb⟩
 
 theorem IsSuccLimit.le_iff_forall_le (h : IsSuccLimit a) : a ≤ b ↔ ∀ c < a, c ≤ b :=
   h.isSuccPrelimit.le_iff_forall_le
@@ -285,28 +283,34 @@ theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c
 theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c < b, a < c :=
   h.isSuccPrelimit.lt_iff_exists_lt
 
-lemma _root_.IsLUB.isSuccPrelimit_of_not_mem {s : Set α} (hs : IsLUB s a) (ha : a ∉ s) :
+lemma _root_.IsLUB.isSuccPrelimit_of_notMem {s : Set α} (hs : IsLUB s a) (ha : a ∉ s) :
     IsSuccPrelimit a := by
   intro b hb
   obtain ⟨c, hc, hbc, hca⟩ := hs.exists_between hb.lt
   obtain rfl := (hb.ge_of_gt hbc).antisymm hca
   contradiction
 
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsLUB.isSuccPrelimit_of_not_mem := _root_.IsLUB.isSuccPrelimit_of_notMem
+
 lemma _root_.IsLUB.mem_of_not_isSuccPrelimit {s : Set α} (hs : IsLUB s a) (ha : ¬IsSuccPrelimit a) :
     a ∈ s :=
-  ha.imp_symm hs.isSuccPrelimit_of_not_mem
+  ha.imp_symm hs.isSuccPrelimit_of_notMem
 
-lemma _root_.IsLUB.isSuccLimit_of_not_mem {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty)
+lemma _root_.IsLUB.isSuccLimit_of_notMem {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty)
     (ha : a ∉ s) : IsSuccLimit a := by
-  refine ⟨?_, hs.isSuccPrelimit_of_not_mem ha⟩
+  refine ⟨?_, hs.isSuccPrelimit_of_notMem ha⟩
   obtain ⟨b, hb⟩ := hs'
   obtain rfl | hb := (hs.1 hb).eq_or_lt
   · contradiction
   · exact hb.not_isMin
 
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsLUB.isSuccLimit_of_not_mem := _root_.IsLUB.isSuccLimit_of_notMem
+
 lemma _root_.IsLUB.mem_of_not_isSuccLimit {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty)
     (ha : ¬IsSuccLimit a) : a ∈ s :=
-  ha.imp_symm <| hs.isSuccLimit_of_not_mem hs'
+  ha.imp_symm <| hs.isSuccLimit_of_notMem hs'
 
 theorem IsSuccPrelimit.isLUB_Iio (ha : IsSuccPrelimit a) : IsLUB (Iio a) a := by
   refine ⟨fun _ ↦ le_of_lt, fun b hb ↦ le_of_forall_lt fun c hc ↦ ?_⟩
@@ -413,6 +417,9 @@ protected theorem _root_.IsMax.not_isPredLimit (h : IsMax a) : ¬ IsPredLimit a 
 
 protected theorem _root_.IsMax.isPredPrelimit : IsMax a → IsPredPrelimit a := fun h _ hab =>
   not_isMax_of_lt hab.lt h
+
+theorem IsPredLimit.nonempty_Ioi (h : IsPredLimit a) : (Set.Ioi a).Nonempty :=
+  not_isMax_iff.1 h.1
 
 theorem isPredPrelimit_top [OrderTop α] : IsPredPrelimit (⊤ : α) :=
   isMax_top.isPredPrelimit
@@ -578,21 +585,27 @@ theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c
 theorem IsPredLimit.lt_iff_exists_lt (h : IsPredLimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
   h.dual.lt_iff_exists_lt
 
-lemma _root_.IsGLB.isPredPrelimit_of_not_mem {s : Set α} (hs : IsGLB s a) (ha : a ∉ s) :
+lemma _root_.IsGLB.isPredPrelimit_of_notMem {s : Set α} (hs : IsGLB s a) (ha : a ∉ s) :
     IsPredPrelimit a := by
-  simpa using (IsGLB.dual hs).isSuccPrelimit_of_not_mem ha
+  simpa using (IsGLB.dual hs).isSuccPrelimit_of_notMem ha
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsGLB.isPredPrelimit_of_not_mem := _root_.IsGLB.isPredPrelimit_of_notMem
 
 lemma _root_.IsGLB.mem_of_not_isPredPrelimit {s : Set α} (hs : IsGLB s a) (ha : ¬IsPredPrelimit a) :
     a ∈ s :=
-  ha.imp_symm hs.isPredPrelimit_of_not_mem
+  ha.imp_symm hs.isPredPrelimit_of_notMem
 
-lemma _root_.IsGLB.isPredLimit_of_not_mem {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
+lemma _root_.IsGLB.isPredLimit_of_notMem {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : a ∉ s) : IsPredLimit a := by
-  simpa using (IsGLB.dual hs).isSuccLimit_of_not_mem hs' ha
+  simpa using (IsGLB.dual hs).isSuccLimit_of_notMem hs' ha
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsGLB.isPredLimit_of_not_mem := _root_.IsGLB.isPredLimit_of_notMem
 
 lemma _root_.IsGLB.mem_of_not_isPredLimit {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : ¬IsPredLimit a) : a ∈ s :=
-  ha.imp_symm <| hs.isPredLimit_of_not_mem hs'
+  ha.imp_symm <| hs.isPredLimit_of_notMem hs'
 
 theorem IsPredPrelimit.isGLB_Ioi (ha : IsPredPrelimit a) : IsGLB (Ioi a) a :=
   ha.dual.isLUB_Iio

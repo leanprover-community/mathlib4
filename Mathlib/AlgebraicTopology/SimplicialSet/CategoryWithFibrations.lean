@@ -42,7 +42,7 @@ which consists of horn inclusions `Λ[n, i].ι : Λ[n, i] ⟶ Δ[n]` (for positi
 def J : MorphismProperty SSet.{u} :=
   ⨆ n, .ofHoms (fun (i : Fin (n + 2)) ↦ Λ[n + 1, i].ι)
 
-lemma horn_ι_mem_J (n : ℕ) (i : Fin (n + 2)):
+lemma horn_ι_mem_J (n : ℕ) (i : Fin (n + 2)) :
     J (horn.{u} (n + 1) i).ι := by
   simp only [J, iSup_iff]
   exact ⟨n, ⟨i⟩⟩

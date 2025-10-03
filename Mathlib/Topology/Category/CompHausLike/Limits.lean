@@ -343,7 +343,7 @@ theorem hasPullbacksOfInclusions
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
     PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
   { preservesPullbackInl := by
-      intros X Y Z f
+      intro X Y Z f
       infer_instance }
 
 instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike P) :=
@@ -362,7 +362,7 @@ section Terminal
 variable {P : TopCat.{u} → Prop}
 
 /-- A one-element space is terminal in `CompHaus` -/
-def isTerminalPUnit [HasProp P PUnit.{u+1}] :
+def isTerminalPUnit [HasProp P PUnit.{u + 1}] :
     IsTerminal (CompHausLike.of P PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ CompHausLike.of P PUnit.{u + 1}) := fun _ ↦
     ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩

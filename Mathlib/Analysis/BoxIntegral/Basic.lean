@@ -28,7 +28,7 @@ with respect to the volume `vol` is the sum of `vol J (f (π.tag J))` over all b
 The integral is defined as the limit of integral sums along a filter. Different filters correspond
 to different integration theories. In order to avoid code duplication, all our definitions and
 theorems take an argument `l : BoxIntegral.IntegrationParams`. This is a type that holds three
-boolean values, and encodes eight filters including those corresponding to Riemann,
+Boolean values, and encodes eight filters including those corresponding to Riemann,
 Henstock-Kurzweil, and McShane integrals.
 
 Following the design of infinite sums (see `hasSum` and `tsum`), we define a predicate
@@ -208,8 +208,7 @@ theorem integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
   rw [integrable_iff_cauchy, cauchy_map_iff',
     (l.hasBasis_toFilteriUnion_top _).prod_self.tendsto_iff uniformity_basis_dist_le]
   refine forall₂_congr fun ε _ => exists_congr fun r => ?_
-  simp only [exists_prop, Prod.forall, Set.mem_iUnion, exists_imp, prodMk_mem_set_prod_eq, and_imp,
-    mem_inter_iff, mem_setOf_eq]
+  simp only [Prod.forall, exists_imp, prodMk_mem_set_prod_eq, and_imp, mem_setOf_eq]
   exact
     and_congr Iff.rfl
       ⟨fun H c₁ c₂ π₁ π₂ h₁ hU₁ h₂ hU₂ => H π₁ π₂ c₁ h₁ hU₁ c₂ h₂ hU₂,
@@ -302,9 +301,11 @@ theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
   classical
-  induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
-  simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
-  exact h.1.add (ihs h.2)
+  induction s using Finset.induction_on with
+  | empty => simp [hasIntegral_zero]
+  | insert a s ha ihs =>
+    simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
+    exact h.1.add (ihs h.2)
 
 theorem HasIntegral.smul (hf : HasIntegral I l f vol y) (c : ℝ) :
     HasIntegral I l (c • f) vol (c • y) := by
@@ -347,7 +348,8 @@ theorem norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Ic
     refine norm_sum_le_of_le _ fun J _ => ?_
     simp only [BoxAdditiveMap.toSMul_apply, norm_smul, smul_eq_mul, Real.norm_eq_abs,
       μ.toBoxAdditive_apply, abs_of_nonneg measureReal_nonneg]
-    exact mul_le_mul_of_nonneg_left (hle _ <| π.tag_mem_Icc _) ENNReal.toReal_nonneg
+    gcongr
+    exact hle _ <| π.tag_mem_Icc _
   · rw [integral, dif_neg hfi, norm_zero]
     exact integral_nonneg (fun x hx => (norm_nonneg _).trans (hle x hx)) μ
 
@@ -549,7 +551,7 @@ theorem dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq (h : Integra
           dist (∑ J ∈ π₀.boxes, integralSum f vol (πi J)) (∑ J ∈ π₀.boxes, integral J l f vol) :=
       dist_triangle _ _ _
     _ ≤ ε + δ' + ∑ _J ∈ π₀.boxes, δ' := add_le_add this (dist_sum_sum_le_of_le _ hπiδ')
-    _ = ε + δ := by field_simp [δ']; ring
+    _ = ε + δ := by simp [field, δ']; ring
 
 /-- **Henstock-Sacks inequality**. Let `r : ℝⁿ → (0, ∞)` be a function such that for any tagged
 *partition* of `I` subordinate to `r`, the integral sum of `f` over this partition differs from the
@@ -576,7 +578,7 @@ theorem tendsto_integralSum_sum_integral (h : Integrable I l f vol) (π₀ : Pre
       (𝓝 <| ∑ J ∈ π₀.boxes, integral J l f vol) := by
   refine ((l.hasBasis_toFilteriUnion I π₀).tendsto_iff nhds_basis_closedBall).2 fun ε ε0 => ?_
   refine ⟨h.convergenceR ε, h.convergenceR_cond ε, ?_⟩
-  simp only [mem_inter_iff, Set.mem_iUnion, mem_setOf_eq]
+  simp only [mem_setOf_eq]
   rintro π ⟨c, hc, hU⟩
   exact h.dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq ε0 hc hU
 
@@ -635,7 +637,6 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     exact le_trans (norm_nonneg (f x)) <| hC x (I.coe_subset_Icc hx)
   rcases exists_pos_mul_lt ε0 (4 * C) with ⟨ε₂, ε₂0, hε₂⟩
   have ε₂0' : ENNReal.ofReal ε₂ ≠ 0 := ne_of_gt <| ofReal_pos.2 ε₂0
-
   -- The set of discontinuities of f is contained in an open set U with μ U < ε₂.
   let D := { x ∈ Box.Icc I | ¬ ContinuousWithinAt f (Box.Icc I) x }
   let μ' := μ.restrict (Box.Icc I)
@@ -644,7 +645,6 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     exact eq_of_le_of_not_lt (mem_ae_iff.1 ae ▸ (μ'.mono <| fun x h xV ↦ h.2 (hV x xV))) not_lt_zero
   obtain ⟨U, UD, Uopen, hU⟩ := Set.exists_isOpen_lt_add D (show μ' D ≠ ⊤ by simp [μ'D]) ε₂0'
   rw [μ'D, zero_add] at hU
-
   /- Box.Icc I \ U is compact and avoids discontinuities of f, so there exists r > 0 such that for
      every x ∈ Box.Icc I \ U, the oscillation (within Box.Icc I) of f on the ball of radius r
      centered at x is ≤ ε₁ -/
@@ -655,7 +655,6 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     suffices oscillationWithin f (Box.Icc I) x = 0 by rw [this]; exact ofReal_pos.2 ε₁0
     simpa [OscillationWithin.eq_zero_iff_continuousWithinAt, D, hx.1] using hx.2 ∘ (fun a ↦ UD a)
   rcases comp.uniform_oscillationWithin this with ⟨r, r0, hr⟩
-
   /- We prove the claim for partitions π₁ and π₂ subordinate to r/2, by writing the difference as
      an integralSum over π₁ ⊓ π₂ and considering separately the boxes of π₁ ⊓ π₂ which are/aren't
      fully contained within U. -/
@@ -674,14 +673,13 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     fun S hS ↦ iUnion_subset_iff.2 (fun J ↦ iUnion_subset_iff.2 fun hJ ↦ le_of_mem' _ J (hS hJ))
   rw [← sum_sdiff hB', ← add_halves ε]
   apply le_trans (norm_add_le _ _) (add_le_add ?_ ?_)
-
   /- If a box J is not contained within U, then the oscillation of f on J is small, which bounds
      the contribution of J to the overall sum. -/
   · have : ∀ J ∈ B \ B', ‖μ.toBoxAdditive J • (f (t₁ J) - f (t₂ J))‖ ≤ μ.toBoxAdditive J * ε₁ := by
       intro J hJ
       rw [mem_sdiff, B.mem_filter, not_and] at hJ
       rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg measureReal_nonneg]
-      refine mul_le_mul_of_nonneg_left ?_ toReal_nonneg
+      gcongr _ * ?_
       obtain ⟨x, xJ, xnU⟩ : ∃ x ∈ J, x ∉ U := Set.not_subset.1 (hJ.2 hJ.1)
       have hx : x ∈ Box.Icc I \ U := ⟨Box.coe_subset_Icc ((le_of_mem' _ J hJ.1) xJ), xnU⟩
       have ineq : edist (f (t₁ J)) (f (t₂ J)) ≤ EMetric.diam (f '' (ball x r ∩ (Box.Icc I))) := by
@@ -697,20 +695,19 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     rw [← sum_mul]
     trans μ.toBoxAdditive I * ε₁; swap
     · linarith
-    simp_rw [mul_le_mul_right ε₁0, μ.toBoxAdditive_apply]
+    simp_rw [mul_le_mul_iff_left₀ ε₁0, μ.toBoxAdditive_apply]
     refine le_trans ?_ <| toReal_mono (lt_top_iff_ne_top.1 μI) <| μ.mono <| un (B \ B') sdiff_subset
     simp_rw [measureReal_def]
     rw [← toReal_sum (fun J hJ ↦ μJ_ne_top J (mem_sdiff.1 hJ).1), ← Finset.tsum_subtype]
     refine (toReal_mono <| ne_of_lt <| lt_of_le_of_lt (μ.mono <| un (B \ B') sdiff_subset) μI) ?_
     refine le_of_eq (measure_biUnion (countable_toSet _) ?_ (fun J _ ↦ J.measurableSet_coe)).symm
     exact fun J hJ J' hJ' hJJ' ↦ pairwiseDisjoint _ (mem_sdiff.1 hJ).1 (mem_sdiff.1 hJ').1 hJJ'
-
   -- The contribution of the boxes contained within U is bounded because f is bounded and μ U < ε₂.
   · have : ∀ J ∈ B', ‖μ.toBoxAdditive J • (f (t₁ J) - f (t₂ J))‖ ≤ μ.toBoxAdditive J * (2 * C) := by
       intro J _
       rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg measureReal_nonneg, two_mul]
-      refine mul_le_mul_of_nonneg_left (le_trans (norm_sub_le _ _) (add_le_add ?_ ?_)) (by simp) <;>
-        exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
+      gcongr
+      apply norm_sub_le_of_le <;> exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
     apply (norm_sum_le_of_le B' this).trans
     simp_rw [← sum_mul, μ.toBoxAdditive_apply, measureReal_def,
       ← toReal_sum (fun J hJ ↦ μJ_ne_top J (hB' hJ))]
@@ -787,7 +784,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   classical
   set δ : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) := fun c x => if x ∈ s then δ₁ c x (εs x) else (δ₂ c) x ε'
   refine ⟨δ, fun c => l.rCond_of_bRiemann_eq_false hl, ?_⟩
-  simp only [Set.mem_iUnion, mem_inter_iff, mem_setOf_eq]
+  simp only [mem_setOf_eq]
   rintro π ⟨c, hπδ, hπp⟩
   -- Now we split the sum into two parts based on whether `π.tag J` belongs to `s` or not.
   rw [← g.sum_partition_boxes le_rfl hπp, Metric.mem_closedBall, integralSum,
@@ -817,15 +814,17 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   /- Now we deal with boxes such that `π.tag J ∉ s`.
     In this case the estimate is straightforward. -/
   calc
-    dist (∑ J ∈ π.boxes with ¬tag π J ∈ s, vol J (f (tag π J)))
-      (∑ J ∈ π.boxes with ¬tag π J ∈ s, g J)
-      ≤ ∑ J ∈ π.boxes with ¬tag π J ∈ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
+    dist (∑ J ∈ π.boxes with tag π J ∉ s, vol J (f (tag π J)))
+      (∑ J ∈ π.boxes with tag π J ∉ s, g J)
+      ≤ ∑ J ∈ π.boxes with tag π J ∉ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
       rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
       convert hπδ.1 J hJ using 3; exact (if_neg hJs).symm
-    _ ≤ ∑ J ∈ π.boxes, ε' * B J := sum_le_sum_of_subset_of_nonneg (filter_subset _ _) fun _ _ _ ↦
-      mul_nonneg ε'0.le (hB0 _)
+    _ ≤ ∑ J ∈ π.boxes, ε' * B J := by
+      gcongr
+      · exact fun _ _ _ ↦ mul_nonneg ε'0.le (hB0 _)
+      · apply filter_subset
     _ = B I * ε' := by rw [← mul_sum, B.sum_partition_boxes le_rfl hπp, mul_comm]
     _ ≤ ε / 2 := hεI.le
 

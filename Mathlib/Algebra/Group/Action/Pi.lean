@@ -14,10 +14,10 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 
 ## See also
 
-* `Mathlib.Algebra.Group.Action.Option`
-* `Mathlib.Algebra.Group.Action.Prod`
-* `Mathlib.Algebra.Group.Action.Sigma`
-* `Mathlib.Algebra.Group.Action.Sum`
+* `Mathlib/Algebra/Group/Action/Option.lean`
+* `Mathlib/Algebra/Group/Action/Prod.lean`
+* `Mathlib/Algebra/Group/Action/Sigma.lean`
+* `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
 assert_not_exists MonoidWithZero
@@ -75,8 +75,8 @@ instance isCentralScalar [∀ i, SMul M (α i)] [∀ i, SMul Mᵐᵒᵖ (α i)] 
 /-- If `α i` has a faithful scalar action for a given `i`, then so does `Π i, α i`. This is
 not an instance as `i` cannot be inferred. -/
 @[to_additive
-"If `α i` has a faithful additive action for a given `i`, then
-so does `Π i, α i`. This is not an instance as `i` cannot be inferred"]
+/-- If `α i` has a faithful additive action for a given `i`, then
+so does `Π i, α i`. This is not an instance as `i` cannot be inferred -/]
 lemma faithfulSMul_at [∀ i, SMul M (α i)] [∀ i, Nonempty (α i)] (i : ι) [FaithfulSMul M (α i)] :
     FaithfulSMul M (∀ i, α i) where
   eq_of_smul_eq_smul h := eq_of_smul_eq_smul fun a : α i => by
@@ -111,15 +111,15 @@ namespace Function
 /-- Non-dependent version of `Pi.smul`. Lean gets confused by the dependent instance if this
 is not present. -/
 @[to_additive
-"Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
-if this is not present."]
+/-- Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
+if this is not present. -/]
 instance hasSMul {α : Type*} [SMul M α] : SMul M (ι → α) := Pi.instSMul
 
 /-- Non-dependent version of `Pi.smulCommClass`. Lean gets confused by the dependent instance if
 this is not present. -/
 @[to_additive
-  "Non-dependent version of `Pi.vaddCommClass`. Lean gets confused by the dependent
-  instance if this is not present."]
+  /-- Non-dependent version of `Pi.vaddCommClass`. Lean gets confused by the dependent
+  instance if this is not present. -/]
 instance smulCommClass {α : Type*} [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass M N (ι → α) := Pi.smulCommClass
 

@@ -63,7 +63,7 @@ theorem binaryProductLimitCone_cone_π_app_right (M N : ModuleCat.{v} R) :
   rfl
 
 /-- We verify that the biproduct in `ModuleCat R` is isomorphic to
-the cartesian product of the underlying types:
+the Cartesian product of the underlying types:
 -/
 noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
     (M ⊞ N : ModuleCat.{v} R) ≅ ModuleCat.of R (M × N) :=
@@ -84,7 +84,7 @@ namespace HasLimit
 variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 
 /-- The map from an arbitrary cone over an indexed family of abelian groups
-to the cartesian product of those groups.
+to the Cartesian product of those groups.
 -/
 @[simps!]
 def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j) :=
@@ -132,18 +132,16 @@ theorem biproductIsoPi_inv_comp_π [Finite J] (f : J → ModuleCat.{v} R) (j : J
 end ModuleCat
 
 section SplitExact
+open ModuleCat
+section universe_monomorphic
 
 variable {R : Type u} {A M B : Type v} [Ring R] [AddCommGroup A] [Module R A] [AddCommGroup B]
   [Module R B] [AddCommGroup M] [Module R M]
 
 variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
-open ModuleCat
 
-
-/-- The isomorphism `A × B ≃ₗ[R] M` coming from a right split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
-of modules. -/
-noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
+private noncomputable def lequivProdOfRightSplitExact' {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfSection _
     (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
@@ -151,14 +149,53 @@ noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function
     (by simpa only [ModuleCat.mono_iff_injective])).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _ ).symm.toLinearEquiv
 
-/-- The isomorphism `A × B ≃ₗ[R] M` coming from a left split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
-of modules. -/
-noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)
+private noncomputable def lequivProdOfLeftSplitExact' {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfRetraction _
     (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
     (ModuleCat.ofHom g) exac) (ModuleCat.ofHom f) (hom_ext h)
     (by simpa only [ModuleCat.epi_iff_surjective] using hg)).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _).symm.toLinearEquiv
+
+end universe_monomorphic
+
+section universe_polymorphic
+
+universe uA uM uB
+variable {R : Type u} {A : Type uA} {M : Type uM} {B : Type uB}
+variable [Ring R] [AddCommGroup A] [AddCommGroup B] [AddCommGroup M]
+variable [Module R A] [Module R B] [Module R M]
+
+variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
+
+/-- The isomorphism `A × B ≃ₗ[R] M` coming from a right split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
+of modules. -/
+noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
+    (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
+  have := lequivProdOfRightSplitExact'
+    (A := ULift.{max uA uM uB} A) (M := ULift.{max uA uM uB} M) (B := ULift.{max uA uM uB} B)
+    (f := ULift.moduleEquiv.symm.toLinearMap ∘ₗ f ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (j := ULift.moduleEquiv.symm.toLinearMap ∘ₗ j ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (g := ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (by simpa using hj)
+    (by simp [LinearMap.range_comp, LinearMap.ker_comp, exac, Submodule.comap_equiv_eq_map_symm])
+    (by ext x; simpa using congr($h x.down))
+  ULift.moduleEquiv.symm.prodCongr ULift.moduleEquiv.symm ≪≫ₗ this ≪≫ₗ ULift.moduleEquiv
+
+/-- The isomorphism `A × B ≃ₗ[R] M` coming from a left split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
+of modules. -/
+noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)
+    (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
+  have := lequivProdOfLeftSplitExact'
+    (A := ULift.{max uA uM uB} A) (M := ULift.{max uA uM uB} M) (B := ULift.{max uA uM uB} B)
+    (f := ULift.moduleEquiv.symm.toLinearMap ∘ₗ f ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (j := ULift.moduleEquiv.symm.toLinearMap ∘ₗ j ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (g := ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (by simpa using hg)
+    (by simp [LinearMap.range_comp, LinearMap.ker_comp, exac, Submodule.comap_equiv_eq_map_symm])
+    (by ext x; simpa using congr($h x.down))
+  ULift.moduleEquiv.symm.prodCongr ULift.moduleEquiv.symm ≪≫ₗ this ≪≫ₗ ULift.moduleEquiv
+
+end universe_polymorphic
 
 end SplitExact

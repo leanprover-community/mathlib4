@@ -52,7 +52,8 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     hfm.eventually, this]
   simp only [mem_closedBall, dist_eq_norm]
   intro s hμs h_integrable hfm h_norm
-  rw [← setIntegral_const, ← integral_sub h_integrable (integrableOn_const.2 <| Or.inr hμs),
+  rw [← setIntegral_const,
+    ← integral_sub h_integrable (integrableOn_const hμs.ne),
     Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
   exact norm_setIntegral_le_of_norm_le_const_ae' hμs h_norm
 

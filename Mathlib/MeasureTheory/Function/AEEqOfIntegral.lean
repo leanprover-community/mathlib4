@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
@@ -35,9 +34,9 @@ For each of these results, we also provide a lemma about the equality of one fun
 example, `Lp.ae_eq_zero_of_forall_setIntegral_eq_zero`.
 
 Generally useful lemmas which are not related to integrals:
-* `ae_eq_zero_of_forall_inner`: if for all constants `c`, `fun x => inner c (f x) =ᵐ[μ] 0` then
+* `ae_eq_zero_of_forall_inner`: if for all constants `c`, `(fun x => ⟪c, f x⟫_𝕜) =ᵐ[μ] 0` then
   `f =ᵐ[μ] 0`.
-* `ae_eq_zero_of_forall_dual`: if for all constants `c` in the dual space,
+* `ae_eq_zero_of_forall_dual`: if for all constants `c` in the `StrongDual` space,
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
 
 -/
@@ -53,17 +52,18 @@ section AeEqOfForall
 
 variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
 
+open scoped InnerProductSpace in
 theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
+    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => ⟪c, f x⟫_𝕜) =ᵐ[μ] 0) :
     f =ᵐ[μ] 0 := by
   let s := denseSeq E
   have hs : DenseRange s := denseRange_denseSeq E
-  have hf' : ∀ᵐ x ∂μ, ∀ n : ℕ, inner (s n) (f x) = (0 : 𝕜) := ae_all_iff.mpr fun n => hf (s n)
+  have hf' : ∀ᵐ x ∂μ, ∀ n : ℕ, ⟪s n, f x⟫_𝕜 = 0 := ae_all_iff.mpr fun n => hf (s n)
   refine hf'.mono fun x hx => ?_
   rw [Pi.zero_apply, ← @inner_self_eq_zero 𝕜]
-  have h_closed : IsClosed {c : E | inner c (f x) = (0 : 𝕜)} :=
+  have h_closed : IsClosed {c : E | ⟪c, f x⟫_𝕜 = 0} :=
     isClosed_eq (continuous_id.inner continuous_const) continuous_const
-  exact @isClosed_property ℕ E _ s (fun c => inner c (f x) = (0 : 𝕜)) hs h_closed hx _
+  exact @isClosed_property ℕ E _ s (fun c => ⟪c, f x⟫_𝕜 = 0) hs h_closed hx _
 
 local notation "⟪" x ", " y "⟫" => y x
 
@@ -71,10 +71,11 @@ variable (𝕜)
 
 theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {t : Set E} (ht : TopologicalSpace.IsSeparable t) {f : α → E}
-    (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) : f =ᵐ[μ] 0 := by
+    (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) :
+    f =ᵐ[μ] 0 := by
   rcases ht with ⟨d, d_count, hd⟩
   haveI : Encodable d := d_count.toEncodable
-  have : ∀ x : d, ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖(x : E)‖ :=
+  have : ∀ x : d, ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖(x : E)‖ :=
     fun x => exists_dual_vector'' 𝕜 (x : E)
   choose s hs using this
   have A : ∀ a : E, a ∈ t → (∀ x, ⟪a, s x⟫ = (0 : 𝕜)) → a = 0 := by
@@ -97,15 +98,15 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
       _ ≤ 1 * ‖(x : E) - a‖ := ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
-      _ = ‖s x x‖ := by rw [(hs x).2, RCLike.norm_coe_norm]
+      _ = ‖s x x‖ := by simp [(hs x).2]
   have hfs : ∀ y : d, ∀ᵐ x ∂μ, ⟪f x, s y⟫ = (0 : 𝕜) := fun y => hf (s y)
   have hf' : ∀ᵐ x ∂μ, ∀ y : d, ⟪f x, s y⟫ = (0 : 𝕜) := by rwa [ae_all_iff]
   filter_upwards [hf', h't] with x hx h'x
   exact A (f x) h'x hx
 
 theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) :
-    f =ᵐ[μ] 0 :=
+    [SecondCountableTopology E] {f : α → E}
+    (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) : f =ᵐ[μ] 0 :=
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (Eventually.of_forall fun _ => Set.mem_univ _)
 
@@ -132,7 +133,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
   have mus : μ s < ∞ := Integrable.measure_le_lt_top hf hb_neg
   have h_int_gt : (∫ x in s, f x ∂μ) ≤ b * μ.real s := by
     have h_const_le : (∫ x in s, f x ∂μ) ≤ ∫ _ in s, b ∂μ := by
-      refine setIntegral_mono_ae_restrict hf.integrableOn (integrableOn_const.mpr (Or.inr mus)) ?_
+      refine setIntegral_mono_ae_restrict hf.integrableOn (integrableOn_const mus.ne) ?_
       rw [EventuallyLE, ae_restrict_iff₀ (hs.mono μ.restrict_le_self)]
       exact Eventually.of_forall fun x hxs => hxs
     rwa [setIntegral_const, smul_eq_mul, mul_comm] at h_const_le
@@ -411,9 +412,9 @@ lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
     rw [← Set.iUnion_inter, iUnion_closure_compactCovering, Set.univ_inter]
   rw [B]
   apply tendsto_setIntegral_of_monotone
-  · intros n
+  · intro n
     exact (isClosed_closure.inter hs).measurableSet
-  · intros m n hmn
+  · intro m n hmn
     simp only [t, Set.le_iff_subset]
     gcongr
   · exact hf.integrableOn

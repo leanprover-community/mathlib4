@@ -33,7 +33,7 @@ abbrev IsPrimary (I : Ideal R) : Prop :=
 lemma isPrimary_iff {I : Ideal R} :
     I.IsPrimary ↔ I ≠ ⊤ ∧ ∀ {x y : R}, x * y ∈ I → x ∈ I ∨ y ∈ radical I := by
   rw [IsPrimary, Submodule.IsPrimary, forall_comm]
-  simp only [mul_comm, mem_radical_iff, and_congr_right_iff,
+  simp only [mul_comm, mem_radical_iff,
     ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem]
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
@@ -68,8 +68,8 @@ lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (h
   classical
   induction s using Finset.induction_on generalizing i with
   | empty => simp at hi
-  | @insert a s ha IH =>
-    rcases s.eq_empty_or_nonempty with rfl|⟨y, hy⟩
+  | insert a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
     · simp only [insert_empty_eq, mem_singleton] at hi
       simpa [hi] using hs
     simp only [inf_insert]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.PathConnected
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.Basic
@@ -22,6 +23,8 @@ We prove the following facts:
 * `isBounded_convexHull` : convex hull of a set is bounded if and only if the original set
   is bounded.
 -/
+
+-- TODO assert_not_exists Cardinal
 
 variable {E : Type*}
 
@@ -129,5 +132,26 @@ lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
   rw [abs_of_nonneg hu_nonneg]
   conv_rhs => rw [← one_mul (‖z - x‖)]
   gcongr
+
+namespace Filter
+
+open scoped Convex Topology
+variable {α : Type*} {f : Filter α} {x : E} {y z : α → E} {r : α → E → Prop}
+
+theorem Eventually.segment_of_prod_nhds (hy : Tendsto y f (𝓝 x)) (hz : Tendsto z f (𝓝 x))
+    (hr : ∀ᶠ p in f ×ˢ 𝓝 x, r p.1 p.2) : ∀ᶠ χ in f, ∀ v ∈ [y χ -[ℝ] z χ], r χ v := by
+  obtain ⟨p, hp, δ, hδ, hr⟩ := eventually_prod_nhds_iff.mp hr
+  rw [Metric.tendsto_nhds] at hy hz
+  filter_upwards [hp, hy δ hδ, hz δ hδ] with χ hp hy hz
+  exact fun v hv => hr hp <| convex_iff_segment_subset.mp (convex_ball x δ) hy hz hv
+
+theorem Eventually.segment_of_prod_nhdsWithin (hy : Tendsto y f (𝓝 x)) (hz : Tendsto z f (𝓝 x))
+    (hr : ∀ᶠ p in f ×ˢ 𝓝[s] x, r p.1 p.2) (seg : ∀ᶠ χ in f, [y χ -[ℝ] z χ] ⊆ s) :
+    ∀ᶠ χ in f, ∀ v ∈ [y χ -[ℝ] z χ], r χ v := by
+  refine seg.mp <| .mono ?_ (fun _ => forall₂_imp)
+  apply Eventually.segment_of_prod_nhds hy hz
+  simpa [nhdsWithin, prod_eq_inf, ← inf_assoc, eventually_inf_principal] using hr
+
+end Filter
 
 end SeminormedAddCommGroup

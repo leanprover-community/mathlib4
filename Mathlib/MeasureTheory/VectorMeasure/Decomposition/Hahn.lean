@@ -205,9 +205,9 @@ private theorem restrictNonposSeq_measurableSet (n : ℕ) :
 
 private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
     restrictNonposSeq s i n ∩ restrictNonposSeq s i m = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   rintro x ⟨hx₁, hx₂⟩
-  cases m; · omega
+  cases m; · cutsat
   · rw [restrictNonposSeq] at hx₂
     exact
       (someExistsOneDivLT_subset hx₂).2

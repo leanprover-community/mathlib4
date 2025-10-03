@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 
 /-!
@@ -72,7 +72,7 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
 
 variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- **Von Neumann Mean Ergodic Theorem** for an operator in a Hilbert space.
 For a contracting continuous linear self-map `f : E →L[𝕜] E` of a Hilbert space, `‖f‖ ≤ 1`,

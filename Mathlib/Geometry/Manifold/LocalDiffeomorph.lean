@@ -13,9 +13,10 @@ import Mathlib.Topology.IsLocalHomeomorph
 In this file, we define `C^n` local diffeomorphisms between manifolds.
 
 A `C^n` map `f : M → N` is a **local diffeomorphism at `x`** iff there are neighbourhoods `s`
-and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphism
-between `s` and `t`. `f` is called a **local diffeomorphism on s** iff it is a local diffeomorphism
-at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorphism on `univ`.
+and `t` of `x` and `f x`, respectively, such that `f` restricts to a diffeomorphism
+between `s` and `t`. `f` is called a **local diffeomorphism on `s`** iff it is a local
+diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorphism on
+`univ`.
 
 ## Main definitions
 * `IsLocalDiffeomorphAt I J n f x`: `f` is a `C^n` local diffeomorphism at `x`
@@ -24,24 +25,24 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 
 ## Main results
 * Each of `Diffeomorph`, `IsLocalDiffeomorph`, `IsLocalDiffeomorphOn` and `IsLocalDiffeomorphAt`
-  implies the next.
-* `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphisms is a local homeomorphism,
-  similarly for local diffeomorphism on `s`
+  implies the next condition.
+* `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphism is a local homeomorphism,
+  and similarly for a local diffeomorphism on `s`.
 * `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
-* `IslocalDiffeomorph.diffeomorph_of_bijective`:
+* `IsLocalDiffeomorph.diffeomorph_of_bijective`:
   a bijective local diffeomorphism is a diffeomorphism
+
+* `Diffeomorph.mfderivToContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
+  (`n ≥ 1`) is a linear equivalence.
+* `LocalDiffeomorphAt.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism
+  at `x`, the differential `mfderiv I J n f x` is a continuous linear equivalence.
+* `LocalDiffeomorph.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism,
+  each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
-* each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
-* if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
-is a continuous linear isomorphism.
-* conversely, if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
-`f` is a local diffeomorphism at `x`.
-* if `f` is a local diffeomorphism, each differential `mfderiv I J n f x`
-is a continuous linear isomorphism.
-* Conversely, if `f` is `C^n` and each differential is a linear isomorphism,
-`f` is a local diffeomorphism.
+* if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
+  `f` is a local diffeomorphism at `x` (using the inverse function theorem).
 
 ## Implementation notes
 
@@ -77,7 +78,7 @@ structure PartialDiffeomorph extends PartialEquiv M N where
   contMDiffOn_invFun : ContMDiffOn J I n invFun target
 
 /-- Coercion of a `PartialDiffeomorph` to function.
-Note that a `PartialDiffeomorph` is not `DFunLike` (like `PartialHomeomorph`),
+Note that a `PartialDiffeomorph` is not `DFunLike` (like `OpenPartialHomeomorph`),
 as `toFun` doesn't determine `invFun` outside of `target`. -/
 instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
   ⟨fun Φ => Φ.toFun⟩
@@ -98,12 +99,15 @@ namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n)
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
-def toPartialHomeomorph : PartialHomeomorph M N where
+def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   toPartialEquiv := Φ.toPartialEquiv
   open_source := Φ.open_source
   open_target := Φ.open_target
   continuousOn_toFun := Φ.contMDiffOn_toFun.continuousOn
   continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
+
+@[deprecated (since := "2025-08-29")] alias
+  toPartialHomeomorph := toOpenPartialHomeomorph
 
 /-- The inverse of a local diffeomorphism. -/
 protected def symm : PartialDiffeomorph J I N M n where
@@ -123,7 +127,8 @@ protected theorem mdifferentiableAt (hn : 1 ≤ n) {x : M} (hx : x ∈ Φ.source
     MDifferentiableAt I J Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
 
-/- We could add lots of additional API (following `Diffeomorph` and `PartialHomeomorph`), such as
+/- We could add lots of additional API (following `Diffeomorph` and `OpenPartialHomeomorph`),
+such as
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
 As this declaration is meant for internal use only, we keep it simple. -/
@@ -295,7 +300,7 @@ theorem IsLocalDiffeomorphOn.isLocalHomeomorphOn {s : Set M} (hf : IsLocalDiffeo
   apply IsLocalHomeomorphOn.mk
   intro x hx
   choose U hyp using hf ⟨x, hx⟩
-  exact ⟨U.toPartialHomeomorph, hyp⟩
+  exact ⟨U.toOpenPartialHomeomorph, hyp⟩
 
 /-- A local diffeomorphism is a local homeomorphism. -/
 theorem IsLocalDiffeomorph.isLocalHomeomorph (hf : IsLocalDiffeomorph I J n f) :
@@ -323,19 +328,19 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 -- This argument implies a `LocalDiffeomorphOn f s` for `s` open is a `PartialDiffeomorph`
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
+noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
-   -- Choose diffeomorphisms φ_x which coincide which `f` near `x`.
+  -- Choose diffeomorphisms φ_x which coincide which `f` near `x`.
   choose Φ hyp using (fun x ↦ hf x)
   -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
   -- they're both inverses to g. In fact, the latter suffices for our proof.
   -- have (x y) : EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
   have aux (x) : EqOn g (Φ x).symm (Φ x).target :=
     eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
-      (LeftInvOn.congr_left ((Φ x).toPartialHomeomorph).rightInvOn
-        ((Φ x).toPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
+      (LeftInvOn.congr_left ((Φ x).toOpenPartialHomeomorph).rightInvOn
+        ((Φ x).toOpenPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
       (fun _y hy ↦ (Φ x).map_target hy)
   exact {
     toFun := f
@@ -351,4 +356,68 @@ noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
 
+@[deprecated (since := "2025-03-24")] alias
+IslocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorph_of_bijective
+
 end Basic
+
+section Differential
+
+variable {f : M → N} {s : Set M} {x : M}
+
+variable {I I' J n}
+
+/-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`, the differential `df_x`
+is a linear equivalence. -/
+noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
+    (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    TangentSpace I x ≃L[𝕜] TangentSpace J (f x) where
+  toFun := mfderiv I J f x
+  invFun := mfderiv J I hf.localInverse (f x)
+  left_inv := by
+    apply ContinuousLinearMap.leftInverse_of_comp
+    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
+    exact (mfderiv_comp _ (hf.localInverse_mdifferentiableAt hn) (hf.mdifferentiableAt hn)).symm
+  right_inv := by
+    apply ContinuousLinearMap.rightInverse_of_comp
+    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
+    -- We need to rewrite the base point hf.localInverse (f x) = x twice,
+    -- in the differentiability hypothesis and for applying the chain rule.
+    have hf' : MDifferentiableAt I J f (hf.localInverse (f x)) := by
+      rw [hf.localInverse_left_inv hf.localInverse_mem_target]
+      exact hf.mdifferentiableAt hn
+    rw [mfderiv_comp _ hf' (hf.localInverse_mdifferentiableAt hn),
+      hf.localInverse_left_inv hf.localInverse_mem_target]
+  continuous_toFun := (mfderiv I J f x).cont
+  continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
+  map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
+  map_smul' := by intros; simp
+
+@[simp, mfld_simps]
+lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
+    (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    hf.mfderivToContinuousLinearEquiv hn = mfderiv I J f x := rfl
+
+/-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≥ 1`)
+is a linear equivalence. -/
+noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
+    (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) (x : M) :
+    TangentSpace I x ≃L[𝕜] TangentSpace J (Φ x) :=
+  (Φ.isLocalDiffeomorph x).mfderivToContinuousLinearEquiv hn
+
+lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
+    Φ.mfderivToContinuousLinearEquiv hn x = mfderiv I J Φ x := by rfl
+
+/-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≥ 1`),
+each differential is a linear equivalence. -/
+noncomputable def IsLocalDiffeomorph.mfderivToContinuousLinearEquiv
+    (hf : IsLocalDiffeomorph I J n f) (hn : 1 ≤ n) (x : M) :
+    TangentSpace I x ≃L[𝕜] TangentSpace J (f x) :=
+  (hf x).mfderivToContinuousLinearEquiv hn
+
+lemma IsLocalDiffeomorph.mfderivToContinuousLinearEquiv_coe
+    (hf : IsLocalDiffeomorph I J n f) (hn : 1 ≤ n) (x : M) :
+    hf.mfderivToContinuousLinearEquiv hn x = mfderiv I J f x :=
+  (hf x).mfderivToContinuousLinearEquiv_coe hn
+
+end Differential

@@ -39,10 +39,9 @@ instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β]
 
 @[to_additive]
 instance [Mul α] [LE α] [CanonicallyOrderedMul α]
-    [Mul β] [LE β] [CanonicallyOrderedMul β] :
-    CanonicallyOrderedMul (α × β) :=
-  { (inferInstance : ExistsMulOfLE _) with
-      le_self_mul := fun _ _ ↦ le_def.mpr ⟨le_self_mul, le_self_mul⟩ }
+    [Mul β] [LE β] [CanonicallyOrderedMul β] : CanonicallyOrderedMul (α × β) where
+  le_mul_self := fun _ _ ↦ le_def.mpr ⟨le_mul_self, le_mul_self⟩
+  le_self_mul := fun _ _ ↦ le_def.mpr ⟨le_self_mul, le_self_mul⟩
 
 namespace Lex
 
@@ -52,9 +51,8 @@ instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [MulLeftStrictMono α
     IsOrderedMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
-    -- Note: the `congr_arg` used to be `rw [hxy.1]` before https://github.com/leanprover-community/mathlib4/pull/8386
-    -- but the definition of `Mul.mul` got unfolded differently.
-    (fun hxy => le_iff.2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
+    (fun hxy => le_iff.2 <|
+      Or.inr ⟨by simp only [ofLex_mul, fst_mul, hxy.1], mul_le_mul_left' hxy.2 _⟩)
 
 @[to_additive]
 instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]

@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 In this file we provide basic API for `Under R` when `R : CommRingCat`. `Under R` is
 (equivalent to) the category of commutative `R`-algebras. For not necessarily commutative
-algebras, use `AlgebraCat R` instead.
+algebras, use `AlgCat R` instead.
 -/
 
 noncomputable section

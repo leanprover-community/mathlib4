@@ -30,15 +30,10 @@ instance : TopologicalSpace (ContinuousMonoidHom A B) :=
 theorem isInducing_toContinuousMap :
     IsInducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) := ⟨rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias inducing_toContinuousMap := isInducing_toContinuousMap
-
 @[to_additive]
 theorem isEmbedding_toContinuousMap :
     IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨isInducing_toContinuousMap A B, toContinuousMap_injective⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_toContinuousMap := isEmbedding_toContinuousMap
 
 @[to_additive]
 instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=
@@ -107,10 +102,9 @@ theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_postcomp.comp (isInducing_toContinuousMap A B).continuous
 
-variable (E)
-
+variable (E) in
 /-- `ContinuousMonoidHom _ f` is a functor. -/
-@[to_additive "`ContinuousAddMonoidHom _ f` is a functor."]
+@[to_additive /-- `ContinuousAddMonoidHom _ f` is a functor. -/]
 def compLeft (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E) where
   toFun g := g.comp f
@@ -118,10 +112,9 @@ def compLeft (f : ContinuousMonoidHom A B) :
   map_mul' _g _h := rfl
   continuous_toFun := f.continuous_comp_left
 
-variable (A) {E}
-
+variable (A) in
 /-- `ContinuousMonoidHom f _` is a functor. -/
-@[to_additive "`ContinuousAddMonoidHom f _` is a functor."]
+@[to_additive /-- `ContinuousAddMonoidHom f _` is a functor. -/]
 def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
@@ -129,6 +122,19 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup
   map_one' := ext fun _a => map_one f
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
+
+section DiscreteTopology
+variable [DiscreteTopology A] [ContinuousMul B] [T2Space B]
+
+@[to_additive]
+lemma isClosedEmbedding_coe : IsClosedEmbedding ((⇑) : (A →ₜ* B) → A → B) :=
+  ContinuousMap.isHomeomorph_coe.isClosedEmbedding.comp <| isClosedEmbedding_toContinuousMap ..
+
+@[to_additive]
+instance [CompactSpace B] : CompactSpace (A →ₜ* B) :=
+  ContinuousMonoidHom.isClosedEmbedding_coe.compactSpace
+
+end DiscreteTopology
 
 section LocallyCompact
 

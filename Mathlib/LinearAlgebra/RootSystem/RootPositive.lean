@@ -3,8 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
-import Mathlib.LinearAlgebra.RootSystem.WeylGroup
+import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Invariant and root-positive bilinear forms on root pairings
@@ -20,24 +19,24 @@ positive semi-definite on weight space and positive-definite on the span of root
 
 ## Main definitions / results:
 
- * `RootPairing.InvariantForm`: an invariant bilinear form on a root pairing.
- * `RootPairing.RootPositiveForm`: Given a root pairing this is a structure which contains a
-   bilinear form together with axioms for reflection-invariance, symmetry, and strict positivity on
-   all roots.
- * `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
-   root-positive form.
- * `RootPairing.pairing_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
- * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
- * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
-   orthogonal.
+* `RootPairing.InvariantForm`: an invariant bilinear form on a root pairing.
+* `RootPairing.RootPositiveForm`: Given a root pairing this is a structure which contains a
+  bilinear form together with axioms for reflection-invariance, symmetry, and strict positivity on
+  all roots.
+* `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
+  root-positive form.
+* `RootPairing.pairing_eq_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
+* `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
+* `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
+  orthogonal.
 
 -/
 
 noncomputable section
 
-open Function Set Submodule
+open FaithfulSMul Function Set Submodule
 
-variable {ι R S M N : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+variable {ι R S M N : Type*} [CommRing S] [LinearOrder S]
   [CommRing R] [Algebra S R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
@@ -58,7 +57,6 @@ variable {P : RootPairing ι R M N} (B : P.InvariantForm) (i j : ι)
 lemma apply_root_ne_zero : B.form (P.root i) ≠ 0 :=
   fun contra ↦ B.ne_zero i <| by simp [contra]
 
-omit [IsStrictOrderedRing S] in
 lemma two_mul_apply_root_root :
     2 * B.form (P.root i) (P.root j) = P.pairing i j * B.form (P.root j) (P.root j) := by
   rw [two_mul, ← eq_sub_iff_add_eq]
@@ -78,19 +76,7 @@ lemma apply_reflection_reflection (x y : M) :
   B.isOrthogonal_reflection i x y
 
 @[simp]
-lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
-    B.form (g • x) (g • y) = B.form x y := by
-  revert x y
-  obtain ⟨g, hg⟩ := g
-  induction hg using weylGroup.induction with
-  | mem i => simp
-  | one => simp
-  | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
-    intro x y
-    rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
-
-@[simp]
-lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)]:
+lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)] :
     B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
   calc B.form (P.root i) (P.root j) = 0
       ↔ 2 * B.form (P.root i) (P.root j) = 0 := by simp [two_ne_zero]
@@ -115,7 +101,7 @@ variable {P : RootPairing ι R M N} [P.IsValuedIn S] (B : P.RootPositiveForm S) 
 
 namespace RootPositiveForm
 
-omit [IsStrictOrderedRing S] [Module S M] [IsScalarTower S R M] in
+omit [Module S M] [IsScalarTower S R M] in
 lemma form_apply_root_ne_zero (i : ι) :
     B.form (P.root i) (P.root i) ≠ 0 := by
   obtain ⟨s, hs, hs'⟩ := B.exists_pos_eq i
@@ -129,7 +115,7 @@ lemma form_apply_root_ne_zero (i : ι) :
   ne_zero := B.form_apply_root_ne_zero
   isOrthogonal_reflection := B.isOrthogonal_reflection
 
-omit [IsStrictOrderedRing S] [Module S M] [IsScalarTower S R M] in
+omit [Module S M] [IsScalarTower S R M] in
 lemma two_mul_apply_root_root :
     2 * B.form (P.root i) (P.root j) = P.pairing i j * B.form (P.root j) (P.root j) :=
   B.toInvariantForm.two_mul_apply_root_root i j
@@ -148,9 +134,6 @@ def posForm :
       simpa using B.exists_eq i j
     · simpa
     · simpa)
-
-omit [IsStrictOrderedRing S] in
-section
 
 @[simp] lemma algebraMap_posForm {x y : span S (range P.root)} :
     algebraMap S R (B.posForm x y) = B.form x y := by
@@ -173,15 +156,37 @@ lemma zero_lt_posForm_apply_root (i : ι)
   simpa only [zero_lt_posForm_iff] using B.exists_pos_eq i
 
 lemma isSymm_posForm :
-    B.posForm.IsSymm := by
-  intro x y
-  apply FaithfulSMul.algebraMap_injective S R
-  simpa using B.symm.eq x y
+    B.posForm.IsSymm where
+  eq x y := by
+    apply FaithfulSMul.algebraMap_injective S R
+    simpa using B.symm.eq x y
 
-end
+/-- The length of the `i`-th root w.r.t. a root-positive form taking values in `S`. -/
+def rootLength (i : ι) : S :=
+  B.posForm (P.rootSpanMem S i) (P.rootSpanMem S i)
+
+lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by
+  simpa using B.zero_lt_posForm_apply_root i
 
 @[simp]
-lemma zero_lt_apply_root_root_iff
+lemma rootLength_reflectionPerm_self (i : ι) :
+    B.rootLength (P.reflectionPerm i i) = B.rootLength i := by
+  simp [rootLength, rootSpanMem_reflectionPerm_self]
+
+@[deprecated (since := "2025-05-28")]
+alias rootLength_reflection_perm_self := rootLength_reflectionPerm_self
+
+@[simp] lemma algebraMap_rootLength (i : ι) :
+    algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
+  simp [rootLength]
+
+lemma pairingIn_mul_eq_pairingIn_mul_swap :
+    P.pairingIn S j i * B.rootLength i = P.pairingIn S i j * B.rootLength j := by
+  simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
+    B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
+
+@[simp]
+lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
     (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))
     (hj : P.root j ∈ span S (range P.root) := subset_span (mem_range_self j)) :
     0 < B.posForm ⟨P.root i, hi⟩ ⟨P.root j, hj⟩ ↔ 0 < P.pairingIn S i j := by
@@ -199,14 +204,14 @@ end RootPositiveForm
 
 include B
 
-lemma zero_lt_pairingIn_iff :
+lemma zero_lt_pairingIn_iff [IsStrictOrderedRing S] :
     0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i := by
   rw [← B.zero_lt_apply_root_root_iff, ← B.isSymm_posForm.eq, RingHom.id_apply,
     B.zero_lt_apply_root_root_iff]
 
-lemma coxeterWeight_nonneg : 0 ≤ P.coxeterWeightIn S i j := by
+lemma coxeterWeight_nonneg [IsStrictOrderedRing S] : 0 ≤ P.coxeterWeightIn S i j := by
   dsimp [coxeterWeightIn]
-  rcases lt_or_le 0 (P.pairingIn S i j) with h | h
+  rcases lt_or_ge 0 (P.pairingIn S i j) with h | h
   · exact le_of_lt <| mul_pos h ((zero_lt_pairingIn_iff B i j).mp h)
   · have hn : P.pairingIn S j i ≤ 0 := by rwa [← not_lt, ← zero_lt_pairingIn_iff B i j, not_lt]
     exact mul_nonneg_of_nonpos_of_nonpos h hn

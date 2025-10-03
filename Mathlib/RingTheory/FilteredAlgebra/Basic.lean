@@ -93,7 +93,7 @@ class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingF
 
 /-- A convenience constructor for `IsModuleFiltration` when the index is the integers. -/
 lemma IsModuleFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F]
-    (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F']:
+    (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F'] :
     letI := IsRingFiltration.mk_int F mono
     IsModuleFiltration F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
   letI := IsRingFiltration.mk_int F mono

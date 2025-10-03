@@ -50,6 +50,7 @@ lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
 
 open Filter Finset
 
+@[fun_prop]
 theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 
@@ -235,7 +236,7 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
 end Monotone
 
 lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
- (NNReal.powOrderIso n hn).map_ciSup' _
+  (NNReal.powOrderIso n hn).map_ciSup' _
 
 lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
   by_cases hn : n = 0
@@ -258,11 +259,14 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0∞ ≃o ℝ≥0∞ :=
 lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0∞) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
   (powOrderIso n hn).map_iSup _
 
-open NNReal ENNReal in
 lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0∞) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
   by_cases hn : n = 0
   · simp [hn]
   · exact iSup_pow_of_ne_zero hn _
+
+lemma iSup₂_pow_of_ne_zero {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) {n : ℕ} (hn : n ≠ 0) :
+    (⨆ i, ⨆ j, f i j) ^ n = ⨆ i, ⨆ j, f i j ^ n :=
+  (powOrderIso n hn).map_iSup₂ f
 
 end ENNReal
 

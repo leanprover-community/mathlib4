@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.HomCongr
 Basic properties of reflective functors, especially those relating to their essential image.
 
 Note properties of reflective functors relating to limits and colimits are included in
-`Mathlib.CategoryTheory.Monad.Limits`.
+`Mathlib/CategoryTheory/Monad/Limits.lean`.
 -/
 
 
@@ -147,11 +147,11 @@ theorem unitCompPartialBijective_symm_natural [Reflective i] (A : C) {B B' : C} 
 theorem unitCompPartialBijective_natural [Reflective i] (A : C) {B B' : C} (h : B ⟶ B')
     (hB : i.essImage B) (hB' : i.essImage B') (f : A ⟶ B) :
     (unitCompPartialBijective A hB') (f ≫ h) = unitCompPartialBijective A hB f ≫ h := by
-  rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h, Equiv.symm_apply_apply]
+  rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h hB, Equiv.symm_apply_apply]
 
 instance [Reflective i] (X : Functor.EssImageSubcategory i) :
-  IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
-Functor.essImage.unit_isIso X.property
+    IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
+  Functor.essImage.unit_isIso X.property
 
 -- These attributes are necessary to make automation work in `equivEssImageOfReflective`.
 -- Making them global doesn't break anything elsewhere, but this is enough for now.

@@ -1,9 +1,13 @@
 import Mathlib.Tactic.Says
 import Aesop
 
+-- removing changes to the `simp` set after this test was created
+attribute [-simp] Nat.add_left_cancel_iff Nat.add_right_cancel_iff
+
 set_option autoImplicit true
 /--
-info: Try this: (show_term exact 37) says exact 37
+info: Try this:
+  (show_term exact 37) says exact 37
 -/
 #guard_msgs in
 example : Nat := by
@@ -14,7 +18,8 @@ example : Nat := by
   (show_term exact 37) says exact 37
 
 /--
-info: Try this: simp? says simp only [List.length_append]
+info: Try this:
+  simp? says simp only [List.length_append]
 -/
 #guard_msgs in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
@@ -101,9 +106,10 @@ def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ 
 @[simp]
 def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
 /--
-info: Try this: aesop? says
-  simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
-    very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
+info: Try this:
+  aesop? says
+      simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+        very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
 -/
 #guard_msgs in
 example : P := by

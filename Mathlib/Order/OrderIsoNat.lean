@@ -19,7 +19,7 @@ defines the limit value of an eventually-constant sequence.
 ## Main declarations
 
 * `natLT`/`natGT`: Make an order embedding `Nat ↪ α` from
-   an increasing/decreasing function `Nat → α`.
+  an increasing/decreasing function `Nat → α`.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
@@ -49,54 +49,49 @@ def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) :
 theorem coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGT f H) = f :=
   rfl
 
-theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
-  contrapose! h
-  refine ⟨_, fun b hr => ?_⟩
-  by_contra hb
-  exact h b hb hr
+@[deprecated (since := "2025-08-08")]
+alias exists_not_acc_lt_of_not_acc := exists_not_acc_lt_of_not_acc
 
 /-- A value is accessible iff it isn't contained in any infinite decreasing sequence. -/
-theorem acc_iff_no_decreasing_seq {x} :
-    Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } := by
-  constructor
-  · refine fun h => h.recOn fun x _ IH => ?_
-    constructor
-    rintro ⟨f, k, hf⟩
-    exact IsEmpty.elim' (IH (f (k + 1)) (hf ▸ f.map_rel_iff.2 (Nat.lt_succ_self _))) ⟨f, _, rfl⟩
-  · have : ∀ x : { a // ¬Acc r a }, ∃ y : { a // ¬Acc r a }, r y.1 x.1 := by
-      rintro ⟨x, hx⟩
-      cases exists_not_acc_lt_of_not_acc hx with
-      | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
-    choose f h using this
-    refine fun E =>
-      by_contradiction fun hx => E.elim' ⟨natGT (fun n => (f^[n] ⟨x, hx⟩).1) fun n => ?_, 0, rfl⟩
-    simp only [Function.iterate_succ']
-    apply h
+theorem acc_iff_isEmpty_subtype_mem_range {x} :
+    Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } where
+  mp acc := .mk fun ⟨f, k, hk⟩ ↦ not_acc_iff_exists_descending_chain.mpr
+    ⟨(f <| k + ·), hk, fun _n ↦ f.map_rel_iff.2 (Nat.lt_succ_self _)⟩ acc
+  mpr h := of_not_not fun nacc ↦
+    have ⟨f, hf⟩ := not_acc_iff_exists_descending_chain.mp nacc
+    h.elim ⟨natGT f hf.2, 0, hf.1⟩
 
-theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
-  rw [acc_iff_no_decreasing_seq, not_isEmpty_iff]
+theorem not_acc (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
+  rw [acc_iff_isEmpty_subtype_mem_range, not_isEmpty_iff]
   exact ⟨⟨f, k, rfl⟩⟩
 
-/-- A strict order relation is well-founded iff it doesn't have any infinite decreasing sequence.
+/-- A strict order relation is well-founded iff it doesn't have any infinite descending chain.
 
-See `wellFounded_iff_no_descending_seq` for a version which works on any relation. -/
-theorem wellFounded_iff_no_descending_seq :
-    WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
-  constructor
-  · rintro ⟨h⟩
-    exact ⟨fun f => not_acc_of_decreasing_seq f 0 (h _)⟩
-  · intro h
-    exact ⟨fun x => acc_iff_no_decreasing_seq.2 inferInstance⟩
+See `wellFounded_iff_isEmpty_descending_chain` for a version which works on any relation. -/
+theorem wellFounded_iff_isEmpty :
+    WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) where
+  mp := fun ⟨h⟩ ↦ ⟨fun f ↦ f.not_acc 0 (h _)⟩
+  mpr _ := ⟨fun _x ↦ acc_iff_isEmpty_subtype_mem_range.2 inferInstance⟩
 
-theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
-  rw [wellFounded_iff_no_descending_seq, not_isEmpty_iff]
+theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
+  rw [wellFounded_iff_isEmpty, not_isEmpty_iff]
   exact ⟨f⟩
+
+@[deprecated (since := "2025-08-10")]
+alias acc_iff_no_decreasing_seq := acc_iff_isEmpty_subtype_mem_range
+
+@[deprecated (since := "2025-08-10")] alias not_acc_of_decreasing_seq := not_acc
+
+@[deprecated (since := "2025-08-10")]
+alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty
+
+@[deprecated (since := "2025-08-10")] alias not_wellFounded_of_decreasing_seq := not_wellFounded
 
 end RelEmbedding
 
 theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
     ¬ StrictAnti f := fun hf ↦
-  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded_of_decreasing_seq wellFounded_lt
+  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded wellFounded_lt
 
 theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
     ¬ StrictMono f :=
@@ -162,13 +157,12 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
   classical
     let bad : Set ℕ := { m | ∀ n, m < n → ¬r (f m) (f n) }
     by_cases hbad : Infinite bad
-    · haveI := hbad
-      refine ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn => ?_⟩
+    · refine ⟨Nat.orderEmbeddingOfSet bad, Or.intro_right _ fun m n mn => ?_⟩
       have h := @Set.mem_range_self _ _ ↑(Nat.orderEmbeddingOfSet bad) m
       rw [Nat.orderEmbeddingOfSet_range bad] at h
       exact h _ ((OrderEmbedding.lt_iff_lt _).2 mn)
     · rw [Set.infinite_coe_iff, Set.Infinite, not_not] at hbad
-      obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → ¬n ∈ bad := by
+      obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → n ∉ bad := by
         by_cases he : hbad.toFinset.Nonempty
         · refine
             ⟨(hbad.toFinset.max' he).succ, fun n hn nbad =>
@@ -180,7 +174,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         have h := hm _ (Nat.le_add_left m n)
         simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
-        refine ⟨n + n' - n - m, by omega, ?_⟩
+        refine ⟨n + n' - n - m, by cutsat, ?_⟩
         convert hn2
         omega
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
@@ -190,16 +184,17 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
           Or.intro_left _ fun n => (Nat.find_spec (h (g' n))).2⟩
 
 /-- This is the infinitary Erdős–Szekeres theorem, and an important lemma in the usual proof of
-    Bolzano-Weierstrass for `ℝ`. -/
+Bolzano-Weierstrass for `ℝ`. -/
 theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTrans α r] (f : ℕ → α) :
     ∃ g : ℕ ↪o ℕ,
       (∀ m n : ℕ, m < n → r (f (g m)) (f (g n))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
   obtain ⟨g, hr | hnr⟩ := exists_increasing_or_nonincreasing_subseq' r f
   · refine ⟨g, Or.intro_left _ fun m n mn => ?_⟩
     obtain ⟨x, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_iff.2 mn)
-    induction' x with x ih
-    · apply hr
-    · apply IsTrans.trans _ _ _ _ (hr _)
+    induction x with
+    | zero => apply hr
+    | succ x ih =>
+      apply IsTrans.trans _ _ _ _ (hr _)
       exact ih (lt_of_lt_of_le m.lt_succ_self (Nat.le_add_right _ _))
   · exact ⟨g, Or.intro_right _ hnr⟩
 
@@ -212,7 +207,7 @@ theorem wellFoundedGT_iff_monotone_chain_condition' [Preorder α] :
   refine ⟨fun h a => ?_, fun h => ?_⟩
   · obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.wf.has_min _ (Set.range_nonempty a)
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
-  · rw [WellFoundedGT, isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
+  · rw [WellFoundedGT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
     refine ⟨fun a => ?_⟩
     obtain ⟨n, hn⟩ := h (a.swap : _ →r _).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
@@ -235,18 +230,6 @@ theorem WellFoundedGT.monotone_chain_condition [PartialOrder α] [h : WellFounde
     ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition.1 h a
 
-@[deprecated wellFoundedGT_iff_monotone_chain_condition' (since := "2025-01-15")]
-theorem WellFounded.monotone_chain_condition' [Preorder α] :
-    WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
-  rw [← isWellFounded_iff]
-  exact wellFoundedGT_iff_monotone_chain_condition'
-
-@[deprecated wellFoundedGT_iff_monotone_chain_condition (since := "2025-01-15")]
-theorem WellFounded.monotone_chain_condition [PartialOrder α] :
-    WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m := by
-  rw [← isWellFounded_iff]
-  exact wellFoundedGT_iff_monotone_chain_condition
-
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
 type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which `aₙ` reaches the
 constant value. For sequences that are not eventually constant, `monotonicSequenceLimitIndex a`
@@ -259,22 +242,21 @@ partially-ordered type. -/
 noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
   a (monotonicSequenceLimitIndex a)
 
--- TODO: generalize to a conditionally complete lattice
-theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
-    [WellFoundedGT α] (a : ℕ →o α) : iSup a = monotonicSequenceLimit a := by
-  refine (iSup_le fun m => ?_).antisymm (le_iSup a _)
-  rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
+theorem le_monotonicSequenceLimit [PartialOrder α] [WellFoundedGT α] (a : ℕ →o α) (m : ℕ) :
+    a m ≤ monotonicSequenceLimit a := by
+  rcases le_or_gt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
-  · obtain ⟨n, hn⟩ := WellFoundedGT.monotone_chain_condition' a
-    have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
-    exact (Nat.sInf_mem ⟨n, this⟩ m hm.le).ge
+  · obtain h := WellFoundedGT.monotone_chain_condition a
+    exact (Nat.sInf_mem (s := {n | ∀ m, n ≤ m → a n = a m}) h m hm.le).ge
 
-@[deprecated WellFoundedGT.iSup_eq_monotonicSequenceLimit (since := "2025-01-15")]
-theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
-    (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) :
-    iSup a = monotonicSequenceLimit a := by
-  have : WellFoundedGT α := ⟨h⟩
-  exact WellFoundedGT.iSup_eq_monotonicSequenceLimit a
+theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
+    [WellFoundedGT α] (a : ℕ →o α) : iSup a = monotonicSequenceLimit a :=
+  (iSup_le (le_monotonicSequenceLimit a)).antisymm (le_iSup a _)
+
+theorem WellFoundedGT.ciSup_eq_monotonicSequenceLimit [ConditionallyCompleteLattice α]
+    [WellFoundedGT α] (a : ℕ →o α) (ha : BddAbove (Set.range a)) :
+    iSup a = monotonicSequenceLimit a :=
+  (ciSup_le (le_monotonicSequenceLimit a)).antisymm (le_ciSup ha _)
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
     [Nonempty α] [wfl : WellFoundedLT α] [wfg : WellFoundedGT α] :
@@ -290,7 +272,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
     exact hnext hn
   have H : ∃ n, IsMax (a n) := by
     by_contra!
-    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded_of_decreasing_seq wfg.wf
+    exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg.wf
   exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ fun h' ↦ wellFounded_lt.not_lt_min _ H h' h⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]

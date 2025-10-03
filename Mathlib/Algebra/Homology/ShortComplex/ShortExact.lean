@@ -103,8 +103,6 @@ lemma ShortExact.map_of_exact (hS : S.ShortExact)
     [PreservesFiniteColimits F] : (S.map F).ShortExact := by
   have := hS.mono_f
   have := hS.epi_g
-  have := preserves_mono_of_preservesLimit F S.f
-  have := preserves_epi_of_preservesColimit F S.g
   exact hS.map F
 
 end
@@ -126,7 +124,7 @@ lemma ShortExact.isIso_f_iff {S : ShortComplex C} (hS : S.ShortExact) [Balanced 
     have : Epi S.f := (S.exact_iff_epi (hX₃.eq_of_tgt _ _)).1 hS.exact
     apply isIso_of_mono_of_epi
 
-lemma ShortExact.isIso_g_iff  {S : ShortComplex C} (hS : S.ShortExact) [Balanced C] :
+lemma ShortExact.isIso_g_iff {S : ShortComplex C} (hS : S.ShortExact) [Balanced C] :
     IsIso S.g ↔ IsZero S.X₁ := by
   have := hS.exact.hasZeroObject
   have := hS.mono_f

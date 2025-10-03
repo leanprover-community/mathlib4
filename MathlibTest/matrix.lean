@@ -2,10 +2,12 @@
 manually ported from
 https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1bb258ad9f3e5b/test/matrix.lean
 -/
-import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Notation
 import Qq
+
+set_option linter.style.commandStart false
 
 open Qq
 
@@ -140,10 +142,11 @@ example {α : Type _} [CommRing α] {a b c d : α} :
   simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
     simp only [det_succ_row_zero, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, of_apply,
       cons_val', cons_val_fin_one, cons_val_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
-      Fin.succ_zero_eq_one, cons_val_one, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul,
-      Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one,
-      cons_val_succ, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib, Finset.sum_const,
-      Finset.card_singleton, one_smul]
+      Fin.succ_zero_eq_one, cons_val_one, Fin.sum_univ_succ, Fin.coe_ofNat_eq_mod, Nat.zero_mod,
+      pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero,
+      zero_add, pow_one, cons_val_succ, neg_mul, ne_eq, Fin.succ_ne_zero, not_false_eq_true,
+      Fin.succAbove_ne_zero_zero, Finset.sum_neg_distrib, Finset.sum_const, Finset.card_singleton,
+      one_smul]
   ring
 
 example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
@@ -153,9 +156,10 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
     simp only [det_succ_row_zero, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, of_apply,
       cons_val', cons_val_fin_one, cons_val_zero, submatrix_apply, Fin.succ_zero_eq_one,
       cons_val_one, submatrix_submatrix, det_unique, Fin.default_eq_zero, Function.comp_apply,
-      Fin.succ_one_eq_two, cons_val, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul,
-      Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one,
-      neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib, Finset.sum_singleton, cons_val_succ,
+      Fin.succ_one_eq_two, cons_val, Fin.sum_univ_succ, Fin.coe_ofNat_eq_mod, Nat.zero_mod,
+      pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero,
+      zero_add, pow_one, neg_mul, ne_eq, Fin.succ_ne_zero, not_false_eq_true,
+      Fin.succAbove_ne_zero_zero, Finset.sum_neg_distrib, Finset.sum_singleton, cons_val_succ,
       Fin.succ_succAbove_one, even_two, Even.neg_pow, one_pow, Finset.sum_const,
       Finset.card_singleton, one_smul]
   ring

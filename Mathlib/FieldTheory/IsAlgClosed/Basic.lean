@@ -102,7 +102,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
-  rcases le_or_lt (degree p) 0 with hd | hd
+  rcases le_or_gt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
@@ -167,10 +167,10 @@ theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducibl
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
 
-theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
+theorem algebraMap_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] [Algebra.IsIntegral k K] :
-    Function.Surjective (algebraMap k K) := by
-  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
+    Function.Bijective (algebraMap k K) := by
+  refine ⟨RingHom.injective _, fun x ↦ ⟨-(minpoly k x).coeff 0, ?_⟩⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsIntegral.isIntegral x)
   have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible
     (Algebra.IsIntegral.isIntegral x))
@@ -179,11 +179,16 @@ theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [Is
     add_eq_zero_iff_eq_neg] at this
   exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
-theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
-    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
+theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [CommRing K] [IsDomain K]
+    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Bijective f :=
   let _ : Algebra k K := f.toAlgebra
   have : Algebra.IsIntegral k K := ⟨hf⟩
-  algebraMap_surjective_of_isIntegral
+  algebraMap_bijective_of_isIntegral
+
+@[deprecated "ringHom_bijective_of_isIntegral" (since := "2025-04-16")]
+theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
+    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
+  (ringHom_bijective_of_isIntegral f hf).surjective
 
 end IsAlgClosed
 
@@ -195,7 +200,7 @@ This statement is 09GR (4) ⟹ (1)."]
 theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
     [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) [Algebra.IsAlgebraic k L] :
     L = ⊥ := bot_unique fun x hx ↦ by
-  obtain ⟨y, hy⟩ := IsAlgClosed.algebraMap_surjective_of_isIntegral (k := k) (⟨x, hx⟩ : L)
+  obtain ⟨y, hy⟩ := (IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)).2 (⟨x, hx⟩ : L)
   exact ⟨y, congr_arg (algebraMap L K) hy⟩
 
 lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field K] [IsAlgClosed K]
@@ -259,13 +264,10 @@ theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
   fun f ↦ IntermediateField.exists_algHom_of_splits'
     (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
 
-@[deprecated (since := "2024-11-15")]
-alias surjective_comp_algebraMap_of_isAlgebraic := surjective_restrictDomain_of_isAlgebraic
-
 variable [Algebra.IsAlgebraic K L] (K L M)
 
 /-- Less general version of `lift`. -/
-private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
+private noncomputable irreducible_def liftAux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
     (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits_codomain (minpoly K x)⟩)
     (IntermediateField.adjoin_univ K L)
@@ -298,8 +300,18 @@ noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI := FractionRing.liftAlgebra R (FractionRing S)
   have := FractionRing.isScalarTower_liftAlgebra R M
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
-  let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M
+  let f : FractionRing S →ₐ[FractionRing R] M := liftAux (FractionRing R) (FractionRing S) M
   exact (f.restrictScalars R).comp ((Algebra.ofId S (FractionRing S)).restrictScalars R)
+
+theorem nonempty_algEquiv_or_of_finrank_eq_two {F F' : Type*} (E : Type*)
+    [Field F] [Field F'] [Field E] [Algebra F F'] [Algebra F E]
+    [Algebra.IsAlgebraic F E] [IsAlgClosed F'] (h : Module.finrank F F' = 2) :
+    Nonempty (E ≃ₐ[F] F) ∨ Nonempty (E ≃ₐ[F] F') := by
+  have emb : E →ₐ[F] F' := lift
+  have e := AlgEquiv.ofInjectiveField emb
+  have := Subalgebra.isSimpleOrder_of_finrank h
+  obtain h | h := IsSimpleOrder.eq_bot_or_eq_top emb.range <;> rw [h] at e
+  exacts [.inl ⟨e.trans <| Algebra.botEquiv ..⟩, .inr ⟨e.trans Subalgebra.topEquiv⟩]
 
 noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [CharP k p]
     [IsAlgClosed k] : PerfectRing k p :=
@@ -398,7 +410,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]
   conv_lhs => rw [← hSR.symm_apply_apply x]
-  show equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
+  change equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
   rw [AlgEquiv.commutes]
 
 /-- Algebraic closure of isomorphic fields are isomorphic -/
@@ -452,8 +464,6 @@ def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
   invFun f := f.codRestrict _ fun x ↦
     ((Algebra.IsIntegral.isIntegral x).map f).mem_intermediateField_of_minpoly_splits <| by
       rw [minpoly.algHom_eq f f.injective]; exact hL x
-  left_inv _ := rfl
-  right_inv _ := by rfl
 
 theorem IntermediateField.algHomEquivAlgHomOfSplits_apply_apply (L : IntermediateField F A)
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
@@ -488,7 +498,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   · simp [hg0]
   by_cases hdf0 : derivative f = 0
   · rw [eq_C_of_derivative_eq_zero hdf0]
-    simp only [eval_C, derivative_C, zero_mul, dvd_zero, implies_true]
+    simp only [derivative_C, zero_mul, dvd_zero, implies_true]
   have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
   classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]

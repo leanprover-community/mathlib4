@@ -154,7 +154,7 @@ lemma cfc_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       cfcHom_eq_cfc_extend 0]
     apply cfc_congr fun x hx ↦ ?_
     lift x to spectrum S a using hx
-    simp [Function.comp, Subtype.val_injective.extend_apply]
+    simp [Function.comp]
   · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a) := by
       refine fun hg' ↦ hg ?_
       rw [halg.isEmbedding.continuousOn_iff]
@@ -212,8 +212,8 @@ variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 
 lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A} {f : C(S, R)}
-    (h : QuasispectrumRestricts a f) (h_id : φ (.id rfl) = a) :
-    h.nonUnitalStarAlgHom φ (.id rfl) = a := by
+    (h : QuasispectrumRestricts a f) (h_id : φ (.id _) = a) :
+    h.nonUnitalStarAlgHom φ (.id _) = a := by
   simp only [QuasispectrumRestricts.nonUnitalStarAlgHom_apply]
   convert h_id
   ext x
@@ -260,16 +260,14 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       constructor
       · rintro ⟨y, hy⟩
         have := congr_arg f hy
-        simp only [nonUnitalStarAlgHom_postcomp_apply, NonUnitalStarAlgHom.coe_coe,
-          Function.comp_apply, comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
+        simp only [comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
           at this
         rw [((h a).mp ha).2.left_inv _, ((h a).mp ha).2.left_inv _] at this
         exact ⟨_, this⟩
       · rintro ⟨y, rfl⟩
         rw [Set.mem_preimage]
         refine ⟨⟨algebraMap R S y, quasispectrum.algebraMap_mem S y.prop⟩, ?_⟩
-        simp only [nonUnitalStarAlgHom_postcomp_apply, NonUnitalStarAlgHom.coe_coe,
-          Function.comp_apply, comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
+        simp only [comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
         congr
         exact Subtype.ext (((h a).mp ha).2.left_inv y)
     case predicate_hom =>
@@ -301,7 +299,7 @@ lemma cfcₙ_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R 
       cfcₙHom_eq_cfcₙ_extend 0]
     apply cfcₙ_congr fun x hx ↦ ?_
     lift x to σₙ S a using hx
-    simp [Function.comp, Subtype.val_injective.extend_apply]
+    simp
   · simp only [not_and_or] at hg
     obtain (hg | hg) := hg
     · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (σₙ S a) := by

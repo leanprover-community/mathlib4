@@ -193,6 +193,12 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
 
 end UniformConvergence
 
+@[to_additive]
+instance IsUniformGroup.of_compactSpace [UniformSpace β] [Group β] [ContinuousDiv β]
+    [CompactSpace β] :
+    IsUniformGroup β where
+  uniformContinuous_div := CompactSpace.uniformContinuous_of_continuous continuous_div'
+
 end IsUniformGroup
 
 section IsTopologicalGroup
@@ -203,11 +209,9 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.toUniformSpace
 
-@[to_additive]
+@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
 theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  ⟨by
-    apply CompactSpace.uniformContinuous_of_continuous
-    exact continuous_div'⟩
+  inferInstance
 
 variable {G}
 
@@ -220,7 +224,7 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
   contrapose!
-  simp only [Set.mem_preimage, not_not]
+  simp only [Set.mem_preimage]
   rintro (hyp : h' / h ∈ V)
   have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
   exact (eq_of_div_eq_one this).symm
@@ -295,10 +299,10 @@ variable {e : β →+ α} (de : IsDenseInducing e)
 variable {f : δ →+ γ} (df : IsDenseInducing f)
 variable {φ : β →+ δ →+ G}
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
-variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
+variable {W' : Set G} (W'_nhds : W' ∈ 𝓝 (0 : G))
 include de hφ
 
-include W'_nhd in
+include W'_nhds in
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
     (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
@@ -314,11 +318,11 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   have lim := lim2.comp lim1
   rw [tendsto_prod_self_iff] at lim
   simp_rw [forall_mem_comm]
-  exact lim W' W'_nhd
+  exact lim W' W'_nhds
 
 variable [IsUniformAddGroup G]
 
-include df W'_nhd in
+include df W'_nhds in
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
     ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
@@ -336,26 +340,26 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
       rwa [prod_map_map_eq] at this
     rw [← nhds_prod_eq] at lim_sub_sub
     exact Tendsto.comp lim_φ lim_sub_sub
-  rcases exists_nhds_zero_quarter W'_nhd with ⟨W, W_nhd, W4⟩
+  rcases exists_nhds_zero_quarter W'_nhds with ⟨W, W_nhds, W4⟩
   have :
     ∃ U₁ ∈ comap e (𝓝 x₀), ∃ V₁ ∈ comap f (𝓝 y₀), ∀ (x) (_ : x ∈ U₁) (x') (_ : x' ∈ U₁),
       ∀ (y) (_ : y ∈ V₁) (y') (_ : y' ∈ V₁), (fun p : β × δ => φ p.1 p.2) (x' - x, y' - y) ∈ W := by
-    rcases tendsto_prod_iff.1 lim_φ_sub_sub W W_nhd with ⟨U, U_in, V, V_in, H⟩
+    rcases tendsto_prod_iff.1 lim_φ_sub_sub W W_nhds with ⟨U, U_in, V, V_in, H⟩
     rw [nhds_prod_eq, ← prod_comap_comap_eq, mem_prod_same_iff] at U_in V_in
     rcases U_in with ⟨U₁, U₁_in, HU₁⟩
     rcases V_in with ⟨V₁, V₁_in, HV₁⟩
     exists U₁, U₁_in, V₁, V₁_in
     intro x x_in x' x'_in y y_in y' y'_in
     exact H _ _ (HU₁ (mk_mem_prod x_in x'_in)) (HV₁ (mk_mem_prod y_in y'_in))
-  rcases this with ⟨U₁, U₁_nhd, V₁, V₁_nhd, H⟩
-  obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhd
-  obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhd
+  rcases this with ⟨U₁, U₁_nhds, V₁, V₁_nhds, H⟩
+  obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhds
+  obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhds
   have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 := by
-    show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
+    change Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
-  rcases extend_Z_bilin_aux de hφ W_nhd x₀ y₁ with ⟨U₂, U₂_nhd, HU⟩
-  rcases extend_Z_bilin_aux df cont_flip W_nhd y₀ x₁ with ⟨V₂, V₂_nhd, HV⟩
-  exists U₁ ∩ U₂, inter_mem U₁_nhd U₂_nhd, V₁ ∩ V₂, inter_mem V₁_nhd V₂_nhd
+  rcases extend_Z_bilin_aux de hφ W_nhds x₀ y₁ with ⟨U₂, U₂_nhds, HU⟩
+  rcases extend_Z_bilin_aux df cont_flip W_nhds y₀ x₁ with ⟨V₂, V₂_nhds, HV⟩
+  exists U₁ ∩ U₂, inter_mem U₁_nhds U₂_nhds, V₁ ∩ V₂, inter_mem V₁_nhds V₂_nhds
   rintro x ⟨xU₁, xU₂⟩ x' ⟨x'U₁, x'U₂⟩ y ⟨yV₁, yV₂⟩ y' ⟨y'V₁, y'V₂⟩
   have key_formula : φ x' y' - φ x y
     = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) := by simp; abel
@@ -382,31 +386,25 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
     intro U h
     rcases mem_closure_iff_nhds.1 ((de.prodMap df).dense (x₀, y₀)) U h with ⟨x, x_in, ⟨z, z_x⟩⟩
     exists z
-    aesop
+    simp_all
   · suffices map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 -
       (fun p : β × δ => φ p.1 p.2) p.1)
         (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))
         (𝓝 (x₀, y₀) ×ˢ 𝓝 (x₀, y₀))) ≤ 𝓝 0 by
       rwa [uniformity_eq_comap_nhds_zero G, prod_map_map_eq, ← map_le_iff_le_comap, Filter.map_map,
         prod_comap_comap_eq]
-    intro W' W'_nhd
-    have key := extend_Z_bilin_key de df hφ W'_nhd x₀ y₀
-    rcases key with ⟨U, U_nhd, V, V_nhd, h⟩
-    rw [mem_comap] at U_nhd
-    rcases U_nhd with ⟨U', U'_nhd, U'_sub⟩
-    rw [mem_comap] at V_nhd
-    rcases V_nhd with ⟨V', V'_nhd, V'_sub⟩
+    intro W' W'_nhds
+    have key := extend_Z_bilin_key de df hφ W'_nhds x₀ y₀
+    rcases key with ⟨U, U_nhds, V, V_nhds, h⟩
+    rw [mem_comap] at U_nhds
+    rcases U_nhds with ⟨U', U'_nhds, U'_sub⟩
+    rw [mem_comap] at V_nhds
+    rcases V_nhds with ⟨V', V'_nhds, V'_sub⟩
     rw [mem_map, mem_comap, nhds_prod_eq]
     exists (U' ×ˢ V') ×ˢ U' ×ˢ V'
     rw [mem_prod_same_iff]
-    simp only [exists_prop]
-    constructor
-    · have := prod_mem_prod U'_nhd V'_nhd
-      tauto
-    · intro p h'
-      simp only [Set.mem_preimage, Set.prodMk_mem_set_prod_eq] at h'
-      rcases p with ⟨⟨x, y⟩, ⟨x', y'⟩⟩
-      apply h <;> tauto
+    have := prod_mem_prod U'_nhds V'_nhds
+    grind
 
 end IsDenseInducing
 
@@ -423,14 +421,14 @@ is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bour
 Because a topological group is not equipped with a `UniformSpace` instance by default, we must
 explicitly provide it in order to consider completeness. See `QuotientGroup.completeSpace` for a
 version in which `G` is already equipped with a uniform structure. -/
-@[to_additive "The quotient `G ⧸ N` of a complete first countable topological additive group
+@[to_additive /-- The quotient `G ⧸ N` of a complete first countable topological additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Because an additive topological group is not equipped with a `UniformSpace` instance by default,
 we must explicitly provide it in order to consider completeness. See
 `QuotientAddGroup.completeSpace` for a version in which `G` is already equipped with a uniform
-structure."]
+structure. -/]
 instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
     [@CompleteSpace G (IsTopologicalGroup.toUniformSpace G)] :
@@ -519,7 +517,7 @@ Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` doe
 uniform structure, so it is still provided manually via `IsTopologicalGroup.toUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
 quotient obtained via other means. -/
-@[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
+@[to_additive /-- The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version
 `G` is already equipped with a uniform structure.
@@ -529,7 +527,7 @@ Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` doe
 uniform structure, so it is still provided manually via `IsTopologicalAddGroup.toUniformSpace`.
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
-(definitionally) with the uniform structure provided here."]
+(definitionally) with the uniform structure provided here. -/]
 instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [IsUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.toUniformSpace (G ⧸ N)) := by

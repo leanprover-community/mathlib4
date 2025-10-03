@@ -5,6 +5,11 @@ Authors: Mario Carneiro, Kim Morrison, Violeta Hernández Palacios, Junyan Xu, T
 -/
 import Mathlib.Logic.Hydra
 import Mathlib.SetTheory.Surreal.Basic
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Surreal.Multiplication` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 ### Surreal multiplication
@@ -150,7 +155,7 @@ lemma P1_of_lt (h₁ : P3 x₃ x₂ y₂ y₃) (h₂ : P3 x₁ x₃ y₂ y₁) :
   convert add_lt_add h₁ h₂ using 1 <;> abel
 
 /-- The type of lists of arguments for P1, P2, and P4. -/
-inductive Args : Type (u+1)
+inductive Args : Type (u + 1)
   | P1 (x y : PGame.{u}) : Args
   | P24 (x₁ x₂ y : PGame.{u}) : Args
 
@@ -219,7 +224,7 @@ lemma numeric_option_mul_option (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a)
   ih (Args.P1 x' y') ((TransGen.single <| cutExpand_pair_right hy).tail <| cutExpand_pair_left hx)
 
 lemma ih1 (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) : IH1 x y := by
-  rintro x₁ x₂ y' h₁ h₂ (rfl|hy) <;> apply ih (Args.P24 _ _ _)
+  rintro x₁ x₂ y' h₁ h₂ (rfl | hy) <;> apply ih (Args.P24 _ _ _)
   on_goal 2 => refine TransGen.tail ?_ (cutExpand_pair_right hy)
   all_goals exact TransGen.single (cutExpand_double_left h₁ h₂)
 
@@ -244,7 +249,7 @@ lemma mulOption_lt_of_lt (hy : y.Numeric) (ihxy : IH1 x y) (ihyx : IH1 y x) (i j
 
 lemma mulOption_lt (hx : x.Numeric) (hy : y.Numeric) (ihxy : IH1 x y) (ihyx : IH1 y x) (i j k l) :
     (⟦mulOption x y i k⟧ : Game) < -⟦mulOption x (-y) j l⟧ := by
-  obtain (h|h|h) := lt_or_equiv_or_gt (hx.moveLeft i) (hx.moveLeft j)
+  obtain (h | h | h) := lt_or_equiv_or_gt (hx.moveLeft i) (hx.moveLeft j)
   · exact mulOption_lt_of_lt hy ihxy ihyx i j k l h
   · have ml := @IsOption.moveLeft
     exact mulOption_lt_iff_P1.2 (P1_of_eq h (P24_of_ih ihxy i j).1
@@ -275,7 +280,7 @@ theorem P1_of_ih (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) (hx : x.Numeri
       apply mulOption_lt hx.neg hy.neg ihxyn ihyxn
   all_goals
     cases x; cases y
-    rintro (⟨i,j⟩|⟨i,j⟩) <;>
+    rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
     refine ((numeric_option_mul ih ?_).add <| numeric_mul_option ih ?_).sub
       (numeric_option_mul_option ih ?_ ?_) <;>
     solve_by_elim [IsOption.mk_left, IsOption.mk_right]
@@ -401,7 +406,7 @@ lemma ih3_of_ih (h24 : IH24 x₁ x₂ y) (h4 : IH4 x₁ x₂ y) (hl : MulOptions
 
 lemma P3_of_le_left {y₁ y₂} (i) (h : IH3 x₁ (x₂.moveLeft i) x₂ y₁ y₂) (hl : x₁ ≤ x₂.moveLeft i) :
     P3 x₁ x₂ y₁ y₂ := by
-  obtain (hl|he) := lt_or_equiv_of_le hl
+  obtain (hl | he) := lt_or_equiv_of_le hl
   · exact (h.2.2.2 hl).trans h.2.2.1
   · rw [P3, h.1 he, h.2.1 he]
     exact h.2.2.1
@@ -411,7 +416,7 @@ lemma P3_of_le_left {y₁ y₂} (i) (h : IH3 x₁ (x₂.moveLeft i) x₂ y₁ y�
 theorem P3_of_lt {y₁ y₂} (h : ∀ i, IH3 x₁ (x₂.moveLeft i) x₂ y₁ y₂)
     (hs : ∀ i, IH3 (-x₂) ((-x₁).moveLeft i) (-x₁) y₁ y₂) (hl : x₁ < x₂) :
     P3 x₁ x₂ y₁ y₂ := by
-  obtain (⟨i,hi⟩|⟨i,hi⟩) := lf_iff_exists_le.1 (lf_of_lt hl)
+  obtain (⟨i, hi⟩ | ⟨i, hi⟩) := lf_iff_exists_le.1 (lf_of_lt hl)
   · exact P3_of_le_left i (h i) hi
   · apply P3_neg.2 <| P3_of_le_left _ (hs (toLeftMovesNeg i)) _
     simpa
@@ -419,7 +424,7 @@ theorem P3_of_lt {y₁ y₂} (h : ∀ i, IH3 x₁ (x₂.moveLeft i) x₂ y₁ y�
 /-- The main chunk of Theorem 8 in [Conway2001] / Theorem 3.8 in [SchleicherStoll]. -/
 theorem main (a : Args) : a.Numeric → P124 a := by
   apply argsRel_wf.induction a
-  intros a ih ha
+  intro a ih ha
   replace ih : ∀ a', ArgsRel a' a → P124 a' := fun a' hr ↦ ih a' hr (hr.numeric_closed ha)
   cases a with
   /- P1 -/

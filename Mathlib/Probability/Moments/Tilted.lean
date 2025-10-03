@@ -10,16 +10,16 @@ import Mathlib.Probability.Moments.MGFAnalytic
 # Results relating `Measure.tilted` to `mgf` and `cgf`
 
 For a random variable `X : Ω → ℝ` and a measure `μ`, the tilted measure `μ.tilted (t * X ·)` is
-linked to the moment generating function (`mgf`) and the cumulant generating function (`cgf`)
+linked to the moment-generating function (`mgf`) and the cumulant-generating function (`cgf`)
 of `X`.
 
 ## Main statements
 
 * `integral_tilted_mul_self`: the integral of `X` against the tilted measure `μ.tilted (t * X ·)`
-  is the first derivative of the cumulant generating function of `X` at `t`.
+  is the first derivative of the cumulant-generating function of `X` at `t`.
   `(μ.tilted (t * X ·))[X] = deriv (cgf X μ) t`
 * `variance_tilted_mul`: the variance of `X` under the tilted measure `μ.tilted (t * X ·)`
-  is the second derivative of the cumulant generating function of `X` at `t`.
+  is the second derivative of the cumulant-generating function of `X` at `t`.
   `Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t`
 
 -/
@@ -124,7 +124,7 @@ lemma integral_tilted_mul_eq_cgf (g : Ω → E) (ht : Integrable (fun ω ↦ exp
     rwa [exp_cgf]
 
 /-- The integral of `X` against the tilted measure `μ.tilted (t * X ·)` is the first derivative of
-the cumulant generating function of `X` at `t`. -/
+the cumulant-generating function of `X` at `t`. -/
 lemma integral_tilted_mul_self (ht : t ∈ interior (integrableExpSet X μ)) :
     (μ.tilted (t * X ·))[X] = deriv (cgf X μ) t := by
   simp_rw [integral_tilted_mul_eq_mgf, deriv_cgf ht, ← integral_div, smul_eq_mul]
@@ -151,14 +151,14 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
   exact integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet ht p.2
 
 /-- The variance of `X` under the tilted measure `μ.tilted (t * X ·)` is the second derivative of
-the cumulant generating function of `X` at `t`. -/
+the cumulant-generating function of `X` at `t`. -/
 lemma variance_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) :
     Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t := by
   rw [variance_eq_integral]
   swap; · exact (memLp_tilted_mul ht 1).aestronglyMeasurable.aemeasurable
   rw [integral_tilted_mul_self ht, iteratedDeriv_two_cgf_eq_integral ht, integral_tilted_mul_eq_mgf,
     ← integral_div]
-  simp only [Pi.pow_apply, Pi.sub_apply, smul_eq_mul]
+  simp only [smul_eq_mul]
   congr with ω
   ring
 

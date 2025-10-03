@@ -9,6 +9,7 @@ import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -248,40 +249,30 @@ theorem IsIntegral.det {n : Type*} [Fintype n] [DecidableEq n] {M : Matrix n n A
 theorem IsIntegral.pow_iff {x : A} {n : ℕ} (hn : 0 < n) : IsIntegral R (x ^ n) ↔ IsIntegral R x :=
   ⟨IsIntegral.of_pow hn, fun hx ↦ hx.pow n⟩
 
-open TensorProduct
+section Pushout
 
-theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
-  rw [← mul_one x, ← smul_eq_mul, ← smul_tmul']
-  exact smul _ (h.map_of_comp_eq (algebraMap R A)
-    (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
-    Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
+variable (R S A) [Algebra R S] [int : Algebra.IsIntegral R S]
+variable (SA : Type*) [CommRing SA] [Algebra R SA] [Algebra S SA] [Algebra A SA]
+  [IsScalarTower R S SA] [IsScalarTower R A SA]
+
+theorem Algebra.IsPushout.isIntegral' [IsPushout R A S SA] : Algebra.IsIntegral A SA :=
+  (equiv R A S SA).isIntegral_iff.mp inferInstance
+
+theorem Algebra.IsPushout.isIntegral [h : IsPushout R S A SA] : Algebra.IsIntegral A SA :=
+  h.symm.isIntegral'
+
+attribute [local instance] Polynomial.algebra in
+instance : Algebra.IsIntegral R[X] S[X] := Algebra.IsPushout.isIntegral R _ S _
+
+attribute [local instance] MvPolynomial.algebraMvPolynomial in
+instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
+  Algebra.IsPushout.isIntegral R _ S _
+
+end Pushout
 
 section
 
 variable (p : R[X]) (x : S)
-
-/-- The monic polynomial whose roots are `p.leadingCoeff * x` for roots `x` of `p`. -/
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots := integralNormalization
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_coeff_mul_leadingCoeff_pow :=
-  integralNormalization_coeff_mul_leadingCoeff_pow
-
-@[deprecated (since := "2024-11-30")]
-alias leadingCoeff_smul_normalizeScaleRoots := leadingCoeff_smul_integralNormalization
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_support := support_integralNormalization_subset
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_degree := integralNormalization_degree
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_eval₂_leadingCoeff_mul := integralNormalization_eval₂_leadingCoeff_mul
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_monic := monic_integralNormalization
 
 /-- Given a `p : R[X]` and a `x : S` such that `p.eval₂ f x = 0`,
 `f p.leadingCoeff * x` is integral. -/
@@ -346,15 +337,10 @@ section IsIntegralClosure
 
 instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A where
-  algebraMap_injective' := Subtype.coe_injective
+  algebraMap_injective := Subtype.coe_injective
   isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
 
 namespace IsIntegralClosure
-
--- Porting note: added to work around missing infer kind support
-theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
-    [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
-  algebraMap_injective' R
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
@@ -392,12 +378,12 @@ theorem mk'_one (h : IsIntegral R (1 : B) := isIntegral_one) : mk' A 1 h = 1 :=
 theorem mk'_zero (h : IsIntegral R (0 : B) := isIntegral_zero) : mk' A 0 h = 0 :=
   algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_zero]
 
--- Porting note: Left-hand side does not simplify @[simp]
+@[simp]
 theorem mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x + y) (hx.add hy) = mk' A x hx + mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_add]
 
--- Porting note: Left-hand side does not simplify @[simp]
+@[simp]
 theorem mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x * y) (hx.mul hy) = mk' A x hx * mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_mul]
@@ -526,10 +512,6 @@ lemma IsIntegralClosure.tower_top {B C : Type*} [CommSemiring C] [CommRing B]
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
   fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
 
-theorem Algebra.isIntegral_of_surjective (h : Function.Surjective (algebraMap R A)) :
-    Algebra.IsIntegral R A :=
-  ⟨(algebraMap R A).isIntegral_of_surjective h⟩
-
 /-- If `R → A → B` is an algebra tower with `A → B` injective,
 then if the entire tower is an integral extension so is `R → A` -/
 theorem IsIntegral.tower_bot (H : Function.Injective (algebraMap A B)) {x : A}
@@ -602,28 +584,35 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 
-/-- If the integral extension `R → S` is injective, and `S` is a field, then `R` is also a field. -/
-theorem isField_of_isIntegral_of_isField {R S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] [Algebra.IsIntegral R S]
-    (hRS : Function.Injective (algebraMap R S)) (hS : IsField S) : IsField R := by
-  have := hS.nontrivial; have := Module.nontrivial R S
-  refine ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {a} ha ↦ ?_⟩
-  -- Let `a_inv` be the inverse of `algebraMap R S a`,
-  -- then we need to show that `a_inv` is of the form `algebraMap R S b`.
-  obtain ⟨a_inv, ha_inv⟩ := hS.mul_inv_cancel fun h ↦ ha (hRS (h.trans (RingHom.map_zero _).symm))
-  letI : Invertible a_inv := (Units.mkOfMulEqOne a_inv _ <| mul_comm _ a_inv ▸ ha_inv).invertible
-  -- Let `p : R[X]` be monic with root `a_inv`,
-  obtain ⟨p, p_monic, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) a_inv
-  -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
-  -- We have `q(a) = 0`, so `-q'(a)` is the inverse of `a`.
-  use -p.reverse.divX.eval a -- -q'(a)
-  nth_rewrite 1 [mul_neg, ← eval_X (x := a), ← eval_mul, ← p_monic, ← coeff_zero_reverse,
-    ← add_eq_zero_iff_neg_eq, ← eval_C (a := p.reverse.coeff 0), ← eval_add, X_mul_divX_add,
-    ← (injective_iff_map_eq_zero' _).mp hRS, ← aeval_algebraMap_apply_eq_algebraMap_eval]
-  rwa [← eval₂_reverse_eq_zero_iff] at hp
+variable {R S : Type*} [CommRing R] [CommRing S]
 
-theorem Algebra.IsIntegral.isField_iff_isField {R S : Type*} [CommRing R]
-    [CommRing S] [IsDomain S] [Algebra R S] [Algebra.IsIntegral R S]
+theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
+    (inj : Function.Injective f) : IsLocalHom f where
+  map_nonunit a ha := by
+    -- `f a` is invertible in `S`, and we need to show that `(f a)⁻¹` is of the form `f b`.
+    -- Let `p : R[X]` be monic with root `(f a)⁻¹`,
+    obtain ⟨p, p_monic, hp⟩ := hf (ha.unit⁻¹ : _)
+    -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
+    -- We have `q(a) = 0`, so `-q'(a)` is the inverse of `a`.
+    refine isUnit_of_mul_eq_one _ (-p.reverse.divX.eval a) ?_
+    nth_rewrite 1 [mul_neg, ← eval_X (x := a), ← eval_mul, ← p_monic, ← coeff_zero_reverse,
+      ← add_eq_zero_iff_neg_eq, ← eval_C (a := p.reverse.coeff 0), ← eval_add, X_mul_divX_add,
+      ← (injective_iff_map_eq_zero' _).mp inj, ← eval₂_hom]
+    rwa [← eval₂_reverse_eq_zero_iff] at hp
+
+variable [Algebra R S] [Algebra.IsIntegral R S]
+
+variable (R S) in
+instance Algebra.IsIntegral.isLocalHom [FaithfulSMul R S] : IsLocalHom (algebraMap R S) :=
+  (algebraMap_isIntegral_iff.mpr ‹_›).isLocalHom (FaithfulSMul.algebraMap_injective R S)
+
+/-- If the integral extension `R → S` is injective, and `S` is a field, then `R` is also a field. -/
+theorem isField_of_isIntegral_of_isField (hRS : Function.Injective (algebraMap R S))
+    (hS : IsField S) : IsField R :=
+  have := (faithfulSMul_iff_algebraMap_injective R S).mpr hRS
+  IsLocalHom.isField hRS hS
+
+theorem Algebra.IsIntegral.isField_iff_isField [IsDomain S]
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
   ⟨isField_of_isIntegral_of_isField', isField_of_isIntegral_of_isField hRS⟩
 

@@ -268,9 +268,17 @@ theorem _root_.MeasureTheory.measureReal_prod_prod (s : Set α) (t : Set β) :
   ext s hs
   simp [Measure.map_apply measurable_fst hs, ← prod_univ, mul_comm]
 
+lemma _root_.MeasureTheory.measurePreserving_fst [IsProbabilityMeasure ν] :
+    MeasurePreserving Prod.fst (μ.prod ν) μ :=
+  ⟨measurable_fst, by rw [map_fst_prod, measure_univ, one_smul]⟩
+
 @[simp] lemma map_snd_prod : Measure.map Prod.snd (μ.prod ν) = (μ univ) • ν := by
   ext s hs
   simp [Measure.map_apply measurable_snd hs, ← univ_prod]
+
+lemma _root_.MeasureTheory.measurePreserving_snd [IsProbabilityMeasure μ] :
+    MeasurePreserving Prod.snd (μ.prod ν) ν :=
+  ⟨measurable_snd, by rw [map_snd_prod, measure_univ, one_smul]⟩
 
 instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsOpenPosMeasure μ] {m' : MeasurableSpace Y}
@@ -295,7 +303,7 @@ instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {m�
     IsFiniteMeasure (μ.prod ν) := by
   constructor
   rw [← univ_prod_univ, prod_prod]
-  exact mul_lt_top (measure_lt_top _ _) (measure_lt_top _ _)
+  finiteness
 
 instance {α β : Type*} [MeasureSpace α] [MeasureSpace β] [IsFiniteMeasure (volume : Measure α)]
     [IsFiniteMeasure (volume : Measure β)] : IsFiniteMeasure (volume : Measure (α × β)) :=
@@ -401,6 +409,7 @@ theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
   measure_prod_null hs.compl
 
 omit [SFinite ν] in
+@[fun_prop]
 theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν) μ := by
   refine ⟨measurable_fst, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_fst hs, ← prod_univ, ← nonpos_iff_eq_zero]
@@ -408,6 +417,7 @@ theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν
   rw [h2s, zero_mul]
 
 omit [SFinite ν] in
+@[fun_prop]
 theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν) ν := by
   refine ⟨measurable_snd, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_snd hs, ← univ_prod, ← nonpos_iff_eq_zero]
@@ -473,13 +483,13 @@ noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)}
 lemma prod_sum_left {ι : Type*} (m : ι → Measure α) (μ : Measure β) [SFinite μ] :
     (Measure.sum m).prod μ = Measure.sum (fun i ↦ (m i).prod μ) := by
   ext s hs
-  simp only [prod_apply hs, lintegral_sum_measure, hs, sum_apply, ENNReal.tsum_prod']
+  simp only [prod_apply hs, lintegral_sum_measure, hs, sum_apply]
 
 lemma prod_sum_right {ι' : Type*} [Countable ι'] (m : Measure α) (m' : ι' → Measure β)
     [∀ n, SFinite (m' n)] :
     m.prod (Measure.sum m') = Measure.sum (fun p ↦ m.prod (m' p)) := by
   ext s hs
-  simp only [prod_apply hs, lintegral_sum_measure, hs, sum_apply, ENNReal.tsum_prod']
+  simp only [prod_apply hs, hs, sum_apply]
   have M : ∀ x, MeasurableSet (Prod.mk x ⁻¹' s) := fun x => measurable_prodMk_left hs
   simp_rw [Measure.sum_apply _ (M _)]
   rw [lintegral_tsum (fun i ↦ (measurable_measure_prodMk_left hs).aemeasurable)]
@@ -542,6 +552,90 @@ theorem prod_eq {μ : Measure α} [SigmaFinite μ] {ν : Measure β} [SigmaFinit
   prod_eq_generateFrom generateFrom_measurableSet generateFrom_measurableSet
     isPiSystem_measurableSet isPiSystem_measurableSet μ.toFiniteSpanningSetsIn
     ν.toFiniteSpanningSetsIn fun s hs t ht => h s t hs ht
+
+-- This is not true for σ-finite measures. See the discussion at
+-- https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Uniqueness.20of.20sigma-finite.20measures.20on.20a.20product.20space/with/541741071
+/-- Two finite measures on a product that are equal on products of sets are equal. -/
+lemma ext_prod {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+    {μ ν : Measure (α × β)} [IsFiniteMeasure μ]
+    (h : ∀ {s : Set α} {t : Set β}, MeasurableSet s → MeasurableSet t → μ (s ×ˢ t) = ν (s ×ˢ t)) :
+    μ = ν := by
+  ext s hs
+  have h_univ : μ univ = ν univ := by
+    rw [← univ_prod_univ]
+    exact h .univ .univ
+  have : IsFiniteMeasure ν := ⟨by simp [← h_univ]⟩
+  refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod (by simp)
+    ?_ ?_ ?_ s hs
+  · rintro - ⟨s, hs, t, ht, rfl⟩
+    exact h hs ht
+  · intro t ht h
+    simp_rw [measure_compl ht (measure_ne_top _ _), h, h_univ]
+  · intro f h_disj hf h_eq
+    simp_rw [measure_iUnion h_disj hf, h_eq]
+
+/-- Two finite measures on a product are equal iff they are equal on products of sets. -/
+lemma ext_prod_iff {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+    {μ ν : Measure (α × β)} [IsFiniteMeasure μ] :
+    μ = ν
+      ↔ ∀ {s : Set α} {t : Set β}, MeasurableSet s → MeasurableSet t → μ (s ×ˢ t) = ν (s ×ˢ t) :=
+  ⟨fun h s t hs ht ↦ by rw [h], Measure.ext_prod⟩
+
+/-- Two finite measures on a product `α × β × γ` that are equal on products of sets are equal.
+See `ext_prod₃'` for the same statement for `(α × β) × γ`. -/
+lemma ext_prod₃ {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+    {mγ : MeasurableSpace γ} {μ ν : Measure (α × β × γ)} [IsFiniteMeasure μ]
+    (h : ∀ {s : Set α} {t : Set β} {u : Set γ},
+      MeasurableSet s → MeasurableSet t → MeasurableSet u → μ (s ×ˢ t ×ˢ u) = ν (s ×ˢ t ×ˢ u)) :
+    μ = ν := by
+  ext s hs
+  have h_univ : μ univ = ν univ := by
+    simp_rw [← univ_prod_univ]
+    exact h .univ .univ .univ
+  have : IsFiniteMeasure ν := ⟨by simp [← h_univ]⟩
+  let C₂ := image2 (· ×ˢ ·) { t : Set β | MeasurableSet t } { u : Set γ | MeasurableSet u }
+  let C := image2 (· ×ˢ ·) { s : Set α | MeasurableSet s } C₂
+  refine MeasurableSpace.induction_on_inter (s := C) ?_ ?_ (by simp) ?_ ?_ ?_ s hs
+  · refine (generateFrom_eq_prod (C := { s : Set α | MeasurableSet s }) (D := C₂) (by simp)
+      generateFrom_prod isCountablySpanning_measurableSet ?_).symm
+    exact isCountablySpanning_measurableSet.prod isCountablySpanning_measurableSet
+  · exact MeasurableSpace.isPiSystem_measurableSet.prod isPiSystem_prod
+  · rintro - ⟨s, hs, -, ⟨t, ht, u, hu, rfl⟩, rfl⟩
+    exact h hs ht hu
+  · intro t ht h
+    simp_rw [measure_compl ht (measure_ne_top _ _), h, h_univ]
+  · intro f h_disj hf h_eq
+    simp_rw [measure_iUnion h_disj hf, h_eq]
+
+/-- Two finite measures on a product `α × β × γ` are equal iff they are equal on products of sets.
+See `ext_prod₃_iff'` for the same statement for `(α × β) × γ`. -/
+lemma ext_prod₃_iff {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+    {mγ : MeasurableSpace γ} {μ ν : Measure (α × β × γ)} [IsFiniteMeasure μ] :
+    μ = ν ↔ (∀ {s : Set α} {t : Set β} {u : Set γ},
+      MeasurableSet s → MeasurableSet t → MeasurableSet u → μ (s ×ˢ t ×ˢ u) = ν (s ×ˢ t ×ˢ u)) :=
+  ⟨fun h s t u hs ht hu ↦ by rw [h], Measure.ext_prod₃⟩
+
+/-- Two finite measures on a product `(α × β) × γ` are equal iff they are equal on products of sets.
+See `ext_prod₃_iff` for the same statement for `α × β × γ`. -/
+lemma ext_prod₃_iff' {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+    {mγ : MeasurableSpace γ} {μ ν : Measure ((α × β) × γ)} [IsFiniteMeasure μ] :
+    μ = ν ↔ (∀ {s : Set α} {t : Set β} {u : Set γ},
+      MeasurableSet s → MeasurableSet t → MeasurableSet u →
+      μ ((s ×ˢ t) ×ˢ u) = ν ((s ×ˢ t) ×ˢ u)) := by
+  rw [← MeasurableEquiv.prodAssoc.map_measurableEquiv_injective.eq_iff, ext_prod₃_iff]
+  have h_eq (ν : Measure ((α × β) × γ)) {s : Set α} {t : Set β} {u : Set γ}
+      (hs : MeasurableSet s) (ht : MeasurableSet t) (hu : MeasurableSet u) :
+      ν.map MeasurableEquiv.prodAssoc (s ×ˢ (t ×ˢ u)) = ν ((s ×ˢ t) ×ˢ u) := by
+    rw [map_apply (by fun_prop) (hs.prod (ht.prod hu))]
+    congr 1 with x
+    simp [MeasurableEquiv.prodAssoc]
+  refine ⟨fun h s t u hs ht hu ↦ ?_, fun h s t u hs ht hu ↦ ?_⟩ <;> specialize h hs ht hu
+  · rwa [h_eq μ hs ht hu, h_eq ν hs ht hu] at h
+  · rwa [h_eq μ hs ht hu, h_eq ν hs ht hu]
+
+/-- Two finite measures on a product `(α × β) × γ` that are equal on products of sets are equal.
+See `ext_prod₃` for the same statement for `α × β × γ`. -/
+alias ⟨_, ext_prod₃'⟩ := ext_prod₃_iff'
 
 variable [SFinite μ]
 
@@ -705,6 +799,13 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
   rw [map_apply (hf.prodMap hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
   exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
 
+-- `prod_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
+-- hence it is placed in the `WithDensity` file, where the instance is defined.
+lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
+  ext s hs
+  rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs]
+  simp
+
 end Measure
 
 open Measure
@@ -714,10 +815,10 @@ namespace MeasurePreserving
 variable {δ : Type*} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β} {μc : Measure γ}
   {μd : Measure δ}
 
-/-- Let `f : α → β` be a measure preserving map.
-For a.e. all `a`, let `g a : γ → δ` be a measure preserving map.
+/-- Let `f : α → β` be a measure-preserving map.
+For a.e. all `a`, let `g a : γ → δ` be a measure-preserving map.
 Also suppose that `g` is measurable as a function of two arguments.
-Then the map `fun (a, c) ↦ (f a, g a c)` is a measure preserving map
+Then the map `fun (a, c) ↦ (f a, g a c)` is a measure-preserving map
 for the product measures on `α × γ` and `β × δ`.
 
 Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a *skew product* over `f`,
@@ -776,6 +877,25 @@ theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [Measu
       ((measurable_swap.measurePreserving (ν.prod μ)).symm
           MeasurableEquiv.prodComm).quasiMeasurePreserving
 
+@[fun_prop]
+protected theorem fst {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
+    QuasiMeasurePreserving (fun x ↦ (f x).1) μ ν :=
+  (quasiMeasurePreserving_fst (μ := ν) (ν := τ)).comp hf
+
+@[fun_prop]
+protected theorem snd {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
+    QuasiMeasurePreserving (fun x ↦ (f x).2) μ τ :=
+  (quasiMeasurePreserving_snd (μ := ν) (ν := τ)).comp hf
+
+@[fun_prop]
+protected theorem prodMap {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure ω}
+    [SFinite μ] [SFinite τ] [SFinite υ] {f : α → β} {g : γ → ω}
+    (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
+    QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
+  refine ⟨by fun_prop, ?_⟩
+  rw [← map_prod_map _ _ (by fun_prop) (by fun_prop)]
+  exact hf.absolutelyContinuous.prod hg.absolutelyContinuous
+
 end QuasiMeasurePreserving
 
 end MeasureTheory
@@ -793,8 +913,7 @@ theorem MeasureTheory.NullMeasurable.comp_fst {f : α → γ} (hf : NullMeasurab
     NullMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
--- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.fst {f : α → γ} (hf : AEMeasurable f μ) :
+theorem AEMeasurable.comp_fst {f : α → γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
@@ -802,8 +921,7 @@ theorem MeasureTheory.NullMeasurable.comp_snd {f : β → γ} (hf : NullMeasurab
     NullMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
--- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.snd {f : β → γ} (hf : AEMeasurable f ν) :
+theorem AEMeasurable.comp_snd {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -919,7 +1037,8 @@ theorem lintegral_lintegral_swap [SFinite μ] ⦃f : α → β → ℝ≥0∞⦄
 
 theorem lintegral_prod_mul {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g ν) : ∫⁻ z, f z.1 * g z.2 ∂μ.prod ν = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
-  simp [lintegral_prod _ (hf.fst.mul hg.snd), lintegral_lintegral_mul hf hg]
+  rw [lintegral_prod _ (by fun_prop)]
+  simp [lintegral_lintegral_mul hf hg]
 
 /-! ### Marginals of a measure defined on a product -/
 
