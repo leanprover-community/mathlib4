@@ -766,7 +766,7 @@ partial def evalPowNat {a : Q($A)} (va : ExSum sAlg a) (n : Q(ℕ)) :
     MetaM <| Result (ExSum sAlg) q($a ^ $n) := do
   let nn := n.natLit!
   if nn = 1 then
-    return ⟨_, va, (q(Ring.pow_one (R := $A)):)⟩
+    return ⟨_, va, (q(Ring.pow_one (R := $A) $a):)⟩
   else
     let nm := nn >>> 1
     have m : Q(ℕ) := mkRawNatLit nm
