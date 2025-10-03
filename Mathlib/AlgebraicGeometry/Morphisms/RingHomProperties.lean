@@ -448,7 +448,7 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
       rw [morphismRestrict_comp]
       exact this _ _ (IsLocalAtTarget.restrict hf _) (IsLocalAtTarget.restrict hg _) U.2
     wlog hY : IsAffine Y generalizing X Y
-    · rw [IsLocalAtSource.iff_of_openCover (P := P) (Y.affineCover.pullbackCover f)]
+    · rw [IsLocalAtSource.iff_of_openCover (P := P) (Y.affineCover.pullback₁ f)]
       intro i
       rw [← Scheme.Cover.pullbackHom_map_assoc]
       exact this _ _ (IsLocalAtTarget.of_isPullback (.of_hasPullback _ _) hf)
