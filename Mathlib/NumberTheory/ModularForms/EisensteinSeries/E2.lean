@@ -54,7 +54,7 @@ theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z :=
 /-- The Eisenstein series of weight `2` and level `1` defined as the limit as `N` tends to
 infinity of the partial sum of `m` in `[N,N)` of `e2Summand m`. This sum over symmetric
 intervals is handy in showing it is Cauchy. -/
-def G2 : ℍ → ℂ := fun z => ∑'[Icc_filter] m, e2Summand m z
+def G2 : ℍ → ℂ := fun z => ∑'[IccFilter] m, e2Summand m z
 
 /-- The normalised Eisenstein series of weight `2` and level `1`. -/
 def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) •  G2
@@ -114,7 +114,7 @@ lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) 
   apply Tendsto.cauchySeq (x := -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ))
   simpa using aux_G2_tendsto z
 
-lemma SummableFilter_G2 (z : ℍ) : Summable (fun m : ℤ => e2Summand m z) Icc_filter := by
+lemma Summable_IccFilter_G2 (z : ℍ) : Summable (fun m : ℤ => e2Summand m z) IccFilter := by
   simp [Summable, HasSum]
   have := G2_cauchy z
   have := cauchySeq_tendsto_of_complete this
@@ -156,28 +156,27 @@ private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [Norm
     (hN N (by rfl))
 
 
-lemma SummableFilter_G2_Ico (z : ℍ) : Summable (fun m : ℤ => e2Summand m z) Ico_filter := by
-  apply summableFilter_int_Icc_eq_Ico_filter (SummableFilter_G2 z)
+lemma Summable_IccFilter_G2_Ico (z : ℍ) : Summable (fun m : ℤ => e2Summand m z) IcoFilter := by
+  apply summable_IcoFilter_of_multiplible_IccFilter (Summable_IccFilter_G2 z)
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchy z) (by apply e2Summand_even)
   simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
-lemma G2_eq_Ico (z : ℍ) : G2 z = ∑'[Ico_filter] m, e2Summand m z := by
-  rw [G2, sumFilter_int_Icc_eq_Ico_filter (SummableFilter_G2 z) ?_]
+lemma G2_eq_Ico (z : ℍ) : G2 z = ∑'[IcoFilter] m, e2Summand m z := by
+  rw [G2, tsum_IccFilter_eq_tsum_IcoFilter (Summable_IccFilter_G2 z) ?_]
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchy z) (by apply e2Summand_even)
   simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
 lemma aux_tendsto_Ico (z : ℍ) :
     Tendsto (fun (N : ℕ) ↦ ∑ m ∈ Ico (-(N : ℤ)) N, e2Summand m z) atTop (𝓝 (G2 z)) := by
-  have := SummableFilter_G2_Ico z
+  have := Summable_IccFilter_G2_Ico z
   obtain ⟨a, ha⟩ := this
   have HA := ha
   rw [Summable.hasSum_iff] at ha
   · rw [G2_eq_Ico z, ha]
-    simp [HasSum, Ico_filter, tendsto_map'_iff] at *
+    simp [HasSum, IcoFilter, tendsto_map'_iff] at *
     apply HA.congr
     simp
-  · apply SummableFilter_G2_Ico
-
+  · apply Summable_IccFilter_G2_Ico
 
 lemma aux_cauchySeq_Ico (z : ℍ) : CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z := by
   apply Filter.Tendsto.cauchySeq
@@ -197,22 +196,20 @@ theorem aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
     simp
   · exact fun i hi => linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
 
-
 lemma G2_S_act (z : ℍ) :
     Tendsto (fun N : ℕ => (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
     (𝓝 ((z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z))) := by
   rw [G2_eq_Ico]
   rw [← tsum_mul_left]
-  have : Summable (fun m : ℤ => (z.1 ^ 2)⁻¹ * e2Summand m (ModularGroup.S • z)) Ico_filter:= by
+  have : Summable (fun m : ℤ => (z.1 ^ 2)⁻¹ * e2Summand m (ModularGroup.S • z)) IcoFilter := by
     apply Summable.mul_left
-    apply SummableFilter_G2_Ico (ModularGroup.S • z)
+    apply Summable_IccFilter_G2_Ico (ModularGroup.S • z)
   have := (this.hasSum)
-  simp only [HasSum, Ico_filter, tendsto_map'_iff, modular_S_smul] at *
+  simp only [HasSum, IcoFilter, tendsto_map'_iff, modular_S_smul] at *
   apply this.congr
   intro N
   simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk, ← mul_sum]
     using (aux_sum_Ico_S_indentity z N)
-
 
 lemma Ico_succ_eq (b : ℕ) : Finset.Ico (-(b+1) : ℤ) (b+1) = Finset.Ico (-(b : ℤ)) (b) ∪
     {-((b+1) : ℤ), (b : ℤ)} :=  by
@@ -247,8 +244,8 @@ theorem tendstozero_inv_linear_sub (z : ℍ) (b : ℤ) :
   simp only [Int.cast_neg, neg_mul, one_div, neg_zero, ← inv_neg] at *
   exact this.congr (fun _ => by ring)
 
-lemma HasSUmFilter_Ico_iff {f : ℤ → ℂ} {x : ℂ} :
-    HasSum f x Ico_filter ↔ Tendsto ((fun N : ℕ =>
+lemma HasSum_IcoFilter_iff {f : ℤ → ℂ} {x : ℂ} :
+    HasSum f x IcoFilter ↔ Tendsto ((fun N : ℕ =>
     ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)), f n)) atTop (𝓝 x) := by
   simp [HasSum, tendsto_map'_iff]
   constructor
@@ -260,10 +257,10 @@ lemma HasSUmFilter_Ico_iff {f : ℤ → ℂ} {x : ℂ} :
     apply h.congr
     simp
 
-lemma G2_S_aa (z : ℍ) : ∑'[Ico_filter] n : ℤ, (∑' m : ℤ, (1 / ((m : ℂ) * z + n) ^ 2)) =
+lemma G2_S_aa (z : ℍ) : ∑'[IcoFilter] n : ℤ, (∑' m : ℤ, (1 / ((m : ℂ) * z + n) ^ 2)) =
     ((z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z)) := by
   apply HasSum.tsum_eq
-  rw [HasSUmFilter_Ico_iff]
+  rw [HasSum_IcoFilter_iff]
   have := G2_S_act z
   apply this.congr
   intro x
@@ -272,9 +269,9 @@ lemma G2_S_aa (z : ℍ) : ∑'[Ico_filter] n : ℤ, (∑' m : ℤ, (1 / ((m : �
   simpa using linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
 
 lemma tsumFilter_Ico_eq_zero (z : ℍ) (m : ℤ) :
-    ∑'[Ico_filter] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
+    ∑'[IcoFilter] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
   apply HasSum.tsum_eq
-  simp only [HasSUmFilter_Ico_iff] at *
+  simp only [HasSum_IcoFilter_iff] at *
   conv =>
     enter [1, N]
     rw [telescope_aux z m N]
@@ -464,7 +461,7 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq (z : ℍ) : Tendsto (fun N : ℕ+ 
 --these are the two key lemmas
 
 lemma tsumFilter_tsum_eq (z : ℍ) :
-    ∑'[Ico_filter] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
+    ∑'[IcoFilter] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     -2 * π * I / z := by
   apply HasSum.tsum_eq
   have := (tendsto_tsum_one_div_linear_sub_succ_eq z)
@@ -478,7 +475,7 @@ lemma tsumFilter_tsum_eq (z : ℍ) :
   exact tendsto_comp_val_Ioi_atTop.mp (tendsto_tsum_one_div_linear_sub_succ_eq z)
 
 lemma tsum_tsumFilter_eq (z : ℍ) :
-    ∑' m : ℤ, (∑'[Ico_filter] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) = 0 := by
+    ∑' m : ℤ, (∑'[IcoFilter] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) = 0 := by
   convert tsum_zero
   apply tsumFilter_Ico_eq_zero
 
@@ -568,10 +565,10 @@ lemma poly_id (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ * (((b : ℂ)
 lemma G2_alt_eq (z : ℍ) : G2 z = ∑' m, ∑' n, (G2Term z ![m, n] + δ ![m, n]) := by
   set t :=  ∑' m, ∑' n,  (G2Term z ![m, n] + δ ![m, n])
   rw [G2, show t = t + 0 by ring, ←   tsum_tsumFilter_eq z, ← Summable.tsum_add]
-  · rw [sumFilter_int_atTop_eq_Icc_filter]
+  · rw [tsum_eq_tsum_IccFilter]
     · congr
       ext a
-      rw [e2Summand, ← sumFilter_int_atTop_eq_Ico_filter,
+      rw [e2Summand, ← tsum_eq_tsum_IcoFilter,
         ← Summable.tsum_add]
       · congr
         ext b
@@ -607,8 +604,7 @@ def swap_equiv {α : Type*} : Equiv (Fin 2 → α) (Fin 2 → α) := Equiv.mk sw
 
 lemma G2_inde_lhs (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) - -2 * π * I / z =
     ∑' n : ℤ, ∑' m : ℤ, (G2Term z ![m, n] + δ ![m, n]) := by
-  rw [← tsumFilter_tsum_eq z, ← (G2_S_aa z),
-    sumFilter_int_atTop_eq_Ico_filter, ← Summable.tsum_sub]
+  rw [← tsumFilter_tsum_eq z, ← (G2_S_aa z), tsum_eq_tsum_IcoFilter, ← Summable.tsum_sub]
   · congr
     ext N
     rw [← Summable.tsum_sub]
@@ -621,7 +617,7 @@ lemma G2_inde_lhs (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) - -2 * 
     · simpa using linear_left_summable (ne_zero z) N (k := 2) (by norm_num)
     · simpa [add_assoc] using summable_one_div_linear_sub_one_div_linear z N (N + 1)
   · apply HasSum.summable (a := (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z))
-    rw [HasSUmFilter_Ico_iff]
+    rw [HasSum_IcoFilter_iff]
     have H := G2_S_act z
     apply H.congr
     intro x
@@ -629,7 +625,7 @@ lemma G2_inde_lhs (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) - -2 * 
     intro i hi
     simpa using linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
   · apply HasSum.summable (a := -2 * π * I / z)
-    rw [HasSUmFilter_Ico_iff]
+    rw [HasSum_IcoFilter_iff]
     have H := tendsto_tsum_one_div_linear_sub_succ_eq z
     rw [← tendsto_comp_val_Ioi_atTop]
     apply H

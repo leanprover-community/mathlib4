@@ -78,43 +78,78 @@ lemma tendsto_Ioo_atTop_atTop' : Tendsto (fun N : ℕ => Finset.Ioo (-N : ℤ) N
   exact fun x => ⟨x.natAbs + 1, by simpa using ⟨by apply le_trans _ (add_abs_nonneg x); omega,
     (Int.lt_add_one_iff.mpr (le_abs_self x))⟩⟩
 
-abbrev Icc_filter : SummationFilter ℤ where
+
+/-- The SummationFilter on `Finset ℤ` corresponding to the intervals `Icc (-N) N` -/
+abbrev IccFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N)
 
-abbrev Ico_filter : SummationFilter ℤ where
+/-- The SummationFilter on `Finset ℤ` corresponding to the intervals `Ico (-N) N` -/
+abbrev IcoFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Ico (-(N : ℤ)) N)
+
+/-- The SummationFilter on `Finset ℤ` corresponding to the intervals `Ioc (-N) N` -/
+abbrev IocFilter : SummationFilter ℤ where
+  filter := atTop.map (fun N : ℕ ↦ Ioc (-(N : ℤ)) N)
+
+/-- The SummationFilter on `Finset ℤ` corresponding to the intervals `Ioo (-N) N` -/
+abbrev IooFilter : SummationFilter ℤ where
+  filter := atTop.map (fun N : ℕ ↦ Ioo (-(N : ℤ)) N)
 
 instance IccFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N)) := by
   simp [Filter.NeBot.map]
 
-lemma IccFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N) ≤ atTop := by
-  rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
-  apply _root_.tendsto_Icc_atTop_atTop'
-
-lemma IcoFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Ico (-(N : ℤ)) N) ≤ atTop := by
-  rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
-  apply _root_.tendsto_Ico_atTop_atTop'
-
 instance IcoFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ico (-(N : ℤ)) N)) := by
   simp [Filter.NeBot.map]
 
-instance : (Icc_filter).NeBot := ⟨IccFilter_neBot⟩
+instance IocFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ioc (-(N : ℤ)) N)) := by
+  simp [Filter.NeBot.map]
 
-instance : (Ico_filter).NeBot := ⟨IcoFilter_neBot⟩
+instance IooFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ioo (-(N : ℤ)) N)) := by
+  simp [Filter.NeBot.map]
 
-instance : (Icc_filter).LeAtTop where
+lemma IccFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N) ≤ atTop := by
+  rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
+  apply tendsto_Icc_atTop_atTop'
+
+lemma IcoFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Ico (-(N : ℤ)) N) ≤ atTop := by
+  rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
+  apply tendsto_Ico_atTop_atTop'
+
+lemma IocFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Ioc (-(N : ℤ)) N) ≤ atTop := by
+  rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
+  apply tendsto_Ioc_atTop_atTop'
+
+lemma IooFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Ioo (-(N : ℤ)) N) ≤ atTop := by
+  rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
+  apply tendsto_Ioo_atTop_atTop'
+
+instance : (IccFilter).NeBot := ⟨IccFilter_neBot⟩
+
+instance : (IcoFilter).NeBot := ⟨IcoFilter_neBot⟩
+
+instance : (IocFilter).NeBot := ⟨IocFilter_neBot⟩
+
+instance : (IooFilter).NeBot := ⟨IooFilter_neBot⟩
+
+instance : (IccFilter).LeAtTop where
   le_atTop := IccFilter_le_atTop
 
-instance : (Ico_filter).LeAtTop where
+instance : (IcoFilter).LeAtTop where
   le_atTop := IcoFilter_le_atTop
+
+instance : (IocFilter).LeAtTop where
+  le_atTop := IocFilter_le_atTop
+
+instance : (IooFilter).LeAtTop where
+  le_atTop := IooFilter_le_atTop
 
 variable {α β γ : Type*}
 
 variable [CommMonoid α] [TopologicalSpace α] [T2Space α]
 
 @[to_additive]
-lemma prodFilter_int_atTop_eq_Icc_filter {f : ℤ → α}
-    (hf : Multipliable f) : ∏' b, f b  = ∏'[Icc_filter] b, f b := by
+lemma tprod_eq_tprod_IccFilter {f : ℤ → α}
+    (hf : Multipliable f) : ∏' b, f b  = ∏'[IccFilter] b, f b := by
   have := (hf.hasProd).comp tendsto_Icc_atTop_atTop'
   apply symm
   apply HasProd.tprod_eq
@@ -123,8 +158,8 @@ lemma prodFilter_int_atTop_eq_Icc_filter {f : ℤ → α}
   simp
 
 @[to_additive]
-lemma prodFilter_int_atTop_eq_Ico_filter {f : ℤ → α}
-    (hf : Multipliable f) : ∏' b, f b  = ∏'[Ico_filter] b, f b := by
+lemma tprod_eq_tprod_IcoFilter {f : ℤ → α}
+    (hf : Multipliable f) : ∏' b, f b  = ∏'[IcoFilter] b, f b := by
   have := (hf.hasProd).comp tendsto_Ico_atTop_atTop'
   apply symm
   apply HasProd.tprod_eq
@@ -132,13 +167,13 @@ lemma prodFilter_int_atTop_eq_Ico_filter {f : ℤ → α}
   apply this.congr
   simp
 
-@[to_additive] --this needs a hyp, but lets see what the min it needs
-lemma multipliableFilter_int_Icc_eq_Ico_filter {α : Type*} {f : ℤ → α} [CommGroup α]
-    [TopologicalSpace α] [ContinuousMul α] [T2Space α] (hf : Multipliable f Icc_filter)
-    (hf2 : Tendsto (fun N : ℕ ↦ (f ↑N)⁻¹) atTop (nhds 1)) : Multipliable f Ico_filter := by
+@[to_additive]
+lemma multipliable_IcoFilter_of_multiplible_IccFilter {α : Type*} {f : ℤ → α} [CommGroup α]
+    [TopologicalSpace α] [ContinuousMul α] [T2Space α] (hf : Multipliable f IccFilter)
+    (hf2 : Tendsto (fun N : ℕ ↦ (f ↑N)⁻¹) atTop (nhds 1)) : Multipliable f IcoFilter := by
   have := (hf.hasProd)
   apply HasProd.multipliable
-  · simp only [Ico_filter] at *
+  · simp only [IcoFilter] at *
     simp only [HasProd, tendsto_map'_iff] at *
     apply Filter.Tendsto_of_div_tendsto_one _ (by apply this)
     conv =>
@@ -149,12 +184,12 @@ lemma multipliableFilter_int_Icc_eq_Ico_filter {α : Type*} {f : ℤ → α} [Co
     apply hf2
 
 @[to_additive]
-lemma prodFilter_int_Icc_eq_Ico_filter {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α]
-    [ContinuousMul α] [T2Space α] (hf : Multipliable f Icc_filter)
+lemma tprod_IccFilter_eq_tprod_IcoFilter {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α]
+    [ContinuousMul α] [T2Space α] (hf : Multipliable f IccFilter)
     (hf2 : Tendsto (fun N : ℕ ↦ (f ↑N)⁻¹) atTop (nhds 1)) :
-    ∏'[Icc_filter] b, f b  = ∏'[Ico_filter] b, f b := by
+    ∏'[IccFilter] b, f b  = ∏'[IcoFilter] b, f b := by
   have := (hf.hasProd)
-  simp  [Ico_filter] at *
+  simp  [IcoFilter] at *
   apply symm
   apply HasProd.tprod_eq
   simp only [HasProd, tendsto_map'_iff] at *
