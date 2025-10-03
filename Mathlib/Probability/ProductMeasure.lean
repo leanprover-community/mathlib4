@@ -340,12 +340,16 @@ theorem isSigmaSubadditive_piContent : (piContent μ).IsSigmaSubadditive := by
 
 namespace Measure
 
+open scoped Classical in
+omit hμ in
 /-- The product measure of an arbitrary family of probability measures. It is defined as the unique
 extension of the function which gives to cylinders the measure given by the associated product
 measure. -/
 noncomputable def infinitePi : Measure (Π i, X i) :=
-  (piContent μ).measure isSetSemiring_measurableCylinders
-    generateFrom_measurableCylinders.ge (isSigmaSubadditive_piContent μ)
+  if ∀ i, IsProbabilityMeasure (μ i) then
+    (piContent μ).measure isSetSemiring_measurableCylinders
+      generateFrom_measurableCylinders.ge (isSigmaSubadditive_piContent μ)
+    else 0
 
 /-- The product measure is the projective limit of the partial product measures. This ensures
 uniqueness and expresses the value of the product measure applied to cylinders. -/
@@ -353,8 +357,8 @@ theorem isProjectiveLimit_infinitePi :
     IsProjectiveLimit (infinitePi μ) (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I
   ext s hs
-  rw [map_apply (measurable_restrict I) hs, infinitePi, AddContent.measure_eq, ← cylinder,
-    piContent_cylinder μ hs]
+  rw [map_apply (measurable_restrict I) hs, infinitePi, if_pos hμ, AddContent.measure_eq,
+    ← cylinder, piContent_cylinder μ hs]
   · exact generateFrom_measurableCylinders.symm
   · exact cylinder_mem_measurableCylinders _ _ hs
 

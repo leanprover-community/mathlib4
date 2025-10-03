@@ -87,4 +87,32 @@ lemma iIndepFun_infinitePi (mX : ∀ i, Measurable (X i)) :
   rw [← (measurePreserving_eval_infinitePi μ i).map_eq, map_map (mX i) (by fun_prop),
     Function.comp_def]
 
+section curry
+
+open Sigma
+
+variable {Ω ι : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {κ : ι → Type*}
+  {𝓧 : (i : ι) → κ i → Type*} {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)}
+  {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j}
+
+example (mX : ∀ i j, Measurable (X i j)) (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P)
+    (h2 : ∀ i, iIndepFun (X i) P) :
+    iIndepFun (fun (p : (i : ι) × (κ i)) ω ↦ X p.1 p.2 ω) P := by
+  have := h1.isProbabilityMeasure
+  have : ∀ i j, IsProbabilityMeasure (P.map (X i j)) :=
+    fun i j ↦ isProbabilityMeasure_map (mX i j).aemeasurable
+  have : ∀ i, IsProbabilityMeasure (P.map (fun ω ↦ (X i · ω))) :=
+    fun i ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+  rw [iIndepFun_iff_map_fun_eq_infinitePi_map] at h1 ⊢
+  · rw [← (MeasurableEquiv.piCurry 𝓧).map_measurableEquiv_injective.eq_iff, map_map]
+    · have : ⇑(MeasurableEquiv.piCurry 𝓧) ∘ (fun ω p ↦ X p.1 p.2 ω) = fun ω i j ↦ X i j ω := by
+        ext; simp [curry]
+      rw [this, h1, infinitePi_map_piCurry (fun i j ↦ P.map (X i j))]
+      congrm infinitePi (fun i ↦ ?_)
+      · rw [(iIndepFun_iff_map_fun_eq_infinitePi_map fun j ↦ mX i j).1 (h2 i)]
+    all_goals fun_prop
+  all_goals fun_prop
+
+end curry
+
 end ProbabilityTheory
