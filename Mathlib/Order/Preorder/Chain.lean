@@ -248,7 +248,7 @@ lemma IsMaxChain.image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc 
 protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ IsEmpty s := by
   refine ⟨fun _ ↦ isEmpty_coe_sort.mpr s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩
   by_contra! hh
-  obtain ⟨x⟩ := not_isEmpty_iff.mp hh
+  obtain ⟨x⟩ := hh
   simp only [IsMaxChain, isEmpty_coe_sort.mp h', IsChain.empty, empty_subset, forall_const,
     true_and] at h
   exact singleton_ne_empty x (h IsChain.singleton).symm
