@@ -114,6 +114,7 @@ This elaborator operates purely syntactically, by analysing the local contexts f
 hypothesis for the above cases. Therefore, it is (hopefully) fast enough to always run.
 -/
 -- TODO: document how this elaborator works, any gotchas, etc.
+-- TODO: factor out `MetaM` component for reuse
 elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← whnf <|← instantiateMVars <|← inferType e
@@ -212,6 +213,7 @@ corners.
 This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
+-- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   if let some m ← tryStrategy m!"TotalSpace"   fromTotalSpace   then return m
@@ -293,6 +295,7 @@ def findModels (etype eterm : Expr) (estype : Option Expr) :
   match etype with
   | .forallE _ src tgt _ =>
     if tgt.hasLooseBVars then
+      -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
       throwError "Term {eterm} is a dependent function, of type {etype}\n\
       Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one"
     let srcI ← findModel src
