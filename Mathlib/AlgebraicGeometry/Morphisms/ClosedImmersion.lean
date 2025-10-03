@@ -396,7 +396,7 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton 
         MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion]
       refine this (X.affineCover.f i ≫ f) _ ?_ ⟨_, rfl⟩
       rw [IsOpenImmersion.lift_fac_assoc, hg]
-    · have : IsEmpty ((X.affineCover.pullbackCover g).X i) := by
+    · have : IsEmpty ((X.affineCover.pullback₁ g).X i) := by
         apply Scheme.isEmpty_pullback
         rw [← Set.subset_compl_iff_disjoint_left]
         rintro _ hx ⟨x, rfl⟩

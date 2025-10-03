@@ -151,10 +151,10 @@ lemma Scheme.IsGermInjective.Spec
   exact ⟨⟨_, n, rfl⟩, hn⟩
 
 instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
-  refine fun x ↦ ⟨⟨(X.affineCover.f x).opensRange, X.affineCover.covers x,
-    (isAffineOpen_opensRange (X.affineCover.f x)), ?_⟩⟩
-  have : Nonempty (X.affineCover.f x).opensRange := ⟨⟨_, X.affineCover.covers x⟩⟩
-  have := (isAffineOpen_opensRange (X.affineCover.f x)).isLocalization_stalk
+  refine fun x ↦ ⟨⟨(X.affineCover.f _).opensRange, X.affineCover.covers x,
+    (isAffineOpen_opensRange (X.affineCover.f _)), ?_⟩⟩
+  have : Nonempty (X.affineCover.f _).opensRange := ⟨⟨_, X.affineCover.covers x⟩⟩
+  have := (isAffineOpen_opensRange (X.affineCover.f _)).isLocalization_stalk
     ⟨_, X.affineCover.covers x⟩
   exact @IsLocalization.injective _ _ _ _ _ (show _ from _) this
     (Ideal.primeCompl_le_nonZeroDivisors _)
