@@ -400,11 +400,13 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Data, `Mathlib.ModelTheory),
   (`Mathlib.Data, `Mathlib.RepresentationTheory),
   (`Mathlib.Data, `Mathlib.Testing),
+  (`Mathlib.Data, `Mathlib.Topology),
   (`Mathlib.Dynamics, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Dynamics, `Mathlib.AlgebraicTopology),
   (`Mathlib.Dynamics, `Mathlib.CategoryTheory),
   (`Mathlib.Dynamics, `Mathlib.Computability),
   (`Mathlib.Dynamics, `Mathlib.Condensed),
+  -- Geometry.Convex is imported in `Dynamics/Ergodic/Extreme.lean`
   (`Mathlib.Dynamics, `Mathlib.Geometry.Euclidean),
   (`Mathlib.Dynamics, `Mathlib.Geometry.Group),
   (`Mathlib.Dynamics, `Mathlib.Geometry.Manifold),
@@ -580,13 +582,15 @@ prefix are allowed to import modules with the second prefix, even if disallowed 
 
 For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
 ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
-because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
-outside `Mathlib/Algebra/Notation.lean`.
+because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra`
+that are outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
   (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
+  -- This file is about computing with topological spaces.
+  (`Mathlib.Data.Analysis.Topology, `Mathlib.Topology),
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
   (`Mathlib.LinearAlgebra.Complex, `Mathlib.Topology), -- Complex numbers are analysis/topology.
   (`Mathlib.LinearAlgebra.Matrix, `Mathlib.Topology), -- For e.g. spectra.

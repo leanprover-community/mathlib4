@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Data.Real.Star
 
 /-!
