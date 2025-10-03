@@ -218,20 +218,20 @@ where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
   fromTotalSpace : TermElabM Expr := do
-    if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
+    match_expr e with
+    | Bundle.TotalSpace _ F V => do
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
       if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
       throwError "Having a TotalSpace as source is not yet supported"
-    else
-      throwError "{e} is not a `Bundle.TotalSpace`."
+    | _ => throwError "{e} is not a `Bundle.TotalSpace`."
   fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
-    if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
+    match_expr V with
+    | TangentSpace _k _ _E _ _ _H _ I M _ _ _x => do
       trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
       Term.elabTerm resTerm none
-    else
-      throwError "{V} is not a `TangentSpace`"
+    | _ => throwError "{V} is not a `TangentSpace`"
   fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
     if let some (src, srcI) := baseInfo then
       trace[Elab.DiffGeo.MDiff] "Using base info {src}, {srcI}"
