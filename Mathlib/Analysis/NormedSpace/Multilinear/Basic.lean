@@ -1029,11 +1029,11 @@ def flipMultilinearEquiv : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃
     ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G') := by
   refine (flipMultilinearEquivₗ 𝕜 E G G').toContinuousLinearEquivOfBounds 1 1 ?_ ?_
   · intro f
-    simp only [flipMultilinearEquivₗ, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, one_mul]
+    suffices ‖f.flipMultilinear‖ ≤ ‖f‖ by simpa
     apply MultilinearMap.mkContinuous_norm_le
     positivity
   · intro f
-    simp only [flipMultilinearEquivₗ, LinearEquiv.coe_symm_mk, one_mul]
+    suffices ‖f.flipLinear‖ ≤ ‖f‖ by simpa
     apply MultilinearMap.mkContinuousLinear_norm_le
     positivity
 
