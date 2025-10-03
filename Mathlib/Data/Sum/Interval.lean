@@ -326,12 +326,6 @@ section LocallyFiniteOrder
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot β]
 
-/-- Throwaway tactic. -/
-local elab "simp_lex" : tactic => do
-  Lean.Elab.Tactic.evalTactic <| ← `(tactic|
-    refine toLex.surjective.forall₃.2 ?_;
-    rintro (a | a) (b | b) (c | c) <;> simp)
-
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
   finsetIcc a b :=
     (sumLexLift Icc Icc (fun a _ => Ici a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
@@ -341,10 +335,10 @@ instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
     (sumLexLift Ioc Ioc (fun a _ => Ioi a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
   finsetIoo a b :=
     (sumLexLift Ioo Ioo (fun a _ => Ioi a) (fun _ => Iio) (ofLex a) (ofLex b)).map toLex.toEmbedding
-  finset_mem_Icc := by simp_lex
-  finset_mem_Ico := by simp_lex
-  finset_mem_Ioc := by simp_lex
-  finset_mem_Ioo := by simp_lex
+  finset_mem_Icc := by simp
+  finset_mem_Ico := by simp
+  finset_mem_Ioc := by simp
+  finset_mem_Ioo := by simp
 
 variable (a a₁ a₂ : α) (b b₁ b₂ : β)
 
