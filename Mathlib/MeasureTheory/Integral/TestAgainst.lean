@@ -90,15 +90,13 @@ continuous functions. -/
 @[simps!]
 noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X) :
     (X →ᵇ 𝕜) →L[𝕜] E :=
-  (testAgainstₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K))
-  (by
-    intro φ
-    have h : ∀ᵐ x ∂(μ.restrict K), ‖φ x • f x‖ ≤ ‖φ‖ * ‖f x‖ :=
-      (ae_of_all _ fun x ↦ by grw [norm_smul, norm_coe_le_norm])
-    apply le_trans (norm_integral_le_of_norm_le
-      ((hf.integrableOn_isCompact K.isCompact).norm.const_mul _) h)
-    rw [mul_comm, integral_const_mul_of_integrable (hf.integrableOn_isCompact K.isCompact).norm]
-  )
+  (testAgainstₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K)) <| by
+  intro φ
+  have h : ∀ᵐ x ∂(μ.restrict K), ‖φ x • f x‖ ≤ ‖φ‖ * ‖f x‖ :=
+    (ae_of_all _ fun x ↦ by grw [norm_smul, norm_coe_le_norm])
+  apply le_trans (norm_integral_le_of_norm_le
+    ((hf.integrableOn_isCompact K.isCompact).norm.const_mul _) h)
+  rw [mul_comm, integral_const_mul_of_integrable (hf.integrableOn_isCompact K.isCompact).norm]
 
 end LocallyIntegrable
 
