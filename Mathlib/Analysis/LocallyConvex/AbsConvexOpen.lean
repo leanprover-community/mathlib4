@@ -6,7 +6,6 @@ Authors: Moritz Doll
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Convex.Gauge
---import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Absolutely convex open sets
