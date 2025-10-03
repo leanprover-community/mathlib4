@@ -35,7 +35,7 @@ set_option linter.style.longLine false
 section lemmas
 
 open NormNum
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] {n d : ℕ}
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R}
     (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :
@@ -47,6 +47,8 @@ theorem add_overlap_zero {a₁ a₂ b₁ b₂ c₂ : R}
     a₁ + a₂ + (b₁ + b₂) = c₂ := by
   sorry
 
+section Nat
+variable {n d : ℕ}
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
 theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
 theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
@@ -59,6 +61,12 @@ theorem nnrat_rawCast {R} [DivisionSemiring R] :
     (NNRat.rawCast n d : R) = Nat.rawCast n / Nat.rawCast d := by simp
 theorem rat_rawCast_neg {R} [DivisionRing R] :
     (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
+end Nat
+
+theorem mul_pow_add_overlap_zero {b₁ b₂ x : A} {e : ℕ}
+    (h : IsNat (b₁ + b₂) 0) :
+    IsNat (x ^ e * b₁ + x ^ e * b₂) 0 := by
+  sorry
 
 theorem smul_add_left_zero {r s : R} {a b : A} (h : r + s = 0) :
     IsNat (r • a + s • b) 0 := by
@@ -76,6 +84,195 @@ theorem eval_smul_eq {e : A} {r : R} {a : A} {ef : A}
     (he : e = r • a) (hf : r • a = ef) :
     e = ef := by
   rw [he, hf]
+
+theorem mul_pow_add_overlap_nonzero {x : A} {e : ℕ} {b₁ b₂ c : A}
+    (h : b₁ + b₂ = c) :
+    x ^ e * b₁ + x ^ e * b₂ = x ^ e * c := by
+  rw [← mul_add, h]
+
+theorem add_add_add_comm {a₁ a₂ b₁ b₂ c : A}
+    (h : a₂ + (b₁ + b₂) = c) :
+    a₁ + a₂ + (b₁ + b₂) = a₁ + c := by
+  rw [add_assoc, h]
+
+theorem add_add_add_comm' {a₁ a₂ b₁ b₂ c : A}
+    (h : (a₁ + a₂) + b₂ = c) :
+    a₁ + a₂ + (b₁ + b₂) = b₁ + c := by
+  sorry
+
+theorem neg_smul_one {r s : R} [Ring R] [Ring A]
+    (h : -r = s) :
+    -(r • (1 : A)) = s • 1 := by
+  sorry
+
+theorem neg_pow_mul (x : A) (e : ℕ) {b c : A} [Ring R] [Ring A]
+    (h : -b = c) :
+    -(x ^ e * b) = x ^ e * c := by
+  sorry
+
+theorem neg_add {a b c d : A} [Ring R] [Ring A]
+    (ha : -a = c) (hb : -b = d) :
+    -(a + b) = c + d := by
+  sorry
+
+theorem sub_eq_add_neg' {a b c d : A} [Ring R] [Ring A]
+    (hc : -b = c) (hd : a + c = d) :
+    a - b = d := by
+  sorry
+
+theorem isNat_zero_eq {a : A} [AddMonoidWithOne A]
+    (h : IsNat a 0) :
+    a = 0 := by
+  sorry
+
+theorem isInt_negOfNat_eq {a : A} {lit : ℕ} [Ring R] [Ring A]
+    (h : IsInt a (Int.negOfNat lit)) :
+    a = (Int.rawCast (Int.negOfNat lit) + 0 : R) • (1 : A) + 0 := by
+  sorry
+
+theorem pow_eq_pow_mul_smul_one {a : A} {b : ℕ} :
+    a ^ b = (a + 0) ^ b * (Nat.rawCast 1 + 0 : R) • (1 : A) := by
+  sorry
+
+theorem pow_eq_pow_mul_smul_one_add_zero {a : A} {b : ℕ} :
+    a ^ b = a ^ b * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
+  sorry
+
+theorem smul_one_pow {r r' : R} {b : ℕ}
+    (h : r ^ (b + 0) = r') :
+    (r • (1 : A)) ^ b = r' • 1 := by
+  sorry
+
+theorem pow_mul_pow {x : A} {e e' : ℕ} {b c : A} {n : ℕ}
+    (he : e * n = e') (hb : b ^ n = c) :
+    (x ^ e * b) ^ n = x ^ e' * c := by
+  sorry
+
+theorem pow_even {a b c : A} {m : ℕ}
+    (hb : a ^ m = b) (hc : b * b = c) :
+    a ^ (m+m) = c := by
+  sorry
+
+theorem pow_odd {a b c d : A} {m : ℕ}
+    (hb : a ^ m = b) (hc : b * b = c) (hd : c * a = d) :
+    a ^ (m+m+1) = d := by
+  sorry
+
+theorem pow_rawCast_one {a : A} :
+    a ^ Nat.rawCast (nat_lit 1) = a := by
+  sorry
+
+theorem zero_pow_pos {b : ℕ} (h : 0 < b) :
+    (0 : A) ^ b = 0 := by
+  sorry
+
+theorem pow_add_zero {a c : A} {b : ℕ}
+    (h : a ^ b = c) :
+    (a + 0) ^ b = c + 0 := by
+  sorry
+
+theorem pow_factored {a d e : A} {b e' k : ℕ}
+    (hb : b = e' * k) (hd : a ^ e' = d) (he : d ^ k = e) :
+    a ^ b = e := by
+  sorry
+
+theorem pow_zero_eq {a : A} :
+    a ^ 0 = (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
+  sorry
+
+theorem pow_add {a c₁ c₂ d : A} {b₁ b₂ : ℕ}
+    (hc₁ : a ^ b₁ = c₁) (hc₂ : a ^ b₂ = c₂) (hd : c₁ * c₂ = d) :
+    a ^ (b₁ + b₂) = d := by
+  sorry
+
+theorem atom_eq_pow_one_mul_smul_one_add_zero {a : A} :
+    a = a ^ Nat.rawCast 1 * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
+  sorry
+
+theorem atom_eq_pow_one_mul_smul_one_add_zero' {a e : A}
+    (h : a = e) :
+    a = e ^ Nat.rawCast 1 * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
+  sorry
+
+theorem eval_add {a b a' b' c : A}
+    (ha : a = a') (hb : b = b') (hc : a' + b' = c) :
+    a + b = c := by
+  sorry
+
+theorem eval_neg {a a' b : A} [Ring A]
+    (ha : a = a') (hb : -a' = b) :
+    -a = b := by
+  sorry
+
+theorem eval_sub {a b a' b' c : A} [Ring A]
+    (ha : a = a') (hb : b = b') (hc : a' - b' = c) :
+    a - b = c := by
+  sorry
+
+theorem eval_mul {a b a' b' c : A}
+    (ha : a = a') (hb : b = b') (hc : a' * b' = c) :
+    a * b = c := by
+  sorry
+
+theorem eval_pow {a a' c : A} {b b' : ℕ}
+    (ha : a = a') (hb : b = b') (hc : a' ^ b' = c) :
+    a ^ b = c := by
+  sorry
+
+theorem smul_smul_one {r s t : R}
+    (h : r * s = t) :
+    r • s • (1 : A) = t • 1 := by
+  rw [smul_smul, h]
+
+theorem smul_mul_assoc {r : R} {x : A} {e : ℕ} {b c : A}
+    (h : r • b = c) :
+    r • (x ^ e * b) = x ^ e * c := by
+  sorry
+
+theorem smul_add {r : R} {a b c d : A}
+    (ha : r • a = c) (hb : r • b = d) :
+    r • (a + b) = c + d := by
+  sorry
+
+theorem smul_one_mul_smul_one {r s t : R}
+    (h : r * s = t) :
+    r • (1 : A) * s • 1 = t • 1 := by
+  sorry
+
+theorem pow_mul_mul_smul_one {x : A} {e : ℕ} {b d : A} {r : R}
+    (h : b * (r • 1) = d) :
+    x ^ e * b * r • 1 = x ^ e * d := by
+  sorry
+
+theorem smul_one_mul_pow_mul {r : R} {x : A} {e : ℕ} {b c : A}
+    (h : r • 1 * b = c) :
+    r • 1 * (x ^ e * b) = x ^ e * c := by
+  sorry
+
+theorem pow_mul_mul_pow_mul {x : A} {ea eb e : ℕ} {b₁ b₂ c : A}
+    (pe : ea + eb = e) (pc : b₁ * b₂ = c) :
+    x ^ ea * b₁ * (x ^ eb * b₂) = x ^ e * c := by
+  sorry
+
+theorem pow_mul_mul_assoc {x xb : A} {ea eb : ℕ} {b₁ b c : A}
+    (pc : b₁ * (xb ^ eb * b) = c) :
+    x ^ ea * b₁ * (xb ^ eb * b) = x ^ ea * c := by
+  sorry
+
+theorem mul_pow_mul_assoc {xa xb : A} {ea eb : ℕ} {b₁ b c : A}
+    (pc : xa ^ ea * b₁ * b = c) :
+    xa ^ ea * b₁ * (xb ^ eb * b) = xb ^ eb * c := by
+  sorry
+
+theorem mul_add_of_add {a a₁ b c₁ c₂ c : A}
+    (pb₁' : a * a₁ = c₁) (pt : a * b = c₂) (pd : c₁ + 0 + c₂ = c) :
+    a * (a₁ + b) = c := by
+  sorry
+
+theorem add_mul_of_add {a₁ a₂ b c₁ c₂ c : A}
+    (pc₁ : a₁ * b = c₁) (pc₂ : a₂ * b = c₂) (pd : c₁ + c₂ = c) :
+    (a₁ + a₂) * b = c := by
+  sorry
 
 end lemmas
 
@@ -340,10 +537,12 @@ def evalAddOverlap {a b : Q($A)} (va : ExProd sAlg a) (vb : ExProd sAlg b) :
       return .nonzero ⟨_, .smul vt, q(smul_add_smul_same rfl $pt)⟩
   | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
     guard (vxa.eq vxb && vea.eq veb)
+    have : $xa =Q $xb := ⟨⟩
+    have : $ea =Q $eb := ⟨⟩
     match ← evalAddOverlap va₂ vb₂ with
-    | .zero p => return .zero q(sorry)
+    | .zero p => return .zero q(mul_pow_add_overlap_zero $p)
     | .nonzero ⟨_, vc, p⟩ =>
-      return .nonzero ⟨_, .mul vxa vea vc, q(sorry)⟩
+      return .nonzero ⟨_, .mul vxa vea vc, q(mul_pow_add_overlap_nonzero $p)⟩
   | _, _ => OptionT.fail
 
 
@@ -358,10 +557,9 @@ def evalAddOverlap {a b : Q($A)} (va : ExProd sAlg a) (vb : ExProd sAlg b) :
 partial def evalAdd {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     MetaM <| Result (ExSum sAlg) q($a + $b) := do
   Lean.Core.checkSystem decl_name%.toString
-  -- IO.println s!"Running evalAdd on {← ppExpr a} and {← ppExpr b}"
   match va, vb with
-  | .zero .., vb => return ⟨b, vb, q(sorry)⟩
-  | va, .zero .. => return ⟨a, va, q(sorry)⟩
+  | .zero .., vb => return ⟨b, vb, q(zero_add $b)⟩
+  | va, .zero .. => return ⟨a, va, q(add_zero _)⟩
   | .add (a := a₁) (b := _a₂) va₁ va₂, .add (a := b₁) (b := _b₂) vb₁ vb₂ =>
     match ← (evalAddOverlap sAlg va₁ vb₁).run with
     | some (.nonzero ⟨_, vc₁, pc₁⟩) =>
@@ -374,32 +572,32 @@ partial def evalAdd {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
       if let .lt := va₁.cmp vb₁ then
         have : $b =Q $b₁ + $_b₂ := ⟨⟩
         let ⟨_c, vc, pc⟩ ← evalAdd va₂ vb
-        return ⟨_, .add va₁ vc, q(sorry)⟩
+        return ⟨_, .add va₁ vc, q(add_add_add_comm $pc)⟩
       else
         have : $a =Q $a₁ + $_a₂ := ⟨⟩
         let ⟨_c, vc, pc⟩ ← evalAdd va vb₂
-        return ⟨_, .add vb₁ vc, q(sorry)⟩
+        return ⟨_, .add vb₁ vc, q(add_add_add_comm' $pc)⟩
 
 partial def evalSMulExProd {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
   ExProd sAlg a →
   MetaM (Result (ExProd q($sAlg)) q($r • $a))
   | .smul vs => do
     let ⟨t, vt, pt⟩ ← Ring.evalMul sR vr vs
-    return ⟨_, .smul vt, q(sorry)⟩
+    return ⟨_, .smul vt, q(smul_smul_one $pt)⟩
   | .mul (x := x) (e := e) (b := b) vx ve vb => do
     let ⟨_, vc, pc⟩ ← evalSMulExProd vr vb
-    return ⟨_, .mul vx ve vc, q(sorry)⟩
+    return ⟨_, .mul vx ve vc, q(smul_mul_assoc $pc)⟩
 
 
 partial def evalSMul {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
   ExSum sAlg a →
   MetaM (Result (ExSum q($sAlg)) q($r • $a))
   | .zero .. =>
-    pure ⟨_, .zero, q(sorry)⟩
+    pure ⟨_, .zero, q(smul_zero $r)⟩
   | .add vsmul vt => do
     let ⟨a, va, pa⟩ ← evalSMulExProd q($sAlg) vr vsmul
     let ⟨t, vt, pt⟩ ← evalSMul vr vt
-    return ⟨_, .add va vt, q(sorry)⟩
+    return ⟨_, .add va vt, q(smul_add $pa $pt)⟩
 
 partial def evalMul₂ {a b : Q($A)} (va : ExProd sAlg a) (vb : ExProd sAlg b) :
     MetaM <| Result (ExProd sAlg) q($a * $b) := do
@@ -407,24 +605,25 @@ partial def evalMul₂ {a b : Q($A)} (va : ExProd sAlg a) (vb : ExProd sAlg b) :
   match va, vb with
   | .smul vr, .smul vs => do
     let ⟨_, vt, pt⟩ ← Ring.evalMul sR vr vs
-    return ⟨_, .smul vt, q(sorry)⟩
-  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .smul _ =>
-    let ⟨_, vc, pc⟩ ← evalMul₂ va₃ vb
-    return ⟨_, .mul va₁ va₂ vc, q(sorry)⟩
-  | .smul _, .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
-    let ⟨_, vc, pc⟩ ← evalMul₂ va vb₃
-    return ⟨_, .mul vb₁ vb₂ vc, q(sorry)⟩
+    return ⟨_, .smul vt, q(smul_one_mul_smul_one $pt)⟩
+  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .smul vr =>
+    let ⟨_, vc, pc⟩ ← evalMul₂ va₃ (.smul vr)
+    return ⟨_, .mul va₁ va₂ vc, q(pow_mul_mul_smul_one $pc)⟩
+  | .smul vr, .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
+    let ⟨_, vc, pc⟩ ← evalMul₂ (.smul vr) vb₃
+    return ⟨_, .mul vb₁ vb₂ vc, q(smul_one_mul_pow_mul $pc)⟩
   | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
     if vxa.eq vxb then
+      have : $xa =Q $xb := ⟨⟩
       if let some (.nonzero ⟨_, ve, pe⟩) ← (Ring.evalAddOverlap Ring.sℕ vea veb).run then
         let ⟨_, vc, pc⟩ ← evalMul₂ va₂ vb₂
-        return ⟨_, .mul vxa ve vc, q(sorry)⟩
+        return ⟨_, .mul vxa ve vc, q(pow_mul_mul_pow_mul $pe $pc)⟩
     if let .lt := (vxa.cmp vxb).then (vea.cmp veb) then
-      let ⟨_, vc, pc⟩ ← evalMul₂ va₂ vb
-      return ⟨_, .mul vxa vea vc, q(sorry)⟩
+      let ⟨_, vc, pc⟩ ← evalMul₂ va₂ (.mul vxb veb vb₂)
+      return ⟨_, .mul vxa vea vc, q(pow_mul_mul_assoc $pc)⟩
     else
-      let ⟨_, vc, pc⟩ ← evalMul₂ va vb₂
-      return ⟨_, .mul vxb veb vc, q(sorry)⟩
+      let ⟨_, vc, pc⟩ ← evalMul₂ (.mul vxa vea va₂) vb₂
+      return ⟨_, .mul vxb veb vc, q(mul_pow_mul_assoc $pc)⟩
 
 /-- Multiplies a monomial `va` to a polynomial `vb` to get a normalized result polynomial.
 
@@ -439,7 +638,7 @@ def evalMul₁ {a b : Q($A)} (va : ExProd sAlg a) (vb : ExSum sAlg b) :
     let ⟨_, vb₁', pb₁'⟩ ← evalMul₂ sAlg va vb₁
     let ⟨_, vt, pt⟩ ← evalMul₁ va vb₂
     let ⟨_, vd, pd⟩ ← evalAdd sAlg vb₁'.toSum vt
-    return ⟨_, vd, q(sorry)⟩
+    return ⟨_, vd, q(mul_add_of_add $pb₁' $pt $pd)⟩
 
 /-- Multiplies two polynomials `va, vb` together to get a normalized result polynomial.
 
@@ -453,35 +652,38 @@ def evalMul {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
   | .add va₁ va₂ =>
     let ⟨c₁, vc₁, pc₁⟩ ← evalMul₁ sAlg va₁ vb
     let ⟨c₂, vc₂, pc₂⟩ ← evalMul va₂ vb
-    -- IO.println s!"TEST1 : evalMul is adding {← ppExpr c₁} and {← ppExpr c₂} "
     let ⟨_, vd, pd⟩ ← evalAdd sAlg vc₁ vc₂
-    return ⟨_, vd, q(sorry)⟩
+    return ⟨_, vd, q(add_mul_of_add $pc₁ $pc₂ $pd)⟩
 
 def evalNegProd {a : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A)) (va : ExProd sAlg a) :
     MetaM <| Result (ExProd sAlg) q(-$a) := do
   match va with
   | .smul vr =>
     let ⟨s, vs, pb⟩ ← Ring.evalNeg sR rR vr
-    return ⟨_, .smul vs, q(sorry)⟩
+    return ⟨_, .smul vs, (q(neg_smul_one (R := $R) (A := $A) $pb):)⟩
   | .mul (x := x) (e := e) vx ve vb =>
     let ⟨_, vc, pc⟩ ← evalNegProd rR rA vb
-    return ⟨_, .mul vx ve vc, q(sorry)⟩
+    return ⟨_, .mul vx ve vc,
+      (q(neg_pow_mul $x $e (R := $R) (A := $A) $pc):)⟩
 
 def evalNeg {a : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A)) (va : ExSum sAlg a) :
     MetaM <| Result (ExSum sAlg) q(-$a) := do
   match va with
-  | .zero => return ⟨_, .zero, q(sorry)⟩
+  | .zero =>
+    assumeInstancesCommute
+    return ⟨_, .zero, (q(Ring.neg_zero (R := $A)):)⟩
   | .add va₁ va₂ =>
     let ⟨_, vb₁, pb₁⟩ ← evalNegProd sAlg rR rA va₁
     let ⟨_, vb₂, pb₂⟩ ← evalNeg rR rA va₂
-    return ⟨_, .add vb₁ vb₂, q(sorry)⟩
+    return ⟨_, .add vb₁ vb₂, (q(neg_add (R := $R) (A := $A) $pb₁ $pb₂):)⟩
 
 def evalSub {a b : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A))
     (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     MetaM <| Result (ExSum sAlg) q($a - $b) := do
-  let ⟨_, vc, pc⟩ ← evalNeg sAlg rR rA vb
-  let ⟨_, vd, pd⟩ ← evalAdd sAlg va vc
-  return ⟨_, vd, q(sorry)⟩
+  let ⟨_c, vc, pc⟩ ← evalNeg sAlg rR rA vb
+  let ⟨d, vd, (pd : Q($a + $_c = $d))⟩ ← evalAdd sAlg va vc
+  assumeInstancesCommute
+  return ⟨_, vd, (q(Ring.sub_pf $pc $pd) : Expr)⟩
 
 def _root_.Mathlib.Tactic.Ring.Cache.cast (c : Ring.Cache sR) :
   Ring.Cache sA where
@@ -494,7 +696,7 @@ def evalCast (c : Ring.Cache q($sR)) :
     NormNum.Result a → Option (Result (ExSum sAlg) a)
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute
-    pure ⟨_, .zero, q(sorry)⟩
+    pure ⟨_, .zero, q(isNat_zero_eq $p)⟩
   | .isNat _ lit p => do
     assumeInstancesCommute
     -- Lift the literal to the base ring as a scalar multiple of 1
@@ -505,7 +707,7 @@ def evalCast (c : Ring.Cache q($sR)) :
     let ⟨r, vr⟩ := Ring.ExProd.mkNegNat sR rR lit.natLit!
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
     assumeInstancesCommute
-    pure ⟨_, (ExProd.smul vr.toSum).toSum, q(sorry)⟩
+    pure ⟨_, (ExProd.smul vr.toSum).toSum, (q(isInt_negOfNat_eq (R := $R) $p):)⟩
   -- We don't handle rational expressions in A.
   | _ => none
 
@@ -518,7 +720,7 @@ the input types are different.)
 -/
 def evalPowProdAtom {a : Q($A)} {b : Q(ℕ)} (va : ExProd sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
     Result (ExProd sAlg) q($a ^ $b) :=
-  ⟨_, (ExBase.sum va.toSum).toProd vb, q(sorry)⟩
+  ⟨_, (ExBase.sum va.toSum).toProd vb, q(pow_eq_pow_mul_smul_one)⟩
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -528,7 +730,7 @@ exponent expression.
 -/
 def evalPowAtom {a : Q($A)} {b : Q(ℕ)} (va : ExBase sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
     Result (ExSum sAlg) q($a ^ $b) :=
-  ⟨_, (va.toProd vb).toSum, q(sorry)⟩
+  ⟨_, (va.toProd vb).toSum, q(pow_eq_pow_mul_smul_one_add_zero)⟩
 
 /-- There are several special cases when exponentiating monomials:
 
@@ -544,11 +746,11 @@ def evalPowProd {a : Q($A)} {b : Q(ℕ)} (va : ExProd sAlg a) (vb : Ring.ExProd 
     match va, vb with
     | .smul (r := r) vr, vb =>
       let ⟨r', vr', pr'⟩ ← Ring.evalPow q($sR) vr (Ring.ExSum.add vb .zero)
-      return ⟨_, .smul vr', q(sorry)⟩
+      return ⟨_, .smul vr', q(smul_one_pow $pr')⟩
     | .mul vxa₁ vea₁ va₂, vb =>
       let ⟨_, vc₁, pc₁⟩ ← Ring.evalMulProd Ring.sℕ vea₁ vb
       let ⟨_, vc₂, pc₂⟩ ← evalPowProd va₂ vb
-      return ⟨_, .mul vxa₁ vc₁ vc₂, q(sorry)⟩
+      return ⟨_, .mul vxa₁ vc₁ vc₂, q(pow_mul_pow $pc₁ $pc₂)⟩
   return (← res.run).getD (evalPowProdAtom sAlg va vb)
 
 /--
@@ -564,19 +766,21 @@ partial def evalPowNat {a : Q($A)} (va : ExSum sAlg a) (n : Q(ℕ)) :
     MetaM <| Result (ExSum sAlg) q($a ^ $n) := do
   let nn := n.natLit!
   if nn = 1 then
-    return ⟨_, va, q(sorry)⟩
+    return ⟨_, va, (q(Ring.pow_one (R := $A)):)⟩
   else
     let nm := nn >>> 1
     have m : Q(ℕ) := mkRawNatLit nm
     if nn &&& 1 = 0 then
       let ⟨_, vb, pb⟩ ← evalPowNat va m
       let ⟨_, vc, pc⟩ ← evalMul sAlg vb vb
-      return ⟨_, vc, q(sorry)⟩
+      have : $n =Q $m + $m := ⟨⟩
+      return ⟨_, vc, q(pow_even $pb $pc)⟩
     else
       let ⟨_, vb, pb⟩ ← evalPowNat va m
       let ⟨_, vc, pc⟩ ← evalMul sAlg vb vb
       let ⟨_, vd, pd⟩ ← evalMul sAlg vc va
-      return ⟨_, vd, q(sorry)⟩
+      have : $n =Q $m + $m + 1 := ⟨⟩
+      return ⟨_, vd, q(pow_odd $pb $pc $pd)⟩
 
 /-- Exponentiates a polynomial `va` by a monomial `vb`, including several special cases.
 
@@ -592,19 +796,19 @@ partial def evalPow₁ {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.E
   match va, vb with
   | va, .const 1 =>
     haveI : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
-    return ⟨_, va, q(sorry)⟩
+    return ⟨_, va, q(pow_rawCast_one)⟩
   | .zero, vb => match vb.evalPos with
-    | some p => return ⟨_, .zero, q(sorry)⟩
+    | some p => return ⟨_, .zero, q(zero_pow_pos $p)⟩
     | none => return evalPowAtom sAlg (.sum .zero) vb
   | ExSum.add va .zero, vb =>
     let ⟨_, vc, pc⟩ ← evalPowProd sAlg va vb
-    return ⟨_, vc.toSum, q(sorry)⟩
+    return ⟨_, vc.toSum, q(pow_add_zero $pc)⟩
   | va, vb =>
     if vb.coeff > 1 then
       let ⟨k, _, vc, pc⟩ := Ring.extractCoeff vb
       let ⟨_, vd, pd⟩ ← evalPow₁ va vc
       let ⟨_, ve, pe⟩ ← evalPowNat sAlg vd k
-      return ⟨_, ve, q(sorry)⟩
+      return ⟨_, ve, q(pow_factored $pc $pd $pe)⟩
     else
       return evalPowAtom sAlg (.sum va) vb
 
@@ -616,12 +820,12 @@ partial def evalPow₁ {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.E
 def evalPow {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.ExSum Ring.sℕ b) :
     MetaM <| Result (ExSum sAlg) q($a ^ $b) := do
   match vb with
-  | .zero => return ⟨_, (ExProd.smul (.one (sA := sR))).toSum, q(sorry)⟩
+  | .zero => return ⟨_, (ExProd.smul (.one (sA := sR))).toSum, q(pow_zero_eq)⟩
   | .add vb₁ vb₂ =>
     let ⟨_, vc₁, pc₁⟩ ← evalPow₁ sAlg va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
     let ⟨_, vd, pd⟩ ← evalMul sAlg vc₁ vc₂
-    return ⟨_, vd, q(sorry)⟩
+    return ⟨_, vd, q(pow_add $pc₁ $pc₂ $pd)⟩
 
 def evalAtom :
     AtomM (Result (ExSum q($sAlg)) q($a)) := do
@@ -633,9 +837,9 @@ def evalAtom :
   pure ⟨_, ve',
   match r.proof? with
   | none =>
-      -- have : $a =Q $a' := ⟨⟩
-      (q(sorry))
-  | some (p : Q($a = $e')) => (q(sorry))
+      have : $a =Q $a' := ⟨⟩
+      (q(atom_eq_pow_one_mul_smul_one_add_zero))
+  | some (p : Q($a = $e')) => (q(atom_eq_pow_one_mul_smul_one_add_zero' $p))
   ⟩
 
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
@@ -673,42 +877,36 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       let ⟨_, va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
       let ⟨_, vb, pb⟩ ← eval q($sAlg) cacheR cacheA q($b)
       let ⟨_, vab, pab⟩ ← evalAdd q($sAlg) va vb
-      return ⟨_, vab, q(sorry)⟩
+      return ⟨_, vab, q(eval_add $pa $pb $pab)⟩
     | _ => els
   | ``Neg.neg, some rA, _ => match e with
     | ~q(-$a) =>
       let some rR := cacheR.rα | els
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨b, vb, p⟩ ← evalNeg sAlg rR rA va
-      pure ⟨b, vb, q(sorry)⟩
+      pure ⟨b, vb, q(eval_neg $pa $p)⟩
   | ``HSub.hSub, some rA, _ | ``Sub.sub, some rA, _ => match e with
     | ~q($a - $b) =>
       let some rR := cacheR.rα | els
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨_, vb, pb⟩ ← eval sAlg cacheR cacheA b
       let ⟨c, vc, p⟩ ← evalSub sAlg rR rA va vb
-      pure ⟨c, vc, q(sorry)⟩
+      pure ⟨c, vc, q(eval_sub $pa $pb $p)⟩
     | _ => els
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
     | ~q($a * $b) =>
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨_, vb, pb⟩ ← eval sAlg cacheR cacheA b
       let ⟨_, vab, pab⟩ ← evalMul sAlg va vb
-      return ⟨_, vab, q(sorry)⟩
+      return ⟨_, vab, q(eval_mul $pa $pb $pab)⟩
     | _ =>
       els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ ($eb : ℕ)) =>
-
-      -- let ⟨blit, pf_isNat⟩ ← try NormNum.deriveNat eb q(Nat.instAddMonoidWithOne) catch
-      --   | _ => throwError "Failed to normalize {eb} to a natural literal"
-      -- if ! Expr.isRawNatLit blit then
-      --   /- This code should be unreachable? -/
-      --   throwError s!"Failed to normalize {eb} to a natural literal 3"
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨_, vb, pb⟩ ← Ring.eval Ring.sℕ .nat eb
       let ⟨c, vc, p⟩ ← evalPow sAlg va vb
-      return ⟨c, vc, q(sorry)⟩
+      return ⟨c, vc, q(eval_pow $pa $pb $p)⟩
     | _ => els
   | _, _, _ =>
     els
@@ -782,14 +980,10 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
 partial def inferBaseAux (e : Expr) :
     OptionT MetaM <|  Σ u : Lean.Level, Q(Type u) := do
   let .const n _ := (← withReducible <| whnf e).getAppFn | failure
-  IO.println s!"Inferring base of {← ppExpr e} with head constant {n}"
-  -- IO.println s!"{e}"
   match_expr e with
   | SMul.smul R _ _ _ _ =>
-    IO.println s!"Found ring {← ppExpr R} in smul"
     return ←inferLevelQ R
   | HSMul.hSMul R _ _ _ _ _ =>
-    IO.println f!"Found ring {← ppExpr R} in hsmul"
     return ←inferLevelQ R
   | Eq _ a b => (inferBaseAux a) <|> (inferBaseAux b)
   | HAdd.hAdd _ _ _ _ a b => inferBaseAux a <|> inferBaseAux b
@@ -805,7 +999,6 @@ partial def inferBaseAux (e : Expr) :
     appear in an smul / algebraMap the user shouldn't be too surprised that the tactic failed. -/
   | Neg.neg _ _ a => inferBaseAux a
   | _ =>
-    IO.println s!"Could not match {← ppExpr e}"
     failure
 
 def inferBase (e : Expr) :
@@ -1039,13 +1232,6 @@ elab (name := matchScalarsAlg) "match_scalars_alg" :tactic =>
 
 example {x : ℚ} {y : ℤ} : y • x + (1:ℤ) • x = (1 + y) • x := by
   algebra
-
-example {S R A : Type*} [CommSemiring S] [CommSemiring R] [CommSemiring A] [Algebra S R]
-    [Algebra R A] [Algebra S A] [IsScalarTower S R A] {r : R} {s : S} {a₁ a₂ : A} :
-    (s • a₁) * (r • a₂) = (s • r) • (a₁ * a₂) := by
-  simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_assoc]
-  rw [smul_comm]
-
 
 end Mathlib.Tactic.Algebra
 
