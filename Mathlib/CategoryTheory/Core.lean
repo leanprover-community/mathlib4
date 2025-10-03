@@ -191,7 +191,7 @@ variable {G : Type u₂} [Groupoid.{v₂} G]
 /-- The functor `functorToCore (F ⋙ H)` factors through `functortoCore H`. -/
 def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
-  NatIso.ofComponents (fun _ ↦ eqToIso _)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 lemma functorToCore_comp_left {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) = F ⋙ functorToCore H :=
@@ -208,7 +208,7 @@ lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ 
 
 /-- The functor `functorToCore (𝟭 G)` is a section of `inclusion G`. -/
 def inclusionCompFunctorToCoreIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
-  NatIso.ofComponents (fun _ ↦ eqToIso _)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 theorem inclusion_comp_functorToCore : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) :=
   Functor.ext_of_iso inclusionCompFunctorToCoreIso (by cat_disch)
