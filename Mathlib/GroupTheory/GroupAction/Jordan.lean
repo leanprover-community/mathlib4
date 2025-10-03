@@ -15,10 +15,10 @@ A proof of theorems of Jordan regarding primitive permutation groups.
 This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-1964].
 
 - `MulAction.IsPreprimitive.is_two_pretransitive` and
-`MulAction.IsPreprimitive.is_two_preprimitive` are technical lemmas
-that prove 2-pretransitivity / 2-preprimitivity for some group
-primitive actions given the transitivity / primitivity of
-`ofFixingSubgroup G s` (Wielandt, 13.1)
+  `MulAction.IsPreprimitive.is_two_preprimitive` are technical lemmas
+  that prove 2-pretransitivity / 2-preprimitivity for some group
+  primitive actions given the transitivity / primitivity of
+  `ofFixingSubgroup G s` (Wielandt, 13.1)
 
 - `MulAction.IsPreprimitive.isMultiplyPreprimitive`:
 A multiple preprimitivity criterion of Jordan (1871) for a preprimitive
