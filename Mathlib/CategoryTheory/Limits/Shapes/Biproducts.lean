@@ -348,7 +348,7 @@ class HasBiproductsOfShape : Prop where
 
 attribute [instance 100] HasBiproductsOfShape.has_biproduct
 
-/-- `HasFiniteBiproducts C` represents a choice of biproduct for every family of objects in `C`
+/-- A category `HasFiniteBiproducts` if it has a biproduct for every finite family of objects in `C`
 indexed by a finite type. -/
 class HasFiniteBiproducts : Prop where
   out : ∀ n, HasBiproductsOfShape (Fin n) C
