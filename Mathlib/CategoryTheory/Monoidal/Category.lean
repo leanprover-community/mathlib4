@@ -163,7 +163,9 @@ scoped notation "ρ_" => MonoidalCategoryStruct.rightUnitor
 
 /-- The property that the pentagon relation is satisfied by four objects
 in a category equipped with a `MonoidalCategoryStruct`. -/
-@[to_additive AddMonoidalCategory.AddPentagon]
+@[to_additive AddMonoidalCategory.AddPentagon
+/-- The property that the pentagon relation is satisfied by four objects
+in a category equipped with an `AddMonoidalCategoryStruct`. -/]
 def Pentagon {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
     (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
   (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
@@ -495,7 +497,7 @@ theorem inv_hom_whiskerRight' {X Y : C} (f : X ⟶ Y) [IsIso f] (Z : C) :
   rw [← comp_whiskerRight, IsIso.inv_hom_id, id_whiskerRight]
 
 /-- The left whiskering of an isomorphism is an isomorphism. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- The left whiskering of an isomorphism is an isomorphism. -/]
 def whiskerLeftIso (X : C) {Y Z : C} (f : Y ≅ Z) : X ⊗ Y ≅ X ⊗ Z where
   hom := X ◁ f.hom
   inv := X ◁ f.inv
@@ -524,7 +526,7 @@ lemma whiskerLeftIso_symm (W : C) {X Y : C} (f : X ≅ Y) :
     (whiskerLeftIso W f).symm = whiskerLeftIso W f.symm := rfl
 
 /-- The right whiskering of an isomorphism is an isomorphism. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) /-- The right whiskering of an isomorphism is an isomorphism. -/]
 def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
   hom := f.hom ▷ Z
   inv := f.inv ▷ Z
@@ -553,7 +555,7 @@ lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
     (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
 /-- The tensor product of two isomorphisms is an isomorphism. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- The tensor product of two isomorphisms is an isomorphism. -/]
 def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
     (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
   hom := f.hom ⊗ₘ g.hom
@@ -954,13 +956,13 @@ variable (C)
 attribute [local simp] whisker_exchange
 
 /-- The tensor product expressed as a functor. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- The sum of objects expressed as a functor. -/]
 def tensor : C × C ⥤ C where
   obj X := X.1 ⊗ X.2
   map {X Y : C × C} (f : X ⟶ Y) := f.1 ⊗ₘ f.2
 
 /-- The left-associated triple tensor product as a functor. -/
-@[to_additive]
+@[to_additive /-- The left-associated triple sum of objects as a functor. -/]
 def leftAssocTensor : C × C × C ⥤ C where
   obj X := (X.1 ⊗ X.2.1) ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := (f.1 ⊗ₘ f.2.1) ⊗ₘ f.2.2
@@ -975,7 +977,7 @@ theorem leftAssocTensor_map {X Y} (f : X ⟶ Y) :
   rfl
 
 /-- The right-associated triple tensor product as a functor. -/
-@[to_additive]
+@[to_additive /-- The right-associated triple sum of objects as a functor. -/]
 def rightAssocTensor : C × C × C ⥤ C where
   obj X := X.1 ⊗ X.2.1 ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := f.1 ⊗ₘ f.2.1 ⊗ₘ f.2.2
@@ -990,7 +992,7 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) :
   rfl
 
 /-- The tensor product bifunctor `C ⥤ C ⥤ C` of a monoidal category. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- The sum bifunctor `C ⥤ C ⥤ C` of an additive category. -/]
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⊗ Y
@@ -1001,42 +1003,43 @@ def curriedTensor : C ⥤ C ⥤ C where
 variable {C}
 
 /-- Tensoring on the left with a fixed object, as a functor. -/
-@[to_additive]
+@[to_additive /-- Adding on the left with a fixed object, as a functor. -/]
 abbrev tensorLeft (X : C) : C ⥤ C := (curriedTensor C).obj X
 
 /-- Tensoring on the right with a fixed object, as a functor. -/
-@[to_additive]
+@[to_additive /-- Adding on the right with a fixed object, as a functor. -/]
 abbrev tensorRight (X : C) : C ⥤ C := (curriedTensor C).flip.obj X
 
 variable (C)
 
 /-- The functor `fun X ↦ 𝟙_ C ⊗ X`. -/
-@[to_additive]
+@[to_additive /-- The functor `fun X ↦ 0 + X`. -/]
 abbrev tensorUnitLeft : C ⥤ C := tensorLeft (𝟙_ C)
 
 /-- The functor `fun X ↦ X ⊗ 𝟙_ C`. -/
-@[to_additive]
+@[to_additive /-- The functor `fun X ↦ X + 0`. -/]
 abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 
 -- We can express the associator and the unitors, given componentwise above,
 -- as natural isomorphisms.
 /-- The associator as a natural isomorphism. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) /-- The associator for sums as a natural isomorphism. -/]
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
 /-- The left unitor as a natural isomorphism. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) /-- The left unitor for sums as a natural isomorphism. -/]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
 /-- The right unitor as a natural isomorphism. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) /-- The right unitor for sums as a natural isomorphism. -/]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.rightUnitor
 
 /-- The associator as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- The associator for sums as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/]
 def curriedAssociatorNatIso :
     bifunctorComp₁₂ (curriedTensor C) (curriedTensor C) ≅
       bifunctorComp₂₃ (curriedTensor C) (curriedTensor C) :=
@@ -1050,7 +1053,10 @@ variable {C}
 /-- Tensoring on the left with `X ⊗ Y` is naturally isomorphic to
 tensoring on the left with `Y`, and then again with `X`.
 -/
-@[to_additive]
+@[to_additive
+/-- Adding on the left with `X ⊕ Y` is naturally isomorphic to
+adding on the left with `Y`, and then again with `X`.
+-/]
 def tensorLeftTensor (X Y : C) : tensorLeft (X ⊗ Y) ≅ tensorLeft Y ⋙ tensorLeft X :=
   NatIso.ofComponents (associator _ _) fun {Z} {Z'} f => by simp
 
@@ -1069,7 +1075,7 @@ variable (C)
 
 TODO: show this is an op-monoidal functor.
 -/
-@[to_additive]
+@[to_additive /-- Adding on the left, as a functor from `C` into endofunctors of `C`. -/]
 abbrev tensoringLeft : C ⥤ C ⥤ C := curriedTensor C
 
 @[to_additive]
@@ -1083,7 +1089,7 @@ instance : (tensoringLeft C).Faithful where
 
 We later show this is a monoidal functor.
 -/
-@[to_additive]
+@[to_additive /-- Adding on the right, as a functor from `C` into endofunctors of `C`. -/]
 abbrev tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 
 @[to_additive]
@@ -1098,7 +1104,10 @@ variable {C}
 /-- Tensoring on the right with `X ⊗ Y` is naturally isomorphic to
 tensoring on the right with `X`, and then again with `Y`.
 -/
-@[to_additive]
+@[to_additive
+/-- Adding on the right with `X ⊕ Y` is naturally isomorphic to
+adding on the right with `X`, and then again with `Y`.
+-/]
 def tensorRightTensor (X Y : C) : tensorRight (X ⊗ Y) ≅ tensorRight X ⋙ tensorRight Y :=
   NatIso.ofComponents (fun Z => (associator Z X Y).symm) fun {Z} {Z'} f => by simp
 
@@ -1217,7 +1226,10 @@ section ObjectProperty
 /-- The restriction of a monoidal category along an object property
 that's closed under the monoidal structure. -/
 -- See note [reducible non-instances]
-@[to_additive]
+@[to_additive
+/-- The restriction of an additive category along an object property
+that's closed under the additive structure.
+-/]
 abbrev MonoidalCategory.fullSubcategory
     {C : Type u} [Category.{v} C] [MonoidalCategory C] (P : ObjectProperty C)
     (tensorUnit : P (𝟙_ C))
