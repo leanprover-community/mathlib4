@@ -315,7 +315,6 @@ theorem isFixedPt_fixedPoint_iterate {n : ℕ} (hf : ContractingWith K f^[n]) :
   have := hf.toLipschitzWith.dist_le_mul x (f x)
   rw [← iterate_succ_apply, iterate_succ_apply', hx] at this
   contrapose! this
-  have := dist_pos.2 (Ne.symm this)
-  simpa only [NNReal.coe_one, one_mul, NNReal.val_eq_coe] using (mul_lt_mul_right this).mpr hf.left
+  simpa using mul_lt_mul_of_pos_right (NNReal.coe_lt_one.2 hf.left) <| dist_pos.2 (Ne.symm this)
 
 end ContractingWith

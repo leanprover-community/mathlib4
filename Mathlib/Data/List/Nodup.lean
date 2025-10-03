@@ -102,7 +102,7 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
   constructor
   · intro h i j hij hj
     rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
-    exact h _ _ (by omega) hj hij
+    exact h _ _ (by cutsat) hj hij
   · intro h i j hi hj hij
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj
@@ -265,14 +265,7 @@ theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
   | cons a l IH =>
     cases i with
     | zero => simp
-    | succ i =>
-      rw [nodup_cons] at hl
-      rw [erase_cons_tail]
-      · simp [IH hl.2]
-      · rw [beq_iff_eq]
-        simp only [getElem_cons_succ]
-        simp only [length_cons, Nat.add_lt_add_iff_right] at h
-        exact mt (· ▸ getElem_mem h) hl.1
+    | succ i => grind
 
 theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
     l.erase (l.get i) = l.eraseIdx ↑i := by

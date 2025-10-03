@@ -3,7 +3,7 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
-
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 open Category Limits Comonad
 
-variable {C : Type u} [Category.{v} C] (X : C)
+variable {C : Type u} [Category.{v} C] (X Y : C)
 variable {D : Type u₂} [Category.{v₂} D]
 
 
@@ -76,6 +76,19 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
             ext
             · simp
             · simpa using (Over.w v).symm } }
+
+/-- The pullback along an epi that's preserved under pullbacks is faithful.
+
+This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
+```
+example [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
+```
+-/
+instance faithful_pullback {X Y : C} (f : X ⟶ Y) [∀ Z (g : Z ⟶ Y), Epi (pullback.fst g f)] :
+    (pullback f).Faithful := by
+  have (Z : Over Y) : Epi ((mapPullbackAdj f).counit.app Z) := by
+    simp only [Functor.comp_obj, Functor.id_obj, mapPullbackAdj_counit_app]; infer_instance
+  exact (mapPullbackAdj f).faithful_R_of_epi_counit_app
 
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
 def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
@@ -176,6 +189,18 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
       right_inv := by cat_disch
     }
   }
+
+/-- The pushout along a mono that's preserved under pushouts is faithful.
+
+This "preserved under pushouts" condition is automatically satisfied in abelian categories:
+```
+example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
+```
+-/
+instance faithful_pushout {X Y : C} (f : X ⟶ Y) [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] :
+    (pushout f).Faithful := by
+  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by simp; infer_instance
+  exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
 def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
