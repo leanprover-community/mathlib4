@@ -302,10 +302,10 @@ def findModels (etype eterm : Expr) (estype : Option Expr) :
     TermElabM (Option (Expr × Expr)) := do
   match etype with
   | .forallE _ src tgt _ =>
-    let srcI ← findModel src
     if tgt.hasLooseBVars then
       throwError "Term {eterm} is a dependent function, of type {etype}\n\
       Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one"
+    let srcI ← findModel src
     if let some es := estype then
       if !(← isDefEq es (← mkAppM ``Set #[src])) then
         throwError "The domain {src} of {eterm} is not definitionally equal to the carrier
