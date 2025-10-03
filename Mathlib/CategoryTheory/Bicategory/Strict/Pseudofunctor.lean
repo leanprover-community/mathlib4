@@ -92,7 +92,7 @@ lemma mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁
   mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom
 
 @[to_app (attr := reassoc)]
-lemma mapComp'₀₁₃_inv_comp_mapComp'₀₂₃ (hf : f₀₁ ≫ f₁₃ = f) :
+lemma mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
     (F.mapComp' f₀₁ f₁₃ f).inv ≫ (F.mapComp' f₀₂ f₂₃ f).hom =
     F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
       (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ := by
