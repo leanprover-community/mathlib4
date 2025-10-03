@@ -143,7 +143,7 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
 theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / k !) *
     ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
-  have : (-1) ^ k * (k : ℕ)! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) =
+  have : (-1) ^ k * k ! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) =
     -(2 * π * I) ^ (k + 1) * ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
     rw [← iteratedDerivWithin_tsum_exp_aux_eq hk z,
       ← iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow hk (by simpa using z.2)]
@@ -165,15 +165,12 @@ theorem summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
   apply ((summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp 0 k (p := 1)
     (f := fun n ↦ (n ^ k : ℂ)) (by norm_num)
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
-  grind [ofReal_one, div_one, ← Complex.exp_nsmul, nsmul_eq_mul, iteratedDerivWithin_zero,
-    Pi.smul_apply, smul_eq_mul, mul_eq_mul_left_iff, pow_eq_zero_iff', Nat.cast_eq_zero]
+  grind [ofReal_one, iteratedDerivWithin_zero, Pi.smul_apply, smul_eq_mul]
 
 theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / k !) *
     ∑' n : ℕ+, n ^ k * cexp (2 * π * I * z) ^ (n : ℕ) := by
-  have hk0 : k ≠ 0 := by omega
   rw [EisensteinSeries.qExpansion_identity hk z, ← tsum_zero_pnat_eq_tsum_nat]
-  · simp only [neg_mul, CharP.cast_eq_zero, ne_eq, hk0, not_false_eq_true, zero_pow, pow_zero,
-    mul_one, zero_add]
+  · simp [show k ≠ 0 by grind]
   · apply (summable_pow_mul_cexp k 1 z).congr
     simp
