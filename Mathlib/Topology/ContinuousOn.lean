@@ -278,9 +278,6 @@ theorem insert_mem_nhds_iff {a : α} {s : Set α} : insert a s ∈ 𝓝 a ↔ s 
 theorem nhdsNE_sup_pure (a : α) : 𝓝[≠] a ⊔ pure a = 𝓝 a := by
   rw [← nhdsWithin_singleton, ← nhdsWithin_union, compl_union_self, nhdsWithin_univ]
 
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_singleton_sup_pure := nhdsNE_sup_pure
-
 @[simp]
 theorem pure_sup_nhdsNE (a : α) : pure a ⊔ 𝓝[≠] a = 𝓝 a := by rw [← sup_comm, nhdsNE_sup_pure]
 
@@ -1059,16 +1056,10 @@ theorem ContinuousWithinAt.prodMk {f : α → β} {g : α → γ} {s : Set α} {
     ContinuousWithinAt (fun x => (f x, g x)) s x :=
   hf.prodMk_nhds hg
 
-@[deprecated (since := "2025-03-10")]
-alias ContinuousWithinAt.prod := ContinuousWithinAt.prodMk
-
 @[fun_prop]
 theorem ContinuousOn.prodMk {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
     (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
-
-@[deprecated (since := "2025-03-10")]
-alias ContinuousOn.prod := ContinuousOn.prodMk
 
 theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
   continuous_fst.continuousOn
@@ -1111,15 +1102,9 @@ theorem ContinuousWithinAt.prodMap {f : α → γ} {g : β → δ} {s : Set α} 
   .prodMk (hf.comp continuousWithinAt_fst mapsTo_fst_prod)
     (hg.comp continuousWithinAt_snd mapsTo_snd_prod)
 
-@[deprecated (since := "2025-03-10")]
-alias ContinuousWithinAt.prod_map := ContinuousWithinAt.prodMap
-
 theorem ContinuousOn.prodMap {f : α → γ} {g : β → δ} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
     (hg : ContinuousOn g t) : ContinuousOn (Prod.map f g) (s ×ˢ t) := fun ⟨x, y⟩ ⟨hx, hy⟩ =>
   (hf x hx).prodMap (hg y hy)
-
-@[deprecated (since := "2025-03-10")]
-alias ContinuousOn.prod_map := ContinuousOn.prodMap
 
 theorem continuousWithinAt_prod_of_discrete_left [DiscreteTopology α]
     {f : α × β → γ} {s : Set (α × β)} {x : α × β} :

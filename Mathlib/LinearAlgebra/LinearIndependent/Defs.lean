@@ -126,24 +126,12 @@ theorem LinearIndepOn.linearIndependent {s : Set ι} (h : LinearIndepOn R v s) :
 theorem linearIndependent_iff_injective_finsuppLinearCombination :
     LinearIndependent R v ↔ Injective (Finsupp.linearCombination R v) := Iff.rfl
 
-@[deprecated (since := "2025-03-18")]
-alias linearIndependent_iff_injective_linearCombination :=
-  linearIndependent_iff_injective_finsuppLinearCombination
-
 alias ⟨LinearIndependent.finsuppLinearCombination_injective, _⟩ :=
   linearIndependent_iff_injective_finsuppLinearCombination
-
-@[deprecated (since := "2025-03-18")]
-alias LinearIndependent.linearCombination_injective :=
-  LinearIndependent.finsuppLinearCombination_injective
 
 theorem linearIndependent_iff_injective_fintypeLinearCombination [Fintype ι] :
     LinearIndependent R v ↔ Injective (Fintype.linearCombination R v) := by
   simp [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearIndependent]
-
-@[deprecated (since := "2025-03-18")]
-alias Fintype.linearIndependent_iff_injective :=
-  linearIndependent_iff_injective_fintypeLinearCombination
 
 alias ⟨LinearIndependent.fintypeLinearCombination_injective, _⟩ :=
   linearIndependent_iff_injective_fintypeLinearCombination
@@ -414,8 +402,6 @@ theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
   rwa [Finsupp.sum_mapDomain_index, Finsupp.sum_mapDomain_index] <;>
     intros <;> simp only [zero_smul, add_smul]
 
-@[deprecated (since := "2025-02-15")] alias linearIndependent_comp_subtypeₛ := linearIndepOn_iffₛ
-
 /-- An indexed set of vectors is linearly dependent iff there are two distinct
 `Finsupp.LinearCombination`s of the vectors with the same value. -/
 theorem linearDepOn_iff'ₛ : ¬LinearIndepOn R v s ↔
@@ -423,17 +409,11 @@ theorem linearDepOn_iff'ₛ : ¬LinearIndepOn R v s ↔
         Finsupp.linearCombination R v f = Finsupp.linearCombination R v g ∧ f ≠ g := by
   simp [linearIndepOn_iffₛ]
 
-@[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype'ₛ := linearDepOn_iff'ₛ
-
 /-- A version of `linearDepOn_iff'ₛ` with `Finsupp.linearCombination` unfolded. -/
 theorem linearDepOn_iffₛ : ¬LinearIndepOn R v s ↔
       ∃ f g : ι →₀ R, f ∈ Finsupp.supported R R s ∧ g ∈ Finsupp.supported R R s ∧
         ∑ i ∈ f.support, f i • v i = ∑ i ∈ g.support, g i • v i ∧ f ≠ g :=
   linearDepOn_iff'ₛ
-
-@[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtypeₛ := linearDepOn_iffₛ
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_subtypeₛ := linearIndepOn_iffₛ
 
 theorem linearIndependent_restrict_iff :
     LinearIndependent R (s.restrict v) ↔ LinearIndepOn R v s := Iff.rfl
@@ -446,9 +426,6 @@ theorem linearIndepOn_iff_linearCombinationOnₛ :
     LinearIndepOn R v s ↔ Injective (Finsupp.linearCombinationOn ι M R v s) := by
   rw [← linearIndependent_restrict_iff]
   simp [LinearIndependent, Finsupp.linearCombination_restrict]
-
-@[deprecated (since := "2025-02-15")] alias
-  linearIndependent_iff_linearCombinationOnₛ := linearIndepOn_iff_linearCombinationOnₛ
 
 end Indexed
 

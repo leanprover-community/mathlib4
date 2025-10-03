@@ -42,14 +42,10 @@ variable (M : Type u) (G : Type v) (X : Type w)
 class IsIsometricVAdd (X : Type w) [PseudoEMetricSpace X] [VAdd M X] : Prop where
   isometry_vadd (X) : ∀ c : M, Isometry ((c +ᵥ ·) : X → X)
 
-@[deprecated (since := "2025-03-10")] alias IsometricVAdd := IsIsometricVAdd
-
 /-- A multiplicative action is isometric if each map `x ↦ c • x` is an isometry. -/
 @[to_additive]
 class IsIsometricSMul (X : Type w) [PseudoEMetricSpace X] [SMul M X] : Prop where
   isometry_smul (X) : ∀ c : M, Isometry ((c • ·) : X → X)
-
-@[deprecated (since := "2025-03-10")] alias IsometricSMul := IsIsometricSMul
 
 export IsIsometricSMul (isometry_smul)
 export IsIsometricVAdd (isometry_vadd)

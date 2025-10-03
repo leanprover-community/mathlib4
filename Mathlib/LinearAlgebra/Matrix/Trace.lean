@@ -168,8 +168,6 @@ theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalN
   apply Finset.sum_congr rfl
   simp [mul_apply]
 
-@[deprecated (since := "2025-03-20")] alias trace_col_mul_row := trace_replicateCol_mul_replicateRow
-
 @[simp]
 theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :
     trace (vecMulVec a b) = a ⬝ᵥ b := by

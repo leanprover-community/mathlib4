@@ -96,9 +96,6 @@ theorem tendsto_mabs_nhdsNE_one : Tendsto (mabs : G → G) (𝓝[≠] 1) (𝓝[>
   (continuous_mabs.tendsto' (1 : G) 1 mabs_one).inf <|
     tendsto_principal_principal.2 fun _x => one_lt_mabs.2
 
-@[deprecated (since := "2025-03-18")]
-alias tendsto_abs_nhdsWithin_zero := tendsto_abs_nhdsNE_zero
-
 /-- In a linearly ordered multiplicative group, the integer powers of an element are dense
 iff they are the whole group. -/
 @[to_additive /-- In a linearly ordered additive group, the integer multiples of an element are

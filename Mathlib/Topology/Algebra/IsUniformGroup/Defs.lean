@@ -41,14 +41,10 @@ variable {α : Type*} {β : Type*}
 class IsUniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
   uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2
 
-@[deprecated (since := "2025-03-26")] alias UniformGroup := IsUniformGroup
-
 /-- A uniform additive group is an additive group in which addition
   and negation are uniformly continuous. -/
 class IsUniformAddGroup (α : Type*) [UniformSpace α] [AddGroup α] : Prop where
   uniformContinuous_sub : UniformContinuous fun p : α × α => p.1 - p.2
-
-@[deprecated (since := "2025-03-26")] alias UniformAddGroup := IsUniformAddGroup
 
 attribute [to_additive] IsUniformGroup
 
@@ -199,12 +195,6 @@ instance (priority := 10) IsUniformGroup.to_topologicalGroup : IsTopologicalGrou
   continuous_mul := uniformContinuous_mul.continuous
   continuous_inv := uniformContinuous_inv.continuous
 
-@[deprecated (since := "2025-03-31")] alias UniformGroup.to_topologicalAddGroup :=
-  IsUniformAddGroup.to_topologicalAddGroup
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias
-  UniformGroup.to_topologicalGroup := IsUniformGroup.to_topologicalGroup
-
 @[to_additive]
 instance Prod.instIsUniformGroup [UniformSpace β] [Group β] [IsUniformGroup β] :
     IsUniformGroup (α × β) :=
@@ -212,11 +202,6 @@ instance Prod.instIsUniformGroup [UniformSpace β] [Group β] [IsUniformGroup β
           (uniformContinuous_fst.comp uniformContinuous_snd)).prodMk
       ((uniformContinuous_snd.comp uniformContinuous_fst).div
         (uniformContinuous_snd.comp uniformContinuous_snd))⟩
-
-@[deprecated (since := "2025-03-31")] alias Prod.instUniformAddGroup :=
-  Prod.instIsUniformAddGroup
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias Prod.instUniformGroup := Prod.instIsUniformGroup
 
 @[to_additive]
 theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a)) = 𝓤 α :=
@@ -255,19 +240,11 @@ theorem isUniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @IsU
     uniformContinuous_sInf_rng.mpr fun u hu =>
       uniformContinuous_sInf_dom₂ hu hu (@IsUniformGroup.uniformContinuous_div β u _ (h u hu))
 
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_sInf := isUniformAddGroup_sInf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_sInf := isUniformGroup_sInf
-
 @[to_additive]
 theorem isUniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
     (h' : ∀ i, @IsUniformGroup β (us' i) _) : @IsUniformGroup β (⨅ i, us' i) _ := by
   rw [← sInf_range]
   exact isUniformGroup_sInf (Set.forall_mem_range.mpr h')
-
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_iInf := isUniformAddGroup_iInf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_iInf := isUniformGroup_iInf
 
 @[to_additive]
 theorem isUniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @IsUniformGroup β u₁ _)
@@ -275,10 +252,6 @@ theorem isUniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @IsUniformGroup
   rw [inf_eq_iInf]
   refine isUniformGroup_iInf fun b => ?_
   cases b <;> assumption
-
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_inf := isUniformAddGroup_inf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_inf := isUniformGroup_inf
 
 end LatticeOps
 
@@ -307,20 +280,11 @@ theorem IsUniformGroup.ext {G : Type*} [Group G] {u v : UniformSpace G} (hu : @I
   UniformSpace.ext <| by
     rw [@uniformity_eq_comap_nhds_one _ u _ hu, @uniformity_eq_comap_nhds_one _ v _ hv, h]
 
-@[deprecated (since := "2025-03-31")] alias UniformAddGroup.ext := IsUniformAddGroup.ext
-@[to_additive existing UniformAddGroup.ext, deprecated (since := "2025-03-31")] alias
-  UniformGroup.ext := IsUniformGroup.ext
-
 @[to_additive]
 theorem IsUniformGroup.ext_iff {G : Type*} [Group G] {u v : UniformSpace G}
     (hu : @IsUniformGroup G u _) (hv : @IsUniformGroup G v _) :
     u = v ↔ @nhds _ u.toTopologicalSpace 1 = @nhds _ v.toTopologicalSpace 1 :=
   ⟨fun h => h ▸ rfl, hu.ext hv⟩
-
-@[deprecated (since := "2025-03-31")] alias UniformAddGroup.ext_iff :=
-  IsUniformAddGroup.ext_iff
-@[to_additive existing UniformAddGroup.ext_iff, deprecated (since := "2025-03-31")] alias
-  UniformGroup.ext_iff := IsUniformGroup.ext_iff
 
 variable {α}
 
@@ -329,12 +293,6 @@ theorem IsUniformGroup.uniformity_countably_generated [(𝓝 (1 : α)).IsCountab
     (𝓤 α).IsCountablyGenerated := by
   rw [uniformity_eq_comap_nhds_one]
   exact Filter.comap.isCountablyGenerated _ _
-
-@[deprecated (since := "2025-03-31")] alias UniformAddGroup.uniformity_countably_generated :=
-  IsUniformAddGroup.uniformity_countably_generated
-@[to_additive existing UniformAddGroup.uniformity_countably_generated, deprecated
-  (since := "2025-03-31")] alias
-  UniformGroup.uniformity_countably_generated := IsUniformGroup.uniformity_countably_generated
 
 open MulOpposite
 
@@ -496,11 +454,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
-@[deprecated (since := "2025-03-30")]
-alias uniformAddGroup_of_addCommGroup := isUniformAddGroup_of_addCommGroup
-@[to_additive existing, deprecated (since := "2025-03-30")]
-alias uniformGroup_of_commGroup := isUniformGroup_of_commGroup
-
 open Set
 
 end

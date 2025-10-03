@@ -115,8 +115,6 @@ theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc
 lemma prod_eq_one_iff [Subsingleton Mˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
   induction s using Finset.cons_induction <;> simp [*]
 
-@[deprecated (since := "2025-03-31")] alias prod_eq_one_iff' := prod_eq_one_iff
-
 @[to_additive]
 theorem prod_disjUnion (h) :
     ∏ x ∈ s₁.disjUnion s₂ h, f x = (∏ x ∈ s₁, f x) * ∏ x ∈ s₂, f x := by

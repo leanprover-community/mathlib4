@@ -145,6 +145,7 @@ theorem comp_familyOfBFamily {o} (f : ∀ a < o, α) (g : α → β) :
 
 /-! ### Supremum of a family of ordinals -/
 
+-- FIXME There is undeprecated material below still depending on this?!
 /-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
     inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
 theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
@@ -178,27 +179,33 @@ fails to infer `f` in simple cases and needs it to be given explicitly. -/
 protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
   le_ciSup (bddAbove_of_small _)
 
+-- FIXME There is undeprecated material below still depending on this?!
 /-- `ciSup_le_iff'` whenever the input type is small in the output universe. -/
 protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   ciSup_le_iff' (bddAbove_of_small _)
 
+-- FIXME There is undeprecated material below still depending on this?!
 /-- An alias of `ciSup_le'` for discoverability. -/
 protected theorem iSup_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
+-- FIXME There is undeprecated material below still depending on this?!
 /-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
 protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < iSup f ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
 
+-- FIXME There is undeprecated material below still depending on this?!
+-- FIXME There is undeprecated material below still depending on this?!
 -- TODO: state in terms of `IsSuccLimit`.
 theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
-  exact hao.not_ge (Ordinal.iSup_le fun i ↦ le_of_lt_succ <|
-    ((Ordinal.le_iSup _ _).lt_of_ne (hf i)).trans_le hoa)
+  exact hao.not_ge (Ordinal.iSup_le fun i => le_of_lt_succ <|
+    (lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf i)).trans_le hoa)
 
+-- FIXME There is undeprecated material below still depending on this?!
 -- TODO: generalize to conditionally complete lattices.
 theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
     iSup f = 0 ↔ ∀ i, f i = 0 := by
@@ -208,11 +215,15 @@ theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
   rw [← Ordinal.le_zero, ← h]
   exact Ordinal.le_iSup f i
 
+-- FIXME There is undeprecated material below still depending on this?!
+-- FIXME There is undeprecated material below still depending on this?!
+-- FIXME There is undeprecated material below still depending on this?!
 -- TODO: generalize or remove
 theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : iSup f = iSup g :=
   congr_arg _ h
 
+-- FIXME There is undeprecated material below still depending on this?!
 theorem iSup_succ (o : Ordinal) : ⨆ a : Iio o, succ a.1 = o := by
   apply (le_of_forall_lt _).antisymm'
   · simp [Ordinal.iSup_le_iff]
@@ -230,6 +241,7 @@ theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
+-- FIXME There is undeprecated material below still depending on this?!
 theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
   (not_bounded_iff _).1 fun ⟨x, hx⟩ =>
@@ -257,6 +269,7 @@ theorem IsNormal.map_sSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {s : Set Ordinal.{u}} (hn : s.Nonempty) [Small.{u} s] : f (sSup s) = sSup (f '' s) :=
   H.map_sSup_of_bddAbove (bddAbove_of_small s) hn
 
+-- FIXME There is undeprecated material below still depending on this?!
 theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
     (ho : IsSuccLimit o) : f o = ⨆ a : Iio o, f a := by
   have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩

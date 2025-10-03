@@ -297,21 +297,6 @@ def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 
 lemma ofLE_apply (h : G₁ ≤ G₂) (v : V) : ofLE h v = v := rfl
 
-/-- The induced map for spanning subgraphs, which is the identity on vertices. -/
-@[deprecated ofLE (since := "2025-03-17")]
-def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
-  toFun x := x
-  map_rel' ha := h ha
-
-@[deprecated "This is true by simp" (since := "2025-03-17")]
-lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
-    ofLE h v = ofLE h w ↔ v = w := by simp
-
-@[deprecated "This is true by simp" (since := "2025-03-17")]
-lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
-    Injective (ofLE h) :=
-  fun v w hvw ↦ by simpa using hvw
-
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
   dsimp [Hom.mapEdgeSet]

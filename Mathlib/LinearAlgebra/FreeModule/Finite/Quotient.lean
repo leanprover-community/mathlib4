@@ -98,9 +98,6 @@ theorem finiteQuotientOfFreeOfRankEq [Module.Free ℤ M] [Module.Finite ℤ M]
     ⟨Int.natAbs_ne_zero.mpr (smithNormalFormCoeffs_ne_zero b h i)⟩
   exact Finite.of_equiv (Π i, ZMod (a i).natAbs) e.symm
 
-@[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfRankEq :=
-  finiteQuotientOfFreeOfRankEq
-
 theorem finiteQuotient_iff [Module.Free ℤ M] [Module.Finite ℤ M] (N : Submodule ℤ M) :
     Finite (M ⧸ N) ↔ Module.finrank ℤ N = Module.finrank ℤ M := by
   refine ⟨fun h ↦ le_antisymm (finrank_le N) <|

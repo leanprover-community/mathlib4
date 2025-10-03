@@ -49,8 +49,6 @@ to the domain of definition of the (partial) left adjoint of `F`. -/
 def leftAdjointObjIsDefined : ObjectProperty C :=
   fun X ↦ IsCorepresentable (F ⋙ coyoneda.obj (op X))
 
-@[deprecated (since := "2025-03-05")] alias LeftAdjointObjIsDefined := leftAdjointObjIsDefined
-
 lemma leftAdjointObjIsDefined_iff (X : C) :
     F.leftAdjointObjIsDefined X ↔ IsCorepresentable (F ⋙ coyoneda.obj (op X)) := by rfl
 

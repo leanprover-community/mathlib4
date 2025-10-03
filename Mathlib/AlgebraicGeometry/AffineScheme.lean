@@ -119,8 +119,6 @@ instance isAffine_Spec (R : CommRingCat) : IsAffine (Spec R) :=
 theorem IsAffine.of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] [h : IsAffine Y] : IsAffine X := by
   rw [← essImage_Spec] at h ⊢; exact Functor.essImage.ofIso (asIso f).symm h
 
-@[deprecated (since := "2025-03-31")] alias isAffine_of_isIso := IsAffine.of_isIso
-
 /-- If `f : X ⟶ Y` is a morphism between affine schemes, the corresponding arrow is isomorphic
 to the arrow of the morphism on prime spectra induced by the map on global sections. -/
 noncomputable
