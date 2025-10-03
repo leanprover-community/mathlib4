@@ -47,6 +47,21 @@ theorem add_overlap_zero {a₁ a₂ b₁ b₂ c₂ : R}
     a₁ + a₂ + (b₁ + b₂) = c₂ := by
   sorry
 
+theorem add_eq_of_eq_eq {a₁ a₂ b₁ b₂ : A}
+    (ha : a₁ = b₁) (hb : a₂ = b₂) :
+    a₁ + a₂ = b₁ + b₂ := by
+  sorry
+
+theorem eq_trans_trans {e₁ e₂ a b : A}
+    (ha : e₁ = a) (hb : e₂ = b) (hab : a = b) :
+    e₁ = e₂ := by
+  sorry
+
+theorem mul_eq_mul_of_eq {c a b : A}
+    (h : a = b) :
+    c * a = c * b := by
+  sorry
+
 section Nat
 variable {n d : ℕ}
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
@@ -217,6 +232,28 @@ theorem eval_mul {a b a' b' c : A}
 theorem eval_pow {a a' c : A} {b b' : ℕ}
     (ha : a = a') (hb : b = b') (hc : a' ^ b' = c) :
     a ^ b = c := by
+  sorry
+
+theorem smul_one_eq_zero {r : R} (h : r = 0) :
+    r • (1 : A) = 0 := by
+  sorry
+
+theorem add_eq_zero {a b : A} (ha : a = 0) (hb : b = 0) :
+    a + b = 0 := by
+  sorry
+
+theorem smul_one_eq_smul_one' {r s : R} (h : r = s) :
+    r • (1 : A) = s • 1 := by
+  sorry
+
+theorem add_eq_of_zero_add {a₁ a₂ b₁ b₂ : A}
+    (ha₁ : a₁ = 0) (ha₂ : a₂ = b₁ + b₂) :
+    a₁ + a₂ = b₁ + b₂ := by
+  sorry
+
+theorem add_eq_of_add_zero {a₁ a₂ b₁ b₂ : A}
+    (hb₁ : b₁ = 0) (ha : a₁ + a₂ = b₂) :
+    a₁ + a₂ = b₁ + b₂ := by
   sorry
 
 theorem smul_smul_one {r s t : R}
@@ -1112,7 +1149,7 @@ def ExProd.equateZero {a : Q($A)}
   match va with
   | .smul (r := r) vr => do
     let pf ← mkFreshExprMVarQ q($r = 0)
-    return ⟨q(sorry), pf.mvarId!⟩
+    return ⟨q(smul_one_eq_zero (R := $R) $pf), pf.mvarId!⟩
   | .mul (x := x) (e := e) vx ve vb => do
     -- For x^e * b = 0, we need b = 0 (assuming x^e ≠ 0)
     vb.equateZero
@@ -1125,7 +1162,7 @@ def equateZero {a : Q($A)} (va : ExSum q($sAlg) a) :
   | .add va₁ va₂ => do
     let ⟨pf, id⟩ ← va₁.equateZero
     let ⟨pf', mvars⟩ ← equateZero va₂
-    return ⟨q(sorry), id :: mvars⟩
+    return ⟨q(add_eq_zero $pf $pf'), id :: mvars⟩
 
 def ExProd.equateScalarsProd {a b : Q($A)} (va : ExProd q($sAlg) a) (vb : ExProd q($sAlg) b) :
     MetaM <| Q($a = $b) × Option MVarId := do
@@ -1134,13 +1171,16 @@ def ExProd.equateScalarsProd {a b : Q($A)} (va : ExProd q($sAlg) a) (vb : ExProd
     -- For r • 1 = s • 1, we need r = s
     if vr.eq vs then
       have : $r =Q $s := ⟨⟩
-      return ⟨q(sorry), none⟩
+      return ⟨q(rfl), none⟩
     else
       let pab ← mkFreshExprMVarQ q($r = $s)
-      return ⟨q(sorry), some pab.mvarId!⟩
+      return ⟨q(smul_one_eq_smul_one' $pab), some pab.mvarId!⟩
   | .mul (x := xa) (e := ea) vxa vea va', .mul (x := xb) (e := eb) vxb veb vb' =>
     -- For x^e * a' = x^e * b', we need a' = b' (bases and exponents already match)
-    va'.equateScalarsProd vb'
+    let ⟨pf, mvOpt⟩ ← va'.equateScalarsProd vb'
+    have : $xa =Q $xb := ⟨⟩
+    have : $ea =Q $eb := ⟨⟩
+    return ⟨q(mul_eq_mul_of_eq $pf), mvOpt⟩
   | _, _ =>
     -- This shouldn't happen - the caller should ensure structural equality
     throwError "equateScalarsProd: structure mismatch"
@@ -1163,19 +1203,21 @@ def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) 
       -- va₁ < vb₁ in shape, so va₁ must be 0
       let ⟨pr, id⟩ ← va₁.equateZero
       let ⟨pf, ids⟩ ← equateScalarsSum va₂ (.add vb₁ vb₂)
-      return ⟨q(sorry), id :: ids⟩
+      return ⟨q(add_eq_of_zero_add $pr $pf), id :: ids⟩
     | .gt =>
       -- vb₁ < va₁ in shape, so vb₁ must be 0
       let ⟨ps, id⟩ ← vb₁.equateZero
       let ⟨pf, ids⟩ ← equateScalarsSum (.add va₁ va₂) vb₂
-      return ⟨q(sorry), id :: ids⟩
+      return ⟨q(add_eq_of_add_zero $ps $pf), id :: ids⟩
     | .eq =>
       -- The leading terms have the same structure, need to equate coefficients
       let ⟨pf, ids⟩ ← equateScalarsSum va₂ vb₂
       let ⟨pab, idOpt⟩ ← va₁.equateScalarsProd sAlg vb₁
-      match idOpt with
-      | none => return ⟨q(sorry), ids⟩
-      | some id => return ⟨q(sorry), id :: ids⟩
+      return ⟨q(add_eq_of_eq_eq $pab $pf),
+        match idOpt with
+        | none => ids
+        | some id => id :: ids
+      ⟩
 
 #check simpTarget
 
@@ -1220,7 +1262,7 @@ where
       let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
       let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂
       let ⟨pab, mvars⟩ ← equateScalarsSum sAlg va vb
-      return ⟨q(sorry), mvars⟩
+      return ⟨q(eq_trans_trans $pa $pb $pab), mvars⟩
 
 elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic => withMainContext do
   let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
