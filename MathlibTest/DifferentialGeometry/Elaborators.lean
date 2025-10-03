@@ -844,8 +844,8 @@ info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f sorry : TangentSpace 𝓘(𝕜, E)
 #guard_msgs in
 #check mfderiv% f m'
 
--- Error messages: argument s has mismatched type.
-/--
+-- TODO: is the old error message better?
+/-
 error: Application type mismatch: The argument
   s'
 has type
@@ -855,18 +855,16 @@ of sort `Type u_4` but is expected to have type
 of sort `Type u_2` in the application
   mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
 -/
+
+-- Error messages: argument s has mismatched type.
+/--
+error: The domain E of f is not definitionally equal to the carrier of the type 'Set M' of the set 's' passed in
+-/
 #guard_msgs in
 #check mfderiv[s'] f
 
 /--
-error: Application type mismatch: The argument
-  s'
-has type
-  Set.{u_4} M
-of sort `Type u_4` but is expected to have type
-  Set.{u_2} E
-of sort `Type u_2` in the application
-  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
+error: The domain E of f is not definitionally equal to the carrier of the type 'Set M' of the set 's' passed in
 -/
 #guard_msgs in
 #check mfderiv[s'] f m

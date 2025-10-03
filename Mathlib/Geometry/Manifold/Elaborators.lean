@@ -262,8 +262,8 @@ def _find_models (etype eterm : Expr) (estype : Option Expr) :
       Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one"
     if let some es := estype then
       if !(← isDefEq es (← mkAppM ``Set #[src])) then
-        throwError m!"The domain {src} of {eterm} is not definitionally equal to the carrier
-        of the type {es} of the set 's' passed in"
+        throwError m!"The domain {src} of {eterm} is not definitionally equal to the carrier \
+        of the type '{es}' of the set 's' passed in"
     let tgtI ← find_model tgt (src, srcI)
     return some (srcI, tgtI)
   | _ => return none
