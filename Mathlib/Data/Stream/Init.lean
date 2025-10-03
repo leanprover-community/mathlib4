@@ -279,11 +279,7 @@ end Bisim
 theorem bisim_simple (s₁ s₂ : Stream' α) :
     head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
   eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
-    (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor
-      · exact h₁
-      rw [← h₂, ← h₃]
-      (repeat' constructor) <;> assumption)
+    (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by grind)
     (And.intro hh (And.intro ht₁ ht₂))
 
 theorem coinduction {s₁ s₂ : Stream' α} :
