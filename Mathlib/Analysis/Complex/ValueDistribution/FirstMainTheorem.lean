@@ -56,7 +56,7 @@ lemma characteristic_sub_characteristic_inv (h : MeromorphicOn f ⊤) :
 
 /--
 First part of the First Main Theorem: Away from zero, the difference between the characteristic
-functions of `f` and `f⁻¹` equals `log ‖leadCoefficient f 0‖`.
+functions of `f` and `f⁻¹` equals `log ‖meromorphicTrailingCoeffAt f 0‖`.
 -/
 @[simp]
 theorem characteristic_sub_characteristic_inv_off_zero
