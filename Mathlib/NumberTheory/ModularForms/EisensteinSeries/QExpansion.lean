@@ -34,16 +34,16 @@ private lemma iteratedDerivWithin_cexp_aux (k m : ℕ) (p : ℝ) {S : Set ℂ} (
   ring_nf
 
 private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
-    (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
+    (hf : f =O[atTop] fun n ↦ ((n ^ l) : ℝ)) :
     (fun n ↦ f n * (2 * π * I * n / p) ^ k) =O[atTop] fun n ↦ (↑(n ^ (l + k)) : ℝ) := by
-  have h0 : (fun n : ℕ ↦ (2 * π * I * n / p) ^ k) =O[atTop] (fun n ↦ ((n ^ k) : ℝ)) := by
+  have h0 : (fun n : ℕ ↦ (2 * π * I * n / p) ^ k) =O[atTop] fun n ↦ ((n ^ k) : ℝ) := by
     have h1 : (fun n : ℕ ↦ (2 * π * I * n / p) ^ k) =
-      (fun n : ℕ ↦ ((2 * π * I / p) ^ k) * n ^ k) := by
+        fun n : ℕ ↦ ((2 * π * I / p) ^ k) * n ^ k := by
       ext z
       ring
-    simpa [h1] using (Complex.isBigO_ofReal_right.mp (Asymptotics.isBigO_const_mul_self
-      ((2 * π * I / p) ^ k) (fun (n : ℕ) ↦ (↑(n ^ k) : ℝ)) atTop))
-  simp only [Nat.cast_pow] at *
+    simpa [h1] using isBigO_ofReal_right.mp (Asymptotics.isBigO_const_mul_self
+      ((2 * π * I / p) ^ k) (fun (n : ℕ) ↦ (↑(n ^ k) : ℝ)) atTop)
+  simp only [Nat.cast_pow]
   convert hf.mul h0
   ring
 
@@ -63,11 +63,10 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
     intro x
     have h1 : cexp (2 * π * I * (x / p)) = cexp (2 * π * I * x / p) := by
       ring_nf
-    simpa using h1 ▸ norm_exp_two_pi_I_lt_one ⟨((x : ℂ) / p) , by aesop⟩
+    simpa using h1 ▸ norm_exp_two_pi_I_lt_one ⟨((x : ℂ) / p), by aesop⟩
   refine ⟨_, by simpa using (summable_norm_mul_geometric_of_norm_lt_one' hr
-    (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), ?_⟩
-  intro n z hz
-  have h0 := pow_le_pow_left₀ (by apply norm_nonneg _) (norm_coe_le_norm (mkOfCompact c) ⟨z, hz⟩) n
+    (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), fun n z hz ↦ ?_⟩
+  have h0 := pow_le_pow_left₀ (norm_nonneg _) (norm_coe_le_norm (mkOfCompact c) ⟨z, hz⟩) n
   simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ← exp_nsmul', Pi.smul_apply,
     iteratedDerivWithin_cexp_aux k n p isOpen_upperHalfPlaneSet (hK hz), smul_eq_mul,
     norm_mul, norm_pow, Complex.norm_div, norm_ofNat, norm_real, Real.norm_eq_abs, norm_I, mul_one,
@@ -82,10 +81,10 @@ and q-expansion coefficients all `1`. -/
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_cexp (k : ℕ) :
     SummableLocallyUniformlyOn
       (fun n ↦ iteratedDerivWithin k (fun z ↦ cexp (2 * π * I * z) ^ n) ℍₒ) ℍₒ := by
-  have h0 : (fun n : ℕ ↦ (1 : ℂ)) =O[atTop] (fun n ↦ ((n ^ 1) : ℝ)) := by
+  have h0 : (fun n : ℕ ↦ (1 : ℂ)) =O[atTop] fun n ↦ ((n ^ 1) : ℝ) := by
     simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast,
       eventually_atTop, ge_iff_le]
-    refine ⟨1, 1, fun b hb ↦ by norm_cast; simp [hb]⟩
+    exact ⟨1, 1, fun b hb ↦ by norm_cast; simp [hb]⟩
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp k 1 (p := 1)
     (by norm_num) h0
 
@@ -128,10 +127,10 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
     · exact (contDiffOn_tsum_cexp k).contDiffWithinAt (by simpa using z.2)
   have h : -(2 * π * I * (2 * π * I) ^ k) * ∑' (n : ℕ), n ^ k * cexp (2 * π * I * z) ^ n =
         -(2 * π * I) * ∑' n : ℕ, (2 * π * I * n) ^ k * cexp (2 * π * I * z) ^ n := by
-      simp_rw [← tsum_mul_left]
-      congr
-      ext y
-      ring
+    simp_rw [← tsum_mul_left]
+    congr
+    ext y
+    ring
   simp only [this, neg_mul, pow_succ', h, neg_inj, mul_eq_mul_left_iff, mul_eq_zero,
     OfNat.ofNat_ne_zero, ofReal_eq_zero, Real.pi_ne_zero, or_self, I_ne_zero, or_false]
   congr
