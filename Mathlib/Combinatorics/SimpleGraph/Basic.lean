@@ -520,7 +520,7 @@ theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, 
 
 theorem exists_adj_of_ne_bot (h : G ≠ ⊥) : ∃ a b : V, G.Adj a b := by
   obtain ⟨x, hx⟩ := edgeSet_nonempty.mpr h
-  exact ⟨x.out.1, x.out.2, adj_iff_exists_edge_coe.mpr ⟨⟨x, hx⟩ , by simp⟩⟩
+  exact ⟨x.out.1, x.out.2, adj_iff_exists_edge_coe.mpr ⟨⟨x, hx⟩, by simp⟩⟩
 
 theorem exists_adj_of_ne_top (h : G ≠ ⊤) : ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
   contrapose! h
