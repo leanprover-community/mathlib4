@@ -266,7 +266,8 @@ theorem tada -- R = ℤ, S = 𝓞 K
   ext z
   rw [Equiv.swap_apply_def]
   split_ifs with hz hz'
-  · simp
+  · subst hz
+    simp
     sorry
   · simp [hz']
   · simp
@@ -320,11 +321,12 @@ attribute [local instance] Gal.splits_ℚ_ℂ
 
 open NumberField
 
-theorem tada'' (f₀ : ℤ[X]) (hf : f₀.Monic) (hf' : Irreducible f₀) :
+theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
     -- condition on at most on root collision mod p :
     Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
   classical
   let f : ℚ[X] := f₀.map (algebraMap ℤ ℚ)
+  have hf := hf₀.map (algebraMap ℤ ℚ)
   let K := f.SplittingField
   have : Fact (f.Splits (algebraMap ℚ K)) := ⟨SplittingField.splits f⟩
   have : NumberField K := by constructor
@@ -332,6 +334,20 @@ theorem tada'' (f₀ : ℤ[X]) (hf : f₀.Monic) (hf' : Irreducible f₀) :
   let R := 𝓞 K
   let G := f.Gal
   let _ : MulSemiringAction G R := IsIntegralClosure.MulSemiringAction ℤ ℚ K R
+  suffices Function.Bijective (Gal.galActionHom f K) by
+    rw [switchinglemma f ℂ K]
+    exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
+      (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
+  let φ : f₀.rootSet R → f.rootSet K := fun x ↦ ⟨algebraMap R K x, by
+    rw [hf.mem_rootSet, aeval_map_algebraMap, aeval_algebraMap_apply,
+      aeval_eq_zero_of_mem_rootSet x.2, map_zero]⟩
+  have hφ1 : ∀ g : G, ∀ x : f₀.rootSet R, φ (g • x) = g • φ x := by
+    intro g x
+    ext
+    sorry
+  have hφ2 : Function.Bijective φ := by
+    -- injective and card
+    sorry
   suffices Function.Bijective (MulAction.toPermHom G (f₀.rootSet R)) by
     sorry
   -- suffices Function.Bijective (Gal.galActionHom f K) by
@@ -339,15 +355,16 @@ theorem tada'' (f₀ : ℤ[X]) (hf : f₀.Monic) (hf' : Irreducible f₀) :
   --   exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
   --     (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
   have : MulAction.IsPretransitive G (f.rootSet K) :=
-    Gal.galAction_isPretransitive _ _ (hf.irreducible_iff_irreducible_map_fraction_map.mp hf')
+    Gal.galAction_isPretransitive _ _ (hf₀.irreducible_iff_irreducible_map_fraction_map.mp hf')
+  have : FaithfulSMul G (f.rootSet K) :=
+    -- use galActionHom_injective
+    sorry
   -- need a bijection between f₀.rootSet R and
   have : MulAction.IsPretransitive G (f₀.rootSet R) := by
-
     sorry
   have : FaithfulSMul G (f₀.rootSet R) := by
-
     sorry
-  refine tada' (S := R) f₀ hf ?_ G ?_ ?_
+  refine tada' (S := R) f₀ hf₀ ?_ G ?_ ?_
   · sorry
   · sorry
   · sorry
