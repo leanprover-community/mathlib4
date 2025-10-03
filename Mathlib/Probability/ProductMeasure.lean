@@ -475,6 +475,26 @@ lemma infinitePi_map_piCurry :
       infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j := by
   rw [MeasurableEquiv.map_apply_eq_iff_map_symm_apply_eq, infinitePi_map_piCurry_symm]
 
+variable {ι κ X : Type*} {mX : MeasurableSpace X} (μ : ι → κ → Measure X)
+  [hμ : ∀ i j, IsProbabilityMeasure (μ i j)]
+
+lemma infinitePi_map_curry_symm :
+    (infinitePi fun i : ι ↦ infinitePi fun j : κ ↦ μ i j).map (curry ι κ X).symm =
+      infinitePi fun p : ι × κ ↦ μ p.1 p.2 := by
+  rw [← (MeasurableEquiv.piCongrLeft (fun _ ↦ X)
+    (Equiv.sigmaEquivProd ι κ).symm).map_measurableEquiv_injective.eq_iff, map_map]
+  · have : (MeasurableEquiv.piCongrLeft (fun _ ↦ X) (Equiv.sigmaEquivProd ι κ).symm) ∘
+        (MeasurableEquiv.curry ι κ X).symm = ⇑(MeasurableEquiv.piCurry (fun _ _ ↦ X)).symm := by
+      ext; simp [piCongrLeft, Equiv.piCongrLeft, Sigma.uncurry]
+    rw [this, infinitePi_map_piCurry_symm]
+    convert infinitePi_map_piCongrLeft (fun p ↦ μ p.1 p.2) (Equiv.sigmaEquivProd ι κ).symm |>.symm
+  all_goals fun_prop
+
+lemma infinitePi_map_curry :
+    (infinitePi fun p : ι × κ ↦ μ p.1 p.2).map (curry ι κ X) =
+      infinitePi fun i : ι ↦ infinitePi fun j : κ ↦ μ i j := by
+  rw [MeasurableEquiv.map_apply_eq_iff_map_symm_apply_eq, infinitePi_map_curry_symm]
+
 end curry
 
 end Measure
