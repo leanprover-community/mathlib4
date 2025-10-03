@@ -168,12 +168,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   subst hx
   intro H
   obtain ⟨_ | k, hk, hk'⟩ := getElem_of_mem H
-  · rw [← Option.some_inj] at hk'
-    rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_zero,
-      Option.some_inj] at hk'
-    · exact hy (Eq.symm hk')
-    rw [length_cons]
-    exact length_pos_of_mem (by assumption)
+  · grind
   suffices k + 1 = l.length by simp [this] at hk
   rcases l with - | ⟨hd, tl⟩
   · simp at hk
