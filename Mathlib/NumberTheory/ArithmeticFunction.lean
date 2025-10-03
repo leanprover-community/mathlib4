@@ -417,7 +417,7 @@ theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid
   simp
 
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
-    (↑ζ * f) x = ∑ i ∈ divisors x, f i :=
+    (ζ * f) x = ∑ i ∈ divisors x, f i :=
   coe_zeta_smul_apply
 
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
@@ -429,11 +429,18 @@ theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     rw [natCoe_apply, zeta_apply_ne (right_ne_zero_of_mul h), cast_one, mul_one]
   · rw [← map_div_right_divisors, sum_map, Function.Embedding.coeFn_mk]
 
+theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
+  ext x
+  rw [coe_zeta_mul_apply, coe_mul_zeta_apply]
+
 theorem zeta_mul_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (ζ * f) x = ∑ i ∈ divisors x, f i := by
   rw [← natCoe_nat ζ, coe_zeta_mul_apply]
 
 theorem mul_zeta_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (f * ζ) x = ∑ i ∈ divisors x, f i := by
   rw [← natCoe_nat ζ, coe_mul_zeta_apply]
+
+theorem zeta_mul_comm {f : ArithmeticFunction ℕ} : ζ * f = f * ζ := by
+  rw [← natCoe_nat ζ, coe_zeta_mul_comm]
 
 end Zeta
 
