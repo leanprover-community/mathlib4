@@ -184,6 +184,17 @@ instance [Add α] [IsRightCancelAdd α] : IsRightCancelAdd αᵐᵒᵖ where
 
 instance [Add α] [IsCancelAdd α] : IsCancelAdd αᵐᵒᵖ where
 
+theorem isLeftCancelAdd_iff [Add α] : IsLeftCancelAdd αᵐᵒᵖ ↔ IsLeftCancelAdd α where
+  mp _ := ⟨fun _ _ _ eq ↦ op_injective <| add_left_cancel (congr_arg op eq)⟩
+  mpr _ := inferInstance
+
+theorem isRightCancelAdd_iff [Add α] : IsRightCancelAdd αᵐᵒᵖ ↔ IsRightCancelAdd α where
+  mp _ := ⟨fun _ _ _ eq ↦ op_injective <| add_right_cancel (congr_arg op eq)⟩
+  mpr _ := inferInstance
+
+protected theorem isCancelAdd_iff [Add α] : IsCancelAdd αᵐᵒᵖ ↔ IsCancelAdd α := by
+  simp_rw [isCancelAdd_iff, isLeftCancelAdd_iff, isRightCancelAdd_iff]
+
 @[to_additive] instance instSMul [SMul α β] : SMul α βᵐᵒᵖ where smul c x := op (c • unop x)
 
 @[simp] lemma op_zero [Zero α] : op (0 : α) = 0 := rfl
