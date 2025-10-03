@@ -577,6 +577,10 @@ lemma AnalyticOnEq (f g : ℂ → ℂ) (U : Set ℂ) :
 
       }
 
+lemma AnalyticAtEq (f g : ℂ → ℂ) (U : Set ℂ) (z : ℂ) :
+  (hU : U ∈ nhds z)  → z ∈ U →
+  (∀ z ∈ U, f z = g z) → AnalyticAt ℂ f z → AnalyticAt ℂ g z := sorry
+
 lemma AnalyticOnEquiv (f g : ℂ → ℂ) (U : Set ℂ) :
   (∀ z ∈ U, f z = g z) → (AnalyticOn ℂ f U ↔ AnalyticOn ℂ g U) := by {
   intro Heq

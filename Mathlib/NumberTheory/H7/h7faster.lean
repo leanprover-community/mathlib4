@@ -8,15 +8,15 @@ import Mathlib.NumberTheory.H7.h7order
 import Mathlib.NumberTheory.H7.House
 
 set_option autoImplicit true
-set_option linter.style.multiGoal false
-set_option linter.style.cases false
+set_option linter.style.multiGoal true
+set_option linter.style.cases true
 set_option linter.unusedSectionVars true
 set_option linter.style.longFile 0
-set_option linter.unusedSectionVars false
-set_option linter.unusedVariables false
-set_option linter.style.commandStart false
-set_option linter.style.longLine false
-set_option linter.style.cdot false
+set_option linter.unusedSectionVars true
+set_option linter.unusedVariables true
+set_option linter.style.commandStart true
+set_option linter.style.longLine true
+set_option linter.style.cdot true
 --set_option profiler false
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
@@ -26,7 +26,6 @@ noncomputable section
 
 /--
 This structure encapsulates all the foundational data and hypotheses for the proof.
-Instead of passing a dozen arguments to every lemma, we will pass this single structure.
 -/
 structure GelfondSchneiderSetup where
   (α β : ℂ)
@@ -76,6 +75,23 @@ lemma hneq1 : h7.α' ≠ 1 := by
 
 lemma β'ne_zero : h7.β' ≠ 0 := h7.hneq0.2.1
 
+open Complex
+
+lemma log_zero_zero : log h7.α ≠ 0 := by
+  intro H
+  have := congr_arg exp H
+  rw [exp_log, exp_zero] at this
+  · apply h7.htriv.2 this
+  · exact h7.htriv.1
+
+
+
+
+
+
+
+
+
 def c₁ : ℤ := abs (c' h7.α' * c' h7.β' * c' h7.γ')
 
 lemma one_leq_c₁ : 1 ≤ h7.c₁ := by
@@ -113,47 +129,12 @@ lemma isIntegral_c₁γ : IsIntegral ℤ (h7.c₁ • h7.γ') := by
   · rename_i H1; rw [H1]; exact h
   · rename_i H2; rw [H2]; rw [← IsIntegral.neg_iff, neg_smul, neg_neg]; exact h
 
--- `h`, `m`, and `n` are now neat definitions depending on the h7.
 def h : ℕ := Module.finrank ℚ h7.K
 
 def m : ℕ := 2 * h7.h + 2
 
 -- `q` is a parameter, so it remains an argument.
 def n (q : ℕ) : ℕ := q ^ 2 / (2 * h7.m)
-
--- Helper lemmas now take the h7 as an argument.
-lemma c₁ac (u : h7.K) (n k a l : ℕ) (hnk : a *l ≤ n * k)
-    (H : IsIntegral ℤ (↑h7.c₁ * u)) :
-    IsIntegral ℤ (h7.c₁ ^ (n * k) • u ^ (a *l)) := by
-  have : h7.c₁ ^ (n * k) = h7.c₁ ^ (n * k - a * l) * h7.c₁ ^ (a *l) := by
-    rw [← pow_add]; rwa [Nat.sub_add_cancel]
-  rw [this, zsmul_eq_mul]
-  simp only [Int.cast_mul, Int.cast_pow]; rw [mul_assoc]
-  apply IsIntegral.mul; apply IsIntegral.pow; apply IsIntegral.Cast
-  rw [← mul_pow]; exact IsIntegral.pow H _
-
--- The only change is sourcing variables like `c₁` and `β'` from the `h7`.
-lemma c₁b (n : ℕ) :
-    1 ≤ n → (k : ℕ) → k ≤ n - 1 → (a : ℕ) → 1 ≤ a → (b : ℕ) → 1 ≤ b →
-    IsIntegral ℤ (h7.c₁ ^ (n - 1) • (↑a + ↑b • h7.β') ^ k) := by
-  intros hn k hkn a ha b hb
-  have : h7.c₁^(n - 1) = h7.c₁^(n - 1 - k) * h7.c₁^k := by
-    rwa [← pow_add, Nat.sub_add_cancel]
-  rw [this]
-  simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow, nsmul_eq_mul, mul_assoc]
-  apply IsIntegral.mul
-  · apply IsIntegral.pow
-    · apply IsIntegral.Cast
-  rw [← mul_pow]
-  apply IsIntegral.pow
-  rw [mul_add]
-  apply IsIntegral.add
-  · apply IsIntegral.mul <| IsIntegral.Cast _ _
-    · apply IsIntegral.Nat
-  rw [mul_comm, mul_assoc]
-  apply IsIntegral.mul <| IsIntegral.Nat _ _
-  rw [mul_comm, ← zsmul_eq_mul]
-  exact isIntegral_c₁β h7
 
 -- These are parameters for the auxiliary function construction.
 variable (q : ℕ) (hq0 : 0 < q)
@@ -194,6 +175,40 @@ lemma k_le_n : k h7 q u  ≤ h7.n q := Fin.is_le'
 abbrev c_coeffs0 (q : ℕ)
 (u : Fin (h7.m * h7.n q)) (t : Fin (q * q)) :=
   h7.c₁^(h7.k q u : ℕ) * h7.c₁^ (a q t * h7.l q u) * h7.c₁^(b q t * h7.l q u)
+
+lemma c₁ac (u : h7.K) (n k a l : ℕ) (hnk : a * l ≤ n * k)
+    (H : IsIntegral ℤ (↑h7.c₁ * u)) :
+    IsIntegral ℤ (h7.c₁ ^ (n * k) • u ^ (a *l)) := by
+  have : h7.c₁ ^ (n * k) = h7.c₁ ^ (n * k - a * l) * h7.c₁ ^ (a *l) := by
+    rw [← pow_add]; rwa [Nat.sub_add_cancel]
+  rw [this, zsmul_eq_mul]
+  simp only [Int.cast_mul, Int.cast_pow]; rw [mul_assoc]
+  apply IsIntegral.mul
+  · apply IsIntegral.pow _ _
+    exact IsIntegral.Cast h7.K h7.c₁
+  rw [← mul_pow]; exact IsIntegral.pow H _
+
+lemma c₁b (n : ℕ) :
+    1 ≤ n → (k : ℕ) → k ≤ n - 1 → (a : ℕ) → 1 ≤ a → (b : ℕ) → 1 ≤ b →
+    IsIntegral ℤ (h7.c₁ ^ (n - 1) • (↑a + ↑b • h7.β') ^ k) := by
+  intros hn k hkn a ha b hb
+  have : h7.c₁^(n - 1) = h7.c₁^(n - 1 - k) * h7.c₁^k := by
+    rwa [← pow_add, Nat.sub_add_cancel]
+  rw [this]
+  simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow, nsmul_eq_mul, mul_assoc]
+  apply IsIntegral.mul
+  · apply IsIntegral.pow
+    · apply IsIntegral.Cast
+  rw [← mul_pow]
+  apply IsIntegral.pow
+  rw [mul_add]
+  apply IsIntegral.add
+  · apply IsIntegral.mul <| IsIntegral.Cast _ _
+    · apply IsIntegral.Nat
+  rw [mul_comm, mul_assoc]
+  apply IsIntegral.mul <| IsIntegral.Nat _ _
+  rw [mul_comm, ← zsmul_eq_mul]
+  exact isIntegral_c₁β h7
 
 open Nat in include hq0 in omit hq0 in
 lemma c1a0 :
@@ -238,7 +253,6 @@ abbrev sys_coe' : h7.K := (a q t + b q t • h7.β')^(h7.k q u) *
 h7.α' ^(a q t * h7.l q u) * h7.γ' ^((b q t) * h7.l q u)
 
 variable (h2mq : 2 * h7.m ∣ q ^ 2)
-variable [DecidableEq (h7.K →+* ℂ)]
 
 include h2mq in
 lemma q_eq_2sqrtmn : q^2 = 2*h7.m*h7.n q := by
@@ -254,14 +268,14 @@ include hq0 h2mq in
 lemma card_mn_pos : 0 < h7.m * h7.n q := by
   simp only [CanonicallyOrderedAdd.mul_pos]
   constructor
-  exact Nat.zero_lt_succ (2 * h7.h + 1)
-  unfold n
-  simp only [Nat.div_pos_iff, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
-  constructor
-  exact Nat.zero_lt_succ (2 * h7.h + 1)
-  apply Nat.le_of_dvd
-  simp_all only [pow_pos]
-  exact h2mq
+  · exact Nat.zero_lt_succ (2 * h7.h + 1)
+  · dsimp [n]
+    simp only [Nat.div_pos_iff, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
+    constructor
+    · exact Nat.zero_lt_succ (2 * h7.h + 1)
+    apply Nat.le_of_dvd
+    · positivity
+    exact h2mq
 
 include hq0 h2mq in
 lemma one_le_n : 1 ≤ h7.n q := by {
@@ -277,38 +291,43 @@ include hq0 h2mq in
 lemma qsqrt_leq_2m : 2 * h7.m ≤ q^2 := by {
   apply Nat.le_of_dvd (Nat.pow_pos hq0) h2mq}
 
-abbrev c_coeffs (q : ℕ) :=
-  h7.c₁^(h7.n q - 1) * h7.c₁^(h7.m * q) * h7.c₁^(h7.m * q)
+lemma hm : 0 < h7.m := Nat.zero_lt_succ (2 * h7.h + 1)
 
-open Nat in include hq0 h2mq in omit hq0 h2mq in
-lemma c₁IsInt0 :
-  IsIntegral ℤ ((h7.c_coeffs0 q u t) • h7.sys_coe' q u t) := by
-  unfold c_coeffs0
-  rw [triple_comm h7.K (h7.c₁^(h7.k q u) : ℤ)
-  (h7.c₁^(a q t * h7.l q u) : ℤ)
-  (h7.c₁^(b q t * h7.l q u) : ℤ)
-  (((a q t : ℕ) + b q t • h7.β')^(h7.k q u : ℕ))
-  (h7.α' ^ (a q t * h7.l q u)) (h7.γ' ^ (b q t * h7.l q u))]
-  rw [mul_assoc]
-  apply IsIntegral.mul
-  simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
-  rw [Eq.symm (mul_pow (↑(h7.c₁)) (↑(a q t) + ↑(b q t) * h7.β') (h7.k q u))]
-  apply IsIntegral.pow
-  rw [mul_add]
-  apply IsIntegral.add
-  · exact mod_cast IsIntegral.Cast h7.K (h7.c₁ * ↑(a q t))
-  · rw [← mul_assoc]
-    nth_rw 2 [mul_comm]
-    rw [mul_assoc]
-    apply IsIntegral.mul
-    · exact IsIntegral.Nat h7.K (b q t)
-    · rw [← zsmul_eq_mul]
-      exact h7.isIntegral_c₁β
-  exact IsIntegral.mul (c1a0 h7 q u t) (c1c0 h7 q u t)
+include hq0 h2mq in
+lemma h0m : 0 < h7.m * h7.n q :=
+  mul_pos (h7.hm) (one_le_n h7 q hq0 h2mq)
+
+include hq0 h2mq in
+lemma hmn : h7.m * h7.n q < q*q := by
+  rw [← Nat.mul_div_eq_iff_dvd] at h2mq
+  rw [← pow_two q, ← mul_lt_mul_left (Nat.zero_lt_two)]
+  rw [← mul_assoc, n, h2mq, lt_mul_iff_one_lt_left]
+  · exact one_lt_two
+  · exact Nat.pow_pos hq0
+
+include h2mq in
+lemma sq_le_two_mn : q^2 ≤ 2 * h7.m * h7.n q := by
+  dsimp only [n]
+  refine Nat.le_sqrt'.mp ?_
+  rw [← Nat.mul_div_eq_iff_dvd] at h2mq
+  refine Nat.le_sqrt'.mpr ?_
+  nth_rw 1 [← h2mq]
+
+include h2mq in
+lemma q_le_two_mn : q ≤ 2 * h7.m * h7.n q := by
+  calc q ≤ q^2 := Nat.le_pow (Nat.zero_lt_two)
+       _ ≤ _ := (sq_le_two_mn h7 q h2mq)
+
+lemma n_sub_1_le_n :
+  h7.n q - 1 ≤ h7.n q := Nat.sub_le (h7.n q) 1
+
+abbrev c_coeffs (q : ℕ) := h7.c₁^(h7.n q - 1) * h7.c₁^(h7.m * q) * h7.c₁^(h7.m * q)
 
 open Nat in include hq0 h2mq in
 lemma c₁IsInt (u : Fin (h7.m * h7.n q)) (t : Fin (q * q)) :
   IsIntegral ℤ (h7.c_coeffs q • h7.sys_coe' q u t) := by
+  unfold c_coeffs
+  unfold sys_coe'
   rw [triple_comm h7.K
     (h7.c₁^(h7.n q - 1) : ℤ)
     (h7.c₁^(h7.m * q) : ℤ)
@@ -333,7 +352,6 @@ lemma c₁neq0 : h7.c₁ ≠ 0 := by
   intros H
   simp_all only [ne_eq, mem_setOf_eq, abs_eq_zero, mul_eq_zero, or_self]
 
-
 lemma c₁αneq0 : h7.c₁ • h7.α' ≠ 0 := by {
   simp only [zsmul_eq_mul, ne_eq, mul_eq_zero, Int.cast_eq_zero, not_or]
   constructor
@@ -355,22 +373,13 @@ lemma c_coeffs_neq_zero : h7.c_coeffs q ≠ 0 :=
   (pow_ne_zero _ (h7.c₁neq0))) (pow_ne_zero _ (h7.c₁neq0))
 
 def A : Matrix (Fin (h7.m * h7.n q)) (Fin (q * q)) (𝓞 h7.K) :=
-  fun i j => RingOfIntegers.restrict _ (fun _ => (c₁IsInt0 h7 q i j)) ℤ
-
+  fun i j => RingOfIntegers.restrict _ (fun _ => (c₁IsInt h7 q hq0 h2mq i j)) ℤ
 
 lemma α'_neq_zero : h7.α' ^ (a q t * h7.l q u) ≠ 0 :=
   pow_ne_zero _ (h7.hneq0).1
 
 lemma γ'_neq_zero : h7.γ' ^ (b q t * h7.l q u) ≠ 0 :=
   pow_ne_zero _ (h7.hneq0).2.2
-
-open Complex
-
-lemma log_zero_zero : log h7.α ≠ 0 := by
-  intro H
-  have := congr_arg exp H
-  rw [exp_log, exp_zero] at this
-  apply h7.htriv.2; exact this; exact h7.htriv.1
 
 lemma β'_neq_zero (y : ℕ) : (↑↑(a q t) + (↑(b q t)) • h7.β') ^ y ≠ 0 := by
   apply pow_ne_zero
@@ -472,14 +481,14 @@ lemma b_sum_neq_0 : ↑q + q • h7.β' ≠ 0 := by
 
 lemma one_leq_house_c₁β : 1 ≤ house (h7.c₁ • h7.β') := by
   apply house_gt_one_of_isIntegral
-  exact h7.isIntegral_c₁β
+  · exact h7.isIntegral_c₁β
   simp only [zsmul_eq_mul, ne_eq, mul_eq_zero, Int.cast_eq_zero, not_or]
   rw [← ne_eq, ne_eq]
   exact ⟨h7.c₁neq0, h7.hneq0.2.1⟩
 
 lemma one_leq_house_c₁α : 1 ≤ house (h7.c₁ • h7.α') := by
   apply house_gt_one_of_isIntegral
-  exact h7.isIntegral_c₁α
+  · exact h7.isIntegral_c₁α
   exact h7.c₁αneq0
 
 lemma house_bound_c₁α : house (h7.c₁ • h7.α') ^ (a q t * h7.l q u)
@@ -511,7 +520,7 @@ lemma isInt_β_bound_low (q : ℕ) (t : Fin (q * q)) :
 lemma bound_c₁β (q : ℕ) (hq0 : 0 < q) :
   1 ≤ house ((h7.c₁ • (q + q • h7.β'))) := by
   apply house_gt_one_of_isIntegral
-  exact h7.isInt_β_bound q
+  · exact h7.isInt_β_bound q
   simp only [zsmul_eq_mul, ne_eq, mul_eq_zero, Int.cast_eq_zero, not_or]
   constructor
   · rw [← ne_eq]; exact h7.c₁neq0
@@ -519,7 +528,7 @@ lemma bound_c₁β (q : ℕ) (hq0 : 0 < q) :
 
 lemma one_leq_house_c₁γ : 1 ≤ house (h7.c₁ • h7.γ') := by
   apply house_gt_one_of_isIntegral
-  exact h7.isIntegral_c₁γ
+  · exact h7.isIntegral_c₁γ
   simp only [zsmul_eq_mul, ne_eq, mul_eq_zero, Int.cast_eq_zero, not_or]
   constructor
   · rw [← ne_eq]; exact h7.c₁neq0
@@ -534,8 +543,7 @@ lemma sys_coe_ne_zero : h7.sys_coe' q u t ≠ 0 := by
   · exact mul_ne_zero (mod_cast α'_neq_zero h7 q u t)
       (mod_cast γ'_neq_zero h7 q u t)
 
-include hq0 h2mq
-lemma hM_neq0 : h7.A q ≠ 0 := by
+lemma hM_neq0 : h7.A q hq0 h2mq ≠ 0 := by
   simp (config := { unfoldPartialApp := true }) only [A]
   rw [Ne, funext_iff]
   simp only [zsmul_eq_mul, RingOfIntegers.restrict]
@@ -550,9 +558,9 @@ lemma hM_neq0 : h7.A q ≠ 0 := by
   simp only [mul_eq_zero, pow_eq_zero_iff', Int.cast_eq_zero, ne_eq, not_or] at H
   rcases H
   · rename_i H1; rcases H1;
-    rename_i H1 ; rcases H1 with ⟨H1, H11⟩
-    · apply h7.c₁neq0; assumption
-    · rename_i H11; apply h7.c₁neq0; exact H11.1
+    · rename_i H1 ; rcases H1 with ⟨H1, H11⟩
+      · apply h7.c₁neq0; assumption
+      · rename_i H11; apply h7.c₁neq0; exact H11.1
     rename_i H1; apply h7.c₁neq0; exact H1.1
   · rename_i H2;
     rcases H2 with ⟨H2, H22⟩
@@ -572,46 +580,15 @@ omit hq0 h2mq in
 lemma cardqq : card (Fin (q*q)) = q * q := by
   simp only [Fintype.card_fin]
 
-lemma hm : 0 < h7.m := Nat.zero_lt_succ (2 * h7.h + 1)
-
-include hq0 h2mq in
-lemma h0m  : 0 < h7.m * h7.n q :=
-  mul_pos (h7.hm q hq0 h2mq) (one_le_n h7 q hq0 h2mq)
-
-include hq0 h2mq in
-lemma hmn : h7.m * h7.n q < q*q := by
-  rw [← Nat.mul_div_eq_iff_dvd] at h2mq
-  rw [← pow_two q, ← mul_lt_mul_left (Nat.zero_lt_two)]
-  rw [← mul_assoc, n, h2mq, lt_mul_iff_one_lt_left]
-  · exact one_lt_two
-  · exact Nat.pow_pos hq0
-
-lemma sq_le_two_mn  : q^2 ≤ 2 * h7.m * h7.n q := by
-  dsimp only [n]
-  refine Nat.le_sqrt'.mp ?_
-  rw [← Nat.mul_div_eq_iff_dvd] at h2mq
-  refine Nat.le_sqrt'.mpr ?_
-  nth_rw 1 [← h2mq]
-
-include h2mq in
-lemma q_le_two_mn : q ≤ 2 * h7.m * h7.n q := by
-  calc q ≤ q^2 := Nat.le_pow (Nat.zero_lt_two)
-       _ ≤ _ := (sq_le_two_mn h7 q hq0 h2mq)
-
-variable [DecidableEq (h7.K →+* ℂ)]
-
-lemma housec1_gt_zero : 0 ≤ house.c₁ h7.K := by
+lemma housec1_gt_zero [DecidableEq (h7.K →+* ℂ)] : 0 ≤ house.c₁ h7.K := by
   apply mul_nonneg
-  rw [le_iff_eq_or_lt]
-  right
-  simp only [Nat.cast_pos]
-  exact Module.finrank_pos
-  apply mul_nonneg
-  simp only [le_sup_iff, zero_le_one, true_or]
-  apply (le_trans zero_le_one (le_max_left ..))
-
-lemma n_sub_1_le_n :
-  h7.n q - 1 ≤ h7.n q := Nat.sub_le (h7.n q) 1
+  · rw [le_iff_eq_or_lt]
+    · right
+      simp only [Nat.cast_pos]
+      exact Module.finrank_pos
+  · apply mul_nonneg
+    · simp only [le_sup_iff, zero_le_one, true_or]
+    · apply (le_trans zero_le_one (le_max_left ..))
 
 def c₂ : ℤ := (h7.c₁ ^ (1 + 2*h7.m * (↑2*h7.m)))
 
@@ -623,7 +600,7 @@ lemma one_leq_c₂ : 1 ≤ h7.c₂ := by
       (Nat.le_add_right 1 (2 * h7.m * (↑2*h7.m)))
 
 lemma zero_leq_c₂ : 0 ≤ h7.c₂ :=
-  le_trans Int.one_nonneg (h7.one_leq_c₂ q hq0)
+  le_trans Int.one_nonneg (h7.one_leq_c₂)
 
 include h2mq in
 lemma c_coeffs_le_c₂_pow_n :
@@ -640,7 +617,7 @@ lemma c_coeffs_le_c₂_pow_n :
            _ ≤ h7.n q + 2 * h7.m * (2 * h7.m * h7.n q) := ?_
       · simp only [add_le_add_iff_left, Nat.ofNat_pos, mul_le_mul_left]
         apply mul_le_mul (le_refl _)
-          (h7.q_le_two_mn q hq0 h2mq) (Nat.zero_le q)
+          (h7.q_le_two_mn q h2mq) (Nat.zero_le q)
           (Nat.zero_le (h7.m))
       · have : 2 * (h7.m * (2 * h7.m * h7.n q) ) =
           2 * h7.m * (2 * h7.m * h7.n q) := by simp only [mul_assoc]
@@ -654,13 +631,13 @@ def c₃ : ℝ := h7.c₂ * (1 + house h7.β')* Real.sqrt (2*h7.m) *
 lemma one_leq_c₃ : 1 ≤ h7.c₃ := by
   dsimp [c₃]
   trans
-  · have := h7.one_leq_c₂ q hq0
+  · have := h7.one_leq_c₂
     norm_cast at this
   · simp only [mul_assoc]
     norm_cast
     refine one_le_mul_of_one_le_of_one_le ?_ ?_
     · norm_cast;
-      exact h7.one_leq_c₂ q hq0
+      exact h7.one_leq_c₂
     · have h1 : 1 ≤ (1 + house h7.β') := by
         simp only [le_add_iff_nonneg_right]; apply house_nonneg
       have h2 : 1 ≤ (max 1 ((house h7.α' ^ (2 * h7.m ^ 2) *
@@ -668,7 +645,7 @@ lemma one_leq_c₃ : 1 ≤ h7.c₃ := by
          apply le_max_left
       have h3 : 1 ≤ ((Real.sqrt ((2*h7.m)))) := by
          rw [Real.one_le_sqrt]
-         have h1 := h7.hm q hq0 h2mq
+         have h1 := h7.hm
          calc 1 ≤ (h7.m : ℝ) := by exact mod_cast h1
               _ ≤ 2*h7.m := by {
                 refine le_mul_of_one_le_left ?_ ?_
@@ -678,10 +655,10 @@ lemma one_leq_c₃ : 1 ≤ h7.c₃ := by
          --exact Nat.le_of_ble_eq_true rfl
       calc 1 ≤ (1 + house h7.β') := h1
            _ ≤ (1 + house h7.β') * (Real.sqrt ((2*h7.m))) := by
-            nth_rw 1 [← mul_one (a:= (1 + house h7.β'))]
+            nth_rw 1 [← mul_one (a := (1 + house h7.β'))]
             apply mul_le_mul (Preorder.le_refl (1 + house h7.β')) (h3)
               (zero_le_one' ℝ) (zero_le_one.trans h1)
-      nth_rw 1 [← mul_one (a:= (1 + house h7.β')*(Real.sqrt ((2*h7.m))))]
+      nth_rw 1 [← mul_one (a := (1 + house h7.β') * (Real.sqrt ((2*h7.m))))]
       simp only [Nat.cast_mul, Nat.cast_ofNat]
       simp only [mul_assoc]
       apply mul_le_mul
@@ -689,58 +666,55 @@ lemma one_leq_c₃ : 1 ≤ h7.c₃ := by
       · apply mul_le_mul
         · apply Preorder.le_refl
         · simp only [le_sup_left]
-        · simp only [zero_le_one]
-        · exact Real.sqrt_nonneg (2 * ↑(h7.m))
+        · positivity
+        · positivity
       · simp only [Nat.ofNat_nonneg, Real.sqrt_mul, mul_one, Real.sqrt_pos, Nat.ofNat_pos,
         mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
       · refine Left.add_nonneg ?_ ?_
         · simp only [zero_le_one]
         · exact house_nonneg h7.β'
 
-lemma zero_leq_c₃ : 0 ≤ h7.c₃ := by sorry
+lemma zero_leq_c₃ : 0 ≤ h7.c₃ := by
+  apply le_trans zero_le_one (h7.one_leq_c₃)
 
-lemma house_leq_house : house (h7.c_coeffs q : h7.K) ≤
-   house ((h7.c₂ ^ h7.n q :ℤ) : h7.K) := by
-    rw [house_intCast]
-    rw [house_intCast (x := h7.c₂ ^ (h7.n q : ℕ))]
+include h2mq in
+lemma house_leq_house : house (h7.c_coeffs q : h7.K)
+      ≤ house ((h7.c₂ ^ h7.n q :ℤ) : h7.K) := by
+    rw [house_intCast, house_intCast (x := h7.c₂ ^ (h7.n q : ℕ))]
     simp only [Int.cast_abs, Int.cast_mul, Int.cast_pow]
-    have := c_coeffs_le_c₂_pow_n h7 q hq0 h2mq
+    have := c_coeffs_le_c₂_pow_n h7 q h2mq
     apply abs_le_abs
     · norm_cast
     · norm_cast
-      calc _ ≤ (h7.c₁ ^ (h7.n q - 1) *
-        h7.c₁ ^ (h7.m * q) * h7.c₁ ^ (h7.m * q)) := by {
+      calc _ ≤ (h7.c₁ ^ (h7.n q - 1) * h7.c₁ ^ (h7.m * q) * h7.c₁ ^ (h7.m * q)) := by {
         simp only [neg_le_self_iff]
         apply mul_nonneg
         · apply mul_nonneg
-          · apply pow_nonneg
-            · exact IsAbsoluteValue.abv_nonneg' (c' h7.α' * c' h7.β' * c' h7.γ')
-          · apply pow_nonneg
-            · exact IsAbsoluteValue.abv_nonneg' (c' h7.α' * c' h7.β' * c' h7.γ')
-        · apply pow_nonneg
-          exact IsAbsoluteValue.abv_nonneg' (c' h7.α' * c' h7.β' * c' h7.γ')}
+          · apply pow_nonneg (IsAbsoluteValue.abv_nonneg' (c' h7.α' * c' h7.β' * c' h7.γ'))
+          · apply pow_nonneg (IsAbsoluteValue.abv_nonneg' (c' h7.α' * c' h7.β' * c' h7.γ'))
+        · apply pow_nonneg (IsAbsoluteValue.abv_nonneg' (c' h7.α' * c' h7.β' * c' h7.γ'))
+          }
            _ ≤ h7.c₂ ^ (h7.n q : ℕ) := this
 
 lemma c2_abs_val : ↑|h7.c₂| ≤ h7.c₂ :=
-  abs_le_of_sq_le_sq (le_refl _) (h7.zero_leq_c₂ q hq0 h2mq)
+  abs_le_of_sq_le_sq (le_refl _) (h7.zero_leq_c₂)
 
 include hq0 h2mq in
 lemma c2_abs_val_pow : ↑|(h7.c₂ ^ h7.n q : ℤ)| ≤ (h7.c₂ ^ h7.n q : ℤ) := by
   simp only [abs_pow]
   refine (pow_le_pow_iff_left₀ (abs_nonneg _)
-    (h7.zero_leq_c₂ q hq0 h2mq)
-    (h7.n_neq_0 q hq0 h2mq)).mpr (h7.c2_abs_val q hq0 h2mq)
+    (h7.zero_leq_c₂)
+    (h7.n_neq_0 q hq0 h2mq)).mpr (h7.c2_abs_val)
 
-lemma house_muls
-    (s t : ℕ) (h: s ≤ t ) (ht: 0 ≤ t) :
-  (s • house h7.β') ≤ (t • house h7.β') := by {
+lemma house_muls (s t : ℕ) (h : s ≤ t) (ht : 0 ≤ t) :
+  (s • house h7.β') ≤ (t • house h7.β') := by
   simp only [nsmul_eq_mul]
   apply mul_le_mul
-  simp only [Nat.cast_le]
-  apply h
-  simp only [le_refl]
-  exact house_nonneg h7.β'
-  exact Nat.cast_nonneg' t}
+  · simp only [Nat.cast_le]
+    apply h
+  · simp only [le_refl]
+  · exact house_nonneg h7.β'
+  · positivity
 
 lemma house_add_mul_leq :
     house (h7.c₁ • (↑(a q t) + b q t • h7.β')) ≤
@@ -802,32 +776,37 @@ lemma q_eq_n_etc : ↑q ^ (h7.n q - 1) ≤
   · simp only [Nat.cast_nonneg]
   · rw [← this]
     rw [Real.le_sqrt]
-    · norm_cast; apply sq_le_two_mn h7 q hq0 h2mq
-    · simp only [Nat.cast_nonneg]
-    · norm_cast;simp only [zero_le]
+    · norm_cast; apply sq_le_two_mn h7 q h2mq
+    · positivity
+    · positivity
 
 lemma sq_n : (Real.sqrt (h7.n q))^((h7.n q : ℝ)-1) =
    (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1)/2) := by
   nth_rw 1 [Real.sqrt_eq_rpow, ← Real.rpow_mul, mul_comm, mul_div]
-  simp only [mul_one]; simp only [Nat.cast_nonneg]
+  · simp only [mul_one]
+  · simp only [Nat.cast_nonneg]
+
+lemma c_coeffspow :
+  (h7.c₁ ^ (h7.n q - 1) * h7.c₁ ^ (h7.m * q) * h7.c₁ ^ (h7.m * q)) =
+    (h7.c₁ ^ ((h7.n q - 1 - h7.k q u)) *
+      h7.c₁ ^ (h7.m * q - (a q t * h7.l q u)) *
+      h7.c₁ ^ (h7.m * q - ((b q t * h7.l q u)))) •
+  (h7.c₁ ^ (h7.k q u) * h7.c₁ ^ (a q t * h7.l q u) * h7.c₁ ^ (b q t * h7.l q u)) := sorry
 
 include hq0 h2mq in
 lemma hAkl : --∀ (k : Fin (m * n)) (l : Fin (q * q)),
-  house ((algebraMap (𝓞 h7.K) h7.K) ((A h7 q) u t)) ≤
+  house ((algebraMap (𝓞 h7.K) h7.K) ((A h7 q) hq0 h2mq u t)) ≤
       (h7.c₃ ^ (h7.n q : ℝ) * (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2))  := by {
-    --simp (config := { unfoldPartialApp := true }) only [A, sys_coe]
     unfold A sys_coe'
     simp only [RingOfIntegers.restrict, RingOfIntegers.map_mk]
-    --intros u t
-    -- let a : ℕ := (finProdFinEquiv.symm.1 t).1 + 1
-    -- let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
-    -- let k : ℕ := (finProdFinEquiv.symm.1 u).2
-    -- let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
+    calc _ = house (((h7.c₁ : h7.K) ^ (h7.n q - 1 - h7.k q u : ℕ) *
+            (h7.c₁ : h7.K) ^ (h7.m * q - a q t * h7.l q u : ℕ)
+             * (h7.c₁ : h7.K) ^ (h7.m * q - b q t * h7.l q u : ℕ)) •
+         (((h7.c₁ : h7.K) ^ h7.k q u) * ((a q t : h7.K) + (b q t) * h7.β') ^ h7.k q u *
+          ((h7.c₁ : h7.K) ^ (a q t * h7.l q u)) * h7.α' ^ (a q t * h7.l q u) *
+          ((h7.c₁ : h7.K) ^ (b q t * h7.l q u)) * h7.γ' ^ (b q t * h7.l q u)))
 
-    calc _ = house
-            (h7.c₁ ^ (h7.k q u) • (↑(a q t) + (b q t) • h7.β') ^ (h7.k q u) *
-             h7.c₁ ^ (a q t * h7.l q u) • h7.α' ^ (a q t * h7.l q u) *
-             h7.c₁ ^ (b q t * h7.l q u) • h7.γ' ^ (b q t * h7.l q u))  := ?_
+          := ?_
 
          _ ≤ house (h7.c₁ ^ (h7.k q u) • (↑(a q t) + (b q t) • h7.β') ^ (h7.k q u)) *
              house (h7.c₁ ^ (a q t * h7.l q u) • h7.α' ^ (a q t * h7.l q u)) *
@@ -865,10 +844,20 @@ lemma hAkl : --∀ (k : Fin (m * n)) (l : Fin (q * q)),
 
          _ ≤ (h7.c₃ ^ (h7.n q: ℝ) * (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2)) := ?_
 
-    · rw [triple_comm h7.K (h7.c₁^(h7.k q u) : ℤ)
+    · unfold c_coeffs
+      rw [h7.c_coeffspow q u t, smul_assoc]
+
+      rw [triple_comm h7.K (h7.c₁^(h7.k q u))
         (h7.c₁^(a q t * h7.l q u): ℤ) (h7.c₁^(b q t * h7.l q u) : ℤ)
         (((a q t : ℕ) + b q t • h7.β')^(h7.k q u : ℕ))
          (h7.α' ^ (a q t * h7.l q u)) (h7.γ' ^ (b q t * h7.l q u))]
+      simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_mul, smul_eq_mul]
+      sorry
+
+
+
+
+
     ·
       simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
       trans
@@ -1063,7 +1052,7 @@ lemma hAkl : --∀ (k : Fin (m * n)) (l : Fin (q * q)),
         apply pow_nonneg
         simp only [Int.cast_nonneg]
         exact h7.zero_leq_c₁
-    · rw [c₃_pow h7 q hq0 h2mq]
+    · --rw [c₃_pow h7 q h2mq]
       simp only [mul_assoc]
       apply mul_le_mul
       · rfl
@@ -1183,11 +1172,10 @@ lemma hAkl : --∀ (k : Fin (m * n)) (l : Fin (q * q)),
     · rw [le_iff_eq_or_lt]
       left
       rw [← sq_n]
-      exact hq0
-      exact h2mq
 }
 
 
+#exit
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le h7.K
   (h7.A q)
   (h7.hM_neq0 q hq0 h2mq)
@@ -1208,8 +1196,10 @@ lemma one_leq_c₄ : 1 ≤ h7.c₄ := by
   refine one_le_mul_of_one_le_of_one_le ?_ (h7.one_leq_c₃ q hq0 h2mq)
   · exact le_max_left 1 (house.c₁ h7.K * house.c₁ h7.K * 2 * ↑(h7.m))
 
-lemma zero_leq_c₄ : 0 ≤ c₄ := by
-  sorry
+lemma zero_leq_c₄ : 0 ≤ h7.c₄ := by
+  unfold c₄
+  simp only [lt_sup_iff, zero_lt_one, true_or, mul_nonneg_iff_of_pos_left]
+  exact zero_leq_c₃ h7 q hq0 h2mq
 
 lemma q_sq_real: (q * q : ℝ) = q^2 := by {
   norm_cast; exact Eq.symm (pow_two ↑q)}
@@ -2017,6 +2007,88 @@ def deriv_R_k_eval_at_l0' :
   cexp (h7.ρ q t * (h7.l₀ q hq0 h2mq)) * (h7.ρ q t) ^ (h7.r q hq0 h2mq) := by
   rw [iteratedDeriv_of_R]
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def rho := ∑ t : Fin (q * q), (h7.η q hq0 h2mq t) * (h7.sys_coe_r q hq0 t h2mq)
 
 def rho_eq_ρᵣ : h7.σ (rho h7 q hq0 h2mq) = ρᵣ h7 q hq0 h2mq := by
@@ -2063,6 +2135,7 @@ lemma c₁bρ (a b n : ℕ) : 1 ≤ n → h7.k q u ≤ n - 1 → 1 ≤ (a : ℕ)
   rw [mul_comm, ← zsmul_eq_mul]
   exact h7.isIntegral_c₁β}
 
+--t again
 include t in
 lemma ρ_is_int :
   IsIntegral ℤ (h7.cρ q hq0 h2mq • rho h7 q hq0 h2mq) := by stop
@@ -2093,17 +2166,16 @@ lemma ρ_is_int :
         (((a q t : ℕ) + b q t • h7.β')^(h7.r q hq0 h2mq))
         (h7.α' ^ (a q t * h7.l₀ q hq0 h2mq))
         (h7.γ' ^ (b q t * h7.l₀ q hq0 h2mq))
-      have : IsIntegral ℤ
-        (((c₁ ^ r * c₁ ^ (m K * q) * c₁ ^ (m K * q)) •
-       let r := _root_.r α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq;
-       let l₀ := l₀
-      (a + b • β') ^ r * α' ^ (a * l₀ : ℕ) * γ' ^ (b * l₀))) =
-         IsIntegral ℤ ((c₁ ^ r • (a + b • β') ^ r
-           * c₁ ^ (m * q) • α' ^ (a * l₀) *
-        c₁ ^ (m * q) • γ' ^ (b * l₀))) := by {
-          rw [← this]
+      have : IsIntegral ℤ ((h7.c₁ ^ (h7.r q hq0 h2mq) * h7.c₁ ^ (h7.m * q) * h7.c₁ ^ (h7.m * q)) •
+        ((↑(a q t) + b q t • h7.β') ^ (h7.r q hq0 h2mq) *
+          h7.α' ^ (a q t * ↑(h7.l₀ q hq0 h2mq)) *
+          h7.γ' ^ (b q t * ↑(h7.l₀ q hq0 h2mq)))) =
+       IsIntegral ℤ
+         (h7.c₁ ^ (h7.r q hq0 h2mq) • (↑(a q t) + b q t • h7.β') ^ (h7.r q hq0 h2mq) *
+          h7.c₁ ^ (h7.m * q) • h7.α' ^ (a q t * ↑(h7.l₀ q hq0 h2mq)) *
+          h7.c₁ ^ (h7.m * q) • h7.γ' ^ (b q t * ↑(h7.l₀ q hq0 h2mq))) := by {
+        rw [← this]
           }
-      simp only at this
       simp_rw [this]
       apply IsIntegral.mul
       · apply IsIntegral.mul
@@ -2216,6 +2288,7 @@ lemma ρ_is_int :
         · rw [← mul_pow]
           apply IsIntegral.pow
           · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ K α' β' γ'
+
 
 def c1ρ : 𝓞 h7.K := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int h7 q hq0 t h2mq)) ℤ
@@ -2397,6 +2470,149 @@ lemma eq5 : h7.c₅ q hq0 h2mq ^ (-(h7.r q hq0 h2mq) : ℤ)
 
 lemma one_leq_c1rho : 1 ≤ ↑(h7.cρ q hq0 h2mq) := sorry
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def c₆ : ℝ := house (1 + h7.β')
 
 def c₇ : ℝ := house (h7.α')^(h7.m) * house (h7.γ')^(h7.m)
@@ -2443,157 +2659,6 @@ lemma eq6a : house (rho h7 q hq0 h2mq) ≤ (q*q) * ((h7.c₄ ^ (h7.n q : ℝ)) *
   · sorry
   · sorry
   · sorry
-  -- · apply house_sum_le_sum_house
-  -- · apply sum_le_sum
-  --   intros i hi
-  --   apply house_mul_le
-  -- · nth_rw  1 [← one_mul ( a:= ∑ t_1,
-  --   house ((algebraMap (𝓞 K) K) (η α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq t_1)) *
-  --     house (sys_coe_r α β hirr htriv K σ hd α' β' γ' habc q t hq0 h2mq))]
-  --   apply mul_le_mul
-  --   · sorry
-  --   · apply Preorder.le_refl
-  --   · sorry
-  --   · sorry
-  -- · apply sum_le_sum
-  --   intros i hi
-  --   have := fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q i hq0 h2mq
-  --   apply mul_le_mul
-  --   · exact this
-  --   · apply Preorder.le_refl
-  --   · apply house_nonneg
-  --   · apply mul_nonneg
-  --     · simp only [Real.rpow_natCast]
-  --       apply pow_nonneg
-  --       ·  apply (le_trans zero_le_one (one_leq_c₄ ..))
-  --     · apply Real.rpow_nonneg
-  --       simp only [Nat.cast_nonneg]
-  -- · apply sum_le_sum
-  --   intros i hi
-  --   apply mul_le_mul
-  --   · simp only [Real.rpow_natCast, le_refl]
-  --   · unfold sys_coe_r
-  --     trans
-  --     · apply house_mul_le
-  --     · rw [mul_comm]
-  --       nth_rw 1 [mul_assoc]
-  --       have : house (↑a + b • β') ^ r *
-  --         (house α' ^ (a * l₀) * house γ' ^ (b * l₀)) =
-  --         house γ' ^ (b * l₀) *
-  --         (house (↑a + b • β') ^ r * (house α' ^ (a * l₀))) := by {
-  --           rw [← mul_assoc]
-  --           rw [mul_comm (house γ' ^ (b * l₀))]}
-  --       rw [this]
-  --       clear this
-  --       apply mul_le_mul
-  --       · trans
-  --         · apply house_pow_le
-  --         · apply Preorder.le_refl
-  --       · trans
-  --         · apply house_mul_le
-  --         · apply mul_le_mul
-  --           · trans
-  --             · apply house_pow_le
-  --             · apply Preorder.le_refl
-  --           · trans
-  --             · apply house_pow_le
-  --             · apply Preorder.le_refl
-  --           · apply house_nonneg
-  --           · apply pow_nonneg
-  --             apply house_nonneg
-  --       · apply house_nonneg
-  --       · apply pow_nonneg
-  --         · apply house_nonneg
-  --   · apply house_nonneg
-  --   · apply mul_nonneg
-  --     · simp only [Real.rpow_natCast]
-  --       apply pow_nonneg
-  --       · sorry
-  --     · apply Real.rpow_nonneg
-  --       simp only [Nat.cast_nonneg]
-  -- · apply sum_le_sum
-  --   intros i hi
-  --   simp only [Real.rpow_natCast, nsmul_eq_mul]
-  --   apply mul_le_mul
-  --   · simp only [le_refl]
-  --   · apply mul_le_mul
-  --     · apply mul_le_mul
-  --       · refine pow_le_pow_left₀ ?_ ?_ r
-  --         sorry
-  --         sorry
-  --       · sorry
-  --       · apply pow_nonneg
-  --         · apply house_nonneg
-  --       · sorry
-  --     · sorry
-  --     · apply pow_nonneg
-  --       apply house_nonneg
-  --     · apply mul_nonneg
-  --       · apply pow_nonneg
-  --         apply mul_nonneg
-  --         · simp only [Nat.cast_nonneg]
-  --         · trans
-  --           · apply zero_le_one
-  --           · simp only [le_add_iff_nonneg_right]
-  --             apply house_nonneg
-  --       · apply pow_nonneg
-  --         apply house_nonneg
-  --   · apply mul_nonneg
-  --     · apply mul_nonneg
-  --       · apply pow_nonneg
-  --         apply house_nonneg
-  --       · apply pow_nonneg
-  --         apply house_nonneg
-  --     · apply pow_nonneg
-  --       apply house_nonneg
-  --   · sorry
-  -- · rw [sum_const, card_univ, Fintype.card_fin]
-  --   simp only [Real.rpow_natCast, Nat.reduceDiv,
-  --     zero_mul, pow_zero, mul_one, nsmul_eq_mul,
-  --     Nat.cast_mul, zpow_natCast]
-  --   apply mul_le_mul
-  --   · simp only [le_refl]
-  --   · apply mul_le_mul
-  --     · sorry
-  --     · sorry
-  --     · apply mul_nonneg
-  --       · apply mul_nonneg
-  --         apply pow_nonneg
-  --         · apply mul_nonneg
-  --           · simp only [Nat.cast_nonneg]
-  --           · trans
-  --             · apply zero_le_one
-  --             · simp only [le_add_iff_nonneg_right]
-  --               apply house_nonneg
-  --         · apply pow_nonneg
-  --           apply house_nonneg
-  --       · apply pow_nonneg
-  --         apply house_nonneg
-  --     · apply mul_nonneg
-  --       · sorry
-  --       · apply pow_nonneg
-  --         apply mul_nonneg
-  --         · sorry
-  --         · exact Nat.cast_nonneg' q
-  --   · apply mul_nonneg
-  --     · sorry
-  --     · apply mul_nonneg
-  --       · apply mul_nonneg
-  --         apply pow_nonneg
-  --         apply mul_nonneg
-  --         · simp only [Nat.cast_nonneg]
-  --         · trans
-  --           · apply zero_le_one
-  --           · simp only [le_add_iff_nonneg_right]
-  --             apply house_nonneg
-  --         · apply pow_nonneg
-  --           apply house_nonneg
-  --       · apply pow_nonneg
-  --         apply house_nonneg
-  --   · simp_all only [Nat.cast_pos,
-  --       mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
-  -- · sorry
-
 lemma eq6b : (q*q) *
   ((h7.c₄ ^ (h7.n q : ℝ)) * ((h7.n q : ℝ)^((1/2)*((h7.n q : ℝ)+1))) *
   (h7.c₆* q) ^(h7.r q hq0 h2mq) * (h7.c₇)^(q)) ≤
@@ -3148,7 +3213,7 @@ lemma S_eq_SRl0 :
   unfold SRl0
   dsimp [SR]
   nth_rw 3 [mul_assoc]
-  simp only [zpow_neg, zpow_natCast, mul_eq_mul_right_iff]
+  simp only [zpow_neg, zpow_natCast]
   dsimp [ks] at hz
   simp only [coe_image, coe_range, mem_compl_iff,
     Set.mem_image, Set.mem_Iio, not_exists,
@@ -3281,8 +3346,6 @@ lemma S_eq_SR (l : Fin (h7.m)) (hl : l ≠ h7.l₀ q hq0 h2mq) :
 
 -- #check AnalyticOnEquiv
  #check AnalyticOnEq
--- #check AnalyticOnAt
--- #check  AnalyticOnSubset
 lemma holS :
   --∀ x ∈ Metric.ball 0 (m K *(1 + (r/q))) \ {(l₀ : ℂ)},
   ∀ z, AnalyticAt ℂ (h7.S q hq0 h2mq) z := by {
@@ -3291,43 +3354,28 @@ lemma holS :
   by_cases Hzl0 : z = h7.l₀ q hq0 h2mq
   -- for all 3 cases show that S is equal to one of the other functions
   -- on a neigh and use the lemma that the other fun is analytic
-  · refine AnalyticOnAt (h7.S q hq0 h2mq) z ?_ ?_ ?_
+  · apply AnalyticAtEq
     · sorry
     · sorry
     · sorry
-  · --have := S_eq_SRl ... ?_ ?_ ?_ ?_
-    refine AnalyticOnAt (h7.S q hq0 h2mq) z ?_ ?_ ?_
+    · sorry
+    · exact (h7.S q hq0 h2mq)
+    · sorry
+  · apply AnalyticAtEq
     · sorry
     · sorry
-    apply AnalyticOnEq
-    intros z HZ
-    sorry
-    sorry
-    sorry
+    · sorry
+    · sorry
+    · exact (h7.S q hq0 h2mq)
+    · sorry
     --refine S_eq_SR ... ?_ hq0 h2mq ?_ ?_ HZ
-  · refine AnalyticOnAt (h7.S q hq0 h2mq) z ?_ ?_ ?_
-    exact (S.U h7)
-    apply S.U_nhds h7 q hq0 h2mq
-    unfold S.U ks
-    simp only [coe_image, coe_range, mem_compl_iff,
-      Set.mem_image, Set.mem_Iio, not_exists, not_and]
-    simp only [not_exists] at H
-    intros x hx
-    have := H ⟨x,hx⟩
-    intros HC
-    apply this
-    simp only
-    exact HC.symm
-    apply AnalyticOnEq
-    intros z HZ
-    sorry
-    sorry
-    sorry
-    -- refine S_eq_SR h7 q ?_ h2mq ?_ ?_ HZ
-    -- · sorry
-    -- · sorry
-    -- · sorry
-    -- · sorry
+  · apply AnalyticAtEq
+    · sorry
+    · sorry
+    · sorry
+    · sorry
+    · exact (h7.S q hq0 h2mq)
+    · sorry
     }
 
 lemma hcauchy (l' : Fin (h7.m)) :
@@ -3340,12 +3388,9 @@ lemma hcauchy (l' : Fin (h7.m)) :
     trans
     · have : (h7.l₀ q hq0 h2mq : ℝ) < h7.m := by {simp only [Nat.cast_lt, Fin.is_lt]}
       exact this
-    · apply lt_mul_right
-      · exact mod_cast h7.hm q hq0 h2mq
+    · apply lt_mul_right (mod_cast h7.hm q hq0 h2mq)
       · simp only [lt_add_iff_pos_right]
-        apply div_pos
-        · norm_cast
-          exact h7.r_qeq_0 q hq0 h2mq
+        apply div_pos (mod_cast h7.r_qeq_0 q hq0 h2mq)
         · simp only [Nat.cast_pos]
           exact hq0}
     exact this
@@ -3396,16 +3441,9 @@ lemma hcauchy (l' : Fin (h7.m)) :
 
 
 
-
-
-
-
-
-
-
-
 #check existrprime
 #print ρᵣ
+
 
 --#check sys_coe'_bar
 def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq =
@@ -3422,32 +3460,139 @@ def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq =
   have hr : h7.r q hq0 h2mq ≤ h7.r q hq0 h2mq := by rfl
   have := existrprime (z₀ := l₀ h7 q hq0 h2mq) (r := r h7 q hq0 h2mq)
     (R h7 q hq0 h2mq) R₁ HAE HR1 hR₁ (r h7 q hq0 h2mq) hr
-  simp only [tsub_self, pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul] at this
+  simp only [tsub_self, pow_zero, Nat.factorial_zero,
+    Nat.cast_one, div_one, one_mul] at this
   obtain ⟨R2,hR2⟩ := this
   rw [hR2]
   sorry
 }
 
-lemma eq7 (l' : Fin (h7.m)) :
-  ρᵣ h7 q hq0 h2mq = Complex.log (h7.α) ^ (-(h7.r q hq0 h2mq) : ℤ) *
-    ((2 * ↑Real.pi * I)⁻¹ *
-      (∮ z in C(0, h7.m * (1 + (h7.r q hq0 h2mq / q))),
-        (z - (h7.l₀ q hq0 h2mq))⁻¹ * (h7.S q hq0 h2mq) z)) := by
 
-  calc _ = (Complex.log (h7.α)) ^ (-(h7.r q hq0 h2mq) : ℤ)
-       * (h7.S q hq0 h2mq) (h7.l₀ q hq0 h2mq) := ?_
-       _ = (Complex.log (h7.α)) ^ (-(h7.r q hq0 h2mq) : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
-    (∮ z in C(0, h7.m * (1 + (h7.r q hq0 h2mq) / q)),
-     (z - (h7.l₀ q hq0 h2mq))⁻¹ * (h7.S q hq0 h2mq) z)) := ?_
-  · apply sys_coeff_foo_S
-  · rw [hcauchy]
-    exact (h7.l₀ q hq0 h2mq)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def c₉ : ℝ := sorry--Real.exp (1 + house (β')) * Real.log (house (α'))*m
 
 def c₁₀ : ℝ := sorry
-
-#check  norm_add_le --simp only [house, map_add]; apply norm_add_le
 
 variable (hz : (z : ℂ) ∈ Metric.sphere 0 (h7.m * (1 + (h7.r q hq0 h2mq / q))))
 
@@ -3466,10 +3611,11 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^(h7.r q hq0 h2mq) *
          Real.exp (norm ((q : ℝ) * (1 + norm h7.β) *
          Real.log (norm h7.α) * (h7.m : ℝ) * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)))) := ?_
 
-       _ ≤ (q * q) * ((h7.c₄ ^ (h7.n q : ℝ) *
-       (h7.n q : ℝ) ^ (((h7.n q : ℝ) + 1) / 2)) * (c₉) ^ (h7.r q hq0 h2mq + q)) := ?_
+       _ ≤ (q * q) * ((h7.c₄ ^ (h7.r q hq0 h2mq) *
+       (h7.r q hq0 h2mq) ^ (((h7.r q hq0 h2mq) + 1) / 2)) * (c₉) ^ (h7.r q hq0 h2mq + q)) := ?_
 
-       _ ≤ (c₁₀ ^ (h7.r q hq0 h2mq)) * (h7.r q hq0 h2mq) ^ (1/2 * (h7.r q hq0 h2mq + 3)) := sorry
+       _ ≤ (c₁₀ ^ (h7.r q hq0 h2mq)) *
+       (h7.r q hq0 h2mq) ^ (1/2 * (h7.r q hq0 h2mq + 3)) := ?_
 
   · unfold R
     apply norm_sum_le_of_le
@@ -3477,11 +3623,13 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^(h7.r q hq0 h2mq) *
     simp only [Complex.norm_mul, le_refl]
   · apply sum_le_sum
     intros i hi
-    apply mul_le_mul
+    apply mul_le_mul -- problem with embedding
     · have lemma82 := fromlemma82_bound h7 q hq0 i h2mq
       unfold house at lemma82
-      have :  ‖(canonicalEmbedding h7.K) ((algebraMap (𝓞 h7.K) h7.K) (h7.η q hq0 h2mq i))‖ =
-        ‖(canonicalEmbedding h7.K) ((algebraMap (𝓞 h7.K) h7.K) (h7.η q hq0 h2mq i)) h7.σ‖ := by
+      have :  ‖(canonicalEmbedding h7.K)
+         ((algebraMap (𝓞 h7.K) h7.K) (h7.η q hq0 h2mq i))‖ =
+        ‖(canonicalEmbedding h7.K)
+         ((algebraMap (𝓞 h7.K) h7.K) (h7.η q hq0 h2mq i)) h7.σ‖ := by
           simp only [canonicalEmbedding.apply_at]
           sorry
       sorry
@@ -3493,12 +3641,7 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^(h7.r q hq0 h2mq) *
     apply mul_le_mul
     · have lemma82 := fromlemma82_bound h7 q hq0 i h2mq
       unfold house at lemma82
-      have :  ‖(canonicalEmbedding h7.K) ((algebraMap (𝓞 h7.K) h7.K) (h7.η q hq0 h2mq i))‖ =
-        ‖(canonicalEmbedding h7.K) ((algebraMap (𝓞 h7.K) h7.K) (h7.η q hq0 h2mq i)) (σ h7)‖ := by {
-          simp only [canonicalEmbedding.apply_at]
-          sorry
-        }
-      sorry
+      apply Preorder.le_refl _
     · unfold ρ
       simp only [
         Real.norm_eq_abs, Real.exp_le_exp]
@@ -3507,99 +3650,29 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^(h7.r q hq0 h2mq) *
       calc _ ≤ ‖↑((a q i) : ℤ)‖ + ‖b q i • h7.β‖ * ‖Complex.log h7.α‖ * ‖z‖ := sorry
            _ ≤ sorry := sorry
       sorry
+    · exact Real.exp_nonneg ‖h7.ρ q i * z‖
+    · apply mul_nonneg
+      · simp only [Real.rpow_natCast]
+        apply pow_nonneg
+        exact h7.zero_leq_c₄ q hq0 h2mq
+      · apply Real.rpow_nonneg
+        simp only [Nat.cast_nonneg]
+  · simp only [Real.rpow_natCast, norm_mul, Real.norm_eq_abs, sum_const, card_univ,
+    Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
+    apply mul_le_mul
+    · apply Preorder.le_refl
+    · apply mul_le_mul
+      · sorry
+      · sorry
+      · positivity
+      · sorry
     · sorry
     · sorry
-
-    -- unfold ρ
-    --   rw [Real.norm_eq_abs]
-
-
-
-
-
   · sorry
 
 
 
 
-  --   · apply norm_nonneg
-  --   · unfold c₄
-  --     simp only [Real.rpow_natCast]
-  --     apply mul_nonneg
-  --     · apply pow_nonneg
-  --       simp only [lt_sup_iff, zero_lt_one, true_or, mul_nonneg_iff_of_pos_left]
-  --       exact zero_leq_c₃ K α' β' γ'
-  --     · apply Real.rpow_nonneg
-  --       · simp only [Nat.cast_nonneg]
-  -- · simp only [Real.rpow_natCast, sum_const, card_univ,
-  --   Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
-  --   apply mul_le_mul
-  --   · simp only [le_refl]
-  --   · apply mul_le_mul
-  --     · simp only [le_refl]
-  --     · dsimp [c₉]
-  --       sorry
-  --     · apply mul_nonneg
-  --       · trans
-  --         · apply zero_le_one
-  --         · simp only [Real.one_le_exp_iff]
-  --           apply mul_nonneg
-  --           · apply mul_nonneg
-  --             · have : (q : ℝ) = q * 1 := by {simp only [mul_one]}
-  --               nth_rw 1 [this]
-  --               rw [← mul_add]
-  --               apply mul_nonneg
-  --               · simp only [Nat.cast_nonneg]
-  --               · trans
-  --                 · apply zero_le_one
-  --                 · simp only [le_add_iff_nonneg_right, norm_nonneg]
-  --             · simp only [Nat.cast_nonneg]
-  --           · trans
-  --             · apply zero_le_one
-  --             · simp only [le_add_iff_nonneg_right]
-  --               apply div_nonneg
-  --               · simp only [Nat.cast_nonneg]
-  --               · simp only [Nat.cast_nonneg]
-  --       · apply norm_nonneg
-  --     · apply mul_nonneg
-  --       · apply pow_nonneg
-  --         · exact zero_leq_c₄ K hd α' β' γ'
-  --       · apply Real.rpow_nonneg
-  --         · simp only [Nat.cast_nonneg]
-  --   · apply mul_nonneg
-  --     · apply mul_nonneg
-  --       · apply pow_nonneg
-  --         · exact zero_leq_c₄ K hd α' β' γ'
-  --       · apply Real.rpow_nonneg
-  --         · simp only [Nat.cast_nonneg]
-  --     · apply mul_nonneg
-  --       · trans
-  --         · apply zero_le_one
-  --         · simp only [Real.one_le_exp_iff]
-  --           apply mul_nonneg
-  --           · apply mul_nonneg
-  --             · have : (q : ℝ) = q * 1 := by {simp only [mul_one]}
-  --               nth_rw 1 [this]
-  --               rw [← mul_add]
-  --               apply mul_nonneg
-  --               · simp only [Nat.cast_nonneg]
-  --               · trans
-  --                 · apply zero_le_one
-  --                 · simp only [le_add_iff_nonneg_right, norm_nonneg]
-  --             · simp only [Nat.cast_nonneg]
-  --           · trans
-  --             · apply zero_le_one
-  --             · simp only [le_add_iff_nonneg_right]
-  --               have := r_div_q_geq_0
-  --                 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
-  --               apply div_nonneg
-  --               simp only [Nat.cast_nonneg]
-  --               simp_all only [zero_le, Nat.cast_nonneg]
-  --       · apply norm_nonneg
-  --   · apply mul_nonneg
-  --     · simp only [Nat.cast_nonneg]
-  --     · simp only [Nat.cast_nonneg]
-  -- · sorry
 
 
 
@@ -3614,18 +3687,10 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^(h7.r q hq0 h2mq) *
 
 
 
+include hz in
+lemma norm_sub_l0_lower_bound_on_sphere:
 
-
-
-
-
-
-
-
-lemma norm_sub_l0_lower_bound_on_sphere (z : ℂ) :
-  ∀ (hz : z ∈ Metric.sphere 0 (h7.m * (1 + (h7.r q hq0 hq2m : ℝ) / (q : ℝ)))),
     h7.m * (h7.r q hq0 hq2m : ℝ) / (q : ℝ) ≤ ‖z - (h7.l₀ q hq0 hq2m : ℂ)‖ := by
-  intros hz
   calc _ = (h7.m * (1 + (h7.r q hq0 hq2m : ℝ) / (q : ℝ)) - h7.m : ℝ) := by ring
        _ ≤ ‖z‖ - ‖(h7.l₀ q hq0 hq2m : ℂ)‖ := by
          simp only [norm_natCast]
@@ -3638,17 +3703,17 @@ lemma norm_sub_l0_lower_bound_on_sphere (z : ℂ) :
            h7.m * (1 + (h7.r q hq0 hq2m : ℝ) / (q : ℝ)) + (- (h7.l₀ q hq0 hq2m : ℝ)) := rfl
          rw [this]
          rw [add_assoc]
-         simp only [le_add_iff_nonneg_right, le_neg_add_iff_add_le, add_zero, Nat.cast_le, ge_iff_le]
+         simp only [le_add_iff_nonneg_right, le_neg_add_iff_add_le,
+           add_zero, Nat.cast_le, ge_iff_le]
          rw [le_iff_lt_or_eq]
          left
          simp only [Nat.cast_lt] at hlm
          exact hlm
        _ ≤ ‖z - (h7.l₀ q hq0 hq2m : ℂ)‖ := norm_sub_norm_le z (h7.l₀ q hq0 hq2m)
 
+include hz in
 lemma norm_z_minus_km_lower_bound_on_sphere (km : Fin (h7.m)) :
-  z ∈ Metric.sphere 0 (h7.m * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ))) →
     h7.m * h7.r q hq0 h2mq / q ≤ ‖z - (km : ℂ)‖ := by
-  intro hz
   calc
     h7.m * h7.r q hq0 h2mq / q
       = (h7.m * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)) - h7.m : ℝ) := by ring
@@ -3660,19 +3725,101 @@ lemma norm_z_minus_km_lower_bound_on_sphere (km : Fin (h7.m)) :
       have : (h7.m * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)) - (km : ℝ)) =
         (h7.m * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ))) + (-(km : ℝ)) := rfl
       rw [this, add_assoc]
-      simp only [le_add_iff_nonneg_right, le_neg_add_iff_add_le, add_zero, Nat.cast_le, ge_iff_le]
+      simp only [le_add_iff_nonneg_right, le_neg_add_iff_add_le,
+        add_zero, Nat.cast_le, ge_iff_le]
       rw [le_iff_lt_or_eq]
       left
       exact km.isLt
     _ ≤ ‖z - (km : ℂ)‖ := norm_sub_norm_le z (km : ℂ)
 
+
+-- Auxiliary factorial product lemma
+lemma prod_dist_eq' :
+    ∏ k in (Finset.range h7.m \ {↑(h7.l₀ q hq0 h2mq)}), ‖(↑(h7.l₀ q hq0 h2mq) : ℂ) - (k : ℂ)‖ =
+    Nat.factorial (↑(h7.l₀ q hq0 h2mq)) * Nat.factorial (h7.m - 1 - ↑(h7.l₀ q hq0 h2mq)) := by
+  -- split into left and right parts around l₀
+  have : Finset.range h7.m \ {↑(h7.l₀ q hq0 h2mq)} =
+    (Finset.range (↑(h7.l₀ q hq0 h2mq))) ∪ Finset.Ico (↑(h7.l₀ q hq0 h2mq) + 1) h7.m := by
+    ext k
+    simp [Nat.lt_iff_add_one_le]
+    let l₀_val := ↑(h7.l₀ q hq0 h2mq)
+    have hl : l₀_val < h7.m := (h7.l₀ q hq0 h2mq).isLt
+    constructor
+    · rintro ⟨hk, hkne⟩
+      by_cases h : k < l₀_val
+      · exact Or.inl h
+      · have : l₀_val < k := by
+          cases Nat.lt_or_eq_of_le (Nat.le_of_not_lt h) with
+          | inl h' => exact h'
+          | inr h' => exact (hkne h'.symm).elim
+        exact Or.inr ⟨this, hk⟩
+    · rintro (h | ⟨h1, h2⟩)
+      · exact ⟨Nat.lt_trans h hl, ne_of_lt h⟩
+      · exact ⟨h2, ne_of_gt h1⟩
+  rw [this, Finset.prod_union]
+  · simp only [Finset.prod_range]
+    let l₀_nat : ℕ := ↑(h7.l₀ q hq0 h2mq)
+    have hleft : ∏ k in Finset.range l₀_nat, (l₀_nat - k) = Nat.factorial l₀_nat := by
+      -- This is a standard identity: ∏_{k=0}^{n-1} (n - k) = n!
+      sorry
+    let l₀_nat : ℕ := ↑(l₀ h7 q hq0 h2mq)
+    let m_nat : ℕ := h7.m
+    have hright : ∏ k in Finset.Ico (l₀_nat + 1) m_nat,
+      (k - l₀_nat) = Nat.factorial (m_nat - 1 - l₀_nat) := by
+      sorry
+    sorry
+  · intro k hk
+    simp
+    sorry
+
+lemma prod_dist_le' (m l₀ : ℕ) (hl : l₀ < m) :
+    ∏ k ∈ (Finset.range m \ { l₀ }), Int.natAbs (l₀ - k) ≤ (m - 1).factorial := by
+  sorry
+
 def c₁₁ : ℝ := sorry
+
+lemma abs_denom
+  : norm (((z - (h7.l₀ q hq0 h2mq : ℂ)) ^ (-(h7.r q hq0 h2mq : ℤ))) *
+      ∏ km ∈ (Finset.range (h7.m) \ { (h7.l₀ q hq0 h2mq : ℕ) }),
+        (((h7.l₀ q hq0 h2mq : ℂ) - (km : ℂ)) / (z - (km : ℂ))) ^ (h7.r q hq0 h2mq))
+    ≤ (c₁₁) ^ (h7.r q hq0 h2mq) * (q / (h7.r q hq0 h2mq)) ^ (h7.m * h7.r q hq0 h2mq) := by
+  calc
+    _ ≤ norm (z - (h7.l₀ q hq0 h2mq : ℂ)) ^ (-(h7.r q hq0 h2mq : ℤ)) *
+        norm (∏ km ∈ Finset.range (h7.m) \ { (h7.l₀ q hq0 h2mq : ℕ) },
+          (((h7.l₀ q hq0 h2mq : ℂ) - (km : ℂ)) / (z - (km : ℂ))) ^ (h7.r q hq0 h2mq)) := ?_
+
+    _ ≤ (h7.m * (h7.r q hq0 h2mq : ℝ) / (q : ℝ)) ^ (-(h7.r q hq0 h2mq : ℤ)) *
+        (∏ km ∈ Finset.range (h7.m) \ { (h7.l₀ q hq0 h2mq : ℕ) },
+          norm (((h7.l₀ q hq0 h2mq : ℂ) - (km : ℂ)) / (z - (km : ℂ)))) ^ (h7.r q hq0 h2mq) := ?_
+
+    _ ≤ (c₁₁) ^ (h7.r q hq0 h2mq) *
+        (q / (h7.r q hq0 h2mq)) ^ (h7.m * h7.r q hq0 h2mq) := ?_
+  · sorry
+  · sorry
+  · sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def c₁₂ : ℝ := sorry
 
-include u in
-lemma S_norm_bound (l' : Fin (h7.m)) : norm (h7.S q hq0 h2mq z) ≤
-(c₁₂) ^ (h7.r q hq0 h2mq) * ((3 - h7.m) / 2 + 3 / 2) := by
+lemma S_norm_bound : ∀
+  (hz : z ∈ Metric.sphere 0 (h7.m * (1 + (h7.r q hq0 hq2m : ℝ) / (q : ℝ)))),
+  norm (h7.S q hq0 h2mq z) ≤ (c₁₂) ^ (h7.r q hq0 h2mq) * ((3 - h7.m) / 2 + 3 / 2) := by
+  intros hz
   calc
     _ = norm ((h7.R q hq0 h2mq z) * ((h7.r q hq0 h2mq).factorial) *
         (((z - (h7.l₀ q hq0 h2mq : ℂ)) ^ (-(h7.r q hq0 h2mq) : ℤ)) *
@@ -3695,7 +3842,7 @@ lemma S_norm_bound (l' : Fin (h7.m)) : norm (h7.S q hq0 h2mq z) ≤
     _ ≤ (c₁₂)^(h7.r q hq0 h2mq)*((3 - h7.m)/2 + 3 / 2) := ?_
 
   · unfold S
-    simp only
+    simp only [mem_sphere_iff_norm, sub_zero] at hz
     sorry
   · simp only [zpow_neg, zpow_natCast, Complex.norm_mul,
       norm_natCast, norm_inv, norm_pow,
@@ -3705,7 +3852,8 @@ lemma S_norm_bound (l' : Fin (h7.m)) : norm (h7.S q hq0 h2mq z) ≤
     simp only [mul_eq_mul_right_iff, mul_eq_zero, inv_eq_zero,
       pow_eq_zero_iff', norm_eq_zero, ne_eq]
     left
-    exact Eq.symm (Nat.cast_comm (h7.r q hq0 h2mq).factorial ‖(h7.R q hq0 h2mq) z‖)
+    exact Eq.symm
+      (Nat.cast_comm (h7.r q hq0 h2mq).factorial ‖(h7.R q hq0 h2mq) z‖)
   · apply mul_le_mul
     · simp only [le_refl]
     · rw [mul_assoc]
@@ -3727,6 +3875,47 @@ lemma S_norm_bound (l' : Fin (h7.m)) : norm (h7.S q hq0 h2mq z) ≤
       · simp only [norm_nonneg]
     · simp only [Nat.cast_nonneg]
   · sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+lemma eq7 (l' : Fin (h7.m)) :
+  ρᵣ h7 q hq0 h2mq = Complex.log (h7.α) ^ (-(h7.r q hq0 h2mq) : ℤ) *
+    ((2 * ↑Real.pi * I)⁻¹ *
+      (∮ z in C(0, h7.m * (1 + (h7.r q hq0 h2mq / q))),
+        (z - (h7.l₀ q hq0 h2mq))⁻¹ * (h7.S q hq0 h2mq) z)) := by
+
+  calc _ = (Complex.log (h7.α)) ^ (-(h7.r q hq0 h2mq) : ℤ)
+       * (h7.S q hq0 h2mq) (h7.l₀ q hq0 h2mq) := ?_
+       _ = (Complex.log (h7.α)) ^ (-(h7.r q hq0 h2mq) : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
+    (∮ z in C(0, h7.m * (1 + (h7.r q hq0 h2mq) / q)),
+     (z - (h7.l₀ q hq0 h2mq))⁻¹ * (h7.S q hq0 h2mq) z)) := ?_
+  · apply sys_coeff_foo_S
+  · rw [hcauchy]
+    exact (h7.l₀ q hq0 h2mq)
+
+
+
+
+
+
+
+
+
+
+
 
 def c₁₃ : ℝ := sorry
 
@@ -3771,12 +3960,14 @@ lemma eq8 : norm (ρᵣ h7 q hq0 h2mq) ≤ (c₁₃ ^ (h7.r q hq0 h2mq)) *
          (h7.m : ℝ) * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)) *
           (c₁₂) ^ (h7.r q hq0 h2mq) *
           (h7.r q hq0 h2mq : ℝ) ^ ((h7.r q hq0 h2mq : ℝ) *
-           (3 - h7.m : ℝ) / 2 + 3 / 2) * (q : ℝ) / ((h7.m : ℝ) * (h7.r q hq0 h2mq : ℝ)) := ?_
+           (3 - h7.m : ℝ) / 2 + 3 / 2) * (q : ℝ) / ((h7.m : ℝ) *
+            (h7.r q hq0 h2mq : ℝ)) := ?_
 
        _ ≤ (c₁₃) ^ (h7.r q hq0 h2mq) *
-           (↑(h7.r q hq0 h2mq) ^ (↑(h7.r q hq0 h2mq) * (3 - ↑(h7.m)) / 2 + 3 / 2)) := ?_
+           (↑(h7.r q hq0 h2mq) ^ (↑(h7.r q hq0 h2mq) *
+           (3 - ↑(h7.m)) / 2 + 3 / 2)) := ?_
 
-  · rw [eq7]
+  · rw [h7.eq7 q hq0 h2mq]
     sorry
     exact (h7.l₀ q hq0 h2mq)
   · simp only [zpow_neg, zpow_natCast, _root_.mul_inv_rev, ofReal_mul,
@@ -3822,6 +4013,52 @@ def c₁₅ : ℝ := c₁₄ --* c₅
 --   · sorry
 --   · rw [← mul_pow]
 --     simp only [c₁₅]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 --include hα hβ α β σ hq0 h2mq hd hirr htriv K σ h2mq t q in
 theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β)
