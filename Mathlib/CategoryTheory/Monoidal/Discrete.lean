@@ -120,6 +120,9 @@ variable [AddMonoid M]
 
 variable {M} {N : Type u'} [AddMonoid N]
 
+/-- An additive morphism between monoids gives a monoidal functor between the corresponding
+discrete monoidal categories.
+-/
 def Discrete.addMonoidalFunctor (F : M →+ N) : Discrete M ⥤ Discrete N :=
   Discrete.functor (fun X ↦ Discrete.mk (F X))
 
