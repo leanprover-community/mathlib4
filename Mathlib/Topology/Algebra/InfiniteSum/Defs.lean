@@ -131,8 +131,8 @@ More generally, if `L` is a `SummationFilter`, `∑'[L] i, f i` is the sum of `f
 `L` if it exists, and `1` otherwise.
 
 (Note that even if the unconditional sum exists, it might not be unique if the topology is not
-separated. When the support of `f` is finite, we make the most reasonable choice, to use the product
-over the support. Otherwise, we choose arbitrarily an `a` satisfying `HasProd f a`. Similar remarks
+separated. When the support of `f` is finite, we make the most reasonable choice, to use the sum
+over the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. Similar remarks
 apply to more general summation filters.)
 -/]
 noncomputable irreducible_def tprod (f : β → α) (L := unconditional β) :=

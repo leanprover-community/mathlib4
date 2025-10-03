@@ -211,7 +211,7 @@ theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
       Summable fun x : Σ n : A, antidiagonal n ↦ f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
   Finset.sigmaAntidiagonalEquivProd.summable_iff.symm
 
-variable [T3Space α] [IsTopologicalSemiring α] [L.NeBot] [L.LeAtTop]
+variable [T3Space α] [IsTopologicalSemiring α]
 
 theorem summable_sum_mul_antidiagonal_of_summable_mul
     (h : Summable fun x : A × A ↦ f x.1 * g x.2) :

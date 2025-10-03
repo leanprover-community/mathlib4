@@ -479,10 +479,7 @@ theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a,
     · rw [tsum_eq_zero_of_not_summable h,
         tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
   · simp only [tsum_bot hL]
-    by_cases hf : f.support.Finite
-    · exact ofRealCLM.toAddMonoidHom.map_finsum hf
-    · rw [finsum_of_infinite_support hf, finsum_of_infinite_support, ofReal_zero]
-      rwa [← Function.comp_def, Function.support_comp_eq _ (by simp)]
+    exact ofRealCLM.toAddMonoidHom.map_finsum_of_injective RCLike.ofReal_injective _
 
 theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x L) : HasSum (fun x => re (f x)) (re x) L :=
   reCLM.hasSum h
