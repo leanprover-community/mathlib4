@@ -286,7 +286,7 @@ variable {F ℱ 𝕜₂ : Type*} [Field 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
 variable [AddCommGroup F] [Module 𝕜₂ F]
 variable [FunLike ℱ F E] [SemilinearMapClass ℱ σ F E]
 
-theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
+theorem Absorbent.module_univ {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
     V = ⊤ := by
   ext x
   refine ⟨by simp, fun _ ↦ ?_⟩
@@ -297,12 +297,13 @@ theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (
     linarith
   obtain ⟨_, H, _, _, rfl⟩ := mem_smul.mp <|
     singleton_subset_iff.mp <| singleton_smul (β := E) (a := α) ▸ hr α (le_of_lt hα)
-  rwa [SetLike.mem_coe, ← Submodule.smul_mem_iff_of_isUnit _ hα_unit.inv, mem_singleton_iff.mpr H,
+  rwa [← Submodule.smul_mem_iff_of_isUnit _ hα_unit.inv, mem_singleton_iff.mpr H,
     ← smul_assoc, smul_eq_mul, hα_unit.inv_mul_cancel, one_smul]
 
 theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : ℱ} {s : Set E}
-    (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
-  ⟨fun hs_sub ↦ range_eq_univ.mp (hs_abs.mono hs_sub).module_univ, fun h a _ ↦ h a⟩
+    (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective := /- by -/
+  ⟨fun hs_sub ↦ range_eq_univ.mp (by
+    simp [← LinearMap.coe_range, (hs_abs.mono hs_sub).module_univ]), fun h a _ ↦ h a⟩
 
 end NontriviallyNormedField
 
