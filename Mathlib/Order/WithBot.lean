@@ -110,6 +110,20 @@ theorem some_eq_map_iff {f : α → β} {y : β} {v : WithBot α} :
     .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
 
+theorem map_id : map (id : α → α) = id :=
+  Option.map_id
+
+@[simp]
+theorem map_map (h : β → γ) (g : α → β) (a : WithBot α) : map h (map g a) = map (h ∘ g) a :=
+  Option.map_map h g a
+
+theorem comp_map (h : β → γ) (g : α → β) (x : WithBot α) : x.map (h ∘ g) = (x.map g).map h :=
+  (map_map ..).symm
+
+@[simp] theorem map_comp_map (f : α → β) (g : β → γ) :
+    WithBot.map g ∘ WithBot.map f = WithBot.map (g ∘ f) :=
+  Option.map_comp_map f g
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
@@ -178,6 +192,40 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   invFun x := ⟨x, WithBot.coe_ne_bot⟩
   left_inv _ := by simp
   right_inv _ := by simp
+
+end WithBot
+
+namespace Equiv
+
+/-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithBot e`. -/
+@[simps apply]
+def withBotCongr (e : α ≃ β) : WithBot α ≃ WithBot β where
+  toFun := WithBot.map e
+  invFun := WithBot.map e.symm
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+attribute [grind =] withBotCongr_apply
+
+@[simp]
+theorem withBotCongr_refl : withBotCongr (Equiv.refl α) = Equiv.refl _ :=
+  Equiv.ext <| congr_fun WithBot.map_id
+
+@[simp, grind =]
+theorem withBotCongr_symm (e : α ≃ β) : withBotCongr e.symm = (withBotCongr e).symm :=
+  rfl
+
+@[simp]
+theorem withBotCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+    withBotCongr (e₁.trans e₂) = (withBotCongr e₁).trans (withBotCongr e₂) := by
+  ext x
+  simp
+
+end Equiv
+
+namespace WithBot
+
+variable {a b : α}
 
 section LE
 
@@ -581,6 +629,20 @@ theorem some_eq_map_iff {f : α → β} {y : β} {v : WithTop α} :
     .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
 
+theorem map_id : map (id : α → α) = id :=
+  Option.map_id
+
+@[simp]
+theorem map_map (h : β → γ) (g : α → β) (a : WithTop α) : map h (map g a) = map (h ∘ g) a :=
+  Option.map_map h g a
+
+theorem comp_map (h : β → γ) (g : α → β) (x : WithTop α) : x.map (h ∘ g) = (x.map g).map h :=
+  (map_map ..).symm
+
+@[simp] theorem map_comp_map (f : α → β) (g : β → γ) :
+    WithTop.map g ∘ WithTop.map f = WithTop.map (g ∘ f) :=
+  Option.map_comp_map f g
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
@@ -659,6 +721,40 @@ theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
   invFun x := ⟨x, WithTop.coe_ne_top⟩
   left_inv _ := by simp
   right_inv _:= by simp
+
+end WithTop
+
+namespace Equiv
+
+/-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithTop e`. -/
+@[simps apply]
+def withTopCongr (e : α ≃ β) : WithTop α ≃ WithTop β where
+  toFun := WithTop.map e
+  invFun := WithTop.map e.symm
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+attribute [grind =] withTopCongr_apply
+
+@[simp]
+theorem withTopCongr_refl : withTopCongr (Equiv.refl α) = Equiv.refl _ :=
+  Equiv.ext <| congr_fun WithBot.map_id
+
+@[simp, grind =]
+theorem withTopCongr_symm (e : α ≃ β) : withTopCongr e.symm = (withTopCongr e).symm :=
+  rfl
+
+@[simp]
+theorem withTopCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+    withTopCongr (e₁.trans e₂) = (withTopCongr e₁).trans (withTopCongr e₂) := by
+  ext x
+  simp
+
+end Equiv
+
+namespace WithTop
+
+variable {a b : α}
 
 section LE
 
