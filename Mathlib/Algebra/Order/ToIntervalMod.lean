@@ -570,7 +570,7 @@ end AddCommGroup
 
 open AddCommGroup
 
-/-- If `a` and `b` fall within the same cycle WRT `c`, then they are congruent modulo `p`. -/
+/-- If `a` and `b` fall within the same cycle w.r.t. `c`, then they are congruent modulo `p`. -/
 @[simp]
 theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] :=
   toIcoMod_eq_toIcoMod _

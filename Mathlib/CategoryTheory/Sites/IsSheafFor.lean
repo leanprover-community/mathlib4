@@ -168,20 +168,21 @@ using the notation defined there.
 For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
 `CategoryTheory.Presieve.Arrows.PullbackCompatible`.
 -/
-def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbacks] : Prop :=
+def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.HasPairwisePullbacks] :
+    Prop :=
   ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
-    haveI := hasPullbacks.has_pullbacks h₁ h₂
+    haveI := HasPairwisePullbacks.has_pullbacks h₁ h₂
     P.map (pullback.fst f₁ f₂).op (x f₁ h₁) = P.map (pullback.snd f₁ f₂).op (x f₂ h₂)
 
-theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
+theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.HasPairwisePullbacks] :
     x.Compatible ↔ x.PullbackCompatible := by
   constructor
   · intro t Y₁ Y₂ f₁ f₂ hf₁ hf₂
     apply t
-    haveI := hasPullbacks.has_pullbacks hf₁ hf₂
+    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     apply pullback.condition
   · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
-    haveI := hasPullbacks.has_pullbacks hf₁ hf₂
+    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t hf₁ hf₂,
       ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
 
@@ -346,24 +347,34 @@ end Pullback
 /-- Given a morphism of presheaves `f : P ⟶ Q`, we can take a family of elements valued in `P` to a
 family of elements valued in `Q` by composing with `f`.
 -/
+@[deprecated map (since := "2025-09-25")]
 def FamilyOfElements.compPresheafMap (f : P ⟶ Q) (x : FamilyOfElements P R) :
     FamilyOfElements Q R := fun Y g hg => f.app (op Y) (x g hg)
 
 @[simp]
-theorem FamilyOfElements.compPresheafMap_id (x : FamilyOfElements P R) :
-    x.compPresheafMap (𝟙 P) = x :=
+lemma FamilyOfElements.map_id (x : FamilyOfElements P R) :
+    x.map (𝟙 _) = x :=
   rfl
 
 @[simp]
-theorem FamilyOfElements.compPresheafMap_comp (x : FamilyOfElements P R) (f : P ⟶ Q)
-    (g : Q ⟶ U) : (x.compPresheafMap f).compPresheafMap g = x.compPresheafMap (f ≫ g) :=
+lemma FamilyOfElements.map_comp (x : FamilyOfElements P R) (f : P ⟶ Q) (g : Q ⟶ U) :
+    (x.map f).map g = x.map (f ≫ g) := by
   rfl
 
-theorem FamilyOfElements.Compatible.compPresheafMap (f : P ⟶ Q) {x : FamilyOfElements P R}
-    (h : x.Compatible) : (x.compPresheafMap f).Compatible := by
+theorem FamilyOfElements.Compatible.map (f : P ⟶ Q) {x : FamilyOfElements P R}
+    (h : x.Compatible) : (x.map f).Compatible := by
   intro Z₁ Z₂ W g₁ g₂ f₁ f₂ h₁ h₂ eq
-  unfold FamilyOfElements.compPresheafMap
+  unfold FamilyOfElements.map
   rwa [← FunctorToTypes.naturality, ← FunctorToTypes.naturality, h]
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.compPresheafMap_id :=
+  FamilyOfElements.map_id
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.compPresheafMap_comp :=
+  FamilyOfElements.map_comp
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.Compatible.compPresheafMap :=
+  FamilyOfElements.Compatible.map
 
 /--
 The given element `t` of `P.obj (op X)` is an *amalgamation* for the family of elements `x` if every
@@ -376,12 +387,15 @@ equation (2).
 def FamilyOfElements.IsAmalgamation (x : FamilyOfElements P R) (t : P.obj (op X)) : Prop :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X) (h : R f), P.map f.op t = x f h
 
-theorem FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P R} {t} (f : P ⟶ Q)
-    (h : x.IsAmalgamation t) : (x.compPresheafMap f).IsAmalgamation (f.app (op X) t) := by
+theorem FamilyOfElements.IsAmalgamation.map {x : FamilyOfElements P R} {t} (f : P ⟶ Q)
+    (h : x.IsAmalgamation t) : (x.map f).IsAmalgamation (f.app (op X) t) := by
   intro Y g hg
-  dsimp [FamilyOfElements.compPresheafMap]
+  dsimp [FamilyOfElements.map]
   change (f.app _ ≫ Q.map _) _ = _
   rw [← f.naturality, types_comp_apply, h g hg]
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.IsAmalgamation.compPresheafMap :=
+  FamilyOfElements.IsAmalgamation.map
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
@@ -673,6 +687,12 @@ theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor
   isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
     (fun _ _ f x ↦ congr_fun (i.hom.naturality f.op) x) hP
 
+/-- The property of being separated for some presieve is preserved under isomorphisms. -/
+theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparatedFor P R) :
+    IsSeparatedFor P' R := by
+  intro x t₁ t₂ ht₁ ht₂
+  simpa using congrArg (i.hom.app _) <| hP (x.map i.inv) _ _ (ht₁.map i.inv) (ht₂.map i.inv)
+
 /-- If a presieve `R` on `X` has a subsieve `S` such that:
 
 * `P` is a sheaf for `S`.
@@ -771,7 +791,7 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
       (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
     exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
 
-variable [(ofArrows X π).hasPullbacks]
+variable [(ofArrows X π).HasPairwisePullbacks]
 
 /--
 A more explicit version of `FamilyOfElements.PullbackCompatible` for a `Presieve.ofArrows`.

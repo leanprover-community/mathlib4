@@ -512,18 +512,19 @@ lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
 
 section CountableOrCountablyGenerated
 
-variable {α γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable {α γ : Type*} [MeasurableSpace γ]
 
 /-- A class registering that either `α` is countable or `β` is a countably generated
 measurable space. -/
-class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace β] :
     Prop where
   countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
 
-instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :
+instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] [MeasurableSpace β] :
     CountableOrCountablyGenerated α β := ⟨Or.inl h1⟩
 
-instance instCountableOrCountablyGeneratedOfCountablyGenerated [h : CountablyGenerated β] :
+instance instCountableOrCountablyGeneratedOfCountablyGenerated [MeasurableSpace β]
+    [h : CountablyGenerated β] :
     CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
 
 instance [hα : CountableOrCountablyGenerated α γ] [hβ : CountableOrCountablyGenerated β γ] :

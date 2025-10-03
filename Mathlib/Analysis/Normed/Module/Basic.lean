@@ -3,7 +3,6 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
@@ -72,9 +71,9 @@ theorem norm_natCast_eq_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ
   simpa using norm_intCast_eq_abs_mul_norm_one α n
 
 @[simp]
-lemma norm_natCast {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass ℤ 𝕜]
-    (a : ℕ) : ‖(a : 𝕜)‖ = a := by
-  simpa using norm_natCast_eq_mul_norm_one 𝕜 a
+lemma norm_natCast {α : Type*} [SeminormedRing α] [NormOneClass α] [NormSMulClass ℤ α]
+    (a : ℕ) : ‖(a : α)‖ = a := by
+  simpa using norm_natCast_eq_mul_norm_one α a
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
@@ -265,6 +264,10 @@ theorem dist_algebraMap (x y : 𝕜) :
 @[simp]
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
+
+@[simp]
+theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x • (1 : 𝕜')‖ = ‖x‖ := by
+  simp [norm_smul]
 
 /-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]

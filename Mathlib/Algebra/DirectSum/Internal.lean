@@ -163,7 +163,7 @@ theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
   · subst h
     rw [of_eq_same]
     rfl
-  · rw [of_eq_of_ne _ _ _ h]
+  · rw [of_eq_of_ne _ _ _ (Ne.symm h)]
     rfl
 
 @[deprecated (since := "2025-04-06")]

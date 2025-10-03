@@ -300,6 +300,39 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
+variable {R}
+
+private theorem relNorm_map_algEquiv_aux {T : Type*} [CommRing T] [IsDedekindDomain T]
+    [IsIntegrallyClosed T] [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal S) :
+    relNorm R (I.map σ) ≤ relNorm R I :=
+  span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨σ.toRingEquiv.symm x,
+    by rwa [SetLike.mem_coe, Ideal.symm_apply_mem_of_equiv_iff],
+    hx₂ ▸ Algebra.intNorm_map_algEquiv _ x σ.symm⟩
+
+@[simp]
+theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal S) :
+    relNorm R (I.map σ) = relNorm R I := by
+  refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
+  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
+  change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
+  simp [map_mapₐ]
+
+@[simp]
+theorem relNorm_comap_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal T) :
+    relNorm R (I.comap σ) = relNorm R I := map_symm σ.toRingEquiv ▸ relNorm_map_algEquiv σ.symm I
+
+variable (R)
+
+open MulSemiringAction Pointwise in
+@[simp]
+theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G)
+    (I : Ideal S) : relNorm R (g • I) = relNorm R I := relNorm_map_algEquiv (toAlgEquiv R S g) I
+
 theorem relNorm_le_comap (I : Ideal S) :
     relNorm R I ≤ comap (algebraMap R S) I := spanNorm_le_comap R I
 

@@ -30,7 +30,6 @@ localization at an element.
 
 -/
 
--- Porting note: added to make the syntax work below.
 open scoped TensorProduct
 
 universe u v w
@@ -82,8 +81,7 @@ theorem iff_comp_injective :
   · intros; exact comp_injective _ ‹_›
   · intro H
     constructor
-    rw [← not_nontrivial_iff_subsingleton]
-    intro h
+    by_contra! h
     obtain ⟨f₁, f₂, e⟩ := (KaehlerDifferential.endEquiv R A).injective.nontrivial
     apply e
     ext1
@@ -283,15 +281,14 @@ instance [FormallyUnramified R S] (M : Submonoid S) : FormallyUnramified R (Loca
   have := of_isLocalization (Rₘ := Localization M) M
   .comp _ S _
 
+set_option linter.unusedSectionVars false in
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
 The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
 without the need to change anything (including removing redundant arguments). -/
--- @[nolint unusedArguments] -- Porting note: removed
+@[nolint unusedArguments]
 theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
-  -- Porting note: added
-  let _ := M
   FormallyUnramified.of_comp R Rₘ Sₘ
 
 theorem localization_map [FormallyUnramified R S] :
