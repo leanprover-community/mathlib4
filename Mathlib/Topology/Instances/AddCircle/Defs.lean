@@ -192,6 +192,14 @@ def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
 
 variable {p a}
 
+theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x = ⟨x, hx⟩ := by
+  rw [Equiv.apply_eq_iff_eq_symm_apply]
+  rfl
+
+theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
+  rw [Equiv.apply_eq_iff_eq_symm_apply]
+  rfl
+
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
   refine ⟨fun h => ?_, by tauto⟩
@@ -202,18 +210,12 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) :
     liftIco p a f ↑x = f x := by
-  have : (equivIco p a) x = ⟨x, hx⟩ := by
-    rw [Equiv.apply_eq_iff_eq_symm_apply]
-    rfl
-  rw [liftIco, comp_apply, this]
+  rw [liftIco, comp_apply, equivIco_coe_eq hx]
   rfl
 
 theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p)) :
     liftIoc p a f ↑x = f x := by
-  have : (equivIoc p a) x = ⟨x, hx⟩ := by
-    rw [Equiv.apply_eq_iff_eq_symm_apply]
-    rfl
-  rw [liftIoc, comp_apply, this]
+  rw [liftIoc, comp_apply, equivIoc_coe_eq hx]
   rfl
 
 lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
