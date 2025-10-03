@@ -286,8 +286,8 @@ variable {F ℱ 𝕜₂ : Type*} [Field 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
 variable [AddCommGroup F] [Module 𝕜₂ F]
 variable [FunLike ℱ F E] [SemilinearMapClass ℱ σ F E]
 
-theorem Absorbent.module_univ {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
-    (V : Set E) = Set.univ := by
+theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
+    V = ⊤ := by
   ext x
   refine ⟨by simp, fun _ ↦ ?_⟩
   obtain ⟨r, r_pos, hr⟩ := Absorbs.exists_pos (hV x)
