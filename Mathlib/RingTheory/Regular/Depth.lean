@@ -421,8 +421,7 @@ lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M = ⊤ ↔ ∀ i, Subsingleton (Ext.{max u v} N M i) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_contra! exist
-    rw [moduleDepth_eq_find N M
-      ((exists_congr (fun i ↦ not_subsingleton_iff_nontrivial)).mp exist)] at h
+    rw [moduleDepth_eq_find N M exist] at h
     simp at h
   · simp [moduleDepth]
     exact csSup_eq_top_of_top_mem (fun i _ ↦ h i)
@@ -432,7 +431,7 @@ lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
   convert (moduleDepth_eq_top_iff N M).not
   · exact lt_top_iff_ne_top
   · push_neg
-    exact exists_congr (fun i ↦ not_subsingleton_iff_nontrivial.symm)
+    rfl
 
 lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n ↔
     Nontrivial (Ext.{max u v} N M n) ∧ ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
