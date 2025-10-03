@@ -592,7 +592,7 @@ theorem IsLocalization.algHom_ext {R A L B : Type*}
     f = g :=
   AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext W <| RingHom.ext <| AlgHom.ext_iff.mp h
 
-@[ext low] theorem Localization.algHom_ext {R A B : Type*}
+@[ext high] theorem Localization.algHom_ext {R A B : Type*}
     [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B] (W : Submonoid A)
     {f g : Localization W →ₐ[R] B}
     (h : f.comp (Algebra.algHom R A _) = g.comp (Algebra.algHom R A _)) :
