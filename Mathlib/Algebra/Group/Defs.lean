@@ -308,27 +308,36 @@ add_decl_doc RightCancelSemigroup.toIsRightCancelMul
 /-- Any `AddRightCancelSemigroup` satisfies `IsRightCancelAdd`. -/
 add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
 
-/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
-`1 * a = a` and `a * 1 = a` for all `a : M`. -/
-class MulOneClass (M : Type u) extends One M, Mul M where
-  /-- One is a left neutral element for multiplication -/
-  protected one_mul : ∀ a : M, 1 * a = a
-  /-- One is a right neutral element for multiplication -/
-  protected mul_one : ∀ a : M, a * 1 = a
+/-- Bundling an `Add` and `Zero` structure together without any axioms about their
+compatibility. See `AddZeroClass` for the additional assumption that 0 is an identity. -/
+class AddZero (M : Type*) extends Zero M, Add M
+
+/-- Bundling a `Mul` and `One` structure together without any axioms about their
+compatibility. See `MulOneClass` for the additional assumption that 1 is an identity. -/
+@[to_additive, ext]
+class MulOne (M : Type*) extends One M, Mul M
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
-class AddZeroClass (M : Type u) extends Zero M, Add M where
+class AddZeroClass (M : Type u) extends AddZero M where
   /-- Zero is a left neutral element for addition -/
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
 
-attribute [to_additive] MulOneClass
+
+/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
+`1 * a = a` and `a * 1 = a` for all `a : M`. -/
+@[to_additive]
+class MulOneClass (M : Type u) extends MulOne M where
+  /-- One is a left neutral element for multiplication -/
+  protected one_mul : ∀ a : M, 1 * a = a
+  /-- One is a right neutral element for multiplication -/
+  protected mul_one : ∀ a : M, a * 1 = a
 
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
-  rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
+  rintro @⟨@⟨⟨one₁⟩, ⟨mul₁⟩⟩, one_mul₁, mul_one₁⟩ @⟨@⟨⟨one₂⟩, ⟨mul₂⟩⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
   -- congr
   suffices one₁ = one₂ by cases this; rfl
@@ -524,8 +533,8 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
-    rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
-      ← npowRec'_mul_comm (by omega), mul_assoc]
+    rw [npowRec'_succ (by cutsat), npowRec'_two_mul, ← npowRec'_two_mul,
+      ← npowRec'_mul_comm (by cutsat), mul_assoc]
 
 /--
 An abbreviation for `npowRec` with an additional typeclass assumption on associativity
@@ -569,7 +578,7 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 
 attribute [instance 150] AddSemigroup.toAdd
-attribute [instance 50] AddZeroClass.toAdd
+attribute [instance 50] AddZero.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
@@ -808,7 +817,7 @@ independent:
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
 * Without `DivisionMonoid.inv_inv`, you can consider `WithTop Unit` with `a⁻¹ = ⊤` for all `a`.
 * Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
-  where `α` non commutative.
+  where `α` noncommutative.
 * Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all
   `a`.
 
@@ -968,7 +977,7 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 
 alias division_def := div_eq_mul_inv
 
-@[to_additive, field_simps] -- The attributes are out of order on purpose
+@[to_additive]
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
 
 @[to_additive]
