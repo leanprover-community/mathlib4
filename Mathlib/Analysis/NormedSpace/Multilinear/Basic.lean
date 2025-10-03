@@ -999,7 +999,7 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
 def _root_.ContinuousMultilinearMap.flipLinear (f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) :
     G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   MultilinearMap.mkContinuousLinear
-    { toFun x := 
+    { toFun x :=
         { toFun m := f m x
           map_update_add' := by simp
           map_update_smul' := by simp }
