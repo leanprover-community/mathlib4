@@ -23,6 +23,10 @@ We say that
 ## Implementation details
 
 The covers appearing in the definitions have index type in the morphism universe of `C`.
+
+## TODOs
+
+- Define source and target local closure of a morphism property.
 -/
 
 universe w v u
