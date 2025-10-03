@@ -199,7 +199,6 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
-    rw [not_subsingleton_iff_nontrivial] at this
     exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial mem M)) h
   have aux (n : ℕ) : projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) ≤ n ↔
     projectiveDimension M + 1 ≤ n := by
