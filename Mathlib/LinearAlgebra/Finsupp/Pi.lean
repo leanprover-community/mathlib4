@@ -160,7 +160,7 @@ lemma map_apply_apply [Fintype X] [Finite Y] [DecidableEq Y] (f : X → Y) (s : 
     map f s y = ∑ x with f x = y, s x := by
   obtain ⟨s, rfl⟩ := Finsupp.equivFunOnFinite.surjective s
   dsimp [map]
-  simp only [Equiv.symm_apply_apply, Finsupp.equivFunOnFinite_apply]
+  simp only [Equiv.symm_apply_apply]
   nth_rw 1 [← Finsupp.univ_sum_single s]
   rw [Finsupp.mapDomain_finset_sum]
   simp [Finset.sum_filter]
