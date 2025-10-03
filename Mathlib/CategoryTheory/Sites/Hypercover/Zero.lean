@@ -101,8 +101,8 @@ base. -/
 def bind (E : PreZeroHypercover.{w} T) (F : ∀ i, PreZeroHypercover.{w'} (E.X i)) :
     PreZeroHypercover.{max w w'} T where
   I₀ := Σ (i : E.I₀), (F i).I₀
-  X := fun ⟨i, j⟩ ↦ (F i).X j
-  f := fun ⟨i, j⟩ ↦ (F i).f j ≫ E.f i
+  X ij := (F ij.1).X ij.2
+  f ij := (F ij.1).f ij.2 ≫ E.f ij.1
 
 /-- Replace the indexing type of a pre-`0`-hypercover. -/
 @[simps]
