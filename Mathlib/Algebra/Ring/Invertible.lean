@@ -33,8 +33,11 @@ variable [NonUnitalNonAssocSemiring R] (x : AddUnits R) (y : R)
 
 variable {x y}
 
-theorem AddUnits.neg_mul_left : -(x.mulLeft y) = (-x).mulLeft y := rfl
-theorem AddUnits.neg_mul_right : -(x.mulRight y) = (-x).mulRight y := rfl
+theorem AddUnits.neg_mulLeft : -(x.mulLeft y) = (-x).mulLeft y := rfl
+theorem AddUnits.neg_mulRight : -(x.mulRight y) = (-x).mulRight y := rfl
+
+@[deprecated (since := "2025-10-03")] alias AddUnits.neg_mul_left := AddUnits.neg_mulLeft
+@[deprecated (since := "2025-10-03")] alias AddUnits.neg_mul_right := AddUnits.neg_mulRight
 
 theorem AddUnits.neg_mul_eq_mul_neg {x y : AddUnits R} : (↑(-x) * y : R) = x * ↑(-y) := by
   rw [← neg_eq_val_neg, ← val_neg_mulRight]
@@ -42,7 +45,7 @@ theorem AddUnits.neg_mul_eq_mul_neg {x y : AddUnits R} : (↑(-x) * y : R) = x *
   simp [← mul_add]
 
 theorem AddUnits.neg_mul_neg {x y : AddUnits R} : ↑(-x) * ↑(-y) = (x * y : R) := by
-  rw [← val_mulLeft, ← val_mulLeft, ← AddUnits.ext_iff, ← neg_inj, ← y.neg_mul_left, neg_neg]
+  rw [← val_mulLeft, ← val_mulLeft, ← AddUnits.ext_iff, ← neg_inj, ← y.neg_mulLeft, neg_neg]
   apply AddUnits.ext
   simp [neg_mul_eq_mul_neg]
 
