@@ -232,4 +232,3 @@ theorem finiteType_isLocal : PropertyIsLocal @FiniteType :=
       finiteType_holdsForLocalizationAway).right⟩
 
 end RingHom
-
