@@ -255,25 +255,14 @@ where
     else
       throwError "No `baseInfo` provided"
   fromNormedSpace : TermElabM Expr := do
-    let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
+    let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
-          if ← withReducible (pureIsDefEq E e) then return some K else return none
+          if ← withReducible (pureIsDefEq E e) then return some (inst, K) else return none
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on {e} among local instances."
     trace[Elab.DiffGeo.MDiff] "Field is: {K}"
-    let eT : Term ← Term.exprToSyntax e
-    let eK : Term ← Term.exprToSyntax K
-    let iTerm : Term ← ``(𝓘($eK, $eT))
-    Term.elabTerm iTerm none
-    -- let uK ← K.getUniverse
-    -- let normedFieldK ← synthInstance (.app (.const ``NontriviallyNormedField [uK]) K)
-    -- trace[Elab.DiffGeo.MDiff] "NontriviallyNormedField instance is: {normedFieldK}"
-    -- let ue ← e.getUniverse
-    -- let normedGroupE ← synthInstance (.app (.const ``NormedAddCommGroup  [ue]) e)
-    -- trace[Elab.DiffGeo.MDiff] "NormedAddCommGroup  instance is: {normedGroupE}"
-    -- return mkAppN (.const `modelWithCornersSelf [uK, ue])
-    --   #[K, normedFieldK, e, normedGroupE, normedSpaceInst]
+    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
   fromChartedSpace : TermElabM Expr := do
     let some H ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
         match_expr type with
