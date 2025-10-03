@@ -166,6 +166,10 @@ namespace Expr
 
 /-! ### Declarations about `Expr` -/
 
+/-- Call `mkApp` recursively with 12 arguments -/
+@[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
+  mkApp6 (mkApp6 f a b c d e g) e₁ e₂ e₃ e₄ e₅ e₆
+
 def bvarIdx? : Expr → Option Nat
   | bvar idx => some idx
   | _        => none
