@@ -5,6 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
@@ -64,16 +65,20 @@ theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕}
   apply h
   simp_all
 
-theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
+theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} (x : F) {r : ℝ}
     (hr : 0 < r) : closedBall (x : F) r ⊆ Set.range f ↔ (⇑f).Surjective :=
   ⟨fun h ↦ (ball_subset_range_iff_surjective hr).mp <| subset_trans ball_subset_closedBall h,
     by simp_all⟩
 
-theorem sphere_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
-    (hr : 0 < r) : sphere (x : F) r ⊆ Set.range f ↔ (⇑f).Surjective := by
+variable (F' 𝓕' : Type*) [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
+  {τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F'] in
+theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
+    (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  -- have := @Convex.linear_image
-  sorry
+  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x
+    (le_of_lt hr), convexHull_subset_affineSpan, affineSpan_subset_span, ← LinearMap.coe_range,
+    ← Submodule.span_eq (p := LinearMap.range f), LinearMap.coe_range, Submodule.span_mono h]
+
 
 
 omit [SemilinearMapClass 𝓕 σ₁₂ E F]
