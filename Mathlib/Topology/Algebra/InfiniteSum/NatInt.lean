@@ -555,56 +555,6 @@ section PNat
 variable {R : Type*} {α : Type*} [AddMonoidWithOne R] [TopologicalSpace α] [CommMonoid α]
 
 @[to_additive]
-<<<<<<< HEAD
-theorem pnat_multipliable_iff_multipliable_succ
-    {f : ℕ → α} : Multipliable (fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) :=
-  Equiv.pnatEquivNat.symm.multipliable_iff.symm
-
-@[to_additive]
-theorem tprod_pnat_eq_tprod_succ (f : ℕ → α) :
-    ∏' n : ℕ+, f n = ∏' n, f (n + 1) := (Equiv.pnatEquivNat.symm.tprod_eq _).symm
-
-@[to_additive]
-lemma tprod_zero_pnat_eq_tprod_nat {α : Type*} [TopologicalSpace α] [CommGroup α]
-    [IsTopologicalGroup α] [T2Space α] (f : ℕ → α) (hf : Multipliable f) :
-    f 0 * ∏' (n : ℕ+), f ↑n = ∏' (n : ℕ), f n := by
-  simp [Multipliable.tprod_eq_zero_mul hf, tprod_pnat_eq_tprod_succ f]
-
-theorem pnat_multipliable_iff_multipliable_succ' {f : R → α} :
-    Multipliable (fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) := by
-  convert Equiv.pnatEquivNat.symm.multipliable_iff.symm
-  simp
-
-theorem pnat_summable_iff_summable_succ' {α : Type*} [TopologicalSpace α] [AddCommMonoid α]
-    {f : R → α} : Summable (fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) := by
-  convert Equiv.pnatEquivNat.symm.summable_iff.symm
-  simp
-
-theorem tprod_pnat_eq_tprod_succ' (f : R → α) : ∏' n : ℕ+, f n = ∏' (n : ℕ), f (n + 1) := by
-  convert (Equiv.pnatEquivNat.symm.tprod_eq _).symm
-  simp
-
-theorem tsum_pnat_eq_tsum_succ' {α : Type*} [TopologicalSpace α] [AddCommMonoid α] (f : R → α) :
-    ∑' n : ℕ+, f n = ∑' (n : ℕ), f (n + 1) := by
-  convert (Equiv.pnatEquivNat.symm.tsum_eq _).symm
-  simp
-
-theorem tsum_nat_eq_zero_two_pnat {α : Type*} [UniformSpace α] [Ring α] [IsUniformAddGroup α]
-    [CompleteSpace α] [T2Space α] {f : ℤ → α} (hf : ∀ n : ℤ, f n = f (-n)) (hf2 : Summable f) :
-    ∑' n, f n = f 0 + 2 * ∑' n : ℕ+, f n := by
-  rw [tsum_of_add_one_of_neg_add_one]
-  · conv =>
-      enter [1,2,1]
-      ext n
-      rw [hf]
-    simp only [neg_add_rev, Int.reduceNeg, neg_neg, tsum_pnat_eq_tsum_succ', two_mul]
-    abel
-  · simpa using ((summable_nat_add_iff (k := 1)).mpr
-      (summable_int_iff_summable_nat_and_neg.mp hf2).1)
-  · exact (summable_nat_add_iff (k := 1)).mpr (summable_int_iff_summable_nat_and_neg.mp hf2).2
-
-end pnat
-=======
 theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
     Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x ↦ f (x + 1) :=
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
@@ -637,4 +587,3 @@ theorem tprod_int_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] 
   rw [← this, mul_right_inj, hf4.tprod_mul hf4, sq]
 
 end PNat
->>>>>>> upstream/master
