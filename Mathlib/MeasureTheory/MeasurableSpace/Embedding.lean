@@ -794,7 +794,7 @@ namespace MeasurableEquiv
 /-- The currying operation `Function.curry` as a measurable equivalence.
 See `MeasurableEquiv.curry` for the non-dependent version. -/
 @[simps!]
-def piCurry {ι : Type*} {κ : ι → Type*} {X : (i : ι) → κ i → Type*}
+def piCurry {ι : Type*} {κ : ι → Type*} (X : (i : ι) → κ i → Type*)
     [∀ i j, MeasurableSpace (X i j)] :
     ((p : (i : ι) × κ i) → X p.1 p.2) ≃ᵐ ((i : ι) → (j : κ i) → X i j) where
   toEquiv := Equiv.piCurry X
@@ -804,7 +804,7 @@ def piCurry {ι : Type*} {κ : ι → Type*} {X : (i : ι) → κ i → Type*}
 /-- The currying operation `Sigma.curry` as a measurable equivalence.
 See `MeasurableEquiv.piCurry` for the dependent version. -/
 @[simps!]
-def curry {ι κ X : Type*} [MeasurableSpace X] :
+def curry (ι κ X : Type*) [MeasurableSpace X] :
     (ι × κ → X) ≃ᵐ (ι → κ → X) where
   toEquiv := Equiv.curry ι κ X
   measurable_toFun := by fun_prop
