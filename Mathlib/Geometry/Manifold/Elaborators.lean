@@ -99,40 +99,43 @@ elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← whnf <|← instantiateMVars <|← inferType e
   match etype with
-  | .forallE x base (mkApp3 (.const ``Bundle.Trivial _) E E' _) _ =>
-    trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle"
-    if ← withReducible (isDefEq E base) then
+  | .forallE x base tgt _ =>
+    match_expr tgt with
+    | Bundle.Trivial E E' _ =>
+      trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle"
+      if ← withReducible (isDefEq E base) then
+        return ← withLocalDeclD x base fun x ↦ do
+          let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
+          mkLambdaFVars #[x] body
+    | TangentSpace _k _ E _ _ _H _ _I _M _ _ _x =>
+      trace[Elab.DiffGeo.TotalSpaceMk] "Vector field"
       return ← withLocalDeclD x base fun x ↦ do
-        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
+        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
         mkLambdaFVars #[x] body
-  | .forallE x base (mkApp12 (.const ``TangentSpace _) _k _ E _ _ _H _ _I _M _ _ _x) _ =>
-    trace[Elab.DiffGeo.TotalSpaceMk] "Vector field"
-    return ← withLocalDeclD x base fun x ↦ do
-      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
-      mkLambdaFVars #[x] body
-  | .forallE x base (.app V _) _ =>
-    trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
-    for decl in ← getLocalHyps do
-      let decltype ← whnfR <|← instantiateMVars <|← inferType decl
-      match decltype with
-      | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ =>
-        if ← withReducible (isDefEq E V) then
-          return ← withLocalDeclD x base fun x ↦ do
-            let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, .app e x]
-            mkLambdaFVars #[x] body
-      | _ => pure ()
-  | .forallE x src tgt _ =>
-    trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
-    -- TODO: can `tgt` depend on `x` in a way that is not a function application?
-    -- Check that `x` is not a bound variable in `tgt`!
-    -- xxx: is this check fine or overzealous?
-    if Lean.Expr.hasLooseBVars tgt then
-      throwError "Term {tgt} has loose bound variables\n\
-      Hint: applying the `T%` elaborator twice makes no sense."
-    let trivBundle ← mkAppOptM ``Bundle.Trivial #[src, tgt]
-    return ← withLocalDeclD x src fun x ↦ do
-      let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[src, trivBundle, tgt, x, e.app x]
-      mkLambdaFVars #[x] body
+    | _ => match tgt with
+      | .app V _ =>
+        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
+        for decl in ← getLocalHyps do
+          let decltype ← instantiateMVars <|← inferType decl
+          match decltype with
+          | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ =>
+            if ← withReducible (isDefEq E V) then
+              return ← withLocalDeclD x base fun x ↦ do
+                let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, .app e x]
+                mkLambdaFVars #[x] body
+          | _ => pure ()
+      | tgt =>
+        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
+        -- TODO: can `tgt` depend on `x` in a way that is not a function application?
+        -- Check that `x` is not a bound variable in `tgt`!
+        -- xxx: is this check fine or overzealous?
+        if Lean.Expr.hasLooseBVars tgt then
+          throwError "Term {tgt} has loose bound variables\n\
+          Hint: applying the `T%` elaborator twice makes no sense."
+        let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
+        return ← withLocalDeclD x base fun x ↦ do
+          let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
+          mkLambdaFVars #[x] body
   | _ => pure ()
   return e
 
