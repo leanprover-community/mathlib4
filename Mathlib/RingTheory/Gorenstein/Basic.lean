@@ -408,49 +408,41 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
   intro i hi N
   apply ext_subsingleton_of_quotients
   intro I
-  let _ : Module.Finite R (Shrink.{v, u} (R ⧸ I)) :=
-    Module.Finite.equiv (Shrink.linearEquiv R _).symm
+  let _ := Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm
   apply ext_subsingleton_of_support_subset
   intro p foo
   clear foo
   simp only [Set.mem_setOf_eq]
   have (n : ℕ) : ringKrullDim (R ⧸ p.1) ≤ n →
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p.asIdeal))) M i) := by
-    revert i hi p
-    induction n with
+    induction n generalizing i hi p with
     | zero =>
-      intro i hi p hp
+      intro hp
       have : p.1 = maximalIdeal R := by
         rw [← isMaximal_iff, Ideal.Quotient.maximal_ideal_iff_isField_quotient]
         rw [← Ring.krullDimLE_iff] at hp
         exact Ring.KrullDimLE.isField_of_isDomain
       exact this ▸ h i hi
     | succ n ih =>
-      intro i hi p hp
+      intro hp
       by_cases hpm : p.1 = maximalIdeal R
-      · exact hpm ▸ h i hi
-      · have : ∀ q > p.1, q.IsPrime →
-          Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (i + 1)) := by
-          intro q hqp hq
-          let q : PrimeSpectrum R := ⟨q, hq⟩
-          have : ringKrullDim (R ⧸ q.1) ≤ n := by
-            rw [← WithBot.add_le_add_right_iff _ _ 1]
-            calc
-              _ ≤ ringKrullDim (R ⧸ p.1) := by
-                obtain ⟨r, hrq, hrp⟩ := Set.exists_of_ssubset hqp
-                apply ringKrullDim_succ_le_of_surjective (r := Ideal.Quotient.mk p.1 r)
-                  (Ideal.Quotient.factor hqp.le) (Ideal.Quotient.factor_surjective hqp.le)
-                · rw [mem_nonZeroDivisors_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem]
-                  exact hrp
-                · rw [Ideal.Quotient.factor_mk, Ideal.Quotient.eq_zero_iff_mem]
-                  exact hrq
-              _ ≤ _ := hp
-          apply ih (i + 1) (Nat.le_add_right_of_le hi) this
-        exact ext_subsingleton_of_all_gt M i p.1 hpm this
+      · rw [hpm]
+        exact h i hi
+      · apply ext_subsingleton_of_all_gt M i p.1 hpm
+        intro q hqp hq
+        let q : PrimeSpectrum R := ⟨q, hq⟩
+        have : ringKrullDim (R ⧸ q.1) ≤ n := by
+          rw [← WithBot.add_le_add_right_iff _ _ 1]
+          apply le_trans _ hp
+          obtain ⟨r, hrq, hrp⟩ := Set.exists_of_ssubset hqp
+          apply ringKrullDim_succ_le_of_surjective (r := Ideal.Quotient.mk p.1 r)
+            (Ideal.Quotient.factor hqp.le) (Ideal.Quotient.factor_surjective hqp.le)
+          · simpa [Ideal.Quotient.eq_zero_iff_mem] using hrp
+          · simpa [Ideal.Quotient.eq_zero_iff_mem] using hrq
+        apply ih (i + 1) (Nat.le_add_right_of_le hi) this
   rcases exist_nat_eq' R with ⟨n, hn⟩
   apply this n
-  rw [← hn]
-  exact ringKrullDim_quotient_le p.1
+  simpa [← hn] using ringKrullDim_quotient_le p.1
 
 lemma injectiveDimension_eq_sInf (M : ModuleCat.{v} R) [Module.Finite R M] :
     injectiveDimension M = sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i →
