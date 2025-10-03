@@ -112,8 +112,8 @@ instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f]
     IsOpenImmersion (pullback.diagonal f) := by
   wlog hX : (∃ S, X = Spec S) ∧ ∃ R, Y = Spec R
   · let 𝒰Y := Y.affineCover
-    let 𝒰X (j : (Y.affineCover.pullbackCover f).I₀) :
-        ((Y.affineCover.pullbackCover f).X j).OpenCover := Scheme.affineCover _
+    let 𝒰X (j : (Y.affineCover.pullback₁ f).I₀) :
+        ((Y.affineCover.pullback₁ f).X j).OpenCover := Scheme.affineCover _
     apply IsLocalAtTarget.of_range_subset_iSup _
       (Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange f 𝒰Y 𝒰X)
     intro ⟨i, j⟩

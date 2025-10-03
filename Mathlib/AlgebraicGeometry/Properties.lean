@@ -31,8 +31,8 @@ variable (X : Scheme)
 
 instance : T0Space X :=
   T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
-    (X.affineCover.f x).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
-    (isAffineOpen_opensRange (X.affineCover.f x)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
+    (X.affineCover.f _).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
+    (isAffineOpen_opensRange (X.affineCover.f _)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
