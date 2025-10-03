@@ -3,6 +3,7 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Batteries.Data.Nat.Basic
 import Batteries.Tactic.Alias
 import Batteries.Tactic.Init
 import Mathlib.Init
@@ -259,6 +260,13 @@ private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m)
 lemma strongRec'_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
     n.strongRec' H = H n fun m _ ↦ m.strongRec' H :=
   congrArg (H n) <| by ext m lt; apply strongRecAux_spec
+
+@[csimp] lemma strongRec'_eq_strongRec : @Nat.strongRec' = @Nat.strongRec := by
+  ext _ h n
+  refine n.strongRec' fun n ih ↦ ?_
+  rw [Nat.strongRec, strongRec'_spec]
+  congr; ext m lt
+  exact ih m lt
 
 /-- Recursion principle based on `<` applied to some natural number. -/
 @[elab_as_elim]
