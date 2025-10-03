@@ -24,7 +24,7 @@ namespace LieAlgebra.IsKilling
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 variable [LieAlgebra.IsKilling K L] [FiniteDimensional K L]
 
-open LieAlgebra LieModule Module IsKilling
+open LieAlgebra LieModule Module
 
 variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
