@@ -99,6 +99,16 @@ lemma measurable_betaPDFReal (α β : ℝ) : Measurable (betaPDFReal α β) :=
 lemma stronglyMeasurable_betaPDFReal (α β : ℝ) :
     StronglyMeasurable (betaPDFReal α β) := (measurable_betaPDFReal α β).stronglyMeasurable
 
+/-- The beta integrand is non-negative on `(0,1)`. -/
+lemma beta_integrand_nonneg
+    {α β x : ℝ} (hα : 0 < α) (hβ : 0 < β) (hx : x ∈ Ioo (0 : ℝ) 1) :
+    0 ≤ (1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1) := by
+  apply mul_nonneg
+  · apply mul_nonneg
+    · exact (one_div_pos.mpr (beta_pos hα hβ)).le
+    · exact Real.rpow_nonneg hx.1.le (α - 1)
+  · exact Real.rpow_nonneg (sub_nonneg.mpr hx.2.le) (β - 1)
+
 /-- The pdf of the beta distribution integrates to 1. -/
 @[simp]
 lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
@@ -117,10 +127,8 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
       all_goals linarith
     convert betaIntegral_convergent (u := α) (v := β) (by simpa) (by simpa)
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by simp), IntegrableOn]
-  · refine ae_restrict_of_forall_mem measurableSet_Ioo fun x ⟨hx1, hx₂⟩ ↦ ?_
-    field_simp
-    exact div_nonneg (mul_nonneg (Real.rpow_nonneg hx1.le (α - 1))
-      (Real.rpow_nonneg (by linarith) (β - 1))) (beta_pos hα hβ).le
+  · refine ae_restrict_of_forall_mem measurableSet_Ioo (fun x hx ↦ ?_)
+    simpa using beta_integrand_nonneg (α := α) (β := β) hα hβ hx
   · exact Measurable.aestronglyMeasurable (by fun_prop)
 
 end BetaPDF
