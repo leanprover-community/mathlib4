@@ -211,7 +211,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOr
     | top => by_cases ha : a = 0 <;> simp [ha]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
-      simp only [mul_coe_eq_bind hc]
+      simp only [mul_coe_eq_map hc]
       cases a <;> cases b <;> try rfl
       exact congr_arg some (add_mul _ _ _)
   left_distrib c a b := by
@@ -219,7 +219,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOr
     | top => by_cases ha : a = 0 <;> simp [ha]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
-      simp only [coe_mul_eq_bind hc]
+      simp only [coe_mul_eq_map hc]
       cases a <;> cases b <;> try rfl
       exact congr_arg some (mul_add _ _ _)
 
