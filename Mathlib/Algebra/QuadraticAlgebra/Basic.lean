@@ -348,6 +348,8 @@ lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra R a b} :
   · intro hz
     simp [hz]
 
+/-- If `R` is a field and there is no `r : R` such that `r ^ 2 = a + b * r`,
+then `QuadraticAlgebra R a b` is a field. -/
 instance : Field (QuadraticAlgebra R a b) where
   toCommRing := inferInstance
   inv z := (norm z)⁻¹ • star z
