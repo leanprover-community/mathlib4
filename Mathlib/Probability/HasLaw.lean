@@ -17,7 +17,7 @@ operations on the codomain of `X`.
 See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
 -/
 
-open MeasureTheory
+open MeasureTheory Measure
 
 open scoped ENNReal
 
@@ -52,6 +52,14 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
     MeasurePreserving X P μ where
   measurable := h₂
   map_eq := h₁.map_eq
+
+protected theorem HasLaw.isFiniteMeasure_iff (hX : HasLaw X μ P) :
+    IsFiniteMeasure μ ↔ IsFiniteMeasure P := by
+  rw [← hX.map_eq, isFiniteMeasure_map_iff hX.aemeasurable]
+
+protected theorem HasLaw.isProbabilityMeasure_iff (hX : HasLaw X μ P) :
+    IsProbabilityMeasure μ ↔ IsProbabilityMeasure P := by
+  rw [← hX.map_eq, isProbabilityMeasure_map_iff hX.aemeasurable]
 
 @[fun_prop]
 lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
