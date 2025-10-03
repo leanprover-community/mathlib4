@@ -93,7 +93,7 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
   let tryThis ← match msg.dropPrefix? "Try this:" with
   | none => throwError m!"Tactic output did not begin with 'Try this:': {msg}"
   | some S => pure S.toString.removeLeadingSpaces
-  match parseAsTacticSeq (← getEnv) tryThis with
+  match parseAsTacticSeq (← getEnv) tryThis.trim with
   | .ok stx => return stx
   | .error err => throwError m!"Failed to parse tactic output: {tryThis}\n{err}"
 
