@@ -351,13 +351,6 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
     refine ⟨J₂, hJ₂, J₁, hJ₁, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₂ hJ₁] at hJ
 
-variable {α β : Type*} in
-@[simp]
-theorem _root_.Finset.mem_eraseBot
-    {s : Finset (WithBot α)} {x : α} : x ∈ eraseBot s ↔ (x : WithBot α) ∈ s := by
-  simp [eraseBot]
-
-
 /-- Create a `BoxIntegral.Prepartition` from a collection of possibly empty boxes by filtering out
 the empty one if it exists. -/
 def ofWithBot (boxes : Finset (WithBot (Box ι)))

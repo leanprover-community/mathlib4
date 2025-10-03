@@ -3,7 +3,7 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.WithTopBot
 import Mathlib.Order.WithBot.BooleanAlgebra
 import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Opens
@@ -125,19 +125,19 @@ theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {�
   isCompl_range_coe_top X
 
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
-  range_some_union_none X
+  range_coe_union_top X
 
 @[simp]
 theorem insert_infty_range_coe : insert ∞ (range (@some X)) = univ :=
-  insert_none_range_some _
+  insert_top_range_coe _
 
 @[simp]
 theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ :=
-  range_some_inter_none X
+  range_coe_inter_top X
 
 @[simp]
 theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=
-  compl_range_some X
+  compl_range_coe_eq_singleton_top X
 
 theorem compl_infty : ({∞}ᶜ : Set (OnePoint X)) = range ((↑) : X → OnePoint X) :=
   (@isCompl_range_coe_infty X).symm.compl_eq
@@ -520,7 +520,7 @@ instance : CompactSpace (OnePoint X) where
     have : Tendsto ((↑) : X → OnePoint X) (cocompact X) (𝓝 ∞) := by
       rw [nhds_infty_eq]
       exact (tendsto_map.mono_left cocompact_le_coclosedCompact).mono_right le_sup_left
-    rw [← insert_none_range_some X]
+    rw [← insert_top_range_coe X]
     exact this.isCompact_insert_range_of_cocompact continuous_coe
 
 /-- The one point compactification of a `T0Space` space is a `T0Space`. -/

@@ -439,8 +439,13 @@ instance _root_.fact_one_le_two_ennreal : Fact ((1 : ℝ≥0∞) ≤ 2) :=
 instance _root_.fact_one_le_top_ennreal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
   ⟨le_top⟩
 
+-- TODO use Equiv.withTopNeTop _ (but needs adjustment to neTopHomeomorphNNReal)
 /-- The set of numbers in `ℝ≥0∞` that are not equal to `∞` is equivalent to `ℝ≥0`. -/
-def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 := Equiv.withTopNeTop _
+def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 where
+  toFun x := ENNReal.toNNReal x
+  invFun x := ⟨x, coe_ne_top⟩
+  left_inv := fun x => Subtype.eq <| coe_toNNReal x.2
+  right_inv := toNNReal_coe
 
 theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : ⨅ x : { x // x ≠ ∞ }, f x = ⨅ x : ℝ≥0, f x :=
   Eq.symm <| neTopEquivNNReal.symm.surjective.iInf_congr _ fun _ => rfl
