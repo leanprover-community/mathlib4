@@ -125,7 +125,7 @@ elab:max "T% " t:term:arg : term => do
         -- TODO: can `tgt` depend on `x` in a way that is not a function application?
         -- Check that `x` is not a bound variable in `tgt`!
         -- xxx: is this check fine or overzealous?
-        if Lean.Expr.hasLooseBVars tgt then
+        if tgt.hasLooseBVars then
           throwError "Term {tgt} has loose bound variables\n\
           Hint: applying the `T%` elaborator twice makes no sense."
         let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
@@ -298,7 +298,7 @@ def findModels (etype eterm : Expr) (estype : Option Expr) :
   match etype with
   | .forallE _ src tgt _ =>
     let srcI ← findModel src
-    if Lean.Expr.hasLooseBVars tgt then
+    if tgt.hasLooseBVars then
       throwError "Term {eterm} is a dependent function, of type {etype}\n\
       Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one"
     if let some es := estype then
