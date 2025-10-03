@@ -296,7 +296,7 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
 end
 
 lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddCommGroup E]
-  [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
+    [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
   balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)
 
 /-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
