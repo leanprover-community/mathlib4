@@ -275,7 +275,7 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   rw [← hv]
   exact h.minDegree_eq_one_of_nontrivial
 
-lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : SimpleGraph.Adj G v w) :
+lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w) :
     G.dist u v ≠ G.dist u w := by
   obtain ⟨p, hp, hp'⟩ := hG.isConnected.exists_path_of_dist u v
   obtain ⟨q, hq, hq'⟩ := hG.isConnected.exists_path_of_dist u w
