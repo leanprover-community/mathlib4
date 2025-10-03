@@ -448,36 +448,33 @@ lemma infinitePi_cylinder {s : Finset ι} {S : Set (Π i : s, X i)} (mS : Measur
 
 section curry
 
-lemma test {ι : Type*} {κ : ι → Type*} {X : (i : ι) → κ i → Type*}
-    {mX : ∀ i, ∀ j, MeasurableSpace (X i j)} (μ : (i : ι) → (j : κ i) → Measure (X i j))
-    [hμ : ∀ i j, IsProbabilityMeasure (μ i j)] :
-    (infinitePi fun p : (i : ι) × κ i ↦ μ p.1 p.2).map (piCurry X) =
-      infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j := by
-  have : (infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j).map (piCurry X).symm =
+variable {ι : Type*} {κ : ι → Type*} {X : (i : ι) → κ i → Type*}
+  {mX : ∀ i, ∀ j, MeasurableSpace (X i j)} (μ : (i : ι) → (j : κ i) → Measure (X i j))
+  [hμ : ∀ i j, IsProbabilityMeasure (μ i j)]
+
+lemma infinitePi_map_piCurry_symm :
+    (infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j).map (piCurry X).symm =
       infinitePi fun p : (i : ι) × κ i ↦ μ p.1 p.2 := by
-    apply eq_infinitePi
-    intro s t ht
-    rw [map_apply]
-    classical
-    have : (piCurry X).symm ⁻¹' s.toSet.pi t = (s.image Sigma.fst).toSet.pi
-        (fun i ↦ (s.preimage (Sigma.mk i) sorry).toSet.pi fun j ↦ t ⟨i, j⟩) := by
-      ext x
-      simp only [piCurry, coe_fn_symm_mk, Set.mem_preimage, Set.mem_pi, Finset.mem_coe,
-        Finset.coe_image, Finset.coe_preimage, Set.mem_image, Sigma.exists, exists_and_right,
-        exists_eq_right, forall_exists_index]
-      exact ⟨fun h i j hij k hik ↦ h _ hik, fun h p hp ↦ h p.1 p.2 hp p.2 hp⟩
-    rw [this, infinitePi_pi]
-    conv_rhs =>
-      enter [1]
-      rw [← Finset.sigma_image_fst_preimage_mk s]
-    rw [Finset.prod_sigma]
-    apply Finset.prod_congr rfl
+  apply eq_infinitePi
+  intro s t ht
+  rw [map_apply (by fun_prop) (.pi (countable_toSet _) ht)]
+  classical
+  have : (piCurry X).symm ⁻¹' s.toSet.pi t = (s.image Sigma.fst).toSet.pi
+      (fun i ↦ (s.preimage (Sigma.mk i) sigma_mk_injective.injOn).toSet.pi fun j ↦ t ⟨i, j⟩) := by
+    ext x
+    simp only [Set.mem_preimage, Set.mem_pi, mem_coe, piCurry_symm_apply, coe_image, coe_preimage,
+      Set.mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
+    exact ⟨fun h i j hij k hik ↦ h _ hik, fun h p hp ↦ h p.1 p.2 hp p.2 hp⟩
+  nth_rw 2 [← Finset.sigma_image_fst_preimage_mk s]
+  rw [this, infinitePi_pi, Finset.prod_sigma]
+  · apply Finset.prod_congr rfl
     simp only [Finset.mem_image, Sigma.exists, exists_and_right, exists_eq_right,
       forall_exists_index]
     intro i j hij
     rw [infinitePi_pi]
-    all_goals sorry
-  sorry
+    simpa using fun j hj ↦ ht _ hj
+  · simp only [mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
+    exact fun i j hij ↦ MeasurableSet.pi (countable_toSet _) fun k hk ↦ by simp_all
 
 end curry
 
