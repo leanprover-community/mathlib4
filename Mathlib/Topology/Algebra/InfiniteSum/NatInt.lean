@@ -552,12 +552,13 @@ end Int
 
 section PNat
 
-variable {α R : Type*} [TopologicalSpace α] [CommMonoid α] [AddMonoidWithOne R]
-
 @[to_additive]
 theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
     Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x ↦ f (x + 1) :=
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
+
+@[deprecated (since := "2025-09-31")]
+alias pnat_multipliable_iff_multipliable_succ := multipliable_pnat_iff_multipliable_succ
 
 @[to_additive]
 theorem tprod_pnat_eq_tprod_succ {f : ℕ → M} : ∏' n : ℕ+, f n = ∏' n, f (n + 1) :=
@@ -569,8 +570,8 @@ lemma tprod_zero_pnat_eq_tprod_nat [TopologicalSpace G] [IsTopologicalGroup G] [
     f 0 * ∏' n : ℕ+, f ↑n = ∏' n, f n := by
   simpa [hf.tprod_eq_zero_mul] using tprod_pnat_eq_tprod_succ
 
-@[to_additive tsum_nat_eq_zero_two_pnat]
-theorem tprod_nat_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
+@[to_additive tsum_int_eq_zero_add_two_mul_tsum_pnat]
+theorem tprod_int_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
     [T2Space G] {f : ℤ → G} (hf : ∀ n : ℤ, f (-n) = f n) (hf2 : Multipliable f) :
     ∏' n, f n = f 0 * (∏' n : ℕ+, f n) ^ 2 := by
   have hf3 : Multipliable fun n : ℕ ↦ f n :=
