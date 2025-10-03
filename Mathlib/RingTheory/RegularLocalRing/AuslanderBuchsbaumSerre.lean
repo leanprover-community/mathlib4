@@ -140,6 +140,7 @@ section
 variable {R} (x : R) {M N L : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
     [Module R M] [Module R N] [Module R L]
 
+/-- The linear map `M⧸xM →ₗ[R] N⧸xN` induced by a linear map `M →ₗ[R] N`. -/
 def QuotSMulTop_map (f : M →ₗ[R] N) :
     QuotSMulTop x M →ₗ[R ⧸ Ideal.span {x}] QuotSMulTop x N where
   __ := Submodule.mapQ _ _ f (fun m hm ↦ by
