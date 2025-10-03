@@ -84,12 +84,22 @@ theorem ex52 : Int.lcm (-2) 3 = 6 := by norm_num1
 theorem ex53 : Int.lcm 2 (-3) = 6 := by norm_num1
 theorem ex54 : Int.lcm (-2) (-3) = 6 := by norm_num1
 
-theorem ex61 : Nat.gcd (553105253 * 776531401) (553105253 * 920419823) = 553105253 := by norm_num1
-theorem ex62 : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := by norm_num1
-theorem ex62' : Nat.gcd (2^1001 - 1) (2^1000 - 1) = 1 := by norm_num1
-theorem ex63 : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := by norm_num1
-theorem ex64 : Int.gcd (1 - 2^500) (2^510 - 1) = 2^10 - 1 := by norm_num1
-theorem ex64' : Int.gcd (1 - 2^500) (2^510 - 1) + 1 = 2^10 := by norm_num1
+theorem ex61 : Nat.gcd (553105253 * 776531401) (553105253 * 920419823) = 553105253 := rfl
+
+section
+
+set_option exponentiation.threshold 1001
+
+theorem ex62 : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := rfl
+theorem ex62' : Nat.gcd (2^1001 - 1) (2^1000 - 1) = 1 := rfl
+theorem ex63 : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := rfl
+
+set_option maxRecDepth 4000
+
+theorem ex64 : Int.gcd (1 - 2^500) (2^510 - 1) = 2^10 - 1 := rfl
+theorem ex64' : Int.gcd (1 - 2^500) (2^510 - 1) + 1 = 2^10 := rfl
+
+end
 
 example : IsCoprime (1 : ℤ) 2 := by norm_num1
 example : IsCoprime (2 : ℤ) 1 := by norm_num1
