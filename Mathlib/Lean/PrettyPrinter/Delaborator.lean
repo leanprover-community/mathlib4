@@ -25,7 +25,7 @@ def withBindingBodyUnusedName' {α} (d : Syntax → Expr → DelabM α) : DelabM
     (fun (stxN, fvar) => d stxN fvar)
 
 /-- Update `OptionsPerPos` at the given position, setting the key `n`
-to have the boolean value `v`. -/
+to have the Boolean value `v`. -/
 def OptionsPerPos.setBool (opts : OptionsPerPos) (p : SubExpr.Pos) (n : Name) (v : Bool) :
     OptionsPerPos :=
   let e := opts.getD p {} |>.setBool n v

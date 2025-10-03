@@ -73,7 +73,7 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     let rbody ← core zα pα body
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      let .some ps ← proveFinsetNonempty s | pure none
+      let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody

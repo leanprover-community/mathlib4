@@ -27,7 +27,7 @@ This file defines the conversion between sesquilinear maps and matrices.
 ## TODO
 
 At the moment this is quite a literal port from `Matrix.BilinearForm`. Everything should be
-generalized to fully semibilinear forms.
+generalized to fully semi-bilinear forms.
 
 ## Tags
 
@@ -488,12 +488,12 @@ def Matrix.IsAdjointPair :=
 
 /-- The condition for a square matrix `A` to be self-adjoint with respect to the square matrix
 `J`. -/
-def Matrix.IsSelfAdjoint :=
+protected def Matrix.IsSelfAdjoint :=
   Matrix.IsAdjointPair J J A₁ A₁
 
 /-- The condition for a square matrix `A` to be skew-adjoint with respect to the square matrix
 `J`. -/
-def Matrix.IsSkewAdjoint :=
+protected def Matrix.IsSkewAdjoint :=
   Matrix.IsAdjointPair J J A₁ (-A₁)
 
 variable [DecidableEq n] [DecidableEq n']

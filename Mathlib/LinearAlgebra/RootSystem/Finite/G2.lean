@@ -103,7 +103,7 @@ lemma not_isG2_iff_isNotG2 :
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
     aesop
   · specialize h i j
-    omega
+    cutsat
 
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
@@ -115,7 +115,7 @@ lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     have aux₂ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j h h'
     simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_zero_zero, Prod.mk_eq_zero,
       Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at aux₂ ⊢
-    omega
+    cutsat
   obtain ⟨k, l, hkl⟩ := exists_pairingIn_neg_three (P := P)
   push_neg
   refine ⟨k, l, ?_⟩
@@ -159,7 +159,7 @@ lemma pairingIn_le_zero_of_root_add_mem [P.IsNotG2] (h : P.root i + P.root j ∈
   have aux₃ : 1 ≤ P.chainTopCoeff j i := by
     rwa [← root_add_nsmul_mem_range_iff_le_chainTopCoeff aux₁, one_smul]
   rw [← P.chainBotCoeff_sub_chainTopCoeff aux₁]
-  omega
+  cutsat
 
 lemma zero_le_pairingIn_of_root_sub_mem [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     0 ≤ P.pairingIn ℤ i j := by
@@ -264,7 +264,6 @@ variable [Finite ι] [CharZero R] [IsDomain R]
 lemma pairingIn_short_long :
     P.pairingIn ℤ (short P) (long P) = - 1 := by
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed (long P) (short P)
-  have := pairingIn_long_short (P := P)
   aesop
 
 @[simp]
@@ -575,8 +574,8 @@ lemma mem_allRoots (i : ι) :
     induction hx using Submodule.span_induction with
     | zero => simp
     | mem => aesop
-    | add => aesop
-    | smul => aesop
+    | add => simp_all
+    | smul => simp_all
   simpa using LinearMap.congr_fun key (P.root i)
 
 open scoped Classical in

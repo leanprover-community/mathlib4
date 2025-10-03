@@ -158,14 +158,12 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
                 exact h₁
               _ = ⟪z, ℓ z • x⟫ - ⟪z, ℓ x • z⟫ := by rw [inner_sub_right]
               _ = ℓ z * ⟪z, x⟫ - ℓ x * ⟪z, z⟫ := by simp [inner_smul_right]
-          sub_eq_zero.mp (Eq.symm h₃)
-        have h₄ :=
-          calc
-            ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left]
-            _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
-            _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
-            _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0]
-        exact h₄)
+          sub_eq_zero.mp h₃.symm
+        calc
+          ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left]
+          _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
+          _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
+          _ = ℓ x := by field_simp [inner_self_ne_zero.2])
 
 variable {𝕜} {E}
 
@@ -179,7 +177,7 @@ theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).s
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
-given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual 𝕜 E`
+given by interpreting the form as a map `B : E →L⋆[𝕜] StrongDual 𝕜 E`
 and dualizing the result using `toDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=

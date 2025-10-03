@@ -58,7 +58,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
   · rintro h x hx hx'
     specialize h x
     rw [formPerm_apply_mem_eq_self_iff _ hl _ hx, formPerm_apply_mem_eq_self_iff _ hl' _ hx'] at h
-    omega
+    cutsat
   · intro h x
     by_cases hx : x ∈ l
     on_goal 1 => by_cases hx' : x ∈ l'
@@ -219,16 +219,8 @@ theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toL
 theorem getElem_toList (n : ℕ) (hn : n < length (toList p x)) :
     (toList p x)[n] = (p ^ n) x := by simp [toList]
 
-@[deprecated getElem_toList (since := "2025-02-17")]
-theorem get_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x).get ⟨n, hn⟩ = (p ^ n) x := by simp [toList]
-
 theorem toList_getElem_zero (h : x ∈ p.support) :
     (toList p x)[0]'(length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
-
-@[deprecated toList_getElem_zero (since := "2025-02-17")]
-theorem toList_get_zero (h : x ∈ p.support) :
-    (toList p x).get ⟨0, (length_toList_pos_of_mem_support _ _ h)⟩ = x := by simp [toList]
 
 variable {p} {x}
 
