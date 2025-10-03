@@ -734,10 +734,11 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
         exact closure_mono (Set.range_comp_subset_range _ _) this
       · rw [← (𝒰.f i).isOpenEmbedding.injective.mem_set_image, Scheme.image_zeroLocus,
           ker_ideal_of_isPullback_of_isOpenImmersion f (𝒰.pullbackHom f i)
-            ((𝒰.pullbackCover f).f i) (𝒰.f i) (IsPullback.of_hasPullback _ _).flip,
+            ((𝒰.pullback₁ f).f i) (𝒰.f i),
           Ideal.coe_comap, Set.image_preimage_eq]
         · exact ⟨((coe_support_inter _ _).le ⟨hx, by simp⟩).1, ⟨_, rfl⟩⟩
         · exact (ConcreteCategory.bijective_of_isIso ((𝒰.f i).appIso ⊤).inv).2
+        · exact (IsPullback.of_hasPullback _ _).flip
     obtain ⟨S, rfl⟩ := hY
     wlog hX : ∃ R, X = Spec R generalizing X S
     · intro x hx
