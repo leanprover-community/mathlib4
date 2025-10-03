@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Order.Partition.Finpartition
+
 /-!
 # Equidecompositions
 
@@ -233,6 +234,97 @@ theorem refl_symm : (refl X G).symm = refl X G := rfl
 @[simp]
 theorem restr_refl_symm (A : Set X) :
     ((Equidecomp.refl X G).restr A).symm = (Equidecomp.refl X G).restr A := rfl
+
+----
+
+variable [Group G] [MulAction G X] [DecidableEq (Set X)]
+
+structure Equipartition (G : Type*) [SMul G X] (A : Set X) where
+  parts : Finset (Set X × G × Set X)
+  sup_parts : A = (⋃ p ∈ parts, p.1)
+  supIndep : Finset.SupIndep (Finset.image (fun p ↦ p.1) parts) id
+  bot_notMem : ∀ p ∈ parts, p.1 ≠ ∅
+  decomp : ∀ p ∈ parts, (fun x ↦ p.2.1 • x) '' p.1 = p.2.2
+
+def Equipartition.to_finpartition {A : Set X} (P : Equipartition G A) : Finpartition A :=
+  { parts := Finset.image (fun p ↦ p.1) P.parts
+    sup_parts := by simp [P.sup_parts]
+    supIndep := P.supIndep
+    bot_notMem := by
+      simp only [bot_eq_empty, Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right,
+        not_exists]
+      refine fun x y ↦ Finset.forall_mem_not_eq'.mp (fun b h ↦ ?_)
+      simp [@Prod.eq_iff_fst_eq_snd_eq, P.bot_notMem b h]}
+
+def Equipartition.target (P : Equipartition G A) : Set X := ⋃ p ∈ P.parts, p.2.2
+
+/--
+The piece of the partition containing `x`, the group element associated to that piece,
+and the image of that piece under the group element.
+-/
+noncomputable def Equipartition.source_part (P : Equipartition G A) (x : X) (h : x ∈ A) :
+       Set X × G × Set X := by
+    have h1 : ∃ p ∈ P.parts, x ∈ p.1 := by simp [P.sup_parts, mem_iUnion] at h ⊢; assumption
+    exact Classical.choose h1
+
+theorem Equipartition.source_part_spec (P : Equipartition G A) (x : X) (h : x ∈ A) :
+    x ∈ (P.source_part x h).1 := by
+    simp [Equipartition.source_part]
+    have h1 : ∃ p ∈ P.parts, x ∈ p.1 := by simp [P.sup_parts, mem_iUnion] at h ⊢; assumption
+    exact (Classical.choose_spec h1).2
+
+theorem Equipartition.source_part_mem_parts (P : Equipartition G A) (x : X) (h : x ∈ A) :
+    (P.source_part x h) ∈ P.parts := by
+    simp [Equipartition.source_part]
+    have h1 : ∃ p ∈ P.parts, x ∈ p.1 := by simp [P.sup_parts, mem_iUnion] at h ⊢; assumption
+    exact (Classical.choose_spec h1).1
+
+theorem Equipartition.source_part_decomp (P : Equipartition G A) (x : X) (h : x ∈ A) :
+    (P.source_part x h).2.1 • x ∈ (P.source_part x h).2.2 := by
+    simp only [← P.decomp (P.source_part x h) (P.source_part_mem_parts x h), image_smul,
+      mem_smul_set]
+    use x
+    simpa using source_part_spec P x h
+
+
+/--
+The piece of the partition whose image contains `x`, the group element associated to that piece,
+and the image of that piece under the group element.
+-/
+noncomputable def Equipartition.target_part (P : Equipartition G A) (x : X) (h : x ∈ P.target) :
+       Set X × G × Set X := by
+    have h1 : ∃ p ∈ P.parts, x ∈ p.2.2 := by
+      simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
+    exact (Classical.choose h1)
+
+theorem Equipartition.target_part_spec (P : Equipartition G A) (x : X) (h : x ∈ P.target) :
+      x ∈ (P.target_part x h).2.2 := by
+    simp [Equipartition.target_part]
+    have h1 : ∃ p ∈ P.parts, x ∈ p.2.2 := by
+      simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
+    exact (Classical.choose_spec h1).2
+
+open scoped Classical in noncomputable def Equipartition.to_equidecomp {A : Set X} (P : Equipartition G A) : Equidecomp X G where
+  toFun x := if h : x ∉ A then x else (P.source_part x (not_notMem.mp h)).2.1 • x
+  invFun x := if h : x ∉ P.target then x else (P.target_part x (not_notMem.mp h)).2.1⁻¹ • x
+  source := A
+  target := P.target
+  map_source' x hx := by
+    simp [hx, Equipartition.target]
+    use (P.source_part x hx).1
+    use (P.source_part x hx).2.1
+    use (P.source_part x hx).2.2
+    exact And.intro (P.source_part_mem_parts x hx) (P.source_part_decomp x hx)
+  map_target' x hx := by sorry
+
+
+
+
+
+
+
+
+
 
 open scoped Classical in def from_partition (source : Set X)
     (parts : Finpartition source) (witness : parts.parts → G) : Equidecomp X G where
