@@ -129,7 +129,8 @@ instance HasAffineProperty.diagonal_affineProperty_isLocal
       ((diagonal_iff (targetAffineLocally Q)).mp hf)
   of_basicOpenCover {X Y} _ f s hs hs' := by
     refine (diagonal_iff (targetAffineLocally Q)).mpr ?_
-    let 𝒰 := Y.openCoverOfISupEqTop _ (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
+    let 𝒰 := Y.openCoverOfIsOpenCover _
+      (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
     have (i : _) : IsAffine (𝒰.X i) := (isAffineOpen_top Y).basicOpen i.1
     refine diagonal_of_openCover_diagonal (targetAffineLocally Q) f 𝒰 ?_
     intro i

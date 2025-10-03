@@ -116,7 +116,7 @@ in the normed setting, we show that if `V` and `W` are nontrivial topological ve
 topological field `R` that acts continuously on `W`, and if `SeparatingDual R V`, there are
 nontrivial continuous `R`-linear operators between `V` and `W`. -/
 instance (W) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W]
-   [ContinuousSMul R W] [Nontrivial V] : Nontrivial (V →L[R] W) := by
+    [ContinuousSMul R W] [Nontrivial V] : Nontrivial (V →L[R] W) := by
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   obtain ⟨w, hw⟩ := exists_ne (0 : W)
   obtain ⟨ψ, hψ⟩ := exists_ne_zero (R := R) hv
