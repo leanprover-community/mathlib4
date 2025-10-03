@@ -285,12 +285,12 @@ theorem map_comp_heq' (hobj : ∀ X : C, F.obj X = G.obj X)
   rw [Functor.hext hobj fun _ _ => hmap]
 
 theorem precomp_map_heq (H : E ⥤ C) (hmap : ∀ {X Y} (f : X ⟶ Y), F.map f ≍ G.map f) {X Y : E}
-    (f : X ⟶ Y) : (H ⋙ F).map f ≍ (H ⋙ G).map f :=
-  hmap _
+    (f : X ⟶ Y) : (H ⋙ F).map f ≍ (H ⋙ G).map f := by
+  simpa using hmap _
 
 theorem postcomp_map_heq (H : D ⥤ E) (hx : F.obj X = G.obj X) (hy : F.obj Y = G.obj Y)
     (hmap : F.map f ≍ G.map f) : (F ⋙ H).map f ≍ (G ⋙ H).map f := by
-  dsimp
+  simp only [comp_map]
   congr
 
 theorem postcomp_map_heq' (H : D ⥤ E) (hobj : ∀ X : C, F.obj X = G.obj X)
@@ -360,7 +360,8 @@ def Equivalence.induced {T : Type*} (e : T ≃ D) :
         erw [Category.assoc]
         rw [Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp] }
   unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp)) (fun {X Y} f ↦ by
-    dsimp
+    simp only [Functor.id_obj, Lean.Elab.WF.paramLet, Functor.comp_obj, inducedFunctor_obj,
+      Functor.id_map, eqToIso.hom, Functor.comp_map, inducedFunctor_map]
     erw [eqToHom_trans_assoc _ (by simp), eqToHom_refl, Category.id_comp]
     rfl )
   counitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))

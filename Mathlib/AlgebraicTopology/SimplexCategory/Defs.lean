@@ -215,7 +215,7 @@ def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m whe
 /-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
 def inclCompInclusion {n m : ℕ} (h : n ≤ m) :
     incl n m ⋙ inclusion m ≅ inclusion n :=
-  Iso.refl _
+  NatIso.ofComponents (fun _ => Iso.refl _)
 
 end Truncated
 

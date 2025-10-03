@@ -86,6 +86,11 @@ def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F
   hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
 
+@[simps!]
+def compConstObj (X : D) (F : J ⥤ C) :
+   F ⋙ (const C).obj X ≅ (const J).obj X :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
 instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
   map_injective e := NatTrans.congr_app e (Classical.arbitrary J)

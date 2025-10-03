@@ -98,11 +98,17 @@ instance full_ιOfLE (h : P ≤ P') : (ιOfLE h).Full := (fullyFaithfulιOfLE h)
 instance faithful_ιOfLE (h : P ≤ P') : (ιOfLE h).Faithful := (fullyFaithfulιOfLE h).faithful
 
 @[deprecated "use ιOfLECompιIso" (since := "2025-03-04")]
-theorem FullSubcategory.map_inclusion (h : P ≤ P') : ιOfLE h ⋙ P'.ι = P.ι := rfl
+theorem FullSubcategory.map_inclusion (h : P ≤ P') :
+    ιOfLE h ⋙ P'.ι = P.ι := by
+  dsimp only [Functor.comp]
+  congr
+  ext
+  simp
 
 /-- If `h : P ≤ P'` is an inequality of properties of objects,
 this is the obvious isomorphism `ιOfLE h ⋙ P'.ι ≅ P.ι`. -/
-def ιOfLECompιIso (h : P ≤ P') : ιOfLE h ⋙ P'.ι ≅ P.ι := Iso.refl _
+def ιOfLECompιIso (h : P ≤ P') : ιOfLE h ⋙ P'.ι ≅ P.ι :=
+  NatIso.ofComponents (fun X ↦ Iso.refl X.1)
 
 end
 
@@ -120,12 +126,16 @@ def lift : C ⥤ FullSubcategory P where
 
 @[deprecated "use liftCompιIso" (since := "2025-03-04")]
 theorem FullSubcategory.lift_comp_inclusion_eq :
-    P.lift F hF ⋙ P.ι = F :=
-  rfl
+    P.lift F hF ⋙ P.ι = F := by
+  dsimp only [Functor.comp]
+  congr
+  ext
+  simp
 
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
     original functor. This is actually true definitionally. -/
-def liftCompιIso : P.lift F hF ⋙ P.ι ≅ F := Iso.refl _
+def liftCompιIso : P.lift F hF ⋙ P.ι ≅ F :=
+  NatIso.ofComponents (fun X ↦ Iso.refl (F.obj X))
 
 @[simp]
 lemma ι_obj_lift_obj (X : C) :
@@ -146,13 +156,17 @@ variable {Q}
 /-- When `h : P ≤ Q`, this is the canonical isomorphism
 `P.lift F hF ⋙ ιOfLE h ≅ Q.lift F _`. -/
 def liftCompιOfLEIso (h : P ≤ Q) :
-    P.lift F hF ⋙ ιOfLE h ≅ Q.lift F (fun X ↦ h _ (hF X)) := Iso.refl _
+    P.lift F hF ⋙ ιOfLE h ≅ Q.lift F (fun X ↦ h _ (hF X)) :=
+  NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 @[deprecated "Use liftCompιOfLEIso" (since := "2025-03-04")]
 theorem FullSubcategory.lift_comp_map (h : P ≤ Q) :
     P.lift F hF ⋙ ιOfLE h =
-      Q.lift F (fun X ↦  h _ (hF X)) :=
-  rfl
+      Q.lift F (fun X ↦  h _ (hF X)) := by
+  dsimp only [Functor.comp]
+  congr
+  ext
+  simp
 
 end lift
 

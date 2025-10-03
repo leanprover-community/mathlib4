@@ -203,7 +203,7 @@ theorem equivalenceCounitIso_eq (hη : τ₀ = τ₁ hF hG η) :
     (equivalence hF hG).counitIso = equivalenceCounitIso η := by
   ext1; apply NatTrans.ext; ext Y
   dsimp [equivalence]
-  simp only [comp_id, id_comp, Functor.map_comp, equivalence₂CounitIso_eq,
+  simp only [comp_id, id_comp, Functor.comp_map, map_comp, equivalence₂CounitIso_eq,
     equivalence₂CounitIso_hom_app, assoc, equivalenceCounitIso_hom_app]
   simp only [equivalence₂_inverse, comp_obj, ← τ₀_hom_app, hη, τ₁_hom_app, ←
     eB.inverse.map_comp_assoc]

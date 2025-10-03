@@ -205,16 +205,16 @@ abbrev CatCommSqOver :=
 
 namespace CatCommSqOver
 
-/-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
+/-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps]
 instance asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
   iso := S.iso
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
-    F.map (S.fst.map f) ≫ S.iso.hom.app x' =
-    S.iso.hom.app x ≫ G.map (S.snd.map f) :=
-  S.iso.hom.naturality f
+   F.map (S.fst.map f) ≫ S.iso.hom.app x' =
+   S.iso.hom.app x ≫ G.map (S.snd.map f) := by
+  simpa using S.iso.hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma w_app {S S' : CatCommSqOver F G X} (φ : S ⟶ S') (x : X) :
@@ -313,8 +313,8 @@ def mkNatIso {J K : X ⥤ F ⊡ G}
       (by simpa using NatTrans.congr_app coh x))
     (fun {_ _} f ↦ by
       ext
-      · exact e₁.hom.naturality f
-      · exact e₂.hom.naturality f)
+      · simpa using e₁.hom.naturality f
+      · simpa using e₂.hom.naturality f)
 
 /-- To check equality of two natural transformations of functors to a `CategoricalPullback`, it
 suffices to do so after whiskering with the projections. -/
