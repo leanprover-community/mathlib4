@@ -231,7 +231,9 @@ lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
 
 end Functoriality
 
-variable {F : PreZeroHypercover.{w'} S} {G : PreZeroHypercover.{w''} S}
+section
+
+variable (F : PreZeroHypercover.{w'} S) {G : PreZeroHypercover.{w''} S}
 
 /-- The left inclusion into the disjoint union. -/
 @[simps]
@@ -245,6 +247,7 @@ def sumInr : F.Hom (E.sum F) where
   s₀ := Sum.inr
   h₀ _ := 𝟙 _
 
+variable {E F} in
 /-- To give a refinement of the disjoint union, it suffices to give refinements of both
 components. -/
 @[simps]
@@ -253,6 +256,34 @@ def sumLift (f : E.Hom G) (g : F.Hom G) : (E.sum F).Hom G where
   h₀
     | .inl i => f.h₀ i
     | .inr i => g.h₀ i
+
+variable [∀ (i : E.I₀) (j : F.I₀), HasPullback (E.f i) (F.f j)]
+
+/-- First projection from the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interFst : Hom (inter E F) E where
+  s₀ i := i.1
+  h₀ _ := pullback.fst _ _
+
+/-- Second projection from the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interSnd : Hom (inter E F) F where
+  s₀ i := i.2
+  h₀ _ := pullback.snd _ _
+  w₀ i := by simp [← pullback.condition]
+
+variable {E F} in
+/-- Universal property of the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interLift (f : G.Hom E) (g : G.Hom F) :
+    G.Hom (E.inter F) where
+  s₀ i := ⟨f.s₀ i, g.s₀ i⟩
+  h₀ i := pullback.lift (f.h₀ i) (g.h₀ i) (by simp)
+
+end
 
 end PreZeroHypercover
 
