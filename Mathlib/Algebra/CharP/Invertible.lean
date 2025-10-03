@@ -36,6 +36,11 @@ theorem Odd.all [Ring R] [Invertible (2 : R)] (a : R) : Odd a :=
 section Ring
 variable [Ring R] {p : ℕ} [CharP R p]
 
+theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : R)] [Nontrivial R] :
+    ¬ringChar R ∣ t := by
+  rw [← ringChar.spec, ← Ne]
+  exact Invertible.ne_zero (t : R)
+
 theorem CharP.intCast_mul_natCast_gcdA_eq_gcd (n : ℕ) :
     (n * n.gcdA p : R) = n.gcd p := by
   suffices ↑(n * n.gcdA p + p * n.gcdB p : ℤ) = ((n.gcd p : ℤ) : R) by simpa using this
@@ -85,10 +90,6 @@ variable [Semifield K]
 divide `t`. -/
 def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
-
-theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t := by
-  rw [← ringChar.spec, ← Ne]
-  exact Invertible.ne_zero (t : K)
 
 /-- A natural number `t` is invertible in a semifield `K` of characteristic `p` if `p` does not
 divide `t`. -/
