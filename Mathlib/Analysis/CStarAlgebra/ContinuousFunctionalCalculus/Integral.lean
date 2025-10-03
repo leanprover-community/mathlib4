@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis, Anatole Dedecker
 -/
 
 import Mathlib.Analysis.Normed.Algebra.Spectrum
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
