@@ -153,7 +153,7 @@ section
 variable {M : Type*} [AddCommMonoid M] {X Y Z : Type*}
 
 /-- The map `(X → M) → (Y → M)` induced by a map `X → Y` between finite types. -/
-noncomputable def map [Finite X] [Finite Y] (f : X → Y) (s : X → M) : (Y → M) :=
+noncomputable def map [Finite X] [Finite Y] (f : X → Y) (s : X → M) : Y → M :=
   Finsupp.equivFunOnFinite (Finsupp.mapDomain f (Finsupp.equivFunOnFinite.symm s))
 
 lemma map_apply_apply [Fintype X] [Finite Y] [DecidableEq Y] (f : X → Y) (s : X → M) (y : Y) :
