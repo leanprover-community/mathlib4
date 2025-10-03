@@ -835,7 +835,7 @@ end Reindex
 
 section
 
-variable {J : Type u₂} [Category.{v₂, u₂} J] (F : J ⥤ C)
+variable {J : Type u₂} [Category.{v₂} J] (F : J ⥤ C)
 
 instance [HasLimit F] [HasProduct F.obj] : Mono (Pi.lift (limit.π F)) where
   right_cancellation _ _ h := by
