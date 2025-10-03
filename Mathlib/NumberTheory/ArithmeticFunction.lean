@@ -491,6 +491,11 @@ def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
 theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif_pos rfl]
 
 @[simp]
+theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by
+  simp only [ppow, pow_one]
+  rfl
+
+@[simp]
 theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
   rw [ppow, dif_neg (Nat.ne_of_gt kpos), coe_mk]
 
