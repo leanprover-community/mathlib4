@@ -163,7 +163,7 @@ theorem δ₀₁_aux_well_defined_1 (b b' : B) (c : H0 G C) (hb : g b = c) (hb' 
     neg_add_cancel])⟩, fun h ↦ hf (by simp [δ₀₁_aux, ← add_assoc])⟩
 
 noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
-    ⟦δ₀₁_aux hf hfg (Classical.choose (hg x)) x (Classical.choose_spec (hg x))⟧
+    ⟦δ₀₁_aux hf hfg (hg x).choose x (hg x).choose_spec⟧
 
 theorem δ₀₁_eq_of_map (b : B) (c : H0 G C) (hb : g b = c) :
     δ₀₁ hf hg hfg c = ⟦δ₀₁_aux hf hfg b c hb⟧ :=
@@ -190,7 +190,7 @@ theorem exact₂ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := by
 
 theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := by
   refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ hx ▸ Quotient.eq_iff_equiv.mpr
-    ⟨- (Classical.choose (hg x)), fun h ↦ by simp⟩⟩
+    ⟨- (hg x).choose, fun h ↦ by simp⟩⟩
   induction y using Quotient.ind
   simp only [H1.map, Quotient.map_mk, zero_def] at h
   obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
@@ -302,8 +302,7 @@ theorem δ₁₂_aux_well_defined_1 (b b' : G → B) (c : Z1 G C) (hbc : ∀ (x 
     (hbc' : ∀ (x : G), c x = g (b' x)) :
     ((δ₁₂_aux hf hfg hA b c hbc) - (δ₁₂_aux hf hfg hA b' c hbc') : (ModuleCat.of k (G × G → A))) ∈
     (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := by
-  obtain a : ∀ (h : G), ∃ (a : A), f a = b h - b' h := fun h ↦ (hfg _).mp
-    (by simp [← hbc h, ← hbc' h])
+  obtain a := fun h ↦ (hfg _).mp (show g (b h - b' h) = 0 by simp [← hbc h, ← hbc' h])
   choose a ha using a
   refine ⟨a, funext fun ⟨h, h'⟩ ↦ hf (sub_eq_zero.mp ?_)⟩
   simp only [d₁₂_hom_apply, sub_eq_add_neg, map_add, δ₁₂_aux, cocycles₂.val_eq_coe,
@@ -339,12 +338,12 @@ theorem δ₁₂_aux_well_defined_2 (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ 
 
 noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
   refine (H2Iso A).symm.hom ∘ Quotient.lift (Submodule.Quotient.mk ∘
-    (fun c ↦ ((δ₁₂_aux hf hfg hA (fun x ↦ Classical.choose (hg (c x))) c
-      (fun x ↦ (Classical.choose_spec (hg (c x))).symm)))))
+    (fun c ↦ ((δ₁₂_aux hf hfg hA (fun x ↦ (hg (c x)).choose) c
+      (fun x ↦ (hg (c x)).choose_spec.symm)))))
         (fun c c' (hcc' : Z1.cohomologous c c') ↦ ?_)
-  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined_2 hf hg hfg hA (fun x ↦ Classical.choose (hg (c x)))
-    (fun x ↦ Classical.choose (hg (c' x))) c c' (fun x ↦ (Classical.choose_spec (hg (c x))).symm)
-      (fun x ↦ (Classical.choose_spec (hg (c' x))).symm) hcc'
+  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined_2 hf hg hfg hA (fun x ↦ (hg (c x)).choose)
+    (fun x ↦ (hg (c' x)).choose) c c' (fun x ↦ (hg (c x)).choose_spec.symm)
+      (fun x ↦ (hg (c' x)).choose_spec.symm) hcc'
   exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
 
 theorem exact₅ : Function.Exact (H1.map g) (δ₁₂ hf hg hfg hA) := sorry
