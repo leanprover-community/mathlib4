@@ -299,24 +299,49 @@ variable [Small.{v} R] [UnivLE.{v, w}]
 local instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
+def quotSMulTop_linearEquiv (x : R) {M N : Type*} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (f : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) :=
+  sorry
+
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (rs : List R) :
     (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M rs.length) ≃ₗ[R]
     M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := by
   generalize len : rs.length = n
-  induction n generalizing M rs
+  induction n generalizing rs
   · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
     let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans
       (AlgEquiv.quotientBot R R).toLinearEquiv
     exact ((Ext.linearEquiv₀.trans (ModuleCat.homLinearEquiv.trans (e₀.congrLeft M R))).trans
       (LinearMap.ringLmapEquivSelf R R M)).trans (Submodule.quotEquivOfEqBot ⊥ rfl).symm
-  · rename_i n hn _ _
+  · rename_i n hn
+    --need refactor by considering element in the tail instead of the head
+    /-
     match rs with
     | [] => simp at len
     | x :: rs' =>
-      let e := Submodule.quotOfListConsSMulTopEquivQuotSMulTopOuter M x rs'
-      --#check (((extFunctor.{w} n).mapIso ???.op).app M)
-      sorry
+      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
+      let e2 := Submodule.quotOfListConsSMulTopEquivQuotSMulTopOuter M x rs'
+      let eih := quotSMulTop_linearEquiv x (hn rs' len)
+      let e : (Shrink.{v, u} (R ⧸ Ideal.ofList (x :: rs'))) ≃ₗ[R]
+        (QuotSMulTop x (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) :=
+        sorry
+      let e1' : Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList (x :: rs')))) M (n + 1) ≃ₗ[R]
+        Ext (ModuleCat.of R (QuotSMulTop x (Shrink.{v, u} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
+          __ := (((extFunctor.{w} (n + 1)).mapIso e.toModuleIso.op).app
+            M).addCommGroupIsoToAddEquiv.symm
+          map_smul' := sorry }
+      let S := (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))).smulShortComplex x
+      have reg : IsSMulRegular x (Shrink.{v, u} (R ⧸ Ideal.ofList rs')) := sorry
+      have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
+      let e1 : Ext (ModuleCat.of R (QuotSMulTop x (Shrink.{v, u} (R ⧸ Ideal.ofList rs')))) M (n + 1)
+        ≃ₗ[R] QuotSMulTop x (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) M n) :=
+
+        sorry
+      exact ((e1'.trans e1).trans eih).trans e2.symm
+      -/
+    sorry
+
 
 omit [IsLocalRing R] in
 lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.Finite R N] (n : ℕ)
@@ -466,12 +491,18 @@ section
 
 variable [Small.{v} R]
 
-lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R)
-    (h : injectiveDimension M ≠ ⊤) : supportDim R M ≤ injectiveDimension M := by
-
+lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) :
+    supportDim R M ≤ injectiveDimension M := by
+  --need localization commute with localization
+  --use `IsLocalizedModule` to state
+  --for `i ≥ 2`, dimension shift
+  --for `i = 0`, proven
+  --for `i = 1`, use exactness lemma for `IsLocalizedModule` to prove cokernel is localized module
+  --can set up totally abstract lemmas
   sorry
 
-lemma injectiveDimension_eq_depth (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) :
+lemma injectiveDimension_eq_depth
+    (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Nontrivial M] :
     injectiveDimension M = IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
 
   sorry
@@ -491,7 +522,7 @@ theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing
     IsCohenMacaulayLocalRing R := by
   have := (isGorensteinLocalRing_def R).mp ‹_›
   have eq := injectiveDimension_eq_depth (ModuleCat.of R R) this
-  have le := supportDim_le_injectiveDimension (ModuleCat.of R R) this
+  have le := supportDim_le_injectiveDimension (ModuleCat.of R R)
   rw [Module.supportDim_self_eq_ringKrullDim, eq] at le
   apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth R (le_of_le_of_eq le _)
   simp [IsLocalRing.depth_eq_of_iso (Shrink.linearEquiv.{u} R R).toModuleIso]
