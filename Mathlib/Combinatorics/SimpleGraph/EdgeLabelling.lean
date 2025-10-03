@@ -90,8 +90,7 @@ def pullback (C : EdgeLabelling G K) (f : G' ↪g G) : EdgeLabelling G' K :=
   C ∘ f.mapEdgeSet
 
 @[simp]
-theorem pullback_apply {f : G' ↪g G} e :
-    C.pullback f e = C (f.mapEdgeSet e) :=
+theorem pullback_apply {f : G' ↪g G} e : C.pullback f e = C (f.mapEdgeSet e) :=
   rfl
 
 @[simp]
@@ -153,8 +152,8 @@ theorem labelGraph_le (C : EdgeLabelling G K) {k : K} : C.labelGraph k ≤ G := 
   rintro ⟨h, -⟩
   exact h
 
-theorem pairwiseDisjoint {C : EdgeLabelling G K} :
-    Set.PairwiseDisjoint (Set.univ : Set K) C.labelGraph := by
+theorem pairwiseDisjoint_univ_labelGraph {C : EdgeLabelling G K} :
+    Set.PairwiseDisjoint (@Set.univ K) C.labelGraph := by
   intro k₁ hk₁ k₂ _ h
   rw [Function.onFun, SimpleGraph.disjoint_left]
   simp only [labelGraph_adj, not_exists, forall_exists_index]
@@ -194,8 +193,7 @@ From a simple graph on `V`, construct the edge labelling on the complete graph o
 edges are labelled `1` and non-edges are labelled `0`.
 -/
 def toTopEdgeLabelling (G : SimpleGraph V) [DecidableRel G.Adj] : TopEdgeLabelling V (Fin 2) :=
-  EdgeLabelling.mk (fun x y _ => if G.Adj x y then 1 else 0) fun x y _ => by
-    simp only [G.adj_comm]
+  EdgeLabelling.mk (fun x y _ => if G.Adj x y then 1 else 0) (by simp [G.adj_comm])
 
 @[simp]
 theorem toTopEdgeLabelling_get {G : SimpleGraph V} [DecidableRel G.Adj] {x y : V} (H : x ≠ y) :
@@ -215,7 +213,7 @@ theorem TopEdgeLabelling.labelGraph_toTopEdgeLabelling [DecidableEq V]
   simp only [Ne.eq_def, toTopEdgeLabelling_get, TopEdgeLabelling.labelGraph_adj]
   split_ifs with h_1
   · rw [← h_1.choose_spec]
-  have : ∀ {x : Fin 2},  x ≠ 1 → x = 0 := by decide
-  exact (this ((not_exists.mp h_1) h)).symm
+  have : ∀ {x : Fin 2}, x ≠ 1 → x = 0 := by decide
+  exact this (not_exists.mp h_1 h) |>.symm
 
 end SimpleGraph

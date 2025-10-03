@@ -638,7 +638,7 @@ instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
 end FromEdgeSet
 
 theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x y → ¬H.Adj x y := by
-  simp only [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall, mem_edgeSet]
+  simp [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
 
 /-! ### Incidence set -/
 
