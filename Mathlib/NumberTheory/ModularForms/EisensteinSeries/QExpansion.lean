@@ -48,6 +48,8 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
   ring
 
 open BoundedContinuousFunction in
+/-- The infinte sum of `k`-th iterated derivative of the complex exponential multiplied by a
+function that grows polynomially is absolutely and uniformly convergent. -/
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f : ℕ → ℂ} {p : ℝ}
     (hp : 0 < p) (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
     SummableLocallyUniformlyOn (fun n ↦ (f n) •
@@ -88,7 +90,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_cexp (k : ℕ) :
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp k 1 (p := 1)
     (by norm_num) h0
 
-theorem differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : IsOpen s)
+lemma differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : IsOpen s)
     {r : ℂ} (hr : r ∈ s) : DifferentiableAt ℂ
       (iteratedDerivWithin a (fun z ↦ cexp (2 * π * I * z) ^ n) s) r := by
   apply DifferentiableOn.differentiableAt _ (hs.mem_nhds hr)
@@ -106,7 +108,7 @@ lemma iteratedDerivWithin_tsum_cexp_eq (k : ℕ) (z : ℍ) :
   · exact fun n l z hl hz ↦ differentiableAt_iteratedDerivWithin_cexp n l
       isOpen_upperHalfPlaneSet hz
 
-theorem contDiffOn_tsum_cexp (k : ℕ∞) :
+lemma contDiffOn_tsum_cexp (k : ℕ∞) :
     ContDiffOn ℂ k (fun z : ℂ ↦ ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ :=
   contDiffOn_of_differentiableOn_deriv fun m _ z hz ↦
   (((summableLocallyUniformlyOn_iteratedDerivWithin_cexp m).differentiableOn
@@ -140,6 +142,9 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
   simpa [this, UpperHalfPlane.coe] using
     iteratedDerivWithin_cexp_aux k n 1 isOpen_upperHalfPlaneSet z.2
 
+/--This is one key identity relating infinite series to q-expansions which shows that
+`∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n, n ^ k q ^n` where
+`q = cexp (2 π I z)`-/
 theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / k !) *
     ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
@@ -157,7 +162,7 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
   ring_nf
   simp [Nat.mul_two]
 
-theorem summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
+lemma summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
     Summable fun c : ℕ ↦ (c : ℂ) ^ k * cexp (2 * π * I * e * z) ^ c := by
   have he : 0 < (e * (z : ℂ)).im := by
     simpa using z.2
@@ -166,6 +171,9 @@ theorem summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
   grind [ofReal_one, iteratedDerivWithin_zero, Pi.smul_apply, smul_eq_mul]
 
+/--This is a version of `EisensteinSeries.qExpansion_identity` for positive naturals,
+which shows that  `∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n : ℕ+, n ^ k q ^n`
+where `q = cexp (2 π I z)`. -/
 theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / k !) *
     ∑' n : ℕ+, n ^ k * cexp (2 * π * I * z) ^ (n : ℕ) := by
