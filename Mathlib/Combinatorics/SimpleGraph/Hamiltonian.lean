@@ -63,6 +63,25 @@ variable [Fintype α]
 lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
   simp [eq_univ_iff_forall, hp]
 
+def IsHamiltonian.supportGetEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α :=
+  p.support.getEquivOfForallCountEqOne hp
+
+def IsHamiltonian.getVertEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α where
+  toFun i := p.getVert i
+  invFun := IsHamiltonian.supportGetEquiv hp |>.invFun
+  left_inv i := by
+    dsimp only
+    have := i.prop.trans_eq p.length_support
+    rw [getVert_eq_support_getElem _ <| by cutsat]
+    have := p.support.idxOf_getElem hp.isPath.support_nodup _ i.prop
+    simp [IsHamiltonian.supportGetEquiv, List.getEquivOfForallCountEqOne,
+      List.Nodup.getEquivOfForallMemList]
+    congr
+  right_inv a := by
+    have := hp.supportGetEquiv.symm a |>.prop
+    exact (getVert_eq_support_getElem _ <| Nat.le_of_lt_add_one <| this.trans_eq p.length_support)
+      |>.trans <| p.support.getElem_idxOf this
+
 /-- The length of a Hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
   eq_tsub_of_add_eq <| by
