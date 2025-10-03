@@ -118,45 +118,47 @@ elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← whnf <|← instantiateMVars <|← inferType e
   match etype with
-  | .forallE x base tgt _ =>
+  | .forallE x base tgt _ => withLocalDeclD x base fun x ↦ do
+    let tgtHasLooseBVars := tgt.hasLooseBVars
+    let tgt := tgt.instantiate1 x
+    -- Note: we do not run `whnfR` on `tgt` because `Bundle.Trivial` is reducible.
     match_expr tgt with
     | Bundle.Trivial E E' _ =>
       trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle"
       if ← withReducible (isDefEq E base) then
-        return ← withLocalDeclD x base fun x ↦ do
-          let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
-          mkLambdaFVars #[x] body
+        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
+        mkLambdaFVars #[x] body
+      else return e
     | TangentSpace _k _ E _ _ _H _ _I _M _ _ _x =>
       trace[Elab.DiffGeo.TotalSpaceMk] "Vector field"
-      return ← withLocalDeclD x base fun x ↦ do
-        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
-        mkLambdaFVars #[x] body
-    | _ => match tgt with
+      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
+      mkLambdaFVars #[x] body
+    | _ => match (← instantiateMVars tgt).cleanupAnnotations with
       | .app V _ =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
-        for decl in ← getLocalHyps do
-          let decltype ← instantiateMVars <|← inferType decl
-          match decltype with
-          | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ =>
-            if ← withReducible (isDefEq E V) then
-              return ← withLocalDeclD x base fun x ↦ do
-                let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, .app e x]
-                mkLambdaFVars #[x] body
-          | _ => pure ()
+        let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦
+          /- Note: we do not use `match_expr` here since that would require importing
+          `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
+          match declType with
+          | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
+            if ← withReducible (pureIsDefEq E V) then
+              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, .app e x]
+              some <$> mkLambdaFVars #[x] body
+            else return none
+          | _ => return none
+        return f?.getD e
       | tgt =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
         -- TODO: can `tgt` depend on `x` in a way that is not a function application?
         -- Check that `x` is not a bound variable in `tgt`!
         -- xxx: is this check fine or overzealous?
-        if tgt.hasLooseBVars then
-          throwError "Term {tgt} has loose bound variables\n\
+        if tgtHasLooseBVars then
+          throwError "Term {tgt} depends on {x}\n\
           Hint: applying the `T%` elaborator twice makes no sense."
         let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
-        return ← withLocalDeclD x base fun x ↦ do
-          let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
-          mkLambdaFVars #[x] body
-  | _ => pure ()
-  return e
+        let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
+        mkLambdaFVars #[x] body
+  | _ => return e
 
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
 failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
