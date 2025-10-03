@@ -71,7 +71,6 @@ theorem fun_bcf_smul {f : X → E} (hf : LocallyIntegrable f μ) (φ : X →ᵇ 
   (ae_of_all _ fun x ↦ by
     grw [norm_smul, Pi.smul_apply, norm_smul, norm_coe_le_norm φ _, norm_norm])
 
-
 variable [SMulCommClass ℝ 𝕜 E]
 variable [T2Space X]
 
