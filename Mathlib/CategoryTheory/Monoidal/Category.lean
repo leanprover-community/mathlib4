@@ -152,9 +152,6 @@ scoped notation "𝟙_ " C:arg => MonoidalCategoryStruct.tensorUnit C
 /-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
 scoped notation "α_" => MonoidalCategoryStruct.associator
 
-/-- Notation for the additive monoidal `addAssociator`: `(X ⊕ₒ Y) ⊕ₒ Z ≃ X ⊕ₒ (Y ⊕ₒ Z)` -/
-scoped notation "α⁺" => AddMonoidalCategoryStruct.addAssociator
-
 /-- Notation for the `leftUnitor`: `𝟙_C ⊗ X ≃ X` -/
 scoped notation "λ_" => MonoidalCategoryStruct.leftUnitor
 
@@ -189,6 +186,9 @@ scoped infixr:70 " ⊕ₘ " => AddMonoidalCategoryStruct.addHom
 
 /-- Notation for `addUnit`, the two-sided identity of `⊕ₒ` -/
 scoped notation "𝟘_ " C:arg => AddMonoidalCategoryStruct.addUnit C
+
+/-- Notation for the additive monoidal `addAssociator`: `(X ⊕ₒ Y) ⊕ₒ Z ≃ X ⊕ₒ (Y ⊕ₒ Z)` -/
+scoped notation "α⁺" => AddMonoidalCategoryStruct.addAssociator
 
 /-- Notation for the `leftAddUnitor`: `𝟘_C ⊕ₒ X ≃ X` -/
 scoped notation "λ⁺" => AddMonoidalCategoryStruct.leftAddUnitor
