@@ -24,22 +24,13 @@ open MeasureTheory Set Filter Function
 
 open scoped Topology ENNReal Interval NNReal
 
-/-- If `f` differentiable at `x ∈ uIoo a b` within `uIcc a b`, then `f'` exists at `x`. -/
-theorem DifferentiableWithinAt.hasDerivAt_interval {f : ℝ → ℝ} {a b x : ℝ}
-    (hf : DifferentiableWithinAt ℝ f (uIcc a b) x) (hx : x ∈ uIoo a b) :
-    HasDerivAt f (deriv f x) x := by
-  rw [uIoo, mem_Ioo] at hx
-  have : uIoo a b ∈ 𝓝 x := Ioo_mem_nhds hx.left hx.right
-  have hx₁ := hf.hasDerivWithinAt.hasDerivAt (mem_of_superset this Ioo_subset_Icc_self)
-  rwa [hx₁.deriv]
 
-/-- If `f` is monotone on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
-theorem MonotoneOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ} (hf : MonotoneOn f (uIcc a b)) :
+/-- If `f` is monotone, then `f'` is interval integrable on `a..b` for any `a` and `b`. -/
+theorem Monotone.deriv_intervalIntegrable {f : ℝ → ℝ} (hf : Monotone f) (a b : ℝ) :
     IntervalIntegrable (deriv f) volume a b := by
   wlog hab : a ≤ b generalizing a b
-  · exact @this b a (uIcc_comm a b ▸ hf) (by linarith) |>.symm
-  rw [uIcc_of_le hab] at hf
-  let g (x : ℝ) : ℝ := if x <= a then f a else if x < b then f x else f b
+  · exact @this b a (by linarith) |>.symm
+  let g (x : ℝ) : ℝ := if x < b then f x else f b
   have hg : Monotone g := by
     intro x y hxy
     dsimp only [g]
@@ -49,9 +40,9 @@ theorem MonotoneOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ} (hf : 
   have hgc (c : ℝ) : Monotone (fun x ↦ g (x + c)) := Monotone.covariant_of_const' hg c
   have h₁ : ∀ᵐ x, x ≠ a := by simp [ae_iff, measure_singleton]
   have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
-  have hg₂ : ∀ᵐ (x : ℝ), HasDerivAt g (deriv g x) x ∧ 0 ≤ deriv g x := by
+  have hg₂ : ∀ᵐ (x : ℝ), DifferentiableAt ℝ g x ∧ 0 ≤ deriv g x := by
     filter_upwards [hg.ae_differentiableAt] with x hx₁
-    exact ⟨hx₁.hasDerivAt, hg.deriv_nonneg⟩
+    exact ⟨hx₁, hg.deriv_nonneg⟩
   have hfg : ∀ x ∈ Ioo a b, deriv f x = deriv g x := by
     intro x hx
     rw [mem_Ioo] at hx
@@ -74,9 +65,9 @@ theorem MonotoneOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ} (hf : 
   have G_measurable_ab (n : ℕ) : AEMeasurable ((Ioc a b).indicator (G (n : ℝ)⁻¹)) volume := by
     apply (G_measurable n).indicator; simp
   have G_lim : ∀ᵐ (x : ℝ), Filter.Tendsto (fun (n : ℕ) ↦ G (n : ℝ)⁻¹ x) Filter.atTop
-      (nhds (deriv g x)) := by
+      (𝓝 (deriv g x)) := by
     filter_upwards [hg₂] with x ⟨hx₁, hx₂⟩
-    rw [hasDerivAt_iff_tendsto_slope] at hx₁
+    replace hx₁ := hasDerivAt_iff_tendsto_slope.mp hx₁.hasDerivAt
     dsimp only [G]
     refine hx₁.comp <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_
     · convert tendsto_const_nhds.add tendsto_inverse_atTop_nhds_zero_nat
@@ -128,13 +119,8 @@ theorem MonotoneOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ} (hf : 
   constructor
   · suffices AEStronglyMeasurable (deriv g) (volume.restrict (Ioc a b)) by
       apply this.congr
-      have h₃ : ∀ᵐ x ∂(volume.restrict (Ioc a b)), x ∈ Ioc a b := by
-        apply MeasureTheory.ae_restrict_mem; simp
-      have h₄ : ∀ᵐ x ∂(volume.restrict (Ioc a b)), x ≠ b := by
-        rw [MeasureTheory.ae_restrict_iff' (by simp)]
-        filter_upwards [h₂] with x hx₁ hx₂
-        exact hx₁
-      filter_upwards [h₃, h₄] with x hx₁ hx₂
+      rw [EventuallyEq, ae_restrict_iff' (by simp)]
+      filter_upwards [h₂] with x hx₁ hx₂
       symm; apply hfg
       simp [← Ioc_diff_right, mem_diff, hx₁, hx₂]
     suffices AEStronglyMeasurable (deriv g) from this.restrict
@@ -197,6 +183,33 @@ theorem MonotoneOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ} (hf : 
         exact G_bound hn
       _ < ∞ := ENNReal.ofReal_lt_top
 
+/-- If `f` is monotone on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
+theorem MonotoneOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ} (hf : MonotoneOn f (uIcc a b)) :
+    IntervalIntegrable (deriv f) volume a b := by
+  wlog hab : a ≤ b generalizing a b
+  · exact @this b a (uIcc_comm a b ▸ hf) (by linarith) |>.symm
+  rw [uIcc_of_le hab] at hf
+  let g (x : ℝ) : ℝ := if x <= a then f a else if x < b then f x else f b
+  have hg : Monotone g := by
+    intro x y hxy
+    dsimp only [g]
+    split_ifs <;> try linarith
+    all_goals apply hf
+    all_goals grind
+  have hgc (c : ℝ) : Monotone (fun x ↦ g (x + c)) := Monotone.covariant_of_const' hg c
+  have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
+  have hfg : ∀ x ∈ Ioo a b, deriv f x = deriv g x := by
+    intro x hx
+    rw [mem_Ioo] at hx
+    apply Filter.EventuallyEq.deriv_eq
+    filter_upwards [Ioo_mem_nhds hx.left hx.right] with y hy
+    simp [g, mem_Ioo.mp hy]
+  apply hg.deriv_intervalIntegrable a b |>.congr
+  rw [uIoc_of_le hab, EventuallyEq, ae_restrict_iff' (by simp)]
+  filter_upwards [h₂] with x hx₁ hx₂
+  symm; apply hfg
+  simp [← Ioc_diff_right, mem_diff, hx₁, hx₂]
+
 /-- If `f` has locally bounded variation on `uIcc a b`, then `f'` is interval integrable on
 `a..b`. -/
 theorem LocallyBoundedVariationOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ}
@@ -205,18 +218,17 @@ theorem LocallyBoundedVariationOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a 
   obtain ⟨p, q, hp, hq, rfl⟩ := hf.exists_monotoneOn_sub_monotoneOn
   have h₁ : ∀ᵐ x, x ≠ min a b := by simp [ae_iff, measure_singleton]
   have h₂ : ∀ᵐ x, x ≠ max a b := by simp [ae_iff, measure_singleton]
-  have hp₁ := hp.deriv_intervalIntegrable
-  have hq₁ := hq.deriv_intervalIntegrable
   have hp₂ := hp.ae_differentiableWithinAt_of_mem
   have hq₂ := hq.ae_differentiableWithinAt_of_mem
-  apply (hp₁.sub hq₁).congr
+  apply (hp.deriv_intervalIntegrable.sub hq.deriv_intervalIntegrable).congr
   rw [Filter.EventuallyEq, MeasureTheory.ae_restrict_iff' (by simp [uIoc])]
   filter_upwards [hp₂, hq₂, h₁, h₂] with x hx₁ hx₂ hx₃ hx₄ hx₅
   have hx₆ : x ∈ uIcc a b := Ioc_subset_Icc_self hx₅
   have hx₇ : x ∈ uIoo a b := by
     rw [uIoo, ← Icc_diff_both, mem_diff, ← uIcc]; simp [hx₃, hx₄, hx₆]
-  replace hx₁ := (hx₁ hx₆).hasDerivAt_interval hx₇
-  replace hx₂ := (hx₂ hx₆).hasDerivAt_interval hx₇
+  rw [uIoo, mem_Ioo] at hx₇
+  replace hx₁ := (hx₁ hx₆).differentiableAt (Icc_mem_nhds hx₇.left hx₇.right) |>.hasDerivAt
+  replace hx₂ := (hx₂ hx₆).differentiableAt (Icc_mem_nhds hx₇.left hx₇.right) |>.hasDerivAt
   rw [(hx₁.sub hx₂).deriv]
 
 /-- If `f` is absolute continuous on `uIcc a b`, then `f` is a.e. differentiable on `uIcc a b`. -/
@@ -226,14 +238,15 @@ theorem AbsolutelyContinuousOnInterval.ae_differentiableWithinAt {f : ℝ → �
   hf.boundedVariationOn.locallyBoundedVariationOn.ae_differentiableWithinAt_of_mem
 
 /-- If `f` is absolute continuous on `uIcc a b`, then `f` exists a.e. on `uIcc a b`. -/
-theorem AbsolutelyContinuousOnInterval.ae_hasDerivAt {f : ℝ → ℝ} {a b : ℝ}
+theorem AbsolutelyContinuousOnInterval.ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) :
-    ∀ᵐ (x : ℝ), x ∈ Set.uIcc a b → HasDerivAt f (deriv f x) x := by
+    ∀ᵐ (x : ℝ), x ∈ Set.uIcc a b → DifferentiableAt ℝ f x := by
   have h₁ : ∀ᵐ x, x ≠ min a b := by simp [ae_iff, measure_singleton]
   have h₂ : ∀ᵐ x, x ≠ max a b := by simp [ae_iff, measure_singleton]
   filter_upwards [hf.ae_differentiableWithinAt, h₁, h₂] with x hx₁ hx₂ hx₃ hx₄
   have : x ∈ uIoo a b := by rw [uIoo, ← Icc_diff_both, mem_diff, ← uIcc]; simp [hx₂, hx₃, hx₄]
-  exact (hx₁ hx₄).hasDerivAt_interval this
+  rw [uIoo, mem_Ioo] at this
+  exact (hx₁ hx₄).differentiableAt (Icc_mem_nhds this.left this.right)
 
 /-- If `f` is absolute continuous on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
 theorem AbsolutelyContinuousOnInterval.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ}

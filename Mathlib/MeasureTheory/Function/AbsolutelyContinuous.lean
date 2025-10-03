@@ -263,7 +263,7 @@ theorem fun_mul {f g : ℝ → ℝ}
 on `uIcc a b`. -/
 theorem mul {f g : ℝ → ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
+    AbsolutelyContinuousOnInterval (f * g) a b :=
   hf.fun_mul hg
 
 /-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
