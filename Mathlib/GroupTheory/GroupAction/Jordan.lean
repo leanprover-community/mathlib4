@@ -144,7 +144,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     have : 1 < s.ncard := by rwa [hsn]
     rw [Set.one_lt_ncard] at this
     obtain ⟨a, ha, b, hb, hab⟩ := this
-    -- apply rudio to get g ∈ G such that a ∈ g • s, b ∉ g • s
+    -- apply Rudio to get g ∈ G such that a ∈ g • s, b ∉ g • s
     obtain ⟨g, hga, hgb⟩ :=
       exists_mem_smul_and_notMem_smul (G := G) s.toFinite hs_nonempty hs_ne_top hab
     let t := s ∩ g • s
