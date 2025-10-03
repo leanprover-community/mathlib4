@@ -1011,6 +1011,13 @@ def _root_.ContinuousMultilinearMap.flipLinear (f : ContinuousMultilinearMap �
     gcongr
     apply f.le_opNorm
 
+@[simp] lemma flipLinear_flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
+    f.flipMultilinear.flipLinear = f := rfl
+
+@[simp] lemma _root_.ContinuousMultilinearMap.flipMultilinear_flipLinear
+    (f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) :
+    f.flipLinear.flipMultilinear = f := rfl
+
 variable (𝕜 E G G') in
 /-- Flipping arguments gives a linear equivalence between `G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'`
 and `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
@@ -1040,6 +1047,14 @@ def flipMultilinearEquiv : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃
     simp only [flipMultilinearEquivₗ, LinearEquiv.coe_symm_mk, one_mul]
     apply MultilinearMap.mkContinuousLinear_norm_le
     positivity
+
+@[simp] lemma coe_flipMultilinearEquiv :
+    (flipMultilinearEquiv 𝕜 E G G' : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') →
+      (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G'))) = flipMultilinear := rfl
+
+@[simp] lemma coe_symm_flipMultilinearEquiv :
+    ((flipMultilinearEquiv 𝕜 E G G').symm : (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) →
+    (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G')) = flipLinear := rfl
 
 end ContinuousLinearMap
 
