@@ -142,9 +142,9 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
   simpa [this, UpperHalfPlane.coe] using
     iteratedDerivWithin_cexp_aux k n 1 isOpen_upperHalfPlaneSet z.2
 
-/--This is one key identity relating infinite series to q-expansions which shows that
+/-- This is one key identity relating infinite series to q-expansions which shows that
 `∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n, n ^ k q ^n` where
-`q = cexp (2 π I z)`-/
+`q = cexp (2 π I z)`. -/
 theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) = ((-2 * π * I) ^ (k + 1) / k !) *
     ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
@@ -171,7 +171,7 @@ lemma summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
   grind [ofReal_one, iteratedDerivWithin_zero, Pi.smul_apply, smul_eq_mul]
 
-/--This is a version of `EisensteinSeries.qExpansion_identity` for positive naturals,
+/-- This is a version of `EisensteinSeries.qExpansion_identity` for positive naturals,
 which shows that  `∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n : ℕ+, n ^ k q ^n`
 where `q = cexp (2 π I z)`. -/
 theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
