@@ -80,6 +80,26 @@ open Qq
 
 namespace Manifold.Elab
 
+/-- Finds the first local instance of class `c` for which `p inst type` produces `some a`.
+Instantiates mvars in and runs `whnfR` on `type` before passing it to `p`. (Does not validate that
+`c` resolves to a class.) -/
+private def findSomeLocalInstanceOf? (c : Name) {α} (p : Expr → Expr → MetaM (Option α)) :
+    MetaM (Option α) := do
+  (← getLocalInstances).findSomeM? fun inst ↦ do
+    if inst.className == c then
+      let type ← whnfR <|← instantiateMVars <|← inferType inst.fvar
+      p inst.fvar type
+    else return none
+
+/-- Finds the most recent local declaration for which `p fvar type` produces `some a`.
+Skips implementation details; instantiates mvars in and runs `whnfR` on `type` before providing it
+to `p`. -/
+private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : MetaM (Option α) := do
+  (← getLCtx).findDeclRevM? fun decl ↦ do
+    if decl.isImplementationDetail then return none
+    let type ← whnfR <|← instantiateMVars decl.type
+    p decl.toExpr type
+
 /-- Elaborator for sections in a fibre bundle: converts a section as a dependent function
 to a non-dependent function into the total space. This handles the cases of
 - sections of a trivial bundle
@@ -134,26 +154,6 @@ elab:max "T% " t:term:arg : term => do
           mkLambdaFVars #[x] body
   | _ => pure ()
   return e
-
-/-- Finds the first local instance of class `c` for which `p inst type` produces `some a`.
-Instantiates mvars in and runs `whnfR` on `type` before passing it to `p`. (Does not validate that
-`c` resolves to a class.) -/
-private def findSomeLocalInstanceOf? (c : Name) {α} (p : Expr → Expr → MetaM (Option α)) :
-    MetaM (Option α) := do
-  (← getLocalInstances).findSomeM? fun inst ↦ do
-    if inst.className == c then
-      let type ← whnfR <|← instantiateMVars <|← inferType inst.fvar
-      p inst.fvar type
-    else return none
-
-/-- Finds the most recent local declaration for which `p fvar type` produces `some a`.
-Skips implementation details; instantiates mvars in and runs `whnfR` on `type` before providing it
-to `p`. -/
-private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : MetaM (Option α) := do
-  (← getLCtx).findDeclRevM? fun decl ↦ do
-    if decl.isImplementationDetail then return none
-    let type ← whnfR <|← instantiateMVars decl.type
-    p decl.toExpr type
 
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
 failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
