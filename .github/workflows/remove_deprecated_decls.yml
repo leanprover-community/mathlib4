@@ -3,9 +3,6 @@ name: Remove outdated deprecated declarations
 on:
   schedule:
   - cron: "5 4 * * 1" # At 04:05, on Monday
-  push:
-   branches:
-   - remove_deprecations_linter_dev_upstream
   workflow_dispatch:
     inputs:
       raw_from_date:
@@ -162,6 +159,9 @@ jobs:
         lake build "${tmplean}"
         echo "::endgroup::"
 
+        echo "Deleting ${tmplean}"
+        rm "${tmplean}"
+
     - name: Create Pull Request
       id: pr
       if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' }}
@@ -172,7 +172,7 @@ jobs:
         commit-message: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
         branch: "deprecated-decls"
         base: master
-        title: "CI TEST: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
+        title: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
         body: |
           I am happy to remove some deprecated declarations for you!
           Please check if there are any remaining stray comments or other issues before merging.
@@ -180,7 +180,7 @@ jobs:
           [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
     - name: Send Zulip message
-      if: steps.pr.outcome == 'success' && false
+      if: steps.pr.outcome == 'success'
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
