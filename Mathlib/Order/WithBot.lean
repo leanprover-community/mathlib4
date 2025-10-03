@@ -193,6 +193,40 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   left_inv _ := by simp
   right_inv _ := by simp
 
+end WithBot
+
+namespace Equiv
+
+/-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithBot e`. -/
+@[simps apply]
+def withBotCongr (e : α ≃ β) : WithBot α ≃ WithBot β where
+  toFun := WithBot.map e
+  invFun := WithBot.map e.symm
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+attribute [grind =] withBotCongr_apply
+
+@[simp]
+theorem withBotCongr_refl : withBotCongr (Equiv.refl α) = Equiv.refl _ :=
+  Equiv.ext <| congr_fun WithBot.map_id
+
+@[simp, grind =]
+theorem withBotCongr_symm (e : α ≃ β) : withBotCongr e.symm = (withBotCongr e).symm :=
+  rfl
+
+@[simp]
+theorem withBotCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+    withBotCongr (e₁.trans e₂) = (withBotCongr e₁).trans (withBotCongr e₂) := by
+  ext x
+  simp
+
+end Equiv
+
+namespace WithBot
+
+variable {a b : α}
+
 section LE
 
 variable [LE α] {x y : WithBot α}
@@ -687,6 +721,40 @@ theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
   invFun x := ⟨x, WithTop.coe_ne_top⟩
   left_inv _ := by simp
   right_inv _:= by simp
+
+end WithTop
+
+namespace Equiv
+
+/-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithTop e`. -/
+@[simps apply]
+def withTopCongr (e : α ≃ β) : WithTop α ≃ WithTop β where
+  toFun := WithTop.map e
+  invFun := WithTop.map e.symm
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+attribute [grind =] withTopCongr_apply
+
+@[simp]
+theorem withTopCongr_refl : withTopCongr (Equiv.refl α) = Equiv.refl _ :=
+  Equiv.ext <| congr_fun WithBot.map_id
+
+@[simp, grind =]
+theorem withTopCongr_symm (e : α ≃ β) : withTopCongr e.symm = (withTopCongr e).symm :=
+  rfl
+
+@[simp]
+theorem withTopCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+    withTopCongr (e₁.trans e₂) = (withTopCongr e₁).trans (withTopCongr e₂) := by
+  ext x
+  simp
+
+end Equiv
+
+namespace WithTop
+
+variable {a b : α}
 
 section LE
 
