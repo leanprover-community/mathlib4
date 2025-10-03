@@ -999,14 +999,13 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
 def _root_.ContinuousMultilinearMap.flipLinear (f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) :
     G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   MultilinearMap.mkContinuousLinear
-    { toFun := fun x ↦
-        { toFun := fun m ↦ f m x
+    { toFun x := 
+        { toFun m := f m x
           map_update_add' := by simp
           map_update_smul' := by simp }
-      map_add' := fun x y ↦ by ext1; simp
-      map_smul' := fun c x ↦ by ext1; simp } ‖f‖ <| fun x m ↦ by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, MultilinearMap.coe_mk]
-    rw [mul_assoc, mul_comm ‖x‖, ← mul_assoc]
+      map_add' x y := by ext1; simp
+      map_smul' c x := by ext1; simp } ‖f‖ <| fun x m ↦ by
+    rw [LinearMap.coe_mk, AddHom.coe_mk, MultilinearMap.coe_mk, mul_right_comm]
     apply ((f m).le_opNorm x).trans
     gcongr
     apply f.le_opNorm
@@ -1034,17 +1033,14 @@ variable (𝕜 E G G') in
 /-- Flipping arguments gives a continuous linear equivalence between
 `G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` and `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 def flipMultilinearEquiv : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃L[𝕜]
-    (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) := by
-  refine LinearEquiv.toContinuousLinearEquivOfBounds (σ := RingHom.id 𝕜)
-    (E := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') (F := ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G'))
-    (flipMultilinearEquivₗ 𝕜 E G G') 1 1
-    ?_ ?_
+    ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G') := by
+  refine (flipMultilinearEquivₗ 𝕜 E G G').toContinuousLinearEquivOfBounds 1 1 ?_ ?_
   · intro f
-    simp only [flipMultilinearEquivₗ, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, one_mul]
+    suffices ‖f.flipMultilinear‖ ≤ ‖f‖ by simpa
     apply MultilinearMap.mkContinuous_norm_le
     positivity
   · intro f
-    simp only [flipMultilinearEquivₗ, LinearEquiv.coe_symm_mk, one_mul]
+    suffices ‖f.flipLinear‖ ≤ ‖f‖ by simpa
     apply MultilinearMap.mkContinuousLinear_norm_le
     positivity
 
