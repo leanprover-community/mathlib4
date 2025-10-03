@@ -217,11 +217,10 @@ def freeForgetAdjunction : free ⊣ Grpd.forgetToCat where
   unit := freeForgetAdjunction.unit
   counit := freeForgetAdjunction.counit
   left_triangle_components C := by
-    simp only [Functor.id_obj, free_obj, Functor.comp_obj, freeForgetAdjunction.unit_app, free_map,
-      map, freeForgetAdjunction.counit_app, coe_of, comp_eq_comp, ← lift_comp]
+    simp only [free_obj, free_map, map, coe_of, comp_eq_comp, ← lift_comp]
     symm
     apply lift_unique
-    simp [Functor.comp_id, forgetToCat, Functor.assoc, lift_spec, Grpd.id_eq_id]
+    simp [Functor.assoc, lift_spec, Grpd.id_eq_id]
   right_triangle_components G := by
     simp [forgetToCat, Cat.comp_eq_comp, lift_spec, Cat.id_eq_id]
 
