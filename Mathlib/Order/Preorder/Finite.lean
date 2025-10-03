@@ -58,7 +58,7 @@ end Finset
 
 namespace Set
 section IsTrans
-variable [LE α] [IsTrans α (@LE.le α _)] {s : Set α} {a : α}
+variable [LE α] [IsTrans α LE.le] {s : Set α} {a : α}
 
 lemma Finite.exists_maximalFor (f : ι → α) (s : Set ι) (h : s.Finite) (hs : s.Nonempty) :
     ∃ i, MaximalFor (· ∈ s) f i := by
