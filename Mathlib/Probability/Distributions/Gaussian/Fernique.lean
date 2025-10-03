@@ -3,21 +3,24 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 import Mathlib.Probability.Distributions.Fernique
 import Mathlib.Probability.Distributions.Gaussian.Basic
-import Mathlib.Probability.Moments.Covariance
 
 /-!
 # Fernique's theorem for Gaussian measures
 
-## Main definitions
-
-* `IsGaussian`
+We show that the product of two identical Gaussian measures is invariant under rotation.
+We then deduce Fernique's theorem, which states that for a Gaussian measure `μ`, there exists
+`C > 0` such that the function `x ↦ exp (C * ‖x‖ ^ 2)` is integrable with respect to `μ`.
+As a consequence, a Gaussian measure has finite moments of all orders.
 
 ## Main statements
 
-* `fooBar_unique`
+* `IsGaussian.exists_integrable_exp_sq`: **Fernique's theorem**. For a Gaussian measure on a
+  second-countable normed space, there exists `C > 0` such that the function
+  `x ↦ exp (C * ‖x‖ ^ 2)` is integrable.
+* `IsGaussian.memLp_id`: a Gaussian measure in a second-countable Banach space has finite moments
+  of all orders.
 
 ## References
 
@@ -41,53 +44,31 @@ lemma two_mul_le_add_mul_sq {R : Type*} [Field R] [LinearOrder R] [IsStrictOrder
 
 end Aux
 
-namespace ProbabilityTheory
+namespace ProbabilityTheory.IsGaussian
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
-  {μ : Measure E} {ν : Measure F} {p : ℝ≥0∞}
-
-variable [IsGaussian μ] [IsGaussian ν] [BorelSpace E] [BorelSpace F]
-
-/-- A product of Gaussian distributions is Gaussian. -/
-instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
-  refine isGaussian_of_charFunDual_eq fun L ↦ ?_
-  rw [charFunDual_prod, IsGaussian.charFunDual_eq, IsGaussian.charFunDual_eq, ← Complex.exp_add]
-  congr
-  let L₁ := L.comp (.inl ℝ E F)
-  let L₂ := L.comp (.inr ℝ E F)
-  suffices μ[L₁] * I - Var[L₁; μ] / 2 + (ν[L₂] * I - Var[L₂; ν] / 2)
-      = (μ.prod ν)[L] * I - Var[L; μ.prod ν] / 2 by convert this
-  rw [sub_add_sub_comm, ← add_mul]
-  congr
-  · simp_rw [integral_complex_ofReal]
-    rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))
-      (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
-    norm_cast
-  · field_simp
-    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
-      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
-    norm_cast
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+  {μ : Measure E} [IsGaussian μ]
 
 section Rotation
 
-/-- The hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` can be simplified to `μ[id] = 0`,
+/-- Characteristic function of a centered Gaussian measure.
+The hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` can be simplified to `μ[id] = 0`,
 but at this point we don't know yet that `μ` has a first moment. -/
-lemma IsGaussian.charFunDual_eq_of_isCentered (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0)
+lemma charFunDual_eq_of_forall_strongDual_eq_zero (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0)
     (L : StrongDual ℝ E) :
-    charFunDual μ L = cexp (- Var[L; μ] / 2) := by
-  rw [IsGaussian.charFunDual_eq L, integral_complex_ofReal, hμ L]
+    charFunDual μ L = exp (- Var[L; μ] / 2) := by
+  rw [charFunDual_eq L, integral_complex_ofReal, hμ L]
   simp [neg_div]
 
-lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
+lemma map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
     (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0) (θ : ℝ) :
     (μ.prod μ).map (ContinuousLinearMap.rotation θ) = μ.prod μ := by
   refine Measure.ext_of_charFunDual ?_
   ext L
-  rw [charFunDual_map, charFunDual_prod, IsGaussian.charFunDual_eq_of_isCentered hμ,
-    IsGaussian.charFunDual_eq_of_isCentered hμ, ← Complex.exp_add, charFunDual_prod,
-    IsGaussian.charFunDual_eq_of_isCentered hμ, IsGaussian.charFunDual_eq_of_isCentered hμ,
-    ← Complex.exp_add]
+  rw [charFunDual_map, charFunDual_prod, charFunDual_eq_of_forall_strongDual_eq_zero hμ,
+    charFunDual_eq_of_forall_strongDual_eq_zero hμ, ← Complex.exp_add, charFunDual_prod,
+    charFunDual_eq_of_forall_strongDual_eq_zero hμ,
+    charFunDual_eq_of_forall_strongDual_eq_zero hμ, ← Complex.exp_add]
   rw [← add_div, ← add_div, ← neg_add, ← neg_add]
   congr 3
   norm_cast
@@ -112,9 +93,8 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
   rw [variance_sub, variance_smul, variance_add, variance_smul, variance_smul, covariance_smul_left,
     covariance_smul_right, variance_smul, covariance_smul_left, covariance_smul_right]
   · have h := Real.cos_sq_add_sin_sq θ
-    simp only [ContinuousLinearMap.coe_comp']
     grind
-  all_goals exact (IsGaussian.memLp_dual _ _ _ (by simp)).const_smul _
+  all_goals exact (memLp_dual _ _ _ (by simp)).const_smul _
 
 end Rotation
 
@@ -122,6 +102,7 @@ section Fernique
 
 variable [SecondCountableTopology E]
 
+/-- the convolution of a Gaussian measure `μ` and its map by `x ↦ -x` is centered. -/
 lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
     (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ)))[L] = 0 := by
   rw [integral_conv (by fun_prop)]
@@ -140,7 +121,7 @@ lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
 
 /-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
 `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
-theorem IsGaussian.exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
+theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
   -- Since `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` is a centered Gaussian measure, it is invariant
   -- under rotation. We can thus apply a version of Fernique's theorem to it.
@@ -208,12 +189,10 @@ variable [CompleteSpace E] [SecondCountableTopology E]
 
 /-- A Gaussian measure has moments of all orders.
 That is, the identity is in Lp for all finite `p`. -/
-lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞) :
-    MemLp id p μ := by
+lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞) : MemLp id p μ := by
   suffices MemLp (fun x ↦ ‖x‖ ^ 2) (p / 2) μ by
-    rw [← memLp_norm_rpow_iff (q := 2) _ (by simp) (by simp)]
-    · simpa using this
-    · fun_prop
+    rw [← memLp_norm_rpow_iff (q := 2) (by fun_prop) (by simp) (by simp)]
+    simpa using this
   lift p to ℝ≥0 using hp
   convert memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
   · simp
@@ -229,25 +208,35 @@ lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp 
     exact fun x hx ↦ integrable_exp_mul_of_le_of_le hC_neg hC hx.1.le hx.2.le
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
 
-lemma IsGaussian.integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
-  L.integral_comp_comm ((IsGaussian.memLp_id μ 1 (by simp)).integrable le_rfl)
+lemma integrable_id : Integrable id μ :=
+  memLp_one_iff_integrable.1 <| memLp_id μ 1 (by norm_num)
 
-lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0) :
+lemma integrable_fun_id : Integrable (fun x ↦ x) μ := integrable_id
+
+lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 (by norm_num)
+
+lemma memLp_two_fun_id : MemLp (fun x ↦ x) 2 μ := memLp_two_id
+
+lemma integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
+  L.integral_comp_comm ((memLp_id μ 1 (by simp)).integrable le_rfl)
+
+/-- A Gaussian measure with variance zero is a Dirac. -/
+lemma eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by
   refine Measure.ext_of_charFunDual ?_
   ext L
-  rw [charFunDual_dirac, IsGaussian.charFunDual_eq L, h L, integral_complex_ofReal,
-    IsGaussian.integral_dual L]
+  rw [charFunDual_dirac, charFunDual_eq L, h L, integral_complex_ofReal, integral_dual L]
   simp
 
-lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
+/-- If a Gaussian measure is not a Dirac, then it has no atoms. -/
+lemma noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
   measure_singleton x := by
     obtain ⟨L, hL⟩ : ∃ L : StrongDual ℝ E, Var[L; μ] ≠ 0 := by
       contrapose! h
       exact ⟨_, eq_dirac_of_variance_eq_zero h⟩
     have hL_zero : μ.map L {L x} = 0 := by
       have : NoAtoms (μ.map L) := by
-        rw [IsGaussian.map_eq_gaussianReal L]
+        rw [map_eq_gaussianReal L]
         refine noAtoms_gaussianReal ?_
         simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
         exact lt_of_le_of_ne (variance_nonneg _ _) hL.symm
@@ -258,4 +247,4 @@ lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
 
 end FiniteMoments
 
-end ProbabilityTheory
+end ProbabilityTheory.IsGaussian
