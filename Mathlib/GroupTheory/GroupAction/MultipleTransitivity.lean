@@ -320,11 +320,11 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
   isMultiplyPretransitive_iff_of_conj hg.symm
 
 /-- Multiple transitivity of a pretransitive action
-  is equivalent to one less transitivity of stabilizer of a point
-  (Wielandt, th. 9.1, 1st part) -/
- @[to_additive /-- Multiple transitivity of a pretransitive action
-  is equivalent to one less transitivity of stabilizer of a point
-  [Wielandt, th. 9.1, 1st part][Wielandt-1964]. -/]
+is equivalent to one less transitivity of stabilizer of a point
+(Wielandt, th. 9.1, 1st part) -/
+@[to_additive /-- Multiple transitivity of a pretransitive action
+is equivalent to one less transitivity of stabilizer of a point
+[Wielandt, th. 9.1, 1st part][Wielandt-1964]. -/]
 theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
@@ -350,8 +350,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     simp only [← smul_apply _ _ i, hgy, hgx]
     simp only [smul_apply]
     rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-    · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
-      simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
+    · simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
     · simp only [ofStabilizer.snoc_last, ← hg]
       exact g.prop
 
@@ -470,8 +469,8 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
 /-- For a multiply pretransitive action,
-  computes the index of the `fixingSubgroup` of a subset
-  of adequate cardinality. -/
+computes the index of the `fixingSubgroup` of a subset
+of adequate cardinality. -/
 theorem IsMultiplyPretransitive.index_of_fixingSubgroup_eq
     [Finite α] (s : Set α) (hMk : IsMultiplyPretransitive G α s.ncard) :
     (fixingSubgroup G s).index =
@@ -646,7 +645,7 @@ theorem isMultiplyPretransitive :
     simp [Equiv.swap_apply_of_ne_of_ne h.1 h.2, ← hg]
 
 /-- A subgroup of `Equiv.Perm α` which is (card α - 2)-pretransitive
-  contains `alternatingGroup α`. -/
+contains `alternatingGroup α`. -/
 theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
     (G : Subgroup (Equiv.Perm α))
     (hmt : IsMultiplyPretransitive G α (Nat.card α - 2)) :
