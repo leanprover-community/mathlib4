@@ -27,9 +27,8 @@ We then choose such an `a`.
 
 In order to show the existence of `C` such that `x ↦ exp (C * ‖x‖ ^ 2)` is integrable, we prove as
 intermediate result that for `a, c` with `2⁻¹ < c ≤ μ {x | ‖x‖ ≤ a}`,
-the integral `∫⁻ x, exp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2) ∂μ` is bounded by a finite quantity that
-does not depend on `a` (`logRatio c` is a multiple of `log (c / (1 - c))`).
-We can then take `C = logRatio c * a⁻¹ ^ 2`.
+the integral `∫⁻ x, exp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2) ∂μ` is bounded by a finite quantity
+(`logRatio c` is a multiple of `log (c / (1 - c))`). We can then take `C = logRatio c * a⁻¹ ^ 2`.
 
 We now turn to the proof of the intermediate result.
 
