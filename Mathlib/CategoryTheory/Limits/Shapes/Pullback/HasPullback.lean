@@ -516,7 +516,7 @@ pullback for every pair of morphisms with the same codomain. -/
 abbrev HasPullbacks :=
   HasLimitsOfShape WalkingCospan C
 
-/-- A category `HasPushouts` if it has all colimits of shape `WalkingSpace`, i.e. if it has a
+/-- A category `HasPushouts` if it has all colimits of shape `WalkingSpan`, i.e. if it has a
 pushout for every pair of morphisms with the same domain. -/
 abbrev HasPushouts :=
   HasColimitsOfShape WalkingSpan C
