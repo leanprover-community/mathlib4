@@ -125,6 +125,7 @@ elab:max "T% " t:term:arg : term => do
     match_expr tgt with
     | Bundle.Trivial E E' _ =>
       trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle"
+      -- Note: we allow `isDefEq` here because any mvar assignments should persist.
       if ← withReducible (isDefEq E base) then
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
         mkLambdaFVars #[x] body
@@ -307,7 +308,7 @@ def findModels (etype eterm : Expr) (estype : Option Expr) :
       Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one"
     let srcI ← findModel src
     if let some es := estype then
-      if !(← isDefEq es (← mkAppM ``Set #[src])) then
+      if !(← pureIsDefEq es <|← mkAppM ``Set #[src]) then
         throwError "The domain {src} of {eterm} is not definitionally equal to the carrier
         of the type {es} of the set `s` passed in"
     let tgtI ← findModel tgt (src, srcI)
