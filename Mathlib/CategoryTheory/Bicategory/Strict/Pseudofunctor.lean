@@ -101,7 +101,7 @@ lemma mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom (hf : f₀₁ ≫ f₁₃
   simp
 
 @[deprecated (since := "2025-10-02")] alias mapComp'_inv_comp_mapComp'_hom :=
-  mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom
+  mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom
 
 @[to_app (attr := reassoc)]
 lemma whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁₃ = f) :
