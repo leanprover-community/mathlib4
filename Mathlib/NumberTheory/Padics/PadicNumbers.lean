@@ -141,6 +141,19 @@ lemma Rat.padicValuation_le_one_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
         exact Nat.not_coprime_of_dvd_of_dvd (Nat.Prime.one_lt Fact.out) h h' x.reduced.symm
   · simp [zero_lt_iff]
 
+theorem Rat.surjective_padicValuation (p : ℕ) [hp : Fact (p.Prime)] :
+    Function.Surjective (Rat.padicValuation p) := by
+  intro x
+  induction x with
+  | zero => simp
+  | coe x =>
+    induction x with | ofAdd x
+    rcases le_or_gt 0 x with (hx | hx) <;> simp only [Rat.padicValuation, WithZero.exp]
+    · use (p ^ x.natAbs)⁻¹
+      simp [hp.out.ne_zero, padicValRat.pow, hx]
+    · use p ^ x.natAbs
+      simp [hp.out.ne_zero, padicValRat.pow, abs_eq_neg_self.2 (le_of_lt hx)]
+
 noncomputable section
 
 open Nat padicNorm CauSeq CauSeq.Completion Metric
