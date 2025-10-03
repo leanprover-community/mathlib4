@@ -30,10 +30,11 @@ section BochnerIntegral
 
 variable {X : Type*} {mX : MeasurableSpace X} [TopologicalSpace X] [OpensMeasurableSpace X]
 variable (μ : Measure X)
-variable {E : Type*} [NormedAddCommGroup E] [SecondCountableTopology E] [MeasurableSpace E]
-  [BorelSpace E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 namespace FiniteMeasure
+
+variable [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
 
 /-- `FiniteMeasure.testAgainstₗ` wraps the integral with respect to a finite measure `μ`
 as a `𝕜`-linear map on bounded continuous functions. -/
@@ -58,19 +59,23 @@ end FiniteMeasure
 namespace LocallyIntegrable
 
 variable {𝕜 : Type*} [NormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
-variable [T2Space X] [SecondCountableTopologyEither X 𝕜]
+variable [SecondCountableTopology X]
 
 open TopologicalSpace
 
-omit [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] [NormedSpace ℝ E] in
-theorem integrable_smul_LocallyIntegrable {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X)
-    (φ : X →ᵇ 𝕜) :
-    Integrable (fun x ↦ (φ x) • (f x)) (μ.restrict K) :=
-    (hf.integrableOn_isCompact K.isCompact).continuousOn_smul φ.continuous.continuousOn K.isCompact
+variable {μ}
+
+theorem fun_bcf_smul {f : X → E} (hf : LocallyIntegrable f μ) (φ : X →ᵇ 𝕜) :
+    LocallyIntegrable (fun x ↦ (φ x) • (f x)) μ :=
+  .mono (hf.smul ‖φ‖) ((φ.continuous.aestronglyMeasurable).smul (hf.aestronglyMeasurable))
+  (ae_of_all _ fun x ↦ by
+    grw [norm_smul, Pi.smul_apply, norm_smul, norm_coe_le_norm φ _, norm_norm])
+
 
 variable [SMulCommClass ℝ 𝕜 E]
+variable [T2Space X]
 
-variable (𝕜) {μ}
+variable (𝕜)
 
 /-- `LocallyIntegrable.testAgainstₗ` wraps the integral against a locally integrable function `f` on
 a fixed compact `K` as a `𝕜`-linear map on scalar valued bounded continuous functions. -/
@@ -79,8 +84,9 @@ noncomputable def testAgainstₗ {f : X → E} (hf : LocallyIntegrable f μ) (K 
     (X →ᵇ 𝕜) →ₗ[𝕜] E where
   toFun φ := ∫ x, φ x • f x ∂(μ.restrict K)
   map_add' φ Φ:= by
-    simp_rw [add_apply, add_smul, integral_add (integrable_smul_LocallyIntegrable μ hf K φ)
-      (integrable_smul_LocallyIntegrable μ hf K Φ)]
+    simp_rw [add_apply, add_smul, integral_add
+      ((fun_bcf_smul hf φ).integrableOn_isCompact K.isCompact)
+      ((fun_bcf_smul hf Φ).integrableOn_isCompact K.isCompact)]
   map_smul' c φ := by
     simp_rw [coe_smul, RingHom.id_apply, smul_assoc, integral_smul]
 
