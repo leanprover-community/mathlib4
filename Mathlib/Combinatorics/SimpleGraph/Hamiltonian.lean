@@ -63,9 +63,13 @@ variable [Fintype α]
 lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
   simp [eq_univ_iff_forall, hp]
 
+/-- If a path `p` is Hamiltonian, then `p.support.get` defines an equivalence between
+`Fin p.support.length` and `α`. -/
 def IsHamiltonian.supportGetEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α :=
   p.support.getEquivOfForallCountEqOne hp
 
+/-- If a path `p` is Hamiltonian, then `p.getVert` defines an equivalence between
+`Fin p.support.length` and `α`. -/
 def IsHamiltonian.getVertEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α where
   toFun i := p.getVert i
   invFun := IsHamiltonian.supportGetEquiv hp |>.invFun
