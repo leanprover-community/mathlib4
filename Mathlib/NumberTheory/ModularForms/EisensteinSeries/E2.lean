@@ -620,7 +620,7 @@ lemma G2_inde_lhs (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) - -2 * 
       ring
     · simpa using linear_left_summable (ne_zero z) N (k := 2) (by norm_num)
     · simpa [add_assoc] using summable_one_div_linear_sub_one_div_linear z N (N + 1)
-  · apply HasSumFilter.summableFilter (a := (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z))
+  · apply HasSum.summable (a := (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z))
     rw [HasSUmFilter_Ico_iff]
     have H := G2_S_act z
     apply H.congr
@@ -628,13 +628,12 @@ lemma G2_inde_lhs (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) - -2 * 
     rw [Summable.tsum_finsetSum]
     intro i hi
     simpa using linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
-  · apply HasSumFilter.summableFilter (a := -2 * π * I / z)
+  · apply HasSum.summable (a := -2 * π * I / z)
     rw [HasSUmFilter_Ico_iff]
     have H := tendsto_tsum_one_div_linear_sub_succ_eq z
     rw [← tendsto_comp_val_Ioi_atTop]
     apply H
-  · rw [← summable_iff_summableFilter_atTop]
-    have := G_2_alt_summable_δ z
+  · have := G_2_alt_summable_δ z
     rw [← swap_equiv.summable_iff, ← (finTwoArrowEquiv _).symm.summable_iff] at this
     simpa using Summable.prod this
 
