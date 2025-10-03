@@ -78,7 +78,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
   convert h0
   rw [← norm_pow, ← exp_nsmul']
 
-/-- This is a version of `summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion` for level one
+/-- This is a version of `summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp` for level one
 and q-expansion coefficients all `1`. -/
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_cexp (k : ℕ) :
     SummableLocallyUniformlyOn
