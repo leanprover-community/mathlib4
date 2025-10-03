@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Michael Schlößer,
   Justus Springer, Andrew Yang, Jujian Zhang
 -/
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
@@ -84,8 +85,8 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
         ((affineOpenCover 𝒜).f j ≫ toSpecZero 𝒜) ≅
         Spec(TensorProduct (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)) := by
     refine pullback.congrHom ?_ ?_ ≪≫ pullbackSpecIso (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)
-    · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
-    · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
+    · simp [affineOpenCover, openCoverOfIsOpenCover, awayι_toSpecZero]; rfl
+    · simp [affineOpenCover, openCoverOfIsOpenCover, awayι_toSpecZero]; rfl
   let e₂ : pullback ((affineOpenCover 𝒜).f i) ((affineOpenCover 𝒜).f j) ≅
         Spec(Away 𝒜 (i.2 * j.2)) :=
     pullbackAwayιIso 𝒜 _ _ _ _ rfl
