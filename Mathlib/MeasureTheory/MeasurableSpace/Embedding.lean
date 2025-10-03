@@ -784,3 +784,32 @@ theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β
 @[simp] theorem MeasurableSpace.comap_not (p : α → Prop) :
     MeasurableSpace.comap (fun a ↦ ¬p a) inferInstance = MeasurableSpace.comap p inferInstance :=
   MeasurableSpace.comap_compl (fun _ _ ↦ measurableSet_top) _
+
+section curry
+
+/-! ### Currying as a measurable equivalence -/
+
+namespace MeasurableEquiv
+
+/-- The currying operation `Equiv.piCurry` as a measurable equivalence.
+See `MeasurableEquiv.curry` for the non-dependent version. -/
+@[simps!]
+def piCurry {ι : Type*} {κ : ι → Type*} {X : (i : ι) → κ i → Type*}
+    [∀ i j, MeasurableSpace (X i j)] :
+    ((p : (i : ι) × κ i) → X p.1 p.2) ≃ᵐ ((i : ι) → (j : κ i) → X i j) where
+  toEquiv := Equiv.piCurry X
+  measurable_toFun := by fun_prop
+  measurable_invFun := by fun_prop
+
+/-- The currying operation `Equiv.curry` as a measurable equivalence.
+See `MeasurableEquiv.piCurry` for the dependent version. -/
+@[simps!]
+def curry {ι κ X : Type*} [MeasurableSpace X] :
+    (ι × κ → X) ≃ᵐ (ι → κ → X) where
+  toEquiv := Equiv.curry ι κ X
+  measurable_toFun := by fun_prop
+  measurable_invFun := by fun_prop
+
+end MeasurableEquiv
+
+end curry
