@@ -435,7 +435,7 @@ private theorem of_inf_eq_bot_aux [IsGalois F A] [FiniteDimensional F E] (h₁ :
   apply LinearDisjoint.of_finrank_sup
   rw [h₁, finrank_top', ← Module.finrank_mul_finrank F B E, mul_comm, mul_left_inj'
     Module.finrank_pos.ne']
-  have : IsGalois B E := IsGalois.sup A B h₁
+  have : IsGalois B E := IsGalois.sup_right A B h₁
   rw [← IsGalois.card_aut_eq_finrank, ← IsGalois.card_aut_eq_finrank]
   exact Nat.card_congr <| Equiv.ofBijective (restrictRestrictAlgEquivMapHom _ _ _ _)
     ⟨restrictRestrictAlgEquivMapHom_injective _ _ h₁,

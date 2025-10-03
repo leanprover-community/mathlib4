@@ -130,7 +130,7 @@ theorem smul_Stick_mem_ZG_iff (x : ℤ[G]) :
     rw [mem_ZG_iff] at h
     have h₁ : (m : ℤ) ∣ ∑ σ, (x σ) * (nν m σ) := by
       obtain ⟨y, hy⟩ := h 1
-      rw [← finset_sum_single x] at hy
+      rw [← fintype_sum_single x] at hy
       simp_rw [Finset.smul_sum, Finset.sum_smul, single_smul_single] at hy
       rw [Finset.sum_apply'] at hy
       conv_lhs at hy =>
@@ -153,7 +153,7 @@ theorem smul_Stick_mem_ZG_iff (x : ℤ[G]) :
         (∑ σ, x σ * nν m σ : ℤ[G]) := by
       rw [← Finset.sum_add_distrib]
       simp_rw [mul_sub, intCast_def, natCast_def, single_mul_single, one_mul, mul_one, Int.cast_eq,
-        ZMod.natCast_val, Finsupp.single_mul, sub_add_cancel, finset_sum_single]
+        ZMod.natCast_val, Finsupp.single_mul, sub_add_cancel, fintype_sum_single]
     rw [h₂]
     refine Submodule.add_mem _ ?_ ?_
     · refine Submodule.sum_smul_mem _ _ fun σ _ ↦ ?_
@@ -188,14 +188,19 @@ section GaussSums
 
 open NumberField
 
-variable {p f : ℕ} (hp : p.Prime) [NeZero (p ^ f - 1)]
+variable {p f : ℕ} [hp : Fact (p.Prime)] [NeZero (p ^ f - 1)]
 
 local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
 
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {p ^ f - 1} ℚ K]
-  (P : Ideal (𝓞 K)) [P.IsMaximal] [P.LiesOver 𝒑]
+  (P : Ideal (𝓞 K)) [P.IsMaximal]
 
-example : 𝒑.inertiaDeg P = f := by
-  sorry
+theorem inertiaDeg_eq (hf : 0 < f) [P.LiesOver 𝒑] : 𝒑.inertiaDeg P = f := by
+  have : p.Coprime (p ^ f - 1) := by
+    rw [← Nat.coprime_pow_left_iff hf, Nat.coprime_self_sub_right NeZero.one_le]
+    exact Nat.gcd_one_right _
+  rw [IsCyclotomicExtension.Rat.inertiaDeg_of_coprime (p ^ f - 1) p _ this,
+    ZMod.orderOf_mod_self_pow_sub_one (Nat.Prime.one_lt hp.out) hf]
+
 
 end GaussSums

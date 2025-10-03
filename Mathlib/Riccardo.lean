@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.FieldTheory.Finite.GaloisField
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 variable {K : Type*} [Field K] [Fintype K] {p f n : ℕ} [hp : Fact p.Prime]
   (hK : Fintype.card K = p ^ f) (hn : (p ^ f).Coprime n)
@@ -42,8 +43,6 @@ theorem foo {P : K[X]} (hP : P ∣ cyclotomic n K) (hPirr : Irreducible P) (hPmo
     rw [powerBasis_gen hPirr.ne_zero, hζ'.pow_eq_pow_iff_modEq, ← hζ.eq_orderOf,
       ← ZMod.natCast_eq_natCast_iff]
     simpa using Units.val_inj.mpr <| pow_orderOf_eq_one (unitOfCoprime _ hn)
-
-#min_imports
 
 #exit
 
