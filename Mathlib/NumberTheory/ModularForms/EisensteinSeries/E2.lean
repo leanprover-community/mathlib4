@@ -33,7 +33,7 @@ noncomputable section
 /-- This is an auxilary summand used to define the Eisenstein serires `G2`. -/
 def e2Summand (m : ℤ) (z : ℍ) : ℂ := ∑' n, eisSummand 2 ![m, n] z
 
-lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n => eisSummand 2 ![m, n] z) := by
+lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n ↦ eisSummand 2 ![m, n] z) := by
   apply (linear_right_summable z m (k := 2) (by grind)).congr
   simp [eisSummand]
 
@@ -43,7 +43,7 @@ lemma e2Summand_zero_eq_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riemannZ
     (two_riemannZeta_eq_tsum_int_inv_even_pow (k := 2) (by grind) (by simp)).symm
 
 theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z := by
-  simp only [e2Summand, ← tsum_comp_neg (fun a => eisSummand 2 ![-n, a] z)]
+  simp only [e2Summand, ← tsum_comp_neg (fun a ↦ eisSummand 2 ![-n, a] z)]
   congr
   ext b
   simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
@@ -54,13 +54,13 @@ theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z :=
 /-- The Eisenstein series of weight `2` and level `1` defined as the limit as `N` tends to
 infinity of the partial sum of `m` in `[N,N]` of `e2Summand m`. This sum over symmetric
 intervals is handy in showing it is Cauchy. -/
-def G2 : ℍ → ℂ := fun z => ∑'[IccFilter] m, e2Summand m z
+def G2 : ℍ → ℂ := fun z ↦ ∑'[IccFilter] m, e2Summand m z
 
 /-- The normalised Eisenstein series of weight `2` and level `1`. -/
 def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) •  G2
 
 /-- This function measures the defect in `E2` being a modular form. -/
-def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z => (2 * π * I * γ 1 0) / (denom γ z)
+def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z ↦ (2 * π * I * γ 1 0) / (denom γ z)
 
 lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z =
     (2 * riemannZeta 2) + (∑ m ∈ range N, -8 * π ^ 2  *
@@ -87,7 +87,7 @@ private lemma aux_tsum_identity (z : ℍ) : ∑' m : ℕ, (-8 * π ^ 2  *
     ∑' n : ℕ+, n * cexp (2 * π * I * (m + 1) * z) ^ (n : ℕ))  =
     -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ) := by
   have := tsum_prod_pow_cexp_eq_tsum_sigma 1 z
-  rw [tsum_pnat_eq_tsum_succ (f:= fun d =>
+  rw [tsum_pnat_eq_tsum_succ (f:= fun d ↦
     ∑' (c : ℕ+), (c ^ 1 : ℂ) * cexp (2 * π * I * d * z) ^ (c : ℕ))] at this
   simp [← tsum_mul_left, ← this]
 
@@ -95,7 +95,7 @@ private lemma aux_G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ x ∈ range N, -
     ∑' (n : ℕ+), n * cexp (2 * π * I * (x + 1) * z) ^ (n : ℕ)) atTop
     (𝓝 (-8 * π ^ 2 * ∑' (n : ℕ+), ((σ 1) n) * cexp (2 * π * I * z) ^ (n : ℕ))) := by
   rw [← aux_tsum_identity]
-  have hf : Summable fun m : ℕ => (-8 * π ^ 2 *
+  have hf : Summable fun m : ℕ ↦ (-8 * π ^ 2 *
       ∑' n : ℕ+, n * cexp (2 * π * I * (m + 1) * z) ^ (n : ℕ)) := by
     apply Summable.mul_left
     have := (summable_prod_mul_pow 1 (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)).prod
@@ -114,7 +114,7 @@ lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) 
   apply Tendsto.cauchySeq (x := -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ))
   simpa using aux_G2_tendsto z
 
-lemma Summable_IccFilter_G2 (z : ℍ) : Summable (fun m : ℤ => e2Summand m z) IccFilter := by
+lemma Summable_IccFilter_G2 (z : ℍ) : Summable (fun m : ℤ ↦ e2Summand m z) IccFilter := by
   simpa [Summable, HasSum] using cauchySeq_tendsto_of_complete (G2_cauchy z)
 
 lemma G2_q_exp (z : ℍ) :
@@ -137,7 +137,7 @@ private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [Norm
   obtain ⟨g, hg, H, Hg⟩ := hc
   intro ε hε
   obtain ⟨N, hN⟩ := (Hg (2 * ε) (by positivity))
-  refine ⟨N + 1, fun n hn => ?_⟩
+  refine ⟨N + 1, fun n hn ↦ ?_⟩
   have H2 := (H n.natAbs (n -1).natAbs N (by omega) (by omega))
   rw [sum_Icc_add_endpoints f (by omega)] at H2
   have h1 : |n| = n := by
@@ -152,7 +152,7 @@ private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [Norm
   simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H2 (le_abs_self (g N)))
     (hN N (by rfl))
 
-lemma Summable_IccFilter_G2_Ico (z : ℍ) : Summable (fun m : ℤ => e2Summand m z) IcoFilter := by
+lemma Summable_IccFilter_G2_Ico (z : ℍ) : Summable (fun m : ℤ ↦ e2Summand m z) IcoFilter := by
   apply summable_IcoFilter_of_multiplible_IccFilter (Summable_IccFilter_G2 z)
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchy z) (by apply e2Summand_even)
   simpa using (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
@@ -183,21 +183,21 @@ private lemma aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
     ∑' (n : ℤ), ∑ x ∈ Ico (-N : ℤ) N, (((n : ℂ) * z + x) ^ 2)⁻¹ := by
   simp_rw [inv_neg, mul_neg]
   rw [Finset.mul_sum, Summable.tsum_finsetSum]
-  · apply sum_congr rfl fun n hn => ?_
+  · apply sum_congr rfl fun n hn ↦ ?_
     rw [← tsum_mul_left, ← tsum_comp_neg]
-    apply tsum_congr fun d => ?_
+    apply tsum_congr fun d ↦ ?_
     rw [← mul_inv,  ← mul_pow, ← neg_pow_two]
     congr
     field_simp [ne_zero z]
     simp
-  · exact fun i hi => linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
+  · exact fun i hi ↦ linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
 
 lemma G2_S_act (z : ℍ) :
-    Tendsto (fun N : ℕ => (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
+    Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
     (𝓝 ((z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z))) := by
   rw [G2_eq_Ico]
   rw [← tsum_mul_left]
-  have : Summable (fun m : ℤ => (z.1 ^ 2)⁻¹ * e2Summand m (ModularGroup.S • z)) IcoFilter := by
+  have : Summable (fun m : ℤ ↦ (z.1 ^ 2)⁻¹ * e2Summand m (ModularGroup.S • z)) IcoFilter := by
     apply Summable.mul_left
     apply Summable_IccFilter_G2_Ico (ModularGroup.S • z)
   have := (this.hasSum)
@@ -238,10 +238,10 @@ theorem tendstozero_inv_linear_sub (z : ℍ) (b : ℤ) :
     Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z - d)) atTop (𝓝 0) := by
   have := (tendstozero_inv_linear z (-b)).neg
   simp only [Int.cast_neg, neg_mul, one_div, neg_zero, ← inv_neg] at *
-  exact this.congr (fun _ => by ring)
+  exact this.congr (fun _ ↦ by ring)
 
 lemma HasSum_IcoFilter_iff {f : ℤ → ℂ} {x : ℂ} :
-    HasSum f x IcoFilter ↔ Tendsto ((fun N : ℕ =>
+    HasSum f x IcoFilter ↔ Tendsto ((fun N : ℕ ↦
     ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)), f n)) atTop (𝓝 x) := by
   simp [HasSum, tendsto_map'_iff]
   constructor
@@ -277,8 +277,8 @@ theorem int_tsum_pNat {α : Type*} [UniformSpace α] [CommRing α] [IsUniformAdd
   [CompleteSpace α] [T2Space α] {f : ℤ → α} (hf2 : Summable f) :
   ∑' n, f n = f 0 + ∑' n : ℕ+, f n + ∑' m : ℕ+, f (-m) := by
   rw [summable_int_iff_summable_nat_and_neg_add_zero, tsum_of_add_one_of_neg_add_one] at *
-  · simp only [neg_add_rev, Int.reduceNeg, tsum_pnat_eq_tsum_succ (f := fun n => f n), Nat.cast_add,
-    Nat.cast_one, tsum_pnat_eq_tsum_succ (f := fun n => f (-n)), add_left_inj]
+  · simp only [neg_add_rev, Int.reduceNeg, tsum_pnat_eq_tsum_succ (f := fun n ↦ f n), Nat.cast_add,
+    Nat.cast_one, tsum_pnat_eq_tsum_succ (f := fun n ↦ f (-n)), add_left_inj]
     ring
   · have hf21 := hf2.1
     rw [← summable_nat_add_iff (k := 1)] at hf21
@@ -286,7 +286,7 @@ theorem int_tsum_pNat {α : Type*} [UniformSpace α] [CommRing α] [IsUniformAdd
   · simpa using hf2.2
 
 lemma summable_pnat_iff_summable_nat {G : Type*} [AddCommGroup G] [TopologicalSpace G]
-    [IsTopologicalAddGroup G] {f : ℕ → G} : Summable (fun n : ℕ+ => f n) ↔ Summable f := by
+    [IsTopologicalAddGroup G] {f : ℕ → G} : Summable (fun n : ℕ+ ↦ f n) ↔ Summable f := by
   rw [summable_pnat_iff_summable_succ , summable_nat_add_iff]
 
 private lemma linear_sub_linear_eq (z : ℍ) (a b m : ℤ) (hm : m ≠ 0) :
@@ -361,7 +361,7 @@ private lemma aux_tsum_identity_3 (z : ℍ) (d : ℕ+) :
       enter [1, n]
       rw [show ((n : ℂ) + 1) = (n + 1 : ℕ) by simp]
     rw [summable_nat_add_iff (k := 1)
-      (f := fun n => (-d / (z : ℂ) - (n))⁻¹ + (-d / (z : ℂ) + (n))⁻¹)] at this
+      (f := fun n ↦ (-d / (z : ℂ) - (n))⁻¹ + (-d / (z : ℂ) + (n))⁻¹)] at this
     apply this.subtype
 
 lemma pnat_div_upper (n : ℕ+) (z : ℍ) : 0 < (-(n : ℂ) / z).im := by
@@ -373,9 +373,9 @@ lemma pnat_div_upper (n : ℕ+) (z : ℍ) : 0 < (-(n : ℂ) / z).im := by
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 
 lemma tendsto_zero_geometric_tsum {r : 𝕜} (hr : ‖r‖ < 1) :
-    Tendsto (fun m : ℕ+ => ∑' (n : ℕ+), r ^ (n * m : ℕ)) atTop (𝓝 0) := by
-  have := tendsto_tsum_of_dominated_convergence (𝓕 := atTop) (g := fun (n : ℕ+) => 0)
-    (f := fun d n : ℕ+ => r ^ (n * d : ℕ)) (bound := fun n : ℕ+ => (‖r ^ (n : ℕ)‖))
+    Tendsto (fun m : ℕ+ ↦ ∑' (n : ℕ+), r ^ (n * m : ℕ)) atTop (𝓝 0) := by
+  have := tendsto_tsum_of_dominated_convergence (𝓕 := atTop) (g := fun (n : ℕ+) ↦ 0)
+    (f := fun d n : ℕ+ ↦ r ^ (n * d : ℕ)) (bound := fun n : ℕ+ ↦ (‖r ^ (n : ℕ)‖))
   simp only [tsum_zero] at this
   apply this
   · have hs : Summable fun n : ℕ ↦ ‖r ^ n‖ := by simp [hr]
@@ -386,26 +386,26 @@ lemma tendsto_zero_geometric_tsum {r : 𝕜} (hr : ‖r‖ < 1) :
       simp [pow_mul, tendsto_pow_atTop_nhds_zero_iff, pow_lt_one_iff_of_nonneg, hr]
     exact tendsto_comp_val_Ioi_atTop.mpr ht
   · simp only [eventually_atTop, ge_iff_le, norm_pow]
-    exact ⟨1, fun b hb k =>
+    exact ⟨1, fun b hb k ↦
       pow_le_pow_of_le_one (norm_nonneg _) hr.le (Nat.le_mul_of_pos_right k hb)⟩
 
 lemma aux_tendsto_tsum_cexp_pnat (z : ℍ) :
-    Tendsto (fun N : ℕ+ => ∑' (n : ℕ+), cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) atTop (𝓝 0) := by
+    Tendsto (fun N : ℕ+ ↦ ∑' (n : ℕ+), cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) atTop (𝓝 0) := by
   have := tendsto_zero_geometric_tsum (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨-1 / z,
     by simpa using (pnat_div_upper 1 z)⟩)
   simp only [← exp_nsmul, mul_neg, neg_div] at *
-  apply this.congr fun n => ?_
+  apply this.congr fun n ↦ ?_
   congr
   grind [one_div, coe_mk_subtype, mul_neg, smul_neg, nsmul_eq_mul, Nat.cast_mul, neg_inj]
 
-private theorem aux_tendsto_tsum (z : ℍ) : Tendsto (fun n : ℕ => (2 / z *
+private theorem aux_tendsto_tsum (z : ℍ) : Tendsto (fun n : ℕ ↦ (2 / z *
     ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) atTop (𝓝 (-2 * π * I / z)) := by
-  suffices Tendsto (fun n : ℕ+ => (2 / (z : ℂ) * ∑' (m : ℕ+),
+  suffices Tendsto (fun n : ℕ+ ↦ (2 / (z : ℂ) * ∑' (m : ℕ+),
       (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) atTop (𝓝 (-2 * π * I / z)) by
     rw [← tendsto_comp_val_Ioi_atTop]
     exact this
-  have H0 : (fun n : ℕ+ => (2 / z * ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) =
-      (fun N : ℕ+ => (-2 * π * I / z) - (2 / z * (2 * π * I)) *
+  have H0 : (fun n : ℕ+ ↦ (2 / z * ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) =
+      (fun N : ℕ+ ↦ (-2 * π * I / z) - (2 / z * (2 * π * I)) *
       (∑' n : ℕ+, cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) + 2 / N) := by
     ext N
     let Z : ℍ := ⟨-N / z, pnat_div_upper N z⟩
@@ -427,8 +427,8 @@ private theorem aux_tendsto_tsum (z : ℍ) : Tendsto (fun n : ℕ => (2 / z *
 
 lemma tendsto_tsum_one_div_linear_sub_succ_eq (z : ℍ) : Tendsto (fun N : ℕ+ ↦ ∑ n ∈ Ico (-N : ℤ) N,
     ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) := by
-  have : (fun N : ℕ+ => ∑ n ∈ (Ico (-N : ℤ) N),
-      ∑' m : ℤ , (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) = (fun N : ℕ+ =>
+  have : (fun N : ℕ+ ↦ ∑ n ∈ (Ico (-N : ℤ) N),
+      ∑' m : ℤ , (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) = (fun N : ℕ+ ↦
       ∑' m : ℤ ,  ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) := by
     ext n
     rw [Summable.tsum_finsetSum]
@@ -445,7 +445,7 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq (z : ℍ) : Tendsto (fun N : ℕ+ 
   apply Tendsto.add
   · have : Tendsto (fun x : ℕ ↦ -(2 / (x : ℂ))) atTop (𝓝 0) := by
       simpa [tendsto_zero_iff_norm_tendsto_zero] using Filter.Tendsto.const_div_atTop
-        (g := fun n : ℕ => ‖(n : ℂ)‖) (r := 2) (by simpa using tendsto_natCast_atTop_atTop)
+        (g := fun n : ℕ ↦ ‖(n : ℂ)‖) (r := 2) (by simpa using tendsto_natCast_atTop_atTop)
     exact tendsto_comp_val_Ioi_atTop.mpr this
   · conv =>
       enter [1, n]
@@ -490,13 +490,13 @@ private lemma δ_neq (a b : ℤ) (h : a ≠ 0) : δ ![a,b] = 0 := by
 /-- This gives term gives and alternative infinte sum for G2 which is absolutely convergent. -/
 abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ := (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹
 
-lemma G_2_alt_summable (z : ℍ) : Summable (fun m => (G2Term z m)) := by
+lemma G_2_alt_summable (z : ℍ) : Summable (fun m ↦ (G2Term z m)) := by
   have hk' : 2 < (3 : ℝ) := by linarith
   apply summable_inv_of_isBigO_rpow_norm_inv hk'
   simpa [pow_three, pow_two, ← mul_assoc] using ((isBigO_linear_add_const_vec z 0 1).mul
     (isBigO_linear_add_const_vec z 0 0)).mul (isBigO_linear_add_const_vec z 0 0)
 
-lemma G_2_alt_summable_δ (z : ℍ) : Summable fun (m : Fin 2 → ℤ) => (G2Term z m + δ m):= by
+lemma G_2_alt_summable_δ (z : ℍ) : Summable fun (m : Fin 2 → ℤ) ↦ (G2Term z m + δ m):= by
   let s : Finset (Fin 2 → ℤ) := {![0,0], ![0,-1]}
   rw [← Finset.summable_compl_iff s]
   apply ((G_2_alt_summable z).subtype sᶜ).congr
@@ -584,7 +584,7 @@ lemma G2_alt_eq (z : ℍ) : G2 z = ∑' m, ∑' n, (G2Term z ![m, n] + δ ![m, n
     simp [← tsumFilter_Ico_eq_zero z b]
 
 /-- The map that swaps the two co-ordinates of a `Fin 2 → α` -/
-def swap {α : Type*} : (Fin 2 → α) → (Fin 2 → α) := fun x => ![x 1, x 0]
+def swap {α : Type*} : (Fin 2 → α) → (Fin 2 → α) := fun x ↦ ![x 1, x 0]
 
 @[simp]
 lemma swap_apply {α : Type*} (b : Fin 2 → α) : swap b = ![b 1, b 0] := rfl
