@@ -240,10 +240,8 @@ variable {B : Rep k G} (f : A ⟶ B)
 variable {A}
 
 def Action.Hom.toDistribMulActionHom (f : A ⟶ B) : A →+[G] B where
-  toFun := f
+  __ := f.hom.hom.toAddMonoidHom
   map_smul' g x := congr($(f.comm g) x)
-  map_zero' := map_zero f.hom.hom
-  map_add' := map_add f.hom.hom
 
 instance : Coe (A ⟶ B) (A →+[G] B) := ⟨Action.Hom.toDistribMulActionHom⟩
 
