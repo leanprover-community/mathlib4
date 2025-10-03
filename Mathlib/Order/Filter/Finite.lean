@@ -283,6 +283,10 @@ alias _root_.Finset.eventually_all := eventually_all_finset
 
 -- attribute [protected] Finset.eventually_all
 
+lemma eventually_subset_of_finite_of_tendsto_atTop {ι : Type*} {f : Filter ι} {s : ι → Set α}
+    {t : Set α} (ht : t.Finite) (hs : ∀ a, ∀ᶠ i in f, a ∈ s i) : ∀ᶠ i in f, t ⊆ s i := by
+  simpa [Set.subset_def, eventually_all_finite ht] using fun _ _ ↦ hs _
+
 /-!
 ### Relation “eventually equal”
 -/
@@ -360,3 +364,8 @@ end EventuallyEq
 end Filter
 
 open Filter
+
+
+namespace Filter
+variable {ι α : Type*} {f : Filter ι} {s : ι → Set α} {t : Set α}
+end Filter
