@@ -6,6 +6,7 @@ Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.Tactic.ToAdditive
 
 /-!
 # Monoidal categories
@@ -63,7 +64,7 @@ Currently, the simp lemmas don't rewrite `𝟙 X ⊗ₘ f` and `f ⊗ₘ 𝟙 Y`
 respectively, since it requires a huge refactoring. We hope to add these simp lemmas soon.
 
 ## References
-* Tensor categories, Etingof, Gelaki, Nikshych, Ostrik,
+* Tensor categories, Etingof, Gelaki, Nikshych, Ostrik,\
   http://www-math.mit.edu/~etingof/egnobookfinal.pdf
 * <https://stacks.math.columbia.edu/tag/0FFK>.
 -/
@@ -98,6 +99,30 @@ class MonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
   /-- The right unitor: `X ⊗ 𝟙_ C ≃ X` -/
   rightUnitor : ∀ X : C, tensorObj X tensorUnit ≅ X
 
+/-- Auxiliary structure to carry only the data fields of (and provide notation for)
+`AddMonoidalCategory`. -/
+class AddMonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
+  /-- curried sum of objects -/
+  addObj : C → C → C
+  /-- left whiskering for morphisms -/
+  addWhiskerLeft (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) : addObj X Y₁ ⟶ addObj X Y₂
+  /-- right whiskering for morphisms -/
+  addWhiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : addObj X₁ Y ⟶ addObj X₂ Y
+  /-- Tensor product of identity maps is the identity: `𝟙 X₁ ⊕ₘ 𝟙 X₂ = 𝟙 (X₁ ⊕ₒ X₂)` -/
+  -- By default, it is defined in terms of whiskerings.
+  addHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (addObj X₁ X₂ ⟶ addObj Y₁ Y₂) :=
+    addWhiskerRight f X₂ ≫ addWhiskerLeft Y₁ g
+  /-- The zero object in the additive monoidal structure `𝟘_ C` -/
+  addUnit (C) : C
+  /-- The associator isomorphism `(X ⊕ₒ Y) ⊕ₒ Z ≃ X ⊕ₒ (Y ⊕ₒ Z)` -/
+  addAssociator : ∀ X Y Z : C, addObj (addObj X Y) Z ≅ addObj X (addObj Y Z)
+  /-- The left unitor: `𝟘_ C ⊕ₒ X ≃ X` -/
+  leftAddUnitor : ∀ X : C, addObj addUnit X ≅ X
+  /-- The right unitor: `X ⊕ₒ 𝟘_ C ≃ X` -/
+  rightAddUnitor : ∀ X : C, addObj X addUnit ≅ X
+
+attribute [to_additive AddMonoidalCategoryStruct] MonoidalCategoryStruct
+
 namespace MonoidalCategory
 
 export MonoidalCategoryStruct
@@ -127,6 +152,9 @@ scoped notation "𝟙_ " C:arg => MonoidalCategoryStruct.tensorUnit C
 /-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
 scoped notation "α_" => MonoidalCategoryStruct.associator
 
+/-- Notation for the additive monoidal `addAssociator`: `(X ⊕ₒ Y) ⊕ₒ Z ≃ X ⊕ₒ (Y ⊕ₒ Z)` -/
+scoped notation "α⁺" => AddMonoidalCategoryStruct.addAssociator
+
 /-- Notation for the `leftUnitor`: `𝟙_C ⊗ X ≃ X` -/
 scoped notation "λ_" => MonoidalCategoryStruct.leftUnitor
 
@@ -135,6 +163,7 @@ scoped notation "ρ_" => MonoidalCategoryStruct.rightUnitor
 
 /-- The property that the pentagon relation is satisfied by four objects
 in a category equipped with a `MonoidalCategoryStruct`. -/
+@[to_additive AddMonoidalCategory.AddPentagon]
 def Pentagon {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
     (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
   (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
@@ -142,7 +171,34 @@ def Pentagon {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
 
 end MonoidalCategory
 
+namespace AddMonoidalCategory
+
+/-- Notation for `addObj`, the sum of objects in an additive monoidal category -/
+scoped infixr:70 " ⊕ₒ " => AddMonoidalCategoryStruct.addObj
+
+/-- Notation for the `addWhiskerLeft` operator of additive monoidal categories -/
+scoped infixr:81 " ◁⁺ " => AddMonoidalCategoryStruct.addWhiskerLeft
+
+/-- Notation for the `addWhiskerRight` operator of additive monoidal categories -/
+scoped infixl:81 " ▷⁺ " => AddMonoidalCategoryStruct.addWhiskerRight
+
+/-- Notation for `addHom`, the sum of morphisms in an additive monoidal category -/
+scoped infixr:70 " ⊕ₘ " => AddMonoidalCategoryStruct.addHom
+
+/-- Notation for `addUnit`, the two-sided identity of `⊕ₒ` -/
+scoped notation "𝟘_ " C:arg => AddMonoidalCategoryStruct.addUnit C
+
+/-- Notation for the `leftAddUnitor`: `𝟘_C ⊕ₒ X ≃ X` -/
+scoped notation "λ⁺" => AddMonoidalCategoryStruct.leftAddUnitor
+
+/-- Notation for the `rightAddUnitor`: `X ⊕ₒ 𝟘_C ≃ X` -/
+scoped notation "ρ⁺" => AddMonoidalCategoryStruct.rightAddUnitor
+
+end AddMonoidalCategory
+
 open MonoidalCategory
+
+open AddMonoidalCategory
 
 /--
 In a monoidal category, we can take the tensor product of objects, `X ⊗ Y` and of morphisms
@@ -212,6 +268,91 @@ attribute [reassoc] MonoidalCategory.leftUnitor_naturality
 attribute [reassoc] MonoidalCategory.rightUnitor_naturality
 attribute [reassoc (attr := simp)] MonoidalCategory.pentagon
 attribute [reassoc (attr := simp)] MonoidalCategory.triangle
+
+/--
+In an additive monoidal category, we can take the sum of objects, `X ⊕ₒ Y` and of morphisms
+`f ⊕ₘ g`.
+Addition does not need to be strictly associative on objects, but there is a
+specified associator, `α⁺ X Y Z : (X ⊕ₒ Y) ⊕ₒ Z ≅ X ⊕ₒ (Y ⊕ₒ Z)`. There is a zero object `𝟘_ C`,
+with specified left and right unitor isomorphisms `λ⁺ X : 𝟘_ C ⊕ₒ X ≅ X` and `ρ⁺ X : X ⊕ₒ 𝟘_ C ≅ X`.
+These associators and unitors satisfy the pentagon and triangle equations. -/
+class AddMonoidalCategory (C : Type u) [𝒞 : Category.{v} C]
+  extends AddMonoidalCategoryStruct C where
+  addHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+    f ⊕ₘ g = (f ▷⁺ X₂) ≫ (Y₁ ◁⁺ g) := by
+      cat_disch
+  /-- Sum of identity maps is the identity: `𝟙 X₁ ⊕ₘ 𝟙 X₂ = 𝟙 (X₁ ⊕ₒ X₂)` -/
+  id_addHom_id : ∀ X₁ X₂ : C, 𝟙 X₁ ⊕ₘ 𝟙 X₂ = 𝟙 (X₁ ⊕ₒ X₂) := by cat_disch
+  /--
+  Composition of sums is sum of compositions:
+  `(f₁ ⊕ₘ f₂) ≫ (g₁ ⊕ₘ g₂) = (f₁ ≫ g₁) ⊕ₘ (f₂ ≫ g₂)`
+  -/
+  addHom_comp_addHom :
+    ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
+      (f₁ ⊕ₘ f₂) ≫ (g₁ ⊕ₘ g₂) = (f₁ ≫ g₁) ⊕ₘ (f₂ ≫ g₂) := by
+    cat_disch
+  addWhiskerLeft_id : ∀ (X Y : C), X ◁⁺ 𝟙 Y = 𝟙 (X ⊕ₒ Y) := by
+    cat_disch
+  id_addWhiskerRight : ∀ (X Y : C), 𝟙 X ▷⁺ Y = 𝟙 (X ⊕ₒ Y) := by
+    cat_disch
+  /-- Naturality of the associator isomorphism: `(f₁ ⊕ₘ f₂) ⊕ₘ f₃ ≃ f₁ ⊕ₘ (f₂ ⊕ₘ f₃)` -/
+  addAssociator_naturality :
+    ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
+      ((f₁ ⊕ₘ f₂) ⊕ₘ f₃) ≫ (α⁺ Y₁ Y₂ Y₃).hom = (α⁺ X₁ X₂ X₃).hom ≫ (f₁ ⊕ₘ (f₂ ⊕ₘ f₃)) := by
+    cat_disch
+  /--
+  Naturality of the left unitor, commutativity of `𝟘_ C ⊕ₒ X ⟶ 𝟘_ C ⊕ₒ Y ⟶ Y` and
+  `𝟘_ C ⊕ₒ X ⟶ X ⟶ Y`
+  -/
+  leftAddUnitor_naturality :
+    ∀ {X Y : C} (f : X ⟶ Y), 𝟘_ _ ◁⁺ f ≫ (λ⁺ Y).hom = (λ⁺ X).hom ≫ f := by
+    cat_disch
+  /--
+  Naturality of the right unitor: commutativity of `X ⊕ₒ 𝟘_ C ⟶ Y ⊕ₒ 𝟘_ C ⟶ Y` and
+  `X ⊕ₒ 𝟘_ C ⟶ X ⟶ Y`
+  -/
+  rightAddUnitor_naturality :
+    ∀ {X Y : C} (f : X ⟶ Y), f ▷⁺ 𝟘_ _ ≫ (ρ⁺ Y).hom = (ρ⁺ X).hom ≫ f := by
+    cat_disch
+  /--
+  The pentagon identity relating the isomorphism between `X ⊕ₒ (Y ⊕ₒ (Z ⊕ₒ W))` and
+  `((X ⊕ₒ Y) ⊕ₒ Z) ⊕ₒ W`
+  -/
+  addPentagon :
+    ∀ W X Y Z : C,
+      (α⁺ W X Y).hom ▷⁺ Z ≫ (α⁺ W (X ⊕ₒ Y) Z).hom ≫ W ◁⁺ (α⁺ X Y Z).hom =
+        (α⁺ (W ⊕ₒ X) Y Z).hom ≫ (α⁺ W X (Y ⊕ₒ Z)).hom := by
+    cat_disch
+  /--
+  The identity relating the isomorphisms between `X ⊕ₒ (𝟘_ C ⊕ₒ Y)`, `(X ⊕ₒ 𝟘_ C) ⊕ₒ Y` and `X ⊕ₒ Y`
+  -/
+  addTriangle :
+    ∀ X Y : C, (α⁺ X (𝟘_ _) Y).hom ≫ X ◁⁺ (λ⁺ Y).hom = (ρ⁺ X).hom ▷⁺ Y := by
+    cat_disch
+
+attribute [reassoc] AddMonoidalCategory.addHom_def
+attribute [reassoc, simp] AddMonoidalCategory.addWhiskerLeft_id
+attribute [reassoc, simp] AddMonoidalCategory.id_addWhiskerRight
+attribute [reassoc (attr := simp)] AddMonoidalCategory.addHom_comp_addHom
+attribute [reassoc] AddMonoidalCategory.addAssociator_naturality
+attribute [reassoc] AddMonoidalCategory.leftAddUnitor_naturality
+attribute [reassoc] AddMonoidalCategory.rightAddUnitor_naturality
+attribute [reassoc (attr := simp)] AddMonoidalCategory.addPentagon
+attribute [reassoc (attr := simp)] AddMonoidalCategory.addTriangle
+
+attribute [to_additive AddMonoidalCategory] MonoidalCategory
+
+-- NOTE: we disable this warning, which would otherwise fire since some of these are already marked
+-- as `simp` lemmas.
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing]
+  MonoidalCategory.whiskerLeft_id_assoc
+  MonoidalCategory.id_whiskerRight_assoc
+  MonoidalCategory.tensorHom_comp_tensorHom_assoc
+  MonoidalCategory.associator_naturality_assoc
+  MonoidalCategory.leftUnitor_naturality_assoc
+  MonoidalCategory.rightUnitor_naturality_assoc
+  MonoidalCategory.pentagon_assoc
 
 namespace MonoidalCategory
 
