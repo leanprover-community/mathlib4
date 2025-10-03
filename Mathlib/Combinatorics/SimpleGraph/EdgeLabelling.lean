@@ -66,7 +66,7 @@ namespace EdgeLabelling
 Convenience function to get the colour of the edge `x ~ y` in the colouring of the complete graph
 on `V`.
 -/
-def get (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : K :=
+abbrev get (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : K :=
   C ⟨s(x, y), h⟩
 
 variable {C : EdgeLabelling G K}
@@ -182,9 +182,7 @@ abbrev pullback (C : TopEdgeLabelling V K) (f : V' ↪ V) : TopEdgeLabelling V' 
 @[simp]
 theorem labelGraph_adj {C : TopEdgeLabelling V K} {k : K} (x y : V) :
     (C.labelGraph k).Adj x y ↔ ∃ H : x ≠ y, C.get x y H = k := by
-  rw [EdgeLabelling.labelGraph_adj]
-  simp
-  rfl
+  simp [EdgeLabelling.labelGraph_adj]
 
 end TopEdgeLabelling
 
