@@ -28,7 +28,7 @@ open Limits
 variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)
   {α : Type t} (J : α → Type u') [∀ a, Category.{v'} (J a)]
 
-/-- The closure of property of objects of a category under colimits of
+/-- The closure of a property of objects of a category under colimits of
 shape `J a` for a family of categories `J`. -/
 inductive colimitsClosure : ObjectProperty C
   | of_mem (X : C) (hX : P X) : colimitsClosure X
