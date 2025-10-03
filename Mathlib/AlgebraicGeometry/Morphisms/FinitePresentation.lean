@@ -97,7 +97,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
     have inst : QuasiCompact (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
     convert (this (Y.affineCover.pullbackHom f i) (hs.preimage_of_isOpenEmbedding
-      ((Y.affineCover.pullbackCover f).f i).isOpenEmbedding)
+      ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding)
       ⟨_, rfl⟩).preimage_of_isOpenEmbedding (Y.affineCover.f i).isoOpensRange.inv.isOpenEmbedding
     refine .trans ?_ ((Scheme.homeoOfIso (Y.affineCover.f i).isoOpensRange).image_eq_preimage _)
     apply Set.image_injective.mpr Subtype.val_injective
@@ -107,10 +107,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
       (Y.affineCover.f i).isoOpensRange.hom ≫ Opens.ι _).base.hom '' _
     rw [Scheme.Hom.isoOpensRange_hom_ι, Cover.pullbackHom_map, Scheme.comp_base, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range]
-    simp only [coe_opensRange, Cover.pullbackCover_X, Cover.pullbackCover_f,
-      IsOpenImmersion.range_pullback_fst_of_right, TopologicalSpace.Opens.map_obj,
-      TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.coe_mk,
-      Set.image_inter_preimage]
+    simp [IsOpenImmersion.range_pullback_fst_of_right, Set.image_inter_preimage]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · have inst : CompactSpace X := HasAffineProperty.iff_of_isAffine.mp ‹QuasiCompact f›
