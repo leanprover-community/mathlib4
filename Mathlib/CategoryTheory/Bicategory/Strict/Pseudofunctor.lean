@@ -109,7 +109,7 @@ lemma whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁
     (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫
       (F.mapComp' f₀₂ f₂₃ f).inv := by
   simp [← cancel_mono (F.mapComp' f₀₂ f₂₃ f).hom,
-    F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃ _ _ _ _ _ _ h₀₂ h₁₃ hf]
+    F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom _ _ _ _ _ _ h₀₂ h₁₃ hf]
 
 @[deprecated (since := "2025-10-02")] alias whiskerLeft_mapComp'_inv_comp_mapComp'_inv :=
   whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv
