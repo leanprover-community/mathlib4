@@ -161,10 +161,11 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
     (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ)
     (hg : AEMeasurable g μ) (hff' : TendstoInMeasure μ (fun n ↦ f' n - f n) l 0)
     (hfg : Tendsto (β := ProbabilityMeasure E)
-      (fun n ↦ ⟨μ.map (f n), isProbabilityMeasure_map (hf n)⟩) l
-      (𝓝 ⟨μ.map g, isProbabilityMeasure_map hg⟩)) :
-    Tendsto (β := ProbabilityMeasure E) (fun n ↦ ⟨μ.map (f' n), isProbabilityMeasure_map (hf' n)⟩) l
-      (𝓝 ⟨μ.map g, isProbabilityMeasure_map hg⟩) := by
+      (fun n ↦ ⟨μ.map (f n), Measure.isProbabilityMeasure_map (hf n)⟩) l
+      (𝓝 ⟨μ.map g, Measure.isProbabilityMeasure_map hg⟩)) :
+    Tendsto (β := ProbabilityMeasure E)
+      (fun n ↦ ⟨μ.map (f' n), Measure.isProbabilityMeasure_map (hf' n)⟩) l
+      (𝓝 ⟨μ.map g, Measure.isProbabilityMeasure_map hg⟩) := by
   rcases isEmpty_or_nonempty E with hE | hE
   · simp only [Subsingleton.elim _ (0 : Measure E)]
     exact tendsto_const_nhds
@@ -183,8 +184,8 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
     specialize hF_lip x₀
     simp_rw [eq_comm (a := F x₀)] at hF_lip
     simp only [hF_lip, integral_const, smul_eq_mul]
-    have h_prob n : IsProbabilityMeasure (μ.map (f' n)) := isProbabilityMeasure_map (hf' n)
-    have : IsProbabilityMeasure (μ.map g) := isProbabilityMeasure_map hg
+    have h_prob n : IsProbabilityMeasure (μ.map (f' n)) := Measure.isProbabilityMeasure_map (hf' n)
+    have : IsProbabilityMeasure (μ.map g) := Measure.isProbabilityMeasure_map hg
     simp only [measureReal_univ_eq_one, one_mul]
     exact tendsto_const_nhds
   replace hL : 0 < L := lt_of_le_of_ne L.2 (Ne.symm hL)
@@ -294,8 +295,9 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
 (`Tendsto` in the `ProbabilityMeasure` type). -/
 lemma ProbabilityMeasure.tendsto_map_of_tendstoInMeasure [l.IsCountablyGenerated]
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : AEMeasurable g μ) (h : TendstoInMeasure μ f l g) :
-    Tendsto (β := ProbabilityMeasure E) (fun n ↦ ⟨μ.map (f n), isProbabilityMeasure_map (hf n)⟩) l
-      (𝓝 ⟨μ.map g, isProbabilityMeasure_map hg⟩) := by
+    Tendsto (β := ProbabilityMeasure E)
+      (fun n ↦ ⟨μ.map (f n), Measure.isProbabilityMeasure_map (hf n)⟩) l
+      (𝓝 ⟨μ.map g, Measure.isProbabilityMeasure_map hg⟩) := by
   refine ProbabilityMeasure.todo hf (fun _ ↦ hg) hg ?_ tendsto_const_nhds
   simpa [tendstoInMeasure_iff_norm] using h
 
@@ -353,7 +355,8 @@ lemma hasLaw_cameronMartin (x : cameronMartin μ) :
         rw [IsGaussian.integral_dual]
       rw [Measure.map_congr h_eq]
       simpa using gaussianReal_sub_const' (hy_map n hn) (μ[y n])
-    have hL'_prob n : IsProbabilityMeasure (μ.map (L' n)) := isProbabilityMeasure_map (by fun_prop)
+    have hL'_prob n : IsProbabilityMeasure (μ.map (L' n)) :=
+      Measure.isProbabilityMeasure_map (by fun_prop)
     let ν n : ProbabilityMeasure ℝ := ⟨μ.map (L' n), hL'_prob n⟩
     have h_eventuallyEq : ∀ᶠ n in atTop, ν n = ⟨gaussianReal 0 (‖x‖₊ ^ 2), inferInstance⟩ := by
       filter_upwards [hL_ne_zero] with n hn
@@ -363,7 +366,7 @@ lemma hasLaw_cameronMartin (x : cameronMartin μ) :
       rw [tendsto_congr' h_eventuallyEq]
       exact tendsto_const_nhds
     have hx_prob : IsProbabilityMeasure (μ.map (x : E → ℝ)) :=
-      isProbabilityMeasure_map (by fun_prop)
+      Measure.isProbabilityMeasure_map (by fun_prop)
     have hν_tendsto_2 : Tendsto ν atTop (𝓝 ⟨μ.map x, hx_prob⟩) :=
       ProbabilityMeasure.tendsto_map_of_tendstoInMeasure (fun _ ↦ by fun_prop) (by fun_prop)
         (tendstoInMeasure_of_tendsto_Lp hL'_tendsto)
