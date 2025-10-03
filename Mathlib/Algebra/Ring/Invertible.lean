@@ -36,8 +36,8 @@ variable {x y}
 theorem AddUnits.neg_mulLeft : -(x.mulLeft y) = (-x).mulLeft y := rfl
 theorem AddUnits.neg_mulRight : -(x.mulRight y) = (-x).mulRight y := rfl
 
-@[deprecated (since := "2025-10-03")] AddUnits.neg_mul_left := AddUnits.neg_mulLeft
-@[deprecated (since := "2025-10-03")] AddUnits.neg_mul_right := AddUnits.neg_mulRight
+@[deprecated (since := "2025-10-03")] alias AddUnits.neg_mul_left := AddUnits.neg_mulLeft
+@[deprecated (since := "2025-10-03")] alias AddUnits.neg_mul_right := AddUnits.neg_mulRight
 
 theorem AddUnits.neg_mul_eq_mul_neg {x y : AddUnits R} : (↑(-x) * y : R) = x * ↑(-y) := by
   rw [← neg_eq_val_neg, ← val_neg_mulRight]
