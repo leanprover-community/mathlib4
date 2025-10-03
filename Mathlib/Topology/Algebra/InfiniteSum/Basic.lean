@@ -387,6 +387,11 @@ theorem tprod_congr {f g : β → α}
   congr_arg tprod (funext hfg)
 
 @[to_additive]
+theorem tprod_congr₂ {f g : γ → β → α}
+    (hfg : ∀ b c, f b c = g b c) : ∏' c, ∏' b, f b c = ∏' c, ∏' b, g b c :=
+  tprod_congr fun c ↦ tprod_congr fun b ↦ hfg b c
+
+@[to_additive]
 theorem tprod_fintype [Fintype β] (f : β → α) : ∏' b, f b = ∏ b, f b := by
   apply tprod_eq_prod; simp
 
@@ -455,6 +460,11 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
 @[to_additive]
 theorem Equiv.tprod_eq (e : γ ≃ β) (f : β → α) : ∏' c, f (e c) = ∏' b, f b :=
   e.injective.tprod_eq <| by simp
+
+@[to_additive (attr := simp)]
+theorem tprod_comp_neg {β : Type*} [InvolutiveNeg β] (f : β → α) :
+    ∏' d, f (-d) = ∏' d, f d :=
+  (Equiv.neg β).tprod_eq f
 
 /-! ### `tprod` on subsets - part 1 -/
 
@@ -565,9 +575,6 @@ protected theorem Multipliable.tprod_mul (hf : Multipliable f) (hg : Multipliabl
 protected theorem Multipliable.tprod_finsetProd {f : γ → β → α} {s : Finset γ}
     (hf : ∀ i ∈ s, Multipliable (f i)) : ∏' b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏' b, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
-
-@[deprecated (since := "2025-02-13")]
-  alias tprod_of_prod := Multipliable.tprod_finsetProd
 
 @[deprecated (since := "2025-04-12")] alias tsum_finsetSum := Summable.tsum_finsetSum
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_finsetProd :=

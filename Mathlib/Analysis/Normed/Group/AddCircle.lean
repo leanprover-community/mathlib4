@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
@@ -118,10 +118,8 @@ theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ =
   obtain ⟨hx₁, hx₂⟩ := abs_le.mp hx
   replace hx₂ := Ne.lt_of_le hx' hx₂
   constructor
-  · rwa [← mul_le_mul_iff_right₀ hp, ← mul_assoc, mul_inv_cancel₀ hp.ne.symm, one_mul, mul_neg, ←
-      mul_div_assoc, mul_one]
-  · rwa [← mul_lt_mul_left hp, ← mul_assoc, mul_inv_cancel₀ hp.ne.symm, one_mul, ← mul_div_assoc,
-      mul_one]
+  · rwa [le_inv_mul_iff₀ hp, mul_neg, ← mul_div_assoc, mul_one]
+  · rwa [inv_mul_lt_iff₀ hp, ← mul_div_assoc, mul_one]
 
 open Metric
 

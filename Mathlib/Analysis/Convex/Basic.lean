@@ -306,6 +306,21 @@ end LinearOrderedAddCommMonoid
 
 end Module
 
+section IsScalarTower
+
+variable [ZeroLEOneClass 𝕜] [Module 𝕜 E]
+variable (R : Type*) [Semiring R] [PartialOrder R] [Module R E]
+variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
+
+/-- Lift the convexity of a set up through a scalar tower. -/
+theorem Convex.lift [SMulPosMono R 𝕜] {s : Set E} (hs : Convex 𝕜 s) : Convex R s := by
+  intro x hx y hy a b ha hb hab
+  suffices (a • (1 : 𝕜)) • x + (b • (1 : 𝕜)) • y ∈ s by simpa using this
+  refine hs hx hy ?_ ?_ (by simpa [add_smul] using congr($(hab) • (1 : 𝕜)))
+  all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
+
+end IsScalarTower
+
 end AddCommMonoid
 
 section LinearOrderedAddCommMonoid
@@ -526,7 +541,7 @@ theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜}
     refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
     match_scalars <;> field_simp
 
-theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 ≤ p) (hq : 0 ≤ q) :
+protected theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     (p + q) • s = p • s + q • s := (add_smul_subset _ _ _).antisymm <| by
   rintro _ ⟨_, ⟨v₁, h₁, rfl⟩, _, ⟨v₂, h₂, rfl⟩, rfl⟩
   exact h_conv.exists_mem_add_smul_eq h₁ h₂ hp hq
@@ -580,3 +595,25 @@ protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K 
   K.convex K.zero_mem
 
 end Submodule
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R]
+variable (A : Type*) [Semiring A] [Algebra R A]
+variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
+variable [PartialOrder R] [PartialOrder A]
+
+lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
+    (halg : Set.Ici 0 ⊆ algebraMap R A '' Set.Ici 0) (hs : Convex R s) :
+    Convex A s := by
+  simp only [Convex, StarConvex] at hs ⊢
+  intro u hu v hv a b ha hb hab
+  obtain ⟨c, hc1, hc2⟩ := halg ha
+  obtain ⟨d, hd1, hd2⟩ := halg hb
+  convert hs hu hv hc1 hd1 _ using 2
+  · rw [← hc2, algebraMap_smul]
+  · rw [← hd2, algebraMap_smul]
+  rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab
+  exact (FaithfulSMul.algebraMap_eq_one_iff R A).mp hab
+
+end CommSemiring

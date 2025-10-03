@@ -3,8 +3,8 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Algebra.ArithmeticGeometric
 import Mathlib.Analysis.Normed.Lp.WithLp
+import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.Topology.MetricSpace.Polish
@@ -20,15 +20,15 @@ with respect to `μ`.
 ## Sketch of the proof
 
 The main case of the proof is for `μ` a probability measure such that there exists a positive
-`a : ℝ` such that `2⁻¹ < μ {x | ‖x‖ ≤ a} < 1`. If `a` does not exist then the measure is a Dirac
-at `0`, and the result is trivial.
+`a : ℝ` such that `2⁻¹ < μ {x | ‖x‖ ≤ a} < 1`. If `μ` is a probability measure and `a` does not
+exist then we can show that there is a ball with finite radius of measure 1, and the result is true
+for `C = 1` (for example), since `x ↦ exp (‖x‖ ^ 2)` is almost surely bounded.
 We then choose such an `a`.
 
 In order to show the existence of `C` such that `x ↦ exp (C * ‖x‖ ^ 2)` is integrable, we prove as
 intermediate result that for `a, c` with `2⁻¹ < c ≤ μ {x | ‖x‖ ≤ a}`,
-the integral `∫⁻ x, exp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2) ∂μ` is bounded by a finite quantity that
-does not depend on `a` (`logRatio c` is a multiple of `log (c / (1 - c))`).
-We can then take `C = logRatio c * a⁻¹ ^ 2`.
+the integral `∫⁻ x, exp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2) ∂μ` is bounded by a finite quantity
+(`logRatio c` is a multiple of `log (c / (1 - c))`). We can then take `C = logRatio c * a⁻¹ ^ 2`.
 
 We now turn to the proof of the intermediate result.
 
@@ -89,11 +89,6 @@ lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {
   simp only [not_le] at h' hx
   exact ⟨Nat.find h - 1, h' _ (by simp [hx]), by simp [Nat.find_spec h, hx]⟩
 
-lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
-  rw [← one_div, div_eq_iff (sub_ne_zero_of_ne (by simp))]
-  ring_nf
-  norm_num
-
 end Aux
 
 namespace ProbabilityTheory
@@ -124,10 +119,10 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
     μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖} ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by
   calc μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖}
   _ = (μ.prod μ) ({x | ‖x‖ ≤ a} ×ˢ {y | b < ‖y‖}) := by rw [Measure.prod_prod]
-    -- this is the measure of two bands in the plane (draw a picture!)
+    -- This is the measure of two bands in the plane (draw a picture!)
   _ = (μ.prod μ) {p | ‖p.1‖ ≤ a ∧ b < ‖p.2‖} := rfl
   _ = ((μ.prod μ).map (ContinuousLinearMap.rotation (- (π/4)))) {p | ‖p.1‖ ≤ a ∧ b < ‖p.2‖} := by
-    -- we can rotate the bands since `μ.prod μ` is invariant under rotation
+    -- We can rotate the bands since `μ.prod μ` is invariant under rotation
     rw [h]
   _ = (μ.prod μ) {p | ‖p.1 - p.2‖ / √2 ≤ a ∧ b < ‖p.1 + p.2‖ / √2} := by
     rw [Measure.map_apply (by fun_prop)]
@@ -151,7 +146,7 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
     · rw [← smul_add, norm_smul, div_eq_inv_mul, div_eq_inv_mul]
       congr
   _ ≤ (μ.prod μ) {p | (b - a) / √2 < ‖p.1‖ ∧ (b - a) / √2 < ‖p.2‖} := by
-    -- the rotated bands are contained in quadrants.
+    -- The rotated bands are contained in quadrants.
     refine measure_mono fun p ↦ ?_
     simp only [Set.mem_setOf_eq, and_imp]
     intro hp1 hp2
@@ -202,7 +197,7 @@ lemma tendsto_normThreshold_atTop (ha_pos : 0 < a) : Tendsto (normThreshold a) a
   tendsto_arithGeom_atTop_of_one_lt Real.one_lt_sqrt_two (lt_normThreshold_zero ha_pos)
 
 lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
-  rw [normThreshold, arithGeom_same_eq_mul_div (by simp), div_eq_mul_inv, inv_sqrt_two_sub_one]
+  rw [normThreshold, arithGeom_same_eq_mul_div (by simp), div_eq_mul_inv, Real.inv_sqrt_two_sub_one]
   ring
 
 lemma sq_normThreshold_add_one_le (n : ℕ) :
@@ -334,6 +329,9 @@ lemma logRatio_mul_normThreshold_add_one_le {c : ℝ≥0∞}
     ring
 
 open Metric in
+/-- Auxiliary lemma for `lintegral_exp_mul_sq_norm_le_mul`, in which we find an upper bound on an
+integral by dealing separately with the contribution of each set in a sequence of annuli.
+This is the bound of the integral over one of those annuli. -/
 lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
@@ -345,6 +343,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
   let c := μ {x | ‖x‖ ≤ a}
   let C := logRatio c * a⁻¹ ^ 2
   calc ∫⁻ x in (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)), .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
+  -- We bound the function on the set by its maximal value, at the outer boundary of the annulus
   _ ≤ ∫⁻ x in (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)),
       .ofReal (rexp (C * t (n + 1) ^ 2)) ∂μ := by
     refine setLIntegral_mono (by fun_prop) fun x hx ↦ ?_
@@ -352,12 +351,14 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     · exact mul_nonneg (logRatio_pos ha_gt ha_lt).le (by positivity)
     · simp only [Set.mem_diff, mem_closedBall, dist_zero_right, not_le] at hx
       exact hx.1
+  -- The integral of a constant is the constant times the measure of the set
   _ = .ofReal (rexp (C * t (n + 1) ^ 2)) * μ (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)) := by
     simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, C, t]
   _ ≤ .ofReal (rexp (C * t (n + 1) ^ 2)) * μ {x | t n < ‖x‖} := by
     gcongr
     intro x
     simp
+  -- We obtained an upper bound on the measure of that annulus in a previous lemma
   _ ≤ .ofReal (rexp (C * t (n + 1) ^ 2))
       * c * .ofReal (rexp (- Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     conv_rhs => rw [mul_assoc]
@@ -389,9 +390,13 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   let c := μ {x | ‖x‖ ≤ a}
   let C := logRatio c' * a⁻¹ ^ 2
   have hc'_le : c' ≤ 1 := hc'.trans prob_le_one
+  -- We want to bound an integral
   change ∫⁻ x, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
       ≤ c * (.ofReal (rexp (logRatio c'))
             + ∑' n, .ofReal (rexp (- 2⁻¹ * Real.log (c' / (1 - c')).toReal * 2 ^ n)))
+  -- We will cut the space into a ball of radius `a` and annuli defined from the thresholds `t n`
+  -- and bound the integral on each piece.
+  -- First, we bound the integral on the ball of radius `a`
   have ht_int_zero : ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
       ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (logRatio c')) := by
     calc ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
@@ -407,6 +412,8 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       field_simp
       congr with x
       simp
+  -- We dispense with an edge case. If `μ {x | ‖x‖ ≤ a} = 1`, then the integral over
+  -- the complement of the ball is zero and we are done.
   by_cases ha : μ {x | ‖x‖ ≤ a} = 1
   · simp [c, ha] at ht_int_zero ⊢
     refine le_add_right ((le_of_eq ?_).trans ht_int_zero)
@@ -420,8 +427,10 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     · refine measurable_to_prop ?_
       rw [show (fun x : E ↦ ‖x‖ ≤ a) ⁻¹' {True} = {x : E | ‖x‖ ≤ a} by ext; simp]
       exact measurableSet_le (by fun_prop) (by fun_prop)
+  -- So we can assume `μ {x | ‖x‖ ≤ a} < 1`, which implies `c' < 1`
   have ha_lt : μ {x | ‖x‖ ≤ a} < 1 := lt_of_le_of_ne prob_le_one ha
   have hc'_lt : c' < 1 := lt_of_le_of_lt hc' ha_lt
+  -- We cut the space into a ball and a sequence of annuli between the thresholds `t n`
   have h_iUnion : (Set.univ : Set E)
       = closedBall 0 a ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n) := by
     ext x
@@ -432,6 +441,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     · exact Or.inl ha'
     · exact Or.inr <| (normThreshold_strictMono ha_pos).exists_between_of_tendsto_atTop
         (tendsto_normThreshold_atTop ha_pos) ha'
+  -- The integral over the union is at most the sum of the integrals
   rw [← setLIntegral_univ, h_iUnion]
   have : ∫⁻ x in closedBall 0 (t 0) ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n),
         .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
@@ -441,22 +451,23 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     refine (lintegral_union_le _ _ _).trans ?_
     gcongr
     exact lintegral_iUnion_le _ _
+  -- Each of the integrals in the sum correspond to the terms in the goal
   refine this.trans ?_
   rw [mul_add]
   gcongr
+  -- We already proved the upper bound for the ball
   · exact ht_int_zero
   rw [← ENNReal.tsum_mul_left]
   gcongr with n
+  -- Now we prove the bound for each annulus, by calling a previous lemma
   refine (le_trans ?_ (lintegral_closedBall_diff_exp_logRatio_mul_sq_le h_rot
     (hc'_gt.trans_le hc') ha_lt n)).trans ?_
   · gcongr
     simp only [inv_pow, C]
     field_simp
-    gcongr
     exact logRatio_mono hc'_gt ha_lt hc'
   gcongr _ * ENNReal.ofReal (rexp ?_)
-  simp only [ENNReal.toReal_div, neg_mul, neg_le_neg_iff, Nat.ofNat_pos, pow_pos,
-    mul_le_mul_iff_left₀, mul_le_mul_iff_left₀]
+  simp only [ENNReal.toReal_div, neg_mul, neg_le_neg_iff]
   gcongr
   · refine div_pos ?_ ?_
     all_goals rw [ENNReal.toReal_pos_iff]
@@ -540,10 +551,12 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
     [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
+  -- If there exists `a > 0` such that `2⁻¹ < μ {x | ‖x‖ ≤ a} < 1`, we can call the previous lemma.
   by_cases h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1
   · obtain ⟨a, ha_pos, ha_gt, ha_lt⟩ : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1 :=
       h_meas_Ioo
     exact exists_integrable_exp_sq_of_map_rotation_eq_self' h_rot ha_pos ha_gt ha_lt
+  -- Otherwise, we can find `b > 0` such that the ball of radius `b` has full measure
   obtain ⟨b, hb⟩ : ∃ b, μ {x | ‖x‖ ≤ b} = 1 := by
     by_contra h_ne
     push_neg at h_meas_Ioo h_ne
@@ -567,6 +580,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
     · intro a b hab x hx
       simp only [Set.mem_setOf_eq] at hx ⊢
       exact hx.trans (mod_cast hab)
+  -- So we can take `C = 1` and show that `x ↦ exp (‖x‖ ^ 2)` is integrable, since it is bounded.
   have hb' : ∀ᵐ x ∂μ, ‖x‖ ≤ b := by
     rwa [ae_iff_prob_eq_one]
     refine measurable_to_prop ?_

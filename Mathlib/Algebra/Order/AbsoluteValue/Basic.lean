@@ -113,6 +113,10 @@ protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
   (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 
+@[simp]
+protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ x = 0 := by
+  simp only [← abv.eq_zero, le_antisymm_iff, abv.nonneg, and_true]
+
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 
@@ -263,7 +267,7 @@ protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg
   eq_zero' _ := abs_eq_zero
-  add_le' := abs_add
+  add_le' := abs_add_le
   map_mul' := abs_mul
 
 instance : Inhabited (AbsoluteValue S S) :=
