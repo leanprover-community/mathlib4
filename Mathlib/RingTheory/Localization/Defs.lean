@@ -515,7 +515,7 @@ include M
 /-- See note [partially-applied ext lemmas] -/
 theorem monoidHom_ext {P : Type*} [Monoid P] ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
-  Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) h
+  (toLocalizationMap M S).epic_of_localizationMap h
 
 /-- See note [partially-applied ext lemmas] -/
 theorem ringHom_ext {P : Type*} [Semiring P] ⦃j k : S →+* P⦄
