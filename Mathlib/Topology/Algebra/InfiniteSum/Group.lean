@@ -161,15 +161,15 @@ section tprod
 variable [T2Space α]
 
 @[to_additive]
-theorem tprod_inv : ∏' b, (f b)⁻¹ = (∏' b, f b)⁻¹ := by
-  by_cases hf : Multipliable f
+theorem tprod_inv [L.NeBot] : ∏'[L] b, (f b)⁻¹ = (∏'[L] b, f b)⁻¹ := by
+  by_cases hf : Multipliable f L
   · exact hf.hasProd.inv.tprod_eq
   · simp [tprod_eq_one_of_not_multipliable hf,
       tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
 
 @[to_additive]
-protected theorem Multipliable.tprod_div (hf : Multipliable f) (hg : Multipliable g) :
-    ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
+protected theorem Multipliable.tprod_div [L.NeBot] (hf : Multipliable f L) (hg : Multipliable g L) :
+    ∏'[L] b, (f b / g b) = (∏'[L] b, f b) / ∏'[L] b, g b :=
   (hf.hasProd.div hg.hasProd).tprod_eq
 
 @[deprecated (since := "2025-04-12")] alias tsum_sub := Summable.tsum_sub

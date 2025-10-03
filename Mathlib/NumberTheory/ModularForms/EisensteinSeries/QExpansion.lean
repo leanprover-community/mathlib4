@@ -173,8 +173,8 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
     field_simp [h3]
     ring_nf
     simp [Nat.mul_two]
-  rw [← iteratedDerivWithin_tsum_exp_eq' hk z, ← iteratedDerivWithin_cot_series_rep_div_pow hk
-    (by simpa using z.2) ]
+  rw [← iteratedDerivWithin_tsum_exp_eq' hk z,
+    ← iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow hk (by simpa using z.2) ]
   apply iteratedDerivWithin_congr
   · intro x hx
     simpa using pi_mul_cot_pi_q_exp ⟨x, hx⟩
@@ -209,10 +209,6 @@ lemma cexp_pow_aux (a b : ℕ) (z : ℍ) :
   simp [← Complex.exp_nsmul]
   ring_nf
 
-theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ ↦
-    (c.1 ^ k : ℂ) * Complex.exp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) := by
-  simpa using summable_prod_mul_pow k (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
-
 theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
     ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
@@ -229,10 +225,10 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
     ∑' x, eisSummand k x z = 2 * riemannZeta k + 2 * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
     ∑' (n : ℕ+), (σ (k - 1) n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
   rw [← (piFinTwoEquiv fun _ ↦ ℤ).symm.tsum_eq, Summable.tsum_prod
-    (by apply summable_prod_eisSummand hk), tsum_nat_eq_zero_two_pnat]
+    (by apply summable_prod_eisSummand hk), tsum_int_eq_zero_add_two_mul_tsum_pnat]
   · have (b : ℕ+) := EisensteinSeries.qExpansion_identity_pnat (k := k - 1) (by omega)
       ⟨b * z , by simpa using z.2⟩
-    simp only [coe_mk_subtype, show k - 1 + 1 = k by omega, one_div, neg_mul, mul_assoc, eisSummand,
+    simp [coe_mk_subtype, show k - 1 + 1 = k by omega, one_div, neg_mul, mul_assoc, eisSummand,
       Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Int.cast_zero, zero_mul, Fin.cons_one,
       zero_add, zpow_neg, zpow_natCast, Int.cast_natCast,
       two_riemannZeta_eq_tsum_int_inv_even_pow (by omega) hk2, add_right_inj, mul_eq_mul_left_iff,
@@ -244,10 +240,10 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
       rw [this c]
     simp_rw [tsum_mul_left, ← mul_assoc, tsum_prod_pow_cexp_eq_tsum_sigma (k - 1) z]
   · intro n
-    nth_rw 2 [(tsum_int_eq_tsum_neg _).symm]
+    nth_rw 1 [(tsum_comp_neg _).symm]
     congr
     ext y
-    simp only [eisSummand, Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one,
+    simp [eisSummand, Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one,
       zpow_neg, zpow_natCast, ← Even.neg_pow hk2 (n * (z : ℂ) + y), neg_add_rev, Int.cast_neg,
       neg_mul, inv_inj]
     ring
@@ -299,7 +295,7 @@ lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : E
     ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * π * Complex.I * z) ^ (n : ℤ) := by
   have : (eisensteinSeries_MF (k := k) (by omega) 0) z =
     (eisensteinSeries_SIF (N := 1) 0 k) z := rfl
-  rw [E, ModularForm.smul_apply, this, eisensteinSeries_SIF_apply 0 k z,
+  rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeries_SIF_apply 0 k z,
     eisensteinSeries]
   have HE1 := tsum_eisSummand_eq_sigma_cexp (by omega) hk2 z
   have HE2 := tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries (by omega) z
