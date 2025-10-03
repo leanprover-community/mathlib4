@@ -37,7 +37,7 @@ open Matrix Bundle Manifold MulAction
 
 open RightActions
 
-/- An `n`-times continuously differentiable left action of a Lie group `G` on a manifold `M`.
+/-- An `n`-times continuously differentiable left action of a Lie group `G` on a manifold `M`.
 
 This class asserts that the left action map `(g, m) ↦ g • m` is `n`-times continuously
 differentiable as a map `G × M → M` between manifolds. This is the standard notion of
@@ -173,6 +173,21 @@ instance SmoothRightGAction_of_Left
 
 universe uK uB uF uH uI uG uP
 
+/-- The core structure of a principal G-bundle.
+
+A principal bundle consists of a fiber bundle where the structure group G acts on the fibers
+in a way that is free (no non-trivial stabilizers) and transitive (the action connects any
+two points in the same fiber). This captures the essential structure needed for principal
+bundles in differential geometry.
+
+## Main conditions
+- `respects_fibres`: The group action preserves fibers
+- `is_free`: The action has no fixed points (except for the identity)
+- `is_transitive`: The action is transitive on each fiber
+
+Together, `is_free` and `is_transitive` mean that each fiber is a principal homogeneous
+space (also called a G-torsor in some contexts) for G.
+-/
 structure PrincipalBundleCore
   (ι : Type uP)
   {𝕜 : Type uK} [NontriviallyNormedField 𝕜]
