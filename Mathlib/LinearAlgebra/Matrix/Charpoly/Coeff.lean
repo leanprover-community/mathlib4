@@ -310,7 +310,7 @@ theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
     rw [mul_sub, ← RingHom.map_mul, mul_inv_of_invertible, RingHom.map_one, ← neg_sub, det_neg,
       det_one_sub_mul_comm, charpolyRev, smul_eq_diagonal_mul]
     simp
-    ring
+    ac_rfl
 
 @[simp] lemma eval_charpolyRev :
     eval 0 M.charpolyRev = 1 := by
