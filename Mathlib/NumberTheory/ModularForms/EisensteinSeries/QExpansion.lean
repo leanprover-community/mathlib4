@@ -152,9 +152,8 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
   simp_rw [(eq_inv_mul_iff_mul_eq₀ (by simp [Nat.factorial_ne_zero])).mpr this, ← tsum_mul_left]
   congr
   ext n
-  have h3 : (k ! : ℂ) ≠ 0 := by simp [Nat.factorial_ne_zero]
   rw [show (-2 * π * I) ^ (k + 1) = (-1) ^ (k + 1) * (2 * π * I) ^ (k + 1) by rw [← neg_pow]; ring]
-  field_simp [h3]
+  field_simp
   ring_nf
   simp [Nat.mul_two]
 
