@@ -58,9 +58,9 @@ theorem toWeakSpace_closedAbsConvexHull_eq {s : Set E} :
     (toWeakSpace 𝕜 E) '' (closedAbsConvexHull 𝕜 s) =
       closedAbsConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by
   have : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) := WeakBilin.instContinuousSMul _
-  rw [closedAbsConvexHull_eq_closure_absConvexHull (𝕜 := 𝕜),
-    convex_absConvexHull.sMulPosMono_convex.toWeakSpace_closure 𝕜,
-    closedAbsConvexHull_eq_closure_absConvexHull (𝕜 := 𝕜)]
+  rw [closedAbsConvexHull_eq_closure_absConvexHull,
+    (convex_absConvexHull.lift ℝ).toWeakSpace_closure 𝕜,
+    closedAbsConvexHull_eq_closure_absConvexHull]
   congr
   refine (toWeakSpace 𝕜 E).toLinearMap.image_absConvexHull s
 
