@@ -544,10 +544,9 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   · simp
   exact Finset.le_sup hN
 
-section Multiplication
+section Mul
 
-variable [NormedField 𝕜] [NormedRing R] -- should be NonUnitalNormedRing
-  [NormedSpace 𝕜 R] [NormedAlgebra ℝ R] -- should be NormedSpace
+variable [NormedField 𝕜] [NormedRing R] [NormedSpace 𝕜 R] [NormedAlgebra ℝ R]
   [IsScalarTower 𝕜 R R] [SMulCommClass 𝕜 R R]
 
 theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
@@ -574,7 +573,7 @@ theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemper
   grw [h1 i (Nat.le_of_lt_succ hi) x, h2 (n - i) (by simp only [tsub_le_self]) x]
   grind
 
-end Multiplication
+end Mul
 
 lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
