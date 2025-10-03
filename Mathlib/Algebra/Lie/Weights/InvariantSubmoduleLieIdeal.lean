@@ -19,6 +19,8 @@ of a Cartan subalgebra.
 * The constructed object is indeed a Lie ideal
 -/
 
+namespace LieAlgebra.IsKilling
+
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 variable [LieAlgebra.IsKilling K L] [FiniteDimensional K L]
 
@@ -234,3 +236,5 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       | add x₁ x₂ _ _ ih₁ ih₂ =>
         simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
         exact add_mem ih₁ ih₂
+
+end LieAlgebra.IsKilling
