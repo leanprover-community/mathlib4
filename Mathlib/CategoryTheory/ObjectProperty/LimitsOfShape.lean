@@ -35,7 +35,7 @@ that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
-universe w v' u' v u
+universe w v'' v' u'' u' v u
 
 namespace CategoryTheory.ObjectProperty
 
@@ -43,6 +43,7 @@ open Limits
 
 variable {C : Type*} [Category C] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
+  {J' : Type u''} [Category.{v''} J']
 
 /-- The property of objects that are *equal* to `limit F` for some
 functor `F : J ⥤ C` where all `F.obj j` satisfy `P`. -/
@@ -88,6 +89,13 @@ def ofLE {X : C} (h : P.LimitOfShape J X) {Q : ObjectProperty C} (hPQ : P ≤ Q)
     Q.LimitOfShape J X where
   toLimitPresentation := h.toLimitPresentation
   prop_diag_obj j := hPQ _ (h.prop_diag_obj j)
+
+/-- Change the index category for `ObjectProperty.LimitOfShape`. -/
+@[simps toLimitPresentation]
+noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Initial] :
+    P.LimitOfShape J' X where
+  toLimitPresentation := h.toLimitPresentation.reindex G
+  prop_diag_obj _ := h.prop_diag_obj _
 
 end LimitOfShape
 
@@ -183,6 +191,29 @@ lemma prop_limit (F : J ⥤ C) [HasLimit F] (hF : ∀ (j : J), P (F.obj j)) :
   P.prop_of_isLimit (limit.isLimit F) hF
 
 end
+
+variable {J} in
+lemma limitsOfShape_le_of_initial (G : J ⥤ J') [G.Initial] :
+    P.limitsOfShape J' ≤ P.limitsOfShape J :=
+  fun _h ⟨h⟩ ↦ ⟨h.reindex G⟩
+
+variable {J} in
+lemma limitsOfShape_congr (e : J ≌ J') :
+    P.limitsOfShape J = P.limitsOfShape J' :=
+  le_antisymm (P.limitsOfShape_le_of_initial e.inverse)
+    (P.limitsOfShape_le_of_initial e.functor)
+
+variable {J} in
+lemma isClosedUnderLimitsOfShape_iff_of_equivalence (e : J ≌ J') :
+    P.IsClosedUnderLimitsOfShape J ↔
+      P.IsClosedUnderLimitsOfShape J' := by
+  simp only [isClosedUnderLimitsOfShape_iff, P.limitsOfShape_congr e]
+
+variable {P J} in
+lemma IsClosedUnderLimitsOfShape.of_equivalence (e : J ≌ J')
+    [P.IsClosedUnderLimitsOfShape J] :
+    P.IsClosedUnderLimitsOfShape J' := by
+  rwa [← P.isClosedUnderLimitsOfShape_iff_of_equivalence e]
 
 end ObjectProperty
 

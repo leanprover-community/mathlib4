@@ -17,6 +17,7 @@ family of categories `J : α → Type _`, we introduce the closure
 and under certain smallness assumptions, we show that its essentially small.
 
 -/
+
 universe w w' t v' u' v u
 
 namespace CategoryTheory.ObjectProperty
