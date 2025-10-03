@@ -291,7 +291,7 @@ lemma isLocalAtTarget [P.IsMultiplicative]
     (hP : ∀ {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g], P (f ≫ g) → P f) :
     IsLocalAtTarget P where
   iff_of_openCover' {X Y} f 𝒰 := by
-    refine (iff_of_openCover (𝒰.pullbackCover f)).trans (forall_congr' fun i ↦ ?_)
+    refine (iff_of_openCover (𝒰.pullback₁ f)).trans (forall_congr' fun i ↦ ?_)
     rw [← Scheme.Cover.pullbackHom_map]
     constructor
     · exact hP _ _
@@ -570,8 +570,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.X i)] :
 
 theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   letI := isLocal_affineProperty P
-  haveI : ∀ i, IsAffine (Scheme.Cover.X
-      (Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)) i) := fun i => by
+  haveI : ∀ i, IsAffine ((Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)).X i) := fun i => by
     dsimp; infer_instance
   rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
   trans Q (pullback.snd f (𝟙 _))
@@ -621,9 +620,9 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
     P.IsStableUnderBaseChange :=
   MorphismProperty.IsStableUnderBaseChange.mk'
     (fun X Y S f g _ H => by
-      rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
+      rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullback₁ f)]
       intro i
-      let e : pullback (pullback.fst f g) ((S.affineCover.pullbackCover f).f i) ≅
+      let e : pullback (pullback.fst f g) ((S.affineCover.pullback₁ f).f i) ≅
           _ := by
         refine pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g _ ≪≫ ?_ ≪≫
           (pullbackRightPullbackFstIso (S.affineCover.f i) g
@@ -631,7 +630,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
         exact asIso
           (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
-          (S.affineCover.pullbackCover f).pullbackHom (pullback.fst _ _) i := by
+          (Scheme.Cover.pullbackHom <| S.affineCover.pullback₁ f) (pullback.fst _ _) i := by
         simp [e, Scheme.Cover.pullbackHom]
       rw [← this, P.cancel_left_of_respectsIso]
       apply HasAffineProperty.pullback_fst_of_right hP'
