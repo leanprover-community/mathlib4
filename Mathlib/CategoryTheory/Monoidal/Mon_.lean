@@ -734,9 +734,6 @@ def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapM
 def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.mapMon :=
   NatIso.ofComponents fun X ↦ Mon.mkIso (e.app _)
 
-attribute [local simp] ε_tensorHom_comp_μ_assoc in
-instance [F.LaxMonoidal] : IsMonHom (ε F) where
-
 end LaxMonoidal
 
 section OplaxMonoidal
