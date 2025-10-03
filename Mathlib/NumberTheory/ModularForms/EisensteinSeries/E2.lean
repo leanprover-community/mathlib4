@@ -52,7 +52,7 @@ theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z :=
   ring
 
 /-- The Eisenstein series of weight `2` and level `1` defined as the limit as `N` tends to
-infinity of the partial sum of `m` in `[N,N)` of `e2Summand m`. This sum over symmetric
+infinity of the partial sum of `m` in `[N,N]` of `e2Summand m`. This sum over symmetric
 intervals is handy in showing it is Cauchy. -/
 def G2 : ℍ → ℂ := fun z => ∑'[IccFilter] m, e2Summand m z
 
@@ -96,12 +96,12 @@ private lemma aux_G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ x ∈ range N, -
     (𝓝 (-8 * π ^ 2 * ∑' (n : ℕ+), ((σ 1) n) * cexp (2 * π * I * z) ^ (n : ℕ))) := by
   rw [← aux_tsum_identity]
   have hf : Summable fun m : ℕ => (-8 * π ^ 2 *
-      ∑' n : ℕ+, n ^ ((2 - 1)) * cexp (2 * π * I * (m + 1) * z) ^ (n : ℕ)) := by
+      ∑' n : ℕ+, n * cexp (2 * π * I * (m + 1) * z) ^ (n : ℕ)) := by
     apply Summable.mul_left
     have := (summable_prod_mul_pow 1 (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)).prod
     have h0 := summable_pnat_iff_summable_succ
       (f := fun b ↦ ∑' (c : ℕ+), c * cexp (2 * π * I * b * z) ^ (c : ℕ))
-    simp only [pow_one, cexp_pow_aux, Nat.cast_add, Nat.cast_one, Nat.add_one_sub_one] at *
+    simp only [pow_one, cexp_pow_aux, Nat.cast_add, Nat.cast_one] at *
     rw [← h0]
     apply this
   simpa using (hf.hasSum).comp tendsto_finset_range
@@ -115,23 +115,20 @@ lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) 
   simpa using aux_G2_tendsto z
 
 lemma Summable_IccFilter_G2 (z : ℍ) : Summable (fun m : ℤ => e2Summand m z) IccFilter := by
-  simp [Summable, HasSum]
-  have := G2_cauchy z
-  have := cauchySeq_tendsto_of_complete this
-  simpa using this
+  simpa [Summable, HasSum] using cauchySeq_tendsto_of_complete (G2_cauchy z)
 
-lemma G2_q_exp (z : ℍ) : G2 z =
-    (2 * riemannZeta 2) - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * cexp (2 * π * I * z) ^ (n : ℕ) := by
-  rw [G2, sub_eq_add_neg]
-  apply  HasSum.tsum_eq
-  simp only [HasSum, tendsto_map'_iff]
+lemma G2_q_exp (z : ℍ) :
+    G2 z = (2 * riemannZeta 2) - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * cexp (2 * π * I * z) ^ (n : ℕ) := by
+  apply HasSum.tsum_eq
+  simp only [sub_eq_add_neg, HasSum, tendsto_map'_iff]
   conv =>
     enter [1, N]
     simp [G2_partial_sum_eq z N]
-  apply Filter.Tendsto.add (by simp) (by simpa using aux_G2_tendsto z)
+  exact Filter.Tendsto.add (by simp) (by simpa using aux_G2_tendsto z)
 
 section transform
 
+--Do we want this not to be private? I made it more general in case we want it elsewhere.
 private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [NormSMulClass ℤ F]
     {f : ℤ → F} (hc : CauchySeq fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, f m) (hs : ∀ n , f n = f (-n)) :
     Tendsto f atTop (𝓝 0) := by
@@ -155,18 +152,17 @@ private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [Norm
   simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H2 (le_abs_self (g N)))
     (hN N (by rfl))
 
-
 lemma Summable_IccFilter_G2_Ico (z : ℍ) : Summable (fun m : ℤ => e2Summand m z) IcoFilter := by
   apply summable_IcoFilter_of_multiplible_IccFilter (Summable_IccFilter_G2 z)
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchy z) (by apply e2Summand_even)
-  simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
+  simpa using (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
 lemma G2_eq_Ico (z : ℍ) : G2 z = ∑'[IcoFilter] m, e2Summand m z := by
   rw [G2, tsum_IccFilter_eq_tsum_IcoFilter (Summable_IccFilter_G2 z) ?_]
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchy z) (by apply e2Summand_even)
   simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
-lemma aux_tendsto_Ico (z : ℍ) :
+private lemma aux_tendsto_Ico (z : ℍ) :
     Tendsto (fun (N : ℕ) ↦ ∑ m ∈ Ico (-(N : ℤ)) N, e2Summand m z) atTop (𝓝 (G2 z)) := by
   have := Summable_IccFilter_G2_Ico z
   obtain ⟨a, ha⟩ := this
@@ -176,13 +172,13 @@ lemma aux_tendsto_Ico (z : ℍ) :
     simp [HasSum, IcoFilter, tendsto_map'_iff] at *
     apply HA.congr
     simp
-  · apply Summable_IccFilter_G2_Ico
+  · exact Summable_IccFilter_G2_Ico z
 
-lemma aux_cauchySeq_Ico (z : ℍ) : CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z := by
-  apply Filter.Tendsto.cauchySeq
-  apply (aux_tendsto_Ico z)
+private lemma aux_cauchySeq_Ico (z : ℍ) :
+    CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z :=
+  Filter.Tendsto.cauchySeq (aux_tendsto_Ico z)
 
-theorem aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
+private lemma aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
     ((z : ℂ) ^ 2)⁻¹ * (∑ x ∈ Ico (-N : ℤ) N, ∑' (n : ℤ), (((x : ℂ) * (-↑z)⁻¹ + n) ^ 2)⁻¹) =
     ∑' (n : ℤ), ∑ x ∈ Ico (-N : ℤ) N, (((n : ℂ) * z + x) ^ 2)⁻¹ := by
   simp_rw [inv_neg, mul_neg]
