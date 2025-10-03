@@ -1026,11 +1026,8 @@ variable (𝕜 E G G') in
 /-- Flipping arguments gives a continuous linear equivalence between
 `G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` and `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 def flipMultilinearEquiv : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃L[𝕜]
-    (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) := by
-  refine LinearEquiv.toContinuousLinearEquivOfBounds (σ := RingHom.id 𝕜)
-    (E := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') (F := ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G'))
-    (flipMultilinearEquivₗ 𝕜 E G G') 1 1
-    ?_ ?_
+    ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G') := by
+  refine (flipMultilinearEquivₗ 𝕜 E G G').toContinuousLinearEquivOfBounds 1 1 ?_ ?_
   · intro f
     simp only [flipMultilinearEquivₗ, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, one_mul]
     apply MultilinearMap.mkContinuous_norm_le
