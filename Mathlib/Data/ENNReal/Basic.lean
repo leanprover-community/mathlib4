@@ -294,7 +294,7 @@ theorem ofReal_toReal_le {a : ℝ≥0∞} : ENNReal.ofReal a.toReal ≤ a :=
   if ha : a = ∞ then ha.symm ▸ le_top else le_of_eq (ofReal_toReal ha)
 
 theorem forall_ennreal {p : ℝ≥0∞ → Prop} : (∀ a, p a) ↔ (∀ r : ℝ≥0, p r) ∧ p ∞ :=
-  Option.forall.trans and_comm
+  WithTop.forall.trans and_comm
 
 theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔ ∀ r : ℝ≥0, p r :=
   Option.forall_ne_none
@@ -467,13 +467,13 @@ theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
 
 /-- Coercion `ℝ≥0 → ℝ≥0∞` as a `RingHom`. -/
 def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
-  toFun := some
+  toFun := WithTop.some
   map_one' := coe_one
   map_mul' _ _ := coe_mul _ _
   map_zero' := coe_zero
   map_add' _ _ := coe_add _ _
 
-@[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = some := rfl
+@[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = WithTop.some := rfl
 
 section Order
 
