@@ -364,8 +364,3 @@ end EventuallyEq
 end Filter
 
 open Filter
-
-
-namespace Filter
-variable {ι α : Type*} {f : Filter ι} {s : ι → Set α} {t : Set α}
-end Filter
