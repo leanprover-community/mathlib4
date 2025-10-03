@@ -801,14 +801,24 @@ def piCurry {ι : Type*} {κ : ι → Type*} (X : (i : ι) → κ i → Type*)
   measurable_toFun := by fun_prop
   measurable_invFun := by fun_prop
 
+lemma coe_piCurry {ι : Type*} {κ : ι → Type*} (X : (i : ι) → κ i → Type*)
+    [∀ i j, MeasurableSpace (X i j)] : ⇑(piCurry X) = Sigma.curry := rfl
+
+lemma coe_piCurry_symm {ι : Type*} {κ : ι → Type*} (X : (i : ι) → κ i → Type*)
+    [∀ i j, MeasurableSpace (X i j)] : ⇑(piCurry X).symm = Sigma.uncurry := rfl
+
 /-- The currying operation `Sigma.curry` as a measurable equivalence.
 See `MeasurableEquiv.piCurry` for the dependent version. -/
 @[simps!]
-def curry (ι κ X : Type*) [MeasurableSpace X] :
-    (ι × κ → X) ≃ᵐ (ι → κ → X) where
+def curry (ι κ X : Type*) [MeasurableSpace X] : (ι × κ → X) ≃ᵐ (ι → κ → X) where
   toEquiv := Equiv.curry ι κ X
   measurable_toFun := by fun_prop
   measurable_invFun := by fun_prop
+
+lemma coe_curry (ι κ X : Type*) [MeasurableSpace X] : ⇑(curry ι κ X) = Function.curry := rfl
+
+lemma coe_curry_symm (ι κ X : Type*) [MeasurableSpace X] :
+    ⇑(curry ι κ X).symm = Function.uncurry := rfl
 
 end MeasurableEquiv
 
