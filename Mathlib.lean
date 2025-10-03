@@ -2197,6 +2197,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.ConnectedComponents
+import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
+import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
 import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.Countable
 import Mathlib.CategoryTheory.Dialectica.Basic
@@ -2542,6 +2544,8 @@ import Mathlib.CategoryTheory.Localization.StructuredArrow
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Localization.Trifunctor
 import Mathlib.CategoryTheory.LocallyDirected
+import Mathlib.CategoryTheory.MarkovCategory.Basic
+import Mathlib.CategoryTheory.MarkovCategory.Cartesian
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
