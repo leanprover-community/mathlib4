@@ -19,9 +19,15 @@ instance [Finite α] : Finite (WithTop α) :=
   have := Fintype.ofFinite α
   Finite.of_fintype _
 
+instance [Infinite α] : Infinite (WithTop α) :=
+  Infinite.of_injective _ WithTop.equivOption.symm.injective
+
 instance [Fintype α] : Fintype (WithBot α) :=
   Fintype.ofEquiv (Option α) WithBot.equivOption.symm
 
 instance [Finite α] : Finite (WithBot α) :=
   have := Fintype.ofFinite α
   Finite.of_fintype _
+
+instance [Infinite α] : Infinite (WithBot α) :=
+  Infinite.of_injective _ WithBot.equivOption.symm.injective
