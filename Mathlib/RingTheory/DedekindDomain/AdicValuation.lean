@@ -665,13 +665,13 @@ namespace Rat
 
 open IsDedekindDomain.HeightOneSpectrum
 
-theorem num_not_mem_ideal_of_den_mem {R : Type*} [CommRing R] [IsDedekindDomain R]
-    [Algebra R ℚ] [IsFractionRing R ℚ] (f : R ≃+* ℤ) {𝔭 : Ideal R} (hp : Prime 𝔭) (x : ℚ) :
-    ↑x.den ∈ 𝔭 → ↑x.num ∉ 𝔭 := by
+variable {R : Type*} [CommRing R] [IsDedekindDomain R]
+
+theorem num_not_mem_ideal_of_den_mem (f : R ≃+* ℤ) {𝔭 : Ideal R} (hp : Prime 𝔭) (x : ℚ)
+    (hden : ↑x.den ∈ 𝔭) : ↑x.num ∉ 𝔭 := by
   obtain ⟨p, h𝔭⟩ := IsPrincipalIdealRing.principal (Ideal.map f 𝔭) |>.map_ringHom f.symm
   rw [Ideal.map_symm, Ideal.comap_map_of_bijective _ f.bijective, Ideal.submodule_span_eq] at h𝔭
-  simp_rw [h𝔭, Ideal.mem_span_singleton]
-  intro hden
+  simp_rw [h𝔭, Ideal.mem_span_singleton] at hden ⊢
   have : IsPrincipalIdealRing R := IsPrincipalIdealRing.of_surjective _ f.symm.surjective
   have := isRelPrime_iff_isCoprime.2 <| Nat.Coprime.cast (R := R) x.reduced
   contrapose! this
@@ -681,8 +681,8 @@ theorem num_not_mem_ideal_of_den_mem {R : Type*} [CommRing R] [IsDedekindDomain 
   · simpa [abs_eq_neg_self.2 (le_of_lt h₀)]
   · simpa [abs_eq_self.2 h₀]
 
-theorem valuation_le_one_iff_den {R : Type*} [CommRing R] [IsDedekindDomain R]
-    [Algebra R ℚ] [IsFractionRing R ℚ] (f : R ≃+* ℤ) (𝔭 : HeightOneSpectrum R) (x : ℚ) :
+theorem valuation_le_one_iff_den [Algebra R ℚ] [IsFractionRing R ℚ] (f : R ≃+* ℤ)
+    (𝔭 : HeightOneSpectrum R) (x : ℚ) :
     𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
   have : (x.den : R) ≠ 0 := fun h ↦ by simpa using congrArg f h
   simp [← 𝔭.valuation_le_one_iff ℚ x.num this (x.num_not_mem_ideal_of_den_mem f 𝔭.prime),
