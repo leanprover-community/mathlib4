@@ -43,6 +43,7 @@ variable [Zero R] [One R]
 def omega : QuadraticAlgebra R a b :=
   ⟨0, 1⟩
 
+/-- the canonical element `⟨0, 1⟩` in a quadratic algebra `QuadraticAlgebra R a b`. -/
 scoped notation "ω" => omega
 
 @[simp]
