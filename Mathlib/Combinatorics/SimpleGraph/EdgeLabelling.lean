@@ -95,7 +95,7 @@ theorem pullback_apply {f : G' ↪g G} e : C.pullback f e = C (f.mapEdgeSet e) :
 
 @[simp]
 theorem pullback_get {f : G' ↪g G} (x y) (h : G'.Adj x y) :
-    (C.pullback f).get x y h = C.get (f x) (f y) (by simpa) :=
+    (C.pullback f) ⟨s(x, y), h⟩ = C.get (f x) (f y) (by simpa) :=
   rfl
 
 @[simp]
