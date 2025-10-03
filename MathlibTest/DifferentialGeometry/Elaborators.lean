@@ -404,7 +404,11 @@ of sort `Type (max u_10 u_4)` but is expected to have type
   WithTop ℕ∞
 of sort `Type`
 ---
-error: Term m is not a function.
+error: Expected
+  m
+of type
+  M
+to be a function
 -/
 #guard_msgs in
 #check CMDiffAt[s] f m
@@ -418,7 +422,11 @@ of sort `Type (max u_10 u_4)` but is expected to have type
   WithTop ℕ∞
 of sort `Type`
 ---
-error: Term m is not a function.
+error: Expected
+  m
+of type
+  M
+to be a function
 -/
 #guard_msgs in
 #check CMDiffAt[s] f m
@@ -832,27 +840,13 @@ info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f sorry : TangentSpace 𝓘(𝕜, E)
 
 -- Error messages: argument s has mismatched type.
 /--
-error: Application type mismatch: The argument
-  s'
-has type
-  Set.{u_4} M
-of sort `Type u_4` but is expected to have type
-  Set.{u_2} E
-of sort `Type u_2` in the application
-  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
+error: The domain E of f is not definitionally equal to the carrier type of the set s' : Set M
 -/
 #guard_msgs in
 #check mfderiv[s'] f
 
 /--
-error: Application type mismatch: The argument
-  s'
-has type
-  Set.{u_4} M
-of sort `Type u_4` but is expected to have type
-  Set.{u_2} E
-of sort `Type u_2` in the application
-  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
+error: The domain E of f is not definitionally equal to the carrier type of the set s' : Set M
 -/
 #guard_msgs in
 #check mfderiv[s'] f m
