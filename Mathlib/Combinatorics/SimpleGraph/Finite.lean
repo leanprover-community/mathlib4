@@ -6,9 +6,6 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -333,7 +330,7 @@ theorem exists_minimal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.minDegree = G.degree v := by
   obtain ⟨t, ht : _ = _⟩ := min_of_nonempty (univ_nonempty.image fun v => G.degree v)
   obtain ⟨v, _, rfl⟩ := mem_image.mp (mem_of_min ht)
-  exact ⟨v, by simp only [minDegree, ht, WithTop.untopD_coe]⟩
+  exact ⟨v, by simp [minDegree, ht]⟩
 
 /-- The minimum degree in the graph is at most the degree of any particular vertex. -/
 theorem minDegree_le_degree [DecidableRel G.Adj] (v : V) : G.minDegree ≤ G.degree v := by

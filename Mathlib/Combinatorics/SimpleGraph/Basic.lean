@@ -8,10 +8,6 @@ import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Sym.Card
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Order.CompleteBooleanAlgebra
-import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Simple graphs
