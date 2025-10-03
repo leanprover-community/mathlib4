@@ -107,7 +107,7 @@ protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X 
 
 /-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small.
 Note: This is not an instance, because it tends to mislead typeclass search. -/
-lemma small {X : Type v} [Small.{u} X] : Small.{u} Xᵒᵖ := by
+instance small {X : Type v} [Small.{u} X] : Small.{u} Xᵒᵖ := by
   obtain ⟨S, ⟨e⟩⟩ := Small.equiv_small (α := X)
   exact ⟨S, ⟨equivToOpposite.symm.trans e⟩⟩
 
