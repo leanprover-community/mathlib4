@@ -789,7 +789,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
     (fun l =>
       match l with
       | [] => True
-      | a :: m => Chain r a (m ++ [a]))
+      | a :: m => IsChain r (a :: m ++ [a]))
     fun a b hab =>
     propext <| by
       rcases a with - | ⟨a, l⟩ <;> rcases b with - | ⟨b, m⟩
@@ -817,14 +817,14 @@ theorem Chain.nil (r : α → α → Prop) : Cycle.Chain r (@nil α) := by trivi
 
 @[simp]
 theorem chain_coe_cons (r : α → α → Prop) (a : α) (l : List α) :
-    Chain r (a :: l) ↔ List.Chain r a (l ++ [a]) :=
+    Chain r (a :: l) ↔ List.IsChain r (a :: (l ++ [a])) :=
   Iff.rfl
 
 theorem chain_singleton (r : α → α → Prop) (a : α) : Chain r [a] ↔ r a a := by
-  rw [chain_coe_cons, nil_append, List.chain_singleton]
+  rw [chain_coe_cons, nil_append, List.isChain_pair]
 
 theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
-    ∀ hl : l ≠ [], Chain r l ↔ List.Chain r (getLast l hl) l :=
+    ∀ hl : l ≠ [], Chain r l ↔ List.IsChain r (getLast l hl :: l) :=
   l.reverseRecOn (fun hm => hm.irrefl.elim) (by
     intro m a _H _
     rw [← coe_cons_eq_coe_append, chain_coe_cons, getLast_append_singleton])
@@ -834,11 +834,11 @@ theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cyc
   Quotient.inductionOn s fun l => by
     rcases l with - | ⟨a, l⟩
     · rfl
-    · simp [← concat_eq_append, ← List.map_concat, List.chain_map f]
+    · simp [← concat_eq_append, ← map_concat, List.isChain_cons_map f]
 
-nonrec theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
+theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain r (List.range n.succ) ↔ r n 0 ∧ ∀ m < n, r m m.succ := by
-  rw [range_succ, ← coe_cons_eq_coe_append, chain_coe_cons, ← range_succ, chain_range_succ]
+  rw [range_succ, ← coe_cons_eq_coe_append, chain_coe_cons, ← range_succ, isChain_cons_range_succ]
 
 variable {r : α → α → Prop} {s : Cycle α}
 
@@ -861,7 +861,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   have Ha : a ∈ (a :: l : Cycle α) := by simp
   have Hl : ∀ {b} (_hb : b ∈ l), b ∈ (a :: l : Cycle α) := @fun b hb => by simp [hb]
   rw [Cycle.chain_coe_cons]
-  apply Pairwise.chain
+  apply Pairwise.isChain
   rw [pairwise_cons]
   refine
     ⟨fun b hb => ?_,
@@ -884,7 +884,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     | nil => exact fun _ b hb ↦ (notMem_nil _ hb).elim
     | cons a l => ?_
     intro hs b hb c hc
-    rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
+    rw [Cycle.chain_coe_cons, List.isChain_iff_pairwise] at hs
     simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,
       IsEmpty.forall_iff, imp_true_iff, Pairwise.nil, forall_eq, true_and] at hs
     simp only [mem_coe_iff, mem_cons] at hb hc
