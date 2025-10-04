@@ -6,6 +6,7 @@ Authors: Mitchell Horner
 import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
@@ -283,5 +284,92 @@ theorem isBipartite_iff_exists_isBipartiteWith :
   ⟨IsBipartite.exists_isBipartiteWith, fun ⟨_, _, h⟩ ↦ h.isBipartite⟩
 
 end IsBipartite
+
+section CompleteBipartiteSubgraph
+
+variable {α β : Type*} [Fintype α] [Fintype β]
+
+/-- A complete bipartite subgraph of `s` and `t` parts is a "left" subset of `s` vertices and a
+"right" subset of `t` vertices such that every vertex in the "left" subset is adjacent to every
+vertex in the "right" subset. -/
+structure CompleteBipartiteSubgraph (G : SimpleGraph V) (s t : ℕ) where
+  /-- The "left" subset is size `s`. -/
+  left : Finset V
+  card_left : #left = s
+  /-- The "right" subset of size `t`. -/
+  right : Finset V
+  card_right : #right = t
+  /-- Vertices in the "left" and "right" subsets are adjacent. -/
+  Adj : ∀ ⦃v₁⦄, v₁ ∈ left → ∀ ⦃v₂⦄, v₂ ∈ right → G.Adj v₁ v₂
+
+variable {s t : ℕ} (B : G.CompleteBipartiteSubgraph s t)
+
+namespace CompleteBipartiteSubgraph
+
+/-- The "left" and "right" parts in a `G.CompleteBipartiteSubgraph s t` are disjoint. -/
+theorem disjoint_left_right : Disjoint B.left B.right :=
+  disjoint_left.mpr fun v hv₁ hv₂ ↦ (G.loopless v) (B.Adj hv₁ hv₂)
+
+/-- The finset of vertices in a `G.CompleteBipartiteSubgraph s t`. -/
+@[simp]
+abbrev verts : Finset V := disjUnion B.left B.right B.disjoint_left_right
+
+/-- There are `s + t` vertices in a complete bipartite subgraph with `s` vertices in the "left"
+part and `t` vertices in the "right" part. -/
+theorem card_verts : #B.verts = s + t := by simp [card_left, card_right]
+
+/-- A complete bipartite subgraph gives rise to a copy of a complete bipartite graph. -/
+noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
+  have : Nonempty (Fin s ↪ B.left) := by
+    apply Function.Embedding.nonempty_of_card_le
+    rw [Fintype.card_fin, card_coe, card_left]
+  let fs : Fin s ↪ B.left := Classical.arbitrary (Fin s ↪ B.left)
+  have : Nonempty (Fin t ↪ B.right) := by
+    apply Function.Embedding.nonempty_of_card_le
+    rw [Fintype.card_fin, card_coe, card_right]
+  let ft : Fin t ↪ B.right := Classical.arbitrary (Fin t ↪ B.right)
+  let f : Fin s ⊕ Fin t ↪ V := by
+    refine ⟨Sum.elim (Subtype.val ∘ fs) (Subtype.val ∘ ft), fun st₁ st₂ ↦ ?_⟩
+    match st₁, st₂ with
+    | Sum.inl s₁, Sum.inl s₂ => simp [← Subtype.ext_iff]
+    | Sum.inr t₁, Sum.inl s₂ =>
+      simpa using (B.Adj (fs s₂).prop (ft t₁).prop).ne'
+    | Sum.inl s₁, Sum.inr t₂ =>
+      simpa using (B.Adj (fs s₁).prop (ft t₂).prop).symm.ne'
+    | Sum.inr t₁, Sum.inr t₂ => simp [← Subtype.ext_iff]
+  refine ⟨⟨f.toFun, fun {st₁ st₂} hadj ↦ ?_⟩, f.injective⟩
+  rcases hadj with ⟨hst₁, hst₂⟩ | ⟨hst₁, hst₂⟩
+  all_goals dsimp [f]
+  · rw [← Sum.inl_getLeft st₁ hst₁, ← Sum.inr_getRight st₂ hst₂,
+      Sum.elim_inl, Sum.elim_inr]
+    exact B.Adj (by simp) (by simp)
+  · rw [← Sum.inr_getRight st₁ hst₁, ← Sum.inl_getLeft st₂ hst₂,
+      Sum.elim_inl, Sum.elim_inr, adj_comm]
+    exact B.Adj (by simp) (by simp)
+
+/-- A copy of a complete bipartite graph identifies a complete bipartite subgraph. -/
+def ofCopy (f : Copy (completeBipartiteGraph α β) G) :
+    G.CompleteBipartiteSubgraph (card α) (card β) where
+  left := univ.map ⟨f ∘ Sum.inl, f.injective.comp Sum.inl_injective⟩
+  card_left := by rw [card_map, card_univ]
+  right := univ.map ⟨f ∘ Sum.inr, f.injective.comp Sum.inr_injective⟩
+  card_right := by rw [card_map, card_univ]
+  Adj _ h₁ _ h₂ := by
+    rw [mem_map] at h₁ h₂
+    obtain ⟨_, _, h₁⟩ := h₁
+    obtain ⟨_, _, h₂⟩ := h₂
+    rw [← h₁, ← h₂]
+    exact f.toHom.map_adj (by simp)
+
+end CompleteBipartiteSubgraph
+
+/-- Simple graphs contain a copy of a `completeBipartiteGraph α β` iff
+`G.CompleteBipartiteSubgraph (card α) (card β)` is nonempty. -/
+theorem completeBipartiteGraph_isContained_iff :
+    completeBipartiteGraph α β ⊑ G ↔ Nonempty (G.CompleteBipartiteSubgraph (card α) (card β)) :=
+  ⟨fun ⟨f⟩ ↦ ⟨CompleteBipartiteSubgraph.ofCopy f⟩,
+    fun ⟨B⟩ ↦ ⟨B.toCopy.comp <| Iso.toCopy ⟨(equivFin α).sumCongr (equivFin β), by simp⟩⟩⟩
+
+end CompleteBipartiteSubgraph
 
 end SimpleGraph
