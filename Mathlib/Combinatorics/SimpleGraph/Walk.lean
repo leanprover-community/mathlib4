@@ -837,7 +837,7 @@ theorem darts_toProd_eq {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.le
   ext
   · by_cases h' : n = 0
     · simp [h', List.getElem_zero]
-    · have := p.chain'_dartAdj_darts.getElem (n - 1) (by grind)
+    · have := p.isChain_dartAdj_darts.getElem (n - 1) (by grind)
       grind [DartAdj, =_ cons_map_snd_darts]
   · simp [← p.cons_map_snd_darts]
 
