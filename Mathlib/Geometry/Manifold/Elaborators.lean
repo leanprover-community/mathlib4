@@ -115,15 +115,17 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     let type ← whnfR <|← instantiateMVars decl.type
     p decl.toExpr type
 
-/-- Elaborator for sections in a fibre bundle: converts a section as a dependent function
-to a non-dependent function into the total space. This handles the cases of
+/--
+Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
+function to a non-dependent function into the total space. This handles the cases of
 - sections of a trivial bundle
 - vector fields on a manifold (i.e., sections of the tangent bundle)
 - sections of an explicit fibre bundle
 - turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
 
-This elaborator operates purely syntactically, by analysing the local contexts for suitable
-hypothesis for the above cases. Therefore, it is (hopefully) fast enough to always run.
+This elaborator searches the local context for suitable hypotheses for the above cases by matching
+on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
+run.
 -/
 -- TODO: document how this elaborator works, any gotchas, etc.
 -- TODO: factor out `MetaM` component for reuse
@@ -206,7 +208,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     return none
 
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
-using the local context to infer the expected type. This supports the following cases:
+using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
 - a model with corners on a manifold
 - the trivial model `𝓘(𝕜, E)` on a normed space
@@ -300,8 +302,8 @@ where
 /-- If `etype` is a non-dependent function between spaces `src` and `tgt`, try to find a model with
 corners on both `src` and `tgt`. If successful, return both models.
 
-`ef` is the term having type `etype`: this is used only for better diagnostics.
-If `estype` is `some`, we verify that `src` and `estype` are def-eq. -/
+`eterm` is the term having type `etype`: this is used only for better diagnostics.
+If `estype` is `some`, we verify that `src` and `estype` are defeq. -/
 def findModels (etype eterm : Expr) (estype : Option Expr) :
     TermElabM (Option (Expr × Expr)) := do
   match etype with
@@ -325,7 +327,7 @@ open Elab
 
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
-The argument x can be omitted. -/
+The argument `x` can be omitted. -/
 scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
