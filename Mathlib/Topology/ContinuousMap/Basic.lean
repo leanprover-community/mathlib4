@@ -211,7 +211,6 @@ variable {X Y Z W : Type*}
 /-- `Sum.inl : X → X ⊕ Y` as a bundled continuous map. -/
 def inl : C(X, X ⊕ Y) where
   toFun := Sum.inl
-  continuous_toFun := by continuity
 
 @[simp]
 lemma coe_inl : ⇑(inl : C(X, X ⊕ Y)) = Sum.inl := rfl
@@ -219,7 +218,6 @@ lemma coe_inl : ⇑(inl : C(X, X ⊕ Y)) = Sum.inl := rfl
 /-- `Sum.inr : Y → X ⊕ Y` as a bundled continuous map. -/
 def inr : C(Y, X ⊕ Y) where
   toFun := Sum.inr
-  continuous_toFun := by continuity
 
 @[simp]
 lemma coe_inr : ⇑(inr : C(Y, X ⊕ Y)) = Sum.inr := rfl
