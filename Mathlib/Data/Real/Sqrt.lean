@@ -350,9 +350,7 @@ variable {x y : ℝ}
 
 @[simp]
 theorem div_sqrt : x / √x = √x := by
-  rcases le_or_gt x 0 with h | h
-  · rw [sqrt_eq_zero'.mpr h, div_zero]
-  · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
+  grind
 
 theorem sqrt_div_self' : √x / x = 1 / √x := by rw [← div_sqrt, one_div_div, div_sqrt]
 
