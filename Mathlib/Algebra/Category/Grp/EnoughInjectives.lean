@@ -5,9 +5,9 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 
 import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.Algebra.Category.Grp.Injective
+import Mathlib.Algebra.Category.GrpCat.EquivalenceGroupAddGroup
+import Mathlib.Algebra.Category.GrpCat.EpiMono
+import Mathlib.Algebra.Category.GrpCat.Injective
 
 /-!
 
@@ -20,12 +20,12 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 - `AddCommGrp.enoughInjectives` : the category of abelian groups (written additively) has
   enough injectives.
-- `CommGrp.enoughInjectives` : the category of abelian groups (written multiplicatively) has
+- `CommGrpCat.enoughInjectives` : the category of abelian groups (written multiplicatively) has
   enough injectives.
 
 ## Implementation notes
 
-This file is split from `Mathlib/Algebra/Category/Grp/Injective.lean` to prevent import loops.
+This file is split from `Mathlib/Algebra/Category/GrpCat/Injective.lean` to prevent import loops.
 -/
 
 open CategoryTheory
@@ -47,9 +47,9 @@ instance enoughInjectives : EnoughInjectives AddCommGrp.{u} where
 end AddCommGrp
 
 
-namespace CommGrp
+namespace CommGrpCat
 
-instance enoughInjectives : EnoughInjectives CommGrp.{u} :=
+instance enoughInjectives : EnoughInjectives CommGrpCat.{u} :=
   EnoughInjectives.of_equivalence commGroupAddCommGroupEquivalence.functor
 
-end CommGrp
+end CommGrpCat

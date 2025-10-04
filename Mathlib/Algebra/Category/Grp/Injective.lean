@@ -3,7 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+import Mathlib.Algebra.Category.GrpCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.GroupTheory.Divisible
@@ -14,7 +14,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 In this file we prove that divisible groups are injective objects in category of (additive) abelian
 groups. The proof that the category of abelian groups has enough injective objects can be found
-in `Mathlib/Algebra/Category/Grp/EnoughInjectives.lean`.
+in `Mathlib/Algebra/Category/GrpCat/EnoughInjectives.lean`.
 
 ## Main results
 

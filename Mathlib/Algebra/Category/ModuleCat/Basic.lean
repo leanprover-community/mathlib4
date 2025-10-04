@@ -3,7 +3,7 @@ Copyright (c) 2019 Robert A. Spencer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.Preadditive
+import Mathlib.Algebra.Category.GrpCat.Preadditive
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.PUnit
 import Mathlib.CategoryTheory.Conj

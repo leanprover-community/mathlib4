@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Preadditive
+import Mathlib.Algebra.Category.GrpCat.Preadditive
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Ring.NegOnePow

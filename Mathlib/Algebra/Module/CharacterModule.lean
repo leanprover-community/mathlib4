@@ -5,7 +5,7 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Injective
+import Mathlib.Algebra.Category.GrpCat.Injective
 import Mathlib.Topology.Instances.AddCircle.Defs
 import Mathlib.LinearAlgebra.Isomorphisms
 

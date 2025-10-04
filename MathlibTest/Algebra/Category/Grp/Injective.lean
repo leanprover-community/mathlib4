@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Category.Grp.Injective
+import Mathlib.Algebra.Category.GrpCat.Injective
 import Mathlib.Topology.Instances.AddCircle.Defs
 
 open CategoryTheory

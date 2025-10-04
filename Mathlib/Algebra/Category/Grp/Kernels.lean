@@ -3,8 +3,8 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn
 -/
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.Algebra.Category.Grp.Preadditive
+import Mathlib.Algebra.Category.GrpCat.EpiMono
+import Mathlib.Algebra.Category.GrpCat.Preadditive
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!

@@ -1,3 +1,3 @@
-import Mathlib.Algebra.Category.Grp.CartesianMonoidal
+import Mathlib.Algebra.Category.GrpCat.CartesianMonoidal
 
 deprecated_module (since := "2025-05-15")

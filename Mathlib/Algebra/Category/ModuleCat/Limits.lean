@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Category.GrpCat.Limits
 import Mathlib.Algebra.Colimit.Module
 import Mathlib.Algebra.Module.Shrink
 

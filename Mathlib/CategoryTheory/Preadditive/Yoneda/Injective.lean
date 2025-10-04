@@ -5,7 +5,7 @@ Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Category.GrpCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!

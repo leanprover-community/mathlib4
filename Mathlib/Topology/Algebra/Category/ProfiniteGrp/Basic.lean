@@ -3,7 +3,7 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
-import Mathlib.Algebra.Category.Grp.FiniteGrp
+import Mathlib.Algebra.Category.GrpCat.FiniteGrp
 import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Category.Profinite.Basic
@@ -226,9 +226,9 @@ instance : HasForget₂ FiniteGrp ProfiniteGrp where
     map := fun f => ⟨f.hom, by continuity⟩ }
 
 @[to_additive]
-instance : HasForget₂ ProfiniteGrp Grp where
-  forget₂.obj P := Grp.of P
-  forget₂.map f := Grp.ofHom f.hom.toMonoidHom
+instance : HasForget₂ ProfiniteGrp GrpCat where
+  forget₂.obj P := GrpCat.of P
+  forget₂.map f := GrpCat.ofHom f.hom.toMonoidHom
 
 /-- A closed subgroup of a profinite group is profinite. -/
 @[to_additive /-- A closed additive subgroup of a profinite additive group is profinite. -/]

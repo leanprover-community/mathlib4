@@ -3,8 +3,8 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.CartesianMonoidal
-import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+import Mathlib.Algebra.Category.GrpCat.CartesianMonoidal
+import Mathlib.Algebra.Category.GrpCat.EquivalenceGroupAddGroup
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.CommGrp_
@@ -92,9 +92,9 @@ noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrp) ≅
     (LeftExactFunctor.whiskeringRight _ _ _).obj (LeftExactFunctor.of (forget _)) ⋙ inverse :=
   NatIso.ofComponents (fun F => InducedCategory.isoMk (NatIso.ofComponents (fun X =>
     commGroupAddCommGroupEquivalence.counitIso.app _ ≪≫
-      (CommGrp.toAddCommGrp.mapIso (commGrpTypeEquivalenceCommGrp.counitIso.app
+      (CommGrpCat.toAddCommGrp.mapIso (commGrpTypeEquivalenceCommGrp.counitIso.app
         (AddCommGrp.toCommGrp.obj (F.obj.obj X)))).symm ≪≫
-      CommGrp.toAddCommGrp.mapIso
+      CommGrpCat.toAddCommGrp.mapIso
         (CommGrpTypeEquivalenceCommGrp.functor.mapIso (unitIsoAux F.obj X)))))
 
 end leftExactFunctorForgetEquivalence
