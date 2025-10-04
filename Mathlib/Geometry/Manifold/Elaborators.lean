@@ -115,6 +115,9 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     let type ← whnfR <|← instantiateMVars decl.type
     p decl.toExpr type
 
+end Elab
+
+open Elab in
 /--
 Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
 function to a non-dependent function into the total space. This handles the cases of
@@ -129,7 +132,7 @@ run.
 -/
 -- TODO: document how this elaborator works, any gotchas, etc.
 -- TODO: factor out `MetaM` component for reuse
-elab:max "T% " t:term:arg : term => do
+scoped elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← whnf <|← instantiateMVars <|← inferType e
   match etype with
@@ -175,6 +178,8 @@ elab:max "T% " t:term:arg : term => do
         let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
         mkLambdaFVars #[x] body
   | _ => return e
+
+namespace Elab
 
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
 failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
