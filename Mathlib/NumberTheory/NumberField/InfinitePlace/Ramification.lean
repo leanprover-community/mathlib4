@@ -514,3 +514,25 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   · exact Finset.compl_univ
   simp only [Finset.mem_univ, forall_true_left]
   exact InfinitePlace.isUnramifiedIn K
+
+section Extension
+
+namespace NumberField.InfinitePlace
+
+variable (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L)
+
+open scoped Classical in
+/-- If `w` is unramified over `K` then the ramification index is `1`, else `2`. -/
+noncomputable abbrev ramificationIdx := if w.IsUnramified K then 1 else 2
+
+variable {w}
+
+theorem ramificationIdx_eq_one (h : w.IsUnramified K) : ramificationIdx K w = 1 := by
+  rw [ramificationIdx, if_pos h]
+
+theorem ramificationIdx_eq_two (h : w.IsRamified K) : ramificationIdx K w = 2 := by
+  rw [ramificationIdx, if_neg h]
+
+end NumberField.InfinitePlace
+
+end Extension
