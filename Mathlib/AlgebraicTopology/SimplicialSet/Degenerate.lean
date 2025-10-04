@@ -121,6 +121,15 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
   rw [SimplexCategory.isIso_iff_of_epi]
   exact le_antisymm h (SimplexCategory.len_le_of_epi f)
 
+lemma mono_of_nonDegenerate (x : X.nonDegenerate n)
+    {m : SimplexCategory} (f : ⦋n⦌ ⟶ m)
+    (y : X.obj (op m)) (hy : X.map f.op y = x) :
+    Mono f := by
+  have := X.isIso_of_nonDegenerate x (factorThruImage f) (y := X.map (image.ι f).op y) (by
+      rw [← FunctorToTypes.map_comp_apply, ← op_comp, image.fac f, hy])
+  rw [← image.fac f]
+  infer_instance
+
 namespace unique_nonDegenerate
 
 /-!
