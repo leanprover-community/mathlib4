@@ -73,12 +73,13 @@ def bitCasesOn {motive : Nat → Sort u} (n) (bit : ∀ b n, motive (bit b n)) :
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
 
-private def binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
+@[specialize] private abbrev binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
     (bit : ∀ b n, motive n → motive (bit b n)) :
-    ∀ fuel n : Nat, n < 2 ^ fuel → motive n :=
-  Nat.rec (fun _ h ↦ lt_one_iff.mp h ▸ zero) fun fuel ih n lt ↦
-    n.bit_testBit_zero_shiftRight_one ▸ (bit (1 &&& n != 0) (n >>> 1) <| ih _ <| by
-      rwa [← n.bit_testBit_zero_shiftRight_one, bit_lt_two_pow_succ_iff] at lt)
+    ∀ fuel n : Nat, n < 2 ^ fuel → motive n
+  | 0, _, lt => lt_one_iff.mp lt ▸ zero
+  | fuel + 1, n, lt => n.bit_testBit_zero_shiftRight_one ▸
+      (bit (1 &&& n != 0) (n >>> 1) <| binaryRecAux zero bit _ _ <| by
+        rwa [← n.bit_testBit_zero_shiftRight_one, bit_lt_two_pow_succ_iff] at lt)
 
 /-- A recursion principle for `bit` representations of natural numbers.
   For a predicate `motive : Nat → Sort u`, if instances can be
@@ -163,9 +164,7 @@ theorem binaryRec_eq_of_ne_zero {motive : Nat → Sort u} {zero : motive 0}
     binaryRec (motive := motive) zero bit n =
     n.bit_testBit_zero_shiftRight_one ▸
       bit (1 &&& n != 0) (n >>> 1) (binaryRec (motive := motive) zero bit _) := by
-  rw [binaryRec, dif_neg ne, binaryRecAux]
-  dsimp only [rec]
-  rw [← binaryRecAux, binaryRec]
+  rw [binaryRec, dif_neg ne, binaryRecAux, binaryRec]
   congr
   by_cases h : n >>> 1 = 0
   · rw [dif_pos h]; congr

@@ -5,4 +5,4 @@ def Nat.popcountTR (n : Nat) : Nat :=
 
 /-- info: 1 -/
 #guard_msgs in
-#eval Nat.popcountTR (2 ^ 4185)
+#eval Nat.popcountTR (2 ^ 20240)
