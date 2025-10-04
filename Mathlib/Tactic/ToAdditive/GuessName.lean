@@ -132,6 +132,11 @@ def nameDict : String → List String
   | "mconv"         => ["conv"]
   | "irreducible"   => ["add", "Irreducible"]
   | "mlconvolution" => ["lconvolution"]
+  | "tensor"        => ["add"]
+  | "tensoring"     => ["adding"]
+  | "whisker"       => ["add", "Whisker"]
+  | "associator"    => ["add", "Associator"]
+  | "unitor"        => ["add", "Unitor"]
   | x               => [x]
 
 /--
