@@ -8,6 +8,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
+import Mathlib.Topology.Category.TopCat.EffectiveEpi
 
 /-!
 # Flat morphisms
@@ -84,6 +85,8 @@ instance {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {
     [∀ i, Flat (f i)] : Flat (Sigma.desc f) :=
   IsLocalAtSource.sigmaDesc (fun _ ↦ inferInstance)
 
+section FlatAndSurjective
+
 /-- A surjective, quasi-compact, flat morphism is a quotient map. -/
 @[stacks 02JY]
 lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [QuasiCompact f]
@@ -128,6 +131,62 @@ lemma epi_of_flat_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surje
     @Module.FaithfullyFlat.of_flat_of_isLocalHom _ _ _ _ _ _ _
       (Flat.stalkMap f x) (f.toLRSHom.prop x)
   exact ‹RingHom.FaithfullyFlat _›.injective
+
+lemma flat_and_surjective_iff_of_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine Y] :
+    Flat f ∧ Surjective f ↔ f.appTop.hom.FaithfullyFlat := by
+  rw [RingHom.FaithfullyFlat.iff_flat_and_comap_surjective]
+  constructor
+  · intro ⟨hf, _⟩
+    have : Surjective (Spec.map f.appTop) := Category.comp_id (Spec.map _) ▸
+      Scheme.isoSpec_inv_toSpecΓ Y ▸ Scheme.isoSpec_inv_naturality_assoc f _ ▸ inferInstance
+    exact ⟨HasRingHomProperty.iff_of_isAffine.mp hf, this.surj⟩
+  · intro ⟨hf₁, hf₂⟩
+    have : Flat (Spec.map (Scheme.Hom.appTop f)) := HasRingHomProperty.Spec_iff.mpr hf₁
+    have : Surjective (Spec.map (Scheme.Hom.appTop f)) := ⟨hf₂⟩
+    exact (Category.comp_id f ▸ Scheme.toSpecΓ_isoSpec_inv Y ▸
+      Scheme.isoSpec_hom_naturality_assoc f _).symm ▸ ⟨inferInstance, inferInstance⟩
+
+/-- An effective epimorphism structure on the continuous map underlying a flat surjective and
+quasi-compact map of schemes. -/
+noncomputable def effectiveEpisStructBase [Flat f] [Surjective f] [QuasiCompact f] :
+    EffectiveEpiStruct f.base :=
+  TopCat.effectiveEpiStructOfQuotientMap _ (isQuotientMap_of_surjective f)
+
+variable {f} in
+/-- A preparation lemma for `AlgebraicGeometry.Flat.base_factor`. -/
+lemma base_factorization_type [Flat f] [Surjective f] [QuasiCompact f] {W : Scheme.{u}} {e : X ⟶ W}
+    (h : pullback.fst f f ≫ e = pullback.snd f f ≫ e) :
+    ∃ (g : ↥Y → ↥W), ⇑e.base.hom = g ∘ ⇑f.base.hom := by
+  let : RegularEpi (Scheme.forget.map f) := by
+    have := (isSplitEpi_iff_surjective (Scheme.forget.map f)).mpr ‹Surjective f›.surj
+    exact regularEpiOfEffectiveEpi (Scheme.forget.map f)
+  refine ⟨_, types_comp _ _ ▸ Cofork.IsColimit.π_desc' this.isColimit _ ?_|>.symm⟩
+  change pullback.fst _ _ ≫ Scheme.forget.map e = pullback.snd _ _ ≫ Scheme.forget.map e
+  apply ((epi_iff_surjective _).mpr
+    (Scheme.Pullback.forget_comparison_surjective _ _)).left_cancellation
+  simp only [← Category.assoc, pullbackComparison_comp_fst, ← Functor.map_comp, h,
+    pullbackComparison_comp_snd]
+
+variable {f} in
+/-- For a flat surjective and quasi-compact morphism `f : X ⟶ Y` of schemes,
+any morphism `e : X ⟶ W` of schemes satisfying `pullback.fst f f ≫ e = pullback.snd f f ≫ e`
+factors through a unique *continuous map* on underlying topological spaces. -/
+lemma base_factorization [Flat f] [Surjective f] [QuasiCompact f] {W : Scheme.{u}} {e : X ⟶ W}
+    (h : pullback.fst f f ≫ e = pullback.snd f f ≫ e) :
+    ∃! (g : Y.carrier ⟶ W.carrier), f.base ≫ g = e.base := by
+  have : ∀ {Z : TopCat} (g₁ g₂ : Z ⟶ X.carrier), g₁ ≫ f.base = g₂ ≫ f.base →
+      g₁ ≫ e.base = g₂ ≫ e.base := by
+    intro _ _ _ hg
+    apply TopCat.hom_ext
+    apply ContinuousMap.coe_injective
+    simp only [TopCat.hom_comp, ContinuousMap.coe_comp]
+    rw [(base_factorization_type h).choose_spec, Function.comp_assoc]
+    congr 1
+    exact congrArg (fun g ↦ g.toFun) ((TopCat.hom_comp _ _).trans (congrArg (fun g ↦ g.hom) hg))
+  exact ⟨(effectiveEpisStructBase f).desc e.base this, ⟨(effectiveEpisStructBase f).fac e.base this,
+    fun g' hg' ↦ (effectiveEpisStructBase f).uniq e.base this g' hg'⟩⟩
+
+end FlatAndSurjective
 
 end Flat
 
