@@ -429,12 +429,23 @@ instance isSymm_id : (SetRel.id : SetRel α α).IsSymm where symm _ _ := .symm
 instance isSymm_preimage {f : β → α} [R.IsSymm] : SetRel.IsSymm (Prod.map f f ⁻¹' R) where
   symm _ _ := R.symm
 
+instance isSymm_image {f : α → β} [R.IsSymm] : SetRel.IsSymm (Prod.map f f '' R) where
+  symm := by
+    simp only [Set.mem_image, Prod.exists, Prod.map_apply, Prod.mk.injEq, forall_exists_index,
+      and_imp]
+    rintro _ _ a₁ a₂ ha rfl rfl
+    exact ⟨_, _, R.symm ha, rfl, rfl⟩
+
 instance isSymm_comp_inv : (R ○ R.inv).IsSymm where
   symm a c := by rintro ⟨b, hab, hbc⟩; exact ⟨b, hbc, hab⟩
 
 instance isSymm_inv_comp : (R.inv ○ R).IsSymm := isSymm_comp_inv
 
 instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSymm_comp_inv
+
+lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
+  rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,
+    R.inv_eq_self]
 
 variable (R) in
 /-- The maximal symmetric relation contained in a given relation. -/
