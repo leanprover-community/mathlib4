@@ -31,6 +31,8 @@ namespace SimpleGraph
 
 variable {V : Type*} {G : SimpleGraph V}
 
+/- Given a partition `p` and a function `f` mapping vertices in `p` to the other partition, create
+the subgraph including only the edges between `x` and `f x` for all `x` in `p`. -/
 private
 abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ : ∀ x : p, f x ∉ p)
     (h₂ : ∀ x : p, G.Adj x (f x)) : Subgraph G where
