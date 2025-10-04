@@ -363,10 +363,10 @@ variable {G α : Type*} [Group G] [MulAction G α]
 open SubMulAction Fin.Embedding
 
 variable (G) in
-/-- The fixator of a finite subset of cardinal d in an n-transitive action
-acts (n-d) transitively on the complement. -/
-@[to_additive /-- The fixator of a finite subset of cardinal d in an n-transitive additive action
-acts (n-d) transitively on the complement. -/]
+/-- The `fixingSubgroup` of a finite subset of cardinal `d`
+in an `n`-transitive action acts `n-d`-transitively on the complement. -/
+@[to_additive /-- The `fixingSubgroup` of a finite subset of cardinal `d`
+in an `n`-transitive additive action acts `n-d`-transitively on the complement. -/]
 theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
     IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m where
