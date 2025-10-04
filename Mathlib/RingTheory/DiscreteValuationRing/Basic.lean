@@ -338,6 +338,33 @@ theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irre
   use n, u
   apply mul_comm
 
+/--
+If `K` is the fraction field of a discrete valuation ring `R`, any element `x` of `K` can be
+expressed as `(algebraMap R K u)*(algebraMap R K ϖ)^n` for some `u : Rˣ`, `n : ℤ`.
+-/
+lemma eq_unit_mul_zpow_irreducible
+    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] {x : K} (hx : x ≠ 0) {ϖ : R}
+    (hϖ : Irreducible ϖ)
+    : ∃ (n : ℤ) (u : Rˣ), x = (algebraMap R K u)*(algebraMap R K ϖ)^n := by
+  let x1 := (IsLocalization.sec (nonZeroDivisors R) x).1
+  let x2 := (IsLocalization.sec (nonZeroDivisors R) x).2
+  have x1nez : x1 ≠ 0 := IsLocalization.sec_fst_ne_zero hx
+  have x2nez : x2.1 ≠ 0 := IsLocalization.sec_snd_ne_zero (fun _ a ↦ a) x
+  have : x = IsLocalization.mk' K x1 x2 := (IsLocalization.mk'_sec K x).symm
+  rw [this]
+  obtain ⟨n1, u1, h1⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible x1nez hϖ
+  rw [h1]
+  obtain ⟨n2, u2, h2⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible x2nez hϖ
+  simp only [IsFractionRing.mk'_eq_div, map_mul, map_pow, h2]
+  use (n1 : ℤ) - (n2 : ℤ)
+  use (u1 * u2⁻¹)
+  simp only [Units.val_mul, map_mul, map_units_inv]
+  field_simp
+  rw[← zpow_natCast, ← zpow_natCast, Field.div_eq_mul_inv, ← @zpow_neg, ← zpow_add₀]
+  · rfl
+  · exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors <|
+      mem_nonZeroDivisors_of_ne_zero <| Irreducible.ne_zero hϖ
+
 open Submodule.IsPrincipal
 
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
