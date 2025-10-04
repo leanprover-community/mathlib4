@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Init
-import Lean.Elab.Term
+import Lean.Elab.SyntheticMVars
 
 /-!
 # Additions to `Lean.Elab.Term`
@@ -22,14 +22,5 @@ def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := 
       let t ← elabTerm patt expectedType?
       synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
       instantiateMVars t
-
-open Meta
-
-/-- Try to infer the universe of an expression `e` -/
-def _root_.Lean.Expr.getUniverse (e : Expr) : TermElabM (Level) := do
-    if let .sort (.succ u) ← inferType e >>= instantiateMVars then
-      return u
-    else
-      throwError m!"Could not find universe of {e}."
 
 end Lean.Elab.Term

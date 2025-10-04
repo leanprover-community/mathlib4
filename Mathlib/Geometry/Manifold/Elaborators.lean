@@ -78,6 +78,13 @@ open scoped Bundle Manifold ContDiff
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
+/-- Try to infer the universe of an expression `e` -/
+def _root_.Lean.Expr.getUniverse (e : Expr) : TermElabM (Level) := do
+    if let .sort (.succ u) ← inferType e >>= instantiateMVars then
+      return u
+    else
+      throwError m!"Could not find universe of {e}."
+
 namespace Manifold
 
 /-- Elaborator for sections in a fibre bundle: converts a section as a dependent function
