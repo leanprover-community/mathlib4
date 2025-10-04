@@ -6593,6 +6593,7 @@ import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.ContinuousMap.CompactlySupported.Basic
+import Mathlib.Topology.ContinuousMap.CompactlySupported.Bounded
 import Mathlib.Topology.ContinuousMap.CompactlySupported.Integral
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
