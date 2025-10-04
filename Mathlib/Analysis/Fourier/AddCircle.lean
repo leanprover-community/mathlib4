@@ -50,7 +50,7 @@ Using this and general theory on approximation of Lᵖ functions by continuous f
 dense in the Lᵖ space of `AddCircle T`. For `p = 2` we show (`orthonormal_fourier`) that the
 monomials are also orthonormal, so they form a Hilbert basis for L², which is named as
 `fourierBasis`; in particular, for `L²` functions `f`, the Fourier series of `f` converges to `f`
-in the `L²` topology (`hasSum_fourier_series_L2`). Parseval's identity, `tsum_sq_fourierCoeff`, is
+in the `L²` topology (`hasSum_fourier_series_L2`). Parseval's identity, `hasSum_sq_fourierCoeff`, is
 a direct consequence.
 
 For continuous maps `f : AddCircle T → ℂ`, the theorem
@@ -378,18 +378,93 @@ theorem hasSum_fourier_series_L2 (f : Lp ℂ 2 <| @haarAddCircle T hT) :
 
 /-- **Parseval's identity**: for an `L²` function `f` on `AddCircle T`, the sum of the squared
 norms of the Fourier coefficients equals the `L²` norm of `f`. -/
-theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
-    ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
+theorem hasSum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
+    HasSum (fun i => ‖fourierCoeff f i‖ ^ 2) (∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle) := by
   simp_rw [← fourierBasis_repr]
-  have H₁ : ‖fourierBasis.repr f‖ ^ 2 = ∑' i, ‖fourierBasis.repr f i‖ ^ 2 := by
-    apply_mod_cast lp.norm_rpow_eq_tsum ?_ (fourierBasis.repr f)
+  have H₁ : HasSum (fun i => ‖fourierBasis.repr f i‖ ^ 2) (‖fourierBasis.repr f‖ ^ 2) := by
+    apply_mod_cast lp.hasSum_norm ?_ (fourierBasis.repr f)
     simp
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
   · simp only [← norm_sq_eq_re_inner] at H₃
-    rw [← H₁, H₂, H₃]
+    rw [← H₃]
+    rw [H₂] at H₁
+    exact H₁
   · exact L2.integrable_inner f f
+
+theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
+    ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
+  (hasSum_sq_fourierCoeff _).tsum_eq
+
+lemma integral_liftIoc_sq_eq {a : ℝ} {f : ℝ → ℂ} :
+    ∫ (t : AddCircle T), ‖liftIoc T a f t‖ ^ 2 ∂haarAddCircle = T⁻¹ • ∫ x in a..a + T, ‖f x‖ ^ 2
+    := by
+  have hab : a < a + T := (lt_add_iff_pos_right a).mpr hT.out
+  rw [eq_inv_smul_iff₀ (by linarith)]
+  conv in T =>
+    rw [←ENNReal.toReal_ofReal hT.out.le]
+  rw [←integral_smul_measure, ←volume_eq_smul_haarAddCircle, ←AddCircle.intervalIntegral_preimage]
+  apply intervalIntegral.integral_congr_ae
+  filter_upwards with _ hx
+  congr
+  rw [uIoc_of_le hab.le] at hx
+  exact liftIoc_coe_apply hx
+
+lemma measurePreserving_equivIoc {a : ℝ} :
+    MeasurePreserving (equivIoc T a) volume (Measure.comap Subtype.val volume) := by
+  have h := (measurableEquivIoc T a).measurable
+  refine ⟨h, ?_⟩
+  ext s hs
+  rw [comap_apply _ Subtype.val_injective (fun _ ↦ measurableSet_Ioc.subtype_image) _ hs,
+    map_apply (by measurability) hs, add_projection_respects_measure T a (by exact h hs)]
+  congr!
+  ext x
+  simp only [mem_inter_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
+    exists_eq_right]
+  rw [and_comm, ← exists_prop]
+  congr! with hx
+  rw [equivIoc_coe_eq hx]
+
+lemma memLp_liftIoc_of_memLp
+    {a : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞} (hLp : MemLp f p (volume.restrict (Ioc a (a + T)))) :
+    MemLp (liftIoc T a f) p := by
+  simp only [liftIoc, Set.restrict_def, Function.comp_def]
+  apply hLp.comp_measurePreserving
+  refine .comp (measurePreserving_subtype_coe measurableSet_Ioc) ?_
+  exact measurePreserving_equivIoc
+
+
+lemma memLp_liftIoc_of_memLp'
+    {a : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞} (hLp : MemLp f p (volume.restrict (Ioc a (a + T)))) :
+    MemLp (liftIoc T a f) p haarAddCircle := by
+  have h := memLp_liftIoc_of_memLp hLp
+  rw [volume_eq_smul_haarAddCircle] at h
+  have h' := MemLp.smul_measure h (ENNReal.inv_ne_top.mpr (ENNReal.ofReal_ne_zero_iff.mpr hT.out))
+  simpa [smul_smul,
+    ENNReal.inv_mul_cancel (ENNReal.ofReal_ne_zero_iff.mpr hT.out) ENNReal.ofReal_ne_top] using h'
+
+/-- **Parseval's identity**: for a function `f` which is square integrable on (a,b],
+the sum of the squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
+theorem hasSum_sq_fourierCoeffOn
+    {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
+    HasSum (fun i => ‖fourierCoeffOn hab f i‖ ^ 2) ((b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2) := by
+  haveI := Fact.mk (by linarith : 0 < b - a)
+  rw [←add_sub_cancel a b] at hL2
+  have h := (memLp_liftIoc_of_memLp' hL2).coeFn_toLp
+  conv in intervalIntegral _ _ _ => rw [←add_sub_cancel a b]
+  rw [←integral_liftIoc_sq_eq,
+      ←integral_congr_ae (h.mono (fun x hx => congrArg (fun x => ‖x‖^2) hx))]
+  conv in fourierCoeffOn _ _ _ =>
+    apply integral_congr_ae
+    apply Filter.EventuallyEq.smul (by rfl)
+    apply h.symm
+  exact hasSum_sq_fourierCoeff _
+
+theorem tsum_sq_fourierCoeffOn
+    {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
+    ∑' (i : ℤ), ‖fourierCoeffOn hab f i‖ ^ 2 = (b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2 :=
+  (hasSum_sq_fourierCoeffOn _ hL2).tsum_eq
 
 end FourierL2
 
