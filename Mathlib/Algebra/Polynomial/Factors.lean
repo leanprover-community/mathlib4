@@ -78,10 +78,7 @@ theorem factors_monomial (n : ℕ) (a : R) : Factors (monomial n a) := by
 
 protected theorem Factors.map {f : R[X]} (hf : Factors f) {S : Type*} [Semiring S] (i : R →+* S) :
     Factors (map i f) := by
-  have h := Submonoid.mem_map_of_mem (mapRingHom i) hf
-  rw [MonoidHom.map_mclosure, Set.image_union] at h
-  refine Submonoid.closure_mono (Set.union_subset_union ?_ ?_) h <;>
-    rintro - ⟨-, ⟨a, rfl⟩, rfl⟩ <;> exact ⟨i a, by simp⟩
+  induction hf using Submonoid.closure_induction <;> aesop
 
 theorem factors_of_isUnit [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Factors f :=
   (isUnit_iff.mp hf).choose_spec.2 ▸ factors_C _
@@ -93,15 +90,13 @@ section CommSemiring
 variable [CommSemiring R]
 
 @[simp, aesop safe apply]
-theorem Factors.multiset_prod {m : Multiset R[X]} (hm : ∀ f ∈ m, Factors f) : Factors m.prod := by
-  rw [← Multiset.prod_toList]
-  exact Factors.list_prod (by simpa)
+theorem Factors.multiset_prod {m : Multiset R[X]} (hm : ∀ f ∈ m, Factors f) : Factors m.prod :=
+  multiset_prod_mem _ hm
 
 @[simp, aesop safe apply]
 protected theorem Factors.prod {ι : Type*} {f : ι → R[X]} {s : Finset ι}
-    (h : ∀ i ∈ s, Factors (f i)) : Factors (∏ i ∈ s, f i) := by
-  rw [Finset.prod_eq_multiset_prod]
-  exact Factors.multiset_prod (by simpa)
+    (h : ∀ i ∈ s, Factors (f i)) : Factors (∏ i ∈ s, f i) :=
+  prod_mem h
 
 /-- See `factors_iff_exists_multiset` for the version with subtraction. -/
 theorem factors_iff_exists_multiset' {f : R[X]} :
