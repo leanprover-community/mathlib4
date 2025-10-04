@@ -101,8 +101,8 @@ base. -/
 def bind (E : PreZeroHypercover.{w} T) (F : ∀ i, PreZeroHypercover.{w'} (E.X i)) :
     PreZeroHypercover.{max w w'} T where
   I₀ := Σ (i : E.I₀), (F i).I₀
-  X := fun ⟨i, j⟩ ↦ (F i).X j
-  f := fun ⟨i, j⟩ ↦ (F i).f j ≫ E.f i
+  X ij := (F ij.1).X ij.2
+  f ij := (F ij.1).f ij.2 ≫ E.f ij.1
 
 /-- Replace the indexing type of a pre-`0`-hypercover. -/
 @[simps]
@@ -231,7 +231,9 @@ lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
 
 end Functoriality
 
-variable {F : PreZeroHypercover.{w'} S} {G : PreZeroHypercover.{w''} S}
+section
+
+variable (F : PreZeroHypercover.{w'} S) {G : PreZeroHypercover.{w''} S}
 
 /-- The left inclusion into the disjoint union. -/
 @[simps]
@@ -245,6 +247,7 @@ def sumInr : F.Hom (E.sum F) where
   s₀ := Sum.inr
   h₀ _ := 𝟙 _
 
+variable {E F} in
 /-- To give a refinement of the disjoint union, it suffices to give refinements of both
 components. -/
 @[simps]
@@ -253,6 +256,34 @@ def sumLift (f : E.Hom G) (g : F.Hom G) : (E.sum F).Hom G where
   h₀
     | .inl i => f.h₀ i
     | .inr i => g.h₀ i
+
+variable [∀ (i : E.I₀) (j : F.I₀), HasPullback (E.f i) (F.f j)]
+
+/-- First projection from the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interFst : Hom (inter E F) E where
+  s₀ i := i.1
+  h₀ _ := pullback.fst _ _
+
+/-- Second projection from the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interSnd : Hom (inter E F) F where
+  s₀ i := i.2
+  h₀ _ := pullback.snd _ _
+  w₀ i := by simp [← pullback.condition]
+
+variable {E F} in
+/-- Universal property of the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interLift (f : G.Hom E) (g : G.Hom F) :
+    G.Hom (E.inter F) where
+  s₀ i := ⟨f.s₀ i, g.s₀ i⟩
+  h₀ i := pullback.lift (f.h₀ i) (g.h₀ i) (by simp)
+
+end
 
 end PreZeroHypercover
 
@@ -338,6 +369,26 @@ def add (E : ZeroHypercover.{w} J S) {T : C} (f : T ⟶ S)
     ZeroHypercover.{w} J S where
   __ := E.toPreZeroHypercover.add f
   mem₀ := by rwa [PreZeroHypercover.presieve₀_add]
+
+/-- If `L` is a finer precoverage than `K`, any `0`-hypercover wrt. `K` is in particular
+a `0`-hypercover wrt. to `L`. -/
+@[simps toPreZeroHypercover]
+def weaken {K L : Precoverage C} {X : C} (E : Precoverage.ZeroHypercover K X) (h : K ≤ L) :
+    Precoverage.ZeroHypercover L X where
+  __ := E
+  mem₀ := h _ E.mem₀
+
+instance (K : Precoverage C) [K.HasPullbacks] {X Y : C} (E : K.ZeroHypercover X) (f : Y ⟶ X) :
+    E.presieve₀.HasPullbacks f :=
+  K.hasPullbacks_of_mem _ E.mem₀
+
+instance {X Y : C} (E : PreZeroHypercover X) (f : Y ⟶ X) [E.presieve₀.HasPullbacks f]
+    (i : E.I₀) : HasPullback (E.f i) f :=
+  E.presieve₀.hasPullback f ⟨i⟩
+
+instance {X Y : C} (E : PreZeroHypercover X) (f : Y ⟶ X) [E.presieve₀.HasPullbacks f]
+    (i : E.I₀) : HasPullback f (E.f i) :=
+  hasPullback_symmetry (E.f i) f
 
 variable (J) in
 /-- A morphism of `0`-hypercovers is a morphism of the underlying pre-`0`-hypercovers. -/
