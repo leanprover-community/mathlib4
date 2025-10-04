@@ -9,7 +9,6 @@ echo "$(wc -l <<<"${filtered_out}") lines of output" >&2
 
 delimiter=$(cat /proc/sys/kernel/random/uuid)
 echo "zulip-message<<${delimiter}"
-echo "Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) ([${SHA}](https://github.com/${REPO}/commit/${SHA})) regression run [completed](https://github.com/${REPO}/actions/runs/${RUN_ID})."
 
 # Categorize the output.
 counts=()
@@ -40,10 +39,20 @@ if info_lines=$(grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at '); then
   echo "$(wc -l <<<"${info_lines}") lines of info" >&2
 fi
 
-if (( ${#counts[@]} == 0 )); then
-  echo "Build completed without messages."
+if [ "true" == "${SUCCESS}" ]; then
+  icon="✅"
+  ended="succeeded"
 else
-  printf ' %s\n\n' "${counts[@]}"
+  icon="❌"
+  ended="failed"
+fi
+
+if (( ${#counts[@]} == 0 )); then
+  echo "${icon} ${WORKFLOW} run on [${REPO}](https://github.com/${REPO}) (commit [${SHA}](https://github.com/${REPO}/commit/${SHA})) [${ended} without messages](https://github.com/${REPO}/actions/runs/${RUN_ID})."
+else
+  echo "${icon} ${WORKFLOW} run on [${REPO}](https://github.com/${REPO}) (commit [${SHA}](https://github.com/${REPO}/commit/${SHA})) [${ended} with messages](https://github.com/${REPO}/actions/runs/${RUN_ID}):"
+  printf '\n* %s' "${counts[@]}"
+  printf '\n\n'
 fi
 
 if [ -n "${panic_lines}" ]; then
