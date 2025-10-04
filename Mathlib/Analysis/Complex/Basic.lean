@@ -472,14 +472,8 @@ theorem summable_ofReal {f : α → ℝ} : Summable (fun x => (f x : 𝕜)) L �
     ofRealCLM.summable⟩
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) := by
-  by_cases hL : L.NeBot
-  · by_cases h : Summable f L
-    · exact ContinuousLinearMap.map_tsum ofRealCLM h
-    · rw [tsum_eq_zero_of_not_summable h,
-        tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
-  · simp only [tsum_bot hL]
-    exact ofRealCLM.toAddMonoidHom.map_finsum_of_injective RCLike.ofReal_injective _
+theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) :=
+  LeftInverse.map_tsum f ofRealCLM.continuous continuous_re (fun _ ↦ by simp)
 
 theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x L) : HasSum (fun x => re (f x)) (re x) L :=
   reCLM.hasSum h
