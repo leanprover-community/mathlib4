@@ -334,31 +334,48 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
       rcases p.dichotomy with (rfl | h)
-      · exact iSup_edist_ne_top_aux f g
-      · rw [edist_eq_sum (zero_lt_one.trans_le h)]
-        exact ENNReal.rpow_ne_top_of_nonneg (by positivity) <| ENNReal.sum_ne_top.2 fun _ _ ↦
-          by finiteness)
+      · simp only [dist, top_ne_zero, ↓reduceIte]
+        exact Real.iSup_nonneg fun i ↦ dist_nonneg
+      · simp only [dist]
+        split_ifs with hp
+        · linarith
+        · exact Real.iSup_nonneg fun i ↦ dist_nonneg
+        exact rpow_nonneg (Fintype.sum_nonneg (fun i ↦  by positivity)) (1 / p.toReal))
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
       cases isEmpty_or_nonempty ι
-      · simp only [Real.iSup_of_isEmpty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.toReal_zero]
-      · refine le_antisymm (ciSup_le fun i => ?_) ?_
-        · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
-            PseudoMetricSpace.edist_dist]
-          -- Porting note: `le_iSup` needed some help
-          exact le_iSup (fun k => edist (f k) (g k)) i
-        · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg ?_) (iSup_le fun i => ?_)
-          · rintro - ⟨i, rfl⟩
-            exact dist_nonneg
-          · change PseudoMetricSpace.edist _ _ ≤ _
-            rw [PseudoMetricSpace.edist_dist]
-            -- Porting note: `le_ciSup` needed some help
-            exact ENNReal.ofReal_le_ofReal
-              (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
-    · have A (i) : edist (f i) (g i) ^ p.toReal ≠ ⊤ := by finiteness
-      simp only [edist_eq_sum (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
-        dist_eq_sum (zero_lt_one.trans_le h), ← ENNReal.toReal_sum fun i _ => A i]
+      · simp
+      · simp [edist, PseudoMetricSpace.edist_dist]
+        refine le_antisymm (ciSup_le fun i => ?_) ?_
+        · gcongr--rw [ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
+          sorry--exact le_iSup (fun j => dist (f j) (g j)) i
+        · rw [ENNReal.ofReal_le_iff_le_toReal]
+          refine Real.iSup_le ?_ (by positivity)
+          intro i
+          refine (ofReal_le_iff_le_toReal ?_).mp ?_
+          · refine lt_top_iff_ne_top.mp <| iSup_coe_lt_top.mpr ?_
+            simp [dist_edist]
+          · rw [le_iSup_iff]
+            exact fun _ hj ↦ hj i
+          · refine lt_top_iff_ne_top.mp <| iSup_coe_lt_top.mpr ?_
+            exact Finite.bddAbove_range fun i ↦ (dist (f i) (g i)).toNNReal
+    · simp [dist, edist]
+      split_ifs with hp1 hp2
+      all_goals try simp_all only [nonpos_iff_eq_zero, one_ne_zero, toReal_zero,
+        ENNReal.ofReal_natCast, Nat.cast_inj]
+      · contradiction
+      · rw [← dist_eq_iSup]
+        simp [dist]
+        simp [dist_edist,edist]
+        sorry
+      · have A (i) : edist (f i) (g i) ^ p.toReal ≠ ⊤ := by finiteness
+        simp [dist_edist, ← dist_eq_sum, edist_eq_sum (zero_lt_one.trans_le h), ENNReal.toReal_rpow,
+          dist_eq_sum (zero_lt_one.trans_le h), ← ENNReal.toReal_sum fun i _ => A i, edist]
+        sorry
+
+
+
 
 attribute [local instance] PiLp.pseudoMetricAux
 

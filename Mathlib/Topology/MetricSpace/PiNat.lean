@@ -48,6 +48,29 @@ in general), and `ι` is countable.
   the uniformity is definitionally the product uniformity. Not registered as an instance.
 -/
 
+namespace PseudoMetricSpace
+variable {X : Type*}
+
+/-- Build a new pseudometric space from an old one where the distance uniform structure is provably
+(but typically non-definitionally) equal to some given distance structure. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceDist (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = dist) :
+    PseudoMetricSpace X where
+  dist := d
+  dist_self := by simp [hd]
+  dist_comm := by simp [hd, dist_comm]
+  dist_triangle := by simp [hd, dist_triangle]
+  edist_dist := by simp [hd, edist_dist]
+  uniformity_dist := by simp [hd, uniformity_dist]
+  cobounded_sets := by simp [hd, cobounded_sets]
+  __ := m
+
+lemma replaceDist_eq (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd) :
+    m.replaceDist d hd = m := by ext : 2; exact hd
+
+end PseudoMetricSpace
+
 noncomputable section
 
 open Topology TopologicalSpace Set Metric Filter Function
