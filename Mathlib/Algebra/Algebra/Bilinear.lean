@@ -271,8 +271,10 @@ section CommSemiring
 variable [CommSemiring R] [NonUnitalCommSemiring A]
   [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
-lemma mul'_comp_comm : mul' R A ∘ₗ TensorProduct.comm R A A = mul' R A :=
-  TensorProduct.ext' <| by simp [mul_comm]
+@[simp] lemma flip_mul : (mul R A).flip = mul R A := by ext; simp [mul_comm]
+
+lemma mul'_comp_comm : mul' R A ∘ₗ TensorProduct.comm R A A = mul' R A := by
+  simp [mul', lift_comp_comm_eq]
 
 lemma mul'_comm (x : A ⊗[R] A) : mul' R A (TensorProduct.comm R A A x) = mul' R A x :=
   congr($mul'_comp_comm _)

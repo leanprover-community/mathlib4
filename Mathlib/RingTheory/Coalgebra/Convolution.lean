@@ -108,9 +108,7 @@ non-unital algebra. -/
 abbrev convNonUnitalSemiring : NonUnitalSemiring (C →ₗ[R] A) where
   mul_assoc f g h := calc
         μ ∘ₗ (μ ∘ₗ (f ⊗ₘ g) ∘ₗ δ ⊗ₘ h) ∘ₗ δ
-    _ = (μ ∘ₗ .rTensor _ μ) ∘ₗ ((f ⊗ₘ g) ⊗ₘ h) ∘ₗ (.rTensor _ δ ∘ₗ δ) := by
-      rw [comp_assoc, ← comp_assoc _ _ (rTensor _ _), rTensor_comp_map,
-        ← comp_assoc _ (rTensor _ _), map_comp_rTensor, comp_assoc]
+    _ = (μ ∘ₗ .rTensor _ μ) ∘ₗ ((f ⊗ₘ g) ⊗ₘ h) ∘ₗ (.rTensor _ δ ∘ₗ δ) := by ext; simp
     _ = (μ ∘ₗ rTensor _ μ)
         ∘ₗ (((f ⊗ₘ g) ⊗ₘ h) ∘ₗ (TensorProduct.assoc R C C C).symm) ∘ₗ lTensor C δ ∘ₗ δ := by
       simp only [comp_assoc, coassoc_symm]
@@ -121,9 +119,7 @@ abbrev convNonUnitalSemiring : NonUnitalSemiring (C →ₗ[R] A) where
       congr 1
       ext
       simp [mul_assoc]
-    _ = μ ∘ₗ (f ⊗ₘ μ ∘ₗ (g ⊗ₘ h) ∘ₗ δ) ∘ₗ δ := by
-      rw [comp_assoc, ← comp_assoc _ _ (lTensor _ _), lTensor_comp_map,
-        ← comp_assoc _ (lTensor _ _), map_comp_lTensor, comp_assoc]
+    _ = μ ∘ₗ (f ⊗ₘ μ ∘ₗ (g ⊗ₘ h) ∘ₗ δ) ∘ₗ δ := by ext; simp
 
 scoped[ConvolutionProduct] attribute [instance] LinearMap.convNonUnitalSemiring
 
