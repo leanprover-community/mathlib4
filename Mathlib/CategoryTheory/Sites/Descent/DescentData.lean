@@ -21,7 +21,7 @@ when `F` also has a covariant functoriality, etc.).
 
 -/
 
-universe t v' v u' u
+universe t t' v' v u' u
 
 namespace CategoryTheory
 
@@ -152,6 +152,72 @@ end DescentData
 def toDescentData : F.obj (.mk (op S)) ⥤ F.DescentData f where
   obj M := .ofObj M
   map {M M'} φ := { hom i := (F.map (f i).op.toLoc).map φ }
+
+namespace DescentData
+
+variable {F f} {S' : C} {p : S' ⟶ S} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j, X' j ⟶ S'}
+
+variable {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j ≫ p)
+
+/-- Auxiliary definition for `pullFunctor`. -/
+def pullFunctorObjHom (D : F.DescentData f)
+    ⦃Y : C⦄ (q : Y ⟶ S') ⦃j₁ j₂ : ι'⦄ (f₁ : Y ⟶ X' j₁) (f₂ : Y ⟶ X' j₂)
+    (hf₁ : f₁ ≫ f' j₁ = q := by cat_disch) (hf₂ : f₂ ≫ f' j₂ = q := by cat_disch) :
+    (F.map f₁.op.toLoc).obj ((F.map (p' j₁).op.toLoc).obj (D.obj (α j₁))) ⟶
+      (F.map f₂.op.toLoc).obj ((F.map (p' j₂).op.toLoc).obj (D.obj (α j₂))) :=
+  (F.mapComp (p' j₁).op.toLoc f₁.op.toLoc).inv.app _ ≫
+    D.hom (q ≫ p) (f₁ ≫ p' _) (f₂ ≫ p' _) (by simp [w, reassoc_of% hf₁])
+      (by simp [w, reassoc_of% hf₂]) ≫
+    (F.mapComp (p' j₂).op.toLoc f₂.op.toLoc).hom.app _
+
+lemma pullFunctorObjHom_eq (D : F.DescentData f)
+    ⦃Y : C⦄ (q : Y ⟶ S') ⦃j₁ j₂ : ι'⦄ (f₁ : Y ⟶ X' j₁) (f₂ : Y ⟶ X' j₂)
+    (q' : Y ⟶ S) (f₁' : Y ⟶ X (α j₁)) (f₂' : Y ⟶ X (α j₂))
+    (hf₁ : f₁ ≫ f' j₁ = q := by cat_disch) (hf₂ : f₂ ≫ f' j₂ = q := by cat_disch)
+    (hq' : q ≫ p = q' := by cat_disch)
+    (hf₁' : f₁ ≫ p' j₁ = f₁' := by cat_disch)
+    (hf₂' : f₂ ≫ p' j₂ = f₂' := by cat_disch) :
+  pullFunctorObjHom w D q f₁ f₂ =
+    (F.mapComp' _ _ _).inv.app _ ≫ D.hom q' f₁' f₂'
+      (by rw [← hq', ← hf₁', Category.assoc, w, reassoc_of% hf₁])
+      (by rw [← hq', ← hf₂', Category.assoc, w, reassoc_of% hf₂]) ≫
+      (F.mapComp' _ _ _).hom.app _ := by
+  subst hq' hf₁' hf₂'
+  simp [mapComp'_eq_mapComp, pullFunctorObjHom]
+
+/-- Given family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, and suitable
+commutative diagrams `p' j ≫ f (α j) = f' j ≫ p`, this is the
+induced functor `F.DescentData f ⥤ F.DescentData f'`. -/
+def pullFunctor (α : ι' → ι) (p' : ∀ j, X' j ⟶ X (α j)) (w : ∀ j, p' j ≫ f (α j) = f' j ≫ p) :
+    F.DescentData f ⥤ F.DescentData f' where
+  obj D :=
+    { obj j := (F.map (p' _).op.toLoc).obj (D.obj (α j))
+      hom Y q j₁ j₂ f₁ f₂ hf₁ hf₂ := pullFunctorObjHom w _ _ _ _
+      pullHom_hom := sorry
+      hom_self Y q j g hg := by
+        rw [pullFunctorObjHom_eq _ _ _ _ _ _ _ _ rfl rfl rfl rfl rfl,
+          D.hom_self _ _ (by cat_disch)]
+        simp
+      hom_comp Y q j₁ j₂ j₃ f₁ f₂ f₃ hf₁ hf₂ hf₃ := by
+        rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂),
+          pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₂ ≫ p' j₂) (f₃ ≫ p' j₃),
+          pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₃ ≫ p' j₃)]
+        simp }
+  map {D₁ D₂} φ :=
+    { hom j := (F.map (p' j).op.toLoc).map (φ.hom (α j))
+      comm Y q j₁ j₂ f₁ f₂ hf₁ hf₂ := by
+        have := φ.comm (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂)
+          (by rw [Category.assoc, w, reassoc_of% hf₁])
+          (by rw [Category.assoc, w, reassoc_of% hf₂])
+        dsimp at this ⊢
+        rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂),
+          pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂)]
+        dsimp
+        simp only [Category.assoc]
+        rw [mapComp'_inv_naturality_assoc, ← mapComp'_hom_naturality,
+          reassoc_of% this] }
+
+end DescentData
 
 end Pseudofunctor
 
