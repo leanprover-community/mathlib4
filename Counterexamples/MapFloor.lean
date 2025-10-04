@@ -20,7 +20,7 @@ However, there is a catch. Potentially something whose floor was `n` could
 get mapped to `n + 1`, and this has floor `n + 1`, not `n`. Note that this is at most an off by one
 error.
 
-This pathology disappears if you require `f` to be strictly monotone or `α` to be archimedean.
+This pathology disappears if you require `f` to be strictly monotone or `α` to be Archimedean.
 
 ## The counterexample
 

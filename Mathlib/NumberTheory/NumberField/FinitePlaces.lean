@@ -112,7 +112,7 @@ noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_n
 
 theorem adicAbv_def {x : K} : adicAbv v x = toNNReal (absNorm_ne_zero v) (v.valuation K x) := rfl
 
-/-- The `v`-adic absolute value is nonarchimedean -/
+/-- The `v`-adic absolute value is non-Archimedean -/
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv v) :=
   v.isNonarchimedean_adicAbv <| one_lt_absNorm_nnreal v
 

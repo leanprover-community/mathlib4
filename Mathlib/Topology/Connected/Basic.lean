@@ -203,7 +203,7 @@ open Order
 
 variable [LinearOrder β] [SuccOrder β] [IsSuccArchimedean β]
 
-/-- The iUnion of connected sets indexed by a type with an archimedean successor (like `ℕ` or `ℤ`)
+/-- The iUnion of connected sets indexed by a type with an Archimedean successor (like `ℕ` or `ℤ`)
   such that any two neighboring sets meet is preconnected. -/
 theorem IsPreconnected.iUnion_of_chain {s : β → Set α} (H : ∀ n, IsPreconnected (s n))
     (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsPreconnected (⋃ n, s n) :=
@@ -212,7 +212,7 @@ theorem IsPreconnected.iUnion_of_chain {s : β → Set α} (H : ∀ n, IsPreconn
       rw [inter_comm]
       exact K i
 
-/-- The iUnion of connected sets indexed by a type with an archimedean successor (like `ℕ` or `ℤ`)
+/-- The iUnion of connected sets indexed by a type with an Archimedean successor (like `ℕ` or `ℤ`)
   such that any two neighboring sets meet is connected. -/
 theorem IsConnected.iUnion_of_chain [Nonempty β] {s : β → Set α} (H : ∀ n, IsConnected (s n))
     (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n, s n) :=
@@ -221,7 +221,7 @@ theorem IsConnected.iUnion_of_chain [Nonempty β] {s : β → Set α} (H : ∀ n
       rw [inter_comm]
       exact K i
 
-/-- The iUnion of preconnected sets indexed by a subset of a type with an archimedean successor
+/-- The iUnion of preconnected sets indexed by a subset of a type with an Archimedean successor
   (like `ℕ` or `ℤ`) such that any two neighboring sets meet is preconnected. -/
 theorem IsPreconnected.biUnion_of_chain {s : β → Set α} {t : Set β} (ht : OrdConnected t)
     (H : ∀ n ∈ t, IsPreconnected (s n))
@@ -237,7 +237,7 @@ theorem IsPreconnected.biUnion_of_chain {s : β → Set α} {t : Set β} (ht : O
   exact reflTransGen_of_succ _ (fun k hk => ⟨h3 hi hj hk, h1 hi hj hk⟩) fun k hk =>
       ⟨by rw [inter_comm]; exact h3 hj hi hk, h2 hj hi hk⟩
 
-/-- The iUnion of connected sets indexed by a subset of a type with an archimedean successor
+/-- The iUnion of connected sets indexed by a subset of a type with an Archimedean successor
   (like `ℕ` or `ℤ`) such that any two neighboring sets meet is preconnected. -/
 theorem IsConnected.biUnion_of_chain {s : β → Set α} {t : Set β} (hnt : t.Nonempty)
     (ht : OrdConnected t) (H : ∀ n ∈ t, IsConnected (s n))
