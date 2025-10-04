@@ -26,7 +26,8 @@ section Semiring
 
 variable [Semiring R]
 
-/-- A polynomial factors if a product of constant and monic linear polynomials. -/
+/-- A polynomial `Factors` if it is a product of constant and monic linear polynomials.
+This will eventually replace `Polynomial.Splits`. -/
 def Factors (f : R[X]) : Prop := f ∈ Submonoid.closure ({C a | a : R} ∪ {X + C a | a : R})
 
 @[simp, aesop safe apply]
