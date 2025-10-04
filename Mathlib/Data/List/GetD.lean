@@ -30,6 +30,14 @@ variable (d : α)
 theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
   grind
 
+theorem getD_eq_getElem? (l : List α) (d : α) (i : Fin l.length) :
+    l.getD i d = l[i]?.get (by simp) := by
+  simp
+
+theorem getD_eq_get (l : List α) (d : α) (i : Fin l.length) :
+    l.getD i d = l.get i := by
+  simp
+
 theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by simp
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
