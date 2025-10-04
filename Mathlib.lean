@@ -2918,6 +2918,7 @@ import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Hindman
+import Mathlib.Combinatorics.Hypergraph.Basic
 import Mathlib.Combinatorics.Matroid.Basic
 import Mathlib.Combinatorics.Matroid.Circuit
 import Mathlib.Combinatorics.Matroid.Closure
