@@ -56,7 +56,7 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
       (u : ι → A) (v : A) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
     obtain ⟨ι₀, _, c₀, hc₀, u₀, v₀, h₀⟩ := inst2.isLiouville (a : K) ι
         ((↑) ∘ c)
-        (fun _ ↦ by simp only [Function.comp_apply, ← coe_deriv, lift_map_eq_zero_iff, hc])
+        (fun _ ↦ by simp only [Function.comp_apply, ← coe_deriv, coe_eq_zero_iff, hc])
         ((↑) ∘ u) v (by simpa only [Function.comp_apply, ← IsScalarTower.algebraMap_apply])
     have hc (x : ι₀) := mem_range_of_deriv_eq_zero F (hc₀ x)
     choose c₀ hc using hc
