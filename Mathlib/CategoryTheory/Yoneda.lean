@@ -63,7 +63,7 @@ abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.flip
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftCoyoneda.{w} (C := C) ≅ coyoneda`. -/
 @[simps!]
-def uliftCoyonedaIsoYoneda {C : Type u₁} [Category.{max w v₁} C] :
+def uliftCoyonedaIsoCoyoneda {C : Type u₁} [Category.{max w v₁} C] :
     uliftCoyoneda.{w} (C := C) ≅ coyoneda :=
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso))
 
@@ -1062,7 +1062,7 @@ def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFai
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps!]
-def compYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
+def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) : F ⋙ uliftYoneda.{v₁} ⋙ (whiskeringLeft _ _ _).obj F.op ≅
       uliftYoneda.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIso _)
@@ -1078,7 +1078,7 @@ def homNatIso' {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFa
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism, using coyoneda. -/
 @[simps!]
-def compCoyonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
+def compUliftCoyonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) : F.op ⋙ uliftCoyoneda.{v₁} ⋙ (whiskeringLeft _ _ _).obj F ≅
       uliftCoyoneda.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIso' _)
