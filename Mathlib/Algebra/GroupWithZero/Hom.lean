@@ -76,7 +76,7 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 `MonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →*₀ β`. -/
 @[coe]
 def MonoidWithZeroHomClass.toMonoidWithZeroHom [FunLike F α β] [MonoidWithZeroHomClass F α β]
-    (f : F) : α →*₀ β := { (f : α →* β), (f : ZeroHom α β) with }
+    (f : F) : α →*₀ β := { (.ofClass f : α →* β), (.ofClass f : ZeroHom α β) with }
 
 /-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
 `MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
