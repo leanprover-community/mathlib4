@@ -3,7 +3,6 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.Nat.Basic
 import Batteries.Tactic.Alias
 import Batteries.Tactic.Init
 import Mathlib.Init
@@ -238,10 +237,11 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
 
-private abbrev strongRecAux {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) :
-    ∀ m < n, p m :=
-  n.rec (fun _ h ↦ by simp at h)
-    fun n ih m hmn ↦ H _ fun l hlm ↦ ih _ (Nat.lt_of_lt_of_le hlm <| le_of_lt_succ hmn)
+private abbrev strongRecAux {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
+    ∀ n : ℕ, ∀ m < n, p m
+  | 0, _, h => by simp at h
+  | n + 1, m, hmn => H _ fun l hlm ↦
+      strongRecAux H n l (Nat.lt_of_lt_of_le hlm <| le_of_lt_succ hmn)
 
 /-- Recursion principle based on `<`. -/
 @[elab_as_elim]
@@ -260,13 +260,6 @@ private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m)
 lemma strongRec'_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
     n.strongRec' H = H n fun m _ ↦ m.strongRec' H :=
   congrArg (H n) <| by ext m lt; apply strongRecAux_spec
-
-@[csimp] lemma strongRec'_eq_strongRec : @Nat.strongRec' = @Nat.strongRec := by
-  ext _ h n
-  refine n.strongRec' fun n ih ↦ ?_
-  rw [Nat.strongRec, strongRec'_spec]
-  congr; ext m lt
-  exact ih m lt
 
 /-- Recursion principle based on `<` applied to some natural number. -/
 @[elab_as_elim]
