@@ -40,17 +40,25 @@ This is the filter of all open codiscrete sets within S. We also define `Filter.
 
 open Set Filter Function Topology
 
-variable {X Y : Type*} [TopologicalSpace Y] {f : X → Y}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+
+theorem discreteTopology_subtype_iff {S : Set Y} :
+    DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
+  simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
+
+lemma discreteTopology_subtype_iff' {S : Set Y} :
+    DiscreteTopology S ↔ ∀ y ∈ S, ∃ U : Set Y, IsOpen U ∧ U ∩ S = {y} := by
+  simp [← singletons_open_iff_discrete, isOpen_induced_iff, Set.ext_iff]
+  grind
 
 section cofinite_cocompact
 
+omit [TopologicalSpace X] in
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
   rw [hasBasis_cocompact.tendsto_right_iff]
   refine forall₂_congr (fun K _ ↦ ?_)
   simp only [mem_compl_iff, eventually_cofinite, not_not, preimage]
-
-variable [TopologicalSpace X]
 
 lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
@@ -83,8 +91,6 @@ end cofinite_cocompact
 
 section codiscrete_filter
 
-variable [TopologicalSpace X]
-
 /-- Criterion for a subset `S ⊆ X` to be closed and discrete in terms of the punctured
 neighbourhood filter at an arbitrary point of `X`. (Compare `discreteTopology_subtype_iff`.) -/
 theorem isClosed_and_discrete_iff {S : Set X} :
@@ -97,6 +103,32 @@ theorem isClosed_and_discrete_iff {S : Set X} :
     exacts [H.2 hx, (H.1 hx).mono_left nhdsWithin_le_nhds]
   · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
     simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
+
+/-- The union of two discrete closed subsets is discrete. -/
+theorem discreteTopology_union {S T : Set X} (hs : DiscreteTopology S) (ht : DiscreteTopology T)
+    (hs' : IsClosed S) (ht' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
+  refine (isClosed_and_discrete_iff.mpr fun x ↦ ?_).2
+  exact Filter.sup_principal ▸ (isClosed_and_discrete_iff.mp ⟨hs', hs⟩ x).sup_right
+    (isClosed_and_discrete_iff.mp ⟨ht', ht⟩ x)
+
+/-- The union of finitely many discrete closed subsets is discrete. -/
+theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X}
+    (hs : ∀ i ∈ I, DiscreteTopology (s i)) (hs' : ∀ i ∈ I, IsClosed (s i)) :
+    DiscreteTopology (⋃ i ∈ I, s i) := by
+  classical
+  induction I using Finset.induction_on with
+  | empty => rw [biUnion_empty_finset]; infer_instance
+  | insert a I _ IH =>
+    rw [Finset.forall_mem_insert] at hs hs'
+    rw [Finset.set_biUnion_insert]
+    exact discreteTopology_union hs.1 (IH hs.2 hs'.2) hs'.1 (isClosed_biUnion_finset hs'.2)
+
+/-- The union of finitely many discrete closed subsets is discrete. -/
+theorem discreteTopology_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
+    (hs : ∀ i, DiscreteTopology (s i)) (hs' : ∀ i, IsClosed (s i)) :
+    DiscreteTopology (⋃ i, s i) := by
+  convert discreteTopology_biUnion_finset (I := .univ) (fun i _ ↦ hs i) (fun i _ ↦ hs' i) <;>
+    simp
 
 /-- The filter of sets with no accumulation points inside a set `S : Set X`, implemented
 as the supremum over all punctured neighborhoods within `S`. -/
