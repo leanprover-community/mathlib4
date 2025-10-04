@@ -5890,6 +5890,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
 import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.TensorProduct.Nontrivial
