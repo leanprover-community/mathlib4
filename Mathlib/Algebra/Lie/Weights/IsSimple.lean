@@ -79,14 +79,15 @@ private theorem chi_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L) (h
   exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
 
 private theorem chi_not_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L)
-    (h_chi_not_in_q : χ.toLinear ∉ q) (x_χ : L) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
+    (h_chi_not_in_q : χ.toLinear ∉ q) (x_χ m_α : L) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
     (hx_χ : x_χ ∈ genWeightSpace L χ) (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
     (w_minus : χ.toLinear - α.1.toLinear ≠ 0) (w_chi : χ.toLinear ≠ 0) (m_pos m_neg m_h : L)
     (hm_h : ∃ y : H, y ∈ corootSpace α.1 ∧ (y : L) = m_h)
+    (h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆)
     (h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear))
     (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)) :
-    ⁅x_χ, m_pos⁆ = 0 ∧ ⁅x_χ, m_neg⁆ = 0 ∧ ⁅x_χ, m_h⁆ = 0 := by
+    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   let S := rootSystem H
   have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = γ.toLinear :=
     ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
@@ -171,7 +172,8 @@ private theorem chi_not_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L
       rw [← lie_skew, h_lie_eq_smul, h_chi_h_zero, zero_smul, neg_zero]
     rw [← hh_eq]
     exact h_bracket_elem
-  exact ⟨h_pos_zero, h_neg_zero, h_bracket_zero⟩
+  rw [h_bracket_sum, h_pos_zero, h_neg_zero, h_bracket_zero]
+  simp only [add_zero, zero_mem]
 
 private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
@@ -234,10 +236,8 @@ private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
   by_cases h_chi_in_q : χ.toLinear ∈ q
   · exact chi_in_q_aux q χ h_chi_in_q x_χ m_α hx_χ α w_plus w_minus w_chi
       m_pos m_neg m_h hm_h h_bracket_sum h_pos_containment h_neg_containment
-  · have ⟨h_pos_zero, h_neg_zero, h_bracket_zero⟩ := chi_not_in_q_aux q χ h_chi_in_q x_χ α hq hx_χ
-      w_plus w_minus w_chi m_pos m_neg m_h hm_h h_pos_containment h_neg_containment
-    rw [h_bracket_sum, h_pos_zero, h_neg_zero, h_bracket_zero]
-    simp only [add_zero, zero_mem]
+  · exact chi_not_in_q_aux q χ h_chi_in_q x_χ m_α α hq hx_χ
+      w_plus w_minus w_chi m_pos m_neg m_h hm_h h_bracket_sum h_pos_containment h_neg_containment
 
 /-- Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra.
 Given a submodule `q` of the dual space `Dual K H` that is invariant under all root reflections,
