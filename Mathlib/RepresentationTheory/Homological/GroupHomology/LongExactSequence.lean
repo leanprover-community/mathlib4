@@ -10,13 +10,13 @@ import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 /-!
 # Long exact sequence in group homology
 
-Given a commutative ring `k` and a group `G`, this file shows that a short exact sequence of
-`k`-linear `G`-representations `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` induces a short exact sequence of
+Given a commutative ring `k` and a group `G`, this file shows that a short-exact sequence of
+`k`-linear `G`-representations `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` induces a short-exact sequence of
 complexes
 `0 ⟶ inhomogeneousChains X₁ ⟶ inhomogeneousChains X₂ ⟶ inhomogeneousChains X₃ ⟶ 0`.
 
 Since the homology of `inhomogeneousChains Xᵢ` is the group homology of `Xᵢ`, this allows us
-to specialize API about long exact sequences to group homology.
+to specialize API about long-exact sequences to group homology.
 
 ## Main definitions
 
@@ -109,7 +109,7 @@ noncomputable abbrev cyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) →₀ X.X
       (by simpa using hx) _
 
 theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
-    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short-exact sequence of `G`-representations.
     -- Let `z` be an `j + 1`-cycle for `X₃`
     (z : (Fin i → G) →₀ X.X₃) (hz : (inhomogeneousChains X.X₃).d i j z = 0)
     -- Let `y` be an `j + 1`-chain for `X₂` such that `g ∘ y = z`
@@ -123,7 +123,7 @@ theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
   exact (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using hx) _ rfl
 
 theorem δ₀_apply
-    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short-exact sequence of `G`-representations.
     -- Let `z` by a 1-cycle for `X₃` and `y` a 1-chain for `X₂` such that `g ∘ y = z`.
     (z : cycles₁ X.X₃) (y : G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.hom y = z.1)
     -- Let `x : X₁` be such that `f(x) = d(y)`.
@@ -144,7 +144,7 @@ theorem mem_cycles₁_of_comp_eq_d₂₁
   simp_all [shortComplexH1]
 
 theorem δ₁_apply
-    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short-exact sequence of `G`-representations.
     -- Let `z` by a 2-cycle for `X₃` and `y` a 2-chain for `X₂` such that `g ∘ y = z`.
     (z : cycles₂ X.X₃) (y : G × G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.hom y = z.1)
     -- Let `x` be a 1-chain for `X₁` such that `f ∘ x = d(y)`.

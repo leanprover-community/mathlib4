@@ -27,7 +27,7 @@ Let `F : C ⥤ D` be an additive functor:
 If we further assume that `C` and `D` are abelian categories, then we have:
 
 - `Functor.preservesFiniteLimits_tfae`: the following are equivalent:
-  1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
+  1. for every short-exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
     `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C` where `A ⟶ B` is mono,
     `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(A) ⟶ F(B)` is mono.
@@ -35,7 +35,7 @@ If we further assume that `C` and `D` are abelian categories, then we have:
   4. `F` preserves finite limits.
 
 - `Functor.preservesFiniteColimits_tfae`: the following are equivalent:
-  1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
+  1. for every short-exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
     `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C` where `B ⟶ C` is epi,
     `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(B) ⟶ F(C)` is epi.
@@ -43,7 +43,7 @@ If we further assume that `C` and `D` are abelian categories, then we have:
   4. `F` preserves finite colimits.
 
 - `Functor.exact_tfae`: the following are equivalent:
-  1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
+  1. for every short-exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
     `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C`, `F(A) ⟶ F(B) ⟶ F(C)` is exact.
   3. `F` preserves homology.
@@ -90,7 +90,7 @@ variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
 /--
-If a functor `F : C ⥤ D` preserves short exact sequences on the left-hand side, (i.e.
+If a functor `F : C ⥤ D` preserves short-exact sequences on the left-hand side, (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact)
 then it preserves monomorphism.
 -/
@@ -101,7 +101,7 @@ lemma preservesMonomorphisms_of_preserves_shortExact_left
 
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
-- `F` preserves short exact sequences on the left-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact
+- `F` preserves short-exact sequences on the left-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact
   then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact.
 - `F` preserves exact sequences on the left-hand side, i.e. if `A ⟶ B ⟶ C` is exact where `A ⟶ B`
   is mono, then `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(A) ⟶ F(B)` is mono as well.
@@ -155,7 +155,7 @@ lemma preservesEpimorphisms_of_preserves_shortExact_right
 
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
-- `F` preserves short exact sequences on the right-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is
+- `F` preserves short-exact sequences on the right-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is
   exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
 - `F` preserves exact sequences on the right-hand side, i.e. if `A ⟶ B ⟶ C` is exact where `B ⟶ C`
   is epi, then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact and `F(B) ⟶ F(C)` is epi as well.
@@ -199,7 +199,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
 
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
-- `F` preserves short exact sequences, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then
+- `F` preserves short-exact sequences, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then
   `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
 - `F` preserves exact sequences, i.e. if `A ⟶ B ⟶ C` is exact then `F(A) ⟶ F(B) ⟶ F(C)` is exact.
 - `F` preserves homology.

@@ -9,10 +9,10 @@ import Mathlib.CategoryTheory.Triangulated.Yoneda
 /-!
 # Long exact sequences of `Ext`-groups
 
-In this file, we obtain the covariant long exact sequence of `Ext` when `n₀ + 1 = n₁`:
+In this file, we obtain the covariant long-exact sequence of `Ext` when `n₀ + 1 = n₁`:
 `Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`
-when `S` is a short exact short complex in an abelian category `C`, `n₀ + 1 = n₁` and `X : C`.
-Similarly, if `Y : C`, there is a contravariant long exact sequence :
+when `S` is a short-exact short complex in an abelian category `C`, `n₀ + 1 = n₁` and `X : C`.
+Similarly, if `Y : C`, there is a contravariant long-exact sequence :
 `Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`.
 
 -/
@@ -113,8 +113,8 @@ lemma covariant_sequence_exact₁' :
 
 open ComposableArrows
 
-/-- Given a short exact short complex `S` in an abelian category `C` and an object `X : C`,
-this is the long exact sequence
+/-- Given a short-exact short complex `S` in an abelian category `C` and an object `X : C`,
+this is the long-exact sequence
 `Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`
 when `n₀ + 1 = n₁` -/
 noncomputable def covariantSequence : ComposableArrows AddCommGrp.{w} 5 :=
@@ -231,8 +231,8 @@ lemma contravariant_sequence_exact₃' :
 
 open ComposableArrows
 
-/-- Given a short exact short complex `S` in an abelian category `C` and an object `Y : C`,
-this is the long exact sequence
+/-- Given a short-exact short complex `S` in an abelian category `C` and an object `Y : C`,
+this is the long-exact sequence
 `Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`
 when `1 + n₀ = n₁`. -/
 noncomputable def contravariantSequence : ComposableArrows AddCommGrp.{w} 5 :=

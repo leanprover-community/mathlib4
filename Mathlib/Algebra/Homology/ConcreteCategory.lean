@@ -68,7 +68,7 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj (S.X₃.homology i))
 set_option linter.style.commandStart false in
 include hS in
 /--
-In the short exact sequence of complexes
+In the short-exact sequence of complexes
 ```
        0            0            0
        |            |            |

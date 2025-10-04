@@ -32,7 +32,7 @@ section
 variable [HasZeroMorphisms C]
 
 /-- Given `P : ObjectProperty C`, we say that `P` is closed under extensions
-if whenever `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is a short exact short complex,
+if whenever `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is a short-exact short complex,
 then `P X₁` and `P X₃` implies `P X₂`. -/
 class IsClosedUnderExtensions : Prop where
   prop_X₂_of_shortExact {S : ShortComplex C} (hS : S.ShortExact)

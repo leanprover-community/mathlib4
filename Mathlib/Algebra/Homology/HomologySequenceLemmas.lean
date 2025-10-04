@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 /-!
 # Consequences of the homology sequence
 
-Given a morphism `φ : S₁ ⟶ S₂` between two short exact sequences
+Given a morphism `φ : S₁ ⟶ S₂` between two short-exact sequences
 of homological complexes in an abelian category, we show the naturality
 of the homology sequence of `S₁` and `S₂` with respect to `φ`
 (see `HomologicalComplex.HomologySequence.δ_naturality`).
@@ -66,7 +66,7 @@ lemma composableArrows₂_exact (hS₁ : S₁.ShortExact) (i : ι) :
 
 /-- The (exact) sequence
 `H_i(S.X₁) ⟶ H_i(S.X₂) ⟶ H_i(S.X₃) ⟶ H_j(S.X₁) ⟶ H_j(S.X₂) ⟶ H_j(S.X₃)` when `c.Rel i j`
-and `S` is a short exact short complex of homological complexes in an abelian category. -/
+and `S` is a short-exact short complex of homological complexes in an abelian category. -/
 @[simp]
 noncomputable def composableArrows₅ (i j : ι) (hij : c.Rel i j) : ComposableArrows C 5 :=
   mk₅ (homologyMap S₁.f i) (homologyMap S₁.g i) (hS₁.δ i j hij)
@@ -90,7 +90,7 @@ noncomputable def mapComposableArrows₂ (i : ι) : composableArrows₂ S₁ i �
     simp only [← homologyMap_comp, φ.comm₂₃])
 
 /-- The map `composableArrows₅ hS₁ i j hij ⟶ composableArrows₅ hS₂ i j hij` of exact
-sequences induced by a morphism `φ : S₁ ⟶ S₂` between short exact short complexes of
+sequences induced by a morphism `φ : S₁ ⟶ S₂` between short-exact short complexes of
 homological complexes. -/
 @[simp]
 noncomputable def mapComposableArrows₅ (i j : ι) (hij : c.Rel i j) :
