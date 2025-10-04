@@ -7,7 +7,12 @@ import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.ProductMeasure
 
 /-!
-# Random variables are independent iff their joint distribution is the product measure.
+# Independence of an infinite family of random variables
+
+In this file we provide several results about independence of arbitrary families of random
+variables, relying on `Measure.infinitePi`.
+
+## Implementation note
 
 There are several possible measurability assumptions:
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is measurable.
@@ -15,9 +20,7 @@ There are several possible measurability assumptions:
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is almost everywhere measurable.
 Although the first two options are equivalent, the last two are not if the index set is not
-countable. Therefore we first prove the third case `iIndepFun_iff_map_fun_eq_infinitePi_map₀`,
-then deduce the fourth case in `iIndepFun_iff_map_fun_eq_infinitePi_map₀'` (assuming the index
-type is countable), and we prove the first case in `iIndepFun_iff_map_fun_eq_infinitePi_map`.
+countable.
 -/
 
 open MeasureTheory Measure ProbabilityTheory
