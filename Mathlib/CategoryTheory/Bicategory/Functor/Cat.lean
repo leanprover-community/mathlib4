@@ -46,7 +46,7 @@ section
 variable (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
   (hfg : f ≫ g = fg) (a : X ⟶ Y)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma mapComp'_hom_naturality :
     (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
       (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
