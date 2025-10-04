@@ -31,7 +31,7 @@ theorem isZero_of_subsingleton (G : GrpCat) [Subsingleton G] : IsZero G := by
   · ext
     subsingleton
 
-@[to_additive AddGrp.hasZeroObject]
+@[to_additive AddGrpCat.hasZeroObject]
 instance : HasZeroObject GrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
@@ -48,7 +48,7 @@ theorem isZero_of_subsingleton (G : CommGrpCat) [Subsingleton G] : IsZero G := b
   · ext
     subsingleton
 
-@[to_additive AddCommGrp.hasZeroObject]
+@[to_additive AddCommGrpCat.hasZeroObject]
 instance : HasZeroObject CommGrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 

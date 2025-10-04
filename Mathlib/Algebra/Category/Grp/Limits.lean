@@ -37,7 +37,7 @@ instance groupObj (j) : Group ((F ⋙ forget GrpCat).obj j) :=
 
 /-- The flat sections of a functor into `GrpCat` form a subgroup of all sections. -/
 @[to_additive
-/-- The flat sections of a functor into `AddGrp` form an additive subgroup of all sections. -/]
+/-- The flat sections of a functor into `AddGrpCat` form an additive subgroup of all sections. -/]
 def sectionsSubgroup : Subgroup (∀ j, F.obj j) :=
   { MonCat.sectionsSubmonoid (F ⋙ forget₂ GrpCat MonCat) with
     carrier := (F ⋙ forget GrpCat).sections
@@ -74,7 +74,7 @@ instance : Small.{u} (Functor.sections ((F ⋙ forget₂ GrpCat MonCat) ⋙ forg
 
 All we need to do is notice that the limit point has a `Group` instance available, and then reuse
 the existing limit. -/
-@[to_additive /-- We show that the forgetful functor `AddGrp ⥤ AddMonCat` creates limits.
+@[to_additive /-- We show that the forgetful functor `AddGrpCat ⥤ AddMonCat` creates limits.
 
 All we need to do is notice that the limit point has an `AddGroup` instance available, and then
 reuse the existing limit. -/]
@@ -117,7 +117,7 @@ noncomputable def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
 
 /-- If `(F ⋙ forget GrpCat).sections` is `u`-small, `F` has a limit. -/
-@[to_additive /-- If `(F ⋙ forget AddGrp).sections` is `u`-small, `F` has a limit. -/]
+@[to_additive /-- If `(F ⋙ forget AddGrpCat).sections` is `u`-small, `F` has a limit. -/]
 instance hasLimit : HasLimit F :=
   HasLimit.mk {
     cone := limitCone F
@@ -128,8 +128,8 @@ end
 
 /-- A functor `F : J ⥤ GrpCat.{u}` has a limit iff `(F ⋙ forget GrpCat).sections` is
 `u`-small. -/
-@[to_additive /-- A functor `F : J ⥤ AddGrp.{u}` has a limit iff
-`(F ⋙ forget AddGrp).sections` is `u`-small. -/]
+@[to_additive /-- A functor `F : J ⥤ AddGrpCat.{u}` has a limit iff
+`(F ⋙ forget AddGrpCat).sections` is `u`-small. -/]
 lemma hasLimit_iff_small_sections :
     HasLimit F ↔ Small.{u} (F ⋙ forget GrpCat).sections := by
   constructor
@@ -138,7 +138,7 @@ lemma hasLimit_iff_small_sections :
     infer_instance
 
 /-- If `J` is `u`-small, `GrpCat.{u}` has limits of shape `J`. -/
-@[to_additive /-- If `J` is `u`-small, `AddGrp.{u}` has limits of shape `J`. -/]
+@[to_additive /-- If `J` is `u`-small, `AddGrpCat.{u}` has limits of shape `J`. -/]
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J GrpCat.{u} where
   has_limit _ := inferInstance
 
@@ -155,7 +155,7 @@ instance hasLimits : HasLimits GrpCat.{u} :=
 
 This means the underlying monoid of a limit can be computed as a limit in the category of monoids.
 -/
-@[to_additive (relevant_arg := 100) AddGrp.forget₂AddMonPreservesLimitsOfSize
+@[to_additive (relevant_arg := 100) AddGrpCat.forget₂AddMonPreservesLimitsOfSize
 /-- The forgetful functor from additive groups to additive monoids preserves all limits.
 
 This means the underlying additive monoid of a limit can be computed as a limit in the category of
@@ -169,7 +169,7 @@ instance forget₂Mon_preservesLimits : PreservesLimits (forget₂ GrpCat.{u} Mo
   GrpCat.forget₂Mon_preservesLimitsOfSize.{u, u}
 
 /-- If `J` is `u`-small, the forgetful functor from `GrpCat.{u}` preserves limits of shape `J`. -/
-@[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddGrp.{u}` preserves limits of
+@[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddGrpCat.{u}` preserves limits of
 shape `J`. -/]
 instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget GrpCat.{u}) where
@@ -236,7 +236,7 @@ instance : (forget₂ CommGrpCat.{u} GrpCat.{u}).ReflectsIsomorphisms :=
 All we need to do is notice that the limit point has a `CommGroup` instance available,
 and then reuse the existing limit.
 -/
-@[to_additive /-- We show that the forgetful functor `AddCommGrp ⥤ AddGrp` creates limits.
+@[to_additive /-- We show that the forgetful functor `AddCommGrpCat ⥤ AddGrpCat` creates limits.
 
 All we need to do is notice that the limit point has an `AddCommGroup` instance available,
 and then reuse the existing limit. -/]
@@ -269,7 +269,7 @@ variable [Small.{u} (Functor.sections (F ⋙ forget CommGrpCat))]
 /-- A choice of limit cone for a functor into `CommGrpCat`.
 (Generally, you'll just want to use `limit F`.) -/
 @[to_additive
-/-- A choice of limit cone for a functor into `AddCommGrp`.
+/-- A choice of limit cone for a functor into `AddCommGrpCat`.
 (Generally, you'll just want to use `limit F`.) -/]
 noncomputable def limitCone : Cone F :=
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommGrpCat GrpCat) ⋙ forget GrpCat)) :=
@@ -285,7 +285,7 @@ noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
 
 /-- If `(F ⋙ forget CommGrpCat).sections` is `u`-small, `F` has a limit. -/
-@[to_additive /-- If `(F ⋙ forget AddCommGrp).sections` is `u`-small, `F` has a limit. -/]
+@[to_additive /-- If `(F ⋙ forget AddCommGrpCat).sections` is `u`-small, `F` has a limit. -/]
 instance hasLimit : HasLimit F :=
   HasLimit.mk {
     cone := limitCone F
@@ -296,8 +296,8 @@ end
 
 /-- A functor `F : J ⥤ CommGrpCat.{u}` has a limit iff `(F ⋙ forget CommGrpCat).sections` is
 `u`-small. -/
-@[to_additive /-- A functor `F : J ⥤ AddCommGrp.{u}` has a limit iff
-`(F ⋙ forget AddCommGrp).sections` is `u`-small. -/]
+@[to_additive /-- A functor `F : J ⥤ AddCommGrpCat.{u}` has a limit iff
+`(F ⋙ forget AddCommGrpCat).sections` is `u`-small. -/]
 lemma hasLimit_iff_small_sections :
     HasLimit F ↔ Small.{u} (F ⋙ forget CommGrpCat).sections := by
   constructor
@@ -306,7 +306,7 @@ lemma hasLimit_iff_small_sections :
     infer_instance
 
 /-- If `J` is `u`-small, `CommGrpCat.{u}` has limits of shape `J`. -/
-@[to_additive /-- If `J` is `u`-small, `AddCommGrp.{u}` has limits of shape `J`. -/]
+@[to_additive /-- If `J` is `u`-small, `AddCommGrpCat.{u}` has limits of shape `J`. -/]
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGrpCat.{u} where
   has_limit _ := inferInstance
 
@@ -352,7 +352,7 @@ instance forget₂Group_preservesLimits :
   CommGrpCat.forget₂Group_preservesLimitsOfSize.{u, u}
 
 /-- An auxiliary declaration to speed up typechecking. -/
-@[to_additive AddCommGrp.forget₂AddCommMon_preservesLimitsAux
+@[to_additive AddCommGrpCat.forget₂AddCommMon_preservesLimitsAux
 /-- An auxiliary declaration to speed up typechecking. -/]
 noncomputable def forget₂CommMon_preservesLimitsAux
     [Small.{u} (F ⋙ forget CommGrpCat).sections] :
@@ -363,8 +363,8 @@ noncomputable def forget₂CommMon_preservesLimitsAux
 
 /-- If `J` is `u`-small, the forgetful functor from `CommGrpCat.{u}` to `CommMonCat.{u}`
 preserves limits of shape `J`. -/
-@[to_additive AddCommGrp.forget₂AddCommMon_preservesLimitsOfShape
-/-- If `J` is `u`-small, the forgetful functor from `AddCommGrp.{u}`
+@[to_additive AddCommGrpCat.forget₂AddCommMon_preservesLimitsOfShape
+/-- If `J` is `u`-small, the forgetful functor from `AddCommGrpCat.{u}`
 to `AddCommMonCat.{u}` preserves limits of shape `J`. -/]
 instance forget₂CommMon_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget₂ CommGrpCat.{u} CommMonCat.{u}) where
@@ -375,7 +375,7 @@ instance forget₂CommMon_preservesLimitsOfShape [Small.{u} J] :
 (That is, the underlying commutative monoids could have been computed instead as limits
 in the category of commutative monoids.)
 -/
-@[to_additive AddCommGrp.forget₂AddCommMon_preservesLimitsOfSize
+@[to_additive AddCommGrpCat.forget₂AddCommMon_preservesLimitsOfSize
 /-- The forgetful functor from additive commutative groups to additive commutative monoids
 preserves all limits. (That is, the underlying additive commutative monoids could have been
 computed instead as limits in the category of additive commutative monoids.) -/]
@@ -385,7 +385,7 @@ instance forget₂CommMon_preservesLimitsOfSize [UnivLE.{v, u}] :
 
 /-- If `J` is `u`-small, the forgetful functor from `CommGrpCat.{u}` preserves limits of
 shape `J`. -/
-@[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddCommGrp.{u}`
+@[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddCommGrpCat.{u}`
 preserves limits of shape `J`. -/]
 instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget CommGrpCat.{u}) where
@@ -402,9 +402,9 @@ types.) -/]
 instance forget_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget CommGrpCat.{u}) := inferInstance
 
-noncomputable instance _root_.AddCommGrp.forget_preservesLimits :
-    PreservesLimits (forget AddCommGrp.{u}) :=
-  AddCommGrp.forget_preservesLimitsOfSize.{u, u}
+noncomputable instance _root_.AddCommGrpCat.forget_preservesLimits :
+    PreservesLimits (forget AddCommGrpCat.{u}) :=
+  AddCommGrpCat.forget_preservesLimitsOfSize.{u, u}
 
 @[to_additive existing]
 noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrpCat.{u}) :=
@@ -430,17 +430,17 @@ noncomputable instance forget_createsLimitsOfSize :
   CreatesLimitsOfShape := inferInstance
 
 -- Verify we can form limits indexed over smaller categories.
-example (f : ℕ → AddCommGrp) : HasProduct f := by infer_instance
+example (f : ℕ → AddCommGrpCat) : HasProduct f := by infer_instance
 
 end CommGrpCat
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
-/-- The categorical kernel of a morphism in `AddCommGrp`
+/-- The categorical kernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical kernel.
 -/
-def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
-    kernel f ≅ AddCommGrp.of f.hom.ker where
+def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
+    kernel f ≅ AddCommGrpCat.of f.hom.ker where
   hom := ofHom
     { toFun := fun g => ⟨kernel.ι f g, ConcreteCategory.congr_hom (kernel.condition f) g⟩
       map_zero' := by
@@ -457,26 +457,26 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     ext
     simp
   inv_hom_id := by
-    apply AddCommGrp.ext
+    apply AddCommGrpCat.ext
     rintro ⟨x, mem⟩
     refine Subtype.ext ?_
     apply ConcreteCategory.congr_hom (kernel.lift_ι f _ _)
 
 @[simp]
-theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGrp.{u}} (f : G ⟶ H) :
+theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     (kernelIsoKer f).hom ≫ ofHom (AddSubgroup.subtype f.hom.ker) = kernel.ι f := by ext; rfl
 
 @[simp]
-theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrp.{u}} (f : G ⟶ H) :
+theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     (kernelIsoKer f).inv ≫ kernel.ι f = ofHom (AddSubgroup.subtype f.hom.ker) := by
   simp [kernelIsoKer]
 
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
 agrees with the `AddSubgroup.subtype` map.
 -/
-def kernelIsoKerOver {G H : AddCommGrp.{u}} (f : G ⟶ H) :
-    Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGrp.of f.hom.ker)
+def kernelIsoKerOver {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
+    Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGrpCat.of f.hom.ker)
       (ofHom (AddSubgroup.subtype f.hom.ker)) :=
   Over.isoMk (kernelIsoKer f)
 
-end AddCommGrp
+end AddCommGrpCat

@@ -13,9 +13,9 @@ import Mathlib.Data.Int.Cast.Lemmas
 
 We introduce the bundled categories:
 * `GrpCat`
-* `AddGrp`
+* `AddGrpCat`
 * `CommGrpCat`
-* `AddCommGrp`
+* `AddCommGrpCat`
 
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
@@ -25,7 +25,7 @@ universe u v
 open CategoryTheory
 
 /-- The category of additive groups and group morphisms. -/
-structure AddGrp : Type (u + 1) where
+structure AddGrpCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
   [str : AddGroup carrier]
@@ -37,9 +37,9 @@ structure GrpCat : Type (u + 1) where
   (carrier : Type u)
   [str : Group carrier]
 
-attribute [instance] AddGrp.str GrpCat.str
+attribute [instance] AddGrpCat.str GrpCat.str
 
-initialize_simps_projections AddGrp (carrier → coe, -str)
+initialize_simps_projections AddGrpCat (carrier → coe, -str)
 initialize_simps_projections GrpCat (carrier → coe, -str)
 
 namespace GrpCat
@@ -48,17 +48,17 @@ namespace GrpCat
 instance : CoeSort GrpCat (Type u) :=
   ⟨GrpCat.carrier⟩
 
-attribute [coe] AddGrp.carrier GrpCat.carrier
+attribute [coe] AddGrpCat.carrier GrpCat.carrier
 
 /-- Construct a bundled `GrpCat` from the underlying type and typeclass. -/
-@[to_additive /-- Construct a bundled `AddGrp` from the underlying type and typeclass. -/]
+@[to_additive /-- Construct a bundled `AddGrpCat` from the underlying type and typeclass. -/]
 abbrev of (M : Type u) [Group M] : GrpCat := ⟨M⟩
 
 end GrpCat
 
-/-- The type of morphisms in `AddGrp R`. -/
+/-- The type of morphisms in `AddGrpCat R`. -/
 @[ext]
-structure AddGrp.Hom (A B : AddGrp.{u}) where
+structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
@@ -84,12 +84,12 @@ instance : ConcreteCategory GrpCat (· →* ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `GrpCat` back into a `MonoidHom`. -/
-@[to_additive /-- Turn a morphism in `AddGrp` back into an `AddMonoidHom`. -/]
+@[to_additive /-- Turn a morphism in `AddGrpCat` back into an `AddMonoidHom`. -/]
 abbrev Hom.hom {X Y : GrpCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := GrpCat) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `GrpCat`. -/
-@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddGrp`. -/]
+@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddGrpCat`. -/]
 abbrev ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := GrpCat) f
 
@@ -99,7 +99,7 @@ def Hom.Simps.hom (X Y : GrpCat.{u}) (f : Hom X Y) :=
   f.hom
 
 initialize_simps_projections Hom (hom' → hom)
-initialize_simps_projections AddGrp.Hom (hom' → hom)
+initialize_simps_projections AddGrpCat.Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -231,7 +231,7 @@ def uliftFunctor : GrpCat.{v} ⥤ GrpCat.{max v u} where
 end GrpCat
 
 /-- The category of additive groups and group morphisms. -/
-structure AddCommGrp : Type (u + 1) where
+structure AddCommGrpCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
   [str : AddCommGroup carrier]
@@ -243,13 +243,13 @@ structure CommGrpCat : Type (u + 1) where
   (carrier : Type u)
   [str : CommGroup carrier]
 
-attribute [instance] AddCommGrp.str CommGrpCat.str
+attribute [instance] AddCommGrpCat.str CommGrpCat.str
 
-initialize_simps_projections AddCommGrp (carrier → coe, -str)
+initialize_simps_projections AddCommGrpCat (carrier → coe, -str)
 initialize_simps_projections CommGrpCat (carrier → coe, -str)
 
 /-- `Ab` is an abbreviation for `AddCommGroup`, for the sake of mathematicians' sanity. -/
-abbrev Ab := AddCommGrp
+abbrev Ab := AddCommGrpCat
 
 namespace CommGrpCat
 
@@ -257,17 +257,17 @@ namespace CommGrpCat
 instance : CoeSort CommGrpCat (Type u) :=
   ⟨CommGrpCat.carrier⟩
 
-attribute [coe] AddCommGrp.carrier CommGrpCat.carrier
+attribute [coe] AddCommGrpCat.carrier CommGrpCat.carrier
 
 /-- Construct a bundled `CommGrpCat` from the underlying type and typeclass. -/
-@[to_additive /-- Construct a bundled `AddCommGrp` from the underlying type and typeclass. -/]
+@[to_additive /-- Construct a bundled `AddCommGrpCat` from the underlying type and typeclass. -/]
 abbrev of (M : Type u) [CommGroup M] : CommGrpCat := ⟨M⟩
 
 end CommGrpCat
 
-/-- The type of morphisms in `AddCommGrp R`. -/
+/-- The type of morphisms in `AddCommGrpCat R`. -/
 @[ext]
-structure AddCommGrp.Hom (A B : AddCommGrp.{u}) where
+structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
@@ -293,12 +293,12 @@ instance : ConcreteCategory CommGrpCat (· →* ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `CommGrpCat` back into a `MonoidHom`. -/
-@[to_additive /-- Turn a morphism in `AddCommGrp` back into an `AddMonoidHom`. -/]
+@[to_additive /-- Turn a morphism in `AddCommGrpCat` back into an `AddMonoidHom`. -/]
 abbrev Hom.hom {X Y : CommGrpCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := CommGrpCat) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `CommGrpCat`. -/
-@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGrp`. -/]
+@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGrpCat`. -/]
 abbrev ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := CommGrpCat) f
 
@@ -308,7 +308,7 @@ def Hom.Simps.hom (X Y : CommGrpCat.{u}) (f : Hom X Y) :=
   f.hom
 
 initialize_simps_projections Hom (hom' → hom)
-initialize_simps_projections AddCommGrp.Hom (hom' → hom)
+initialize_simps_projections AddCommGrpCat.Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -454,7 +454,7 @@ def uliftFunctor : CommGrpCat.{v} ⥤ CommGrpCat.{max v u} where
 
 end CommGrpCat
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 -- Note that because `ℤ : Type 0`, this forces `G : AddCommGroup.{0}`,
 -- so we write this explicitly to be clear.
@@ -462,26 +462,26 @@ namespace AddCommGrp
 /-- Any element of an abelian group gives a unique morphism from `ℤ` sending
 `1` to that element. -/
 @[simps!]
-def asHom {G : AddCommGrp.{0}} (g : G) : AddCommGrp.of ℤ ⟶ G :=
+def asHom {G : AddCommGrpCat.{0}} (g : G) : AddCommGrpCat.of ℤ ⟶ G :=
   ofHom (zmultiplesHom G g)
 
-theorem asHom_injective {G : AddCommGrp.{0}} : Function.Injective (@asHom G) := fun h k w => by
+theorem asHom_injective {G : AddCommGrpCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
   simpa using CategoryTheory.congr_fun w 1
 
 @[ext]
-theorem int_hom_ext {G : AddCommGrp.{0}} (f g : AddCommGrp.of ℤ ⟶ G)
+theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : AddCommGrpCat.of ℤ ⟶ G)
     (w : f (1 : ℤ) = g (1 : ℤ)) : f = g :=
   hom_ext (AddMonoidHom.ext_int w)
 
 -- TODO: this argument should be generalised to the situation where
 -- the forgetful functor is representable.
-theorem injective_of_mono {G H : AddCommGrp.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
+theorem injective_of_mono {G H : AddCommGrpCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
   have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by cat_disch
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
 
-end AddCommGrp
+end AddCommGrpCat
 
 /-- Build an isomorphism in the category `GrpCat` from a `MulEquiv` between `Group`s. -/
 @[to_additive (attr := simps)]
@@ -499,7 +499,7 @@ def MulEquiv.toCommGrpIso {X Y : CommGrpCat} (e : X ≃* Y) : X ≅ Y where
   hom := CommGrpCat.ofHom e.toMonoidHom
   inv := CommGrpCat.ofHom e.symm.toMonoidHom
 
-/-- Build an isomorphism in the category `AddCommGrp` from an `AddEquiv`
+/-- Build an isomorphism in the category `AddCommGrpCat` from an `AddEquiv`
 between `AddCommGroup`s. -/
 add_decl_doc AddEquiv.toAddCommGrpIso
 
@@ -531,7 +531,7 @@ def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : X ≃* Y ≅ X ≅ Y where
   inv i := i.groupIsoToMulEquiv
 
 /-- Additive equivalences between `AddGroup`s are the same
-as (isomorphic to) isomorphisms in `AddGrp`. -/
+as (isomorphic to) isomorphisms in `AddGrpCat`. -/
 add_decl_doc addEquivIsoAddGroupIso
 
 /-- Multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
@@ -542,7 +542,7 @@ def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : X ≃* Y ≅ X ≅ Y where
   inv i := i.commGroupIsoToMulEquiv
 
 /-- Additive equivalences between `AddCommGroup`s are
-the same as (isomorphic to) isomorphisms in `AddCommGrp`. -/
+the same as (isomorphic to) isomorphisms in `AddCommGrpCat`. -/
 add_decl_doc addEquivIsoAddCommGroupIso
 
 namespace CategoryTheory.Aut
@@ -586,19 +586,19 @@ instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomo
 
 /-- An alias for `GrpCat.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) GrpMaxAux
-  /-- An alias for `AddGrp.{max u v}`, to deal around unification issues. -/]
+  /-- An alias for `AddGrpCat.{max u v}`, to deal around unification issues. -/]
 abbrev GrpMax.{u1, u2} := GrpCat.{max u1 u2}
-/-- An alias for `AddGrp.{max u v}`, to deal around unification issues. -/
+/-- An alias for `AddGrpCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
-abbrev AddGrpMax.{u1, u2} := AddGrp.{max u1 u2}
+abbrev AddGrpMax.{u1, u2} := AddGrpCat.{max u1 u2}
 
 /-- An alias for `CommGrpCat.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) AddCommGrpMaxAux
-  /-- An alias for `AddCommGrp.{max u v}`, to deal around unification issues. -/]
+  /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/]
 abbrev CommGrpMax.{u1, u2} := CommGrpCat.{max u1 u2}
-/-- An alias for `AddCommGrp.{max u v}`, to deal around unification issues. -/
+/-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
-abbrev AddCommGrpMax.{u1, u2} := AddCommGrp.{max u1 u2}
+abbrev AddCommGrpMax.{u1, u2} := AddCommGrpCat.{max u1 u2}
 
 /-!
 Deprecated lemmas for `MonoidHom.comp` and categorical identities.

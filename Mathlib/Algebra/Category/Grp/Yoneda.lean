@@ -18,7 +18,7 @@ open CategoryTheory
 universe u
 
 /-- The `CommGrpCat`-valued coyoneda embedding. -/
-@[to_additive (attr := simps) /-- The `AddCommGrp`-valued coyoneda embedding. -/]
+@[to_additive (attr := simps) /-- The `AddCommGrpCat`-valued coyoneda embedding. -/]
 def CommGrpCat.coyoneda : CommGrpᵒᵖ ⥤ CommGrpCat ⥤ CommGrpCat where
   obj M := { obj N := of (M.unop →* N), map f := ofHom (.compHom f.hom) }
   map f := { app N := ofHom (.compHom' f.unop.hom) }
@@ -26,7 +26,7 @@ def CommGrpCat.coyoneda : CommGrpᵒᵖ ⥤ CommGrpCat ⥤ CommGrpCat where
 /-- The `CommGrpCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/
 @[to_additive (attr := simps!)
-/-- The `AddCommGrp`-valued coyoneda embedding composed with the forgetful functor is the usual
+/-- The `AddCommGrpCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/]
 def CommGrpCat.coyonedaForget :
     coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
@@ -41,7 +41,7 @@ groups. -/
 /-- The Hom bifunctor sending a type `X` and a commutative group `G` to the commutative group
 `X → G` with pointwise operations.
 
-This is also the coyoneda embedding of `Type` into `AddCommGrp`-valued presheaves of commutative
+This is also the coyoneda embedding of `Type` into `AddCommGrpCat`-valued presheaves of commutative
 groups. -/]
 def CommGrpCat.coyonedaType : (Type u)ᵒᵖ ⥤ CommGrpCat.{u} ⥤ CommGrpCat.{u} where
   obj X := { obj G := of <| X.unop → G

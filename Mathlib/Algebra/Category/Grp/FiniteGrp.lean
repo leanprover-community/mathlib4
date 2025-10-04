@@ -29,7 +29,7 @@ structure FiniteGrp where
 @[pp_with_univ]
 structure FiniteAddGrp where
   /-- An additive group that is finite -/
-  toAddGrp : AddGrp
+  toAddGrp : AddGrpCat
   [isFinite : Finite toAddGrp]
 
 attribute [to_additive] FiniteGrp
@@ -61,7 +61,7 @@ def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
 
 /-- The morphism in `FiniteGrp`, induced from a morphism of the category `GrpCat`. -/
 @[to_additive
-/-- The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrp` -/]
+/-- The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrpCat` -/]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
   GrpCat.ofHom f
 

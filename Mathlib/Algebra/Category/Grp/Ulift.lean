@@ -22,18 +22,18 @@ and that the universe lift functor on `Type` preserves all limits. Once we know
 that `GrpCat.uliftFunctor` preserves all limits and is fully faithful, it will
 automatically create all limits that exist, i.e. all small ones.
 
-We then switch to `AddCommGrp` and show that `AddCommGrp.uliftFunctor` preserves zero morphisms
+We then switch to `AddCommGrpCat` and show that `AddCommGrpCat.uliftFunctor` preserves zero morphisms
 and is an additive functor, which again is pretty obvious.
 
-The last result is a proof that `AddCommGrp.uliftFunctor` preserves all colimits
+The last result is a proof that `AddCommGrpCat.uliftFunctor` preserves all colimits
 (and hence creates small colimits). This is the only non-formal part of this file,
 as we follow the same strategy as for the categories `Type`.
 
-Suppose that we have a functor `K : J ⥤ AddCommGrp.{u}` (with `J` any category), a
+Suppose that we have a functor `K : J ⥤ AddCommGrpCat.{u}` (with `J` any category), a
 colimit cocone `c` of `K` and a cocone `lc` of `K ⋙ uliftFunctor.{u v}`. We want to
 construct a morphism of cocones `uliftFunctor.mapCocone c → lc` witnessing the fact
 that `uliftFunctor.mapCocone c` is also a colimit cocone, but we have no direct way
-to do this. The idea is to use that `AddCommGrp.{max v u}` has a small cogenerator,
+to do this. The idea is to use that `AddCommGrpCat.{max v u}` has a small cogenerator,
 which is just the additive (rational) circle `ℚ / ℤ`, so any abelian group of
 any size can be recovered from its morphisms into `ℚ / ℤ`. More precisely, the functor
 sending an abelian group `A` to its dual `A →+ ℚ / ℤ` is fully faithful, *if* we consider
@@ -118,7 +118,7 @@ noncomputable instance uliftFunctor_preservesLimitsOfSize :
 The universe lift functor on `GrpCat.{u}` creates `u`-small limits.
 -/
 @[to_additive
-  /-- The universe lift functor on `AddGrp.{u}` creates `u`-small limits. -/]
+  /-- The universe lift functor on `AddGrpCat.{u}` creates `u`-small limits. -/]
 noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
 
@@ -168,22 +168,22 @@ noncomputable instance uliftFunctor_preservesLimitsOfSize :
 The universe lift functor on `CommGrpCat.{u}` creates `u`-small limits.
 -/
 @[to_additive
-  /-- The universe lift functor on `AddCommGrp.{u}` creates `u`-small limits. -/]
+  /-- The universe lift functor on `AddCommGrpCat.{u}` creates `u`-small limits. -/]
 noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
 
 end CommGrpCat
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 /-- The universe lift for commutative additive groups is additive.
 -/
 instance uliftFunctor_additive :
-    AddCommGrp.uliftFunctor.{u,v}.Additive where
+    AddCommGrpCat.uliftFunctor.{u,v}.Additive where
 
 open Colimits in
 /--
-The functor `uliftFunctor : AddCommGrp.{u} ⥤ AddCommGrp.{max u v}` preserves colimits
+The functor `uliftFunctor : AddCommGrpCat.{u} ⥤ AddCommGrpCat.{max u v}` preserves colimits
 of arbitrary size.
 -/
 noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} where
@@ -197,10 +197,10 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
         exact ULift.up_bijective.comp ((isColimit_iff_bijective_desc c).mp (Nonempty.intro hc)) } }
 
 /--
-The functor `uliftFunctor : AddCommGrp.{u} ⥤ AddCommGrp.{max u v}` creates `u`-small colimits.
+The functor `uliftFunctor : AddCommGrpCat.{u} ⥤ AddCommGrpCat.{max u v}` creates `u`-small colimits.
 -/
 noncomputable instance : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesColimitsOfShape :=
     { CreatesColimit := fun {_} ↦ createsColimitOfReflectsIsomorphismsOfPreserves }
 
-end AddCommGrp
+end AddCommGrpCat

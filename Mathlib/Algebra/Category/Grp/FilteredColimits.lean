@@ -17,7 +17,7 @@ We show that the colimit of `F ⋙ forget₂ GrpCat MonCat` (in `MonCat`) carrie
 group,
 thereby showing that the forgetful functor `forget₂ GrpCat MonCat` preserves filtered colimits.
 In particular, this implies that `forget GrpCat` preserves filtered colimits.
-Similarly for `AddGrp`, `CommGrpCat` and `AddCommGrp`.
+Similarly for `AddGrpCat`, `CommGrpCat` and `AddCommGrpCat`.
 
 -/
 
@@ -42,7 +42,7 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ GrpCat.{max v 
 In the following, we will show that this has the structure of a group.
 -/
 @[to_additive
-  /-- The colimit of `F ⋙ forget₂ AddGrp AddMonCat` in the category `AddMonCat`.
+  /-- The colimit of `F ⋙ forget₂ AddGrpCat AddMonCat` in the category `AddMonCat`.
   In the following, we will show that this has the structure of an additive group. -/]
 noncomputable abbrev G : MonCat :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ GrpCat MonCat.{max v u})
@@ -160,7 +160,7 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommGrpCat.{ma
 In the following, we will show that this has the structure of a _commutative_ group.
 -/
 @[to_additive
-  /-- The colimit of `F ⋙ forget₂ AddCommGrp AddGrp` in the category `AddGrp`.
+  /-- The colimit of `F ⋙ forget₂ AddCommGrpCat AddGrpCat` in the category `AddGrpCat`.
   In the following, we will show that this has the structure of a _commutative_ additive group. -/]
 noncomputable abbrev G : GrpCat.{max v u} :=
   GrpCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommGrpCat.{max v u} GrpCat.{max v u})

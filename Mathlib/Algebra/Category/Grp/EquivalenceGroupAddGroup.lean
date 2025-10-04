@@ -9,10 +9,10 @@ import Mathlib.Algebra.Category.Grp.Basic
 # Equivalence between `Group` and `AddGroup`
 
 This file contains two equivalences:
-* `groupAddGroupEquivalence` : the equivalence between `GrpCat` and `AddGrp` by sending
-  `X : GrpCat` to `Additive X` and `Y : AddGrp` to `Multiplicative Y`.
-* `commGroupAddCommGroupEquivalence` : the equivalence between `CommGrpCat` and `AddCommGrp`
-  by sending `X : CommGrpCat` to `Additive X` and `Y : AddCommGrp` to `Multiplicative Y`.
+* `groupAddGroupEquivalence` : the equivalence between `GrpCat` and `AddGrpCat` by sending
+  `X : GrpCat` to `Additive X` and `Y : AddGrpCat` to `Multiplicative Y`.
+* `commGroupAddCommGroupEquivalence` : the equivalence between `CommGrpCat` and `AddCommGrpCat`
+  by sending `X : CommGrpCat` to `Additive X` and `Y : AddCommGrpCat` to `Multiplicative Y`.
 -/
 
 
@@ -20,62 +20,62 @@ open CategoryTheory
 
 namespace GrpCat
 
-/-- The functor `GrpCat ⥤ AddGrp` by sending `X ↦ Additive X` and `f ↦ f`.
+/-- The functor `GrpCat ⥤ AddGrpCat` by sending `X ↦ Additive X` and `f ↦ f`.
 -/
 @[simps]
-def toAddGrp : GrpCat ⥤ AddGrp where
-  obj X := AddGrp.of (Additive X)
-  map {_} {_} f := AddGrp.ofHom f.hom.toAdditive
+def toAddGrp : GrpCat ⥤ AddGrpCat where
+  obj X := AddGrpCat.of (Additive X)
+  map {_} {_} f := AddGrpCat.ofHom f.hom.toAdditive
 
 end GrpCat
 
 namespace CommGrpCat
 
-/-- The functor `CommGrpCat ⥤ AddCommGrp` by sending `X ↦ Additive X` and `f ↦ f`.
+/-- The functor `CommGrpCat ⥤ AddCommGrpCat` by sending `X ↦ Additive X` and `f ↦ f`.
 -/
 @[simps]
-def toAddCommGrp : CommGrpCat ⥤ AddCommGrp where
-  obj X := AddCommGrp.of (Additive X)
-  map {_} {_} f := AddCommGrp.ofHom f.hom.toAdditive
+def toAddCommGrp : CommGrpCat ⥤ AddCommGrpCat where
+  obj X := AddCommGrpCat.of (Additive X)
+  map {_} {_} f := AddCommGrpCat.ofHom f.hom.toAdditive
 
 end CommGrpCat
 
-namespace AddGrp
+namespace AddGrpCat
 
-/-- The functor `AddGrp ⥤ GrpCat` by sending `X ↦ Multiplicative X` and `f ↦ f`.
+/-- The functor `AddGrpCat ⥤ GrpCat` by sending `X ↦ Multiplicative X` and `f ↦ f`.
 -/
 @[simps]
-def toGrp : AddGrp ⥤ GrpCat where
+def toGrp : AddGrpCat ⥤ GrpCat where
   obj X := GrpCat.of (Multiplicative X)
   map {_} {_} f := GrpCat.ofHom f.hom.toMultiplicative
 
-end AddGrp
+end AddGrpCat
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
-/-- The functor `AddCommGrp ⥤ CommGrpCat` by sending `X ↦ Multiplicative X` and `f ↦ f`.
+/-- The functor `AddCommGrpCat ⥤ CommGrpCat` by sending `X ↦ Multiplicative X` and `f ↦ f`.
 -/
 @[simps]
-def toCommGrp : AddCommGrp ⥤ CommGrpCat where
+def toCommGrp : AddCommGrpCat ⥤ CommGrpCat where
   obj X := CommGrpCat.of (Multiplicative X)
   map {_} {_} f := CommGrpCat.ofHom f.hom.toMultiplicative
 
-end AddCommGrp
+end AddCommGrpCat
 
-/-- The equivalence of categories between `GrpCat` and `AddGrp`
+/-- The equivalence of categories between `GrpCat` and `AddGrpCat`
 -/
 @[simps]
-def groupAddGroupEquivalence : GrpCat ≌ AddGrp where
+def groupAddGroupEquivalence : GrpCat ≌ AddGrpCat where
   functor := GrpCat.toAddGrp
-  inverse := AddGrp.toGrp
+  inverse := AddGrpCat.toGrp
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-/-- The equivalence of categories between `CommGrpCat` and `AddCommGrp`.
+/-- The equivalence of categories between `CommGrpCat` and `AddCommGrpCat`.
 -/
 @[simps]
-def commGroupAddCommGroupEquivalence : CommGrpCat ≌ AddCommGrp where
+def commGroupAddCommGroupEquivalence : CommGrpCat ≌ AddCommGrpCat where
   functor := CommGrpCat.toAddCommGrp
-  inverse := AddCommGrp.toCommGrp
+  inverse := AddCommGrpCat.toCommGrp
   unitIso := Iso.refl _
   counitIso := Iso.refl _

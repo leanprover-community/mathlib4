@@ -120,7 +120,7 @@ def nameDict : String → List String
   | "cyclic"        => ["add", "Cyclic"]
   | "rootable"      => ["divisible"]
   | "semigrp"       => ["add", "Semigrp"]
-  | "grp"           => ["add", "GrpCat"]
+  | "grp"           => ["add", "Grp"]
   | "commute"       => ["add", "Commute"]
   | "semiconj"      => ["add", "Semiconj"]
   | "zpowers"       => ["zmultiples"]

@@ -15,7 +15,7 @@ category of abelian groups.
 
 ## Main definitions
 
-* `AddCommGrp.free`: constructs the functor associating to a type `X` the free abelian group
+* `AddCommGrpCat.free`: constructs the functor associating to a type `X` the free abelian group
   with generators `x : X`.
 * `GrpCat.free`: constructs the functor associating to a type `X` the free group with
   generators `x : X`.
@@ -23,7 +23,7 @@ category of abelian groups.
 
 ## Main statements
 
-* `AddCommGrp.adj`: proves that `AddCommGrp.free` is the left adjoint
+* `AddCommGrpCat.adj`: proves that `AddCommGrpCat.free` is the left adjoint
   of the forgetful functor from abelian groups to types.
 * `GrpCat.adj`: proves that `GrpCat.free` is the left adjoint of the forgetful functor
   from groups to types.
@@ -39,16 +39,16 @@ universe u
 
 open CategoryTheory Limits
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 /-- The free functor `Type u ⥤ AddCommGroup` sending a type `X` to the
 free abelian group with generators `x : X`.
 -/
-def free : Type u ⥤ AddCommGrp where
+def free : Type u ⥤ AddCommGrpCat where
   obj α := of (FreeAbelianGroup α)
   map f := ofHom (FreeAbelianGroup.map f)
-  map_id _ := AddCommGrp.ext FreeAbelianGroup.map_id_apply
-  map_comp _ _ := AddCommGrp.ext FreeAbelianGroup.map_comp_apply
+  map_id _ := AddCommGrpCat.ext FreeAbelianGroup.map_id_apply
+  map_comp _ _ := AddCommGrpCat.ext FreeAbelianGroup.map_comp_apply
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
@@ -63,7 +63,7 @@ theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) 
 
 /-- The free-forgetful adjunction for abelian groups.
 -/
-def adj : free ⊣ forget AddCommGrp.{u} :=
+def adj : free ⊣ forget AddCommGrpCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeAbelianGroup.lift.symm
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be just `by intros; ext; rfl`.
@@ -75,7 +75,7 @@ def adj : free ⊣ forget AddCommGrp.{u} :=
 instance : free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
-instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
+instance : (forget AddCommGrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 /-- As an example, we now give a high-powered proof that
@@ -83,8 +83,8 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 
 (This proof works in all universes.)
 -/
-example {G H : AddCommGrp.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  (mono_iff_injective (f : G → H)).mp (Functor.map_mono (forget AddCommGrp) f)
+example {G H : AddCommGrpCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
+  (mono_iff_injective (f : G → H)).mp (Functor.map_mono (forget AddCommGrpCat) f)
 
 instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
@@ -99,7 +99,7 @@ instance : (free.{u}).PreservesMonomorphisms where
       have : IsSplitMono f := IsSplitMono.mk' { retraction := g }
       infer_instance
 
-end AddCommGrp
+end AddCommGrpCat
 
 namespace GrpCat
 
