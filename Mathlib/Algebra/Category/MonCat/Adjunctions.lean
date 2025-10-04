@@ -88,6 +88,7 @@ def free : Type u ⥤ AddCommMonCat.{u} where
   obj α := .of (α →₀ ℕ)
   map f := ofHom (Finsupp.mapDomain.addMonoidHom f)
 
+attribute [local simp ←] ofHom_comp in
 /-- The free-forgetful adjunction for commutative monoids. -/
 noncomputable
 def adj : free ⊣ forget AddCommMonCat.{u} where
