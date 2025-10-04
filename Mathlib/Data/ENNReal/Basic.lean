@@ -7,7 +7,9 @@ import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Order.WithBot.BooleanAlgebra
 import Mathlib.Tactic.Finiteness
+import Mathlib.Logic.Equiv.WithBot
 
 /-!
 # Extended non-negative reals
@@ -181,9 +183,9 @@ def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C
 
 instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 
-@[simp] theorem none_eq_top : (none : ℝ≥0∞) = ∞ := rfl
+@[simp] theorem none_eq_top : (WithTop.top : ℝ≥0∞) = ∞ := rfl
 
-@[simp] theorem some_eq_coe (a : ℝ≥0) : (Option.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
+@[simp] theorem some_eq_coe (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
@@ -194,7 +196,7 @@ lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_
 lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
 
 theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
-theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
+theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_coe_bot ℝ≥0).symm.compl_eq.symm
 
 instance : NNRatCast ℝ≥0∞ where
   nnratCast r := ofNNReal r
@@ -297,10 +299,10 @@ theorem forall_ennreal {p : ℝ≥0∞ → Prop} : (∀ a, p a) ↔ (∀ r : ℝ
   WithTop.forall.trans and_comm
 
 theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔ ∀ r : ℝ≥0, p r :=
-  Option.forall_ne_none
+  WithTop.forall_ne_top
 
 theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r :=
-  Option.exists_ne_none
+  WithTop.exists_ne_top
 
 theorem toNNReal_eq_zero_iff (x : ℝ≥0∞) : x.toNNReal = 0 ↔ x = 0 ∨ x = ∞ :=
   WithTop.untopD_eq_self_iff
@@ -437,6 +439,7 @@ instance _root_.fact_one_le_two_ennreal : Fact ((1 : ℝ≥0∞) ≤ 2) :=
 instance _root_.fact_one_le_top_ennreal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
   ⟨le_top⟩
 
+-- TODO use Equiv.withTopNeTop _ (but needs adjustment to neTopHomeomorphNNReal)
 /-- The set of numbers in `ℝ≥0∞` that are not equal to `∞` is equivalent to `ℝ≥0`. -/
 def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 where
   toFun x := ENNReal.toNNReal x
@@ -457,9 +460,25 @@ theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
     ⨆ (x) (_ : x ≠ ∞), f x = ⨆ x : ℝ≥0, f x :=
   @iInf_ne_top αᵒᵈ _ _
 
+section -- TODO move
+variable {α β : Type*} [CompleteLattice α]
+
+theorem _root_.iSup_withTop (f : WithTop β → α) : ⨆ o, f o = f ⊤ ⊔ ⨆ b : β, f b :=
+  eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, sup_le_iff, WithTop.forall]
+
+theorem _root_.iInf_withTop (f : WithTop β → α) : ⨅ o, f o = f ⊤ ⊓ ⨅ b : β, f b :=
+  @iSup_withTop αᵒᵈ _ _ _
+
+theorem _root_.iSup_withBot (f : WithBot β → α) : ⨆ o, f o = f ⊥ ⊔ ⨆ b : β, f b :=
+  eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, sup_le_iff, WithBot.forall]
+
+theorem _root_.iInf_withBot (f : WithBot β → α) : ⨅ o, f o = f ⊥ ⊓ ⨅ b : β, f b :=
+  @iSup_withBot αᵒᵈ _ _ _
+end
+
 theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
-  (iInf_option f).trans (inf_comm _ _)
+  (iInf_withTop f).trans (inf_comm _ _)
 
 theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨆ n, f n = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
