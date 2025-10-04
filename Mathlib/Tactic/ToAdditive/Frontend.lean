@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
 import Batteries.Tactic.Trans
+import Lean.Compiler.NoncomputableAttr
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Tactic.Symm
