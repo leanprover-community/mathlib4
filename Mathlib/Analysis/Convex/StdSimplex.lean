@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
+Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 -/
 import Mathlib.Analysis.Convex.Combination
+import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
 import Mathlib.Topology.UnitInterval
 
@@ -13,6 +14,9 @@ import Mathlib.Topology.UnitInterval
 In this file, given an ordered semiring `𝕜` and a finite type `ι`,
 we define `stdSimplex : Set (ι → 𝕜)` as the set of vectors with non-negative
 coordinates with total sum `1`.
+
+When `f : X → Y` is a map between finite types, we define the map
+`stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
 
 -/
 
@@ -207,3 +211,81 @@ lemma stdSimplexHomeomorphUnitInterval_one :
     stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 1⟩ = 1 := rfl
 
 end Topology
+
+namespace stdSimplex
+
+variable {S : Type*} [Semiring S] [PartialOrder S]
+  {X Y Z : Type*} [Fintype X] [Fintype Y] [Fintype Z]
+
+instance : FunLike (stdSimplex S X) X S where
+  coe s := s.val
+  coe_injective' := by aesop
+
+@[ext high]
+lemma ext {s t : stdSimplex S X} (h : (s : X → S) = t) : s = t := by
+  ext : 1
+  assumption
+
+@[simp]
+lemma zero_le (s : stdSimplex S X) (x : X) : 0 ≤ s x := s.2.1 x
+
+@[simp]
+lemma sum_eq_one (s : stdSimplex S X) : ∑ x, s x = 1 := s.2.2
+
+section
+
+variable [IsOrderedRing S]
+
+@[simp]
+lemma le_one (s : stdSimplex S X) (x : X) : s x ≤ 1 := by
+  rw [← sum_eq_one s]
+  simpa only using Finset.single_le_sum (by simp) (by simp)
+
+lemma image_linearMap (f : X → Y) :
+    Set.image (FunOnFinite.linearMap S S f) (stdSimplex S X) ⊆ stdSimplex S Y := by
+  classical
+  rintro _ ⟨s, ⟨hs₀, hs₁⟩, rfl⟩
+  refine ⟨fun y ↦ ?_, ?_⟩
+  · rw [FunOnFinite.linearMap_apply_apply]
+    exact Finset.sum_nonneg (by aesop)
+  · simp only [FunOnFinite.linearMap_apply_apply, ← hs₁]
+    exact Finset.sum_fiberwise Finset.univ f s
+
+/-- The map `stdSimplex S X → stdSimplex S Y` that is induced by a map `f : X → Y`. -/
+noncomputable def map (f : X → Y) (s : stdSimplex S X) : stdSimplex S Y :=
+  ⟨FunOnFinite.linearMap S S f s, image_linearMap f (by aesop)⟩
+
+@[simp]
+lemma map_coe (f : X → Y) (s : stdSimplex S X) :
+    ⇑(map f s) = FunOnFinite.linearMap S S f s := rfl
+
+@[simp]
+lemma map_id_apply (x : stdSimplex S X) : map id x = x := by
+  aesop
+
+lemma map_comp_apply (f : X → Y) (g : Y → Z) (x : stdSimplex S X) :
+    map g (map f x) = map (g.comp f) x := by
+  ext
+  simp [FunOnFinite.linearMap_comp]
+
+/-- The vertex corresponding to `x : X` in `stdSimplex S X`. -/
+abbrev vertex [DecidableEq X] (x : X) : stdSimplex S X :=
+  ⟨Pi.single x 1, single_mem_stdSimplex S x⟩
+
+@[simp]
+lemma vertex_coe [DecidableEq X] (x : X) :
+    ⇑(vertex (S := S) x) = Pi.single x 1 := rfl
+
+@[simp]
+lemma map_vertex [DecidableEq X] [DecidableEq Y] (f : X → Y) (x : X) :
+    map (S := S) f (vertex x) = vertex (f x) := by
+  aesop
+
+@[continuity]
+lemma continuous_map [TopologicalSpace S] [IsTopologicalSemiring S] (f : X → Y) :
+    Continuous (map (S := S) f) :=
+  Continuous.subtype_mk ((FunOnFinite.continuous_linearMap S S f).comp continuous_induced_dom) _
+
+end
+
+end stdSimplex
