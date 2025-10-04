@@ -3,7 +3,7 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Sophie Morel
 -/
-import Mathlib.Algebra.Category.GrpCat.Preadditive
+import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Group.Shrink
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.Data.DFinsupp.BigOperators

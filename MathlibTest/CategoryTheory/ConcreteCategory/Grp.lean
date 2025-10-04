@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Category.GrpCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
 
 universe v u
 

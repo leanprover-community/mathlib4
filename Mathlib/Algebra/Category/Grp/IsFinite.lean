@@ -3,9 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.GrpCat.Abelian
-import Mathlib.Algebra.Category.GrpCat.EpiMono
-import Mathlib.Algebra.Category.GrpCat.Zero
+import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 import Mathlib.Data.Finite.Prod

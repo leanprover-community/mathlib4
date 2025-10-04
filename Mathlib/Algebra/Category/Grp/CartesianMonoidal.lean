@@ -3,8 +3,8 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.GrpCat.Biproducts
-import Mathlib.Algebra.Category.GrpCat.Zero
+import Mathlib.Algebra.Category.Grp.Biproducts
+import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Ring.PUnit
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 

@@ -3,7 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.GrpCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
 # Equivalence between `Group` and `AddGroup`

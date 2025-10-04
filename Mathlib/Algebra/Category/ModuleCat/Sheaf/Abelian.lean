@@ -17,7 +17,7 @@ and `J.WEqualsLocallyBijective AddCommGrp.{v}` are satisfied.
 
 In particular, if `u = v` and `C : Type u` is a small category,
 then `SheafOfModules.{u} R` is abelian: this instance shall be
-found automatically if this file and `Algebra.Category.GrpCat.FilteredColimits`
+found automatically if this file and `Algebra.Category.Grp.FilteredColimits`
 are imported.
 
 -/

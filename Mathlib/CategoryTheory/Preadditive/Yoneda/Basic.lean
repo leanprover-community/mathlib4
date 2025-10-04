@@ -5,8 +5,8 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.GrpCat.Preadditive
-import Mathlib.Algebra.Category.GrpCat.Yoneda
+import Mathlib.Algebra.Category.Grp.Preadditive
+import Mathlib.Algebra.Category.Grp.Yoneda
 
 /-!
 # The Yoneda embedding for preadditive categories

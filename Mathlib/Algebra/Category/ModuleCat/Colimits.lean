@@ -5,7 +5,7 @@ Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.Algebra.Category.GrpCat.Colimits
+import Mathlib.Algebra.Category.Grp.Colimits
 
 /-!
 # The category of R-modules has all colimits.

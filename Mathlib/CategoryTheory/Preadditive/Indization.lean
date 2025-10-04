@@ -6,7 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.Indization.Category
 import Mathlib.CategoryTheory.Preadditive.Transfer
 import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.Algebra.Category.GrpCat.LeftExactFunctor
+import Mathlib.Algebra.Category.Grp.LeftExactFunctor
 
 /-!
 # The category of ind-objects is preadditive

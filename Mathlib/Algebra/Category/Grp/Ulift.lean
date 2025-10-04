@@ -3,8 +3,8 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.GrpCat.LargeColimits
-import Mathlib.Algebra.Category.GrpCat.Limits
+import Mathlib.Algebra.Category.Grp.LargeColimits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 

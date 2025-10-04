@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Category.GrpCat.Preadditive
+import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.Algebra.Category.GrpCat.Limits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!

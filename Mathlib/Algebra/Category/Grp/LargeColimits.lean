@@ -3,7 +3,7 @@ Copyright (c) 2025 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.GrpCat.Colimits
+import Mathlib.Algebra.Category.Grp.Colimits
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Group.Equiv.Basic
 
