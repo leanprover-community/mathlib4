@@ -64,10 +64,10 @@ variable (I I' n) in
 /-- Data witnessing the fact that `f` has local property `P` at `x` -/
 structure LocalPresentationAt (f : M → M') (x : M)
     (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) where
-  /-- A choice of chart on the domain `M` of a local property of `f` at `x`:
+  /-- A choice of chart on the domain `M` of the local property `P` of `f` at `x`:
   w.r.t. this chart and `codChart`, `f` has the local property `P` at `x`. -/
   domChart : PartialHomeomorph M H
-  /-- A choice of chart on the target `M'` of a local property of `f` at `x`:
+  /-- A choice of chart on the target `M'` of the local property `P` of `f` at `x`:
   w.r.t. this chart and `domChart`, `f` has the local property `P` at `x`. -/
   codChart : PartialHomeomorph M' H'
   mem_domChart_source : x ∈ domChart.source
@@ -144,7 +144,7 @@ lemma congr_iff (hP : IsLocalSourceTargetProperty P)
     P f φ ψ ↔ P g φ ψ :=
   ⟨hP.congr hfg hs hφ, hP.congr hfg.symm hs hφ⟩
 
-/-- If `P` is a nice local property, by monotonicity w.r.t. restricting `domChart`,
+/-- If `P` is a local property, by monotonicity w.r.t. restricting `domChart`,
 if `f` is continuous at `x`, to prove `LiftSourceTargetPropertyAt I I' n f x P`
 we need not check the condition `f '' domChart.source ⊆ codChart.source`. -/
 lemma mk_of_continuousAt (hf : ContinuousAt f x)
