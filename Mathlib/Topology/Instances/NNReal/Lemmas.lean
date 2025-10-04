@@ -121,25 +121,29 @@ theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} :
     HasSum (fun a => (f a : ℝ)) (r : ℝ) L ↔ HasSum f r L := by
   simp only [HasSum, ← coe_sum, tendsto_coe]
 
-protected theorem _root_.HasSum.toNNReal [L.NeBot] {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
+protected theorem _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
     (hy : HasSum f y L) : HasSum (fun x => Real.toNNReal (f x)) y.toNNReal L := by
-  lift y to ℝ≥0 using hy.nonneg hf₀
-  lift f to α → ℝ≥0 using hf₀
-  simpa [hasSum_coe] using hy
+  rcases L.neBot_or_eq_bot with _ | hL
+  · lift y to ℝ≥0 using hy.nonneg hf₀
+    lift f to α → ℝ≥0 using hf₀
+    simpa [hasSum_coe] using hy
+  · simp [HasSum, hL]
 
-theorem hasSum_real_toNNReal_of_nonneg [L.NeBot] {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n)
+theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n)
     (hf : Summable f L) :
     HasSum (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑'[L] n, f n)) L :=
   hf.hasSum.toNNReal hf_nonneg
 
 @[norm_cast]
-theorem summable_coe [L.NeBot] {f : α → ℝ≥0} :
+theorem summable_coe {f : α → ℝ≥0} :
     (Summable (fun a => (f a : ℝ)) L) ↔ Summable f L := by
-  constructor
-  · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
-  · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
+  rcases L.neBot_or_eq_bot with _ | hL
+  · constructor
+    · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
+    · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
+  · simp [Summable, HasSum, hL]
 
-theorem summable_mk [L.NeBot] {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
+theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
     Summable (fun n ↦ ⟨f n, hf n⟩ : α → ℝ≥0) L ↔ Summable f L :=
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 
