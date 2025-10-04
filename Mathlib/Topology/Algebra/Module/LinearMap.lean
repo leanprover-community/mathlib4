@@ -671,6 +671,24 @@ theorem _root_.Submodule.ker_subtypeL (p : Submodule R₁ M₁) : ker p.subtypeL
 
 section
 
+variable {S : Type*} [Semiring S] [Module S M₁] [SMulCommClass S R₁ M₁] [ContinuousConstSMul S M₁]
+
+variable (R₁ M₁) in
+/-- Scalar multiplication as a continuous linear map. -/
+def smulL (c : S) : M₁ →L[R₁] M₁ where
+  toFun f := c • f
+  map_add' := smul_add c
+  map_smul' := smul_comm c
+  cont := continuous_const_smul c
+
+@[simp]
+theorem smulL_apply (c : S) (f : M₁) :
+    ContinuousLinearMap.smulL R₁ M₁ c f = c • f := rfl
+
+end
+
+section
+
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
   [Module S M₂] [IsScalarTower R S M₂] [TopologicalSpace S] [ContinuousSMul S M₂]
 
