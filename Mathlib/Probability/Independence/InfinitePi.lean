@@ -71,12 +71,11 @@ lemma iIndepFun_iff_map_fun_eq_infinitePi_map (mX : ∀ i, Measurable (X i)) :
     iIndepFun X P ↔ P.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ P.map (X i)) :=
   iIndepFun_iff_map_fun_eq_infinitePi_map₀ <| measurable_pi_iff.2 mX |>.aemeasurable
 
-variable {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
-    {P : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (P i)] {X : (i : ι) → Ω i → 𝓧 i}
-
 /-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
 variables defined on the product space `Π i, Ω i`. -/
-lemma iIndepFun_infinitePi (mX : ∀ i, Measurable (X i)) :
+lemma iIndepFun_infinitePi {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
+    {P : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (P i)] {X : (i : ι) → Ω i → 𝓧 i}
+    (mX : ∀ i, Measurable (X i)) :
     iIndepFun (fun i ω ↦ X i (ω i)) (infinitePi P) := by
   refine iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop) |>.2 ?_
   rw [infinitePi_map_pi _ mX]
@@ -89,11 +88,17 @@ section curry
 
 open Sigma
 
-variable {Ω ι : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {κ : ι → Type*}
-  {𝓧 : (i : ι) → κ i → Type*} {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)}
-  {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j}
+omit [IsProbabilityMeasure P]
 
-example (mX : ∀ i j, Measurable (X i j)) (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P)
+/-- Consider `((Xᵢⱼ)ⱼ)ᵢ` a family of families of random variables.
+Assume that for any `i`, the random variables `(Xᵢⱼ)ⱼ` are independent.
+Assume furthermore that the random variables `((Xᵢⱼ)ⱼ)ᵢ` are independent.
+Then the random variables `(Xᵢⱼ)` indexed by pairs `(i, j)` are independent.
+
+This is a dependent version of `iIndepFun_uncurry'`. -/
+lemma iIndepFun_uncurry {κ : ι → Type*} {𝓧 : (i : ι) → κ i → Type*}
+    {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)} {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j}
+    (mX : ∀ i j, Measurable (X i j)) (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P)
     (h2 : ∀ i, iIndepFun (X i) P) :
     iIndepFun (fun (p : (i : ι) × (κ i)) ω ↦ X p.1 p.2 ω) P := by
   have := h1.isProbabilityMeasure
@@ -110,6 +115,18 @@ example (mX : ∀ i j, Measurable (X i j)) (h1 : iIndepFun (fun i ω ↦ (X i ·
     infinitePi_map_piCurry (fun i j ↦ P.map (X i j))]
   congrm infinitePi (fun i ↦ ?_)
   rw [(iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop)).1 (h2 i)]
+
+/-- Consider `((Xᵢⱼ)ⱼ)ᵢ` a family of families of random variables.
+Assume that for any `i`, the random variables `(Xᵢⱼ)ⱼ` are independent.
+Assume furthermore that the random variables `((Xᵢⱼ)ⱼ)ᵢ` are independent.
+Then the random variables `(Xᵢⱼ)` indexed by pairs `(i, j)` are independent.
+
+This is a non-dependent version of `iIndepFun_uncurry`. -/
+lemma iIndepFun_uncurry' {κ : Type*} {𝓧 : ι → κ → Type*} {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)}
+    {X : (i : ι) → (j : κ) → Ω → 𝓧 i j} (mX : ∀ i j, Measurable (X i j))
+    (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P) (h2 : ∀ i, iIndepFun (X i) P) :
+    iIndepFun (fun (p : ι × κ) ω ↦ X p.1 p.2 ω) P :=
+  (iIndepFun_uncurry mX h1 h2).of_precomp (Equiv.sigmaEquivProd ι κ).surjective
 
 end curry
 
