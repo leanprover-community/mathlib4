@@ -69,11 +69,10 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   {n : WithTop ℕ∞}
 
--- XXX: should the next three definitions be a class instead?
--- Are these slice charts canonical enough that we want the typeclass system to kick in?
-
 variable (F I I' M M') in
-/-- The local property of being an immersion at `x` -/
+/-- The local property of being an immersion at a point.
+This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
+being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`. -/
 def ImmersionAtProp :
     ((M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) :=
   fun f domChart codChart ↦ ∃ equiv : (E × F) ≃L[𝕜] E',
