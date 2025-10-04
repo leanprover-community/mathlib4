@@ -311,7 +311,7 @@ theorem smeval_commute (hc : Commute x y) : Commute (p.smeval x) (q.smeval y) :=
       refine (commute_iff_eq (x ^ (n + 1)) (q.smeval y)).mpr ?_
       rw [commute_iff_eq (x ^ n) (q.smeval y)] at ih
       have hxq : x * q.smeval y = q.smeval y * x :=
-        Commute.symm (smeval_commute_left R q (Commute.symm hc))
+        (smeval_commute_left R q (hc.symm)).symm
       rw [pow_succ, ← mul_assoc, ← ih, mul_assoc, hxq, mul_assoc]
 
 end Commute
