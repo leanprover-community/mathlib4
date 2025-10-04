@@ -597,26 +597,16 @@ theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x
   rw [exp_le_exp]; exact mul_le_mul_of_nonneg_left hyz (log_nonneg hx)
 
 theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (hz : z < 0) :
-    x ^ z < y ^ z := by
-  have hx : 0 < x := hy.trans hxy
-  rw [← neg_neg z, Real.rpow_neg (le_of_lt hx) (-z), Real.rpow_neg (le_of_lt hy) (-z),
-      inv_lt_inv₀ (rpow_pos_of_pos hx _) (rpow_pos_of_pos hy _)]
-  exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
+    x ^ z < y ^ z :=
+  rpow_lt_rpow_of_neg hy hxy hz
 
 theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
     StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
   fun _ ha _ _ hab => rpow_lt_rpow_of_exponent_neg ha hab hr
 
 theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x) (hz : z ≤ 0) :
-    x ^ z ≤ y ^ z := by
-  rcases ne_or_eq z 0 with hz_zero | rfl
-  case inl =>
-    rcases ne_or_eq x y with hxy' | rfl
-    case inl =>
-      exact le_of_lt <| rpow_lt_rpow_of_exponent_neg hy (Ne.lt_of_le (id (Ne.symm hxy')) hxy)
-        (Ne.lt_of_le hz_zero hz)
-    case inr => simp
-  case inr => simp
+    x ^ z ≤ y ^ z :=
+  rpow_le_rpow_of_nonpos hy hxy hz
 
 theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
     AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
@@ -827,10 +817,8 @@ lemma le_log_of_pow_le (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤ log y :=
 lemma le_log_of_zpow_le {n : ℤ} (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤ log y :=
   le_log_of_rpow_le hx (rpow_intCast _ _ ▸ h)
 
-lemma rpow_le_of_le_log (hy : 0 < y) (h : log x ≤ z * log y) : x ≤ y ^ z := by
-  obtain hx | hx := le_or_gt x 0
-  · exact hx.trans (rpow_pos_of_pos hy _).le
-  · exact (le_rpow_iff_log_le hx hy).2 h
+lemma rpow_le_of_le_log (hy : 0 < y) (h : log x ≤ z * log y) : x ≤ y ^ z :=
+  le_rpow_of_log_le hy h
 
 lemma pow_le_of_le_log (hy : 0 < y) (h : log x ≤ n * log y) : x ≤ y ^ n :=
   rpow_natCast _ _ ▸ rpow_le_of_le_log hy h
@@ -856,10 +844,8 @@ lemma lt_log_of_pow_lt (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
 lemma lt_log_of_zpow_lt {n : ℤ} (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
   lt_log_of_rpow_lt hx (rpow_intCast _ _ ▸ h)
 
-lemma rpow_lt_of_lt_log (hy : 0 < y) (h : log x < z * log y) : x < y ^ z := by
-  obtain hx | hx := le_or_gt x 0
-  · exact hx.trans_lt (rpow_pos_of_pos hy _)
-  · exact (lt_rpow_iff_log_lt hx hy).2 h
+lemma rpow_lt_of_lt_log (hy : 0 < y) (h : log x < z * log y) : x < y ^ z :=
+  lt_rpow_of_log_lt hy h
 
 lemma pow_lt_of_lt_log (hy : 0 < y) (h : log x < n * log y) : x < y ^ n :=
   rpow_natCast _ _ ▸ rpow_lt_of_lt_log hy h
