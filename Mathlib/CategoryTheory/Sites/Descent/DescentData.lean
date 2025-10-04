@@ -21,7 +21,7 @@ when `F` also has a covariant functoriality, etc.).
 
 -/
 
-universe t t' v' v u' u
+universe t t' t'' v' v u' u
 
 namespace CategoryTheory
 
@@ -149,15 +149,17 @@ def isoMk {D₁ D₂ : F.DescentData f} (e : ∀ (i : ι), D₁.obj i ≅ D₂.o
 end DescentData
 
 /-- The functor `F.obj (.mk (op S)) ⥤ F.DescentData f`. -/
+@[simps]
 def toDescentData : F.obj (.mk (op S)) ⥤ F.DescentData f where
   obj M := .ofObj M
   map {M M'} φ := { hom i := (F.map (f i).op.toLoc).map φ }
 
 namespace DescentData
 
-variable {F f} {S' : C} {p : S' ⟶ S} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j, X' j ⟶ S'}
+section
 
-variable {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j ≫ p)
+variable {F f} {S' : C} {p : S' ⟶ S} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j, X' j ⟶ S'}
+  {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j ≫ p)
 
 /-- Auxiliary definition for `pullFunctor`. -/
 def pullFunctorObjHom (D : F.DescentData f)
@@ -239,6 +241,7 @@ def pullFunctor : F.DescentData f ⥤ F.DescentData f' where
 /-- Up to a (unique) isomorphism, the functor
 `pullFunctor : F.DescentData f ⥤ F.DescentData f'` does not depend
 on the auxiliary data. -/
+@[simps!]
 def pullFunctorIso {β : ι' → ι} {p'' : ∀ j, X' j ⟶ X (β j)}
     (w' : ∀ j, p'' j ≫ f (β j) = f' j ≫ p) :
     pullFunctor F w ≅ pullFunctor F w' :=
@@ -259,6 +262,49 @@ def pullFunctorIso {β : ι' → ι} {p'' : ∀ j, X' j ⟶ X (β j)}
     (fun {D₁ D₂} φ ↦ by
       ext j
       exact φ.comm _ _ _ rfl (by aesop))
+
+variable (S) in
+@[simps!]
+def pullFunctorIdIso :
+    pullFunctor F (p := 𝟙 S) (p' := fun _ ↦ 𝟙 _) (w := by simp) ≅ 𝟭 (F.DescentData f) :=
+  NatIso.ofComponents (fun D ↦ isoMk (fun i ↦ (F.mapId _).app _) (by
+    intro Y q i₁ i₂ f₁ f₂ hf₁ hf₂
+    dsimp
+    rw [pullFunctorObjHom_eq_assoc _ _ _ _ _ q f₁ f₂ rfl]
+    simp [mapComp'_id_comp_inv_app_assoc, mapComp'_id_comp_hom_app, ← Functor.map_comp]))
+
+@[simps!]
+def pullFunctorCompIso
+    {S'' : C} {q : S'' ⟶ S'} {ι'' : Type t''} {X'' : ι'' → C} {f'' : ∀ k, X'' k ⟶ S''}
+    {β : ι'' → ι'} {q' : ∀ k, X'' k ⟶ X' (β k)} (w' : ∀ k, q' k ≫ f' (β k) = f'' k ≫ q)
+    (r : S'' ⟶ S) {r' : ∀ k, X'' k ⟶ X (α (β k))}
+    (hr : q ≫ p = r := by cat_disch) (hr' : ∀ k, q' k ≫ p' (β k) = r' k := by cat_disch) :
+    pullFunctor F w ⋙ pullFunctor F w' ≅
+      pullFunctor F (p := r) (α := α ∘ β) (p' := r') (fun k ↦ by
+        dsimp
+        rw [← hr', Category.assoc, w, reassoc_of% w', hr]) :=
+  NatIso.ofComponents
+    (fun D ↦ isoMk (fun i ↦ (F.mapComp' _ _ _ (by aesoptoloc)).symm.app _) sorry)
+
+end
+
+def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j, X' j ⟶ S'}
+  (e : S' ≅ S) {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j ≫ e.hom)
+  {β : ι → ι'} {q' : ∀ i, X i ⟶ X' (β i)} (w' : ∀ i, q' i ≫ f' (β i) = f i ≫ e.inv) :
+    F.DescentData f ≌ F.DescentData f' where
+  functor := pullFunctor F w
+  inverse := pullFunctor F w'
+  unitIso :=
+    (pullFunctorIdIso F S).symm ≪≫ pullFunctorIso _ _ _ ≪≫
+      (pullFunctorCompIso _ _ _ (hr := e.inv_hom_id) (hr' := fun _ ↦ rfl)).symm
+  counitIso :=
+    (pullFunctorCompIso _ _ _ (hr := e.hom_inv_id) (hr' := fun _ ↦ rfl)) ≪≫
+      pullFunctorIso _ _ _ ≪≫ pullFunctorIdIso F S'
+  functor_unitIso_comp D := by
+    ext j
+    dsimp
+    simp
+    sorry
 
 end DescentData
 
