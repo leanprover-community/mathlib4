@@ -354,7 +354,14 @@ attribute [to_additive existing]
   MonoidalCategory.associator_naturality_assoc
   MonoidalCategory.leftUnitor_naturality_assoc
   MonoidalCategory.rightUnitor_naturality_assoc
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing AddMonoidalCategory.addPentagon_assoc]
   MonoidalCategory.pentagon_assoc
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing AddMonoidalCategory.addTriangle_assoc]
+  MonoidalCategory.triangle_assoc
 
 namespace MonoidalCategory
 
