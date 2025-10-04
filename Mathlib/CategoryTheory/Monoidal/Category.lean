@@ -279,7 +279,7 @@ specified associator, `α⁺ X Y Z : (X ⊕ₒ Y) ⊕ₒ Z ≅ X ⊕ₒ (Y ⊕�
 with specified left and right unitor isomorphisms `λ⁺ X : 𝟘_ C ⊕ₒ X ≅ X` and `ρ⁺ X : X ⊕ₒ 𝟘_ C ≅ X`.
 These associators and unitors satisfy the pentagon and triangle equations. -/
 class AddMonoidalCategory (C : Type u) [𝒞 : Category.{v} C]
-  extends AddMonoidalCategoryStruct C where
+    extends AddMonoidalCategoryStruct C where
   addHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     f ⊕ₘ g = (f ▷⁺ X₂) ≫ (Y₁ ◁⁺ g) := by
       cat_disch
