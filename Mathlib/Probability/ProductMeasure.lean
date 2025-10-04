@@ -414,10 +414,12 @@ lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     rw [this, ← map_map, infinitePi_map_restrict, (measurePreserving_eval _ _).map_eq]
     all_goals fun_prop
 
+lemma infinitePi_map_eval (i : ι) :
+    (infinitePi μ).map (fun x ↦ x i) = μ i :=
+  (measurePreserving_eval_infinitePi μ i).map_eq
+
 lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
-    haveI (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
-      isProbabilityMeasure_map (hf i).aemeasurable
     (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
   have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
     isProbabilityMeasure_map (hf i).aemeasurable

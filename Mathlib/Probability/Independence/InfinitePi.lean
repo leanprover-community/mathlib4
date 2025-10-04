@@ -77,18 +77,17 @@ lemma iIndepFun_infinitePi {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω
     {P : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (P i)] {X : (i : ι) → Ω i → 𝓧 i}
     (mX : ∀ i, Measurable (X i)) :
     iIndepFun (fun i ω ↦ X i (ω i)) (infinitePi P) := by
-  refine iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop) |>.2 ?_
-  rw [infinitePi_map_pi _ mX]
-  congr
-  ext i : 1
-  rw [← (measurePreserving_eval_infinitePi P i).map_eq, map_map (mX i) (by fun_prop),
-    Function.comp_def]
+  rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop), infinitePi_map_pi _ mX]
+  congrm (infinitePi fun i ↦ ?_)
+  rw [← infinitePi_map_eval P i, map_map (mX i) (by fun_prop), Function.comp_def]
 
 section curry
 
-open Sigma
-
 omit [IsProbabilityMeasure P]
+
+section dependent
+
+variable {κ : ι → Type*} {𝓧 : (i : ι) → κ i → Type*} {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)}
 
 /-- Consider `((Xᵢⱼ)ⱼ)ᵢ` a family of families of random variables.
 Assume that for any `i`, the random variables `(Xᵢⱼ)ⱼ` are independent.
@@ -96,10 +95,8 @@ Assume furthermore that the random variables `((Xᵢⱼ)ⱼ)ᵢ` are independent
 Then the random variables `(Xᵢⱼ)` indexed by pairs `(i, j)` are independent.
 
 This is a dependent version of `iIndepFun_uncurry'`. -/
-lemma iIndepFun_uncurry {κ : ι → Type*} {𝓧 : (i : ι) → κ i → Type*}
-    {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)} {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j}
-    (mX : ∀ i j, Measurable (X i j)) (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P)
-    (h2 : ∀ i, iIndepFun (X i) P) :
+lemma iIndepFun_uncurry {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j} (mX : ∀ i j, Measurable (X i j))
+    (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P) (h2 : ∀ i, iIndepFun (X i) P) :
     iIndepFun (fun (p : (i : ι) × (κ i)) ω ↦ X p.1 p.2 ω) P := by
   have := h1.isProbabilityMeasure
   have : ∀ i j, IsProbabilityMeasure (P.map (X i j)) :=
@@ -107,7 +104,7 @@ lemma iIndepFun_uncurry {κ : ι → Type*} {𝓧 : (i : ι) → κ i → Type*}
   have : ∀ i, IsProbabilityMeasure (P.map (fun ω ↦ (X i · ω))) :=
     fun i ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
   have : (MeasurableEquiv.piCurry 𝓧) ∘ (fun ω p ↦ X p.1 p.2 ω) = fun ω i j ↦ X i j ω := by
-    ext; simp [curry]
+    ext; simp [Sigma.curry]
   rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop),
     ← (MeasurableEquiv.piCurry 𝓧).map_measurableEquiv_injective.eq_iff,
     map_map (by fun_prop) (by fun_prop), this,
@@ -116,17 +113,66 @@ lemma iIndepFun_uncurry {κ : ι → Type*} {𝓧 : (i : ι) → κ i → Type*}
   congrm infinitePi (fun i ↦ ?_)
   rw [(iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop)).1 (h2 i)]
 
+lemma iIndepFun_uncurry_infinitePi {Ω : (i : ι) → κ i → Type*} {mΩ : ∀ i j, MeasurableSpace (Ω i j)}
+    {X : (i : ι) → (j : κ i) → Ω i j → 𝓧 i j}
+    (μ : (i : ι) → (j : κ i) → Measure (Ω i j)) [∀ i j, IsProbabilityMeasure (μ i j)]
+    (mX : ∀ i j, Measurable (X i j)) :
+    iIndepFun (fun (p : (i : ι) × κ i) (ω : (i : ι) → (j : κ i) → Ω i j) ↦ X p.1 p.2 (ω p.1 p.2))
+      (infinitePi (fun i ↦ infinitePi (μ i))) := by
+  refine iIndepFun_uncurry (P := infinitePi (fun i ↦ infinitePi (μ i)))
+    (X := fun i j ω ↦ X i j (ω i j)) (by fun_prop) ?_ fun i ↦ ?_
+  · exact iIndepFun_infinitePi (P := fun i ↦ infinitePi (μ i))
+      (X := fun i u j ↦ X i j (u j)) (by fun_prop)
+  · rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop)]
+    change map ((fun f ↦ f i) ∘ (fun ω i j ↦ X i j (ω i j)))
+      (infinitePi fun i ↦ infinitePi (μ i)) = _
+    rw [← map_map (by fun_prop) (by fun_prop),
+      infinitePi_map_pi (X := fun i ↦ (j : κ i) → Ω i j) (μ := fun i ↦ infinitePi (μ i))
+        (f := fun i f j ↦ X i j (f j)), @infinitePi_map_eval .., infinitePi_map_pi]
+    · congrm (infinitePi fun j ↦ ?_)
+      change _ = map (((fun f ↦ f j) ∘ (fun f ↦ f i)) ∘ (fun ω i j ↦ X i j (ω i j)))
+        (infinitePi fun i ↦ infinitePi (μ i))
+      rw [← map_map (by fun_prop) (by fun_prop), infinitePi_map_pi (X := fun i ↦ (j : κ i) → Ω i j)
+          (μ := fun i ↦ infinitePi (μ i)) (f := fun i f j ↦ X i j (f j)),
+          ← map_map (by fun_prop) (by fun_prop),
+          @infinitePi_map_eval .., infinitePi_map_pi, @infinitePi_map_eval ..]
+      any_goals fun_prop
+      · exact fun _ ↦ isProbabilityMeasure_map (by fun_prop)
+      · exact fun _ ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+    any_goals fun_prop
+    exact fun _ ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+
+-- lemma iIndepFun_uncurry_infinitePi' (μ : (i : ι) → (j : κ i) → Measure (𝓧 i j))
+--     [∀ i j, IsProbabilityMeasure (μ i j)] :
+--     iIndepFun (fun (p : (i : ι) × κ i) ω ↦ ω p.1 p.2) (infinitePi (fun i ↦ infinitePi (μ i))) :=
+--   iIndepFun_uncurry_infinitePi μ (X := fun _ _ ↦ id) (by fun_prop)
+
+end dependent
+
+section nondependent
+
+variable {κ : Type*} {𝓧 : ι → κ → Type*} {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)}
+
 /-- Consider `((Xᵢⱼ)ⱼ)ᵢ` a family of families of random variables.
 Assume that for any `i`, the random variables `(Xᵢⱼ)ⱼ` are independent.
 Assume furthermore that the random variables `((Xᵢⱼ)ⱼ)ᵢ` are independent.
 Then the random variables `(Xᵢⱼ)` indexed by pairs `(i, j)` are independent.
 
 This is a non-dependent version of `iIndepFun_uncurry`. -/
-lemma iIndepFun_uncurry' {κ : Type*} {𝓧 : ι → κ → Type*} {m𝓧 : ∀ i j, MeasurableSpace (𝓧 i j)}
-    {X : (i : ι) → (j : κ) → Ω → 𝓧 i j} (mX : ∀ i j, Measurable (X i j))
+lemma iIndepFun_uncurry' {X : (i : ι) → (j : κ) → Ω → 𝓧 i j} (mX : ∀ i j, Measurable (X i j))
     (h1 : iIndepFun (fun i ω ↦ (X i · ω)) P) (h2 : ∀ i, iIndepFun (X i) P) :
     iIndepFun (fun (p : ι × κ) ω ↦ X p.1 p.2 ω) P :=
   (iIndepFun_uncurry mX h1 h2).of_precomp (Equiv.sigmaEquivProd ι κ).surjective
+
+lemma iIndepFun_uncurry_infinitePi' {Ω : ι → κ → Type*} {mΩ : ∀ i j, MeasurableSpace (Ω i j)}
+    {X : (i : ι) → (j : κ) → Ω i j → 𝓧 i j}
+    (μ : (i : ι) → (j : κ) → Measure (Ω i j)) [∀ i j, IsProbabilityMeasure (μ i j)]
+    (mX : ∀ i j, Measurable (X i j)) :
+    iIndepFun (fun (p : ι × κ) (ω : (i : ι) → (j : κ) → Ω i j) ↦ X p.1 p.2 (ω p.1 p.2))
+      (infinitePi (fun i ↦ infinitePi (μ i))) :=
+  (iIndepFun_uncurry_infinitePi μ mX).of_precomp (Equiv.sigmaEquivProd ι κ).surjective
+
+end nondependent
 
 end curry
 
