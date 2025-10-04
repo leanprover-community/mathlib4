@@ -170,9 +170,9 @@ def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
 
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∑" bigOpBinders* ("with" (ident ":")? term)? "," term` -/
+Notation: `"∑" bigOpBinders* (" with" (ident ":")? term)? "," term` -/
 syntax (name := bigsum)
-  "∑ " bigOpBinders ("with " atomic(binderIdent " : ")? term)? ", " term:67 : term
+  "∑ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
