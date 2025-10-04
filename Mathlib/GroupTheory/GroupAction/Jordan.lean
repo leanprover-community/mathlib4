@@ -21,23 +21,23 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
   `ofFixingSubgroup G s` (Wielandt, 13.1)
 
 - `MulAction.IsPreprimitive.isMultiplyPreprimitive`:
-A multiple preprimitivity criterion of Jordan (1871) for a preprimitive
-action: the hypothesis is the preprimitivity of the `SubMulAction`
-of `fixingSubgroup s` on `ofFixingSubgroup G s` (Wielandt, 13.2)
+  A multiple preprimitivity criterion of Jordan (1871) for a preprimitive
+  action: the hypothesis is the preprimitivity of the `SubMulAction`
+  of `fixingSubgroup s` on `ofFixingSubgroup G s` (Wielandt, 13.2)
 
 - `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isSwap_mem` :
-a primitive subgroup of a permutation group that contains a
-swap is equal to the full permutation group (Wielandt, 13.3)
+  a primitive subgroup of a permutation group that contains a
+  swap is equal to the full permutation group (Wielandt, 13.3)
 
 - `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem`:
-a primitive subgroup of a permutation group that contains a 3-cycle
-contains the alternating group (Wielandt, 13.3)
+  a primitive subgroup of a permutation group that contains a 3-cycle
+  contains the alternating group (Wielandt, 13.3)
 
 ## TODO
 
 - Prove `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isCycle_mem`:
-a primitive subgroup of a permutation group that contains
-a cycle of prime order contains the alternating group (Wielandt, 13.9).
+  a primitive subgroup of a permutation group that contains
+  a cycle of *prime* order contains the alternating group (Wielandt, 13.9).
 
 - Prove the stronger versions of the technical lemmas of Jordan (Wielandt, 13.1').
 

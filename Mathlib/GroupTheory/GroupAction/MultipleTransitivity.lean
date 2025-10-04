@@ -685,7 +685,7 @@ theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
 
 open scoped Pointwise
 
-/-- The action of the alternation group has trivial blocks.
+/-- The action of the alternating group has trivial blocks.
 
 This holds for any `α`, even when `Nat.card α ≤ 2` and the action
 is not preprimitive, because it is not pretransitive. -/
