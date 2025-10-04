@@ -25,17 +25,17 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
   action: the hypothesis is the preprimitivity of the `SubMulAction`
   of `fixingSubgroup s` on `ofFixingSubgroup G s` (Wielandt, 13.2)
 
-- `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isSwap_mem` :
+- `Equiv.Perm.eq_top_of_isPreprimitive_of_isSwap_mem` :
   a primitive subgroup of a permutation group that contains a
   swap is equal to the full permutation group (Wielandt, 13.3)
 
-- `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem`:
+- `Equiv.Perm.alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem` :
   a primitive subgroup of a permutation group that contains a 3-cycle
   contains the alternating group (Wielandt, 13.3)
 
 ## TODO
 
-- Prove `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isCycle_mem`:
+- Prove `Equiv.Perm.alternatingGroup_le_of_isPreprimitive_of_isCycle_mem`:
   a primitive subgroup of a permutation group that contains
   a cycle of *prime* order contains the alternating group (Wielandt, 13.9).
 
@@ -395,7 +395,7 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/
-theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
+theorem eq_top_of_isPreprimitive_of_isSwap_mem
     (hG : IsPreprimitive G α) (g : Perm α) (h2g : IsSwap g) (hg : g ∈ G) :
     G = ⊤ := by
   classical
@@ -433,7 +433,7 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a 3-cycle
 contains the alternating group (Jordan). -/
-theorem subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem
+theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
     (hG : IsPreprimitive G α) {g : Perm α} (h3g : IsThreeCycle g) (hg : g ∈ G) :
     alternatingGroup α ≤ G := by
   classical
@@ -475,7 +475,7 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a cycle of prime order
 contains the alternating group. -/
-proof_wanted subgroup_eq_top_of_isPreprimitive_of_isCycle_mem
+proof_wanted alternatingGroup_le_of_isPreprimitive_of_isCycle_mem
   (hG : IsPreprimitive G α)
   {p : ℕ} (hp : p.Prime) (hp' : p + 3 ≤ Nat.card α)
   {g : Perm α} (hgc : g.IsCycle) (hgp : g.support.card = p)
