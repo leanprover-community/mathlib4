@@ -55,7 +55,6 @@ protected theorem Factors.mul {f g : R[X]} (hf : Factors f) (hg : Factors g) :
     Factors (f * g) :=
   mul_mem hf hg
 
-@[simp, aesop safe apply]
 theorem Factors.C_mul {f : R[X]} (hf : Factors f) (a : R) : Factors (C a * f) :=
   (factors_C a).mul hf
 
@@ -67,11 +66,9 @@ theorem Factors.list_prod {l : List R[X]} (h : ∀ f ∈ l, Factors f) : Factors
 protected theorem Factors.pow {f : R[X]} (hf : Factors f) (n : ℕ) : Factors (f ^ n) :=
   pow_mem hf n
 
-@[simp, aesop safe apply]
 theorem factors_X_pow (n : ℕ) : Factors (X ^ n : R[X]) :=
   factors_X.pow n
 
-@[simp, aesop safe apply]
 theorem factors_C_mul_X_pow (a : R) (n : ℕ) : Factors (C a * X ^ n) :=
   (factors_X_pow n).C_mul a
 
