@@ -67,10 +67,10 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
 
 /-- Evaluating a path homotopy at an intermediate point, giving us a `Path`.
 -/
-def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
-  toFun := F.toHomotopy.curry t
-  source' := by simp
-  target' := by simp
+def eval (F : Homotopy p₀ p₁) (t : ℝ) : Path x₀ x₁ where
+  toFun := F.toHomotopy.extend t
+  source' := by simp [ContinuousMap.Homotopy.extend, Set.IccExtend]
+  target' := by simp [ContinuousMap.Homotopy.extend, Set.IccExtend]
 
 @[simp]
 theorem eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ := by
@@ -323,10 +323,14 @@ namespace ContinuousMap.Homotopy
 /-- Given a homotopy `H : f ∼ g`, get the path traced by the point `x` as it moves from
 `f x` to `g x`.
 -/
-def evalAt {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : C(X, Y)}
-    (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
+@[simps]
+def evalAt {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
   toFun t := H (t, x)
   source' := H.apply_zero x
   target' := H.apply_one x
+
+@[simp]
+theorem pathExtend_evalAt {f g : C(X, Y)} (H : f.Homotopy g) (x : X) :
+    (H.evalAt x).extend = (fun t ↦ H.extend t x) := rfl
 
 end ContinuousMap.Homotopy
