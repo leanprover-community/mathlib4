@@ -177,9 +177,8 @@ def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   inv_mem' hσ := by
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ ⊢
     intro c hc
-    rw [← hσ]
-    · simp only [Finset.coe_mem, Subtype.coe_eta, apply_inv_self]
-    · simp only [Finset.coe_mem]
+    rw [← hσ _ (by simp)]
+    simp
 
 variable {g} in
 theorem mem_range_toPermHom'_iff {τ : Perm g.cycleFactorsFinset} :
