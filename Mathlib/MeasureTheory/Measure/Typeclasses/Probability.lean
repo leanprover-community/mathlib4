@@ -88,7 +88,8 @@ instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
-theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
+theorem Measure.isProbabilityMeasure_map {f : α → β}
+    (hf : AEMeasurable f μ := by first | fun_prop | exact Measurable.aemeasurable (by fun_prop)) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
 
