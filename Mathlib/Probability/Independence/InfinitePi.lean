@@ -81,7 +81,7 @@ lemma iIndepFun_infinitePi {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω
     (mX : ∀ i, Measurable (X i)) :
     iIndepFun (fun i ω ↦ X i (ω i)) (infinitePi P) := by
   rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop), infinitePi_map_pi _ mX]
-  congrm (infinitePi fun i ↦ ?_)
+  congrm infinitePi fun i ↦ ?_
   rw [← infinitePi_map_eval P i, map_map (mX i) (by fun_prop), Function.comp_def]
 
 section curry
@@ -113,7 +113,7 @@ lemma iIndepFun_uncurry {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j} (mX : 
     map_map (by fun_prop) (by fun_prop), this,
     (iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop)).1 h1,
     infinitePi_map_piCurry (fun i j ↦ P.map (X i j))]
-  congrm infinitePi (fun i ↦ ?_)
+  congrm infinitePi fun i ↦ ?_
   rw [(iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop)).1 (h2 i)]
 
 /-- Given random variables `X i j : Ω i j → 𝓧 i j`, they are independent when viewed as random
@@ -134,7 +134,7 @@ lemma iIndepFun_uncurry_infinitePi {Ω : (i : ι) → κ i → Type*} {mΩ : ∀
     rw [← map_map (by fun_prop) (by fun_prop),
       infinitePi_map_pi (X := fun i ↦ (j : κ i) → Ω i j) (μ := fun i ↦ infinitePi (μ i))
         (f := fun i f j ↦ X i j (f j)), @infinitePi_map_eval .., infinitePi_map_pi]
-    · congrm (infinitePi fun j ↦ ?_)
+    · congrm infinitePi fun j ↦ ?_
       change _ = map (((fun f ↦ f j) ∘ (fun f ↦ f i)) ∘ (fun ω i j ↦ X i j (ω i j)))
         (infinitePi fun i ↦ infinitePi (μ i))
       rw [← map_map (by fun_prop) (by fun_prop), infinitePi_map_pi (X := fun i ↦ (j : κ i) → Ω i j)
