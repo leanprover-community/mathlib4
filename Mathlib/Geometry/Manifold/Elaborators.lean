@@ -80,6 +80,9 @@ open Qq
 
 namespace Manifold.Elab
 
+/- Note: these functions are convenient in this file, and may be convenient elsewhere, but their
+precise behavior should be considered before adding them to the meta API. -/
+
 /-- Finds the first local instance of class `c` for which `p inst type` produces `some a`.
 Instantiates mvars in and runs `whnfR` on `type` before passing it to `p`. (Does not validate that
 `c` resolves to a class.) -/
