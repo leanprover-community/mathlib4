@@ -6335,6 +6335,7 @@ import Mathlib.Tactic.Zify
 import Mathlib.Testing.Plausible.Functions
 import Mathlib.Testing.Plausible.Sampleable
 import Mathlib.Testing.Plausible.Testable
+import Mathlib.TestLinter
 import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.AffineSubspace
