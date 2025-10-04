@@ -85,6 +85,10 @@ def _root_.Lean.Expr.getUniverse (e : Expr) : TermElabM (Level) := do
     else
       throwError m!"Could not find universe of {e}."
 
+/-- Call `mkApp` recursively with 12 arguments -/
+@[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
+  mkApp6 (mkApp6 f a b c d e g) e₁ e₂ e₃ e₄ e₅ e₆
+
 namespace Manifold
 
 /-- Elaborator for sections in a fibre bundle: converts a section as a dependent function
