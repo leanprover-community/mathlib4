@@ -639,7 +639,7 @@ lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
 
 private noncomputable
 def Hom.toImageAux : X ⟶ f.image :=
-  ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullbackCover f).glueMorphisms
+  Cover.glueMorphisms ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullback₁ f)
     (fun U ↦ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).liftQuotient _
       (by exact ideal_ker_le_ker_ΓSpecIso_inv_comp f U) ≫ f.ker.subschemeCover.f U) (by
     intro U V
@@ -649,7 +649,7 @@ def Hom.toImageAux : X ⟶ f.image :=
 
 private lemma Hom.toImageAux_spec :
     f.toImageAux ≫ f.imageι = f := by
-  apply ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullbackCover f).hom_ext
+  apply Cover.hom_ext ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullback₁ f)
   intro U
   simp only [Hom.toImageAux, Cover.ι_glueMorphisms_assoc]
   simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc, pullback.condition]
