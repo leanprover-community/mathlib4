@@ -88,6 +88,8 @@ to learn about it as well!
 - `lint-style.lean`, `lint-style.py`, `print-style-errors.sh`
   style linters, written in Python and Lean. Run via `lake exe lint-style`.
   Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
+- `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
+  In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
