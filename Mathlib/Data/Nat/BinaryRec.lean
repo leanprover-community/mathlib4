@@ -73,7 +73,7 @@ def bitCasesOn {motive : Nat → Sort u} (n) (bit : ∀ b n, motive (bit b n)) :
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
 
-private abbrev binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
+private def binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
     (bit : ∀ b n, motive n → motive (bit b n)) :
     ∀ fuel n : Nat, n < 2 ^ fuel → motive n :=
   Nat.rec (fun _ h ↦ lt_one_iff.mp h ▸ zero) fun fuel ih n lt ↦
