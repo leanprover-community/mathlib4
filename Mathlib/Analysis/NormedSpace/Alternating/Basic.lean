@@ -449,6 +449,28 @@ def ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F) :
     (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
+def ContinuousAlternatingMap.compContinuousLinearMapFDeriv [DecidableEq ι]
+    (g : F [⋀^ι]→L[𝕜] G) (f : E →L[𝕜] F) : (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) := by
+  set f₁ := ContinuousLinearMap.apply 𝕜 (ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G) g.1
+  set f₂ := ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜 (fun i : ι ↦ E)
+    (fun _ ↦ F) G
+  set f₃ := (f₁.compContinuousMultilinearMap f₂ |>.linearDeriv (fun _ ↦ f))
+  refine liftCLM (f₃ ∘L .pi fun _ ↦ .id _ _) ?_
+  intro df v a b heq hne
+  trans (∑ i, g fun j ↦ (Function.update (fun _ ↦ f) i df j) (v j))
+  · simp [f₁, f₂, f₃]
+  · rw [← Finset.sum_add_sum_compl {a, b}, Finset.sum_pair hne, Finset.sum_eq_zero, add_zero]
+    · convert g.map_add_swap _ hne with i
+      rcases eq_or_ne i a with rfl | hia
+      · simp [heq, hne, hne.symm]
+      · rcases eq_or_ne i b with rfl | hib
+        · simp [Function.update_apply, heq]
+        · simp [Function.update_apply, Equiv.swap_apply_of_ne_of_ne, *]
+    · simp only [mem_compl, mem_insert, mem_singleton, not_or, and_imp]
+      intro i hia hib
+      apply g.map_eq_zero_of_eq _ _ hne
+      simp [*, Ne.symm]
+
 /-- Given a continuous linear isomorphism between the domains,
 generate a continuous linear isomorphism between the spaces of continuous alternating maps.
 
