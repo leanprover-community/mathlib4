@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+import Mathlib.Tactic.Monotonicity
 
 set_option linter.style.refine true
 /--
@@ -251,3 +252,15 @@ Note: This linter can be disabled with `set_option linter.style.maxHeartbeats fa
 set_option maxHeartbeats 10 in
 /-- Doc-strings for the following command do not silence the linter. -/
 example : True := trivial
+
+set_option maxHeartbeats 200000 -- neede for some reason
+
+private axiom test_sorry : ∀ {α}, α
+open List Set
+
+#guard_msgs in
+example (x y z k : ℕ)
+    (h : 3 ≤ (4 : ℕ))
+    (h' : z ≤ y) :
+    (k + 3 + x) - y ≤ (k + 4 + x) - z := by
+  mono
