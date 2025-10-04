@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Monoidal.Grp_
 # Yoneda embedding of `Grp_ C`
 
 We show that group objects are exactly those whose yoneda presheaf is a presheaf of groups,
-by constructing the yoneda embedding `Grp_ C ⥤ Cᵒᵖ ⥤ Grp.{v}` and
+by constructing the yoneda embedding `Grp_ C ⥤ Cᵒᵖ ⥤ GrpCat.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
 
@@ -32,9 +32,9 @@ lemma Grp_.homMk_hom' {G H : Grp_ C} (f : G ⟶ H) : homMk (G := G.X) (H := H.X)
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
+def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     GrpObj X where
-  __ := MonObj.ofRepresentableBy X (F ⋙ forget₂ Grp MonCat) α
+  __ := MonObj.ofRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α
   inv := α.homEquiv.symm (α.homEquiv (𝟙 _))⁻¹
   left_inv := by
     change lift (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) (𝟙 X) ≫
@@ -72,9 +72,9 @@ lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
 variable (G) in
 /-- If `G` is a group object, then `Hom(-, G)` is a presheaf of groups. -/
 @[simps]
-def yonedaGrpObj : Cᵒᵖ ⥤ Grp.{v} where
-  obj X := Grp.of (unop X ⟶ G)
-  map φ := Grp.ofHom ((yonedaMonObj G).map φ).hom
+def yonedaGrpObj : Cᵒᵖ ⥤ GrpCat.{v} where
+  obj X := GrpCat.of (unop X ⟶ G)
+  map φ := GrpCat.ofHom ((yonedaMonObj G).map φ).hom
 
 variable (G) in
 /-- If `G` is a monoid object, then `Hom(-, G)` as a presheaf of monoids is represented by `G`. -/
@@ -94,21 +94,21 @@ variable (X) in
 /-- If `X` represents a presheaf of groups `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of groups. -/
 @[simps! hom inv]
-def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ Grp.{v}) (α : (F ⋙ forget _).RepresentableBy X) :
+def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{v}) (α : (F ⋙ forget _).RepresentableBy X) :
     letI := GrpObj.ofRepresentableBy X F α
     yonedaGrpObj X ≅ F :=
   letI := GrpObj.ofRepresentableBy X F α
   NatIso.ofComponents (fun Y ↦ MulEquiv.toGrpIso
     { toEquiv := α.homEquiv
       map_mul' :=
-  ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ Grp MonCat) α).hom.app Y).hom.map_mul})
-      fun φ ↦ Grp.hom_ext <| MonoidHom.ext <| α.homEquiv_comp φ.unop
+  ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α).hom.app Y).hom.map_mul})
+      fun φ ↦ GrpCat.hom_ext <| MonoidHom.ext <| α.homEquiv_comp φ.unop
 
 /-- The yoneda embedding of `Grp_C` into presheaves of groups. -/
 @[simps]
-def yonedaGrp : Grp_ C ⥤ Cᵒᵖ ⥤ Grp.{v} where
+def yonedaGrp : Grp_ C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
   obj G := yonedaGrpObj G.X
-  map {G H} ψ := { app Y := Grp.ofHom ((yonedaMon.map ψ).app Y).hom }
+  map {G H} ψ := { app Y := GrpCat.ofHom ((yonedaMon.map ψ).app Y).hom }
 
 @[reassoc]
 lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y) (g : Y ⟶ G) :
@@ -116,11 +116,11 @@ lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y
 
 /-- The yoneda embedding for `Grp_C` is fully faithful. -/
 def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
-  preimage {G H} α := yonedaMonFullyFaithful.preimage (Functor.whiskerRight α (forget₂ Grp MonCat))
+  preimage {G H} α := yonedaMonFullyFaithful.preimage (Functor.whiskerRight α (forget₂ GrpCat MonCat))
   map_preimage {G H} α := by
     ext X : 3
     exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon) (Y := H.toMon)
-      (Functor.whiskerRight α (forget₂ Grp MonCat))).app X).hom)
+      (Functor.whiskerRight α (forget₂ GrpCat MonCat))).app X).hom)
   preimage_map := yonedaMonFullyFaithful.preimage_map
 
 instance : yonedaGrp (C := C).Full := yonedaGrpFullyFaithful.full
