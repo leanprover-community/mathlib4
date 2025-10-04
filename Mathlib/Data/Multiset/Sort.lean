@@ -44,7 +44,7 @@ theorem sort_sorted (s : Multiset α) : Sorted r (sort r s) :=
 theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
   Quot.inductionOn s fun _ => Quot.sound <| mergeSort_perm _ _
 
-@[simp]
+@[simp, push]
 theorem mem_sort {s : Multiset α} {a : α} : a ∈ sort r s ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 
 @[simp]

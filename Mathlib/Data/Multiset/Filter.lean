@@ -83,7 +83,7 @@ theorem filter_cons_of_pos {a : α} (s) : p a → filter p (a ::ₘ s) = a ::ₘ
 theorem filter_cons_of_neg {a : α} (s) : ¬p a → filter p (a ::ₘ s) = filter p s :=
   Quot.inductionOn s fun _ h => congr_arg ofList <| List.filter_cons_of_neg <| by simpa using h
 
-@[simp]
+@[simp, push]
 theorem mem_filter {a : α} {s} : a ∈ filter p s ↔ a ∈ s ∧ p a :=
   Quot.inductionOn s fun _l => by simp
 
@@ -228,7 +228,7 @@ theorem filterMap_filter (f : α → Option β) (s : Multiset α) :
 theorem filterMap_some (s : Multiset α) : filterMap some s = s :=
   Quot.inductionOn s fun _ => congr_arg ofList List.filterMap_some
 
-@[simp]
+@[simp, push]
 theorem mem_filterMap (f : α → Option β) (s : Multiset α) {b : β} :
     b ∈ filterMap f s ↔ ∃ a, a ∈ s ∧ f a = some b :=
   Quot.inductionOn s fun _ => List.mem_filterMap
