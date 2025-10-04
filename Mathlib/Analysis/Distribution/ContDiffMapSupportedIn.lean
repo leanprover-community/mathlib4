@@ -27,6 +27,11 @@ Given `n : ℕ∞`and a compact `K` of a normed space `E`, we consider the type 
 - `ContDiffMapSupportedIn.iteratedFDerivₗ'`: wrapper as a `𝕜`-linear maps for `iteratedFDeriv` on
   `ContDiffMapSupportedIn E F n K`, as a map into `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) n-i K`.
 
+## Main statements
+- `ContDiffMapSupportedIn.instIsUniformAddGroup` and
+  `ContDiffMapSupportedIn.instLocallyConvexSpace`: `ContDiffMapSupportedIn` is a locally convex
+  topological vector space.
+
 ## Notation
 
 - `𝓓^{n}_{K}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
