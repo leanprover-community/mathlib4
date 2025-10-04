@@ -41,13 +41,12 @@ The obvious map from `α` to `1.Combination α`, as an equivariant map.
 
 -/
 
-variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
 
-variable (α) in
 /-- The type of combinations of `n` elements of a type `α` -/
 def Nat.Combination (n : ℕ) := {s : Finset α | s.card = n}
 
-variable {n : ℕ} {s t : n.Combination α}
+variable {α} {n : ℕ} {s t : n.Combination α}
 
 namespace Nat.Combination
 
