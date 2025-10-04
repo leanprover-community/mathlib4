@@ -61,8 +61,7 @@ lemma mk_apply (x) : Ideal.Quotient.mk Q (φ x) = x ^ Nat.card (R ⧸ Q.under R)
   exact H x
 
 lemma finite_quotient : _root_.Finite (R ⧸ Q.under R) := by
-  rw [← not_infinite_iff_finite]
-  intro h
+  by_contra! h
   obtain rfl : Q = ⊤ := by simpa [Nat.card_eq_zero_of_infinite, ← Ideal.eq_top_iff_one] using H 0
   simp only [Ideal.comap_top] at h
   exact not_finite (R ⧸ (⊤ : Ideal R))
