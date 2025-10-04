@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Order.Partition.Finpartition
 
 /-!
+
 # Equidecompositions
 
 This file develops the basic theory of equidecompositions.
@@ -304,6 +305,34 @@ theorem Equipartition.target_part_spec (P : Equipartition G A) (x : X) (h : x �
       simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
     exact (Classical.choose_spec h1).2
 
+theorem Equipartition.target_part_mem_parts (P : Equipartition G A) (x : X) (h : x ∈ P.target) :
+    (P.target_part x h) ∈ P.parts := by
+  simp [Equipartition.target_part]
+  have h1 : ∃ p ∈ P.parts, x ∈ p.2.2 := by
+      simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
+  exact (Classical.choose_spec h1).1
+
+theorem Equipartition.decomp_inv (P : Equipartition G A) (x : X) (h : x ∈ P.target) :
+    ∃ y ∈ (P.target_part x h).1, (P.target_part x h).2.1 • y = x := by
+  let test := P.decomp (P.target_part x h) (by exact Equipartition.target_part_mem_parts P x h)
+  simp at test
+  rw [Set.ext_iff] at test
+  rw [← @mem_smul_set]
+  let h2 := (test x).mpr (by exact Equipartition.target_part_spec P x h)
+  exact h2
+
+theorem Equipartition.target_part_decomp (P : Equipartition G A) (x : X) (h : x ∈ P.target) :
+    (P.target_part x h).2.1⁻¹ • x ∈ (P.target_part x h).1 := by
+  rcases P.decomp_inv x h with ⟨y,⟨h1, h2⟩⟩
+  have h3 :  (P.target_part x h).2.1⁻¹ • x =
+    (P.target_part x h).2.1⁻¹ • (P.target_part x h).2.1 • y := by
+    rw [h2]
+  rw [h3]
+  simpa using h1
+
+theorem Equipartition.targer_part_eq_source_part (P : Equipartition G A) (x : X) (h : x ∈ P.target) :
+    P.target_part x h = P.source_part ((P.target_part x h).2.1⁻¹ • x) (by simp) := by sorry
+
 open scoped Classical in noncomputable def Equipartition.to_equidecomp {A : Set X} (P : Equipartition G A) : Equidecomp X G where
   toFun x := if h : x ∉ A then x else (P.source_part x (not_notMem.mp h)).2.1 • x
   invFun x := if h : x ∉ P.target then x else (P.target_part x (not_notMem.mp h)).2.1⁻¹ • x
@@ -315,7 +344,15 @@ open scoped Classical in noncomputable def Equipartition.to_equidecomp {A : Set 
     use (P.source_part x hx).2.1
     use (P.source_part x hx).2.2
     exact And.intro (P.source_part_mem_parts x hx) (P.source_part_decomp x hx)
-  map_target' x hx := by sorry
+  map_target' x hx := by
+    simp [hx]
+    apply mem_of_subset_of_mem ?_ (P.target_part_decomp x hx)
+    simp_rw [P.sup_parts]
+    apply subset_iUnion_of_subset (P.target_part x hx)
+    refine subset_iUnion_of_subset ?_ fun ⦃a⦄ a ↦ a
+    exact target_part_mem_parts P x hx
+
+
 
 
 
