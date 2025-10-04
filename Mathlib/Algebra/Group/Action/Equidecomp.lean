@@ -240,14 +240,18 @@ theorem restr_refl_symm (A : Set X) :
 
 variable [Group G] [MulAction G X] [DecidableEq (Set X)]
 
-structure Equipartition (G : Type*) [SMul G X] (A : Set X) where
+
+structure Equipartition (X : Type*) (G : Type*) [SMul G X] where
   parts : Finset (Set X × G × Set X)
-  sup_parts : A = (⋃ p ∈ parts, p.1)
-  supIndep : Finset.SupIndep parts (fun p ↦ p.1)
+  supIndepSource : Finset.SupIndep parts (fun p ↦ p.1)
+  supIndepTarget : Finset.SupIndep parts (fun p ↦ p.2.2)
   bot_notMem : ∀ p ∈ parts, p.1 ≠ ∅
   decomp : ∀ p ∈ parts, (fun x ↦ p.2.1 • x) '' p.1 = p.2.2
 
-def Equipartition.to_finpartition {A : Set X} (P : Equipartition G A) : Finpartition A :=
+namespace Equipartition
+
+
+def to_finpartition (P : Equipartition X G) : Finpartition A :=
   { parts := Finset.image (fun p ↦ p.1) P.parts
     sup_parts := by simp [P.sup_parts]
     supIndep := by
@@ -356,10 +360,11 @@ theorem Equipartition.target_part_eq_iff (P : Equipartition G A) (x y : X) (hx :
     rw [h]
     exact target_part_spec P y hy
   . intro h
-    sorry
+
 
 theorem Equipartition.source_part_eq_target_part (P : Equipartition G A) (x : X) (h : x ∈ A) :
-    P.source_part x h = P.target_part ((P.source_part x h).2.1 • x) (by sorry) := by sorry
+    P.source_part x h = P.target_part ((P.source_part x h).2.1 • x) (by sorry) := by
+  sorry
 
 
 
@@ -387,6 +392,7 @@ open scoped Classical in noncomputable def Equipartition.to_equidecomp {A : Set 
       apply mem_of_subset_of_mem ?_ (P.source_part_decomp x hx)
       simp [Equipartition.target]
     simp only [h1, ↓reduceDIte]
+
 
 
 
