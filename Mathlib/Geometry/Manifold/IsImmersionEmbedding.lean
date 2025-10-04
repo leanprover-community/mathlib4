@@ -69,29 +69,28 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   {n : WithTop ℕ∞}
 
-variable (I I' M M') in
+variable (F I I' M M') in
 /-- The local property of being an immersion at a point.
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`. -/
 def ImmersionAtProp :
     ((M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) :=
-  fun f domChart codChart ↦
-    ∃ F : Type*, ∃ ( _ : NormedAddCommGroup F), ∃ (_ : NormedSpace 𝕜 F), ∃ equiv : (E × F) ≃L[𝕜] E',
+  fun f domChart codChart ↦ ∃ equiv : (E × F) ≃L[𝕜] E',
     EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target
 
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
 /-- Being an immersion at `x` is a local property. -/
 lemma isLocalSourceTargetProperty_immersionAtProp :
-    IsLocalSourceTargetProperty (ImmersionAtProp I I' M M') where
+    IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
   mono_source {f φ ψ s} hs hf := by
     have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
-    obtain ⟨F, hF, hF', equiv, hf⟩ := hf
-    use F, hF, hF', equiv
+    obtain ⟨equiv, hf⟩ := hf
+    use equiv
     exact hf.mono (by simpa using this)
   congr {f g φ ψ s} hfg hs hφ hf := by
-    obtain ⟨F, hF, hF', equiv, hf⟩ := hf
-    use F, hF, hF', equiv
+    obtain ⟨equiv, hf⟩ := hf
+    use equiv
     apply EqOn.trans ?_ (hf.mono (by simp))
     intro x hx
     set Φ := φ.extend I
@@ -100,7 +99,7 @@ lemma isLocalSourceTargetProperty_immersionAtProp :
     rw [Function.comp_apply, ← this]
     simp [Φ]
 
-variable (I I' n) in
+variable (F I I' n) in
 /-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
@@ -109,7 +108,7 @@ NB. We don't know the particular atlasses used for `M` and `N`, so asking for `�
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
 -/
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
-  LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp I I' M M')
+  LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M')
 
 namespace IsImmersionAt
 
@@ -122,11 +121,8 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorp
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
     (hsource : f '' domChart.source ⊆ codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target) : IsImmersionAt I I' n f x := by
-  use domChart, codChart
-  use F
-
-  ; use equiv
+      (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
+  use domChart, codChart; use equiv
 
 /-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
