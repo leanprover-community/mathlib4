@@ -177,11 +177,11 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed
   · intro j
     rcases eq_or_ne j i with (rfl | hne) <;> simp [*, v.isOpen]
   · refine fun x hx => mem_iUnion.2 ?_
-    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
-    · use j
+    by_cases! h : ∃ j ≠ i, x ∈ v j
+    · rcases h with ⟨j, hji, hj⟩
+      use j
       rwa [update_of_ne hji]
-    · push_neg at h
-      use i
+    · use i
       rw [update_self]
       exact hvi ⟨hx, mem_biInter h⟩
   · rintro j (rfl | hj)
@@ -298,11 +298,11 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
   · intro j
     rcases eq_or_ne j i with (rfl | hne) <;> simp [*, v.isOpen]
   · refine fun x hx => mem_iUnion.2 ?_
-    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
-    · use j
+    by_cases! h : ∃ j ≠ i, x ∈ v j
+    · rcases h with ⟨j, hji, hj⟩
+      use j
       rwa [update_of_ne hji]
-    · push_neg at h
-      use i
+    · use i
       rw [update_self]
       apply hvi.2.1
       rw [hsi]

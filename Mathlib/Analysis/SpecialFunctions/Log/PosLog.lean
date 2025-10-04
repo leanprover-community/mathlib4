@@ -38,17 +38,16 @@ theorem posLog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv {r : ℝ} : log⁺ r - log⁺ r⁻¹ = log r := by
   rw [posLog_def, posLog_def, log_inv]
-  by_cases h : 0 ≤ log r
+  by_cases! h : 0 ≤ log r
   · simp [h]
-  · rw [not_le] at h
-    simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
+  · simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
 
 /-- Presentation of `log⁺` in terms of `log`. -/
 theorem half_mul_log_add_log_abs {r : ℝ} : 2⁻¹ * (log r + |log r|) = log⁺ r := by
-  by_cases hr : 0 ≤ log r
+  by_cases! hr : 0 ≤ log r
   · simp [posLog, hr, abs_of_nonneg]
     ring
-  · simp [posLog, le_of_not_ge hr, abs_of_nonpos]
+  · simp [posLog, hr.le, abs_of_nonpos]
 
 /-- The positive part of `log` is never negative. -/
 theorem posLog_nonneg {x : ℝ} : 0 ≤ log⁺ x := by simp [posLog]
@@ -80,10 +79,10 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
   simp only [posLog, le_sup_iff, sup_le_iff, le_refl, true_and]
-  by_cases h : log x ≤ 0
+  by_cases! h : log x ≤ 0
   · tauto
   · right
-    have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 (not_le.1 h))) hxy
+    have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 h)) hxy
     simp only [this, and_true, ge_iff_le]
     linarith
 

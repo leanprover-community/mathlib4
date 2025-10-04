@@ -79,7 +79,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte, Classical.choose_eq,
         Finset.sum_apply, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero]
       rw [eq_comm]
-      by_cases hj : ∃ j, f j = i
+      by_cases! hj : ∃ j, f j = i
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
               convert Finset.sum_eq_single (M := R) hj.choose ?_ ?_
@@ -99,9 +99,8 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
               · exact hj.choose_spec.symm
               · simp [hj]
       · convert Finset.sum_const_zero with x
-        · rw [not_exists] at hj
-          specialize hj x
-          rw [eq_comm] at hj
+        · specialize hj x
+          rw [ne_comm] at hj
           simp [hj]
         · rw [← zero_dvd_iff]
           convert h i
