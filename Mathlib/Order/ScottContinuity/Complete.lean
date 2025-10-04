@@ -34,8 +34,11 @@ alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
 
 end CompleteLattice
 
-/- In a complete linear order, the Scott Topology coincides with the Upper topology, see
-`Topology.IsScott.scott_eq_upper_of_completeLinearOrder` -/
+/-!
+In a complete linear order, the Scott Topology coincides with the Upper topology, see
+`Topology.IsScott.scott_eq_upper_of_completeLinearOrder`
+-/
+
 section CompleteLinearOrder
 
 variable [CompleteLinearOrder β]
