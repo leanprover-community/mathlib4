@@ -10,7 +10,6 @@ import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
 import Mathlib.Util.AtomM
 
-
 /-!
 # Linarith preprocessing
 
