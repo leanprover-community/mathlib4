@@ -105,6 +105,9 @@ Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
 NB. We don't know the particular atlasses used for `M` and `N`, so asking for `φ` and `ψ` to be
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
+
+This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
+being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`.
 -/
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
   LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M')
