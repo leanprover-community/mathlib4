@@ -344,10 +344,10 @@ theorem toSet_insert (x y : ZFSet) : (insert x y).toSet = insert x y.toSet := by
   simp
 
 @[simp]
-theorem mem_singleton {x y : ZFSet} : x ∈ ({y} : ZFSet) ↔ x = y :=
+theorem mem_singleton {x y : ZFSet.{u}} : x ∈ ({y} : ZFSet.{u}) ↔ x = y :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.mem_singleton.trans eq.symm
 
-theorem notMem_singleton {x y : ZFSet} : x ∉ ({y} : ZFSet) ↔ x ≠ y :=
+theorem notMem_singleton {x y : ZFSet.{u}} : x ∉ ({y} : ZFSet.{u}) ↔ x ≠ y :=
   mem_singleton.not
 
 @[simp]
@@ -690,7 +690,7 @@ theorem toSet_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
   simp
 
 theorem toSet_sUnion_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
-    (⋃₀ range f).toSet = ⋃ i, f i := by
+    (⋃₀ range f).toSet = ⋃ i, (f i).toSet := by
   ext
   simp
 

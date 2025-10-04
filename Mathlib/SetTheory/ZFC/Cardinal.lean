@@ -7,9 +7,9 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.SetTheory.ZFC.Basic
 
 /-!
-# Cardinalities of ZFSet
+# Cardinalities of ZFC sets
 
-In this file, we define the cardinalities of `ZFSet`.
+In this file, we define the cardinalities of ZFC sets as `ZFSet.{u} → Cardinal.{u}`.
 
 ## Definitions
 
@@ -42,7 +42,7 @@ theorem card_empty : card ∅ = 0 := by
   rw [← lift_inj, card_eq]
   simp
 
-theorem card_insert_le (x y : ZFSet.{u}) : card (insert x y) ≤ card y + 1 := by
+theorem card_insert_le : card (insert x y) ≤ card y + 1 := by
   rw [← lift_le.{u + 1}]
   simpa [card_eq] using mk_insert_le
 
@@ -59,7 +59,7 @@ theorem card_pair_of_ne (h : x ≠ y) : card {x, y} = 2 := by
   convert card_insert (notMem_singleton.2 h)
   rw [card_singleton, one_add_one_eq_two]
 
-theorem card_union_le (x y : ZFSet.{u}) : card (x ∪ y) ≤ card x + card y := by
+theorem card_union_le : card (x ∪ y) ≤ card x + card y := by
   rw [← lift_le.{u + 1}]
   simpa [card_eq] using mk_union_le x.toSet y.toSet
 
