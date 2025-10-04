@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
+
 import Mathlib.CategoryTheory.Limits.Skeleton
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
@@ -494,6 +495,14 @@ theorem lower_comm (F : MonoOver Y ⥤ MonoOver X) :
     toThinSkeleton _ ⋙ lower F = F ⋙ toThinSkeleton _ :=
   rfl
 
+/--
+Applying `lower F` and then `representative` is isomorphic to first applying `representative`
+and then applying `F`.
+-/
+def isoLowerRepresentative (F : MonoOver Y ⥤ MonoOver X) :
+    lower F ⋙ representative ≅ representative ⋙ F :=
+  ThinSkeleton.isoCompFromThinSkeleton _
+
 /-- An adjunction between `MonoOver A` and `MonoOver B` gives an adjunction
 between `Subobject A` and `Subobject B`. -/
 def lowerAdjunction {A : C} {B : D} {L : MonoOver A ⥤ MonoOver B} {R : MonoOver B ⥤ MonoOver A}
@@ -713,6 +722,56 @@ left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
+
+/--
+Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`
+and then taking representatives.
+-/
+def isoExistsRepresentative (f : X ⟶ Y) :
+    («exists» f) ⋙ representative ≅ representative ⋙ (MonoOver.exists f) :=
+  isoLowerRepresentative _
+
+/-- `exists f` applied to a subobject `x` is isomorphic to the image of `x.arrow ≫ f`. -/
+def isoExistsImage (f : X ⟶ Y) (x : Subobject X) :
+    ((«exists» f).obj x : C) ≅ Limits.image (x.arrow ≫ f) :=
+  (MonoOver.forget Y ⋙ Over.forget Y).mapIso <| (isoExistsRepresentative f).app x
+
+/-- `exists f` is the image factorisation of `x.arrow ≫ f`. -/
+def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
+    ImageFactorisation (x.arrow ≫ f) :=
+  have h :
+    (isoExistsImage f x).hom ≫ ((Image.imageFactorisation (x.arrow ≫ f)).F.m) =
+      ((«exists» f).obj x).arrow :=
+    Over.w ((isoExistsRepresentative f).app x).hom
+  let :=
+    ImageFactorisation.ofIsoI
+      (Image.imageFactorisation (x.arrow ≫ f))
+      (isoExistsImage f x).symm
+  ImageFactorisation.copy this
+    ((«exists» f).obj x).arrow
+    this.F.e
+    (by rw [h.symm]; simp [this])
+
+/--
+For any morphism `f : X ⟶ Y` and subobject `x` of `X`, `Subobject.existsπ f x` is the first
+projection in the following commutative square:
+
+```
+(x : C) ------existsπ f x-----> ((exists f).obj x : C)
+   |                                      |
+x.arrow                        ((exists f).obj x).arrow
+   |                                      |
+   v                                      v
+   X ------------------f----------------> Y
+```
+-/
+def existsπ (f : X ⟶ Y) (x : Subobject X) :
+    (x : C) ⟶ ((«exists» f).obj x : C) :=
+  (imageFactorisation f x).F.e
+
+lemma existπ_comm (f : X ⟶ Y) (x : Subobject X) :
+    existsπ f x ≫ ((«exists» f).obj x).arrow = x.arrow ≫ f :=
+  (imageFactorisation f x).F.fac
 
 end Exists
 
