@@ -116,10 +116,10 @@ namespace Valued
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
-    toUniformSpace := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
+    toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
     toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
     is_topological_valuation := by
-      letI := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
+      letI := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
       exact exists_congr fun γ => by rw [true_and]; rfl }
@@ -138,7 +138,7 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
 theorem toUniformSpace_eq :
-    toUniformSpace = @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
+    toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ :=
   UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
 

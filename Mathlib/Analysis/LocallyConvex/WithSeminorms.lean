@@ -940,7 +940,7 @@ is first countable. -/
 theorem WithSeminorms.firstCountableTopology (hp : WithSeminorms p) :
     FirstCountableTopology E := by
   have := hp.topologicalAddGroup
-  let _ : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  let _ : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
     rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp]
