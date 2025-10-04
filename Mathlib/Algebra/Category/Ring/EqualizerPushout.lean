@@ -5,7 +5,7 @@ Authors: Yong-Gyu Choi
 -/
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
 import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 
 /-!
 # Equalizer of inclusions to pushout in `CommRingCat`
@@ -109,8 +109,9 @@ section Fork
 variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 
 /-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then `forkPushoutCoconeSelf` is
-an equalizer diagram. See `isLimitForkPushoutSelf` for the pushout version. -/
-noncomputable def isLimitforkPushoutCoconeSelf (hf : f.hom.FaithfullyFlat) :
+an equalizer diagram.
+See `isLimitForkPushoutSelfOfFaithfullyFlat` for the pushout version. -/
+noncomputable def isLimitforkPushoutCoconeSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
     IsLimit (forkPushoutCoconeSelf f) :=
   (Fork.isLimitEquivOfIsos _ (equalizerFork _ _) (Iso.refl _) (Iso.refl _) (RingEquiv.ofBijective _
     (toEqualizerPushoutCoconeSelf_bij_of_faithfullyFlat _ hf)).toCommRingCatIso (by simp) (by simp)
@@ -122,35 +123,53 @@ noncomputable def isLimitforkPushoutCoconeSelf (hf : f.hom.FaithfullyFlat) :
 R --f-->
         S ---inr---> pushout f f
 ```
-is an equalizer diagram. See `isLimitforkPushoutCoconeSelf` for the pushoutCocone version. -/
-noncomputable def isLimitForkPushoutSelf (hf : f.hom.FaithfullyFlat) :
+is an equalizer diagram.
+See `isLimitforkPushoutCoconeSelfOfFaithfullyFlat` for the pushoutCocone version. -/
+noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
     IsLimit (Fork.ofι f pushout.condition) := by
   algebraize [f.hom]
   let : IsPushout _ _ _ _ :=
     ⟨⟨PushoutCocone.condition (pushoutCocone R S S)⟩, ⟨pushoutCoconeIsColimit R S S⟩⟩
   exact Fork.isLimitEquivOfIsos _ _ (Iso.refl _) (IsPushout.isoPushout this) (Iso.refl _)
     (IsPushout.inl_isoPushout_hom this).symm (IsPushout.inr_isoPushout_hom this).symm rfl
-      (isLimitforkPushoutCoconeSelf f hf)
+      (isLimitforkPushoutCoconeSelfOfFaithfullyFlat f hf)
 
 end Fork
 
-section Opposite
+end Equalizer
+
+namespace Opposite
 
 variable {R S : CommRingCat.{u}ᵒᵖ} (f : S ⟶ R)
 
-/-- If `f : S ⟶ R` is a map in `CommRingCatᵒᵖ` with faithfully flat `f.unop`, then the fork
+/-- For a map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop : R.unop ⟶ S.unop`,
+the cofork
 ```
-                  S.unop ---inl---> pushout f.unop f.unop
-R.unop --f.unop-->
-                  S.unop ---inr---> pushout f.unop f.unop
+pullback f f ---fst---> S
+                          --f--> R
+pullback f f ---snd---> S
 ```
-is an equalizer diagram. -/
-noncomputable def isLimitForkPushoutSelfOp (hf : f.unop.hom.FaithfullyFlat) :
-    IsLimit (Fork.ofι f.unop pushout.condition) := by
-  algebraize [f.unop.hom]
+is a coequalizer diagram. -/
+noncomputable def isColimitOfπPullbackOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) :
+    IsColimit (Cofork.ofπ f pullback.condition) :=
+  Cofork.isColimitCoforkPushoutEquivIsColimitForkUnopPullback.symm
+    (Equalizer.isLimitForkPushoutSelfOfFaithfullyFlat _ hf)
+
+/-- A regular epimorphism structure on a map `f : S ⟶ R` in `CommRingCatᵒᵖ` with
+faithfully flat `f.unop : R.unop ⟶ S.unop`. -/
+noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : RegularEpi f where
+  W := pullback f f
+  left := pullback.fst f f
+  right := pullback.snd f f
+  w := pullback.condition
+  isColimit := isColimitOfπPullbackOfFaithfullyFlat f hf
+
+/-- Any map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop : R.unop ⟶ S.unop` is
+an effective epimorphism. -/
+lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : EffectiveEpi f := by
+  let := regularEpiOfFaithfullyFlat f hf
+  infer_instance
 
 end Opposite
-
-end Equalizer
 
 end CommRingCat
