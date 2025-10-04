@@ -13,6 +13,10 @@ and a family of maps `f i : X i ⟶ S` in the category `C`,
 we define the category `F.DescentData f` of objects over the `X i`
 equipped with a descent data relative to the morphisms `f i : X i ⟶ S`.
 
+We show that up to an equivalence, the category `F.DescentData f` is unchanged
+when we replace `S` by an isomorphic object, or the family `f i : X i ⟶ S`
+by another family which generates the same sieve (see `Pseudofunctor.pullFunctorEquivalence`).
+
 ## TODO (@joelriou, @chrisflav)
 * Relate the prestack condition to the fully faithfullness of `Pseudofunctor.toDescentData`.
 * Define stacks.
@@ -238,6 +242,11 @@ def pullFunctor : F.DescentData f ⥤ F.DescentData f' where
         rw [mapComp'_inv_naturality_assoc, ← mapComp'_hom_naturality,
           reassoc_of% this] }
 
+/- TODO:
+def toDescentDataCompPullFunctorIso :
+    F.toDescentData f ⋙ pullFunctor F w ≅ F.map p.op.toLoc ⋙ F.toDescentData f' := ...
+-/
+
 /-- Up to a (unique) isomorphism, the functor
 `pullFunctor : F.DescentData f ⥤ F.DescentData f'` does not depend
 on the auxiliary data. -/
@@ -264,6 +273,8 @@ def pullFunctorIso {β : ι' → ι} {p'' : ∀ j, X' j ⟶ X (β j)}
       exact φ.comm _ _ _ rfl (by aesop))
 
 variable (S) in
+/-- The functor `F.DescentData f ⥤ F.DescentData f` corresponding to `pullFunctor`
+applied to identity morphisms is isomorphic to the identity functor. -/
 @[simps!]
 def pullFunctorIdIso :
     pullFunctor F (p := 𝟙 S) (p' := fun _ ↦ 𝟙 _) (w := by simp) ≅ 𝟭 (F.DescentData f) :=
@@ -273,6 +284,8 @@ def pullFunctorIdIso :
     rw [pullFunctorObjHom_eq_assoc _ _ _ _ _ q f₁ f₂ rfl]
     simp [mapComp'_id_comp_inv_app_assoc, mapComp'_id_comp_hom_app, ← Functor.map_comp]))
 
+/-- The composition of two functors `pullFunctor` is isomorphic to `pullFunctor` applied
+to the compositions. -/
 @[simps!]
 def pullFunctorCompIso
     {S'' : C} {q : S'' ⟶ S'} {ι'' : Type t''} {X'' : ι'' → C} {f'' : ∀ k, X'' k ⟶ S''}
@@ -284,13 +297,29 @@ def pullFunctorCompIso
         dsimp
         rw [← hr', Category.assoc, w, reassoc_of% w', hr]) :=
   NatIso.ofComponents
-    (fun D ↦ isoMk (fun i ↦ (F.mapComp' _ _ _ (by aesoptoloc)).symm.app _) sorry)
+    (fun D ↦ isoMk (fun _ ↦ (F.mapComp' _ _ _ (by aesoptoloc)).symm.app _) (by
+      intro Y s k₁ k₂ f₁ f₂ hf₁ hf₂
+      dsimp
+      rw [pullFunctorObjHom_eq _ _ _ _ _  (s ≫ r) _ _ rfl,
+        pullFunctorObjHom_eq _ _ _ _ _ (s ≫ q) (f₁ ≫ q' k₁) (f₂ ≫ q' k₂)]
+      dsimp
+      rw [pullFunctorObjHom_eq _ _ _ _ _ (s ≫ r) (f₁ ≫ r' k₁) (f₂ ≫ r' k₂)
+        rfl (by simp [w', reassoc_of% hf₁, reassoc_of% hf₂])]
+      dsimp
+      simp only [Category.assoc]
+      rw [mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app_assoc _ _ _ _ _ _ _
+        (by aesoptoloc) rfl rfl, mapComp'₀₂₃_hom_app _ _ _ _ _ _ _ _ rfl rfl]))
 
 end
 
+variable {f} in
+/-- Up to an equivalence, the category `DescentData` for a pseudofunctor `F` and
+a family of morphisms `f : X i ⟶ S` is unchanged when we replace `S` by an isomorphic object,
+or when we replace `f` by another family which generate the same sieve. -/
 def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j, X' j ⟶ S'}
-  (e : S' ≅ S) {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j ≫ e.hom)
-  {β : ι → ι'} {q' : ∀ i, X i ⟶ X' (β i)} (w' : ∀ i, q' i ≫ f' (β i) = f i ≫ e.inv) :
+    (e : S' ≅ S) {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)}
+    (w : ∀ j, p' j ≫ f (α j) = f' j ≫ e.hom)
+    {β : ι → ι'} {q' : ∀ i, X i ⟶ X' (β i)} (w' : ∀ i, q' i ≫ f' (β i) = f i ≫ e.inv) :
     F.DescentData f ≌ F.DescentData f' where
   functor := pullFunctor F w
   inverse := pullFunctor F w'
@@ -303,8 +332,17 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
   functor_unitIso_comp D := by
     ext j
     dsimp
-    simp
-    sorry
+    simp only [Category.id_comp, Functor.map_comp, Category.assoc]
+    rw [pullFunctorObjHom_eq_assoc _ _ _ _ _  (p' _ ≫ f _) (p' _ ≫ q' _ ≫ p' _) (p' _) (by simp)
+        (by simp [w', reassoc_of% w]),
+      map_eq_pullHom_assoc _ (p' j) (p' j) (p' _ ≫ q' _ ≫ p' _) (by simp) (by simp),
+      D.pullHom_hom _ _ (p' j ≫ f _) (by simp) _ _ (by simp)
+        (by simp [w, reassoc_of% w']) _ _ (by simp) rfl]
+    dsimp
+    rw [← F.mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom_app_assoc _ _ _ _ _ _ rfl rfl (by simp),
+      mapComp'_comp_id_hom_app, mapComp'_id_comp_inv_app_assoc, ← Functor.map_comp_assoc,
+      Iso.inv_hom_id_app]
+    simp [D.hom_self _ _ rfl]
 
 end DescentData
 
