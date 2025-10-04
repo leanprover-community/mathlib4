@@ -191,13 +191,19 @@ theorem pullback_snd [IsStableUnderBaseChange P]
     P (pullback.snd f g) :=
   of_isPullback (IsPullback.of_hasPullback f g) H
 
-theorem baseChange_obj [HasPullbacks C]
-    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
+theorem baseChange_obj [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
+    [∀ {W} (h : W ⟶ S), HasPullback h f] (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
   pullback_snd X.hom f H
 
-theorem baseChange_map [HasPullbacks C]
-    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
+instance {C : Type*} [Category C] {X Y Z W : C} (f : X ⟶ Y)
+    [∀ {W} (h : W ⟶ Y), HasPullback h f] (g : Z ⟶ Y) (h : W ⟶ Z) :
+    HasPullback h (pullback.fst g f) :=
+  IsPullback.hasPullback (IsPullback.of_bot' (IsPullback.of_hasPullback (h ≫ g) f)
+    (IsPullback.of_hasPullback g f))
+
+theorem baseChange_map [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
+    [∀ {W} (h : W ⟶ S), HasPullback h f] {X Y : Over S} (g : X ⟶ Y)
     (H : P g.left) : P ((Over.pullback f).map g).left := by
   let e :=
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
