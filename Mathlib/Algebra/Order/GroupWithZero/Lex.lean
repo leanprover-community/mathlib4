@@ -35,7 +35,7 @@ lemma inl_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preor
   intro x y
   obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   obtain rfl | ⟨y, rfl⟩ := GroupWithZero.eq_zero_or_unit y <;>
-  · simp
+  simp
 
 lemma inl_strictMono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [PartialOrder N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] : StrictMono (inl M₀ N₀) :=
@@ -46,7 +46,7 @@ lemma inr_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZ
   intro x y
   obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   obtain rfl | ⟨y, rfl⟩ := GroupWithZero.eq_zero_or_unit y <;>
-  · simp
+  simp
 
 lemma inr_strictMono [GroupWithZero M₀] [PartialOrder M₀] [LinearOrderedCommGroupWithZero N₀]
     [DecidablePred fun x : N₀ ↦ x = 0] : StrictMono (inr M₀ N₀) :=
