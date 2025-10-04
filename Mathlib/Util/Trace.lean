@@ -1,0 +1,41 @@
+/-
+Copyright (c) 2025 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+
+import Mathlib.Init
+
+/-! # Tracing utilities -/
+
+open Lean
+
+namespace Mathlib.Meta
+
+/--
+A wrapper around `Lean.withTraceNode` where every node wraps a function `k : α → m β`.
+The resulting trace node includes output of the form `{a} ==> {(← k a)}` upon success,
+and `{a} ==> {err}` on error.
+
+We do not include this result on the first line, as it would thwart attempts to group trace nodes
+from the same function name within the Firefox profiler data export.
+
+Typically this should be used in extensible tactics like `norm_num` and `positivity`.
+-/
+def withTraceNodeApplication
+  {α β : Type} {m : Type → Type} [Monad m] [MonadTrace m] [MonadRef m] [AddMessageContext m]
+  [ToMessageData α] [ToMessageData β]
+  [MonadOptions m] [MonadAlwaysExcept Exception m] [MonadLiftT BaseIO m] (cls : Name)
+  (k_name : Name) (k : α → m β) (a : α) (collapsed : Bool := true) (tag : String := "") :
+    m β :=
+  withTraceNode cls
+    (fun e => do
+      let ret_msg := match e with
+      | .ok b => toMessageData b
+      | .error err => err.toMessageData
+      Lean.trace cls fun _ => .group m!"{a}{Format.line}==> {.nest 2 ret_msg}"
+      return m!"{exceptEmoji e} {.ofConstName k_name}")
+    (collapsed := collapsed) (tag := tag)
+    (k a)
+
+end Mathlib.Meta
