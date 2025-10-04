@@ -281,7 +281,7 @@ theorem MemLp.locallyIntegrable [IsLocallyFiniteMeasure μ] {p : ℝ≥0∞}
 
 theorem locallyIntegrable_const_enorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     LocallyIntegrable (fun _ => c) μ :=
-  (memLp_top_const_enorm hc).locallyIntegrable le_top
+  (memLp_const_of_enorm hc).locallyIntegrable le_top
 
 theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrable (fun _ => c) μ :=
@@ -541,7 +541,7 @@ theorem MonotoneOn.memLp_top (hmono : MonotoneOn f s) {a b : X}
   have habove : BddAbove (f '' s) := ⟨f b, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono hy hb.1 (hb.2 hy)⟩
   have : IsBounded (f '' s) := Metric.isBounded_of_bddAbove_of_bddBelow habove hbelow
   rcases isBounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
-  have A : MemLp (fun _ => C) ⊤ (μ.restrict s) := memLp_top_const _
+  have A : MemLp (fun _ => C) ⊤ (μ.restrict s) := memLp_const _
   apply MemLp.mono A (aemeasurable_restrict_of_monotoneOn h's hmono).aestronglyMeasurable
   apply (ae_restrict_iff' h's).mpr
   apply ae_of_all _ fun y hy ↦ ?_
