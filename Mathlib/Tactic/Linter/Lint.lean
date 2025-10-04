@@ -96,4 +96,70 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter dupNamespace
 
-end Mathlib.Linter.DupNamespaceLinter
+end DupNamespaceLinter
+
+/-!
+# The "missing end" linter
+
+The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
+-/
+
+open Lean Elab Command
+
+/-!
+#  The "introsVar" linter
+
+The "introsVar" linter flags uses of `intros <at least one variable>`.
+-/
+
+/-- The "introsVar" linter flags uses of `intros <at least one variable>`.
+It suggests to use `intro` instead. -/
+register_option linter.introsVar : Bool := {
+  defValue := true
+  descr := "enable the introsVar linter"
+}
+
+namespace IntrosVar
+
+/-!
+# `Syntax` filters
+-/
+
+partial
+def _root_.Lean.Syntax.filterMapM {m : Type → Type} [Monad m] (stx : Syntax)
+    (f : Syntax → m (Option Syntax)) :
+    m (Array Syntax) := do
+  let nargs := (← stx.getArgs.mapM (·.filterMapM f)).flatten
+  match ← f stx with
+    | some new => return nargs.push new
+    | none => return nargs
+
+def _root_.Lean.Syntax.filterMap (stx : Syntax) (f : Syntax → Option Syntax) : Array Syntax :=
+  stx.filterMapM (m := Id) f
+
+def _root_.Lean.Syntax.filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
+  stx.filterMap (fun s => if f s then some s else none)
+
+/-- Gets the value of the `linter.introsVar` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.introsVar o
+
+@[inherit_doc Mathlib.Linter.linter.introsVar]
+def introsVarLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    let introsVars := stx.filter fun s =>
+         (s.isOfKind ``Lean.Parser.Tactic.intros) && (s.find? (·.isOfKind `ident)).isSome
+    for i in introsVars do
+      let vars := i.filter (·.isOfKind `ident)
+      let newIntro : Syntax :=  -- recreate `intro [one fewer variable]`
+        .node i.getHeadInfo ``Lean.Parser.Tactic.intro #[mkAtom "intro", .node default `null vars]
+      Linter.logLint linter.introsVar i (m!"use '{newIntro}' instead.")
+
+initialize addLinter introsVarLinter
+
+end IntrosVar
+
+end Mathlib.Linter
