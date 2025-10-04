@@ -138,44 +138,16 @@ section Opposite
 
 variable {R S : CommRingCat.{u}ᵒᵖ} (f : S ⟶ R)
 
-/-- If `f : S ⟶ R` is a faithfully flat map in `CommRingCatᵒᵖ`, then `forkPushoutCoconeSelf` is
-an equalizer diagram. See `isLimitForkPushoutSelfOp` for the pushout version. -/
-noncomputable def isLimitforkPushoutCoconeSelfOp (hf : f.unop.hom.FaithfullyFlat) :
-    IsLimit (forkPushoutCoconeSelf f.unop) :=
-  (Fork.isLimitEquivOfIsos _ (equalizerFork _ _) (Iso.refl _) (Iso.refl _) (RingEquiv.ofBijective _
-    (toEqualizerPushoutCoconeSelf_bij_of_faithfullyFlat _ hf)).toCommRingCatIso (by simp) (by simp)
-      rfl).symm (CommRingCat.equalizerForkIsLimit _ _)
-
-/-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then the fork
+/-- If `f : S ⟶ R` is a map in `CommRingCatᵒᵖ` with faithfully flat `f.unop`, then the fork
 ```
-        S ---inl---> pushout f f
-R --f-->
-        S ---inr---> pushout f f
+                  S.unop ---inl---> pushout f.unop f.unop
+R.unop --f.unop-->
+                  S.unop ---inr---> pushout f.unop f.unop
 ```
-is an equalizer diagram. See `isLimitforkPushoutCoconeSelfOp` for the pushoutCocone version. -/
+is an equalizer diagram. -/
 noncomputable def isLimitForkPushoutSelfOp (hf : f.unop.hom.FaithfullyFlat) :
     IsLimit (Fork.ofι f.unop pushout.condition) := by
   algebraize [f.unop.hom]
-  let : IsPushout _ _ _ _ :=
-    ⟨⟨PushoutCocone.condition (pushoutCocone R.unop S.unop S.unop)⟩,
-      ⟨pushoutCoconeIsColimit R.unop S.unop S.unop⟩⟩
-  exact Fork.isLimitEquivOfIsos _ _ (Iso.refl _) (IsPushout.isoPushout this) (Iso.refl _)
-    (IsPushout.inl_isoPushout_hom this).symm (IsPushout.inr_isoPushout_hom this).symm rfl
-      (isLimitforkPushoutCoconeSelf f.unop hf)
-
-#check ((Fork.ofι f.unop pushout.condition) :
-  Cone (parallelPair (pushout.inl f.unop f.unop) (pushout.inr f.unop f.unop)))
-#check (parallelPair (pushout.inl f.unop f.unop) (pushout.inr f.unop f.unop) :
-  WalkingParallelPair ⥤ CommRingCat)
-
--- /-- A morphism which is a coequalizer for its kernel pair is a regular epi. -/
--- noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
---     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
---   W := pullback f f
---   left := pullback.fst f f
---   right := pullback.snd f f
---   w := pullback.condition
---   isColimit := hc
 
 end Opposite
 
