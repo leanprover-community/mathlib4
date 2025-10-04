@@ -53,6 +53,10 @@ theorem IsTotallyReal.complexEmbedding_isReal [IsTotallyReal K] (φ : K →+* �
     ComplexEmbedding.IsReal φ :=
   isReal_mk_iff.mp <| isReal (InfinitePlace.mk φ)
 
+@[simp]
+theorem IsTotallyReal.mult_eq [IsTotallyReal K] (w : InfinitePlace K) : mult w = 1 :=
+  mult_isReal ⟨w, isReal w⟩
+
 theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F] (f : F ≃+* K) : IsTotallyReal K where
   isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
 
@@ -69,6 +73,8 @@ instance [IsTotallyReal K] (F : IntermediateField ℚ K) : IsTotallyReal F :=
 
 instance [IsTotallyReal K] (F : Subfield K) : IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
+
+
 
 variable (K)
 
@@ -164,6 +170,10 @@ theorem nrRealPlaces_eq_zero_iff :
 theorem IsTotallyComplex.complexEmbedding_not_isReal [IsTotallyComplex K] (φ : K →+* ℂ) :
     ¬ ComplexEmbedding.IsReal φ :=
   isReal_mk_iff.not.mp <| not_isReal_iff_isComplex.mpr <| isComplex (InfinitePlace.mk φ)
+
+@[simp]
+theorem IsTotallyComplex.mult_eq [IsTotallyComplex K] (w : InfinitePlace K) : mult w = 2 :=
+  mult_isComplex ⟨w, isComplex w⟩
 
 variable (K)
 

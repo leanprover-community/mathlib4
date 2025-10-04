@@ -680,7 +680,6 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
 theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
-@[to_additive]
 theorem not_finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
     ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
 
