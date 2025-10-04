@@ -304,8 +304,7 @@ corners on both `src` and `tgt`. If successful, return both models.
 
 `eterm` is the term having type `etype`: this is used only for better diagnostics.
 If `estype` is `some`, we verify that `src` and `estype` are defeq. -/
-def findModels (etype eterm : Expr) (estype : Option Expr) :
-    TermElabM (Option (Expr × Expr)) := do
+def findModels (etype eterm : Expr) (estype : Option Expr) : TermElabM (Option (Expr × Expr)) := do
   match etype with
   | .forallE _ src tgt _ =>
     if tgt.hasLooseBVars then
