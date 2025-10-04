@@ -427,6 +427,16 @@ theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB :
       exact posSemidef_iff_isHermitian_and_spectrum_nonneg.mp
         (posSemidef_conjTranspose_mul_self _) |>.2
 
+/-- The matrix `vecMulVec a (star a)` is always positive semi-definite. -/
+theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
+    (vecMulVec a (star a)).PosSemidef := by
+  simp [vecMulVec_eq Unit, ← conjTranspose_replicateCol, posSemidef_self_mul_conjTranspose]
+
+/-- The matrix `vecMulVec (star a) a` is always postive semi-definite. -/
+theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
+    (vecMulVec (star a) a).PosSemidef := by
+  simp [vecMulVec_eq Unit, ← conjTranspose_replicateRow, posSemidef_conjTranspose_mul_self]
+
 /-!
 ## Positive definite matrices
 -/
@@ -560,6 +570,41 @@ theorem conjTranspose_mul_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
     PosDef (Aᴴ * A) := by
   classical
   simpa using conjTranspose_mul_mul_same .one hA
+
+theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matrix m n R)
+    (hA : Function.Injective A.vecMul) :
+    PosDef (A * Aᴴ) := by
+  classical
+  simpa using mul_mul_conjTranspose_same .one hA
+
+/-- If `dotProduct · a` is injective, then `vecMulVec a (star a)` is positive definite.
+
+In a nontrivial commutative ring with nontrivial index, this is never positive definite
+(see `Matrix.not_posDef_vecMulVec`). -/
+theorem _root_.Matrix.posDef_vecMulVec_self_star [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
+    (ha : Function.Injective (dotProduct · a)) :
+    (vecMulVec a (star a)).PosDef := by
+  simp only [vecMulVec_eq Unit, ← conjTranspose_replicateCol]
+  exact mul_conjTranspose_self _ fun a b => by simp [← ha.eq_iff, funext_iff, vecMul]
+
+/-- If `dotProduct a` is injective, then `vecMulVec (star a) a` is positive definite.
+
+In a nontrivial commutative ring with nontrivial index, this is never positive definite
+(see `Matrix.not_posDef_vecMulVec`). -/
+theorem _root_.Matrix.posDef_vecMulVec_star_self [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
+    (ha : Function.Injective (dotProduct a)) :
+    (vecMulVec (star a) a).PosDef := by
+  simp only [vecMulVec_eq Unit, ← conjTranspose_replicateRow]
+  exact conjTranspose_mul_self _ fun a b => by simp [← ha.eq_iff, funext_iff, mulVec]
+
+/-- In a nontrivial commutative ring with nontrivial index, the matrices
+`vecMulVec a (star a)` and `vecMulVec (star a) a` are never positive definite. -/
+theorem _root_.Matrix.not_posDef_vecMulVec [Nontrivial n] [Nontrivial R'] (a : n → R') :
+    ¬ (vecMulVec a (star a)).PosDef ∧ ¬ (vecMulVec (star a) a).PosDef := by
+  rw [← PosDef.transpose_iff, transpose_vecMulVec, and_self]
+  rintro ⟨h1, h2⟩
+  obtain ⟨b, hb, H⟩ := exists_ne_zero_dotProduct_eq_zero (star a)
+  simpa [vecMulVec_mulVec, H] using h2 (star b) (star_ne_zero.mpr hb)
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
 
