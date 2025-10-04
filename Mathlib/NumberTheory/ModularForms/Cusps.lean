@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.GroupTheory.Commensurable
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
@@ -16,7 +15,7 @@ import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 We define the cusps of a subgroup of `GL(2, ℝ)` as the fixed points of parabolic elements.
 -/
 
-open Matrix SpecialLinearGroup Filter Polynomial OnePoint
+open Matrix SpecialLinearGroup GeneralLinearGroup Filter Polynomial OnePoint
 
 open scoped MatrixGroups LinearAlgebra.Projectivization
 
@@ -119,6 +118,12 @@ lemma Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z (𝒢 : Subgroup (GL (Fin 2) 
 end IsCusp
 
 section CuspOrbits
+/-!
+## Cusp orbits
+
+We consider the orbits for the action of `𝒢` on its own cusps. The main result is that if
+`[𝒢.IsArithmetic]` holds, then this set is finite.
+-/
 
 /-- The action of `𝒢` on its own cusps. -/
 def cusps_subMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) : SubMulAction 𝒢 (OnePoint ℝ) where
@@ -164,3 +169,177 @@ instance (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] : Finite (CuspOr
   .of_surjective _ (surjective_cosetToCuspOrbit 𝒢)
 
 end CuspOrbits
+
+section Width
+/-!
+## Width of a cusp
+
+We define the *strict width* of `𝒢` at `∞` to be the smallest `h > 0` such that `[1, h; 0, 1] ∈ 𝒢`,
+or `0` if no such `h` exists. (We say "strict" because the width of a subgroup `Γ ⊆ SL(2, ℤ)` is
+usually defined to be the smallest `h > 0` such that `±[1, h; 0, 1] ∈ Γ`, but we assume the
+positive sign here.)
+-/
+
+variable (K : Type*) [Ring K]
+
+/-- The map sending `x` to `[1, x; 0, 1]` (bundled as an `AddChar`). -/
+def Matrix.GeneralLinearGroup.upperRightHom : AddChar K (GL (Fin 2) K) where
+  toFun x := ⟨!![1, x; 0, 1], !![1, -x; 0, 1], by simp [one_fin_two], by simp [one_fin_two]⟩
+  map_zero_eq_one' := by simp [Units.ext_iff, one_fin_two]
+  map_add_eq_mul' a b := by simp [Units.ext_iff, add_comm]
+
+variable {K} in
+@[simp] lemma Matrix.GeneralLinearGroup.upperRightHom_apply {x : K} : (upperRightHom K x) =
+    ⟨!![1, x; 0, 1], !![1, -x; 0, 1], by simp [one_fin_two], by simp [one_fin_two]⟩ :=
+  rfl
+
+lemma continuous_upperRightHom [TopologicalSpace K] [IsTopologicalRing K] :
+    Continuous (upperRightHom K) := by
+  simp only [continuous_induced_rng, Function.comp_def, upperRightHom_apply,
+    Units.embedProduct_apply, Units.inv_mk, continuous_prodMk, MulOpposite.unop_op]
+  constructor <;>
+  · refine continuous_matrix fun i j ↦ ?_
+    fin_cases i <;>
+    fin_cases j <;>
+    simp [continuous_const, continuous_neg, continuous_id']
+
+lemma injective_upperRightHom : Function.Injective (upperRightHom K) := by
+  refine (injective_iff_map_eq_zero (upperRightHom K).toAddMonoidHom).mpr ?_
+  simp [Units.ext_iff, one_fin_two]
+
+variable {K}
+
+namespace Subgroup.HasDetPlusMinusOne
+
+variable {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.HasDetPlusMinusOne]
+
+lemma isParabolic_iff_of_upperTriangular {g} (hg : g ∈ 𝒢) (hg10 : g 1 0 = 0) :
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom ℝ x) ∨ (∃ x ≠ 0, g = -upperRightHom ℝ x) := by
+  rw [GeneralLinearGroup.isParabolic_iff_of_upperTriangular hg10]
+  constructor
+  · rintro ⟨hg00, hg01⟩
+    have : g 1 1 ^ 2 = 1 := by
+      have : g.det = g 1 1 ^ 2 := by rw [val_det_apply, det_fin_two, hg10, hg00]; ring
+      have h_det : g.det = 1 ∨ g.det = -1 := HasDetPlusMinusOne.det_eq hg
+      simp only [Units.ext_iff, Units.val_one, Units.val_neg, this] at h_det
+      exact h_det.resolve_right (neg_one_lt_zero.trans_le <| sq_nonneg _).ne'
+    apply (sq_eq_one_iff.mp this).imp <;> intro hg11 <;> simp only [Units.ext_iff]
+    · refine ⟨g 0 1, hg01, ?_⟩
+      rw [g.val.eta_fin_two]
+      simp [upperRightHom_apply, hg00, hg10, hg11]
+    · refine ⟨-g 0 1, neg_eq_zero.not.mpr hg01, ?_⟩
+      rw [g.val.eta_fin_two]
+      simp [upperRightHom_apply, hg00, hg10, hg11]
+  · rintro (⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩) <;>
+    simpa using hx
+
+end Subgroup.HasDetPlusMinusOne
+
+/-- For a subgroup `𝒢` of `GL(2, K)`, this is the additive group of `x : K` such that
+`[1, x; 0, 1] ∈ 𝒢`. -/
+def Subgroup.strictPeriods (𝒢 : Subgroup (GL (Fin 2) K)) : AddSubgroup K :=
+  (toAddSubgroup 𝒢).comap (upperRightHom K).toAddMonoidHom
+
+/-- For a subgroup `𝒢` of `GL(2, K)`, this is the additive group of `x : K` such that
+`±[1, x; 0, 1] ∈ 𝒢`. -/
+noncomputable def Subgroup.periods (𝒢 : Subgroup (GL (Fin 2) K)) : AddSubgroup K :=
+  𝒢.adjoinNegOne.strictPeriods
+
+@[simp] lemma Subgroup.mem_strictPeriods_iff {𝒢 : Subgroup (GL (Fin 2) K)} {x : K} :
+    x ∈ 𝒢.strictPeriods ↔ upperRightHom K x ∈ 𝒢 := by
+  simp [strictPeriods]
+
+@[simp] lemma Subgroup.strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
+  ext x
+  simp only [mem_strictPeriods_iff, MonoidHom.mem_range, Units.ext_iff, mapGL_coe_matrix,
+    map_apply_coe]
+  refine ⟨fun ⟨g, hg⟩ ↦ ⟨g 0 1, by simpa using congr_fun₂ hg 0 1⟩, ?_⟩
+  rintro ⟨m, rfl⟩
+  use ModularGroup.T ^ m
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow]
+
+/-- If `𝒢` is discrete, so is its strict period subgroup. -/
+instance [TopologicalSpace K] [IsTopologicalRing K] (𝒢 : Subgroup (GL (Fin 2) K))
+    [hG : DiscreteTopology 𝒢] : DiscreteTopology 𝒢.strictPeriods := by
+  let H := ↑𝒢 ∩ (Set.range (upperRightHom K))
+  have hH : DiscreteTopology H := hG.of_subset Set.inter_subset_left
+  have : Set.MapsTo (upperRightHom K) 𝒢.strictPeriods H := fun x hx ↦ by
+    rw [SetLike.mem_coe, Subgroup.mem_strictPeriods_iff] at hx
+    tauto
+  exact .of_continuous_injective ((continuous_upperRightHom K).restrict this)
+    (this.restrict_inj.mpr (injective_upperRightHom K).injOn)
+
+lemma AddSubgroup.discrete_iff_cyclic {A : AddSubgroup ℝ} :
+    IsAddCyclic A ↔ DiscreteTopology A := by
+  rw [AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq_top]
+  constructor
+  · rintro ⟨g, rfl⟩
+    apply NormedSpace.discreteTopology_zmultiples
+  · intro hA
+    have := A.dense_or_cyclic
+    simp only [← AddSubgroup.zmultiples_eq_closure, Eq.comm (a := A)] at this
+    refine this.resolve_left fun h ↦ ?_
+    -- remains to show a contradiction assuming `A` is dense and discrete
+    obtain ⟨U, hU⟩ := discreteTopology_subtype_iff'.mp hA 0 (by simp)
+    obtain ⟨j, hj⟩ := mem_closure_iff.mp (h.diff_singleton 0 0) U hU.1
+      (by simpa only [← Set.singleton_subset_iff, ← hU.2] using Set.inter_subset_left)
+    grind
+
+/-- The strict width of the cusp `∞`, i.e. the `x` such that `𝒢.strictPeriods = zmultiples x`, or
+0 if no such `x` exists. -/
+noncomputable def Subgroup.strictWidthInfty (𝒢 : Subgroup (GL (Fin 2) ℝ)) : ℝ :=
+  by classical exact if h : DiscreteTopology 𝒢.strictPeriods then
+  |Exists.choose <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
+      <| AddSubgroup.discrete_iff_cyclic.mpr h|
+  else 0
+
+/-- The width of the cusp `∞`, i.e. the `x` such that `𝒢.periods = zmultiples x`, or 0 if no such
+`x` exists. -/
+noncomputable def Subgroup.widthInfty (𝒢 : Subgroup (GL (Fin 2) ℝ)) : ℝ :=
+  𝒢.adjoinNegOne.strictWidthInfty
+
+lemma Subgroup.strictWidth_nonneg (𝒢 : Subgroup (GL (Fin 2) ℝ)) : 0 ≤ 𝒢.strictWidthInfty := by
+  unfold Subgroup.strictWidthInfty; aesop
+
+lemma Subgroup.strictPeriods_eq_zmultiples_strictWidth {𝒢 : Subgroup (GL (Fin 2) ℝ)}
+    [DiscreteTopology 𝒢.strictPeriods] :
+    𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
+  simp only [Subgroup.strictWidthInfty, dif_pos]
+  -- the following should be a simp lemma `AddSubgroup.zmultiples_abs`
+  have (a : ℝ) : AddSubgroup.zmultiples |a| = AddSubgroup.zmultiples a := by
+    rcases abs_cases a with (h | h) <;> simp only [h, AddSubgroup.zmultiples_neg]
+  rw [this, Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
+    <| AddSubgroup.discrete_iff_cyclic.mpr inferInstance]
+
+lemma Subgroup.strictWidthInfty_mem_strictPeriods (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
+    𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
+  by_cases h : DiscreteTopology 𝒢.strictPeriods
+  · simp [strictPeriods_eq_zmultiples_strictWidth]
+  · simpa only [strictWidthInfty, dif_neg h] using 𝒢.strictPeriods.zero_mem
+
+lemma Subgroup.strictWidth_pos_iff {𝒢 : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology 𝒢]
+    [𝒢.HasDetPlusMinusOne] : 0 < 𝒢.strictWidthInfty ↔ IsCusp ∞ 𝒢 := by
+  constructor
+  · refine fun h ↦ ⟨_, mem_strictPeriods_iff.mpr 𝒢.strictWidthInfty_mem_strictPeriods, ?_, ?_⟩
+    · rw [GeneralLinearGroup.isParabolic_iff_of_upperTriangular (by simp)]
+      simpa using h.ne'
+    · rw [smul_infty_eq_self_iff]
+      simp
+  · -- Hard implication: if `∞` is a cusp, show the strict width is positive.
+    rintro ⟨g, hgg, hgp, hgi⟩
+    apply 𝒢.strictWidth_nonneg.lt_of_ne'
+    rw [← AddSubgroup.zmultiples_ne_bot]
+    simp only [AddSubgroup.ne_bot_iff_exists_ne_zero, Subtype.exists, Ne, AddSubgroup.mk_eq_zero,
+      exists_prop, and_comm, ← strictPeriods_eq_zmultiples_strictWidth, mem_strictPeriods_iff]
+    -- We have some `g ∈ 𝒢` which is parabolic and fixes `∞`. So `g = ±[1, x; 0, 1]` some `x ≠ 0`.
+    rw [smul_infty_eq_self_iff] at hgi
+    rw [Subgroup.HasDetPlusMinusOne.isParabolic_iff_of_upperTriangular hgg hgi] at hgp
+    rcases hgp with ⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩
+    · -- If `g = [1, x; 0, 1]`, we're done
+      exact ⟨x, hx, hgg⟩
+    · -- If `g = -[1, x; 0, 1]` then `g ^ 2 = [1, 2 * x; 0, 1]`.
+      exact ⟨2 • x, by grind,
+        by simpa only [AddChar.map_nsmul_eq_pow, neg_sq] using pow_mem hgg 2⟩
+
+end Width
