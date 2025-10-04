@@ -50,9 +50,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 
 -/
 
-open scoped Manifold Topology ContDiff
-
-open Function Set
+open scoped Topology ContDiff
+open Function Set Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]

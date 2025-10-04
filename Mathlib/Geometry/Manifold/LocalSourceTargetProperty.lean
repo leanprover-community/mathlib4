@@ -22,13 +22,14 @@ local property of this form.
 
 ## Main definitions and results
 
-* `LocalSourceTargetPropertyAt` captures a local property of the above form: for each `f: M → N`,
-  and pair of charts `φ` of `M` and `ψ` of `N`, the local property is either safisfied or not.
+* `Manifold.LocalSourceTargetPropertyAt` captures a local property of the above form:
+  for each `f: M → N`, and pair of charts `φ` of `M` and `ψ` of `N`, the local property is either
+  safisfied or not.
   We ask that the property be stable under congruence and under restriction of `φ`.
-* `LiftSourceTargetPropertyAt f x P`, where `P` is a `LocalSourceTargetPropertyAt`,
+* `Manifold.LiftSourceTargetPropertyAt f x P`, where `P` is a `LocalSourceTargetPropertyAt`,
   defines a local property of functions of the above shape:
   `f` has this property at `x` if there exist charts `φ` and `ψ` such that `P f φ ψ` holds.
-* `LiftSourceTargetPropertyAt.congr_of_eventuallyEq`: if `f` has property `P` at `x`
+* `Manifold.LiftSourceTargetPropertyAt.congr_of_eventuallyEq`: if `f` has property `P` at `x`
   and `g` equals `f` near `x`, then `g` also has property `P` at `x`.
 
 -/
@@ -45,6 +46,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {n : WithTop ℕ∞}
+
+namespace Manifold
 
 /-- Structure recording good behaviour of a property of functions `M → N` w.r.t. to compatible
 choices of both a chart on `M` and `N`. Currently, we ask for the property being stable under
@@ -191,3 +194,5 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
     exact hP.mono_source hs hf.property
 
 end LiftSourceTargetPropertyAt
+
+end Manifold
