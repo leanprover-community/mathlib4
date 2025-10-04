@@ -448,15 +448,15 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
 
-theorem get_surjective_iff {l : List α} : (∀ x, x ∈ l) ↔ l.get.Surjective :=
-  ⟨fun h x ↦ mem_iff_get.mp <| h x, fun h x ↦ mem_iff_get.mpr <| h x⟩
+theorem get_surjective_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l) :=
+  ⟨fun h x ↦ mem_iff_get.mpr <| h x, fun h x ↦ mem_iff_get.mp <| h x⟩
 
 theorem getElem_surjective_iff {l : List α} :
-    (∀ x, x ∈ l) ↔ (fun (n : Fin l.length) ↦ l[n]).Surjective :=
+    (fun (n : Fin l.length) ↦ l[n]).Surjective ↔ (∀ x, x ∈ l) :=
   get_surjective_iff
 
-theorem getElem?_surjective_iff {l : List α} : (∀ x, x ∈ l) ↔ (fun (n : ℕ) ↦ l[n]?).Surjective := by
-  refine ⟨fun h x ↦ ?_, fun h x ↦ mem_iff_getElem?.mpr <| h x⟩
+theorem getElem?_surjective_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjective ↔ (∀ x, x ∈ l) := by
+  refine ⟨fun h x ↦ mem_iff_getElem?.mpr <| h x, fun h x ↦ ?_⟩
   cases x with
   | none => exact ⟨l.length, getElem?_eq_none le_rfl⟩
   | some x => exact mem_iff_getElem?.mp <| h x
