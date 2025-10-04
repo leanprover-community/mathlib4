@@ -104,7 +104,7 @@ hypothesis for the above cases. Therefore, it is (hopefully) fast enough to alwa
 -- TODO: document how this elaborator works, any gotchas, etc.
 elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
-  let etype ← instantiateMVars <|← inferType e
+  let etype ← whnf <|← instantiateMVars <|← inferType e
   match etype with
   | .forallE x base (mkApp3 (.const ``Bundle.Trivial _) E E' _) _ =>
     trace[TotalSpaceMk] "Section of a trivial bundle"
