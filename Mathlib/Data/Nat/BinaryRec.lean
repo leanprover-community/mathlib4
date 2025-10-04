@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
 import Batteries.Tactic.Alias
-import Mathlib.Data.Nat.Init
+import Mathlib.Init
 
 /-!
 # Binary recursion on `Nat`
@@ -57,7 +57,7 @@ theorem bit_true_apply (n) : bit true n = (2 * n + 1) :=
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   cases n <;> cases b <;> simp [bit, Nat.two_mul, ← Nat.add_assoc]
 
-theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
+theorem bit_ne_zero_iff {n : Nat} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
   simp
 
 /-- For a predicate `motive : Nat → Sort u`, if instances can be
@@ -148,15 +148,13 @@ theorem bitCasesOn_bit (h : ∀ b n, motive (bit b n)) (b : Bool) (n : Nat) :
 
 @[simp]
 theorem binaryRec_zero (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
-    binaryRec zero bit 0 = zero := by
-  rw [binaryRec]
-  simp
+    binaryRec zero bit 0 = zero := rfl
 
 @[simp]
 theorem binaryRec_one (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
     binaryRec (motive := motive) zero bit 1 = bit true 0 zero := rfl
 
-lemma log2_eq_succ_log2_shiftRight {n : ℕ} (hn : n >>> 1 ≠ 0) : n.log2 = (n >>> 1).log2.succ :=
+theorem log2_eq_succ_log2_shiftRight {n : Nat} (hn : n >>> 1 ≠ 0) : n.log2 = (n >>> 1).log2.succ :=
   (log2_eq_iff (by rintro rfl; exact hn rfl)).mpr
     ⟨Nat.mul_le_of_le_div _ _ _ (log2_self_le hn), (div_lt_iff_lt_mul <| by decide).mp lt_log2_self⟩
 
