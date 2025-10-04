@@ -79,8 +79,8 @@ private theorem chi_not_in_q_aux (q : Submodule K (Dual K H))
     (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)) :
     ⁅x_χ, m_pos⁆ = 0 ∧ ⁅x_χ, m_neg⁆ = 0 ∧ ⁅x_χ, m_h⁆ = 0 := by
   let S := rootSystem H
-  have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) :
-    ∃ i, S.root i = γ.toLinear := ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
+  have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = γ.toLinear :=
+    ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
   have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
     by_contra h_plus_ne_bot
     let γ : Weight K H L := ⟨χ.toLinear + α.1.toLinear, h_plus_ne_bot⟩
