@@ -17,6 +17,8 @@ import Mathlib.Topology.Metrizable.Uniformity
 # Topology on extended non-negative reals
 -/
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 open Filter Function Metric Set Topology

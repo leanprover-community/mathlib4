@@ -14,6 +14,8 @@ This file provides lemmas about Cauchy sequences in terms of infinite sums and i
 in the reals.
 -/
 
+assert_not_exists Cardinal
+
 open Filter Finset NNReal Topology
 
 variable {α β : Type*} [PseudoMetricSpace α] {f : ℕ → α} {a : α}
