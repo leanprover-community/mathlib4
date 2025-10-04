@@ -188,7 +188,7 @@ def toWeakSpaceCLM : E →L[𝕜] WeakSpace 𝕜 E where
 variable (𝕜 E) in
 @[simp]
 theorem toWeakSpaceCLM_eq_toWeakSpace (x : E) :
-    toWeakSpaceCLM 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
+    toWeakSpaceCLM 𝕜 E x = toWeakSpace 𝕜 E x := rfl
 
 theorem toWeakSpaceCLM_bijective :
     Function.Bijective (toWeakSpaceCLM 𝕜 E) :=

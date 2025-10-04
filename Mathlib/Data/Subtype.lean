@@ -120,8 +120,7 @@ def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : S
 
 @[simp, grind =]
 theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
-    restrict p f x = f x.1 := by
-  rfl
+    restrict p f x = f x.1 := rfl
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
     restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
