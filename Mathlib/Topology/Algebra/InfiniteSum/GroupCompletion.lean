@@ -22,7 +22,7 @@ theorem hasSum_iff_hasSum_compl (f : β → α) (a : α) :
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if it is summable in
 `Completion α` and its sum in `Completion α` lies in the range of `toCompl : α →+ Completion α`. -/
-theorem summable_iff_summable_compl_and_tsum_mem [L.NeBot] (f : β → α) :
+theorem summable_iff_summable_compl_and_tsum_mem (f : β → α) :
     Summable f L ↔ Summable (toCompl ∘ f) L ∧ ∑'[L] i, toCompl (f i) ∈ Set.range toCompl :=
   (isDenseInducing_toCompl α).summable_iff_tsum_comp_mem_range f
 
