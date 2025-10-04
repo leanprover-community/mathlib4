@@ -416,6 +416,14 @@ theorem symm_trans_self (e : α ≃+*o β) : e.symm.trans e = OrderRingIso.refl 
 
 end LE
 
+variable {R S : Type*} [Mul R] [Add R] [Mul S] [Add S] [Preorder R] [Preorder S]
+
+theorem lt_symm_apply (e : R ≃+*o S) {x : R} {y : S} : x < e.symm y ↔ e x < y := by
+  simpa using e.toOrderIso.lt_symm_apply
+
+theorem symm_apply_lt (e : R ≃+*o S) {x : R} {y : S} : e.symm y < x ↔ y < e x := by
+  simpa using e.toOrderIso.symm_apply_lt
+
 section NonAssocSemiring
 
 variable [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
