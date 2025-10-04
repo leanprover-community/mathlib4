@@ -6645,6 +6645,7 @@ import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.FiberPartition
 import Mathlib.Topology.Filter
+import Mathlib.Topology.FoldTrans
 import Mathlib.Topology.GDelta.Basic
 import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.GDelta.UniformSpace
@@ -6871,6 +6872,7 @@ import Mathlib.Topology.Spectral.Basic
 import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.Spectral.Prespectral
 import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Subpath
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.UniformSpace.AbsoluteValue
