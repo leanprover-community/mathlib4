@@ -950,11 +950,9 @@ variable {κ X : Type*} [MeasurableSpace X]
 lemma measurable_curry : Measurable (@curry ι κ X) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
+-- This cannot be tagged with `fun_prop` because `fun_prop` can see through `Function.uncurry`.
 @[measurability]
-lemma measurable_uncurry : Measurable (@uncurry ι κ X) := by
-  refine measurable_pi_lambda _ fun _ ↦ ?_
-  simp only [uncurry]
-  fun_prop
+lemma measurable_uncurry : Measurable (@uncurry ι κ X) := by fun_prop
 
 @[fun_prop, measurability]
 lemma measurable_equivCurry : Measurable (Equiv.curry ι κ X) := measurable_curry
