@@ -6589,8 +6589,10 @@ import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.ContinuousMap.Bounded.Star
+import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.ContinuousMap.Compact
+import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.ContinuousMap.CompactlySupported.Basic
 import Mathlib.Topology.ContinuousMap.CompactlySupported.Bounded
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
