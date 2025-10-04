@@ -176,6 +176,7 @@
   "Mathlib.Tactic.TermCongr",
   "Mathlib.Tactic.ToAdditive",
   "Mathlib.Tactic.ToAdditive.Frontend",
+  "Mathlib.Tactic.ToDual",
   "Mathlib.Tactic.ToExpr",
   "Mathlib.Tactic.ToLevel",
   "Mathlib.Tactic.Trace",
@@ -226,6 +227,7 @@
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
   "Mathlib.Tactic.ToAdditive.Frontend": ["Lean.Meta.Tactic.TryThis"],
+  "Mathlib.Tactic.ToDual": ["Mathlib.Tactic.ToAdditive.ToDual"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
   ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
