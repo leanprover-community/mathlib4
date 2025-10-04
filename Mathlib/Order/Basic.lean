@@ -741,6 +741,12 @@ instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
 instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
   ⟨((· ⊔ ·) : α → α → α)⟩
 
+instance instIsTransLE [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
+  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
+
+instance instIsTransLT [LT α] [T : IsTrans α LT.lt] : IsTrans αᵒᵈ LT.lt where
+  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
+
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
