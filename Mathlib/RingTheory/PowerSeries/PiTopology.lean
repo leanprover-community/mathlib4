@@ -8,6 +8,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-! # Product topology on power series
 
@@ -156,6 +157,31 @@ theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFinite
   exact coeff_of_lt_order _ <| by simpa using (hi k hk.le)
 
 end Sum
+
+section Prod
+
+/-- A family of `PowerSeries` in the form `1 + f i` is multipliable if order of `f i` tends to
+infinity. -/
+theorem multipliable_one_add_of_tendsto_order_atTop_nhds_top [CommSemiring R]
+    {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] {f : ι → R⟦X⟧}
+    (h : Tendsto (fun i ↦ (f i).order) atTop (nhds ⊤)) :
+    Multipliable (1 + f ·) := by
+  rcases isEmpty_or_nonempty ι with hempty | hempty
+  · apply multipliable_empty
+  apply multipliable_one_add_of_summable_prod
+  refine (summable_iff_summable_coeff _).mpr fun n ↦ (summable_of_finite_support ?_)
+  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
+  obtain ⟨i, hi⟩ := h n
+  apply (Finset.Iio i).powerset.finite_toSet.subset
+  suffices ∀ s : Finset ι, coeff n (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
+  intro s hs
+  contrapose! hs
+  obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
+  rw [Set.mem_Iio, not_lt] at hxi
+  refine coeff_of_lt_order _<| (hi x hxi).trans_le <| le_trans ?_ (le_order_prod _ _)
+  apply Finset.single_le_sum (by simp) hxs
+
+end Prod
 
 end WithPiTopology
 
