@@ -242,6 +242,9 @@ there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `u ↦ (u, 0)`.
 
 In other words, `f` is an immersion at each `x ∈ M`.
+
+This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
+being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`.
 -/
 def IsImmersion (f : M → M') : Prop := ∀ x, IsImmersionAt F I I' n f x
 
