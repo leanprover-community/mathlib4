@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Vasilii Nesterov
 -/
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Seq.Defs
 import Mathlib.Data.ENat.Basic
 import Mathlib.Tactic.ENatToNat
@@ -22,6 +23,10 @@ namespace Stream'
 namespace Seq
 
 variable {α : Type u} {β : Type v} {γ : Type w}
+
+theorem terminatedAt_le {m n : ℕ} (hmn : m ≤ n) (s : Seq α)
+    (h : s.TerminatedAt m) : s.TerminatedAt n :=
+  Nat.le_induction_step_iff.mp @s.property _ _ hmn h
 
 section length
 
@@ -416,6 +421,82 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
       case cons _ s => exact ⟨s, t, rfl, rfl⟩
 
 end Map
+
+section Subsequence
+
+variable {f : ℕ → ℕ} (hf : Monotone f) {g : ℕ → ℕ} (hg : Monotone g) (s : Seq α)
+
+@[simp]
+theorem subsequence_get? (n : ℕ) : (s.subsequence hf).get? n = s.get? (f n) := rfl
+
+@[simp]
+theorem subsequence_nil : (nil : Seq α).subsequence hf = nil := rfl
+
+@[simp]
+theorem subsequence_cons a (s : Seq α) :
+    (cons a s).subsequence (Monotone.comp Order.succ_mono hf) = s.subsequence hf := by
+  ext n
+  simp
+
+theorem subsequence_cons' (h : f 0 ≠ 0) a (s : Seq α) :
+    (cons a s).subsequence hf = s.subsequence (Monotone.comp Order.pred_mono hf) := by
+  ext n
+  dsimp
+  have := hf (zero_le n)
+  nth_rw 1 [show f n = f n - 1 + 1 by omega]
+  simp
+
+@[simp]
+theorem subsequence_id : s.subsequence monotone_id = s := rfl
+
+@[simp]
+theorem subsequence_succ_eq_tail : s.subsequence Order.succ_mono = s.tail := by
+  ext n
+  simp
+
+@[simp]
+theorem subsequence_tail_pred (h : f 0 ≠ 0) (s : Seq α) :
+    s.tail.subsequence (Monotone.comp Order.pred_mono hf) = s.subsequence hf := by
+  ext n
+  dsimp
+  have := hf (zero_le n)
+  rw [show f n - 1 + 1 = f n by omega]
+
+theorem subsequence_comp :
+    s.subsequence (Monotone.comp hg hf) = (s.subsequence hg).subsequence hf := by
+  ext n
+  simp
+
+@[simp]
+theorem terminatedAt_subsequence_iff {n : ℕ} :
+    (s.subsequence hf).TerminatedAt n ↔ s.TerminatedAt (f n) := by
+  simp [TerminatedAt]
+
+theorem terminates_subsequence : (s.subsequence hf).Terminates → s.Terminates :=
+  fun ⟨_, h⟩ => ⟨_, (terminatedAt_subsequence_iff _ _).mp h⟩
+
+@[simp]
+theorem terminates_subsequence_iff {f : ℕ → ℕ} (hf : StrictMono f) (s : Seq α) :
+    (s.subsequence hf.monotone).Terminates ↔ s.Terminates :=
+  ⟨terminates_subsequence _ _, fun ⟨_, h⟩ => ⟨_, terminatedAt_le (StrictMono.le_apply hf) s h⟩⟩
+
+theorem length_subsequence_le {f : ℕ → ℕ} (hf : StrictMono f) (s : Seq α) (h : s.Terminates) :
+    (s.subsequence _).length ((terminates_subsequence_iff hf _).mpr h) ≤ s.length h := by
+  simp [length]
+  exact fun m hm h => hm m (le_refl _) <| terminatedAt_le (StrictMono.le_apply hf) s h
+
+theorem mem_subsequence {a : α} : a ∈ s.subsequence hf → a ∈ s := fun ⟨n, h⟩ => ⟨f n, h⟩
+
+@[simp]
+theorem subsequence_update {f : ℕ → ℕ} (hf : StrictMono f) (s : Seq α) (u : α → α) (n : ℕ) :
+    (s.update (f n) u).subsequence hf.monotone = (s.subsequence hf.monotone).update n u := by
+  ext m
+  simp [update, Function.update]
+  split_ifs with h' h h <;> (try rfl) <;> exfalso
+  · exact h <| hf.injective h'
+  · exact h' <| congrArg _ h
+
+end Subsequence
 
 section Join
 
