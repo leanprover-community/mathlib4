@@ -190,7 +190,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean, `Batteries.CodeAction),
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
   -- TODO: decide if this is acceptable or should be split in a more fine-grained way
-  (`Mathlib.Lean, `Batteries),
+  --(`Mathlib.Lean, `Batteries),
   (`Mathlib.Lean.Expr, `Mathlib.Util),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Util),
   -- Fine-grained exceptions: TODO decide if these are fine, or should be scoped more broadly.
@@ -454,7 +454,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.InformationTheory, `Mathlib.ModelTheory),
   (`Mathlib.InformationTheory, `Mathlib.RepresentationTheory),
   (`Mathlib.InformationTheory, `Mathlib.Testing),
-  (`Mathlib.Lean.Expr, `Batteries),
   (`Mathlib.LinearAlgebra, `Mathlib.AlgebraicGeometry),
   (`Mathlib.LinearAlgebra, `Mathlib.AlgebraicTopology),
   (`Mathlib.LinearAlgebra, `Mathlib.Computability),
