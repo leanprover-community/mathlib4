@@ -102,8 +102,7 @@ theorem subset_spanPoints (s : Set P) : s ⊆ spanPoints k s := fun p => mem_spa
 @[simp]
 theorem spanPoints_nonempty (s : Set P) : (spanPoints k s).Nonempty ↔ s.Nonempty := by
   constructor
-  · contrapose
-    rw [Set.not_nonempty_iff_eq_empty, Set.not_nonempty_iff_eq_empty]
+  · contrapose!
     intro h
     simp [h, spanPoints]
   · exact fun h => h.mono (subset_spanPoints _ _)

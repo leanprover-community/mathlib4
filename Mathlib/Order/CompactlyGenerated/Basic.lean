@@ -365,7 +365,7 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
         rcases hc s hs h hcinf.2 with ⟨d, ds, cd⟩
         refine (le_inf hcinf.1 cd).trans (le_trans ?_ (le_iSup₂ d ds))
         rfl
-      · rw [Set.not_nonempty_iff_eq_empty] at hs
+      · push_neg at hs
         simp [hs])
     iSup_inf_le_inf_sSup
 

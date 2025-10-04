@@ -612,7 +612,7 @@ theorem inter_nonempty_of_card_lt_card_add_card (hts : t ⊆ s) (hus : u ⊆ s)
     (hstu : #s < #t + #u) : (t ∩ u).Nonempty := by
   contrapose! hstu
   calc
-    _ = #(t ∪ u) := by simp [← card_union_add_card_inter, not_nonempty_iff_eq_empty.1 hstu]
+    _ = #(t ∪ u) := by simp [← card_union_add_card_inter, hstu]
     _ ≤ #s := by gcongr; exact union_subset hts hus
 
 end Lattice

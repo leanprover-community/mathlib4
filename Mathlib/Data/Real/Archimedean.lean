@@ -349,13 +349,13 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
 
 theorem not_bddAbove_coe : ¬ (BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
   dsimp only [BddAbove, upperBounds]
-  rw [Set.not_nonempty_iff_eq_empty]
+  push_neg
   ext
   simpa using exists_rat_gt _
 
 theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
   dsimp only [BddBelow, lowerBounds]
-  rw [Set.not_nonempty_iff_eq_empty]
+  push_neg
   ext
   simpa using exists_rat_lt _
 

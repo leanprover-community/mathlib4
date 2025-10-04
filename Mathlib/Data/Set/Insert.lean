@@ -58,7 +58,7 @@ theorem eq_of_mem_insert_of_notMem : b ∈ insert a s → b ∉ s → b = a :=
 @[deprecated (since := "2025-05-23")]
 alias eq_of_not_mem_of_mem_insert := eq_of_mem_insert_of_notMem
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ x ∈ s :=
   Iff.rfl
 
@@ -154,7 +154,7 @@ instance : LawfulSingleton α (Set α) :=
 theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
   (insert_empty_eq a).symm
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 
