@@ -3,10 +3,8 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.Data.List.Prime
-import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Polynomial.Roots
 
 /-!
 # Split polynomials
