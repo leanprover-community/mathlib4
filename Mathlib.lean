@@ -3623,6 +3623,7 @@ import Mathlib.Data.Real.Pi.Wallis
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Data.Real.Sign
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Real.StandardPart
 import Mathlib.Data.Real.Star
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.Data.Rel
@@ -5224,6 +5225,7 @@ import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.Prod.Lex.Hom
 import Mathlib.Order.PropInstances
+import Mathlib.Order.Quotient
 import Mathlib.Order.Radical
 import Mathlib.Order.Rel.GaloisConnection
 import Mathlib.Order.RelClasses
