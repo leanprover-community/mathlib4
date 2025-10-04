@@ -204,7 +204,7 @@ instance toCoalgebra : Coalgebra R R where
 theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
 
 @[simp]
-theorem counit_apply (r : R) : counit r = r := rfl
+theorem counit_apply (r : R) : counit (R := R) r = r := rfl
 
 instance : IsCocomm R R where comm_comp_comul := by ext; simp
 
@@ -230,7 +230,8 @@ theorem comul_apply (r : A × B) :
       TensorProduct.map (.inr R A B) (.inr R A B) (comul r.2) := rfl
 
 @[simp]
-theorem counit_apply (r : A × B) : (counit r : R) = counit r.1 + counit r.2 := rfl
+theorem counit_apply (r : A × B) :
+    counit (R := R) r = counit (R := R) r.1 + counit (R := R) r.2 := rfl
 
 theorem comul_comp_inl :
     comul ∘ₗ inl R A B = TensorProduct.map (.inl R A B) (.inl R A B) ∘ₗ comul := by
@@ -309,7 +310,8 @@ theorem comul_single (i : ι) (a : A i) :
   lsum_single _ _ _ _
 
 @[simp]
-theorem counit_single (i : ι) (a : A i) : counit (DFinsupp.single i a) = counit (R := R) a :=
+theorem counit_single (i : ι) (a : A i) :
+    counit (R := R) (DFinsupp.single i a) = counit (R := R) a :=
   lsum_single _ _ _ _
 
 theorem comul_comp_lsingle (i : ι) :
@@ -378,7 +380,7 @@ theorem comul_single (i : ι) (a : A) :
   lsum_single _ _ _ _
 
 @[simp]
-theorem counit_single (i : ι) (a : A) : counit (Finsupp.single i a) = counit (R := R) a :=
+theorem counit_single (i : ι) (a : A) : counit (R := R) (Finsupp.single i a) = counit (R := R) a :=
   lsum_single _ _ _ _
 
 theorem comul_comp_lsingle (i : ι) :
