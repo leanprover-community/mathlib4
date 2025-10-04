@@ -9,8 +9,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 # Thickenings in pseudo-metric spaces
 
 ## Main definitions
-* `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
-* `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric
+* `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo-emetric space.
+* `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo-emetric
   space.
 
 ## Main results
@@ -44,7 +44,7 @@ variable [PseudoEMetricSpace α] {δ : ℝ} {s : Set α} {x : α}
 
 open EMetric
 
-/-- The (open) `δ`-thickening `Metric.thickening δ E` of a subset `E` in a pseudo emetric space
+/-- The (open) `δ`-thickening `Metric.thickening δ E` of a subset `E` in a pseudo-emetric space
 consists of those points that are at distance less than `δ` from some point of `E`. -/
 def thickening (δ : ℝ) (E : Set α) : Set α :=
   { x : α | infEdist x E < ENNReal.ofReal δ }
@@ -177,7 +177,7 @@ variable [PseudoEMetricSpace α] {δ ε : ℝ} {s t : Set α} {x : α}
 
 open EMetric
 
-/-- The closed `δ`-thickening `Metric.cthickening δ E` of a subset `E` in a pseudo emetric space
+/-- The closed `δ`-thickening `Metric.cthickening δ E` of a subset `E` in a pseudo-emetric space
 consists of those points that are at infimum distance at most `δ` from `E`. -/
 def cthickening (δ : ℝ) (E : Set α) : Set α :=
   { x : α | infEdist x E ≤ ENNReal.ofReal δ }

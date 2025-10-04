@@ -14,7 +14,7 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 
 In this file we define two typeclasses:
 
-- `IsIsometricSMul M X` says that `M` multiplicatively acts on a (pseudo extended) metric space
+- `IsIsometricSMul M X` says that `M` multiplicatively acts on a (pseudo-extended) metric space
   `X` by isometries;
 - `IsIsometricVAdd` is an additive version of `IsIsometricSMul`.
 
