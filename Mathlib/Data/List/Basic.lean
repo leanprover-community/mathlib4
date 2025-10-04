@@ -448,6 +448,19 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
 
+theorem get_surjective_iff {l : List α} : (∀ x, x ∈ l) ↔ l.get.Surjective :=
+  ⟨fun h x ↦ mem_iff_get.mp <| h x, fun h x ↦ mem_iff_get.mpr <| h x⟩
+
+theorem getElem_surjective_iff {l : List α} :
+    (∀ x, x ∈ l) ↔ (fun (n : Fin l.length) ↦ l[n]).Surjective :=
+  get_surjective_iff
+
+theorem getElem?_surjective_iff {l : List α} : (∀ x, x ∈ l) ↔ (fun (n : ℕ) ↦ l[n]?).Surjective := by
+  refine ⟨fun h x ↦ ?_, fun h x ↦ mem_iff_getElem?.mpr <| h x⟩
+  cases x with
+  | none => exact ⟨l.length, getElem?_eq_none le_rfl⟩
+  | some x => exact mem_iff_getElem?.mp <| h x
+
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; cutsat)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
