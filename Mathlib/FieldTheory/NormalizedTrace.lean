@@ -173,7 +173,7 @@ theorem normalizedTrace_algebraMap_of_lifts [CharZero E] [Algebra.IsIntegral E K
   simp [normalizedTrace_minpoly F a, normalizedTrace_minpoly E a,
     ← minpoly.map_algebraMap ha h,
     (minpoly F a).natDegree_map,
-    (minpoly F a).nextCoeff_map (algebraMap F E).injective,
+    (minpoly F a).nextCoeff_map_of_injective (algebraMap F E).injective,
     map_mul, map_neg]
 
 /- An auxiliary result to prove `normalizedTrace_trans_apply`. It differs from
