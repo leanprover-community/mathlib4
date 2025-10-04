@@ -561,6 +561,10 @@ protected lemma inv_inv (hab : a + b = 1) : a⁻¹.HolderConjugate b⁻¹ where
 lemma inv_one_sub_inv (ha : a ≤ 1) : a⁻¹.HolderConjugate (1 - a)⁻¹ :=
   .inv_inv <| add_tsub_cancel_of_le ha
 
+lemma inv_one_sub_inv' (ha : 1 ≤ a) : a.HolderConjugate (1 - a⁻¹)⁻¹ := by
+  convert inv_one_sub_inv (ENNReal.inv_le_one.mpr ha)
+  exact (inv_inv a).symm
+
 lemma one_sub_inv_inv (ha : a ≤ 1) : (1 - a)⁻¹.HolderConjugate a⁻¹ := (inv_one_sub_inv ha).symm
 
 lemma top_one : HolderConjugate ∞ 1 := ⟨by simp⟩
