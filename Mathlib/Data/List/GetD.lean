@@ -72,18 +72,18 @@ theorem getD_eq_getD_getElem? (n : ℕ) : l.getD n d = l[n]?.getD d := by
   | inr h => rw [getD_eq_default _ _ h, getElem?_eq_none_iff.mpr h, Option.getD_none]
 
 theorem getD_surjective_iff [DecidableEq α] {l : List α} (d : α) :
-    (∀ x, x = d ∨ x ∈ l) ↔ (l.getD · d).Surjective := by
+    (l.getD · d).Surjective ↔ (∀ x, x = d ∨ x ∈ l) := by
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
-  · obtain h | h := h x
-    · exact ⟨l.length, by simp [h]⟩
-    · have ⟨n, h⟩ := mem_iff_get.mp h
-      exact ⟨n, by simp [← h]⟩
   · have ⟨n, hx⟩ := h x
     by_cases hn : l.length ≤ n
     · exact Or.inl <| hx ▸ l.getD_eq_default d hn
     let n' : Fin l.length := ⟨n, by cutsat⟩
     refine Decidable.or_iff_not_imp_left.mpr fun hd ↦ mem_iff_get.mpr ⟨n', ?_⟩
     simp [← hx, show n = n' by rfl]
+  · obtain h | h := h x
+    · exact ⟨l.length, by simp [h]⟩
+    · have ⟨n, h⟩ := mem_iff_get.mp h
+      exact ⟨n, by simp [← h]⟩
 
 theorem getD_surjective {l : List α} (h : ∀ x, x ∈ l) (d : α) : (l.getD · d).Surjective := by
   intro x
