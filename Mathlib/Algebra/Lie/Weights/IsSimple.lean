@@ -33,14 +33,10 @@ theorem get_isNonZero (w : Weight K H L) (h : w.toLinear ≠ 0) : w.IsNonZero :=
 -- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsKilling K L] [IsTriangularizable K H L]
 
-private theorem chi_in_q_aux (q : Submodule K (Dual K H))
-    (χ : Weight K H L) (x_χ m_α : L) (hx_χ : x_χ ∈ genWeightSpace L χ)
-    (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
-    (h_chi_in_q : χ.toLinear ∈ q)
-    (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
-    (w_minus : χ.toLinear - α.1.toLinear ≠ 0)
-    (w_chi : χ.toLinear ≠ 0)
-    (m_pos m_neg m_h : L)
+private theorem chi_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L) (h_chi_in_q : ↑χ ∈ q)
+    (x_χ m_α : L) (hx_χ : x_χ ∈ genWeightSpace L χ) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
+    (w_plus : χ.toLinear + α.1.toLinear ≠ 0) (w_minus : χ.toLinear - α.1.toLinear ≠ 0)
+    (w_chi : χ.toLinear ≠ 0) (m_pos m_neg m_h : L)
     (hm_h : ∃ y : H, y ∈ corootSpace α.1 ∧ (y : L) = m_h)
     (h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆)
     (h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear))
@@ -82,15 +78,11 @@ private theorem chi_in_q_aux (q : Submodule K (Dual K H))
     genWeightSpace_le_I _ h_chi_in_q (fun h_eq => (w_chi h_eq).elim)
   exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
 
-private theorem chi_not_in_q_aux (q : Submodule K (Dual K H))
-    (χ : Weight K H L) (x_χ : L) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
+private theorem chi_not_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L)
+    (h_chi_not_in_q : χ.toLinear ∉ q) (x_χ : L) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-    (hx_χ : x_χ ∈ genWeightSpace L χ)
-    (h_chi_not_in_q : χ.toLinear ∉ q)
-    (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
-    (w_minus : χ.toLinear - α.1.toLinear ≠ 0)
-    (w_chi : χ.toLinear ≠ 0)
-    (m_pos m_neg m_h : L)
+    (hx_χ : x_χ ∈ genWeightSpace L χ) (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
+    (w_minus : χ.toLinear - α.1.toLinear ≠ 0) (w_chi : χ.toLinear ≠ 0) (m_pos m_neg m_h : L)
     (hm_h : ∃ y : H, y ∈ corootSpace α.1 ∧ (y : L) = m_h)
     (h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear))
     (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)) :
@@ -240,9 +232,9 @@ private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
     exact lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
 
   by_cases h_chi_in_q : χ.toLinear ∈ q
-  · exact chi_in_q_aux q χ x_χ m_α hx_χ α h_chi_in_q w_plus w_minus w_chi
+  · exact chi_in_q_aux q χ h_chi_in_q x_χ m_α hx_χ α w_plus w_minus w_chi
       m_pos m_neg m_h hm_h h_bracket_sum h_pos_containment h_neg_containment
-  · have ⟨h_pos_zero, h_neg_zero, h_bracket_zero⟩ := chi_not_in_q_aux q χ x_χ α hq hx_χ h_chi_in_q
+  · have ⟨h_pos_zero, h_neg_zero, h_bracket_zero⟩ := chi_not_in_q_aux q χ h_chi_in_q x_χ α hq hx_χ
       w_plus w_minus w_chi m_pos m_neg m_h hm_h h_pos_containment h_neg_containment
     rw [h_bracket_sum, h_pos_zero, h_neg_zero, h_bracket_zero]
     simp only [add_zero, zero_mem]
