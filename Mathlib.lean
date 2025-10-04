@@ -5224,6 +5224,7 @@ import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.Prod.Lex.Hom
 import Mathlib.Order.PropInstances
+import Mathlib.Order.Quotient
 import Mathlib.Order.Radical
 import Mathlib.Order.Rel.GaloisConnection
 import Mathlib.Order.RelClasses
