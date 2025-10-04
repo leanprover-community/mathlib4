@@ -68,19 +68,23 @@ theorem UniqueMDiffOn.image_denseRange (hs : UniqueMDiffOn I s) {f : M → M'}
     UniqueMDiffOn I' (f '' s) :=
   hs.image_denseRange' (fun x hx ↦ (hf x hx).hasMFDerivWithinAt) hd
 
-protected theorem UniqueMDiffWithinAt.preimage_partialHomeomorph (hs : UniqueMDiffWithinAt I s x)
-    {e : PartialHomeomorph M M'} (he : e.MDifferentiable I I') (hx : x ∈ e.source) :
-    UniqueMDiffWithinAt I' (e.target ∩ e.symm ⁻¹' s) (e x) := by
+protected theorem UniqueMDiffWithinAt.preimage_openPartialHomeomorph
+    (hs : UniqueMDiffWithinAt I s x) {e : OpenPartialHomeomorph M M'} (he : e.MDifferentiable I I')
+    (hx : x ∈ e.source) : UniqueMDiffWithinAt I' (e.target ∩ e.symm ⁻¹' s) (e x) := by
   rw [← e.image_source_inter_eq', inter_comm]
   exact (hs.inter (e.open_source.mem_nhds hx)).image_denseRange
     (he.mdifferentiableAt hx).hasMFDerivAt.hasMFDerivWithinAt
     (he.mfderiv_surjective hx).denseRange
 
+@[deprecated (since := "2025-08-29")] alias
+UniqueMDiffWithinAt.preimage_PartialHomeomorph := UniqueMDiffWithinAt.preimage_openPartialHomeomorph
+
 /-- If a set has the unique differential property, then its image under a local
 diffeomorphism also has the unique differential property. -/
-theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : PartialHomeomorph M M'}
-    (he : e.MDifferentiable I I') : UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
-  e.right_inv hx.1 ▸ (hs _ hx.2).preimage_partialHomeomorph he (e.map_target hx.1)
+theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s)
+    {e : OpenPartialHomeomorph M M'} (he : e.MDifferentiable I I') :
+    UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
+  e.right_inv hx.1 ▸ (hs _ hx.2).preimage_openPartialHomeomorph he (e.map_target hx.1)
 
 variable [IsManifold I 1 M] in
 /-- If a set in a manifold has the unique derivative property, then its pullback by any extended
@@ -147,13 +151,13 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
   rintro ⟨z, w⟩ ⟨hz, -⟩
   simp only [mem_inter_iff, mem_preimage, Function.comp_apply,
     mem_range] at hz
-  simp only [FiberBundle.chartedSpace_chartAt, PartialHomeomorph.coe_trans_symm, mem_inter_iff,
+  simp only [FiberBundle.chartedSpace_chartAt, OpenPartialHomeomorph.coe_trans_symm, mem_inter_iff,
     mem_preimage, Function.comp_apply, mem_range]
   constructor
   · rw [PartialEquiv.prod_symm, PartialEquiv.refl_symm, PartialEquiv.prod_coe,
       ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.refl_coe,
-      PartialHomeomorph.prod_symm, PartialHomeomorph.refl_symm, PartialHomeomorph.prod_apply,
-      PartialHomeomorph.refl_apply]
+      OpenPartialHomeomorph.prod_symm, OpenPartialHomeomorph.refl_symm,
+      OpenPartialHomeomorph.prod_apply, OpenPartialHomeomorph.refl_apply]
     convert hz.1
     apply Trivialization.proj_symm_apply'
     exact h's hz.1

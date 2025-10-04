@@ -24,6 +24,8 @@ Given `n : ℕ∞`and a compact `K` of a normed space `E`, we consider the type 
 
 - `ContDiffMapSupportedIn E F n K`: the type of `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
+- `ContDiffMapSupportedIn.iteratedFDerivₗ'`: wrapper as a `𝕜`-linear maps for `iteratedFDeriv` on
+  `ContDiffMapSupportedIn E F n K`, as a map into `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) n-i K`.
 
 ## Notation
 
@@ -59,12 +61,12 @@ structure ContDiffMapSupportedIn (n : ℕ∞) (K : Compacts E) : Type _ where
   protected zero_on_compl' : EqOn toFun 0 Kᶜ
 
 /-- Notation for the space of `n`-times continuously differentiable
-functions with support in a compact `K` -/
+functions with support in a compact `K`. -/
 scoped[Distributions] notation "𝓓^{" n "}_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
 /-- Notation for the space of smooth (inifinitely differentiable)
-functions with support in a compact `K` -/
+functions with support in a compact `K`. -/
 scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
 
