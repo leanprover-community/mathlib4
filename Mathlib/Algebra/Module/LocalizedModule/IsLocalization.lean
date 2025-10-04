@@ -20,7 +20,7 @@ variable {S} in
 theorem isLocalizedModule_iff_isLocalization :
     IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
       IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
-  rw [isLocalizedModule_iff, isLocalization_iff]
+  rw [isLocalizedModule_iff, IsLocalization, Submonoid.isLocalizationMap_iff]
   refine and_congr ?_ (and_congr (forall_congr' fun _ ↦ ?_) (forall₂_congr fun _ _ ↦ ?_))
   · simp_rw [← (Algebra.lmul R Aₛ).commutes, Algebra.lmul_isUnit_iff, Subtype.forall,
       Algebra.algebraMapSubmonoid, ← SetLike.mem_coe, Submonoid.coe_map,
