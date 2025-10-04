@@ -243,14 +243,15 @@ variable [Group G] [MulAction G X] [DecidableEq (Set X)]
 structure Equipartition (G : Type*) [SMul G X] (A : Set X) where
   parts : Finset (Set X × G × Set X)
   sup_parts : A = (⋃ p ∈ parts, p.1)
-  supIndep : Finset.SupIndep (Finset.image (fun p ↦ p.1) parts) id
+  supIndep : Finset.SupIndep parts (fun p ↦ p.1)
   bot_notMem : ∀ p ∈ parts, p.1 ≠ ∅
   decomp : ∀ p ∈ parts, (fun x ↦ p.2.1 • x) '' p.1 = p.2.2
 
 def Equipartition.to_finpartition {A : Set X} (P : Equipartition G A) : Finpartition A :=
   { parts := Finset.image (fun p ↦ p.1) P.parts
     sup_parts := by simp [P.sup_parts]
-    supIndep := P.supIndep
+    supIndep := by
+      sorry
     bot_notMem := by
       simp only [bot_eq_empty, Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right,
         not_exists]
@@ -258,6 +259,21 @@ def Equipartition.to_finpartition {A : Set X} (P : Equipartition G A) : Finparti
       simp [@Prod.eq_iff_fst_eq_snd_eq, P.bot_notMem b h]}
 
 def Equipartition.target (P : Equipartition G A) : Set X := ⋃ p ∈ P.parts, p.2.2
+
+theorem Equipartition.parts_eq_iff (P : Equipartition G A) :
+    ∀ p1 ∈ P.parts, ∀ p2 ∈ P.parts, p1 = p2 ↔ p1.1 = p2.1 := by
+  intro p1 h1 p2 h2
+  constructor
+  · simp_all
+  · intro h3
+    have h4 := Finset.SupIndep.pairwiseDisjoint P.supIndep
+    by_contra hC
+    simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
+      not_and] at h4
+    have h5 := @h4 p1.1 p1.2.1 p1.2.2 h1 p2.1 p2.2.1 p2.2.2 h2 (by grind)
+    simp only [h3, Prod.mk.eta, disjoint_self, bot_eq_empty] at h5
+    have have_body_congr' := P.bot_notMem p2 h2
+    contradiction
 
 /--
 The piece of the partition containing `x`, the group element associated to that piece,
@@ -298,6 +314,9 @@ noncomputable def Equipartition.target_part (P : Equipartition G A) (x : X) (h :
       simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
     exact (Classical.choose h1)
 
+
+
+
 theorem Equipartition.target_part_spec (P : Equipartition G A) (x : X) (h : x ∈ P.target) :
       x ∈ (P.target_part x h).2.2 := by
     simp [Equipartition.target_part]
@@ -330,8 +349,19 @@ theorem Equipartition.target_part_decomp (P : Equipartition G A) (x : X) (h : x 
   rw [h3]
   simpa using h1
 
-theorem Equipartition.targer_part_eq_source_part (P : Equipartition G A) (x : X) (h : x ∈ P.target) :
-    P.target_part x h = P.source_part ((P.target_part x h).2.1⁻¹ • x) (by simp) := by sorry
+theorem Equipartition.target_part_eq_iff (P : Equipartition G A) (x y : X) (hx : x ∈ P.target) (hy : y ∈ P.target) :
+    (P.target_part x hx) = (P.target_part y hy) ↔ y ∈ (P.target_part x hx).2.2 := by
+  constructor
+  . intro h
+    rw [h]
+    exact target_part_spec P y hy
+  . intro h
+    sorry
+
+theorem Equipartition.source_part_eq_target_part (P : Equipartition G A) (x : X) (h : x ∈ A) :
+    P.source_part x h = P.target_part ((P.source_part x h).2.1 • x) (by sorry) := by sorry
+
+
 
 open scoped Classical in noncomputable def Equipartition.to_equidecomp {A : Set X} (P : Equipartition G A) : Equidecomp X G where
   toFun x := if h : x ∉ A then x else (P.source_part x (not_notMem.mp h)).2.1 • x
@@ -351,6 +381,20 @@ open scoped Classical in noncomputable def Equipartition.to_equidecomp {A : Set 
     apply subset_iUnion_of_subset (P.target_part x hx)
     refine subset_iUnion_of_subset ?_ fun ⦃a⦄ a ↦ a
     exact target_part_mem_parts P x hx
+  left_inv' x hx := by
+    simp only [hx, not_true_eq_false, ↓reduceDIte, dite_not]
+    have h1 : (P.source_part x (not_notMem.mp (of_eq_false (Eq.trans (congrArg Not (eq_true hx)) not_true_eq_false)) )).2.1 • x ∈ P.target := by
+      apply mem_of_subset_of_mem ?_ (P.source_part_decomp x hx)
+      simp [Equipartition.target]
+    simp only [h1, ↓reduceDIte]
+
+
+
+
+
+
+
+
 
 
 
