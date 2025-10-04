@@ -23,7 +23,7 @@ set difference.
 
 ## Main Results
 
-- `Nat.addSubmonoidFG_eqLocusM`: a verison of *Gordan's lemma*, `AddMonoidHom.eqLocusM` is finitely
+- `Nat.addSubmonoidFG_eqLocusM`: a version of *Gordan's lemma*, `AddMonoidHom.eqLocusM` is finitely
   generated in `ℕ ^ k`.
 - `Nat.isSemilinearSet_setOf_eq`: the set of solutions of a linear equation `a + f x = b + g y` in
   `ℕ ^ k` is semilinear.
