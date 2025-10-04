@@ -468,6 +468,12 @@ instance : Module R (HahnSeries Γ V) :=
       ext
       simp [add_smul] }
 
+@[simp]
+theorem smul_single (a : Γ) (r : R) (v : V) :
+    r • single a v = single a (r • v) := by
+  ext b
+  by_cases h : b = a <;> simp [h]
+
 /-- `single` as a linear map -/
 @[simps]
 def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
