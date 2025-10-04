@@ -174,14 +174,15 @@ theorem minVertexCover_top_eq : @minVertexCover V ⊤ = ENat.card V - 1 := by
       have := ht₂ a b (by simp [hne])
       grind
 
-theorem minVertexCover_le_of_relEmbedding (f : G ↪g H) : minVertexCover G ≤ minVertexCover H := by
+theorem minVertexCover_le_of_relHom (f : G →g H) (hf : Function.Injective f) :
+    minVertexCover G ≤ minVertexCover H := by
   obtain ⟨s, hs₁, hs₂⟩ := minVertexCover_exists H
   have := H.isIndepSet_iff_isAntichain.mp <| isVertexCover_iff_isIndepSet_compl.mp hs₂
-  have : IsAntichain G.Adj (f ⁻¹' sᶜ) := this.preimage f.injective (by simp_all [IsVertexCover])
-  have : G.IsVertexCover (⇑f ⁻¹' s) :=
+  have : IsAntichain G.Adj (f ⁻¹' sᶜ) := this.preimage hf (fun _ _ hadj ↦ f.map_rel' hadj)
+  have : G.IsVertexCover (f ⁻¹' s) :=
     isVertexCover_iff_isIndepSet_compl.mpr <| G.isIndepSet_iff_isAntichain.mpr this
   grw [minVertexCover_le_of_isVertexCover this, ← hs₁]
-  exact Function.Embedding.encard_le <| f.subtypeMap (by simp)
+  exact Function.Embedding.encard_le <| Function.Embedding.mk f hf |>.subtypeMap (by simp)
 
 theorem minVertexCover_eq_of_relIso (f : G ≃g H) : minVertexCover G = minVertexCover H :=
   le_antisymm (minVertexCover_le_of_relEmbedding f.toRelEmbedding)
