@@ -5,9 +5,7 @@ Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis
 Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
 import Mathlib.Init
-import Lean.Meta.Tactic.Rewrite
-import Batteries.Tactic.Alias
-import Lean.Elab.Binders
+import Lean.Expr
 
 /-!
 # Additional operations on Expr and related types
@@ -429,26 +427,6 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
 @[specialize]
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
-
-/--
-Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewrite (e eq : Expr) : MetaM Expr := do
-  let ⟨_, eq', []⟩ ← (← mkFreshExprMVar none).mvarId!.rewrite e eq
-    | throwError "Expr.rewrite may not produce subgoals."
-  return eq'
-
-/--
-Rewrites the type of `e` via some `eq`, then moves `e` into the new type via `Eq.mp`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewriteType (e eq : Expr) : MetaM Expr := do
-  mkEqMP (← (← inferType e).rewrite eq) e
 
 /-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
 return a `forall x, Not (p x)` and a proof for it.
