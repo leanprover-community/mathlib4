@@ -35,8 +35,8 @@ theorem factors_C (a : R) : Factors (C a) :=
 theorem factors_zero : Factors (0 : R[X]) := by
   simpa using factors_C (0 : R)
 
-theorem factors_one : Factors (1 : R[X]) := by
-  simpa using factors_C (1 : R)
+theorem factors_one : Factors (1 : R[X]) :=
+  factors_C (1 : R)
 
 theorem factors_X_add_C (a : R) : Factors (X + C a) :=
   Submonoid.mem_closure_of_mem (Set.mem_union_right _ ⟨a, rfl⟩)
@@ -51,15 +51,11 @@ protected theorem Factors.mul {f g : R[X]} (hf : Factors f) (hg : Factors g) :
 theorem Factors.C_mul {f : R[X]} (hf : Factors f) (a : R) : Factors (C a * f) :=
   (factors_C a).mul hf
 
-theorem Factors.list_prod {l : List R[X]} (h : ∀ f ∈ l, Factors f) : Factors l.prod := by
-  induction l with
-  | nil => exact factors_one
-  | cons f l ih =>
-    exact (h f List.mem_cons_self).mul (ih (h · ∘ List.mem_cons_of_mem f))
+theorem Factors.list_prod {l : List R[X]} (h : ∀ f ∈ l, Factors f) : Factors l.prod :=
+  list_prod_mem h
 
-protected theorem Factors.pow {f : R[X]} (hf : Factors f) (n : ℕ) : Factors (f ^ n) := by
-  rw [← List.prod_replicate]
-  exact Factors.list_prod (by simp [hf])
+protected theorem Factors.pow {f : R[X]} (hf : Factors f) (n : ℕ) : Factors (f ^ n) :=
+  pow_mem hf n
 
 theorem factors_X_pow (n : ℕ) : Factors (X ^ n : R[X]) :=
   factors_X.pow n
@@ -95,7 +91,8 @@ protected theorem Factors.prod {ι : Type*} {f : ι → R[X]} {s : Finset ι}
   rw [Finset.prod_eq_multiset_prod]
   exact Factors.multiset_prod (by simpa)
 
-theorem factors_iff_exists_multiset_add {f : R[X]} :
+/-- See `factors_iff_exists_multiset` for the version with subtraction. -/
+theorem factors_iff_exists_multiset' {f : R[X]} :
     Factors f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X + C ·)).prod := by
   refine ⟨fun hf ↦ ?_, ?_⟩
   · rw [Factors, Submonoid.closure_union, Submonoid.mem_sup] at hf
@@ -142,7 +139,7 @@ variable [CommRing R]
 
 theorem factors_iff_exists_multiset {f : R[X]} :
     Factors f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X - C ·)).prod := by
-  refine factors_iff_exists_multiset_add.trans ⟨?_, ?_⟩ <;>
+  refine factors_iff_exists_multiset'.trans ⟨?_, ?_⟩ <;>
     rintro ⟨m, hm⟩ <;> exact ⟨m.map (- ·), by simpa⟩
 
 variable [IsDomain R]
