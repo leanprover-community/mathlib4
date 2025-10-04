@@ -32,7 +32,7 @@ variable [CommMonoid α] [TopologicalSpace α]
 
 @[to_additive]
 theorem hasProd_pi_single [DecidableEq β] (b : β) (a : α) : HasProd (Pi.mulSingle b a) a := by
-  convert hasProd_ite_eq (L := unconditional β) b a
+  convert hasProd_ite_eq (L := .unconditional β) b a
   simp [Pi.mulSingle_apply]
 
 @[to_additive (attr := simp)]

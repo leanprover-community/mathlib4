@@ -21,7 +21,7 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 noncomputable section
 
-open Filter Finset Function Topology
+open Filter Finset Function Topology SummationFilter
 
 variable {α β γ : Type*}
 
@@ -225,16 +225,18 @@ theorem Multipliable.map_tprod [L.NeBot] [CommMonoid γ] [TopologicalSpace γ] [
   (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
 
 @[to_additive]
-lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [L.NeBot]
-    [CommMonoid γ] [TopologicalSpace γ]
+lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
     [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) :
     Multipliable f L ↔ Multipliable (g ∘ f) L ∧ ∏'[L] i, g (f i) ∈ Set.range g := by
   constructor
   · intro hf
     constructor
     · exact hf.map g hg.continuous
-    · use ∏'[L] i, f i
-      exact hf.map_tprod g hg.continuous
+    · by_cases hL : L.NeBot
+      · exact ⟨_, hf.map_tprod g hg.continuous⟩
+      · by_cases hfs : (mulSupport fun x ↦ g (f x)).Finite
+        · simp [tprod_bot hL, finprod_eq_prod, hfs, ← map_prod]
+        · exact ⟨1, by simp [tprod_bot hL, finprod_of_infinite_mulSupport hfs]⟩
   · rintro ⟨hgf, a, ha⟩
     use a
     have := hgf.hasProd
