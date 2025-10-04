@@ -74,6 +74,10 @@ instance : IsClosedUnderIsomorphisms (isoClosure P) where
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
 
+lemma isClosedUnderIsomorphisms_iff_isoClosure_eq_self :
+    IsClosedUnderIsomorphisms P ↔ isoClosure P = P :=
+  ⟨fun _ ↦ isoClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
+
 instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
   of_iso := by
     rintro _ _ e ⟨X, hX, ⟨e'⟩⟩
