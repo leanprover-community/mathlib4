@@ -190,6 +190,17 @@ def valueSetoid : Setoid (R × posSubmonoid R) where
         simpa using this
   }
 
+instance (S : Subring R) : ValuativeRel S where
+  rel r s := (r : R) ≤ᵥ s
+  rel_total _ _ := rel_total _ _
+  rel_trans := rel_trans
+  rel_add := rel_add
+  rel_mul_right _ := rel_mul_right _
+  rel_mul_cancel := rel_mul_cancel
+  not_rel_one_zero := not_rel_one_zero
+
+lemma coe_rel_coe (S : Subring R) {x y : S} : (x : R) ≤ᵥ y ↔ x ≤ᵥ y := .rfl
+
 variable (R) in
 /-- The "canonical" value group-with-zero of a ring with a valuative relation. -/
 def ValueGroupWithZero := Quotient (valueSetoid R)
@@ -805,6 +816,10 @@ lemma mapValueGroupWithZero_valuation (a : A) :
   simp [valuation]
 
 end ValuativeExtension
+
+instance {R : Type*} [CommRing R] [ValuativeRel R] (S : Subring R) :
+    ValuativeExtension S R where
+  rel_iff_rel _ _ := .rfl
 
 namespace ValuativeRel
 
