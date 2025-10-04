@@ -16,6 +16,7 @@ import ImportGraph.Imports
 import Batteries.Tactic.Basic
 import Batteries.Tactic.Case
 import Batteries.Tactic.HelpCmd
+import Batteries.Tactic.Alias
 
 -- Import syntax for leansearch
 import LeanSearchClient
