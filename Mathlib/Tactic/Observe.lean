@@ -36,16 +36,39 @@ elab_rules : tactic |
     | some n => n.getId
   withMainContext do
     let (type, _) ← elabTermWithHoles t none (← getMainTag) true
-    let .mvar goal ← mkFreshExprMVar type | failure
-    if let some _ ← librarySearch goal then
+    let goal ← mkFreshExprMVar type
+
+    let tryLibrarySearch (goal : Expr) : TacticM Bool := do
+      if let some _ ← librarySearch goal.mvarId! then
+        return false
+      else
+        return true
+
+    let tryGrind (goal : Expr) : TacticM Bool := do
+      try
+        let mainGoal ← getGoals
+        replaceMainGoal [goal.mvarId!]
+        evalTactic (← `(tactic| grind))
+        let solved := (← getGoals).isEmpty
+        replaceMainGoal mainGoal
+        return solved
+      catch _ =>
+        return false
+
+    let libSuccess ← tryLibrarySearch goal
+    let grindSuccess ← if libSuccess then pure true else tryGrind goal
+    let success := libSuccess || grindSuccess
+
+    unless success do
       reportOutOfHeartbeats `library_search tk
       throwError "observe did not find a solution"
-    else
-      let v := (← instantiateMVars (mkMVar goal)).headBeta
-      if trace.isSome then
-        addHaveSuggestion tk (some name) type v (checkState? := (← saveState))
-      let (_, newGoal) ← (← getMainGoal).note name v
-      replaceMainGoal [newGoal]
+
+    let proof := (← instantiateMVars goal).headBeta
+    if trace.isSome then
+      addHaveSuggestion tk (some name) type proof (checkState? := (← saveState))
+
+    let (_, newGoal) ← (← getMainGoal).note name proof
+    replaceMainGoal [newGoal]
 
 @[inherit_doc observe] macro "observe?" h:(ppSpace ident)? " : " t:term : tactic =>
   `(tactic| observe ? $[$h]? : $t)
