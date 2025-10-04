@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.List.Sort
-import Mathlib.Data.Nat.Bitwise
 
 /-!
 # Bit Indices
