@@ -21,11 +21,17 @@ We show the irreducibility of root systems of simple Lie algebras.
 
 namespace LieAlgebra.IsKilling
 
--- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
-variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
-variable [IsKilling K L] [FiniteDimensional K L]
+variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
 open LieAlgebra LieModule Module
-variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
+variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
+
+theorem get_isNonZero (w : Weight K H L) (h : w.toLinear ≠ 0) : w.IsNonZero := by
+  intro h_zero
+  apply h
+  ext _; simp [Weight.IsZero.eq h_zero]
+
+-- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
+variable [IsKilling K L] [IsTriangularizable K H L]
 
 private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
@@ -101,11 +107,6 @@ private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
     apply LieSubmodule.mem_iSup_of_mem α
     rw [← (by rfl : ⁅(⟨x_χ, hx_χ_in_H⟩ : H), m_α⁆ = ⁅x_χ, m_α⁆)]
     exact (sl2SubmoduleOfRoot α.2.2).lie_mem hm_α_original
-
-  have get_isNonZero (w : Weight K H L) (h : w.toLinear ≠ 0) : w.IsNonZero := by
-    intro h_zero
-    apply h
-    ext _; simp [Weight.IsZero.eq h_zero]
 
   by_cases h_chi_in_q : χ.toLinear ∈ q
   · let I := ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot β.2.2
@@ -220,8 +221,7 @@ Given a submodule `q` of the dual space `Dual K H` that is invariant under all r
 this produces a Lie ideal by taking the supremum of all `sl₂` subalgebras corresponding to roots
 whose linear forms lie in `q`. -/
 noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
-    LieIdeal K L where
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) : LieIdeal K L where
   __ := ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2
   lie_mem := by
     intro x m hm
