@@ -4985,6 +4985,7 @@ import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
 import Mathlib.NumberTheory.ZetaValues
+import Mathlib.NumberTheory.Zsigmondy
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
