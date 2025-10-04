@@ -57,7 +57,7 @@ private theorem chi_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L) (h
       (Submodule.mem_sup_left (Submodule.mem_sup_left h_pos_containment))
       (Submodule.mem_sup_left (Submodule.mem_sup_right h_neg_containment)))
       (Submodule.mem_sup_right h_h_containment)
-  let I := ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot β.2.2
+  let I := ⨆ β : {β : Weight K H L // ↑β ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot β.2.2
   have genWeightSpace_le_I (β_lin : H →ₗ[K] K) (hβ_in_q : β_lin ∈ q)
       (hβ_ne_zero : β_lin ≠ 0) : genWeightSpace L β_lin ≤ I := by
     by_cases h_trivial : genWeightSpace L β_lin = ⊥
@@ -79,7 +79,7 @@ private theorem chi_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L) (h
   exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
 
 private theorem chi_not_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L)
-    (h_chi_not_in_q : χ.toLinear ∉ q) (x_χ m_α : L) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
+    (h_chi_not_in_q : ↑χ ∉ q) (x_χ m_α : L) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
     (hx_χ : x_χ ∈ genWeightSpace L χ) (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
     (w_minus : χ.toLinear - α.1.toLinear ≠ 0) (w_chi : χ.toLinear ≠ 0) (m_pos m_neg m_h : L)
@@ -89,7 +89,7 @@ private theorem chi_not_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L
     (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   let S := rootSystem H
-  have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = γ.toLinear :=
+  have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = ↑γ :=
     ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
   have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
     by_contra h_plus_ne_bot
@@ -222,7 +222,7 @@ private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
   have h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear) := by
     rw [sub_eq_add_neg]
     exact lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
-  by_cases h_chi_in_q : χ.toLinear ∈ q
+  by_cases h_chi_in_q : ↑χ ∈ q
   · exact chi_in_q_aux q χ h_chi_in_q x_χ m_α hx_χ α w_plus w_minus w_chi
       m_pos m_neg m_h hm_h h_bracket_sum h_pos_containment h_neg_containment
   · exact chi_not_in_q_aux q χ h_chi_in_q x_χ m_α α hq hx_χ
