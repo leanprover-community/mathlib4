@@ -18,8 +18,6 @@ is a commutative group. We also prove the same instances for additive situations
 
 Since these structures permit morphisms of morphisms, we also provide some composition-like
 operations.
-
-Finally, we provide the `Ring` structure on `AddMonoid.End`.
 -/
 
 assert_not_exists AddMonoidWithOne Ring

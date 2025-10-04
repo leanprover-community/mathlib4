@@ -10,11 +10,7 @@ import Mathlib.Algebra.Ring.Defs
 /-!
 # Instances on spaces of monoid and group morphisms
 
-This file does two things involving `AddMonoid.End` and `Ring`.
-They are separate, and if someone would like to split this file in two that may be helpful.
-
-* We provide the `Ring` structure on `AddMonoid.End`.
-* Results about `AddMonoid.End R` when `R` is a ring.
+This file provides the `Ring` structure on `AddMonoid.End`.
 -/
 
 
