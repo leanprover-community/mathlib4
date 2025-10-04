@@ -192,8 +192,18 @@ instance : (forget₂ (FDRep R G) (Rep R G)).Faithful := by
   dsimp [forget₂, HasForget₂.forget₂]
   infer_instance
 
-end FDRep
+-- Appealing to the fact that simple objects are not zero objects would be more complicated here,
+-- so instead, we use that `0 = 𝟙` holds for rank 0 spaces, since they are subsingletons,
+-- but not for simple objects.
+theorem finrank_pos_of_simple (V : FDRep R G) [Simple V] [StrongRankCondition R]
+    [NoZeroSMulDivisors R V] : 0 < finrank R V := by
+  by_contra! h
+  rw[nonpos_iff_eq_zero, Module.finrank_zero_iff] at h
+  apply id_nonzero V
+  ext a
+  simpa using Subsingleton.allEq _ _
 
+end FDRep
 namespace FDRep
 
 variable {k G : Type u} [Field k] [Group G]
