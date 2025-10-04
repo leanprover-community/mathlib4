@@ -33,6 +33,137 @@ theorem get_isNonZero (w : Weight K H L) (h : w.toLinear ≠ 0) : w.IsNonZero :=
 -- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsKilling K L] [IsTriangularizable K H L]
 
+private theorem chi_in_q_aux (q : Submodule K (Dual K H))
+    (χ : Weight K H L) (x_χ m_α : L)
+    (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
+    (h_chi_in_q : χ.toLinear ∈ q)
+    (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
+    (w_minus : χ.toLinear - α.1.toLinear ≠ 0)
+    (w_chi : χ.toLinear ≠ 0)
+    (h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
+        genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
+        genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔ genWeightSpace L χ) :
+    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
+  let I := ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot β.2.2
+  have genWeightSpace_le_I (β_lin : H →ₗ[K] K) (hβ_in_q : β_lin ∈ q)
+      (hβ_ne_zero : β_lin ≠ 0) : genWeightSpace L β_lin ≤ I := by
+    by_cases h_trivial : genWeightSpace L β_lin = ⊥
+    · simp [h_trivial]
+    · let β : Weight K H L := ⟨β_lin, h_trivial⟩
+      have hβ_nonzero : β.IsNonZero := get_isNonZero β hβ_ne_zero
+      refine le_trans ?_ (le_iSup _ ⟨β, hβ_in_q, hβ_nonzero⟩)
+      rw [sl2SubmoduleOfRoot_eq_sup]
+      exact le_sup_of_le_left (le_sup_of_le_left le_rfl)
+  have h_plus_contain : genWeightSpace L (χ.toLinear + α.1.toLinear) ≤ I :=
+    genWeightSpace_le_I _ (q.add_mem h_chi_in_q α.2.1) w_plus
+  have h_minus_contain : genWeightSpace L (χ.toLinear - α.1.toLinear) ≤ I :=
+    genWeightSpace_le_I _ (by
+      have : -α.1.toLinear = (-1 : K) • α.1.toLinear := by simp
+      rw [sub_eq_add_neg, this]
+      exact q.add_mem h_chi_in_q (q.smul_mem (-1) α.2.1)) w_minus
+  have h_chi_contain : genWeightSpace L χ.toLinear ≤ I :=
+    genWeightSpace_le_I _ h_chi_in_q (fun h_eq => (w_chi h_eq).elim)
+  exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
+
+private theorem chi_not_in_q_aux (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+    (χ : Weight K H L) (x_χ : L) (hx_χ : x_χ ∈ genWeightSpace L χ)
+    (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
+    (h_chi_not_in_q : χ.toLinear ∉ q)
+    (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
+    (w_minus : χ.toLinear - α.1.toLinear ≠ 0)
+    (w_chi : χ.toLinear ≠ 0)
+    (m_pos m_neg m_h : L)
+    (hm_h : ∃ y : H, y ∈ corootSpace α.1 ∧ (y : L) = m_h)
+    (h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear))
+    (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)) :
+    ⁅x_χ, m_pos⁆ = 0 ∧ ⁅x_χ, m_neg⁆ = 0 ∧ ⁅x_χ, m_h⁆ = 0 := by
+  let S := rootSystem H
+  have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) :
+    ∃ i, S.root i = γ.toLinear := ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
+  have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
+    by_contra h_plus_ne_bot
+    let γ : Weight K H L := ⟨χ.toLinear + α.1.toLinear, h_plus_ne_bot⟩
+    have hγ_nonzero : γ.IsNonZero := get_isNonZero γ w_plus
+    obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
+    obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
+    have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
+      rw [hi, hj]
+      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+    have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+      ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
+    rw [hi] at h_equiv
+    exact h_chi_not_in_q (h_equiv.mpr (by rw [hj]; exact α.2.1))
+
+  have h_minus_bot : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥ := by
+    by_contra h_minus_ne_bot
+    let γ : Weight K H L := ⟨χ.toLinear - α.1.toLinear, h_minus_ne_bot⟩
+    have hγ_nonzero : γ.IsNonZero := get_isNonZero γ w_minus
+    obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
+    obtain ⟨j, hj⟩ := exists_root_index (-α.1) (Weight.IsNonZero.neg α.2.2)
+    have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
+      rw [hi, hj, Weight.toLinear_neg, ← sub_eq_add_neg]
+      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+    have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+      ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
+    rw [hi] at h_equiv
+    exact h_chi_not_in_q (h_equiv.mpr (by
+      rw [hj, Weight.toLinear_neg]
+      convert q.smul_mem (-1) α.2.1 using 1
+      rw [neg_smul, one_smul]))
+
+  obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
+  obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
+  have h_pairing_zero : S.pairing i j = 0 := by
+    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S.toRootPairing
+    · intro h_eq; exact w_minus (by rw [← hi, ← hj, h_eq, sub_self])
+    · intro h_eq; exact w_plus (by rw [← hi, ← hj, h_eq, neg_add_cancel])
+    · intro ⟨idx, hidx⟩
+      have : genWeightSpace L (S.root idx) ≠ ⊥ := idx.val.genWeightSpace_ne_bot
+      rw [hidx, hi, hj] at this
+      exact this h_plus_bot
+    · intro ⟨idx, hidx⟩
+      have : genWeightSpace L (S.root idx) ≠ ⊥ := idx.val.genWeightSpace_ne_bot
+      rw [hidx, hi, hj] at this
+      exact this h_minus_bot
+
+  have h_pos_zero : ⁅x_χ, m_pos⁆ = 0 := by
+    have h_in_bot : ⁅x_χ, m_pos⁆ ∈ (⊥ : LieSubmodule K H L) := by
+      rw [← h_plus_bot]
+      exact h_pos_containment
+    rwa [LieSubmodule.mem_bot] at h_in_bot
+
+  have h_neg_zero : ⁅x_χ, m_neg⁆ = 0 := by
+    have h_in_bot : ⁅x_χ, m_neg⁆ ∈ (⊥ : LieSubmodule K H L) := by
+      rw [← h_minus_bot]
+      exact h_neg_containment
+    rwa [LieSubmodule.mem_bot] at h_in_bot
+
+  have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
+    have h_chi_coroot_zero : χ (coroot α.1) = 0 := by
+      have h_pairing_eq : S.pairing i j = i.1 (coroot j.1) := by
+        rw [rootSystem_pairing_apply]
+      rw [h_pairing_zero] at h_pairing_eq
+      have w_eq {w₁ w₂ : Weight K H L} (h : w₁.toLinear = w₂.toLinear) : w₁ = w₂ := by
+        apply Weight.ext; intro x; exact LinearMap.ext_iff.mp h x
+      have hi_val : i.1 = χ := w_eq (by rw [← hi]; rfl)
+      have hj_val : j.1 = α.1 := w_eq (by rw [← hj]; rfl)
+      rw [hi_val, hj_val] at h_pairing_eq
+      exact h_pairing_eq.symm
+    obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
+    have h_lie_eq_smul : ⁅(h_elem : L), x_χ⁆ = χ h_elem • x_χ :=
+      lie_eq_smul_of_mem_rootSpace hx_χ h_elem
+    have h_chi_h_zero : χ h_elem = 0 := by
+      obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp <| by
+        rw [← coe_corootSpace_eq_span_singleton α.1, LieSubmodule.mem_toSubmodule]
+        exact hh_elem
+      rw [← hc, map_smul, h_chi_coroot_zero, smul_zero]
+    have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 := by
+      rw [← lie_skew, h_lie_eq_smul, h_chi_h_zero, zero_smul, neg_zero]
+    rw [← hh_eq]
+    exact h_bracket_elem
+  exact ⟨h_pos_zero, h_neg_zero, h_bracket_zero⟩
+
 private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
     (χ : Weight K H L) (x_χ : L) (hx_χ : x_χ ∈ genWeightSpace L χ)
@@ -109,110 +240,9 @@ private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
     exact (sl2SubmoduleOfRoot α.2.2).lie_mem hm_α_original
 
   by_cases h_chi_in_q : χ.toLinear ∈ q
-  · let I := ⨆ β : {β : Weight K H L // β.toLinear ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot β.2.2
-    have genWeightSpace_le_I (β_lin : H →ₗ[K] K) (hβ_in_q : β_lin ∈ q)
-        (hβ_ne_zero : β_lin ≠ 0) : genWeightSpace L β_lin ≤ I := by
-      by_cases h_trivial : genWeightSpace L β_lin = ⊥
-      · simp [h_trivial]
-      · let β : Weight K H L := ⟨β_lin, h_trivial⟩
-        have hβ_nonzero : β.IsNonZero := get_isNonZero β hβ_ne_zero
-        refine le_trans ?_ (le_iSup _ ⟨β, hβ_in_q, hβ_nonzero⟩)
-        rw [sl2SubmoduleOfRoot_eq_sup]
-        exact le_sup_of_le_left (le_sup_of_le_left le_rfl)
-    have h_plus_contain : genWeightSpace L (χ.toLinear + α.1.toLinear) ≤ I :=
-      genWeightSpace_le_I _ (q.add_mem h_chi_in_q α.2.1) w_plus
-    have h_minus_contain : genWeightSpace L (χ.toLinear - α.1.toLinear) ≤ I :=
-      genWeightSpace_le_I _ (by
-        have : -α.1.toLinear = (-1 : K) • α.1.toLinear := by simp
-        rw [sub_eq_add_neg, this]
-        exact q.add_mem h_chi_in_q (q.smul_mem (-1) α.2.1)) w_minus
-    have h_chi_contain : genWeightSpace L χ.toLinear ≤ I :=
-      genWeightSpace_le_I _ h_chi_in_q (fun h_eq => (w_chi h_eq).elim)
-    exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
-  · let S := rootSystem H
-    have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) :
-      ∃ i, S.root i = γ.toLinear := ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
-    have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
-      by_contra h_plus_ne_bot
-      let γ : Weight K H L := ⟨χ.toLinear + α.1.toLinear, h_plus_ne_bot⟩
-      have hγ_nonzero : γ.IsNonZero := get_isNonZero γ w_plus
-      obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
-      obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
-      have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
-        rw [hi, hj]
-        exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
-      have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
-        ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
-      rw [hi] at h_equiv
-      exact h_chi_in_q (h_equiv.mpr (by rw [hj]; exact α.2.1))
-
-    have h_minus_bot : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥ := by
-      by_contra h_minus_ne_bot
-      let γ : Weight K H L := ⟨χ.toLinear - α.1.toLinear, h_minus_ne_bot⟩
-      have hγ_nonzero : γ.IsNonZero := get_isNonZero γ w_minus
-      obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
-      obtain ⟨j, hj⟩ := exists_root_index (-α.1) (Weight.IsNonZero.neg α.2.2)
-      have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
-        rw [hi, hj, Weight.toLinear_neg, ← sub_eq_add_neg]
-        exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
-      have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
-        ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
-      rw [hi] at h_equiv
-      exact h_chi_in_q (h_equiv.mpr (by
-        rw [hj, Weight.toLinear_neg]
-        convert q.smul_mem (-1) α.2.1 using 1
-        rw [neg_smul, one_smul]))
-
-    obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
-    obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
-    have h_pairing_zero : S.pairing i j = 0 := by
-      apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S.toRootPairing
-      · intro h_eq; exact w_minus (by rw [← hi, ← hj, h_eq, sub_self])
-      · intro h_eq; exact w_plus (by rw [← hi, ← hj, h_eq, neg_add_cancel])
-      · intro ⟨idx, hidx⟩
-        have : genWeightSpace L (S.root idx) ≠ ⊥ := idx.val.genWeightSpace_ne_bot
-        rw [hidx, hi, hj] at this
-        exact this h_plus_bot
-      · intro ⟨idx, hidx⟩
-        have : genWeightSpace L (S.root idx) ≠ ⊥ := idx.val.genWeightSpace_ne_bot
-        rw [hidx, hi, hj] at this
-        exact this h_minus_bot
-
-    have h_pos_zero : ⁅x_χ, m_pos⁆ = 0 := by
-      have h_in_bot : ⁅x_χ, m_pos⁆ ∈ (⊥ : LieSubmodule K H L) := by
-        rw [← h_plus_bot]
-        exact h_pos_containment
-      rwa [LieSubmodule.mem_bot] at h_in_bot
-
-    have h_neg_zero : ⁅x_χ, m_neg⁆ = 0 := by
-      have h_in_bot : ⁅x_χ, m_neg⁆ ∈ (⊥ : LieSubmodule K H L) := by
-        rw [← h_minus_bot]
-        exact h_neg_containment
-      rwa [LieSubmodule.mem_bot] at h_in_bot
-
-    have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
-      have h_chi_coroot_zero : χ (coroot α.1) = 0 := by
-        have h_pairing_eq : S.pairing i j = i.1 (coroot j.1) := by
-          rw [rootSystem_pairing_apply]
-        rw [h_pairing_zero] at h_pairing_eq
-        have w_eq {w₁ w₂ : Weight K H L} (h : w₁.toLinear = w₂.toLinear) : w₁ = w₂ := by
-          apply Weight.ext; intro x; exact LinearMap.ext_iff.mp h x
-        have hi_val : i.1 = χ := w_eq (by rw [← hi]; rfl)
-        have hj_val : j.1 = α.1 := w_eq (by rw [← hj]; rfl)
-        rw [hi_val, hj_val] at h_pairing_eq
-        exact h_pairing_eq.symm
-      obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
-      have h_lie_eq_smul : ⁅(h_elem : L), x_χ⁆ = χ h_elem • x_χ :=
-        lie_eq_smul_of_mem_rootSpace hx_χ h_elem
-      have h_chi_h_zero : χ h_elem = 0 := by
-        obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp <| by
-          rw [← coe_corootSpace_eq_span_singleton α.1, LieSubmodule.mem_toSubmodule]
-          exact hh_elem
-        rw [← hc, map_smul, h_chi_coroot_zero, smul_zero]
-      have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 := by
-        rw [← lie_skew, h_lie_eq_smul, h_chi_h_zero, zero_smul, neg_zero]
-      rw [← hh_eq]
-      exact h_bracket_elem
+  · exact chi_in_q_aux q χ x_χ m_α α h_chi_in_q w_plus w_minus w_chi h_bracket_decomp
+  · have ⟨h_pos_zero, h_neg_zero, h_bracket_zero⟩ := chi_not_in_q_aux q hq χ x_χ hx_χ α h_chi_in_q
+      w_plus w_minus w_chi m_pos m_neg m_h hm_h h_pos_containment h_neg_containment
     rw [h_bracket_sum, h_pos_zero, h_neg_zero, h_bracket_zero]
     simp only [add_zero, zero_mem]
 
