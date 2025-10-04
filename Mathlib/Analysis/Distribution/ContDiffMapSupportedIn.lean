@@ -28,6 +28,7 @@ Given `n : ℕ∞`and a compact `K` of a normed space `E`, we consider the type 
   `ContDiffMapSupportedIn E F n K`, as a map into `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) n-i K`.
 
 ## Main statements
+
 - `ContDiffMapSupportedIn.instIsUniformAddGroup` and
   `ContDiffMapSupportedIn.instLocallyConvexSpace`: `ContDiffMapSupportedIn` is a locally convex
   topological vector space.
