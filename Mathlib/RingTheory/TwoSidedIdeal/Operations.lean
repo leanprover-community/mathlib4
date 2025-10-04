@@ -58,6 +58,9 @@ lemma subset_span {s : Set R} : s ⊆ (span s : Set R) := by
   rw [SetLike.mem_coe, mem_iff]
   exact RingConGen.Rel.of _ _ (by simpa using hx)
 
+lemma mem_span_singleton {x : R} : x ∈ span {x} :=
+  subset_span <| Set.mem_singleton x
+
 lemma mem_span_iff {s : Set R} {x} :
     x ∈ span s ↔ ∀ (I : TwoSidedIdeal R), s ⊆ I → x ∈ I := by
   refine ⟨?_, fun h => h _ subset_span⟩
@@ -74,9 +77,22 @@ lemma span_mono {s t : Set R} (h : s ⊆ t) : span s ≤ span t := by
   rw [mem_span_iff] at hx ⊢
   exact fun I hI => hx I <| h.trans hI
 
+@[simp]
 lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
   rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
   exact ⟨fun h x hx ↦ by aesop, fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy)⟩
+
+@[simp]
+lemma span_neg (s : Set R) : span (-s) = span s := by
+  apply le_antisymm <;> rw [span_le]
+  · intro x hx
+    exact neg_neg x ▸ neg_mem _ (subset_span hx)
+  · intro x hx
+    exact neg_neg x ▸ neg_mem _ (subset_span (Set.neg_mem_neg.mpr hx))
+
+@[simp]
+lemma span_singleton_zero : span {(0 : R)} = ⊥ := by
+  simp [← le_bot_iff]
 
 /-- An induction principle for span membership.
 
