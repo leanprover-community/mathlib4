@@ -232,7 +232,7 @@ lemma IsMeagre.union {s t : Set X} (hs : IsMeagre s) (ht : IsMeagre t) : IsMeagr
   exact inter_mem hs ht
 
 /-- A countable union of meagre sets is meagre. -/
-lemma isMeagre_iUnion [Countable ι] {f : ι → Set X} (hs : ∀ i, IsMeagre (f i)) :
+lemma isMeagre_iUnion [Countable ι'] {f : ι' → Set X} (hs : ∀ i, IsMeagre (f i)) :
     IsMeagre (⋃ i, f i) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
@@ -255,5 +255,15 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
 lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := by
   contrapose! hs
   simpa [hs] using IsMeagre.empty
+
+lemma isMeagre_congr_residual {s t : Set X} (h : s =ᶠ[residual X] t) : IsMeagre s ↔ IsMeagre t := by
+  constructor <;> {
+    intro h_meagre
+    have : _ᶜ ∩ {x | s x = t x} ∈ residual X := inter_mem h_meagre h
+    refine mem_of_superset this ?_
+    intro x ⟨hs, hx⟩
+    simp only [mem_setOf_eq] at hx
+    tauto
+  }
 
 end IsMeagre
