@@ -148,9 +148,15 @@ lemma flat_and_surjective_iff_of_faithfullyFlat_of_isAffine [IsAffine X] [IsAffi
 
 /-- An effective epimorphism structure on the continuous map underlying a flat surjective and
 quasi-compact map of schemes. -/
-noncomputable def effectiveEpisStructBase [Flat f] [Surjective f] [QuasiCompact f] :
+noncomputable def effectiveEpiStructBaseOfSurjective [Flat f] [Surjective f] [QuasiCompact f] :
     EffectiveEpiStruct f.base :=
   TopCat.effectiveEpiStructOfQuotientMap _ (isQuotientMap_of_surjective f)
+
+/-- The underlying continuous map of a flat surjective and quasi-compact map of schemes is
+an effective epimorphism in the category of topological spaces. -/
+lemma effectiveEpi_base_of_surjective [Flat f] [Surjective f] [QuasiCompact f] :
+    EffectiveEpi f.base :=
+  ⟨⟨TopCat.effectiveEpiStructOfQuotientMap _ (isQuotientMap_of_surjective f)⟩⟩
 
 variable {f} in
 /-- A preparation lemma for `AlgebraicGeometry.Flat.base_factor`. -/
@@ -174,17 +180,17 @@ factors through a unique *continuous map* on underlying topological spaces. -/
 lemma base_factorization [Flat f] [Surjective f] [QuasiCompact f] {W : Scheme.{u}} {e : X ⟶ W}
     (h : pullback.fst f f ≫ e = pullback.snd f f ≫ e) :
     ∃! (g : Y.carrier ⟶ W.carrier), f.base ≫ g = e.base := by
-  have : ∀ {Z : TopCat} (g₁ g₂ : Z ⟶ X.carrier), g₁ ≫ f.base = g₂ ≫ f.base →
+  have {Z : TopCat} (g₁ g₂ : Z ⟶ X.carrier) (hg : g₁ ≫ f.base = g₂ ≫ f.base) :
       g₁ ≫ e.base = g₂ ≫ e.base := by
-    intro _ _ _ hg
     apply TopCat.hom_ext
     apply ContinuousMap.coe_injective
     simp only [TopCat.hom_comp, ContinuousMap.coe_comp]
     rw [(base_factorization_type h).choose_spec, Function.comp_assoc]
     congr 1
     exact congrArg (fun g ↦ g.toFun) ((TopCat.hom_comp _ _).trans (congrArg (fun g ↦ g.hom) hg))
-  exact ⟨(effectiveEpisStructBase f).desc e.base this, ⟨(effectiveEpisStructBase f).fac e.base this,
-    fun g' hg' ↦ (effectiveEpisStructBase f).uniq e.base this g' hg'⟩⟩
+  exact ⟨(effectiveEpiStructBaseOfSurjective f).desc e.base this,
+    ⟨(effectiveEpiStructBaseOfSurjective f).fac e.base this,
+      fun g' hg' ↦ (effectiveEpiStructBaseOfSurjective f).uniq e.base this g' hg'⟩⟩
 
 end FlatAndSurjective
 
