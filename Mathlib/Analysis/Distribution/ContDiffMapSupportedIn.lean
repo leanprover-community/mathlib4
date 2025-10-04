@@ -59,12 +59,12 @@ structure ContDiffMapSupportedIn (n : ℕ∞) (K : Compacts E) : Type _ where
   protected zero_on_compl' : EqOn toFun 0 Kᶜ
 
 /-- Notation for the space of `n`-times continuously differentiable
-functions with support in a compact `K` -/
+functions with support in a compact `K`. -/
 scoped[Distributions] notation "𝓓^{" n "}_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
 /-- Notation for the space of smooth (inifinitely differentiable)
-functions with support in a compact `K` -/
+functions with support in a compact `K`. -/
 scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
 
