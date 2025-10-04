@@ -45,7 +45,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     linearMap_subsingleton_of_mem_annihilator reg mem_ann⟩
   by_cases htrivial : Subsingleton M
   · exact ⟨0, ⟨Submodule.zero_mem (Module.annihilator R N), IsSMulRegular.zero⟩⟩
-  · let _ : Nontrivial M := not_subsingleton_iff_nontrivial.mp htrivial
+  · push_neg at htrivial
     by_contra! h
     have hexist : ∃ p ∈ associatedPrimes R M, Module.annihilator R N ≤ p := by
       rcases associatedPrimes.nonempty R M with ⟨Ia, hIa⟩

@@ -76,7 +76,7 @@ variable {ι F α β γ δ : Type*}
 
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonnegHomClass (F : Type*) (α β : outParam Type*) [Zero β] [LE β] [FunLike F α β] : Prop where
-  /-- the image of any element is non negative. -/
+  /-- the image of any element is nonnegative. -/
   apply_nonneg (f : F) : ∀ a, 0 ≤ f a
 
 /-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/

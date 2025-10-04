@@ -11,6 +11,7 @@ import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Topology.Algebra.UniformFilterBasis
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.Tactic.MoveAdd
 
 /-!
@@ -295,6 +296,9 @@ instance instNeg : Neg 𝓢(E, F) :=
     ⟨-f, (f.smooth _).neg, fun k n =>
       ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
 
+@[simp]
+theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
+
 end Neg
 
 section Add
@@ -568,6 +572,11 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
+theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
+  refine ⟨smooth f ⊤, fun n => ?_⟩
+  rcases f.decay 0 n with ⟨C, Cpos, hC⟩
+  exact ⟨0, C, by simpa using hC⟩
+
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
 open MeasureTheory Module
@@ -707,7 +716,7 @@ variable {σ : 𝕜 →+* 𝕜'}
 /-- Create a semilinear map between Schwartz spaces.
 
 Note: This is a helper definition for `mkCLM`. -/
-def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
+def mkLM (A : 𝓢(D, E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
     (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
@@ -726,7 +735,7 @@ def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + 
 /-- Create a continuous semilinear map between Schwartz spaces.
 
 For an example of using this definition, see `fderivCLM`. -/
-def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
+def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
     (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
@@ -798,12 +807,7 @@ where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate g
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
     𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
   refine mkCLM (fun f x => B (f x) (g x))
-    (fun _ _ _ => by
-      simp only [map_add, Pi.add_apply,
-        ContinuousLinearMap.add_apply])
-    (fun _ _ _ => by
-      simp only [map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-        RingHom.id_apply])
+    (fun _ _ _ => by simp) (fun _ _ _ => by simp)
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
       ((f.smooth ⊤).prodMk hg.1)) ?_
   rintro ⟨k, n⟩
@@ -844,6 +848,10 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   move_mul [(1 + ‖x‖) ^ l]
   gcongr
   simp
+
+@[simp]
+theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) : bilinLeftCLM B hg f = fun x => B (f x) (g x) := rfl
 
 end Multiplication
 
@@ -962,7 +970,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
-  mkCLM (fderiv ℝ) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
+  mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => fderiv_const_smul f.differentiableAt a)
     (fun f => (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
@@ -973,9 +981,12 @@ def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
 theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv ℝ f x :=
   rfl
 
+theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
+  f.differentiableAt.hasFDerivAt
+
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
-  mkCLM deriv (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
+  mkCLM (deriv ·) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => deriv_const_smul a f.differentiableAt)
     (fun f => (contDiff_succ_iff_deriv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
@@ -986,6 +997,9 @@ def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
 @[simp]
 theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 f x = deriv f x :=
   rfl
+
+theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
+  f.differentiableAt.hasDerivAt
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
@@ -1343,5 +1357,42 @@ theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ 
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
 
 end Lp
+
+section integration_by_parts
+
+open ENNReal MeasureTheory
+
+variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a general bilinear map. -/
+theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
+    (L : E →L[ℝ] F →L[ℝ] V) :
+    ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
+  MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
+    f.hasDerivAt g.hasDerivAt (bilinLeftCLM L (derivCLM ℝ g).hasTemperateGrowth f).integrable
+    (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).integrable
+    (bilinLeftCLM L g.hasTemperateGrowth f).integrable
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a Schwartz function with values in continuous linear maps. -/
+theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)) (g : 𝓢(ℝ, F)) :
+    ∫ (x : ℝ), f x (deriv g x) = -∫ (x : ℝ), deriv f x (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g
+    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for multiplication of scalar-valued Schwartz functions. -/
+theorem integral_mul_deriv_eq_neg_deriv_mul (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, 𝕜)) :
+    ∫ (x : ℝ), f x * (deriv g x) = -∫ (x : ℝ), deriv f x * (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜)
+
+end integration_by_parts
+
 
 end SchwartzMap

@@ -461,6 +461,11 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
 theorem Equiv.tprod_eq (e : γ ≃ β) (f : β → α) : ∏' c, f (e c) = ∏' b, f b :=
   e.injective.tprod_eq <| by simp
 
+@[to_additive (attr := simp)]
+theorem tprod_comp_neg {β : Type*} [InvolutiveNeg β] (f : β → α) :
+    ∏' d, f (-d) = ∏' d, f d :=
+  (Equiv.neg β).tprod_eq f
+
 /-! ### `tprod` on subsets - part 1 -/
 
 @[to_additive]

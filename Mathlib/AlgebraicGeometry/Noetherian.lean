@@ -44,7 +44,7 @@ giving definitions, equivalent conditions, and basic properties.
 
 universe u v
 
-open Opposite AlgebraicGeometry Localization IsLocalization TopologicalSpace
+open Opposite AlgebraicGeometry Localization IsLocalization TopologicalSpace CategoryTheory
 
 namespace AlgebraicGeometry
 
@@ -122,7 +122,6 @@ theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
   ⟨fun _ i => IsLocallyNoetherian.component_noetherian (S i),
    isLocallyNoetherian_of_affine_cover hS⟩
 
-open CategoryTheory in
 /-- A version of `isLocallyNoetherian_iff_of_iSup_eq_top` using `Scheme.OpenCover`. -/
 theorem isLocallyNoetherian_iff_of_affine_openCover (𝒰 : Scheme.OpenCover.{v, u} X)
     [∀ i, IsAffine (𝒰.X i)] :
@@ -172,7 +171,7 @@ theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
   · rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
     intro h i
     exact @isNoetherianRing_of_ringEquiv _ _ _ _
-      (IsOpenImmersion.ΓIsoTop (Scheme.Cover.f _ i.2)).symm.commRingCatIsoToRingEquiv
+      (IsOpenImmersion.ΓIsoTop (PreZeroHypercover.f _ i.2)).symm.commRingCatIsoToRingEquiv
       (IsLocallyNoetherian.component_noetherian ⟨_, isAffineOpen_opensRange _⟩)
 
 /-- If `R` is a Noetherian ring, `Spec R` is a Noetherian topological space. -/
@@ -263,7 +262,6 @@ theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v,
     · exact (isLocallyNoetherian_iff_of_affine_openCover _).mpr hNoeth
     · exact Scheme.OpenCover.compactSpace 𝒰
 
-open CategoryTheory in
 /-- A Noetherian scheme has a Noetherian underlying topological space. -/
 @[stacks 01OZ]
 instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :

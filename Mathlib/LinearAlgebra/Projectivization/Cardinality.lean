@@ -60,13 +60,12 @@ See `Projectivization.card'` and `Projectivization.card''` for other spellings o
 lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
   nontriviality V
   wlog h : Finite k
-  · simp only [not_finite_iff_infinite] at h
+  · push_neg at h
     have : Infinite V := Module.Free.infinite k V
     simp
   wlog h : Finite V
-  · simp only [not_finite_iff_infinite] at h
-    have := not_iff_not.mpr (finite_iff_of_finite k V)
-    simp only [not_finite_iff_infinite] at this
+  · have := not_iff_not.mpr (finite_iff_of_finite k V)
+    push_neg at h this
     have : Infinite (ℙ k V) := by rwa [this]
     simp
   classical
@@ -98,10 +97,9 @@ lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
   wlog hf : Finite V
-  · simp only [not_finite_iff_infinite] at hf
-    have : Infinite (ℙ k V) := by
-      rw [← not_finite_iff_infinite, not_iff_not.mpr (finite_iff_of_finite k V)]
-      simpa
+  · have : Infinite (ℙ k V) := by
+      contrapose! hf
+      rwa [finite_iff_of_finite] at hf
     have : n = 0 := by
       rw [← h]
       apply Module.finrank_of_not_finite

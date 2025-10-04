@@ -83,7 +83,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     simp_all [mfderiv]
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
     rw [if_pos]
-    · simp [Function.comp_def, PartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
+    · simp [Function.comp_def, OpenPartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
     · apply mdifferentiableWithinAt_extChartAt_symm
       apply (extChartAt I (f x₀)).map_source
       simpa using hx
