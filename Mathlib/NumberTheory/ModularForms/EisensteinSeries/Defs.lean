@@ -120,6 +120,10 @@ lemma gammaSet_eq_gcd_mul_divIntMap {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ ga
 def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0 :=
     Set.BijOn.equiv _ (gammaSet_div_gcd_to_gammaSet10_bijection r)
 
+@[simp]
+lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
+    (gammaSetDivGcdEquiv r) v = divIntMap r v.1 := rfl
+
 /-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0)` . -/
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
   apply (Equiv.sigmaFiberEquiv finGcdMap).symm.trans
