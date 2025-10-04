@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+import Mathlib.Data.List.GetD
 
 /-!
 
@@ -800,6 +801,20 @@ lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n �
 
 @[deprecated (since := "2025-06-10")]
 alias getVert_eq_support_get? := getVert_eq_support_getElem?
+
+lemma getVert_eq_support_getD {u v : V} {n : ℕ} (p : G.Walk u v) :
+    p.getVert n = p.support.getD n v := by
+  by_cases h : n ≤ p.length
+  · simp [← getVert_eq_support_getElem? p h]
+  exact getVert_of_length_le p (by cutsat) |>.trans <|
+    p.support.getD_eq_default v (length_support _ |>.trans_le <| not_le.mp h) |>.symm
+
+theorem getVert_comp_val_eq_support_get {u v : V} (p : G.Walk u v) :
+    p.getVert ∘ Fin.val = p.support.get := by
+  ext n
+  refine getVert_eq_support_getElem p ?_
+  have h := p.length_support
+  cutsat
 
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
