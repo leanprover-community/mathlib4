@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Field.WithAbs
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!
 # The completion of a number field at an infinite place
@@ -59,13 +60,22 @@ open AbsoluteValue.Completion
 
 variable {K : Type*} [Field K] (v : InfinitePlace K)
 
+theorem isometry_embedding : Isometry (v.embedding.comp (WithAbs.equiv v.1).toRingHom) :=
+  AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
+    simpa using v.norm_embedding_eq (WithAbs.equiv v.1 x)
+
+theorem isometry_embedding_of_isReal (hv : v.IsReal) :
+    Isometry ((v.embedding_of_isReal hv).comp (WithAbs.equiv v.1).toRingHom) :=
+  AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
+    simpa using v.norm_embedding_of_isReal hv (WithAbs.equiv v.1 x)
+
 /-- The completion of a number field at an infinite place. -/
 abbrev Completion := v.1.Completion
 
 namespace Completion
 
 instance : NormedField v.Completion :=
-  letI := (WithAbs.isUniformInducing_of_comp v.norm_embedding_eq).completableTopField
+  letI := v.isometry_embedding.isUniformInducing.completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
 
 lemma norm_coe (x : WithAbs v.1) :
@@ -89,48 +99,56 @@ lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
 
 /-- The completion of a number field at an infinite place is locally compact. -/
 instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
-  AbsoluteValue.Completion.locallyCompactSpace v.norm_embedding_eq
+  AbsoluteValue.Completion.locallyCompactSpace v.isometry_embedding
 
 /-- The embedding associated to an infinite place extended to an embedding `v.Completion →+* ℂ`. -/
-def extensionEmbedding : v.Completion →+* ℂ := extensionEmbedding_of_comp v.norm_embedding_eq
+def extensionEmbedding : v.Completion →+* ℂ := v.isometry_embedding.extensionHom
 
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
-  extensionEmbedding_of_comp <| v.norm_embedding_of_isReal hv
+  (v.isometry_embedding_of_isReal hv).extensionHom
 
 @[simp]
-theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
-  extensionEmbedding_of_comp_coe v.norm_embedding_eq x
+theorem extensionEmbedding_coe (x : WithAbs v.1) :
+    extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) :=
+  v.isometry_embedding.extensionHom_coe _
 
 @[simp]
-theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : K) :
-    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv x :=
-  extensionEmbedding_of_comp_coe (v.norm_embedding_of_isReal hv) x
+theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
+    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
+  (v.isometry_embedding_of_isReal hv).extensionHom_coe _
 
 @[deprecated (since := "2025-09-24")]
 alias extensionEmbedding_of_isReal_coe := extensionEmbeddingOfIsReal_coe
 
+open UniformSpace.Completion in
+@[simp]
+theorem extensionEmbeddingOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v) (x : v.Completion) :
+    (extensionEmbeddingOfIsReal hv x : ℂ) = extensionEmbedding v x := by
+  refine UniformSpace.Completion.induction_on x ?_ (fun x => by simp)
+  exact isClosed_eq (Continuous.comp' (by fun_prop) continuous_extension) continuous_extension
+
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
-  Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.norm_embedding_eq)
+  v.isometry_embedding.completion_extension
 
 /-- The embedding `v.Completion →+* ℝ` at a real infinite place is an isometry. -/
 theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
-  Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| v.norm_embedding_of_isReal hv)
+  (v.isometry_embedding_of_isReal hv).completion_extension
 
 @[deprecated (since := "2025-09-24")]
 alias isometry_extensionEmbedding_of_isReal := isometry_extensionEmbeddingOfIsReal
 
 /-- The embedding `v.Completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
-  (isClosedEmbedding_extensionEmbedding_of_comp v.norm_embedding_eq).isClosed_range
+  v.isometry_embedding.completion_extension.isClosedEmbedding.isClosed_range
 
 /-- The embedding `v.Completion →+* ℝ` associated to a real infinite place has closed image
 inside `ℝ`. -/
 theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     IsClosed (Set.range (extensionEmbeddingOfIsReal hv)) :=
-  (isClosedEmbedding_extensionEmbedding_of_comp <| v.norm_embedding_of_isReal hv).isClosed_range
+  (v.isometry_embedding_of_isReal hv).completion_extension.isClosedEmbedding.isClosed_range
 
 @[deprecated (since := "2025-09-24")]
 alias isClosed_image_extensionEmbedding_of_isReal := isClosed_image_extensionEmbeddingOfIsReal
@@ -138,10 +156,10 @@ alias isClosed_image_extensionEmbedding_of_isReal := isClosed_image_extensionEmb
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
   contrapose! hv
-  simp only [not_isComplex_iff_isReal, isReal_iff]
-  ext x
-  obtain ⟨r, hr⟩ := hv ▸ extensionEmbedding_coe v x ▸ RingHom.mem_fieldRange_self _ _
-  simp only [ComplexEmbedding.conjugate_coe_eq, ← hr, Complex.ofRealHom_eq_coe, Complex.conj_ofReal]
+  refine not_isComplex_iff_isReal.2 <| isReal_iff.2 <| RingHom.ext fun x ↦ ?_
+  obtain ⟨r, hr⟩ := hv ▸ RingHom.mem_fieldRange_self (extensionEmbedding v) (x : v.Completion)
+  simp only [extensionEmbedding_coe, RingEquiv.apply_symm_apply] at hr
+  simp [← hr]
 
 /-- If `v` is a complex infinite place, then the embedding `v.Completion →+* ℂ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
@@ -194,4 +212,48 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbeddingOfIsReal hv
 
-end NumberField.InfinitePlace.Completion
+end Completion
+
+namespace Extension
+
+open Completion
+
+variable {L : Type*} [Field L] [Algebra K L] (w : v.Extension L) {v}
+
+theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.abs)) := by
+  apply AddMonoidHomClass.isometry_of_norm
+  exact fun _ ↦ WithAbs.equiv_algebraMap_apply v.1 w.abs _ ▸ comp_of_comap_eq w.comap_eq _
+
+instance : Algebra v.Completion w.1.Completion := w.isometry_algebraMap.mapRingHom.toAlgebra
+
+@[simp]
+theorem algebraMap_coe (x : WithAbs v.1) :
+    algebraMap v.Completion w.1.Completion x = algebraMap (WithAbs v.1) (WithAbs w.abs) x :=
+  w.isometry_algebraMap.mapRingHom_coe _
+
+open UniformSpace.Completion NumberField.ComplexEmbedding in
+theorem extensionEmbedding_algebraMap
+    (h : w.1.embedding.comp (algebraMap K L) = v.embedding) (x : v.Completion) :
+    extensionEmbedding w.1 (algebraMap v.Completion w.1.Completion x) =
+      extensionEmbedding v x := by
+  induction x using induction_on
+  · exact isClosed_eq (Continuous.comp continuous_extension continuous_map) continuous_extension
+  · simp [WithAbs.equiv_algebraMap_apply, ← h]
+
+open UniformSpace.Completion NumberField.ComplexEmbedding in
+theorem conjugate_extensionEmbedding_algebraMap
+    (h : (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding) (x : v.Completion) :
+    conjugate (extensionEmbedding w.1) (algebraMap _ _ x) = extensionEmbedding v x := by
+  induction x using induction_on
+  · exact isClosed_eq (Continuous.comp
+      (by simpa using Continuous.comp Complex.continuous_conj continuous_extension) continuous_map)
+      continuous_extension
+  · simp [WithAbs.equiv_algebraMap_apply, ← h]
+
+open UniformSpace.Completion in
+theorem extensionEmbedding_algebraMap_of_isReal (h : v.IsReal) (x : v.Completion) :
+    extensionEmbedding w.1 (algebraMap _ _ x) = extensionEmbedding v x :=
+  extensionEmbedding_algebraMap w
+    ((w.comap_eq ▸ comap_embedding_of_isReal _ (w.comap_eq ▸ h)).symm) _
+
+end NumberField.InfinitePlace.Extension
