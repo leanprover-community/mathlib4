@@ -142,12 +142,12 @@ elab:max "T% " t:term:arg : term => do
       trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle"
       -- Note: we allow `isDefEq` here because any mvar assignments should persist.
       if ← withReducible (isDefEq E base) then
-        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
+        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, e.app x]
         mkLambdaFVars #[x] body
       else return e
     | TangentSpace _k _ E _ _ _H _ _I _M _ _ _x =>
       trace[Elab.DiffGeo.TotalSpaceMk] "Vector field"
-      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
+      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, e.app x]
       mkLambdaFVars #[x] body
     | _ => match (← instantiateMVars tgt).cleanupAnnotations with
       | .app V _ =>
@@ -158,7 +158,7 @@ elab:max "T% " t:term:arg : term => do
           match declType with
           | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
             if ← withReducible (pureIsDefEq E V) then
-              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, .app e x]
+              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, e.app x]
               some <$> mkLambdaFVars #[x] body
             else return none
           | _ => return none
