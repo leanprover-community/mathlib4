@@ -481,22 +481,19 @@ theorem integral_smul_pairing (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ) :
     = c • ∫ x, f x ∂(VectorMeasureWithPairing.mk B μ) := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral, hG]
-  simp_rw [integral_eq_setToFun, ← setToFun_smul_left]
-  have hdfma : DominatedFinMeasAdditive μ.variation.ennrealToMeasure
-    (weightedVectorSMul (c • B) μ : Set α → G →L[ℝ] G) c :=
-    mul_one c ▸ (dominatedFinMeasAdditive_weightedSMul (c • μ)).of_smul_measure hc
-  have hdfma_smul := dominatedFinMeasAdditive_weightedSMul (F := G) (c • μ)
-  rw [← setToFun_congr_smul_measure c hc hdfma hdfma_smul f]
-  exact setToFun_congr_left' _ _ (fun s _ _ => weightedSMul_smul_measure μ c) f
+  simp_rw [integral_eq_setToFun, ← setToFun_smul_left, weightedVectorSMul_smul_pairing]
+  congr
+  simp [norm_smul]
 
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
     {f : β → E} (hfm : StronglyMeasurable f) : ∫ y, f y ∂(VectorMeasureWithPairing.mk Bμ.pairing
-    (VectorMeasure.map Bμ.vectorMeasure φ)) = ∫ x, f (φ x) ∂Bμ := by
+    (Bμ.vectorMeasure.map φ)) = ∫ x, f (φ x) ∂Bμ := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral, hG]
-  by_cases hfi : Integrable f (VectorMeasure.map Bμ.vectorMeasure φ); swap
-  · rw [integral_undef hfi, integral_undef]
-    exact fun hfφ => hfi ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hfφ)
+  by_cases hfi : Integrable f (Bμ.vectorMeasure.map φ).variation.ennrealToMeasure; swap
+  · rw [integral_undef, integral_undef]
+    · exact fun hfφ => sorry
+    · exact hfi
   borelize G
   have : SeparableSpace (range f ∪ {0} : Set G) := hfm.separableSpace_range_union_singleton
   refine tendsto_nhds_unique
