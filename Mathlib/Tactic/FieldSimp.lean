@@ -684,6 +684,10 @@ example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
   -- new goal: `⊢ (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2`
 ```
 
+A very common pattern is `field_simp; ring` (clear denominators, then the resulting goal is
+solvable by the axioms of a commutative ring). The finishing tactic `field` is a shorthand for this
+pattern.
+
 Cancelling and combining denominators will generally require checking "nonzeroness"/"positivity"
 side conditions. The `field_simp` tactic attempts to discharge these, and will omit such steps if it
 cannot discharge the corresponding side conditions. The discharger will try, among other things,
