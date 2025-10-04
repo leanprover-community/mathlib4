@@ -113,11 +113,13 @@ lemma iIndepFun_uncurry {X : (i : ι) → (j : κ i) → Ω → 𝓧 i j} (mX : 
   congrm infinitePi (fun i ↦ ?_)
   rw [(iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop)).1 (h2 i)]
 
+/-- Given random variables `X i j : Ω i j → 𝓧 i j`, they are independent when viewed as random
+variables defined on the product space `Π i, Π j, Ω i j`. -/
 lemma iIndepFun_uncurry_infinitePi {Ω : (i : ι) → κ i → Type*} {mΩ : ∀ i j, MeasurableSpace (Ω i j)}
     {X : (i : ι) → (j : κ i) → Ω i j → 𝓧 i j}
     (μ : (i : ι) → (j : κ i) → Measure (Ω i j)) [∀ i j, IsProbabilityMeasure (μ i j)]
     (mX : ∀ i j, Measurable (X i j)) :
-    iIndepFun (fun (p : (i : ι) × κ i) (ω : (i : ι) → (j : κ i) → Ω i j) ↦ X p.1 p.2 (ω p.1 p.2))
+    iIndepFun (fun (p : (i : ι) × κ i) (ω : Π i, Π j, Ω i j) ↦ X p.1 p.2 (ω p.1 p.2))
       (infinitePi (fun i ↦ infinitePi (μ i))) := by
   refine iIndepFun_uncurry (P := infinitePi (fun i ↦ infinitePi (μ i)))
     (X := fun i j ω ↦ X i j (ω i j)) (by fun_prop) ?_ fun i ↦ ?_
@@ -142,11 +144,6 @@ lemma iIndepFun_uncurry_infinitePi {Ω : (i : ι) → κ i → Type*} {mΩ : ∀
     any_goals fun_prop
     exact fun _ ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
 
--- lemma iIndepFun_uncurry_infinitePi' (μ : (i : ι) → (j : κ i) → Measure (𝓧 i j))
---     [∀ i j, IsProbabilityMeasure (μ i j)] :
---     iIndepFun (fun (p : (i : ι) × κ i) ω ↦ ω p.1 p.2) (infinitePi (fun i ↦ infinitePi (μ i))) :=
---   iIndepFun_uncurry_infinitePi μ (X := fun _ _ ↦ id) (by fun_prop)
-
 end dependent
 
 section nondependent
@@ -164,11 +161,13 @@ lemma iIndepFun_uncurry' {X : (i : ι) → (j : κ) → Ω → 𝓧 i j} (mX : �
     iIndepFun (fun (p : ι × κ) ω ↦ X p.1 p.2 ω) P :=
   (iIndepFun_uncurry mX h1 h2).of_precomp (Equiv.sigmaEquivProd ι κ).surjective
 
+/-- Given random variables `X i j : Ω i j → 𝓧 i j`, they are independent when viewed as random
+variables defined on the product space `Π i, Π j, Ω i j`. -/
 lemma iIndepFun_uncurry_infinitePi' {Ω : ι → κ → Type*} {mΩ : ∀ i j, MeasurableSpace (Ω i j)}
     {X : (i : ι) → (j : κ) → Ω i j → 𝓧 i j}
     (μ : (i : ι) → (j : κ) → Measure (Ω i j)) [∀ i j, IsProbabilityMeasure (μ i j)]
     (mX : ∀ i j, Measurable (X i j)) :
-    iIndepFun (fun (p : ι × κ) (ω : (i : ι) → (j : κ) → Ω i j) ↦ X p.1 p.2 (ω p.1 p.2))
+    iIndepFun (fun (p : ι × κ) (ω : Π i, Π j, Ω i j) ↦ X p.1 p.2 (ω p.1 p.2))
       (infinitePi (fun i ↦ infinitePi (μ i))) :=
   (iIndepFun_uncurry_infinitePi μ mX).of_precomp (Equiv.sigmaEquivProd ι κ).surjective
 
