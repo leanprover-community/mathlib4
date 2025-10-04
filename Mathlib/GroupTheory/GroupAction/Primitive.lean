@@ -124,6 +124,13 @@ theorem IsPreprimitive.of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] 
     left
     exact Set.subsingleton_of_subsingleton
 
+theorem isTrivialBlock_of_card_le_two
+    [Finite X] (hX : Nat.card X ≤ 2) (B : Set X) :
+    IsTrivialBlock B := by
+  rw [IsTrivialBlock, ← B.ncard_le_one_iff_subsingleton, B.eq_univ_iff_ncard]
+  have := B.ncard_le_card
+  grind
+
 variable [Group G] [MulAction G X]
 
 open scoped BigOperators Pointwise
