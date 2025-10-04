@@ -271,6 +271,11 @@ lemma Commute.mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : Commute a 
     ← quasispectrumRestricts_iff, ← mul_assoc]
   exact QuasispectrumRestricts.nnreal_of_nonneg <| conjugate_nonneg_of_nonneg ha hx
 
+lemma commute_iff_mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    Commute a b ↔ 0 ≤ a * b :=
+  ⟨Commute.mul_nonneg ha hb,
+  fun h => ha.isSelfAdjoint.commute_iff hb.isSelfAdjoint |>.mpr h.isSelfAdjoint⟩
+
 open NNReal in
 lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [LE A]
     [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
