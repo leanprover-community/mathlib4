@@ -29,42 +29,54 @@ variable [Semiring R]
 /-- A polynomial factors if a product of constant and monic linear polynomials. -/
 def Factors (f : R[X]) : Prop := f ∈ Submonoid.closure ({C a | a : R} ∪ {X + C a | a : R})
 
+@[simp, aesop safe apply]
 theorem factors_C (a : R) : Factors (C a) :=
   Submonoid.mem_closure_of_mem (Set.mem_union_left _ ⟨a, rfl⟩)
 
+@[simp, aesop safe apply]
 theorem factors_zero : Factors (0 : R[X]) := by
   simpa using factors_C (0 : R)
 
+@[simp, aesop safe apply]
 theorem factors_one : Factors (1 : R[X]) :=
   factors_C (1 : R)
 
+@[simp, aesop safe apply]
 theorem factors_X_add_C (a : R) : Factors (X + C a) :=
   Submonoid.mem_closure_of_mem (Set.mem_union_right _ ⟨a, rfl⟩)
 
+@[simp, aesop safe apply]
 theorem factors_X : Factors (X : R[X]) := by
   simpa using factors_X_add_C (0 : R)
 
+@[simp, aesop safe apply]
 protected theorem Factors.mul {f g : R[X]} (hf : Factors f) (hg : Factors g) :
     Factors (f * g) :=
   mul_mem hf hg
 
+@[simp, aesop safe apply]
 theorem Factors.C_mul {f : R[X]} (hf : Factors f) (a : R) : Factors (C a * f) :=
   (factors_C a).mul hf
 
+@[simp, aesop safe apply]
 theorem Factors.list_prod {l : List R[X]} (h : ∀ f ∈ l, Factors f) : Factors l.prod :=
   list_prod_mem h
 
+@[simp, aesop safe apply]
 protected theorem Factors.pow {f : R[X]} (hf : Factors f) (n : ℕ) : Factors (f ^ n) :=
   pow_mem hf n
 
+@[simp, aesop safe apply]
 theorem factors_X_pow (n : ℕ) : Factors (X ^ n : R[X]) :=
   factors_X.pow n
 
+@[simp, aesop safe apply]
 theorem factors_C_mul_X_pow (a : R) (n : ℕ) : Factors (C a * X ^ n) :=
   (factors_X_pow n).C_mul a
 
+@[simp, aesop safe apply]
 theorem factors_monomial (n : ℕ) (a : R) : Factors (monomial n a) := by
-  simp [← C_mul_X_pow_eq_monomial, factors_C_mul_X_pow]
+  simp [← C_mul_X_pow_eq_monomial]
 
 protected theorem Factors.map {f : R[X]} (hf : Factors f) {S : Type*} [Semiring S] (i : R →+* S) :
     Factors (map i f) := by
@@ -82,10 +94,12 @@ section CommSemiring
 
 variable [CommSemiring R]
 
+@[simp, aesop safe apply]
 theorem Factors.multiset_prod {m : Multiset R[X]} (hm : ∀ f ∈ m, Factors f) : Factors m.prod := by
   rw [← Multiset.prod_toList]
   exact Factors.list_prod (by simpa)
 
+@[simp, aesop safe apply]
 protected theorem Factors.prod {ι : Type*} {f : ι → R[X]} {s : Finset ι}
     (h : ∀ i ∈ s, Factors (f i)) : Factors (∏ i ∈ s, f i) := by
   rw [Finset.prod_eq_multiset_prod]
@@ -121,13 +135,16 @@ section Ring
 
 variable [Ring R]
 
+@[simp, aesop safe apply]
 theorem factors_X_sub_C (a : R) : Factors (X - C a) := by
   simpa using factors_X_add_C (-a)
 
+@[aesop safe apply]
 protected theorem Factors.neg {f : R[X]} (hf : Factors f) : Factors (-f) := by
   rw [← neg_one_mul, ← C_1, ← C_neg]
   exact hf.C_mul (-1)
 
+@[simp]
 theorem factors_neg_iff {f : R[X]} : Factors (-f) ↔ Factors f :=
   ⟨fun hf ↦ neg_neg f ▸ hf.neg, Factors.neg⟩
 
