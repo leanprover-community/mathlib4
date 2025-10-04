@@ -259,9 +259,6 @@ theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
     { τ₁ := Projective.π _
       τ₂ := 𝟙 _
       τ₃ := 𝟙 _ }
-  have : Epi α.τ₁ := by dsimp; infer_instance
-  have : IsIso α.τ₂ := by dsimp; infer_instance
-  have : Mono α.τ₃ := by dsimp; infer_instance
   rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono α]
   apply ShortComplex.exact_of_f_is_kernel
   apply kernelIsKernel

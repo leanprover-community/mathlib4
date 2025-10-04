@@ -243,8 +243,9 @@ theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
 /-- The degree of a vertex is at most the number of edges. -/
-theorem degree_le_card_edgeFinset [DecidableEq V] [Fintype G.edgeSet] :
+theorem degree_le_card_edgeFinset [Fintype G.edgeSet] :
     G.degree v ≤ #G.edgeFinset := by
+  classical
   rw [← card_incidenceFinset_eq_degree]
   exact card_le_card (G.incidenceFinset_subset v)
 
@@ -359,7 +360,7 @@ lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [Decidable
   by_cases hne : Nonempty V
   · apply le_minDegree_of_forall_le_degree
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
-  · rw [not_nonempty_iff] at hne
+  · push_neg at hne
     simp
 
 /-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
@@ -377,7 +378,7 @@ theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
 and `maxDegree_le_of_forall_degree_le`. -/
 def maxDegree [DecidableRel G.Adj] : ℕ :=
-  Option.getD (univ.image fun v => G.degree v).max 0
+  WithBot.unbotD 0 (univ.image fun v => G.degree v).max
 
 /-- There exists a vertex of maximal degree. Note the assumption of being nonempty is necessary, as
 the lemma implies there exists a vertex. -/
@@ -385,22 +386,20 @@ theorem exists_maximal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.maxDegree = G.degree v := by
   obtain ⟨t, ht⟩ := max_of_nonempty (univ_nonempty.image fun v => G.degree v)
   have ht₂ := mem_of_max ht
-  simp only [mem_image, mem_univ] at ht₂
-  rcases ht₂ with ⟨v, _, rfl⟩
+  simp only [mem_image, mem_univ, true_and] at ht₂
+  rcases ht₂ with ⟨v, rfl⟩
   refine ⟨v, ?_⟩
-  rw [maxDegree, ht]
-  rfl
+  rw [maxDegree, ht, WithBot.unbotD_coe]
 
 /-- The maximum degree in the graph is at least the degree of any particular vertex. -/
 theorem degree_le_maxDegree [DecidableRel G.Adj] (v : V) : G.degree v ≤ G.maxDegree := by
   obtain ⟨t, ht : _ = _⟩ := Finset.max_of_mem (mem_image_of_mem (fun v => G.degree v) (mem_univ v))
   have := Finset.le_max_of_eq (mem_image_of_mem _ (mem_univ v)) ht
-  rwa [maxDegree, ht]
+  rwa [maxDegree, ht, WithBot.unbotD_coe]
 
 @[simp]
 lemma maxDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.maxDegree = 0 := by
-  rw [maxDegree, univ_eq_empty, image_empty, max_empty]
-  rfl
+  rw [maxDegree, univ_eq_empty, image_empty, max_empty, WithBot.unbotD_bot]
 
 /-- In a graph, if `k` is at least the degree of every vertex, then it is at least the maximum
 degree. -/
@@ -408,7 +407,7 @@ theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀
     G.maxDegree ≤ k := by
   by_cases hV : IsEmpty V
   · simp
-  · have := not_isEmpty_iff.1 hV
+  · push_neg at hV
     obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
     exact hv ▸ h _
 
@@ -420,7 +419,7 @@ lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
 lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree := by
   by_cases he : IsEmpty V
   · simp
-  · rw [not_isEmpty_iff] at he
+  · push_neg at he
     exact he.elim fun v ↦ (minDegree_le_degree _ v).trans (degree_le_maxDegree _ v)
 
 @[simp]
@@ -477,9 +476,7 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
     Fintype.card ((⊤ : SimpleGraph V).commonNeighbors v w) = Fintype.card V - 2 := by
   simp only [commonNeighbors_top_eq, ← Set.toFinset_card, Set.toFinset_diff]
-  rw [Finset.card_sdiff]
-  · simp [Finset.card_univ, h]
-  · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
+  simp [Finset.card_sdiff, h]
 
 end Finite
 

@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Lean.Elab.Command
 import Lean.Elab.ParseImportsFast
+-- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
 
@@ -279,6 +280,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
 
   -- The following are a list of existing non-dependent top-level directory pairs.
   (`Mathlib.Algebra, `Mathlib.AlgebraicGeometry),
+  (`Mathlib.Algebra, `Mathlib.Analysis),
   (`Mathlib.Algebra, `Mathlib.Computability),
   (`Mathlib.Algebra, `Mathlib.Condensed),
   (`Mathlib.Algebra, `Mathlib.Geometry),
@@ -389,6 +391,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Data, `Mathlib.Analysis),
   (`Mathlib.Data, `Mathlib.Computability),
   (`Mathlib.Data, `Mathlib.Condensed),
+  (`Mathlib.Data, `Mathlib.FieldTheory),
   (`Mathlib.Data, `Mathlib.Geometry.Euclidean),
   (`Mathlib.Data, `Mathlib.Geometry.Group),
   (`Mathlib.Data, `Mathlib.Geometry.Manifold),
@@ -464,6 +467,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.LinearAlgebra, `Mathlib.ModelTheory),
   (`Mathlib.LinearAlgebra, `Mathlib.Probability),
   (`Mathlib.LinearAlgebra, `Mathlib.Testing),
+  (`Mathlib.LinearAlgebra, `Mathlib.Topology),
   (`Mathlib.MeasureTheory, `Mathlib.AlgebraicGeometry),
   (`Mathlib.MeasureTheory, `Mathlib.AlgebraicTopology),
   (`Mathlib.MeasureTheory, `Mathlib.Computability),
@@ -581,8 +585,12 @@ outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
+  (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
+  (`Mathlib.LinearAlgebra.Complex, `Mathlib.Topology), -- Complex numbers are analysis/topology.
+  (`Mathlib.LinearAlgebra.Matrix, `Mathlib.Topology), -- For e.g. spectra.
+  (`Mathlib.LinearAlgebra.QuadraticForm, `Mathlib.Topology), -- For real/complex quadratic forms.
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
   (`Mathlib.Topology.Compactification, `Mathlib.Geometry.Manifold)
 ]
