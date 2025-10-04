@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: EtienneMarion
 -/
 import Mathlib.Probability.Density
+import Mathlib.Probability.Independence.InfinitePi
 import Mathlib.Probability.Moments.Variance
 
 /-!
@@ -41,7 +42,7 @@ variable {X μ} {P : Measure Ω}
 
 lemma HasLaw.congr {Y : Ω → 𝓧} (hX : HasLaw X μ P) (hY : Y =ᵐ[P] X) : HasLaw Y μ P where
   aemeasurable := hX.aemeasurable.congr hY.symm
-  map_eq := by rw [Measure.map_congr hY, hX.map_eq]
+  map_eq := by rw [map_congr hY, hX.map_eq]
 
 lemma _root_.MeasureTheory.MeasurePreserving.hasLaw (h : MeasurePreserving X P μ) :
     HasLaw X μ P where
@@ -52,6 +53,9 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
     MeasurePreserving X P μ where
   measurable := h₂
   map_eq := h₁.map_eq
+
+protected lemma HasLaw.id : HasLaw id μ μ where
+  map_eq := map_id
 
 protected theorem HasLaw.isFiniteMeasure_iff (hX : HasLaw X μ P) :
     IsFiniteMeasure μ ↔ IsFiniteMeasure P := by
@@ -129,5 +133,33 @@ lemma HasLaw.variance_eq {μ : Measure ℝ} {X : Ω → ℝ} (hX : HasLaw X μ P
 lemma HasPDF.hasLaw [h : HasPDF X P μ] : HasLaw X (μ.withDensity (pdf X P μ)) P where
   aemeasurable := h.aemeasurable
   map_eq := map_eq_withDensity_pdf X P μ
+
+section Existence
+
+universe u v
+
+lemma exists_hasLaw {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧} (μ : Measure 𝓧) :
+    ∃ Ω : Type u, ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : Ω → 𝓧, HasLaw X μ P :=
+  ⟨𝓧, m𝓧, μ, id, .id⟩
+
+lemma exists_hasLaw_indepFun {ι : Type v} (𝓧 : ι → Type u)
+    {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)} (μ : (i : ι) → Measure (𝓧 i))
+    [hμ : ∀ i, IsProbabilityMeasure (μ i)] :
+    ∃ Ω : Type (max u v), ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : (i : ι) → Ω → (𝓧 i),
+      (∀ i, HasLaw (X i) (μ i) P) ∧ (iIndepFun X P) := by
+  use Π i, (𝓧 i), .pi, infinitePi μ, fun i ↦ Function.eval i
+  refine ⟨fun i ↦ MeasurePreserving.hasLaw (measurePreserving_eval_infinitePi _ _), ?_⟩
+  rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop), map_id']
+  congr
+  funext i
+  exact ((measurePreserving_eval_infinitePi μ i).map_eq).symm
+
+lemma exists_iid (ι : Type v) {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧}
+    (μ : Measure 𝓧) [IsProbabilityMeasure μ] :
+    ∃ Ω : Type (max u v), ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : ι → Ω → 𝓧,
+      (∀ i, HasLaw (X i) μ P) ∧ (iIndepFun X P) :=
+  exists_hasLaw_indepFun (fun _ ↦ 𝓧) (fun _ ↦ μ)
+
+end Existence
 
 end ProbabilityTheory
