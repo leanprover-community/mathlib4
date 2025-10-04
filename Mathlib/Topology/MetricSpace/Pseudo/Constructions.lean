@@ -232,3 +232,58 @@ protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : �
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
     Tendsto (fun x => nndist (f x) (g x)) x (𝓝 (nndist a b)) :=
   (continuous_nndist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
+
+section Discrete
+
+namespace PseudoMetricSpace
+
+variable {X : Type*}
+
+/-- The trivial metric space, where every distinct element is 1 away from another.
+This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
+inheritance to topology matches. -/
+@[nolint unusedArguments]
+def ofDiscreteTopology [TopologicalSpace X]
+    [DiscreteTopology X] [DecidableEq X] : PseudoMetricSpace X where
+  dist x y := if x = y then 0 else 1
+  dist_self := by simp
+  dist_comm := by intros; split_ifs <;> simp_all
+  dist_triangle := by intros; split_ifs <;> simp_all
+  edist_dist := by intros; split_ifs <;> simp_all
+
+variable [TopologicalSpace X] [DiscreteTopology X] [DecidableEq X]
+
+lemma ofDiscreteTopology_dist_def (x y : X) :
+    letI := ofDiscreteTopology (X := X)
+    dist x y = if x = y then 0 else 1 :=
+  rfl
+
+lemma ofDiscreteTopology_uniformSpace_eq_bot :
+    (PseudoMetricSpace.ofDiscreteTopology (X := X)).toUniformSpace = ⊥ := by
+  ext U
+  let := ofDiscreteTopology (X := X)
+  simp only [uniformity_dist, gt_iff_lt, ofDiscreteTopology_dist_def, Filter.mem_biInf_principal,
+    DiscreteUniformity.eq_principal_idRel, Filter.mem_principal, idRel_subset]
+  constructor
+  · rintro ⟨I, hI, hI', hIU⟩
+    intro x
+    refine hIU ?_
+    simpa
+  · intro h
+    use {1}
+    simp only [Set.finite_singleton, Set.mem_singleton_iff, forall_eq, zero_lt_one,
+      Set.iInter_iInter_eq_left, true_and]
+    rintro ⟨x, y⟩
+    simp only [Set.mem_setOf_eq]
+    split <;>
+    simp_all
+
+lemma ofDiscreteTopology_discreteUniformity :
+    @DiscreteUniformity X (ofDiscreteTopology (X := X)).toUniformSpace := by
+  letI := ofDiscreteTopology (X := X)
+  rw [discreteUniformity_iff_eq_bot]
+  exact ofDiscreteTopology_uniformSpace_eq_bot
+
+end PseudoMetricSpace
+
+end Discrete
