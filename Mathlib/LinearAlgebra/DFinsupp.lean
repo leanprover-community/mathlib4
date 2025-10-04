@@ -181,6 +181,19 @@ theorem lsum_single [Semiring S] [Module S N] [SMulCommClass R S N] (F : ∀ i, 
     (x : M i) : lsum S F (single i x) = F i x := by
   simp
 
+@[simp]
+theorem lsum_appl_ycomp_lsingle
+    [Semiring S] [Module S N] [SMulCommClass R S N] (F : ∀ i, M i →ₗ[R] N) (i) :
+    lsum S F ∘ₗ lsingle i = F i := by
+  ext; simp
+
+@[simp]
+theorem lsum_comp_lsingle
+    [Semiring S] [∀ i, Module S (M i)] [Module S N]
+    [SMulCommClass R S N] [∀ i, SMulCommClass R S (M i)] (f : (Π₀ i, M i) →ₗ[R] N) :
+    lsum S (fun i => f ∘ₗ lsingle (R := R) (M := M) i) = f :=
+  lhom_ext (lsum_single _ _)
+
 theorem lsum_lsingle [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
     lsum S (lsingle (R := R) (M := M)) = .id :=
   lhom_ext (lsum_single _ _)
