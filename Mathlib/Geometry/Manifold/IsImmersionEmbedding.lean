@@ -80,7 +80,7 @@ def ImmersionAtProp :
       (domChart.extend I).target
 
 omit [ChartedSpace H M] [ChartedSpace H' M'] in
-/-- Being an immersion at `x` is a "nice" local property. -/
+/-- Being an immersion at `x` is a local property. -/
 lemma isLocalSourceTargetProperty_immersionAtProp :
     IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
   mono_source {f φ ψ s} hs hf := by
