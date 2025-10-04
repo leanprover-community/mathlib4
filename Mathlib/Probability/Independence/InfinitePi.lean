@@ -128,24 +128,24 @@ lemma iIndepFun_uncurry_infinitePi {Ω : (i : ι) → κ i → Type*} {mΩ : ∀
     (X := fun i j ω ↦ X i j (ω i j)) (by fun_prop) ?_ fun i ↦ ?_
   · exact iIndepFun_infinitePi (P := fun i ↦ infinitePi (μ i))
       (X := fun i u j ↦ X i j (u j)) (by fun_prop)
-  · rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop)]
-    change map ((fun f ↦ f i) ∘ (fun ω i j ↦ X i j (ω i j)))
-      (infinitePi fun i ↦ infinitePi (μ i)) = _
-    rw [← map_map (by fun_prop) (by fun_prop),
-      infinitePi_map_pi (X := fun i ↦ (j : κ i) → Ω i j) (μ := fun i ↦ infinitePi (μ i))
-        (f := fun i f j ↦ X i j (f j)), @infinitePi_map_eval .., infinitePi_map_pi]
-    · congrm infinitePi fun j ↦ ?_
-      change _ = map (((fun f ↦ f j) ∘ (fun f ↦ f i)) ∘ (fun ω i j ↦ X i j (ω i j)))
-        (infinitePi fun i ↦ infinitePi (μ i))
-      rw [← map_map (by fun_prop) (by fun_prop), infinitePi_map_pi (X := fun i ↦ (j : κ i) → Ω i j)
-          (μ := fun i ↦ infinitePi (μ i)) (f := fun i f j ↦ X i j (f j)),
-          ← map_map (by fun_prop) (by fun_prop),
-          @infinitePi_map_eval .., infinitePi_map_pi, @infinitePi_map_eval ..]
-      any_goals fun_prop
-      · exact fun _ ↦ isProbabilityMeasure_map (by fun_prop)
-      · exact fun _ ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+  rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop)]
+  change map ((fun f ↦ f i) ∘ (fun ω i j ↦ X i j (ω i j)))
+    (infinitePi fun i ↦ infinitePi (μ i)) = _
+  rw [← map_map (by fun_prop) (by fun_prop),
+    infinitePi_map_pi (X := fun i ↦ (j : κ i) → Ω i j) (μ := fun i ↦ infinitePi (μ i))
+      (f := fun i f j ↦ X i j (f j)), @infinitePi_map_eval .., infinitePi_map_pi]
+  · congrm infinitePi fun j ↦ ?_
+    change _ = map (((fun f ↦ f j) ∘ (fun f ↦ f i)) ∘ (fun ω i j ↦ X i j (ω i j)))
+      (infinitePi fun i ↦ infinitePi (μ i))
+    rw [← map_map (by fun_prop) (by fun_prop), infinitePi_map_pi (X := fun i ↦ (j : κ i) → Ω i j)
+        (μ := fun i ↦ infinitePi (μ i)) (f := fun i f j ↦ X i j (f j)),
+        ← map_map (by fun_prop) (by fun_prop),
+        @infinitePi_map_eval .., infinitePi_map_pi, @infinitePi_map_eval ..]
     any_goals fun_prop
-    exact fun _ ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+    · exact fun _ ↦ isProbabilityMeasure_map (by fun_prop)
+    · exact fun _ ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
+  any_goals fun_prop
+  exact fun _ ↦ isProbabilityMeasure_map (Measurable.aemeasurable (by fun_prop))
 
 end dependent
 
