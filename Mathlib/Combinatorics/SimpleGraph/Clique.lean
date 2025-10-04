@@ -414,7 +414,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
   refine Nat.lt_le_asymm hc ?_
-  rw [cliqueFree_iff, not_isEmpty_iff] at h
+  rw [not_cliqueFree_iff] at h
   simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
