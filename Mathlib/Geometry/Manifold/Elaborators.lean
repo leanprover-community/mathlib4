@@ -9,47 +9,60 @@ import Mathlib.Geometry.Manifold.MFDeriv.Defs
 /-!
 # Elaborators for differential geometry
 
-This file defines custom elaborators for differential geometry, to allow for more compact notation.
-There are two classes of elaborators. The first provides more compact notation for differentiability
-and continuous differentiability on manifolds, including inference of the model with corners.
-All these elaborators are scoped to the `Manifold` namespace. They allow writing
-- `MDiff f` for `MDifferentiable I J f`
-- `MDiffAt f x` for `MDifferentiableAt I J f x`
-- `MDiff[u] f` for `MDifferentiableOn I J f u`
-- `MDiffAt[u] f x` for `MDifferentiableWithinAt I J f u x`
-- `CMDiff n f` for `ContMDiff I J n f`
-- `CMDiffAt n f x` for `ContMDiffAt I J n f x`
-- `CMDiff[u] n f` for `ContMDiffOn I J n f u`
-- `CMDiffAt[u] n f x` for `ContMDiffWithinAt I J n f u x`,
-- `mfderiv[u] f x` for `mfderivWithin I J f u x`,
-- `mfderiv% f x` for `mfderiv I J f x`.
+This file defines custom elaborators for differential geometry to allow for more compact notation.
+We introduce a class of elaborators for handling differentiability on manifolds, and the elaborator
+`T%` for converting dependent sections of fibre bundles into non-dependent functions into the total
+space.
+
+All of these elaborators are scoped to the `Manifold` namespace.
+
+## Differentiability on manifolds
+
+We provide compact notation for differentiability and continuous differentiability on manifolds,
+including inference of the model with corners.
+
+| Notation            | Elaborates to                       |
+|---------------------|-------------------------------------|
+| `MDiff f`           | `MDifferentiable I J f`             |
+| `MDiffAt f x`       | `MDifferentiableAt I J f x`         |
+| `MDiff[u] f`        | `MDifferentiableOn I J f u`         |
+| `MDiffAt[u] f x`    | `MDifferentiableWithinAt I J f u x` |
+| `CMDiff n f`        | `ContMDiff I J n f`                 |
+| `CMDiffAt n f x`    | `ContMDiffAt I J n f x`             |
+| `CMDiff[u] n f`     | `ContMDiffOn I J n f u`             |
+| `CMDiffAt[u] n f x` | `ContMDiffWithinAt I J n f u x`     |
+| `mfderiv[u] f x`    | `mfderivWithin I J f u x`           |
+| `mfderiv% f x`      | `mfderiv I J f x`                   |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
-The search for models with corners uses the local context and is (almost) only syntactic, hence
-hopefully fast enough to always run.
+The search for models with corners uses the local context and is (almost) only based on expression
+structure, hence hopefully fast enough to always run.
 
 This has no dedicated support for product manifolds (or product vector spaces) yet;
 adding this is left for future changes. (It would need to make a choice between e.g. the
 trivial model with corners on a product `E × F` and the product of the trivial models on `E` and
 `F`). In these settings, the elaborators should be avoided (for now).
 
-Secondly, this file adds an elaborator to ease working with sections in a fibre bundle,
-converting a section `s : Π x : M, Π V x` to a non-dependent function into the total space of the
+## `T%`
+
+Secondly, this file adds an elaborator `T%` to ease working with sections in a fibre bundle,
+which converts a section `s : Π x : M, V x` to a non-dependent function into the total space of the
 bundle.
 ```lean
 -- omitted: let `V` be a fibre bundle over `M`
-variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 
--- outputs `fun x ↦ TotalSpace.mk' F x (σ x) : M → TotalSpace F V`
-#check T% σ
+variable {σ : Π x : M, V x} in
+#check T% σ -- `(fun x ↦ TotalSpace.mk' F x (σ x)) : M → TotalSpace F V`
 
--- outputs `fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E')`
 -- Note how the name of the bound variable `x` is preserved.
-#check T% σ'
+variable {σ : (x : E) → Trivial E E' x} in
+#check T% σ -- `(fun x ↦ TotalSpace.mk' E' x (σ x)) : E → TotalSpace E' (Trivial E E')`
 
--- outputs `fun a ↦ TotalSpace.mk' E' a (s a) : E → TotalSpace E' (Trivial E E')`
-#check T% s
+variable {s : E → E'} in
+#check T% s -- `(fun a ↦ TotalSpace.mk' E' a (s a)) : E → TotalSpace E' (Trivial E E')`
 ```
+
+---
 
 These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
 
@@ -60,11 +73,10 @@ the following.
 ## TODO
 - extend the elaborators to guess models with corners on product manifolds
   (this has to make a guess, hence cannot always be correct: but it could make the guess that
-  is correct 90% of the time)
+  is correct 90% of the time).
   For products of vector spaces `E × F`, this could print a warning about making a choice between
   the model in `E × F` and the product of the models on `E` and `F`.
 - extend the elaborators to support `PartialHomeomorph`s and `PartialEquiv`s
-
 - better error messages (as needed)
 - further testing and fixing of edge cases
 - add tests for all of the above
