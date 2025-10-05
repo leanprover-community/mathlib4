@@ -473,7 +473,7 @@ theorem summable_ofReal {f : α → ℝ} : Summable (fun x => (f x : 𝕜)) L �
 
 @[norm_cast]
 theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) :=
-  LeftInverse.map_tsum f ofRealCLM.continuous continuous_re (fun _ ↦ by simp)
+  Function.LeftInverse.map_tsum f ofRealCLM.continuous continuous_re (fun _ ↦ by simp)
 
 theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x L) : HasSum (fun x => re (f x)) (re x) L :=
   reCLM.hasSum h
