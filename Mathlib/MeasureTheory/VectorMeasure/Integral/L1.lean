@@ -189,6 +189,8 @@ variable {α E F G : Type*} [MeasurableSpace α]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   (Bμ : VectorMeasureWithPairing α E F G)
 
+/-- Given `Bμ : VectorMeasureWithPairing` and a set `s`. `Bμ.restrict s` only restrict
+the vector measure to `s` without changing the pairing. -/
 noncomputable def restrict (s : Set α) : VectorMeasureWithPairing α E F G :=
   VectorMeasureWithPairing.mk Bμ.pairing (Bμ.vectorMeasure.restrict s)
 
