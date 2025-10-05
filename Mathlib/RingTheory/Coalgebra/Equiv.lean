@@ -15,7 +15,7 @@ This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the ea
 
 * `CoalgEquiv R A B`: the type of `R`-coalgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
@@ -164,7 +164,7 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
   { (e : A ≃ₗ[R] B).symm with
     counit_comp := (LinearEquiv.comp_toLinearMap_symm_eq _ _).2 e.counit_comp.symm
     map_comp_comul := by
-      show (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
+      change (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
       simp only [TensorProduct.congr, toLinearEquiv_toLinearMap,

@@ -655,7 +655,7 @@ lemma trans_assoc {δ : Type*} {u : δ → δ → Prop} (ab : r ≃r s) (bc : s 
 /-- A relation isomorphism between equal relations on equal types. -/
 @[simps! toEquiv apply]
 protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
-    (h₂ : HEq r s) : r ≃r s :=
+    (h₂ : r ≍ s) : r ≃r s :=
   ⟨Equiv.cast h₁, @fun a b => by
     subst h₁
     rw [eq_of_heq h₂]
@@ -663,17 +663,17 @@ protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → 
 
 @[simp]
 protected theorem cast_symm {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
-    (h₂ : HEq r s) : (RelIso.cast h₁ h₂).symm = RelIso.cast h₁.symm h₂.symm :=
+    (h₂ : r ≍ s) : (RelIso.cast h₁ h₂).symm = RelIso.cast h₁.symm h₂.symm :=
   rfl
 
 @[simp]
 protected theorem cast_refl {α : Type u} {r : α → α → Prop} (h₁ : α = α := rfl)
-    (h₂ : HEq r r := HEq.rfl) : RelIso.cast h₁ h₂ = RelIso.refl r :=
+    (h₂ : r ≍ r := HEq.rfl) : RelIso.cast h₁ h₂ = RelIso.refl r :=
   rfl
 
 @[simp]
 protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : β → β → Prop}
-    {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : HEq r s) (h₂' : HEq s t) :
+    {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : r ≍ s) (h₂' : s ≍ t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
   ext fun x => by subst h₁; rfl
 
@@ -781,19 +781,25 @@ def prodLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso �
 def relIsoOfIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] [IsEmpty β] : r ≃r s :=
   ⟨Equiv.equivOfIsEmpty α β, @fun a => isEmptyElim a⟩
 
+/-- The lexicographic sum of `r` plus an empty relation is isomorphic to `r`. -/
+@[simps!]
+def sumLexEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty β] : Sum.Lex r s ≃r r :=
+  ⟨Equiv.sumEmpty _ _, by simp⟩
+
+/-- The lexicographic sum of an empty relation plus `s` is isomorphic to `s`. -/
+@[simps!]
+def emptySumLex (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : Sum.Lex r s ≃r s :=
+  ⟨Equiv.emptySum _ _, by simp⟩
+
 /-- Two irreflexive relations on a unique type are isomorphic. -/
 def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
     [IsIrrefl β s] [Unique α] [Unique β] : r ≃r s :=
   ⟨Equiv.ofUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
       (not_rel_of_subsingleton r _ _) ⟩
 
-@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfIrrefl := ofUniqueOfIrrefl
-
 /-- Two reflexive relations on a unique type are isomorphic. -/
 def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
     [Unique α] [Unique β] : r ≃r s :=
   ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
-
-@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfRefl := ofUniqueOfRefl
 
 end RelIso

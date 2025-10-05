@@ -34,7 +34,7 @@ variable [Group A] [Group B]
 
 @[to_additive]
 theorem ker_eq_bot_of_cancel {f : A →* B} (h : ∀ u v : f.ker →* A, f.comp u = f.comp v → u = v) :
-    f.ker = ⊥ := by simpa using congr_arg range (h f.ker.subtype 1 (by aesop_cat))
+    f.ker = ⊥ := by simpa using congr_arg range (h f.ker.subtype 1 (by cat_disch))
 
 end
 
@@ -118,7 +118,7 @@ theorem one_smul (x : X') : (1 : B) • x = x :=
   match x with
   | fromCoset y => by
     change fromCoset _ = fromCoset _
-    simp only [one_leftCoset, Subtype.ext_iff_val]
+    simp only [one_leftCoset]
   | ∞ => rfl
 
 theorem fromCoset_eq_of_mem_range {b : B} (hb : b ∈ f.hom.range) :
@@ -218,7 +218,7 @@ theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ := rfl
 
 theorem h_apply_infinity (x : B) (hx : x ∈ f.hom.range) : (h x) ∞ = ∞ := by
   change ((τ).symm.trans (g x)).trans τ _ = _
-  simp only [MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
+  simp only [Equiv.coe_trans, Function.comp_apply]
   rw [τ_symm_apply_infinity, g_apply_fromCoset]
   simpa only using τ_apply_fromCoset' f x hx
 
@@ -235,7 +235,7 @@ theorem h_apply_fromCoset' (x : B) (b : B) (hb : b ∈ f.hom.range) :
 theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.hom.range) (b : B) (hb : b ∉ f.hom.range) :
     h x (fromCoset ⟨b • f.hom.range, b, rfl⟩) = fromCoset ⟨(x * b) • ↑f.hom.range, x * b, rfl⟩ := by
   change ((τ).symm.trans (g x)).trans τ _ = _
-  simp only [tau, MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
+  simp only [tau, Equiv.coe_trans, Function.comp_apply]
   rw [Equiv.symm_swap,
     @Equiv.swap_apply_of_ne_of_ne X' _ (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) ∞
       (fromCoset ⟨b • ↑f.hom.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]

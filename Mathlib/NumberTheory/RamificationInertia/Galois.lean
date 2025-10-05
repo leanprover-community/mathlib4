@@ -88,15 +88,15 @@ noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
   smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp
-    show map _ Q.1 = Q.1
+    change map _ Q.1 = Q.1
     simpa only [map_one] using map_id Q.1
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
-    show map _ Q.1 = map _ (map _ Q.1)
+    change map _ Q.1 = map _ (map _ Q.1)
     rw [map_mul]
     exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
 
-theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B):
+theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B) :
     (σ • P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
@@ -162,6 +162,12 @@ theorem ramificationIdxIn_eq_ramificationIdx [IsGalois K L] :
   rw [ramificationIdxIn, dif_pos h]
   exact ramificationIdx_eq_of_isGalois p h.choose P K L
 
+theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime] (hp : p ≠ ⊥)
+    [IsGalois K L] [NoZeroSMulDivisors A B] : p.ramificationIdxIn B ≠ 0 := by
+  obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
+  rw [ramificationIdxIn_eq_ramificationIdx p P K L]
+  exact IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P.1 hp
+
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
 theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] [IsGalois K L] :
     inertiaDegIn p B = inertiaDeg p P := by
@@ -169,6 +175,12 @@ theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] [IsGalois K L] :
   obtain ⟨_, _⟩ := h.choose_spec
   rw [inertiaDegIn, dif_pos h]
   exact inertiaDeg_eq_of_isGalois p h.choose P K L
+
+theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [IsGalois K L] [NoZeroSMulDivisors A B] :
+    inertiaDegIn p B ≠ 0 := by
+  obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
+  rw [inertiaDegIn_eq_inertiaDeg p P K L]
+  exact inertiaDeg_ne_zero _ _
 
 end RamificationInertia
 
@@ -185,7 +197,7 @@ include hpb in
 theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
-  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_Finset, ← Finset.sum_const]
+  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
   rw [← sum_ramification_inertia B p K L hpb]
   apply Finset.sum_congr rfl
   intro P hp

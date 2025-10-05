@@ -89,7 +89,7 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
   apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
     (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
-    (by simp only [le_refl, Subtype.forall, implies_true])
+    (by simp only [le_refl, implies_true])
     (by apply hf.subtype)
   apply hf
 
@@ -298,6 +298,7 @@ protected theorem Multipliable.tprod_ne_one_iff (hf : Multipliable f) :
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_ne_one_iff :=
   Multipliable.tprod_ne_one_iff
 
+omit [IsOrderedMonoid α] in
 @[to_additive]
 theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
   classical
@@ -324,7 +325,7 @@ theorem hasProd_of_isLUB_of_one_le [CommMonoid α] [LinearOrder α] [IsOrderedMo
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
-theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α]
     [CanonicallyOrderedMul α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
     HasProd f b :=

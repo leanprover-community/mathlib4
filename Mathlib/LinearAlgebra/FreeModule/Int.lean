@@ -18,7 +18,7 @@ index.
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
 
-namespace Basis.SmithNormalForm
+namespace Module.Basis.SmithNormalForm
 
 variable [Fintype ι]
 
@@ -83,7 +83,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
               convert Finset.sum_eq_single (M := R) hj.choose ?_ ?_
-              · simp [hj]
+              · simp
               · rintro j - h
                 have hinj := f.injective.ne h
                 rw [hj.choose_spec] at hinj
@@ -171,7 +171,7 @@ lemma toAddSubgroup_index_ne_zero_iff {N : Submodule ℤ M} (snf : Basis.SmithNo
   simpa [Ideal.span_singleton_toAddSubgroup_eq_zmultiples, Int.index_zmultiples,
     Finset.prod_eq_zero_iff] using ha
 
-end Basis.SmithNormalForm
+end Module.Basis.SmithNormalForm
 
 namespace Int
 
@@ -179,7 +179,7 @@ variable [Finite ι]
 
 lemma submodule_toAddSubgroup_index_ne_zero_iff {N : Submodule ℤ (ι → ℤ)} :
     N.toAddSubgroup.index ≠ 0 ↔ Nonempty (N ≃ₗ[ℤ] (ι → ℤ)) := by
-  obtain ⟨n, snf⟩ := N.smithNormalForm <| Basis.ofEquivFun <| LinearEquiv.refl _ _
+  obtain ⟨n, snf⟩ := N.smithNormalForm <| .ofEquivFun <| .refl ..
   have := Fintype.ofFinite ι
   rw [snf.toAddSubgroup_index_ne_zero_iff]
   rcases snf with ⟨-, bN, -, -, -⟩

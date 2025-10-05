@@ -23,7 +23,7 @@ the functor of sheaves of locally constant maps described above.
 
 The hard part of this adjunction is to define the counit. Its components are defined as follows:
 
-Let `S : CompHausLike P` and let `Y` be a finite-product preserving presheaf on `CompHausLike P`
+Let `S : CompHausLike P` and let `Y` be a finite-product-preserving presheaf on `CompHausLike P`
 (e.g. a sheaf for the coherent topology). We need to define a map `LocallyConstant S Y(*) ⟶ Y(S)`.
 Given a locally constant map `f : S → Y(*)`, let `S = S₁ ⊔ ⋯ ⊔ Sₙ` be the corresponding
 decomposition of `S` into the fibers. Let `yᵢ ∈ Y(*)` denote the value of `f` on `Sᵢ` and denote
@@ -122,7 +122,7 @@ lemma sigmaComparison_comp_sigmaIso [HasExplicitFiniteCoproducts.{u} P]
     (X.mapIso (sigmaIso r).op).hom ≫ sigmaComparison X (fun a ↦ (fiber r a).1) ≫
       (fun g ↦ g a) = X.map (sigmaIncl r a).op := by
   ext
-  simp only [Functor.mapIso_hom, Iso.op_hom, types_comp_apply, sigmaComparison, coe_of,
+  simp only [Functor.mapIso_hom, Iso.op_hom, types_comp_apply, sigmaComparison,
     ← FunctorToTypes.map_comp_apply]
   rfl
 
@@ -210,8 +210,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     simp only [op_unop, functorToPresheaves_obj_obj, types_comp_apply, functorToPresheaves_obj_map,
       incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap]
     simp only [FunctorToTypes.map_comp_apply, incl_of_counitAppApp]
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      terminal.comp_from]
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp]
     apply congrArg
     exact image_eq_image_mk (g := g.unop) (a := a)
 
@@ -256,7 +255,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
   naturality X Y g := by
     have := CompHausLike.preregular hs
     apply Sheaf.hom_ext
-    simp only [functor, id_eq, eq_mpr_eq_cast, Functor.comp_obj, Functor.flip_obj_obj,
+    simp only [functor, Functor.comp_obj, Functor.flip_obj_obj,
       sheafToPresheaf_obj, Functor.id_obj, Functor.comp_map, Functor.flip_obj_map,
       sheafToPresheaf_map, Sheaf.comp_val, Functor.id_map]
     ext S (f : LocallyConstant _ _)
@@ -266,7 +265,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
     apply presheaf_ext (f.comap (sigmaIncl _ _).hom)
     intro b
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, CompHausLike.coe_of,
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
       map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
     change (_ ≫ Y.val.map _) _ = (_ ≫ Y.val.map _) _
     simp only [← g.val.naturality]
@@ -274,7 +273,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
         CompHausLike.ofHom P (X := fiber _ b) (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _)
       by ext; rfl]
     simp only [op_comp, Functor.map_comp, types_comp_apply, incl_of_counitAppApp]
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, terminal.comp_from]
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp]
     rw [mk_image]
     change (X.val.map _ ≫ _) _ = (X.val.map _ ≫ _) _
     simp only [g.val.naturality]
@@ -288,7 +287,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     exact (mem_iff_eq_image (g.val.app _ ∘ f) _ _).symm
 
 /--
-The unit of the adjunciton is given by mapping each element to the corresponding constant map.
+The unit of the adjunction is given by mapping each element to the corresponding constant map.
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where
@@ -313,7 +312,7 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
       (f.map ((unit P hs).app X))
   intro a
   erw [incl_of_counitAppApp]
-  simp only [functor_obj_val, functorToPresheaves_obj_obj, coe_of, Functor.id_obj,
+  simp only [functor_obj_val, functorToPresheaves_obj_obj, Functor.id_obj,
     counitAppAppImage, LocallyConstant.map_apply, functorToPresheaves_obj_map, Quiver.Hom.unop_op]
   ext x
   erw [← map_eq_image _ a x]
@@ -329,9 +328,8 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
   counit := counit P hs
   left_triangle_components := by
     intro X
-    simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.flip_obj_obj,
-      sheafToPresheaf_obj, functor_obj_val, functorToPresheaves_obj_obj, coe_of, whiskerRight_app,
-      Functor.associator_hom_app, whiskerLeft_app, Category.id_comp, NatTrans.id_app']
+    simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
+      functor_obj_val, functorToPresheaves_obj_obj]
     apply Sheaf.hom_ext
     rw [Sheaf.comp_val, Sheaf.id_val]
     exact adjunction_left_triangle P hs X
@@ -339,16 +337,15 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     intro X
     ext (x : X.val.obj _)
     simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
-      FunctorToTypes.comp, whiskerLeft_app, unit_app, coe_of, Functor.associator_inv_app,
-      functor_obj_val, functorToPresheaves_obj_obj, types_id_apply, whiskerRight_app,
-      Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val, counitApp_app, NatTrans.id_app']
+      functor_obj_val, functorToPresheaves_obj_obj, types_id_apply,
+      Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val]
     have := CompHausLike.preregular hs
     letI : PreservesFiniteProducts ((sheafToPresheaf (coherentTopology _) _).obj X) :=
       inferInstanceAs (PreservesFiniteProducts (Sheaf.val _))
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
     erw [incl_of_counitAppApp]
-    simp only [sheafToPresheaf_obj, unit_app, coe_of, counitAppAppImage, coe_const]
+    simp only [unit_app, counitAppAppImage, coe_const]
     erw [← map_eq_image _ a ⟨PUnit.unit, by simp [mem_iff_eq_image, ← map_preimage_eq_image]⟩]
     rfl
 

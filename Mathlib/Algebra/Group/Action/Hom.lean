@@ -24,7 +24,7 @@ variable [Monoid M] [MulAction M α]
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
 @[to_additive
-"Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
+/-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`. -/]
 abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
@@ -84,8 +84,8 @@ section CompatibleScalar
 /-- If the multiplicative action of `M` on `N` is compatible with multiplication on `N`, then
 `fun x ↦ x • 1` is a monoid homomorphism from `M` to `N`. -/
 @[to_additive (attr := simps)
-"If the additive action of `M` on `N` is compatible with addition on `N`, then
-`fun x ↦ x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
+/-- If the additive action of `M` on `N` is compatible with addition on `N`, then
+`fun x ↦ x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`. -/]
 def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsScalarTower M N N] :
     M →* N where
   toFun x := x • (1 : N)
@@ -95,8 +95,8 @@ def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsSca
 /-- A monoid homomorphism between two monoids M and N can be equivalently specified by a
 multiplicative action of M on N that is compatible with the multiplication on N. -/
 @[to_additive
-"A monoid homomorphism between two additive monoids M and N can be equivalently
-specified by an additive action of M on N that is compatible with the addition on N."]
+/-- A monoid homomorphism between two additive monoids M and N can be equivalently
+specified by an additive action of M on N that is compatible with the addition on N. -/]
 def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
     (M →* N) ≃ {_inst : MulAction M N // IsScalarTower M N N} where
   toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩

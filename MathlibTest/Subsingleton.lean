@@ -20,7 +20,7 @@ example (p : Prop) (h h' : p) : h = h' := by subsingleton
 /-!
 HEq proof irrelevance
 -/
-example (p q : Prop) (h : p) (h' : q) : HEq h h' := by subsingleton
+example (p q : Prop) (h : p) (h' : q) : h ≍ h' := by subsingleton
 
 /-!
 Does intros.
@@ -30,7 +30,7 @@ example : ∀ {α : Type} [Subsingleton α] (x y : α), x = y := by subsingleton
 /-!
 Does intros, and turns HEq into Eq if possible.
 -/
-example : ∀ {α : Type} [Subsingleton α] (x y : α), HEq x y := by subsingleton
+example : ∀ {α : Type} [Subsingleton α] (x y : α), x ≍ y := by subsingleton
 
 section AvoidSurprise
 
@@ -62,7 +62,10 @@ example (α : Type) (inst1 inst2 : BEq α) [@LawfulBEq α inst1] [@LawfulBEq α 
 /-!
 `subsingleton` suggests `rfl` when it fails
 -/
-/-- info: Try this: rfl -/
+/--
+info: Try this:
+  rfl
+-/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   subsingleton
@@ -75,7 +78,10 @@ example : 1 + 1 = 2 := by
   guard_target =ₛ 1 + 1 = 2
   rfl
 
-/-- info: Try this: (intros; rfl) -/
+/--
+info: Try this:
+  (intros; rfl)
+-/
 #guard_msgs in
 example : ∀ (n : Nat), n = n := by
   subsingleton

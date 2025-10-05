@@ -63,6 +63,9 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
 
 instance (n : ℤ) : (shiftFunctor C n).Additive where
 
+instance (n : ℤ) {R : Type*} [Ring R] [Linear R C] :
+    Functor.Linear R (shiftFunctor C n) where
+
 variable {C}
 
 /-- The canonical isomorphism `((shiftFunctor C n).obj K).X i ≅ K.X m` when `m = i + n`. -/
@@ -82,7 +85,7 @@ functor when `n = 0`. -/
 def shiftFunctorZero' (n : ℤ) (h : n = 0) :
     shiftFunctor C n ≅ 𝟭 _ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by cutsat))
     (fun _ _ _ => by simp [h])) (fun _ ↦ by ext; simp)
 
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
@@ -91,7 +94,7 @@ to the addition of integers. -/
 def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
     shiftFunctor C n₁₂ ≅ shiftFunctor C n₁ ⋙ shiftFunctor C n₂ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by cutsat))
     (fun _ _ _ => by
       subst h
       dsimp
@@ -109,6 +112,10 @@ instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
 instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
+
+instance (n : ℤ) {R : Type*} [Ring R] [Linear R C] :
+    Functor.Linear R
+      (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n) where
 
 end
 
@@ -132,12 +139,7 @@ lemma shiftFunctorAdd_inv_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
 lemma shiftFunctorAdd_hom_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
     ((shiftFunctorAdd (CochainComplex C ℤ) a b).hom.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_comm a, add_assoc])).hom := by
-  have : IsIso (((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n) := by
-    rw [shiftFunctorAdd_inv_app_f]
-    infer_instance
-  rw [← cancel_mono (((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n),
-    ← comp_f, Iso.hom_inv_id_app, id_f, shiftFunctorAdd_inv_app_f]
-  simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans, eqToHom_refl]
+  tauto
 
 lemma shiftFunctorAdd'_inv_app_f' (K : CochainComplex C ℤ) (a b ab : ℤ) (h : a + b = ab) (n : ℤ) :
     ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) a b ab h).inv.app K).f n =
@@ -158,12 +160,7 @@ lemma shiftFunctorZero_inv_app_f (K : CochainComplex C ℤ) (n : ℤ) :
 lemma shiftFunctorZero_hom_app_f (K : CochainComplex C ℤ) (n : ℤ) :
     ((CategoryTheory.shiftFunctorZero (CochainComplex C ℤ) ℤ).hom.app K).f n =
       (K.XIsoOfEq (by dsimp; rw [add_zero])).hom := by
-  have : IsIso (((shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n) := by
-    rw [shiftFunctorZero_inv_app_f]
-    infer_instance
-  rw [← cancel_mono (((shiftFunctorZero (CochainComplex C ℤ) ℤ).inv.app K).f n), ← comp_f,
-    Iso.hom_inv_id_app, id_f, shiftFunctorZero_inv_app_f]
-  simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans, eqToHom_refl]
+  tauto
 
 lemma XIsoOfEq_shift (K : CochainComplex C ℤ) (n : ℤ) {p q : ℤ} (hpq : p = q) :
     (K⟦n⟧).XIsoOfEq hpq = K.XIsoOfEq (show p + n = q + n by rw [hpq]) := rfl
@@ -208,7 +205,7 @@ def shiftEval (n i i' : ℤ) (hi : n + i = i') :
       HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
       HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
   NatIso.ofComponents (fun K => K.XIsoOfEq (by dsimp; rw [← hi, add_comm i]))
-    (by intros; simp)
+    (by simp)
 
 end CochainComplex
 
@@ -239,9 +236,8 @@ instance commShiftMapCochainComplex :
     ext
     rw [CommShift.isoZero_hom_app]
     dsimp
-    simp only [mapCochainComplexShiftIso_hom_app_f, CochainComplex.shiftFunctorZero_inv_app_f,
-       CochainComplex.shiftFunctorZero_hom_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
-       eqToHom_map, eqToHom_trans, eqToHom_refl]
+    simp only [CochainComplex.shiftFunctorZero_inv_app_f, CochainComplex.shiftFunctorZero_hom_app_f,
+       HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl]
   add := fun a b => by
     ext
     rw [CommShift.isoAdd_hom_app]
@@ -312,6 +308,17 @@ instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n)
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
+
+instance {R : Type*} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
+    (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where
+  map_smul := by
+    rintro ⟨X⟩ ⟨Y⟩ f r
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective f
+    have h₁ := NatIso.naturality_1 ((HomotopyCategory.quotient _ _).commShiftIso n) f
+    have h₂ := NatIso.naturality_1 ((HomotopyCategory.quotient _ _).commShiftIso n) (r • f)
+    dsimp at h₁ h₂
+    rw [← Functor.map_smul, ← h₁, ← h₂]
+    simp
 
 section
 

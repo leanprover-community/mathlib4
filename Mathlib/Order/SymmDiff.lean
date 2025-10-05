@@ -3,7 +3,7 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.BooleanAlgebra.Basic
 import Mathlib.Logic.Equiv.Basic
 
 /-!
@@ -31,7 +31,7 @@ In generalized Boolean algebras, the symmetric difference operator is:
 * `symmDiff_comm`: commutative, and
 * `symmDiff_assoc`: associative.
 
-## Notations
+## Notation
 
 * `a ∆ b`: `symmDiff a b`
 * `a ⇔ b`: `bihimp a b`

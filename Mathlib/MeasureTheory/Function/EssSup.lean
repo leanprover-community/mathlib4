@@ -15,7 +15,7 @@ We define the essential supremum and infimum of a function `f : α → β` with 
 almost everywhere.
 
 TODO: The essential supremum of functions `α → ℝ≥0∞` is used in particular to define the norm in
-the `L∞` space (see `Mathlib/MeasureTheory/Function/LpSpace.lean`).
+the `L∞` space (see `Mathlib/MeasureTheory/Function/LpSeminorm/Defs.lean`).
 
 There is a different quantity which is sometimes also called essential supremum: the least
 upper-bound among measurable functions of a family of measurable functions (in an almost-everywhere
@@ -160,7 +160,7 @@ variable [CompleteLattice β]
 
 @[simp]
 theorem essSup_measure_zero {m : MeasurableSpace α} {f : α → β} : essSup f (0 : Measure α) = ⊥ :=
-  le_bot_iff.mp (sInf_le (by simp [Set.mem_setOf_eq, EventuallyLE, ae_iff]))
+  le_bot_iff.mp (sInf_le (by simp))
 
 @[simp]
 theorem essInf_measure_zero {_ : MeasurableSpace α} {f : α → β} : essInf f (0 : Measure α) = ⊤ :=

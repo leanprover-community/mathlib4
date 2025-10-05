@@ -33,7 +33,7 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
 
-open Limits Category
+open Limits Category Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]
@@ -108,10 +108,8 @@ section
 variable [(Φ.functor ⋙ F).HasPointwiseRightDerivedFunctor W₁]
   [F₂.IsRightDerivedFunctor α₂ W₂]
 
-instance  :
-    IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂) := by
-  suffices ∀ Y, IsIso ((rightDerivedFunctorComparison Φ L₁ L₂ F F₁ α₁ F₂ α₂).app Y) from
-    NatIso.isIso_of_isIso_app _
+instance : IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂) := by
+  rw [NatTrans.isIso_iff_isIso_app]
   intro Y
   have : (F.HasPointwiseRightDerivedFunctor W₂) := by
     rw [Φ.hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure]
@@ -123,11 +121,12 @@ instance  :
       ((Φ.localizedFunctor L₁ L₂).obj Y)
   have hF₂' := (Functor.Final.isColimitWhiskerEquiv (w.costructuredArrowRightwards Y) _).symm hF₂
   have : (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂).app Y =
-      (IsColimit.coconePointUniqueUpToIso hF₁ hF₂').hom := hF₁.hom_ext (fun φ => by
-    rw [IsColimit.comp_coconePointUniqueUpToIso_hom]
-    dsimp
-    simp only [w, assoc, NatTrans.naturality, Functor.comp_obj, Functor.comp_map,
-      rightDerivedFunctorComparison_fac_app_assoc, Functor.map_comp])
+      (IsColimit.coconePointUniqueUpToIso hF₁ hF₂').hom :=
+    hF₁.hom_ext (fun φ ↦ by
+      rw [IsColimit.comp_coconePointUniqueUpToIso_hom]
+      dsimp
+      simp only [w, assoc, NatTrans.naturality, Functor.comp_obj, Functor.comp_map,
+        rightDerivedFunctorComparison_fac_app_assoc, Functor.map_comp])
   rw [this]
   infer_instance
 

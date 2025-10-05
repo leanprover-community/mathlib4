@@ -21,10 +21,10 @@ lemma Submodule.isCompact_of_fg [CompactSpace R] {N : Submodule R M} (hN : N.FG)
     IsCompact (X := M) N := by
   obtain ⟨s, hs⟩ := hN
   have : LinearMap.range (Fintype.linearCombination R (α := s) Subtype.val) = N := by
-    simp [Finsupp.range_linearCombination, hs]
+    simp [hs]
   rw [← this]
   refine isCompact_range ?_
-  simp only [Fintype.linearCombination, Finset.univ_eq_attach, smul_eq_mul, LinearMap.coe_mk,
+  simp only [Fintype.linearCombination, Finset.univ_eq_attach, LinearMap.coe_mk,
     AddHom.coe_mk]
   fun_prop
 

@@ -379,24 +379,25 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
   simp only [← hasFDerivWithinAt_univ, ← nhdsWithin_univ] at hf hfg ⊢
   exact hf.of_local_left_inverse (.inf hg (by simp)) (mem_univ _) hfg
 
-/-- If `f` is a partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
+/-- If `f` is an open partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
 invertible derivative `f'` in the sense of strict differentiability at `f.symm a`, then `f.symm` has
 the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem PartialHomeomorph.hasStrictFDerivAt_symm (f : PartialHomeomorph E F) {f' : E ≃L[𝕜] F}
-    {a : F} (ha : a ∈ f.target) (htff' : HasStrictFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
+theorem OpenPartialHomeomorph.hasStrictFDerivAt_symm (f : OpenPartialHomeomorph E F)
+    {f' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
+    (htff' : HasStrictFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
     HasStrictFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 
-/-- If `f` is a partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
+/-- If `f` is an open partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
 invertible derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem PartialHomeomorph.hasFDerivAt_symm (f : PartialHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
-    (ha : a ∈ f.target) (htff' : HasFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
+theorem OpenPartialHomeomorph.hasFDerivAt_symm (f : OpenPartialHomeomorph E F) {f' : E ≃L[𝕜] F}
+    {a : F} (ha : a ∈ f.target) (htff' : HasFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
     HasFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 
@@ -466,7 +467,7 @@ under a map with onto derivative has also the unique differentiability property 
 theorem HasFDerivWithinAt.uniqueDiffWithinAt (h : HasFDerivWithinAt f f' s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) (h' : DenseRange f') : UniqueDiffWithinAt 𝕜 (f '' s) (f x) := by
   refine ⟨h'.dense_of_mapsTo f'.continuous hs.1 ?_, h.continuousWithinAt.mem_closure_image hs.2⟩
-  show
+  change
     Submodule.span 𝕜 (tangentConeAt 𝕜 s x) ≤
       (Submodule.span 𝕜 (tangentConeAt 𝕜 (f '' s) (f x))).comap f'
   rw [Submodule.span_le]

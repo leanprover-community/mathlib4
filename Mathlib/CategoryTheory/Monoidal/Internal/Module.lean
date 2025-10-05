@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.AlgCat.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
-# `Mon_ (ModuleCat R) ≌ AlgCat R`
+# `Mon (ModuleCat R) ≌ AlgCat R`
 
 The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
@@ -23,7 +23,7 @@ universe v u
 
 open CategoryTheory
 
-open LinearMap Mon_Class
+open LinearMap MonObj
 
 open scoped TensorProduct
 
@@ -35,12 +35,7 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
--- Porting note: in the following proof `have := ...; convert this` is to help Lean infer what the
--- underlying rings are.
--- Porting note: `simps(!)` doesn't work, I guess we will see what `simp` lemmas are needed and
--- add them manually
--- @[simps!]
-instance Ring_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Ring A :=
+instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
@@ -65,7 +60,7 @@ instance Ring_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Ring A :=
     mul_zero := fun x => show μ[A] _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
-instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Algebra R A where
+instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
   algebraMap :=
   { η[A].hom with
     map_zero' := η[A].hom.map_zero
@@ -82,30 +77,30 @@ instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Algebra R A where
     (LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) (r ⊗ₜ a)).symm
 
 @[simp]
-theorem algebraMap (A : ModuleCat.{u} R) [Mon_Class A] (r : R) : algebraMap R A r = η[A] r :=
+theorem algebraMap (A : ModuleCat.{u} R) [MonObj A] (r : R) : algebraMap R A r = η[A] r :=
   rfl
 
 /-- Converting a monoid object in `ModuleCat R` to a bundled algebra.
 -/
 @[simps!]
-def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgCat R where
+def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
   obj A := AlgCat.of R A.X
   map {_ _} f := AlgCat.ofHom
     { f.hom.hom.toAddMonoidHom with
       toFun := f.hom
-      map_one' := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMon_Hom.one_hom f.hom)) (1 : R)
+      map_one' := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) (1 : R)
       map_mul' := fun x y =>
-        LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMon_Hom.mul_hom f.hom)) (x ⊗ₜ y)
+        LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.mul_hom f.hom)) (x ⊗ₜ y)
       commutes' := fun r =>
-        LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMon_Hom.one_hom f.hom)) r }
+        LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) r }
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
+def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A
-  one_mul' := by
+  one_mul := by
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
@@ -119,7 +114,7 @@ def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
     dsimp
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
     dsimp
-  mul_one' := by
+  mul_one := by
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
@@ -133,7 +128,7 @@ def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     dsimp
-  mul_assoc' := by
+  mul_assoc := by
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
@@ -144,20 +139,19 @@ def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
     dsimp only [id_coe, id_eq]
     erw [TensorProduct.mk_apply, TensorProduct.mk_apply, mul'_apply, LinearMap.id_apply, mul'_apply]
-    simp only [LinearMap.mul'_apply, _root_.mul_assoc]
+    simp only [_root_.mul_assoc]
 
 attribute [local instance] inverseObj
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverse : AlgCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
+def inverse : AlgCat.{u} R ⥤ Mon (ModuleCat.{u} R) where
   obj A := { X := ModuleCat.of R A, mon := inverseObj A}
   map f :=
     { hom := ofHom <| f.hom.toLinearMap
-      is_mon_hom :=
-        { one_hom := hom_ext <| LinearMap.ext f.hom.commutes
-          mul_hom := hom_ext <| TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.hom } }
+      isMonHom_hom.one_hom := hom_ext <| LinearMap.ext f.hom.commutes
+      isMonHom_hom.mul_hom := hom_ext <| TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.hom }
 
 end MonModuleEquivalenceAlgebra
 
@@ -166,34 +160,29 @@ open MonModuleEquivalenceAlgebra
 /-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
-def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgCat R where
+def monModuleEquivalenceAlgebra : Mon (ModuleCat.{u} R) ≌ AlgCat R where
   functor := functor
   inverse := inverse
   unitIso :=
     NatIso.ofComponents
       (fun A =>
-        { hom :=
-            { hom := ofHom
-                { toFun := _root_.id
-                  map_add' := fun _ _ => rfl
-                  map_smul' := fun _ _ => rfl }
-              is_mon_hom :=
-                { mul_hom := by
-                    ext : 1
-                    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-                    refine TensorProduct.ext ?_
-                    rfl } }
-          inv :=
-            { hom := ofHom
-                { toFun := _root_.id
-                  map_add' := fun _ _ => rfl
-                  map_smul' := fun _ _ => rfl }
-              is_mon_hom :=
-                { mul_hom := by
-                    ext : 1
-                    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-                    refine TensorProduct.ext ?_
-                    rfl } } })
+        { hom.hom := ofHom
+            { toFun := _root_.id
+              map_add' _ _ := rfl
+              map_smul' _ _ := rfl }
+          hom.isMonHom_hom.mul_hom := by
+            ext : 1
+            -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
+            exact TensorProduct.ext rfl
+          inv.hom := ofHom
+            { toFun := _root_.id
+              map_add' := fun _ _ => rfl
+              map_smul' := fun _ _ => rfl }
+          inv.isMonHom_hom.mul_hom := by
+            ext : 1
+            -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
+            refine TensorProduct.ext ?_
+            rfl })
   counitIso :=
     NatIso.ofComponents
       (fun A =>
@@ -212,12 +201,12 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgCat R where
               map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ x y).symm
               commutes' := fun _ => rfl } })
 
-/-- The equivalence `Mon_ (ModuleCat R) ≌ AlgCat R`
+/-- The equivalence `Mon (ModuleCat R) ≌ AlgCat R`
 is naturally compatible with the forgetful functors to `ModuleCat R`.
 -/
 def monModuleEquivalenceAlgebraForget :
     MonModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgCat.{u} R) (ModuleCat.{u} R) ≅
-      Mon_.forget (ModuleCat.{u} R) :=
+      Mon.forget (ModuleCat.{u} R) :=
   NatIso.ofComponents
     (fun A =>
       { hom := ofHom

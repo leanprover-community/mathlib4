@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Adjunction.Parametrized
 Define (right) closed objects and (right) closed monoidal categories.
 
 ## TODO
-Some of the theorems proved about cartesian closed categories
+Some of the theorems proved about Cartesian-closed categories
 should be generalised and moved to this file.
 -/
 
@@ -410,7 +410,7 @@ lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
     (α_ _ _ _).inv ≫ comp w x y ▷ _ ≫ comp w y z = _ ◁ comp x y z ≫ comp w x z := by
   apply uncurry_injective
   simp only [uncurry_natural_left, comp_eq]
-  rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq, Category.assoc]
+  rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq]
   rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
   rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
     ← uncurry_eq, uncurry_curry]

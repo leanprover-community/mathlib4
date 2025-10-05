@@ -15,7 +15,7 @@ We define the pullback and pushforward of ideal sheaves in this file.
 - `AlgebraicGeometry.Scheme.IdealSheafData.comap`: The pullback of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
-  The galois connection between pullback and pushforward.
+  The Galois connection between pullback and pushforward.
 
 -/
 
@@ -93,9 +93,10 @@ section gc
 
 variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : X ⟶ Y)
 
-/-- Pushforward and pullback of ideal sheaves forms a galois connection. -/
+/-- Pushforward and pullback of ideal sheaves forms a Galois connection. -/
 lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
 
+set_option linter.style.commandStart false
 lemma map_mono          : Monotone (map · f)                          := (map_gc f).monotone_u
 lemma comap_mono        : Monotone (comap · f)                        := (map_gc f).monotone_l
 lemma le_map_comap      : J ≤ (J.comap f).map f                       := (map_gc f).le_u_l J
@@ -104,6 +105,7 @@ lemma comap_map_le      : (I.map f).comap f ≤ I                       := (map_
 @[simp] lemma comap_bot : comap ⊥ f = ⊥                               := (map_gc f).l_bot
 @[simp] lemma map_inf   : map (I₁ ⊓ I₂) f = map I₁ f ⊓ map I₂ f       := (map_gc f).u_inf
 @[simp] lemma comap_sup : comap (J₁ ⊔ J₂) f = comap J₁ f ⊔ comap J₂ f := (map_gc f).l_sup
+set_option linter.style.commandStart true
 
 end gc
 

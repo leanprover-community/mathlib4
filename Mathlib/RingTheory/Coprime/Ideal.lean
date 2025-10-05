@@ -36,14 +36,13 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
   · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true]
     refine fun a => ⟨fun i => if h : i = a then ⟨1, ?_⟩ else 0, ?_⟩
     · simp [h]
-    · simp only [dif_pos, Submodule.coe_mk, eq_self_iff_true]
+    · simp only [dif_pos, Submodule.coe_mk]
   intro a t hat h ih
   rw [Finset.coe_cons,
     Set.pairwise_insert_of_symmetric fun i j (h : I i ⊔ I j = ⊤) ↦ (sup_comm _ _).trans h]
   constructor
   · rintro ⟨μ, hμ⟩
     rw [Finset.sum_cons] at hμ
-    -- Porting note: `refine` yields goals in a different order than in lean3.
     refine ⟨ih.mp ⟨Pi.single h.choose ⟨μ a, ?a1⟩ + fun i => ⟨μ i, ?a2⟩, ?a3⟩, fun b hb ab => ?a4⟩
     case a1 =>
       have := Submodule.coe_mem (μ a)

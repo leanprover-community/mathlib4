@@ -237,7 +237,6 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
       IntermediateField.fixedField <| g x.1
     have (x : K) : (g x).Normal :=
       Subgroup.Normal.map h (restrictNormalHom (adjoin k {x})) (restrictNormalHom_surjective K)
-    have (l : L) := IsGalois.of_fixedField_normal_subgroup (g l.1)
     have (l : L) : Normal k (f l) :=
       Normal.of_algEquiv <| IntermediateField.liftAlgEquiv <| IntermediateField.fixedField (g l.1)
     have n : Normal k ↥(⨆ l : L, f l) := IntermediateField.normal_iSup k K f
@@ -253,8 +252,7 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
           fixedField_fixingSubgroup L, IntermediateField.mem_inf, hl, true_and]
           using adjoin_simple_le_iff.mp le_rfl
     rw [this] at n
-    let _ : Algebra.IsSeparable k L := Algebra.isSeparable_tower_bot_of_isSeparable k L K
-    apply IsGalois.mk
+    constructor
   · simpa only [IntermediateFieldEquivClosedSubgroup, RelIso.coe_fn_mk, Equiv.coe_fn_mk,
       ← L.restrictNormalHom_ker] using MonoidHom.normal_ker (restrictNormalHom L)
 

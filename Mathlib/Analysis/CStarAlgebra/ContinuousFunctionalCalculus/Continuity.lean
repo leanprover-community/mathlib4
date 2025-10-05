@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+import Mathlib.Topology.MetricSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Continuity of the continuous functional calculus in each variable
@@ -25,21 +26,49 @@ predicate `p` and their spectra are collectively contained in a compact set on w
 continuous. Moreover, it is required that the continuous functional calculus be the isometric
 variant.
 
+Under the assumption of `IsometricContinuousFunctionalCalculus`, we show that the continuous
+functional calculus is Lipschitz with constant 1 in the variable `f : R →ᵤ[{spectrum R a}] R`
+on the set of functions which are continuous on the spectrum of `a`. Combining this with the
+continuity of the continuous functional calculus in the variable `a`, we obtain a joint continuity
+result for `cfc` in both variables.
+
 Finally, all of this is developed for both the unital and non-unital functional calculi.
 The continuity results in the function variable are valid for all scalar rings, but the continuity
 results in the variable `a` come in two flavors: those for `RCLike 𝕜` and those for `ℝ≥0`.
 
-# To do
+## Main results
 
-+ Get a version with joint continuity in both variables.
+
++ `tendsto_cfc_fun`: If `F : X → R → R` tends to `f : R → R` uniformly on the spectrum of `a`, and
+  all these functions are continuous on the spectrum, then `fun x ↦ cfc (F x) a` tends
+  to `cfc f a`.
++ `Filter.Tendsto.cfc`: If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `a : X → A` tends to
+  `a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
+  `𝕜` and has spectrum contained in `s`, as does `a₀`), then `fun x ↦ cfc f (a x)` tends to
+  `cfc f a₀`.
++ `lipschitzOnWith_cfc_fun`: The function `f ↦ cfc f a` is Lipschitz with constant with constant 1
+  with respect to supremum metric (on `R →ᵤ[{spectrum R a}] R`) on those functions which are
+  continuous on the spectrum.
++ `continuousOn_cfc`: For `f : 𝕜 → 𝕜` continuous on a compact set `s`, `cfc f` is continuous on the
+  set of `a : A` satisfying the predicate `p` (associated to `𝕜`) and whose `𝕜`-spectrum is
+  contained in `s`.
++ `continuousOn_cfc_setProd`: Let `s : Set 𝕜` be a compact set and consider pairs
+  `(f, a) : (𝕜 → 𝕜) × A` where `f` is continuous on `s` and `spectrum 𝕜 a ⊆ s` and `a` satisfies
+  the predicate `p a` for the continuous functional calculus. Then `cfc` is jointly continuous in
+  both variables (i.e., continuous in its uncurried form) on this set of pairs when the function
+  space is equipped with the topology of uniform convergence on `s`.
++ Versions of all of the above for non-unital algebras, and versions over `ℝ≥0` as well.
 
 -/
 
+open scoped UniformConvergence NNReal
 open Filter Topology
 
 section Unital
 
 section Left
+
+section Generic
 
 variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
@@ -68,7 +97,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     intro t
     simp only [eventually_comap, Subtype.forall]
     peel h_tendsto t with ht x _
-    aesop
+    simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -111,8 +140,48 @@ theorem Continuous.cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (h_cont : Continuous (fun x ↦ ofFun {spectrum R a} (f x)))
     (hf : ∀ x, ContinuousOn (f x) (spectrum R a) := by cfc_cont_tac) :
     Continuous fun x ↦ cfc (f x) a := by
-  rw [continuous_iff_continuousOn_univ] at h_cont ⊢
+  rw [← continuousOn_univ] at h_cont ⊢
   exact h_cont.cfc_fun (fun x _ ↦ hf x)
+
+end Generic
+
+section Isometric
+
+variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
+    [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
+
+variable (R) in
+open UniformOnFun in
+open scoped ContinuousFunctionalCalculus in
+/-- The function `f ↦ cfc f a` is Lipschitz with constant 1 with respect to
+supremum metric (on `R →ᵤ[{spectrum R a}] R`) on those functions which are continuous on
+the spectrum. -/
+lemma lipschitzOnWith_cfc_fun (a : A) :
+    LipschitzOnWith 1 (fun f ↦ cfc (toFun {spectrum R a} f) a)
+      {f | ContinuousOn (toFun {spectrum R a} f) (spectrum R a)} := by
+  by_cases ha : p a
+  · intro f hf g hg
+    simp only
+    rw [cfc_apply .., cfc_apply .., isometry_cfcHom (R := R) a ha |>.edist_eq]
+    simp only [ENNReal.coe_one, one_mul]
+    rw [edist_continuousRestrict_of_singleton hf hg]
+  · simpa [cfc_apply_of_not_predicate a ha] using LipschitzWith.const' 0 |>.lipschitzOnWith
+
+open UniformOnFun in
+open scoped ContinuousFunctionalCalculus in
+/-- The function `f ↦ cfc f a` is Lipschitz with constant 1 with respect to
+supremum metric (on `R →ᵤ[{s}] R`) on those functions which are continuous on a set `s` containing
+the spectrum. -/
+lemma lipschitzOnWith_cfc_fun_of_subset (a : A) {s : Set R} (hs : spectrum R a ⊆ s) :
+    LipschitzOnWith 1 (fun f ↦ cfc (toFun {s} f) a)
+      {f | ContinuousOn (toFun {s} f) (s)} := by
+  have h₁ := lipschitzOnWith_cfc_fun R a
+  have h₂ := lipschitzWith_one_ofFun_toFun' (𝔖 := {spectrum R a}) (𝔗 := {s}) (β := R) (by simpa)
+  have h₃ := h₂.lipschitzOnWith (s := {f | ContinuousOn (toFun {s} f) (s)})
+  simpa using h₁.comp h₃ (fun f hf ↦ hf.mono hs)
+
+end Isometric
 
 end Left
 
@@ -169,6 +238,20 @@ theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     rw [cfcHomSuperset_apply, Set.restrict_apply, cfc_apply _ _ x.2.1 (hf.mono x.2.2)]
     congr!
 
+open UniformOnFun in
+/-- Let `s : Set 𝕜` be a compact set and consider pairs `(f, a) : (𝕜 → 𝕜) × A` where `f` is
+continuous on `s` and `spectrum 𝕜 a ⊆ s` and `a` satisfies the predicate `p a` for the continuous
+functional calculus.
+
+Then `cfc` is jointly continuous in both variables (i.e., continuous in its uncurried form) on this
+set of pairs when the function space is equipped with the topology of uniform convergence on `s`. -/
+theorem continuousOn_cfc_setProd {s : Set 𝕜} (hs : IsCompact s) :
+    ContinuousOn (fun fa : (𝕜 →ᵤ[{s}] 𝕜) × A ↦ cfc (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {s} f) s} ×ˢ {a | p a ∧ spectrum 𝕜 a ⊆ s}) :=
+  continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
+    (fun f hf ↦ continuousOn_cfc A hs ((toFun {s}) f) hf)
+    (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
+
 /-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `a : X → A` tends to `a₀ : A` along a
 filter `l` (such that eventually `a x` satisfies the predicate `p` associated to `𝕜` and has
 spectrum contained in `s`, as does `a₀`), then `fun x ↦ cfc f (a x)` tends to `cfc f a₀`. -/
@@ -221,14 +304,12 @@ protected theorem Continuous.cfc [TopologicalSpace X] {s : Set 𝕜} (hs : IsCom
     {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, spectrum 𝕜 (a x) ⊆ s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfc f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfc hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end RCLike
 
 section NNReal
-
-open scoped NNReal
 
 variable {X A : Type*} [NormedRing A] [StarRing A]
     [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
@@ -241,7 +322,7 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     (f : ℝ≥0 → ℝ≥0) (hf : ContinuousOn f s := by cfc_cont_tac) :
     ContinuousOn (cfc f) {a : A | 0 ≤ a ∧ spectrum ℝ≥0 a ⊆ s} := by
   have : {a : A | 0 ≤ a ∧ spectrum ℝ≥0 a ⊆ s}.EqOn (cfc f) (cfc (fun x : ℝ ↦ f x.toNNReal)) :=
-    fun a ha ↦ cfc_nnreal_eq_real _ ha.1
+    fun a ha ↦ cfc_nnreal_eq_real _ _ ha.1
   refine ContinuousOn.congr ?_ this
   replace hf : ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) (NNReal.toReal '' s) := by
     apply hf.ofReal_map_toNNReal
@@ -249,10 +330,24 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     intro x hx
     simpa
   refine continuousOn_cfc A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
-  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_spectrumRestricts] at ha ⊢
+  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  rw [← SpectrumRestricts] at ha
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
   exact Set.image_mono ha.2
+
+open UniformOnFun in
+/-- Let `s : Set ℝ≥0` be a compact set and consider pairs `(f, a) : (ℝ≥0 → ℝ≥0) × A` where `f` is
+continuous on `s` and `spectrum ℝ≥0 a ⊆ s` and `0 ≤ a`.
+
+Then `cfc` is jointly continuous in both variables (i.e., continuous in its uncurried form) on this
+set of pairs when the function space is equipped with the topology of uniform convergence on `s`. -/
+theorem continuousOn_cfc_nnreal_setProd {s : Set ℝ≥0} (hs : IsCompact s) :
+    ContinuousOn (fun fa : (ℝ≥0 →ᵤ[{s}] ℝ≥0) × A ↦ cfc (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {s} f) s} ×ˢ {a | 0 ≤ a ∧ spectrum ℝ≥0 a ⊆ s}) :=
+  continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
+    (fun f hf ↦ continuousOn_cfc_nnreal A hs ((toFun {s}) f) hf)
+    (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
 
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `a : X → A` tends to `a₀ : A` along a
 filter `l` (such that eventually `0 ≤ a x` and has spectrum contained in `s`, as does `a₀`), then
@@ -306,7 +401,7 @@ theorem Continuous.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCom
     {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, spectrum ℝ≥0 (a x) ⊆ s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (ha' : ∀ x, 0 ≤ a x := by cfc_tac) :
     Continuous (fun x ↦ cfc f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfc_nnreal hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end NNReal
@@ -318,6 +413,8 @@ end Unital
 section NonUnital
 
 section Left
+
+section Generic
 
 variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
     [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
@@ -348,13 +445,13 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     rw [cfcₙ_apply ..]
     apply cfcₙHom_continuous _ |>.tendsto _ |>.comp
     rw [ContinuousMapZero.isEmbedding_toContinuousMap.isInducing.tendsto_nhds_iff]
-    show Tendsto (fun x : s ↦ (⟨_, x.2.1.restrict⟩ : C(quasispectrum R a, R))) _
+    change Tendsto (fun x : s ↦ (⟨_, x.2.1.restrict⟩ : C(quasispectrum R a, R))) _
       (𝓝 ⟨_, hf.restrict⟩)
     rw [hf.tendsto_restrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
     intro t
     simp only [eventually_comap, Subtype.forall]
     peel h_tendsto t with ht x _
-    aesop
+    simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -402,8 +499,50 @@ theorem Continuous.cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (hf : ∀ x, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
     (hf0 : ∀ x, f x 0 = 0 := by cfc_zero_tac) :
     Continuous fun x ↦ cfcₙ (f x) a := by
-  rw [continuous_iff_continuousOn_univ] at h_cont ⊢
+  rw [← continuousOn_univ] at h_cont ⊢
   exact h_cont.cfcₙ_fun (fun x _ ↦ hf x) (fun x _ ↦ hf0 x)
+
+end Generic
+
+section Isometric
+
+variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
+    [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+    [MetricSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+    [NonUnitalIsometricContinuousFunctionalCalculus R A p]
+
+variable (R) in
+open UniformOnFun in
+open scoped NonUnitalContinuousFunctionalCalculus in
+/-- The function `f ↦ cfcₙ f a` is Lipschitz with constant 1 with respect to
+supremum metric (on `R →ᵤ[{quasispectrum R a}] R`) on those functions which are continuous on
+the quasispectrum and map zero to itself. -/
+lemma lipschitzOnWith_cfcₙ_fun (a : A) :
+    LipschitzOnWith 1 (fun f ↦ cfcₙ (toFun {quasispectrum R a} f) a)
+      {f | ContinuousOn (toFun {quasispectrum R a} f) (quasispectrum R a) ∧ f 0 = 0} := by
+  by_cases ha : p a
+  · rintro f ⟨hf, hf0⟩ g ⟨hg, hg0⟩
+    simp only
+    rw [cfcₙ_apply .., cfcₙ_apply .., isometry_cfcₙHom (R := R) a ha |>.edist_eq]
+    simp only [ENNReal.coe_one, one_mul]
+    rw [← ContinuousMapZero.isometry_toContinuousMap.edist_eq,
+      edist_continuousRestrict_of_singleton hf hg]
+  · simpa [cfcₙ_apply_of_not_predicate a ha] using LipschitzWith.const' 0 |>.lipschitzOnWith
+
+open UniformOnFun in
+open scoped ContinuousFunctionalCalculus in
+/-- The function `f ↦ cfcₙ f a` is Lipschitz with constant 1 with respect to
+supremum metric (on `R →ᵤ[{s}] R`) on those functions which are continuous on a set `s` containing
+the quasispectrum and map zero to itself. -/
+lemma lipschitzOnWith_cfcₙ_fun_of_subset (a : A) {s : Set R} (hs : quasispectrum R a ⊆ s) :
+    LipschitzOnWith 1 (fun f ↦ cfcₙ (toFun {s} f) a)
+      {f | ContinuousOn (toFun {s} f) (s) ∧ f 0 = 0} := by
+  have h₂ := lipschitzWith_one_ofFun_toFun' (𝔖 := {quasispectrum R a}) (𝔗 := {s}) (β := R)
+    (by simpa)
+  have h₃ := h₂.lipschitzOnWith (s := {f | ContinuousOn (toFun {s} f) (s) ∧ f 0 = 0})
+  simpa using lipschitzOnWith_cfcₙ_fun R a |>.comp h₃ (fun f ↦ .imp_left fun hf ↦ hf.mono hs)
+
+end Isometric
 
 end Left
 
@@ -424,10 +563,9 @@ theorem continuous_cfcₙHomSuperset_left
     Continuous (fun x ↦ cfcₙHomSuperset (ha' x) (ha x) f) := by
   have : CompactSpace s := by rwa [isCompact_iff_compactSpace] at hs
   induction f using ContinuousMapZero.induction_on_of_compact with
-  | h0 => rfl
   | zero => simpa [map_zero] using continuous_const
-  | id => simpa only [cfcₙHomSuperset_id']
-  | star_id => simp only [map_star, cfcₙHomSuperset_id']; fun_prop
+  | id => simpa only [cfcₙHomSuperset_id]
+  | star_id => simp only [map_star, cfcₙHomSuperset_id]; fun_prop
   | add f g hf hg => simpa only [map_add] using hf.add hg
   | mul f g hf hg => simpa only [map_mul] using hf.mul hg
   | smul r f hf => simpa only [map_smul] using hf.const_smul r
@@ -460,6 +598,20 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
   · convert continuousOn_empty _
     rw [Set.eq_empty_iff_forall_notMem]
     exact fun a ha ↦ hs0 <| ha.2 <| quasispectrum.zero_mem 𝕜 a
+
+open UniformOnFun in
+/-- Let `s : Set 𝕜` be a compact set and consider pairs `(f, a) : (𝕜 → 𝕜) × A` where `f` is
+continuous on `s`, maps zero itself, and `quasispectrum 𝕜 a ⊆ s` and `a` satisfies the predicate
+`p a` for the continuous functional calculus.
+
+Then `cfcₙ` is jointly continuous in both variables (i.e., continuous in its uncurried form) on this
+set of pairs when the function space is equipped with the topology of uniform convergence on `s`. -/
+theorem continuousOn_cfcₙ_setProd {s : Set 𝕜} (hs : IsCompact s) :
+    ContinuousOn (fun fa : (𝕜 →ᵤ[{s}] 𝕜) × A ↦ cfcₙ (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {s} f) s ∧ f 0 = 0} ×ˢ {a | p a ∧ quasispectrum 𝕜 a ⊆ s}) :=
+  continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
+    (fun f hf ↦ continuousOn_cfcₙ A hs ((toFun {s}) f) hf.1 hf.2)
+    (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfcₙ_fun_of_subset a ha')
 
 /-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
 `a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
@@ -518,7 +670,7 @@ protected theorem Continuous.cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : Is
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfcₙ f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfcₙ hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 /-- `cfcₙ` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a` varies over
@@ -537,7 +689,6 @@ end RCLike
 
 section NNReal
 
-open scoped NNReal
 variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
     [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
@@ -551,7 +702,7 @@ theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ
     ContinuousOn (cfcₙ f · : A → A) {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s} := by
   have : {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}.EqOn (cfcₙ f)
       (cfcₙ (fun x : ℝ ↦ f x.toNNReal)) :=
-    fun a ha ↦ cfcₙ_nnreal_eq_real _ ha.1
+    fun a ha ↦ cfcₙ_nnreal_eq_real _ _ ha.1
   refine ContinuousOn.congr ?_ this
   replace hf : ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) (NNReal.toReal '' s) := by
     apply hf.ofReal_map_toNNReal
@@ -563,6 +714,19 @@ theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
   exact Set.image_mono ha.2
+
+open UniformOnFun in
+/-- Let `s : Set ℝ≥0` be a compact set and consider pairs `(f, a) : (ℝ≥0 → ℝ≥0) × A` where `f` is
+continuous on `s`, maps zero to itself, `spectrum ℝ≥0 a ⊆ s` and `0 ≤ a`.
+
+Then `cfcₙ` is jointly continuous in both variables (i.e., continuous in its uncurried form) on this
+set of pairs when the function space is equipped with the topology of uniform convergence on `s`. -/
+theorem continuousOn_cfcₙ_nnreal_setProd {s : Set ℝ≥0} (hs : IsCompact s) :
+    ContinuousOn (fun fa : (ℝ≥0 →ᵤ[{s}] ℝ≥0) × A ↦ cfcₙ (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {s} f) s ∧ f 0 = 0} ×ˢ {a | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}) :=
+  continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
+    (fun f hf ↦ continuousOn_cfcₙ_nnreal A hs ((toFun {s}) f) hf.1 hf.2)
+    (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfcₙ_fun_of_subset a ha')
 
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
 `a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
@@ -622,7 +786,7 @@ theorem Continuous.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : Is
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha' : ∀ x, 0 ≤ a x := by cfc_tac) :
     Continuous (fun x ↦ cfcₙ f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfcₙ_nnreal hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end NNReal

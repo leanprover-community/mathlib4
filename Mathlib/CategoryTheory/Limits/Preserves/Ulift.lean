@@ -63,9 +63,10 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
   preservesColimitsOfShape {J _} :=
   { preservesColimit := fun {F} ↦
     { preserves := fun {c} hc ↦ by
-        rw [isColimit_iff_bijective_desc, ← Function.Bijective.of_comp_iff _
-          (quotQuotUliftEquiv F).bijective, Quot.desc_quotQuotUliftEquiv]
-        exact ULift.up_bijective.comp ((isColimit_iff_bijective_desc c).mp (Nonempty.intro hc)) } }
+        rw [isColimit_iff_coconeTypesIsColimit]
+        exact (((isColimit_iff_coconeTypesIsColimit _).1 ⟨hc⟩).precompose
+          (G := F ⋙ uliftFunctor.{v}) (fun _ ↦ Equiv.ulift)
+          (fun _ ↦ rfl)).of_equiv Equiv.ulift.symm (fun _ _ ↦ rfl) } }
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small colimits.

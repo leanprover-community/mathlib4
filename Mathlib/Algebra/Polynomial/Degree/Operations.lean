@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 
@@ -137,14 +138,14 @@ theorem ne_zero_of_degree_ge_degree (hpq : p.degree ≤ q.degree) (hp : p ≠ 0)
       q.degree > ⊥)
 
 theorem ne_zero_of_natDegree_gt {n : ℕ} (h : n < natDegree p) : p ≠ 0 := fun H => by
-  simp [H, Nat.not_lt_zero] at h
+  simp [H] at h
 
 theorem degree_lt_degree (h : natDegree p < natDegree q) : degree p < degree q := by
   by_cases hp : p = 0
   · simp only [hp, degree_zero]
     rw [bot_lt_iff_ne_bot]
     intro hq
-    simp [hp, degree_eq_bot.mp hq, lt_irrefl] at h
+    simp [hp, degree_eq_bot.mp hq] at h
   · rwa [degree_eq_natDegree hp, degree_eq_natDegree <| ne_zero_of_natDegree_gt h, Nat.cast_lt]
 
 theorem natDegree_lt_natDegree_iff (hp : p ≠ 0) : natDegree p < natDegree q ↔ degree p < degree q :=
@@ -286,11 +287,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
             zero_mul]
         · rw [not_lt_iff_eq_or_lt] at H
           rcases H with H | H
-          · subst H
-            rw [add_left_cancel_iff] at h₁
-            dsimp at h₁
-            subst h₁
-            exact (h₂ rfl).elim
+          · simp_all
           · suffices natDegree q < j by
               rw [coeff_eq_zero_of_degree_lt
                   (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 this)),
@@ -630,9 +627,7 @@ theorem zero_notMem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α 
 alias zero_nmem_multiset_map_X_add_C := zero_notMem_multiset_map_X_add_C
 
 theorem natDegree_X_pow_add_C {n : ℕ} {r : R} : (X ^ n + C r).natDegree = n := by
-  by_cases hn : n = 0
-  · rw [hn, pow_zero, ← C_1, ← RingHom.map_add, natDegree_C]
-  · exact natDegree_eq_of_degree_eq_some (degree_X_pow_add_C (pos_iff_ne_zero.mpr hn) r)
+  simp
 
 theorem X_pow_add_C_ne_one {n : ℕ} (hn : 0 < n) (a : R) : (X : R[X]) ^ n + C a ≠ 1 := fun h =>
   hn.ne' <| by simpa only [natDegree_X_pow_add_C, natDegree_one] using congr_arg natDegree h

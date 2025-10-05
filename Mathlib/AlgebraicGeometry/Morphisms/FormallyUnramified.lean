@@ -34,7 +34,7 @@ instance Algebra.FormallyUnramified.isOpenImmersion_SpecMap_lmul {R S : Type u} 
   rw [isOpenImmersion_SpecMap_iff_of_surjective _ (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)]
   apply (Ideal.isIdempotentElem_iff_of_fg _ (KaehlerDifferential.ideal_fg R S)).mp
   apply (Ideal.cotangent_subsingleton_iff _).mp
-  exact inferInstanceAs <| Subsingleton (Ω[S⁄R])
+  exact inferInstanceAs <| Subsingleton Ω[S⁄R]
 
 namespace AlgebraicGeometry
 
@@ -66,14 +66,14 @@ instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnr
   wlog hY : ∃ R, Y = Spec R
   · rw [IsLocalAtTarget.iff_of_openCover (P := @FormallyUnramified) Y.affineCover]
     intro i
-    have inst : IsOpenImmersion (pullback.diagonal (pullback.snd f (Y.affineCover.map i))) :=
+    have inst : IsOpenImmersion (pullback.diagonal (pullback.snd f (Y.affineCover.f i))) :=
       MorphismProperty.pullback_snd (P := .diagonal @IsOpenImmersion) _ _ ‹_›
     exact this (pullback.snd _ _) ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S generalizing X
   · rw [IsLocalAtSource.iff_of_openCover (P := @FormallyUnramified) X.affineCover]
     intro i
-    have inst : IsOpenImmersion (pullback.diagonal (X.affineCover.map i ≫ f)) :=
+    have inst : IsOpenImmersion (pullback.diagonal (X.affineCover.f i ≫ f)) :=
       MorphismProperty.comp_mem (.diagonal @IsOpenImmersion) _ _
         (inferInstanceAs (IsOpenImmersion _)) ‹_›
     exact this (_ ≫ _) ⟨_, rfl⟩
@@ -112,16 +112,16 @@ instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f]
     IsOpenImmersion (pullback.diagonal f) := by
   wlog hX : (∃ S, X = Spec S) ∧ ∃ R, Y = Spec R
   · let 𝒰Y := Y.affineCover
-    let 𝒰X (j : (Y.affineCover.pullbackCover f).J) :
-        ((Y.affineCover.pullbackCover f).obj j).OpenCover := Scheme.affineCover _
+    let 𝒰X (j : (Y.affineCover.pullback₁ f).I₀) :
+        ((Y.affineCover.pullback₁ f).X j).OpenCover := Scheme.affineCover _
     apply IsLocalAtTarget.of_range_subset_iSup _
       (Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange f 𝒰Y 𝒰X)
     intro ⟨i, j⟩
     rw [arrow_mk_iso_iff (P := @IsOpenImmersion)
       (Scheme.Pullback.diagonalRestrictIsoDiagonal f 𝒰Y 𝒰X i j)]
-    have hu : FormallyUnramified ((𝒰X i).map j ≫ pullback.snd f (𝒰Y.map i)) :=
+    have hu : FormallyUnramified ((𝒰X i).f j ≫ pullback.snd f (𝒰Y.f i)) :=
       comp_mem _ _ _ inferInstance (pullback_snd _ _ inferInstance)
-    have hfin : LocallyOfFiniteType ((𝒰X i).map j ≫ pullback.snd f (𝒰Y.map i)) :=
+    have hfin : LocallyOfFiniteType ((𝒰X i).f j ≫ pullback.snd f (𝒰Y.f i)) :=
       comp_mem _ _ _ inferInstance (pullback_snd _ _ inferInstance)
     exact this _ ⟨⟨_, rfl⟩, ⟨_, rfl⟩⟩
   obtain ⟨⟨S, rfl⟩, R, rfl⟩ := hX
