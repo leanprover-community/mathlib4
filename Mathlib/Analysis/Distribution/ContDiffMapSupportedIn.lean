@@ -9,21 +9,32 @@ import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.Sets.Compacts
 
 /-!
-# Continuously differentiable functions supported in a compact
+# Continuously differentiable functions supported in a given compact
 
-This file develops the basic theory of `n`-times continuously differentiable functions with support
-contained in a given compact.
+This file develops the basic theory of bundled `n`-times continuously differentiable functions
+with support contained in a given compact.
 
-Given `n : ℕ∞`and a compact `K` of a normed space `E`, we consider the type of functions `f : E → F`
-(where `F` is a normed vector space) such that:
+Given `n : ℕ∞` and a compact subset `K` of a normed space `E`, we consider the type of bundled
+functions `f : E → F` (where `F` is a normed vector space) such that:
 
 - `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
 - `f` vanishes outside of a compact: `EqOn f 0 Kᶜ`.
+
+We define it as a bundled structure so as to endow it with the topology required to make it a ù
+subspace of the space of test functions.
 
 ## Main definitions
 
 - `ContDiffMapSupportedIn E F n K`: the type of `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
+- `ContDiffMapSupportedIn.iteratedFDerivₗ'`: wrapper as a `𝕜`-linear maps for `iteratedFDeriv` on
+  `ContDiffMapSupportedIn E F n K`, as a map into `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) n-i K`.
+
+## Main statements
+
+- `ContDiffMapSupportedIn.instIsUniformAddGroup` and
+  `ContDiffMapSupportedIn.instLocallyConvexSpace`: `ContDiffMapSupportedIn` is a locally convex
+  topological vector space.
 
 ## Notation
 
@@ -34,8 +45,8 @@ Given `n : ℕ∞`and a compact `K` of a normed space `E`, we consider the type 
 
 ## Implementation details
 
-Thes technical choice of spelling `EqOn f 0 Kᶜ` as opposed to `support f = K` is to make the
-development somewhat easier.
+The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
+is to make replacing `f` by zero outside of `K` easier.
 
 ## Tags
 
