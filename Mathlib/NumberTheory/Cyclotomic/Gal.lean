@@ -5,7 +5,6 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.FieldTheory.PolynomialGaloisGroup
-import Mathlib.FieldTheory.Galois.Abelian
 
 /-!
 # Galois group of cyclotomic extensions
@@ -138,14 +137,6 @@ theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
   convert h.choose_spec.2
   exact ZMod.val_cast_of_lt h.choose_spec.1
-
-variable (n K) in
-/-- Cyclotomic extensions are abelian. -/
-theorem isAbelianGalois (L : Type*) [Field L] [Algebra K L] [IsCyclotomicExtension {n} K L] :
-    IsAbelianGalois K L :=
-  letI := isGalois n K L
-  letI := Aut.commGroup (n := n) K (L := L)
-  ⟨⟩
 
 end IsCyclotomicExtension
 
