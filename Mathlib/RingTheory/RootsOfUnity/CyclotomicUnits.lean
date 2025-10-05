@@ -92,7 +92,7 @@ theorem pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one (hζ : IsPrimit
 
 /-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `ζ - 1` and
   `ζ ^ (i + j) - ζ ^ i` are associated for all and `j` coprime with `n` and all `i`. See
-  `pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one` above for the explicit formula of the
+  `pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one` for the explicit formula of the
   unit. -/
 theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (i : ℕ)
     (hjn : j.Coprime n) : Associated (ζ - 1) (ζ ^ (i + j) - ζ ^ i) := by
