@@ -7,6 +7,7 @@ Authors: Christopher Hoskin
 import Mathlib.Order.Lattice
 import Mathlib.Tactic.TFAE
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Order.Lattice.Congruence
 
 /-!
 # Distributive, Standard and Neutral elements
@@ -35,7 +36,7 @@ lattice, distributive, neutral
 -/
 
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- Element is distributive -/
 def IsDistrib [Lattice α] (a : α) : Prop :=
@@ -49,24 +50,7 @@ def IsStandard [Lattice α] (a : α) : Prop :=
 def IsNeutral [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), (a ⊓ x) ⊔ (a ⊓ y) ⊔ (x ⊓ y) = (a ⊔ x) ⊓ (a ⊔ y) ⊓ (x ⊔ y)
 
-variable [Lattice α] [Lattice β]
-
-/-- Lattice homomorphism is a structure preserving map between lattices -/
-structure IsLatticeHom (f : α → β) : Prop where
-  /-- f preserves inf -/
-  map_inf (a b : α) : f (a ⊓ b) = f a ⊓ f b
-  /-- f preserves sup -/
-  map_sup (a b : α) : f (a ⊔ b) = f a ⊔ f b
-
-/- The kernel of a lattice homomorphism is a lattice congruence -/
-lemma isLatticeCon_of_isLatticeHom {f : α → β} (h : IsLatticeHom f) :
-    IsLatticeCon (Setoid.ker f) := {
-      (Setoid.ker f).iseqv with
-      inf := fun h1 h2 => by
-        simp_all [Setoid.ker, Function.onFun, h.map_inf]
-      sup := fun h1 h2 => by
-        simp_all [Setoid.ker, Function.onFun, h.map_sup]
-  }
+variable [Lattice α]
 
 -- Grätzer III.2, Theorem 2
 open List in
