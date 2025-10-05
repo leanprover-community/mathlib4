@@ -5,7 +5,6 @@ Authors: Andrew Yang, Christian Merten
 -/
 import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
-import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.CategoryTheory.Monad.Limits
 
