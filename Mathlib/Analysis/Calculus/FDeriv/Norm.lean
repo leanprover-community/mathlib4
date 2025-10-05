@@ -27,7 +27,7 @@ at `t • x` when `t ≠ 0`.
 * `DifferentiableAt.fderiv_norm_self`: if the norm is differentiable at `x`,
   then `fderiv ℝ (‖·‖) x x = ‖x‖`.
 * `norm_fderiv_norm`: if the norm is differentiable at `x` then the operator norm of its derivative
-  is `1` (on a non trivial space).
+  is `1` (on a non-trivial space).
 
 ## Tags
 
@@ -81,7 +81,7 @@ theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t �
     · rw [zero_smul] at h
       exact (mt (ContDiffAt.differentiableAt · (mod_cast hn)))
         (not_differentiableAt_norm_zero E) h |>.elim
-    · rw [not_nontrivial_iff_subsingleton] at hE
+    · push_neg at hE
       rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const
   · exact contDiffAt_norm_smul_iff ht |>.2 h
@@ -148,7 +148,7 @@ theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ
   · by_cases hE : Nontrivial E
     · rw [zero_smul] at h
       exact not_differentiableAt_norm_zero E h |>.elim
-    · rw [not_nontrivial_iff_subsingleton] at hE
+    · push_neg at hE
       exact (hasFDerivAt_of_subsingleton _ _).differentiableAt
   · exact differentiableAt_norm_smul ht |>.2 h
 
@@ -178,7 +178,7 @@ theorem fderiv_norm_smul :
     · rw [fderiv_zero_of_not_differentiableAt hd, fderiv_zero_of_not_differentiableAt]
       · simp
       · exact mt DifferentiableAt.differentiableAt_norm_of_smul hd
-  · rw [not_nontrivial_iff_subsingleton] at hE
+  · push_neg at hE
     simp_rw [(hasFDerivAt_of_subsingleton _ _).fderiv, smul_zero]
 
 theorem fderiv_norm_smul_pos (ht : 0 < t) :

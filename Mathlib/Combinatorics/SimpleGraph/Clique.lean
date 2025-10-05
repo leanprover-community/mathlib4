@@ -188,7 +188,7 @@ lemma isClique_sup_edge_of_ne_iff {v w : α} {s : Set α} (h : v ≠ w) :
 theorem isClique_range_copy_top (f : Copy (⊤ : SimpleGraph β) G) :
     G.IsClique (Set.range f) := by
   intro _ ⟨_, h⟩ _ ⟨_, h'⟩ nh
-  rw [← h, show f _ = f.topEmbedding _ by rfl, ← h', show f _ = f.topEmbedding _ by rfl] at nh ⊢
+  rw [← h, ← Copy.topEmbedding_apply, ← h', ← Copy.topEmbedding_apply] at nh ⊢
   rwa [← f.topEmbedding.coe_toEmbedding, (f.topEmbedding.apply_eq_iff_eq _ _).ne,
     ← top_adj, ← f.topEmbedding.map_adj_iff] at nh
 
@@ -414,7 +414,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
   refine Nat.lt_le_asymm hc ?_
-  rw [cliqueFree_iff, not_isEmpty_iff] at h
+  rw [not_cliqueFree_iff] at h
   simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/

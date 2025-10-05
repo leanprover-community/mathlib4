@@ -344,10 +344,8 @@ theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff_of_mem
   h.lineDifferentiableWithinAt_iff (h.eq_of_nhdsWithin hx)
 
 lemma HasLineDerivWithinAt.congr_of_eventuallyEq (hf : HasLineDerivWithinAt 𝕜 f f' s x v)
-    (h'f : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasLineDerivWithinAt 𝕜 f₁ f' s x v := by
-  apply HasDerivWithinAt.congr_of_eventuallyEq hf _ (by simp [hx])
-  have A : Continuous (fun (t : 𝕜) ↦ x + t • v) := by fun_prop
-  exact A.continuousWithinAt.preimage_mem_nhdsWithin'' h'f (by simp)
+    (h'f : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
+  h'f.symm.hasLineDerivWithinAt_iff hx.symm |>.mp hf
 
 theorem HasLineDerivAt.congr_of_eventuallyEq (h : HasLineDerivAt 𝕜 f f' x v) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasLineDerivAt 𝕜 f₁ f' x v :=

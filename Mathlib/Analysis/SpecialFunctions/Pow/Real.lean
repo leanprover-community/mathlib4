@@ -231,11 +231,17 @@ theorem rpow_sum_of_pos {ι : Type*} {a : ℝ} (ha : 0 < a) (f : ι → ℝ) (s 
 
 theorem rpow_sum_of_nonneg {ι : Type*} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι} {f : ι → ℝ}
     (h : ∀ x ∈ s, 0 ≤ f x) : (a ^ ∑ x ∈ s, f x) = ∏ x ∈ s, a ^ f x := by
-  induction' s using Finset.cons_induction with i s hi ihs
-  · rw [sum_empty, Finset.prod_empty, rpow_zero]
-  · rw [forall_mem_cons] at h
+  induction s using Finset.cons_induction with
+  | empty => rw [sum_empty, Finset.prod_empty, rpow_zero]
+  | cons i s hi ihs =>
+    rw [forall_mem_cons] at h
     rw [sum_cons, prod_cons, ← ihs h.2, rpow_add_of_nonneg ha h.1 (sum_nonneg h.2)]
 
+/-- See also `rpow_neg` for a version with `(x ^ y)⁻¹` in the RHS. -/
+theorem rpow_neg_eq_inv_rpow (x y : ℝ) : x ^ (-y) = x⁻¹ ^ y := by
+  simp [rpow_def, Complex.cpow_neg, Complex.inv_cpow_eq_ite, apply_ite]
+
+/-- See also `rpow_neg_eq_inv_rpow` for a version with `x⁻¹ ^ y` in the RHS. -/
 theorem rpow_neg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
   simp only [rpow_def_of_nonneg hx]; split_ifs <;> simp_all [exp_neg]
 
@@ -322,17 +328,6 @@ theorem norm_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : ‖(x : �
 theorem norm_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : re y ≠ 0) :
     ‖(x : ℂ) ^ y‖ = x ^ re y := by
   rw [norm_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, abs_of_nonneg]
-
-@[deprecated (since := "2025-02-17")] alias abs_cpow_of_ne_zero := norm_cpow_of_ne_zero
-@[deprecated (since := "2025-02-17")] alias abs_cpow_of_imp := norm_cpow_of_imp
-@[deprecated (since := "2025-02-17")] alias abs_cpow_le := norm_cpow_le
-@[deprecated (since := "2025-02-17")] alias abs_cpow_real := norm_cpow_real
-@[deprecated (since := "2025-02-17")] alias abs_cpow_inv_nat := norm_cpow_inv_nat
-@[deprecated (since := "2025-02-17")] alias abs_cpow_eq_rpow_re_of_pos :=
-  norm_cpow_eq_rpow_re_of_pos
-
-@[deprecated (since := "2025-02-17")] alias abs_cpow_eq_rpow_re_of_nonneg :=
-  norm_cpow_eq_rpow_re_of_nonneg
 
 open Filter in
 lemma norm_ofReal_cpow_eventually_eq_atTop (c : ℂ) :
@@ -421,7 +416,7 @@ lemma rpow_add_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n
 lemma rpow_add_natCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y + n) = x ^ y * x ^ n := by
   simpa using rpow_add_intCast hx y n
 
-lemma rpow_sub_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n := by
+lemma rpow_sub_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y - n) = x ^ y / x ^ n := by
   simpa using rpow_add_intCast hx y (-n)
 
 lemma rpow_sub_natCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n := by
@@ -461,8 +456,7 @@ theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
   simp
 
 theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
-  suffices H : x ^ ((-1 : ℤ) : ℝ) = x⁻¹ by rwa [Int.cast_neg, Int.cast_one] at H
-  simp only [rpow_intCast, zpow_one, zpow_neg]
+  rw [rpow_neg_eq_inv_rpow, rpow_one]
 
 theorem mul_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) : (x * y) ^ z = x ^ z * y ^ z := by
   iterate 2 rw [Real.rpow_def_of_nonneg]; split_ifs with h_ifs <;> simp_all
@@ -470,7 +464,7 @@ theorem mul_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) : (x * y) ^ z = x ^ z * y ^ z := 
   all_goals positivity
 
 theorem inv_rpow (hx : 0 ≤ x) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
-  simp only [← rpow_neg_one, ← rpow_mul hx, mul_comm]
+  rw [← rpow_neg_eq_inv_rpow, rpow_neg hx]
 
 theorem div_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) (z : ℝ) : (x / y) ^ z = x ^ z / y ^ z := by
   simp only [div_eq_mul_inv, mul_rpow hx (inv_nonneg.2 hy), inv_rpow hy]
@@ -632,7 +626,7 @@ theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
   have x_pos : 0 < x := lt_trans zero_lt_one hx
   rw [← log_le_log_iff (rpow_pos_of_pos x_pos y) (rpow_pos_of_pos x_pos z), log_rpow x_pos,
-    log_rpow x_pos, mul_le_mul_right (log_pos hx)]
+    log_rpow x_pos, mul_le_mul_iff_left₀ (log_pos hx)]
 
 @[simp]
 theorem rpow_lt_rpow_left_iff (hx : 1 < x) : x ^ y < x ^ z ↔ y < z := by
@@ -989,7 +983,7 @@ theorem sqrt_eq_rpow (x : ℝ) : √x = x ^ (1 / (2 : ℝ)) := by
   obtain h | h := le_or_gt 0 x
   · rw [← mul_self_inj_of_nonneg (sqrt_nonneg _) (rpow_nonneg h _), mul_self_sqrt h, ← sq,
       ← rpow_natCast, ← rpow_mul h]
-    norm_num
+    simp
   · have : 1 / (2 : ℝ) * π = π / (2 : ℝ) := by ring
     rw [sqrt_eq_zero_of_nonpos h.le, rpow_def_of_neg h, this, cos_pi_div_two, mul_zero]
 

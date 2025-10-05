@@ -535,9 +535,6 @@ lemma memLp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpS
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_of_mem_interior_integrableExpSet := memLp_of_mem_interior_integrableExpSet
-
 section Complex
 
 open Complex

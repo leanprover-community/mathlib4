@@ -44,6 +44,7 @@ theorem hasDerivAt_sin (x : ℂ) : HasDerivAt sin (cos x) x :=
 
 theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
 
+@[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℂ n sin :=
   (((contDiff_neg.mul contDiff_const).cexp.sub (contDiff_id.mul contDiff_const).cexp).mul
     contDiff_const).div_const _
@@ -89,6 +90,7 @@ theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
 theorem hasDerivAt_cos (x : ℂ) : HasDerivAt cos (-sin x) x :=
   (hasStrictDerivAt_cos x).hasDerivAt
 
+@[fun_prop]
 theorem contDiff_cos {n} : ContDiff ℂ n cos :=
   ((contDiff_id.mul contDiff_const).cexp.add (contDiff_neg.mul contDiff_const).cexp).div_const _
 
@@ -138,6 +140,7 @@ theorem hasDerivAt_sinh (x : ℂ) : HasDerivAt sinh (cosh x) x :=
 
 theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using (hasDerivAt_sinh 0).isLittleO
 
+@[fun_prop]
 theorem contDiff_sinh {n} : ContDiff ℂ n sinh :=
   (contDiff_exp.sub contDiff_neg.cexp).div_const _
 
@@ -182,6 +185,7 @@ theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
 theorem hasDerivAt_cosh (x : ℂ) : HasDerivAt cosh (sinh x) x :=
   (hasStrictDerivAt_cosh x).hasDerivAt
 
+@[fun_prop]
 theorem contDiff_cosh {n} : ContDiff ℂ n cosh :=
   (contDiff_exp.add contDiff_neg.cexp).div_const _
 
@@ -562,6 +566,7 @@ theorem hasDerivAt_sin (x : ℝ) : HasDerivAt sin (cos x) x :=
 
 theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
 
+@[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℝ n sin :=
   Complex.contDiff_sin.real_of_complex
 
@@ -599,6 +604,7 @@ theorem hasStrictDerivAt_cos (x : ℝ) : HasStrictDerivAt cos (-sin x) x :=
 theorem hasDerivAt_cos (x : ℝ) : HasDerivAt cos (-sin x) x :=
   (Complex.hasDerivAt_cos x).real_of_complex
 
+@[fun_prop]
 theorem contDiff_cos {n} : ContDiff ℝ n cos :=
   Complex.contDiff_cos.real_of_complex
 
@@ -641,6 +647,7 @@ theorem hasDerivAt_sinh (x : ℝ) : HasDerivAt sinh (cosh x) x :=
 
 theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using (hasDerivAt_sinh 0).isLittleO
 
+@[fun_prop]
 theorem contDiff_sinh {n} : ContDiff ℝ n sinh :=
   Complex.contDiff_sinh.real_of_complex
 
@@ -678,6 +685,7 @@ theorem hasStrictDerivAt_cosh (x : ℝ) : HasStrictDerivAt cosh (sinh x) x :=
 theorem hasDerivAt_cosh (x : ℝ) : HasDerivAt cosh (sinh x) x :=
   (Complex.hasDerivAt_cosh x).real_of_complex
 
+@[fun_prop]
 theorem contDiff_cosh {n} : ContDiff ℝ n cosh :=
   Complex.contDiff_cosh.real_of_complex
 
@@ -797,6 +805,278 @@ theorem sinh_lt_self_iff : sinh x < x ↔ x < 0 :=
   lt_iff_lt_of_le_iff_le self_le_sinh_iff
 
 end Real
+
+section iteratedDeriv
+
+/-! ### Simp lemmas for iterated derivaties of `sin` and `cos`. -/
+
+namespace Complex
+
+@[simp]
+theorem iteratedDeriv_add_one_sin (n : ℕ) :
+    iteratedDeriv (n + 1) sin = iteratedDeriv n cos := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [iteratedDeriv_succ, ih, iteratedDeriv_succ]
+
+@[simp]
+theorem iteratedDeriv_add_one_cos (n : ℕ) :
+    iteratedDeriv (n + 1) cos = - iteratedDeriv n sin := by
+  induction n with
+  | zero => ext; simp
+  | succ n ih =>
+    rw [iteratedDeriv_succ, ih, iteratedDeriv_succ, deriv.neg']
+    ext x
+    simp
+
+@[simp]
+theorem iteratedDeriv_even_sin (n : ℕ) :
+    iteratedDeriv (2 * n) sin = (-1) ^ n * sin := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp_all [mul_add, pow_succ]
+
+@[simp]
+theorem iteratedDeriv_even_cos (n : ℕ) :
+    iteratedDeriv (2 * n) cos = (-1) ^ n * cos := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp_all [mul_add, pow_succ]
+
+theorem iteratedDeriv_odd_sin (n : ℕ) :
+    iteratedDeriv (2 * n + 1) sin = (-1) ^ n * cos := by simp
+
+theorem iteratedDeriv_odd_cos (n : ℕ) :
+    iteratedDeriv (2 * n + 1) cos = (-1) ^ (n + 1) * sin := by simp [pow_succ]
+
+theorem differentiable_iteratedDeriv_sin (n : ℕ) :
+    Differentiable ℂ (iteratedDeriv n sin) :=
+  match n with
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [differentiable_iteratedDeriv_sin]
+
+theorem differentiable_iteratedDeriv_cos (n : ℕ) :
+    Differentiable ℂ (iteratedDeriv n cos) :=
+  match n with
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [differentiable_iteratedDeriv_cos]
+
+@[simp]
+theorem iteratedDeriv_add_one_sinh (n : ℕ) :
+    iteratedDeriv (n + 1) sinh = iteratedDeriv n cosh := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [iteratedDeriv_succ, ih, iteratedDeriv_succ]
+
+@[simp]
+theorem iteratedDeriv_add_one_cosh (n : ℕ) :
+    iteratedDeriv (n + 1) cosh = iteratedDeriv n sinh := by
+  induction n with
+  | zero => ext; simp
+  | succ n ih =>
+    rw [iteratedDeriv_succ, ih, iteratedDeriv_succ]
+
+@[simp]
+theorem iteratedDeriv_even_sinh (n : ℕ) :
+    iteratedDeriv (2 * n) sinh = sinh := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp_all [mul_add]
+
+@[simp]
+theorem iteratedDeriv_even_cosh (n : ℕ) :
+    iteratedDeriv (2 * n) cosh = cosh := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp_all [mul_add]
+
+theorem iteratedDeriv_odd_sinh (n : ℕ) :
+    iteratedDeriv (2 * n + 1) sinh = cosh := by simp
+
+theorem iteratedDeriv_odd_cosh (n : ℕ) :
+    iteratedDeriv (2 * n + 1) cosh = sinh := by simp
+
+theorem differentiable_iteratedDeriv_sinh (n : ℕ) :
+    Differentiable ℂ (iteratedDeriv n sinh) :=
+  match n with
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [differentiable_iteratedDeriv_sinh]
+
+theorem differentiable_iteratedDeriv_cosh (n : ℕ) :
+    Differentiable ℂ (iteratedDeriv n cosh) :=
+  match n with
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [differentiable_iteratedDeriv_cosh]
+
+end Complex
+
+namespace Real
+
+@[simp]
+theorem iteratedDeriv_add_one_sin (n : ℕ) :
+    iteratedDeriv (n + 1) sin = iteratedDeriv n cos := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [iteratedDeriv_succ, ih, iteratedDeriv_succ]
+
+@[simp]
+theorem iteratedDeriv_add_one_cos (n : ℕ) :
+    iteratedDeriv (n + 1) cos = - iteratedDeriv n sin := by
+  induction n with
+  | zero => ext; simp
+  | succ n ih =>
+    rw [iteratedDeriv_succ, ih, iteratedDeriv_succ, deriv.neg']
+    ext x
+    simp
+
+@[simp]
+theorem iteratedDeriv_even_sin (n : ℕ) :
+    iteratedDeriv (2 * n) sin = (-1) ^ n * sin := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp_all [mul_add, pow_succ]
+
+@[simp]
+theorem iteratedDeriv_even_cos (n : ℕ) :
+    iteratedDeriv (2 * n) cos = (-1) ^ n * cos := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp_all [mul_add, pow_succ]
+
+theorem iteratedDeriv_odd_sin (n : ℕ) :
+    iteratedDeriv (2 * n + 1) sin = (-1) ^ n * cos := by simp
+
+theorem iteratedDeriv_odd_cos (n : ℕ) :
+    iteratedDeriv (2 * n + 1) cos = (-1) ^ (n + 1) * sin := by simp [pow_succ]
+
+theorem differentiable_iteratedDeriv_sin (n : ℕ) :
+    Differentiable ℝ (iteratedDeriv n sin) :=
+  match n with
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [differentiable_iteratedDeriv_sin]
+
+theorem differentiable_iteratedDeriv_cos (n : ℕ) :
+    Differentiable ℝ (iteratedDeriv n cos) :=
+  match n with
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [differentiable_iteratedDeriv_cos]
+
+theorem abs_iteratedDeriv_sin_le_one (n : ℕ) (x : ℝ) :
+    |iteratedDeriv n sin x| ≤ 1 :=
+  match n with
+  | 0 => by simpa using Real.abs_sin_le_one x
+  | 1 => by simpa using Real.abs_cos_le_one x
+  | n + 2 => by simpa using abs_iteratedDeriv_sin_le_one n x
+
+theorem abs_iteratedDeriv_cos_le_one (n : ℕ) (x : ℝ) :
+    |iteratedDeriv n cos x| ≤ 1 :=
+  match n with
+  | 0 => by simpa using Real.abs_cos_le_one x
+  | 1 => by simpa using Real.abs_sin_le_one x
+  | n + 2 => by simpa using abs_iteratedDeriv_cos_le_one n x
+
+@[simp]
+theorem iteratedDeriv_add_one_sinh (n : ℕ) :
+    iteratedDeriv (n + 1) sinh = iteratedDeriv n cosh := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [iteratedDeriv_succ, ih, iteratedDeriv_succ]
+
+@[simp]
+theorem iteratedDeriv_add_one_cosh (n : ℕ) :
+    iteratedDeriv (n + 1) cosh = iteratedDeriv n sinh := by
+  induction n with
+  | zero => ext; simp
+  | succ n ih =>
+    rw [iteratedDeriv_succ, ih, iteratedDeriv_succ]
+
+@[simp]
+theorem iteratedDeriv_even_sinh (n : ℕ) :
+    iteratedDeriv (2 * n) sinh = sinh := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp_all [mul_add]
+
+@[simp]
+theorem iteratedDeriv_even_cosh (n : ℕ) :
+    iteratedDeriv (2 * n) cosh = cosh := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp_all [mul_add]
+
+theorem iteratedDeriv_odd_sinh (n : ℕ) :
+    iteratedDeriv (2 * n + 1) sinh = cosh := by simp
+
+theorem iteratedDeriv_odd_cosh (n : ℕ) :
+    iteratedDeriv (2 * n + 1) cosh = sinh := by simp
+
+theorem differentiable_iteratedDeriv_sinh (n : ℕ) :
+    Differentiable ℝ (iteratedDeriv n sinh) :=
+  match n with
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [differentiable_iteratedDeriv_sinh]
+
+theorem differentiable_iteratedDeriv_cosh (n : ℕ) :
+    Differentiable ℝ (iteratedDeriv n cosh) :=
+  match n with
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by simp [differentiable_iteratedDeriv_cosh]
+
+@[simp]
+theorem iteratedDerivWithin_sin_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Icc a b) :
+    iteratedDerivWithin n sin (Icc a b) x = iteratedDeriv n sin x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h) contDiff_sin.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_cos_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Icc a b) :
+    iteratedDerivWithin n cos (Icc a b) x = iteratedDeriv n cos x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h) contDiff_cos.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_sinh_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Icc a b) :
+    iteratedDerivWithin n sinh (Icc a b) x = iteratedDeriv n sinh x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h) contDiff_sinh.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_cosh_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Icc a b) :
+    iteratedDerivWithin n cosh (Icc a b) x = iteratedDeriv n cosh x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h) contDiff_cosh.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_sin_Ioo (n : ℕ) {a b x : ℝ} (hx : x ∈ Ioo a b) :
+    iteratedDerivWithin n sin (Ioo a b) x = iteratedDeriv n sin x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Ioo a b) contDiff_sin.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_cos_Ioo (n : ℕ) {a b x : ℝ} (hx : x ∈ Ioo a b) :
+    iteratedDerivWithin n cos (Ioo a b) x = iteratedDeriv n cos x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Ioo a b) contDiff_cos.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_sinh_Ioo (n : ℕ) {a b x : ℝ} (hx : x ∈ Ioo a b) :
+    iteratedDerivWithin n sinh (Ioo a b) x = iteratedDeriv n sinh x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Ioo a b) contDiff_sinh.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_cosh_Ioo (n : ℕ) {a b x : ℝ} (hx : x ∈ Ioo a b) :
+    iteratedDerivWithin n cosh (Ioo a b) x = iteratedDeriv n cosh x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Ioo a b) contDiff_cosh.contDiffAt hx
+
+end Real
+
+end iteratedDeriv
 
 section
 

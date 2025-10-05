@@ -213,6 +213,9 @@ lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} 
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 
+instance [hα : Nonempty α] : Nonempty {μ : Measure α // IsProbabilityMeasure μ} :=
+  ⟨Measure.dirac hα.some, inferInstance⟩
+
 /-! Extra instances to short-circuit type class resolution -/
 
 instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance

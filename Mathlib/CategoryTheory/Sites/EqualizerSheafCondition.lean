@@ -53,7 +53,6 @@ def FirstObj : Type max v u :=
 
 variable {P R}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
     (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₁ =
@@ -73,9 +72,8 @@ def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
 
--- Porting note: was not needed in mathlib
 instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
-  (inferInstance : Inhabited (FirstObj P (⊥ : Presieve X)))
+  inferInstanceAs <| Inhabited (FirstObj P (⊥ : Presieve X))
 
 /--
 The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
@@ -101,7 +99,6 @@ def SecondObj : Type max v u :=
 
 variable {P S}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
     (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₁ =
@@ -175,7 +172,7 @@ https://stacks.math.columbia.edu/tag/00VM and the definition of `isSheafFor`.
 
 namespace Presieve
 
-variable [R.hasPullbacks]
+variable [R.HasPairwisePullbacks]
 
 /--
 The rightmost object of the fork diagram of the Stacks entry, which
@@ -184,14 +181,14 @@ contains the data used to check a family of elements for a presieve is compatibl
 @[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
 def SecondObj : Type max v u :=
   ∏ᶜ fun fg : (Σ Y, { f : Y ⟶ X // R f }) × Σ Z, { g : Z ⟶ X // R g } =>
-    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
 /-- The map `pr₀*` of the Stacks entry. -/
 @[stacks 00VM "This is the map `pr₀*` there."]
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
-    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
 instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
@@ -201,7 +198,7 @@ instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
 @[stacks 00VM "This is the map `pr₁*` there."]
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
-    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
@@ -209,7 +206,7 @@ theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   ext fg
   simp only [firstMap, secondMap, forkMap]
   simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
-  haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+  haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 
@@ -255,7 +252,7 @@ variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
 open Presieve
 
 variable {B : C} {I : Type t} [Small.{w} I] (X : I → C) (π : (i : I) → X i ⟶ B)
-    [(Presieve.ofArrows X π).hasPullbacks]
+    [(Presieve.ofArrows X π).HasPairwisePullbacks]
 
 /--
 The middle object of the fork diagram of the Stacks entry.
@@ -319,7 +316,7 @@ See `CategoryTheory.Equalizer.Presieve.Arrows.compatible_iff_of_small` for a ver
 less universe assumptions.
 -/
 theorem compatible_iff {I : Type w} (X : I → C) (π : (i : I) → X i ⟶ B)
-    [(Presieve.ofArrows X π).hasPullbacks] (x : FirstObj P X) :
+    [(Presieve.ofArrows X π).HasPairwisePullbacks] (x : FirstObj P X) :
     (Arrows.Compatible P π ((Types.productIso _).hom x)) ↔
       firstMap P X π x = secondMap P X π x := by
   rw [Arrows.pullbackCompatible_iff]
