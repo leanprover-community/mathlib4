@@ -3,7 +3,7 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Split polynomials
@@ -85,14 +85,6 @@ theorem factors_of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
 
 theorem factors_of_isUnit [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Factors f :=
   factors_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
-
-theorem not_isUnit_X_add_C [Nontrivial R] (a : R) : ¬ IsUnit (X + C a) := by
-  rintro ⟨⟨_, g, hfg, hgf⟩, rfl⟩
-  by_cases hg : g = 0
-  · simp [hg] at hfg
-  · have h := (monic_X_add_C a).natDegree_mul' hg
-    rw [hfg, natDegree_one, natDegree_X_add_C] at h
-    grind
 
 end Semiring
 
@@ -244,6 +236,11 @@ theorem Factors.of_dvd {f g : R[X]} (hg : Factors g) (hg₀ : g ≠ 0) (hfg : f 
   obtain ⟨g, rfl⟩ := hfg
   exact ((factors_mul_iff hg₀).mp hg).1
 
+theorem Factors.splits {f : R[X]} (hf : Factors f) :
+    f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 :=
+  or_iff_not_imp_left.mpr fun hf0 _ hg hgf ↦ degree_le_of_natDegree_le <|
+    (hf.of_dvd hf0 hgf).natDegree_le_one_of_irreducible hg
+
 end CommRing
 
 section Field
@@ -265,6 +262,20 @@ theorem factors_of_degree_le_one {f : R[X]} (hf : degree f ≤ 1) : Factors f :=
 
 theorem factors_of_degree_eq_one {f : R[X]} (hf : degree f = 1) : Factors f :=
   factors_of_degree_le_one hf.le
+
+open UniqueFactorizationMonoid in
+theorem factors_iff_splits {f : R[X]} :
+    Factors f ↔ f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 := by
+  refine ⟨(·.splits), ?_⟩
+  rintro (rfl | hf)
+  · aesop
+  classical
+  by_cases hf0 : f = 0
+  · simp [hf0]
+  obtain ⟨u, hu⟩ := factors_prod hf0
+  rw [← hu]
+  refine (Factors.multiset_prod fun g hg ↦ ?_).mul (factors_of_isUnit u.isUnit)
+  exact factors_of_degree_le_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
 
 end Field
 
