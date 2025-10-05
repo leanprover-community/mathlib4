@@ -160,7 +160,7 @@ lemma effectiveEpi_base_of_surjective [Flat f] [Surjective f] [QuasiCompact f] :
 
 variable {f} in
 /-- A preparation lemma for `AlgebraicGeometry.Flat.base_factor`. -/
-lemma base_factorization_type [Flat f] [Surjective f] [QuasiCompact f] {W : Scheme.{u}} {e : X ⟶ W}
+lemma base_factorization_type [Surjective f] {W : Scheme.{u}} {e : X ⟶ W}
     (h : pullback.fst f f ≫ e = pullback.snd f f ≫ e) :
     ∃ (g : ↥Y → ↥W), ⇑e.base.hom = g ∘ ⇑f.base.hom := by
   let : RegularEpi (Scheme.forget.map f) := by
