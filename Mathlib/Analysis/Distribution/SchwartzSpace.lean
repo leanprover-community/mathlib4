@@ -713,7 +713,7 @@ def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSuppo
       apply Continuous.mul (by fun_prop)
       exact (h₂.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
     have hg₂ : HasCompactSupport g := (h₁.iteratedFDeriv _).norm.mul_left
-    rcases hg₁.exists_forall_ge_of_hasCompactSupport hg₂ with ⟨x₀, hx₀⟩
+    obtain ⟨x₀, hx₀⟩ := hg₁.exists_forall_ge_of_hasCompactSupport hg₂
     exact ⟨g x₀, hx₀⟩
 
 end HasCompactSupport
