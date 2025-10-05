@@ -707,8 +707,7 @@ def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSuppo
     (h₂ : ContDiff ℝ ∞ f) : 𝓢(E, F) where
   toFun := f
   smooth' := h₂
-  decay' := by
-    intro k n
+  decay' k n := by
     set g := fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖
     have hg₁ : Continuous g := by
       apply Continuous.mul (by fun_prop)
