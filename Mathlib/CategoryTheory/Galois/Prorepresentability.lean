@@ -429,7 +429,7 @@ private instance FiberFunctor.isPretransitive_of_isConnected' (X : C) [IsConnect
   obtain ⟨σ, (hσ : σ.hom.app A a = b)⟩ := MulAction.exists_smul_eq (Aut F) a b
   use σ
   rw [← ha, ← hb]
-  show (F.map f ≫ σ.hom.app X) a = F.map f b
+  change (F.map f ≫ σ.hom.app X) a = F.map f b
   rw [σ.hom.naturality, FintypeCat.comp_apply, hσ]
 
 end Specialized

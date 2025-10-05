@@ -20,7 +20,8 @@ open Set
 We consider the actual implementation to be a "black box", so it is irreducible.
 -/
 @[irreducible]
-def orderIsoIooNegOneOne (k : Type*) [LinearOrderedField k] : k ≃o Ioo (-1 : k) 1 := by
+def orderIsoIooNegOneOne (k : Type*) [Field k] [LinearOrder k] [IsStrictOrderedRing k] :
+    k ≃o Ioo (-1 : k) 1 := by
   refine StrictMono.orderIsoOfRightInverse ?_ ?_ (fun x ↦ x / (1 - |↑x|)) ?_
   · refine codRestrict (fun x ↦ x / (1 + |x|)) _ fun x ↦ abs_lt.1 ?_
     have H : 0 < 1 + |x| := (abs_nonneg x).trans_lt (lt_one_add _)
@@ -35,4 +36,4 @@ def orderIsoIooNegOneOne (k : Type*) [LinearOrderedField k] : k ≃o Ioo (-1 : k
         hy.trans_lt (lt_one_add _), *]
   · refine fun x ↦ Subtype.ext ?_
     have : 0 < 1 - |(x : k)| := sub_pos.2 (abs_lt.2 x.2)
-    field_simp [abs_div, this.ne', abs_of_pos this]
+    simp [field, abs_div, abs_of_pos this]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Logic.Small.Basic
 import Mathlib.SetTheory.ZFC.PSet
 
@@ -11,9 +12,9 @@ import Mathlib.SetTheory.ZFC.PSet
 # A model of ZFC
 
 In this file, we model Zermelo-Fraenkel set theory (+ choice) using Lean's underlying type theory,
-building on the pre-sets defined in `Mathlib.SetTheory.ZFC.PSet`.
+building on the pre-sets defined in `Mathlib/SetTheory/ZFC/PSet.lean`.
 
-The theory of classes is developed in `Mathlib.SetTheory.ZFC.Class`.
+The theory of classes is developed in `Mathlib/SetTheory/ZFC/Class.lean`.
 
 ## Main definitions
 
@@ -241,8 +242,25 @@ theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ex
 theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
   toSet_injective.eq_iff
 
+instance : SetLike ZFSet ZFSet where
+  coe := toSet
+  coe_injective' := toSet_injective
+
+instance : HasSSubset ZFSet := ⟨(· < ·)⟩
+
+@[simp]
+theorem le_def (x y : ZFSet) : x ≤ y ↔ x ⊆ y :=
+  Iff.rfl
+
+@[simp]
+theorem lt_def (x y : ZFSet) : x < y ↔ x ⊂ y :=
+  Iff.rfl
+
 instance : IsAntisymm ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
+  ⟨@le_antisymm ZFSet _⟩
+
+instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
+  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
@@ -255,8 +273,10 @@ instance : Inhabited ZFSet :=
   ⟨∅⟩
 
 @[simp]
-theorem not_mem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
-  Quotient.inductionOn x PSet.not_mem_empty
+theorem notMem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
+  Quotient.inductionOn x PSet.notMem_empty
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
@@ -399,7 +419,7 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
 
 @[simp]
 theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
-  (eq_empty _).mpr fun _ h ↦ not_mem_empty _ (mem_sep.mp h).1
+  (eq_empty _).mpr fun _ h ↦ notMem_empty _ (mem_sep.mp h).1
 
 @[simp]
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
@@ -429,8 +449,8 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
     ∀ a, ∃ b, Equiv ((sUnion ⟨α, A⟩).Func a) ((sUnion ⟨β, B⟩).Func b)
   | ⟨a, c⟩ => by
     let ⟨b, hb⟩ := αβ a
-    induction' ea : A a with γ Γ
-    induction' eb : B b with δ Δ
+    induction ea : A a with | _ γ Γ
+    induction eb : B b with | _ δ Δ
     rw [ea, eb] at hb
     obtain ⟨γδ, δγ⟩ := hb
     let c : (A a).Type := c
@@ -440,7 +460,9 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
     match A a, B b, ea, eb, c, d, hd with
     | _, _, rfl, rfl, _, _, hd => exact hd
 
-/-- The union operator, the collection of elements of elements of a ZFC set -/
+/-- The union operator, the collection of elements of elements of a ZFC set. Uses `⋃₀` notation,
+scoped under the `ZFSet` namespace.
+-/
 def sUnion : ZFSet → ZFSet :=
   Quotient.map PSet.sUnion
     fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
@@ -450,14 +472,14 @@ def sUnion : ZFSet → ZFSet :=
           fun b hb => ⟨b, PSet.Equiv.symm hb⟩⟩
 
 @[inherit_doc]
-prefix:110 "⋃₀ " => ZFSet.sUnion
+scoped prefix:110 "⋃₀ " => ZFSet.sUnion
 
 /-- The intersection operator, the collection of elements in all of the elements of a ZFC set. We
-define `⋂₀ ∅ = ∅`. -/
+define `⋂₀ ∅ = ∅`. Uses `⋂₀` notation, scoped under the `ZFSet` namespace. -/
 def sInter (x : ZFSet) : ZFSet := (⋃₀ x).sep (fun y => ∀ z ∈ x, y ∈ z)
 
 @[inherit_doc]
-prefix:110 "⋂₀ " => ZFSet.sInter
+scoped prefix:110 "⋂₀ " => ZFSet.sInter
 
 @[simp]
 theorem mem_sUnion {x y : ZFSet.{u}} : y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈ z :=
@@ -482,14 +504,16 @@ theorem sInter_empty : ⋂₀ (∅ : ZFSet) = ∅ := by simp [sInter]
 
 theorem mem_of_mem_sInter {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   rcases eq_empty_or_nonempty x with (rfl | hx)
-  · exact (not_mem_empty z hz).elim
+  · exact (notMem_empty z hz).elim
   · exact (mem_sInter hx).1 hy z hz
 
 theorem mem_sUnion_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ ⋃₀ x :=
   mem_sUnion.2 ⟨z, hz, hy⟩
 
-theorem not_mem_sInter_of_not_mem {x y z : ZFSet} (hy : ¬y ∈ z) (hz : z ∈ x) : ¬y ∈ ⋂₀ x :=
+theorem notMem_sInter_of_notMem {x y z : ZFSet} (hy : y ∉ z) (hz : z ∈ x) : y ∉ ⋂₀ x :=
   fun hx => hy <| mem_of_mem_sInter hx hz
+
+@[deprecated (since := "2025-05-23")] alias not_mem_sInter_of_not_mem := notMem_sInter_of_notMem
 
 @[simp]
 theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
@@ -595,8 +619,10 @@ theorem mem_irrefl (x : ZFSet) : x ∉ x :=
 theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
   fun h' ↦ mem_irrefl _ (h' h)
 
-theorem not_mem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
+theorem notMem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
@@ -657,6 +683,8 @@ theorem toSet_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
   ext
   simp
 
+theorem mem_range_self {α} [Small.{u} α] {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by simp
+
 /-- Kuratowski ordered pair -/
 def pair (x y : ZFSet.{u}) : ZFSet.{u} :=
   {{x}, {x, y}}
@@ -672,12 +700,7 @@ def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u}
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     z ∈ pairSep p x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b := by
   refine mem_sep.trans ⟨And.right, fun e => ⟨?_, e⟩⟩
-  rcases e with ⟨a, ax, b, bY, rfl, pab⟩
-  simp only [mem_powerset, subset_def, mem_union, pair, mem_pair]
-  rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
-  · rintro rfl
-    exact Or.inl ax
-  · rintro (rfl | rfl) <;> [left; right] <;> assumption
+  grind [mem_pair, mem_powerset, mem_singleton, mem_union, pair, subset_def]
 
 theorem pair_injective : Function.Injective2 pair := by
   intro x x' y y' H
@@ -695,7 +718,7 @@ theorem pair_injective : Function.Injective2 pair := by
 theorem pair_inj {x y x' y' : ZFSet} : pair x y = pair x' y' ↔ x = x' ∧ y = y' :=
   pair_injective.eq_iff
 
-/-- The cartesian product, `{(a, b) | a ∈ x, b ∈ y}` -/
+/-- The Cartesian product, `{(a, b) | a ∈ x, b ∈ y}` -/
 def prod : ZFSet.{u} → ZFSet.{u} → ZFSet.{u} :=
   pairSep fun _ _ => True
 

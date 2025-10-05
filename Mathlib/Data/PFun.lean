@@ -51,7 +51,6 @@ Monad operations:
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 -/
 
-
 open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
@@ -110,7 +109,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 
 /-- The type of partial functions `α →. β` is equivalent to
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
-def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
+def equivSubtype : (α →. β) ≃ Σ p : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun _ =>
     funext fun _ => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 
@@ -143,7 +142,7 @@ def graph (f : α →. β) : Set (α × β) :=
 
 /-- Graph of a partial function as a relation. `x` and `y` are related iff `f x` is defined and
 "equals" `y`. -/
-def graph' (f : α →. β) : Rel α β := fun x y => y ∈ f x
+def graph' (f : α →. β) : SetRel α β := {(x, y) : α × β | y ∈ f x}
 
 /-- The range of a partial function is the set of values
   `f x` where `x` is in the domain of `f`. -/
@@ -223,13 +222,13 @@ def fix (f : α →. β ⊕ α) : α →. β := fun a =>
 
 theorem dom_of_mem_fix {f : α →. β ⊕ α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
   let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-  rw [WellFounded.fixFEq] at h₂; exact h₂.fst.fst
+  rw [WellFounded.fixF_eq] at h₂; exact h₂.fst.fst
 
 theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     b ∈ f.fix a ↔ Sum.inl b ∈ f a ∨ ∃ a', Sum.inr a' ∈ f a ∧ b ∈ f.fix a' :=
   ⟨fun h => by
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-    rw [WellFounded.fixFEq] at h₂
+    rw [WellFounded.fixF_eq] at h₂
     simp only [Part.mem_assert_iff] at h₂
     obtain ⟨h₂, h₃⟩ := h₂
     split at h₃
@@ -240,7 +239,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
     · refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
-      · rw [WellFounded.fixFEq]
+      · rw [WellFounded.fixF_eq]
         -- Porting note: used to be simp [h₁, h₂]
         apply Part.mem_assert h₁
         split
@@ -254,7 +253,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
       · obtain ⟨h₁, h₂⟩ := h
-        rw [WellFounded.fixFEq]
+        rw [WellFounded.fixF_eq]
         -- Porting note: used to be simp [h₁, h₂, h₄]
         apply Part.mem_assert h₁
         split
@@ -353,17 +352,16 @@ theorem mem_image (y : β) (s : Set α) : y ∈ f.image s ↔ ∃ x ∈ s, y ∈
   Iff.rfl
 
 theorem image_mono {s t : Set α} (h : s ⊆ t) : f.image s ⊆ f.image t :=
-  Rel.image_mono _ h
+  SetRel.image_mono h
 
 theorem image_inter (s t : Set α) : f.image (s ∩ t) ⊆ f.image s ∩ f.image t :=
-  Rel.image_inter _ s t
+  SetRel.image_inter_subset _
 
 theorem image_union (s t : Set α) : f.image (s ∪ t) = f.image s ∪ f.image t :=
-  Rel.image_union _ s t
+  SetRel.image_union _ s t
 
 /-- Preimage of a set under a partial function. -/
-def preimage (s : Set β) : Set α :=
-  Rel.image (fun x y => x ∈ f y) s
+def preimage (s : Set β) : Set α := f.graph'.preimage s
 
 theorem Preimage_def (s : Set β) : f.preimage s = { x | ∃ y ∈ s, y ∈ f x } :=
   rfl
@@ -376,13 +374,13 @@ theorem preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y,
   Part.dom_iff_mem.mpr ⟨y, fxy⟩
 
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t :=
-  Rel.preimage_mono _ h
+  SetRel.preimage_mono h
 
 theorem preimage_inter (s t : Set β) : f.preimage (s ∩ t) ⊆ f.preimage s ∩ f.preimage t :=
-  Rel.preimage_inter _ s t
+  SetRel.preimage_inter_subset _
 
 theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ f.preimage t :=
-  Rel.preimage_union _ s t
+  SetRel.preimage_union _ s t
 
 theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 
@@ -404,10 +402,10 @@ theorem compl_dom_subset_core (s : Set β) : f.Domᶜ ⊆ f.core s := fun x hx y
   absurd ((mem_dom f x).mpr ⟨y, fxy⟩) hx
 
 theorem core_mono {s t : Set β} (h : s ⊆ t) : f.core s ⊆ f.core t :=
-  Rel.core_mono _ h
+  SetRel.core_mono h
 
 theorem core_inter (s t : Set β) : f.core (s ∩ t) = f.core s ∩ f.core t :=
-  Rel.core_inter _ s t
+  SetRel.core_inter _ s t
 
 theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
     x ∈ (res f s).core t ↔ x ∈ s → f x ∈ t := by simp [mem_core, mem_res]
@@ -429,7 +427,7 @@ theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ 
   Set.eq_of_subset_of_subset (Set.subset_inter (f.preimage_subset_core s) (f.preimage_subset_dom s))
     fun x ⟨xcore, xdom⟩ =>
     let y := (f x).get xdom
-    have ys : y ∈ s := xcore _ (Part.get_mem _)
+    have ys : y ∈ s := xcore (Part.get_mem _)
     show x ∈ f.preimage s from ⟨(f x).get xdom, ys, Part.get_mem _⟩
 
 theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Domᶜ := by
@@ -439,7 +437,7 @@ theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Do
 theorem preimage_asSubtype (f : α →. β) (s : Set β) :
     f.asSubtype ⁻¹' s = Subtype.val ⁻¹' f.preimage s := by
   ext x
-  simp only [Set.mem_preimage, Set.mem_setOf_eq, PFun.asSubtype, PFun.mem_preimage]
+  simp only [Set.mem_preimage, PFun.asSubtype, PFun.mem_preimage]
   show f.fn x.val _ ∈ s ↔ ∃ y ∈ s, y ∈ f x.val
   exact
     Iff.intro (fun h => ⟨_, h, Part.get_mem _⟩) fun ⟨y, ys, fxy⟩ =>

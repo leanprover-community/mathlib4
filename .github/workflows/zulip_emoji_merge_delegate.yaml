@@ -1,13 +1,15 @@
-name: Zulip Emoji Merge Delegate
+name: Zulip emoji merge update
 
 on:
   push:
     branches:
       - master
+      - bump/*
 
 jobs:
   zulip-emoji-merged:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
 
     steps:
     - name: Checkout mathlib repository
@@ -16,7 +18,7 @@ jobs:
         fetch-depth: 0 # download the full repository
 
     - name: Set up Python
-      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
       with:
         python-version: '3.x'
 
@@ -25,7 +27,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install zulip
 
-    - name: Run Zulip Emoji Merge Delegate Script
+    - name: Update zulip emoji reactions
       env:
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
@@ -38,5 +40,5 @@ jobs:
           printf $'Scanning commits:\n%s\n\nContinuing\n' "$(git log --since="10 minutes ago" --pretty=oneline)"
           while read -r pr_number; do
             printf $'Running the python script with pr "%s"\n' "${pr_number}"
-            python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "${pr_number}"
+            python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "none" "${pr_number}"
           done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')

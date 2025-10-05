@@ -30,7 +30,7 @@ equalizer diagrams.
 -/
 
 
-universe w v u
+universe t w v u
 
 namespace CategoryTheory
 
@@ -49,11 +49,10 @@ of the Stacks entry.
 -/
 @[stacks 00VM "This is the middle object of the fork diagram there."]
 def FirstObj : Type max v u :=
-  ∏ᶜ fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)
 
 variable {P R}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
     (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₁ =
@@ -67,15 +66,14 @@ variable (P R)
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
-  hom t _ _ hf := Pi.π (fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
+  hom t _ _ hf := Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
   inv := Pi.lift fun f x => x _ f.2.2
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
 
--- Porting note: was not needed in mathlib
 instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
-  (inferInstance : Inhabited (FirstObj P (⊥ : Presieve X)))
+  inferInstanceAs <| Inhabited (FirstObj P (⊥ : Presieve X))
 
 /--
 The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
@@ -101,7 +99,6 @@ def SecondObj : Type max v u :=
 
 variable {P S}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
     (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₁ =
@@ -115,7 +112,7 @@ variable (P S)
 /-- The map `p` of Equations (3,4) [MM92]. -/
 def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg =>
-    Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : ΣY, { f : Y ⟶ X // S f })
+    Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : Σ Y, { f : Y ⟶ X // S f })
 
 instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
   ⟨firstMap _ _ default⟩
@@ -138,7 +135,7 @@ theorem compatible_iff (x : FirstObj P S.arrows) :
   constructor
   · intro t
     apply SecondObj.ext
-    intros Y Z g f hf
+    intro Y Z g f hf
     simpa [firstMap, secondMap] using t _ g hf
   · intro t Y Z f g hf
     rw [Types.limit_ext_iff'] at t
@@ -175,7 +172,7 @@ https://stacks.math.columbia.edu/tag/00VM and the definition of `isSheafFor`.
 
 namespace Presieve
 
-variable [R.hasPullbacks]
+variable [R.HasPairwisePullbacks]
 
 /--
 The rightmost object of the fork diagram of the Stacks entry, which
@@ -183,15 +180,15 @@ contains the data used to check a family of elements for a presieve is compatibl
 -/
 @[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
 def SecondObj : Type max v u :=
-  ∏ᶜ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
-    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+  ∏ᶜ fun fg : (Σ Y, { f : Y ⟶ X // R f }) × Σ Z, { g : Z ⟶ X // R g } =>
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
 /-- The map `pr₀*` of the Stacks entry. -/
 @[stacks 00VM "This is the map `pr₀*` there."]
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
-    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
 instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
@@ -201,7 +198,7 @@ instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
 @[stacks 00VM "This is the map `pr₁*` there."]
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
-    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
@@ -209,7 +206,7 @@ theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   ext fg
   simp only [firstMap, secondMap, forkMap]
   simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
-  haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+  haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 
@@ -254,9 +251,8 @@ variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
 
 open Presieve
 
-variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B)
-    [(Presieve.ofArrows X π).hasPullbacks]
--- TODO: allow `I : Type w`
+variable {B : C} {I : Type t} [Small.{w} I] (X : I → C) (π : (i : I) → X i ⟶ B)
+    [(Presieve.ofArrows X π).HasPairwisePullbacks]
 
 /--
 The middle object of the fork diagram of the Stacks entry.
@@ -316,9 +312,13 @@ theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P 
 /--
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
+See `CategoryTheory.Equalizer.Presieve.Arrows.compatible_iff_of_small` for a version with
+less universe assumptions.
 -/
-theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.productIso _).hom x)) ↔
-    firstMap P X π x = secondMap P X π x := by
+theorem compatible_iff {I : Type w} (X : I → C) (π : (i : I) → X i ⟶ B)
+    [(Presieve.ofArrows X π).HasPairwisePullbacks] (x : FirstObj P X) :
+    (Arrows.Compatible P π ((Types.productIso _).hom x)) ↔
+      firstMap P X π x = secondMap P X π x := by
   rw [Arrows.pullbackCompatible_iff]
   constructor
   · intro t
@@ -328,18 +328,32 @@ theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.prod
     apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
     simpa [firstMap, secondMap] using t
 
+/-- Version of `CategoryTheory.Equalizer.Presieve.Arrows.compatible_iff` for a small
+indexing type. -/
+lemma compatible_iff_of_small (x : FirstObj P X) :
+    (Arrows.Compatible P π ((equivShrink _).symm ((Types.Small.productIso _).hom x))) ↔
+      firstMap P X π x = secondMap P X π x := by
+  rw [Arrows.pullbackCompatible_iff]
+  refine ⟨fun t ↦ ?_, fun t i j ↦ ?_⟩
+  · ext ij
+    simpa [firstMap, secondMap] using t ij.1 ij.2
+  · apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
+    simpa [firstMap, secondMap] using t
+
 /-- `P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer. -/
 @[stacks 00VM]
 theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
-  erw [← Equiv.forall_congr_right (Types.productIso _).toEquiv.symm]
-  simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
+  simp only [FirstObj]
+  rw [← Equiv.forall_congr_right ((equivShrink _).trans (Types.Small.productIso _).toEquiv.symm)]
+  simp_rw [← compatible_iff_of_small, ← Iso.toEquiv_fun, Equiv.trans_apply, Equiv.apply_symm_apply,
+    Equiv.symm_apply_apply]
   apply forall₂_congr
   intro x _
   apply existsUnique_congr
   intro t
-  erw [Equiv.eq_symm_apply]
+  rw [Equiv.eq_symm_apply, ← Equiv.symm_apply_eq]
   constructor
   · intro q
     funext i
@@ -349,6 +363,32 @@ theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     simp [forkMap]
 
 end Arrows
+
+/-- The sheaf condition for a single morphism is the same as the canonical fork diagram being
+limiting. -/
+lemma isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
+    (c : PullbackCone f f) (hc : IsLimit c) :
+    Presieve.IsSheafFor F (.singleton f) ↔
+      Nonempty
+        (IsLimit (Fork.ofι (F.map f.op) (f := F.map c.fst.op) (g := F.map c.snd.op)
+          (by simp [← Functor.map_comp, ← op_comp, c.condition]))) := by
+  have h (x : F.obj (op X)) : (∀ {Z : C} (p₁ p₂ : Z ⟶ X),
+      p₁ ≫ f = p₂ ≫ f → F.map p₁.op x = F.map p₂.op x) ↔ F.map c.fst.op x = F.map c.snd.op x := by
+    refine ⟨fun H ↦ H _ _ c.condition, fun H Z p₁ p₂ h ↦ ?_⟩
+    rw [← PullbackCone.IsLimit.lift_fst hc _ _ h, op_comp, FunctorToTypes.map_comp_apply, H]
+    simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [Types.type_equalizer_iff_unique, Presieve.isSheafFor_singleton]
+  simp_rw [h]
+
+/-- Special case of `isSheafFor_singleton_iff` with `c = pullback.cone f f`. -/
+lemma isSheafFor_singleton_iff_of_hasPullback {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
+    [HasPullback f f] :
+    Presieve.IsSheafFor F (.singleton f) ↔
+      Nonempty
+        (IsLimit (Fork.ofι (F.map f.op) (f := F.map (pullback.fst f f).op)
+          (g := F.map (pullback.snd f f).op)
+          (by simp [← Functor.map_comp, ← op_comp, pullback.condition]))) :=
+  isSheafFor_singleton_iff (pullback.cone f f) (pullback.isLimit f f)
 
 end Presieve
 

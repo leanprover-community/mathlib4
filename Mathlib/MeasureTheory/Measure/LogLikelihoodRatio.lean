@@ -134,7 +134,7 @@ lemma llr_tilted_left [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν)
     (llr (μ.tilted f) ν) =ᵐ[μ] fun x ↦ f x - log (∫ z, exp (f z) ∂μ) + llr μ ν x := by
   cases eq_zero_or_neZero μ with
   | inl hμ =>
-    simp only [hμ, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
+    simp only [hμ, ae_zero, Filter.EventuallyEq, Filter.eventually_bot]
   | inr h0 =>
     filter_upwards [hμν.ae_le (toReal_rnDeriv_tilted_left μ hfν), Measure.rnDeriv_pos hμν,
       hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
@@ -165,7 +165,7 @@ lemma integral_llr_tilted_left [IsProbabilityMeasure μ] [SigmaFinite ν]
         rw [integral_add ?_ h_int]
         swap; · exact hf.sub (integrable_const _)
         rw [integral_sub hf (integrable_const _)]
-        simp only [integral_const, measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul]
+        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ + ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂μ) := by abel
 
 lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
@@ -174,7 +174,7 @@ lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
   cases eq_zero_or_neZero ν with
   | inl h =>
     have hμ : μ = 0 := by ext s _; exact hμν (by simp [h])
-    simp only [hμ, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
+    simp only [hμ, ae_zero, Filter.EventuallyEq, Filter.eventually_bot]
   | inr h0 =>
     filter_upwards [hμν.ae_le (toReal_rnDeriv_tilted_right μ ν hf), Measure.rnDeriv_pos hμν,
       hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
@@ -202,7 +202,7 @@ lemma integral_llr_tilted_right [IsProbabilityMeasure μ] [SigmaFinite ν]
         swap; · exact hfμ.neg.add (integrable_const _)
         rw [integral_add ?_ (integrable_const _)]
         swap; · exact hfμ.neg
-        simp only [integral_const, measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul]
+        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by abel
 
 end llr_tilted

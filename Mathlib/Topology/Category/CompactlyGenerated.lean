@@ -16,7 +16,7 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 ## TODO
 
 * `CompactlyGenerated` is a reflective subcategory of `TopCat`.
-* `CompactlyGenerated` is cartesian closed.
+* `CompactlyGenerated` is Cartesian closed.
 * Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
 
@@ -105,11 +105,5 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompactlyGenerated.{u, w}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 end CompactlyGenerated

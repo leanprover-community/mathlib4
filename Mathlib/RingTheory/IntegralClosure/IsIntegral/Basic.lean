@@ -44,7 +44,7 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
   obtain ⟨P, hP⟩ := hb
   refine ⟨P, hP.1, ?_⟩
   rw [← aeval_def, ← aeval_map_algebraMap A,
-    aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, _root_.map_zero]
+    aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, map_zero]
 
 section
 
@@ -141,7 +141,7 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
 /- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
 a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
 over `T`. -/
-theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing T]
     [Algebra R S] [Algebra T S] (φ : R ≃+* T)
     (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
     IsIntegral R a ↔ IsIntegral T a := by
@@ -203,7 +203,7 @@ theorem Algebra.finite_adjoin_of_finite_of_isIntegral {s : Set A} (hf : s.Finite
     (hi : ∀ x ∈ s, IsIntegral R x) : Module.Finite R (adjoin R s) :=
   Module.Finite.iff_fg.mpr <| fg_adjoin_of_finite hf hi
 
-theorem Algebra.finite_adjoin_simple_of_isIntegral {x : A} (hi : IsIntegral R x) :
+theorem Algebra.finite_adjoin_simple_of_isIntegral {x : B} (hi : IsIntegral R x) :
     Module.Finite R (adjoin R {x}) :=
   Module.Finite.iff_fg.mpr hi.fg_adjoin_singleton
 

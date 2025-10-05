@@ -15,7 +15,7 @@ Banach-Steinhaus theorem for maps from a barrelled space to a space equipped wit
 of seminorms generating the topology (i.e `WithSeminorms q` for some family of seminorms `q`).
 
 The more standard Banach-Steinhaus theorem for normed spaces is then deduced from that in
-`Mathlib.Analysis.Normed.Operator.BanachSteinhaus`.
+`Mathlib/Analysis/Normed/Operator/BanachSteinhaus.lean`.
 
 ## Main definitions
 
@@ -106,7 +106,7 @@ end defs
 
 section TVS_anyField
 
-variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [Nonempty κ] [NontriviallyNormedField 𝕜₁]
+variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁]
     [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂]
     [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F]
 

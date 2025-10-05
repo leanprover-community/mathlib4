@@ -10,7 +10,8 @@ import Mathlib.Topology.Category.LightProfinite.Basic
 # Explicit limits and colimits
 
 This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
-the file `Mathlib.Topology.Category.CompHausLike.Limits`) to the special case of `LightProfinite`.
+the file `Mathlib/Topology/Category/CompHausLike/Limits.lean`) to the special case of
+`LightProfinite`.
 -/
 
 namespace LightProfinite

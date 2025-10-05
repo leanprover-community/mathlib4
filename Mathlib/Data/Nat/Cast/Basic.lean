@@ -50,7 +50,7 @@ section NonAssocSemiring
 variable [NonAssocSemiring α]
 
 @[simp, norm_cast] lemma cast_mul (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
-  induction n <;> simp [mul_succ, mul_add, *]
+  induction n <;> simp [mul_add, *]
 
 variable (α) in
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/
@@ -64,10 +64,8 @@ lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
   | zero => rw [zero_nsmul, Nat.cast_zero, mul_zero]
   | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, mul_add, mul_one]
 
-@[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
-  induction n with
-  | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
-  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
+lemma ofNat_nsmul_eq_mul (n : ℕ) [n.AtLeastTwo] (a : α) : ofNat(n) • a = ofNat(n) * a := by
+  simp [nsmul_eq_mul]
 
 end NonAssocSemiring
 
@@ -79,6 +77,7 @@ lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
   | 0 => by simp
   | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
 
+@[gcongr]
 lemma cast_dvd_cast (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
 
 alias _root_.Dvd.dvd.natCast := cast_dvd_cast
@@ -111,7 +110,7 @@ section MonoidWithZeroHomClass
 variable {A F : Type*} [MulZeroOneClass A] [FunLike F ℕ A]
 
 /-- If two `MonoidWithZeroHom`s agree on the positive naturals they are equal. -/
-theorem ext_nat'' [MonoidWithZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
+theorem ext_nat'' [ZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
     f = g := by
   apply DFunLike.ext
   rintro (_ | n)
@@ -148,7 +147,7 @@ theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.At
 theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
   ext_nat' f g <| by simp
 
-theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S]
+theorem NeZero.nat_of_neZero {R S} [NonAssocSemiring R] [NonAssocSemiring S]
     {F} [FunLike F R S] [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
   .of_map (f := f) (neZero := by simp only [map_natCast, hn])

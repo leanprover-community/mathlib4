@@ -140,9 +140,8 @@ theorem coeff_hermite_explicit :
   | 0, _ => by simp
   | n + 1, 0 => by
     convert coeff_hermite_succ_zero (2 * n + 1) using 1
-    -- Porting note: ring_nf did not solve the goal on line 165
-    rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] :
-      2 * (n + 1) - 1 = 2 * n + 1), Nat.doubleFactorial_add_one, Nat.choose_zero_right,
+    rw [coeff_hermite_explicit n 1, (by grind : 2 * (n + 1) - 1 = 2 * n + 1),
+      Nat.doubleFactorial_add_one, Nat.choose_zero_right,
       Nat.choose_one_right, pow_succ]
     push_cast
     ring
@@ -162,8 +161,7 @@ theorem coeff_hermite_explicit :
       congr 2
       -- Factor out double factorials.
       norm_cast
-      -- Porting note: ring_nf did not solve the goal on line 186
-      rw [(by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
+      rw [(by grind : 2 * (n + 1) - 1 = 2 * n + 1),
         Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]
       congr 1
@@ -181,11 +179,10 @@ theorem coeff_hermite_explicit :
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
     coeff (hermite n) k = (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k := by
-  rcases le_or_lt k n with h_le | h_lt
+  rcases le_or_gt k n with h_le | h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
-    -- Porting note: linarith failed to find a contradiction by itself
-    rw [(by omega : n = 2 * m + k),
+    rw [(by cutsat : n = 2 * m + k),
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 

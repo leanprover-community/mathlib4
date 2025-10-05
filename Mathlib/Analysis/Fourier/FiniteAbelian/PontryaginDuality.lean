@@ -7,6 +7,7 @@ import Mathlib.Algebra.DirectSum.AddChar
 import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.GroupTheory.FiniteAbelian.Basic
+import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Pontryagin duality for finite abelian groups
@@ -20,13 +21,13 @@ Structure Theorem.
 
 ## TODO
 
-Reuse the work done in `Mathlib.GroupTheory.FiniteAbelian.Duality`. This requires to write some more
-glue.
+Reuse the work done in `Mathlib/GroupTheory/FiniteAbelian/Duality.lean`. This requires to write some
+more glue.
 -/
 
 noncomputable section
 
-open Circle Finset Function Multiplicative
+open Circle Finset Function Module Multiplicative
 open Fintype (card)
 open Real hiding exp
 open scoped BigOperators DirectSum
@@ -47,12 +48,12 @@ def zmod (x : ZMod n) : AddChar (ZMod n) Circle :=
     AddCircle.toCircle_apply_mk]
 
 @[simp] lemma zmod_zero : zmod n 0 = 1 :=
-  DFunLike.ext _ _ <| by simp [ZMod.intCast_surjective.forall, zmod]
+  DFunLike.ext _ _ <| by simp [zmod]
 
 variable {n}
 
 @[simp] lemma zmod_add : ∀ x y : ZMod n, zmod n (x + y) = zmod n x * zmod n y := by
-  simp [DFunLike.ext_iff, ← Int.cast_add, zmod, add_mul, add_div, map_add_eq_mul]
+  simp [DFunLike.ext_iff, zmod, add_mul, map_add_eq_mul]
 
 lemma zmod_injective : Injective (zmod n) := by
   simp_rw [Injective, ZMod.intCast_surjective.forall]

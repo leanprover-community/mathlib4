@@ -20,7 +20,7 @@ namespace Subgroup
 
 /-- Pull a subgroup back to an opposite subgroup along `MulOpposite.unop` -/
 @[to_additive (attr := simps)
-"Pull an additive subgroup back to an opposite additive subgroup along `AddOpposite.unop`"]
+/-- Pull an additive subgroup back to an opposite additive subgroup along `AddOpposite.unop` -/]
 protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' (H : Set G)
   one_mem' := H.one_mem
@@ -36,7 +36,7 @@ theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S :
 
 /-- Pull an opposite subgroup back to a subgroup along `MulOpposite.op` -/
 @[to_additive (attr := simps)
-"Pull an opposite additive subgroup back to an additive subgroup along `AddOpposite.op`"]
+/-- Pull an opposite additive subgroup back to an additive subgroup along `AddOpposite.op` -/]
 protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   carrier := MulOpposite.op ⁻¹' (H : Set Gᵐᵒᵖ)
   one_mem' := H.one_mem
@@ -75,8 +75,8 @@ theorem unop_le_unop_iff {S₁ S₂ : Subgroup Gᵐᵒᵖ} : S₁.unop ≤ S₂.
   MulOpposite.unop_surjective.forall
 
 /-- A subgroup `H` of `G` determines a subgroup `H.op` of the opposite group `Gᵐᵒᵖ`. -/
-@[to_additive (attr := simps) "An additive subgroup `H` of `G` determines an additive subgroup
-`H.op` of the opposite additive group `Gᵃᵒᵖ`."]
+@[to_additive (attr := simps) /-- An additive subgroup `H` of `G` determines an additive subgroup
+`H.op` of the opposite additive group `Gᵃᵒᵖ`. -/]
 def opEquiv : Subgroup G ≃o Subgroup Gᵐᵒᵖ where
   toFun := Subgroup.op
   invFun := Subgroup.unop
@@ -97,14 +97,14 @@ theorem op_inj {S T : Subgroup G} : S.op = T.op ↔ S = T := opEquiv.eq_iff_eq
 theorem unop_inj {S T : Subgroup Gᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
 
 /-- Bijection between a subgroup `H` and its opposite. -/
-@[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
+@[to_additive (attr := simps!) /-- Bijection between an additive subgroup `H` and its opposite. -/]
 def equivOp (H : Subgroup G) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
 @[to_additive]
 theorem op_normalizer (H : Subgroup G) : H.normalizer.op = H.op.normalizer := by
   ext x
-  simp [mem_normalizer_iff', MulOpposite.op_surjective.forall, iff_comm]
+  simp [mem_normalizer_iff', iff_comm]
 
 @[to_additive]
 theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) : H.normalizer.unop = H.unop.normalizer := by
