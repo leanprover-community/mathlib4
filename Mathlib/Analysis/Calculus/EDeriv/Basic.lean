@@ -28,12 +28,12 @@ variable {𝕜 E F G : Type*}
 
 /-- Exterior derivative of a differential form. -/
 noncomputable def ederiv (ω : E → E [⋀^Fin n]→L[𝕜] F) (x : E) : E [⋀^Fin (n + 1)]→L[𝕜] F :=
-  .uncurryFin (fderiv 𝕜 ω x)
+  .alternatizeUncurryFin (fderiv 𝕜 ω x)
 
-/- Exterior derivative of a differential form within a set. -/
+/-- Exterior derivative of a differential form within a set. -/
 noncomputable def ederivWithin (ω : E → E [⋀^Fin n]→L[𝕜] F) (s : Set E) (x : E) :
     E [⋀^Fin (n + 1)]→L[𝕜] F :=
-  .uncurryFin (fderivWithin 𝕜 ω s x)
+  .alternatizeUncurryFin (fderivWithin 𝕜 ω s x)
 
 @[simp]
 theorem ederivWithin_univ (ω : E → E [⋀^Fin n]→L[𝕜] F) :
@@ -44,7 +44,7 @@ theorem ederivWithin_univ (ω : E → E [⋀^Fin n]→L[𝕜] F) :
 theorem ederivWithin_add (hsx : UniqueDiffWithinAt 𝕜 s x)
     (hω₁ : DifferentiableWithinAt 𝕜 ω₁ s x) (hω₂ : DifferentiableWithinAt 𝕜 ω₂ s x) :
     ederivWithin (ω₁ + ω₂) s x = ederivWithin ω₁ s x + ederivWithin ω₂ s x := by
-  simp [ederivWithin, fderivWithin_add hsx hω₁ hω₂, uncurryFin_add]
+  simp [ederivWithin, fderivWithin_add hsx hω₁ hω₂, alternatizeUncurryFin_add]
 
 theorem ederivWithin_fun_add (hsx : UniqueDiffWithinAt 𝕜 s x)
     (hω₁ : DifferentiableWithinAt 𝕜 ω₁ s x) (hω₂ : DifferentiableWithinAt 𝕜 ω₂ s x) :
@@ -61,7 +61,7 @@ theorem ederiv_fun_add (hω₁ : DifferentiableAt 𝕜 ω₁ x) (hω₂ : Differ
 
 theorem ederivWithin_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) (hsx : UniqueDiffWithinAt 𝕜 s x) :
     ederivWithin (c • ω) s x = c • ederivWithin ω s x := by
-  simp [ederivWithin, fderivWithin_const_smul_of_field, hsx, uncurryFin_smul]
+  simp [ederivWithin, fderivWithin_const_smul_of_field, hsx, alternatizeUncurryFin_smul]
 
 theorem ederivWithin_fun_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F)
     (hsx : UniqueDiffWithinAt 𝕜 s x) :
@@ -82,7 +82,7 @@ theorem ederivWithin_constOfIsEmpty (f : E → F) (hs : UniqueDiffWithinAt 𝕜 
       .ofSubsingleton _ _ _ (0 : Fin 1) (fderivWithin 𝕜 f s x) := by
   simp only [ederivWithin, ← constOfIsEmptyLIE_apply, ← Function.comp_def _ f,
     (constOfIsEmptyLIE 𝕜 E F (Fin 0)).comp_fderivWithin hs,
-    uncurryFin_constOfIsEmptyLIE_comp]
+    alternatizeUncurryFin_constOfIsEmptyLIE_comp]
 
 /-- Exterior derivative of a 0-form given by a function `f`
 is the 1-form given by the derivative of `f`. -/
@@ -93,7 +93,7 @@ theorem ederiv_constOfIsEmpty (f : E → F) (x : E) :
 
 theorem Filter.EventuallyEq.ederivWithin_eq (hs : ω₁ =ᶠ[𝓝[s] x] ω₂) (hx : ω₁ x = ω₂ x) :
     ederivWithin ω₁ s x = ederivWithin ω₂ s x := by
-  simp only [ederivWithin, uncurryFin, hs.fderivWithin_eq hx]
+  simp only [ederivWithin, alternatizeUncurryFin, hs.fderivWithin_eq hx]
 
 theorem Filter.EventuallyEq.ederivWithin_eq_of_mem (hs : ω₁ =ᶠ[𝓝[s] x] ω₂) (hx : x ∈ s) :
     ederivWithin ω₁ s x = ederivWithin ω₂ s x :=
@@ -137,7 +137,7 @@ theorem Filter.EventuallyEq.ederiv_eq (h : ω₁ =ᶠ[𝓝 x] ω₂) : ederiv ω
 theorem ederivWithin_apply (h : DifferentiableWithinAt 𝕜 ω s x) (hs : UniqueDiffWithinAt 𝕜 s x)
     (v : Fin (n + 1) → E) :
     ederivWithin ω s x v = ∑ i, (-1) ^ i.val • fderivWithin 𝕜 (ω · (i.removeNth v)) s x (v i) := by
-  simp [ederivWithin, ContinuousAlternatingMap.uncurryFin_apply,
+  simp [ederivWithin, ContinuousAlternatingMap.alternatizeUncurryFin_apply,
     fderivWithin_continuousAlternatingMap_apply_const_apply, *]
 
 theorem ederiv_apply (h : DifferentiableAt 𝕜 ω x) (v : Fin (n + 1) → E) :
@@ -148,16 +148,19 @@ theorem ederiv_apply (h : DifferentiableAt 𝕜 ω x) (v : Fin (n + 1) → E) :
 theorem ederivWithin_ederivWithin_apply (hω : ContDiffWithinAt 𝕜 r ω s x)
     (hr : minSmoothness 𝕜 2 ≤ r) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s))
     (h'x : x ∈ s) : ederivWithin (ederivWithin ω s) s x = 0 := calc
-  ederivWithin (ederivWithin ω s) s x =
-    uncurryFin (fderivWithin 𝕜 (fun y ↦ uncurryFin (fderivWithin 𝕜 ω s y)) s x) := rfl
-  _ = uncurryFin (uncurryFinCLM _ _ _ ∘L fderivWithin 𝕜 (fderivWithin 𝕜 ω s) s x) := by
+  ederivWithin (ederivWithin ω s) s x
+    = alternatizeUncurryFin (fderivWithin 𝕜 (fun y ↦
+        alternatizeUncurryFin (fderivWithin 𝕜 ω s y)) s x) := rfl
+  _ = alternatizeUncurryFin (alternatizeUncurryFinCLM _ _ _ ∘L
+        fderivWithin 𝕜 (fderivWithin 𝕜 ω s) s x) := by
     congr 1
     have : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 ω s) s x := by
       refine (hω.fderivWithin_right hs ?_ h'x).differentiableWithinAt le_rfl
       exact le_minSmoothness.trans hr
-    exact (uncurryFinCLM _ _ _).hasFDerivAt.comp_hasFDerivWithinAt x this.hasFDerivWithinAt
-      |>.fderivWithin (hs.uniqueDiffWithinAt h'x)
-  _ = 0 := uncurryFin_uncurryFinCLM_comp_of_symmetric <| hω.isSymmSndFDerivWithinAt hr hs hx h'x
+    exact alternatizeUncurryFinCLM _ _ _ |>.hasFDerivAt.comp_hasFDerivWithinAt x
+      this.hasFDerivWithinAt |>.fderivWithin (hs.uniqueDiffWithinAt h'x)
+  _ = 0 := alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric <|
+    hω.isSymmSndFDerivWithinAt hr hs hx h'x
 
 /-- Second exterior derivative of a sufficiently smooth differential form is zero. -/
 theorem ederivWithin_ederivWithin_eqOn (hω : ContDiffOn 𝕜 r ω s) (hr : minSmoothness 𝕜 2 ≤ r)
