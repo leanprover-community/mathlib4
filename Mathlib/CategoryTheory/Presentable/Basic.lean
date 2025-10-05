@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
@@ -175,6 +176,25 @@ lemma isCardinalPresentable_iff_of_isEquivalence
       (show F.inv.obj (F.obj X) ≅ X from F.asEquivalence.unitIso.symm.app X :) κ
   · intro
     infer_instance
+
+variable {X} in
+lemma IsCardinalPresentable.exists_lift [IsCardinalPresentable X κ]
+    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f : X ⟶ c.pt) :
+    ∃ (j : J) (f' : X ⟶ F.obj j), f' ≫ c.ι.app j = f := by
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  exact Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (op X)) hc) f
+
+variable {X} in
+lemma IsCardinalPresentable.hom_ext [IsCardinalPresentable X κ]
+    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {j : J} (f₁ f₂ : X ⟶ F.obj j)
+    (hf : f₁ ≫ c.ι.app j = f₂ ≫ c.ι.app j) :
+    ∃ (j' : J) (g : j ⟶ j'), f₁ ≫ F.map g = f₂ ≫ F.map g := by
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  have := isFiltered_of_isCardinalDirected J κ
+  exact (Types.FilteredColimit.isColimit_eq_iff'
+    ((isColimitOfPreserves (coyoneda.obj (op X)) hc)) f₁ f₂).1 hf
 
 end
 

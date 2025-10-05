@@ -128,6 +128,8 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
       (CostructuredArrow (P.colimitsCardinalClosure κ).ι X) κ := ⟨fun {J} _ K hJ ↦ ⟨by
         have := ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure P κ J hJ
         exact colimit.cocone K⟩⟩
+    have (X : C) : IsFiltered (CostructuredArrow (P.colimitsCardinalClosure κ).ι X) :=
+      isFiltered_of_isCardinalDirected _ κ
     have : (P.colimitsCardinalClosure κ).ι.IsDense := ⟨by
       ext X
       simp only [Pi.top_apply, «Prop».top_eq_true, iff_true]
@@ -146,7 +148,36 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
           (CostructuredArrow.pre e.functor (ObjectProperty.ι _) X).asEquivalence
       let c := canonicalCocone (P.colimitsCardinalClosure κ).ι X
       have : Mono (colimit.desc _ c) := by
-        sorry
+        rw [hS₁.isSeparating.mono_iff]
+        let Φ := CostructuredArrow.proj
+          (P.colimitsCardinalClosure κ).ι X ⋙ (P.colimitsCardinalClosure κ).ι
+        intro G hG (g₁ : G ⟶ colimit Φ) (g₂ : G ⟶ colimit Φ)
+          (h : g₁ ≫ colimit.desc Φ c = g₂ ≫ colimit.desc Φ c)
+        have : IsCardinalPresentable G κ := hS₂ ⟨_, hG⟩
+        obtain ⟨j, φ₁, φ₂, rfl, rfl⟩ :
+            ∃ (j :  CostructuredArrow (P.colimitsCardinalClosure κ).ι X)
+              (φ₁ φ₂ : G ⟶ Φ.obj j), φ₁ ≫ colimit.ι _ _ = g₁ ∧ φ₂ ≫ colimit.ι _ _ = g₂ := by
+          obtain ⟨j₁, f₁, hf₁⟩ := IsCardinalPresentable.exists_lift κ (colimit.isColimit _) g₁
+          obtain ⟨j₂, f₂, hf₂⟩ := IsCardinalPresentable.exists_lift κ (colimit.isColimit _) g₂
+          exact ⟨IsFiltered.max j₁ j₂, f₁ ≫ Φ.map (IsFiltered.leftToMax j₁ j₂),
+            f₂ ≫ Φ.map (IsFiltered.rightToMax j₁ j₂), by simpa, by simpa⟩
+        simp only [Category.assoc, colimit.ι_desc] at h
+        have : (P.colimitsCardinalClosure κ).IsClosedUnderColimitsOfShape WalkingParallelPair := by
+          apply ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure
+          refine .of_le ?_ (Cardinal.IsRegular.aleph0_le Fact.out)
+          simp only [hasCardinalLT_aleph0_iff]
+          infer_instance
+        let E : (P.colimitsCardinalClosure κ).FullSubcategory :=
+          ⟨coequalizer φ₁ φ₂, by
+            apply ObjectProperty.prop_colimit
+            rintro (_ | _)
+            · exact P.le_colimitsCardinalClosure _ _ hG
+            · exact j.left.2⟩
+        let a : (P.colimitsCardinalClosure κ).ι.obj E ⟶ X := coequalizer.desc (c.ι.app j) h
+        let ψ : j ⟶ CostructuredArrow.mk a :=
+          CostructuredArrow.homMk (coequalizer.π _ _) (coequalizer.π_desc _ _)
+        rw [← colimit.w Φ ψ]
+        apply coequalizer.condition_assoc
       have : IsIso (colimit.desc _ c) := hS₁.isIso_of_mono _ (fun g φ ↦ by
         let γ : CostructuredArrow (P.colimitsCardinalClosure κ).ι X :=
           CostructuredArrow.mk (Y := ⟨g.1, P.le_colimitsCardinalClosure _ _ g.2⟩) (by exact φ)
