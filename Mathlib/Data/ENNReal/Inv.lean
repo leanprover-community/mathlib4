@@ -72,7 +72,7 @@ theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
   rw [div_eq_mul_inv, div_eq_mul_inv, coe_mul, coe_inv hr]
 
 lemma coe_div_le : ↑(p / r) ≤ (p / r : ℝ≥0∞) := by
-  simpa only [div_eq_mul_inv, coe_mul] using mul_le_mul_left' coe_inv_le _
+  simpa only [div_eq_mul_inv, coe_mul] using _root_.mul_le_mul_right coe_inv_le _
 
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 

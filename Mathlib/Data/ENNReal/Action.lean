@@ -95,7 +95,7 @@ instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
     ENNReal.mul_lt_mul_left' (coe_pos.2 hr).ne' coe_ne_top hab
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
-  smul_le_smul_of_nonneg_right _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
+  smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
 
 end Actions
 
