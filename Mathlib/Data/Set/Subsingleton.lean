@@ -80,11 +80,13 @@ lemma Subsingleton.inter_singleton : (s ∩ {a}).Subsingleton :=
 lemma Subsingleton.singleton_inter : ({a} ∩ s).Subsingleton :=
   Set.subsingleton_of_subset_singleton Set.inter_subset_left
 
-lemma Subsingleton.union_subsingleton (h : (s ∪ t).Subsingleton) :
-    s.Subsingleton ∧ t.Subsingleton := by
-  constructor <;> intro _ h₁ _ h₂
-  · exact h (.inl h₁) (.inl h₂)
-  · exact h (.inr h₁) (.inr h₂)
+lemma Subsingleton.union_subsingleton_left (h : (s ∪ t).Subsingleton) :
+    s.Subsingleton :=
+  fun _ h₁ _ h₂ ↦ h (.inl h₁) (.inl h₂)
+
+lemma Subsingleton.union_subsingleton_right (h : (s ∪ t).Subsingleton) :
+    t.Subsingleton :=
+  fun _ h₁ _ h₂ ↦ h (.inr h₁) (.inr h₂)
 
 theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : s.Subsingleton :=
   subsingleton_univ.anti (subset_univ s)
