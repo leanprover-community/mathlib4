@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Olivia Röhrig
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Defs
 
@@ -58,7 +59,7 @@ abbrev TopEdgeLabelling (V : Type*) (K : Type*) :=
 
 theorem card_topEdgeLabelling [DecidableEq V] [Fintype V] [Fintype K] :
     card (TopEdgeLabelling V K) = card K ^ (card V).choose 2 :=
-  Fintype.card_fun.trans (by rw [card_top_edgeSet])
+  Fintype.card_fun.trans (by rw [← edgeFinset_card, card_edgeFinset_top_eq_card_choose_two])
 
 namespace EdgeLabelling
 
@@ -66,8 +67,11 @@ namespace EdgeLabelling
 Convenience function to get the colour of the edge `x ~ y` in the colouring of the complete graph
 on `V`.
 -/
-abbrev get (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : K :=
+def get (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : K :=
   C ⟨s(x, y), h⟩
+
+lemma get_eq (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : C.get x y h = C ⟨s(x, y), h⟩ :=
+  by rw [get]
 
 variable {C : EdgeLabelling G K}
 
@@ -182,7 +186,7 @@ abbrev pullback (C : TopEdgeLabelling V K) (f : V' ↪ V) : TopEdgeLabelling V' 
 @[simp]
 theorem labelGraph_adj {C : TopEdgeLabelling V K} {k : K} (x y : V) :
     (C.labelGraph k).Adj x y ↔ ∃ H : x ≠ y, C.get x y H = k := by
-  simp [EdgeLabelling.labelGraph_adj]
+  simp [EdgeLabelling.labelGraph_adj, EdgeLabelling.get_eq]
 
 end TopEdgeLabelling
 

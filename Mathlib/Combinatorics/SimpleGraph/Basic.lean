@@ -7,7 +7,8 @@ import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Sym.Card
+import Mathlib.Data.Sym.Sym2
+import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Simple graphs
@@ -548,10 +549,6 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
     Fintype (G₁ \ G₂).edgeSet := by
   rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
-
-theorem card_top_edgeSet [DecidableEq V] [Fintype V] :
-    (⊤ : SimpleGraph V).edgeSet.ncard = (Fintype.card V).choose 2 := by
-  simp only [edgeSet_top, Set.coe_setOf, Sym2.card_subtype_not_diag]
 
 end EdgeSet
 
