@@ -261,9 +261,13 @@ end Module
 end Defs
 
 lemma isSMulRegular_iff_torsionBy_eq_bot {R} (M : Type*)
-    [CommRing R] [AddCommGroup M] [Module R M] (r : R) :
-    IsSMulRegular M r ↔ Submodule.torsionBy R M r = ⊥ :=
-  Iff.symm (DistribMulAction.toLinearMap R M r).ker_eq_bot
+    [CommSemiring R] [AddCommGroup M] [Module R M] (r : R) :
+    IsSMulRegular M r ↔ Submodule.torsionBy R M r = ⊥ := by
+  have htorsion : Submodule.torsionBy R M r = ⊥ ↔
+      ∀ x : M, r • x = 0 → x = 0 := by
+    simp [Submodule.eq_bot_iff, Submodule.torsionBy]
+  exact (isSMulRegular_iff_right_eq_zero_of_smul (R := R) (M := M) (r := r)).trans
+    htorsion.symm
 
 variable {R M : Type*}
 
