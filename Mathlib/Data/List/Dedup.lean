@@ -180,10 +180,4 @@ theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup 
     else by
       simp [h, count_eq_zero_of_not_mem, mt p.mem_iff.2]
 
-theorem Pairwise.dedup {r : α → α → Prop} {l : List α} (hl : l.Pairwise r) :
-    l.dedup.Pairwise r := by
-  induction l with
-  | nil => simp
-  | cons x xs ih => grind [dedup_cons, pairwise_cons, mem_dedup]
-
 end List
