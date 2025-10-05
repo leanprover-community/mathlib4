@@ -11,7 +11,6 @@ import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Monad.Limits
 
-
 /-!
 
 # Inverse limits of schemes with affine transition maps
