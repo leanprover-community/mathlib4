@@ -720,7 +720,7 @@ instance : Div (Submodule R A) :=
     { carrier := { x | ∀ y ∈ J, x * y ∈ I }
       zero_mem' := fun y _ => by
         rw [zero_mul]
-        exact Submodule.zero_mem _
+        apply Submodule.zero_mem
       add_mem' := fun ha hb y hy => by
         rw [add_mul]
         exact Submodule.add_mem _ (ha _ hy) (hb _ hy)
@@ -728,30 +728,23 @@ instance : Div (Submodule R A) :=
         rw [Algebra.smul_mul_assoc]
         exact Submodule.smul_mem _ _ (hx _ hy) }⟩
 
-@[simp]
-theorem mem_div_iff_forall_mul_mem {x : A} {I J : Submodule R A} :
-    x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I :=
-  Iff.rfl
+theorem mem_div_iff_forall_mul_mem {x : A} {I J : Submodule R A} : x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I :=
+  Iff.refl _
 
-theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} :
-    x ∈ I / J ↔ x • (J : Set A) ⊆ I :=
-  ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by
-      rw [← xy'_eq_y]
-      exact h _ hy'
-    , fun h _ hy => h (Set.smul_mem_smul_set hy)⟩
+theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} : x ∈ I / J ↔ x • (J : Set A) ⊆ I :=
+  ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by rw [← xy'_eq_y]; exact h _ hy',
+    fun h _ hy => h (Set.smul_mem_smul_set hy)⟩
 
-@[simp]
 theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z ∈ K, x * z ∈ J :=
-  Iff.rfl
+  Iff.refl _
 
 theorem le_div_iff_mul_le {I J K : Submodule R A} : I ≤ J / K ↔ I * K ≤ J := by
   rw [le_div_iff, mul_le]
 
-@[simp, nolint simpNF]
 theorem one_le_one_div {I : Submodule R A} : 1 ≤ 1 / I ↔ I ≤ 1 := by
   rw [le_div_iff_mul_le, one_mul]
 
-@[simp, nolint simpNF]
+@[simp]
 theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
   rw [← one_le, le_div_iff_mul_le, one_mul]
 
@@ -759,9 +752,8 @@ theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / 
   simpa using mul_le_mul_left' (one_le_one_div.mpr hI) _
 
 @[simp]
-protected theorem map_div {B : Type*} [Semiring B] [Algebra R B]
-    (I J : Submodule R A) (h : A ≃ₐ[R] B) :
-    (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
+protected theorem map_div {B : Type*} [Semiring B] [Algebra R B] (I J : Submodule R A)
+    (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
   ext x
   simp only [mem_map, mem_div_iff_forall_mul_mem, AlgEquiv.toLinearMap_apply]
   constructor
@@ -770,7 +762,7 @@ protected theorem map_div {B : Type*} [Semiring B] [Algebra R B]
   · rintro hx
     refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
-    convert xz_mem using 1
+    convert xz_mem
     apply h.injective
     rw [map_mul, h.apply_symm_apply, hxz]
 
