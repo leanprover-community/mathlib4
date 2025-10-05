@@ -334,8 +334,8 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
           simp only [φ, id, Perm.smul_def, toPerm_apply] }
     have hf : Function.Bijective f := Function.bijective_id
     rw [isPreprimitive_congr _ hf]
-    infer_instance
-    -- Function.Surjective φ,
+    · infer_instance
+    -- Function.Surjective φ
     classical
     intro g
     use! Perm.ofSubtype g
