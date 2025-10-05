@@ -79,8 +79,20 @@ protected theorem Factors.map {f : R[X]} (hf : Factors f) {S : Type*} [Semiring 
     Factors (map i f) := by
   induction hf using Submonoid.closure_induction <;> aesop
 
+theorem factors_of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
+    Factors f :=
+  (natDegree_eq_zero.mp hf).choose_spec ▸ by aesop
+
 theorem factors_of_isUnit [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Factors f :=
-  (isUnit_iff.mp hf).choose_spec.2 ▸ factors_C _
+  factors_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
+
+theorem not_isUnit_X_add_C [Nontrivial R] (a : R) : ¬ IsUnit (X + C a) := by
+  rintro ⟨⟨_, g, hfg, hgf⟩, rfl⟩
+  by_cases hg : g = 0
+  · simp [hg] at hfg
+  · have h := (monic_X_add_C a).natDegree_mul' hg
+    rw [hfg, natDegree_one, natDegree_X_add_C] at h
+    grind
 
 end Semiring
 
@@ -114,7 +126,22 @@ theorem factors_iff_exists_multiset' {f : R[X]} :
     apply monic_multiset_prod_of_monic
     simp [monic_X_add_C]
   · rintro ⟨m, hm⟩
-    exact hm ▸ (factors_C _).mul (Factors.multiset_prod (by simp [factors_X_add_C]))
+    exact hm ▸ (factors_C _).mul (.multiset_prod (by simp [factors_X_add_C]))
+
+theorem Factors.natDegree_le_one_of_irreducible [Nontrivial R] {f : R[X]} (hf : Factors f)
+    (h : Irreducible f) : natDegree f ≤ 1 := by
+  obtain ⟨m, hm⟩ := factors_iff_exists_multiset'.mp hf
+  rcases m.empty_or_exists_mem with rfl | ⟨a, ha⟩
+  · rw [hm]
+    simp
+  · obtain ⟨m, rfl⟩ := Multiset.exists_cons_of_mem ha
+    rw [Multiset.map_cons, Multiset.prod_cons] at hm
+    rw [hm] at h
+    simp only [irreducible_mul_iff, IsUnit.mul_iff, not_isUnit_X_add_C, false_and, and_false,
+      or_false, false_or, ← Multiset.prod_toList, List.prod_isUnit_iff] at h
+    have : m = 0 := by simpa [not_isUnit_X_add_C, ← Multiset.eq_zero_iff_forall_notMem] using h.1.2
+    grw [hm, this, natDegree_mul_le]
+    simp
 
 end CommSemiring
 
@@ -133,7 +160,7 @@ protected theorem Factors.neg {f : R[X]} (hf : Factors f) : Factors (-f) := by
 
 @[simp]
 theorem factors_neg_iff {f : R[X]} : Factors (-f) ↔ Factors f :=
-  ⟨fun hf ↦ neg_neg f ▸ hf.neg, Factors.neg⟩
+  ⟨fun hf ↦ neg_neg f ▸ hf.neg, .neg⟩
 
 end Ring
 
@@ -177,6 +204,45 @@ theorem roots_ne_zero_of_factors {f : R[X]} (hf : Factors f) (hf0 : natDegree f 
     f.roots ≠ 0 := by
   obtain ⟨a, ha⟩ := exists_root_of_factors hf (degree_ne_of_natDegree_ne hf0)
   exact mt (· ▸ (mem_roots (by aesop)).mpr ha) (Multiset.notMem_zero a)
+
+theorem factors_X_sub_C_mul_iff {f : R[X]} {a : R} : Factors ((X - C a) * f) ↔ Factors f := by
+  refine ⟨fun hf ↦ ?_, ((factors_X_sub_C _).mul ·)⟩
+  by_cases hf₀ : f = 0
+  · aesop
+  have := hf.eq_prod_roots
+  rw [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul,
+    roots_mul (mul_ne_zero (X_sub_C_ne_zero _) hf₀), roots_X_sub_C,
+    Multiset.singleton_add, Multiset.map_cons, Multiset.prod_cons, mul_left_comm] at this
+  rw [mul_left_cancel₀ (X_sub_C_ne_zero _) this]
+  aesop
+
+theorem factors_mul_iff {f g : R[X]} (hfg : f * g ≠ 0) :
+    Factors (f * g) ↔ Factors f ∧ Factors g := by
+  refine ⟨fun h ↦ ?_, and_imp.mpr .mul⟩
+  generalize hp : f * g = p at *
+  generalize hn : p.natDegree = n
+  induction n generalizing p f g with
+  | zero =>
+    have hf₀ : f ≠ 0 := by aesop
+    have hg₀ : g ≠ 0 := by aesop
+    rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero] at hn
+    exact ⟨factors_of_natDegree_eq_zero hn.1, factors_of_natDegree_eq_zero hn.2⟩
+  | succ n ih =>
+    obtain ⟨a, ha⟩ := exists_root_of_factors h (degree_ne_of_natDegree_ne <| hn ▸ by aesop)
+    have := dvd_iff_isRoot.mpr ha
+    rw [← hp, (prime_X_sub_C a).dvd_mul] at this
+    wlog hf : X - C a ∣ f with hf2
+    · exact .symm <| hf2 _ ih _ ((mul_comm _ _).trans hp) hfg h hn _ ha this.symm <|
+        this.resolve_left hf
+    obtain ⟨f, rfl⟩ := hf
+    rw [mul_assoc] at hp; subst hp
+    rw [natDegree_mul (by aesop) (by aesop), natDegree_X_sub_C, add_comm, Nat.succ_inj] at hn
+    have := ih (f * g) rfl (by aesop) (factors_X_sub_C_mul_iff.mp h) hn
+    aesop
+
+theorem Factors.of_dvd {f g : R[X]} (hg : Factors g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Factors f := by
+  obtain ⟨g, rfl⟩ := hfg
+  exact ((factors_mul_iff hg₀).mp hg).1
 
 end CommRing
 
