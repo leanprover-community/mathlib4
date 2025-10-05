@@ -292,7 +292,7 @@ theorem has_three_cycle_of_stabilizer [DecidableEq α] (s : Set α) (hα : 4 < N
     rw [← ncard_add_ncard_compl s]
     grind
 
-theorem le_of_isPreprimitive (h4 : 4 < Nat.card α)
+theorem _root_.Equiv.Perm.alternatingGroup_le_of_isPreprimitive (h4 : 4 < Nat.card α)
     (G : Subgroup (Perm α)) [hG' : IsPreprimitive G α] {s : Set α}
     (hG : stabilizer (Perm α) s ⊓ alternatingGroup α ≤ G) :
     alternatingGroup α ≤ G := by
@@ -300,7 +300,7 @@ theorem le_of_isPreprimitive (h4 : 4 < Nat.card α)
   -- G contains a three_cycle
   obtain ⟨g, hg3, hg⟩ := has_three_cycle_of_stabilizer s h4
   -- By Jordan's theorem, it suffices to prove that G acts primitively
-  apply subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem hG' hg3
+  apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem hG' hg3
   apply hG
   simp only [Subgroup.mem_inf, hg, true_and]
   exact IsThreeCycle.mem_alternatingGroup hg3
@@ -510,7 +510,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
         simp only [Subgroup.coe_subtype, SetLike.coe_eq_coe] at hgg'
         rw [← hgg']; exact hg'
       --   apply is_maximal_stab'_temp' s hα,
-      apply le_of_isPreprimitive hα (s := s) (hG' := ?_)
+      apply alternatingGroup_le_of_isPreprimitive hα (s := s) (hG' := ?_)
       · rw [← Subgroup.subgroupOf_map_subtype, Subgroup.map_subtype_le_map_subtype]
         exact le_of_lt hG'
       · apply isPreprimitive_of_stabilizer_lt (le_of_lt hα) h0' h1' hs
@@ -553,8 +553,10 @@ theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     AlternatingGroup.isPreprimitive_of_three_le_card α h3
   apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
-/-- `stabilizer (alternating_group α) s` is a maximal subgroup of alternating_group α,
-  provided s ≠ ⊥, s ≠ ⊤ and fintype.card α ≠ 2 * fintype.card ↥s) -/
+/-- `stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
+provided `s ≠ ∅`, `sᶜ ≠ ∅` and `Nat.card α ≠ 2 * s.ncard`.
+
+This is the intransitive case of the O'Nan–Scott classification. -/
 theorem isCoatom_stabilizer {s : Set α}
     (h0 : s.Nonempty) (h1 : sᶜ.Nonempty) (hs : Nat.card α ≠ 2 * ncard s) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
