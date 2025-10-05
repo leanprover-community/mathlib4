@@ -11,8 +11,8 @@ import Mathlib.Topology.Sets.Compacts
 /-!
 # Continuously differentiable functions supported in a given compact
 
-This file develops the basic theory of `n`-times continuously differentiable functions with support
-contained in a given compact.
+This file develops the basic theory of bundled `n`-times continuously differentiable functions
+with support contained in a given compact.
 
 Given `n : ℕ∞` and a compact subset `K` of a normed space `E`, we consider the type of bundled
 functions `f : E → F` (where `F` is a normed vector space) such that:
