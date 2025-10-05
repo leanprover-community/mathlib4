@@ -52,17 +52,19 @@ def IsNeutral [Lattice α] (a : α) : Prop :=
 
 variable [Lattice α]
 
--- Grätzer III.2, Theorem 2 1 → 2
+/-- Grätzer III.2, Theorem 2 1 → 2 -/
 def const_sup_left_of_isDistrib {a : α} (h : IsDistrib a) : LatticeHom α α := {
   toFun := fun x => a ⊔ x
   map_sup' := sup_sup_distrib_left a
   map_inf' := h
 }
 
--- Grätzer III.2, Theorem 2 2 → 3
+/-
+Grätzer III.2, Theorem 2 2 → 3
 #check LatticeCon.ker
+-/
 
--- Grätzer III.2, Theorem 2 3 → 1
+/-- Grätzer III.2, Theorem 2 3 → 1 -/
 def isDistrib_of_congruence {a : α} {c : LatticeCon α} (h : ∀ ⦃x y : α⦄, c.r x y ↔ a ⊔ x = a ⊔ y) :
     IsDistrib a := by
   intro x y
@@ -81,7 +83,7 @@ instance {a : α} :
     · exact inf_le_right
     · rw [inf_idem, sup_idem, sup_of_le_left inf_le_left]
 
--- Grätzer III.2, Theorem 3 1 → 2
+/-- Grätzer III.2, Theorem 3 1 → 2 -/
 def of_isStandard {a : α} (h : IsStandard a) : LatticeCon α := LatticeCon.mk'
   (fun x y => ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y)
   (by
@@ -124,7 +126,7 @@ def of_isStandard {a : α} (h : IsStandard a) : LatticeCon α := LatticeCon.mk'
         rw [←  ha2, sup_assoc, sup_comm a₁ t, ← sup_assoc, inf_of_le_left le_sup_left,
           sup_of_le_right le_sup_left])
 
--- Grätzer III.2, Theorem 3 2 → 3
+/-- Grätzer III.2, Theorem 3 2 → 3 -/
 def isDistrib_and {a : α} {c : LatticeCon α}
     (h : ∀ ⦃x y : α⦄, c.r x y ↔ ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y) :
     IsDistrib a ∧ ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y := by
@@ -158,7 +160,7 @@ def isDistrib_and {a : α} {c : LatticeCon α}
     intro x y ⟨h₁, h₂⟩
     rw [← step1 h₁ h₂, inf_comm, step1 h₁.symm h₂.symm]
 
--- Grätzer III.2, Theorem 3 3 → 1
+/-- Grätzer III.2, Theorem 3 3 → 1 -/
 def isStandard_of_isDistrib_and {a : α}
     (h : IsDistrib a ∧ ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y) : IsStandard a := by
   intro x y
