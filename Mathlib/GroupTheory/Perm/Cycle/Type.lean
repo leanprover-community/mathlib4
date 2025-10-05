@@ -574,10 +574,26 @@ theorem partition_eq_of_isConj {σ τ : Perm α} : IsConj σ τ ↔ σ.partition
 
 end Partition
 
+section IsSwap
+
+variable [DecidableEq α]
+
+theorem isSwap_iff_cycleType {σ : Perm α} : σ.IsSwap ↔ σ.cycleType = {2} := by
+  constructor
+  · intro h
+    simpa [h.isCycle.cycleType, card_support_eq_two] using h
+  · intro h
+    simp [← card_support_eq_two, ← sum_cycleType, h]
+
+theorem IsSwap.orderOf {σ : Equiv.Perm α} (h : σ.IsSwap) :
+    orderOf σ = 2 := by
+  rw [← lcm_cycleType, isSwap_iff_cycleType.mp h, Multiset.lcm_singleton, normalize_eq]
+
+end IsSwap
+
 /-!
 ### 3-cycles
 -/
-
 
 /-- A three-cycle is a cycle of length 3. -/
 def IsThreeCycle [DecidableEq α] (σ : Perm α) : Prop :=
