@@ -136,9 +136,9 @@ theorem natDegree_of_mem_normalizedFactors_cyclotomic
 theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K)).toFinset.card =
     φ n / orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   have h := prod_normalizedFactors (cyclotomic_ne_zero n K)
-  have : ∀ P ∈ normalizedFactors (cyclotomic n K), P.natDegree = orderOf
-    (unitOfCoprime _ (hn.pow_left f)) := fun P hP ↦ natDegree_of_mem_normalizedFactors_cyclotomic
-      hK hn hP
+  have : ∀ P ∈ normalizedFactors (cyclotomic n K),
+      P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) := fun P hP ↦
+    natDegree_of_mem_normalizedFactors_cyclotomic hK hn hP
   have H := natDegree_eq_of_degree_eq <| degree_eq_degree_of_associated h
   rw [natDegree_cyclotomic, natDegree_multiset_prod _ (zero_notMem_normalizedFactors _),
     map_congr rfl this] at H
