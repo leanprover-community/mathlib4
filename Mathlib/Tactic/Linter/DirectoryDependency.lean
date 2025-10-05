@@ -189,7 +189,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
 
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
   (`Mathlib.Lean, `Batteries.CodeAction),
-  -- XXX: should this be minimised further?
+  -- TODO: should this be minimised further?
   (`Mathlib.Lean.Meta.CongrTheorems, `Batteries),
   -- These modules are transitively imported by `Batteries.CodeAction.
   (`Mathlib.Lean, `Batteries.Classes.SatisfiesM),
