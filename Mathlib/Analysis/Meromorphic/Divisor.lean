@@ -145,6 +145,16 @@ theorem divisor_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : Mero
   · simp [hz]
 
 /--
+If orders are finite, the divisor of the scalar product of two meromorphic functions is the sum of
+the divisors.
+-/
+theorem divisor_fun_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
+    (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z ∈ U, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₂f₂ : ∀ z ∈ U, meromorphicOrderAt f₂ z ≠ ⊤) :
+    divisor (fun z ↦ f₁ z • f₂ z) U = divisor f₁ U + divisor f₂ U :=
+  divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
+
+/--
 If orders are finite, the divisor of the product of two meromorphic functions is the sum of the
 divisors.
 
@@ -155,7 +165,16 @@ See `MeromorphicOn.exists_order_ne_top_iff_forall` and
 theorem divisor_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z ∈ U, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₂f₂ : ∀ z ∈ U, meromorphicOrderAt f₂ z ≠ ⊤) :
-    divisor (f₁ * f₂) U = divisor f₁ U + divisor f₂ U :=
+    divisor (f₁ * f₂) U = divisor f₁ U + divisor f₂ U := divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
+
+/--
+If orders are finite, the divisor of the product of two meromorphic functions is the sum of the
+divisors.
+-/
+theorem divisor_fun_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
+    (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z ∈ U, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₂f₂ : ∀ z ∈ U, meromorphicOrderAt f₂ z ≠ ⊤) :
+    divisor (fun z ↦ f₁ z * f₂ z) U = divisor f₁ U + divisor f₂ U :=
   divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
 
 /-- The divisor of the inverse is the negative of the divisor. -/
@@ -166,6 +185,62 @@ theorem divisor_inv {f : 𝕜 → 𝕜} :
   by_cases h : MeromorphicOn f U ∧ z ∈ U
   · simp [divisor_apply, h, meromorphicOrderAt_inv]
   · simp [divisor_def, h]
+
+/-- The divisor of the inverse is the negative of the divisor. -/
+@[simp]
+theorem divisor_fun_inv {f : 𝕜 → 𝕜} : divisor (fun z ↦ f⁻¹ z) U = -divisor f U := divisor_inv
+
+open Classical in
+/--
+If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
+-/
+theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
+    divisor (f ^ n) U = n • divisor f U := by
+  ext z
+  by_cases hn : n = 0
+  · simp only [hn, pow_zero, divisor_def, zero_nsmul, Function.locallyFinsuppWithin.coe_zero,
+      Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
+    intro _ _
+    have := meromorphicOrderAt_const_ofNat z 1
+    simp_all
+  by_cases hz : ¬z ∈ U
+  · simp [hz]
+  simp_all only [Decidable.not_not, hf.pow n, divisor_apply,
+    Function.locallyFinsuppWithin.coe_nsmul, Pi.smul_apply, Int.nsmul_eq_mul]
+  rw [meromorphicOrderAt_pow (hf z hz)]
+  aesop
+
+/--
+If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
+-/
+theorem divisor_fun_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
+    divisor (fun z ↦ f z ^ n) U = n • divisor f U := divisor_pow hf n
+
+open Classical in
+/--
+If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
+-/
+theorem divisor_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
+    divisor (f ^ n) U = n • divisor f U := by
+  ext z
+  by_cases hn : n = 0
+  · simp only [hn, zpow_zero, divisor_def, zero_smul, Function.locallyFinsuppWithin.coe_zero,
+      Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
+    intro _ _
+    have := meromorphicOrderAt_const_ofNat z 1
+    simp_all
+  by_cases hz : ¬z ∈ U
+  · simp [hz]
+  simp_all only [Decidable.not_not, hf.zpow n, divisor_apply,
+    Function.locallyFinsuppWithin.coe_zsmul, Pi.smul_apply, Int.zsmul_eq_mul]
+  rw [meromorphicOrderAt_zpow (hf z hz)]
+  aesop
+
+/--
+If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
+-/
+theorem divisor_fun_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
+    divisor (fun z ↦ f z ^ n) U = n • divisor f U := divisor_zpow hf n
 
 /--
 Taking the divisor of a meromorphic function commutes with restriction.

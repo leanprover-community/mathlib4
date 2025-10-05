@@ -359,6 +359,30 @@ protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
       filter_upwards [hg] with z hz using by simpa using hz.symm
     exact AnalyticAt.congr (by fun_prop) A
 
+open Classical in
+/--
+The order of a constant function is `⊤` is the the constant is zero and `0` otherwise.
+-/
+theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) :
+    meromorphicOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else (0 : WithTop ℤ) := by
+  by_cases he : e = 0
+  · simp [he, meromorphicOrderAt_eq_top_iff]
+  simp [he]
+  rw [(by rfl : (0 : WithTop ℤ) = (0 : ℤ)),
+    meromorphicOrderAt_eq_int_iff (MeromorphicAt.const e z₀)]
+  use fun _ ↦ e
+  simp [he]
+  fun_prop
+
+open Classical in
+/--
+Variant of `meromorphicOrderAt_const`, for constant functions defined by coercion from natural
+numbers.
+-/
+theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℤ) :
+    meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
+  meromorphicOrderAt_const z₀ (n : 𝕜)
+
 /-!
 ## Order at a Point: Behaviour under Ring Operations
 
