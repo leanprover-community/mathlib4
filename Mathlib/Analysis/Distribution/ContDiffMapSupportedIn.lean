@@ -33,7 +33,8 @@ larger space of test functions.
 - `ContDiffMapSupportedIn E F n K`: the type of `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
 - `ContDiffMapSupportedIn.iteratedFDerivₗ'`: wrapper as a `𝕜`-linear maps for `iteratedFDeriv` on
-  `ContDiffMapSupportedIn E F n K`, as a map into `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) n-i K`.
+  `ContDiffMapSupportedIn E F n K`, as a map into
+  `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) (n-i) K`.
 
 ## Main statements
 
