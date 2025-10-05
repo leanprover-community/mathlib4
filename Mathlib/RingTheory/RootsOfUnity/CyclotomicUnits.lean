@@ -69,6 +69,15 @@ theorem geom_sum_isUnit (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (hj : j.Copr
   apply mul_right_injective₀ (show 1 - ζ ≠ 0 by grind [sub_one_ne_zero])
   grind [mul_neg_geom_sum]
 
+/-- Similar to `geom_sum_isUnit`, but instead of assuming `2 ≤ n` we assume that `j` is a unit in
+  `A`. -/
+theorem geom_sum_isUnit' (hζ : IsPrimitiveRoot ζ n) (hj : j.Coprime n) (hj_Unit : IsUnit (j : A)) :
+    IsUnit (∑ i ∈ range j, ζ ^ i) := by
+  match n with
+  | 0 => simp_all
+  | 1 => simp_all
+  | n + 2 => exact geom_sum_isUnit hζ (by linarith) hj
+
 /-- The explicit formula giving `associated_pow_sub_one_pow_of_coprime` above. -/
 theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum (hζ : IsPrimitiveRoot ζ n)
     (hn : 2 ≤ n) : (ζ ^ j - 1) * ∑ k ∈ range i, ζ ^ k = (ζ ^ i - 1) * ∑ k ∈ range j, ζ ^ k := by
