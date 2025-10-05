@@ -173,7 +173,7 @@ scoped elab:max "T% " t:term:arg : term => do
         -- xxx: is this check fine or overzealous?
         if tgtHasLooseBVars then
           throwError "Term {tgt} depends on {x}\n\
-          Hint: applying the `T%` elaborator twice makes no sense."
+            Hint: applying the `T%` elaborator twice makes no sense."
         let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
         let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
         mkLambdaFVars #[x] body
@@ -316,14 +316,14 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
   | .forallE _ src tgt _ =>
     if tgt.hasLooseBVars then
       -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
-      throwError "Term {e} is a dependent function, of type {etype}\n\
-      Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one"
+      throwError "Term {e} is a dependent function, of type {etype}\nHint: you can use the `T%` \
+        elaborator to convert a dependent function to a non-dependent one"
     let srcI ← findModel src
     if let some es := es then
       let estype ← inferType es
       if !(← pureIsDefEq estype <|← mkAppM ``Set #[src]) then
         throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
-        the set {es} : {estype}"
+          the set {es} : {estype}"
     let tgtI ← findModel tgt (src, srcI)
     return (srcI, tgtI)
   | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
