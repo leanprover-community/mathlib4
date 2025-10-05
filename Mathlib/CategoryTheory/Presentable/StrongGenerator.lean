@@ -27,9 +27,15 @@ universe w v' v u' u
 
 namespace CategoryTheory
 
-open Limits
+-- to be moved
+instance CostructuredArrow.locallySmall {C : Type u} {D : Type u'} [Category.{u'} C]
+    [Category.{v'} D] (F : C ⥤ D) (Y : D) [LocallySmall.{w} C] :
+    LocallySmall.{w} (CostructuredArrow F Y) where
+  hom_small T₁ T₂ := small_of_injective (f := CommaMorphism.left)
+    (fun _ _ _ ↦ by aesop)
 
-instance {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+-- to be moved
+instance CostructuredArrow.small {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     [Small.{w} C] [LocallySmall.{w} D]
     {F : C ⥤ D} (X : D) : Small.{w} (CostructuredArrow F X) := by
   let φ (f : CostructuredArrow F X) : Σ (Y : C), F.obj Y ⟶ X := ⟨_, f.hom⟩
@@ -41,6 +47,16 @@ instance {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     obtain rfl : f = g := by simpa [φ] using h
     rfl
   exact small_of_injective hφ
+
+-- to be moved
+instance CostructuredArrow.essentiallySmall {C : Type u} {D : Type u'} [Category.{v} C]
+    [Category.{v'} D] (F : C ⥤ D) (Y : D) [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
+    EssentiallySmall.{w} (CostructuredArrow F Y) := by
+  rw [← essentiallySmall_congr
+    (CostructuredArrow.pre (equivSmallModel.{w} C).inverse F Y).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
+
+open Limits
 
 variable {C : Type u} [Category.{v} C] {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
@@ -112,7 +128,25 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
       (CostructuredArrow (P.colimitsCardinalClosure κ).ι X) κ := ⟨fun {J} _ K hJ ↦ ⟨by
         have := ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure P κ J hJ
         exact colimit.cocone K⟩⟩
-    have : (P.colimitsCardinalClosure κ).ι.IsDense := sorry
+    have : (P.colimitsCardinalClosure κ).ι.IsDense := ⟨by
+      ext X
+      simp only [Pi.top_apply, «Prop».top_eq_true, iff_true]
+      have : HasColimitsOfShape (CostructuredArrow (P.colimitsCardinalClosure κ).ι X) C := by
+        obtain ⟨P₀, _, hP₀⟩ :=
+          ObjectProperty.EssentiallySmall.exists_small.{w} (P.colimitsCardinalClosure κ)
+        have h : P₀ ≤ P.colimitsCardinalClosure κ := by simp only [hP₀, P₀.le_isoClosure]
+        have : (ObjectProperty.ιOfLE h).IsEquivalence :=
+          (ObjectProperty.isEquivalence_ιOfLE_iff h).2 (by rw [hP₀])
+        let e : P₀.FullSubcategory ≌ (P.colimitsCardinalClosure κ).FullSubcategory :=
+          (ObjectProperty.ιOfLE h).asEquivalence
+        have : HasColimitsOfShape
+            (CostructuredArrow (e.functor ⋙ (P.colimitsCardinalClosure κ).ι) X) C :=
+          HasColimitsOfShape.of_essentiallySmall.{w} _ _
+        apply hasColimitsOfShape_of_equivalence
+          (CostructuredArrow.pre e.functor (ObjectProperty.ι _) X).asEquivalence
+      let c := canonicalCocone (P.colimitsCardinalClosure κ).ι X
+      have : IsIso (colimit.desc _ c) := sorry
+      exact ⟨CanonicalColimis.ofIsIso _ _⟩⟩
     have := HasCardinalFilteredGenerators.of_essentiallySmall_of_dense
       (P.colimitsCardinalClosure κ) (P.colimitsCardinalClosure_le κ
         (fun J _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C κ hJ)

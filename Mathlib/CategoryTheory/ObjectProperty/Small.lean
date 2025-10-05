@@ -3,9 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-import Mathlib.Logic.Small.Basic
+import Mathlib.CategoryTheory.ObjectProperty.Equivalence
+import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Smallness of a property of objects
@@ -170,5 +170,12 @@ instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P] :
 instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.EssentiallySmall.{w} P] :
     ObjectProperty.EssentiallySmall.{w} P.unop := by
   simpa
+
+instance (P : ObjectProperty C) [LocallySmall.{w} C]
+    [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  have := (isEquivalence_ιOfLE_iff h₁).2 h₂
+  rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
 
 end CategoryTheory.ObjectProperty

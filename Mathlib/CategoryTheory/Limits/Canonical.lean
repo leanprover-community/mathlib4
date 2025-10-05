@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!
@@ -59,6 +59,14 @@ lemma CanonicalColimit.hom_ext'
     {Y : D} (hY : CanonicalColimit F Y) {T : D} {f g : Y ⟶ T}
     (h : ∀ (X : C) (p : F.obj X ⟶ Y), p ≫ f = p ≫ g) : f = g :=
   hY.hom_ext (fun _ ↦ h _ _)
+
+/-- If the canonical map `colimit (CostructuredArrow.proj F Y ⋙ F) ⟶ Y` is an isomorphim,
+then `Y` is a canonical colimit relatively to `F`. -/
+noncomputable def CanonicalColimis.ofIsIso (Y : D) [HasColimit (CostructuredArrow.proj F Y ⋙ F)]
+    [IsIso (colimit.desc _ (canonicalCocone F Y))] :
+    CanonicalColimit F Y :=
+  IsColimit.ofIsoColimit (colimit.isColimit (CostructuredArrow.proj F Y ⋙ F))
+    (Cocones.ext (asIso ((colimit.desc _ (canonicalCocone F Y)))))
 
 variable {F} in
 /-- If `Y` is a canonical colimit relatively to `F : C ⥤ D`, and `G : C ⥤ D`
