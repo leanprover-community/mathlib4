@@ -706,6 +706,76 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseMulSemiringAction
 
 end
 
+section Quotient
+
+/-- The elements of `I / J` are the `x` such that `x • J ⊆ I`.
+
+In fact, we define `x ∈ I / J` to be `∀ y ∈ J, x * y ∈ I` (see `mem_div_iff_forall_mul_mem`),
+which is equivalent to `x • J ⊆ I` (see `mem_div_iff_smul_subset`), but nicer to use in proofs.
+
+This is the general form of the ideal quotient, traditionally written $I : J$.
+-/
+instance : Div (Submodule R A) :=
+  ⟨fun I J =>
+    { carrier := { x | ∀ y ∈ J, x * y ∈ I }
+      zero_mem' := fun y _ => by
+        rw [zero_mul]
+        exact Submodule.zero_mem _
+      add_mem' := fun ha hb y hy => by
+        rw [add_mul]
+        exact Submodule.add_mem _ (ha _ hy) (hb _ hy)
+      smul_mem' := fun r x hx y hy => by
+        rw [Algebra.smul_mul_assoc]
+        exact Submodule.smul_mem _ _ (hx _ hy) }⟩
+
+@[simp]
+theorem mem_div_iff_forall_mul_mem {x : A} {I J : Submodule R A} :
+    x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I :=
+  Iff.rfl
+
+theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} :
+    x ∈ I / J ↔ x • (J : Set A) ⊆ I :=
+  ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by
+      rw [← xy'_eq_y]
+      exact h _ hy'
+    , fun h _ hy => h (Set.smul_mem_smul_set hy)⟩
+
+@[simp]
+theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z ∈ K, x * z ∈ J :=
+  Iff.rfl
+
+theorem le_div_iff_mul_le {I J K : Submodule R A} : I ≤ J / K ↔ I * K ≤ J := by
+  rw [le_div_iff, mul_le]
+
+@[simp]
+theorem one_le_one_div {I : Submodule R A} : 1 ≤ 1 / I ↔ I ≤ 1 := by
+  rw [le_div_iff_mul_le, one_mul]
+
+@[simp]
+theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
+  rw [← one_le, le_div_iff_mul_le, one_mul]
+
+theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
+  simpa using mul_le_mul_left' (one_le_one_div.mpr hI) _
+
+@[simp]
+protected theorem map_div {B : Type*} [Semiring B] [Algebra R B]
+    (I J : Submodule R A) (h : A ≃ₐ[R] B) :
+    (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
+  ext x
+  simp only [mem_map, mem_div_iff_forall_mul_mem, AlgEquiv.toLinearMap_apply]
+  constructor
+  · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+    exact ⟨x * y, hx _ hy, map_mul h x y⟩
+  · rintro hx
+    refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
+    obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
+    convert xz_mem using 1
+    apply h.injective
+    rw [map_mul, h.apply_symm_apply, hxz]
+
+end Quotient
+
 end AlgebraSemiring
 
 section AlgebraCommSemiring
@@ -737,6 +807,20 @@ theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
 theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
     (∏ i ∈ s, span R ({x i} : Set A)) = span R {∏ i ∈ s, x i} := by
   rw [prod_span, Set.finset_prod_singleton]
+
+theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
+  rw [Submodule.mul_le]
+  intro m hm n hn
+  rw [Submodule.mem_div_iff_forall_mul_mem] at hn
+  rw [mul_comm]
+  exact hn m hm
+
+end AlgebraCommSemiring
+
+section ModuleSet
+
+variable {R : Type u} [CommSemiring R]
+variable {A : Type v} [Semiring A] [Algebra R A]
 
 variable (R A)
 
@@ -771,75 +855,6 @@ theorem singleton_smul (a : A) (M : Submodule R A) :
   rw [setSemiring_smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
   exact (map (LinearMap.mulLeft R a) M).span_eq
 
-section Quotient
-
-/-- The elements of `I / J` are the `x` such that `x • J ⊆ I`.
-
-In fact, we define `x ∈ I / J` to be `∀ y ∈ J, x * y ∈ I` (see `mem_div_iff_forall_mul_mem`),
-which is equivalent to `x • J ⊆ I` (see `mem_div_iff_smul_subset`), but nicer to use in proofs.
-
-This is the general form of the ideal quotient, traditionally written $I : J$.
--/
-instance : Div (Submodule R A) :=
-  ⟨fun I J =>
-    { carrier := { x | ∀ y ∈ J, x * y ∈ I }
-      zero_mem' := fun y _ => by
-        rw [zero_mul]
-        apply Submodule.zero_mem
-      add_mem' := fun ha hb y hy => by
-        rw [add_mul]
-        exact Submodule.add_mem _ (ha _ hy) (hb _ hy)
-      smul_mem' := fun r x hx y hy => by
-        rw [Algebra.smul_mul_assoc]
-        exact Submodule.smul_mem _ _ (hx _ hy) }⟩
-
-theorem mem_div_iff_forall_mul_mem {x : A} {I J : Submodule R A} : x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I :=
-  Iff.refl _
-
-theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} : x ∈ I / J ↔ x • (J : Set A) ⊆ I :=
-  ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by rw [← xy'_eq_y]; exact h _ hy',
-    fun h _ hy => h (Set.smul_mem_smul_set hy)⟩
-
-theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z ∈ K, x * z ∈ J :=
-  Iff.refl _
-
-theorem le_div_iff_mul_le {I J K : Submodule R A} : I ≤ J / K ↔ I * K ≤ J := by
-  rw [le_div_iff, mul_le]
-
-theorem one_le_one_div {I : Submodule R A} : 1 ≤ 1 / I ↔ I ≤ 1 := by
-  rw [le_div_iff_mul_le, one_mul]
-
-@[simp]
-theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
-  rw [← one_le, le_div_iff_mul_le, one_mul]
-
-theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
-  simpa using mul_le_mul_left' (one_le_one_div.mpr hI) _
-
-theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
-  rw [Submodule.mul_le]
-  intro m hm n hn
-  rw [Submodule.mem_div_iff_forall_mul_mem] at hn
-  rw [mul_comm]
-  exact hn m hm
-
-@[simp]
-protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
-    (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
-  ext x
-  simp only [mem_map, mem_div_iff_forall_mul_mem, AlgEquiv.toLinearMap_apply]
-  constructor
-  · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-    exact ⟨x * y, hx _ hy, map_mul h x y⟩
-  · rintro hx
-    refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
-    obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
-    convert xz_mem
-    apply h.injective
-    rw [map_mul, h.apply_symm_apply, hxz]
-
-end Quotient
-
-end AlgebraCommSemiring
+end ModuleSet
 
 end Submodule
