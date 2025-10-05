@@ -587,26 +587,4 @@ representation of any number less than 1000 (10 ^ 3) has a length less than or e
 lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e :=
   toDigits_length _ _ _
 
-/-! ### `norm_digits` tactic -/
-
-
-namespace NormDigits
-
-theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
-    (h : Nat.digits b m = l ∧ 1 < b ∧ 0 < m) : (Nat.digits b n = r :: l) ∧ 1 < b ∧ 0 < n := by
-  rcases h with ⟨h, b2, m0⟩
-  have b0 : 0 < b := by omega
-  have n0 : 0 < n := by linarith [mul_pos b0 m0]
-  refine ⟨?_, b2, n0⟩
-  obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
-  subst h; exact Nat.digits_def' b2 n0
-
-theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 < b ∧ 0 < n := by
-  have b2 : 1 < b :=
-    lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
-  refine ⟨?_, b2, n0⟩
-  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb, Nat.div_eq_zero_iff.2 <| .inr nb, Nat.digits_zero]
-
-end NormDigits
-
 end Nat
