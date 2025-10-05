@@ -33,11 +33,11 @@ local notation "v" => valuation R
 /-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
 prove `IsValuativeTopology R`. -/
 theorem of_zero [ContinuousConstVAdd R R]
-    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
+    (h₀ : (𝓝 0).HasBasis (fun _ ↦ True) fun γ : (ValueGroupWithZero R)ˣ ↦ { z | v z < γ }) :
     IsValuativeTopology R where
   mem_nhds_iff {s x} := by
     simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
-      h₀ ((x + ·) ⁻¹' s)
+      h₀.mem_iff (t := (x + ·) ⁻¹' s)
 
 end
 
@@ -84,6 +84,13 @@ theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True)
       fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
   convert hasBasis_nhds (0 : R); rw [sub_zero]
+
+theorem iff_hasBasis_nhds_zero {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
+    [ContinuousConstVAdd R R] :
+    IsValuativeTopology R ↔
+    (𝓝 (0 : R)).HasBasis (fun _ => True)
+      fun γ : (ValueGroupWithZero R)ˣ => { x | valuation R x < γ } :=
+  ⟨fun _ ↦ hasBasis_nhds_zero _, of_zero⟩
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero

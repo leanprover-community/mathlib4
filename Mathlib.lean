@@ -5943,6 +5943,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.Valuation.ValuativeRel
 import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+import Mathlib.RingTheory.Valuation.ValuativeRel.Integers
 import Mathlib.RingTheory.Valuation.ValuativeRel.Trivial
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Compare
