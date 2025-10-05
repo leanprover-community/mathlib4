@@ -124,7 +124,7 @@ instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
   isDomain_localization P.primeCompl_le_nonZeroDivisors
 
 /-- This is an `IsLocalization.AtPrime` version for `IsLocalization.isDomain_of_local_atPrime`. -/
-theorem isDomain_of_isLocalization_atPrime (S : Type*) [CommSemiring S] [Algebra A S]
+theorem isDomain_of_atPrime (S : Type*) [CommSemiring S] [Algebra A S]
     (P : Ideal A) [P.IsPrime] [IsLocalization.AtPrime S P] : IsDomain S :=
   isDomain_of_le_nonZeroDivisors S P.primeCompl_le_nonZeroDivisors
 
