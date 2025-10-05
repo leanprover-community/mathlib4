@@ -154,7 +154,7 @@ variable [Coalgebra R C]
 /-- Convolution unit on linear maps from a coalgebra to an algebra. -/
 abbrev convOne : One (C →ₗ[R] A) where one := Algebra.linearMap R A ∘ₗ counit
 
-scoped[ConvolutionProduct] attribute [instance] LinearMap.convOne LinearMap.convMul
+scoped[ConvolutionProduct] attribute [instance] LinearMap.convOne
 
 lemma convOne_def : (1 : C →ₗ[R] A) = Algebra.linearMap R A ∘ₗ counit := rfl
 
