@@ -100,7 +100,7 @@ theorem characteristic_sub_characteristic_inv_le (hf : MeromorphicOn f Set.univ)
   · simp [characteristic_sub_characteristic_inv_off_zero hf h]
 
 /--
-First part of the First Main Theorem, quantitative version: If `f` is meromorphic on the complex
+First part of the First Main Theorem, qualitative version: If `f` is meromorphic on the complex
 plane, then the characteristic functions of `f` and `f⁻¹` agree asymptotically up to a bounded
 function.
 -/
