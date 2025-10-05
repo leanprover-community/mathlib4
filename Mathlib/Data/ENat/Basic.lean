@@ -327,6 +327,8 @@ lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m
 lemma ne_top_iff_exists : n ≠ ⊤ ↔ ∃ m : ℕ, ↑m = n := WithTop.ne_top_iff_exists
 
 lemma eq_top_iff_forall_ne : n = ⊤ ↔ ∀ m : ℕ, ↑m ≠ n := WithTop.eq_top_iff_forall_ne
+lemma forall_ne_top {p : ℕ∞ → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : ℕ, p x := WithTop.forall_ne_top
+lemma exists_ne_top {p : ℕ∞ → Prop} : (∃ x ≠ ⊤, p x) ↔ ∃ x : ℕ, p x := WithTop.exists_ne_top
 lemma eq_top_iff_forall_gt : n = ⊤ ↔ ∀ m : ℕ, m < n := WithTop.eq_top_iff_forall_gt
 lemma eq_top_iff_forall_ge : n = ⊤ ↔ ∀ m : ℕ, m ≤ n := WithTop.eq_top_iff_forall_ge
 
