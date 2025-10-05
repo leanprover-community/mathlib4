@@ -1622,6 +1622,7 @@ import Mathlib.Analysis.Convex.Cone.Closure
 import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Cone.InnerDual
+import Mathlib.Analysis.Convex.Cone.Polar
 import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.Convex.ContinuousLinearEquiv
 import Mathlib.Analysis.Convex.Contractible
@@ -5191,8 +5192,8 @@ import Mathlib.Order.JordanHolder
 import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
-import Mathlib.Order.LatticeElements
 import Mathlib.Order.Lattice.Congruence
+import Mathlib.Order.LatticeElements
 import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Max
@@ -6944,3 +6945,4 @@ import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
+import Mathlib.«c-star-centre»
