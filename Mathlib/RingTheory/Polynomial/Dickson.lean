@@ -128,7 +128,6 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
 
 variable (R)
 
--- Porting note: Added 2 new theorems for convenience
 private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟2 : R) = 1 := by
   rw [two_mul, ← C_add, invOf_two_add_invOf_two, C_1]
 

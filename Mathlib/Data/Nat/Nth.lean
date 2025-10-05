@@ -360,10 +360,11 @@ theorem filter_range_nth_eq_insert_of_infinite (hp : (setOf p).Infinite) (k : �
 
 theorem count_nth {n : ℕ} (hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset) :
     count p (nth p n) = n := by
-  induction' n with k ihk
-  · exact count_nth_zero _
-  · rw [count_eq_card_filter_range, filter_range_nth_eq_insert hn, card_insert_of_notMem, ←
-      count_eq_card_filter_range, ihk fun hf => lt_of_succ_lt (hn hf)]
+  induction n with
+  | zero => exact count_nth_zero _
+  | succ k ihk =>
+    rw [count_eq_card_filter_range, filter_range_nth_eq_insert hn, card_insert_of_notMem,
+      ← count_eq_card_filter_range, ihk fun hf => lt_of_succ_lt (hn hf)]
     simp
 
 theorem count_nth_of_lt_card_finite {n : ℕ} (hp : (setOf p).Finite) (hlt : n < #hp.toFinset) :
