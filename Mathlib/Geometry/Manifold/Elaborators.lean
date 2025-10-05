@@ -172,8 +172,9 @@ scoped elab:max "T% " t:term:arg : term => do
         -- Check that `x` is not a bound variable in `tgt`!
         -- xxx: is this check fine or overzealous?
         if tgtHasLooseBVars then
-          throwError "Term {tgt} depends on {x}\n\
-            Hint: applying the `T%` elaborator twice makes no sense."
+          throwError "Attempted to fall back to creating a section of the trivial bundle out of \
+            ({e} : {etype}) as a non-dependent function, but return type {tgt} depends on the bound
+            variable ({x} : {base}).\nHint: applying the `T%` elaborator twice makes no sense."
         let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
         let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
         mkLambdaFVars #[x] body
