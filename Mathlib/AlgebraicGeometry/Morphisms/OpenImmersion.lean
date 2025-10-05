@@ -64,6 +64,38 @@ variable {X Y : Scheme.{u}}
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
     IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_stalk_iso f
 
+theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
+    (𝒰 : X.OpenCover) (hf : Function.Injective f.base) (h𝒰 : ∀ i, IsOpenImmersion (𝒰.f i ≫ f)) :
+    IsOpenImmersion f := by
+  refine isOpenImmersion_iff_stalk.mpr ⟨.of_continuous_injective_isOpenMap f.continuous hf ?_, ?_⟩
+  · intro U hU
+    convert (⨆ i, ((𝒰.f i ≫ f) ''ᵁ (𝒰.f i ⁻¹ᵁ ⟨U, hU⟩))).2
+    ext x
+    simp only [Set.mem_image, TopologicalSpace.Opens.map_obj, TopologicalSpace.Opens.iSup_mk,
+      TopologicalSpace.Opens.carrier_eq_coe, IsOpenMap.coe_functor_obj, Scheme.comp_coeBase,
+      TopCat.hom_comp, ContinuousMap.comp_apply, TopologicalSpace.Opens.coe_mk, Set.mem_iUnion,
+      Set.mem_preimage]
+    constructor
+    · rintro ⟨x, hx, rfl⟩
+      obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
+      exact ⟨i, x, hx, rfl⟩
+    · rintro ⟨i, x, hx, rfl⟩
+      exact ⟨_, hx, rfl⟩
+  · intro x
+    obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
+    rw [← (IsIso.comp_inv_eq _).mpr (Scheme.stalkMap_comp (𝒰.f i) f x)]
+    infer_instance
+
+lemma IsOpenImmersion.of_forall_source_exists (f : X ⟶ Y)
+    (hf : Function.Injective f.base)
+    (hX : ∀ x, ∃ (U : Scheme) (i : U ⟶ X) (_ : IsOpenImmersion i),
+      x ∈ i.opensRange ∧ IsOpenImmersion (i ≫ f)) :
+    IsOpenImmersion f := by
+  choose U i _ hxi hi using hX
+  let 𝒰 : X.OpenCover := ⟨⟨X, U, i⟩,
+    ⟨by simpa using show ∀ x, ∃ j y, (i j).base y = x from (⟨_, hxi ·⟩), by simpa⟩⟩
+  exact IsOpenImmersion.of_openCover_source f 𝒰 hf hi
+
 theorem isOpenImmersion_eq_inf :
     @IsOpenImmersion = (topologically IsOpenEmbedding) ⊓
       stalkwise (fun f ↦ Function.Bijective f) := by

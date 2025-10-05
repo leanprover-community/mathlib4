@@ -1272,6 +1272,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.AlgebraicGeometry.QuasiAffine
 import Mathlib.AlgebraicGeometry.RationalMap
 import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.AlgebraicGeometry.Restrict
