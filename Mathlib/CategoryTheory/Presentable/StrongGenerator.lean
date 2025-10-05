@@ -157,8 +157,10 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
         obtain ⟨j, φ₁, φ₂, rfl, rfl⟩ :
             ∃ (j :  CostructuredArrow (P.colimitsCardinalClosure κ).ι X)
               (φ₁ φ₂ : G ⟶ Φ.obj j), φ₁ ≫ colimit.ι _ _ = g₁ ∧ φ₂ ≫ colimit.ι _ _ = g₂ := by
-          obtain ⟨j₁, f₁, hf₁⟩ := IsCardinalPresentable.exists_lift κ (colimit.isColimit _) g₁
-          obtain ⟨j₂, f₂, hf₂⟩ := IsCardinalPresentable.exists_lift κ (colimit.isColimit _) g₂
+          obtain ⟨j₁, f₁, hf₁⟩ :=
+            IsCardinalPresentable.exists_hom_of_isColimit κ (colimit.isColimit _) g₁
+          obtain ⟨j₂, f₂, hf₂⟩ :=
+            IsCardinalPresentable.exists_hom_of_isColimit κ (colimit.isColimit _) g₂
           exact ⟨IsFiltered.max j₁ j₂, f₁ ≫ Φ.map (IsFiltered.leftToMax j₁ j₂),
             f₂ ≫ Φ.map (IsFiltered.rightToMax j₁ j₂), by simpa, by simpa⟩
         simp only [Category.assoc, colimit.ι_desc] at h
