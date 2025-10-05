@@ -115,32 +115,35 @@ theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
   rw [this] at lem
   rw [lem, mul_comm]
 
--- open Classical in
--- /--
--- Zero-preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
+open Classical in
+/--
+Zero-preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
 
--- Note that we cannot just use `fun x ↦ ord R x` without further assumptions on `R`.
--- This is because if R is finite length, then ord R 0 will be some non-top value,
--- meaning in this case `0` will not be mapped to `⊤`.
--- -/
--- @[stacks 02MD]
--- noncomputable
--- def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
---   toFun x := if x ∈ nonZeroDivisors R
---              then WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x)
---              else 0
---   map_zero' := by
---     simp [nonZeroDivisors, exists_ne]
---   map_one' := by
---     simp [nonZeroDivisors, Ring.ord_one]
---     rfl
---   map_mul' := by
---     intro x y
---     split_ifs with _ _ b
---     · rw [← MonoidWithZeroHom.map_mul]
---       congr
---       exact ord_mul R b
---     all_goals simp_all [mul_mem_nonZeroDivisors]
+Note that we cannot just use `fun x ↦ ord R x` without further assumptions on `R`.
+This is because if R is finite length, then ord R 0 will be some non-top value,
+meaning in this case `0` will not be mapped to `⊤`.
+-/
+@[stacks 02MD]
+noncomputable
+def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
+  toFun x :=
+    if x ∈ nonZeroDivisors R then
+      match Ring.ord R x with
+      | ⊤ => 0
+      | (y : ℕ) => (Nat.castAddMonoidHom ℤ).toMultiplicative (.ofAdd y)
+    else 0
+  map_zero' := by
+    simp [nonZeroDivisors, exists_ne]
+  map_one' := by
+    simp [nonZeroDivisors, Ring.ord_one]
+  map_mul' := by
+    intro x y
+    cases hx : ord R x <;> cases hy : ord R y <;>
+      simp +contextual only [mul_mem_nonZeroDivisors, ord_mul, add_top, ite_self, mul_zero, hx, hy,
+        ite_and, top_add, ite_self, AddMonoidHom.toMultiplicative_apply_apply, toAdd_ofAdd,
+        Nat.coe_castAddMonoidHom, mul_ite, zero_mul, mul_zero]
+    rw [← Nat.cast_add, ← ite_and]
+    simp [← ite_and, and_comm]
 
 /--
 The quotient of a Noetherian ring of krull dimension less than or equal to `1` by a principal ideal
