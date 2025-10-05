@@ -102,9 +102,10 @@ theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ 
 
 /-- If `p` is prime and `ζ` is a `p`-th primitive root of unit, then `ζ - 1` and `η₁ - η₂` are
   associated for all distincts `p`-th root of unit `η₁` and `η₂`. -/
-lemma associated_sub_one_mem_nthRootsFinset_sub (hζ : IsPrimitiveRoot ζ p) (hp : p.Prime)
-      {η₁ η₂ : A} (hη₁ : η₁ ∈ nthRootsFinset p 1) (hη₂ : η₂ ∈ nthRootsFinset p 1) (e : η₁ ≠ η₂) :
-    Associated (ζ - 1) (η₁ - η₂) := by
+lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveRoot ζ p)
+    (hp : p.Prime) : Set.Pairwise
+      (nthRootsFinset p (1 : A)) (fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂)) := by
+  intro η₁ hη₁ η₂ hη₂ e
   have : NeZero p := ⟨hp.ne_zero⟩
   obtain ⟨i, hi, rfl⟩ :=
     hζ.eq_pow_of_pow_eq_one ((Polynomial.mem_nthRootsFinset hp.pos 1).1 hη₁)
