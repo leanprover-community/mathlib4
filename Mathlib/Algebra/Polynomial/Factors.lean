@@ -120,8 +120,9 @@ theorem factors_iff_exists_multiset' {f : R[X]} :
   · rintro ⟨m, hm⟩
     exact hm ▸ (factors_C _).mul (.multiset_prod (by simp [factors_X_add_C]))
 
-theorem Factors.natDegree_le_one_of_irreducible [Nontrivial R] {f : R[X]} (hf : Factors f)
+theorem Factors.natDegree_le_one_of_irreducible {f : R[X]} (hf : Factors f)
     (h : Irreducible f) : natDegree f ≤ 1 := by
+  nontriviality R
   obtain ⟨m, hm⟩ := factors_iff_exists_multiset'.mp hf
   rcases m.empty_or_exists_mem with rfl | ⟨a, ha⟩
   · rw [hm]
