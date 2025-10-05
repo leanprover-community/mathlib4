@@ -147,7 +147,7 @@ theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K))
   refine nodup_iff_count_le_one.mpr (fun P ↦ ?_)
   by_contra! H
   have sq : Squarefree (cyclotomic n K) := by
-    refine cyclotomic_squarefree (fun H ↦ ?_)
+    refine squarefree_cyclotomic (fun H ↦ ?_)
     have := charP_of_card_eq_prime_pow hK
     exact hp.out.coprime_iff_not_dvd.mp ((coprime_pow_left_iff
       (pos_of_ne_zero <| f_ne_zero hK) _ _).mp (hn.pow_left f))
@@ -159,7 +159,7 @@ theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K))
     by_cases hQ : Q = P
     · simp only [hQ, insert_eq_cons, count_cons_self, nodup_singleton, mem_singleton,
         count_eq_one_of_mem, reduceAdd]
-      omega
+      cutsat
     · simp [hQ]
   have := prod_dvd_prod_of_le this
   simp only [insert_eq_cons, prod_cons, prod_singleton] at this
