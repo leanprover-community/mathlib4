@@ -61,9 +61,7 @@ abbrev add : W.LeftFraction X Y where
 
 @[simp]
 lemma symm_add : φ.symm.add = φ.add := by
-  dsimp [add, symm]
-  congr 1
-  apply add_comm
+  grind
 
 @[simp]
 lemma map_add (F : C ⥤ D) (hF : W.IsInvertedBy F) [Preadditive D] [F.Additive] :

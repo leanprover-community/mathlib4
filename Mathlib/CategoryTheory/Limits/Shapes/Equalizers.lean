@@ -75,7 +75,6 @@ open WalkingParallelPairHom
 
 /-- Composition of morphisms in the indexing diagram for (co)equalizers. -/
 def WalkingParallelPairHom.comp :
-    -- Porting note: changed X Y Z to implicit to match comp fields in precategory
     ∀ {X Y Z : WalkingParallelPair} (_ : WalkingParallelPairHom X Y)
       (_ : WalkingParallelPairHom Y Z), WalkingParallelPairHom X Z
   | _, _, _, id _, h => h
@@ -144,11 +143,11 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
       (by rintro _ _ (_ | _ | _) <;> simp)
   counitIso :=
     NatIso.ofComponents (fun j => eqToIso (by
-            induction' j with X
+            induction j with | _ X
             cases X <;> rfl))
       (fun {i} {j} f => by
-      induction' i with i
-      induction' j with j
+      induction i with | _ i
+      induction j with | _ j
       let g := f.unop
       have : f = g.op := rfl
       rw [this]
@@ -372,7 +371,6 @@ theorem Fork.IsLimit.lift_ι {s t : Fork f g} (hs : IsLimit s) : hs.lift t ≫ s
 theorem Cofork.IsColimit.π_desc {s t : Cofork f g} (hs : IsColimit s) : s.π ≫ hs.desc t = t.π :=
   hs.fac _ _
 
--- Porting note: `Fork.IsLimit.lift` was added in order to ease the port
 /-- If `s` is a limit fork over `f` and `g`, then a morphism `k : W ⟶ X` satisfying
 `k ≫ f = k ≫ g` induces a morphism `l : W ⟶ s.pt` such that `l ≫ fork.ι s = k`. -/
 def Fork.IsLimit.lift {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
@@ -393,7 +391,6 @@ def Fork.IsLimit.lift' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h 
 lemma Fork.IsLimit.mono {s : Fork f g} (hs : IsLimit s) : Mono s.ι where
   right_cancellation _ _ h := hom_ext hs h
 
--- Porting note: `Cofork.IsColimit.desc` was added in order to ease the port
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
 `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
 def Cofork.IsColimit.desc {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
@@ -705,9 +702,8 @@ variable (f g)
 
 section
 
-/-- `HasEqualizer f g` represents a particular choice of limiting cone
-for the parallel pair of morphisms `f` and `g`.
--/
+/-- Two parallel morphisms `f` and `g` have an equalizer if the diagram `parallelPair f g` has a
+limit. -/
 abbrev HasEqualizer :=
   HasLimit (parallelPair f g)
 
@@ -854,9 +850,8 @@ theorem equalizer.isoSourceOfSelf_inv :
 
 section
 
-/-- `HasCoequalizer f g` represents a particular choice of colimiting cocone
-for the parallel pair of morphisms `f` and `g`.
--/
+/-- Two parallel morphisms `f` and `g` have a coequalizer if the diagram `parallelPair f g` has a
+colimit. -/
 abbrev HasCoequalizer :=
   HasColimit (parallelPair f g)
 
@@ -1060,11 +1055,13 @@ end Comparison
 
 variable (C)
 
-/-- `HasEqualizers` represents a choice of equalizer for every pair of morphisms -/
+/-- A category `HasEqualizers` if it has all limits of shape `WalkingParallelPair`, i.e. if it has
+an equalizer for every parallel pair of morphisms. -/
 abbrev HasEqualizers :=
   HasLimitsOfShape WalkingParallelPair C
 
-/-- `HasCoequalizers` represents a choice of coequalizer for every pair of morphisms -/
+/-- A category `HasCoequalizers` if it has all colimits of shape `WalkingParallelPair`, i.e. if it
+has a coequalizer for every parallel pair of morphisms. -/
 abbrev HasCoequalizers :=
   HasColimitsOfShape WalkingParallelPair C
 

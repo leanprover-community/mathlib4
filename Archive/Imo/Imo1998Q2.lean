@@ -156,7 +156,7 @@ theorem add_sq_add_sq_sub {α : Type*} [Ring α] (x y : α) :
 theorem norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
     2 * z * z + 2 * z + 1 ≤ x * x + y * y := by
   suffices 4 * z * z + 4 * z + 1 + 1 ≤ 2 * x * x + 2 * y * y by
-    rw [← mul_le_mul_left (zero_lt_two' ℤ)]; ring_nf at this ⊢; exact this
+    rw [← mul_le_mul_iff_right₀ (zero_lt_two' ℤ)]; ring_nf at this ⊢; exact this
   have h' : (x + y) * (x + y) = 4 * z * z + 4 * z + 1 := by rw [h]; ring
   rw [← add_sq_add_sq_sub, h', add_le_add_iff_left]
   suffices 0 < (x - y) * (x - y) by apply Int.add_one_le_of_lt this
@@ -192,7 +192,7 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
       suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
   have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ, Finset.card_univ]
-  rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff]
+  rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff_of_subset]
   · rw [hst']; rw [add_assoc] at hs; apply le_tsub_of_add_le_right hs
   · apply Finset.sdiff_subset
 

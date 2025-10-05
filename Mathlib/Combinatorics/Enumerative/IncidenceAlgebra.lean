@@ -352,12 +352,7 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-lemma zeta_mul_kappa [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableLE α]
-    (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
-  rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
-  refine sum_congr rfl fun x hx ↦ ?_
-  rw [mem_Icc] at hx
-  rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
+@[deprecated (since := "2025-09-28")] alias zeta_mul_kappa := zeta_mul_zeta
 
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
@@ -609,7 +604,7 @@ end DecidableLe
 
 variable {𝕜} (f f₁ f₂ : IncidenceAlgebra 𝕜 α) (g g₁ g₂ : IncidenceAlgebra 𝕜 β)
 
-/-- The cartesian product of two incidence algebras. -/
+/-- The Cartesian product of two incidence algebras. -/
 protected def prod : IncidenceAlgebra 𝕜 (α × β) where
   toFun x y := f x.1 y.1 * g x.2 y.2
   eq_zero_of_not_le' x y hxy := by

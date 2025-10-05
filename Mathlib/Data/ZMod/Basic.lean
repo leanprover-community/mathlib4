@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.GroupAction.SubMulAction
@@ -566,7 +565,7 @@ theorem intCast_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
   constructor
   · rintro rfl
     refine ⟨n / p, ?_⟩
-    rw [val_intCast, Int.emod_add_ediv]
+    rw [val_intCast, Int.emod_add_mul_ediv]
   · rintro ⟨k, rfl⟩
     rw [Int.cast_add, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_val,
       ZMod.natCast_self, zero_mul, add_zero, cast_id]
@@ -1227,7 +1226,7 @@ variable (G) in
 lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
   have := NeZero.ne n
   have := char_ne_one n G
-  omega
+  cutsat
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by

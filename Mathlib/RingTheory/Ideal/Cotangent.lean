@@ -27,7 +27,7 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 namespace Ideal
 
--- Porting note: universes need to be explicit to avoid bad universe levels in `quotCotangent`
+-- Universes need to be explicit to avoid bad universe levels in `quotCotangent`
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]

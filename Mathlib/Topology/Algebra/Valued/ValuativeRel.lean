@@ -115,7 +115,21 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
   «v» := valuation R
   is_topological_valuation := mem_nhds_zero_iff
 
-variable (R) in
+lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
+    Valued.v = valuation R := rfl
+
+theorem hasBasis_nhds (x : R) :
+    (𝓝 x).HasBasis (fun _ => True)
+      fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
+  simp [Filter.hasBasis_iff, mem_nhds_iff']
+
+/-- A variant of `hasBasis_nhds` where `· ≠ 0` is unbundled. -/
+lemma hasBasis_nhds' (x : R) :
+    (𝓝 x).HasBasis (· ≠ 0) ({ y | v (y - x) < · }) :=
+  (hasBasis_nhds x).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
+    fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
+
 instance (priority := low) instContinuousConstVAdd : ContinuousConstVAdd R R :=
   ⟨fun x ↦ continuous_iff_continuousAt.2 fun z ↦
     ((hasBasis_nhds_iff.mp inferInstance z).tendsto_iff

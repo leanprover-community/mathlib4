@@ -84,7 +84,7 @@ measures.
 * `MeasureTheory.hausdorffMeasure_pi_real`: for a nonempty `ι`, `μH[card ι]` on `ι → ℝ` equals
   Lebesgue measure.
 
-## Notations
+## Notation
 
 We use the following notation localized in `MeasureTheory`.
 
@@ -910,8 +910,8 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     let f : γ n := fun i =>
       ⟨⌊(x i - a i) * n⌋₊, by
         apply Nat.floor_lt_ceil_of_lt_of_pos
-        · refine (mul_lt_mul_right npos).2 ?_
-          simp only [(hx i).right, sub_lt_sub_iff_right]
+        · gcongr
+          exact (hx i).right
         · refine mul_pos ?_ npos
           simpa only [Rat.cast_lt, sub_pos] using H i⟩
     refine ⟨f, fun i => ⟨?_, ?_⟩⟩
@@ -919,9 +919,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         (a i : ℝ) + ⌊(x i - a i) * n⌋₊ / n ≤ (a i : ℝ) + (x i - a i) * n / n := by
           gcongr
           exact Nat.floor_le (mul_nonneg (sub_nonneg.2 (hx i).1.le) npos.le)
-        _ = x i := by field_simp [npos.ne']
+        _ = x i := by field_simp; ring
     · calc
-        x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp [npos.ne']
+        x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp; ring
         _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n := by
           gcongr
           exact (Nat.lt_floor_add_one _).le

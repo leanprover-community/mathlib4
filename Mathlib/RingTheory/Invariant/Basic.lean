@@ -12,8 +12,8 @@ import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a predicate
 `Algebra.IsInvariant A B G` which states that every fixed point of `B` lies in the image of `A`.
 
-The main application is in algebraic number theory, where `G := Gal(L/K)` is the galois group
-of some finite galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
+The main application is in algebraic number theory, where `G := Gal(L/K)` is the Galois group
+of some finite Galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
 integers. This main result in this file implies the existence of Frobenius elements in this setting.
 See `Mathlib/RingTheory/Frobenius.lean`.
 
@@ -396,7 +396,7 @@ include G in
 For any domain `k` containing `B ⧸ Q`,
 any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`.
 
-This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the galois setting.
+This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the Galois setting.
 -/
 lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
     (σ : k →ₐ[A ⧸ P] k) :
@@ -459,5 +459,41 @@ lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
     dsimp [f] at h₁ h₂ ⊢
     refine .trans ?_ (σ.apply_symm_apply _)
     rw [← h₂, ← e, h₁]
+
+attribute [local instance] Ideal.Quotient.field in
+include G in
+/--
+For any domain `k` containing `B ⧸ Q`,
+any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`. -/
+lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
+    Normal (A ⧸ P) (B ⧸ Q) := by
+  cases subsingleton_or_nontrivial B
+  · cases ‹Q.IsMaximal›.ne_top (Subsingleton.elim _ _)
+  have := Algebra.IsInvariant.isIntegral A B G
+  constructor
+  intro x
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  cases nonempty_fintype G
+  obtain ⟨p, hp, h₁, h₂⟩ := Polynomial.lifts_and_degree_eq_and_monic
+    (Algebra.IsInvariant.charpoly_mem_lifts A B G x) (MulSemiringAction.monic_charpoly _ _)
+  have H : Polynomial.aeval x p = 0 := by
+    rw [Polynomial.aeval_def, ← Polynomial.eval_map, hp, MulSemiringAction.eval_charpoly]
+  have := minpoly.dvd _ (algebraMap _ (B ⧸ Q) x) (p := p.map (algebraMap _ (A ⧸ P)))
+    (by rw [Polynomial.aeval_map_algebraMap, Polynomial.aeval_algebraMap_apply, H, map_zero])
+  refine Polynomial.splits_of_splits_of_dvd (algebraMap (A ⧸ P) (B ⧸ Q)) ?_ ?_ this
+  · exact (h₂.map (algebraMap A (A ⧸ P))).ne_zero
+  · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A B,
+      ← Polynomial.splits_map_iff, hp, MulSemiringAction.charpoly_eq]
+    exact Polynomial.splits_prod _ (fun _ _ ↦ Polynomial.splits_X_sub_C _)
+
+attribute [local instance] Ideal.Quotient.field in
+include G in
+/-- If the extension `B/Q` over `A/P` is separable, then it is finite dimensional. -/
+lemma Ideal.Quotient.finite_of_isInvariant [P.IsMaximal] [Q.IsMaximal]
+    [SMulCommClass G A B] [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
+    Module.Finite (A ⧸ P) (B ⧸ Q) := by
+  have : IsGalois (A ⧸ P) (B ⧸ Q) := { __ := Ideal.Quotient.normal (A := A) G P Q }
+  have := Finite.of_surjective _ (Ideal.Quotient.stabilizerHom_surjective G P Q)
+  exact IsGalois.finiteDimensional_of_finite _ _
 
 end normal

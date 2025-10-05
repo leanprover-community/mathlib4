@@ -8,7 +8,7 @@ import Mathlib.Analysis.Convex.Hull
 /-!
 # Convex cones
 
-In a `R`-module `M`, we define a convex cone as a set `s` such that `a • x + b • y ∈ s` whenever
+In an `R`-module `M`, we define a convex cone as a set `s` such that `a • x + b • y ∈ s` whenever
 `x, y ∈ s` and `a, b > 0`. We prove that convex cones form a `CompleteLattice`, and define their
 images (`ConvexCone.map`) and preimages (`ConvexCone.comap`) under linear maps.
 
@@ -49,7 +49,7 @@ section Definitions
 variable [Semiring R] [PartialOrder R]
 
 variable (R M) in
-/-- A convex cone is a subset `s` of a `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
+/-- A convex cone is a subset `s` of an `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
 structure ConvexCone [AddCommMonoid M] [SMul R M] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
@@ -247,20 +247,6 @@ theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C
   ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc) h, C.smul_mem hc⟩
 
 end MulAction
-
-section OrderedAddCommGroup
-
-variable [AddCommGroup M] [PartialOrder M] [Module 𝕜 M]
-
-/-- Constructs an ordered module given an `OrderedAddCommGroup`, a cone, and a proof that
-the order relation is the one defined by the cone.
--/
-theorem to_orderedSMul (C : ConvexCone 𝕜 M) (h : ∀ x y : M, x ≤ y ↔ y - x ∈ C) : OrderedSMul 𝕜 M :=
-  .mk' fun x y z xy hz ↦ by
-    rw [h (z • x) (z • y), ← smul_sub z y x]; exact C.smul_mem hz ((h x y).mp xy.le)
-
-end OrderedAddCommGroup
-
 end LinearOrderedField
 
 /-! ### Convex cones with extra properties -/
