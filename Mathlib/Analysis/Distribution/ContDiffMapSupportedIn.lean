@@ -52,7 +52,7 @@ larger space of test functions.
 ## Implementation details
 
 The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
-is to make replacing `f` by zero outside of `K` easier.
+is to make rewriting `f x` to `0` easier when `x ∉ K`.
 
 ## Tags
 
