@@ -29,11 +29,10 @@ would say that `P.colimitsOfShape J ≤ J`.
 * refactor `ObjectProperty.ind` by saying that it is the supremum
 of `P.colimitsOfShape J` for a filtered category `J`
 (generalize also to `κ`-filtered categories?)
-* dualize the results and formalize the closure of `P`
-under finite limits (which require iterating over `ℕ`),
-and more generally the closure under limits indexed by a category
-whose type of arrows has a cardinality that is bounded by a
-certain regular cardinal (@joelriou)
+* formalize the closure of `P` under finite colimits (which require
+iterating over `ℕ`), and more generally the closure under colimits
+indexed by a category whose type of arrows has a cardinality
+that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
