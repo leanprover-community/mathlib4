@@ -397,7 +397,7 @@ end PositiveCompacts
 
 /-! ### Compact open sets -/
 
-/-- The type of compact open sets of a topological space. This is useful in non Hausdorff contexts,
+/-- The type of compact open sets of a topological space. This is useful in non-Hausdorff contexts,
 in particular spectral spaces. -/
 structure CompactOpens (α : Type*) [TopologicalSpace α] extends Compacts α where
   isOpen' : IsOpen carrier
