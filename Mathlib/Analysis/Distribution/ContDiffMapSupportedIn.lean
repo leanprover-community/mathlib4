@@ -124,4 +124,39 @@ instance toContDiffMapSupportedInClass :
   map_contDiff f := f.contDiff'
   map_zero_on_compl f := f.zero_on_compl'
 
+variable {E F}
+
+protected theorem contDiff (f : 𝓓^{n}_{K}(E, F)) : ContDiff ℝ n f := map_contDiff f
+protected theorem zero_on_compl (f : 𝓓^{n}_{K}(E, F)) : EqOn f 0 Kᶜ := map_zero_on_compl f
+protected theorem compact_supp (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport f :=
+  .intro K.isCompact (map_zero_on_compl f)
+
+@[simp]
+theorem toFun_eq_coe {f : 𝓓^{n}_{K}(E, F)} : f.toFun = (f : E → F) :=
+  rfl
+
+/-- See note [custom simps projection]. -/
+def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E →F  := f
+
+-- this must come after the coe_to_fun definition.
+initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
+
+@[ext]
+theorem ext {f g : 𝓓^{n}_{K}(E, F)} (h : ∀ a, f a = g a) : f = g :=
+  DFunLike.ext _ _ h
+
+/-- Copy of a `ContDiffMapSupportedIn` with a new `toFun` equal to the old one. Useful to fix
+definitional equalities. -/
+protected def copy (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : 𝓓^{n}_{K}(E, F) where
+  toFun := f'
+  contDiff' := h.symm ▸ f.contDiff
+  zero_on_compl' := h.symm ▸ f.zero_on_compl
+
+@[simp]
+theorem coe_copy (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+  rfl
+
+theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f' h = f :=
+  DFunLike.ext' h
+
 end ContDiffMapSupportedIn
