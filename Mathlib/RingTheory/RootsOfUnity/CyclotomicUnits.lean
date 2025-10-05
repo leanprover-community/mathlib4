@@ -62,7 +62,7 @@ theorem associated_pow_sub_one_pow_of_coprime (hζ : IsPrimitiveRoot ζ n)
 /-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `∑ i ∈ range j, ζ ^ i`
   is a unit for all `j` coprime with `n`. This is the unit given by
   `associated_pow_sub_one_pow_of_coprime` (see
-  `pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum` below). -/
+  `pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum`). -/
 theorem geom_sum_isUnit (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (hj : j.Coprime n) :
     IsUnit (∑ i ∈ range j, ζ ^ i) := by
   obtain ⟨u, hu⟩ := hζ.associated_pow_sub_one_pow_of_coprime hj (coprime_one_left n)
