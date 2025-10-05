@@ -1622,7 +1622,6 @@ import Mathlib.Analysis.Convex.Cone.Closure
 import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Cone.InnerDual
-import Mathlib.Analysis.Convex.Cone.Polar
 import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.Convex.ContinuousLinearEquiv
 import Mathlib.Analysis.Convex.Contractible
@@ -6945,4 +6944,3 @@ import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
-import Mathlib.«c-star-centre»
