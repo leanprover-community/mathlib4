@@ -145,7 +145,15 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
         apply hasColimitsOfShape_of_equivalence
           (CostructuredArrow.pre e.functor (ObjectProperty.ι _) X).asEquivalence
       let c := canonicalCocone (P.colimitsCardinalClosure κ).ι X
-      have : IsIso (colimit.desc _ c) := sorry
+      have : Mono (colimit.desc _ c) := by
+        sorry
+      have : IsIso (colimit.desc _ c) := hS₁.isIso_of_mono _ (fun g φ ↦ by
+        let γ : CostructuredArrow (P.colimitsCardinalClosure κ).ι X :=
+          CostructuredArrow.mk (Y := ⟨g.1, P.le_colimitsCardinalClosure _ _ g.2⟩) (by exact φ)
+        refine ⟨colimit.ι (CostructuredArrow.proj _ _ ⋙ (P.colimitsCardinalClosure κ).ι) γ, ?_⟩
+        dsimp
+        rw [colimit.ι_desc]
+        rfl)
       exact ⟨CanonicalColimis.ofIsIso _ _⟩⟩
     have := HasCardinalFilteredGenerators.of_essentiallySmall_of_dense
       (P.colimitsCardinalClosure κ) (P.colimitsCardinalClosure_le κ
