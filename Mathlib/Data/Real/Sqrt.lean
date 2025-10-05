@@ -321,6 +321,11 @@ lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
   rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
   norm_num
 
+lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
+  rw [← one_div, div_eq_iff (sub_ne_zero_of_ne (by simp))]
+  ring_nf
+  norm_num
+
 @[simp]
 theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
   simp_rw [Real.sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
@@ -345,9 +350,7 @@ variable {x y : ℝ}
 
 @[simp]
 theorem div_sqrt : x / √x = √x := by
-  rcases le_or_gt x 0 with h | h
-  · rw [sqrt_eq_zero'.mpr h, div_zero]
-  · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
+  grind
 
 theorem sqrt_div_self' : √x / x = 1 / √x := by rw [← div_sqrt, one_div_div, div_sqrt]
 
