@@ -589,7 +589,7 @@ theorem tensorIso_def' {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ₘ g) :=
   (asIso f ⊗ᵢ asIso g).isIso_hom
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) inv_add]
 theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] :
     inv (f ⊗ₘ g) = inv f ⊗ₘ inv g := by
   simp [tensorHom_def, whisker_exchange]
@@ -1123,7 +1123,7 @@ theorem tensorRightTensor_hom_app (X Y Z : C) :
     (tensorRightTensor X Y).hom.app Z = (associator Z X Y).inv :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) addRightAdd_inv_app]
 theorem tensorRightTensor_inv_app (X Y Z : C) :
     (tensorRightTensor X Y).inv.app Z = (associator Z X Y).hom := by simp [tensorRightTensor]
 
