@@ -125,7 +125,7 @@ open UniqueFactorizationMonoid Nat
 variable [DecidableEq K]
 
 theorem natDegree_of_mem_normalizedFactors_cyclotomic
-      (hP : P ∈ normalizedFactors (cyclotomic n K)) :
+    (hP : P ∈ normalizedFactors (cyclotomic n K)) :
     P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) :=
   natDegree_of_dvd_cyclotomic_of_irreducible hK hn (dvd_of_mem_normalizedFactors hP)
     (irreducible_of_normalized_factor P hP)
