@@ -718,13 +718,13 @@ This is the general form of the ideal quotient, traditionally written $I : J$.
 instance : Div (Submodule R A) :=
   ⟨fun I J =>
     { carrier := { x | ∀ y ∈ J, x * y ∈ I }
-      zero_mem' := fun y _ => by
+      zero_mem' y _ := by
         rw [zero_mul]
-        apply Submodule.zero_mem
-      add_mem' := fun ha hb y hy => by
+        exact Submodule.zero_mem _
+      add_mem' ha hb y hy := by
         rw [add_mul]
         exact Submodule.add_mem _ (ha _ hy) (hb _ hy)
-      smul_mem' := fun r x hx y hy => by
+      smul_mem' r x hx y hy := by
         rw [Algebra.smul_mul_assoc]
         exact Submodule.smul_mem _ _ (hx _ hy) }⟩
 
