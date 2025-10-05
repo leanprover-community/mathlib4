@@ -265,8 +265,9 @@ theorem factors_of_degree_eq_one {f : R[X]} (hf : degree f = 1) : Factors f :=
 
 open UniqueFactorizationMonoid in
 theorem factors_iff_splits {f : R[X]} :
-    Factors f ↔ f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 := by
-  refine ⟨(·.splits), ?_⟩
+    Factors f ↔ f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g = 1 := by
+  refine ⟨fun hf ↦ hf.splits.imp_right (forall₃_imp fun g hg hgf ↦
+    (le_antisymm · (Nat.WithBot.one_le_iff_zero_lt.mpr hg.degree_pos))), ?_⟩
   rintro (rfl | hf)
   · aesop
   classical
@@ -275,7 +276,7 @@ theorem factors_iff_splits {f : R[X]} :
   obtain ⟨u, hu⟩ := factors_prod hf0
   rw [← hu]
   refine (Factors.multiset_prod fun g hg ↦ ?_).mul (factors_of_isUnit u.isUnit)
-  exact factors_of_degree_le_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
+  exact factors_of_degree_eq_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
 
 end Field
 
