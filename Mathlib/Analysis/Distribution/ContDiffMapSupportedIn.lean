@@ -145,7 +145,7 @@ initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
 theorem ext {f g : 𝓓^{n}_{K}(E, F)} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
-/-- Copy of a `BoundedContDiffMap` with a new `toFun` equal to the old one. Useful to fix
+/-- Copy of a `ContDiffMapSupportedIn` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : 𝓓^{n}_{K}(E, F) where
   toFun := f'
@@ -162,11 +162,6 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 @[simp]
 theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
    (f : BoundedContinuousFunction E F) x  = (f x) := rfl
-
-theorem _root_.Set.EqOn.comp_left₂ {α β δ γ} {op : α → β → δ} {a₁ a₂ : γ → α}
-    {b₁ b₂ : γ → β} {s : Set γ} (ha : s.EqOn a₁ a₂) (hb : s.EqOn b₁ b₂) :
-    s.EqOn (fun x ↦ op (a₁ x) (b₁ x)) (fun x ↦ op (a₂ x) (b₂ x)) := fun _ hx =>
-  congr_arg₂ _ (ha hx) (hb hx)
 
 section AddCommGroup
 
@@ -199,20 +194,16 @@ instance : Neg 𝓓^{n}_{K}(E, F) where
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
-instance instSub : Sub 𝓓^{n}_{K}(E, F) :=
-  ⟨fun f g =>
-    ⟨f - g, (f.contDiff).sub (g.contDiff), by
-      intro x hx
-      simp [f.zero_on_compl hx, g.zero_on_compl hx]
-    ⟩
-  ⟩
+instance instSub : Sub 𝓓^{n}_{K}(E, F) where
+  sub f g := ContDiffMapSupportedIn.mk (f - g) (f.contDiff.sub g.contDiff) <| by
+    rw [← sub_zero 0]
+    exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-   SMul R 𝓓^{n}_{K}(E, F) :=
-⟨fun c f ↦
-  ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
+   SMul R 𝓓^{n}_{K}(E, F) where
+  smul c f := ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
-    exact f.zero_on_compl.comp_left⟩
+    exact f.zero_on_compl.comp_left
 
 @[simp]
 lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
@@ -223,28 +214,6 @@ lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [Continuous
 lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
     (c : R) (f : 𝓓^{n}_{K}(E, F)) (x : E) : (c • f) x = c • (f x) :=
   rfl
-
-instance instNSMul : SMul ℕ 𝓓^{n}_{K}(E, F) :=
- ⟨fun c f ↦
-    {
-      toFun := c • f
-      contDiff' := (f.contDiff).const_smul c
-      zero_on_compl' := by
-        rw [← smul_zero c]
-        exact f.zero_on_compl.comp_left
-    }
-  ⟩
-
-instance instZSMul : SMul ℤ 𝓓^{n}_{K}(E, F) :=
- ⟨fun c f ↦
-    {
-      toFun := c • f
-      contDiff' := (f.contDiff).const_smul c
-      zero_on_compl' := by
-        rw [← smul_zero c]
-        exact f.zero_on_compl.comp_left
-    }
-  ⟩
 
 instance : AddCommGroup 𝓓^{n}_{K}(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
