@@ -245,7 +245,7 @@ private abbrev strongRecAux {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) →
 
 /-- Recursion principle based on `<`. -/
 @[elab_as_elim]
-protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m, m < n → p m) → p n) (n : ℕ) : p n :=
+protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) : p n :=
   H n <| strongRecAux H n
 
 private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) :
@@ -289,11 +289,11 @@ def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
 
 @[elab_as_elim]
 protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
-    (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
+    (h : ∀ n, (∀ m < n, p m) → p n) : p n :=
   Nat.strongRecOn n h
 
 protected theorem case_strong_induction_on {p : ℕ → Prop} (a : ℕ) (hz : p 0)
-    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a :=
+    (hi : ∀ n, (∀ m ≤ n, p m) → p (n + 1)) : p a :=
   Nat.caseStrongRecOn a hz hi
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `k < n`, then `P n` implies `P m` for
