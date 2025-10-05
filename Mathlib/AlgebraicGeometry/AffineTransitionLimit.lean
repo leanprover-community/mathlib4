@@ -213,7 +213,7 @@ lemma exists_map_eq_top
 
 attribute [local simp] Scheme.Hom.resLE_id Scheme.Hom.resLE_comp_resLE
 
-/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and a open `U ⊆ Dᵢ`,
+/-- Given a diagram `{ Dᵢ }` of schemes and a open `U ⊆ Dᵢ`,
 this is the diagram of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 @[simps] noncomputable
 def opensDiagram (i : I) (U : (D.obj i).Opens) : Over i ⥤ Scheme where
@@ -225,7 +225,7 @@ def opensDiagram (i : I) (U : (D.obj i).Opens) : Over i ⥤ Scheme where
 def opensDiagramι (i : I) (U : (D.obj i).Opens) : opensDiagram D i U ⟶ Over.forget _ ⋙ D where
   app j := Scheme.Opens.ι _
 
-/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and a open `U ⊆ Dᵢ`,
+/-- Given a diagram `{ Dᵢ }` of schemes and a open `U ⊆ Dᵢ`,
 the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`.
 This is the underlying cone, and it is limiting as witnessed by `isLimitOpensCone` below. -/
 @[simps] noncomputable
