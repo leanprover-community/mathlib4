@@ -1162,6 +1162,13 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R[X] where
 
 instance [IsCancelAdd R] [IsDomain R] : IsDomain R[X] where
 
+/-- See also `Polynomial.isCancelMulZero_iff`: in order for `R[X]` to have cancellative
+multiplication (stronger than `NoZeroDivisors` in general, but equivalent if `R` is a ring),
+`R` must have both cancellative multiplication and cancellative addition. -/
+theorem noZeroDivisors_iff : NoZeroDivisors R[X] ↔ NoZeroDivisors R where
+  mp _ := C_injective.noZeroDivisors _ C_0 fun _ _ ↦ C_mul
+  mpr _ := inferInstance
+
 end Semiring
 
 section DivisionSemiring
