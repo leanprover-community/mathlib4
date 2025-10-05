@@ -20,8 +20,9 @@ functions `f : E → F` (where `F` is a normed vector space) such that:
 - `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
 - `f` vanishes outside of a compact: `EqOn f 0 Kᶜ`.
 
-We define it as a bundled structure so as to endow it with the topology required to make it a ù
-subspace of the space of test functions.
+We define it as a bundled structure so as to endow it with the topology of uniform convergence of
+`f` and all of its derivatives up to order `n`, required to make it a subspace of the space of
+test functions.
 
 ## Main definitions
 
