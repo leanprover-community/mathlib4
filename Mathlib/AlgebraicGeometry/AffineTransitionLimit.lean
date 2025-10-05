@@ -3,12 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Christian Merten
 -/
-import Mathlib.Algebra.Category.Grp.Colimits
 import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
@@ -870,4 +868,3 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
 end sections
 
 end AlgebraicGeometry
-#min_imports
