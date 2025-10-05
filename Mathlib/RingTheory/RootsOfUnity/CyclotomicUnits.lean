@@ -14,8 +14,8 @@ We gather miscellaneous results about units given by sums of powers of roots of 
 
 ## Main results
 
-* `IsPrimitiveRoot.associated_pow_sub_one_of_coprime` : given an `n`-th primitive root of unity `ζ`,
-  we have that `ζ - 1` and `ζ ^ j - 1` are associated for all `j` coprime with `n`.
+* `IsPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime` : given an `n`-th primitive root of
+  unity `ζ`, we have that `ζ - 1` and `ζ ^ j - 1` are associated for all `j` coprime with `n`.
 * `IsPrimitiveRoot.associated_pow_sub_one_pow_of_coprime` : given an `n`-th primitive root of unity
   `ζ`, we have that `ζ ^ i - 1` and `ζ ^ j - 1` are associated for all `i` and `j` coprime with `n`.
 * `IsPrimitiveRoot.associated_pow_add_sub_sub_one` : given an `n`-th primitive root of unity `ζ`,
@@ -39,7 +39,7 @@ namespace IsPrimitiveRoot
 
 /-- Given an `n`-th primitive root of unity `ζ,` we have that `ζ - 1` and `ζ ^ j - 1` are associated
   for all `j` coprime with `n`. -/
-theorem associated_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (hj : j.Coprime n) :
+theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (hj : j.Coprime n) :
     Associated (ζ - 1) (ζ ^ j - 1) := by
   refine associated_of_dvd_dvd ⟨∑ i ∈ range j, ζ ^ i, (mul_geom_sum _ _).symm⟩ ?_
   match n with
@@ -56,7 +56,7 @@ theorem associated_pow_sub_one_pow_of_coprime (hζ : IsPrimitiveRoot ζ n)
     (hi : i.Coprime n) (hj : j.Coprime n) : Associated (ζ ^ j - 1) (ζ ^ i - 1) := by
   suffices ∀ {j}, (j.Coprime n) → Associated (ζ - 1) (ζ ^ j - 1) by
     grind [Associated.trans, Associated.symm]
-  exact hζ.associated_pow_sub_one_of_coprime
+  exact hζ.associated_sub_one_pow_sub_one_of_coprime
 
 /-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `∑ i ∈ range j, ζ ^ i`
   is a unit for all `j` coprime with `n`. This is the unit given by
