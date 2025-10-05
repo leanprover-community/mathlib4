@@ -186,10 +186,10 @@ instance (priority := 100) completable : CompletableTopField K :=
           rw [mul_assoc]
           have : ((γ₀ * γ₀ : Γ₀ˣ) : Γ₀) ≤ v x * v x :=
             calc
-              ↑γ₀ * ↑γ₀ ≤ ↑γ₀ * v x := mul_le_mul_left' x_in₀ ↑γ₀
-              _ ≤ _ := mul_le_mul_right' x_in₀ (v x)
+              ↑γ₀ * ↑γ₀ ≤ ↑γ₀ * v x := mul_le_mul_right x_in₀ ↑γ₀
+              _ ≤ _ := mul_le_mul_left x_in₀ (v x)
           rw [Units.val_mul]
-          exact mul_le_mul_left' this γ }
+          exact mul_le_mul_right this γ }
 
 open WithZeroTopology
 

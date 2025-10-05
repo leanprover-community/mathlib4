@@ -145,7 +145,7 @@ lemma sSup_mul : sSup s * a = ⨆ b ∈ s, b * a := by
   simp_rw [mul_comm, mul_sSup]
 
 lemma mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i := by
-  refine (le_iInf fun x ↦ (mul_le_mul_left' (iInf_le ..) a)).antisymm ?_
+  refine (le_iInf fun x ↦ (mul_le_mul_right (iInf_le ..) a)).antisymm ?_
   obtain ⟨b, hb⟩ := ENat.exists_eq_iInf f
   rw [← hb, iInf_le_iff]
   exact fun x h ↦ h _

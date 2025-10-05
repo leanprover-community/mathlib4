@@ -61,7 +61,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftMono α] :
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only at h ⊢
         norm_cast at h ⊢
-        exact mul_le_mul_left' h x
+        exact mul_le_mul_right h x
 
 -- This makes `lt_mul_of_le_of_one_lt'` work on `ℤᵐ⁰`
 open Function in
@@ -77,7 +77,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only at h ⊢
         norm_cast at h ⊢
-        exact mul_le_mul_right' h x
+        exact mul_le_mul_left h x
 
 section Units
 

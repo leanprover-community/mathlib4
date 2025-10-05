@@ -268,7 +268,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   simp only [← add_assoc]
   refine (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans ?_
   norm_cast
-  exact mul_le_mul_left' (hN (n + N + 1) (by cutsat)) _
+  exact mul_le_mul_right (hN (n + N + 1) (by cutsat)) _
 
 end SpectrumCompact
 
@@ -325,7 +325,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
       rcases n with - | n
       · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
       · refine
-          le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)
+          le_trans (le_trans (mul_le_mul_left (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)
             (le_max_left _ _)
         by_cases h : ‖a‖₊ = 0
         · simp only [h, zero_mul, zero_le', pow_succ']

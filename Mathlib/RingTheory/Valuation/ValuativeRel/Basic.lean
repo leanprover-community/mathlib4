@@ -526,7 +526,7 @@ def ofValuation
   rel_total x y := le_total (v x) (v y)
   rel_trans := le_trans
   rel_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
-  rel_mul_right _ h := by simp only [map_mul, mul_le_mul_right' h]
+  rel_mul_right _ h := by simp only [map_mul, mul_le_mul_left h]
   rel_mul_cancel h0 h := by
     rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h

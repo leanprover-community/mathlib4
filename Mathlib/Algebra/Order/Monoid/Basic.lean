@@ -26,7 +26,7 @@ lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β]
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
     IsOrderedMonoid β where
   mul_le_mul_left a b ab c := le.1 <| by
-      rw [mul, mul]; apply mul_le_mul_left'; exact le.2 ab
+      rw [mul, mul]; apply mul_le_mul_right; exact le.2 ab
 
 /-- Pullback an `IsOrderedMonoid` under a strictly monotone map. -/
 @[to_additive /-- Pullback an `IsOrderedAddMonoid` under a strictly monotone map. -/]

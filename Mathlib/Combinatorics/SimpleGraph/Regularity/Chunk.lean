@@ -111,7 +111,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     · convert card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
     · convert card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
   rw [sum_const]
-  refine mul_le_mul_right' ?_ _
+  refine mul_le_mul_left ?_ _
   have t := card_filter_atomise_le_two_pow (s := U) hX
   refine t.trans (pow_right_mono₀ (by simp) <| tsub_le_tsub_right ?_ _)
   exact card_image_le.trans (card_le_card <| filter_subset _ _)

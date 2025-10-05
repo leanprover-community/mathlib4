@@ -186,7 +186,7 @@ theorem mabs_div_le_max_div {a b c : G} (hac : a ≤ b) (hcd : b ≤ c) (d : G) 
 
 @[to_additive]
 theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ :=
-  (mabs_mul_le _ _).trans (mul_le_mul_right' (mabs_mul_le _ _) _)
+  (mabs_mul_le _ _).trans (mul_le_mul_left (mabs_mul_le _ _) _)
 
 @[to_additive]
 theorem mabs_div_le_of_le_of_le {a b lb ub : G} (hal : lb ≤ a) (hau : a ≤ ub) (hbl : lb ≤ b)

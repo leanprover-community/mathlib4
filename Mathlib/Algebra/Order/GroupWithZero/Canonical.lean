@@ -74,7 +74,7 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
   bot_le a := le.1 <| bot ▸ bot_le
 
 @[simp] lemma zero_le' : 0 ≤ a := by
-  simpa only [mul_zero, mul_one] using mul_le_mul_left' (zero_le_one' α) a
+  simpa only [mul_zero, mul_one] using mul_le_mul_right (zero_le_one' α) a
 
 @[simp]
 theorem not_lt_zero' : ¬a < 0 :=
@@ -115,21 +115,21 @@ variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
-  elim _a _b _c hbc := mul_le_mul_right' hbc _
+  elim _a _b _c hbc := mul_le_mul_left hbc _
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
-  elim _a _b _c hbc := mul_le_mul_left' hbc _
+  elim _a _b _c hbc := mul_le_mul_right hbc _
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLE :
     PosMulReflectLE α where
-  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left' hbc a⁻¹
+  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_right hbc a⁻¹
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
     MulPosReflectLE α where
-  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_right' hbc a⁻¹
+  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left hbc a⁻¹
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
@@ -308,7 +308,7 @@ instance instMulLeftMono [Mul α] [MulLeftMono α] :
   induction b; · exact zero_le _
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
-  exact mul_le_mul_left' hbc' _
+  exact mul_le_mul_right hbc' _
 
 protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α]
     (h : ∀ a : α, 0 ≤ a) : AddLeftMono (WithZero α) := by
@@ -476,7 +476,7 @@ end LinearOrder
 
 instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     IsOrderedMonoid (WithZero α) where
-  mul_le_mul_left := fun _ _ => mul_le_mul_left'
+  mul_le_mul_left := fun _ _ => mul_le_mul_right
 
 /-
 Note 1 : the below is not an instance because it requires `zero_le`. It seems

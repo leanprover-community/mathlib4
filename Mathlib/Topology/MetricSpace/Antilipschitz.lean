@@ -97,7 +97,7 @@ theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
 
 theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) : diam (f ⁻¹' s) ≤ K * diam s :=
   diam_le fun x hx y hy => (hf x y).trans <|
-    mul_le_mul_left' (edist_le_diam_of_mem (mem_preimage.1 hx) hy) K
+    mul_le_mul_right (edist_le_diam_of_mem (mem_preimage.1 hx) hy) K
 
 theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) : diam s ≤ K * diam (f '' s) :=
   (diam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))

@@ -160,7 +160,7 @@ noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
     bot_le _ := bot_le
-    mul_le_mul_left := fun _ _ => mul_le_mul_left'
+    mul_le_mul_left := fun _ _ => mul_le_mul_right
     zero_le_one := zero_le 1 }
 
 instance : Unique (AddUnits ℝ≥0∞) where

@@ -54,14 +54,14 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
 
 -- TODO: make it an instance
 lemma toIsOrderedMonoid : IsOrderedMonoid R where
-  mul_le_mul_left _ _ := mul_le_mul_left'
+  mul_le_mul_left _ _ := mul_le_mul_right
 
 -- TODO: make it an instance
 lemma toIsOrderedRing : IsOrderedRing R where
   zero_le_one := zero_le _
   add_le_add_left _ _ := add_le_add_left
-  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
-  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
+  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_right h _
+  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_left h _
 
 @[simp]
 protected theorem mul_pos [NoZeroDivisors R] {a b : R} :
@@ -95,14 +95,14 @@ namespace AddLECancellable
 protected theorem mul_tsub {a b c : R}
     (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
   obtain (hbc | hcb) := total_of (· ≤ ·) b c
-  · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_left' hbc a)]
+  · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_right hbc a)]
   · apply h.eq_tsub_of_add_eq
     rw [← mul_add, tsub_add_cancel_of_le hcb]
 
 protected theorem tsub_mul [MulRightMono R] {a b c : R}
     (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
   obtain (hab | hba) := total_of (· ≤ ·) a b
-  · rw [tsub_eq_zero_iff_le.2 hab, zero_mul, tsub_eq_zero_iff_le.2 (mul_le_mul_right' hab c)]
+  · rw [tsub_eq_zero_iff_le.2 hab, zero_mul, tsub_eq_zero_iff_le.2 (mul_le_mul_left hab c)]
   · apply h.eq_tsub_of_add_eq
     rw [← add_mul, tsub_add_cancel_of_le hba]
 

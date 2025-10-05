@@ -347,7 +347,7 @@ theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) :=
   have hd0 : 0 < d := Nat.gcd_pos_of_pos_left _ ha0
   apply le_of_mul_le_mul_right _ hd0
   rw [← totient_gcd_mul_totient_mul a b, mul_comm]
-  apply mul_le_mul_left' (Nat.totient_le d)
+  apply mul_le_mul_right (Nat.totient_le d)
 
 @[gcongr]
 theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
