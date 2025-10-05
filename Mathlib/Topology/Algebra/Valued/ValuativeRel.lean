@@ -59,7 +59,7 @@ lemma of_hasBasis_zero (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
 
 end
 
-instance of_subgroups_basis {R : Type*} [CommRing R] [ValuativeRel R] :
+lemma of_subgroups_basis {R : Type*} [CommRing R] [ValuativeRel R] :
     letI := ((valuation R).subgroups_basis.topology)
     IsValuativeTopology R :=
   letI := ((valuation R).subgroups_basis.topology)
@@ -71,7 +71,8 @@ lemma _root_.isValuativeTopology_iff_subgroups_basis_topology_eq [t : Topologica
   let := (valuation R).subgroups_basis
   refine ⟨fun _ ↦ ext_nhds fun x ↦ Filter.ext fun s ↦ ?_, ?_⟩
   · rw [(this.hasBasis_nhds _).mem_iff, mem_nhds_iff']; simp_rw [true_and]; rfl
-  · rintro rfl; infer_instance
+  · rintro rfl
+    exact .of_subgroups_basis
 
 section
 
