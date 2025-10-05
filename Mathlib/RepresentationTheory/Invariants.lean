@@ -85,6 +85,14 @@ theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
 eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
 
+lemma mem_invariants_iff_of_forall_mem_zpowers
+    (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : V) :
+    x ∈ ρ.invariants ↔ ρ g x = x :=
+  ⟨fun h => h g, fun hx γ => by
+    rcases hg γ with ⟨i, rfl⟩
+    induction i with | zero => simp | succ i _ => simp_all [zpow_add_one] | pred i h => _
+    simpa [neg_sub_comm _ (1 : ℤ), zpow_sub] using congr(ρ g⁻¹ $(h.trans hx.symm))⟩
+
 section
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
