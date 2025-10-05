@@ -163,37 +163,30 @@ theorem _root_.isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
 
 variable [Nontrivial R] [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
--- /--
--- Order of vanishing function for elements of the fraction field defined as the extension of
--- `CommRing.ordMonoidWithZeroHom` to the field of fractions.
--- -/
--- @[stacks 02MD]
--- noncomputable
--- def ordFrac : K →*₀ ℤᵐ⁰ :=
---   letI f := (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R)
---   haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
---     intro y
---     simp only [isUnit_iff_ne_zero, ne_eq]
---     simp [ordMonoidWithZeroHom, ord]
---     have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
---     have : ∀ k,
---       (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) k = 0 ↔
--- k = 0 := by
---         intro k
---         cases k
---         all_goals simp
---     simpa [this]
---   f this
+/--
+Order of vanishing function for elements of the fraction field defined as the extension of
+`CommRing.ordMonoidWithZeroHom` to the field of fractions.
+-/
+@[stacks 02MD]
+noncomputable
+def ordFrac : K →*₀ ℤᵐ⁰ :=
+  letI f := (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R)
+  haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
+    intro y
+    have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
+    obtain ⟨l, hl⟩ := WithBot.ne_bot_iff_exists.mp this
+    simp [ordMonoidWithZeroHom, ord, ← hl]
+  f this
 
--- lemma ordFrac_eq_ord (x : R) (hx : x ≠ 0) :
---     ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
---   have := (FaithfulSMul.algebraMap_injective R K).isDomain
---   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
---   simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mpr hx]
+lemma ordFrac_eq_ord (x : R) (hx : x ≠ 0) :
+    ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
+  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
+  simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mpr hx]
 
--- lemma ordFrac_eq_div (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
---     ordFrac R (IsLocalization.mk' K a.1 b) =
---       ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
---   simp [ordFrac_eq_ord]
+lemma ordFrac_eq_div (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
+    ordFrac R (IsLocalization.mk' K a.1 b) =
+      ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
+  simp [ordFrac_eq_ord]
 
 end Ring
