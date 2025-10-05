@@ -188,7 +188,7 @@ theorem divisor_inv {f : 𝕜 → 𝕜} :
 
 /-- The divisor of the inverse is the negative of the divisor. -/
 @[simp]
-theorem divisor_fun_inv {f : 𝕜 → 𝕜} : divisor (fun z ↦ f⁻¹ z) U = -divisor f U := divisor_inv
+theorem divisor_fun_inv {f : 𝕜 → 𝕜} : divisor (fun z ↦ (f z)⁻¹) U = -divisor f U := divisor_inv
 
 open Classical in
 /--
