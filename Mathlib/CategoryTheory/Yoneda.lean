@@ -730,7 +730,7 @@ lemma hom_ext_uliftYoneda {P Q : Cᵒᵖ ⥤ Type max w v₁} {f g : P ⟶ Q}
 
 /-- A variant of the curried version of the Yoneda lemma with a raise in the universe level. -/
 def largeCurriedUliftYonedaLemma {C : Type u₁} [Category.{v₁} C] :
-    yoneda.op ⋙ ((whiskeringRight _ _ _).obj uliftFunctor.{w}).op ⋙ coyoneda ≅
+    uliftYoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type max v₁ w) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
@@ -854,7 +854,7 @@ def curriedCoyonedaLemma {C : Type u₁} [SmallCategory C] :
 
 /-- The curried version of the Coyoneda lemma. -/
 def largeCurriedCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
-    (coyoneda.rightOp ⋙ coyoneda) ≅
+    coyoneda.rightOp ⋙ coyoneda ≅
       evaluation C (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
@@ -959,7 +959,7 @@ lemma hom_ext_uliftCoyoneda {P Q : C ⥤ Type max w v₁} {f g : P ⟶ Q}
 
 /-- A variant of the curried version of the Coyoneda lemma with a raise in the universe level. -/
 def largeCurriedUliftCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
-    coyoneda.rightOp ⋙ ((whiskeringRight _ _ _).obj uliftFunctor.{w}).op ⋙ coyoneda ≅
+    uliftCoyoneda.rightOp ⋙ coyoneda ≅
       evaluation C (Type max v₁ w) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
