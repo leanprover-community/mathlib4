@@ -13,8 +13,13 @@ import Mathlib.CategoryTheory.Functor.Dense
 
 In this file, we show that a category is locally `κ`-presentable iff
 it is cocomplete and has a strong generator consisting of `κ`-presentable objects.
+This is theorem 1.20 in the book by Adámek and Rosický.
 
-depends on #30168 and #29565
+In particular, if a category if locally `κ`-presentable, if it also
+locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
+
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
 
@@ -113,6 +118,13 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
         (fun J _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C κ hJ)
         (fun X hX ↦ hS₂ ⟨X, hX⟩))
     constructor
+
+lemma of_le [IsCardinalLocallyPresentable C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
+    (h : κ ≤ κ') :
+    IsCardinalLocallyPresentable C κ' := by
+  rw [iff_exists_isStrongGenerator]
+  obtain ⟨S, _, h₁, h₂⟩ := (iff_exists_isStrongGenerator C κ).1 inferInstance
+  exact ⟨S, inferInstance, h₁, fun X ↦ isCardinalPresentable_of_le _ h⟩
 
 end IsCardinalLocallyPresentable
 
