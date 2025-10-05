@@ -272,7 +272,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     intro j hjs
     exact h j (Finset.mem_insert_of_mem hjs)
 
-/-- A non zero weighted homogeneous polynomial of weighted degree `n` has weighted total degree
+/-- A nonzero weighted-homogeneous polynomial of weighted degree `n` has weighted total degree
   `n`. -/
 theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
     (h : φ ≠ 0) : weightedTotalDegree' w φ = n := by
@@ -550,7 +550,7 @@ section LinearOrderedAddCommMonoid
 variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
-/-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if
+/-- A multivariate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/
 theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolynomial σ R} :
     IsWeightedHomogeneous w p 0 ↔ p.weightedTotalDegree w = 0 := by

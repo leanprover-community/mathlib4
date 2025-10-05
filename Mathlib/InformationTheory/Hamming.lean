@@ -21,7 +21,7 @@ code.
 * `hammingNorm x`: the Hamming norm of `x`, the number of non-zero entries.
 * `Hamming β`: a type synonym for `Π i, β i` with `dist` and `norm` provided by the above.
 * `Hamming.toHamming`, `Hamming.ofHamming`: functions for casting between `Hamming β` and
-`Π i, β i`.
+  `Π i, β i`.
 * the Hamming norm forms a normed group on `Hamming β`.
 -/
 

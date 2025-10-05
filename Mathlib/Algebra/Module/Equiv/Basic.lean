@@ -659,8 +659,7 @@ theorem arrowCongr_trans
     (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₁' : M₁' ≃ₛₗ[σ₁'₂'] M₂')
     (e₂ : M₂ ≃ₛₗ[σ₂₃] M₃) (e₂' : M₂' ≃ₛₗ[σ₂'₃'] M₃') :
     ((arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂' : (M₂ →ₛₗ[σ₂₂'] M₂') ≃ₛₗ[σ₂'₃'] _)) =
-      arrowCongr (e₁.trans e₂) (e₁'.trans e₂')
-      :=
+      arrowCongr (e₁.trans e₂) (e₁'.trans e₂') :=
   rfl
 
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
@@ -700,7 +699,6 @@ theorem conj_trans (e₁ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (e₂ : M₂' ≃�
 
 @[simp]
 theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by
-  ext
   simp [conj_apply]
 
 @[simp]

@@ -63,9 +63,7 @@ def map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
 lemma map_id (i : J) (hi : i ≤ j) :
     map c i i (by rfl) hi = 𝟙 _:= by
   dsimp [map]
-  obtain hi' | rfl := hi.lt_or_eq
-  · rw [dif_pos hi', F.map_id, id_comp, Iso.hom_inv_id]
-  · rw [dif_neg (by simp), dif_neg (by simp)]
+  grind
 
 lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (hi₃ : i₃ ≤ j) :
     map c i₁ i₃ (hi.trans hi') hi₃ =

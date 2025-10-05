@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # The colimit type of a functor to types
@@ -27,7 +27,7 @@ in a categorical sense is a colimit.
 
 ## TODO
 * refactor `DirectedSystem` and the construction of colimits in `Type`
-by using `Functor.ColimitType`.
+  by using `Functor.ColimitType`.
 * add a similar API for limits in `Type`?
 
 -/
@@ -138,9 +138,20 @@ namespace CoconeTypes
 
 variable {F} (c : CoconeTypes.{w₁} F)
 
+lemma descColimitType_surjective_iff :
+    Function.Surjective (F.descColimitType c) ↔
+      ∀ (z : c.pt), ∃ (i : J) (x : F.obj i), c.ι i x = z := by
+  constructor
+  · intro h z
+    obtain ⟨⟨i, x⟩, rfl⟩ := h z
+    exact ⟨i, x, rfl⟩
+  · intro h z
+    obtain ⟨i, x, rfl⟩ := h z
+    exact ⟨F.ιColimitType i x, rfl⟩
+
 /-- Given `F : J ⥤ Type w₀` and `c : F.CoconeTypes`, this is the property
 that `c` is a colimit. It is defined by saying the canonical map
-`F.descColimitType c : F.ColimiType → c.pt` is a bijection. -/
+`F.descColimitType c : F.ColimitType → c.pt` is a bijection. -/
 structure IsColimit : Prop where
   bijective : Function.Bijective (F.descColimitType c)
 
@@ -199,7 +210,7 @@ lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     convert Function.Bijective.comp e.bijective hc.bijective
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
-    aesop
+    simp_all
 
 end IsColimit
 

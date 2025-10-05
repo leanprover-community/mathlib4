@@ -134,7 +134,7 @@ private structure PartialMatch where
   /-- Trie to match next -/
   trie : TrieIndex
   /-- Metavariable assignments for `.labelledStar` patterns in the discrimination tree.
-    We use a `List Key`, in the reverse order. -/
+  We use a `List Key`, in the reverse order. -/
   treeStars : Std.HashMap Nat (List Key) := {}
   deriving Inhabited
 
@@ -262,7 +262,7 @@ private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (Mat
 
 /--
 Find values that match `e` in `d`.
-* If `unify == true` then metavarables in `e` can be assigned.
+* If `unify == true` then metavariables in `e` can be assigned.
 * If `matchRootStar == true` then we allow metavariables at the root to unify.
   Set this to `false` to avoid getting excessively many results.
 

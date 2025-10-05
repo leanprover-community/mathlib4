@@ -627,9 +627,7 @@ theorem zero_notMem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α 
 alias zero_nmem_multiset_map_X_add_C := zero_notMem_multiset_map_X_add_C
 
 theorem natDegree_X_pow_add_C {n : ℕ} {r : R} : (X ^ n + C r).natDegree = n := by
-  by_cases hn : n = 0
-  · rw [hn, pow_zero, ← C_1, ← RingHom.map_add, natDegree_C]
-  · exact natDegree_eq_of_degree_eq_some (degree_X_pow_add_C (pos_iff_ne_zero.mpr hn) r)
+  simp
 
 theorem X_pow_add_C_ne_one {n : ℕ} (hn : 0 < n) (a : R) : (X : R[X]) ^ n + C a ≠ 1 := fun h =>
   hn.ne' <| by simpa only [natDegree_X_pow_add_C, natDegree_one] using congr_arg natDegree h

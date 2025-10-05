@@ -187,12 +187,11 @@ lemma HasAffineProperty.affineAnd_isStableUnderComposition {P : MorphismProperty
     (hA : HasAffineProperty P (affineAnd Q)) (hQ : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
-    haveI := hA
     wlog hZ : IsAffine Z
     · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
       intro U
       rw [morphismRestrict_comp]
-      exact this hA hQ _ _ (IsLocalAtTarget.restrict hf _) (IsLocalAtTarget.restrict hg _) hA U.2
+      exact this hA hQ _ _ (IsLocalAtTarget.restrict hf _) (IsLocalAtTarget.restrict hg _) U.2
     rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hg
     obtain ⟨hY, hg⟩ := hg
     rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hf
@@ -255,6 +254,13 @@ lemma HasAffineProperty.affineAnd_eq_of_propertyIsLocal {P P' : MorphismProperty
     HasRingHomProperty.eq_affineLocally (P := P')]
   exact HasRingHomProperty.isLocal_ringHomProperty P'
 
+lemma HasAffineProperty.SpecMap_iff_of_affineAnd {P : MorphismProperty Scheme.{u}}
+    (hP : HasAffineProperty P (affineAnd Q)) (hQi : RingHom.RespectsIso Q)
+    {R S : CommRingCat.{u}} (f : R ⟶ S) : P (Spec.map f) ↔ Q f.hom := by
+  have := RingHom.toMorphismProperty_respectsIso_iff.mp hQi
+  rw [HasAffineProperty.iff_of_isAffine (P := P), affineAnd, and_iff_right]
+  exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty Q)
+    (arrowIsoΓSpecOfIsAffine f).symm, inferInstance]
 variable {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
 
 lemma HasAffineProperty.affineAnd_le_affineAnd {P P' : MorphismProperty Scheme.{u}}
