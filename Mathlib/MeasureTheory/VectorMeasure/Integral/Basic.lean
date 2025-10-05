@@ -1,25 +1,23 @@
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.MeasureTheory.Integral.SetToL1
 import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.VectorMeasure.Integral
+import Mathlib.MeasureTheory.VectorMeasure.Integral.L1
 
 /-!
 
 ## Main statements
 
-1. Basic properties of the Bochner integral on functions of type `α → E`, where `α` is a measure
-   space and `E` is a real normed space.
+1. Integral is a linear operator on functions. For example,
 
-  * `integral_zero`                  : `∫ 0 ∂Bμ = 0`
+  * `integral_add`              : `∫ a, B (f a + g a) ∂μ = ∫ a, B (f a) ∂μ + ∫ a, B (g a) ∂μ`.
 
-2. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
-  `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
+2. Integral is a linear operator on bilinear forms. For example,
 
-3. (In `Mathlib/MeasureTheory/Integral/Bochner/Set.lean`) integration commutes with continuous
-  linear maps.
+  * `integral_add_pairing`      : `∫ a, (B + C) (f a) ∂μ = ∫ a, B (f a) ∂μ + ∫ a, C (f a) ∂μ`.
 
-  * `ContinuousLinearMap.integral_comp_comm`
-  * `LinearIsometry.integral_comp_comm`
+3. Integral is a linear operator on vector measures. For example,
+
+  * `integral_add_measure`      : `∫ a, B (f a) ∂(μ + ν) = ∫ a, B (f a) ∂μ + ∫ a, B (f a) ∂ν`.
 
 -/
 noncomputable section
@@ -30,10 +28,10 @@ open Real VectorMeasure ContinuousLinearMap
 namespace VectorMeasure
 
 /-!
-## The vector-valued integral against a vector measure on functions
+## Integral against a vector measure on functions
 
 Define the vector-valued integral on functions generally to be the `L1` vector-valued integral,
-for integrable functions, and 0 otherwise; prove its basic properties.
+for integrable functions, and 0 otherwise/
 -/
 
 variable {α E F G 𝕜 : Type*}
@@ -426,7 +424,12 @@ theorem setIntegral_measure_zero {s : Set α}
     by_cases hm : MeasurableSet s
     · rw [← ennrealToMeasure_apply hm]; exact hs
     · exact Bμ.vectorMeasure.variation.not_measurable' hm
-  have : (Bμ.vectorMeasure.restrict s).variation = 0 := by sorry
+  have : (Bμ.vectorMeasure.restrict s).variation = 0 := by
+    simp only [restrict_comm_variation, ← univ_eq_zero]
+    simp only [VectorMeasure.restrict]
+    by_cases hsm : MeasurableSet s
+    · simp [hsm, this]
+    · simp [hsm]
   have : Bμ.vectorMeasure.restrict s = 0 :=
     eq_zero_of_zero_variation (Bμ.vectorMeasure.restrict s) this
   have : Bμ.restrict s = VectorMeasureWithPairing.mk Bμ.pairing 0 := by
@@ -484,157 +487,6 @@ theorem integral_smul_pairing (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ) :
   simp_rw [integral_eq_setToFun, ← setToFun_smul_left, weightedVectorSMul_smul_pairing]
   congr
   simp [norm_smul]
-
-theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
-    {f : β → E} (hfm : StronglyMeasurable f) : ∫ y, f y ∂(VectorMeasureWithPairing.mk Bμ.pairing
-    (Bμ.vectorMeasure.map φ)) = ∫ x, f (φ x) ∂Bμ := by
-  by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
-  by_cases hfi : Integrable f (Bμ.vectorMeasure.map φ).variation.ennrealToMeasure; swap
-  · rw [integral_undef, integral_undef]
-    · exact fun hfφ => sorry
-    · exact hfi
-  borelize G
-  have : SeparableSpace (range f ∪ {0} : Set G) := hfm.separableSpace_range_union_singleton
-  refine tendsto_nhds_unique
-    (tendsto_integral_approxOn_of_measurable_of_range_subset hfm.measurable hfi _ Subset.rfl) ?_
-  convert tendsto_integral_approxOn_of_measurable_of_range_subset (hfm.measurable.comp hφ)
-    ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).1 hfi) (range f ∪ {0})
-    (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
-  ext1 i
-  simp only [SimpleFunc.integral_eq, hφ, SimpleFunc.measurableSet_preimage, map_measureReal_apply,
-    ← preimage_comp]
-  refine (Finset.sum_subset (SimpleFunc.range_comp_subset_range _ hφ) fun y _ hy => ?_).symm
-  rw [SimpleFunc.mem_range, ← Set.preimage_singleton_eq_empty, SimpleFunc.coe_comp] at hy
-  rw [hy]
-  simp
-
-theorem integral_map {β} [MeasurableSpace β] {φ : α → β}
-    (hφ : AEMeasurable φ μ) {f : β → E}
-    (hfm : AEStronglyMeasurable f (Measure.map φ μ)) :
-    ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
-  let g := hfm.mk f
-  calc
-    ∫ y, f y ∂Measure.map φ μ = ∫ y, g y ∂Measure.map φ μ := integral_congr_ae hfm.ae_eq_mk
-    _ = ∫ y, g y ∂Measure.map (hφ.mk φ) μ := by congr 1; exact Measure.map_congr hφ.ae_eq_mk
-    _ = ∫ x, g (hφ.mk φ x) ∂μ :=
-      (integral_map_of_stronglyMeasurable hφ.measurable_mk hfm.stronglyMeasurable_mk)
-    _ = ∫ x, g (φ x) ∂μ := integral_congr_ae (hφ.ae_eq_mk.symm.fun_comp _)
-    _ = ∫ x, f (φ x) ∂μ := integral_congr_ae <| ae_eq_comp hφ hfm.ae_eq_mk.symm
-
-theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f : α → β}
-    (hf : MeasurableEmbedding f) (g : β → E) : ∫ y, g y ∂(VectorMeasureWithPairing.mk Bμ.pairing
-    (VectorMeasure.map Bμ.vectorMeasure f)) = ∫ x, g (f x) ∂Bμ := by
-  by_cases hgm : AEStronglyMeasurable g (Measure.map f Bμ.vectorMeasure.variation.ennrealToMeasure)
-  · exact integral_map hf.measurable.aemeasurable hgm
-  · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
-    exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
-
-theorem _root_.Topology.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
-    [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : IsClosedEmbedding φ)
-    (f : β → E) : ∫ y, f y ∂(VectorMeasureWithPairing.mk Bμ.pairing
-    (VectorMeasure.map Bμ.vectorMeasure φ)) = ∫ x, f (φ x) ∂Bμ :=
-  hφ.measurableEmbedding.integral_map _
-
-theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → E) :
-    ∫ y, f y ∂(VectorMeasureWithPairing.mk Bμ.pairing
-    (VectorMeasure.map Bμ.vectorMeasure e)) = ∫ x, f (e x) ∂Bμ :=
-  e.measurableEmbedding.integral_map f
-
-lemma integral_domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
-    [MeasurableSpace A] [MeasurableConstSMul G A] {μ : Measure A} (g : Gᵈᵐᵃ) (f : A → E) :
-    ∫ x, f x ∂g • μ = ∫ x, f ((DomMulAct.mk.symm g)⁻¹ • x) ∂μ :=
-  integral_map_equiv (MeasurableEquiv.smul ((DomMulAct.mk.symm g : G)⁻¹)) f
-
-theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
-    (hs : MeasurableSet s) (f : α → G) :
-    ∫ x : s, f (x : α)Measure.comap ∂( Subtype.val μ) = ∫ x in s, f x ∂μ := by
-  rw [← map_comap_subtype_coe hs]
-  exact ((MeasurableEmbedding.subtype_coe hs).integral_map _).symm
-
-@[simp]
-theorem integral_dirac' [MeasurableSpace α] (f : α → E) (a : α) (hfm : StronglyMeasurable f) :
-    ∫ x, f x ∂Measure.dirac a = f a := by
-  borelize E
-  calc
-    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a :=
-      integral_congr_ae <| ae_eq_dirac' hfm.measurable
-    _ = f a := by simp
-
-@[simp]
-theorem integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α) :
-    ∫ x, f x ∂Measure.dirac a = f a :=
-  calc
-    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a := integral_congr_ae <| ae_eq_dirac f
-    _ = f a := by simp
-
-theorem setIntegral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : StronglyMeasurable f) (a : α)
-    {s : Set α} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
-    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
-  rw [restrict_dirac' hs]
-  split_ifs
-  · exact integral_dirac' _ _ hf
-  · exact integral_zero_measure _
-
-theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
-    (s : Set α) [Decidable (a ∈ s)] :
-    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
-  rw [restrict_dirac]
-  split_ifs
-  · exact integral_dirac _ _
-  · exact integral_zero_measure _
-
-theorem integral_countable' [Countable α] [MeasurableSingletonClass α]
-    (hf : Integrable f Bμ.vectorMeasure.variation.ennrealToMeasure) :
-    ∫ a, f a ∂Bμ = ∑' a, Bμ.pairing (f a) (Bμ.vectorMeasure {a}) := by
-  rw [← Measure.sum_smul_dirac μ] at hf
-  rw [← Measure.sum_smul_dirac μ, integral_sum_measure hf]
-  congr 1 with a : 1
-  rw [integral_smul_measure, integral_dirac, Measure.sum_smul_dirac, measureReal_def]
-
-theorem integral_singleton' (hf : StronglyMeasurable f) (a : α) :
-    ∫ a in {a}, f a ∂Bμ = Bμ.pairing (f a) (Bμ.vectorMeasure {a}) := by
-  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf,
-    measureReal_def]
-
-theorem integral_singleton [MeasurableSingletonClass α] (f : α → E) (a : α) :
-    ∫ a in {a}, f a ∂Bμ = Bμ.pairing (f a) (Bμ.vectorMeasure {a}) := by
-  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, measureReal_def]
-
-theorem integral_countable [MeasurableSingletonClass α] {s : Set α} (hs : s.Countable)
-    (hf : IntegrableOn f s Bμ.vectorMeasure.variation.ennrealToMeasure) :
-    ∫ a in s, f a ∂Bμ = ∑' a : s, Bμ.pairing (f a) (Bμ.vectorMeasure {(a : α)}) := by
-  have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
-  have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
-    rw [IntegrableOn, ← map_comap_subtype_coe, integrable_map_measure] at hf
-    · apply hf
-    · exact Integrable.aestronglyMeasurable hf
-    · exact Measurable.aemeasurable measurable_subtype_coe
-    · exact Countable.measurableSet hs
-  rw [← integral_subtype_comap hs.measurableSet, integral_countable' hf']
-  congr 1 with a : 1
-  rw [measureReal_def, Measure.comap_apply Subtype.val Subtype.coe_injective
-    (fun s' hs' => MeasurableSet.subtype_image (Countable.measurableSet hs) hs') _
-    (MeasurableSet.singleton a)]
-  simp [measureReal_def]
-
-theorem integral_finset [MeasurableSingletonClass α] (s : Finset α)
-    (hf : IntegrableOn f s Bμ.vectorMeasure.variation.ennrealToMeasure) :
-    ∫ x in s, f x ∂Bμ = ∑ x ∈ s, Bμ.pairing (f x) (Bμ.vectorMeasure {x})  := by
-  rw [integral_countable s.countable_toSet hf, ← Finset.tsum_subtype']
-
-theorem integral_fintype [MeasurableSingletonClass α] [Fintype α]
-    (hf : Integrable f Bμ.vectorMeasure.variation.ennrealToMeasure) :
-    ∫ x, f x ∂Bμ = ∑ x, Bμ.pairing (f x) (Bμ.vectorMeasure {x}) := by
-  rw [← integral_finset .univ, Finset.coe_univ, VectorMeasureWithPairing.restrict_univ]
-  simp [Finset.coe_univ, hf]
-
-theorem integral_unique [Unique α] [hG : CompleteSpace G]
-    [IsFiniteMeasure Bμ.vectorMeasure.variation.ennrealToMeasure] :
-    ∫ x, f x ∂Bμ = Bμ.pairing (f default) (Bμ.vectorMeasure univ) :=
-  calc
-    ∫ x, f x ∂Bμ = ∫ _, f default ∂Bμ := by congr with x; congr; exact Unique.uniq _ x
-    _ = Bμ.pairing (f default) (Bμ.vectorMeasure univ) := by rw [integral_const]
 
 end Properties
 

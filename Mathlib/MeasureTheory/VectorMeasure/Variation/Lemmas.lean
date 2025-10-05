@@ -14,6 +14,7 @@ import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 * `norm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
 * `variation_neg`: `(-μ).variation = μ.variation`.
 * `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
+* `triangle_inequality`: `(μ + ν).variation ≤ μ.variation + ν.variation`.
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
 
 -/
@@ -106,43 +107,62 @@ theorem eq_zero_of_zero_variation_univ (μ : VectorMeasure X V) :
 theorem restrict_comm_variation (s : Set X) (μ : VectorMeasure X V) :
     (μ.restrict s).variation = μ.variation.restrict s := by
   ext t ht
-  by_cases hse : s = ∅
-  · sorry
-  · by_cases hsm : MeasurableSet s
-    · simp [variation, var_aux, restrict, ht, hsm]
-      apply le_antisymm
-      all_goals
-        apply sSup_le; intro b hb; obtain ⟨P, hP⟩ := hb
-        simp [apply_ite, ← hP]; intro iP; rw [IsInnerPart] at iP; apply le_sSup
-      · simp_all only [↓reduceIte]
-        classical
-        let Q := (P.image (fun p : Set X => p ∩ s)).erase ∅
-        use Q
-        have iQ : IsInnerPart (t ∩ s) Q := by
-          refine ⟨?_, ⟨?_, ⟨?_, ?_⟩⟩⟩
-          all_goals intro q hq; simp_all [Q]; try simp only [and_comm] at hq
-          all_goals obtain ⟨a, ha⟩ := hq.2; rw [← ha.1]
-          · constructor;
-            · trans a
-              · exact inter_subset_left
-              · exact (iP.1 a ha.2)
-            · exact inter_subset_right
-          · refine MeasurableSet.inter ?_ ?_
-            · exact (iP.2.1 a ha.2)
-            · exact hsm
-          · intro p hp hap hap1; have := iP.2.2.1
-            simp [PairwiseDisjoint] at this
-            have := this ha.2 hp (by contrapose; intro f hf; rw [hf] at hap1; simp_all)
-            simp_all [disjoint_iff_inter_eq_empty]; rw [← ha.1]
-            exact subset_eq_empty (inter_subset_inter inter_subset_left inter_subset_left) this
-        simp [ciSup_const (hι := Nonempty.intro iQ), Q]
-        sorry
-      · use P
-        have iP : IsInnerPart t P := sorry
-        simp [ciSup_const (hι := Nonempty.intro iP)]
-        simp_all only [↓reduceIte]
-        refine Finset.sum_congr rfl (by intro x hx; congr; apply inter_eq_self_of_subset_left; aesop)
-    · simp [restrict_not_measurable μ hsm, restrict_not_measurable μ.variation hsm]
+  by_cases hsm : MeasurableSet s
+  · simp [variation, var_aux, restrict, ht, hsm]
+    apply le_antisymm
+    all_goals
+      apply sSup_le; intro b hb; obtain ⟨P, hP⟩ := hb
+      simp [apply_ite, ← hP]; intro iP; rw [IsInnerPart] at iP; apply le_sSup
+    · simp_all only [↓reduceIte]
+      classical
+      let P' := P.filter (fun p => p ∩ s ≠ ∅)
+      have mem {x} (h : x ∈ P') : (x ∈ P) := (Finset.mem_of_subset (Finset.filter_subset _ _) h)
+      let Q := P'.image (fun p => p ∩ s)
+      use Q
+      have iQ : IsInnerPart (t ∩ s) Q := by
+        refine ⟨?_, ⟨?_, ⟨?_, ?_⟩⟩⟩
+        all_goals intro q hq; simp_all [Q]; try simp only [and_comm] at hq
+        all_goals obtain ⟨a, ha⟩ := hq; rw [← ha.1]
+        · constructor;
+          · trans a
+            · exact inter_subset_left
+            · exact (iP.1 a (mem ha.2))
+          · exact inter_subset_right
+        · exact MeasurableSet.inter (iP.2.1 a (mem ha.2)) hsm
+        · intro p hp hap
+          simp [disjoint_iff_inter_eq_empty]
+          refine subset_eq_empty (inter_subset_inter inter_subset_left inter_subset_left) ?_
+          have h : a ≠ p := by by_contra v; simp [v] at hap
+          have : Disjoint a p := by
+            have := Set.PairwiseDisjoint.eq_or_disjoint iP.2.2.1 (mem ha.2) (mem hp)
+            simp_all
+          simpa [disjoint_iff_inter_eq_empty] using this
+        · simp [P'] at ha; exact ha.2.2
+      simp [ciSup_const (hι := Nonempty.intro iQ), Q]
+      rw [Finset.sum_image, Finset.sum_filter]
+      · congr with p
+        simp +contextual
+      · intro a ha b hb hab
+        have : (a ∩ b).Nonempty := by
+          have : (a ∩ s).Nonempty := by simp_all [Set.nonempty_iff_ne_empty, P']
+          simp_all only [inter_nonempty]
+          obtain ⟨x, hx⟩ := this; use x
+          exact ⟨mem_of_mem_of_subset (by rw [hab]; exact hx) Set.inter_subset_left, hx.1⟩
+        have : ¬Disjoint (id a) (id b) := by simp [not_disjoint_iff_nonempty_inter, this]
+        refine PairwiseDisjoint.elim iP.2.2.1 (mem ha) (mem hb) this
+    · use P
+      have jP : IsInnerPart t P := by
+        refine ⟨?_, ⟨?_, ⟨iP.2.2.1, ?_⟩⟩⟩
+        all_goals intro q hq
+        · trans t ∩ s
+          · exact iP.1 q hq
+          · exact inter_subset_left
+        · exact iP.2.1 q hq
+        · exact iP.2.2.2 q hq
+      simp [ciSup_const (hι := Nonempty.intro jP)]
+      simp_all only [↓reduceIte]
+      refine Finset.sum_congr rfl (by intro x hx; congr; apply inter_eq_self_of_subset_left; aesop)
+  · simp [restrict_not_measurable μ hsm, restrict_not_measurable μ.variation hsm]
 
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.variation := by
   intro s hs
@@ -152,7 +172,6 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.variation := 
     0 < ‖μ s‖ₑ := enorm_pos.mpr hc
     _ ≤ μ.variation s := norm_measure_le_variation μ s
     _ = 0 := hs
-
 
 lemma variation_neg {E} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (μ : VectorMeasure X E) : (-μ).variation = μ.variation := by
