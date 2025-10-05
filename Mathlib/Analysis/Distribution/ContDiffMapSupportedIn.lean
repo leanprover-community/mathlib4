@@ -45,8 +45,8 @@ the space of test functions.
 
 ## Implementation details
 
-The technical choice of spelling `EqOn f 0 Kᶜ` as opposed to `tsupport f ⊆ K` is to make replacing
-the `f` by zero outside of `K` easier.
+The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
+is to make replacing `f` by zero outside of `K` easier.
 
 ## Tags
 
