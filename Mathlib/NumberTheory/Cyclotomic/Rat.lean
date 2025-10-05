@@ -257,13 +257,11 @@ theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : Is
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) : PowerBasis ℤ (𝓞 K) :=
-  PowerBasis.ofGenMemAdjoin' hζ.integralPowerBasis (RingOfIntegers.isIntegral _)
-    (by
-      simp only [integralPowerBasis_gen, toInteger]
-      convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ (⟨ζ - 1, _⟩ : 𝓞 K))
-        (Subalgebra.one_mem _)
-      · simp
-      · exact Subalgebra.sub_mem _ (hζ.isIntegral (NeZero.pos _)) (Subalgebra.one_mem _))
+  PowerBasis.ofAdjoinEqTop'
+    (RingOfIntegers.isIntegral ⟨ζ- 1, (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one⟩) (by
+    refine hζ.integralPowerBasis.adjoin_eq_top_of_gen_mem_adjoin ?_
+    convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
+    simp [RingOfIntegers.ext_iff, integralPowerBasis_gen, toInteger])
 
 @[simp]
 theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {p ^ k} ℚ K]
@@ -423,7 +421,7 @@ The norm, relative to `ℤ`, of `ζ - 1` in a `2`-th cyclotomic extension of `�
 theorem norm_toInteger_sub_one_of_eq_two [IsCyclotomicExtension {2} ℚ K]
     (hζ : IsPrimitiveRoot ζ 2) :
     norm ℤ (hζ.toInteger - 1) = -2 := by
-  rw [show 2 = (2 ^ (0 + 1)) by norm_num] at hζ
+  rw [show 2 = (2 ^ (0 + 1)) by simp] at hζ
   simpa using hζ.norm_toInteger_pow_sub_one_of_two
 
 /-- The norm, relative to `ℤ`, of `ζ - 1` in a `p`-th cyclotomic extension of `ℚ` is `p` if
@@ -483,7 +481,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
         Nat.reduceAdd] at htwo ⊢
       exact htwo.symm.lt_of_le hp.1.two_le
     · exact one_lt_mul_of_lt_of_le (one_lt_pow₀ hp.1.one_lt hk)
-        (have := Nat.Prime.two_le hp.out; by omega)
+        (have := Nat.Prime.two_le hp.out; by cutsat)
   rw [sub_eq_iff_eq_add] at h
   -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
   -- coordinates in the base `pB`, we obtain that `1` is a multiple of `p`, contradiction.
@@ -496,7 +494,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
   rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
     LinearMap.map_smul, ← zsmul_one, ← pB.basis.coord_apply, LinearMap.map_smul,
-    show 1 = pB.gen ^ (⟨0, by omega⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+    show 1 = pB.gen ^ (⟨0, by cutsat⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩

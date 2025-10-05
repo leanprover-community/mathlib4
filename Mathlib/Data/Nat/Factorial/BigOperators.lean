@@ -28,9 +28,10 @@ variable {α : Type*} (s : Finset α) (f : α → ℕ)
 theorem prod_factorial_pos : 0 < ∏ i ∈ s, (f i)! := prod_pos fun _ _ ↦ factorial_pos _
 
 theorem prod_factorial_dvd_factorial_sum : (∏ i ∈ s, (f i)!) ∣ (∑ i ∈ s, f i)! := by
-  induction' s using Finset.cons_induction_on with a s has ih
-  · simp
-  · rw [prod_cons, Finset.sum_cons]
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s has ih =>
+    rw [prod_cons, Finset.sum_cons]
     exact (mul_dvd_mul_left _ ih).trans (Nat.factorial_mul_factorial_dvd_factorial_add _ _)
 
 theorem ascFactorial_eq_prod_range (n : ℕ) : ∀ k, n.ascFactorial k = ∏ i ∈ range k, (n + i)

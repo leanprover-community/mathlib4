@@ -223,7 +223,7 @@ instance instContinuousAdd : ContinuousAdd (E →WOT[𝕜] F) := .induced (induc
 instance instContinuousNeg : ContinuousNeg (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 instance instContinuousSMul : ContinuousSMul 𝕜 (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 
-#adaptation_note /-- 2025-03-29 lean4#7717 Needed to add this instance explicitly to avoid a
+#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add this instance explicitly to avoid a
 limitation with parent instance inference. TODO(kmill): fix this. -/
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E →WOT[𝕜] F) where
   toContinuousAdd := inferInstance

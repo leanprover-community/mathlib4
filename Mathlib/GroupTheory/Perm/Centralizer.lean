@@ -473,7 +473,7 @@ theorem nat_card_range_toPermHom :
   simp only [← SetLike.coe_sort_coe, Fintype.card_eq_nat_card]
   congr
   ext
-  rw [SetLike.mem_coe, mem_range_toPermHom_iff', Set.mem_setOf_eq, ← beq_eq_beq]
+  rw [SetLike.mem_coe, mem_range_toPermHom_iff', Set.mem_setOf_eq]
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/
@@ -681,8 +681,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     simp_rw [Set.coe_setOf, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
       Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case
-    convert MulZeroClass.zero_mul _
-    exact (card_of_cycleType_eq_zero_iff α).mpr hm
+    rw [(card_of_cycleType_eq_zero_iff α).mpr hm, zero_mul]
 
 /-- Cardinality of the `Finset` of `Equiv.Perm α` of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :
