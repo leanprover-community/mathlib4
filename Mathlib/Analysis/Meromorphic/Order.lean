@@ -361,7 +361,7 @@ protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
 
 open Classical in
 /--
-The order of a constant function is `⊤` is the the constant is zero and `0` otherwise.
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
 -/
 theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) :
     meromorphicOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else (0 : WithTop ℤ) := by
