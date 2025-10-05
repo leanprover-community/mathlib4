@@ -38,7 +38,8 @@ variable [CommRing A] [IsDomain A]
 namespace IsPrimitiveRoot
 
 /-- Given an `n`-th primitive root of unity `ζ,` we have that `ζ - 1` and `ζ ^ j - 1` are associated
-  for all `j` coprime with `n`. -/
+  for all `j` coprime with `n`.
+  `pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum` gives an explicit formula for the unit. -/
 theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (hj : j.Coprime n) :
     Associated (ζ - 1) (ζ ^ j - 1) := by
   refine associated_of_dvd_dvd ⟨∑ i ∈ range j, ζ ^ i, (mul_geom_sum _ _).symm⟩ ?_
