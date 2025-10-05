@@ -28,7 +28,7 @@ local notation "v" => valuation R
 
 /-- A version mentioning subtraction. -/
 lemma mem_nhds_iff' [TopologicalSpace R] [IsValuativeTopology R] {s : Set R} {x : R} :
-    s ∈ 𝓝 (x : R) ↔
+    s ∈ 𝓝 x ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { z | v (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
   ext z
@@ -112,7 +112,7 @@ alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
 
 variable (R) in
 lemma hasBasis_nhds_zero_ne_zero :
-    (𝓝 (0 : R)).HasBasis (· ≠ 0) fun γ ↦ { x | (valuation R) x < γ } :=
+    (𝓝 (0 : R)).HasBasis (· ≠ 0) ({ x | (valuation R) x < · }) :=
   (hasBasis_nhds_zero R).to_hasBasis
     (fun γ _ ↦ ⟨γ, γ.ne_zero, subset_refl _⟩)
     fun γ hγ ↦ ⟨Units.mk0 γ hγ, trivial, subset_refl _⟩
