@@ -175,12 +175,9 @@ theorem isOrdering_iff :
   · have : HasMemOrNegMem P := ⟨by simp [h]⟩
     refine IsOrdering.mk' P (fun {x y} _ => ?_)
     by_contra
-    cases (by aesop : x ∈ P ∨ -x ∈ P) with
-    | inl =>  have := h (-x) y
-              have := h (-x) (-y)
-              simp_all [mem_support]
-    | inr =>  have := h x y
-              have := h x (-y)
-              simp_all [mem_support]
-
+    have := h (-x) y
+    have := h (-x) (-y)
+    have := h x y
+    have := h x (-y)
+    cases (by aesop : x ∈ P ∨ -x ∈ P) <;> simp_all [mem_support]
 end RingPreordering
