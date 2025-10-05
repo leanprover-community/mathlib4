@@ -148,20 +148,19 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 
 @[norm_cast]
-theorem coe_tsum [L.NeBot] {f : α → ℝ≥0} : ↑(∑'[L] a, f a) = ∑'[L] a, (f a : ℝ) := by
-  classical
-  exact if hf : Summable f L then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
-  else by simp [tsum_def, hf, mt summable_coe.1 hf]
+theorem coe_tsum {f : α → ℝ≥0} : ↑(∑'[L] a, f a) = ∑'[L] a, (f a : ℝ) :=
+  Function.LeftInverse.map_tsum (g := NNReal.toRealHom)
+    f NNReal.continuous_coe continuous_real_toNNReal (fun x ↦ by simp)
 
-theorem coe_tsum_of_nonneg [L.NeBot] {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
+theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
     (⟨∑'[L] n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑'[L] n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=
   NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
 
-nonrec theorem tsum_mul_left [L.NeBot] (a : ℝ≥0) (f : α → ℝ≥0) :
+nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) :
     ∑'[L] x, a * f x = a * ∑'[L] x, f x :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
 
-nonrec theorem tsum_mul_right [L.NeBot] (f : α → ℝ≥0) (a : ℝ≥0) :
+nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) :
     ∑'[L] x, f x * a = (∑'[L] x, f x) * a :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
 

@@ -249,7 +249,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
 to apply in practice. -/
 @[to_additive /-- Special case of `Topology.IsClosedEmbedding.map_tsum`, logically weaker but
 possibly easier to apply in practice. -/]
-lemma LeftInverse.map_tprod {G : Type*} (f : β → α) [CommMonoid γ] [TopologicalSpace γ]
+lemma Function.LeftInverse.map_tprod {G : Type*} (f : β → α) [CommMonoid γ] [TopologicalSpace γ]
     [T2Space γ] {g : G} [FunLike G α γ] [MonoidHomClass G α γ] (hg : Continuous g)
     {g' : γ → α} (hg' : Continuous g') (hgg' : LeftInverse g' g) :
     g (∏'[L] b, f b) = ∏'[L] b, g (f b) :=
