@@ -301,8 +301,6 @@ end IsValuativeTopology
 
 namespace ValuativeRel
 
-variable {R : Type*} [CommRing R]
-
 @[inherit_doc]
 scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
 
