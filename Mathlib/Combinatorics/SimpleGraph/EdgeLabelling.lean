@@ -71,7 +71,7 @@ def get (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : K :=
   C ⟨s(x, y), h⟩
 
 lemma get_eq (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : C.get x y h = C ⟨s(x, y), h⟩ :=
-  by rw [get]
+  rfl
 
 variable {C : EdgeLabelling G K}
 
@@ -156,13 +156,19 @@ theorem labelGraph_le (C : EdgeLabelling G K) {k : K} : C.labelGraph k ≤ G := 
   rintro ⟨h, -⟩
   exact h
 
+theorem pairwise_disjoint_labelGraph {C : EdgeLabelling G K} :
+    Pairwise fun k l ↦ Disjoint (C.labelGraph k) (C.labelGraph l) := by
+  intro _ _ h
+  rw [SimpleGraph.disjoint_left]
+  simp only [labelGraph_adj, not_exists, forall_exists_index]
+  rintro _ _ h rfl _
+  exact h
+
 theorem pairwiseDisjoint_univ_labelGraph {C : EdgeLabelling G K} :
     Set.PairwiseDisjoint (@Set.univ K) C.labelGraph := by
-  intro k₁ hk₁ k₂ _ h
-  rw [Function.onFun, SimpleGraph.disjoint_left]
-  simp only [labelGraph_adj, not_exists, forall_exists_index]
-  rintro x y h rfl _
-  exact h
+  intro _ _ _ _ h
+  rw [Function.onFun]
+  exact pairwise_disjoint_labelGraph h
 
 theorem iSup_labelGraph (C : EdgeLabelling G K) : ⨆ k : K, C.labelGraph k = G := by
   ext x y
