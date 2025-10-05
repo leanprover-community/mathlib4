@@ -464,6 +464,11 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     rfl
   mpr hU := hU.image_of_isOpenImmersion f
 
+lemma preimage_of_isOpenImmersion {U : Y.Opens} (hV : IsAffineOpen U)
+    (f : X ⟶ Y) [IsOpenImmersion f] (hU : U ≤ f.opensRange) : IsAffineOpen (f ⁻¹ᵁ U) := by
+  rwa [← f.isAffineOpen_iff_of_isOpenImmersion,
+    f.image_preimage_eq_opensRange_inter U, inf_eq_right.mpr hU]
+
 /-- The affine open sets of an open subscheme corresponds to
 the affine open sets containing in the image. -/
 @[simps]

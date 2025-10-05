@@ -192,10 +192,14 @@ lemma exists_mem_of_isClosed_of_nonempty'
     (fun i ↦ Z i.left i.hom) (fun _ ↦ hZc _ _)  (fun _ ↦ hZne _ _)  (fun _ ↦ hZcpt _ _)
     (fun {i₁ i₂} f ↦ by dsimp; rw [← Over.w f]; exact hstab ..)
 
+section Opens
+
 include hc in
-@[stacks 01Z3]
+/-- Let `{ Dᵢ }` be a cofiltered diagram of compact schemes with affine transition maps.
+If `U ⊆ Dⱼ` contains the image of `limᵢ Dᵢ ⟶ Dⱼ`, then it contains the image of some `Dₖ ⟶ Dⱼ`. -/
+@[stacks 01Z4 "(1)"]
 lemma exists_map_eq_top
-    [IsCofilteredOrEmpty I]
+    [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ i, CompactSpace (D.obj i)]
     {i : I} (U : (D.obj i).Opens) (hU : c.π.app i ⁻¹ᵁ U = ⊤) :
@@ -209,24 +213,30 @@ lemma exists_map_eq_top
     (fun j k fkj fji x (hx : _ ∉ U) ↦ by rwa [Functor.map_comp] at hx)
   exact absurd (hU.ge (Set.mem_univ s)) (by simpa using hs i (𝟙 i))
 
-section Opens
-
 attribute [local simp] Scheme.Hom.resLE_id Scheme.Hom.resLE_comp_resLE
 
+/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and a open `U ⊆ Dᵢ`,
+this is the diagram of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 @[simps] noncomputable
 def opensDiagram (i : I) (U : (D.obj i).Opens) : Over i ⥤ Scheme where
   obj j := D.map j.hom ⁻¹ᵁ U
   map {j k} f := (D.map f.left).resLE _ _ (by rw [← Scheme.preimage_comp, ← D.map_comp, Over.w f])
 
+/-- The map `Dⱼᵢ⁻¹ U ⟶ Dᵢ` from the restricted diagram to the original diagram. -/
 @[simps] noncomputable
 def opensDiagramι (i : I) (U : (D.obj i).Opens) : opensDiagram D i U ⟶ Over.forget _ ⋙ D where
   app j := Scheme.Opens.ι _
 
+/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and a open `U ⊆ Dᵢ`,
+the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`.
+This is the underlying cone, and it is limiting as witnessed by `isLimitOpensCone` below. -/
 @[simps] noncomputable
 def opensCone (i : I) (U : (D.obj i).Opens) : Cone (opensDiagram D i U) where
   pt := c.π.app i ⁻¹ᵁ U
   π.app j := (c.π.app j.left).resLE _ _ (by rw [← Scheme.preimage_comp, c.w]; rfl)
 
+/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and a open `U ⊆ Dᵢ`,
+the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 noncomputable
 def isLimitOpensCone [IsCofiltered I] (i : I) (U : (D.obj i).Opens) :
     IsLimit (opensCone D c i U) where
@@ -252,12 +262,6 @@ def isLimitOpensCone [IsCofiltered I] (i : I) (U : (D.obj i).Opens) :
     simp only [Functor.const_obj_obj, opensCone_pt, IsOpenImmersion.lift_fac]
     exact (isLimitOfPreserves (Over.forget _) (Over.isLimitConePost i hc)).uniq
       ((Cones.postcompose (opensDiagramι D i U)).obj s) _ fun j ↦ by simp [← hm]
-
--- move me
-lemma IsAffineOpen.preimage_of_isOpenImmersion {X Y : Scheme} {U : Y.Opens} (hV : IsAffineOpen U)
-    (f : X ⟶ Y) [IsOpenImmersion f] (hU : U ≤ f.opensRange) : IsAffineOpen (f ⁻¹ᵁ U) := by
-  rwa [← f.isAffineOpen_iff_of_isOpenImmersion,
-    f.image_preimage_eq_opensRange_inter U, inf_eq_right.mpr hU]
 
 instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     (U : (D.obj i).Opens) {j k : Over i} (f : j ⟶ k) :
@@ -866,3 +870,4 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
 end sections
 
 end AlgebraicGeometry
+#min_imports
