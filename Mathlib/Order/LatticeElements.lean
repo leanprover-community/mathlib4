@@ -27,7 +27,7 @@ Defines distinguished sets of elements within a `Lattice` and considers their pr
 
 ## References
 
-* [Grätzer et al, *General lattice theory*][Grätzer2003]
+* [Grätzer et al, *General lattice theory*][Graetzer2003]
 
 ## Tags
 
