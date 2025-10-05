@@ -14,10 +14,10 @@ generator (in the sense that `IsSeparating S` holds) such that for any
 proper subobject `A ⊂ X`, there exists a morphism `G ⟶ X` from an
 object in `S` which does not factor through `A`.
 
-The main result if the lemma `isStrongGenerator_iff_exists_extremalEpi` which
+The main result is the lemma `isStrongGenerator_iff_exists_extremalEpi` which
 says that if `S` is `w`-small, `C` is locally `w`-small and
 has coproducts of size `w`, then `S` is a strong generator iff any
-object of `C` is the target of extremal epimorphism from a coproduct of
+object of `C` is the target of an extremal epimorphism from a coproduct of
 objects in `S`. A similar iff lemma for `IsSeparating` is also obtained.
 
 ## References
