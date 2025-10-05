@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Presentable.Limits
-import Mathlib.CategoryTheory.Limits.Presentation
+import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Presentable generators
@@ -16,7 +16,8 @@ this property says that the objects `G i` are all `κ`-presentable and that
 any object in `C` identifies as a `κ`-filtered colimit of these objects.
 We show in the lemma `AreCardinalFilteredGenerators.presentable` that it
 follows that any object `X` is presentable (relatively to a possibly
-larger regular cardinal `κ'`).
+larger regular cardinal `κ'`). The lemma `AreCardinalFilteredGenerators.isStrongGenerator`
+shows that the objects `G i` form a strong generator of the category `C`.
 
 Finally, we define a typeclass `HasCardinalFilteredGenerators C κ` saying
 that `C` is locally `w`-small and that there exists a family `G : ι → C`
@@ -114,6 +115,14 @@ lemma presentable [LocallySmall.{w} C] (X : C) : IsPresentable.{w} X := by
       h₂ (Sum.inl ⟨⟩)⟩
   have := (h.colimitPresentation X).isCardinalPresentable κ (by infer_instance) κ' le hκ'
   exact isPresentable_of_isCardinalPresentable _ κ'
+
+include h in
+lemma isStrongGenerator :
+    IsStrongGenerator (Set.range G) :=
+  .mk_of_exists_colimitPresentation (fun X ↦ by
+    refine ⟨_, _, h.colimitPresentation X, fun j ↦ ?_⟩
+    obtain ⟨i, ⟨e⟩⟩ := h.exists_colimitPresentation_diag_obj_iso X j
+    exact ⟨⟨_, i, rfl⟩, ⟨e⟩⟩)
 
 end AreCardinalFilteredGenerators
 
