@@ -21,7 +21,7 @@ This file defines affine maps.
 * `AffineMap` is the type of affine maps between two affine spaces with the same ring `k`.  Various
   basic examples of affine maps are defined, including `const`, `id`, `lineMap` and `homothety`.
 
-## Notations
+## Notation
 
 * `P1 →ᵃ[k] P2` is a notation for `AffineMap k P1 P2`;
 * `AffineSpace V P`: a localized notation for `AddTorsor V P` defined in
@@ -813,6 +813,9 @@ def homothety (c : P1) (r : k) : P1 →ᵃ[k] P1 :=
 
 theorem homothety_def (c : P1) (r : k) :
     homothety c r = r • (id k P1 -ᵥ const k P1 c) +ᵥ const k P1 c :=
+  rfl
+
+theorem coe_homothety (c : P1) (r : k) : homothety c r = fun p => r • (p -ᵥ c) +ᵥ c :=
   rfl
 
 theorem homothety_apply (c : P1) (r : k) (p : P1) : homothety c r p = r • (p -ᵥ c : V1) +ᵥ c :=

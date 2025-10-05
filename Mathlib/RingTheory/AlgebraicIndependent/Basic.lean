@@ -149,7 +149,7 @@ theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A)
   have := Module.subsingleton R A
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨.of_subsingleton, fun s hs hx ↦
     hx.antisymm fun a _ ↦ ⟨Classical.arbitrary _, Subsingleton.elim ..⟩⟩⟩
-  by_contra hι; rw [not_nonempty_iff] at hι
+  by_contra! hι
   have := h.2 {0} .of_subsingleton
   simp [range_eq_empty, eq_comm (a := ∅)] at this
 

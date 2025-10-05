@@ -218,7 +218,7 @@ theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : #σ.support < 2 * orderOf σ) : σ.IsCycle := by
   obtain ⟨n, hn⟩ := cycleType_prime_order h1
   rw [← σ.sum_cycleType, hn, Multiset.sum_replicate, nsmul_eq_mul, Nat.cast_id,
-    mul_lt_mul_right (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, Nat.le_zero] at h2
+    mul_lt_mul_iff_left₀ (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, Nat.le_zero] at h2
   rw [← card_cycleType_eq_one, hn, card_replicate, h2]
 
 theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cycleFactorsFinset) :
@@ -392,7 +392,7 @@ theorem isCycle_of_prime_order' {σ : Perm α} (h1 : (orderOf σ).Prime)
 theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
     (h2 : orderOf σ = Fintype.card α) : σ.IsCycle :=
   isCycle_of_prime_order' ((congr_arg Nat.Prime h2).mpr h1) <| by
-    rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_right (orderOf_pos σ)]
+    rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_iff_left₀ (orderOf_pos σ)]
     exact one_lt_two
 
 section Cauchy
@@ -574,10 +574,26 @@ theorem partition_eq_of_isConj {σ τ : Perm α} : IsConj σ τ ↔ σ.partition
 
 end Partition
 
+section IsSwap
+
+variable [DecidableEq α]
+
+theorem isSwap_iff_cycleType {σ : Perm α} : σ.IsSwap ↔ σ.cycleType = {2} := by
+  constructor
+  · intro h
+    simpa [h.isCycle.cycleType, card_support_eq_two] using h
+  · intro h
+    simp [← card_support_eq_two, ← sum_cycleType, h]
+
+theorem IsSwap.orderOf {σ : Equiv.Perm α} (h : σ.IsSwap) :
+    orderOf σ = 2 := by
+  rw [← lcm_cycleType, isSwap_iff_cycleType.mp h, Multiset.lcm_singleton, normalize_eq]
+
+end IsSwap
+
 /-!
 ### 3-cycles
 -/
-
 
 /-- A three-cycle is a cycle of length 3. -/
 def IsThreeCycle [DecidableEq α] (σ : Perm α) : Prop :=
