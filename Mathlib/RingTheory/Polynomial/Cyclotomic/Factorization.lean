@@ -39,7 +39,7 @@ variable [hp : Fact p.Prime]
 /-- The degree of an irreducible monic factor of the `n` cyclotomic polynomial over a finite field.
   This is a special case of `natDegree_of_dvd_cyclotomic_of_irreducible` below. -/
 private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ cyclotomic n K)
-      (hPirr : Irreducible P) (hPmo : P.Monic) :
+    (hPirr : Irreducible P) (hPmo : P.Monic) :
     P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   have : Fact (Irreducible P) := ⟨hPirr⟩
   have := hPmo.finite_adjoinRoot
