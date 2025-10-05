@@ -513,10 +513,6 @@ noncomputable def fderivₗ' {n : ℕ∞} : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓
     · rw [← ne_eq, ← ENat.one_le_iff_ne_zero] at hn
       exact fderiv_const_smul (f.contDiff.differentiable (by exact_mod_cast hn)).differentiableAt c
 
-theorem _root_.ENat.eq_zero_or_add_one (i : ℕ∞) : i = 0 ∨ ∃ k, i = k + 1 := by
-  refine or_iff_not_imp_left.mpr fun h ↦ ⟨i - 1, ?_⟩
-  rw [tsub_add_cancel_of_le (ENat.one_le_iff_ne_zero.mpr h)]
-
 theorem seminorm_fderiv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm 𝕜 E (E →L[ℝ] F) (n - 1) K i f.fderiv' =
       ContDiffMapSupportedIn.seminorm 𝕜 E F n K (i+1) f := by
