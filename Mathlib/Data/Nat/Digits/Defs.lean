@@ -280,13 +280,8 @@ theorem digits_ne_nil_iff_ne_zero {b n : ℕ} : digits b n ≠ [] ↔ n ≠ 0 :=
   not_congr digits_eq_nil_iff_eq_zero
 
 theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
-    digits b n = (n % b) :: digits b (n / b) := by
-  rcases b with (_ | _ | b)
-  · rw [digits_zero_succ' w, Nat.mod_zero, Nat.div_zero, Nat.digits_zero_zero]
-  · norm_num at h
-  rcases n with (_ | n)
-  · norm_num at w
-  · simp only [digits_add_two_add_one]
+    digits b n = (n % b) :: digits b (n / b) :=
+  digits_def' h (Nat.pos_of_ne_zero w)
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
     (digits b m).getLast p = (digits b (m / b)).getLast q := by
