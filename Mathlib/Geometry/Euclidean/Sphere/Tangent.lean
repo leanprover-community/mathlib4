@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.Geometry.Euclidean.Sphere.Basic
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 /-!
 # Tangency for spheres.
@@ -53,7 +54,8 @@ namespace EuclideanGeometry
 
 namespace Sphere
 
-open AffineSubspace RealInnerProductSpace
+open AffineSubspace RealInnerProductSpace InnerProductGeometry
+open scoped Real
 
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
@@ -178,6 +180,52 @@ lemma IsTangentAt.mem_and_mem_iff_eq {s : Sphere P} {p q : P} {as : AffineSubspa
 lemma IsTangentAt.eq_of_mem_of_mem {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
     (h : s.IsTangentAt p as) (hs : q ∈ s) (has : q ∈ as) : q = p :=
   h.mem_and_mem_iff_eq.1 ⟨hs, has⟩
+
+/-- If two tangent lines to a sphere pass through the same point `q`,
+then `q` is euqal dist to the tangent points. -/
+lemma IsTangentAt.dist_eq_of_mem_of_mem {s : Sphere P} {p₁ p₂ q : P}
+    {as₁ as₂ : AffineSubspace ℝ P}
+    (h₁ : s.IsTangentAt p₁ as₁) (h₂ : s.IsTangentAt p₂ as₂) (hq_mem₁ : q ∈ as₁)
+    (hq_mem₂ : q ∈ as₂) :
+    dist q p₁ = dist q p₂ := by
+  have h1 := dist_sq_eq_of_mem h₁ hq_mem₁
+  have h2 := dist_sq_eq_of_mem h₂ hq_mem₂
+  rwa [h1, add_left_cancel_iff, sq_eq_sq₀ dist_nonneg dist_nonneg] at h2
+
+/-- For a tangent line to a sphere, the angle between the line and the radius at the tangent point
+equals `π / 2`. -/
+lemma IsTangentAt.angle_eq_pi_div_two {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) (hq_mem : q ∈ as) :
+    ∠ q p s.center = π / 2 := by
+  have h1 := IsTangentAt.inner_left_eq_zero_of_mem h hq_mem
+  rw [inner_eq_zero_iff_angle_eq_pi_div_two] at h1
+  rw [angle, ← neg_vsub_eq_vsub_rev _ s.center, angle_neg_right, h1]
+  linarith
+
+/-- If the angle between the line `p q` and the radius at `p` equals `π / 2`, then the line `p q` is
+tangent to the sphere at `p`. -/
+lemma IsTangentAt_of_angle_eq_pi_div_two {s : Sphere P} {p q : P} (h : ∠ q p s.center = π / 2)
+    (hp : p ∈ s) :
+    s.IsTangentAt p line[ℝ, p, q] := by
+  have hp_mem := left_mem_affineSpan_pair ℝ p q
+  refine ⟨hp, hp_mem, ?_⟩
+  have h_ortho : ⟪q -ᵥ p, p -ᵥ s.center⟫ = 0 := by
+    rwa [angle, ← inner_eq_zero_iff_angle_eq_pi_div_two, ← neg_vsub_eq_vsub_rev p s.center,
+      inner_neg_right, neg_eq_zero] at h
+  have hq : q ∈ s.orthRadius p := by
+    simp [Sphere.mem_orthRadius_iff_inner_left, h_ortho]
+  rw [affineSpan_le]
+  have hp : p ∈ s.orthRadius p := by
+    simp [Sphere.self_mem_orthRadius]
+  simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
+  exact ⟨hp, hq⟩
+
+/-- A line through `p` is tangent to the sphere at `p` if and only if the angle between the line and
+the radius at `p` equals `π / 2`. -/
+lemma IsTangentAt_iff_angle_eq_pi_div_two {s : Sphere P} {p q : P} (hp : p ∈ s) :
+    s.IsTangentAt p line[ℝ, p, q] ↔ ∠ q p s.center = π / 2 := by
+  exact ⟨fun h ↦ IsTangentAt.angle_eq_pi_div_two h (right_mem_affineSpan_pair ℝ p q),
+    fun h ↦ IsTangentAt_of_angle_eq_pi_div_two h hp⟩
 
 /-- The affine subspace `as` is tangent to the sphere `s` at some point. -/
 def IsTangent (s : Sphere P) (as : AffineSubspace ℝ P) : Prop :=
