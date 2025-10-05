@@ -20,9 +20,13 @@ functions `f : E → F` (where `F` is a normed vector space) such that:
 - `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
 - `f` vanishes outside of a compact: `EqOn f 0 Kᶜ`.
 
-We define it as a bundled structure so as to endow it with the topology of uniform convergence of
-`f` and all of its derivatives up to order `n`, required to make it a subspace of the space of
-test functions.
+The main reason this exists as a bundled type is to be endowed with its natural locally convex
+topology (namely, uniform convergence of `f` and its derivative up to order `n`).
+Taking the locally convex inductive limit of these as `K` yields the natural topology on test
+functions, used to define distributions. While most of distribution theory cares only about `C^∞`
+functions, we also want to endow the space of `C^n` test functions with its natural topology.
+Indeed, distributions of order less than `n` are precisely those which extend continuously to this
+larger space of test functions.
 
 ## Main definitions
 
