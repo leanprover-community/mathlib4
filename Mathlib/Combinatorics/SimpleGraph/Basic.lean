@@ -550,7 +550,7 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
   exact Set.fintypeDiff _ _
 
 theorem card_top_edgeSet [DecidableEq V] [Fintype V] :
-    Fintype.card (⊤ : SimpleGraph V).edgeSet = (Fintype.card V).choose 2 := by
+    (⊤ : SimpleGraph V).edgeSet.ncard = (Fintype.card V).choose 2 := by
   simp only [edgeSet_top, Set.coe_setOf, Sym2.card_subtype_not_diag]
 
 end EdgeSet

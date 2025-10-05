@@ -56,7 +56,7 @@ label.
 abbrev TopEdgeLabelling (V : Type*) (K : Type*) :=
   EdgeLabelling (⊤ : SimpleGraph V) K
 
-theorem card_EdgeLabelling [DecidableEq V] [Fintype V] [Fintype K] :
+theorem card_topEdgeLabelling [DecidableEq V] [Fintype V] [Fintype K] :
     card (TopEdgeLabelling V K) = card K ^ (card V).choose 2 :=
   Fintype.card_fun.trans (by rw [card_top_edgeSet])
 
@@ -71,7 +71,7 @@ abbrev get (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : K :=
 
 variable {C : EdgeLabelling G K}
 
-theorem get_swap (x y : V) (h : G.Adj x y) : C.get y x h.symm = C.get x y h := by
+theorem get_comm (x y : V) (h) : C.get y x h = C.get x y h.symm := by
   simp only [EdgeLabelling.get, Sym2.eq_swap]
 
 @[ext]
@@ -95,7 +95,7 @@ theorem pullback_apply {f : G' ↪g G} e : C.pullback f e = C (f.mapEdgeSet e) :
 
 @[simp]
 theorem pullback_get {f : G' ↪g G} (x y) (h : G'.Adj x y) :
-    (C.pullback f) ⟨s(x, y), h⟩ = C.get (f x) (f y) (by simpa) :=
+    (C.pullback f).get x y h = C.get (f x) (f y) (by simpa) :=
   rfl
 
 @[simp]
