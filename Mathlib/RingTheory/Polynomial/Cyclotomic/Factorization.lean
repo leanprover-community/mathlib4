@@ -158,7 +158,7 @@ theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K))
     refine le_iff_count.mpr (fun Q ↦ ?_)
     by_cases hQ : Q = P
     · simp only [hQ, insert_eq_cons, count_cons_self, nodup_singleton, mem_singleton,
-      count_eq_one_of_mem, reduceAdd]
+        count_eq_one_of_mem, reduceAdd]
       omega
     · simp [hQ]
   have := prod_dvd_prod_of_le this
