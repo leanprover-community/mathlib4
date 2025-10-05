@@ -702,23 +702,20 @@ end TemperateGrowth
 section HasCompactSupport
 
 /-- A smooth compactly supported function is a Schwartz function. -/
-def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h1 : HasCompactSupport f)
-    (h2 : ContDiff ℝ ∞ f) : 𝓢(E, F) where
+@[simps]
+def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSupport f)
+    (h₂ : ContDiff ℝ ∞ f) : 𝓢(E, F) where
   toFun := f
-  smooth' := h2
+  smooth' := h₂
   decay' := by
     intro k n
     set g := fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖
-    have hg1 : Continuous g := by
+    have hg₁ : Continuous g := by
       apply Continuous.mul (by fun_prop)
-      exact (h2.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
-    have hg2 : HasCompactSupport g := (h1.iteratedFDeriv _).norm.mul_left
-    rcases hg1.exists_forall_ge_of_hasCompactSupport hg2 with ⟨x₀, hx₀⟩
+      exact (h₂.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
+    have hg₂ : HasCompactSupport g := (h₁.iteratedFDeriv _).norm.mul_left
+    rcases hg₁.exists_forall_ge_of_hasCompactSupport hg₂ with ⟨x₀, hx₀⟩
     exact ⟨g x₀, hx₀⟩
-
-@[simp]
-theorem _root_.HasCompactSupport.toSchwartzMap_apply {f : E → F} (h1 : HasCompactSupport f)
-    (h2 : ContDiff ℝ ∞ f) (x : E) : h1.toSchwartzMap h2 x = f x := rfl
 
 end HasCompactSupport
 
