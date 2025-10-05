@@ -59,7 +59,7 @@ variable {ι : Type w} (G : ι → C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 of objects `G : ι → C` consists of `κ`-presentable objects and that any
 object in `C` identifies to a `κ`-filtered colimit of these objects. -/
 structure AreCardinalFilteredGenerators : Prop where
-  isCardinalPresentable (i : ι) : IsCardinalPresentable (G i) κ
+  isCardinalPresentable (i : ι) : IsCardinalPresentable (G i) κ := by infer_instance
   exists_colimitPresentation (X : C) :
     ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ)
       (p : ColimitPresentation J X),

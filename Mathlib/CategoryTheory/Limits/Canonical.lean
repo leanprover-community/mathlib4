@@ -28,13 +28,14 @@ to the Yoneda embedding
 
 -/
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+variable {C : Type u₁} {D : Type u₂} {C' : Type u₃}
+  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} C']
   (F : C ⥤ D)
 
 namespace Limits
@@ -59,6 +60,22 @@ lemma CanonicalColimit.hom_ext'
     (h : ∀ (X : C) (p : F.obj X ⟶ Y), p ≫ f = p ≫ g) : f = g :=
   hY.hom_ext (fun _ ↦ h _ _)
 
+variable {F} in
+/-- If `Y` is a canonical colimit relatively to `F : C ⥤ D`, and `G : C ⥤ D`
+is isomorphic to `F`, then `Y` is also a canonical colimit relatively to `G`. -/
+def CanonicalColimit.ofNatIso {Y : D} (h : CanonicalColimit F Y) {G : C ⥤ D} (e : F ≅ G) :
+    CanonicalColimit G Y := by
+  refine (IsColimit.equivOfNatIsoOfIso
+    ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerLeft _ e) _ _ ?_).1
+    (h.whiskerEquivalence (CostructuredArrow.mapNatIso e.symm))
+  exact Cocones.ext (Iso.refl _)
+
+variable {F} in
+noncomputable def CanonicalColimit.ofEquivalence
+    {X : D} (h : CanonicalColimit F X) (e : C' ≌ C) :
+    CanonicalColimit (e.functor ⋙ F) X :=
+  h.whiskerEquivalence (CostructuredArrow.pre e.functor F X).asEquivalence
+
 end Limits
 
 /-- Given a functor `F : C ⥤ D`, this is the property that an object `Y : D`
@@ -73,5 +90,11 @@ this is a choice of structure `CanonicalColimit F Y`. -/
 noncomputable def Functor.isCanonicalColimit.canonicalColimit
     {Y : D} (hY : F.isCanonicalColimit Y) :
     CanonicalColimit F Y := hY.some
+
+variable {F} in
+lemma Functor.congr_isCanonicalColimit {G : C ⥤ D} (e : F ≅ G) :
+    F.isCanonicalColimit = G.isCanonicalColimit := by
+  ext Y
+  exact ⟨fun ⟨h⟩ ↦ ⟨h.ofNatIso e⟩, fun ⟨h⟩ ↦ ⟨h.ofNatIso e.symm⟩⟩
 
 end CategoryTheory

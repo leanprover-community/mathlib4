@@ -25,13 +25,14 @@ generator (see `Functor.isStrongGenerator_range_of_isDense`).
 
 -/
 
-universe w v₁ v₂ u₁ u₂
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
 open Limits Opposite Presheaf
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+  {C' : Type u₃} [Category.{v₃} C']
 
 namespace Functor
 
@@ -46,7 +47,29 @@ noncomputable def canonicalColimitOfIsDense (F : C ⥤ D) [F.IsDense] (Y : D) :
     CanonicalColimit F Y :=
   ((IsDense.isCanonicalColimit_eq_top F).symm.le _ (by simp)).canonicalColimit
 
+lemma IsDense.of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsDense] :
+    G.IsDense where
+  isCanonicalColimit_eq_top := by
+    rw [← Functor.congr_isCanonicalColimit e, isCanonicalColimit_eq_top F]
+
+lemma IsDense.iff_of_iso {F G : C ⥤ D} (e : F ≅ G) :
+    F.IsDense ↔ G.IsDense :=
+  ⟨fun _ ↦ of_iso e, fun _ ↦ of_iso e.symm⟩
+
 variable (F : C ⥤ D)
+
+instance (G : C' ⥤ C) [F.IsDense] [G.IsEquivalence] :
+    (G ⋙ F).IsDense where
+  isCanonicalColimit_eq_top := by
+    ext Y
+    simpa using ⟨(F.canonicalColimitOfIsDense Y).ofEquivalence G.asEquivalence⟩
+
+lemma IsDense.comp_left_iff_of_isEquivalence (G : C' ⥤ C) [G.IsEquivalence] :
+    (G ⋙ F).IsDense ↔ F.IsDense := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  let e : G.inv ⋙ G ⋙ F ≅ F := (associator _ _ _).symm ≪≫
+    isoWhiskerRight (G.asEquivalence.counitIso) _ ≪≫ F.leftUnitor
+  exact of_iso e
 
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
   map_injective h :=
