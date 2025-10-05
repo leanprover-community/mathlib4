@@ -78,15 +78,12 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 lemma Discrete.monoidalFunctor_ε (F : M →* N) :
     ε (monoidalFunctor F) = Discrete.eqToHom F.map_one.symm := rfl
 
--- @[to_additive Discrete.addMonoidalFunctor_η]
 lemma Discrete.monoidalFunctor_η (F : M →* N) :
     η (monoidalFunctor F) = Discrete.eqToHom F.map_one := rfl
 
--- @[to_additive Discrete.addMonoidalFunctor_μ]
 lemma Discrete.monoidalFunctor_μ (F : M →* N) (m₁ m₂ : Discrete M) :
     μ (monoidalFunctor F) m₁ m₂ = Discrete.eqToHom (F.map_mul _ _).symm := rfl
 
--- @[to_additive Discrete.addMonoidalFunctor_δ]
 lemma Discrete.monoidalFunctor_δ (F : M →* N) (m₁ m₂ : Discrete M) :
     δ (monoidalFunctor F) m₁ m₂ = Discrete.eqToHom (F.map_mul _ _) := rfl
 

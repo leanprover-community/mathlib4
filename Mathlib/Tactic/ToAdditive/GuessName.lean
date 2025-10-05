@@ -137,6 +137,7 @@ def nameDict : String → List String
   | "whisker"       => ["add", "Whisker"]
   | "associator"    => ["add", "Associator"]
   | "unitor"        => ["add", "Unitor"]
+  | "monoidal"      => ["add", "Monoidal"]
   | x               => [x]
 
 /--

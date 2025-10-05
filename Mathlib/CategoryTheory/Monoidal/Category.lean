@@ -121,7 +121,7 @@ class AddMonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
   /-- The right unitor: `X ⊕ₒ 𝟘_ C ≃ X` -/
   rightAddUnitor : ∀ X : C, addObj X addUnit ≅ X
 
-attribute [to_additive AddMonoidalCategoryStruct] MonoidalCategoryStruct
+attribute [to_additive] MonoidalCategoryStruct
 
 namespace MonoidalCategory
 
@@ -342,7 +342,7 @@ attribute [reassoc] AddMonoidalCategory.rightAddUnitor_naturality
 attribute [reassoc (attr := simp)] AddMonoidalCategory.addPentagon
 attribute [reassoc (attr := simp)] AddMonoidalCategory.addTriangle
 
-attribute [to_additive AddMonoidalCategory] MonoidalCategory
+attribute [to_additive] MonoidalCategory
 
 -- NOTE: we disable this warning, which would otherwise fire since some of these are already marked
 -- as `simp` lemmas.
