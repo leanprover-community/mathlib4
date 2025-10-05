@@ -704,6 +704,10 @@ theorem smulRight_apply {c : M₁ →L[R] S} {f : M₂} {x : M₁} :
     (smulRight c f : M₁ → M₂) x = c x • f :=
   rfl
 
+theorem smulRight_id_apply [Module S M₁] [SMulCommClass S R₁ M₁] [ContinuousSMul S M₁] (c : S)
+    (f : M₁) : (id S S).smulRight f c = smulL R₁ M₁ c f :=
+  rfl
+
 end
 
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
