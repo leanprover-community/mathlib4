@@ -54,7 +54,7 @@ An edge labelling of the complete graph on `V` with labels in type `K`. Sometime
 edge-colouring, but we reserve that terminology for labellings where incident edges cannot share a
 label.
 -/
-abbrev TopEdgeLabelling (V : Type*) (K : Type*) :=
+abbrev TopEdgeLabelling (V K : Type*) :=
   EdgeLabelling (⊤ : SimpleGraph V) K
 
 theorem card_topEdgeLabelling [DecidableEq V] [Fintype V] [Fintype K] :
@@ -76,7 +76,7 @@ lemma get_eq (C : EdgeLabelling G K) (x y : V) (h : G.Adj x y) : C.get x y h = C
 variable {C : EdgeLabelling G K}
 
 theorem get_comm (x y : V) (h) : C.get y x h = C.get x y h.symm := by
-  simp only [EdgeLabelling.get, Sym2.eq_swap]
+  simp [EdgeLabelling.get, Sym2.eq_swap]
 
 @[ext]
 theorem ext_get {C' : EdgeLabelling G K}
@@ -98,7 +98,7 @@ theorem pullback_apply {f : G' ↪g G} e : C.pullback f e = C (f.mapEdgeSet e) :
   rfl
 
 @[simp]
-theorem pullback_get {f : G' ↪g G} (x y) (h : G'.Adj x y) :
+theorem get_pullback {f : G' ↪g G} (x y) (h : G'.Adj x y) :
     (C.pullback f).get x y h = C.get (f x) (f y) (by simpa) :=
   rfl
 
@@ -123,12 +123,12 @@ def mk (f : ∀ x y : V, G.Adj x y → K)
     rintro ⟨a, b⟩ ⟨c, d⟩ ⟨⟩
     · rfl
     refine Function.hfunext ?_ ?_
-    · ext; simp only [adj_comm]
+    · simp [adj_comm]
     · intro h₁ h₂ _
       exact heq_of_eq (f_symm _ _ _)
 
-theorem mk_get (f : ∀ x y : V, G.Adj x y → K) (f_symm) (x y : V) (h : G.Adj x y) :
-    (EdgeLabelling.mk f f_symm).get x y h = f x y h :=
+theorem get_mk (f : ∀ x y : V, G.Adj x y → K) (f_symm) (x y : V) (h : G.Adj x y) :
+    (mk f f_symm).get x y h = f x y h :=
   rfl
 
 /--
@@ -164,7 +164,7 @@ theorem pairwiseDisjoint_univ_labelGraph {C : EdgeLabelling G K} :
   rintro x y h rfl _
   exact h
 
-theorem iSup_labelGraph (C : EdgeLabelling G K) : (⨆ k : K, C.labelGraph k) = G := by
+theorem iSup_labelGraph (C : EdgeLabelling G K) : ⨆ k : K, C.labelGraph k = G := by
   ext x y
   simp only [iSup_adj, EdgeLabelling.labelGraph_adj]
   constructor
