@@ -55,10 +55,10 @@ lemma characteristic_sub_characteristic_inv (h : MeromorphicOn f ⊤) :
     rw [← ValueDistribution.log_counting_zero_sub_logCounting_top]
 
 /--
-First part of the First Main Theorem: Away from zero, the difference between the characteristic
-functions of `f` and `f⁻¹` equals `log ‖meromorphicTrailingCoeffAt f 0‖`.
+Helper lemma for the first part of the First Main Theorem: Away from zero, the difference between
+the characteristic functions of `f` and `f⁻¹` equals `log ‖meromorphicTrailingCoeffAt f 0‖`.
 -/
-theorem characteristic_sub_characteristic_inv_off_zero
+lemma characteristic_sub_characteristic_inv_off_zero
     (hf : MeromorphicOn f Set.univ) (hR : R ≠ 0) :
     characteristic f ⊤ R - characteristic f⁻¹ ⊤ R = log ‖meromorphicTrailingCoeffAt f 0‖ := by
   calc characteristic f ⊤ R - characteristic f⁻¹ ⊤ R
@@ -74,10 +74,10 @@ theorem characteristic_sub_characteristic_inv_off_zero
     simp [this, toClosedBall, restrictMonoidHom, restrict_apply]
 
 /--
-Complement to the first part of the First Main Theorem: At 0, the difference between the
+Helper lemma for the first part of the First Main Theorem: At 0, the difference between the
 characteristic functions of `f`  and `f⁻¹` equals `log ‖f 0‖`.
 -/
-theorem characteristic_sub_characteristic_inv_at_zero (h : MeromorphicOn f Set.univ) :
+lemma characteristic_sub_characteristic_inv_at_zero (h : MeromorphicOn f Set.univ) :
     characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0 = log ‖f 0‖ := by
   calc characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0
   _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) 0 := by simp
@@ -88,34 +88,37 @@ theorem characteristic_sub_characteristic_inv_at_zero (h : MeromorphicOn f Set.u
     simp
 
 /--
-First part of the First Main Theorem: Away from zero, the difference between the characteristic
-functions of `f` and `f⁻¹` equals `log ‖meromorphicTrailingCoeffAt f 0‖`.
+First part of the First Main Theorem, quantitative version: If `f` is meromorphic on the complex
+plane, then the difference between the characteristic functions of `f` and `f⁻¹` is bounded by an
+explicit constant.
 -/
-@[simp]
 theorem characteristic_sub_characteristic_inv_le (hf : MeromorphicOn f Set.univ) :
-    ‖characteristic f ⊤ R - characteristic f⁻¹ ⊤ R‖
-      ≤ max ‖log ‖f 0‖‖ ‖log ‖meromorphicTrailingCoeffAt f 0‖‖ := by
+    |characteristic f ⊤ R - characteristic f⁻¹ ⊤ R|
+      ≤ max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖| := by
   by_cases h : R = 0
   · simp [h, characteristic_sub_characteristic_inv_at_zero hf]
   · simp [characteristic_sub_characteristic_inv_off_zero hf h]
 
+/--
+First part of the First Main Theorem, quantitative version: If `f` is meromorphic on the complex
+plane, then the characteristic functions of `f` and `f⁻¹` agree asymptotically up to a bounded
+function.
+-/
 theorem characteristic_sub_characteristic_inv_eqO (h : MeromorphicOn f ⊤) :
-    (characteristic f ⊤ - characteristic f⁻¹ ⊤) =O[atTop] (1 : ℝ → ℝ) := by
+    |characteristic f ⊤ - characteristic f⁻¹ ⊤| =O[atTop] (1 : ℝ → ℝ) := by
   simp_rw [isBigO_iff', eventually_atTop]
   use 1 + max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖|
   constructor
   · rw [gt_iff_lt, add_comm]
     apply lt_add_of_le_of_pos (by aesop) Real.zero_lt_one
-  · simp only [ge_iff_le, Pi.sub_apply, norm_eq_abs, Pi.one_apply, one_mem,
+  · simp only [ge_iff_le, norm_eq_abs, Pi.abs_apply, Pi.sub_apply, abs_abs, Pi.one_apply, one_mem,
       CStarRing.norm_of_mem_unitary, mul_one]
     use 1
-    intro b hb
-    calc ‖(characteristic f ⊤ - characteristic f⁻¹ ⊤) b‖
-    _ ≤ max ‖log ‖f 0‖‖ ‖log ‖meromorphicTrailingCoeffAt f 0‖‖ := by
+    intro b _
+    calc |(characteristic f ⊤ - characteristic f⁻¹ ⊤) b|
+    _ ≤ max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖| := by
       simp [characteristic_sub_characteristic_inv_off_zero h (by linarith)]
-    _ ≤ 1 + max ‖log ‖f 0‖‖ ‖log ‖meromorphicTrailingCoeffAt f 0‖‖ := by
-      simp
-
+    _ ≤ 1 + max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖| := by simp
 
 end FirstPart
 
