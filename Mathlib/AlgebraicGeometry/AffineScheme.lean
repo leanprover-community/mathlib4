@@ -239,11 +239,6 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
 instance createsLimitsForgetToScheme : CreatesLimits forgetToScheme.{u} :=
   ⟨⟨createsLimitOfReflectsIsomorphismsOfPreserves⟩⟩
 
-/-- The opposite of the forgetful functor `AffineScheme ⥤ Scheme` creates small colimits. -/
-def forgetToSchemeCreatesColimits : CreatesColimits forgetToScheme.{u}.op :=
-  let : PreservesColimits forgetToScheme.{u}.op := preservesColimits_op _
-  ⟨⟨createsColimitOfReflectsIsomorphismsOfPreserves⟩⟩
-
 end AffineScheme
 
 /-- An open subset of a scheme is affine if the open subscheme is affine. -/
