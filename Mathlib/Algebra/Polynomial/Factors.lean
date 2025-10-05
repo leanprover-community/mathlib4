@@ -146,6 +146,17 @@ theorem factors_iff_exists_multiset {f : R[X]} :
   refine factors_iff_exists_multiset'.trans ⟨?_, ?_⟩ <;>
     rintro ⟨m, hm⟩ <;> exact ⟨m.map (- ·), by simpa⟩
 
+theorem exists_root_of_factors {f : R[X]} (hf : Factors f) (hf0 : degree f ≠ 0) :
+    ∃ a, eval a f = 0 := by
+  obtain ⟨m, hm⟩ := factors_iff_exists_multiset.mp hf
+  by_cases hf₀ : f.leadingCoeff = 0
+  · simp [leadingCoeff_eq_zero.mp hf₀]
+  obtain rfl | ⟨a, ha⟩ := m.empty_or_exists_mem
+  · rw [hm, Multiset.map_zero, Multiset.prod_zero, mul_one, degree_C hf₀] at hf0
+    contradiction
+  obtain ⟨m, rfl⟩ := Multiset.exists_cons_of_mem ha
+  exact ⟨a, hm ▸ by simp⟩
+
 variable [IsDomain R]
 
 theorem Factors.eq_prod_roots {f : R[X]} (hf : Factors f) :
@@ -162,21 +173,10 @@ theorem Factors.natDegree_eq_card_roots {f : R[X]} (hf : Factors f) :
   · simp [leadingCoeff_eq_zero.mp hf0]
   · conv_lhs => rw [hf.eq_prod_roots, natDegree_C_mul hf0, natDegree_multiset_prod_X_sub_C_eq_card]
 
-theorem exists_root_of_factors {f : R[X]} (hf : Factors f) (hf0 : degree f ≠ 0) :
-    ∃ a, eval a f = 0 := by
-  rcases f.roots.empty_or_exists_mem with h | ⟨a, ha⟩
-  · replace hf : f = 0 := by simpa [h, natDegree, hf0] using hf.natDegree_eq_card_roots
-    exact ⟨0, hf ▸ eval_zero⟩
-  · exact ⟨a, isRoot_of_mem_roots ha⟩
-
 theorem roots_ne_zero_of_factors {f : R[X]} (hf : Factors f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
   obtain ⟨a, ha⟩ := exists_root_of_factors hf (degree_ne_of_natDegree_ne hf0)
-  contrapose! ha
-  rw [Ne, ← IsRoot.def, ← mem_roots, ha]
-  · exact Multiset.notMem_zero a
-  · contrapose! hf0
-    rw [hf0, natDegree_zero]
+  exact mt (· ▸ (mem_roots (by aesop)).mpr ha) (Multiset.notMem_zero a)
 
 end CommRing
 
@@ -187,9 +187,9 @@ variable [Field R]
 theorem factors_of_natDegree_le_one {f : R[X]} (hf : natDegree f ≤ 1) : Factors f := by
   obtain ⟨a, b, rfl⟩ := exists_eq_X_add_C_of_natDegree_le_one hf
   by_cases ha : a = 0
-  · simp [ha, factors_C]
+  · aesop
   · rw [← mul_div_cancel₀ b ha, C_mul, ← mul_add]
-    exact (factors_C a).mul (factors_X_add_C (b / a))
+    aesop
 
 theorem factors_of_natDegree_eq_one {f : R[X]} (hf : natDegree f = 1) : Factors f :=
   factors_of_natDegree_le_one hf.le
