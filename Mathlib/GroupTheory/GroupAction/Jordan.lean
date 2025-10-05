@@ -15,6 +15,7 @@ A proof of theorems of Jordan regarding primitive permutation groups.
 This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-1964].
 
 - `MulAction.IsPreprimitive.is_two_pretransitive` and
+<<<<<<< HEAD
 `MulAction.IsPreprimitive.is_two_preprimitive` are technical lemmas
 that prove 2-pretransitivity / 2-preprimitivity for some group
 primitive actions given the transitivity / primitivity of
@@ -38,6 +39,31 @@ contains the alternating group (Wielandt, 13.3)
 - Prove `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isCycle_mem`:
 a primitive subgroup of a permutation group that contains
 a cycle of prime order contains the alternating group (Wielandt, 13.9).
+=======
+  `MulAction.IsPreprimitive.is_two_preprimitive` are technical lemmas
+  that prove 2-pretransitivity / 2-preprimitivity for some group
+  primitive actions given the transitivity / primitivity of
+  `ofFixingSubgroup G s` (Wielandt, 13.1)
+
+- `MulAction.IsPreprimitive.isMultiplyPreprimitive`:
+  A multiple preprimitivity criterion of Jordan (1871) for a preprimitive
+  action: the hypothesis is the preprimitivity of the `SubMulAction`
+  of `fixingSubgroup s` on `ofFixingSubgroup G s` (Wielandt, 13.2)
+
+- `Equiv.Perm.eq_top_of_isPreprimitive_of_isSwap_mem` :
+  a primitive subgroup of a permutation group that contains a
+  swap is equal to the full permutation group (Wielandt, 13.3)
+
+- `Equiv.Perm.alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem` :
+  a primitive subgroup of a permutation group that contains a 3-cycle
+  contains the alternating group (Wielandt, 13.3)
+
+## TODO
+
+- Prove `Equiv.Perm.alternatingGroup_le_of_isPreprimitive_of_isCycle_mem`:
+  a primitive subgroup of a permutation group that contains
+  a cycle of *prime* order contains the alternating group (Wielandt, 13.9).
+>>>>>>> master
 
 - Prove the stronger versions of the technical lemmas of Jordan (Wielandt, 13.1').
 
@@ -144,7 +170,11 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     have : 1 < s.ncard := by rwa [hsn]
     rw [Set.one_lt_ncard] at this
     obtain ⟨a, ha, b, hb, hab⟩ := this
+<<<<<<< HEAD
     -- apply rudio to get g ∈ G such that a ∈ g • s, b ∉ g • s
+=======
+    -- apply Rudio to get g ∈ G such that a ∈ g • s, b ∉ g • s
+>>>>>>> master
     obtain ⟨g, hga, hgb⟩ :=
       exists_mem_smul_and_notMem_smul (G := G) s.toFinite hs_nonempty hs_ne_top hab
     let t := s ∩ g • s
@@ -268,7 +298,12 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
       rw [htb]
       refine IsPreprimitive.of_surjective
         (conjMap_ofFixingSubgroup_bijective (hst := hst)).surjective
+<<<<<<< HEAD
   | succ n hrec => -- Induction step
+=======
+  -- Induction step
+  | succ n hrec =>
+>>>>>>> master
     suffices ∃ (a : α) (t : Set (SubMulAction.ofStabilizer G a)),
       a ∈ s ∧ s = insert a (Subtype.val '' t) by
       obtain ⟨a, t, _, hst⟩ := this
@@ -394,7 +429,11 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/
+<<<<<<< HEAD
 theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
+=======
+theorem eq_top_of_isPreprimitive_of_isSwap_mem
+>>>>>>> master
     (hG : IsPreprimitive G α) (g : Perm α) (h2g : IsSwap g) (hg : g ∈ G) :
     G = ⊤ := by
   classical
@@ -432,7 +471,11 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a 3-cycle
 contains the alternating group (Jordan). -/
+<<<<<<< HEAD
 theorem subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem
+=======
+theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
+>>>>>>> master
     (hG : IsPreprimitive G α) {g : Perm α} (h3g : IsThreeCycle g) (hg : g ∈ G) :
     alternatingGroup α ≤ G := by
   classical
@@ -452,9 +495,18 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem
     simp only [orderOf_mk, h3g.orderOf]
     -- important case : Nat.card α ≥ 4
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα4
+<<<<<<< HEAD
   apply IsMultiplyPretransitive.alternatingGroup_le
   suffices IsMultiplyPreprimitive G α (Nat.card α - 2) by
     apply IsMultiplyPreprimitive.isMultiplyPretransitive
+=======
+  --  refine is_full_minus_two_pretransitive_iff α _,
+  apply IsMultiplyPretransitive.alternatingGroup_le
+  suffices IsMultiplyPreprimitive G α (Nat.card α - 2) by
+    apply IsMultiplyPreprimitive.isMultiplyPretransitive
+  -- suffices : IsMultiplyPreprimitive G α (Fintype.card α - 2)
+  -- apply this.left.alternatingGroup_le_of_sub_two
+>>>>>>> master
   rw [show Nat.card α - 2 = n + 2 by grind]
   apply hG.isMultiplyPreprimitive (s := (g.supportᶜ : Set α))
   · apply Nat.add_left_cancel
@@ -471,7 +523,11 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a cycle of prime order
 contains the alternating group. -/
+<<<<<<< HEAD
 proof_wanted subgroup_eq_top_of_isPreprimitive_of_isCycle_mem
+=======
+proof_wanted alternatingGroup_le_of_isPreprimitive_of_isCycle_mem
+>>>>>>> master
   (hG : IsPreprimitive G α)
   {p : ℕ} (hp : p.Prime) (hp' : p + 3 ≤ Nat.card α)
   {g : Perm α} (hgc : g.IsCycle) (hgp : g.support.card = p)
