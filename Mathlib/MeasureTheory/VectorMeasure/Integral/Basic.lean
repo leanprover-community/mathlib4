@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 Yoh Tanimoto. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yongxi Lin
+-/
+
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.MeasureTheory.Integral.SetToL1
 import Mathlib.MeasureTheory.Integral.IntegrableOn
@@ -7,16 +13,10 @@ import Mathlib.MeasureTheory.VectorMeasure.Integral.L1
 
 ## Main statements
 
-1. Integral is a linear operator on functions. For example,
+1. Integral is a linear operator on functions, bilinear forms, and vector measures, respectively. For example,
 
   * `integral_add`              : `∫ a, B (f a + g a) ∂μ = ∫ a, B (f a) ∂μ + ∫ a, B (g a) ∂μ`.
-
-2. Integral is a linear operator on bilinear forms. For example,
-
   * `integral_add_pairing`      : `∫ a, (B + C) (f a) ∂μ = ∫ a, B (f a) ∂μ + ∫ a, C (f a) ∂μ`.
-
-3. Integral is a linear operator on vector measures. For example,
-
   * `integral_add_measure`      : `∫ a, B (f a) ∂(μ + ν) = ∫ a, B (f a) ∂μ + ∫ a, B (f a) ∂ν`.
 
 -/
