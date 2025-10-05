@@ -9,6 +9,7 @@ import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
+import Mathlib.Data.Finset.Lattice.Lemmas
 import Mathlib.Data.Finset.SDiff
 import Mathlib.Data.Fintype.Defs
 
@@ -294,9 +295,7 @@ theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
 
 -- Not `@[simp]` since `mem_image` already gets most of the way there.
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
-  rw [mem_image]
-  simp only [const_apply, exists_and_right]
-  rfl
+  grind
 
 theorem mem_image_const_self : b ∈ s.image (const α b) ↔ s.Nonempty :=
   mem_image_const.trans <| and_iff_left rfl
@@ -645,11 +644,12 @@ theorem subset_univ_image_iff [Fintype α] [DecidableEq β] {t : Finset β} {f :
     t ⊆ univ.image f ↔ ∃ s' : Finset α, s'.image f = t := by simp [subset_image_iff]
 
 theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.succ := by
-  induction' n with k hk
-  · simp
-  conv_rhs => rw [range_succ]
-  rw [range_succ, image_insert, ← hk, insert_sdiff_of_notMem]
-  simp
+  induction n with
+  | zero => simp
+  | succ k hk =>
+    conv_rhs => rw [range_add_one]
+    rw [range_add_one, image_insert, ← hk, insert_sdiff_of_notMem]
+    simp
 
 end Finset
 

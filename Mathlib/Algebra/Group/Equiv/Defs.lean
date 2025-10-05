@@ -18,7 +18,7 @@ datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`G
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that
   preserve multiplication/addition.
 
-## Notations
+## Notation
 
 * ``infix ` ≃* `:25 := MulEquiv``
 * ``infix ` ≃+ `:25 := AddEquiv``

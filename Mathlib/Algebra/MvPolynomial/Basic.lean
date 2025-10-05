@@ -728,7 +728,6 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
   classical
   split_ifs with h
   · conv_rhs => rw [← coeff_mul_monomial _ s]
-    congr with t
     rw [tsub_add_cancel_of_le h]
   · contrapose! h
     rw [← mem_support_iff] at h

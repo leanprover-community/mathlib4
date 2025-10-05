@@ -237,7 +237,6 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
       IntermediateField.fixedField <| g x.1
     have (x : K) : (g x).Normal :=
       Subgroup.Normal.map h (restrictNormalHom (adjoin k {x})) (restrictNormalHom_surjective K)
-    have (l : L) := IsGalois.of_fixedField_normal_subgroup (g l.1)
     have (l : L) : Normal k (f l) :=
       Normal.of_algEquiv <| IntermediateField.liftAlgEquiv <| IntermediateField.fixedField (g l.1)
     have n : Normal k ↥(⨆ l : L, f l) := IntermediateField.normal_iSup k K f
