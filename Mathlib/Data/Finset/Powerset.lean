@@ -189,11 +189,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 
 @[simp]
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
-  ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
-  refine
-    ⟨fun h => h.2, fun h => by
-      rw [h]
-      exact ⟨empty_subset s, rfl⟩⟩
+  grind
 
 lemma powersetCard_empty_subsingleton (n : ℕ) :
     (powersetCard n (∅ : Finset α) : Set <| Finset α).Subsingleton := by
