@@ -18,7 +18,7 @@ $$
 $$
 This is recorded in this file as an inner product space instance on `PiLp 2`.
 
-This file develops the notion of a finite dimensional Hilbert space over `𝕜 = ℂ, ℝ`, referred to as
+This file develops the notion of a finite-dimensional Hilbert space over `𝕜 = ℂ, ℝ`, referred to as
 `E`. We define an `OrthonormalBasis 𝕜 ι E` as a linear isometric equivalence
 between `E` and `EuclideanSpace 𝕜 ι`. Then `stdOrthonormalBasis` shows that such an equivalence
 always exists if `E` is finite dimensional. We provide language for converting between a basis
@@ -43,10 +43,10 @@ the last section, various properties of matrices are explored.
 - `Orthonormal.exists_orthonormalBasis_extension`: provides an existential result of an
   `OrthonormalBasis` extending a given orthonormal set
 
-- `exists_orthonormalBasis`: provides an orthonormal basis on a finite dimensional vector space
+- `exists_orthonormalBasis`: provides an orthonormal basis on a finite-dimensional vector space
 
-- `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given finite
-  dimensional inner product space
+- `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
+finite-dimensional inner product space
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.

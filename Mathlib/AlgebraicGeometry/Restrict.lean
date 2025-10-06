@@ -162,19 +162,23 @@ lemma stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (x : U) :
 end Scheme.Opens
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
-@[simps! J obj map]
-def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
-    (hU : ⨆ i, U i = ⊤) : X.OpenCover where
-  J := s
-  obj i := U i
-  map i := (U i).ι
-  f x :=
-    haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
-    (Opens.mem_iSup.mp this).choose
-  covers x := by
-    erw [Subtype.range_coe]
-    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
-    exact (Opens.mem_iSup.mp this).choose_spec
+@[simps! I₀ X f]
+def Scheme.openCoverOfIsOpenCover {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
+    (hU : TopologicalSpace.IsOpenCover U) : X.OpenCover where
+  I₀ := s
+  X i := U i
+  f i := (U i).ι
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    have hx : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
+    rw [Opens.mem_iSup] at hx
+    obtain ⟨i, hi⟩ := hx
+    use i
+    simpa
+
+@[deprecated (since := "2025-09-30")]
+noncomputable alias Scheme.openCoverOfISupEqTop := Scheme.openCoverOfIsOpenCover
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
@@ -270,11 +274,16 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
 /-- The open cover of `⋃ Vᵢ` by `Vᵢ`. -/
 def Scheme.Opens.iSupOpenCover {J : Type*} {X : Scheme} (U : J → X.Opens) :
     (⨆ i, U i).toScheme.OpenCover where
-  J := J
-  obj i := U i
-  map j := X.homOfLE (le_iSup _ _)
-  f x := (TopologicalSpace.Opens.mem_iSup.mp x.2).choose
-  covers x := ⟨⟨x.1, (TopologicalSpace.Opens.mem_iSup.mp x.2).choose_spec⟩, Subtype.ext (by simp)⟩
+  I₀ := J
+  X i := U i
+  f j := X.homOfLE (le_iSup _ _)
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    obtain ⟨i, hi⟩ := TopologicalSpace.Opens.mem_iSup.mp x.2
+    use i, ⟨x.1, hi⟩
+    apply Subtype.ext
+    simp
 
 variable (X) in
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
@@ -761,19 +770,18 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
 end MorphismRestrict
 
 /-- The restriction of an open cover to an open subset. -/
-@[simps! J obj map]
+@[simps! I₀ X f]
 noncomputable
 def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X) :
     U.toScheme.OpenCover := by
-  refine Cover.copy (𝒰.pullbackCover U.ι) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
+  refine Cover.copy (𝒰.pullback₁ U.ι) 𝒰.I₀ _ (𝒰.f · ∣_ U) (Equiv.refl _)
     (fun i ↦ IsOpenImmersion.isoOfRangeEq (Opens.ι _) (pullback.snd _ _) ?_) ?_
-  · dsimp only [Cover.pullbackCover_obj, Cover.pullbackCover_J, Equiv.refl_apply]
-    rw [IsOpenImmersion.range_pullback_snd_of_left U.ι (𝒰.map i), Opens.opensRange_ι]
+  · dsimp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+      PreZeroHypercover.pullback₁_I₀, Equiv.refl_apply, PreZeroHypercover.pullback₁_X]
+    rw [IsOpenImmersion.range_pullback_snd_of_left U.ι (𝒰.f i), Opens.opensRange_ι]
     exact Subtype.range_val
   · intro i
     rw [← cancel_mono U.ι]
-    simp only [morphismRestrict_ι, Cover.pullbackCover_J, Equiv.refl_apply, Cover.pullbackCover_obj,
-      Cover.pullbackCover_map, Category.assoc, pullback.condition]
-    rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
+    simp [morphismRestrict_ι, Equiv.refl_apply, Category.assoc, pullback.condition]
 
 end AlgebraicGeometry
