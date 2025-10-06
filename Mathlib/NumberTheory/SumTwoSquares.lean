@@ -228,3 +228,10 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     exact odd_two_mul_add_one _
 
 end Main
+
+theorem Nat.eq_sq_add_sq_iff' {n : ℕ} :
+    (∃ x y, n = x ^ 2 + y ^ 2) ↔ ∀ q ∈ n.primeFactors, q % 4 = 3 → Even (padicValNat q n) :=
+  eq_sq_add_sq_iff.trans <| by grind [Nat.mem_primeFactors, padicValNat.eq_zero_iff]
+
+instance {n : ℕ} : Decidable (∃ x y, n = x ^ 2 + y ^ 2) :=
+  decidable_of_iff' _ Nat.eq_sq_add_sq_iff'
