@@ -523,7 +523,7 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
 
 theorem exists_eq_pow_of_pow_eq_pow
     {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
-    let g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
+    letI g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
   intro g
   let m' := m / gcd m n
   let n' := n / gcd m n
