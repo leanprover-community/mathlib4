@@ -10,6 +10,7 @@ import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.Galois.Notation
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain

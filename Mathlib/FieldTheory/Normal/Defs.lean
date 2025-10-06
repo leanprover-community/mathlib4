@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.FieldTheory.Galois.Notation
 import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 
@@ -16,24 +17,6 @@ In this file we define normal field extensions.
 
 - `Normal F K` where `K` is a field extension of `F`.
 -/
-
-section Notation
-
-notation "Gal(" L:100 "/" K ")" => L ≃ₐ[K] L
-
-open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Pretty printer for the `Gal(L/K)` notation. -/
-@[app_delab AlgEquiv]
-partial def delabGal : Delab := whenPPOption getPPNotation do
-  guard <| (← getExpr).isAppOfArity ``AlgEquiv 8
-  let [u, v, _] := (← getExpr).getAppFn'.constLevels! | failure
-  let #[R, A, B, _, _, _, _, _] := (← getExpr).getAppArgs | failure
-  guard (A == B) -- We require that A = B syntatically, not merely defeq.
-  let some _ ← Meta.synthInstance? (.app (.const `Field [u]) R) | failure
-  let some _ ← Meta.synthInstance? (.app (.const `Field [v]) A) | failure
-  `(Gal($(← withNaryArg 1 <| delab)/$(← withNaryArg 0 <| delab)))
-
-end Notation
 
 noncomputable section
 
