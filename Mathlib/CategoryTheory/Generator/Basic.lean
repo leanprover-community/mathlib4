@@ -6,6 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.CategoryTheory.ObjectProperty.Opposite
 import Mathlib.Data.Set.Opposite
 
 /-!
@@ -14,10 +15,12 @@ import Mathlib.Data.Set.Opposite
 There are several non-equivalent notions of a generator of a category. Here, we consider two of
 them:
 
-* We say that `𝒢` is a separating set if the functors `C(G, -)` for `G ∈ 𝒢` are collectively
-    faithful, i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`.
-* We say that `𝒢` is a detecting set if the functors `C(G, -)` collectively reflect isomorphisms,
-    i.e., if any `h` with domain in `𝒢` uniquely factors through `f`, then `f` is an isomorphism.
+* We say that `P : ObjectProperty C` is a separating set if the functors `C(G, -)`
+    for `G` such that `P G` are collectively faithful, i.e., if
+    `h ≫ f = h ≫ g` for all `h` with domain satisfying `P` implies `f = g`.
+* We say that `P : ObjectProperty C` is a detecting set if the functors `C(G, -)`
+    collectively reflect isomorphisms, i.e., if any `h` with domain satisfying `P`
+    uniquely factors through `f`, then `f` is an isomorphism.
 
 There are, of course, also the dual notions of coseparating and codetecting sets.
 
@@ -25,7 +28,7 @@ There are, of course, also the dual notions of coseparating and codetecting sets
 
 We
 * define predicates `IsSeparating`, `IsCoseparating`, `IsDetecting` and `IsCodetecting` on
-  sets of objects;
+  `ObjectProperty C`;
 * show that equivalences of categories preserves these notions;
 * show that separating and coseparating are dual notions;
 * show that detecting and codetecting are dual notions;
@@ -45,9 +48,9 @@ We
 * define corresponding typeclasses `HasSeparator`, `HasCoseparator`, `HasDetector`
   and `HasCodetector` on categories and prove analogous results for these.
 
-## Future work
+## Examples
 
-* We currently don't have any examples yet.
+See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.Sheaf`.
 
 -/
 
@@ -60,143 +63,161 @@ namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-/-- We say that `𝒢` is a separating set if the functors `C(G, -)` for `G ∈ 𝒢` are collectively
-    faithful, i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`. -/
-def IsSeparating (𝒢 : Set C) : Prop :=
-  ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : G ⟶ X), h ≫ f = h ≫ g) → f = g
+namespace ObjectProperty
 
-/-- We say that `𝒢` is a coseparating set if the functors `C(-, G)` for `G ∈ 𝒢` are collectively
-    faithful, i.e., if `f ≫ h = g ≫ h` for all `h` with codomain in `𝒢` implies `f = g`. -/
-def IsCoseparating (𝒢 : Set C) : Prop :=
-  ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : Y ⟶ G), f ≫ h = g ≫ h) → f = g
+variable (P : ObjectProperty C)
 
-/-- We say that `𝒢` is a detecting set if the functors `C(G, -)` collectively reflect isomorphisms,
-    i.e., if any `h` with domain in `𝒢` uniquely factors through `f`, then `f` is an isomorphism. -/
-def IsDetecting (𝒢 : Set C) : Prop :=
-  ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : G ⟶ Y), ∃! h' : G ⟶ X, h' ≫ f = h) → IsIso f
+/-- We say that `P : ObjectProperty C` is a separating set if the functors `C(G, -)`
+for `G : C` such that `P G` are collectively faithful,
+i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`. -/
+def IsSeparating : Prop :=
+  ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ (G : C) (_ : P G) (h : G ⟶ X), h ≫ f = h ≫ g) → f = g
 
-/-- We say that `𝒢` is a codetecting set if the functors `C(-, G)` collectively reflect
-    isomorphisms, i.e., if any `h` with codomain in `G` uniquely factors through `f`, then `f` is
-    an isomorphism. -/
-def IsCodetecting (𝒢 : Set C) : Prop :=
-  ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : X ⟶ G), ∃! h' : Y ⟶ G, f ≫ h' = h) → IsIso f
+/-- We say that `P : ObjectProperty C` is a coseparating set if the functors `C(-, G)`
+for `G : C` such that `P G` are collectively faithful,
+i.e., if `f ≫ h = g ≫ h` for all `h` with codomain in `𝒢` implies `f = g`. -/
+def IsCoseparating : Prop :=
+  ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ (G : C) (_ : P G) (h : Y ⟶ G), f ≫ h = g ≫ h) → f = g
+
+/-- We say that `P : ObjectProperty C` is a detecting set if the functors `C(G, -)`
+for `G : C` such that `P G` collectively reflect isomorphisms,
+i.e., if any `h` with domain `G` that `P G` uniquely factors through `f`,
+then `f` is an isomorphism. -/
+def IsDetecting : Prop :=
+  ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ (G : C) (_ : P G),
+    ∀ (h : G ⟶ Y), ∃! h' : G ⟶ X, h' ≫ f = h) → IsIso f
+
+/-- We say that `P : ObjectProperty C` is a codetecting set if the functors `C(-, G)`
+for `G : C` such that `P G` collectively reflect isomorphisms,
+i.e., if any `h` with codomain `G` such that `P G` uniquely factors through `f`,
+then `f` is an isomorphism. -/
+def IsCodetecting : Prop :=
+  ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ (G : C) (_ : P G),
+    ∀ (h : X ⟶ G), ∃! h' : Y ⟶ G, f ≫ h' = h) → IsIso f
 
 section Equivalence
 
+variable {P}
+
 lemma IsSeparating.of_equivalence
-    {𝒢 : Set C} (h : IsSeparating 𝒢) {D : Type*} [Category D] (α : C ≌ D) :
-    IsSeparating (α.functor.obj '' 𝒢) := fun X Y f g H =>
+    (h : IsSeparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    IsSeparating (P.map α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h => by
     obtain ⟨h', rfl⟩ := (α.toAdjunction.homEquiv _ _).surjective h
     simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
-      H (α.functor.obj Z) (Set.mem_image_of_mem _ hZ) h']))
+      H _ (P.prop_map_obj _ hZ) h']))
 
 lemma IsCoseparating.of_equivalence
-    {𝒢 : Set C} (h : IsCoseparating 𝒢) {D : Type*} [Category D] (α : C ≌ D) :
-    IsCoseparating (α.functor.obj '' 𝒢) := fun X Y f g H =>
+    (h : IsCoseparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    IsCoseparating (P.map α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h => by
     obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h
-    simp only [Adjunction.homEquiv_symm_apply, ← Category.assoc, ← Functor.map_comp,
-      Equivalence.symm_functor, H (α.functor.obj Z) (Set.mem_image_of_mem _ hZ) h']))
+    simp only [Equivalence.symm_inverse, Equivalence.symm_functor,
+      Adjunction.homEquiv_counit, ← Functor.map_comp_assoc,
+      H _ (P.prop_map_obj _ hZ) h']))
 
 end Equivalence
 
 section Dual
 
-theorem isSeparating_op_iff (𝒢 : Set C) : IsSeparating 𝒢.op ↔ IsCoseparating 𝒢 := by
-  refine ⟨fun h𝒢 X Y f g hfg => ?_, fun h𝒢 X Y f g hfg => ?_⟩
-  · refine Quiver.Hom.op_inj (h𝒢 _ _ fun G hG h => Quiver.Hom.unop_inj ?_)
-    simpa only [unop_comp, Quiver.Hom.unop_op] using hfg _ (Set.mem_op.1 hG) _
-  · refine Quiver.Hom.unop_inj (h𝒢 _ _ fun G hG h => Quiver.Hom.op_inj ?_)
-    simpa only [op_comp, Quiver.Hom.op_unop] using hfg _ (Set.op_mem_op.2 hG) _
+theorem isSeparating_op_iff : IsSeparating P.op ↔ IsCoseparating P := by
+  refine ⟨fun hP X Y f g hfg => ?_, fun hP X Y f g hfg => ?_⟩
+  · refine Quiver.Hom.op_inj (hP _ _ fun G hG h => Quiver.Hom.unop_inj ?_)
+    simpa only [unop_comp, Quiver.Hom.unop_op] using hfg _ hG _
+  · refine Quiver.Hom.unop_inj (hP _ _ fun G hG h => Quiver.Hom.op_inj ?_)
+    simpa only [op_comp, Quiver.Hom.op_unop] using hfg _ hG _
 
-theorem isCoseparating_op_iff (𝒢 : Set C) : IsCoseparating 𝒢.op ↔ IsSeparating 𝒢 := by
-  refine ⟨fun h𝒢 X Y f g hfg => ?_, fun h𝒢 X Y f g hfg => ?_⟩
-  · refine Quiver.Hom.op_inj (h𝒢 _ _ fun G hG h => Quiver.Hom.unop_inj ?_)
-    simpa only [unop_comp, Quiver.Hom.unop_op] using hfg _ (Set.mem_op.1 hG) _
-  · refine Quiver.Hom.unop_inj (h𝒢 _ _ fun G hG h => Quiver.Hom.op_inj ?_)
-    simpa only [op_comp, Quiver.Hom.op_unop] using hfg _ (Set.op_mem_op.2 hG) _
+theorem isCoseparating_op_iff : IsCoseparating P.op ↔ IsSeparating P := by
+  refine ⟨fun hP X Y f g hfg => ?_, fun hP X Y f g hfg => ?_⟩
+  · refine Quiver.Hom.op_inj (hP _ _ fun G hG h => Quiver.Hom.unop_inj ?_)
+    simpa only [unop_comp, Quiver.Hom.unop_op] using hfg _ hG _
+  · refine Quiver.Hom.unop_inj (hP _ _ fun G hG h => Quiver.Hom.op_inj ?_)
+    simpa only [op_comp, Quiver.Hom.op_unop] using hfg _ hG _
 
-theorem isCoseparating_unop_iff (𝒢 : Set Cᵒᵖ) : IsCoseparating 𝒢.unop ↔ IsSeparating 𝒢 := by
-  rw [← isSeparating_op_iff, Set.unop_op]
+theorem isCoseparating_unop_iff (P : ObjectProperty Cᵒᵖ) :
+    IsCoseparating P.unop ↔ IsSeparating P :=
+  P.unop.isSeparating_op_iff.symm
 
-theorem isSeparating_unop_iff (𝒢 : Set Cᵒᵖ) : IsSeparating 𝒢.unop ↔ IsCoseparating 𝒢 := by
-  rw [← isCoseparating_op_iff, Set.unop_op]
+theorem isSeparating_unop_iff (P : ObjectProperty Cᵒᵖ) :
+    IsSeparating P.unop ↔ IsCoseparating P :=
+  P.unop.isCoseparating_op_iff.symm
 
-theorem isDetecting_op_iff (𝒢 : Set C) : IsDetecting 𝒢.op ↔ IsCodetecting 𝒢 := by
-  refine ⟨fun h𝒢 X Y f hf => ?_, fun h𝒢 X Y f hf => ?_⟩
-  · refine (isIso_op_iff _).1 (h𝒢 _ fun G hG h => ?_)
-    obtain ⟨t, ht, ht'⟩ := hf (unop G) (Set.mem_op.1 hG) h.unop
+theorem isDetecting_op_iff : IsDetecting P.op ↔ IsCodetecting P := by
+  refine ⟨fun hP X Y f hf => ?_, fun hP X Y f hf => ?_⟩
+  · refine (isIso_op_iff _).1 (hP _ fun G hG h => ?_)
+    obtain ⟨t, ht, ht'⟩ := hf (unop G) hG h.unop
     exact
       ⟨t.op, Quiver.Hom.unop_inj ht, fun y hy => Quiver.Hom.unop_inj (ht' _ (Quiver.Hom.op_inj hy))⟩
-  · refine (isIso_unop_iff _).1 (h𝒢 _ fun G hG h => ?_)
-    obtain ⟨t, ht, ht'⟩ := hf (op G) (Set.op_mem_op.2 hG) h.op
+  · refine (isIso_unop_iff _).1 (hP _ fun G hG h => ?_)
+    obtain ⟨t, ht, ht'⟩ := hf (op G) hG h.op
     refine ⟨t.unop, Quiver.Hom.op_inj ht, fun y hy => Quiver.Hom.op_inj (ht' _ ?_)⟩
     exact Quiver.Hom.unop_inj (by simpa only using hy)
 
-theorem isCodetecting_op_iff (𝒢 : Set C) : IsCodetecting 𝒢.op ↔ IsDetecting 𝒢 := by
-  refine ⟨fun h𝒢 X Y f hf => ?_, fun h𝒢 X Y f hf => ?_⟩
-  · refine (isIso_op_iff _).1 (h𝒢 _ fun G hG h => ?_)
-    obtain ⟨t, ht, ht'⟩ := hf (unop G) (Set.mem_op.1 hG) h.unop
+theorem isCodetecting_op_iff : IsCodetecting P.op ↔ IsDetecting P := by
+  refine ⟨fun hP X Y f hf => ?_, fun hP X Y f hf => ?_⟩
+  · refine (isIso_op_iff _).1 (hP _ fun G hG h => ?_)
+    obtain ⟨t, ht, ht'⟩ := hf (unop G) hG h.unop
     exact
       ⟨t.op, Quiver.Hom.unop_inj ht, fun y hy => Quiver.Hom.unop_inj (ht' _ (Quiver.Hom.op_inj hy))⟩
-  · refine (isIso_unop_iff _).1 (h𝒢 _ fun G hG h => ?_)
-    obtain ⟨t, ht, ht'⟩ := hf (op G) (Set.op_mem_op.2 hG) h.op
+  · refine (isIso_unop_iff _).1 (hP _ fun G hG h => ?_)
+    obtain ⟨t, ht, ht'⟩ := hf (op G) hG h.op
     refine ⟨t.unop, Quiver.Hom.op_inj ht, fun y hy => Quiver.Hom.op_inj (ht' _ ?_)⟩
     exact Quiver.Hom.unop_inj (by simpa only using hy)
 
-theorem isDetecting_unop_iff (𝒢 : Set Cᵒᵖ) : IsDetecting 𝒢.unop ↔ IsCodetecting 𝒢 := by
-  rw [← isCodetecting_op_iff, Set.unop_op]
+theorem isDetecting_unop_iff (P : ObjectProperty Cᵒᵖ) : IsDetecting P.unop ↔ IsCodetecting P :=
+  P.unop.isCodetecting_op_iff.symm
 
-theorem isCodetecting_unop_iff {𝒢 : Set Cᵒᵖ} : IsCodetecting 𝒢.unop ↔ IsDetecting 𝒢 := by
-  rw [← isDetecting_op_iff, Set.unop_op]
+theorem isCodetecting_unop_iff (P : ObjectProperty Cᵒᵖ) : IsCodetecting P.unop ↔ IsDetecting P :=
+  P.unop.isDetecting_op_iff.symm
 
 end Dual
 
-theorem IsDetecting.isSeparating [HasEqualizers C] {𝒢 : Set C} (h𝒢 : IsDetecting 𝒢) :
-    IsSeparating 𝒢 := fun _ _ f g hfg =>
-  have : IsIso (equalizer.ι f g) := h𝒢 _ fun _ hG _ => equalizer.existsUnique _ (hfg _ hG _)
+variable {P}
+
+theorem IsDetecting.isSeparating [HasEqualizers C] (hP : IsDetecting P) :
+    IsSeparating P := fun _ _ f g hfg =>
+  have : IsIso (equalizer.ι f g) := hP _ fun _ hG _ => equalizer.existsUnique _ (hfg _ hG _)
   eq_of_epi_equalizer
 
-theorem IsCodetecting.isCoseparating [HasCoequalizers C] {𝒢 : Set C} :
-    IsCodetecting 𝒢 → IsCoseparating 𝒢 := by
+theorem IsCodetecting.isCoseparating [HasCoequalizers C] :
+    IsCodetecting P → IsCoseparating P := by
   simpa only [← isSeparating_op_iff, ← isDetecting_op_iff] using IsDetecting.isSeparating
 
-theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparating 𝒢) :
-    IsDetecting 𝒢 := by
+theorem IsSeparating.isDetecting [Balanced C] (hP : IsSeparating P) :
+    IsDetecting P := by
   intro X Y f hf
   refine
-    (isIso_iff_mono_and_epi _).2 ⟨⟨fun g h hgh => h𝒢 _ _ fun G hG i => ?_⟩, ⟨fun g h hgh => ?_⟩⟩
+    (isIso_iff_mono_and_epi _).2 ⟨⟨fun g h hgh => hP _ _ fun G hG i => ?_⟩, ⟨fun g h hgh => ?_⟩⟩
   · obtain ⟨t, -, ht⟩ := hf G hG (i ≫ g ≫ f)
     rw [ht (i ≫ g) (Category.assoc _ _ _), ht (i ≫ h) (hgh.symm ▸ Category.assoc _ _ _)]
-  · refine h𝒢 _ _ fun G hG i => ?_
+  · refine hP _ _ fun G hG i => ?_
     obtain ⟨t, rfl, -⟩ := hf G hG i
     rw [Category.assoc, hgh, Category.assoc]
 
-lemma IsDetecting.isIso_iff_of_mono {𝒢 : Set C} (h𝒢 : IsDetecting 𝒢)
+lemma IsDetecting.isIso_iff_of_mono (hP : IsDetecting P)
     {X Y : C} (f : X ⟶ Y) [Mono f] :
-    IsIso f ↔ ∀ s ∈ 𝒢, Function.Surjective ((coyoneda.obj (op s)).map f) := by
+    IsIso f ↔ ∀ (G : C) (_ : P G), Function.Surjective ((coyoneda.obj (op G)).map f) := by
   constructor
   · intro h
     rw [isIso_iff_yoneda_map_bijective] at h
     intro A _
     exact (h A).2
   · intro hf
-    refine h𝒢 _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
+    refine hP _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
     · exact hf A hA g
     · intro l₁ l₂ h₁ h₂
       rw [← cancel_mono f, h₁, h₂]
 
-lemma IsCodetecting.isIso_iff_of_epi {𝒢 : Set C} (h𝒢 : IsCodetecting 𝒢)
+lemma IsCodetecting.isIso_iff_of_epi (hP : IsCodetecting P)
     {X Y : C} (f : X ⟶ Y) [Epi f] :
-    IsIso f ↔ ∀ s ∈ 𝒢, Function.Surjective ((yoneda.obj s).map f.op) := by
+    IsIso f ↔ ∀ (G : C) (_ : P G), Function.Surjective ((yoneda.obj G).map f.op) := by
   constructor
   · intro h
     rw [isIso_iff_coyoneda_map_bijective] at h
     intro A _
     exact (h A).2
   · intro hf
-    refine h𝒢 _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
+    refine hP _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
     · exact hf A hA g
     · intro l₁ l₂ h₁ h₂
       rw [← cancel_epi f, h₁, h₂]
@@ -205,63 +226,65 @@ section
 
 attribute [local instance] balanced_opposite
 
-theorem IsCoseparating.isCodetecting [Balanced C] {𝒢 : Set C} :
-    IsCoseparating 𝒢 → IsCodetecting 𝒢 := by
+theorem IsCoseparating.isCodetecting [Balanced C] :
+    IsCoseparating P → IsCodetecting P := by
   simpa only [← isDetecting_op_iff, ← isSeparating_op_iff] using IsSeparating.isDetecting
 
 end
 
-theorem isDetecting_iff_isSeparating [HasEqualizers C] [Balanced C] (𝒢 : Set C) :
-    IsDetecting 𝒢 ↔ IsSeparating 𝒢 :=
+theorem isDetecting_iff_isSeparating [HasEqualizers C] [Balanced C] :
+    IsDetecting P ↔ IsSeparating P :=
   ⟨IsDetecting.isSeparating, IsSeparating.isDetecting⟩
 
-theorem isCodetecting_iff_isCoseparating [HasCoequalizers C] [Balanced C] {𝒢 : Set C} :
-    IsCodetecting 𝒢 ↔ IsCoseparating 𝒢 :=
+theorem isCodetecting_iff_isCoseparating [HasCoequalizers C] [Balanced C] :
+    IsCodetecting P ↔ IsCoseparating P :=
   ⟨IsCodetecting.isCoseparating, IsCoseparating.isCodetecting⟩
 
 section Mono
 
-theorem IsSeparating.mono {𝒢 : Set C} (h𝒢 : IsSeparating 𝒢) {ℋ : Set C} (h𝒢ℋ : 𝒢 ⊆ ℋ) :
-    IsSeparating ℋ := fun _ _ _ _ hfg => h𝒢 _ _ fun _ hG _ => hfg _ (h𝒢ℋ hG) _
+theorem IsSeparating.of_le (hP : IsSeparating P) {Q : ObjectProperty C} (h : P ≤ Q) :
+    IsSeparating Q := fun _ _ _ _ hfg => hP _ _ fun _ hG _ => hfg _ (h _ hG) _
 
-theorem IsCoseparating.mono {𝒢 : Set C} (h𝒢 : IsCoseparating 𝒢) {ℋ : Set C} (h𝒢ℋ : 𝒢 ⊆ ℋ) :
-    IsCoseparating ℋ := fun _ _ _ _ hfg => h𝒢 _ _ fun _ hG _ => hfg _ (h𝒢ℋ hG) _
+theorem IsCoseparating.of_le (hP : IsCoseparating P) {Q : ObjectProperty C} (h : P ≤ Q) :
+    IsCoseparating Q := fun _ _ _ _ hfg => hP _ _ fun _ hG _ => hfg _ (h _ hG) _
 
-theorem IsDetecting.mono {𝒢 : Set C} (h𝒢 : IsDetecting 𝒢) {ℋ : Set C} (h𝒢ℋ : 𝒢 ⊆ ℋ) :
-    IsDetecting ℋ := fun _ _ _ hf => h𝒢 _ fun _ hG _ => hf _ (h𝒢ℋ hG) _
+theorem IsDetecting.of_le (hP : IsDetecting P) {Q : ObjectProperty C} (h : P ≤ Q) :
+    IsDetecting Q := fun _ _ _ hf => hP _ fun _ hG _ => hf _ (h _ hG) _
 
-theorem IsCodetecting.mono {𝒢 : Set C} (h𝒢 : IsCodetecting 𝒢) {ℋ : Set C} (h𝒢ℋ : 𝒢 ⊆ ℋ) :
-    IsCodetecting ℋ := fun _ _ _ hf => h𝒢 _ fun _ hG _ => hf _ (h𝒢ℋ hG) _
+theorem IsCodetecting.of_le (h𝒢 : IsCodetecting P) {Q : ObjectProperty C} (h : P ≤ Q) :
+    IsCodetecting Q := fun _ _ _ hf => h𝒢 _ fun _ hG _ => hf _ (h _ hG) _
 
 end Mono
 
 section Empty
 
-theorem thin_of_isSeparating_empty (h : IsSeparating (∅ : Set C)) : Quiver.IsThin C := fun _ _ =>
-  ⟨fun _ _ => h _ _ fun _ => False.elim⟩
+lemma isThin_of_isSeparating_bot (h : IsSeparating (⊥ : ObjectProperty C)) :
+    Quiver.IsThin C := fun _ _ ↦ ⟨fun _ _ ↦ h _ _ (by simp)⟩
 
-theorem isSeparating_empty_of_thin [Quiver.IsThin C] : IsSeparating (∅ : Set C) :=
-  fun _ _ _ _ _ => Subsingleton.elim _ _
+lemma isSeparating_bot_of_isThin [Quiver.IsThin C] : IsSeparating (⊥ : ObjectProperty C) :=
+  fun _ _ _ _ _ ↦ Subsingleton.elim _ _
 
-theorem thin_of_isCoseparating_empty (h : IsCoseparating (∅ : Set C)) : Quiver.IsThin C :=
-  fun _ _ => ⟨fun _ _ => h _ _ fun _ => False.elim⟩
+lemma isThin_of_isCoseparating_bot (h : IsCoseparating (⊥ : ObjectProperty C)) :
+    Quiver.IsThin C := fun _ _ ↦ ⟨fun _ _ ↦ h _ _ (by simp)⟩
 
-theorem isCoseparating_empty_of_thin [Quiver.IsThin C] : IsCoseparating (∅ : Set C) :=
-  fun _ _ _ _ _ => Subsingleton.elim _ _
+lemma isCoseparating_bot_of_isThin [Quiver.IsThin C] : IsCoseparating (⊥ : ObjectProperty C) :=
+  fun _ _ _ _ _ ↦ Subsingleton.elim _ _
 
-theorem groupoid_of_isDetecting_empty (h : IsDetecting (∅ : Set C)) {X Y : C} (f : X ⟶ Y) :
-    IsIso f :=
-  h _ fun _ => False.elim
+lemma isGroupoid_of_isDetecting_bot (h : IsDetecting (⊥ : ObjectProperty C)) :
+    IsGroupoid C where
+  all_isIso f := h _ (by simp)
 
-theorem isDetecting_empty_of_groupoid [∀ {X Y : C} (f : X ⟶ Y), IsIso f] :
-    IsDetecting (∅ : Set C) := fun _ _ _ _ => inferInstance
+lemma isDetecting_bot_of_isGroupoid [IsGroupoid C] :
+    IsDetecting (⊥ : ObjectProperty C) :=
+  fun _ _ _ _ ↦ inferInstance
 
-theorem groupoid_of_isCodetecting_empty (h : IsCodetecting (∅ : Set C)) {X Y : C} (f : X ⟶ Y) :
-    IsIso f :=
-  h _ fun _ => False.elim
+lemma isGroupoid_of_isCodetecting_bot (h : IsCodetecting (⊥ : ObjectProperty C)) :
+    IsGroupoid C where
+  all_isIso f := h _ (by simp)
 
-theorem isCodetecting_empty_of_groupoid [∀ {X Y : C} (f : X ⟶ Y), IsIso f] :
-    IsCodetecting (∅ : Set C) := fun _ _ _ _ => inferInstance
+lemma isCodetecting_bot_of_isGroupoid [IsGroupoid C] :
+    IsCodetecting (⊥ : ObjectProperty C) :=
+  fun _ _ _ _ ↦ inferInstance
 
 end Empty
 
@@ -819,5 +842,72 @@ theorem HasCodetector.hasDetector_of_hasCodetector_op [HasCodetector Cᵒᵖ] :
 end Dual
 
 end HasGenerator
+
+end ObjectProperty
+
+@[deprecated (since := "2025-10-06")] alias IsSeparating := ObjectProperty.IsSeparating
+@[deprecated (since := "2025-10-06")] alias IsCoseparating := ObjectProperty.IsCoseparating
+@[deprecated (since := "2025-10-06")] alias IsDetecting := ObjectProperty.IsDetecting
+@[deprecated (since := "2025-10-06")] alias IsCodetecting := ObjectProperty.IsCodetecting
+@[deprecated (since := "2025-10-06")] alias IsSeparating.of_equivalence :=
+  ObjectProperty.IsSeparating.of_equivalence
+@[deprecated (since := "2025-10-06")] alias IsCoseparating.of_equivalence :=
+  ObjectProperty.IsCoseparating.of_equivalence
+@[deprecated (since := "2025-10-06")] alias isSeparating_op_iff :=
+  ObjectProperty.isSeparating_op_iff
+@[deprecated (since := "2025-10-06")] alias isCoseparating_op_iff :=
+  ObjectProperty.isCoseparating_op_iff
+@[deprecated (since := "2025-10-06")] alias isSeparating_unop_iff :=
+  ObjectProperty.isSeparating_op_iff
+@[deprecated (since := "2025-10-06")] alias isCoseparating_unop_iff :=
+  ObjectProperty.isCoseparating_op_iff
+@[deprecated (since := "2025-10-06")] alias isDetecting_op_iff :=
+  ObjectProperty.isDetecting_op_iff
+@[deprecated (since := "2025-10-06")] alias isCodetecting_op_iff :=
+  ObjectProperty.isCodetecting_op_iff
+@[deprecated (since := "2025-10-06")] alias isDetecting_unop_iff :=
+  ObjectProperty.isDetecting_op_iff
+@[deprecated (since := "2025-10-06")] alias isCodetecting_unop_iff :=
+  ObjectProperty.isCodetecting_op_iff
+@[deprecated (since := "2025-10-06")] alias IsDetecting.isSeparating :=
+  ObjectProperty.IsDetecting.isSeparating
+@[deprecated (since := "2025-10-06")] alias IsCodetecting.isCoseparating :=
+  ObjectProperty.IsCodetecting.isCoseparating
+@[deprecated (since := "2025-10-06")] alias IsSeparating.isDetecting :=
+  ObjectProperty.IsSeparating.isDetecting
+@[deprecated (since := "2025-10-06")] alias IsDetecting.isIso_iff_of_mono :=
+  ObjectProperty.IsDetecting.isIso_iff_of_mono
+@[deprecated (since := "2025-10-06")] alias IsCodetecting.isIso_iff_of_epi :=
+  ObjectProperty.IsCodetecting.isIso_iff_of_epi
+@[deprecated (since := "2025-10-06")] alias IsCoseparating.isCodetecting :=
+  ObjectProperty.IsCoseparating.isCodetecting
+@[deprecated (since := "2025-10-06")] alias isDetecting_iff_isSeparating :=
+  ObjectProperty.isDetecting_iff_isSeparating
+@[deprecated (since := "2025-10-06")] alias isCodetecting_iff_isCoseparating :=
+  ObjectProperty.isCodetecting_iff_isCoseparating
+@[deprecated (since := "2025-10-06")] alias IsSeparating.mono :=
+  ObjectProperty.IsSeparating.of_le
+@[deprecated (since := "2025-10-06")] alias IsCoseparating.mono :=
+  ObjectProperty.IsCoseparating.of_le
+@[deprecated (since := "2025-10-06")] alias IsDetecting.mono :=
+  ObjectProperty.IsDetecting.of_le
+@[deprecated (since := "2025-10-06")] alias IsCodetecting.mono :=
+  ObjectProperty.IsCodetecting.of_le
+@[deprecated (since := "2025-10-06")] alias thin_of_isSeparating_empty :=
+  ObjectProperty.isThin_of_isSeparating_bot
+@[deprecated (since := "2025-10-06")] alias isSeparating_empty_of_thin :=
+  ObjectProperty.isSeparating_bot_of_isThin
+@[deprecated (since := "2025-10-06")] alias thin_of_isCoseparating_empty :=
+  ObjectProperty.isThin_of_isCoseparating_bot
+@[deprecated (since := "2025-10-06")] alias isCoseparating_empty_of_thin :=
+  ObjectProperty.isCoseparating_bot_of_isThin
+@[deprecated (since := "2025-10-06")] alias groupoid_of_isDetecting_empty :=
+  ObjectProperty.isGroupoid_of_isDetecting_bot
+@[deprecated (since := "2025-10-06")] alias isDetecting_empty_of_groupoid :=
+  ObjectProperty.isDetecting_bot_of_isGroupoid
+@[deprecated (since := "2025-10-06")] alias groupoid_of_isCodetecting_empty :=
+  ObjectProperty.isGroupoid_of_isCodetecting_bot
+@[deprecated (since := "2025-10-06")] alias isCodetecting_empty_of_groupoid :=
+  ObjectProperty.isCodetecting_bot_of_isGroupoid
 
 end CategoryTheory
