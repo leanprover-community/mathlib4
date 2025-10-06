@@ -380,7 +380,7 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
   rw [orthocenter_eq_mongePoint]
   have ha : ∀ i, i₃ ≠ i → p ∈ t.mongePlane i₃ i := by
     intro i hi
-    obtain rfl | rfl : i₁ = i ∨ i₂ = i := by omega
+    obtain rfl | rfl : i₁ = i ∨ i₂ = i := by cutsat
     all_goals assumption
   exact eq_mongePoint_of_forall_mem_mongePlane ha
 
