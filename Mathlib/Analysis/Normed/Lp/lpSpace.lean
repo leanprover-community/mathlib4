@@ -1049,7 +1049,7 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
 
 /-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[local ext] -- not globally `ext` due to `hp`
 theorem ext_continuousAddMonoidHom
     {F : Type*} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
@@ -1066,7 +1066,7 @@ theorem ext_continuousAddMonoidHom
 
 /-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[local ext] -- not globally `ext` due to `hp`
 theorem ext_continuousLinearMap
     {F : Type*} [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [T2Space F]

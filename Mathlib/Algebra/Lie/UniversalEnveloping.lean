@@ -132,7 +132,7 @@ theorem lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι 
   refine Iff.trans ?_ (lift R).symm_apply_eq
   constructor <;> · intro h; ext; simp [← h]
 
-/-- See note [partially-applied ext lemmas]. -/
+/-- See note [partiallyAppliedExtLemmas]. -/
 @[ext]
 theorem hom_ext {g₁ g₂ : UniversalEnvelopingAlgebra R L →ₐ[R] A}
     (h :

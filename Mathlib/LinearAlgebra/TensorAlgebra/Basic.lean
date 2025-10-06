@@ -164,7 +164,7 @@ theorem lift_comp_ι {A : Type*} [Semiring A] [Algebra R A] (g : TensorAlgebra R
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
 
-/-- See note [partially-applied ext lemmas]. -/
+/-- See note [partiallyAppliedExtLemmas]. -/
 @[ext]
 theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M →ₐ[R] A}
     (w : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g := by

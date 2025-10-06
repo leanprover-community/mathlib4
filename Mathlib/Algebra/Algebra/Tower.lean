@@ -106,7 +106,7 @@ theorem of_algebraMap_eq [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
   ⟨fun x y z => by simp_rw [Algebra.smul_def, RingHom.map_mul, mul_assoc, h]⟩
 
-/-- See note [partially-applied ext lemmas]. -/
+/-- See note [partiallyAppliedExtLemmas]. -/
 theorem of_algebraMap_eq' [Algebra R A]
     (h : algebraMap R A = (algebraMap S A).comp (algebraMap R S)) : IsScalarTower R S A :=
   of_algebraMap_eq <| RingHom.ext_iff.1 h

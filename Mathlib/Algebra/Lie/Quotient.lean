@@ -193,7 +193,7 @@ theorem map_mk'_eq_bot_le : map (mk' N) N' = ⊥ ↔ N' ≤ N := by
 /-- Two `LieModuleHom`s from a quotient lie module are equal if their compositions with
 `LieSubmodule.Quotient.mk'` are equal.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[ext]
 theorem lieModuleHom_ext ⦃f g : M ⧸ N →ₗ⁅R,L⁆ M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
   LieModuleHom.ext fun x => Quotient.inductionOn' x <| LieModuleHom.congr_fun h

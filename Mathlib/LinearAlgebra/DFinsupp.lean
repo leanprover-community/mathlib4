@@ -63,7 +63,7 @@ theorem lhom_ext ⦃φ ψ : (Π₀ i, M i) →ₗ[R] N⦄ (h : ∀ i x, φ (sing
 
 /-- Two `R`-linear maps from `Π₀ i, M i` which agree on each `single i x` agree everywhere.
 
-See note [partially-applied ext lemmas].
+See note [partiallyAppliedExtLemmas].
 After applying this lemma, if `M = R` then it suffices to verify
 `φ (single a 1) = ψ (single a 1)`. -/
 @[ext 1100]

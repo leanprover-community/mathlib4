@@ -113,7 +113,7 @@ end lift
 
 variable {A : Type v} [Monoid A]
 
-/-- See note [partially-applied ext lemmas]. -/
+/-- See note [partiallyAppliedExtLemmas]. -/
 @[ext]
 theorem hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
   MonoidHom.ext fun x => QuotientGroup.induction_on x <| DFunLike.congr_fun h

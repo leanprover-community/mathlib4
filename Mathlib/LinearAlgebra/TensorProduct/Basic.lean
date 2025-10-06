@@ -581,7 +581,7 @@ it in some cases, notably when one wants to show equality of two linear maps. Th
 attribute is now added locally where it is needed. Using this as the `@[ext]` lemma instead of
 `TensorProduct.ext'` allows `ext` to apply lemmas specific to `M →ₗ _` and `N →ₗ _`.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 theorem ext {g h : M ⊗ N →ₗ[R] P} (H : (mk R M N).compr₂ g = (mk R M N).compr₂ h) : g = h := by
   rw [← lift_mk_compr₂ g, H, lift_mk_compr₂]
 

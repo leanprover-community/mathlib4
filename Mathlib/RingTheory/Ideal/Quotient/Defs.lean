@@ -87,7 +87,7 @@ instance : Coe R (R ⧸ I) :=
 /-- Two `RingHom`s from the quotient by an ideal are equal if their
 compositions with `Ideal.Quotient.mk'` are equal.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=

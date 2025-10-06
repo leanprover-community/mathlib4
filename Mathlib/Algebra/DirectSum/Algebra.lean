@@ -121,7 +121,7 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
 
 /-- Two `AlgHom`s out of a direct sum are equal if they agree on the generators.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[ext]
 theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
     (h : ∀ i, f.toLinearMap.comp (lof _ _ A i) = g.toLinearMap.comp (lof _ _ A i)) : f = g :=

@@ -143,7 +143,7 @@ def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorA
 /-- To show that two linear maps from the exterior algebra agree, it suffices to show they agree on
 the exterior powers.
 
-See note [partially-applied ext lemmas] -/
+See note [partiallyAppliedExtLemmas] -/
 @[ext]
 theorem lhom_ext ⦃f g : ExteriorAlgebra R M →ₗ[R] N⦄
     (h : ∀ i, f.compAlternatingMap (ιMulti R i) = g.compAlternatingMap (ιMulti R i)) : f = g :=

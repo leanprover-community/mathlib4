@@ -97,7 +97,7 @@ def coeMonoidHom : α →* WithZero α where
 section lift
 variable [MulZeroOneClass β]
 
--- See note [partially-applied ext lemmas]
+-- See note [partiallyAppliedExtLemmas]
 @[ext high]
 theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
     (h : f.toMonoidHom.comp coeMonoidHom = g.toMonoidHom.comp coeMonoidHom) :

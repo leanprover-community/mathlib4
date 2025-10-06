@@ -363,7 +363,7 @@ Using this as the `@[ext]` lemma instead of `Algebra.TensorProduct.ext'` allows 
 lemmas specific to `A →ₐ[S] _` and `B →ₐ[R] _`; notably this allows recursion into nested tensor
 products of algebras.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[ext high]
 theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
     (ha : f.comp includeLeft = g.comp includeLeft)

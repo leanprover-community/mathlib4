@@ -88,7 +88,7 @@ theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
 /-- Just as `TensorProduct.ext` is marked `ext` instead of `TensorProduct.ext'`, this is
 a better `ext` lemma than `TensorProduct.AlgebraTensorModule.ext` below.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[ext high]
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>

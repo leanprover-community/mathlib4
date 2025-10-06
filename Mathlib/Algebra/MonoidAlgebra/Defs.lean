@@ -624,7 +624,7 @@ theorem ringHom_ext {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : MonoidA
 /-- If two ring homomorphisms from `MonoidAlgebra k G` are equal on all `single a 1`
 and `single 1 b`, then they are equal.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[ext high]
 theorem ringHom_ext' {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : MonoidAlgebra k G →+* R}
     (h₁ : f.comp singleOneRingHom = g.comp singleOneRingHom)
@@ -787,7 +787,7 @@ end MiscTheorems
 /-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`
 and `single 0 b`, then they are equal.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[ext high]
 theorem ringHom_ext' {R} [Semiring k] [AddMonoid G] [Semiring R] {f g : k[G] →+* R}
     (h₁ : f.comp singleZeroRingHom = g.comp singleZeroRingHom)

@@ -629,9 +629,9 @@ protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 
 
 /-- Two homomorphisms out of a free group are equal if they are equal on generators.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[to_additive (attr := ext) /-- Two homomorphisms out of a free additive group are equal if they are
-  equal on generators. See note [partially-applied ext lemmas]. -/]
+  equal on generators. See note [partiallyAppliedExtLemmas]. -/]
 lemma ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (of a) = g (of a)) :
     f = g := by
   ext x

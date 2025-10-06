@@ -512,12 +512,12 @@ variable (M)
 section
 include M
 
-/-- See note [partially-applied ext lemmas] -/
+/-- See note [partiallyAppliedExtLemmas] -/
 theorem monoidHom_ext ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
   Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) <| DFunLike.congr_fun h
 
-/-- See note [partially-applied ext lemmas] -/
+/-- See note [partiallyAppliedExtLemmas] -/
 theorem ringHom_ext ⦃j k : S →+* P⦄ (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
     j = k :=
   RingHom.coe_monoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h

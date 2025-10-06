@@ -136,3 +136,18 @@ open Lean in
 in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`. -/
 macro "library_note2 " name:ident ppSpace dc:docComment : command =>
   `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
+
+library_note2 partiallyAppliedExtLemmas
+/--
+When possible, `ext` lemmas are stated without a full set of arguments. As an example, for bundled
+homs `f`, `g`, and `of`, `f.comp of = g.comp of → f = g` is a better `ext` lemma than
+`(∀ x, f (of x) = g (of x)) → f = g`, as the former allows a second type-specific extensionality
+lemmas to be applied to `f.comp of = g.comp of`.
+If the domain of `of` is `ℕ` or `ℤ` and `of` is a `RingHom`, such a lemma could then make the goal
+`f (of 1) = g (of 1)`.
+
+For bundled morphisms, there is a `ext` lemma that always applies of the form
+`(∀ x, ⇑f x = ⇑g x) → f = g`. When adding type-specific `ext` lemmas like the one above, we want
+these to be tried first. This happens automatically since the type-specific lemmas are inevitably
+defined later.
+-/

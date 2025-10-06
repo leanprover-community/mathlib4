@@ -231,7 +231,7 @@ lemma ext_nnrat' (h : ∀ n : ℕ, f n = g n) : f = g :=
 
 /-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the naturals then they are equal.
 
-See note [partially-applied ext lemmas] for why `comp` is used here. -/
+See note [partiallyAppliedExtLemmas] for why `comp` is used here. -/
 @[ext]
 lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀}
     (h : f.comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0) = g.comp (Nat.castRingHom ℚ≥0)) : f = g :=
@@ -258,7 +258,7 @@ theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
 
 /-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal.
 
-See note [partially-applied ext lemmas] for why `comp` is used here. -/
+See note [partiallyAppliedExtLemmas] for why `comp` is used here. -/
 @[ext]
 theorem ext_rat {f g : ℚ →*₀ M₀}
     (h : f.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) = g.comp (Int.castRingHom ℚ)) : f = g :=

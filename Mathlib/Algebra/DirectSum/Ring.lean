@@ -513,7 +513,7 @@ variable {A}
 /-- If two ring homomorphisms from `⨁ i, A i` are equal on each `of A i y`,
 then they are equal.
 
-See note [partially-applied ext lemmas]. -/
+See note [partiallyAppliedExtLemmas]. -/
 @[ext]
 theorem ringHom_ext' ⦃F G : (⨁ i, A i) →+* R⦄
     (h : ∀ i, (↑F : _ →+ R).comp (of A i) = (↑G : _ →+ R).comp (of A i)) : F = G :=

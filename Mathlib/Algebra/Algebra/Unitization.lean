@@ -648,7 +648,7 @@ lemma algHom_ext'' {F : Type*}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
   algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
 
-/-- See note [partially-applied ext lemmas] -/
+/-- See note [partiallyAppliedExtLemmas] -/
 @[ext 1100]
 theorem algHom_ext' {φ ψ : Unitization R A →ₐ[R] C}
     (h :
@@ -715,7 +715,7 @@ variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [St
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [Semiring C] [Algebra R C] [StarRing C]
 
-/-- See note [partially-applied ext lemmas] -/
+/-- See note [partiallyAppliedExtLemmas] -/
 @[ext]
 theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
     (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
