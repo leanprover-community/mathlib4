@@ -3,6 +3,7 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Tactic.Bound.Attribute
@@ -237,6 +238,9 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   rw [div_lt_iff_lt_mul (by cutsat), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (by cutsat)]
   exact Nat.add_le_mul hn hb
+
+lemma log_two_bit {b n} (hn : n ≠ 0) : Nat.log 2 (n.bit b) = Nat.log 2 n + 1 := by
+  rw [← log_div_mul_self, bit_div_two, log_mul_base Nat.one_lt_two hn]
 
 lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
   rcases eq_or_ne n 0 with rfl | hn
