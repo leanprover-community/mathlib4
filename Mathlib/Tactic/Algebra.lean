@@ -757,7 +757,7 @@ def evalCast (c : Ring.Cache q($sR)) :
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
     assumeInstancesCommute
     pure ⟨_, (ExProd.smul vr.toSum).toSum, (q(isInt_negOfNat_eq (R := $R) $p):)⟩
-  -- We don't handle rational expressions in A.
+  -- We don't handle rational expressions in A at the moment.
   | _ => none
 
 /--
@@ -891,6 +891,29 @@ def evalAtom :
   | some (p : Q($a = $e')) => (q(atom_eq_pow_one_mul_smul_one_add_zero' $p))
   ⟩
 
+--TODO: This is broken.
+/-- Handle scalar multiplication when the scalar ring R' doesn't match the base ring R.
+Assumes R is an R'-algebra (i.e., R' is smaller), and casts the scalar using algebraMap. -/
+def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(Type v)}
+    {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
+    (cacheR : Ring.Cache q($sR)) (cacheA : Ring.Cache q($sA))
+    (smul : Q(SMul $R' $A)) (r' : Q($R')) (a : Q($A)) :
+    MetaM <| Σ r : Q($R), Q($r • $a = $r' • $a) := do
+    -- AtomM (Result (ExSum sAlg) q($r' • $a')) := do
+  -- Synthesize the algebra instance showing R is an R'-algebra
+  if (← isDefEq R R') then
+    have : u =QL u' := ⟨⟩
+    have : $R =Q $R' := ⟨⟩
+    assumeInstancesCommute
+    return ⟨q($r'), q(rfl)⟩
+  let _sR' ← synthInstanceQ q(CommSemiring $R')
+  let _algR'R ← synthInstanceQ q(Algebra $R' $R)
+  let _ist ← synthInstanceQ q(IsScalarTower $R' $R $A)
+  assumeInstancesCommute
+  let r_cast : Q($R) := q(algebraMap $R' $R $r')
+  have : Q($r_cast = algebraMap $R' $R $r') := q(rfl)
+  return ⟨r_cast, q(sorry)⟩
+
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
     {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Ring.Cache q($sR))
     (cacheA : Ring.Cache q($sA)) (e : Q($A)) :
@@ -902,24 +925,21 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
   match n, cacheA.rα, cacheA.dsα with
   | ``HSMul.hSMul, _, _ | ``SMul.smul, _, _ => match e with
     | ~q(@HSMul.hSMul $R' $A' _ $inst $r' $a') =>
-      if ! (← isDefEq R R') then
-        -- TODO: Handle case if R extends R'
-        return ← els
       if ! (← isDefEq A A') then
         throwError "algebra: HSmul not implemented"
-      have r : Q($R) := r'
-      have a : Q($A) := a'
-      let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
-      let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
-      let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
-      have : v =QL u_2 := ⟨⟩
+      have : u_2 =QL v := ⟨⟩
       have : $A =Q $A' := ⟨⟩
-      have : u =QL u_1 := ⟨⟩
-      have : $R =Q $R' := ⟨⟩
-      have : $r =Q $r' := ⟨⟩
-      have : $a =Q $a' := ⟨⟩
-      assumeInstancesCommute
-      return ⟨ef, vf, q(eval_smul_eq rfl (smul_congr $pr $pa $pf))⟩
+      have a : Q($A) := a'
+      try
+        let ⟨r, pf_smul⟩ ← evalSMulCast sAlg cacheR cacheA inst r' a
+        let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
+        let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
+        let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
+        have pe : Q($e = $r' • $a') := q(rfl)
+        have : $a =Q $a' := ⟨⟩
+        assumeInstancesCommute
+        return ⟨ef, vf, q(eval_smul_eq sorry (smul_congr $pr $pa $pf))⟩
+      catch | _ => els
     | _ => els
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
     | ~q($a + $b) =>
@@ -1024,35 +1044,63 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   --   Tactic.pushGoals l
     -- NormNum.normNumAt g (← getSimpContext)
 
-/-- Infer from the expression what base ring the normalization should use.
- TODO: Find a better way to do this. -/
-partial def inferBaseAux (e : Expr) :
-    OptionT MetaM <|  Σ u : Lean.Level, Q(Type u) := do
-  let .const n _ := (← withReducible <| whnf e).getAppFn | failure
+/-- Collect all scalar rings from scalar multiplications in the expression. -/
+partial def collectScalarRings (e : Expr) : MetaM (List (Σ u : Lean.Level, Q(Type u))) := do
+  let .const n _ := (← withReducible <| whnf e).getAppFn | return []
   match_expr e with
-  | SMul.smul R _ _ _ _ =>
-    return ←inferLevelQ R
-  | HSMul.hSMul R _ _ _ _ _ =>
-    return ←inferLevelQ R
-  | Eq _ a b => (inferBaseAux a) <|> (inferBaseAux b)
-  | HAdd.hAdd _ _ _ _ a b => inferBaseAux a <|> inferBaseAux b
-  | Add.add _ _ _ a b => inferBaseAux a <|> inferBaseAux b
-  | HMul.hMul _ _ _ _ a b => inferBaseAux a <|> inferBaseAux b
-  | Mul.mul _ _ _ a b => inferBaseAux a <|> inferBaseAux b
-  | HSub.hSub _ _ _ _ a b => inferBaseAux a <|> inferBaseAux b
-  | Sub.sub _ _ _ a b => inferBaseAux a <|> inferBaseAux b
-  | HPow.hPow _ _ _ _ a _ => inferBaseAux a
-  /- Should it try to be clever here and return q(ℤ)
-    instead of q(ℕ) if there's negation or subtraction and no other ring?
-    Maybe not... what if there's natural number subtraction. And if the desired ring doesn't
-    appear in an smul / algebraMap the user shouldn't be too surprised that the tactic failed. -/
-  | Neg.neg _ _ a => inferBaseAux a
-  | _ =>
-    failure
+  | SMul.smul R _ _ _ a =>
+    return [←inferLevelQ R] ++ (← collectScalarRings a)
+  | HSMul.hSMul R _ _ _ _ a =>
+    return [←inferLevelQ R] ++ (← collectScalarRings a)
+  | Eq _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
+  | HAdd.hAdd _ _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
+  | Add.add _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
+  | HMul.hMul _ _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
+  | Mul.mul _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
+  | HSub.hSub _ _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
+  | Sub.sub _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
+  | HPow.hPow _ _ _ _ a _ => collectScalarRings a
+  | Neg.neg _ _ a => collectScalarRings a
+  | _ => return []
 
-def inferBase (e : Expr) :
-    MetaM <| Σ u : Lean.Level, Q(Type u) := do
-  return (← (inferBaseAux e).run).getD ⟨0, q(ℕ)⟩
+/-- Given two rings, determine which is 'larger' in the sense that the larger is an algebra
+over the smaller. Returns the first ring if they're the same or incompatible. -/
+def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
+    MetaM (Σ u : Lean.Level, Q(Type u)) := do
+  let ⟨u1, R1⟩ := r1
+  let ⟨u2, R2⟩ := r2
+  -- If they're definitionally equal, return the first one
+  if ← withReducible <| isDefEq R1 R2 then
+    return r1
+  -- Try to show R2 is an R1-algebra (meaning R1 is smaller, so return R2)
+  try
+    let _i1 ← synthInstanceQ q(CommSemiring $R1)
+    let _i2 ← synthInstanceQ q(Semiring $R2)
+    let _i3 ← synthInstanceQ q(Algebra $R1 $R2)
+    return r2
+  catch _ => try
+    -- Try to show R1 is an R2-algebra (meaning R2 is smaller, so return R1)
+    let _i1 ← synthInstanceQ q(CommSemiring $R2)
+    let _i2 ← synthInstanceQ q(Semiring $R1)
+    let _i3 ← synthInstanceQ q(Algebra $R2 $R1)
+    return r1
+  catch _ =>
+    -- If neither works, return the first ring
+    return r1
+
+/-- Infer from the expression what base ring the normalization should use.
+ Finds all scalar rings in the expression and picks the 'larger' one in the sense that
+ it is an algebra over the smaller rings. -/
+def inferBase (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
+  let rings ← collectScalarRings e
+  let res ← match rings with
+  | [] =>
+    /- TODO: If we can synthesize Algebra ℚ A or Algebra ℤ A, instead return ℚ or ℤ respectively.
+      Note this function does not currently know A. -/
+    return ⟨0, q(ℕ)⟩
+  | r :: rs => rs.foldlM pickLargerRing r
+  IO.println s!"Inferred ring {← ppExpr res.2}"
+  return res
 
 def isAtomOrDerivable (c : Ring.Cache sR) (e : Q($A)) : AtomM (Option (Option (Result (ExSum sAlg) e))) := do
   let els := try
@@ -1090,7 +1138,7 @@ def evalExprInfer (e : Expr) : AtomM Simp.Result := do
   let ⟨_, R⟩ ← inferBase e
   evalExpr R e
 
-/-- Attempt -/
+/-- Attempt to normalize all  -/
 elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic => do
   -- let mut cfg ← elabConfig cfg
   let mut cfg := {}
@@ -1391,6 +1439,10 @@ example : 2 = 1 := by
 example (x y : ℚ) (m n : ℕ) : (x + 2) ^ (2 * n+1) = ((x+2)^n)^2 * (x+2) := by
   algebra
 
-example (x y : ℚ) (m n : ℕ) : (x^n +  1)^2 = 0 := by
+example (x y : ℚ) (m n : ℕ) : (x^n + 1)^2 = 0 := by
   algebra_nf
+  sorry
+
+example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
+  match_scalars_alg with ℤ
   sorry
