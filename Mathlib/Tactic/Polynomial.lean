@@ -116,17 +116,15 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   | .raw => pure r
   | .SOP => do
     let thms : SimpTheorems := {}
-    let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
-      ``_root_.pow_one, ``Algebra.mul_neg, ``Algebra.add_neg, ``one_smul,
-      ``Nat.ofNat_nsmul_eq_mul,
       /- The following theorems are polynomial specific. -/
+    let thms ← [
     ``Polynomial.smul_eq_C_mul, ``MvPolynomial.smul_eq_C_mul,  ``Polynomial.map_add,
     ``Polynomial.map_smul].foldlM (·.addConst ·) thms
-    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
-       ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
     let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
       (simpTheorems := #[thms])
       (congrTheorems := ← getSimpCongrTheorems)
+    let r ← Algebra.cleanup cfg r
+    -- let r' ← r.mkEqTrans (← Algebra.cleanup cfg r)
     pure <| ←
       r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
@@ -164,6 +162,10 @@ example (a b c : ℚ) : (X + C a)^2 = X^2 + C c * X + C b := by
   all_goals sorry
 
 
+example (a b c : ℚ) (m n : ℕ) : (X^n + C a)^2 = 0 := by
+  polynomial_nf
+  sorry
+
 end poly
 
 section mvpoly
@@ -188,6 +190,7 @@ example (a b c : ℚ) : ((X 0 + C a)^2).eval (fun i ↦ -a) = 0 := by
 example (a b c d : ℤ) : (X 0 * C a + X 1 * X 37 * C (b*(c-1)))^2 * (X 0 - 1) = 0 := by
   polynomial_nf
   sorry
+
 
 
 end mvpoly

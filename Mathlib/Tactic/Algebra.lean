@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 import Mathlib.Tactic.Module
+import Mathlib.Algebra.Algebra.Defs
 
 set_option linter.all false
 
@@ -25,6 +26,7 @@ TODOs:
   and handle the Algebra (Polynomial _) (Polynomial _) instance gracefully.
 * The new normal form puts the coefficients an the end as `x * y * 1 • r` and `X^n * C a`. We really
   ought to put it in front.
+* Fill in all the sorries - there are typeclass problems with all of the theorems involving negation
 -/
 
 section ExSum
@@ -34,8 +36,15 @@ set_option linter.style.longLine false
 
 section lemmas
 
+
+section ring
+
+variable {R A : Type*} [rR : Ring R] [rA : Ring A]
+
+end ring
+
 open NormNum
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R A : Type*} [sR : CommSemiring R] [sA : CommSemiring A] [sAlg : Algebra R A]
 
 theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R}
     (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :
@@ -113,12 +122,14 @@ theorem add_add_add_comm {a₁ a₂ b₁ b₂ c : A}
 theorem add_add_add_comm' {a₁ a₂ b₁ b₂ c : A}
     (h : (a₁ + a₂) + b₂ = c) :
     a₁ + a₂ + (b₁ + b₂) = b₁ + c := by
-  sorry
+  subst_vars
+  ring
 
-theorem neg_smul_one {r s : R} [Ring R] [Ring A]
+theorem neg_smul_one {r s : R} [Ring R] [Ring A] [Algebra R A]
     (h : -r = s) :
     -(r • (1 : A)) = s • 1 := by
   sorry
+
 
 theorem neg_pow_mul (x : A) (e : ℕ) {b c : A} [Ring R] [Ring A]
     (h : -b = c) :
@@ -133,6 +144,7 @@ theorem neg_add {a b c d : A} [Ring R] [Ring A]
 theorem sub_eq_add_neg' {a b c d : A} [Ring R] [Ring A]
     (hc : -b = c) (hd : a + c = d) :
     a - b = d := by
+  subst_vars
   sorry
 
 theorem isNat_zero_eq {a : A} [AddMonoidWithOne A]
@@ -967,7 +979,7 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
     let thms : SimpTheorems := {}
     let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
       ``_root_.pow_one, ``mul_neg, ``add_neg, ``one_smul,
-      ``Nat.ofNat_nsmul_eq_mul].foldlM (·.addConst ·) thms
+      ``Nat.ofNat_nsmul_eq_mul, ``mul_smul_comm].foldlM (·.addConst ·) thms
     let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
        ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
     let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
@@ -1185,7 +1197,6 @@ def ExProd.equateScalarsProd {a b : Q($A)} (va : ExProd q($sAlg) a) (vb : ExProd
     -- This shouldn't happen - the caller should ensure structural equality
     throwError "equateScalarsProd: structure mismatch"
 
-
 def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) :
     MetaM <| Q($a = $b) × List MVarId := do
   match va, vb with
@@ -1224,9 +1235,8 @@ def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) 
 #check Simp.Simproc
 
 def runSimp (f : Simp.Result → MetaM Simp.Result) (g : MVarId) : MetaM MVarId := do
-  let mut cfg := {}
   let e ← g.getType
-  let r ← RingNF.cleanup cfg {expr := e, proof? := none}
+  let r ← f {expr := e, proof? := none}
   applySimpResultToTarget g e r
 
 def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : MetaM (List MVarId) :=
@@ -1360,6 +1370,9 @@ example {a b : ℤ} (x y : ℚ) (ha : a = 2) : (a + b) • (x + y) = b • x + (
   sorry
   sorry
 
+example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = 0 := by
+  algebra_nf
+  sorry
 
 
 
