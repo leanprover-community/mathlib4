@@ -80,11 +80,11 @@ lemma Subsingleton.inter_singleton : (s ∩ {a}).Subsingleton :=
 lemma Subsingleton.singleton_inter : ({a} ∩ s).Subsingleton :=
   Set.subsingleton_of_subset_singleton Set.inter_subset_left
 
-lemma Subsingleton.union_subsingleton_left (h : (s ∪ t).Subsingleton) :
+lemma subsingleton_of_subsingleton_inter_left (h : (s ∪ t).Subsingleton) :
     s.Subsingleton :=
   fun _ h₁ _ h₂ ↦ h (.inl h₁) (.inl h₂)
 
-lemma Subsingleton.union_subsingleton_right (h : (s ∪ t).Subsingleton) :
+lemma subsingleton_of_subsingleton_inter_right (h : (s ∪ t).Subsingleton) :
     t.Subsingleton :=
   fun _ h₁ _ h₂ ↦ h (.inr h₁) (.inr h₂)
 
