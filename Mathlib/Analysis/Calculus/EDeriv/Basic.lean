@@ -74,7 +74,7 @@ theorem ederiv_fun_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) :
     ederiv (c • ω) x = c • ederiv ω x :=
   ederiv_smul c ω
 
-/-- Exterior derivative of a 0-form given by a function `f` within a set
+/-- The exterior derivative of a `0`-form given by a function `f` within a set
 is the 1-form given by the derivative of `f` within the set. -/
 theorem ederivWithin_constOfIsEmpty (f : E → F) (hs : UniqueDiffWithinAt 𝕜 s x) :
     ederivWithin (fun x ↦ constOfIsEmpty 𝕜 E (Fin 0) (f x)) s x =
@@ -83,7 +83,7 @@ theorem ederivWithin_constOfIsEmpty (f : E → F) (hs : UniqueDiffWithinAt 𝕜 
     (constOfIsEmptyLIE 𝕜 E F (Fin 0)).comp_fderivWithin hs,
     alternatizeUncurryFin_constOfIsEmptyLIE_comp]
 
-/-- Exterior derivative of a 0-form given by a function `f`
+/-- The exterior derivative of a `0`-form given by a function `f`
 is the 1-form given by the derivative of `f`. -/
 theorem ederiv_constOfIsEmpty (f : E → F) (x : E) :
     ederiv (fun x ↦ constOfIsEmpty 𝕜 E (Fin 0) (f x)) x =
@@ -143,7 +143,7 @@ theorem ederiv_apply (h : DifferentiableAt 𝕜 ω x) (v : Fin (n + 1) → E) :
     ederiv ω x v = ∑ i, (-1) ^ i.val • fderiv 𝕜 (ω · (i.removeNth v)) x (v i) := by
   simp [← ederivWithin_univ, ederivWithin_apply h.differentiableWithinAt]
 
-/-- Second exterior derivative of a sufficiently smooth differential form is zero. -/
+/-- The second exterior derivative of a sufficiently smooth differential form is zero. -/
 theorem ederivWithin_ederivWithin_apply (hω : ContDiffWithinAt 𝕜 r ω s x)
     (hr : minSmoothness 𝕜 2 ≤ r) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s))
     (h'x : x ∈ s) : ederivWithin (ederivWithin ω s) s x = 0 := calc
@@ -161,19 +161,19 @@ theorem ederivWithin_ederivWithin_apply (hω : ContDiffWithinAt 𝕜 r ω s x)
   _ = 0 := alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric <|
     hω.isSymmSndFDerivWithinAt hr hs hx h'x
 
-/-- Second exterior derivative of a sufficiently smooth differential form is zero. -/
+/-- The second exterior derivative of a sufficiently smooth differential form is zero. -/
 theorem ederivWithin_ederivWithin_eqOn (hω : ContDiffOn 𝕜 r ω s) (hr : minSmoothness 𝕜 2 ≤ r)
     (hs : UniqueDiffOn 𝕜 s) :
     EqOn (ederivWithin (ederivWithin ω s) s) 0 (s ∩ closure (interior s)) := by
   rintro x ⟨h'x, hx⟩
   exact ederivWithin_ederivWithin_apply (hω.contDiffWithinAt h'x) hr hs hx h'x
 
-/-- Second exterior derivative of a sufficiently smooth differential form is zero. -/
+/-- The second exterior derivative of a sufficiently smooth differential form is zero. -/
 theorem ederiv_ederiv_apply (hω : ContDiffAt 𝕜 r ω x) (hr : minSmoothness 𝕜 2 ≤ r) :
     ederiv (ederiv ω) x = 0 := by
   simp only [← ederivWithin_univ]
   apply ederivWithin_ederivWithin_apply (s := univ) hω.contDiffWithinAt hr <;> simp
 
-/-- Second exterior derivative of a sufficiently smooth differential form is zero. -/
+/-- The second exterior derivative of a sufficiently smooth differential form is zero. -/
 theorem ederiv_ederiv (h : ContDiff 𝕜 r ω) (hr : minSmoothness 𝕜 2 ≤ r) : ederiv (ederiv ω) = 0 :=
   funext fun _ ↦ ederiv_ederiv_apply h.contDiffAt hr
