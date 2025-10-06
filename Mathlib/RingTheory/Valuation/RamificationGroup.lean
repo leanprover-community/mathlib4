@@ -23,8 +23,8 @@ variable (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
 
 /-- The decomposition subgroup defined as the stabilizer of the action
 on the type of all valuation subrings of the field. -/
-abbrev decompositionSubgroup (A : ValuationSubring L) : Subgroup Gal(L/K) :=
-  MulAction.stabilizer Gal(L/K) A
+abbrev decompositionSubgroup (A : ValuationSubring L) : Subgroup (L ≃ₐ[K] L) :=
+  MulAction.stabilizer (L ≃ₐ[K] L) A
 
 /-- The valuation subring `A` (considered as a subset of `L`)
 is stable under the action of the decomposition group. -/
