@@ -37,6 +37,7 @@ lattice, distributive, neutral
 
 variable {α : Type*}
 
+/-- The sup with a constant on the left as a `SupHom` -/
 def const_sup_left [SemilatticeSup α] (a : α) : SupHom α α := {
   toFun := fun x => a ⊔ x
   map_sup' := sup_sup_distrib_left a
