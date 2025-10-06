@@ -48,11 +48,11 @@ theorem nonneg_or_nonpos_of_mul_nonneg {a b : ℤ} : 0 ≤ a * b → 0 ≤ a ∧
   · refine .inr ⟨?_, le_of_not_ge hb⟩
     obtain _ | _ := Int.mul_eq_zero.mp <|
       Int.le_antisymm (Int.mul_nonpos_of_nonneg_of_nonpos ha <| le_of_not_ge hb) h
-    all_goals omega
+    all_goals cutsat
   · refine .inr ⟨le_of_not_ge ha, ?_⟩
     obtain _ | _ := Int.mul_eq_zero.mp <|
       Int.le_antisymm (Int.mul_nonpos_of_nonpos_of_nonneg (le_of_not_ge ha) hb) h
-    all_goals omega
+    all_goals cutsat
   · exact .inr ⟨le_of_not_ge ha, le_of_not_ge hb⟩
 
 theorem mul_nonneg_of_nonneg_or_nonpos {a b : ℤ} : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 → 0 ≤ a * b
