@@ -68,9 +68,7 @@ by applying some element of `S` to `a` instead.
 
 More familiarly, the restriction of `f` to `A` is the result of partitioning `A` into finitely many
 pieces, then applying a single element of `G` to each piece. -/
-def IsDecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop := ∀
-
- a ∈ A, ∃ g ∈ S, f a = g • a
+def IsDecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop := ∀ a ∈ A, ∃ g ∈ S, f a = g • a
 
 variable (X G)
 
@@ -96,25 +94,6 @@ def witness (f : Equidecomp X G) : Finset G := f.isDecompOn'.choose
 
 theorem isDecompOn (f : Equidecomp X G) : IsDecompOn f f.source f.witness :=
   f.isDecompOn'.choose_spec
-
-noncomputable def element_witness (f : Equidecomp X G) (a : X) (h : a ∈ f.source) : G :=
-    (f.isDecompOn a h).choose
-
-open Classical in noncomputable def minimal_witness (f : Equidecomp X G) : Finset G :=
-  {w ∈ f.witness | ∃ a, ∃ h, f.element_witness a h = w}
-
-theorem minimal_witness_subset (f : Equidecomp X G) : f.minimal_witness ⊆ f.witness := by
-  simp [witness, minimal_witness]
-
-theorem element_witness_mem_minimal_witness (f : Equidecomp X G) (a : X) (h : a ∈ f.source) :
-  f.element_witness a h ∈ f.minimal_witness := by
-    simp [minimal_witness]
-    apply And.intro
-    . simp [witness, element_witness]
-      sorry
-
-    . use a
-      use h
 
 theorem apply_mem_target {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
     f x ∈ f.target := by simp [h]
@@ -236,8 +215,15 @@ theorem refl_symm : (refl X G).symm = refl X G := rfl
 theorem restr_refl_symm (A : Set X) :
     ((Equidecomp.refl X G).restr A).symm = (Equidecomp.refl X G).restr A := rfl
 
-----
-
+/--
+An Equipartition contains a Finset of parts.
+Each part has a source, a group element and a target.
+The sources and targets of every part are supremum independent (and not empty), which ensures that
+they form a `Finpartition` of the source and target of the whole Equipartition.
+`decomp` ensures that applying the group element of a part to its source gives the target.
+This definition is equivalent to the one given at `Equidecomp`.
+It is mainly useful for constructing concrete Equidecompositions.
+-/
 structure Equipartition (X : Type*) (G : Type*) [SMul G X] where
   parts : Finset (Set X × G × Set X)
   supIndepSource : Finset.SupIndep parts (fun p ↦ p.1)
@@ -249,59 +235,74 @@ namespace Equipartition
 
 variable (P : Equipartition X G)
 
+/--
+The source of the Equipartition, defined as the union of the source of all parts.
+-/
 def source := P.parts.sup (fun p ↦ p.1)
 
+/--
+The target of the Equipartition, defined as the union of the target of all parts.
+-/
 def target := P.parts.sup (fun p ↦ p.2.2)
 
 theorem subset_source (p : Set X × G × Set X) (h : p ∈ P.parts) : p.1 ⊆ P.source := by
   simpa [source] using subset_biUnion_of_mem h
 
 theorem subset_target (p : Set X × G × Set X) (h : p ∈ P.parts) : p.2.2 ⊆ P.target := by
-  simp [target]
+  simp only [target, Finset.sup_set_eq_biUnion]
   exact subset_iUnion₂_of_subset p h fun ⦃a⦄ a ↦ a
 
-/-
-def source.to_finpartition (P : Equipartition X G) : Finpartition P.source :=
+/--
+The sources of each part form a `Finpartition` of `source`.
+-/
+def source.to_finpartition [DecidableEq (Set X)] (P : Equipartition X G) : Finpartition P.source :=
   { parts := Finset.image (fun p ↦ p.1) P.parts
     sup_parts := by simp [source]
-    supIndep := by simp [supIndepSource]
+    supIndep := by exact Finset.SupIndep.image P.supIndepSource
     bot_notMem := by
       simp only [bot_eq_empty, Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right,
         not_exists]
       refine fun x y ↦ Finset.forall_mem_not_eq'.mp (fun b h ↦ ?_)
-      simp [@Prod.eq_iff_fst_eq_snd_eq, P.bot_notMem b h]}-/
+      simp [@Prod.eq_iff_fst_eq_snd_eq, P.bot_notMem b h]}
 
+/--
+The targets of each part form a `Finpartition` of `target`.
+-/
+def target.to_finpartition [DecidableEq (Set X)] (P : Equipartition X G) :
+    Finpartition P.target :=
+  { parts := Finset.image (fun p ↦ p.2.2) P.parts
+    sup_parts := by simp [target]
+    supIndep := by exact Finset.SupIndep.image P.supIndepTarget
+    bot_notMem := by
+      simp only [bot_eq_empty, Finset.mem_image, Prod.exists, exists_eq_right, not_exists]
+      refine fun x y ↦ Finset.forall_mem_not_eq'.mp (fun b h ↦ ?_)
+      exact ne_of_apply_ne (fun b ↦ b.2.2) (by simp [← P.decomp b h, P.bot_notMem b h])}
 
-theorem parts_eq_iff_1 : ∀ p1 ∈ P.parts, ∀ p2 ∈ P.parts, p1 = p2 ↔ p1.1 = p2.1 := by
-  intro p1 h1 p2 h2
-  constructor
-  · simp_all
-  · intro h3
-    have h4 := Finset.SupIndep.pairwiseDisjoint P.supIndepSource
-    by_contra hC
-    simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
-      not_and] at h4
-    have h5 := @h4 p1.1 p1.2.1 p1.2.2 h1 p2.1 p2.2.1 p2.2.2 h2 (by grind)
-    simp only [h3, Prod.mk.eta, disjoint_self, bot_eq_empty] at h5
-    have have_body_congr' := P.bot_notMem p2 h2
-    contradiction
+theorem parts_eq_iff_1 {p1 p2 : Set X × G × Set X} (h1 : p1 ∈ P.parts) (h2 : p2 ∈ P.parts) :
+    p1 = p2 ↔ p1.1 = p2.1 := by
+  refine Iff.intro (by simp +contextual) (fun h3 ↦ ?_)
+  have h4 := Finset.SupIndep.pairwiseDisjoint P.supIndepSource
+  by_contra hC
+  simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
+    not_and] at h4
+  have h5 := @h4 p1.1 p1.2.1 p1.2.2 h1 p2.1 p2.2.1 p2.2.2 h2 (by grind)
+  simp only [h3, Prod.mk.eta, disjoint_self, bot_eq_empty] at h5
+  have have_body_congr' := P.bot_notMem p2 h2
+  contradiction
 
-
-theorem parts_eq_iff_2 : ∀ p1 ∈ P.parts, ∀ p2 ∈ P.parts, p1 = p2 ↔ p1.2.2 = p2.2.2 := by
-  intro p1 h1 p2 h2
-  constructor
-  · simp_all
-  · intro h3
-    have h4 := Finset.SupIndep.pairwiseDisjoint P.supIndepTarget
-    by_contra hC
-    simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
-      not_and] at h4
-    have h5 := @h4 p1.1 p1.2.1 p1.2.2 h1 p2.1 p2.2.1 p2.2.2 h2 (by grind)
-    simp only [h3, Prod.mk.eta, disjoint_self, bot_eq_empty] at h5
-    have have_body_congr' := P.bot_notMem p2 h2
-    rw [← P.decomp _ h2] at h5
-    simp only [image_smul, smul_set_eq_empty] at h5
-    contradiction
+theorem parts_eq_iff_2 {p1 p2 : Set X × G × Set X} (h1 : p1 ∈ P.parts) (h2 : p2 ∈ P.parts) :
+    p1 = p2 ↔ p1.2.2 = p2.2.2 := by
+  refine Iff.intro (by simp +contextual) (fun h3 ↦ ?_)
+  have h4 := Finset.SupIndep.pairwiseDisjoint P.supIndepTarget
+  by_contra hC
+  simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
+    not_and] at h4
+  have h5 := @h4 p1.1 p1.2.1 p1.2.2 h1 p2.1 p2.2.1 p2.2.2 h2 (by grind)
+  simp only [h3, Prod.mk.eta, disjoint_self, bot_eq_empty] at h5
+  have have_body_congr' := P.bot_notMem p2 h2
+  rw [← P.decomp _ h2] at h5
+  simp only [image_smul, smul_set_eq_empty] at h5
+  contradiction
 
 /--
 The piece of the partition containing `x`, the group element associated to that piece,
@@ -317,7 +318,7 @@ theorem source_part_spec (x : X) (h : x ∈ P.source) : x ∈ (P.source_part x h
   exact (Classical.choose_spec h1).2
 
 theorem source_part_mem_parts (x : X) (h : x ∈ P.source) : (P.source_part x h) ∈ P.parts := by
-  simp [Equipartition.source_part]
+  rw [Equipartition.source_part]
   have h1 : ∃ p ∈ P.parts, x ∈ p.1 := by simp [source, mem_iUnion] at h ⊢; assumption
   exact (Classical.choose_spec h1).1
 
@@ -332,32 +333,29 @@ theorem source_part_decomp (x : X) (h : x ∈ P.source) :
 The piece of the partition whose image contains `x`, the group element associated to that piece,
 and the image of that piece under the group element.
 -/
-noncomputable def target_part (x : X) (h : x ∈ P.target) :
-      Set X × G × Set X := by
+noncomputable def target_part (x : X) (h : x ∈ P.target) : Set X × G × Set X := by
   have h1 : ∃ p ∈ P.parts, x ∈ p.2.2 := by
     simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
   exact Classical.choose h1
 
 theorem target_part_spec (x : X) (h : x ∈ P.target) : x ∈ (P.target_part x h).2.2 := by
-    simp [Equipartition.target_part]
-    have h1 : ∃ p ∈ P.parts, x ∈ p.2.2 := by
-      simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
-    exact (Classical.choose_spec h1).2
+  rw [Equipartition.target_part]
+  have h1 : ∃ p ∈ P.parts, x ∈ p.2.2 := by
+    simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
+  exact (Classical.choose_spec h1).2
 
 theorem target_part_mem_parts (x : X) (h : x ∈ P.target) : (P.target_part x h) ∈ P.parts := by
-  simp [Equipartition.target_part]
+  rw [Equipartition.target_part]
   have h1 : ∃ p ∈ P.parts, x ∈ p.2.2 := by
       simp [Equipartition.target, mem_iUnion] at h ⊢; assumption
   exact (Classical.choose_spec h1).1
 
 theorem decomp_inv (x : X) (h : x ∈ P.target) :
     ∃ y ∈ (P.target_part x h).1, (P.target_part x h).2.1 • y = x := by
-  let test := P.decomp (P.target_part x h) (by exact Equipartition.target_part_mem_parts P x h)
-  simp at test
-  rw [Set.ext_iff] at test
+  let h1 := P.decomp (P.target_part x h) (by exact Equipartition.target_part_mem_parts P x h)
+  simp [Set.ext_iff] at h1
   rw [← @mem_smul_set]
-  let h2 := (test x).mpr (by exact Equipartition.target_part_spec P x h)
-  exact h2
+  exact (h1 x).mpr (by exact Equipartition.target_part_spec P x h)
 
 theorem target_part_decomp (x : X) (h : x ∈ P.target) :
     (P.target_part x h).2.1⁻¹ • x ∈ (P.target_part x h).1 := by
@@ -365,14 +363,13 @@ theorem target_part_decomp (x : X) (h : x ∈ P.target) :
   have h3 :  (P.target_part x h).2.1⁻¹ • x =
     (P.target_part x h).2.1⁻¹ • (P.target_part x h).2.1 • y := by
     rw [h2]
-  rw [h3]
-  simpa using h1
+  simpa [h3] using h1
 
 theorem part_eq_target_part_iff_mem (x : X) (hx : x ∈ P.target) (part : Set X × G × Set X)
     (hp : part ∈ P.parts) : x ∈ part.2.2 ↔ P.target_part x hx = part := by
   constructor
   · intro h
-    rw [P.parts_eq_iff_2 _ (target_part_mem_parts P x hx) _ hp]
+    rw [P.parts_eq_iff_2 (target_part_mem_parts P x hx) hp]
     by_contra h1
     have test := Finset.SupIndep.pairwiseDisjoint P.supIndepTarget
     simp [PairwiseDisjoint, Set.Pairwise] at test
@@ -389,7 +386,7 @@ theorem part_eq_source_part_iff_mem (x : X) (hx : x ∈ P.source) (part : Set X 
     (hp : part ∈ P.parts) : x ∈ part.1 ↔ P.source_part x hx = part := by
   constructor
   · intro h
-    rw [P.parts_eq_iff_2 _ (source_part_mem_parts P x hx) _ hp]
+    rw [P.parts_eq_iff_2 (source_part_mem_parts P x hx) hp]
     by_contra h1
     have test := Finset.SupIndep.pairwiseDisjoint P.supIndepSource
     simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
@@ -413,102 +410,52 @@ theorem source_part_eq_target_part (x : X) (h : x ∈ P.source) :
   have eq_iff := P.part_eq_target_part_iff_mem _ h_target s (source_part_mem_parts P x h)
   exact (eq_iff.mp (source_part_decomp P x h)).symm
 
+theorem target_part_eq_source_part (x : X) (h : x ∈ P.target) :
+    P.target_part x h = P.source_part ((P.target_part x h).2.1⁻¹ • x) (mem_of_subset_of_mem
+      (P.subset_source (P.target_part x h) (target_part_mem_parts P x h))
+          (target_part_decomp P x h)) := by
+  let t := P.target_part x h
+  have h_source : t.2.1⁻¹ • x ∈ P.source := by
+    apply mem_of_subset_of_mem (P.subset_source t (target_part_mem_parts P x h))
+        (target_part_decomp P x h)
+  have eq_iff := P.part_eq_source_part_iff_mem _ h_source t (target_part_mem_parts P x h)
+  exact (eq_iff.mp (target_part_decomp P x h)).symm
+
 open scoped Classical in noncomputable def to_equidecomp : Equidecomp X G where
   toFun x := if h : x ∉ P.source then x else (P.source_part x (not_notMem.mp h)).2.1 • x
   invFun x := if h : x ∉ P.target then x else (P.target_part x (not_notMem.mp h)).2.1⁻¹ • x
   source := P.source
   target := P.target
-  map_source' x hx := by simpa [hx] using (mem_of_subset_of_mem
-    (P.subset_target (P.source_part x hx) (source_part_mem_parts P x hx)) (source_part_decomp P x hx))
+  map_source' x hx := by simpa [hx] using (mem_of_subset_of_mem (P.subset_target
+    (P.source_part x hx) (source_part_mem_parts P x hx)) (source_part_decomp P x hx))
   map_target' x hx := by
-    simpa [hx] using (mem_of_subset_of_mem  (P.subset_source (P.target_part x hx) (target_part_mem_parts P x hx)) (target_part_decomp P x hx))
+    simpa [hx] using (mem_of_subset_of_mem  (P.subset_source (P.target_part x hx)
+       (target_part_mem_parts P x hx)) (target_part_decomp P x hx))
   left_inv' x hx := by
-    have h1 : (P.source_part x (not_notMem.mp (of_eq_false (Eq.trans (congrArg Not (eq_true hx)) not_true_eq_false)) )).2.1 • x ∈ P.target := by
+    have h1 : (P.source_part x (not_notMem.mp (of_eq_false (Eq.trans (congrArg Not (eq_true hx))
+        not_true_eq_false)) )).2.1 • x ∈ P.target := by
       refine mem_of_subset_of_mem ?_ (P.source_part_decomp x hx)
-      simp [Equipartition.target]
+      exact P.subset_target _ (source_part_mem_parts P x hx)
     simp [hx, h1, ↓reduceDIte, ← P.source_part_eq_target_part x hx, inv_smul_smul]
-  right_inv' x hx := by sorry
+  right_inv' x hx := by
+    have h1 : (P.target_part x (not_notMem.mp (of_eq_false (Eq.trans (congrArg Not (eq_true hx))
+        not_true_eq_false)))).2.1⁻¹ • x ∈ P.source := by
+      refine mem_of_subset_of_mem ?_ (P.target_part_decomp x hx)
+      exact P.subset_source _ (target_part_mem_parts P x hx)
+    simp [← P.target_part_eq_source_part x hx, smul_inv_smul, h1, hx]
   isDecompOn' := by
     use Finset.image (fun p ↦ p.2.1) P.parts
-    simp [IsDecompOn]
-    sorry
-
-open scoped Classical in def from_partition (source : Set X)
-    (parts : Finpartition source) (witness : parts.parts → G) : Equidecomp X G where
-  toFun x := if x ∉ source then x else witness ⟨x, sorry⟩ • x
-
-
-open scoped Classical in noncomputable def source.to_finpartition {f : Equidecomp X G} :
-  Finpartition f.source where
-  parts := Finset.image (fun g : f.minimal_witness ↦
-              Subtype.val '' {a : f.source | (f.isDecompOn a (Subtype.coe_prop a)).choose = g})
-                  f.minimal_witness.attach
-  supIndep := by
-    rw [Finset.SupIndep]
-    simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, exists_prop, id_eq,
-      Finset.sup_set_eq_biUnion, disjoint_iUnion_right, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂]
-    intro t ht a1 ha h1 i hi
-    rw [Finset.subset_image_iff] at ht
-    rcases ht with ⟨s, ⟨ht1, ht2⟩⟩
-    --- h1
-    rw [← ht2] at h1
-
-    -- hi
-    rw [← ht2] at hi
-    simp at hi
-
-    rcases hi with ⟨a, ⟨⟨h3, hi1⟩, hi2⟩⟩
-
-    subst hi2
-    simp only [Subtype.val_injective, disjoint_image_iff]
-    rw [Set.disjoint_iff]
-    simp
-    rw [Set.eq_empty_iff_forall_notMem]
-    simp only [mem_inter_iff, mem_setOf_eq, not_and, Subtype.forall]
-
-    intro x ha1 h4
-    rw [h4]
-    simp at h1
-    grind
-  sup_parts := by
-    simp only [Finset.sup_image, id_comp, Finset.sup_set_eq_biUnion, Finset.mem_attach, iUnion_true]
-    apply le_antisymm
-    . simp only [le_eq_subset, iUnion_subset_iff, image_subset_iff, Subtype.coe_preimage_self,
-      subset_univ, implies_true]
-    . simp only [le_eq_subset]
-      rw [Set.subset_def]
-      simp only [mem_iUnion, mem_image, mem_setOf_eq, Subtype.exists, exists_and_right,
-        exists_eq_right, exists_prop]
-      intro x hx
-      use f.element_witness x hx
-      apply And.intro
-      . exact element_witness_mem_minimal_witness f x hx
-      . use hx
-        simp_rw [element_witness]
-
-
-  bot_notMem := by
-    --by_cases hC: f.source.Nonempty
-    simp only [bot_eq_empty, Finset.mem_image, Finset.mem_attach, image_eq_empty, true_and,
-      Subtype.exists, exists_prop, not_exists, not_and]
     intro x hx
-    push_neg
-    rw [Set.nonempty_def]
-    simp only [mem_setOf_eq, Subtype.exists]
-    --
+    use (P.source_part x hx).2.1
+    constructor
+    · simp only [Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right]
+      use (P.source_part x hx).1
+      use (P.source_part x hx).2.2
+      exact source_part_mem_parts P x hx
+    · simp [hx]
 
-    rw [Equidecomp.minimal_witness] at hx
-    simp at hx
-    rcases hx with ⟨hx, ⟨a, ⟨ha, ha1⟩⟩⟩
-    use a
-    use ha
-    rw [← ha1]
-    simp_rw [Equidecomp.element_witness]
-
-
+end Equipartition
 
 end Group
-
 
 end Equidecomp
