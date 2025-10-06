@@ -47,8 +47,10 @@ def valuation' : Valuation R ℝ≥0 where
 theorem valuation'_apply (x : R) : valuation' x = ‖x‖₊ := rfl
 
 /-- A nonarchimedean normed ring carries a valuative relation induced by the norm.
-This is a scoped instance. -/
-def toValuativeRel : ValuativeRel R := .ofValuation valuation'
+This is a scoped instance.
+
+See note [reducible non-instances]. -/
+abbrev toValuativeRel : ValuativeRel R := .ofValuation valuation'
 
 open Filter Topology
 
@@ -56,7 +58,7 @@ scoped[NormedField] attribute [instance] NormedField.toValuativeRel
 
 lemma rel_iff_le (x y : R) : x ≤ᵥ y ↔ ‖x‖ ≤ ‖y‖ := Iff.rfl
 
-lemma norm_pos_posSubmonoid (x : (ValuativeRel.posSubmonoid R)) :
+lemma norm_pos_posSubmonoid (x : ValuativeRel.posSubmonoid R) :
     0 < ‖(x : R)‖ := by
   simp
 

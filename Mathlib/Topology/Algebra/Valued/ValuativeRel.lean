@@ -177,6 +177,7 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
   exact (hasBasis_nhds_zero R).comap _
 
 instance (priority := low) : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
+
 instance (priority := low) : IsUltraUniformity R := by
   refine .mk_of_hasBasis hasBasis_uniformity ?_ ?_
   · intros
