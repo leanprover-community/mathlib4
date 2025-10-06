@@ -336,6 +336,9 @@ section IsCompleteMultipartiteBetween
 
 variable {ι : Type*} {parts : ι → Set V}
 
+/-- The condition that the portion of the simple graph `G` _between_ the subsets of vertices
+`parts` is complete multipartite, that is, every vertex in `parts i₁` is adjacent to every vertex
+in `parts i₂`, for all `i₁ ≠ i₂`. -/
 def IsCompleteMultipartiteBetween (G : SimpleGraph V) (parts : ι → Set V) :=
   Pairwise fun ⦃i₁ i₂⦄ ↦ ∀ ⦃v₁⦄, v₁ ∈ parts i₁ → ∀ ⦃v₂⦄, v₂ ∈ parts i₂ → G.Adj v₁ v₂
 
