@@ -111,7 +111,7 @@ lemma map_relationOfHasCoeffs (r : σ) :
 
 @[simp]
 lemma aeval_val_relationOfHasCoeffs (r : σ) :
-    (MvPolynomial.aeval P.val) (P.relationOfHasCoeffs R₀ r) = 0 := by
+    MvPolynomial.aeval P.val (P.relationOfHasCoeffs R₀ r) = 0 := by
   rw [← MvPolynomial.aeval_map_algebraMap R, map_relationOfHasCoeffs, aeval_val_relation]
 
 @[simp]
