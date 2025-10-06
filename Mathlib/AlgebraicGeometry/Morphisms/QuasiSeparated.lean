@@ -376,9 +376,9 @@ lemma exists_of_res_zero_of_qcqs_of_top {X : Scheme} [CompactSpace X] [QuasiSepa
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
-theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]
-    [QuasiSeparatedSpace X] (f : X.presheaf.obj (op ⊤)) :
-    IsIso ((ΓSpec.adjunction.unit.app X).c.app (op (PrimeSpectrum.basicOpen f))) := by
+instance isIso_ΓSpec_adjunction_unit_app_basicOpen
+    [CompactSpace X] [QuasiSeparatedSpace X] (f : Γ(X, ⊤)) :
+    IsIso (X.toSpecΓ.app (PrimeSpectrum.basicOpen f)) := by
   refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ (X.presheaf.map
     (eqToHom (Scheme.toSpecΓ_preimage_basicOpen _ _).symm).op) _ ?_
   rw [ConcreteCategory.isIso_iff_bijective]
