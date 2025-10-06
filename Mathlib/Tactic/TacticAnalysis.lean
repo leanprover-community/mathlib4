@@ -145,26 +145,14 @@ would result in three sequences:
 Similarly, a declaration with multiple `by` blocks results in each of the blocks getting its
 own sequence.
 -/
-def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
+def findTacticSeqs (tree : InfoTree) :
     CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
-  let some _enclosingRange := stx.getRange? |
-    throw (Exception.error stx m!"operating on syntax without range")
   -- Turn the CommandElabM into a surrounding context for traversing the tree.
   let ctx ← read
   let state ← get
   let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
   let out ← tree.visitM (m := CommandElabM) (ctx? := some ctxInfo)
-    (fun _ i _ => do
-      if let some _range := i.stx.getRange? then
-        /-
-        It turns out some syntax replacements change the ranges, so we get misleading answers.
-        Comment out the check for now, since the worst that can happen is we analyze a piece
-        of syntax that belongs to another declaration (that would be analyzed later on anyway).
-        See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/What.20can.20one.20actually.20do.20with.20docs.23Syntax.2EgetRange.3F/with/536203324).
-        -/
-        -- pure <| enclosingRange.start <= range.start && range.stop <= enclosingRange.stop
-        pure true
-      else pure false)
+    (fun _ _ _ => pure true) -- Assumption: a tactic can occur as a child of any piece of syntax.
     (fun ctx i _c cs => do
       let relevantChildren := (cs.filterMap id).toArray
       let childTactics := relevantChildren.filterMap Prod.fst
@@ -197,8 +185,7 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
 
 /-- Run the tactic analysis passes from `configs` on the tactic sequences in `stx`,
 using `trees` to get the infotrees. -/
-def runPasses (configs : Array Pass) (stx : Syntax)
-    (trees : PersistentArray InfoTree) : CommandElabM Unit := do
+def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : CommandElabM Unit := do
   let opts ← getLinterOptions
   let enabledConfigs := configs.filter fun config =>
     -- This can be `none` in the file where the option is declared.
@@ -206,7 +193,7 @@ def runPasses (configs : Array Pass) (stx : Syntax)
   if enabledConfigs.isEmpty then
     return
   for i in trees do
-    for seq in (← findTacticSeqs stx i) do
+    for seq in (← findTacticSeqs i) do
       for config in enabledConfigs do
         config.run seq
 
@@ -224,7 +211,7 @@ def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
   let env ← getEnv
   let configs := (tacticAnalysisExt.getState env).2
   let trees ← getInfoTrees
-  runPasses configs stx trees
+  runPasses configs trees
 
 initialize addLinter tacticAnalysis
 
