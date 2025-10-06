@@ -62,7 +62,7 @@ deduce it for `eLpNorm`, and translate it in terms of `MemLp`.
 this quantity is finite.
 
 Note: this is a purely auxiliary quantity; lemmas about `eLpNorm'` should only be used to
-prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm'` version. -/
+prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm` version. -/
 def eLpNorm' {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
   (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q)
 
@@ -113,14 +113,9 @@ def MemLp {α} {_ : MeasurableSpace α} [TopologicalSpace ε] (f : α → ε) (p
     (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ eLpNorm f p μ < ∞
 
-@[deprecated (since := "2025-02-21")] alias Memℒp := MemLp
-
 theorem MemLp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0∞} (h : MemLp f p μ) :
     AEStronglyMeasurable f μ :=
   h.1
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.aestronglyMeasurable := MemLp.aestronglyMeasurable
 
 lemma MemLp.aemeasurable [MeasurableSpace ε] [TopologicalSpace ε]
     [TopologicalSpace.PseudoMetrizableSpace ε] [BorelSpace ε]

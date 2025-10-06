@@ -193,6 +193,12 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
 
 end UniformConvergence
 
+@[to_additive]
+instance IsUniformGroup.of_compactSpace [UniformSpace β] [Group β] [ContinuousDiv β]
+    [CompactSpace β] :
+    IsUniformGroup β where
+  uniformContinuous_div := CompactSpace.uniformContinuous_of_continuous continuous_div'
+
 end IsUniformGroup
 
 section IsTopologicalGroup
@@ -203,11 +209,9 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.toUniformSpace
 
-@[to_additive]
+@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
 theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  ⟨by
-    apply CompactSpace.uniformContinuous_of_continuous
-    exact continuous_div'⟩
+  inferInstance
 
 variable {G}
 
@@ -220,7 +224,7 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
   contrapose!
-  simp only [Set.mem_preimage, not_not]
+  simp only [Set.mem_preimage]
   rintro (hyp : h' / h ∈ V)
   have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
   exact (eq_of_div_eq_one this).symm
@@ -382,7 +386,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
     intro U h
     rcases mem_closure_iff_nhds.1 ((de.prodMap df).dense (x₀, y₀)) U h with ⟨x, x_in, ⟨z, z_x⟩⟩
     exists z
-    aesop
+    simp_all
   · suffices map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 -
       (fun p : β × δ => φ p.1 p.2) p.1)
         (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))

@@ -209,11 +209,11 @@ lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom n A B fun 
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_zero_iff : IsMulFreimanHom 0 A B f ↔ MapsTo f A B :=
-  ⟨fun h => h.mapsTo, fun h => ⟨h, by aesop⟩⟩
+  ⟨fun h => h.mapsTo, fun h => ⟨h, by simp_all⟩⟩
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanIso_zero_iff : IsMulFreimanIso 0 A B f ↔ BijOn f A B :=
-  ⟨fun h => h.bijOn, fun h => ⟨h, by aesop⟩⟩
+  ⟨fun h => h.bijOn, fun h => ⟨h, by simp_all⟩⟩
 
 @[to_additive (attr := simp) isAddFreimanHom_one_iff]
 lemma isMulFreimanHom_one_iff : IsMulFreimanHom 1 A B f ↔ MapsTo f A B :=

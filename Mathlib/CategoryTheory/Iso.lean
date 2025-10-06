@@ -21,7 +21,7 @@ This file defines isomorphisms between objects of a category.
 - `of_iso` : convert from `Iso` to `IsIso`;
 - standard operations on isomorphisms (composition, inverse etc)
 
-## Notations
+## Notation
 
 - `X ≅ Y` : same as `Iso X Y`;
 - `α ≪≫ β` : composition of two isomorphisms; it is called `Iso.trans`
@@ -107,12 +107,10 @@ theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) 
   ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
 
 /-- Identity isomorphism. -/
-@[refl, simps]
+@[refl, simps (attr := grind =)]
 def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
-
-attribute [grind =] refl_hom refl_inv
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
@@ -122,12 +120,10 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
 /-- Composition of two isomorphisms -/
-@[simps]
+@[simps (attr := grind =)]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
-
-attribute [grind =] trans_hom trans_inv
 
 @[simps]
 instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
@@ -283,14 +279,14 @@ noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
 -- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_hom (f : X ⟶ Y) {_ : IsIso f} : (asIso f).hom = f :=
+theorem asIso_hom (f : X ⟶ Y) [IsIso f] : (asIso f).hom = f :=
   rfl
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
 -- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_inv (f : X ⟶ Y) {_ : IsIso f} : (asIso f).inv = inv f :=
+theorem asIso_inv (f : X ⟶ Y) [IsIso f] : (asIso f).inv = inv f :=
   rfl
 
 namespace IsIso

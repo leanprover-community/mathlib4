@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.Probability.IdentDistrib
 
 /-!
-# Moments and moment generating function
+# Moments and moment-generating function
 
 ## Main definitions
 
@@ -14,20 +14,22 @@ import Mathlib.Probability.IdentDistrib
   measure `μ`, `μ[X^p]`
 * `ProbabilityTheory.centralMoment X p μ`:`p`th central moment of `X` with respect to measure `μ`,
   `μ[(X - μ[X])^p]`
-* `ProbabilityTheory.mgf X μ t`: moment generating function of `X` with respect to measure `μ`,
+* `ProbabilityTheory.mgf X μ t`: moment-generating function of `X` with respect to measure `μ`,
   `μ[exp(t*X)]`
-* `ProbabilityTheory.cgf X μ t`: cumulant generating function, logarithm of the moment generating
+* `ProbabilityTheory.cgf X μ t`: cumulant-generating function, logarithm of the moment-generating
   function
 
 ## Main results
 
 * `ProbabilityTheory.IndepFun.mgf_add`: if two real random variables `X` and `Y` are independent
-  and their mgfs are defined at `t`, then `mgf (X + Y) μ t = mgf X μ t * mgf Y μ t`
+  and their moment-generating functions are defined at `t`, then
+  `mgf (X + Y) μ t = mgf X μ t * mgf Y μ t`
 * `ProbabilityTheory.IndepFun.cgf_add`: if two real random variables `X` and `Y` are independent
-  and their cgfs are defined at `t`, then `cgf (X + Y) μ t = cgf X μ t + cgf Y μ t`
+  and their cumulant-generating functions are defined at `t`, then
+  `cgf (X + Y) μ t = cgf X μ t + cgf Y μ t`
 * `ProbabilityTheory.measure_ge_le_exp_cgf` and `ProbabilityTheory.measure_le_le_exp_cgf`:
   Chernoff bound on the upper (resp. lower) tail of a random variable. For `t` nonnegative such that
-  the cgf exists, `ℙ(ε ≤ X) ≤ exp(- t*ε + cgf X ℙ t)`. See also
+  the cumulant-generating function exists, `ℙ(ε ≤ X) ≤ exp(- t*ε + cgf X ℙ t)`. See also
   `ProbabilityTheory.measure_ge_le_exp_mul_mgf` and
   `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
   of `cgf`.
@@ -48,10 +50,12 @@ variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ
 def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
   μ[X ^ p]
 
+lemma moment_def (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) :
+    moment X p μ = μ[X ^ p] := rfl
+
 /-- Central moment of a real random variable, `μ[(X - μ[X]) ^ p]`. -/
-def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
-  have m := fun (x : Ω) => μ[X] -- Porting note: Lean deems `μ[(X - fun x => μ[X]) ^ p]` ambiguous
-  exact μ[(X - m) ^ p]
+def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
+  μ[(X - fun (_ : Ω) => μ[X]) ^ p]
 
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
@@ -65,6 +69,9 @@ lemma moment_zero_measure : moment X p (0 : Measure Ω) = 0 := by simp [moment]
 theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
   simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
     mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne, not_false_iff]
+
+lemma moment_one (X : Ω → ℝ) (μ : Measure Ω) :
+    moment X 1 μ = μ[X] := by simp [moment]
 
 @[simp]
 lemma centralMoment_zero_measure : centralMoment X p (0 : Measure Ω) = 0 := by
@@ -98,11 +105,11 @@ section MomentGeneratingFunction
 
 variable {t : ℝ}
 
-/-- Moment generating function of a real random variable `X`: `fun t => μ[exp(t*X)]`. -/
+/-- Moment-generating function of a real random variable `X`: `fun t => μ[exp(t*X)]`. -/
 def mgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
   μ[fun ω => exp (t * X ω)]
 
-/-- Cumulant generating function of a real random variable `X`: `fun t => log μ[exp(t*X)]`. -/
+/-- Cumulant-generating function of a real random variable `X`: `fun t => log μ[exp(t*X)]`. -/
 def cgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
   log (mgf X μ t)
 
@@ -242,7 +249,7 @@ lemma mgf_sum_measure {ι : Type*} {μ : ι → Measure Ω}
 lemma mgf_smul_measure (c : ℝ≥0∞) : mgf X (c • μ) t = c.toReal * mgf X μ t := by
   rw [mgf, integral_smul_measure, mgf, smul_eq_mul]
 
-/-- The moment generating function is monotone in the random variable for `t ≥ 0`. -/
+/-- The moment-generating function is monotone in the random variable for `t ≥ 0`. -/
 lemma mgf_mono_of_nonneg {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : 0 ≤ t)
     (htY : Integrable (fun ω ↦ exp (t * Y ω)) μ) :
     mgf X μ t ≤ mgf Y μ t := by
@@ -252,7 +259,7 @@ lemma mgf_mono_of_nonneg {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : 0 ≤ t)
   · rw [mgf_undef htX]
     exact mgf_nonneg
 
-/-- The moment generating function is antitone in the random variable for `t ≤ 0`. -/
+/-- The moment-generating function is antitone in the random variable for `t ≤ 0`. -/
 lemma mgf_anti_of_nonpos {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : t ≤ 0)
     (htX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     mgf Y μ t ≤ mgf X μ t := by
@@ -417,8 +424,7 @@ theorem measure_le_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
     μ.real {ω | X ω ≤ ε} ≤ exp (-t * ε) * mgf X μ t := by
   rw [← neg_neg t, ← mgf_neg, neg_neg, ← neg_mul_neg (-t)]
   refine Eq.trans_le ?_ (measure_ge_le_exp_mul_mgf (-ε) (neg_nonneg.mpr ht) ?_)
-  · congr with ω
-    simp only [Pi.neg_apply, neg_le_neg_iff]
+  · simp only [Pi.neg_apply, neg_le_neg_iff]
   · simp_rw [Pi.neg_apply, neg_mul_neg]
     exact h_int
 
