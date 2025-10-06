@@ -518,6 +518,7 @@ theorem _root_.AddSubgroup.toSubgroup'_closure (S : Set (Additive G)) :
 theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {i : ι} (hp : p i)
     (hK : DirectedOn ((· ≤ ·) on K) {i | p i})
     {x : G} : x ∈ (⨆ i, ⨆ (_h : p i), K i) ↔ ∃ i, p i ∧ x ∈ K i := by
+  -- Could use the `Submonoid` version, but we limit the imports here
   refine ⟨?_, fun ⟨i, hi', hi⟩ ↦ ?_⟩
   · suffices x ∈ closure (⋃ i, ⋃ (_ : p i), (K i : Set G)) → ∃ i, p i ∧ x ∈ K i by
       simpa only [closure_iUnion, closure_eq (K _)] using this
@@ -539,9 +540,10 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (h
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
   · simp only [setOf_true]
-    -- API need for `Function.onFun` and `Function.comp` and with `PLift`
+    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
+    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
-    simp only [mem_univ, true_and, PLift.exists, forall_const]
+    simp only [PLift.exists]
     intro j
     refine (hK i.down j.down).imp ?_
     simp
