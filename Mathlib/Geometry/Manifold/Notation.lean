@@ -243,7 +243,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
-  /-- Attempt to find a model from a `TotalSpace` first by seeing if it is the total space of a 
+  /-- Attempt to find a model from a `TotalSpace` first by seeing if it is the total space of a
   tangent bundle, then by attempting to use any provided `baseInfo`. -/
   fromTotalSpace : TermElabM Expr := do
     match_expr e with
@@ -329,7 +329,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
     let srcI ← findModel src
     if let some es := es then
       let estype ← inferType es
-      /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and 
+      /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
       `estype` are acceptable.
       TODO: consider attempting to coerce `es` to a `Set`. -/
       if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
