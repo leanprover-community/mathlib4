@@ -170,7 +170,6 @@ scoped elab:max "T% " t:term:arg : term => do
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
         -- TODO: can `tgt` depend on `x` in a way that is not a function application?
         -- Check that `x` is not a bound variable in `tgt`!
-        -- xxx: is this check fine or overzealous?
         if tgtHasLooseBVars then
           throwError "Attempted to fall back to creating a section of the trivial bundle out of \
             ({e} : {etype}) as a non-dependent function, but return type {tgt} depends on the bound
