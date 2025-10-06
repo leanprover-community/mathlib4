@@ -34,6 +34,14 @@ A graph is complete multipartite iff non-adjacency is transitive.
 * `SimpleGraph.completeEquipartiteGraph`: the **complete equipartite graph** in parts of *equal*
   size such that two vertices are adjacent if and only if they are in different parts.
 
+* `SimpleGraph.IsCompleteMultipartiteBetween G parts` is the condition that the portion of the
+  simple graph `G` _between_ the subsets of vertices `parts` is complete multipartite, that is,
+  every vertex in `parts i₁` is adjacent to every vertex in `parts i₂`, for all `i₁ ≠ i₂`.
+
+* `SimpleGraph.CompleteEquipartiteSubgraph G r t` is a complete equipartite subgraph, that is,
+  `r` subsets of vertices each of size `t` such that the vertices in distinct subsets are
+  adjacent.
+
 ## Implementation Notes
 
 The definition of `completeEquipartiteGraph` is similar to `completeMultipartiteGraph`
