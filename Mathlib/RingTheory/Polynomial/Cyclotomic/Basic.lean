@@ -650,7 +650,7 @@ theorem separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
     (cyclotomic n K).Separable :=
   .of_dvd (separable_X_pow_sub_C 1 NeZero.out one_ne_zero) (cyclotomic.dvd_X_pow_sub_one n K)
 
-theorem squarefree_cyclotomic {K : Type*} [Field K] {n : ℕ} [NeZero (n : K)] :
+theorem squarefree_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
     Squarefree (cyclotomic n K) :=
  (separable_cyclotomic n K).squarefree
 
