@@ -32,7 +32,7 @@ larger space of test functions.
 
 - `ContDiffMapSupportedIn E F n K`: the type of `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
-- `ContDiffMapSupportedIn.iteratedFDerivₗ'`: wrapper as a `𝕜`-linear maps for `iteratedFDeriv` on
+- `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`: wrapper as a `𝕜`-linear maps for `iteratedFDeriv` on
   `ContDiffMapSupportedIn E F n K`, as a map into
   `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) (n-i) K`.
 
@@ -337,19 +337,19 @@ lemma iteratedFDerivWithOrder_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)}
 
 /-- Wrapper for iteratedFDerivWithOrder as a `𝕜`-linear map. -/
 @[simps]
-noncomputable def iteratedFDerivₗ' (i : ℕ) :
+noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) where
   toFun f := f.iteratedFDerivWithOrder i
   map_add' _ _ := iteratedFDerivWithOrder_add i
   map_smul' _ _ := iteratedFDerivWithOrder_smul 𝕜 i
 
-lemma iteratedFDerivₗ'_eq_iteratedFDerivWithOrder (i : ℕ) :
-  (iteratedFDerivₗ' 𝕜 i : 𝓓^{n}_{K}(E, F) → _) = (iteratedFDerivWithOrder i : _) := by
+lemma iteratedFDerivWithOrderₗ_eq_iteratedFDerivWithOrder (i : ℕ) :
+  (iteratedFDerivWithOrderₗ 𝕜 i : 𝓓^{n}_{K}(E, F) → _) = (iteratedFDerivWithOrder i : _) := by
   congr
 
 lemma iteratedFDerivWithOrder_zero (i : ℕ) :
     (0 : 𝓓^{n}_{K}(E, F)).iteratedFDerivWithOrder i = 0 :=
-  map_zero (iteratedFDerivₗ' ℝ i)
+  map_zero (iteratedFDerivWithOrderₗ ℝ i)
 
 /-- The composition of `ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ` and
 `ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
@@ -357,7 +357,7 @@ of maps is used a lot for defining and using the topology on `ContDiffMapSupport
 takes a long time to infer the type of `toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
 noncomputable def iteratedFDeriv_toBoundedContinuousFunctionₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
-  toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ' 𝕜 i
+  toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 i
 
 section Topology
 
