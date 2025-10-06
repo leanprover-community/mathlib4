@@ -31,7 +31,8 @@ local infixr:81 " ◁ " => MonoidalCategory.whiskerLeftIso
 local infixl:81 " ▷ " => MonoidalCategory.whiskerRightIso
 
 /-- The composition of the normalizing isomorphisms `η_f : p ⊗ f ≅ pf` and `η_g : pf ⊗ g ≅ pfg`. -/
-@[to_additive normalizeIsoComp_add]
+@[to_additive normalizeIsoComp_add
+/-- The composition of the normalizing isomorphisms `η_f : p ⊕ f ≅ pf` and `η_g : pf ⊕ g ≅ pfg`. -/]
 abbrev normalizeIsoComp {p f g pf pfg : C} (η_f : p ⊗ f ≅ pf) (η_g : pf ⊗ g ≅ pfg) :=
   (α_ _ _ _).symm ≪≫ whiskerRightIso η_f g ≪≫ η_g
 
