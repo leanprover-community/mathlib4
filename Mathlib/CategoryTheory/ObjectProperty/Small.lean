@@ -15,7 +15,7 @@ In this file, given `P : ObjectProperty C`, we define
 
 -/
 
-universe w v u
+universe w t v u
 
 namespace CategoryTheory.ObjectProperty
 
@@ -177,5 +177,8 @@ instance (P : ObjectProperty C) [LocallySmall.{w} C]
   have := (isEquivalence_ιOfLE_iff h₁).2 h₂
   rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
   exact essentiallySmall_of_small_of_locallySmall _
+
+instance {ι : Type t} [Small.{w} ι] (X : ι → C) : ObjectProperty.Small.{w} (ofObj X) :=
+  small_of_surjective (f := fun i ↦ ⟨X i, ⟨i⟩⟩) (by rintro ⟨_, ⟨i⟩⟩; exact ⟨i, rfl⟩)
 
 end CategoryTheory.ObjectProperty

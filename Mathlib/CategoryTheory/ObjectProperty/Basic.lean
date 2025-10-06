@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Iso
+import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 
 /-!
@@ -65,6 +66,51 @@ class Is (P : ObjectProperty C) (X : C) : Prop where
 lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.is_iff]
 
 lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
+
+section
+
+variable {ι : Type u'} (X : ι → C)
+
+/-- The property of objects that is satisfied by the `X i` for a family
+of objects `X : ι : C`. -/
+inductive ofObj : ObjectProperty C
+  | mk (i : ι) : ofObj (X i)
+
+@[simp]
+lemma prop_ofObj (i : ι) : ofObj X (X i) := ⟨i⟩
+
+lemma ofObj_iff (Y : C) : ofObj X Y ↔ ∃ i, X i = Y := by
+  constructor
+  · rintro ⟨i⟩
+    exact ⟨i, rfl⟩
+  · rintro ⟨i, rfl⟩
+    exact ⟨i⟩
+
+lemma ofObj_le_iff (P : ObjectProperty C) :
+    ofObj X ≤ P ↔ ∀ i, P (X i) :=
+  ⟨fun h i ↦ h _ (by simp), fun h ↦ by rintro _ ⟨i⟩; exact h i⟩
+
+lemma ofObj_eq_setRange : ofObj X = Set.range X := by
+  ext Y
+  change _ ↔ Y ∈ Set.range X
+  simp [ofObj_iff]
+
+end
+
+abbrev singleton (X : C) : ObjectProperty C := ofObj (fun (_ : Unit) ↦ X)
+
+@[simp]
+lemma singleton_iff (X Y : C) : singleton X Y ↔ X = Y := by simp [ofObj_iff]
+
+@[simp]
+lemma singleton_le_iff {X : C} {P : ObjectProperty C} :
+    singleton X ≤ P ↔ P X := by
+  simp [ofObj_le_iff]
+
+lemma singleton_eq_setSingleton (X : C) :
+    singleton X = ({X} : Set C) := by
+  ext Y
+  simpa using eq_comm
 
 end ObjectProperty
 

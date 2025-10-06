@@ -27,18 +27,21 @@ instance : IsCardinalPresentable PUnit.{u + 1} κ where
           invFun x _ := x })
     exact preservesColimitsOfShape_of_natIso e.symm
 
-lemma isStrongGenerator_punit : IsStrongGenerator {PUnit.{u + 1}} := by
+lemma isStrongGenerator_punit :
+    IsStrongGenerator (ObjectProperty.singleton (PUnit.{u + 1})) := by
   rw [isStrongGenerator_iff]
-  refine ⟨by simpa using isSeparator_punit, fun _ _ i hi₁ hi₂ ↦ ?_⟩
-  rw [mono_iff_injective] at hi₁
-  rw [isIso_iff_bijective]
-  refine ⟨hi₁, fun y ↦ ?_⟩
-  obtain ⟨f, hf⟩ := hi₂ ⟨PUnit, by simp⟩ (fun _ ↦ y)
-  exact ⟨f .unit, congr_fun hf .unit⟩
+  refine ⟨?_, fun _ _ i hi₁ hi₂ ↦ ?_⟩
+  · simpa only [ObjectProperty.singleton_eq_setSingleton] using isSeparator_punit
+  · rw [mono_iff_injective] at hi₁
+    rw [isIso_iff_bijective]
+    refine ⟨hi₁, fun y ↦ ?_⟩
+    obtain ⟨f, hf⟩ := hi₂ ⟨PUnit, ⟨.unit⟩⟩ (fun _ ↦ y)
+    exact ⟨f .unit, congr_fun hf .unit⟩
 
 instance : IsCardinalLocallyPresentable (Type u) κ := by
   rw [IsCardinalLocallyPresentable.iff_exists_isStrongGenerator]
-  exact ⟨{PUnit}, inferInstance, isStrongGenerator_punit, by rintro ⟨_, rfl⟩; infer_instance⟩
+  exact ⟨.singleton PUnit, inferInstance, isStrongGenerator_punit,
+    by simp [isCardinalPresentable_iff]; infer_instance⟩
 
 instance : IsLocallyPresentable.{u} (Type u) where
   exists_cardinal := ⟨_, Cardinal.fact_isRegular_aleph0, inferInstance⟩
