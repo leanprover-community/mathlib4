@@ -205,9 +205,11 @@ lemma universally_isLocalAtSource (P : MorphismProperty Scheme)
     exact IsLocalAtSource.comp (hf _ _ _ (IsPullback.of_hasPullback ..)) _
   · apply MorphismProperty.universally_mk'
     intro T g _
-    rw [IsLocalAtSource.iff_of_openCover (P := P) (𝒰.pullbackCover <| pullback.snd g f)]
+    rw [IsLocalAtSource.iff_of_openCover (P := P) (𝒰.pullback₁ <| pullback.snd g f)]
     intro i
-    rw [𝒰.pullbackCover_f, ← pullbackLeftPullbackSndIso_hom_fst, P.cancel_left_of_respectsIso]
+    dsimp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+      PreZeroHypercover.pullback₁_X, PreZeroHypercover.pullback₁_f]
+    rw [← pullbackLeftPullbackSndIso_hom_fst, P.cancel_left_of_respectsIso]
     exact hf i _ _ _ (IsPullback.of_hasPullback ..)
 
 end Universally
