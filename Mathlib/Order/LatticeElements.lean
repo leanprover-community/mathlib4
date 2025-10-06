@@ -35,8 +35,12 @@ Defines distinguished sets of elements within a `Lattice` and considers their pr
 lattice, distributive, neutral
 -/
 
-
 variable {α : Type*}
+
+def const_sup_left [SemilatticeSup α] (a : α) : SupHom α α := {
+  toFun := fun x => a ⊔ x
+  map_sup' := sup_sup_distrib_left a
+}
 
 /-- Element is distributive -/
 def IsDistrib [Lattice α] (a : α) : Prop :=
@@ -54,8 +58,7 @@ variable [Lattice α]
 
 /-- Grätzer III.2, Theorem 2 1 → 2 -/
 def const_sup_left_of_isDistrib {a : α} (h : IsDistrib a) : LatticeHom α α := {
-  toFun := fun x => a ⊔ x
-  map_sup' := sup_sup_distrib_left a
+  __ := const_sup_left a
   map_inf' := h
 }
 
