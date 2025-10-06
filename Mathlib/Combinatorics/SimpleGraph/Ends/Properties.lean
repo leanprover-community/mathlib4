@@ -24,7 +24,7 @@ instance [Finite V] : IsEmpty G.end where
     cases nonempty_fintype V
     obtain ⟨v, h⟩ := (s <| Opposite.op Finset.univ).nonempty
     exact Set.disjoint_iff.mp (s _).disjoint_right
-        ⟨by simp only [Opposite.unop_op, Finset.coe_univ, Set.mem_univ], h⟩
+        ⟨by simp only [Finset.coe_univ, Set.mem_univ], h⟩
 
 /-- The `componentCompl`s chosen by an end are all infinite. -/
 lemma end_componentCompl_infinite (e : G.end) (K : (Finset V)ᵒᵖ) :
@@ -33,7 +33,7 @@ lemma end_componentCompl_infinite (e : G.end) (K : (Finset V)ᵒᵖ) :
   change Opposite.unop K ⊆ Opposite.unop (Opposite.op L) at h
   exact ⟨e.val (Opposite.op L), (e.prop (CategoryTheory.opHomOfLE h))⟩
 
-instance compononentComplFunctor_nonempty_of_infinite [Infinite V] (K : (Finset V)ᵒᵖ) :
+instance componentComplFunctor_nonempty_of_infinite [Infinite V] (K : (Finset V)ᵒᵖ) :
     Nonempty (G.componentComplFunctor.obj K) := G.componentCompl_nonempty_of_infinite K.unop
 
 instance componentComplFunctor_finite [LocallyFinite G] [Fact G.Preconnected]

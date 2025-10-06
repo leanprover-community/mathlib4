@@ -50,7 +50,7 @@ theorem val_comp_inclusion (h : s ⊆ t) : Subtype.val ∘ inclusion h = Subtype
   rfl
 
 theorem inclusion_injective (h : s ⊆ t) : Injective (inclusion h)
-  | ⟨_, _⟩, ⟨_, _⟩ => Subtype.ext_iff_val.2 ∘ Subtype.ext_iff_val.1
+  | ⟨_, _⟩, ⟨_, _⟩ => Subtype.ext_iff.2 ∘ Subtype.ext_iff.1
 
 theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y ↔ x = y :=
   (inclusion_injective h).eq_iff
@@ -59,7 +59,7 @@ theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
     (h_surj : Function.Surjective (inclusion h)) : s = t := by
   refine Set.Subset.antisymm h (fun x hx => ?_)
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
-  exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
+  grind
 
 theorem inclusion_le_inclusion [LE α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x ≤ inclusion h y ↔ x ≤ y := Iff.rfl

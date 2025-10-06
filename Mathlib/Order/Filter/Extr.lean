@@ -81,8 +81,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
 open Set Filter Relator
 
-open Filter
-
 section Preorder
 
 variable [Preorder β] [Preorder γ]

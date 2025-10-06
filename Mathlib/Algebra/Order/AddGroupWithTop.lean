@@ -3,7 +3,6 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.CharZero.Defs
@@ -28,8 +27,8 @@ variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    OrderTop α where
+class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
+    AddCommMonoid α, LinearOrder α, IsOrderedAddMonoid α, OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
 
@@ -40,10 +39,10 @@ class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddComm
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 
-instance WithTop.linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
+instance WithTop.linearOrderedAddCommMonoidWithTop
+    [AddCommMonoid α] [LinearOrder α] [IsOrderedAddMonoid α] :
     LinearOrderedAddCommMonoidWithTop (WithTop α) :=
-  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
-    top_add' := WithTop.top_add }
+  { top_add' := WithTop.top_add }
 
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α]
@@ -64,20 +63,23 @@ open Function
 
 namespace LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
-
-instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
+instance instNeg [AddCommGroup α] : Neg (WithTop α) where
+  neg := WithTop.map fun a : α => -a
 
 /-- If `α` has subtraction, we can extend the subtraction to `WithTop α`, by
 setting `x - ⊤ = ⊤` and `⊤ - x = ⊤`. This definition is only registered as an instance on linearly
 ordered additive commutative groups, to avoid conflicting with the instance `WithTop.instSub` on
 types with a bottom element. -/
-protected def sub : ∀ _ _ : WithTop α, WithTop α
+protected def sub [AddCommGroup α] :
+    WithTop α → WithTop α → WithTop α
   | _, ⊤ => ⊤
   | ⊤, (x : α) => ⊤
   | (x : α), (y : α) => (x - y : α)
 
-instance instSub : Sub (WithTop α) where sub := WithTop.LinearOrderedAddCommGroup.sub
+instance instSub [AddCommGroup α] : Sub (WithTop α) where
+  sub := WithTop.LinearOrderedAddCommGroup.sub
+
+variable [AddCommGroup α]
 
 @[simp, norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
@@ -100,12 +102,12 @@ theorem sub_top {a : WithTop α} : a - ⊤ = ⊤ := by cases a <;> rfl
 lemma sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ (a = ⊤ ∨ b = ⊤) := by
   cases a <;> cases b <;> simp [← coe_sub]
 
-instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
+instance [LinearOrder α] [IsOrderedAddMonoid α] : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
-  __ := Option.nontrivial
+  __ := WithTop.nontrivial
   sub_eq_add_neg a b := by
     cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg]
-  neg_top := Option.map_none
+  neg_top := WithTop.map_top _
   zsmul := zsmulRec
   add_neg_cancel := by
     rintro (a | a) ha

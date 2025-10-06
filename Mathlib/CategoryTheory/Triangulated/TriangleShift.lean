@@ -72,7 +72,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
         simp only [one_smul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
           comp_id, NatTrans.naturality, Functor.id_map]))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The canonical isomorphism
 `Triangle.shiftFunctor C n ≅ Triangle.shiftFunctor C a ⋙ Triangle.shiftFunctor C b`
@@ -104,7 +104,7 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         erw [← NatTrans.naturality_assoc]
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- Rotating triangles three times identifies with the shift by `1`. -/
 noncomputable def rotateRotateRotateIso :
@@ -112,7 +112,7 @@ noncomputable def rotateRotateRotateIso :
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) (by simp))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- Rotating triangles three times backwards identifies with the shift by `-1`. -/
 noncomputable def invRotateInvRotateInvRotateIso :
@@ -124,7 +124,7 @@ noncomputable def invRotateInvRotateInvRotateIso :
       (by
         dsimp [shiftFunctorCompIsoId]
         simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The inverse of the rotation of triangles can be expressed using a double
 rotation and the shift by `-1`. -/
@@ -133,16 +133,16 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
   calc
     invRotate C ≅ invRotate C ⋙ 𝟭 _ := (Functor.rightUnitor _).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 0 :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
+          Functor.isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 1 ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
+          Functor.isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
     _ ≅ invRotate C ⋙ (rotate C ⋙ rotate C ⋙ rotate C) ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (isoWhiskerRight (rotateRotateRotateIso C).symm _)
+          Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight (rotateRotateRotateIso C).symm _)
     _ ≅ (invRotate C ⋙ rotate C) ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Functor.associator _ _ _ ≪≫
-            isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ (Functor.associator _ _ _).symm
+          Functor.isoWhiskerLeft _ (Functor.associator _ _ _ ≪≫
+            Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ (Functor.associator _ _ _).symm
     _ ≅ 𝟭 _ ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerRight (triangleRotation C).counitIso _
+          Functor.isoWhiskerRight (triangleRotation C).counitIso _
     _ ≅ _ := Functor.leftUnitor _
 
 namespace Triangle

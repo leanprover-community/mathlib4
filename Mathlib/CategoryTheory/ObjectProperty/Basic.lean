@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Iso
+import Mathlib.Order.Basic
 
 /-!
 # Properties of objects in a category
@@ -16,9 +17,9 @@ for predicates `C → Prop`.
 ## TODO
 
 * refactor the file `Limits.FullSubcategory` in order to rename `ClosedUnderLimitsOfShape`
-as `ObjectProperty.IsClosedUnderLimitsOfShape` (and make it a type class)
+  as `ObjectProperty.IsClosedUnderLimitsOfShape` (and make it a type class)
 * refactor the file `Triangulated.Subcategory` in order to make it a type class
-regarding terms in `ObjectProperty C` when `C` is pretriangulated
+  regarding terms in `ObjectProperty C` when `C` is pretriangulated
 
 -/
 
@@ -33,6 +34,9 @@ abbrev ObjectProperty (C : Type u) [Category.{v} C] : Type u := C → Prop
 namespace ObjectProperty
 
 variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
+
+lemma le_def {P Q : ObjectProperty C} :
+    P ≤ Q ↔ ∀ (X : C), P X → Q X := Iff.rfl
 
 /-- The inverse image of a property of objects by a functor. -/
 def inverseImage (P : ObjectProperty D) (F : C ⥤ D) : ObjectProperty C :=

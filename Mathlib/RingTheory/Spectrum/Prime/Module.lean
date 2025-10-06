@@ -23,8 +23,11 @@ import Mathlib.RingTheory.Support
 variable {R A M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   [CommRing A] [Algebra R A] [Module A M]
 
-
-section support
+variable (R M) in
+lemma IsLocalRing.closedPoint_mem_support [IsLocalRing R] [Nontrivial M] :
+    IsLocalRing.closedPoint R ∈ Module.support R M := by
+  obtain ⟨p, hp⟩ := (Module.nonempty_support_iff (R := R)).mpr ‹_›
+  exact Module.mem_support_mono le_top hp
 
 /-- `M[1/f] = 0` if and only if `D(f) ∩ Supp M = 0`. -/
 lemma LocalizedModule.subsingleton_iff_disjoint {f : R} :
@@ -35,7 +38,7 @@ lemma LocalizedModule.subsingleton_iff_disjoint {f : R} :
 
 lemma Module.stableUnderSpecialization_support :
     StableUnderSpecialization (Module.support R M) := by
-  intros x y e H
+  intro x y e H
   rw [mem_support_iff_exists_annihilator] at H ⊢
   obtain ⟨m, hm⟩ := H
   exact ⟨m, hm.trans ((PrimeSpectrum.le_iff_specializes _ _).mpr e)⟩
@@ -52,5 +55,3 @@ lemma Module.support_subset_preimage_comap [IsScalarTower R A M] :
     ne_eq, not_imp_not] at hx ⊢
   obtain ⟨m, hm⟩ := hx
   exact ⟨m, fun r e ↦ hm _ (by simpa)⟩
-
-end support

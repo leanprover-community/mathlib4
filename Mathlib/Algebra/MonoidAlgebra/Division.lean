@@ -3,6 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
@@ -158,7 +159,7 @@ theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
 theorem divOf_add_modOf [IsCancelAdd G] (x : k[G]) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
   ext g'
-  rw [Finsupp.add_apply] -- Porting note: changed from `simp_rw` which can't see through the type
+  rw [Finsupp.add_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   swap
   · rw [modOf_apply_of_not_exists_add x _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h,

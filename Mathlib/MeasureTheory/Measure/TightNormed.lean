@@ -142,7 +142,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h
   by_cases hy : y = 0
-  · simp only [hy, inner_zero_left, abs_zero]
+  · simp only [hy, inner_zero_left]
     refine (tendsto_congr' ?_).mpr tendsto_const_nhds
     filter_upwards [eventually_ge_atTop 0] with r hr
     simp [not_lt.mpr hr]

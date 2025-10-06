@@ -29,7 +29,7 @@ Kleene star.
 
 ## Notation
 
-`a∗` is notation for `kstar a` in locale `Computability`.
+`a∗` is notation for `kstar a` in scope `Computability`.
 
 ## References
 
@@ -155,18 +155,18 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
-    OrderedAddCommMonoid α :=
-  { ‹IdemSemiring α› with
-    add_le_add_left := fun a b hbc c ↦ by
+instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
+    IsOrderedAddMonoid α :=
+  { add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
-      exact sup_le_sup_left hbc _ }
+      grw [hbc] }
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
-    CanonicallyOrderedAdd α :=
-  { exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
-    le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
+    CanonicallyOrderedAdd α where
+  exists_add_of_le h := ⟨_, h.add_eq_right.symm⟩
+  le_add_self a b := add_eq_left_iff_le.1 <| by rw [add_assoc, add_idem]
+  le_self_add a b := add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem]
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=

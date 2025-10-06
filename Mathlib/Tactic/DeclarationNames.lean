@@ -47,3 +47,9 @@ def getAliasSyntax {m} [Monad m] [MonadResolveName m] (stx : Syntax) : m (Array 
       aliases := aliases.push
         (mkIdentFrom (.ofRange (idStx.raw.getRange?.getD default)) (currNamespace ++ id))
   return aliases
+
+/-- Used for linters which use `0` instead of `false` for disabling. -/
+def logLint0Disable {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
+    (linterOption : Lean.Option Nat) (stx : Syntax) (msg : MessageData) : m Unit :=
+  let disable := .note m!"This linter can be disabled with `set_option {linterOption.name} 0`"
+  logWarningAt stx (.tagged linterOption.name m!"{msg}{disable}")

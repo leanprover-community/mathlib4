@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
 
@@ -15,6 +16,7 @@ This file provides lemmas about the interaction between infinite sums and multip
 ## Main results
 
 * `tsum_mul_tsum_eq_tsum_sum_antidiagonal`: Cauchy product formula
+* `tprod_one_add`: expanding `∏' i : ι, (1 + f i)` as infinite sum.
 -/
 
 open Filter Finset Function
@@ -42,10 +44,10 @@ section tsum
 
 variable [T2Space α]
 
-theorem Summable.tsum_mul_left (a) (hf : Summable f) : ∑' i, a * f i = a * ∑' i, f i :=
+protected theorem Summable.tsum_mul_left (a) (hf : Summable f) : ∑' i, a * f i = a * ∑' i, f i :=
   (hf.hasSum.mul_left _).tsum_eq
 
-theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' i, f i) * a :=
+protected theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' i, f i) * a :=
   (hf.hasSum.mul_right _).tsum_eq
 
 theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) := by
@@ -160,11 +162,13 @@ theorem HasSum.mul (hf : HasSum f s) (hg : HasSum g t)
   (hf.mul_eq hg hu).symm ▸ hu
 
 /-- Product of two infinites sums indexed by arbitrary types.
-    See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
-theorem tsum_mul_tsum (hf : Summable f) (hg : Summable g)
+See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
+protected theorem Summable.tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ ↦ f x.1 * g x.2) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × κ, f z.1 * g z.2 :=
   hf.hasSum.mul_eq hg.hasSum hfg.hasSum
+
+@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum := Summable.tsum_mul_tsum
 
 end tsum_mul_tsum
 
@@ -191,7 +195,7 @@ variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : A → α}
 `(n, k, l) : Σ (n : ℕ), antidiagonal n ↦ f k * g l` is summable. -/
 theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
     (Summable fun x : A × A ↦ f x.1 * g x.2) ↔
-      Summable fun x : Σn : A, antidiagonal n ↦ f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
+      Summable fun x : Σ n : A, antidiagonal n ↦ f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
   Finset.sigmaAntidiagonalEquivProd.summable_iff.symm
 
 variable [T3Space α] [IsTopologicalSemiring α]
@@ -208,14 +212,17 @@ by summing on `Finset.antidiagonal`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm` if `f` and `g` are absolutely
 summable. -/
-theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f) (hg : Summable g)
-    (hfg : Summable fun x : A × A ↦ f x.1 * g x.2) :
+protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f)
+    (hg : Summable g) (hfg : Summable fun x : A × A ↦ f x.1 * g x.2) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 := by
   conv_rhs => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype]
-  rw [tsum_mul_tsum hf hg hfg, ← sigmaAntidiagonalEquivProd.tsum_eq (_ : A × A → α)]
-  exact
-    tsum_sigma' (fun n ↦ (hasSum_fintype _).summable)
-      (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg)
+  rw [hf.tsum_mul_tsum hg hfg, ← sigmaAntidiagonalEquivProd.tsum_eq (_ : A × A → α)]
+  exact (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg).tsum_sigma'
+    (fun n ↦ (hasSum_fintype _).summable)
+
+
+@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_antidiagonal :=
+  Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal
 
 end HasAntidiagonal
 
@@ -234,12 +241,45 @@ by summing on `Finset.range`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm` if `f` and `g` are absolutely summable.
 -/
-theorem tsum_mul_tsum_eq_tsum_sum_range (hf : Summable f) (hg : Summable g)
+protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_range (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ℕ × ℕ ↦ f x.1 * g x.2) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k ∈ range (n + 1), f k * g (n - k) := by
   simp_rw [← Nat.sum_antidiagonal_eq_sum_range_succ fun k l ↦ f k * g l]
-  exact tsum_mul_tsum_eq_tsum_sum_antidiagonal hf hg hfg
+  exact hf.tsum_mul_tsum_eq_tsum_sum_antidiagonal hg hfg
+
+@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_range :=
+  Summable.tsum_mul_tsum_eq_tsum_sum_range
 
 end Nat
 
 end CauchyProduct
+
+section ProdOneSum
+
+/-!
+### Infinite product of `1 + f i`
+
+This section extends `Finset.prod_one_add` to the infinite product
+`∏' i : ι, (1 + f i) = ∑' s : Finset ι, ∏ i ∈ s, f i`.
+-/
+
+variable [CommSemiring α] [TopologicalSpace α] {f : ι → α}
+
+theorem hasProd_one_add_of_hasSum_prod {a : α} (h : HasSum (∏ i ∈ ·, f i) a) :
+    HasProd (1 + f ·) a := by
+  simp_rw [HasProd, prod_one_add]
+  exact h.comp tendsto_finset_powerset_atTop_atTop
+
+/-- `∏' i : ι, (1 + f i)` is convergent if `∑' s : Finset ι, ∏ i ∈ s, f i` is convergent.
+
+For complete normed ring, see also `multipliable_one_add_of_summable`. -/
+theorem multipliable_one_add_of_summable_prod (h : Summable (∏ i ∈ ·, f i)) :
+    Multipliable (1 + f ·) := by
+  obtain ⟨a, h⟩ := h
+  exact ⟨a, hasProd_one_add_of_hasSum_prod h⟩
+
+theorem tprod_one_add [T2Space α] (h : Summable (∏ i ∈ ·, f i)) :
+    ∏' i, (1 + f i) = ∑' s, ∏ i ∈ s, f i :=
+  HasProd.tprod_eq <| hasProd_one_add_of_hasSum_prod h.hasSum
+
+end ProdOneSum

@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Int.GCD
@@ -22,8 +23,23 @@ when needed. To construct instances for concrete numbers,
 
 variable {R K : Type*}
 
+/-- When two is invertible, every element is `Even`. -/
+@[simp]
+theorem Even.all [Semiring R] [Invertible (2 : R)] (a : R) : Even a :=
+  .of_isUnit_two (isUnit_of_invertible _) _
+
+/-- When two is invertible in a ring, every element is `Odd`. -/
+@[simp low]
+theorem Odd.all [Ring R] [Invertible (2 : R)] (a : R) : Odd a :=
+  .of_isUnit_two (isUnit_of_invertible _) _
+
 section Ring
 variable [Ring R] {p : ℕ} [CharP R p]
+
+theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : R)] [Nontrivial R] :
+    ¬ringChar R ∣ t := by
+  rw [← ringChar.spec, ← Ne]
+  exact Invertible.ne_zero (t : R)
 
 theorem CharP.intCast_mul_natCast_gcdA_eq_gcd (n : ℕ) :
     (n * n.gcdA p : R) = n.gcd p := by
@@ -67,34 +83,28 @@ theorem CharP.isUnit_intCast_iff {z : ℤ} (hp : p.Prime) : IsUnit (z : R) ↔ �
 
 end Ring
 
-section Field
+section Semifield
+variable [Semifield K]
 
-variable [Field K]
-
-/-- A natural number `t` is invertible in a field `K` if the characteristic of `K` does not divide
-`t`. -/
+/-- A natural number `t` is invertible in a semifield `K` if the characteristic of `K` does not
+divide `t`. -/
 def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
 
-theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t := by
-  rw [← ringChar.spec, ← Ne]
-  exact Invertible.ne_zero (t : K)
-
-/-- A natural number `t` is invertible in a field `K` of characteristic `p` if `p` does not divide
-`t`. -/
+/-- A natural number `t` is invertible in a semifield `K` of characteristic `p` if `p` does not
+divide `t`. -/
 def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((CharP.cast_eq_zero_iff K p t).mp h)
 
--- warning: this could potentially loop with `Invertible.ne_zero` - if there is weird type-class
+-- warning: this could potentially loop with `Invertible.ne_zero` - if there are weird type-class
 -- loops, watch out for that.
 instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) :=
   invertibleOfNonzero <| NeZero.out
 
-end Field
+end Semifield
 
-section DivisionRing
-
-variable [DivisionRing K] [CharZero K]
+section DivisionSemiring
+variable [DivisionSemiring K] [CharZero K]
 
 instance invertibleSucc (n : ℕ) : Invertible (n.succ : K) :=
   invertibleOfNonzero (Nat.cast_ne_zero.mpr (Nat.succ_ne_zero _))
@@ -111,4 +121,4 @@ instance invertibleTwo : Invertible (2 : K) :=
 instance invertibleThree : Invertible (3 : K) :=
   invertibleOfNonzero (mod_cast (by decide : 3 ≠ 0))
 
-end DivisionRing
+end DivisionSemiring
