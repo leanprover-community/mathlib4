@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Util.WhatsNew
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # `ToExpr` instances for Mathlib
@@ -12,6 +13,8 @@ import Mathlib.Util.WhatsNew
 namespace Mathlib
 open Lean
 
+#adaptation_note /-- 2025-10-06 https://github.com/leanprover/lean4/issues/10678
+  Added `docBlame` nolint for `Mathlib.instToExprULift_mathlib.toExpr` -/
 set_option autoImplicit true in
 deriving instance ToExpr for ULift
 
