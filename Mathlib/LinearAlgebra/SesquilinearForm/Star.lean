@@ -3,19 +3,22 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.PosDef
-import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+
+/-!
+# Sesquilinear forms over a star ring
+
+This file provides some properties about sesquilinear forms `M →ₗ⋆[R] M →ₗ[R] R` when `R` is a
+`StarRing`.
+-/
 
 open Module LinearMap
 
-variable {R M n m : Type*} [CommSemiring R] [StarRing R]
-variable [AddCommMonoid M] [Module R M]
-variable {σ : R →+* R} [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
-variable {B C : M →ₗ⋆[R] M →ₗ[R] R} (b : Basis n R M)
+variable {R M n : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid M] [Module R M]
+  [Fintype n] [DecidableEq n]
+  {B : M →ₗ⋆[R] M →ₗ[R] R} (b : Basis n R M)
 
-lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
+lemma LinearMap.isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     IsSymm B ↔ ∀ i j, star (B (b i) (b j)) = B (b j) (b i) where
   mp h i j := h.eq _ _
   mpr := by
@@ -49,7 +52,8 @@ lemma apply_eq_star_dotProduct_toMatrix₂_mulVec (x y : M) :
 variable {R : Type*} [CommRing R] [StarRing R] [PartialOrder R] [Module R M]
   {B : M →ₗ⋆[R] M →ₗ[R] R} (b : Basis n R M)
 
-lemma isPosSemidef_iff_posSemidef_toMatrix : B.IsPosSemidef ↔ (toMatrix₂ b b B).PosSemidef := by
+lemma LinearMap.isPosSemidef_iff_posSemidef_toMatrix :
+    B.IsPosSemidef ↔ (toMatrix₂ b b B).PosSemidef := by
   rw [isPosSemidef_def, Matrix.PosSemidef]
   apply and_congr (B.isSymm_iff_isHermitian_toMatrix b)
   rw [isNonneg_def]
