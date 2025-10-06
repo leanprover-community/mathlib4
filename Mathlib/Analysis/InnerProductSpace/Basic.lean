@@ -94,6 +94,31 @@ lemma inner_smul_right_eq_smul (x y : E) (r : 𝕝) : ⟪x, r • y⟫ = r • �
   rw [← inner_conj_symm, inner_smul_left_eq_star_smul, starRingEnd_apply, starRingEnd_apply,
     star_smul, star_star, ← starRingEnd_apply, inner_conj_symm]
 
+-- **mine**
+lemma inner_smul_add_smul_right
+    (x y z : E) (r s : 𝕝) : ⟪x, r • y + s • z⟫ = r • ⟪x, y⟫ + s • ⟪x, z⟫ := by
+  simp only [inner_add_right, inner_smul_right_eq_smul]
+
+-- **mine**
+lemma inner_smul_add_smul_left
+    (x y z : E) (r s : 𝕝) : ⟪r • x + s • y, z⟫ = r† • ⟪x, z⟫ + s† • ⟪y, z⟫ := by
+  simp only [inner_add_left, inner_smul_left_eq_star_smul]
+
+-- -- Add to Mathlib
+-- lemma real_inner_smul_sub_smul_right (a b c : E k) (r k : ℝ) :
+--     ⟪a, r • b - k • c⟫ = r * ⟪a, b⟫ - k * ⟪a, c⟫ := by
+--   simp only [inner_sub_right, real_inner_smul_right]
+
+-- -- Add to Mathlib
+-- lemma real_inner_smul_sub_smul_left (a b c : E k) (r k : ℝ) :
+--     ⟪r • a - k • b, c⟫ = r * ⟪a, c⟫ - k * ⟪b, c⟫ := by
+--   simp only [inner_sub_left, real_inner_smul_left]
+
+-- -- Add to Mathlib (?)
+-- lemma zero_leq_pos_mul_norm (r : ℝ) (hr : 0 < r) (a : E k) : 0 ≤ r * ‖a‖ := by
+--   rw [← mul_zero r, mul_le_mul_iff_of_pos_left hr]
+--   exact norm_nonneg a
+
 end Algebra
 
 /-- See `inner_smul_left_eq_star_smul` for the case of a general algebra action. -/
@@ -106,6 +131,14 @@ theorem real_inner_smul_left (x y : F) (r : ℝ) : ⟪r • x, y⟫_ℝ = r * �
 theorem inner_smul_real_left (x y : E) (r : ℝ) : ⟪(r : 𝕜) • x, y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_left, conj_ofReal, Algebra.smul_def]
 
+-- **mine**
+-- -- Add to Mathlib
+-- lemma real_inner_smul_add_smul_left (a b c : E k) (r k : ℝ) :
+--     ⟪r • a + k • b, c⟫ = r * ⟪a, c⟫ + k * ⟪b, c⟫ := by
+--   simp only [inner_add_left, real_inner_smul_left]
+lemma inner_smul_add_smul' (x y z : E) (r s : 𝕜) : ⟪r • x + s • y, z⟫ = r† * ⟪x, z⟫ + s† * ⟪y, z⟫ :=
+  inner_smul_add_smul_left ..
+
 /-- See `inner_smul_right_eq_smul` for the case of a general algebra action. -/
 theorem inner_smul_right (x y : E) (r : 𝕜) : ⟪x, r • y⟫ = r * ⟪x, y⟫ :=
   inner_smul_right_eq_smul ..
@@ -115,6 +148,15 @@ theorem real_inner_smul_right (x y : F) (r : ℝ) : ⟪x, r • y⟫_ℝ = r * �
 
 theorem inner_smul_real_right (x y : E) (r : ℝ) : ⟪x, (r : 𝕜) • y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_right, Algebra.smul_def]
+
+-- **mine**
+-- -- Add to Mathlib
+-- lemma real_inner_smul_add_smul_right (a b c : E k) (r k : ℝ) :
+--     ⟪a, r • b + k • c⟫ = r * ⟪a, b⟫ + k * ⟪a, c⟫ := by
+--   simp only [inner_add_right, real_inner_smul_right]
+example (x y z : E) (r s : 𝕜) : ⟪x, r • y + s • z⟫ = r * ⟪x, y⟫ + s * ⟪x, z⟫ :=
+  inner_smul_add_smul_right ..
+
 
 /-- The inner product as a sesquilinear form.
 
