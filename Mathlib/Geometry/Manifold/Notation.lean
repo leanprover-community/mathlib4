@@ -76,7 +76,7 @@ the following.
   is correct 90% of the time).
   For products of vector spaces `E × F`, this could print a warning about making a choice between
   the model in `E × F` and the product of the models on `E` and `F`.
-- extend the elaborators to support `PartialHomeomorph`s and `PartialEquiv`s
+- extend the elaborators to support `OpenPartialHomeomorph`s and `PartialEquiv`s
 - better error messages (as needed)
 - further testing and fixing of edge cases
 - add tests for all of the above
@@ -309,7 +309,7 @@ model with corners on both `src` and `tgt`. If successful, return both models.
 
 We pass `e` instead of just its type for better diagnostics.
 
-If `es` is `some`, we verify that `src` and the type of `es` are defeq. -/
+If `es` is `some`, we verify that `src` and the type of `es` are definitionally equal. -/
 def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
   let etype ← whnf <|← instantiateMVars <|← inferType e
   match etype with
