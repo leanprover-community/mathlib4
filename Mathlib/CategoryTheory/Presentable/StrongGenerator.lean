@@ -196,7 +196,7 @@ lemma ObjectProperty.colimitsCardinalClosure_le_isCardinalPresentable
     [LocallySmall.{w} C] (P : ObjectProperty C) (hP : P ≤ isCardinalPresentable C κ) :
     P.colimitsCardinalClosure κ ≤ isCardinalPresentable C κ :=
   P.colimitsCardinalClosure_le κ
-    (fun _ _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C κ hJ) hP
+    (fun _ _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C hJ) hP
 
 lemma IsStrongGenerator.colimitsCardinalClosure_eq_isCardinalPresentable
     [HasColimitsOfSize.{w, w} C] [LocallySmall.{w} C]
@@ -229,8 +229,10 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
       (P.colimitsCardinalClosure κ) (P.colimitsCardinalClosure_le_isCardinalPresentable hS₂)
     constructor
 
+variable [IsCardinalLocallyPresentable C κ]
+
 variable (C) in
-lemma of_le [IsCardinalLocallyPresentable C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
+lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
     (h : κ ≤ κ') :
     IsCardinalLocallyPresentable C κ' := by
   rw [iff_exists_isStrongGenerator]
@@ -238,8 +240,7 @@ lemma of_le [IsCardinalLocallyPresentable C κ] {κ' : Cardinal.{w}} [Fact κ'.I
   exact ⟨S, inferInstance, h₁, by
     refine h₂.trans (isCardinalPresentable_monotone _ h)⟩
 
-instance [IsCardinalLocallyPresentable C κ] :
-    ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
+instance : ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
   obtain ⟨ι, G, hG⟩ := HasCardinalFilteredGenerators.exists_generators C κ
   have : ObjectProperty.Small.{w} (Set.range G) :=
     inferInstanceAs (Small.{w} (Set.range G))
@@ -247,9 +248,20 @@ instance [IsCardinalLocallyPresentable C κ] :
     (by rintro _ ⟨i, rfl⟩; exact hG.isCardinalPresentable i)]
   infer_instance
 
+instance : (isCardinalPresentable C κ).ι.IsDense := by
+  obtain ⟨ι, G, hG⟩ := HasCardinalFilteredGenerators.exists_generators C κ
+  have : ObjectProperty.Small.{w} (Set.range G) :=
+    inferInstanceAs (Small.{w} (Set.range G))
+  rw [hG.isStrongGenerator.colimitsCardinalClosure_eq_isCardinalPresentable (κ := κ)
+    (by rintro _ ⟨i, rfl⟩; exact hG.isCardinalPresentable i)]
+  refine IsStrongGenerator.isDense_colimitsCardinalClosure_ι
+    (hG.isStrongGenerator) (by rintro _ ⟨_, rfl⟩; apply hG.isCardinalPresentable)
+
 end IsCardinalLocallyPresentable
 
-instance IsLocallyPresentable.essentiallySmall_isCardinalPresentable
+namespace IsLocallyPresentable
+
+instance essentiallySmall_isCardinalPresentable
     [IsLocallyPresentable.{w} C] :
     ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
   obtain ⟨κ₀, _, _⟩  := IsLocallyPresentable.exists_cardinal.{w} C
@@ -258,5 +270,7 @@ instance IsLocallyPresentable.essentiallySmall_isCardinalPresentable
     infer_instance
   · simp only [not_le] at h
     exact ObjectProperty.EssentiallySmall.of_le (isCardinalPresentable_monotone C h.le)
+
+end IsLocallyPresentable
 
 end CategoryTheory

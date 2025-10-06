@@ -186,9 +186,9 @@ lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
   exact isCardinalPresentable_of_isColimit' _
     (isColimitOfPreserves e.functor hc) κ hK
 
-variable (C) {κ} in
+variable (C) in
 lemma isClosedUnderColimitsOfShape_isCardinalPresentable [LocallySmall.{w} C]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    {κ : Cardinal.{w}} [Fact κ.IsRegular]
     {J : Type u'} [Category.{v'} J] [HasLimitsOfShape Jᵒᵖ (Type w)]
     (hJ : HasCardinalLT (Arrow J) κ) :
     (isCardinalPresentable C κ).IsClosedUnderColimitsOfShape J where
