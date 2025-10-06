@@ -321,7 +321,10 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
     let srcI ← findModel src
     if let some es := es then
       let estype ← inferType es
-      if !(← pureIsDefEq estype <|← mkAppM ``Set #[src]) then
+      /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and 
+      `estype` are acceptable.
+      TODO: consider attempting to coerce `es` to a `Set`. -/
+      if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
         throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
           the set {es} : {estype}"
     let tgtI ← findModel tgt (src, srcI)
