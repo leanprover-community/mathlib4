@@ -184,24 +184,6 @@ lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [Continuo
     (c : R) (f : 𝓓^{n}(E, F)) (x : E) : (c • f) x = c • (f x) :=
   rfl
 
-instance instNSMul : SMul ℕ 𝓓^{n}(E, F) :=
- ⟨fun c f ↦
-    {
-      toFun := c • f
-      contDiff' := (f.contDiff').const_smul c
-      compact_supp' := f.compact_supp.smul_left
-    }
-  ⟩
-
-instance instZSMul : SMul ℤ 𝓓^{n}(E, F) :=
- ⟨fun c f ↦
-    {
-      toFun := c • f
-      contDiff' := (f.contDiff').const_smul c
-      compact_supp' := f.compact_supp.smul_left
-    }
-  ⟩
-
 instance : AddCommGroup 𝓓^{n}(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
