@@ -98,9 +98,6 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
 
 alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
 
-private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 :=
-  Nat.cast_add_one n
-
 /-! ### Order properties -/
 
 theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
