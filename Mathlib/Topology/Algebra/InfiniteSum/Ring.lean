@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
+import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
@@ -97,26 +98,14 @@ theorem tsum_mul_left [T2Space α] :
     ∑'[L] x, a * f x = a * ∑'[L] x, f x := by
   by_cases ha : a = 0
   · simp [ha]
-  by_cases hf : Summable f L
-  · by_cases hL : L.NeBot
-    · exact hf.tsum_mul_left a
-    · rw [tsum_bot hL, tsum_bot hL]
-      exact ((AddMonoidHom.mulLeft a).map_finsum_of_injective
-        (mulLeft_bijective₀ a ha).injective f).symm
-  · rw [tsum_eq_zero_of_not_summable hf,
-        tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
+  · exact ((Homeomorph.mulLeft₀ a ha).isClosedEmbedding.map_tsum f
+      (g := AddMonoidHom.mulLeft a)).symm
 
 theorem tsum_mul_right [T2Space α] : ∑'[L] x, f x * a = (∑'[L] x, f x) * a := by
   by_cases ha : a = 0
   · simp [ha]
-  by_cases hf : Summable f L
-  · by_cases hL : L.NeBot
-    · exact hf.tsum_mul_right a
-    · rw [tsum_bot hL, tsum_bot hL]
-      exact ((AddMonoidHom.mulRight a).map_finsum_of_injective
-        (mulRight_bijective₀ a ha).injective f).symm
-  · rw [tsum_eq_zero_of_not_summable hf,
-        tsum_eq_zero_of_not_summable (mt (summable_mul_right_iff ha).mp hf), zero_mul]
+  · exact ((Homeomorph.mulRight₀ a ha).isClosedEmbedding.map_tsum f
+      (g := AddMonoidHom.mulRight a)).symm
 
 theorem tsum_div_const [T2Space α] : ∑'[L] x, f x / a = (∑'[L] x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right

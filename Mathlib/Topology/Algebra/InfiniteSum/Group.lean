@@ -161,14 +161,8 @@ section tprod
 variable [T2Space α]
 
 @[to_additive]
-theorem tprod_inv : ∏'[L] b, (f b)⁻¹ = (∏'[L] b, f b)⁻¹ := by
-  by_cases hL : L.NeBot
-  · by_cases hf : Multipliable f L
-    · exact hf.hasProd.inv.tprod_eq
-    · simp [tprod_eq_one_of_not_multipliable hf,
-        tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
-  · rw [tprod_bot hL, tprod_bot hL]
-    exact finprod_inv_distrib f
+theorem tprod_inv : ∏'[L] b, (f b)⁻¹ = (∏'[L] b, f b)⁻¹ :=
+  ((Homeomorph.inv α).isClosedEmbedding.map_tprod f (g := MulEquiv.inv α)).symm
 
 @[to_additive]
 protected theorem Multipliable.tprod_div [L.NeBot] (hf : Multipliable f L) (hg : Multipliable g L) :
