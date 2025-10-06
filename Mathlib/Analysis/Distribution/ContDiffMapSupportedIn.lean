@@ -466,7 +466,7 @@ section fderiv
 open Distributions
 
 /-- Wrapper for `fderiv` on `𝓓^{n}_{K}(E, F)`, as a map into `𝓓^{n-1}_{K}(E, E →L[ℝ] F)` -/
-protected noncomputable def fderiv' (f : 𝓓^{n}_{K}(E, F)) :
+protected noncomputable def fderivWithOrder (f : 𝓓^{n}_{K}(E, F)) :
     𝓓^{n-1}_{K}(E, E →L[ℝ] F) :=
   if hn : n = 0 then 0 else
     .of_support_subset
@@ -475,32 +475,32 @@ protected noncomputable def fderiv' (f : 𝓓^{n}_{K}(E, F)) :
     ((support_fderiv_subset ℝ).trans f.tsupport_subset)
 
 @[simp]
-lemma fderiv'_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-    f.fderiv' x = if n = 0 then 0 else fderiv ℝ f x := by
-  rw [ContDiffMapSupportedIn.fderiv']
+lemma fderivWithOrder_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
+    f.fderivWithOrder x = if n = 0 then 0 else fderiv ℝ f x := by
+  rw [ContDiffMapSupportedIn.fderivWithOrder]
   split_ifs <;> rfl
 
 @[simp]
-lemma coe_fderiv'_of_ne (hn : n ≠ 0) (f : 𝓓^{n}_{K}(E, F)) :
-    f.fderiv' = fderiv ℝ f := by
+lemma coe_fderivWithOrder_of_ne (hn : n ≠ 0) (f : 𝓓^{n}_{K}(E, F)) :
+    f.fderivWithOrder = fderiv ℝ f := by
   ext : 1
-  rw [fderiv'_apply]
+  rw [fderivWithOrder_apply]
   exact if_neg hn
 
 @[simp]
-lemma coe_fderiv'_zero (f : 𝓓^{0}_{K}(E, F)) :
-    f.fderiv' = 0 := by
+lemma coe_fderivWithOrder_zero (f : 𝓓^{0}_{K}(E, F)) :
+    f.fderivWithOrder = 0 := by
   ext : 1
-  rw [fderiv'_apply]
+  rw [fderivWithOrder_apply]
   exact if_pos rfl
 
 /-- Bundling of `fderiv` as a `𝕜`-linear map. -/
 @[simps]
-noncomputable def fderivₗ' {n : ℕ∞} : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-1}_{K}(E, E →L[ℝ] F) where
-  toFun f := f.fderiv'
+noncomputable def fderivWithOrderₗ {n : ℕ∞} : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-1}_{K}(E, E →L[ℝ] F) where
+  toFun f := f.fderivWithOrder
   map_add' f₁ f₂ := by
     ext : 1
-    simp only [fderiv'_apply, add_apply]
+    simp only [fderivWithOrder_apply, add_apply]
     split_ifs with hn
     · rw [add_zero]
     · rw [← ne_eq, ← ENat.one_le_iff_ne_zero] at hn
@@ -509,20 +509,20 @@ noncomputable def fderivₗ' {n : ℕ∞} : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓
         (f₂.contDiff.differentiable (by exact_mod_cast hn)).differentiableAt
   map_smul' c f := by
     ext : 1
-    simp only [fderiv'_apply, smul_apply]
+    simp only [fderivWithOrder_apply, smul_apply]
     split_ifs with hn
     · rw [smul_zero]
     · rw [← ne_eq, ← ENat.one_le_iff_ne_zero] at hn
       exact fderiv_const_smul (f.contDiff.differentiable (by exact_mod_cast hn)).differentiableAt c
 
-theorem seminorm_fderiv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
-    ContDiffMapSupportedIn.seminorm 𝕜 E (E →L[ℝ] F) (n - 1) K i f.fderiv' =
+theorem seminorm_fderivWithOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E (E →L[ℝ] F) (n - 1) K i f.fderivWithOrder =
       ContDiffMapSupportedIn.seminorm 𝕜 E F n K (i+1) f := by
   simp_rw [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm]
   refine iSup_congr fun x ↦ ?_
   simp only [toBoundedContinuousFunction_apply]
   rcases eq_or_ne n 0 with rfl | hn
-  · simp [iteratedFDeriv'_zero]
+  · simp [iteratedFDerivWithOrder_zero]
   · rcases lt_or_ge (i : ℕ∞) n with (hin|hin)
     · have hin' : i + 1 ≤ n := by
         exact Order.add_one_le_of_lt hin
@@ -538,18 +538,18 @@ theorem seminorm_fderiv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
         exact lt_of_tsub_lt_tsub_right hin'
       simp [hin', hin'']
 
-/-- Bundling of `fderiv'` as continuous `𝕜`-linear map. -/
+/-- Bundling of `fderivWithOrder` as continuous `𝕜`-linear map. -/
 @[simps! apply]
-noncomputable def fderivCLM' : 𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n-1}_{K}(E, E →L[ℝ] F) where
-  toLinearMap := fderivₗ' 𝕜
+noncomputable def fderivWithOrderCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n-1}_{K}(E, E →L[ℝ] F) where
+  toLinearMap := fderivWithOrderₗ 𝕜
   cont := by
     refine Seminorm.continuous_from_bounded  (τ₁₂ := RingHom.id 𝕜)
       (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K)
       (ContDiffMapSupportedIn.withSeminorms 𝕜 E (E →L[ℝ] F) (n-1) K) _
       fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩
-    simp only [Seminorm.comp_apply, fderivₗ'_apply,
+    simp only [Seminorm.comp_apply, fderivWithOrderₗ_apply,
       Finset.sup_singleton, one_smul]
-    rw [seminorm_fderiv']
+    rw [seminorm_fderivWithOrder]
 
 section infinite
 
