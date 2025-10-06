@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferetiationThm
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 
@@ -45,18 +45,18 @@ absolute continuous on `uIcc a b`. -/
 theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → ℝ} {a b : ℝ}
     (h : IntervalIntegrable f volume a b) (c : ℝ) (hc : c ∈ uIcc a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
-  wlog hab : a ≤ b
-  · exact @this f b a h.symm c (uIcc_comm a b ▸ hc) (by linarith) |>.symm
-  have subinterval_integrable {x y : ℝ} (hx1 : a ≤ x) (hx2 : x ≤ b) (hy1 : a ≤ y) (hy2 : y ≤ b) :
+  wlog hab : a ≤ b generalizing a b
+  · exact @this b a h.symm (uIcc_comm a b ▸ hc) (by linarith) |>.symm
+  have subinterval_integrable {x y : ℝ} (_ : a ≤ x) (_ : x ≤ b) (_ : a ≤ y) (_ : y ≤ b) :
       IntervalIntegrable f volume x y := by
     apply IntervalIntegrable.mono_set' (a := a) (b := b) (by assumption)
     simp only [uIoc, hab, inf_of_le_left, sup_of_le_right]
-    gcongr <;> simp [hx1, hx2, hy1, hy2]
+    grind
   have hf := h.1.hasFiniteIntegral
   unfold HasFiniteIntegral at hf
   replace hf := ne_of_lt hf
   rw [absolutelyContinuousOnInterval_iff]
-  simp only [AbsolutelyContinuousOnInterval.DisjEnds, mem_setOf_eq]
+  simp only [AbsolutelyContinuousOnInterval.disjWithin, mem_setOf_eq]
   simp_rw [uIcc_of_le hab, mem_Icc] at hc ⊢
   intro ε hε
   have hε' := ne_of_gt ((ENNReal.ofReal_pos).mpr hε)
