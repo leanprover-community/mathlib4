@@ -810,6 +810,8 @@ section IsCompleteBetween
 
 variable {s t : Set V}
 
+/-- The condition that the portion of the simple graph `G` _between_ `s` and `t` is complete, that
+is, every vertex in `s` is adjacent to every vertex in `t`, and vice versa. -/
 def IsCompleteBetween (G : SimpleGraph V) (s t : Set V) :=
   ∀ ⦃v₁⦄, v₁ ∈ s → ∀ ⦃v₂⦄, v₂ ∈ t → G.Adj v₁ v₂
 
