@@ -50,7 +50,7 @@ instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [MulLeftStrictMono α
     [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
-    (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
+    (fun hxy => left _ _ <| mul_lt_mul_right hxy _)
     (fun hxy => le_iff.2 <|
       Or.inr ⟨by simp only [ofLex_mul, fst_mul, hxy.1], mul_le_mul_right hxy.2 _⟩)
 
