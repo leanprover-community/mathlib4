@@ -51,22 +51,16 @@ variable [TopologicalSpace R] [ContinuousConstVAdd R R]
 
 /-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
 prove `IsValuativeTopology R`. -/
-theorem iff_nhds_zero :
-    IsValuativeTopology R ↔
-      ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s := by
+lemma iff_hasBasis_zero :
+    IsValuativeTopology R ↔ (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
+      fun γ : (ValueGroupWithZero R)ˣ ↦ { x | valuation R x < γ } := by
+  simp only [hasBasis_iff, true_and]
   constructor <;> intro h
   · simp [IsValuativeTopology.mem_nhds_iff]
   · constructor
     intro s x
     simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
       h ((x + ·) ⁻¹' s)
-
-/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
-prove `IsValuativeTopology R`. -/
-lemma iff_hasBasis_zero :
-    IsValuativeTopology R ↔ (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-      fun γ : (ValueGroupWithZero R)ˣ ↦ { x | valuation R x < γ } :=
-  iff_nhds_zero.trans ⟨fun h ↦ ⟨by simpa using h⟩, fun h ↦ by simp [h.mem_iff]⟩
 
 end
 
