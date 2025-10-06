@@ -77,9 +77,6 @@ theorem DirectedOn.mono {s : Set α} (h : DirectedOn r s) (H : ∀ ⦃a b⦄, r 
 theorem directed_comp {ι} {f : ι → β} {g : β → α} : Directed r (g ∘ f) ↔ Directed (g ⁻¹'o r) f :=
   Iff.rfl
 
-theorem directed_comp' {ι} {f : ι → β} {g : β → α} : Directed r (g ∘ f) ↔ Directed (g ⁻¹'o r) f :=
-  Iff.rfl
-
 theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b, r a b → s a b)
     (h : Directed r f) : Directed s f := fun a b =>
   let ⟨c, h₁, h₂⟩ := h a b
