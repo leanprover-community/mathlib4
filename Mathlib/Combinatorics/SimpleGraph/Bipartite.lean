@@ -43,6 +43,14 @@ This file proves results about bipartite simple graphs, including several double
   See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
   `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right".
 
+* `SimpleGraph.IsCompleteBipartiteBetween G s t` is the condition that the portion of the simple
+  graph `G` _between_ `s` and `t` is complete bipartite, that is, every vertex in `s` is adjacent to
+  every vertex in `t`, and vice versa.
+
+* `SimpleGraph.CompleteBipartiteFinSubgraph G a b` is a finite complete bipartite subgraph, that is,
+  a "left" subset of `a` vertices and a "right" subset of `b` vertices such that every vertex in the
+  "left" subset is adjacent to every vertex in the "right" subset.
+
 ## Implementation notes
 
 For the formulation of double-counting arguments where a bipartite graph is considered as a
