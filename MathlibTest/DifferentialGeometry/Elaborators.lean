@@ -888,3 +888,44 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 end
 
 end mfderiv
+
+section trace
+
+/- Test that basic tracing works. -/
+
+set_option trace.Elab.DiffGeo true
+
+variable {f : Unit → Unit}
+
+/--
+error: Could not find models with corners for Unit
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Unit is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on Unit among local instances.
+[Elab.DiffGeo.MDiff] ❌️ ChartedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on Unit among local instances.
+[Elab.DiffGeo.MDiff] ❌️ NormedField
+  [Elab.DiffGeo.MDiff] Failed with error:
+      failed to synthesize
+        NontriviallyNormedField Unit
+      ⏎
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check mfderiv% f
+
+/--
+info: fun a ↦ TotalSpace.mk' Unit a (f a) : Unit → TotalSpace Unit (Trivial Unit Unit)
+---
+trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
+-/
+#guard_msgs in
+#check T% f
+
+end trace
