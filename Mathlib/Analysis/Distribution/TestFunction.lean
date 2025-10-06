@@ -8,24 +8,28 @@ import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 import Mathlib.Order.CompletePartialOrder
 
 /-!
-# Continuously differentiable functions supported in a compact
+# Continuously differentiable bundled functions supported in a compact
 
-This file develops the basic theory of `n`-times continuously differentiable functions with compact
-support. That is, for `f : E → F` (where `E`, `F` are normed spaces) and `n : ℕ∞`,
+This file develops the basic theory of bundled `n`-times continuously differentiable functions
+with compact support. That is, for `f : E → F` (where `E`, `F` are normed spaces) and `n : ℕ∞`,
 
 - `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
 - `f` has compact support: `HasCompactSupport f`.
 
+This exists as a bundled type to equip it with the canonical LF topology induced by the inclusions
+`𝓓_K^{n}(E, F) → 𝓓^{n}(E, F)` (see `ContDiffMapSupportedIn`). The dual space is then the space of
+distributions, or "weak solutions" to PDEs.
+
 ## Main definitions
 
-- `TestFunction E F n`: the type of `n`-times continuously differentiable
+- `TestFunction E F n`: the type of bundled `n`-times continuously differentiable
   functions `E → F` with compact support.
 
 ## Notation
 
-- `𝓓^{n}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
+- `𝓓^{n}(E, F)`: the space of bundled `n`-times continuously differentiable functions `E → F`
   with compact support.
-- `𝓓(E, F)`:   the space of smooth (infinitely differentiable) functions `E → F`
+- `𝓓(E, F)`: the space of bundled smooth (infinitely differentiable) functions `E → F`
   with compact support i.e. `𝓓^{⊤}_{K}(E, F)`.
 
 ## Tags
@@ -41,19 +45,19 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable {n : ℕ∞}
 
-/-- The type of `n`-times continuously differentiable maps with compact support. -/
+/-- The type of bundled `n`-times continuously differentiable maps with compact support. -/
 structure TestFunction (n : ℕ∞) : Type _ where
   /-- The underlying function. Use coercion instead. -/
   protected toFun : E → F
   protected contDiff' : ContDiff ℝ n toFun
   protected compact_supp' : HasCompactSupport toFun
 
-/-- Notation for the space of `n`-times continuously differentiable maps
+/-- Notation for the space of bundled `n`-times continuously differentiable maps
 with compact support. -/
 scoped[Distributions] notation "𝓓^{" n "}(" E ", " F ")" =>
   TestFunction E F n
 
-/-- Notation for the space of "test functions", i.e. smooth (infinitely differentiable) maps
+/-- Notation for the space of "test functions", i.e. bundled smooth (infinitely differentiable) maps
 with compact support. -/
 scoped[Distributions] notation "𝓓(" E ", " F ")" =>
   TestFunction E F ⊤
@@ -112,7 +116,7 @@ initialize_simps_projections TestFunction (toFun → apply)
 theorem ext {f g : 𝓓^{n}(E, F)} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
-/-- Copy of a `BoundedContDiffMap` with a new `toFun` equal to the old one. Useful to fix
+/-- Copy of a `TestFunction` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : 𝓓^{n}(E, F)) (f' : E → F) (h : f' = f) : 𝓓^{n}(E, F) where
   toFun := f'
