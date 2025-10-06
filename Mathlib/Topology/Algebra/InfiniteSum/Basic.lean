@@ -256,20 +256,6 @@ lemma Function.LeftInverse.map_tprod {G : Type*} (f : β → α) [CommMonoid γ]
   (hgg'.isClosedEmbedding hg' hg).map_tprod _
 
 @[to_additive]
-lemma map_tprod_of_leftInverse' {G G' : Type*} (f : β → α) [CommMonoid γ] [TopologicalSpace γ]
-    [T2Space γ] {g : G} [FunLike G α γ] [MonoidHomClass G α γ] (hg : Continuous g)
-    {g' : G'} [FunLike G' γ α] [MonoidHomClass G' γ α] (hg' : Continuous g')
-    (hgg' : Function.LeftInverse g' g) :
-    g (∏'[L] b, f b) = ∏'[L] b, g (f b) := by
-  by_cases hL : L.NeBot
-  · by_cases h : Multipliable f L
-    · exact h.map_tprod g hg
-    · rw [tprod_eq_one_of_not_multipliable h, tprod_eq_one_of_not_multipliable, map_one]
-      exact (Multipliable.map_iff_of_leftInverse g g' hg hg' hgg').not.mpr h
-  · simpa [tprod_bot hL] using
-      (MonoidHomClass.toMonoidHom g).map_finprod_of_injective hgg'.injective f
-
-@[to_additive]
 lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
     [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) :
     Multipliable f L ↔ Multipliable (g ∘ f) L ∧ ∏'[L] i, g (f i) ∈ Set.range g := by
