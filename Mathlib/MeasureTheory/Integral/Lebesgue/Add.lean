@@ -211,30 +211,15 @@ theorem lintegral_liminf_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Mea
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
   lintegral_liminf_le' fun n => (h_meas n).aemeasurable
 
-/-- **Fatou's lemma**, version with `AEMeasurable` functions on an `AEMeasurable` set. -/
-theorem lintegral_liminf_le₀' {f : ℕ → α → ℝ≥0∞} {s : Set α} (h_meas : ∀ n, AEMeasurable (f n) μ)
-    (hs : NullMeasurableSet s μ) :
-    ∫⁻ a in s, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a in s, f n a ∂μ) atTop := by
-  calc
-    ∫⁻ a in s, liminf (fun n => f n a) atTop ∂μ
-    _ = ∫⁻ a, s.indicator (fun x ↦ liminf (fun n => f n x) atTop) a ∂μ :=
-      lintegral_indicator₀ hs _ |>.symm
-    _ = ∫⁻ a, liminf (fun n => s.indicator (fun x ↦ f n x) a) atTop ∂μ := by
-      apply MeasureTheory.lintegral_congr_ae
-      filter_upwards with x
-      by_cases hx : x ∈ s <;> simp only [indicator, hx, ↓reduceIte]
-      simp
-    _ ≤ liminf (fun n => ∫⁻ a, s.indicator (fun x ↦ f n x) a ∂μ) atTop :=
-      lintegral_liminf_le' (fun n ↦ (h_meas n).indicator₀ hs)
-    _ = liminf (fun n => ∫⁻ a in s, f n a ∂μ) atTop := by
-      congr with n
-      exact lintegral_indicator₀ hs fun x ↦ f n x
-
-/-- **Fatou's lemma**, version with `Measurable` functions on a `Measurable` set. -/
-theorem lintegral_liminf_le₀ {f : ℕ → α → ℝ≥0∞} {s : Set α} (h_meas : ∀ n, Measurable (f n))
-    (hs : MeasurableSet s) :
+/-- **Fatou's lemma**, version with `AEMeasurable` functions on a set. -/
+theorem lintegral_liminf_le₀' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) (s : Set α) :
     ∫⁻ a in s, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a in s, f n a ∂μ) atTop :=
-  lintegral_liminf_le₀' (fun n => (h_meas n).aemeasurable) (hs.nullMeasurableSet)
+  lintegral_liminf_le' (fun n ↦ h_meas n |>.restrict)
+
+/-- **Fatou's lemma**, version with `Measurable` functions on a set. -/
+theorem lintegral_liminf_le₀ {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n)) (s : Set α) :
+    ∫⁻ a in s, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a in s, f n a ∂μ) atTop :=
+  lintegral_liminf_le₀' (fun n => (h_meas n).aemeasurable) s
 
 end MonotoneConvergence
 
