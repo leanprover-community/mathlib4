@@ -65,8 +65,8 @@ Grätzer III.2, Theorem 2 2 → 3
 -/
 
 /-- Grätzer III.2, Theorem 2 3 → 1 -/
-def isDistrib_of_congruence {a : α} {c : LatticeCon α} (h : ∀ ⦃x y : α⦄, c.r x y ↔ a ⊔ x = a ⊔ y) :
-    IsDistrib a := by
+lemma isDistrib_of_congruence {a : α}
+    {c : LatticeCon α} (h : ∀ ⦃x y : α⦄, c.r x y ↔ a ⊔ x = a ⊔ y) : IsDistrib a := by
   intro x y
   have e1 : a ⊔ x ⊓ y = a ⊔ ((a ⊔ x) ⊓ (a ⊔ y)) := by
     rw [← h]
@@ -127,7 +127,7 @@ def of_isStandard {a : α} (h : IsStandard a) : LatticeCon α := LatticeCon.mk'
           sup_of_le_right le_sup_left])
 
 /-- Grätzer III.2, Theorem 3 2 → 3 -/
-def isDistrib_and {a : α} {c : LatticeCon α}
+lemma isDistrib_and {a : α} {c : LatticeCon α}
     (h : ∀ ⦃x y : α⦄, c.r x y ↔ ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y) :
     IsDistrib a ∧ ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y := by
   constructor
@@ -161,7 +161,7 @@ def isDistrib_and {a : α} {c : LatticeCon α}
     rw [← step1 h₁ h₂, inf_comm, step1 h₁.symm h₂.symm]
 
 /-- Grätzer III.2, Theorem 3 3 → 1 -/
-def isStandard_of_isDistrib_and {a : α}
+lemma isStandard_of_isDistrib_and {a : α}
     (h : IsDistrib a ∧ ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y) : IsStandard a := by
   intro x y
   apply h.2 _ _
