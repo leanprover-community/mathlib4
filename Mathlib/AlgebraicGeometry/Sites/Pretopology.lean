@@ -117,10 +117,7 @@ variable (P)
 The pretopology defined by `P`-covers agrees with the
 the intersection of the pretopology of surjective families with the pretopology defined by `P`.
 -/
-lemma pretopology_eq_inf : pretopology P = jointlySurjectivePretopology ⊓ P.pretopology := by
-  ext : 1
-  rw [pretopology, Precoverage.toPretopology_toPrecoverage]
-  rfl
+lemma pretopology_eq_inf : pretopology P = jointlySurjectivePretopology ⊓ P.pretopology := rfl
 
 @[deprecated (since := "2025-08-28")]
 alias pretopology_le_inf := pretopology_eq_inf
