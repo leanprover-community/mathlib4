@@ -85,6 +85,12 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (
     simp
   · exact PLift.up hι.some
 
+@[to_additive (attr := simp)]
+theorem mem_iSup_prop {p : Prop} {S : p → Submonoid M} {x : M} :
+    x ∈ ⨆ (h : p), S h ↔ x = 1 ∨ ∃ (h : p), x ∈ S h := by
+  by_cases h : p <;>
+  simp +contextual [h]
+
 @[to_additive]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S) :
     ((⨆ i, S i : Submonoid M) : Set M) = ⋃ i, S i :=
