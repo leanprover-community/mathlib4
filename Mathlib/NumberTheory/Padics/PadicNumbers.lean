@@ -148,9 +148,11 @@ theorem Rat.surjective_padicValuation (p : ℕ) [hp : Fact (p.Prime)] :
   | zero => simp
   | coe x =>
     induction x with | ofAdd x
-    rcases le_or_gt 0 x with (hx | hx) <;> simp only [Rat.padicValuation, WithZero.exp]
+    simp_rw [Rat.padicValuation, WithZero.exp, Valuation.coe_mk, MonoidWithZeroHom.coe_mk,
+      ZeroHom.coe_mk]
+    rcases le_or_gt 0 x with (hx | hx)
     · use (p ^ x.natAbs)⁻¹
-      simp [hp.out.ne_zero, padicValRat.pow, hx]
+      simp [hp.out.ne_zero, hx]
     · use p ^ x.natAbs
       simp [hp.out.ne_zero, padicValRat.pow, abs_eq_neg_self.2 (le_of_lt hx)]
 
