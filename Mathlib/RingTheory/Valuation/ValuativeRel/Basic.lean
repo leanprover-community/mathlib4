@@ -643,6 +643,13 @@ variable (R) in
 class IsNontrivial where
   condition : ∃ γ : ValueGroupWithZero R, γ ≠ 0 ∧ γ ≠ 1
 
+lemma IsNontrivial.exists_lt_one [IsNontrivial R] :
+    ∃ γ : ValueGroupWithZero R, 0 < γ ∧ γ < 1 := by
+  obtain ⟨γ, h0, h1⟩ := IsNontrivial.condition (R := R)
+  obtain h1 | h1 := lt_or_lt_iff_ne.mpr h1
+  · exact ⟨γ, zero_lt_iff.mpr h0, h1⟩
+  · exact ⟨γ⁻¹, by simpa [zero_lt_iff], by simp [inv_lt_one_iff₀, h0, h1]⟩
+
 lemma isNontrivial_iff_nontrivial_units :
     IsNontrivial R ↔ Nontrivial (ValueGroupWithZero R)ˣ := by
   constructor
@@ -654,50 +661,22 @@ lemma isNontrivial_iff_nontrivial_units :
     · exact ⟨s.val, by simp, by simpa using h.symm⟩
     · exact ⟨r.val, by simp, by simpa using hr⟩
 
-lemma isNontrivial_iff_isNontrivial
-    {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible] :
-    IsNontrivial R ↔ v.IsNontrivial := by
+lemma isNontrivial_iff_isNontrivial :
+    IsNontrivial R ↔ (valuation R).IsNontrivial := by
   constructor
   · rintro ⟨r, hr, hr'⟩
     induction r using ValueGroupWithZero.ind with | mk r s
-    have hγ : v r ≠ 0 := by simpa [Valuation.Compatible.rel_iff_le (v := v)] using hr
-    have hγ' : v r ≤ v s → v r < v s := by
-      simpa [Valuation.Compatible.rel_iff_le (v := v)] using hr'
-    by_cases hr : v r = 1
-    · exact ⟨s, by simp, fun h ↦ by simp [h, hr] at hγ'⟩
-    · exact ⟨r, by simpa using hγ, hr⟩
+    by_cases hs : valuation R s = 1
+    · refine ⟨r, ?_, ?_⟩
+      · simpa [valuation] using hr
+      · simp only [ne_eq, ValueGroupWithZero.mk_eq_one, not_and, valuation, Valuation.coe_mk,
+          MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, OneMemClass.coe_one] at hr' hs ⊢
+        contrapose! hr'
+        exact hr'.imp hs.right.trans' hs.left.trans
+    · refine ⟨s, ?_, hs⟩
+      simp [valuation, ← posSubmonoid_def]
   · rintro ⟨r, hr, hr'⟩
-    exact ⟨valuation R r, (isEquiv v (valuation R)).ne_zero.mp hr,
-      by simpa [(isEquiv v (valuation R)).eq_one_iff_eq_one] using hr'⟩
-
-instance {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
-    [IsNontrivial R] (v : Valuation R Γ₀) [v.Compatible] :
-    v.IsNontrivial := by rwa [← isNontrivial_iff_isNontrivial]
-
-lemma ValueGroupWithZero.mk_eq_valuation {K : Type*} [Field K] [ValuativeRel K]
-    (x : K) (y : posSubmonoid K) :
-    ValueGroupWithZero.mk x y = valuation K (x / y) := by
-  rw [Valuation.map_div, ValueGroupWithZero.mk_eq_div]
-
-lemma exists_valuation_div_valuation_eq (γ : ValueGroupWithZero R) :
-    ∃ (a : R) (b : posSubmonoid R), valuation _ a / valuation _ (b : R) = γ := by
-  induction γ using ValueGroupWithZero.ind with | mk a b
-  use a, b
-  simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
-
-lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGroupWithZero R)ˣ) :
-    ∃ (a b : posSubmonoid R), valuation R a / valuation _ (b : R) = γ := by
-  obtain ⟨a, b, hab⟩ := exists_valuation_div_valuation_eq γ.val
-  lift a to posSubmonoid R using by
-    rw [posSubmonoid_def, ← valuation_eq_zero_iff]
-    intro H
-    simp [H, eq_comm] at hab
-  use a, b
-
--- See `exists_valuation_div_valuation_eq` for the version that works for all rings.
-theorem valuation_surjective {K : Type*} [Field K] [ValuativeRel K] :
-    Function.Surjective (valuation K) :=
-  ValueGroupWithZero.ind (ValueGroupWithZero.mk_eq_valuation · · ▸ ⟨_, rfl⟩)
+    exact ⟨valuation R r, hr, hr'⟩
 
 variable (R) in
 /-- A ring with a valuative relation is discrete if its value group-with-zero
@@ -705,6 +684,45 @@ has a maximal element `< 1`. -/
 class IsDiscrete where
   has_maximal_element :
     ∃ γ : ValueGroupWithZero R, γ < 1 ∧ (∀ δ : ValueGroupWithZero R, δ < 1 → δ ≤ γ)
+
+variable (R) in
+/-- The maximal element that is `< 1` in the value group of a discrete valuation. -/
+noncomputable
+def uniformizer [IsDiscrete R] : ValueGroupWithZero R :=
+  IsDiscrete.has_maximal_element.choose
+
+lemma uniformizer_lt_one [IsDiscrete R] :
+    uniformizer R < 1 := IsDiscrete.has_maximal_element.choose_spec.1
+
+lemma le_uniformizer_iff [IsDiscrete R] {a : ValueGroupWithZero R} :
+    a ≤ uniformizer R ↔ a < 1 :=
+  ⟨fun h ↦ h.trans_lt uniformizer_lt_one,
+    IsDiscrete.has_maximal_element.choose_spec.2 a⟩
+
+lemma uniformizer_pos [IsDiscrete R] [IsNontrivial R] :
+    0 < uniformizer R := by
+  obtain ⟨γ, hγ, hγ'⟩ := IsNontrivial.exists_lt_one (R := R)
+  exact hγ.trans_le (le_uniformizer_iff.mpr hγ')
+
+@[simp]
+lemma uniformizer_ne_zero [IsDiscrete R] [IsNontrivial R] :
+    uniformizer R ≠ 0 :=
+  uniformizer_pos.ne'
+
+lemma valuation_surjective (γ : ValueGroupWithZero R) :
+    ∃ (a : R) (b : posSubmonoid R), valuation _ a / valuation _ (b : R) = γ := by
+  induction γ using ValueGroupWithZero.ind with | mk a b
+  use a, b
+  simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
+
+lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGroupWithZero R)ˣ) :
+    ∃ (a b : posSubmonoid R), valuation R a / valuation _ (b : R) = γ := by
+  obtain ⟨a, b, hab⟩ := valuation_surjective γ.val
+  lift a to posSubmonoid R using by
+    rw [posSubmonoid_def, ← valuation_eq_zero_iff]
+    intro H
+    simp [H, eq_comm] at hab
+  use a, b
 
 end ValuativeRel
 
@@ -749,8 +767,8 @@ lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
 
 lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   intro a b h
-  obtain ⟨a, r, rfl⟩ := exists_valuation_div_valuation_eq a
-  obtain ⟨b, s, rfl⟩ := exists_valuation_div_valuation_eq b
+  obtain ⟨a, r, rfl⟩ := valuation_surjective a
+  obtain ⟨b, s, rfl⟩ := valuation_surjective b
   simp only [map_div₀]
   rw [div_lt_div_iff₀] at h ⊢
   any_goals simp [zero_lt_iff]
