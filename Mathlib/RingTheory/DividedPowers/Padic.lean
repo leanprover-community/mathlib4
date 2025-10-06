@@ -33,20 +33,17 @@ section Factorial
 
 theorem sub_one_mul_padicValNat_factorial_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (p - 1) * padicValNat p n.factorial < n := by
-  have hpn : ((p - 1 : ℕ) : ℝ) * (padicValNat p n ! : ℝ) = n - (p.digits n).sum := by
-    rw [← cast_mul, sub_one_mul_padicValNat_factorial n, cast_sub (digit_sum_le p n)]
-  rw [← Nat.cast_lt (α := ℝ), Nat.cast_mul, hpn]
+  rw [sub_one_mul_padicValNat_factorial n]
+  refine Nat.sub_lt_self ?_ (digit_sum_le p n)
   have hnil : p.digits n ≠ [] := Nat.digits_ne_nil_iff_ne_zero.mpr hn
-  apply sub_lt_self _
-  exact_mod_cast Nat.sum_pos_iff_exists_pos.mpr ⟨(p.digits n).getLast hnil,
-    List.getLast_mem hnil, Nat.pos_of_ne_zero (Nat.getLast_digit_ne_zero p hn)⟩
+  exact Nat.sum_pos_iff_exists_pos.mpr
+    ⟨_, List.getLast_mem hnil, Nat.pos_of_ne_zero (Nat.getLast_digit_ne_zero p hn)⟩
 
 theorem padicValNat_factorial_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n.factorial < n := by
   apply lt_of_le_of_lt _ (sub_one_mul_padicValNat_factorial_lt_of_ne_zero p hn)
-  conv_lhs => rw [← one_mul (padicValNat p n !)]
-  gcongr
-  exact le_sub_one_of_lt (Nat.Prime.one_lt hp.elim)
+  apply Nat.le_mul_of_pos_left
+  exact le_sub_one_of_lt hp.out.one_lt
 
 theorem padicValNat_factorial_le (n : ℕ) : padicValNat p n.factorial ≤ n := by
   by_cases hn : n = 0
