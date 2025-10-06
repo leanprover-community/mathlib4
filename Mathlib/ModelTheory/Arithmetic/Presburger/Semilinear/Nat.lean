@@ -36,16 +36,22 @@ set difference.
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
-variable {M ι κ : Type*} [AddCommMonoid M]
+variable {M N ι κ : Type*} [AddCommMonoid M] [AddCommMonoid N]
 
 open Set Pointwise AddSubmonoid Matrix
 
 /-! ### Semilinear sets in `ℕ ^ k` are closed under intersection -/
 
-/-- Any subtractive `AddSubmonoid` in `ℕ ^ k` is finitely generated. -/
-theorem Nat.addSubmonoidFG_of_subtractive [Finite ι] {P : AddSubmonoid (ι → ℕ)}
-    (hP : ∀ x ∈ P, ∀ y, x + y ∈ P → y ∈ P) : P.FG := by
-  have hpwo := Pi.isPWO { x | x ∈ P ∧ x ≠ 0 }
+section WellQuasiOrderedLE
+
+variable [PartialOrder M] [WellQuasiOrderedLE M] [IsOrderedCancelAddMonoid M]
+  [CanonicallyOrderedAdd M]
+
+/-- In a well-quasi-ordered and canonically ordered commutative monoid, any subtractive submonoid is
+finitely generated. The only example is `ℕ ^ k`; see `Nat.addSubmonoidFG_of_subtractive`. -/
+theorem AddSubmonoid.fg_of_subtractive {P : AddSubmonoid M} (hP : ∀ x ∈ P, ∀ y, x + y ∈ P → y ∈ P) :
+    P.FG := by
+  have hpwo := Set.isPWO_of_WellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 0 }
   rw [fg_iff]
   refine ⟨_, ?_, (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
     (hpwo.mono (setOf_minimal_subset _))⟩
@@ -62,21 +68,33 @@ theorem Nat.addSubmonoidFG_of_subtractive [Finite ι] {P : AddSubmonoid (ι → 
     by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 0 }) y
     · exact mem_closure_of_mem hy₃
     rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩
-    rw [← tsub_add_cancel_of_le hz₁.le]
+    rcases exists_add_of_le hz₁.le with ⟨y, rfl⟩
     apply add_mem
-    · apply ih
-      · rw [← add_tsub_cancel_of_le hz₁.le] at hy₁
-        exact hP _ hz₂ _ hy₁
-      · exact (tsub_pos_of_lt hz₁).ne'
-      · exact tsub_le_self
-      · rw [le_tsub_iff_le_tsub (le_refl _) hz₁.le, tsub_self]
-        exact (pos_of_ne_zero hz₃).not_ge
     · exact ih _ hz₂ hz₃ hz₁.le hz₁.not_ge
+    · apply ih
+      · exact hP _ hz₂ _ hy₁
+      · exact (pos_of_lt_add_right hz₁).ne.symm
+      · exact le_add_self
+      · rw [add_le_iff_nonpos_left]
+        exact (pos_of_ne_zero hz₃).not_ge
+
+/-- A generalized verison of *Gordan's lemma*: if `f` `g` are homomorphisms from a well-quasi-ordred
+and canonically ordered commutative monoid to a cancellative monoid, then `eqLocusM f g` is finitely
+generated in `M`. See `Nat.addSubmonoidFG_of_subtractive` when `M` is `ℕ ^ k`. -/
+theorem AddSubmonoid.fg_eqLocusM [IsCancelAdd N] (f g : M →+ N) : (f.eqLocusM g).FG :=
+  fg_of_subtractive (by simp_all)
+
+end WellQuasiOrderedLE
+
+/-- Any subtractive `AddSubmonoid` in `ℕ ^ k` is finitely generated. -/
+theorem Nat.addSubmonoidFG_of_subtractive [Finite ι] {P : AddSubmonoid (ι → ℕ)}
+    (hP : ∀ x ∈ P, ∀ y, x + y ∈ P → y ∈ P) : P.FG :=
+  AddSubmonoid.fg_of_subtractive hP
 
 /-- A verison of *Gordan's lemma*: `AddMonoidHom.eqLocusM` is finitely generated in `ℕ ^ k`. -/
 theorem Nat.addSubmonoidFG_eqLocusM [Finite ι] [IsCancelAdd M] (f g : (ι → ℕ) →+ M) :
     (f.eqLocusM g).FG :=
-  addSubmonoidFG_of_subtractive (by simp_all)
+  AddSubmonoid.fg_eqLocusM f g
 
 /-- The set of solutions of a linear equation `a + f x = b + g y` in `ℕ ^ k` is semilinear. -/
 theorem Nat.isSemilinearSet_setOf_eq [Finite ι] [IsCancelAdd M] {F : Type*} [FunLike F (ι → ℕ) M]
