@@ -61,9 +61,8 @@ variable [ContinuousMul M]
 
 @[to_additive]
 theorem prod_range_mul {f : ℕ → M} {k : ℕ} (h : HasProd (fun n ↦ f (n + k)) m) :
-    HasProd f ((∏ i ∈ range k, f i) * m) := by
-  refine ((range k).hasProd f).mul_compl ?_
-  rwa [← (notMemRangeEquiv k).symm.hasProd_iff]
+    HasProd f ((∏ i ∈ range k, f i) * m) :=
+  ((range k).hasProd f).mul_compl <| (notMemRangeEquiv k).symm.hasProd_iff.mp h
 
 @[to_additive]
 theorem zero_mul {f : ℕ → M} (h : HasProd (fun n ↦ f (n + 1)) m) :
@@ -545,15 +544,38 @@ end IsUniformGroup
 
 end Int
 
-section pnat
+section PNat
 
 @[to_additive]
-theorem pnat_multipliable_iff_multipliable_succ {α : Type*} [TopologicalSpace α] [CommMonoid α]
-    {f : ℕ → α} : Multipliable (fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) :=
+theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
+    Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x ↦ f (x + 1) :=
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
 
-@[to_additive]
-theorem tprod_pnat_eq_tprod_succ {α : Type*} [TopologicalSpace α] [CommMonoid α] (f : ℕ → α) :
-    ∏' n : ℕ+, f n = ∏' n, f (n + 1) := (Equiv.pnatEquivNat.symm.tprod_eq _).symm
+@[deprecated (since := "2025-09-31")]
+alias pnat_multipliable_iff_multipliable_succ := multipliable_pnat_iff_multipliable_succ
 
-end pnat
+@[to_additive]
+theorem tprod_pnat_eq_tprod_succ {f : ℕ → M} : ∏' n : ℕ+, f n = ∏' n, f (n + 1) :=
+  (Equiv.pnatEquivNat.symm.tprod_eq _).symm
+
+@[to_additive]
+lemma tprod_zero_pnat_eq_tprod_nat [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]
+    {f : ℕ → G} (hf : Multipliable f) :
+    f 0 * ∏' n : ℕ+, f ↑n = ∏' n, f n := by
+  simpa [hf.tprod_eq_zero_mul] using tprod_pnat_eq_tprod_succ
+
+@[to_additive tsum_int_eq_zero_add_two_mul_tsum_pnat]
+theorem tprod_int_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
+    [T2Space G] {f : ℤ → G} (hf : ∀ n : ℤ, f (-n) = f n) (hf2 : Multipliable f) :
+    ∏' n, f n = f 0 * (∏' n : ℕ+, f n) ^ 2 := by
+  have hf3 : Multipliable fun n : ℕ ↦ f n :=
+    (multipliable_int_iff_multipliable_nat_and_neg.mp hf2).1
+  have hf4 : Multipliable fun n : ℕ+ ↦ f n := by
+    rwa [multipliable_pnat_iff_multipliable_succ (f := (f ·)),
+      multipliable_nat_add_iff 1 (f := (f ·))]
+  have := tprod_nat_mul_neg hf2
+  rw [← tprod_zero_pnat_eq_tprod_nat (by simpa [hf] using hf3.mul hf3), mul_comm _ (f 0)] at this
+  simp only [hf, Nat.cast_zero, mul_assoc, mul_right_inj] at this
+  rw [← this, mul_right_inj, hf4.tprod_mul hf4, sq]
+
+end PNat

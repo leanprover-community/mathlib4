@@ -129,7 +129,8 @@ instance HasAffineProperty.diagonal_affineProperty_isLocal
       ((diagonal_iff (targetAffineLocally Q)).mp hf)
   of_basicOpenCover {X Y} _ f s hs hs' := by
     refine (diagonal_iff (targetAffineLocally Q)).mpr ?_
-    let 𝒰 := Y.openCoverOfISupEqTop _ (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
+    let 𝒰 := Y.openCoverOfIsOpenCover _
+      (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
     have (i : _) : IsAffine (𝒰.X i) := (isAffineOpen_top Y).basicOpen i.1
     refine diagonal_of_openCover_diagonal (targetAffineLocally Q) f 𝒰 ?_
     intro i
@@ -204,9 +205,11 @@ lemma universally_isLocalAtSource (P : MorphismProperty Scheme)
     exact IsLocalAtSource.comp (hf _ _ _ (IsPullback.of_hasPullback ..)) _
   · apply MorphismProperty.universally_mk'
     intro T g _
-    rw [IsLocalAtSource.iff_of_openCover (P := P) (𝒰.pullbackCover <| pullback.snd g f)]
+    rw [IsLocalAtSource.iff_of_openCover (P := P) (𝒰.pullback₁ <| pullback.snd g f)]
     intro i
-    rw [𝒰.pullbackCover_f, ← pullbackLeftPullbackSndIso_hom_fst, P.cancel_left_of_respectsIso]
+    dsimp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+      PreZeroHypercover.pullback₁_X, PreZeroHypercover.pullback₁_f]
+    rw [← pullbackLeftPullbackSndIso_hom_fst, P.cancel_left_of_respectsIso]
     exact hf i _ _ _ (IsPullback.of_hasPullback ..)
 
 end Universally
