@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Rat.Defs
 import Mathlib.Algebra.Ring.Int.Defs
 
