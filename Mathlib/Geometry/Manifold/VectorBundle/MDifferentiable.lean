@@ -583,14 +583,13 @@ lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
       (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
   apply (MDifferentiableWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
-  rw [← tsum_eq_finsum]
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
     intro x hx
     rw [Set.mem_setOf] at hx ⊢
     use y
     simpa using ⟨hx, mem_of_mem_nhds hu⟩
-  exact Set.Finite.subset hfin this
+  rw [tsum_eq_finsum (hfin.subset this)]
 
 lemma MDifferentiableAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})

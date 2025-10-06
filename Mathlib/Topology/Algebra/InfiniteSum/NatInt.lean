@@ -61,9 +61,8 @@ variable [ContinuousMul M]
 
 @[to_additive]
 theorem prod_range_mul {f : ℕ → M} {k : ℕ} (h : HasProd (fun n ↦ f (n + k)) m) :
-    HasProd f ((∏ i ∈ range k, f i) * m) := by
-  refine ((range k).hasProd f).mul_compl ?_
-  rwa [← (notMemRangeEquiv k).symm.hasProd_iff]
+    HasProd f ((∏ i ∈ range k, f i) * m) :=
+  ((range k).hasProd f).mul_compl <| (notMemRangeEquiv k).symm.hasProd_iff.mp h
 
 @[to_additive]
 theorem zero_mul {f : ℕ → M} (h : HasProd (fun n ↦ f (n + 1)) m) :
