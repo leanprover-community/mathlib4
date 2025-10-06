@@ -71,16 +71,7 @@ theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
   · intro U hU
     convert (⨆ i, ((𝒰.f i ≫ f) ''ᵁ (𝒰.f i ⁻¹ᵁ ⟨U, hU⟩))).2
     ext x
-    simp only [Set.mem_image, TopologicalSpace.Opens.map_obj, TopologicalSpace.Opens.iSup_mk,
-      TopologicalSpace.Opens.carrier_eq_coe, IsOpenMap.coe_functor_obj, Scheme.comp_coeBase,
-      TopCat.hom_comp, ContinuousMap.comp_apply, TopologicalSpace.Opens.coe_mk, Set.mem_iUnion,
-      Set.mem_preimage]
-    constructor
-    · rintro ⟨x, hx, rfl⟩
-      obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
-      exact ⟨i, x, hx, rfl⟩
-    · rintro ⟨i, x, hx, rfl⟩
-      exact ⟨_, hx, rfl⟩
+    exact ⟨fun ⟨x, _, _⟩ ↦ by have := 𝒰.exists_eq x; simp; grind, by simp; grind⟩
   · intro x
     obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
     rw [← (IsIso.comp_inv_eq _).mpr (Scheme.stalkMap_comp (𝒰.f i) f x)]
