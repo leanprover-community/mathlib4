@@ -75,8 +75,7 @@ lemma tendsto_extremalNumber_div_choose_two (H : SimpleGraph W) :
       (𝓝 (sInf { (extremalNumber n H / n.choose 2 : ℝ) | n ∈ Set.Ici 2 })) := by
   let f := fun n ↦ (extremalNumber n H / n.choose 2 : ℝ)
   have hf_Ici : f '' (Set.Ici 2) = Set.range (fun n ↦ f (n + 2)) := by
-    refine Set.ext fun x ↦ ⟨fun ⟨n, hn, hfn⟩ ↦ ⟨n - 2, ?_⟩,
-      fun ⟨n, hfn⟩ ↦ ⟨n + 2, Nat.le_add_left 2 n, hfn⟩⟩
+    refine Set.ext fun x ↦ ⟨fun ⟨n, hn, hfn⟩ ↦ ⟨n - 2, ?_⟩, by grind⟩
     rwa [← Nat.sub_add_cancel hn] at hfn
   suffices h : Tendsto (fun n ↦ f (n + 2)) atTop (𝓝 (⨅ n, f (n + 2))) by
     rwa [tendsto_add_atTop_iff_nat 2, ← sInf_range, ← hf_Ici, Set.image] at h
