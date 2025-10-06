@@ -646,14 +646,13 @@ theorem _root_.IsPrimitiveRoot.pow_add_pow_eq_prod_add_mul (hodd : Odd n)
     (h : IsPrimitiveRoot ζ n) : x ^ n + y ^ n = ∏ ζ ∈ nthRootsFinset n (1 : R), (x + ζ * y) := by
   simpa [hodd.neg_pow] using h.pow_sub_pow_eq_prod_sub_mul x (-y) hodd.pos
 
-theorem separable_cyclotomic {K : Type*} [Field K] {n : ℕ} (hn : (n : K) ≠ 0) :
-    Separable (cyclotomic n K) :=
-  ((X_pow_sub_one_separable_iff.mpr hn).of_dvd
-    (cyclotomic.dvd_X_pow_sub_one n K))
+theorem separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
+    (cyclotomic n K).Separable :=
+  .of_dvd (separable_X_pow_sub_C 1 NeZero.out one_ne_zero) (cyclotomic.dvd_X_pow_sub_one n K)
 
-theorem squarefree_cyclotomic {K : Type*} [Field K] {n : ℕ} (hn : (n : K) ≠ 0) :
+theorem squarefree_cyclotomic {K : Type*} [Field K] {n : ℕ} [NeZero (n : K)] :
     Squarefree (cyclotomic n K) :=
- (separable_cyclotomic hn).squarefree
+ (separable_cyclotomic n K).squarefree
 
 end miscellaneous
 
