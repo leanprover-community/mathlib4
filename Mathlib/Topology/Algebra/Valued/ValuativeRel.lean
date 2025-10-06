@@ -310,14 +310,12 @@ lemma iff_hasBasis_pair :
   refine HasBasis.to_hasBasis_iff ?_ ?_
   · simp only [posSubmonoid_def, setOf_subset_setOf, Prod.exists, forall_const]
     intro γ
-    obtain ⟨r, s, h⟩ := valuation_surjective γ.val
-    by_cases hr : valuation R r = 0
-    · simp [hr, eq_comm] at h
-    · refine ⟨r, s, ⟨by simpa [valuation_eq_zero_iff] using hr, s.prop⟩, ?_⟩
-      simp only [← h]
-      intro x hx
-      rw [lt_div_iff₀ (by simp [zero_lt_iff])]
-      simp [valuation, hx]
+    obtain ⟨r, s, h⟩ := exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
+    refine ⟨r, s, ⟨by simp [← posSubmonoid_def], s.prop⟩, ?_⟩
+    simp only [← h]
+    intro x hx
+    rw [lt_div_iff₀ (by simp [zero_lt_iff])]
+    simp [valuation, hx]
   · rintro ⟨r, s⟩ ⟨hr, hs⟩
     refine ⟨Units.mk0 (.mk r ⟨s, hs⟩) ?_, trivial, ?_⟩
     · simpa using hr
@@ -345,7 +343,7 @@ lemma iff_hasBasis_min_inv :
     · refine ⟨x * x, mul_mem hx hx, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
       simp only [Valuation.Compatible.rel_iff_le («v» := v),
         Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul] at *
-      refine ((mul_lt_mul_right (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
+      refine ((mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
         ⟨y, hy⟩))).2 hz.1).trans_le ?_
       rw [mul_assoc]
       exact (mul_le_iff_le_one_right (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
@@ -353,7 +351,7 @@ lemma iff_hasBasis_min_inv :
     · refine ⟨y * y, mul_mem hy hy, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
       simp only [Valuation.Compatible.rel_iff_le («v» := v),
         Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul] at *
-      rw [← mul_lt_mul_right (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
+      rw [← mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
          ⟨y, hy⟩)), mul_assoc]
       exact hz.2.trans_le hxy
   · rintro x hx
@@ -361,7 +359,7 @@ lemma iff_hasBasis_min_inv :
     · refine ⟨(x, 1), ⟨hx, one_mem _⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, ?_⟩⟩
       · rwa [mul_one] at hz
       · simp only [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul, map_one, mul_one] at hz ⊢
-        rw [← mul_lt_mul_right (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
+        rw [← mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
           ⟨x, hx⟩))] at hz
         exact hz.trans_le (mul_le_one' hx1 hx1)
     · refine ⟨(1, x), ⟨one_mem _, hx⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, hz⟩⟩
