@@ -24,20 +24,20 @@ open WithZero
 
 /-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an homomorphism of monoids with zero. -/
 @[simps!]
-def valueGroup₀.MonoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
+def valueGroup₀.monoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
   WithZero.map' (valueGroup f).subtype
 
-lemma valueGroup₀.MonoidWithZeroHom_strictMono :
-    StrictMono (valueGroup₀.MonoidWithZeroHom (f := f)) :=
+lemma valueGroup₀.monoidWithZeroHom_strictMono :
+    StrictMono (valueGroup₀.monoidWithZeroHom (f := f)) :=
   map'_strictMono (Subtype.strictMono_coe _)
 
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
 the use of `valueGroup₀.MonoidWithZeroHom` and apply the above lemma
 `valueGroup₀.MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
 def valueGroup₀_OrderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
-  toFun := valueGroup₀.MonoidWithZeroHom
-  inj' := valueGroup₀.MonoidWithZeroHom_strictMono.injective
-  map_rel_iff' := valueGroup₀.MonoidWithZeroHom_strictMono.le_iff_le
+  toFun := valueGroup₀.monoidWithZeroHom
+  inj' := valueGroup₀.monoidWithZeroHom_strictMono.injective
+  map_rel_iff' := valueGroup₀.monoidWithZeroHom_strictMono.le_iff_le
 
 @[simp]
 lemma valueGroup₀_OrderEmbedding_apply (x : ValueGroup₀ f) :
