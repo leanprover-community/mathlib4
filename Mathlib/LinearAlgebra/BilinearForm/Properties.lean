@@ -172,6 +172,38 @@ lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     obtain ⟨j, rfl⟩ := iy h₂
     rw [h]
 
+/-! ### Positive semidefinite bilinear forms -/
+
+section PositiveSemidefinite
+
+/-- A sesquilinear form `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
+structure IsNonneg [LE R] (B : BilinForm R M) where
+  nonneg : ∀ x, 0 ≤ B x x
+
+lemma isNonneg_def [LE R] {B : BilinForm R M} : B.IsNonneg ↔ ∀ x, 0 ≤ B x x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+@[simp]
+lemma isNonneg_zero [Preorder R] : IsNonneg (0 : BilinForm R M) := ⟨fun _ ↦ le_rfl⟩
+
+/-- A bilinear form `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
+structure IsPosSemidef [LE R] (B : BilinForm R M) extends B.IsSymm, B.IsNonneg
+
+variable {B : BilinForm R M}
+
+alias IsPosSemidef.isSymm := IsPosSemidef.toIsSymm
+alias IsPosSemidef.isNonneg := IsPosSemidef.toIsNonneg
+
+lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsNonneg :=
+  ⟨fun h ↦ ⟨h.isSymm, h.isNonneg⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+
+@[simp]
+lemma isPosSemidef_zero [Preorder R] : IsPosSemidef (0 : BilinForm R M) where
+  toIsSymm := isSymm_zero
+  toIsNonneg := isNonneg_zero
+
+end PositiveSemidefinite
+
 /-- The proposition that a bilinear form is alternating -/
 def IsAlt (B : BilinForm R M) : Prop := LinearMap.IsAlt B
 
