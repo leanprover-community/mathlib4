@@ -74,8 +74,8 @@ theorem nat_clog_helper {b m n : ℕ} (hb : Nat.blt 1 b = true)
     (h₁ : Nat.blt (b ^ m) n = true) (h₂ : Nat.ble n (b ^ (m + 1)) = true) :
     Nat.clog b n = m + 1 := by
   rw [Nat.blt_eq] at hb
-  rw [Nat.blt_eq, Nat.pow_lt_iff_lt_clog hb] at h₁
-  rw [Nat.ble_eq, Nat.le_pow_iff_clog_le hb] at h₂
+  rw [Nat.blt_eq, ← Nat.lt_clog_iff_pow_lt hb] at h₁
+  rw [Nat.ble_eq, ← Nat.clog_le_iff_le_pow hb] at h₂
   cutsat
 
 private theorem isNat_clog : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
