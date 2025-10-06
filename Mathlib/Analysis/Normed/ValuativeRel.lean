@@ -62,12 +62,12 @@ lemma norm_pos_posSubmonoid (x : ValuativeRel.posSubmonoid R) :
     0 < ‖(x : R)‖ := by
   simp
 
-instance : (valuation' (R := R)).Compatible := .ofValuation _
+scoped instance : (valuation' (R := R)).Compatible := .ofValuation _
 
-instance : ValuativeRel.IsRankLeOne R :=
+scoped instance : ValuativeRel.IsRankLeOne R :=
   .of_compatible_mulArchimedean (valuation' (R := R))
 
-instance {K : Type*} [NormedField K] [IsUltrametricDist K] :
+scoped instance {K : Type*} [NormedField K] [IsUltrametricDist K] :
     IsValuativeTopology K := by
   have he : valuation'.IsEquiv (ValuativeRel.valuation K) := ValuativeRel.isEquiv _ _
   refine .of_hasBasis_zero (Metric.nhds_basis_ball.to_hasBasis' ?_ ?_)
