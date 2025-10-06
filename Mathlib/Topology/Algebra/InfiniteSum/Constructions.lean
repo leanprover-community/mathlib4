@@ -361,17 +361,10 @@ theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L:=
 theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable (fun a ↦ unop (f a)) L) ↔ Summable f L :=
   ⟨Summable.op, Summable.unop⟩
 
-theorem tsum_op [T2Space α] :
-    ∑'[L] x, op (f x) = op (∑'[L] x, f x) := by
-  by_cases hL : L.NeBot
-  · by_cases h : Summable f L
-    · exact h.hasSum.op.tsum_eq
-    · have ho := summable_op.not.mpr h
-      rw [tsum_eq_zero_of_not_summable h, tsum_eq_zero_of_not_summable ho, op_zero]
-  · simpa only [tsum_bot hL] using (opAddEquiv.map_finsum f).symm
+theorem tsum_op [T2Space α] : ∑'[L] x, op (f x) = op (∑'[L] x, f x) :=
+  (opHomeomorph.isClosedEmbedding.map_tsum f (g := opAddEquiv)).symm
 
-theorem tsum_unop [T2Space α] {f : β → αᵐᵒᵖ} :
-    ∑'[L] x, unop (f x) = unop (∑'[L] x, f x) :=
+theorem tsum_unop [T2Space α] {f : β → αᵐᵒᵖ} : ∑'[L] x, unop (f x) = unop (∑'[L] x, f x) :=
   op_injective tsum_op.symm
 
 end MulOpposite
@@ -400,12 +393,7 @@ theorem summable_star_iff : Summable (fun b ↦ star (f b)) L ↔ Summable f L :
 theorem summable_star_iff' : Summable (star f) L ↔ Summable f L :=
   summable_star_iff
 
-theorem tsum_star [T2Space α] : star (∑'[L] b, f b) = ∑'[L] b, star (f b) := by
-  by_cases hL : L.NeBot
-  · by_cases hf : Summable f L
-    · exact hf.hasSum.star.tsum_eq.symm
-    · rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (mt Summable.ofStar hf),
-        star_zero]
-  · simpa only [tsum_bot hL] using starAddEquiv.map_finsum f
+theorem tsum_star [T2Space α] : star (∑'[L] b, f b) = ∑'[L] b, star (f b) :=
+  Function.LeftInverse.map_tsum (g := starAddEquiv) f continuous_star continuous_star star_star
 
 end ContinuousStar
