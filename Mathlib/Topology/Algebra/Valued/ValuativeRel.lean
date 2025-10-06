@@ -102,17 +102,18 @@ lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 (0 : R) ↔
 @[deprecated (since := "2025-08-04")]
 alias _root_.ValuativeTopology.mem_nhds_iff := mem_nhds_zero_iff
 
+variable {R' : Type*} [CommRing R'] [ValuativeRel R'] [UniformSpace R']
+    [IsUniformAddGroup R'] [IsValuativeTopology R']
+
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
-instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
-    [IsUniformAddGroup R] [IsValuativeTopology R] :
-    Valued R (ValueGroupWithZero R) where
-  «v» := valuation R
+instance (priority := low) :
+    Valued R' (ValueGroupWithZero R') where
+  «v» := valuation R'
   is_topological_valuation := mem_nhds_zero_iff
 
-lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
-    [IsUniformAddGroup R] [IsValuativeTopology R] :
-    Valued.v = valuation R := rfl
+lemma v_eq_valuation :
+    Valued.v = valuation R' := rfl
 
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ => True)
@@ -164,21 +165,14 @@ instance (priority := low) : IsTopologicalRing R := by
   simp [(RingSubgroupsBasis.hasBasis_nhds _ _).mem_iff, mem_nhds_iff, Valuation.ltAddSubgroup,
     neg_add_eq_sub]
 
-/-- A ring with a topological additive structure and a valuative relationship is
-a uniform space made up of entourages of the form `{ (x, y) | v (y - x) < γ }`.
-However, this is not a global instance to prevent timeouts in typeclass inference,
-since otherwise, TC search for `UniformSpace R` will start exploring `IsValuativeTopology R`. -/
-local instance : UniformSpace R := IsTopologicalAddGroup.toUniformSpace R
-
 open Uniformity in
-theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
-    fun γ : (ValueGroupWithZero R)ˣ => { p : R × R | v (p.2 - p.1) < γ } := by
-  rw [uniformity_eq_comap_nhds_zero']
-  exact (hasBasis_nhds_zero R).comap _
+theorem hasBasis_uniformity :
+    (𝓤 R').HasBasis (fun _ => True)
+      fun γ : (ValueGroupWithZero R')ˣ => { p : R' × R' | (valuation R') (p.2 - p.1) < γ } := by
+  rw [uniformity_eq_comap_nhds_zero]
+  exact (hasBasis_nhds_zero R').comap _
 
-instance (priority := low) : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
-
-instance (priority := low) : IsUltraUniformity R := by
+instance (priority := low) : IsUltraUniformity R' := by
   refine .mk_of_hasBasis hasBasis_uniformity ?_ ?_
   · intros
     ext ⟨x, y⟩
@@ -190,21 +184,21 @@ instance (priority := low) : IsUltraUniformity R := by
     ring_nf at this
     rwa [neg_add_eq_sub] at this
 
-lemma uniformity_ball_lt_mem_uniformity {r : ValueGroupWithZero R} (hr : r ≠ 0) :
-    { p : R × R | v (p.2 - p.1) < r } ∈ 𝓤 R := by
+lemma uniformity_ball_lt_mem_uniformity {r : ValueGroupWithZero R'} (hr : r ≠ 0) :
+    { p : R' × R' | (valuation R') (p.2 - p.1) < r } ∈ 𝓤 R' := by
   rw [hasBasis_uniformity.mem_iff]
   use Units.mk0 r hr
   simp
 
-lemma uniformity_ball_le_mem_uniformity {r : ValueGroupWithZero R} (hr : r ≠ 0) :
-    { p : R × R | v (p.2 - p.1) ≤ r } ∈ 𝓤 R := by
+lemma uniformity_ball_le_mem_uniformity {r : ValueGroupWithZero R'} (hr : r ≠ 0) :
+    { p : R' × R' | (valuation R') (p.2 - p.1) ≤ r } ∈ 𝓤 R' := by
   rw [hasBasis_uniformity.mem_iff]
   rcases le_or_gt 1 r with hr1 | hr1
   · use 1
     simp only [Units.val_one, setOf_subset_setOf, Prod.forall, true_and]
     intro _ _ h
     exact hr1.trans' h.le
-  · lift r to (ValueGroupWithZero R)ˣ using IsUnit.mk0 r hr
+  · lift r to (ValueGroupWithZero R')ˣ using IsUnit.mk0 r hr
     use r ^ 2
     simp only [Units.val_pow_eq_pow_val, setOf_subset_setOf, Prod.forall, true_and]
     intro _ _ h
@@ -215,7 +209,9 @@ theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simp
-  · convert ((v).isTransitiveRel_uniformity_ball_lt r).isOpen_ball_of_mem_uniformity 0
+  · letI := IsTopologicalAddGroup.toUniformSpace R
+    letI := isUniformAddGroup_of_addCommGroup (G := R)
+    convert ((v).isTransitiveRel_uniformity_ball_lt r).isOpen_ball_of_mem_uniformity 0
       (uniformity_ball_lt_mem_uniformity hr)
     simp [UniformSpace.ball]
 
@@ -226,7 +222,9 @@ theorem isClosed_ball (r : ValueGroupWithZero R) :
     IsClosed {x | v x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simp
-  · convert UniformSpace.isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
+  · letI := IsTopologicalAddGroup.toUniformSpace R
+    letI := isUniformAddGroup_of_addCommGroup (G := R)
+    convert UniformSpace.isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
       0 ((v).isSymmetricRel_uniformity_ball_lt r) ((v).isTransitiveRel_uniformity_ball_lt r)
       (uniformity_ball_lt_mem_uniformity hr)
     simp [UniformSpace.ball]
@@ -243,6 +241,8 @@ alias _root_.ValuativeTopology.isClopen_ball := isClopen_ball
 
 lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x ≤ r} := by
+  letI := IsTopologicalAddGroup.toUniformSpace R
+  letI := isUniformAddGroup_of_addCommGroup (G := R)
   convert ((v).isTransitiveRel_uniformity_ball_le r).isOpen_ball_of_mem_uniformity 0
     (uniformity_ball_le_mem_uniformity hr)
   simp [UniformSpace.ball]
