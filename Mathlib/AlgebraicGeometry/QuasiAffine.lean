@@ -40,7 +40,7 @@ instance (priority := low) [X.IsQuasiAffine] : X.IsSeparated where
     rw [← terminal.comp_from X.toSpecΓ]
     infer_instance
 
-/-- Superceded by `IsQuasiAffine.of_isImmersion`. -/
+/-- Superseded by `IsQuasiAffine.of_isImmersion`. -/
 @[stacks 01P9]
 private lemma IsQuasiAffine.of_isOpenImmersion [CompactSpace X]
     [Y.IsQuasiAffine] [IsOpenImmersion f] : X.IsQuasiAffine := by
@@ -57,9 +57,7 @@ private lemma IsQuasiAffine.of_isOpenImmersion [CompactSpace X]
     refine ⟨_, ((f ≫ Y.toSpecΓ) ⁻¹ᵁ (PrimeSpectrum.basicOpen r)).ι,
       inferInstance, by simpa using hxr, ?_⟩
     have := (f ≫ Y.toSpecΓ).isIso_app _ hrf
-    have := (asIso <| (f ≫ Y.toSpecΓ).app (PrimeSpectrum.basicOpen r))
-    have := (asIso <| X.toSpecΓ.app (PrimeSpectrum.basicOpen (f.appTop r)))
-    have : IsIso (Spec.map (f.appTop) ∣_ PrimeSpectrum.basicOpen r) := by
+    have : IsIso (Spec.map f.appTop ∣_ PrimeSpectrum.basicOpen r) := by
       have : IsAffine (Scheme.Opens.toScheme (X := Spec _) (PrimeSpectrum.basicOpen r)) :=
         IsAffineOpen.Spec_basicOpen r
       refine (HasAffineProperty.iff_of_isAffine (P := .isomorphisms Scheme)).mpr
