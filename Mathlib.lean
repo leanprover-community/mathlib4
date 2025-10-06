@@ -2726,6 +2726,7 @@ import Mathlib.CategoryTheory.Presentable.Limits
 import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 import Mathlib.CategoryTheory.Presentable.Presheaf
 import Mathlib.CategoryTheory.Presentable.StrongGenerator
+import Mathlib.CategoryTheory.Presentable.Type
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
