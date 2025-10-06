@@ -357,6 +357,7 @@ theorem Matrix.toLinearMapₛₗ₂_apply (M : Matrix n m N₂) (x : M₁) (y : 
     smul_algebra_smul_comm (σ₁ ((Basis.equivFun b₁) x _))
     ((RingHom.id R) ((Basis.equivFun b₂) y _)) (M _ _)
 
+@[simp]
 theorem Matrix.toLinearMap₂_apply (M : Matrix n m N₂) (x : M₁) (y : M₂) :
     Matrix.toLinearMap₂ b₁ b₂ M x y =
       ∑ i, ∑ j, b₁.repr x i • b₂.repr y j • M i j :=
