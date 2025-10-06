@@ -376,18 +376,18 @@ theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) :
 
 open Classical in
 /--
-Variant of `meromorphicOrderAt_const`, for constant functions defined by coercion from natural
-numbers.
+Variant of `meromorphicOrderAt_const`, for constant functions defined by coercion from integers.
 -/
-theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) :
+theorem meromorphicOrderAt_const_intCast (z₀ : 𝕜) (n : ℤ) :
     meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
   meromorphicOrderAt_const z₀ (n : 𝕜)
 
 open Classical in
 /--
-Variant of `meromorphicOrderAt_const`, for constant functions defined by coercion from integers.
+Variant of `meromorphicOrderAt_const`, for constant functions defined by coercion from natural
+numbers.
 -/
-theorem meromorphicOrderAt_const_ofInt (z₀ : 𝕜) (n : ℤ) :
+theorem meromorphicOrderAt_const_natCast (z₀ : 𝕜) (n : ℕ) :
     meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
   meromorphicOrderAt_const z₀ (n : 𝕜)
 

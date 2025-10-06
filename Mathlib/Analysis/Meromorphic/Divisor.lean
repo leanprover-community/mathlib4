@@ -201,7 +201,7 @@ theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
   · simp only [hn, pow_zero, divisor_def, zero_nsmul, Function.locallyFinsuppWithin.coe_zero,
       Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
     intro _ _
-    have := meromorphicOrderAt_const_ofNat z 1
+    have := meromorphicOrderAt_const_natCast z 1
     simp_all
   by_cases hz : ¬z ∈ U
   · simp [hz]
@@ -227,7 +227,7 @@ theorem divisor_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
   · simp only [hn, zpow_zero, divisor_def, zero_smul, Function.locallyFinsuppWithin.coe_zero,
       Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
     intro _ _
-    have := meromorphicOrderAt_const_ofNat z 1
+    have := meromorphicOrderAt_const_natCast z 1
     simp_all
   by_cases hz : ¬z ∈ U
   · simp [hz]
