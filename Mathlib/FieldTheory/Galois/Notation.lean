@@ -18,6 +18,12 @@ notation when `L/K` is an extension of fields.
 
 section Notation
 
+/--
+Notation for `Gal(L/K) := L ≃ₐ[K] L`.
+
+Although this notation works for all automorphism groups of algebras, we should only use this
+notation when `L/K` is an extension of fields.
+-/
 notation "Gal(" L:100 "/" K ")" => L ≃ₐ[K] L
 
 open Lean PrettyPrinter.Delaborator SubExpr in
