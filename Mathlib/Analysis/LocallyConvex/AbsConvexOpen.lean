@@ -82,7 +82,7 @@ variable [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 variable [ContinuousSMul ℝ E]
 variable (𝕜 E)
 
-open ComplexOrder
+open scoped ComplexOrder
 
 /-- The family of seminorms defined by the gauges of absolute convex open sets. -/
 noncomputable def gaugeSeminormFamily : SeminormFamily 𝕜 E (AbsConvexOpenSets 𝕜 E) := fun s =>
