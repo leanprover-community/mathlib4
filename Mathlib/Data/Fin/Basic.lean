@@ -530,15 +530,13 @@ section Mul
 ### mul
 -/
 
-@[deprecated (since := "2025-08-14")] alias mul_one' := Fin.mul_one
+@[deprecated (since := "2025-10-06")] alias mul_one' := Fin.mul_one
 
-protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
-  rw [Fin.mul_comm, Fin.mul_one]
+@[deprecated (since := "2025-10-06")] alias one_mul' := Fin.one_mul
 
-protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [mul_def]
+@[deprecated (since := "2025-10-06")] alias mul_zero' := Fin.mul_zero
 
-protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [mul_def]
+@[deprecated (since := "2025-10-06")] alias zero_mul' := Fin.zero_mul
 
 end Mul
 
