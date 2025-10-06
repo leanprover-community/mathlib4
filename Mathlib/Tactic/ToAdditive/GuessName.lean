@@ -87,57 +87,58 @@ This only transforms single name components, unlike `abbreviationDict`.
 Note: `guessName` capitalizes the output according to the capitalization of the input.
 In order for this to work, the input should always be lower case, and the output always upper case.
 -/
-def nameDict : String → List String
-  | "one"           => ["Zero"]
-  | "mul"           => ["Add"]
-  | "smul"          => ["VAdd"]
-  | "inv"           => ["Neg"]
-  | "div"           => ["Sub"]
-  | "prod"          => ["Sum"]
-  | "hmul"          => ["HAdd"]
-  | "hsmul"         => ["HVAdd"]
-  | "hdiv"          => ["HSub"]
-  | "hpow"          => ["HSMul"]
-  | "finprod"       => ["Finsum"]
-  | "tprod"         => ["TSum"]
-  | "pow"           => ["NSMul"]
-  | "npow"          => ["NSMul"]
-  | "zpow"          => ["ZSMul"]
-  | "mabs"          => ["Abs"]
-  | "monoid"        => ["Add", "Monoid"]
-  | "submonoid"     => ["Add", "Submonoid"]
-  | "group"         => ["Add", "Group"]
-  | "subgroup"      => ["Add", "Subgroup"]
-  | "semigroup"     => ["Add", "Semigroup"]
-  | "magma"         => ["Add", "Magma"]
-  | "haar"          => ["Add", "Haar"]
-  | "prehaar"       => ["Add", "Prehaar"]
-  | "unit"          => ["Add", "Unit"]
-  | "units"         => ["Add", "Units"]
-  | "cyclic"        => ["Add", "Cyclic"]
-  | "semigrp"       => ["Add", "Semigrp"]
-  | "grp"           => ["Add", "Grp"]
-  | "commute"       => ["Add", "Commute"]
-  | "semiconj"      => ["Add", "Semiconj"]
-  | "rootable"      => ["Divisible"]
-  | "zpowers"       => ["ZMultiples"]
-  | "powers"        => ["Multiples"]
-  | "multipliable"  => ["Summable"]
-  | "gpfree"        => ["APFree"]
-  | "quantale"      => ["Add", "Quantale"]
-  | "square"        => ["Even"]
-  | "mconv"         => ["Conv"]
-  | "irreducible"   => ["Add", "Irreducible"]
-  | "mlconvolution" => ["LConvolution"]
-  | _               => []
+def nameDict : Std.HashMap String (List String) :=
+  .ofList [("one", ["Zero"]),
+    ("mul", ["Add"]),
+    ("smul", ["VAdd"]),
+    ("inv", ["Neg"]),
+    ("div", ["Sub"]),
+    ("prod", ["Sum"]),
+    ("hmul", ["HAdd"]),
+    ("hsmul", ["HVAdd"]),
+    ("hdiv", ["HSub"]),
+    ("hpow", ["HSMul"]),
+    ("finprod", ["Finsum"]),
+    ("tprod", ["TSum"]),
+    ("pow", ["NSMul"]),
+    ("npow", ["NSMul"]),
+    ("zpow", ["ZSMul"]),
+    ("mabs", ["Abs"]),
+    ("monoid", ["Add", "Monoid"]),
+    ("submonoid", ["Add", "Submonoid"]),
+    ("group", ["Add", "Group"]),
+    ("subgroup", ["Add", "Subgroup"]),
+    ("semigroup", ["Add", "Semigroup"]),
+    ("magma", ["Add", "Magma"]),
+    ("haar", ["Add", "Haar"]),
+    ("prehaar", ["Add", "Prehaar"]),
+    ("unit", ["Add", "Unit"]),
+    ("units", ["Add", "Units"]),
+    ("cyclic", ["Add", "Cyclic"]),
+    ("semigrp", ["Add", "Semigrp"]),
+    ("grp", ["Add", "Grp"]),
+    ("commute", ["Add", "Commute"]),
+    ("semiconj", ["Add", "Semiconj"]),
+    ("rootable", ["Divisible"]),
+    ("zpowers", ["ZMultiples"]),
+    ("powers", ["Multiples"]),
+    ("multipliable", ["Summable"]),
+    ("gpfree", ["APFree"]),
+    ("quantale", ["Add", "Quantale"]),
+    ("square", ["Even"]),
+    ("mconv", ["Conv"]),
+    ("irreducible", ["Add", "Irreducible"]),
+    ("mlconvolution", ["LConvolution"])]
 
 /--
 Apply the `nameDict` and decapitalize the output like the input.
 -/
 def applyNameDict : List String → List String
   | x :: s =>
-    let y := nameDict x.toLower
-    let z := if y.isEmpty then [x] else decapitalizeFirstLike x y
+    let y := nameDict.get? x.toLower
+    let z := match y with
+      | some y' => decapitalizeFirstLike x y'
+      | none => [x]
     z ++ applyNameDict s
   | [] => []
 
