@@ -6,6 +6,7 @@ Authors: Andrew Yang, Christian Merten
 import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
@@ -88,33 +89,6 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
         ((Cones.postcompose α).obj c'.1)).base
 
-instance {I : Type*} [Category I] (D : I ⥤ Scheme) [∀ i, IsAffine (D.obj i)] :
-    PreservesLimit D Scheme.Γ.rightOp := by
-  let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
-  have (i : _) : IsIso (α.app i) := IsAffine.affine
-  have : IsIso α := NatIso.isIso_of_isIso_app α
-  suffices PreservesLimit ((D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec) Scheme.Γ.rightOp from
-    preservesLimit_of_iso_diagram _ (asIso α).symm
-  have := monadicCreatesLimits Scheme.Spec
-  suffices PreservesLimit (D ⋙ Scheme.Γ.rightOp) (Scheme.Spec ⋙ Scheme.Γ.rightOp) from
-    preservesLimit_comp_of_createsLimit _ _
-  exact preservesLimit_of_natIso (F := 𝟭 _) _ (NatIso.op Scheme.SpecΓIdentity)
-
-instance {I : Type*} [Category I] (D : I ⥤ Schemeᵒᵖ) [∀ i, IsAffine (D.obj i).unop] :
-    PreservesColimit D Scheme.Γ :=
-  have : ∀ i, IsAffine (D.leftOp.obj i) := by dsimp; infer_instance
-  preservesColimit_of_rightOp _ _
-
-include hc in
-lemma Scheme.isAffine_of_isLimit [∀ i, IsAffine (D.obj i)] :
-    IsAffine c.pt := by
-  let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
-  have (i : _) : IsIso (α.app i) := IsAffine.affine
-  have : IsIso α := NatIso.isIso_of_isIso_app α
-  have : c.pt ≅ Spec Γ(c.pt, ⊤) := hc.conePointUniqueUpToIso ((IsLimit.postcomposeHomEquiv
-    (asIso α).symm _).symm (isLimitOfPreserves (Scheme.Γ.rightOp ⋙ Scheme.Spec) hc))
-  exact .of_isIso this.hom
-
 include hc in
 open Scheme.IdealSheafData in
 /--
@@ -193,7 +167,6 @@ section Opens
 include hc in
 /-- Let `{ Dᵢ }` be a cofiltered diagram of compact schemes with affine transition maps.
 If `U ⊆ Dⱼ` contains the image of `limᵢ Dᵢ ⟶ Dⱼ`, then it contains the image of some `Dₖ ⟶ Dⱼ`. -/
-@[stacks 01Z4 "(1)"]
 lemma exists_map_eq_top
     [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -223,6 +196,10 @@ def opensDiagram (i : I) (U : (D.obj i).Opens) : Over i ⥤ Scheme where
 def opensDiagramι (i : I) (U : (D.obj i).Opens) : opensDiagram D i U ⟶ Over.forget _ ⋙ D where
   app j := Scheme.Opens.ι _
 
+instance (i : I) (U : (D.obj i).Opens) (j : Over i) :
+    IsOpenImmersion ((opensDiagramι D i U).app j) := by
+  delta opensDiagramι; infer_instance
+
 /-- Given a diagram `{ Dᵢ }` of schemes and a open `U ⊆ Dᵢ`,
 the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`.
 This is the underlying cone, and it is limiting as witnessed by `isLimitOpensCone` below. -/
@@ -231,33 +208,17 @@ def opensCone (i : I) (U : (D.obj i).Opens) : Cone (opensDiagram D i U) where
   pt := c.π.app i ⁻¹ᵁ U
   π.app j := (c.π.app j.left).resLE _ _ (by rw [← Scheme.preimage_comp, c.w]; rfl)
 
+attribute [local instance] CategoryTheory.isConnected_of_hasTerminal
+
 /-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and a open `U ⊆ Dᵢ`,
 the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 noncomputable
 def isLimitOpensCone [IsCofiltered I] (i : I) (U : (D.obj i).Opens) :
-    IsLimit (opensCone D c i U) where
-  lift s := IsOpenImmersion.lift (Scheme.Opens.ι _)
-    ((isLimitOfPreserves (Over.forget _) (Over.isLimitConePost _ hc)).lift
-      ((Cones.postcompose (opensDiagramι D i U)).obj s)) (by
-        dsimp
-        conv_rhs => rw [← Scheme.Hom.coe_opensRange]
-        simp only [Scheme.Opens.opensRange_ι, TopologicalSpace.Opens.map_coe]
-        rintro _ ⟨x, rfl⟩
-        have := (isLimitOfPreserves (Over.forget _) (Over.isLimitConePost i hc)).fac
-          ((Cones.postcompose (opensDiagramι D i U)).obj s) (Over.mk (𝟙 i))
-        dsimp at this
-        simpa [← ConcreteCategory.comp_apply, ← Scheme.comp_coeBase, this] using
-          ((s.π.app (Over.mk (𝟙 i))).base x).2)
-  fac s j := by
-    have := (isLimitOfPreserves (Over.forget _) (Over.isLimitConePost i hc)).fac
-      ((Cones.postcompose (opensDiagramι D i U)).obj s) j
-    dsimp at this
-    simp [← cancel_mono (Scheme.Opens.ι _), this]
-  uniq s m hm := by
-    rw [← cancel_mono (Scheme.Opens.ι _)]
-    simp only [Functor.const_obj_obj, opensCone_pt, IsOpenImmersion.lift_fac]
-    exact (isLimitOfPreserves (Over.forget _) (Over.isLimitConePost i hc)).uniq
-      ((Cones.postcompose (opensDiagramι D i U)).obj s) _ fun j ↦ by simp [← hm]
+    IsLimit (opensCone D c i U) :=
+  isLimitOfIsPullbackOfIsConnected (opensDiagramι D i U) _ _
+    (by exact { hom := (c.π.app i ⁻¹ᵁ U).ι })
+    (fun j ↦ IsOpenImmersion.isPullback _ _ _ _ (by simp) (by simp [← Scheme.preimage_comp]))
+    ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
 
 instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     (U : (D.obj i).Opens) {j k : Over i} (f : j ⟶ k) :
@@ -289,7 +250,7 @@ include hc in
 lemma isAffineHom_π_app [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] (i : I) :
     IsAffineHom (c.π.app i) where
   isAffine_preimage U hU := have (j : _) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage _
-    Scheme.isAffine_of_isLimit _ _ (isLimitOpensCone D c hc i U)
+    Scheme.isAffine_of_isLimit _ (isLimitOpensCone D c hc i U)
 
 include hc in
 lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
@@ -678,7 +639,7 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
   obtain ⟨l, hl, hlU⟩ := Set.mem_iUnion₂.mp (ht.ge (Set.mem_univ ((D.map (fk (by simp))).base x)))
   refine ⟨D.map (fk (by simp)) ⁻¹ᵁ U l, le_top, hlU, ?_⟩
   dsimp
-  simp
+  simp only [homOfLE_leOfHom, map_zero]
   have h₁ : fk (by simp) = fk (Finset.mem_insert_of_mem (Finset.mem_image_of_mem _ hl)) ≫ f l :=
     (hk _ (by simp) (Finset.mem_image.mpr ⟨⟨l, hl⟩, by simp, by simp⟩)).symm
   have h₂ : D.map (fk (Finset.mem_insert_self _ _)) ⁻¹ᵁ U l ≤ D.map (fk (Finset.mem_insert_of_mem
