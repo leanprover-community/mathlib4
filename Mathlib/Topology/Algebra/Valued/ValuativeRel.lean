@@ -280,10 +280,7 @@ lemma hasBasis_nhds_zero_ne_zero [IsValuativeTopology R] :
     (𝓝 (0 : R)).HasBasis (· ≠ 0) ({ x | (valuation R) x < · }) :=
   iff_hasBasis_ne_zero.mp inferInstance
 
-lemma of_hasBasis_ne_zero
-    (h : (𝓝 (0 : R)).HasBasis (· ≠ 0) fun γ ↦ { x | (valuation R) x < γ }) :
-    IsValuativeTopology R :=
-  iff_hasBasis_ne_zero.mpr h
+alias ⟨_, of_hasBasis_ne_zero⟩ := iff_hasBasis_ne_zero
 
 lemma iff_hasBasis_ne_zero_and_le_one :
     IsValuativeTopology R ↔
@@ -297,10 +294,7 @@ lemma hasBasis_nhds_zero_ne_zero_and_le_one [IsValuativeTopology R] :
     (𝓝 (0 : R)).HasBasis (fun γ ↦ γ ≠ 0 ∧ γ ≤ 1) ({ x | (valuation R) x < · }) :=
   iff_hasBasis_ne_zero_and_le_one.mp inferInstance
 
-lemma of_hasBasis_ne_zero_and_le_one
-    (h : (𝓝 (0 : R)).HasBasis (fun γ ↦ γ ≠ 0 ∧ γ ≤ 1) fun γ ↦ { x | (valuation R) x < γ }) :
-    IsValuativeTopology R :=
-  iff_hasBasis_ne_zero_and_le_one.mpr h
+alias ⟨_, of_hasBasis_ne_zero_and_le_one⟩ := iff_hasBasis_ne_zero_and_le_one
 
 lemma iff_hasBasis_pair :
     IsValuativeTopology R ↔
@@ -326,11 +320,7 @@ lemma hasBasis_nhds_zero_pair [IsValuativeTopology R] :
       fun rs ↦ { x | x * rs.2 <ᵥ rs.1 } :=
   iff_hasBasis_pair.mp inferInstance
 
-lemma of_hasBasis_pair
-    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ 0 <ᵥ rs.1 ∧ 0 <ᵥ rs.2)
-      fun rs ↦ { x | x * rs.2 <ᵥ rs.1 }) :
-    IsValuativeTopology R :=
-  iff_hasBasis_pair.mpr h
+alias ⟨_, of_hasBasis_pair⟩ := iff_hasBasis_pair
 
 lemma iff_hasBasis_min_inv :
     IsValuativeTopology R ↔
@@ -372,11 +362,7 @@ lemma hasBasis_nhds_zero_min_inv [IsValuativeTopology R] :
       fun r ↦ { x | x <ᵥ r ∧ x * r <ᵥ 1 } :=
   iff_hasBasis_min_inv.mp inferInstance
 
-lemma of_hasBasis_min_inv
-    (h : (𝓝 (0 : R)).HasBasis (fun r : R ↦ r ∈ posSubmonoid R)
-      fun r ↦ { x | x <ᵥ r ∧ x * r <ᵥ 1 }) :
-    IsValuativeTopology R :=
-  iff_hasBasis_min_inv.mpr h
+alias ⟨_, of_hasBasis_min_inv⟩ := iff_hasBasis_min_inv
 
 lemma iff_hasBasis_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
     {v' : Valuation R Γ₀} [v'.Compatible] :
@@ -394,12 +380,7 @@ lemma hasBasis_nhds_zero_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWith
       fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 } :=
   iff_hasBasis_compatible.mp inferInstance
 
-lemma of_hasBasis_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
-    {v' : Valuation R Γ₀} [v'.Compatible]
-    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ v' rs.1 ≠ 0 ∧ v' rs.2 ≠ 0)
-      fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 }) :
-    IsValuativeTopology R :=
-  iff_hasBasis_compatible.mpr h
+alias ⟨_, of_hasBasis_compatible⟩ := iff_hasBasis_compatible
 
 lemma iff_hasBasis_map_ne_zero
     {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F] [ContinuousConstVAdd F F]
@@ -418,13 +399,7 @@ lemma hasBasis_nhds_zero_map_ne_zero
     (𝓝 (0 : F)).HasBasis (fun r ↦ v' r ≠ 0) fun r ↦ { x | v' x < v' r } :=
   iff_hasBasis_map_ne_zero.mp inferInstance
 
-lemma of_hasBasis_map_ne_zero
-    {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F] [ContinuousConstVAdd F F]
-    {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    {v' : Valuation F Γ₀} [v'.Compatible]
-    (h : (𝓝 (0 : F)).HasBasis (fun r ↦ v' r ≠ 0) fun r ↦ { x | v' x < v' r }) :
-    IsValuativeTopology F :=
-  iff_hasBasis_map_ne_zero.mpr h
+alias ⟨_, of_hasBasis_map_ne_zero⟩ := iff_hasBasis_map_ne_zero
 
 end
 
