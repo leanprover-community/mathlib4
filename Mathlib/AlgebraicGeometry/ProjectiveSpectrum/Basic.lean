@@ -335,8 +335,8 @@ noncomputable alias openCoverOfISupEqTop := affineOpenCoverOfIrrelevantLESpan
 /-- `Proj A` is covered by `Spec (A_f)₀` for all homogeneous elements of positive degree. -/
 noncomputable
 def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
-  openCoverOfIsOpenCover 𝒜 (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.2)
-    (fun i ↦ i.1.2) <| by
+  affineOpenCoverOfIrrelevantLESpan 𝒜
+    (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.2) (fun i ↦ i.1.2) <| by
   classical
   intro z hz
   rw [← DirectSum.sum_support_decompose 𝒜 z]
