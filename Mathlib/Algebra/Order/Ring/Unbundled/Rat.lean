@@ -147,7 +147,7 @@ theorem abs_def' (q : ℚ) :
   (refine ext ?_ ?_ <;> dsimp only; rw [Int.abs_eq_natAbs]) <;>
   rw [abs_def, ← Rat.mk_eq_divInt q.num.natAbs _ q.den_ne_zero q.reduced]
 
-theorem abs_num_eq_num_natAbs (q : ℚ) : |q|.num = |q.num| := by
+theorem abs_num_eq_num_abs (q : ℚ) : |q|.num = |q.num| := by
   rw [abs_def']
 
 theorem abs_den_eq_den (q : ℚ) : |q|.den = q.den := by
