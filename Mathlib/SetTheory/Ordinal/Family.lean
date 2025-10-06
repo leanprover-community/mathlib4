@@ -213,8 +213,7 @@ theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : iSup f = iSup g :=
   congr_arg _ h
 
-theorem iSup_succ (o : Ordinal) : ⨆ a : Iio o, succ a.1 = o :=
-  _root_.iSup_succ o
+@[deprecated (since := "2025-10-08")] alias iSup_succ := _root_.iSup_succ
 
 -- TODO: generalize to conditionally complete lattices
 theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β] :
