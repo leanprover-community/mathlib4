@@ -9,7 +9,7 @@ import Mathlib.Topology.Metrizable.Uniformity
 /-!
 # Completely metrizable spaces
 
-A topological space is completely metrizable if one can endow it mith a `MetricSpace` structure
+A topological space is completely metrizable if one can endow it with a `MetricSpace` structure
 which makes it complete and gives the same topology. This typeclass allows to state theorems
 which do not require a `MetricSpace` structure to make sense without introducing such a structure.
 It is in particular useful in measure theory, where one often assumes that a space is a

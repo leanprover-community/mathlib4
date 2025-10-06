@@ -322,7 +322,7 @@ instance algebra : Algebra R S := S.algebra'
 
 @[simp]
 theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S) :
-  ⟨algebraMap R A r, hr⟩ = algebraMap R S r := rfl
+    ⟨algebraMap R A r, hr⟩ = algebraMap R S r := rfl
 
 end
 

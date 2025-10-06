@@ -34,9 +34,6 @@ variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
 include h
 
 /-- `μ` is integral over `ℤ`. -/
--- Porting note: `hpos` was in the `variable` line, with an `omit` in mathlib3 just after this
--- declaration. For some reason, in Lean4, `hpos` gets included also in the declarations below,
--- even if it is not used in the proof.
 theorem isIntegral (hpos : 0 < n) : IsIntegral ℤ μ := by
   use X ^ n - 1
   constructor
@@ -171,8 +168,7 @@ theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.Coprime m n) :
   · intro u hunit _ _
     congr
     simp [Nat.isUnit_iff.mp hunit]
-  · intro a p _ hprime
-    intro hind h hcop
+  · intro a p _ hprime hind h hcop
     rw [hind h (Nat.Coprime.coprime_mul_left hcop)]; clear hind
     replace hprime := hprime.nat_prime
     have hdiv := (Nat.Prime.coprime_iff_not_dvd hprime).1 (Nat.Coprime.coprime_mul_right hcop)

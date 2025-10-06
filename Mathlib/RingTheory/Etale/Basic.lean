@@ -24,8 +24,6 @@ localization at an element.
 
 -/
 
-
--- Porting note: added to make the syntax work below.
 open scoped TensorProduct
 
 universe u
@@ -141,9 +139,6 @@ variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
 
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
-
 theorem of_isLocalization : FormallyEtale R Rₘ :=
   FormallyEtale.iff_unramified_and_smooth.mpr
     ⟨FormallyUnramified.of_isLocalization M, FormallySmooth.of_isLocalization M⟩
@@ -192,12 +187,12 @@ section Comp
 
 variable (R A B)
 
-/-- Etale is stable under composition. -/
+/-- Étale is stable under composition. -/
 theorem comp [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale A B] : Etale R B where
   formallyEtale := FormallyEtale.comp R A B
   finitePresentation := FinitePresentation.trans R A B
 
-/-- Etale is stable under base change. -/
+/-- Étale is stable under base change. -/
 instance baseChange [Etale R A] : Etale B (B ⊗[R] A) where
 
 end Comp

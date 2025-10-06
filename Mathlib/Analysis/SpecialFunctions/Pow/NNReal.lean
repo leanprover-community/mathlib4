@@ -155,10 +155,14 @@ lemma rpow_one_sub' (h : 1 - y ≠ 0) (x : ℝ≥0) : x ^ (1 - y) = x / x ^ y :=
   rw [rpow_sub' h, rpow_one]
 
 theorem rpow_inv_rpow_self {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y) ^ (1 / y) = x := by
-  field_simp [← rpow_mul]
+  rw [← rpow_mul]
+  field_simp
+  simp
 
 theorem rpow_self_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ (1 / y)) ^ y = x := by
-  field_simp [← rpow_mul]
+  rw [← rpow_mul]
+  field_simp
+  simp
 
 theorem inv_rpow (x : ℝ≥0) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ :=
   NNReal.eq <| Real.inv_rpow x.2 y
@@ -231,7 +235,7 @@ theorem _root_.Real.list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ)
 theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ)
     (hs : ∀ i ∈ s, (0 : ℝ) ≤ f i) (r : ℝ) :
     (s.map (f · ^ r)).prod = (s.map f).prod ^ r := by
-  induction' s using Quotient.inductionOn with l
+  obtain ⟨l⟩ := s
   simpa using Real.list_prod_map_rpow' l f hs r
 
 /-- `rpow` version of `Finset.prod_pow`. -/
@@ -554,12 +558,7 @@ lemma rpow_lt_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y < �
   simp only [lt_top_iff_ne_top, Ne, rpow_eq_top_iff_of_pos hy]
 
 theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y = ⊤ → x = ⊤ := by
-  rw [ENNReal.rpow_eq_top_iff]
-  rintro (h|h)
-  · exfalso
-    rw [lt_iff_not_ge] at h
-    exact h.right hy0
-  · exact h.left
+  simp +contextual [ENNReal.rpow_eq_top_iff, hy0.not_gt]
 
 -- This is an unsafe rule since we want to try `rpow_ne_top_of_ne_zero` if `y < 0`.
 @[aesop (rule_sets := [finiteness]) unsafe apply]
@@ -786,6 +785,7 @@ theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ �
   nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne.symm]
   rw [ENNReal.rpow_mul, ENNReal.rpow_le_rpow_iff (inv_pos.2 hz)]
 
+@[gcongr]
 theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (hx' : x ≠ ⊤) (hyz : y < z) :
     x ^ y < x ^ z := by
   lift x to ℝ≥0 using hx'

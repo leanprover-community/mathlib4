@@ -10,7 +10,7 @@ import Mathlib.Data.Set.Lattice.Image
 
 # Subpresheaf of types
 
-We define the subpresheaf of a type valued presheaf.
+We define the subpresheaf of a type-valued presheaf.
 
 ## Main results
 

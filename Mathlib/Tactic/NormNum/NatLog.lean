@@ -39,12 +39,12 @@ Panics if `ex` or `en` aren't natural number literals.
 -/
 def proveNatLog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.log $eb $en = $ek) :=
   match eb.natLit!, en.natLit! with
-  | 0, _ => show (ek : Q(ℕ)) × Q(Nat.log 0 $en = $ek) from ⟨mkRawNatLit 0, q(nat_log_zero $en)⟩
-  | 1, _ => show (ek : Q(ℕ)) × Q(Nat.log 1 $en = $ek) from ⟨mkRawNatLit 0, q(nat_log_one $en)⟩
+  | 0, _ => have : $eb =Q nat_lit 0 := ⟨⟩; ⟨q(nat_lit 0), q(nat_log_zero $en)⟩
+  | 1, _ => have : $eb =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 0), q(nat_log_one $en)⟩
   | b, n =>
     if n < b then
       have hh : Q(Nat.blt $en $eb = true) := (q(Eq.refl true) : Expr)
-      ⟨mkRawNatLit 0, q(nat_log_helper0 $eb $en $hh)⟩
+      ⟨q(nat_lit 0), q(nat_log_helper0 $eb $en $hh)⟩
     else
       let k := Nat.log b n
       have ek : Q(ℕ) := mkRawNatLit k
@@ -76,7 +76,7 @@ theorem nat_clog_helper {b m n : ℕ} (hb : Nat.blt 1 b = true)
   rw [Nat.blt_eq] at hb
   rw [Nat.blt_eq, Nat.pow_lt_iff_lt_clog hb] at h₁
   rw [Nat.ble_eq, Nat.le_pow_iff_clog_le hb] at h₂
-  omega
+  cutsat
 
 private theorem isNat_clog : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
     Nat.clog nb nn = k → IsNat (Nat.clog b n) k
@@ -92,14 +92,14 @@ def proveNatClog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.clog $eb $en = $ek) :
   let n := en.natLit!
   if _ : b ≤ 1 then
     have h : Q(Nat.ble $eb 1 = true) := reflBoolTrue
-    ⟨mkRawNatLit 0, q(nat_clog_zero_left $eb $en $h)⟩
+    ⟨q(nat_lit 0), q(nat_clog_zero_left $eb $en $h)⟩
   else if _ : n ≤ 1 then
     have h : Q(Nat.ble $en 1 = true) := reflBoolTrue
-    ⟨mkRawNatLit 0, q(nat_clog_zero_right $eb $en $h)⟩
+    ⟨q(nat_lit 0), q(nat_clog_zero_right $eb $en $h)⟩
   else
     match h : Nat.clog b n with
     | 0 => False.elim <|
-      Nat.ne_of_gt (Nat.clog_pos (by omega) (by omega)) h
+      Nat.ne_of_gt (Nat.clog_pos (by cutsat) (by cutsat)) h
     | k + 1 =>
       have ek : Q(ℕ) := mkRawNatLit k
       have ek1 : Q(ℕ) := mkRawNatLit (k + 1)

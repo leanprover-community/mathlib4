@@ -393,6 +393,14 @@ example : (63:ℚ) ≥ 5 := by norm_num1
 example (x : ℤ) (h : 1000 + 2000 < x) : 100 * 30 < x := by
   norm_num at *; exact h
 
+set_option linter.unusedVariables false in
+example {P : ℝ → Prop} (h1 : P (3 * 9 + 2)) (h2 : P (12 - 6 ^ 2)) : P (7 + 7) := by
+  norm_num at *
+  guard_hyp h1 : P 29
+  guard_hyp h2 : P (-24)
+  guard_target = P 14
+  exact test_sorry
+
 example : (1103 : ℤ) ≤ (2102 : ℤ) := by norm_num1
 example : (110474 : ℤ) ≤ (210485 : ℤ) := by norm_num1
 example : (11047462383473829263 : ℤ) ≤ (21048574677772382462 : ℤ) := by norm_num1
@@ -600,6 +608,13 @@ example : 3 ^ 3 + 4 = 31 := by
   norm_num1
   guard_target =ₛ 3 ^ 3 + 4 = 31
   rfl
+
+set_option linter.unusedTactic false in
+set_option linter.unusedVariables false in
+example {a b : ℚ} (h : a = b) : True := by
+  norm_num [*] at h
+  guard_hyp h : a = b
+  exact trivial
 
 /- Check that the scoping above works: -/
 example : 3 ^ 3 + 4 = 31 := by norm_num1
