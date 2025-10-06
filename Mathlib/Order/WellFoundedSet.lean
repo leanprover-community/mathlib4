@@ -267,7 +267,7 @@ theorem PartiallyWellOrderedOn.mono (ht : t.PartiallyWellOrderedOn r) (h : s ⊆
     s.PartiallyWellOrderedOn r :=
   fun f ↦ ht (Set.inclusion h ∘ f)
 
-theorem partiallyWellOrderedOn_of_wellQuasiOrdered (h : WellQuasiOrdered r) :
+theorem partiallyWellOrderedOn_of_wellQuasiOrdered (h : WellQuasiOrdered r) (s : Set α) :
     s.PartiallyWellOrderedOn r :=
   (partiallyWellOrderedOn_univ_iff.mpr h).mono s.subset_univ
 
@@ -405,8 +405,8 @@ nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) {f : ℕ → α} (hf :
 theorem isPWO_univ_iff : (univ : Set α).IsPWO ↔ WellQuasiOrderedLE α :=
   partiallyWellOrderedOn_univ_iff.trans (wellQuasiOrderedLE_def _).symm
 
-theorem isPWO_of_WellQuasiOrderedLE [h : WellQuasiOrderedLE α] : s.IsPWO :=
-  partiallyWellOrderedOn_of_wellQuasiOrdered h.wqo
+theorem isPWO_of_WellQuasiOrderedLE [h : WellQuasiOrderedLE α] (s : Set α) : s.IsPWO :=
+  partiallyWellOrderedOn_of_wellQuasiOrdered h.wqo s
 
 theorem isPWO_iff_exists_monotone_subseq :
     s.IsPWO ↔ ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
