@@ -129,7 +129,7 @@ theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function
 variable (K L) in
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 noncomputable abbrev algEquivEquivAlgHom [FiniteDimensional K L] :
-    (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) :=
+    Gal(L/K) ≃* (L →ₐ[K] L) :=
   Algebra.IsAlgebraic.algEquivEquivAlgHom K L
 
 end Field
