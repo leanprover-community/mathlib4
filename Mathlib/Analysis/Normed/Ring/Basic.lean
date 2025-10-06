@@ -370,6 +370,24 @@ theorem Finset.nnnorm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α]
     (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
   (s.norm_prod_le f).trans_eq <| by simp [NNReal.coe_prod]
 
+lemma norm_natAbs (z : ℤ) :
+    ‖(z.natAbs : α)‖ = ‖(z : α)‖ := by
+  rcases z.natAbs_eq with hz | hz
+  · rw [← Int.cast_natCast, ← hz]
+  · rw [← Int.cast_natCast, ← norm_neg, ← Int.cast_neg, ← hz]
+
+lemma nnnorm_natAbs (z : ℤ) :
+    ‖(z.natAbs : α)‖₊ = ‖(z : α)‖₊ := by
+  simp [← NNReal.coe_inj, - Nat.cast_natAbs, norm_natAbs]
+
+@[simp] lemma norm_intCast_abs (z : ℤ) :
+    ‖((|z| : ℤ) : α)‖ = ‖(z : α)‖ := by
+  simp [← norm_natAbs]
+
+@[simp] lemma nnnorm_intCast_abs (z : ℤ) :
+    ‖((|z| : ℤ) : α)‖₊ = ‖(z : α)‖₊ := by
+  simp [← nnnorm_natAbs]
+
 /-- If `α` is a seminormed ring, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n` for `n > 0`.
 See also `nnnorm_pow_le`. -/
 theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n

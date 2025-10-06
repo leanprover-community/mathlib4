@@ -339,7 +339,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
         norm_add_le_of_le J2 <| (le_opNorm _ _).trans <| by gcongr; exact Lf' _ _ m_ge
       _ = (4 + 12 * ‖c‖) * ‖y‖ * (1 / 2) ^ e := by ring
       _ ≤ (4 + 12 * ‖c‖) * ‖y‖ * (ε / (4 + 12 * ‖c‖)) := by gcongr
-      _ = ε * ‖y‖ := by field_simp [ne_of_gt pos]; ring
+      _ = ε * ‖y‖ := by field_simp
   rw [← this.fderiv] at f'K
   exact ⟨this.differentiableAt, f'K⟩
 
@@ -507,7 +507,7 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : ℝ}
 theorem norm_sub_le_of_mem_A {r x : ℝ} (hr : 0 < r) (ε : ℝ) {L₁ L₂ : F} (h₁ : x ∈ A f L₁ r ε)
     (h₂ : x ∈ A f L₂ r ε) : ‖L₁ - L₂‖ ≤ 4 * ε := by
   suffices H : ‖(r / 2) • (L₁ - L₂)‖ ≤ r / 2 * (4 * ε) by
-    rwa [norm_smul, Real.norm_of_nonneg (half_pos hr).le, mul_le_mul_left (half_pos hr)] at H
+    rwa [norm_smul, Real.norm_of_nonneg (half_pos hr).le, mul_le_mul_iff_right₀ (half_pos hr)] at H
   calc
     ‖(r / 2) • (L₁ - L₂)‖ =
         ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂ -
@@ -604,7 +604,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * (ε / 12) := mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num)
-      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)]
+      _ = ε := by field_simp
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
@@ -792,7 +792,6 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   simp only [A, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
   apply isOpen_iff_mem_nhds.2
   rintro ⟨a, x⟩ ⟨r', ⟨Irr', Ir'r⟩, hr⟩
-  have ha : Continuous (f a) := hf.uncurry_left a
   rcases exists_between Irr' with ⟨t, hrt, htr'⟩
   rcases exists_between hrt with ⟨t', hrt', ht't⟩
   obtain ⟨b, b_lt, hb⟩ : ∃ b, b < s * r ∧ ∀ y ∈ closedBall x t, ∀ z ∈ closedBall x t,

@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.AEMeasurable
 /-!
 # Typeclasses for measurability of operations
 
-In this file we define classes `MeasurableMul` etc and prove dot-style lemmas
+In this file we define classes `MeasurableMul` etc. and prove dot-style lemmas
 (`Measurable.mul`, `AEMeasurable.mul` etc). For binary operations we define two typeclasses:
 
 - `MeasurableMul` says that both left and right multiplication are measurable;
@@ -16,7 +16,7 @@ In this file we define classes `MeasurableMul` etc and prove dot-style lemmas
 
 and similarly for other binary operations. The reason for introducing these classes is that in case
 of topological space `α` equipped with the Borel `σ`-algebra, instances for `MeasurableMul₂`
-etc require `α` to have a second countable topology.
+etc. require `α` to have a second countable topology.
 
 We define separate classes for `MeasurableDiv`/`MeasurableSub`
 because on some types (e.g., `ℕ`, `ℝ≥0∞`) division and/or subtraction are not defined as `a * b⁻¹` /
@@ -120,7 +120,7 @@ theorem Measurable.mul [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable
 /-- Compositional version of `Measurable.add` for use by `fun_prop`. -/]
 lemma Measurable.mul' [MeasurableMul₂ M] {f g : α → β → M} {h : α → β} (hf : Measurable ↿f)
     (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a * g a) (h a) := by
-  simp; fun_prop
+  dsimp; fun_prop
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
@@ -166,7 +166,7 @@ export MeasurablePow (measurable_pow)
 /-- `Monoid.Pow` is measurable. -/
 instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M] :
     MeasurablePow M ℕ :=
-  ⟨measurable_from_prod_countable fun n => by
+  ⟨measurable_from_prod_countable_left fun n => by
       induction n with
       | zero => simp only [pow_zero, ← Pi.one_def, measurable_one]
       | succ n ih =>
@@ -272,7 +272,7 @@ theorem Measurable.div [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 lemma Measurable.div' [MeasurableDiv₂ G] {f g : α → β → G} {h : α → β} (hf : Measurable ↿f)
     (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a / g a) (h a) := by
-  simp; fun_prop
+  dsimp; fun_prop
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
@@ -450,7 +450,7 @@ theorem AEMeasurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpa
 /-- `DivInvMonoid.Pow` is measurable. -/
 instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
-  ⟨measurable_from_prod_countable fun n => by
+  ⟨measurable_from_prod_countable_left fun n => by
       rcases n with n | n
       · simp_rw [Int.ofNat_eq_coe, zpow_natCast]
         exact measurable_id.pow_const _
@@ -600,7 +600,7 @@ theorem Measurable.smul [MeasurableSMul₂ M X] (hf : Measurable f) (hg : Measur
 /-- Compositional version of `Measurable.vadd` for use by `fun_prop`. -/]
 lemma Measurable.smul' [MeasurableSMul₂ M X] {f : α → β → M} {g : α → β → X} {h : α → β}
     (hf : Measurable ↿f) (hg : Measurable ↿g) (hh : Measurable h) :
-    Measurable fun a ↦ (f a • g a) (h a) := by simp; fun_prop
+    Measurable fun a ↦ (f a • g a) (h a) := by dsimp; fun_prop
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.smul [MeasurableSMul₂ M X] {μ : Measure α} (hf : AEMeasurable f μ)
@@ -635,7 +635,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     [MeasurableAdd₂ M] : MeasurableSMul₂ ℕ M :=
   ⟨by
     suffices Measurable fun p : M × ℕ => p.2 • p.1 by apply this.comp measurable_swap
-    refine measurable_from_prod_countable fun n => ?_
+    refine measurable_from_prod_countable_left fun n => ?_
     induction n with
     | zero => simp only [zero_smul, ← Pi.zero_def, measurable_zero]
     | succ n ih =>
@@ -647,7 +647,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     [MeasurableAdd₂ M] [MeasurableNeg M] : MeasurableSMul₂ ℤ M :=
   ⟨by
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
-    refine measurable_from_prod_countable fun n => ?_
+    refine measurable_from_prod_countable_left fun n => ?_
     cases n with
     | ofNat n =>
       simp only [Int.ofNat_eq_coe, natCast_zsmul]
@@ -667,7 +667,7 @@ theorem Measurable.measurableSMul₂_iterateMulAct (h : Measurable f) :
     MeasurableSMul₂ (IterateMulAct f) α where
   measurable_smul :=
     suffices Measurable fun p : α × IterateMulAct f ↦ f^[p.2.val] p.1 from this.comp measurable_swap
-    measurable_from_prod_countable fun n ↦ h.iterate n.val
+    measurable_from_prod_countable_left fun n ↦ h.iterate n.val
 
 @[to_additive (attr := simp)]
 theorem measurableSMul_iterateMulAct : MeasurableSMul (IterateMulAct f) α ↔ Measurable f :=
@@ -918,7 +918,8 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
 /-- Compositional version of `Finset.measurable_sum` for use by `fun_prop`. -/]
 lemma Finset.measurable_prod_apply {f : ι → α → β → M} {g : α → β} {s : Finset ι}
     (hf : ∀ i ∈ s, Measurable ↿(f i)) (hg : Measurable g) :
-    Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by simp; fun_prop (discharger := assumption)
+    Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
+  simp only [prod_apply]; fun_prop (discharger := assumption)
 
 @[deprecated (since := "2025-05-30")]
 alias Finset.measurable_sum' := Finset.measurable_sum_apply
