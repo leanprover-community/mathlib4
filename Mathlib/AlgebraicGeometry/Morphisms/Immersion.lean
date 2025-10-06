@@ -69,10 +69,14 @@ lemma Scheme.Hom.liftCoborder_ι (f : X.Hom Y) [IsImmersion f] :
     f.liftCoborder ≫ f.coborderRange.ι = f :=
   IsOpenImmersion.lift_fac _ _ _
 
+lemma Scheme.Hom.liftCoborder_preimage [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
+    f.liftCoborder ⁻¹ᵁ U = f ⁻¹ᵁ f.coborderRange.ι ''ᵁ U := by
+  conv_rhs => enter [1]; rw [← f.liftCoborder_ι]
+  rw [Scheme.preimage_comp, Scheme.Hom.preimage_image_eq]
+
 lemma liftCoborder_app [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
-    f.liftCoborder.app U = f.app (f.coborderRange.ι ''ᵁ U) ≫ X.presheaf.map (eqToHom <| by
-      conv_rhs => enter [1]; rw [← f.liftCoborder_ι]
-      rw [Scheme.preimage_comp, Scheme.Hom.preimage_image_eq]).op := by
+    f.liftCoborder.app U = f.app (f.coborderRange.ι ''ᵁ U) ≫
+      X.presheaf.map (eqToHom <| f.liftCoborder_preimage U).op := by
   rw [Scheme.congr_app (f.liftCoborder_ι).symm (f.coborderRange.ι ''ᵁ U)]
   simp [Scheme.app_eq f.liftCoborder (f.coborderRange.ι.preimage_image_eq U),
     ← Functor.map_comp_assoc, - Functor.map_comp, Subsingleton.elim _ (𝟙 _)]

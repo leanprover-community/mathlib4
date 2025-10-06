@@ -213,13 +213,12 @@ lemma lift_fac {X Y Z : Scheme.{u}}
 lemma isIso_of_ker_eq {Z₁ Z₂ X : Scheme.{u}} (i₁ : Z₁ ⟶ X) (i₂ : Z₂ ⟶ X)
     [IsClosedImmersion i₁] [IsClosedImmersion i₂] (f : Z₁ ⟶ Z₂)
     (h : f ≫ i₂ = i₁) (h' : i₁.ker = i₂.ker) : IsIso f := by
-  have := @isIso_of_reflects_iso (MorphismProperty.Over @IsClosedImmersion ⊤ X)ᵒᵖ _ _ _
-    (.op (.mk _ i₂ ‹_›)) (.op (.mk _ i₁ ‹_›)) (Quiver.Hom.op <| MorphismProperty.Over.homMk f h)
-    (IsClosedImmersion.overEquivIdealSheafData X).functor ?_ inferInstance
-  · rwa [isIso_op_iff, ← isIso_iff_of_reflects_iso _ (MorphismProperty.Over.forget ..),
-      ← isIso_iff_of_reflects_iso _ (Over.forget _)] at this
-  · dsimp [IsClosedImmersion.overEquivIdealSheafData]
-    exact ⟨homOfLE h'.le, by simp, by simp⟩
+  let f' : MorphismProperty.Over.mk ⊤ i₁ ‹_› ⟶ .mk ⊤ i₂ ‹_› := MorphismProperty.Over.homMk f h
+  suffices h : IsIso f'.op by
+    rwa [isIso_op_iff, ← isIso_iff_of_reflects_iso _ (MorphismProperty.Over.forget ..),
+      ← isIso_iff_of_reflects_iso _ (Over.forget _)] at h
+  rw [← isIso_iff_of_reflects_iso _ (IsClosedImmersion.overEquivIdealSheafData X).functor]
+  simpa [IsClosedImmersion.overEquivIdealSheafData] using ⟨homOfLE h'.le, by simp, by simp⟩
 
 lemma isIso_lift {Z₁ Z₂ X : Scheme.{u}} (i₁ : Z₁ ⟶ X) (i₂ : Z₂ ⟶ X)
     [IsClosedImmersion i₁] [IsClosedImmersion i₂] (h : i₁.ker = i₂.ker) :
