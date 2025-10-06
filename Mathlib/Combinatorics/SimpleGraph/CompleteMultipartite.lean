@@ -337,8 +337,7 @@ section IsCompleteMultipartiteBetween
 variable {ι : Type*} {parts : ι → Set V}
 
 def IsCompleteMultipartiteBetween (G : SimpleGraph V) (parts : ι → Set V) :=
-  Pairwise fun ⦃i₁ i₂⦄ ↦
-    ∀ ⦃v₁⦄, v₁ ∈ parts i₁ → ∀ ⦃v₂⦄, v₂ ∈ parts i₂ → G.Adj v₁ v₂
+  Pairwise fun ⦃i₁ i₂⦄ ↦ ∀ ⦃v₁⦄, v₁ ∈ parts i₁ → ∀ ⦃v₂⦄, v₂ ∈ parts i₂ → G.Adj v₁ v₂
 
 theorem IsCompleteMultipartiteBetween.pairwise_disjoint
     (h : G.IsCompleteMultipartiteBetween parts) : Pairwise (Disjoint on parts) :=
