@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Batteries.Logic
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Algebra.Regular.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
@@ -817,7 +818,7 @@ independent:
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
 * Without `DivisionMonoid.inv_inv`, you can consider `WithTop Unit` with `a⁻¹ = ⊤` for all `a`.
 * Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
-  where `α` non commutative.
+  where `α` noncommutative.
 * Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all
   `a`.
 
