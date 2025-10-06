@@ -6,7 +6,7 @@ Authors: Chris Birkbeck, David Loeffler
 
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 
 /-!
 # Dedekind eta function

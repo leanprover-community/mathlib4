@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Alternating.Curry
-import Mathlib.Analysis.NormedSpace.Alternating.Basic
-import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+import Mathlib.Analysis.Normed.Module.Alternating.Basic
+import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 
 /-!
 # Currying continuous alternating forms
