@@ -280,7 +280,7 @@ noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[�
 
 /-- Wrapper for `iteratedFDeriv i` on `𝓓^{n}_{K}(E, F)`,
 as a map into `𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F)`. -/
-noncomputable def iteratedFDeriv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+noncomputable def iteratedFDerivWithOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) :=
   if hi : i ≤ n then
     .of_support_subset
@@ -289,65 +289,66 @@ noncomputable def iteratedFDeriv' (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
   else 0
 
 @[simp]
-lemma iteratedFDeriv'_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-    f.iteratedFDeriv' i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
-  rw [ContDiffMapSupportedIn.iteratedFDeriv']
+lemma iteratedFDerivWithOrder_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
+    f.iteratedFDerivWithOrder i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
+  rw [ContDiffMapSupportedIn.iteratedFDerivWithOrder]
   split_ifs <;> rfl
 
 @[simp]
-lemma coe_iteratedFDeriv'_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
-    f.iteratedFDeriv' i = iteratedFDeriv ℝ i f := by
+lemma coe_iteratedFDerivWithOrder_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+    f.iteratedFDerivWithOrder i = iteratedFDeriv ℝ i f := by
   ext : 1
-  rw [iteratedFDeriv'_apply]
+  rw [iteratedFDerivWithOrder_apply]
   exact dif_pos hin
 
 @[simp]
-lemma coe_iteratedFDeriv'_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) :
-    f.iteratedFDeriv' i = 0 := by
+lemma coe_iteratedFDerivWithOrder_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) :
+    f.iteratedFDerivWithOrder i = 0 := by
   ext : 1
-  rw [iteratedFDeriv'_apply]
+  rw [iteratedFDerivWithOrder_apply]
   exact dif_neg (not_le_of_gt hin)
 
 @[simp]
-lemma coe_iteratedFDeriv'_of_gt' {i : ℕ} (hin : i > n) :
-    (iteratedFDeriv' i : 𝓓^{n}_{K}(E, F) → _) = 0 := by
+lemma coe_iteratedFDerivWithOrder_of_gt' {i : ℕ} (hin : i > n) :
+    (iteratedFDerivWithOrder i : 𝓓^{n}_{K}(E, F) → _) = 0 := by
   ext : 2
-  rw [iteratedFDeriv'_apply]
+  rw [iteratedFDerivWithOrder_apply]
   exact dif_neg (not_le_of_gt hin)
 
-lemma iteratedFDeriv'_add (i : ℕ) {f g : 𝓓^{n}_{K}(E, F)} :
-    (f + g).iteratedFDeriv' i = f.iteratedFDeriv' i + g.iteratedFDeriv' i := by
+lemma iteratedFDerivWithOrder_add (i : ℕ) {f g : 𝓓^{n}_{K}(E, F)} :
+    (f + g).iteratedFDerivWithOrder i = f.iteratedFDerivWithOrder i + g.iteratedFDerivWithOrder i
+  := by
   ext : 1
-  simp only [iteratedFDeriv'_apply, add_apply]
+  simp only [iteratedFDerivWithOrder_apply, add_apply]
   split_ifs with hin
   · refine iteratedFDeriv_add_apply (ContDiff.contDiffAt ?_) (ContDiff.contDiffAt ?_)
     · exact f.contDiff.of_le (by exact_mod_cast hin)
     · exact g.contDiff.of_le (by exact_mod_cast hin)
   · rw [add_zero]
 
-lemma iteratedFDeriv'_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)} :
-    (c • f).iteratedFDeriv' i = c • f.iteratedFDeriv' i := by
+lemma iteratedFDerivWithOrder_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)} :
+    (c • f).iteratedFDerivWithOrder i = c • f.iteratedFDerivWithOrder i := by
   ext : 1
-  simp only [iteratedFDeriv'_apply, smul_apply]
+  simp only [iteratedFDerivWithOrder_apply, smul_apply]
   split_ifs with hin
   · apply iteratedFDeriv_const_smul_apply
     refine ContDiff.contDiffAt <| f.contDiff.of_le (by exact_mod_cast hin)
   · rw [smul_zero]
 
-/-- Wrapper for iteratedFDeriv' as a `𝕜`-linear map. -/
+/-- Wrapper for iteratedFDerivWithOrder as a `𝕜`-linear map. -/
 @[simps]
 noncomputable def iteratedFDerivₗ' (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) where
-  toFun f := f.iteratedFDeriv' i
-  map_add' _ _ := iteratedFDeriv'_add i
-  map_smul' _ _ := iteratedFDeriv'_smul 𝕜 i
+  toFun f := f.iteratedFDerivWithOrder i
+  map_add' _ _ := iteratedFDerivWithOrder_add i
+  map_smul' _ _ := iteratedFDerivWithOrder_smul 𝕜 i
 
-lemma iteratedFDerivₗ'_eq_iteratedFDeriv' (i : ℕ) :
-  (iteratedFDerivₗ' 𝕜 i : 𝓓^{n}_{K}(E, F) → _) = (iteratedFDeriv' i : _) := by
+lemma iteratedFDerivₗ'_eq_iteratedFDerivWithOrder (i : ℕ) :
+  (iteratedFDerivₗ' 𝕜 i : 𝓓^{n}_{K}(E, F) → _) = (iteratedFDerivWithOrder i : _) := by
   congr
 
-lemma iteratedFDeriv'_zero (i : ℕ) :
-    (0 : 𝓓^{n}_{K}(E, F)).iteratedFDeriv' i = 0 :=
+lemma iteratedFDerivWithOrder_zero (i : ℕ) :
+    (0 : 𝓓^{n}_{K}(E, F)).iteratedFDerivWithOrder i = 0 :=
   map_zero (iteratedFDerivₗ' ℝ i)
 
 /-- The composition of `ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ` and
