@@ -8,11 +8,26 @@ import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
-# Exterior derivative of a differential form
+# Exterior derivative of a differential form on a normed space
 
-In this file we define the exterior derivative of a differential form.
+In this file we define the exterior derivative of a differential form on a normed space.
 Under certain smoothness assumptions, we prove that this operation is linear in the form
 and the second exterior derivative of a form is zero.
+
+We represent a differential `n`-form on `E` taking values in `F` as `E → E [⋀^Fin n]→L[𝕜] F`.
+
+## TODO
+
+- Introduce notation for:
+  - an unbundled `n`-form on a normed space;
+  - a bundled `C^r`-smooth `n`-form on a normed space;
+  - same for manifolds (not defined yet).
+- Introduce bundled `C^r`-smooth `n`-forms on normed spaces and manifolds.
+  - Discuss the future API and the use cases that need to be covered on Zulip.
+  - Introduce new types & notation, copy the API.
+- Add shorter and more readable definitions (or abbreviations?)
+  for `0`-forms (`constOfIsEmpty`) and `1`-forms (`ofSubsingleton`),
+  sync with the API for `ContinuousMultilinearMap`.
 -/
 
 open Filter ContinuousAlternatingMap Set
