@@ -490,7 +490,7 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
       x (hx : x ≠ 0) n (h : x.factorization = n • c_factorization) : x = c ^ n := by
     suffices x.factorization = (c ^ n).factorization by
       refine eq_of_factorization_eq hx ?_ (congrFun (congrArg DFunLike.coe this))
-      suffices c ≠ 0 by exact pow_ne_zero n this
+      suffices c ≠ 0 from pow_ne_zero n this
       simp [c, c_factorization]
     convert h
     rw [factorization_pow]
