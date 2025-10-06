@@ -122,17 +122,17 @@ lemma algebraTensorAlgEquiv_symm_relation (r : σ) :
 
 /-- The model of `S` over a `R₀` that contains the coefficients of `P` is `R₀[X]` quotiented by the
 same relations. -/
-abbrev modelOfHasCoeffs : Type _ :=
+abbrev ModelOfHasCoeffs : Type _ :=
   MvPolynomial ι R₀ ⧸ (Ideal.span <| Set.range (P.relationOfHasCoeffs R₀))
 
-instance [Finite ι] [Finite σ] : Algebra.FinitePresentation R₀ (P.modelOfHasCoeffs R₀) := by
+instance [Finite ι] [Finite σ] : Algebra.FinitePresentation R₀ (P.ModelOfHasCoeffs R₀) := by
   classical
   cases nonempty_fintype σ
   exact .quotient ⟨Finset.image (P.relationOfHasCoeffs R₀) .univ, by simp⟩
 
 variable (P) in
 /-- (Implementation detail): The underlying `AlgHom` of `tensorModelOfHasCoeffsEquiv`. -/
-noncomputable def tensorModelOfHasCoeffsHom : R ⊗[R₀] P.modelOfHasCoeffs R₀ →ₐ[R] S :=
+noncomputable def tensorModelOfHasCoeffsHom : R ⊗[R₀] P.ModelOfHasCoeffs R₀ →ₐ[R] S :=
   Algebra.TensorProduct.lift (Algebra.ofId R S)
     (Ideal.Quotient.liftₐ _ (MvPolynomial.aeval P.val) <| by
       simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le]
@@ -147,7 +147,7 @@ lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
 
 variable (P) in
 /-- (Implementation detail): The inverse of `tensorModelOfHasCoeffsHom`. -/
-noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.modelOfHasCoeffs R₀ :=
+noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfHasCoeffs R₀ :=
   (Ideal.Quotient.liftₐ _
     ((Algebra.TensorProduct.map (.id R R) (Ideal.Quotient.mkₐ _ _)).comp
       (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm.toAlgHom) <| by
@@ -186,7 +186,7 @@ private lemma inv_comp_hom :
   simp
 
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/
-noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.modelOfHasCoeffs R₀ ≃ₐ[R] S :=
+noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.ModelOfHasCoeffs R₀ ≃ₐ[R] S :=
   AlgEquiv.ofAlgHom (P.tensorModelOfHasCoeffsHom R₀) (P.tensorModelOfHasCoeffsInv R₀)
     (P.hom_comp_inv R₀) (P.inv_comp_hom R₀)
 
