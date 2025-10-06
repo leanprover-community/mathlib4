@@ -35,22 +35,48 @@ section NonAssoc
 
 variable [Mul M]
 
-open Set
+open Set Function
 
 namespace Subsemigroup
+
+@[to_additive]
+theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subsemigroup M}
+    (hK : DirectedOn ((· ≤ ·) on K) {i | p i})
+    {x : M} : x ∈ (⨆ i, ⨆ (_h : p i), K i) ↔ ∃ i, p i ∧ x ∈ K i := by
+  refine ⟨?_, fun ⟨i, hi', hi⟩ ↦ ?_⟩
+  · suffices x ∈ closure (⋃ i, ⋃ (_ : p i), (K i : Set M)) → ∃ i, p i ∧ x ∈ K i by
+      simpa only [closure_iUnion, closure_eq (K _)] using this
+    refine fun hx ↦ closure_induction (fun _ ↦ ?_) ?_ hx
+    · simp
+    · rintro x y _ _ ⟨i, hip, hi⟩ ⟨j, hjp, hj⟩
+      rcases hK i hip j hjp with ⟨k, hk, hki, hkj⟩
+      exact ⟨k, hk, mul_mem (hki hi) (hkj hj)⟩
+  · apply le_iSup (fun i ↦ ⨆ (_ : p i), K i) i
+    simp [hi, hi']
 
 -- TODO: this section can be generalized to `[MulMemClass B M] [CompleteLattice B]`
 -- such that `complete_lattice.le` coincides with `set_like.le`
 @[to_additive]
 theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
     (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
-  suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
-    simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine fun hx ↦ closure_induction (fun y hy ↦ mem_iUnion.mp hy) ?_ hx
-  rintro x y - - ⟨i, hi⟩ ⟨j, hj⟩
-  rcases hS i j with ⟨k, hki, hkj⟩
-  exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
+  have : iSup S = ⨆ i : PLift ι, ⨆ (_ : True), S i.down := by simp [iSup_plift_down]
+  rw [this, mem_biSup_of_directedOn]
+  · simp
+  · simp only [setOf_true]
+    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
+    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
+    intro i
+    simp only [PLift.exists]
+    intro j
+    refine (hS i.down j.down).imp ?_
+    simp
+
+@[to_additive (attr := simp)]
+theorem mem_iSup_prop {p : Prop} {S : p → Subsemigroup M} {x : M} :
+    x ∈ ⨆ (h : p), S h ↔ ∃ (h : p), x ∈ S h := by
+  by_cases h : p
+  · simp +contextual [h]
+  · simpa [h] using id
 
 @[to_additive]
 theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
