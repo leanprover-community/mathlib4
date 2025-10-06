@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Jingting Wang
 -/
 import Mathlib.CategoryTheory.Action.Limits
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.CategoryTheory.Category.Pointed.Exact
-import Mathlib.CategoryTheory.Category.Pointed.Forgetful
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 # Non-abelian group cohomology
@@ -143,6 +140,68 @@ theorem H1.map_comp {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
 
 end H1
 
+section compatibility
+
+variable {G : Type u} [Group G] {k : Type u} [CommRing k] (A : Rep k G)
+
+-- Why can't this be found automatically?
+instance : MulAction G A := Action.instMulAction A
+
+-- should be moved
+instance : DistribMulAction G A where
+  smul_zero _ := map_zero _
+  smul_add _ := map_add _
+
+open CategoryTheory
+
+noncomputable def H0Iso : groupCohomology.H0 A ≃+ H0 G A where
+  __ := (groupCohomology.H0Iso A).hom.hom.toAddMonoidHom
+  invFun := (groupCohomology.H0Iso A).inv
+  left_inv x := by simp
+  right_inv x := by simp
+
+-- should be moved
+def H0Iso_zero : H0Iso A 0 = 0 := map_zero _
+
+variable {B : Rep k G} (f : A ⟶ B)
+variable {A}
+
+def Action.Hom.toDistribMulActionHom (f : A ⟶ B) : A →+[G] B where
+  __ := f.hom.hom.toAddMonoidHom
+  map_smul' g x := congr($(f.comm g) x)
+
+instance : Coe (A ⟶ B) (A →+[G] B) := ⟨Action.Hom.toDistribMulActionHom⟩
+
+-- naturality of H0Iso
+theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
+    H0Iso B ∘ (groupCohomology.map (.id G) f 0) = (H0.map f) ∘ H0Iso A := by
+  ext x
+  induction x using groupCohomology_induction_on
+  sorry
+
+def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, fun x y => Eq.symm (by
+  rw [← sub_eq_zero, add_sub_right_comm, sub_add_comm]
+  exact ((mem_cocycles₁_def f).mp f.2 x y))⟩
+
+open ConcreteCategory MorphismProperty in
+-- cocycle first, CategoryTheory.ConcreteCategory.surjective_eq_epimorphisms
+noncomputable def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A where
+  toFun := Quotient.mk _ ∘ CocycleToZ1 ∘ Function.surjInv (f := (groupCohomology.H1π A).hom) (by
+    rw [← MorphismProperty.surjective, ConcreteCategory.surjective_eq_epimorphisms,
+        MorphismProperty.epimorphisms]
+    infer_instance)
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
+
+theorem H1Iso_zero : H1Iso A 0 = 0 := sorry
+
+-- naturality of H1Iso
+theorem H1Iso_map {A B : Rep k G} (f : A ⟶ B) :
+    H1Iso B ∘ (groupCohomology.map (.id G) f 1) = (H1.map f) ∘ H1Iso A := sorry
+
+end compatibility
+
 section connectHom₀₁
 
 variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
@@ -194,83 +253,27 @@ theorem exact₃ : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := by
   induction y using Quotient.ind
   simp only [H1.map, Quotient.map_mk, zero_def] at h
   obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
-  -- let z : f.range := sorry
-  -- refine ⟨⟨g x, ?_⟩, Quotient.eq_iff_equiv.mpr ⟨(Equiv.ofInjective f hf).symm z , fun h ↦ hf ?_⟩⟩
-  -- · sorry
-  -- · simp [δ₀₁_aux]
-  sorry
+  refine ⟨⟨g (-x), fun h ↦ (add_neg_eq_zero.mp ?_).symm⟩, (δ₀₁_eq_of_map hf hg hfg _ _ rfl).trans
+    <| congrArg _ <| Subtype.ext <| funext fun h ↦ hf ?_⟩
+  · simpa [hfg.apply_apply_eq_zero] using congr(g $(hx h)).symm
+  · simp only [map_neg, δ₀₁_aux_coe, neg_neg, smul_neg, Equiv.apply_ofInjective_symm]
+    refine eq_sub_iff_add_eq.mp (neg_add_eq_zero.mp ?_)
+    simpa [add_assoc] using (hx h).symm
 
 include hfg in
 theorem exact₄ : Function.Exact (H1.map f) (H1.map g) := by
-  refine fun y ↦ ⟨?_, fun ⟨x, hx⟩ ↦ hx ▸ ?_⟩
+  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ hx ▸ ?_⟩
   · induction y using Quotient.ind
+    obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
     sorry
   · induction x using Quotient.ind
-    simp [H1.map, zero_def, ← Function.comp_assoc, hfg.comp_eq_zero]
+    simp only [H1.map, Quotient.map_mk, ← Function.comp_assoc, hfg.comp_eq_zero, Pi.zero_comp,
+      zero_def]
     congr
 
+-- δ₀₁ maps to groupCohomology.δ under H0Iso
+
 end connectHom₀₁
-
-
-section compatibility
-
-variable {G : Type u} [Group G] {k : Type u} [CommRing k] (A : Rep k G)
-
--- Why can't this be found automatically?
-instance : MulAction G A := Action.instMulAction A
-
--- should be moved
-instance : DistribMulAction G A where
-  smul_zero _ := map_zero _
-  smul_add _ := map_add _
-
-open CategoryTheory
-
-noncomputable def H0Iso : groupCohomology.H0 A ≃+ H0 G A where
-  toFun := (groupCohomology.H0Iso A).hom
-  invFun := (groupCohomology.H0Iso A).inv
-  left_inv := sorry
-  right_inv := sorry
-  map_add' := sorry
-
--- should be moved
-def H0Iso_zero : H0Iso A 0 = 0 := sorry
-
-variable {B : Rep k G} (f : A ⟶ B)
-variable {A}
-
-def Action.Hom.toDistribMulActionHom (f : A ⟶ B) : A →+[G] B where
-  __ := f.hom.hom.toAddMonoidHom
-  map_smul' g x := congr($(f.comm g) x)
-
-instance : Coe (A ⟶ B) (A →+[G] B) := ⟨Action.Hom.toDistribMulActionHom⟩
-
--- naturality of H0Iso
-theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
-    H0Iso B ∘ (groupCohomology.map (.id G) f 0) = (H0.map f) ∘ H0Iso A := sorry
-
-def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, fun x y => Eq.symm (by
-  rw [← sub_eq_zero, add_sub_right_comm, sub_add_comm]
-  exact ((mem_cocycles₁_def f).mp f.2 x y))⟩
-
-open ConcreteCategory MorphismProperty in
--- cocycle first, CategoryTheory.ConcreteCategory.surjective_eq_epimorphisms
-noncomputable def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A where
-  toFun := Quotient.mk _ ∘ CocycleToZ1 ∘ Function.surjInv (f := (groupCohomology.H1π A).hom) (by
-    rw [← MorphismProperty.surjective, ConcreteCategory.surjective_eq_epimorphisms,
-        MorphismProperty.epimorphisms]
-    infer_instance)
-  invFun := sorry
-  left_inv := sorry
-  right_inv := sorry
-
-theorem H1Iso_zero : H1Iso A 0 = 0 := sorry
-
--- naturality of H1Iso
-theorem H1Iso_map {A B : Rep k G} (f : A ⟶ B) :
-    H1Iso B ∘ (groupCohomology.map (.id G) f 1) = (H1.map f) ∘ H1Iso A := sorry
-
-end compatibility
 
 section connectHom₁₂
 
@@ -334,7 +337,7 @@ theorem δ₁₂_aux_well_defined_2 (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ 
     (AddSubgroup.mem_center_iff.mp (hA ((hfg _).mp (by simp [← hbc, c.prop, add_assoc]))) _).symm
   simp [δ₁₂_aux, b'', sub_eq_add_neg, neg_add_rev, ← add_assoc, mul_smul, this]
 
-noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
+noncomputable def δ₁₂ : H1 G C → groupCohomology.H2 A := by
   refine (H2Iso A).symm.hom ∘ Quotient.lift (Submodule.Quotient.mk ∘
     (fun c ↦ ((δ₁₂_aux hf hfg hA (fun x ↦ (hg (c x)).choose) c
       (fun x ↦ (hg (c x)).choose_spec.symm)))))
@@ -345,6 +348,8 @@ noncomputable def δ₁₂ : H1 G C → groupCohomology A 2 := by
   exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
 
 theorem exact₅ : Function.Exact (H1.map g) (δ₁₂ hf hg hfg hA) := sorry
+
+-- δ₁₂ maps to groupCohomology.δ under H1Iso
 
 end connectHom₁₂
 
