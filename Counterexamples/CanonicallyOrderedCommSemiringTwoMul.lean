@@ -78,7 +78,7 @@ theorem lt_def : a < b ↔ a.1 < b.1 := by
 theorem add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := fun a _ _ h =>
   (add_right_inj a).mp h
 
-theorem add_le_add_left : ∀ a b : ℕ × ZMod 2, a ≤ b → ∀ c : ℕ × ZMod 2, c + a ≤ c + b := by
+theorem add_le_add_right : ∀ a b : ℕ × ZMod 2, a ≤ b → ∀ c : ℕ × ZMod 2, c + a ≤ c + b := by
   rintro a b (rfl | ab) c
   · rfl
   · exact Or.inr (by simpa)

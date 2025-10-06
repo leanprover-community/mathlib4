@@ -49,9 +49,7 @@ structure OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α w
   /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 
-alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_left'
-
-attribute [to_additive OrderedAddCommGroup.add_lt_add_left] OrderedCommGroup.mul_lt_mul_left'
+@[deprecated (since := "2025-10-06")] alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
 
 alias OrderedCommGroup.le_of_mul_le_mul_left := le_of_mul_le_mul_left'
 
@@ -99,9 +97,11 @@ section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
-@[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
-theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
-  _root_.mul_lt_mul_left' h c
+@[deprecated (since := "2025-10-06")]
+alias LinearOrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
+
+@[deprecated (since := "2025-10-06")]
+alias LinearOrderedCommGroup.mul_lt_mul_right' := mul_lt_mul_left
 
 @[to_additive eq_zero_of_neg_eq]
 theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=

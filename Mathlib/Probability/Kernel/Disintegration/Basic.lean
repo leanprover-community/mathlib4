@@ -162,7 +162,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     rw [lintegral_indicator_const hs] at this
     contrapose! this with h_ne_zero
     conv_lhs => rw [← one_mul (κ.fst a s)]
-    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+    exact ENNReal.mul_lt_mul_left h_ne_zero (measure_ne_top _ _) hr
   · rw [ae_const_le_iff_forall_lt_measure_zero]
     intro r hr
     let s := {b | κCond (a, b) Set.univ ≤ r}
@@ -177,7 +177,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     rw [lintegral_indicator_const hs] at this
     contrapose! this with h_ne_zero
     conv_rhs => rw [← one_mul (κ.fst a s)]
-    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+    exact ENNReal.mul_lt_mul_left h_ne_zero (measure_ne_top _ _) hr
 
 
 /-! #### Existence of a disintegrating kernel in a countable space -/

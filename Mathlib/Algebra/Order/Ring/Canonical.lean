@@ -54,7 +54,7 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
 
 -- TODO: make it an instance
 lemma toIsOrderedMonoid : IsOrderedMonoid R where
-  mul_le_mul_left _ _ := mul_le_mul_right
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 -- TODO: make it an instance
 lemma toIsOrderedRing : IsOrderedRing R where
