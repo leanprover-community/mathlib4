@@ -112,11 +112,11 @@ theorem factors_iff_exists_multiset' {f : R[X]} :
     obtain ⟨mg, hmg, rfl⟩ := Submonoid.exists_multiset_of_mem_closure hg
     choose! j hj using hmg
     have hmg : mg = (mg.map j).map (X + C ·) := by simp [Multiset.map_congr rfl hj]
-    use mg.map j
-    rw [← hmg, leadingCoeff_mul_monic, leadingCoeff_C]
-    rw [hmg]
-    apply monic_multiset_prod_of_monic
-    simp [monic_X_add_C]
+    rw [hmg, leadingCoeff_mul_monic, leadingCoeff_C]
+    · use mg.map j
+    · rw [hmg]
+      apply monic_multiset_prod_of_monic
+      simp [monic_X_add_C]
   · rintro ⟨m, hm⟩
     exact hm ▸ (factors_C _).mul (.multiset_prod (by simp [factors_X_add_C]))
 
