@@ -479,11 +479,8 @@ lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} 
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
     {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by
-  by_cases hn : n = 0
-  · simp [hn] at h hmn
-    simp [hmn] at h
-    use b
-    simp [h, hn, hmn]
+  · use b
+    simp_all
   have factorization_pow_eq := congrArg factorization h
   rw [factorization_pow, factorization_pow] at factorization_pow_eq
   let c_factorization := a.factorization.mapRange (· / n) (Nat.zero_div n)
