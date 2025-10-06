@@ -28,9 +28,7 @@ variable {m n a b guess fuel : ℕ}
 
 @[simp]
 theorem nthRoot_zero_right (h : n ≠ 0) : nthRoot n 0 = 0 := by
-  match n, h with
-  | 1, _ => simp
-  | n + 2, _ => simp [nthRoot, nthRoot.go]
+  rcases n with _|_|_ <;> grind [nthRoot, nthRoot.go]
 
 @[simp]
 theorem nthRoot_one_right : nthRoot n 1 = 1 := by
@@ -40,27 +38,23 @@ private theorem nthRoot.pow_go_le (hle : guess ≤ fuel) (n a : ℕ) :
     go n a fuel guess ^ (n + 2) ≤ a := by
   induction fuel generalizing guess with
   | zero =>
-    obtain rfl : guess = 0 := by omega
+    obtain rfl : guess = 0 := by grind
     simp [go]
   | succ fuel ih =>
     rw [go]
     split_ifs with h
     case pos =>
-      apply ih
-      omega
+      grind
     case neg =>
       have : guess ≤ a / guess ^ (n + 1) := by
         linarith only [Nat.mul_le_of_le_div _ _ _ (not_lt.1 h)]
       replace := Nat.mul_le_of_le_div _ _ _ this
-      rwa [← Nat.pow_succ'] at this
+      grind
 
 /-- `nthRoot n a ^ n ≤ a` unless both `n` and `a` are zeros. -/
 @[simp]
 theorem pow_nthRoot_le_iff : nthRoot n a ^ n ≤ a ↔ n ≠ 0 ∨ a ≠ 0 := by
-  match n with
-  | 0 => simp [Nat.one_le_iff_ne_zero]
-  | 1 => simp
-  | n + 2 => simp [nthRoot, nthRoot.pow_go_le]
+  rcases n with _|_|_ <;> first | grind | simp [nthRoot, nthRoot.pow_go_le]
 
 alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 
@@ -106,7 +100,7 @@ private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
     split_ifs with h
     case pos =>
       rcases eq_or_ne guess 0 with rfl | hguess
-      · simp at *
+      · grind
       apply ih
       replace h : a < guess ^ (n + 2) := by
         rw [Nat.div_lt_iff_lt_mul (by positivity)] at h
@@ -151,21 +145,19 @@ theorem nthRoot_pow (hn : n ≠ 0) (a : ℕ) : nthRoot n (a ^ n) = a := by
 theorem nthRoot_eq_of_le_of_lt (h₁ : a ^ n ≤ b) (h₂ : b < (a + 1) ^ n) :
     nthRoot n b = a := by
   rcases eq_or_ne n 0 with rfl | hn
-  · rw [pow_zero] at *; omega
+  · grind
   simp only [← le_nthRoot_iff hn, ← nthRoot_lt_iff hn] at h₁ h₂
-  omega
+  grind
 
 theorem exists_pow_eq_iff' (hn : n ≠ 0) : (∃ x, x ^ n = a) ↔ (nthRoot n a) ^ n = a := by
   constructor
   · rintro ⟨x, rfl⟩
     rw [nthRoot_pow hn]
-  · exact fun h ↦ ⟨_, h⟩
+  · grind
 
 theorem exists_pow_eq_iff :
     (∃ x, x ^ n = a) ↔ ((n = 0 ∧ a = 1) ∨ (n ≠ 0 ∧ (nthRoot n a) ^ n = a)) := by
-  rcases eq_or_ne n 0 with rfl | hn
-  · simp [eq_comm]
-  · simp [exists_pow_eq_iff', hn]
+  rcases eq_or_ne n 0 with rfl | _ <;> grind [exists_pow_eq_iff']
 
 instance instDecidableExistsPowEq : Decidable (∃ x, x ^ n = a) :=
   decidable_of_iff' _ exists_pow_eq_iff
