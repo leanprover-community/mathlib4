@@ -553,14 +553,15 @@ noncomputable def fderivWithOrderCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n-1}_
 
 section infinite
 
-/-- Specialization of `iteratedFDeriv'` for the space `𝓓_{K}(E, F)` of smooth compactly supported
-functions, as a map `𝓓_{K}(E, F) → 𝓓_{K}(E, E [×i]→L[ℝ] F)` with no loss of smoothness. -/
+/-- Specialization of `iteratedFDerivWithOrder` for the space `𝓓_{K}(E, F)` of smooth compactly
+supported functions, as a map `𝓓_{K}(E, F) → 𝓓_{K}(E, E [×i]→L[ℝ] F)` with no loss of smoothness. -/
 protected noncomputable def iteratedFDeriv (i : ℕ) (f : 𝓓_{K}(E, F)) : 𝓓_{K}(E, E [×i]→L[ℝ] F) :=
-  (f.iteratedFDeriv' i).copy (iteratedFDeriv ℝ i f) (coe_iteratedFDeriv'_of_le le_top f)
+  (f.iteratedFDerivWithOrder i).copy (iteratedFDeriv ℝ i f)
+    (coe_iteratedFDerivWithOrder_of_le le_top f)
 
-lemma iteratedFDeriv_eq_iteratedFDeriv' (i : ℕ) (f : 𝓓_{K}(E, F)) :
-    f.iteratedFDeriv i = f.iteratedFDeriv' i :=
-  (f.iteratedFDeriv' i).copy_eq _ _
+lemma iteratedFDeriv_eq_iteratedFDerivWithOrder (i : ℕ) (f : 𝓓_{K}(E, F)) :
+    f.iteratedFDeriv i = f.iteratedFDerivWithOrder i :=
+  (f.iteratedFDerivWithOrder i).copy_eq _ _
 
 @[simp]
 lemma iteratedFDeriv_apply (i : ℕ) (f : 𝓓_{K}(E, F)) (x : E) :
@@ -570,16 +571,16 @@ lemma iteratedFDeriv_apply (i : ℕ) (f : 𝓓_{K}(E, F)) (x : E) :
 /-- Bundling of `ContDiffMapSupportedIn.iteratedFDeriv` as `𝕜`-linear map. -/
 @[simps! apply]
 noncomputable def iteratedFDerivₗ (i : ℕ) : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F) :=
-  (iteratedFDerivₗ' 𝕜 i).copy (ContDiffMapSupportedIn.iteratedFDeriv i) <| funext <|
-    iteratedFDeriv_eq_iteratedFDeriv' i
+  (iteratedFDerivWithOrderₗ 𝕜 i).copy (ContDiffMapSupportedIn.iteratedFDeriv i) <| funext <|
+    iteratedFDeriv_eq_iteratedFDerivWithOrder i
 
-/-- Specialisation of `fderiv'` to the space `𝓓_{K}(E, F)` of smooth compactly supported functions
-as a map `𝓓_{K}(E, F) → 𝓓_{K}(E, E →L[ℝ] F)`, with no loss of smoothness. -/
+/-- Specialisation of `fderivWithOrder` to the space `𝓓_{K}(E, F)` of smooth compactly supported
+functions as a map `𝓓_{K}(E, F) → 𝓓_{K}(E, E →L[ℝ] F)`, with no loss of smoothness. -/
 protected noncomputable def fderiv (f : 𝓓_{K}(E, F)) : 𝓓_{K}(E, E →L[ℝ] F) :=
-  f.fderiv'.copy (fderiv ℝ f) (coe_fderiv'_of_ne (by decide) f)
+  f.fderivWithOrder.copy (fderiv ℝ f) (coe_fderivWithOrder_of_ne (by decide) f)
 
-lemma fderiv_eq_fderiv' (f : 𝓓_{K}(E, F)) : f.fderiv = f.fderiv' :=
-  f.fderiv'.copy_eq _ _
+lemma fderiv_eq_fderivWithOrder (f : 𝓓_{K}(E, F)) : f.fderiv = f.fderivWithOrder :=
+  f.fderivWithOrder.copy_eq _ _
 
 @[simp]
 lemma fderiv_apply (f : 𝓓_{K}(E, F)) (x : E) :
@@ -589,12 +590,12 @@ lemma fderiv_apply (f : 𝓓_{K}(E, F)) (x : E) :
 /-- Bundling of `ContDiffMapSupportedIn.fderiv` as a `𝕜`-linear map. -/
 @[simps! apply]
 noncomputable def fderivₗ : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E →L[ℝ] F) :=
-  (fderivₗ' 𝕜).copy ContDiffMapSupportedIn.fderiv <| funext fderiv_eq_fderiv'
+  (fderivWithOrderₗ 𝕜).copy ContDiffMapSupportedIn.fderiv <| funext fderiv_eq_fderivWithOrder
 
 /-- Bundling of `ContDiffMapSupportedIn.fderiv` as a continuous `𝕜`-linear map. -/
 @[simps! apply]
 noncomputable def fderivCLM : 𝓓_{K}(E, F) →L[𝕜] 𝓓_{K}(E, E →L[ℝ] F) :=
-  (fderivCLM' 𝕜).copy ContDiffMapSupportedIn.fderiv <| funext fderiv_eq_fderiv'
+  (fderivWithOrderCLM 𝕜).copy ContDiffMapSupportedIn.fderiv <| funext fderiv_eq_fderivWithOrder
 
 end infinite
 
