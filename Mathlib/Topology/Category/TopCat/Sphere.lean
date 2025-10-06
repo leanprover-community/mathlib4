@@ -69,22 +69,19 @@ def ballInclusion (n : ℕ) : 𝔹 n ⟶ 𝔻 n :=
 
 instance {n : ℕ} : Mono (diskBoundaryInclusion n) := mono_iff_injective _ |>.mpr <| by
   intro ⟨x, hx⟩ ⟨y, hy⟩ h
-  simp [diskBoundaryInclusion, disk] at h
-  cases h; rfl
+  obtain rfl : x = y := by simpa [diskBoundaryInclusion, disk] using h
+  congr
 
 instance {n : ℕ} : Mono (ballInclusion n) := TopCat.mono_iff_injective _ |>.mpr <| by
   intro ⟨x, hx⟩ ⟨y, hy⟩ h
-  simp [ballInclusion, disk] at h
-  cases h; rfl
+  obtain rfl : x = y := by simpa [ballInclusion, disk] using h
+  congr
 
 instance compact_disk (n : ℕ) : CompactSpace (𝔻 n) := by
   convert Homeomorph.compactSpace Homeomorph.ulift.symm
-  rw [← isCompact_iff_compactSpace]
-  fapply ProperSpace.isCompact_closedBall
+  infer_instance
 
 instance compact_sphere (n : ℕ) : CompactSpace (∂𝔻 n) := by
   convert Homeomorph.compactSpace Homeomorph.ulift.symm
-  rw [← isCompact_iff_compactSpace]
-  fapply isCompact_sphere
-
+  infer_instance
 end TopCat
