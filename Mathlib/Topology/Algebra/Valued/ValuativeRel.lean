@@ -304,11 +304,11 @@ lemma of_hasBasis_ne_zero_and_le_one
 
 lemma iff_hasBasis_pair :
     IsValuativeTopology R ↔
-    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
+    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ 0 <ᵥ rs.1 ∧ 0 <ᵥ rs.2)
       fun rs ↦ { x | x * rs.2 <ᵥ rs.1 } := by
   rw [iff_hasBasis_zero]
   refine HasBasis.to_hasBasis_iff ?_ ?_
-  · simp only [posSubmonoid_def, setOf_subset_setOf, Prod.exists, forall_const]
+  · simp only [setOf_subset_setOf, Prod.exists, forall_const]
     intro γ
     obtain ⟨r, s, h⟩ := exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
     refine ⟨r, s, ⟨by simp [← posSubmonoid_def], s.prop⟩, ?_⟩
@@ -322,12 +322,12 @@ lemma iff_hasBasis_pair :
     · simp [valuation]
 
 lemma hasBasis_nhds_zero_pair [IsValuativeTopology R] :
-    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
+    (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ 0 <ᵥ rs.1 ∧ 0 <ᵥ rs.2)
       fun rs ↦ { x | x * rs.2 <ᵥ rs.1 } :=
   iff_hasBasis_pair.mp inferInstance
 
 lemma of_hasBasis_pair
-    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ rs.1 ∈ posSubmonoid R ∧ rs.2 ∈ posSubmonoid R)
+    (h : (𝓝 (0 : R)).HasBasis (fun rs : R × R ↦ 0 <ᵥ rs.1 ∧ 0 <ᵥ rs.2)
       fun rs ↦ { x | x * rs.2 <ᵥ rs.1 }) :
     IsValuativeTopology R :=
   iff_hasBasis_pair.mpr h
@@ -342,28 +342,28 @@ lemma iff_hasBasis_min_inv :
     obtain hxy | hxy := rel_total (x * y) 1
     · refine ⟨x * x, mul_mem hx hx, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
       simp only [Valuation.Compatible.rel_iff_le («v» := v),
-        Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul] at *
+        Valuation.Compatible.srel_iff_lt («v» := v), map_mul] at *
       refine ((mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
-        ⟨y, hy⟩))).2 hz.1).trans_le ?_
+        ⟨y, by simpa [Valuation.Compatible.srel_iff_lt («v» := v)] using hy⟩))).2 hz.1).trans_le ?_
       rw [mul_assoc]
       exact (mul_le_iff_le_one_right (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
-        ⟨x, hx⟩))).2 hxy
+        ⟨x, by simpa [Valuation.Compatible.srel_iff_lt («v» := v)] using hx⟩))).2 hxy
     · refine ⟨y * y, mul_mem hy hy, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
       simp only [Valuation.Compatible.rel_iff_le («v» := v),
-        Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul] at *
+        Valuation.Compatible.srel_iff_lt («v» := v), map_mul] at *
       rw [← mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
-         ⟨y, hy⟩)), mul_assoc]
+         ⟨y, by simpa [Valuation.Compatible.srel_iff_lt («v» := v)] using hy⟩)), mul_assoc]
       exact hz.2.trans_le hxy
   · rintro x hx
     obtain hx1 | h1x := le_total (v x) 1
-    · refine ⟨(x, 1), ⟨hx, one_mem _⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, ?_⟩⟩
+    · refine ⟨(x, 1), ⟨hx, zero_srel_one⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, ?_⟩⟩
       · rwa [mul_one] at hz
-      · simp only [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul, map_one, mul_one] at hz ⊢
+      · simp only [Valuation.Compatible.srel_iff_lt («v» := v), map_mul, map_one, mul_one] at hz ⊢
         rw [← mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
           ⟨x, hx⟩))] at hz
         exact hz.trans_le (mul_le_one' hx1 hx1)
-    · refine ⟨(1, x), ⟨one_mem _, hx⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, hz⟩⟩
-      simp only [Valuation.Compatible.rel_lt_iff_lt («v» := v), map_mul, map_one] at hz ⊢
+    · refine ⟨(1, x), ⟨zero_srel_one, hx⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, hz⟩⟩
+      simp only [Valuation.Compatible.srel_iff_lt («v» := v), map_mul, map_one] at hz ⊢
       refine lt_of_lt_of_le (lt_of_le_of_lt ?_ hz) h1x
       exact le_mul_of_one_le_right' h1x
 
@@ -385,8 +385,7 @@ lemma iff_hasBasis_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero �
       fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 } := by
   rw [iff_hasBasis_pair]
   refine HasBasis.to_hasBasis_iff ?_ ?_ <;>
-  · simp [Valuation.Compatible.rel_iff_le («v» := v'),
-      Valuation.Compatible.rel_lt_iff_lt («v» := v')];
+  · simp [Valuation.Compatible.srel_iff_lt («v» := v'), zero_lt_iff];
     grind
 
 lemma hasBasis_nhds_zero_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
