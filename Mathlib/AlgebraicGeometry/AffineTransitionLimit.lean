@@ -182,7 +182,7 @@ lemma exists_map_eq_top
     (fun j k fkj fji x (hx : _ ∉ U) ↦ by rwa [Functor.map_comp] at hx)
   exact absurd (hU.ge (Set.mem_univ s)) (by simpa using hs i (𝟙 i))
 
-attribute [local simp] Scheme.Hom.resLE_id Scheme.Hom.resLE_comp_resLE
+attribute [local simp] Scheme.Hom.resLE_comp_resLE
 
 /-- Given a diagram `{ Dᵢ }` of schemes and a open `U ⊆ Dᵢ`,
 this is the diagram of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
