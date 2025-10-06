@@ -413,6 +413,19 @@ lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g
 end Scheme
 
 /-- The spectrum of a commutative ring, as a scheme.
+
+The notation `Spec(R)` for `(R : Type*) [CommRing R]` to mean `Spec (CommRingCat.of R)` is
+enabled in the scope `SpecOfNotation`. Please do not use it within Mathlib, but it can be
+used in downstream projects if desired. To use this, do:
+```lean
+import Mathlib.AlgebraicGeometry.Scheme
+
+variable (R : Type*) [CommRing R]
+
+open scoped SpecOfNotation
+
+#check Spec(R)
+```
 -/
 def Spec (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
