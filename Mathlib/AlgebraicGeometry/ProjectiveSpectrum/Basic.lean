@@ -316,7 +316,7 @@ open TopologicalSpace.Opens in
 /-- Given a family of homogeneous elements `f` of positive degree that spans the irrelevant ideal,
 `Spec (A_f)₀ ⟶ Proj A` forms an affine open cover of `Proj A`. -/
 noncomputable
-def openCoverOfIsOpenCover {ι : Type*} (f : ι → A) {m : ι → ℕ}
+def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → ℕ}
     (f_deg : ∀ i, f i ∈ 𝒜 (m i)) (hm : ∀ i, 0 < m i)
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
     (Proj 𝒜).AffineOpenCover where
@@ -328,6 +328,9 @@ def openCoverOfIsOpenCover {ι : Type*} (f : ι → A) {m : ι → ℕ}
     change x ∈ (awayι 𝒜 _ _ _).opensRange
     rw [opensRange_awayι]
     exact (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose_spec
+
+@[deprecated (since := "2025-10-07")]
+noncomputable alias openCoverOfISupEqTop := affineOpenCoverOfIrrelevantLESpan
 
 /-- `Proj A` is covered by `Spec (A_f)₀` for all homogeneous elements of positive degree. -/
 noncomputable
