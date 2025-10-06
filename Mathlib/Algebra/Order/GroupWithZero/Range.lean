@@ -28,7 +28,8 @@ def valueGroup₀.MonoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
   WithZero.map' (valueGroup f).subtype
 
 lemma valueGroup₀.MonoidWithZeroHom_strictMono :
-    StrictMono (valueGroup₀.MonoidWithZeroHom (f := f)):= map'_strictMono (Subtype.strictMono_coe _)
+    StrictMono (valueGroup₀.MonoidWithZeroHom (f := f)) :=
+  map'_strictMono (Subtype.strictMono_coe _)
 
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
 the use of `valueGroup₀.MonoidWithZeroHom` and apply the above lemma
