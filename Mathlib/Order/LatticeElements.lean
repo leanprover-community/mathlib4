@@ -37,12 +37,6 @@ lattice, distributive, neutral
 
 variable {α : Type*}
 
-/-- The sup with a constant on the left as a `SupHom` -/
-def const_sup_left [SemilatticeSup α] (a : α) : SupHom α α := {
-  toFun := fun x => a ⊔ x
-  map_sup' := sup_sup_distrib_left a
-}
-
 /-- Element is distributive -/
 def IsDistrib [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), a ⊔ (x ⊓ y) = (a ⊔ x) ⊓ (a ⊔ y)
@@ -59,7 +53,7 @@ variable [Lattice α]
 
 /-- Grätzer III.2, Theorem 2 1 → 2 -/
 def const_sup_left_of_isDistrib {a : α} (h : IsDistrib a) : LatticeHom α α := {
-  __ := const_sup_left a
+  __ := supLeft a
   map_inf' := h
 }
 

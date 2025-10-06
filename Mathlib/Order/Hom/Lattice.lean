@@ -98,6 +98,26 @@ export InfHomClass (map_inf)
 
 attribute [simp] map_sup map_inf
 
+/-- Left sup by an element of a (semi)lattice is a `SupHom` -/
+def supLeft [SemilatticeSup α] (a : α) : SupHom α α where
+  toFun := (a ⊔ ·)
+  map_sup' := sup_sup_distrib_left a
+
+/-- Right sup by an element of a (semi)lattice is a `SupHom` -/
+def supRight [SemilatticeSup α] (a : α) : SupHom α α where
+  toFun x := x ⊔ a
+  map_sup' _ _ := sup_sup_distrib_right _ _ a
+
+/-- Left inf by an element of a (semi)lattice is an `InfHom` -/
+def infLeft [SemilatticeInf α] (a : α) : InfHom α α where
+  toFun := (a ⊓ ·)
+  map_inf' := inf_inf_distrib_left a
+
+/-- Right inf by an element of a (semi)lattice is an `InfHom` -/
+def infRight [SemilatticeInf α] (a : α) : InfHom α α where
+  toFun x := x ⊓ a
+  map_inf' _ _ := inf_inf_distrib_right _ _ a
+
 section Hom
 
 variable [FunLike F α β]
