@@ -9,10 +9,10 @@ import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Instances.ENat
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-! # Product topology on multivariate power series
 
