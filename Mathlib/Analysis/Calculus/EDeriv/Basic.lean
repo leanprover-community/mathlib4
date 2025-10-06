@@ -6,6 +6,7 @@ Authors: Yury G. Kudryashov, Sam Lindauer
 import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 
 /-!
 # Exterior derivative of a differential form
@@ -183,5 +184,36 @@ theorem ederiv_pullback (ω : F → F [⋀^Fin n]→L[𝕜] G) (f : E → F) :
     ederiv (fun x ↦ (ω (f x)).compContinuousLinearMap (fderiv 𝕜 f x)) x =
       (ederiv ω (f x)).compContinuousLinearMap (fderiv 𝕜 f x) := by
   ext v
-  rw [ederiv_apply, ContinuousAlternatingMap.compContinuousLinearMap_apply, ederiv_apply]
+  have H₁ : DifferentiableAt 𝕜 ω (f x) := sorry
+  have H₂ : DifferentiableAt 𝕜 f x := sorry
+  have H₃ : DifferentiableAt 𝕜 (fderiv 𝕜 f) x := sorry
+  have H₄ : DifferentiableAt 𝕜 (fun x ↦ (ω (f x)).compContinuousLinearMap (fderiv 𝕜 f x)) x :=
+    (H₁.comp x H₂).continuousAlternatingMapCompContinuousLinearMap H₃
+  have H₅ (i : Fin (n + 1)) (i_1 : Fin n) :
+      DifferentiableAt 𝕜 (fun x ↦ (⇑(fderiv 𝕜 f x) ∘ i.removeNth v) i_1) x :=
+    sorry
+  simp? (disch := fun_prop) [ederiv_apply, ContinuousAlternatingMap.compContinuousLinearMap_apply,
+      fderiv_continuousAlternatingMap_apply, smul_add, Finset.sum_add_distrib, Finset.smul_sum,
+      fderiv_comp' x H₁ H₂, Fin.removeNth] says
+    simp (disch := fun_prop) only [ederiv_apply, Int.reduceNeg, compContinuousLinearMap_apply,
+      fderiv_continuousAlternatingMap_apply, Function.comp_apply, Fin.removeNth,
+      fderiv_comp' x H₁ H₂, ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_comp',
+      apply_apply, ContinuousLinearMap.coe_sum', Finset.sum_apply, toContinuousLinearMap_apply,
+      smul_add, Finset.smul_sum, Finset.sum_add_distrib, fderiv_fun_const, Pi.zero_apply,
+      ContinuousLinearMap.comp_zero, Finset.sum_const_zero, add_zero, add_eq_left]
+  rw [← Fintype.sum_prod_type']
+  refine Finset.sum_ninvolution (fun (i, j) ↦ (i.succAbove j, j.predAbove i)) ?_ (by simp) (by simp)
+    (by simp [Fin.succAbove_succAbove_predAbove, Fin.predAbove_predAbove_succAbove])
+  rintro ⟨i, j⟩
+  simp only
   
+/-
+  rw [ederiv, fderiv_continuousAlternatingMapCompContinuousLinearMap (by exact H₁.comp x H₂) H₃,
+    alternatizeUncurryFin_add, fderiv_comp' _ H₁ H₂]
+  convert add_zero _
+  · ext v
+    simp [alternatizeUncurryFin_apply, Finset.smul_sum]
+    
+  · ext v
+    simp +unfoldPartialApp [ederiv, alternatizeUncurryFin_apply, Function.comp_def, Fin.removeNth]
+-/

@@ -463,6 +463,11 @@ def compContinuousLinearMapCLM (f : E →L[𝕜] F) :
     (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
+@[simp]
+lemma compContinuousLinearMapCLM_apply (f : E →L[𝕜] F) (g : F [⋀^ι]→L[𝕜] G) :
+    compContinuousLinearMapCLM f g = g.compContinuousLinearMap f :=
+  rfl
+
 variable [DecidableEq ι]
 
 /-- Fréchet derivative of `compContinuousLinearMap f g` with respect to `g`.
