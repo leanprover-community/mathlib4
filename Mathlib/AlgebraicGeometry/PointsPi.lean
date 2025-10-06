@@ -37,7 +37,7 @@ lemma Ideal.span_eq_top_of_span_image_evalRingHom
 lemma eq_top_of_sigmaSpec_subset_of_isCompact
     (U : (Spec <| .of <| Π i, R i).Opens) (V : Set (Spec <| .of <| Π i, R i))
     (hV : ↑(sigmaSpec R).opensRange ⊆ V)
-    (hV' : IsCompact (X := Spec <| .of <| Π i, R i)) V)
+    (hV' : IsCompact (X := Spec (.of <| Π i, R i)) V)
     (hVU : V ⊆ U) : U = ⊤ := by
   obtain ⟨s, hs⟩ := (PrimeSpectrum.isOpen_iff _).mp U.2
   obtain ⟨t, hts, ht, ht'⟩ : ∃ t ⊆ s, t.Finite ∧ V ⊆ ⋃ i ∈ t, (basicOpen i).1 := by
