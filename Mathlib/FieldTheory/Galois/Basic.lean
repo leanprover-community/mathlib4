@@ -65,7 +65,7 @@ attribute [instance 100] IsGalois.to_isSeparable IsGalois.to_normal
 
 section Notation
 
-notation "Gal(" L:100 "/" K ")" => Gal(L/K)
+notation "Gal(" L:100 "/" K ")" => L ≃ₐ[K] L
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Pretty printer for the `Gal(L/K)` notation. -/
