@@ -97,7 +97,7 @@ theorem characteristic_sub_characteristic_inv_le (hf : MeromorphicOn f Set.univ)
       ≤ max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖| := by
   by_cases h : R = 0
   · simp [h, characteristic_sub_characteristic_inv_at_zero hf]
-  · simp [characteristic_sub_characteristic_inv_off_zero hf h]
+  · simp [characteristic_sub_characteristic_inv_of_ne_zero hf h]
 
 /--
 First part of the First Main Theorem, qualitative version: If `f` is meromorphic on the complex
@@ -106,7 +106,7 @@ function.
 -/
 theorem isBigO_characteristic_sub_characteristic_inv (h : MeromorphicOn f ⊤) :
     |characteristic f ⊤ - characteristic f⁻¹ ⊤| =O[atTop] (1 : ℝ → ℝ) :=
-  isBigO_of_le' (c := max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖|) _ 
+  isBigO_of_le' (c := max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖|) _
     (fun R ↦ by simpa using characteristic_sub_characteristic_inv_le h (R := R))
 
 end FirstPart
@@ -154,11 +154,14 @@ Second part of the First Main Theorem of Value Distribution Theory, qualitative 
 meromorphic on the complex plane, then the characteristic functions for the value `⊤` of the
 function `f` and `f - a₀` agree asymptotically up to a bounded function.
 -/
-theorem abs_characteristic_sub_characteristic_shift_eqO (h : MeromorphicOn f ⊤) :
-    |characteristic f ⊤ - characteristic (f · - a₀) ⊤| =O[atTop] (1 : ℝ → ℝ) := by
-  simp_rw [isBigO_iff', eventually_atTop]
-  use log⁺ ‖a₀‖ + log 2, add_pos_of_nonneg_of_pos posLog_nonneg (log_pos one_lt_two), 0
-  simp [abs_characteristic_sub_characteristic_shift_le h]
+theorem isBigO_abs_characteristic_sub_characteristic_shift (h : MeromorphicOn f ⊤) :
+    |characteristic f ⊤ - characteristic (f · - a₀) ⊤| =O[atTop] (1 : ℝ → ℝ) :=
+  isBigO_of_le' (c := log⁺ ‖a₀‖ + log 2) _
+    (fun R ↦ by simpa using abs_characteristic_sub_characteristic_shift_le h)
+
+@[deprecated (since := "2025-10-06")]
+alias abs_characteristic_sub_characteristic_shift_eqO :=
+  isBigO_abs_characteristic_sub_characteristic_shift
 
 end SecondPart
 
