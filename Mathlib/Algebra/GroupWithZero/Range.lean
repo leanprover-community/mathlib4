@@ -158,6 +158,7 @@ lemma embedding_restrict₀ (a : A) : valueGroup₀.embedding (restrict₀ f a) 
   simp_all
 
 end Restrict
+
 noncomputable section GroupWithZero
 
 variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
