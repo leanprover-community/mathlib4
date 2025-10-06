@@ -285,7 +285,17 @@ theorem isBipartite_iff_exists_isBipartiteWith :
 
 end IsBipartite
 
-section CompleteBipartiteSubgraph
+section IsCompleteBipartiteBetween
+
+def IsCompleteBipartiteBetween (G : SimpleGraph V) (s t : Set V) :=
+  ∀ ⦃v₁⦄, v₁ ∈ s → ∀ ⦃v₂⦄, v₂ ∈ t → G.Adj v₁ v₂
+
+theorem IsCompleteBipartiteBetween.disjoint
+    (h : G.IsCompleteBipartiteBetween s t) : Disjoint s t :=
+  Set.disjoint_left.mpr fun v hv₁ hv₂ ↦ (G.loopless v) (h hv₁ hv₂)
+
+end IsCompleteBipartiteBetween
+
 
 variable {α β : Type*} [Fintype α] [Fintype β]
 
