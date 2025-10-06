@@ -321,11 +321,11 @@ theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
 @[deprecated (since := "2025-10-06")]
 alias mem_of_formPerm_ne_self := mem_of_formPerm_apply_ne
 
-theorem formPerm_eq_self_of_notMem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
-  List.formPerm_apply_of_notMem h
+@[deprecated (since := "2025-10-06")]
+alias formPerm_eq_self_of_notMem := List.formPerm_apply_of_notMem
 
 @[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
+alias formPerm_eq_self_of_not_mem := List.formPerm_apply_of_notMem
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩

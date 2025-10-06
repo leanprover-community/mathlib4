@@ -63,7 +63,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
     by_cases hx : x ∈ l
     on_goal 1 => by_cases hx' : x ∈ l'
     · exact (h hx hx').elim
-    all_goals have := formPerm_eq_self_of_notMem _ _ ‹_›; tauto
+    all_goals have := List.formPerm_apply_of_notMem ‹_›; tauto
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
@@ -158,7 +158,7 @@ theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontriv
 theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
     formPerm s h x = x := by
   induction s using Quot.inductionOn
-  simpa using List.formPerm_eq_self_of_notMem _ _ hx
+  simpa using List.formPerm_apply_of_notMem hx
 
 @[deprecated (since := "2025-05-23")]
 alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
