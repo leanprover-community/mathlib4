@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Defs
 
 This file contains the commutative semiring instance on the natural numbers.
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 -/
 
 namespace Nat

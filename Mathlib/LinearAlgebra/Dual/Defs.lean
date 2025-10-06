@@ -295,7 +295,7 @@ lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
 instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
   equiv <| MulOpposite.opLinearEquiv _
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
   refine (noZeroSMulDivisors_iff R M).mpr ?_
   intro r m hrm

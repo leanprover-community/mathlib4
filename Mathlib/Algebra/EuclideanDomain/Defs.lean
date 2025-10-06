@@ -103,11 +103,11 @@ local instance wellFoundedRelation : WellFoundedRelation R where
 instance isWellFounded : IsWellFounded R (· ≺ ·) where
   wf := r_wellFounded
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 70) : Div R :=
   ⟨EuclideanDomain.quotient⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 70) : Mod R :=
   ⟨EuclideanDomain.remainder⟩
 

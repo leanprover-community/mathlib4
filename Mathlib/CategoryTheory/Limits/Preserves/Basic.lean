@@ -39,7 +39,7 @@ noncomputable section
 
 namespace CategoryTheory.Limits
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [categoryTheoryUniverses].
 universe w' w₂' w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
@@ -94,13 +94,13 @@ limit cones over any diagram to limit cones. -/
 abbrev PreservesColimits (F : C ⥤ D) :=
   PreservesColimitsOfSize.{v₂, v₂} F
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 attribute [instance 100]
   PreservesLimitsOfShape.preservesLimit PreservesLimitsOfSize.preservesLimitsOfShape
   PreservesColimitsOfShape.preservesColimit
   PreservesColimitsOfSize.preservesColimitsOfShape
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A convenience function for `PreservesLimit`, which takes the functor as an explicit argument to
 guide typeclass resolution.
 -/
@@ -421,22 +421,22 @@ instance reflects_colimits_subsingleton (F : C ⥤ D) :
     Subsingleton (ReflectsColimitsOfSize.{w', w} F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) reflectsLimit_of_reflectsLimitsOfShape (K : J ⥤ C) (F : C ⥤ D)
     [ReflectsLimitsOfShape J F] : ReflectsLimit K F :=
   ReflectsLimitsOfShape.reflectsLimit
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) reflectsColimit_of_reflectsColimitsOfShape (K : J ⥤ C) (F : C ⥤ D)
     [ReflectsColimitsOfShape J F] : ReflectsColimit K F :=
   ReflectsColimitsOfShape.reflectsColimit
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) reflectsLimitsOfShape_of_reflectsLimits (J : Type w) [Category.{w'} J]
     (F : C ⥤ D) [ReflectsLimitsOfSize.{w', w} F] : ReflectsLimitsOfShape J F :=
   ReflectsLimitsOfSize.reflectsLimitsOfShape
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) reflectsColimitsOfShape_of_reflectsColimits
     (J : Type w) [Category.{w'} J]
     (F : C ⥤ D) [ReflectsColimitsOfSize.{w', w} F] : ReflectsColimitsOfShape J F :=

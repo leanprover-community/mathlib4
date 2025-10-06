@@ -26,7 +26,7 @@ For sets `s` and `t` and scalar `a`:
 For `α` a semigroup/monoid, `Set α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between
 pointwise scaling and repeated pointwise addition; the former has `(2 : ℕ) • {1, 2} = {2, 4}`, while
-the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat action].
+the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwiseNatAction].
 
 Appropriate definitions and results are also transported to the additive theory via `to_additive`.
 
@@ -37,7 +37,7 @@ Appropriate definitions and results are also transported to the additive theory 
   `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
 * We put all instances in the scope `Pointwise`, so that these instances are not available by
-  default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
+  default. Note that we do not mark them as reducible (as argued by note [reducibleNonInstances])
   since we expect the scope to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
 
@@ -513,23 +513,23 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 end Div
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
-note [pointwise nat action]. -/
+note [pointwiseNatAction]. -/
 protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
-`Set`. See note [pointwise nat action]. -/
+`Set`. See note [pointwiseNatAction]. -/
 @[to_additive existing]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
+addition/subtraction!) of a `Set`. See note [pointwiseNatAction]. -/
 protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
   ⟨zsmulRec⟩
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
-multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
+multiplication/division!) of a `Set`. See note [pointwiseNatAction]. -/
 @[to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩

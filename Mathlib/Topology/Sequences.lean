@@ -139,13 +139,13 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
     rcases extraction_of_frequently_atTop hus with ⟨φ, φ_mono, hφ⟩
     exact ⟨u ∘ φ, hφ, hux.comp φ_mono.tendsto_atTop⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Every first-countable space is a Fréchet-Urysohn space. -/
 instance (priority := 100) FirstCountableTopology.frechetUrysohnSpace
     [FirstCountableTopology X] : FrechetUrysohnSpace X :=
   FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto fun _ _ => tendsto_iff_seq_tendsto.2
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Every Fréchet-Urysohn space is a sequential space. -/
 instance (priority := 100) FrechetUrysohnSpace.to_sequentialSpace [FrechetUrysohnSpace X] :
     SequentialSpace X :=
@@ -265,7 +265,7 @@ theorem IsCompact.tendsto_subseq {s : Set X} {x : ℕ → X} (hs : IsCompact s) 
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   hs.isSeqCompact hx
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) FirstCountableTopology.seq_compact_of_compact [CompactSpace X] :
     SeqCompactSpace X :=
   ⟨isCompact_univ.isSeqCompact⟩

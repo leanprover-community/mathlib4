@@ -902,7 +902,7 @@ theorem le_ker_iff_map (M' : LieSubmodule R L M) : M' ≤ f.ker ↔ LieSubmodule
 variable (f)
 
 /-- The range of a morphism of Lie modules `f : M → N` is a Lie submodule of `N`.
-See Note [range copy pattern]. -/
+See note [rangeCopyPattern]. -/
 def range : LieSubmodule R L N :=
   (LieSubmodule.map f ⊤).copy (Set.range f) Set.image_univ.symm
 

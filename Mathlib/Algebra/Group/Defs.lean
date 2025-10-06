@@ -271,14 +271,14 @@ This attempts to avoid expensive checks involving bundling and unbundling with t
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
 Zulip discussion: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Why.20is.20.60simpNF.60.20complaining.20here.3F
 -/
-attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cancel priority]
+attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lowerCancelPriority]
 
 /-- An `AddLeftCancelSemigroup` is an additive semigroup such that
 `a + b = a + c` implies `b = c`. -/
 @[ext]
 class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G, IsLeftCancelAdd G
 
-attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
+attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lowerCancelPriority]
 
 attribute [to_additive] LeftCancelSemigroup
 
@@ -292,14 +292,14 @@ add_decl_doc AddLeftCancelSemigroup.toIsLeftCancelAdd
 @[ext]
 class RightCancelSemigroup (G : Type u) extends Semigroup G, IsRightCancelMul G
 
-attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lower cancel priority]
+attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lowerCancelPriority]
 
 /-- An `AddRightCancelSemigroup` is an additive semigroup such that
 `a + b = c + b` implies `a = c`. -/
 @[ext]
 class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G, IsRightCancelAdd G
 
-attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
+attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lowerCancelPriority]
 
 attribute [to_additive] RightCancelSemigroup
 
@@ -442,7 +442,7 @@ goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
 
 To solve this issue, we embed an `ℕ`-action in the definition of an `AddMonoid` (which is by
 default equal to the naive action `a + ... + a`, but can be adjusted when needed), and declare
-a `SMul ℕ α` instance using this action. See Note [forgetful inheritance] for more
+a `SMul ℕ α` instance using this action. See note [forgetfulInheritance] for more
 explanations on this pattern.
 
 For example, when we define `Polynomial R`, then we declare the `ℕ`-action to be by multiplication
@@ -699,13 +699,13 @@ Main examples are `ℕ` and groups. This is the right typeclass for many sum lem
 is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
 class AddLeftCancelMonoid (M : Type u) extends AddMonoid M, AddLeftCancelSemigroup M
 
-attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lower cancel priority]
+attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lowerCancelPriority]
 
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive]
 class LeftCancelMonoid (M : Type u) extends Monoid M, LeftCancelSemigroup M
 
-attribute [instance 75] LeftCancelMonoid.toMonoid -- See note [lower cancel priority]
+attribute [instance 75] LeftCancelMonoid.toMonoid -- See note [lowerCancelPriority]
 
 end LeftCancelMonoid
 
@@ -716,13 +716,13 @@ Main examples are `ℕ` and groups. This is the right typeclass for many sum lem
 is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
 class AddRightCancelMonoid (M : Type u) extends AddMonoid M, AddRightCancelSemigroup M
 
-attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lower cancel priority]
+attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lowerCancelPriority]
 
 /-- A monoid in which multiplication is right-cancellative. -/
 @[to_additive]
 class RightCancelMonoid (M : Type u) extends Monoid M, RightCancelSemigroup M
 
-attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
+attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lowerCancelPriority]
 
 end RightCancelMonoid
 
@@ -740,15 +740,15 @@ class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 /-- Commutative version of `AddCancelMonoid`. -/
 class AddCancelCommMonoid (M : Type u) extends AddCommMonoid M, AddLeftCancelMonoid M
 
-attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower cancel priority]
+attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lowerCancelPriority]
 
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends CommMonoid M, LeftCancelMonoid M
 
-attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
+attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lowerCancelPriority]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 @[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
@@ -850,7 +850,7 @@ also have an instance `∀ X [Cromulent X], GroupWithZero (Foo X)`. Then the
 the `(/)` coming from `Foo.Div`.
 
 In the same way, adding a `zpow` field makes it possible to avoid definitional failures
-in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
+in diamonds. See the definition of `Monoid` and note [forgetfulInheritance] for more
 explanations on this.
 -/
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
@@ -892,7 +892,7 @@ Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no
 `Foo.Sub`.
 
 In the same way, adding a `zsmul` field makes it possible to avoid definitional failures
-in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
+in diamonds. See the definition of `AddMonoid` and note [forgetfulInheritance] for more
 explanations on this.
 -/
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
@@ -1154,7 +1154,7 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
       fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_inv_cancel]
     inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 @[to_additive]
 instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
   mul_right_cancel := fun a b c h ↦ by
@@ -1175,12 +1175,12 @@ section CommGroup
 
 variable [CommGroup G]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 @[to_additive]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 @[to_additive]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }

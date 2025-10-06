@@ -177,7 +177,7 @@ theorem Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Inj
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e⟩⟩
   classical exact .of_equiv (Set.range (e ∘ f)) (Equiv.ofInjective _ (e.injective.comp H)).symm
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α] : Finite α :=
   Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 
@@ -437,7 +437,7 @@ theorem exists_notMem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
 
 @[deprecated (since := "2025-05-23")] alias exists_not_mem_finset := exists_notMem_finset
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
   ⟨let ⟨x, _hx⟩ := exists_notMem_finset (∅ : Finset α)
     let ⟨y, hy⟩ := exists_notMem_finset ({x} : Finset α)

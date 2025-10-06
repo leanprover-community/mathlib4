@@ -185,7 +185,7 @@ theorem mem_iInf_finite' {f : ι → Filter α} (s) :
   (Set.ext_iff.1 (iInf_sets_eq_finite' f) s).trans mem_iUnion
 
 /-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by

@@ -183,11 +183,11 @@ theorem linear_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.linear = e.linear.symm :=
 theorem symm_linear (e : P₁ ≃ᵃ[k] P₂) : e.linear.symm = e.symm.linear :=
   rfl
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.apply (e : P₁ ≃ᵃ[k] P₂) : P₁ → P₂ :=
   e
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.symm_apply (e : P₁ ≃ᵃ[k] P₂) : P₂ → P₁ :=
   e.symm
 

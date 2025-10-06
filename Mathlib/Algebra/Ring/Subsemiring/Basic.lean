@@ -151,7 +151,7 @@ namespace RingHom
 
 variable (g : S →+* T) (f : R →+* S)
 
-/-- The range of a ring homomorphism is a subsemiring. See Note [range copy pattern]. -/
+/-- The range of a ring homomorphism is a subsemiring. See note [rangeCopyPattern]. -/
 @[simps! coe toSubmonoid]
 def rangeS : Subsemiring S :=
   ((⊤ : Subsemiring R).map f).copy (Set.range f) Set.image_univ.symm

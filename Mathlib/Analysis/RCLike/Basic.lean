@@ -34,7 +34,7 @@ The coercion from reals into an `RCLike` field is done by registering `RCLike.of
 a `CoeTC`. For this to work, we must proceed carefully to avoid problems involving circular
 coercions in the case `K=ℝ`; in particular, we cannot use the plain `Coe` and must set
 priorities carefully. This problem was already solved for `ℕ`, and we copy the solution detailed
-in `Mathlib/Data/Nat/Cast/Defs.lean`. See also Note [coercion into rings] for more details.
+in `Mathlib/Data/Nat/Cast/Defs.lean`. See also note [coercionIntoRings] for more details.
 
 In addition, several lemmas need to be set at priority 900 to make sure that they do not override
 their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter errors).
@@ -91,7 +91,7 @@ namespace RCLike
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
 
 /- The priority must be set at 900 to ensure that coercions are tried in the right order.
-See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
+See note [coercionIntoRings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
 noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
 
@@ -239,7 +239,7 @@ theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
 
 /-! ### Characteristic zero -/
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- ℝ and ℂ are both of characteristic zero. -/
 instance (priority := 100) charZero_rclike : CharZero K :=
   (RingHom.charZero_iff (algebraMap ℝ K).injective).1 inferInstance

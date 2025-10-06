@@ -598,12 +598,12 @@ protected instance IsStarNormal.smul {R A : Type*} [SMul R A] [Star R] [Star A] 
     (r : R) (a : A) [ha : IsStarNormal a] : IsStarNormal (r • a) where
   star_comm_self := star_smul r a ▸ ha.star_comm_self.smul_left (star r) |>.smul_right r
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]
     {x : R} : IsStarNormal x :=
   ⟨by rw [star_trivial]⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) CommMonoid.isStarNormal [CommMonoid R] [StarMul R] {x : R} :
     IsStarNormal x :=
   ⟨mul_comm _ _⟩

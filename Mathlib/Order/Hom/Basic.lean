@@ -131,7 +131,7 @@ def OrderIsoClass.toOrderIso [LE α] [LE β] [EquivLike F α β] [OrderIsoClass 
 instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
   ⟨OrderIsoClass.toOrderIso⟩
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
     [EquivLike F α β] [OrderIsoClass F α β] : OrderHomClass F α β :=
   { EquivLike.toEmbeddingLike (E := F) with
@@ -224,7 +224,7 @@ protected theorem monotone (f : α →o β) : Monotone f :=
 protected theorem mono (f : α →o β) : Monotone f :=
   f.monotone
 
-/-- See Note [custom simps projection]. We give this manually so that we use `toFun` as the
+/-- See note [customSimpsProjection]. We give this manually so that we use `toFun` as the
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
@@ -234,7 +234,7 @@ initialize_simps_projections OrderHom (toFun → coe)
 
 @[simp] theorem toFun_eq_coe (f : α →o β) : f.toFun = f := rfl
 
--- See library note [partially-applied ext lemmas]
+-- See note [partiallyAppliedExtLemmas]
 @[ext]
 theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
   DFunLike.coe_injective h
@@ -510,7 +510,7 @@ def uliftMap (f : α →o β) : ULift α →o ULift β :=
 
 end OrderHom
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
     [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
   map_rel f := map_rel f
@@ -1180,7 +1180,7 @@ end BoundedOrder
 
 end LatticeIsos
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
     [EquivLike F α β] [OrderIsoClass F α β] : OrderIsoClass F αᵒᵈ βᵒᵈ where
   map_le_map_iff f := map_le_map_iff f

@@ -72,7 +72,7 @@ theorem not_haveLebesgueDecomposition_iff (s : SignedMeasure α) (μ : Measure �
   ⟨fun h => not_or_of_imp fun hp hn => h ⟨hp, hn⟩, fun h hl => (not_and_or.2 h) ⟨hl.1, hl.2⟩⟩
 
 -- `inferInstance` directly does not work
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (s : SignedMeasure α)
     (μ : Measure α) [SigmaFinite μ] : s.HaveLebesgueDecomposition μ where
   posPart := inferInstance

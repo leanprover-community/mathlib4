@@ -29,7 +29,7 @@ open LinearMap (BilinForm)
 variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace F :=
   ⟨fun ε hε => by
     refine

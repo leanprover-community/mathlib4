@@ -32,7 +32,7 @@ instance : SetLike (ClopenUpperSet α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-/-- See Note [custom simps projection]. -/
+/-- See note [customSimpsProjection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s
 
 initialize_simps_projections ClopenUpperSet (carrier → coe, as_prefix coe)

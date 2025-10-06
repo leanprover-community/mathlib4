@@ -116,11 +116,11 @@ class CreatesColimitsOfSize (F : C ⥤ D) where
 abbrev CreatesColimits (F : C ⥤ D) :=
   CreatesColimitsOfSize.{v₂, v₂} F
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 attribute [instance 100] CreatesLimitsOfShape.CreatesLimit CreatesLimitsOfSize.CreatesLimitsOfShape
   CreatesColimitsOfShape.CreatesColimit CreatesColimitsOfSize.CreatesColimitsOfShape
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 -- Interface to the `CreatesLimit` class.
 /-- `liftLimit t` is the cone for `K` given by lifting the limit `t` for `K ⋙ F`. -/
 def liftLimit {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) :
@@ -334,7 +334,7 @@ def createsLimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [F.Full] 
     [HasLimit K] [PreservesLimit K F] : CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (isLimitOfPreserves _ (limit.isLimit K)) _ (Iso.refl _)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- `F` preserves the limit of `K` if it creates the limit and `K ⋙ F` has the limit. -/
 instance (priority := 100) preservesLimit_of_createsLimit_and_hasLimit (K : J ⥤ C) (F : C ⥤ D)
     [CreatesLimit K F] [HasLimit (K ⋙ F)] : PreservesLimit K F where
@@ -342,12 +342,12 @@ instance (priority := 100) preservesLimit_of_createsLimit_and_hasLimit (K : J �
     ((liftedLimitMapsToOriginal (limit.isLimit _)).symm ≪≫
       (Cones.functoriality K F).mapIso ((liftedLimitIsLimit (limit.isLimit _)).uniqueUpToIso t))⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- `F` preserves the limit of shape `J` if it creates these limits and `D` has them. -/
 instance (priority := 100) preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape
     (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] : PreservesLimitsOfShape J F where
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- `F` preserves limits if it creates limits and `D` has limits. -/
 instance (priority := 100) preservesLimits_of_createsLimits_and_hasLimits (F : C ⥤ D)
     [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
@@ -445,7 +445,7 @@ def createsColimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.F
     [HasColimit (K ⋙ F)] (X : C) (i : F.obj X ≅ colimit (K ⋙ F)) : CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfIso' (colimit.isColimit _) X i
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- `F` preserves the colimit of `K` if it creates the colimit and `K ⋙ F` has the colimit. -/
 instance (priority := 100) preservesColimit_of_createsColimit_and_hasColimit (K : J ⥤ C) (F : C ⥤ D)
     [CreatesColimit K F] [HasColimit (K ⋙ F)] : PreservesColimit K F where
@@ -455,13 +455,13 @@ instance (priority := 100) preservesColimit_of_createsColimit_and_hasColimit (K 
         (Cocones.functoriality K F).mapIso
           ((liftedColimitIsColimit (colimit.isColimit _)).uniqueUpToIso t))⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- `F` preserves the colimit of shape `J` if it creates these colimits and `D` has them. -/
 instance (priority := 100) preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape
     (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
     PreservesColimitsOfShape J F where
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- `F` preserves limits if it creates limits and `D` has limits. -/
 instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :

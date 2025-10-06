@@ -90,7 +90,7 @@ class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyComp
   /-- The supremum of the empty set is special-cased to `⊥` -/
   csSup_empty : sSup ∅ = ⊥
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
 open scoped Classical in

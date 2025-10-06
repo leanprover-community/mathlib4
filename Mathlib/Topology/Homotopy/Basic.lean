@@ -113,7 +113,7 @@ instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
 theorem ext {F G : Homotopy f₀ f₁} (h : ∀ x, F x = G x) : F = G :=
   DFunLike.ext _ _ h
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
 def Simps.apply (F : Homotopy f₀ f₁) : I × X → Y :=
   F
@@ -416,7 +416,7 @@ theorem coeFn_injective : @Function.Injective (HomotopyWith f₀ f₁ P) (I × X
 @[ext]
 theorem ext {F G : HomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G := DFunLike.ext F G h
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
 def Simps.apply (F : HomotopyWith f₀ f₁ P) : I × X → Y := F
 

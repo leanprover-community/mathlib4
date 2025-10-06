@@ -115,7 +115,7 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
     1 / a * (b - a) * (1 / b) = 1 / a - 1 / b := by
   simpa only [one_div] using (inv_sub_inv' ha hb).symm
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
   NoZeroDivisors.to_isDomain _
 
@@ -180,7 +180,7 @@ theorem sub_div' {a b c : K} (hc : c ≠ 0) : b - a / c = (b * c - a) / c := by
 theorem div_sub' {a b c : K} (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
   simpa using div_sub_div a b hc one_ne_zero
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) Field.isDomain : IsDomain K :=
   { DivisionRing.isDomain with }
 
@@ -191,7 +191,7 @@ section NoncomputableDefs
 variable {R : Type*} [Nontrivial R]
 
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     DivisionRing R where
   toRing := ‹Ring R›
@@ -202,7 +202,7 @@ noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUn
   qsmul_def := fun _ _ => rfl
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 noncomputable abbrev Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     Field R where
   toCommRing := ‹CommRing R›
@@ -216,7 +216,7 @@ variable [Zero K] [Add K] [Neg K] [Sub K] [One K] [Mul K] [Inv K] [Div K] [SMul 
   (f : K → L) (hf : Injective f)
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 protected abbrev divisionSemiring [DivisionSemiring L] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
@@ -230,7 +230,7 @@ protected abbrev divisionSemiring [DivisionSemiring L] (zero : f 0 = 0) (one : f
   nnqsmul_def q a := hf <| by rw [nnqsmul, NNRat.smul_def, mul, nnratCast]
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 protected abbrev divisionRing [DivisionRing L] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
@@ -248,7 +248,7 @@ protected abbrev divisionRing [DivisionRing L] (zero : f 0 = 0) (one : f 1 = 1)
   qsmul_def q a := hf <| by rw [qsmul, mul, Rat.smul_def, ratCast]
 
 /-- Pullback a `Field` along an injective function. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 protected abbrev semifield [Semifield L] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
@@ -260,7 +260,7 @@ protected abbrev semifield [Semifield L] (zero : f 0 = 0) (one : f 1 = 1)
   __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
 
 /-- Pullback a `Field` along an injective function. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 protected abbrev field [Field L] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)

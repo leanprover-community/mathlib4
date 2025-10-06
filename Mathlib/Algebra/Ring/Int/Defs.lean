@@ -14,7 +14,7 @@ import Mathlib.Algebra.Ring.GrindInstances
 
 This file contains the commutative ring instance on `ℤ`.
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 -/
 
 assert_not_exists DenselyOrdered Set.Subsingleton

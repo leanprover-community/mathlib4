@@ -106,11 +106,11 @@ variable {R M N : Type*}
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 variable (R M)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 80) _root_.isNoetherian_of_finite [Finite M] : IsNoetherian R M :=
   ⟨fun s => ⟨(s : Set M).toFinite.toFinset, by rw [Set.Finite.coe_toFinset, Submodule.span_eq]⟩⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Module.Finite R M :=
   ⟨IsNoetherian.noetherian ⊤⟩
 
@@ -282,7 +282,7 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot
 
 end
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Modules over the trivial ring are Noetherian. -/
 instance (priority := 100) isNoetherian_of_subsingleton (R M) [Subsingleton R] [Semiring R]
     [AddCommMonoid M] [Module R M] : IsNoetherian R M :=

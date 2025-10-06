@@ -46,7 +46,7 @@ class NonarchimedeanRing (R : Type*) [Ring R] [TopologicalSpace R] : Prop
   extends IsTopologicalRing R where
   is_nonarchimedean : ∀ U ∈ 𝓝 (0 : R), ∃ V : OpenAddSubgroup R, (V : Set R) ⊆ U
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Every nonarchimedean ring is naturally a nonarchimedean additive group. -/
 instance (priority := 100) NonarchimedeanRing.to_nonarchimedeanAddGroup (R : Type*) [Ring R]
     [TopologicalSpace R] [t : NonarchimedeanRing R] : NonarchimedeanAddGroup R :=

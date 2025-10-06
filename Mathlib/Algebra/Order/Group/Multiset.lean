@@ -14,7 +14,7 @@ import Mathlib.Data.Multiset.Fold
 
 This file contains the ordered monoid instance on multisets, and lemmas related to it.
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 -/
 
 open List Nat

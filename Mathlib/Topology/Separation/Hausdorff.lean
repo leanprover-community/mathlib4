@@ -107,12 +107,12 @@ theorem Set.Finite.t2_separation [T2Space X] {s : Set X} (hs : s.Finite) :
     ∃ U : X → Set X, (∀ x, x ∈ U x ∧ IsOpen (U x)) ∧ s.PairwiseDisjoint U :=
   s.pairwiseDisjoint_nhds.exists_mem_filter_basis hs nhds_basis_opens
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) T2Space.t1Space [T2Space X] : T1Space X :=
   t1Space_iff_disjoint_pure_nhds.mpr fun _ _ hne =>
     (disjoint_nhds_nhds.2 hne).mono_left <| pure_le_nhds _
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) T2Space.r1Space [T2Space X] : R1Space X :=
   ⟨fun x y ↦ (eq_or_ne x y).imp specializes_of_eq disjoint_nhds_nhds.2⟩
 
@@ -326,7 +326,7 @@ Hausdorff spaces:
   We use this lemma to prove that topological spaces defined using `coinduced` are Hausdorff spaces.
 -/
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) DiscreteTopology.toT2Space
     [DiscreteTopology X] : T2Space X :=
   ⟨fun x y h => ⟨{x}, {y}, isOpen_discrete _, isOpen_discrete _, rfl, rfl, disjoint_singleton.2 h⟩⟩

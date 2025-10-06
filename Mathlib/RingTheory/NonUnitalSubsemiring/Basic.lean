@@ -133,7 +133,7 @@ variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 variable [FunLike G S T] [NonUnitalRingHomClass G S T] (f : F) (g : G)
 
 /-- The range of a non-unital ring homomorphism is a non-unital subsemiring.
-See note [range copy pattern]. -/
+See note [rangeCopyPattern]. -/
 def srange : NonUnitalSubsemiring S :=
   ((⊤ : NonUnitalSubsemiring R).map (f : R →ₙ+* S)).copy (Set.range f) Set.image_univ.symm
 

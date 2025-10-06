@@ -142,7 +142,7 @@ end CommSemiring
 section Ring
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
@@ -336,7 +336,7 @@ end FaithfulSMul
 
 namespace NoZeroSMulDivisors
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) instOfFaithfulSMul {R A : Type*}
     [CommSemiring R] [Semiring A] [Algebra R A] [NoZeroDivisors A] [FaithfulSMul R A] :
     NoZeroSMulDivisors R A :=
@@ -385,19 +385,19 @@ theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommSemiring R] [
 
 variable {A}
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980, as it is a very common path
 instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M :=
   ⟨fun r a m => by
     rw [algebra_compatible_smul A r (a • m), smul_smul, Algebra.commutes, mul_smul, ←
       algebra_compatible_smul]⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980, as it is a very common path
 instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass

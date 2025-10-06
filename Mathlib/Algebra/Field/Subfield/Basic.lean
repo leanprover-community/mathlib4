@@ -176,7 +176,7 @@ variable (g : L →+* M) (f : K →+* L)
 /-! # range -/
 
 
-/-- The range of a ring homomorphism, as a subfield of the target. See Note [range copy pattern]. -/
+/-- The range of a ring homomorphism, as a subfield of the target. See note [rangeCopyPattern]. -/
 def fieldRange : Subfield L :=
   ((⊤ : Subfield K).map f).copy (Set.range f) Set.image_univ.symm
 

@@ -188,7 +188,7 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
 
--- See Note [decidable namespace]
+-- See note [decidableNamespace]
 protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_ge hab hba)
 

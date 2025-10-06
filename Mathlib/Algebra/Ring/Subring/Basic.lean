@@ -236,7 +236,7 @@ variable (g : S →+* T) (f : R →+* S)
 /-! ## range -/
 
 
-/-- The range of a ring homomorphism, as a subring of the target. See Note [range copy pattern]. -/
+/-- The range of a ring homomorphism, as a subring of the target. See note [rangeCopyPattern]. -/
 def range {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R →+* S) : Subring S :=
   ((⊤ : Subring R).map f).copy (Set.range f) Set.image_univ.symm
 

@@ -40,7 +40,7 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
-/-- See Note [custom simps projection]. -/
+/-- See note [customSimpsProjection]. -/
 def Simps.coe (L : Sublattice α) : Set α := L
 
 initialize_simps_projections Sublattice (carrier → coe, as_prefix coe)

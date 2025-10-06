@@ -23,7 +23,7 @@ open scoped Topology
 variable {G : Type*} [TopologicalSpace G] [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
   [OrderTopology G]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 @[to_additive]
 instance (priority := 100) LinearOrderedCommGroup.toIsTopologicalGroup :
     IsTopologicalGroup G where

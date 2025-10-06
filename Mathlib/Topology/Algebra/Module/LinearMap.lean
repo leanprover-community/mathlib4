@@ -134,12 +134,12 @@ theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
     (f : ContinuousAddMonoidHom M₁ M₂) = g ↔ f = g :=
   toContinuousAddMonoidHom_injective.eq_iff
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (h : M₁ →SL[σ₁₂] M₂) : M₁ → M₂ :=
   h
 
-/-- See Note [custom simps projection]. -/
+/-- See note [customSimpsProjection]. -/
 def Simps.coe (h : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ₁₂] M₂ :=
   h
 

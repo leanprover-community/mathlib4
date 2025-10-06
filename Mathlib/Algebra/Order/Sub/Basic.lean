@@ -91,7 +91,7 @@ variable (α)
 /-- A `CanonicallyOrderedAddCommMonoid` with ordered subtraction and order-reflecting addition is
 cancellative. This is not an instance as it would form a typeclass loop.
 
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 abbrev CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
   { (by infer_instance : AddCommMonoid α) with
     add_left_cancel := fun a b c h => by
@@ -206,7 +206,7 @@ namespace CanonicallyOrderedAdd
 
 variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 /-- `Sub` structure in linearly canonically ordered monoid using choice. -/
 noncomputable abbrev toSub : Sub α where
   sub x y := if h : y ≤ x then (exists_add_of_le h).choose else 0

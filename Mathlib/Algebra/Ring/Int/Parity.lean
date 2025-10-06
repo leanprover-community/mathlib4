@@ -10,7 +10,7 @@ import Mathlib.Algebra.Group.Int.Even
 /-!
 # Basic parity lemmas for the ring `ℤ`
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 -/
 
 assert_not_exists DenselyOrdered Set.Subsingleton

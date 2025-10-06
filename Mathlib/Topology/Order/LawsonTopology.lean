@@ -216,7 +216,7 @@ namespace IsLawson
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
 /-- The Lawson topology on a partial order is T₁. -/
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 90) toT1Space : T1Space α where
   t1 a := by
     simp only [IsLawson.topology_eq_lawson]

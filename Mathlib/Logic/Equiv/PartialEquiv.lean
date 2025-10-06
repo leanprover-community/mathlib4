@@ -158,7 +158,7 @@ protected def symm : PartialEquiv β α where
 instance : CoeFun (PartialEquiv α β) fun _ => α → β :=
   ⟨PartialEquiv.toFun⟩
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.symm_apply (e : PartialEquiv α β) : β → α :=
   e.symm
 

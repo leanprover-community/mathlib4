@@ -157,11 +157,11 @@ protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [Uni
     [IsUniformAddGroup E₂] (f : E₁ →A[R] E₂) : UniformContinuous f :=
   uniformContinuous_addMonoidHom_of_continuous f.continuous
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
 def Simps.apply (h : A →A[R] B) : A → B := h
 
-/-- See Note [custom simps projection]. -/
+/-- See note [customSimpsProjection]. -/
 def Simps.coe (h : A →A[R] B) : A →ₐ[R] B := h
 
 initialize_simps_projections ContinuousAlgHom (toFun → apply, toAlgHom → coe)
@@ -577,7 +577,7 @@ lemma Subalgebra.topologicalClosure_adjoin_le_centralizer_centralizer [T2Space A
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
@@ -658,7 +658,7 @@ variable [Ring A]
 variable [Algebra R A] [IsTopologicalRing A]
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }

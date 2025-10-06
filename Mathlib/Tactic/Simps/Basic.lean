@@ -171,7 +171,7 @@ derives two `simp` lemmas:
 * If the structure is a class that has an instance to a notation class, like `Neg` or `Mul`,
   then this notation is used instead of the corresponding projection.
 * You can specify custom projections, by giving a declaration with name
-  `{StructureName}.Simps.{projectionName}`. See Note [custom simps projection].
+  `{StructureName}.Simps.{projectionName}`. See note [customSimpsProjection].
 
   Example:
   ```lean
@@ -407,7 +407,7 @@ The `Simps.structureExt` environment extension specifies the preferred projectio
 structure, used by the `@[simps]` attribute.
 - You can generate this with the command `initialize_simps_projections`.
 - If not generated, the `@[simps]` attribute will generate this automatically.
-- To change the default value, see Note [custom simps projection].
+- To change the default value, see note [customSimpsProjection].
 - The first argument is the list of names of the universe variables used in the structure
 - The second argument is an array that consists of the projection data for each projection.
 -/

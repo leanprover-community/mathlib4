@@ -25,7 +25,7 @@ variable [Semiring R] [Semiring S] [Semiring T]
 theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
   map_nonunit _ := id
 
--- see note [lower instance priority]
+-- see note [lowerInstancePriority]
 @[instance 100]
 theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
     [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
@@ -122,7 +122,7 @@ theorem surjective_units_map_of_local_ringHom [Semiring R] [Semiring S] (f : R �
   ext
   exact hb
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Every ring hom `f : K →+* R` from a division ring `K` to a nontrivial ring `R` is a
 local ring hom. -/
 instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]

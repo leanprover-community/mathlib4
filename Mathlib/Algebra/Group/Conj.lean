@@ -179,7 +179,7 @@ Note that there is no issue unless `T` and `T'` are reducibly equal to `S`, Othe
 discrimination tree can distinguish them, and the note does not apply.
 
 If the type involved is a free variable (rather than an instantiation of some type `S`),
-the instance priority should be even lower, see Note [lower instance priority].
+the instance priority should be even lower, see note [lowerInstancePriority].
 -/
 
 instance [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=

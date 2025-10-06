@@ -94,13 +94,13 @@ instance colim_preservesColimits [HasColimitsOfShape J C] :
     PreservesColimits (colim (J := J) (C := C)) :=
   colimConstAdj.leftAdjoint_preservesColimits
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 noncomputable instance (priority := 100) isEquivalence_preservesColimits
     (E : C ⥤ D) [E.IsEquivalence] :
     PreservesColimitsOfSize.{v, u} E :=
   leftAdjoint_preservesColimits E.adjunction
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 noncomputable instance (priority := 100)
     _root_.CategoryTheory.Functor.reflectsColimits_of_isEquivalence
     (E : D ⥤ C) [E.IsEquivalence] :
@@ -110,7 +110,7 @@ noncomputable instance (priority := 100)
         { reflects := fun t =>
           ⟨(isColimitOfPreserves E.inv t).mapCoconeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 noncomputable instance (priority := 100)
     _root_.CategoryTheory.Functor.createsColimitsOfIsEquivalence (H : D ⥤ C)
     [H.IsEquivalence] :
@@ -203,13 +203,13 @@ instance lim_preservesLimits [HasLimitsOfShape J C] :
     PreservesLimits (lim (J := J) (C := C)) :=
   constLimAdj.rightAdjoint_preservesLimits
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) isEquivalencePreservesLimits
     (E : D ⥤ C) [E.IsEquivalence] :
     PreservesLimitsOfSize.{v, u} E :=
   rightAdjoint_preservesLimits E.asEquivalence.symm.toAdjunction
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 noncomputable instance (priority := 100)
     _root_.CategoryTheory.Functor.reflectsLimits_of_isEquivalence
     (E : D ⥤ C) [E.IsEquivalence] :
@@ -219,7 +219,7 @@ noncomputable instance (priority := 100)
         { reflects := fun t =>
             ⟨(isLimitOfPreserves E.inv t).mapConeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 noncomputable instance (priority := 100)
     _root_.CategoryTheory.Functor.createsLimitsOfIsEquivalence (H : D ⥤ C) [H.IsEquivalence] :
     CreatesLimitsOfSize.{v, u} H where

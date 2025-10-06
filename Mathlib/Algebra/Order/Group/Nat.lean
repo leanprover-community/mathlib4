@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Sub.Defs
 
 This file contains the linear ordered monoid instance on the natural numbers.
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 -/
 
 namespace Nat

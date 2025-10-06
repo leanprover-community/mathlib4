@@ -215,7 +215,7 @@ theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
 
 protected alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
   { (‹_› : GroupWithZero G₀) with
     eq_zero_or_eq_zero_of_mul_eq_zero := @fun a b h => by
@@ -382,13 +382,13 @@ section CommGroupWithZero
 -- comm
 variable [CommGroupWithZero G₀] {a b c d : G₀}
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 10) CommGroupWithZero.toCancelCommMonoidWithZero :
     CancelCommMonoidWithZero G₀ :=
   { GroupWithZero.toCancelMonoidWithZero,
     CommGroupWithZero.toCommMonoidWithZero with }
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
     DivisionCommMonoid G₀ where
   __ := ‹CommGroupWithZero G₀›

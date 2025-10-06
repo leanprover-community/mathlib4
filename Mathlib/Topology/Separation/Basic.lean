@@ -530,7 +530,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
   IsEmbedding.uliftDown.t1Space
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) T1Space.t0Space [T1Space X] : T0Space X :=
   (t1Space_iff_t0Space_and_r0Space.mp ‹T1Space X›).left
 
@@ -1104,7 +1104,7 @@ theorem isCompact_isClosed_basis_nhds (x : X) :
 theorem exists_mem_nhds_isCompact_isClosed (x : X) : ∃ K ∈ 𝓝 x, IsCompact K ∧ IsClosed K :=
   (isCompact_isClosed_basis_nhds x).ex_mem
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A weakly locally compact R₁ space is locally compact. -/
 instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace : LocallyCompactSpace X :=
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, h, _⟩ ↦ h

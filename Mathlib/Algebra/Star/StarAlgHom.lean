@@ -645,14 +645,14 @@ class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
 
 namespace StarAlgEquivClass
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
     [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
     [NonUnitalAlgEquivClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
   { }
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 100) instAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
@@ -740,7 +740,7 @@ nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
       simpa only [apply_inv_apply, inv_apply_apply] using
         congr_arg (inv e) (map_smul e r (inv e b)).symm }
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.symm_apply (e : A ≃⋆ₐ[R] B) : B → A :=
   e.symm
 

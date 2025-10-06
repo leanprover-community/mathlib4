@@ -109,7 +109,7 @@ protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
 
 @[simp] theorem mk_coe (U : Opens α) : mk (↑U) U.isOpen = U := rfl
 
-/-- See Note [custom simps projection]. -/
+/-- See note [customSimpsProjection]. -/
 def Simps.coe (U : Opens α) : Set α := U
 
 initialize_simps_projections Opens (carrier → coe, as_prefix coe)

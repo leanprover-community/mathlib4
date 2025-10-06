@@ -157,7 +157,7 @@ theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) 
   rintro ⟨_⟩ ⟨_⟩
   simp
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedAddCommGroup E]
     [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] (h : E →ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
@@ -695,14 +695,14 @@ theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
 @[simp]
 theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm := rfl
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E]
     [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
   h
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.symm_apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
     [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂]
     [Module R E] [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E₂ → E :=

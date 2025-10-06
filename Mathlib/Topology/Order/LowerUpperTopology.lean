@@ -299,7 +299,7 @@ section PartialOrder
 
 variable [PartialOrder α] [TopologicalSpace α] [IsLower α]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- The lower topology on a partial order is T₀. -/
 instance (priority := 90) t0Space : T0Space α :=
   (t0Space_iff_inseparable α).2 fun x y h =>
@@ -440,7 +440,7 @@ section PartialOrder
 
 variable [PartialOrder α] [TopologicalSpace α] [IsUpper α]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- The upper topology on a partial order is T₀. -/
 instance (priority := 90) t0Space : T0Space α :=
   IsLower.t0Space (α := αᵒᵈ)
@@ -511,7 +511,7 @@ protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := 
   refine LE.le.trans ?_ (map_sInf f _).ge
   simp
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 90) IsLower.toContinuousInf : ContinuousInf α :=
   ⟨(infsInfHom : sInfHom (α × α) α).continuous⟩
 
@@ -525,7 +525,7 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsUppe
 protected lemma _root_.sSupHom.continuous (f : sSupHom α β) : Continuous f :=
   sInfHom.continuous (α := αᵒᵈ) (β := βᵒᵈ) (sSupHom.dual.toFun f)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 90) IsUpper.toContinuousInf : ContinuousSup α :=
   ⟨(supsSupHom : sSupHom (α × α) α).continuous⟩
 

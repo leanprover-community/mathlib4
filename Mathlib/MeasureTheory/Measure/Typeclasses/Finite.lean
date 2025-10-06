@@ -289,7 +289,7 @@ end Measure
 class IsLocallyFiniteMeasure [TopologicalSpace α] (μ : Measure α) : Prop where
   finiteAtNhds : ∀ x, μ.FiniteAtFilter (𝓝 x)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) IsFiniteMeasure.toIsLocallyFiniteMeasure [TopologicalSpace α]
     (μ : Measure α) [IsFiniteMeasure μ] : IsLocallyFiniteMeasure μ :=
   ⟨fun _ => finiteAtFilter_of_finite _ _⟩
@@ -545,7 +545,7 @@ theorem measure_zero_of_nhdsWithin (hs : IsCompact s) :
 
 end IsCompact
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure [TopologicalSpace α]
     {_ : MeasurableSpace α} {μ : Measure α} [IsLocallyFiniteMeasure μ] :
     IsFiniteMeasureOnCompacts μ :=

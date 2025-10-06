@@ -77,7 +77,7 @@ def Rat.castRec [NatCast K] [IntCast K] [Div K] (q : ℚ) : K := q.num / q.den
 An instance of `DivisionSemiring K` includes maps `nnratCast : ℚ≥0 → K` and `nnqsmul : ℚ≥0 → K → K`.
 Those two fields are needed to implement the `DivisionSemiring K → Algebra ℚ≥0 K` instance since we
 need to control the specific definitions for some special cases of `K` (in particular `K = ℚ≥0`
-itself). See also note [forgetful inheritance].
+itself). See also note [forgetfulInheritance].
 
 If the division semiring has positive characteristic `p`, our division by zero convention forces
 `nnratCast (1 / p) = 1 / 0 = 0`. -/
@@ -104,7 +104,7 @@ class DivisionSemiring (K : Type*) extends Semiring K, GroupWithZero K, NNRatCas
 An instance of `DivisionRing K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
 Those two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need
 to control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself).
-See also note [forgetful inheritance]. Similarly, there are maps `nnratCast ℚ≥0 → K` and
+See also note [forgetfulInheritance]. Similarly, there are maps `nnratCast ℚ≥0 → K` and
 `nnqsmul : ℚ≥0 → K → K` to implement the `DivisionSemiring K → Algebra ℚ≥0 K` instance.
 
 If the division ring has positive characteristic `p`, our division by zero convention forces
@@ -148,7 +148,7 @@ class DivisionRing (K : Type*)
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected qsmul_def (a : ℚ) (x : K) : qsmul a x = Rat.cast a * x := by intros; rfl
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing K] : DivisionSemiring K :=
   { ‹DivisionRing K› with }
 
@@ -157,7 +157,7 @@ instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing K] : Di
 An instance of `Semifield K` includes maps `nnratCast : ℚ≥0 → K` and `nnqsmul : ℚ≥0 → K → K`.
 Those two fields are needed to implement the `DivisionSemiring K → Algebra ℚ≥0 K` instance since we
 need to control the specific definitions for some special cases of `K` (in particular `K = ℚ≥0`
-itself). See also note [forgetful inheritance].
+itself). See also note [forgetfulInheritance].
 
 If the semifield has positive characteristic `p`, our division by zero convention forces
 `nnratCast (1 / p) = 1 / 0 = 0`. -/
@@ -168,14 +168,14 @@ class Semifield (K : Type*) extends CommSemiring K, DivisionSemiring K, CommGrou
 An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
 Those two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need
 to control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself).
-See also note [forgetful inheritance].
+See also note [forgetfulInheritance].
 
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
 @[stacks 09FD "first part"]
 class Field (K : Type u) extends CommRing K, DivisionRing K
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) Field.toSemifield [Field K] : Semifield K := { ‹Field K› with }
 
 namespace NNRat

@@ -59,7 +59,7 @@ and also prove its basic properties.
   This fact is not available as a separate theorem.
   Instead, we override the projection of `ContinuousMap.compactConvergenceUniformity`
   to `TopologicalSpace` to be `ContinuousMap.compactOpen` and prove that they agree,
-  see Note [forgetful inheritance] and implementation notes below.
+  see note [forgetfulInheritance] and implementation notes below.
 
 * `ContinuousMap.tendsto_iff_tendstoLocallyUniformly`:
   on a weakly locally compact space,
@@ -72,7 +72,7 @@ and also prove its basic properties.
 
 ## Implementation details
 
-For technical reasons (see Note [forgetful inheritance]),
+For technical reasons (see note [forgetfulInheritance]),
 instead of defining a `UniformSpace C(α, β)` structure
 and proving in a theorem that it agrees with the compact-open topology,
 we override the projection right in the definition,
@@ -161,7 +161,7 @@ which defines topology of uniform convergence on compact sets.
 We use `ContinuousMap.tendsto_iff_forall_isCompact_tendstoUniformlyOn`
 to show that the induced topology agrees with the compact-open topology
 and replace the topology with `compactOpen` to avoid non-defeq diamonds,
-see Note [forgetful inheritance]. -/
+see note [forgetfulInheritance]. -/
 instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
   .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
     refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_

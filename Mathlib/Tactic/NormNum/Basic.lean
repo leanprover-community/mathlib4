@@ -151,12 +151,12 @@ opportunity for lean to unfold the numerals (and the instance defeq problem is u
 easy).
 -/
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isNat_add {α} [AddMonoidWithOne α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℕ},
     f = HAdd.hAdd → IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_add _ _).symm⟩
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isInt_add {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℤ},
     f = HAdd.hAdd → IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_add ..).symm⟩
@@ -173,7 +173,7 @@ def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
 def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
     (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb nc : ℕ} {da db dc k : ℕ} :
     f = HAdd.hAdd → IsNNRat a na da → IsNNRat b nb db →
     Nat.add (Nat.mul na db) (Nat.mul nb da) = Nat.mul k nc →
@@ -195,7 +195,7 @@ theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
 -- TODO: clean up and move it somewhere in mathlib? It's a bit much for this file
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : ℤ} {da db dc k : ℕ} :
     f = HAdd.hAdd → IsRat a na da → IsRat b nb db →
     Int.add (Int.mul na db) (Int.mul nb da) = Int.mul k nc →
@@ -301,12 +301,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     guard <|← withNewMCtxDepth <| isDefEq f q(HAdd.hAdd (α := $α))
     ra.add rb
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isInt_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {a' b : ℤ},
     f = Neg.neg → IsInt a a' → Int.neg a' = b → IsInt (-a) b
   | _, _, _, _, rfl, ⟨rfl⟩, rfl => ⟨(Int.cast_neg ..).symm⟩
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d : ℕ},
     f = Neg.neg → IsRat a n d → Int.neg n = n' → IsRat (-a) n' d
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
@@ -348,12 +348,12 @@ such that `norm_num` successfully recognises `a`. -/
   haveI' _e_eq : $e =Q -$a := ⟨⟩
   ra.neg
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isInt_sub {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℤ},
     f = HSub.hSub → IsInt a a' → IsInt b b' → Int.sub a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_sub ..).symm⟩
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : ℤ} {da db dc k : ℕ}
     (hf : f = HSub.hSub) (ra : IsRat a na da) (rb : IsRat b nb db)
     (h₁ : Int.sub (Int.mul na db) (Int.mul nb da) = Int.mul k nc)
@@ -411,12 +411,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   haveI' _e_eq : $e =Q $a - $b := ⟨⟩
   ra.sub rb
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isNat_mul {α} [Semiring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℕ},
     f = HMul.hMul → IsNat a a' → IsNat b b' → Nat.mul a' b' = c → IsNat (a * b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_mul ..).symm⟩
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isInt_mul {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℤ},
     f = HMul.hMul → IsInt a a' → IsInt b b' → Int.mul a' b' = c → IsInt (a * b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_mul ..).symm⟩

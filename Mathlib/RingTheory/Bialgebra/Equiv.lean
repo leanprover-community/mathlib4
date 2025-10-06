@@ -193,13 +193,13 @@ protected theorem congr_fun (h : e = e') (x : A) : e x = e' x :=
 
 end
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.apply {R : Type u} [CommSemiring R] {α : Type v} {β : Type w}
     [Semiring α] [Semiring β] [Algebra R α]
     [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α ≃ₐc[R] β) : α → β := f
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
     {A : Type*} {B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]

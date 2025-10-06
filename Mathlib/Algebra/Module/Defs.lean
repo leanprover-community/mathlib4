@@ -58,7 +58,7 @@ section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
 instance (priority := 100) Module.toMulActionWithZero
     {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
@@ -77,7 +77,7 @@ variable (R)
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 protected abbrev Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : M₂ →+ M)
     (hf : Injective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { hf.distribMulAction f smul with
@@ -85,7 +85,7 @@ protected abbrev Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f
     zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
 
 /-- Pushforward a `Module` structure along a surjective additive monoid homomorphism.
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 protected abbrev Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { toDistribMulAction := hf.distribMulAction f smul
@@ -159,7 +159,7 @@ protected theorem Module.nontrivial (R M : Type*) [MonoidWithZero R] [Nontrivial
     [MulActionWithZero R M] : Nontrivial R :=
   MulActionWithZero.nontrivial R M
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
   smul_add := mul_add
   add_smul := add_mul

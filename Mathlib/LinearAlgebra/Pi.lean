@@ -218,7 +218,7 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
     · exact hI i hiI
 
 /-- The linear equivalence between linear functions on a finite product of modules and
-families of functions on these modules. See note [bundled maps over different rings]. -/
+families of functions on these modules. See note [bundledMapsOverDifferentRings]. -/
 @[simps symm_apply]
 def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S] [Module S M]
     [SMulCommClass R S M] : ((i : ι) → φ i →ₗ[R] M) ≃ₗ[S] ((i : ι) → φ i) →ₗ[R] M where
@@ -522,7 +522,7 @@ are represented as `ι → R` and `ι → M`, respectively, where `ι` is a fini
 This as an `S`-linear equivalence, under the assumption that `S` acts on `M` commuting with `R`.
 When `R` is commutative, we can take this to be the usual action with `S = R`.
 Otherwise, `S = ℕ` shows that the equivalence is additive.
-See note [bundled maps over different rings]. -/
+See note [bundledMapsOverDifferentRings]. -/
 def piRing : ((ι → R) →ₗ[R] M) ≃ₗ[S] ι → M :=
   (LinearMap.lsum R (fun _ : ι => R) S).symm.trans
     (piCongrRight fun _ => LinearMap.ringLmapEquivSelf R S M)

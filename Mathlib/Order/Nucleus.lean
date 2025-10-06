@@ -53,7 +53,7 @@ instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective' f g h := by  obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.apply (n : Nucleus X) : X → X := n
 
 @[simp] lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl

@@ -13,7 +13,7 @@ import Mathlib.Data.Fin.Rev
 
 This file contains the additive and multiplicative monoid instances on `Fin n`.
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 -/
 
 assert_not_exists OrderedCommMonoid MonoidWithZero

@@ -54,7 +54,7 @@ theorem topologicalClosure_minimal (s : NonUnitalStarSubalgebra R A)
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
 
-See note [reducible non-instances] -/
+See note [reducibleNonInstances] -/
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   s.toNonUnitalSubalgebra.nonUnitalCommSemiringTopologicalClosure hs
@@ -98,7 +98,7 @@ instance instIsTopologicalRing (s : NonUnitalStarSubalgebra R A) : IsTopological
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
 
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
   { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }

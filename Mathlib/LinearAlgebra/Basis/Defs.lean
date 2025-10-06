@@ -507,7 +507,7 @@ This definition is parameterized over an extra `Semiring S`,
 such that `SMulCommClass R S M'` holds.
 If `R` is commutative, you can set `S := R`; if `R` is not commutative,
 you can recover an `AddEquiv` by setting `S := ℕ`.
-See library note [bundled maps over different rings].
+See note [bundledMapsOverDifferentRings].
 -/
 def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
   toFun f := (Finsupp.linearCombination R id).comp <| Finsupp.lmapDomain R R f ∘ₗ ↑b.repr

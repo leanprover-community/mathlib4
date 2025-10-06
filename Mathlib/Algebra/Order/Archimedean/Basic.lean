@@ -530,7 +530,7 @@ noncomputable def Archimedean.floorRing (R) [Ring R] [LinearOrder R] [IsStrictOr
   .ofFloor R (fun a => Classical.choose (exists_floor a)) fun z a =>
     (Classical.choose_spec (exists_floor a) z).symm
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A linear ordered field that is a floor ring is archimedean. -/
 instance (priority := 100) FloorRing.archimedean (K) [Field K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorRing K] :

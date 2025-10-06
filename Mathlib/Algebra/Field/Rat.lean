@@ -11,7 +11,7 @@ import Mathlib.Data.NNRat.Defs
 
 This file contains the field instance on the rational numbers.
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 
 ## Tags
 

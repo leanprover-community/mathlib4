@@ -12,7 +12,7 @@ import Mathlib.Order.Bounds.Defs
 
 This file contains the linear order instance on the natural numbers.
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 
 ## TODO
 

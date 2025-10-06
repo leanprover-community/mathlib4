@@ -279,7 +279,7 @@ export Classical (or_iff_not_imp_left or_iff_not_imp_right)
 
 theorem not_or_of_imp : (a → b) → ¬a ∨ b := open scoped Classical in Decidable.not_or_of_imp
 
--- See Note [decidable namespace]
+-- See note [decidableNamespace]
 protected theorem Decidable.or_not_of_imp [Decidable a] (h : a → b) : b ∨ ¬a :=
   dite _ (Or.inl ∘ h) Or.inr
 
@@ -611,7 +611,7 @@ theorem forall_or_of_or_forall {α : Sort*} {p : α → Prop} {b : Prop} (h : b 
     b ∨ p x :=
   h.imp_right fun h₂ ↦ h₂ x
 
--- See Note [decidable namespace]
+-- See note [decidableNamespace]
 protected theorem Decidable.forall_or_left {q : Prop} {p : α → Prop} [Decidable q] :
     (∀ x, q ∨ p x) ↔ q ∨ ∀ x, p x :=
   ⟨fun h ↦ if hq : q then Or.inl hq else
@@ -620,7 +620,7 @@ protected theorem Decidable.forall_or_left {q : Prop} {p : α → Prop} [Decidab
 theorem forall_or_left {q} {p : α → Prop} : (∀ x, q ∨ p x) ↔ q ∨ ∀ x, p x :=
   open scoped Classical in Decidable.forall_or_left
 
--- See Note [decidable namespace]
+-- See note [decidableNamespace]
 protected theorem Decidable.forall_or_right {q} {p : α → Prop} [Decidable q] :
     (∀ x, p x ∨ q) ↔ (∀ x, p x) ∨ q := by simp [or_comm, Decidable.forall_or_left]
 
@@ -786,7 +786,7 @@ theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists₂_im
 theorem not_forall₂_of_exists₂_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
   | ⟨x, h, hp⟩, al => hp <| al x h
 
--- See Note [decidable namespace]
+-- See note [decidableNamespace]
 protected theorem Decidable.not_forall₂ [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
     (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h :=
   ⟨Not.decidable_imp_symm fun nx x h ↦ nx.decidable_imp_symm

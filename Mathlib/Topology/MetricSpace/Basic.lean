@@ -26,7 +26,7 @@ namespace Metric
 
 variable {x : γ} {s : Set γ}
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
   t0 _ _ h := eq_of_dist_eq_zero <| Metric.inseparable_iff.1 h
 
@@ -44,7 +44,7 @@ abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace 
   toPseudoMetricSpace := ‹_›
   eq_of_dist_eq_zero hdist := (Metric.inseparable_iff.2 hdist).eq
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A metric space induces an emetric space -/
 instance (priority := 100) _root_.MetricSpace.toEMetricSpace : EMetricSpace γ :=
   .ofT0PseudoEMetricSpace γ

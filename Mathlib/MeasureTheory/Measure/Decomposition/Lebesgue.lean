@@ -933,7 +933,7 @@ theorem HaveLebesgueDecomposition.sfinite_of_isFiniteMeasure [SFinite μ]
 
 attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 variable (μ ν) in
 /-- **The Lebesgue decomposition theorem**:
 Any s-finite measure `μ` has Lebesgue decomposition with respect to any σ-finite measure `ν`.

@@ -95,7 +95,7 @@ theorem locallyConvexSpace_iff_exists_convex_subset_zero :
     LocallyConvexSpace 𝕜 E ↔ ∀ U ∈ (𝓝 0 : Filter E), ∃ S ∈ (𝓝 0 : Filter E), Convex 𝕜 S ∧ S ⊆ U :=
   (locallyConvexSpace_iff_zero 𝕜 E).trans hasBasis_self
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) LocallyConvexSpace.toLocPathConnectedSpace [Module ℝ E]
     [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocPathConnectedSpace E :=
   .of_bases (fun x ↦ convex_basis (𝕜 := ℝ) x)

@@ -71,7 +71,7 @@ protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) :
 protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) :
     Disjoint a bᶜ ↔ a ≤ b := by rw [← le_compl_iff_disjoint_right, hb.eq]
 
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 /-- A Heyting algebra with regular excluded middle is a Boolean algebra. -/
 abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : BooleanAlgebra α :=
   have : ∀ a : α, IsCompl a aᶜ := fun a =>

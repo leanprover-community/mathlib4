@@ -66,12 +66,12 @@ instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
 instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
   NormedSpace.restrictScalars ℝ ℂ E
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
 instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=

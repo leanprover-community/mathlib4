@@ -13,7 +13,7 @@ assert_not_exists Ring
 namespace MulEquivClass
 variable {F α β : Type*} [EquivLike F α β]
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
     ZeroHomClass F α β where
   map_zero f :=
@@ -21,7 +21,7 @@ instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [M
       f 0 = f 0 * f (EquivLike.inv f 0) := by rw [← map_mul, zero_mul]
         _ = 0 := by simp
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 100) toMonoidWithZeroHomClass
     [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
     MonoidWithZeroHomClass F α β :=

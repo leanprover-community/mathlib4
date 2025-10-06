@@ -112,7 +112,7 @@ theorem prod_comp (f : M₂ →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄)
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains.
 
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
+See note [bundledMapsOverDifferentRings] for why separate `R` and `S` semirings are used. -/
 @[simps]
 def prodEquiv [Module S M₂] [Module S M₃] [SMulCommClass R S M₂] [SMulCommClass R S M₃] :
     ((M →ₗ[R] M₂) × (M →ₗ[R] M₃)) ≃ₗ[S] M →ₗ[R] M₂ × M₃ where
@@ -248,7 +248,7 @@ theorem coprod_comp_inl_inr (f : M × M₂ →ₗ[R] M₃) :
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
 
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
+See note [bundledMapsOverDifferentRings] for why separate `R` and `S` semirings are used. -/
 @[simps]
 def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
     ((M →ₗ[R] M₃) × (M₂ →ₗ[R] M₃)) ≃ₗ[S] M × M₂ →ₗ[R] M₃ where

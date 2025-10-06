@@ -30,12 +30,12 @@ For finsets `s` and `t`:
 For `α` a semigroup/monoid, `Finset α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between
 pointwise scaling and repeated pointwise addition; the former has `(2 : ℕ) • {1, 2} = {2, 4}`, while
-the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat action].
+the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwiseNatAction].
 
 ## Implementation notes
 
 We put all instances in the scope `Pointwise`, so that these instances are not available by
-default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
+default. Note that we do not mark them as reducible (as argued by note [reducibleNonInstances])
 since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`.
 
@@ -683,12 +683,12 @@ section Instances
 variable [DecidableEq α] [DecidableEq β]
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
-note [pointwise nat action]. -/
+note [pointwiseNatAction]. -/
 protected def nsmul [Zero α] [Add α] : SMul ℕ (Finset α) :=
   ⟨nsmulRec⟩
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
-`Finset`. See note [pointwise nat action]. -/
+`Finset`. See note [pointwiseNatAction]. -/
 protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
@@ -696,12 +696,12 @@ attribute [to_additive existing] Finset.npow
 
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `Finset`. See note [pointwise nat action]. -/
+addition/subtraction!) of a `Finset`. See note [pointwiseNatAction]. -/
 protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
   ⟨zsmulRec⟩
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
-multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
+multiplication/division!) of a `Finset`. See note [pointwiseNatAction]. -/
 @[to_additive existing]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩

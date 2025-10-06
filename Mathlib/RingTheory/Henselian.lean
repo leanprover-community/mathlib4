@@ -105,7 +105,7 @@ class HenselianLocalRing (R : Type*) [CommRing R] : Prop extends IsLocalRing R w
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ maximalIdeal R)
       (_ : IsUnit (f.derivative.eval a₀)), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLocalRing K where
   is_henselian f _ a₀ h₁ _ := by
     simp only [(maximalIdeal K).eq_bot_of_prime, Ideal.mem_bot] at h₁ ⊢
@@ -160,7 +160,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     rw [h₂]
     exact not_isUnit_zero
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A ring `R` that is `I`-adically complete is Henselian at `I`. -/
 instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R] (I : Ideal R)
     [IsAdicComplete I R] : HenselianRing R I where

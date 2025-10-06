@@ -312,7 +312,7 @@ theorem disjoint_lift'_closure_nhds [T25Space X] {x y : X} :
     Disjoint ((𝓝 x).lift' closure) ((𝓝 y).lift' closure) ↔ x ≠ y :=
   ⟨fun h hxy => by simp [hxy, nhds_neBot.ne] at h, fun h => T25Space.t2_5 h⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) T25Space.t2Space [T25Space X] : T2Space X :=
   t2Space_iff_disjoint_nhds.2 fun _ _ hne =>
     (disjoint_lift'_closure_nhds.2 hne).mono (le_lift'_closure _) (le_lift'_closure _)
@@ -357,7 +357,7 @@ instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X :
 theorem RegularSpace.t3Space_iff_t0Space [RegularSpace X] : T3Space X ↔ T0Space X := by
   constructor <;> intro <;> infer_instance
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
   refine ⟨fun x y hne => ?_⟩
   rw [lift'_nhds_closure, lift'_nhds_closure]
@@ -471,7 +471,7 @@ class T4Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, Normal
 
 instance (priority := 100) [T1Space X] [NormalSpace X] : T4Space X := ⟨⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) T4Space.t3Space [T4Space X] : T3Space X where
   regular hs hxs := by simpa only [nhdsSet_singleton] using (normal_separation hs isClosed_singleton
     (disjoint_singleton_right.mpr hxs)).disjoint_nhdsSet
@@ -515,7 +515,7 @@ class CompletelyNormalSpace (X : Type u) [TopologicalSpace X] : Prop where
 
 export CompletelyNormalSpace (completely_normal)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A completely normal space is a normal space. -/
 instance (priority := 100) CompletelyNormalSpace.toNormalSpace
     [CompletelyNormalSpace X] : NormalSpace X where
@@ -553,7 +553,7 @@ theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X →
 protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
   h.symm.isClosedEmbedding.t5Space
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A `T₅` space is a `T₄` space. -/
 instance (priority := 100) T5Space.toT4Space [T5Space X] : T4Space X where
   -- follows from type-class inference

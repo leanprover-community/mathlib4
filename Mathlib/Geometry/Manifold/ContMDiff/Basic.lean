@@ -77,7 +77,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source,
       e.left_inv, e'.left_inv]
 
-/-- See note [comp_of_eq lemmas] -/
+/-- See note [compOfEqLemmas] -/
 theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : M'}
     (hg : ContMDiffWithinAt I' I'' n g t y) (hf : ContMDiffWithinAt I I' n f s x)
     (st : MapsTo f s t) (hx : f x = y) : ContMDiffWithinAt I I'' n (g ∘ f) s x := by
@@ -124,7 +124,7 @@ nonrec theorem ContMDiffAt.comp {g : M' → M''} (x : M) (hg : ContMDiffAt I' I'
     (hf : ContMDiffAt I I' n f x) : ContMDiffAt I I'' n (g ∘ f) x :=
   hg.comp x hf (mapsTo_univ _ _)
 
-/-- See note [comp_of_eq lemmas] -/
+/-- See note [compOfEqLemmas] -/
 theorem ContMDiffAt.comp_of_eq {g : M' → M''} {x : M} {y : M'} (hg : ContMDiffAt I' I'' n g y)
     (hf : ContMDiffAt I I' n f x) (hx : f x = y) : ContMDiffAt I I'' n (g ∘ f) x := by
   subst hx; exact hg.comp x hf

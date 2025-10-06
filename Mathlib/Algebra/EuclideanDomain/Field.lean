@@ -16,7 +16,7 @@ namespace Field
 
 variable {K : Type*} [Field K]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) toEuclideanDomain : EuclideanDomain K :=
 { toCommRing := toCommRing
   quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,

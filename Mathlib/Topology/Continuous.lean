@@ -121,7 +121,7 @@ nonrec theorem ContinuousAt.comp {g : Y → Z} (hg : ContinuousAt g (f x))
 theorem ContinuousAt.comp' {g : Y → Z} {x : X} (hg : ContinuousAt g (f x))
     (hf : ContinuousAt f x) : ContinuousAt (fun x => g (f x)) x := ContinuousAt.comp hg hf
 
-/-- See note [comp_of_eq lemmas] -/
+/-- See note [compOfEqLemmas] -/
 theorem ContinuousAt.comp_of_eq {g : Y → Z} (hg : ContinuousAt g y)
     (hf : ContinuousAt f x) (hy : f x = y) : ContinuousAt (g ∘ f) x := by subst hy; exact hg.comp hf
 

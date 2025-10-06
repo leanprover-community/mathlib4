@@ -118,7 +118,7 @@ The unprimed version is for `GroupWithZero`. -/
 class ContinuousDiv (G : Type*) [TopologicalSpace G] [Div G] : Prop where
   continuous_div' : Continuous fun p : G × G => p.1 / p.2
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 @[to_additive]
 instance (priority := 100) IsTopologicalGroup.to_continuousDiv
     {G : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] : ContinuousDiv G where

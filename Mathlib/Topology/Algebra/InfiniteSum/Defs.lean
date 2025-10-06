@@ -108,7 +108,7 @@ noncomputable irreducible_def tprod {β} (f : β → α) :=
     else h.choose
   else 1
 
--- see Note [operator precedence of big operators]
+-- see note [operatorPrecedenceBigOperators]
 @[inherit_doc tprod]
 notation3 "∏' "(...)", "r:67:(scoped f => tprod f) => r
 @[inherit_doc tsum]

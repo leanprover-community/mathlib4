@@ -367,7 +367,7 @@ end Coreflective
 
 -- It is possible to do this computably since the construction gives the data of the inverse, not
 -- just the existence of an inverse on each object.
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Any reflective inclusion has a monadic right adjoint.
 cf Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) monadicOfReflective [Reflective R] :

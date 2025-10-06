@@ -50,7 +50,7 @@ theorem topologicalClosure_minimal {s t : NonUnitalSubalgebra R A}
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.
 
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   s.toNonUnitalSubsemiring.nonUnitalCommSemiringTopologicalClosure hs
@@ -91,7 +91,7 @@ instance instIsTopologicalRing (s : NonUnitalSubalgebra R A) : IsTopologicalRing
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.
 
-See note [reducible non-instances]. -/
+See note [reducibleNonInstances]. -/
 abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
   { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }

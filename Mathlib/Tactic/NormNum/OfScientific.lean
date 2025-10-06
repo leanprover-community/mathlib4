@@ -19,14 +19,14 @@ open Qq
 
 variable {α : Type*}
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isNNRat_ofScientific_of_true [DivisionRing α] :
     {m e : ℕ} → {n : ℕ} → {d : ℕ} →
     IsNNRat (mkRat m (10 ^ e) : α) n d → IsNNRat (OfScientific.ofScientific m true e : α) n d
   | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by
     rwa [← Rat.cast_ofScientific, ← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_true_def]⟩
 
--- see note [norm_num lemma function equality]
+-- see note [normNumLemmaFunctionEquality]
 theorem isNat_ofScientific_of_false [DivisionRing α] : {m e nm ne n : ℕ} →
     IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
     IsNat (OfScientific.ofScientific m false e : α) n

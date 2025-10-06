@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Ring.Canonical
 
 variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 /-- Construct a `LinearOrderedCommGroupWithZero` from a canonically linear ordered semifield. -/
 abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α where

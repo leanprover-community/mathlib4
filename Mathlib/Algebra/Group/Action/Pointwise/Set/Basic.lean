@@ -20,7 +20,7 @@ of `α`/`Set α` on `Set β`.
 ## Implementation notes
 
 * We put all instances in the scope `Pointwise`, so that these instances are not available by
-  default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
+  default. Note that we do not mark them as reducible (as argued by note [reducibleNonInstances])
   since we expect the scope to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
 -/

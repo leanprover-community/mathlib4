@@ -83,7 +83,7 @@ theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) �
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
 
-/-- See Note [custom simps projection]. -/
+/-- See note [customSimpsProjection]. -/
 def Simps.symm_apply (e : X ≃ᵈ Y) : Y → X := e.symm
 
 initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_apply)

@@ -54,7 +54,7 @@ This axiomatizes the reals. -/
 class ConditionallyCompleteLinearOrderedField (α : Type*) extends
     Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=

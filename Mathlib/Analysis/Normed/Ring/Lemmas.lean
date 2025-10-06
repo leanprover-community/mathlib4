@@ -144,7 +144,7 @@ instance Pi.normedCommutativeRing {R : ι → Type*} [Fintype ι] [∀ i, Normed
 
 end NormedCommRing
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSeminormedRing α] :
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
@@ -164,7 +164,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul tendsto_const_nhds)
         simp⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A seminormed ring is a topological ring. -/
 instance (priority := 100) NonUnitalSeminormedRing.toIsTopologicalRing [NonUnitalSeminormedRing α] :
     IsTopologicalRing α where

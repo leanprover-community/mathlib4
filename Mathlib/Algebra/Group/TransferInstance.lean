@@ -16,7 +16,7 @@ then `α` has a group structure, and similarly for monoids, semigroups and so on
 ### Implementation details
 
 When adding new definitions that transfer type-classes across an equivalence, please use
-`abbrev`. See note [reducible non-instances].
+`abbrev`. See note [reducibleNonInstances].
 -/
 
 assert_not_exists MonoidWithZero MulAction

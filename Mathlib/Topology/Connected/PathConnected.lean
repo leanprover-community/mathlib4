@@ -525,7 +525,7 @@ instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) PathConnectedSpace.connectedSpace [PathConnectedSpace X] :
     ConnectedSpace X := by
   rw [connectedSpace_iff_connectedComponent]

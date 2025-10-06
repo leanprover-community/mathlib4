@@ -13,6 +13,6 @@ open Set
 
 variable (M : Type*) [AddMonoidWithOne M] [CharZero M]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) CharZero.infinite : Infinite M :=
   Infinite.of_injective Nat.cast Nat.cast_injective

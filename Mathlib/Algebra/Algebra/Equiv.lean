@@ -47,7 +47,7 @@ class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semir
 
 namespace AlgEquivClass
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
@@ -339,15 +339,15 @@ end symm
 
 section simps
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
   e
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
   e
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
   e.symm
 

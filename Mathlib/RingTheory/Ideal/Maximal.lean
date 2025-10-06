@@ -151,7 +151,7 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
       refine Submodule.add_mem I (I.mul_mem_left a hxy) (Submodule.smul_mem I y ?_)
       rwa [Submodule.span_eq] at h⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMaximal], I.IsPrime :=
   @IsMaximal.isPrime _ _ _
 

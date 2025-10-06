@@ -20,7 +20,7 @@ section
 
 variable {R M : Type*} [Semiring R] [AddCommMonoid M]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Like `Semiring.toModule`, but multiplies on the right. -/
 instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐᵒᵖ R :=
   { MonoidWithZero.toOppositeMulActionWithZero R with

@@ -95,7 +95,7 @@ protected theorem source : γ 0 = x :=
 protected theorem target : γ 1 = y :=
   γ.target'
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
 def simps.apply : I → X :=
   γ
@@ -188,7 +188,7 @@ theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
 def extend : C(ℝ, X) where
   toFun := IccExtend zero_le_one γ
 
-/-- See Note [continuity lemma statement]. -/
+/-- See note [continuityLemmaStatement]. -/
 @[continuity, fun_prop]
 theorem _root_.Continuous.pathExtend {γ : Y → Path x y} {f : Y → ℝ} (hγ : Continuous ↿γ)
     (hf : Continuous f) : Continuous fun t => (γ t).extend (f t) :=

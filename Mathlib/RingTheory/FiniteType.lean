@@ -47,7 +47,7 @@ variable {R S M N}
 
 section Algebra
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) finiteType {R : Type*} (A : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [hRA : Module.Finite R A] : Algebra.FiniteType R A :=
   ⟨Subalgebra.fg_of_submodule_fg hRA.1⟩

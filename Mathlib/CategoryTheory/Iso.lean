@@ -35,7 +35,7 @@ set_option mathlib.tactic.category.grind true
 
 universe v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [categoryTheoryUniverses].
 namespace CategoryTheory
 
 open Category
@@ -291,12 +291,12 @@ theorem asIso_inv (f : X ⟶ Y) [IsIso f] : (asIso f).inv = inv f :=
 
 namespace IsIso
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) epi_of_iso (f : X ⟶ Y) [IsIso f] : Epi f where
   left_cancellation g h w := by
     rw [← IsIso.inv_hom_id_assoc f g, w, IsIso.inv_hom_id_assoc f h]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) mono_of_iso (f : X ⟶ Y) [IsIso f] : Mono f where
   right_cancellation g h w := by
     rw [← Category.comp_id g, ← Category.comp_id h, ← IsIso.hom_inv_id f,

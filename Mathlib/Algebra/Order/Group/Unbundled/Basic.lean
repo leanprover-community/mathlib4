@@ -501,7 +501,7 @@ attribute [simp] div_le_iff_le_mul
 
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
 -- (a renamed version of) `tsub_le_iff_right`?
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) AddGroup.toOrderedSub {α : Type*} [AddGroup α] [LE α]
     [AddRightMono α] : OrderedSub α :=
   ⟨fun _ _ _ => sub_le_iff_le_add⟩

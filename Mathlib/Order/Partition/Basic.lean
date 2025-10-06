@@ -56,7 +56,7 @@ instance {s : α} : SetLike (Partition s) α where
   coe := Partition.parts
   coe_injective' p p' h := by cases p; cases p'; simpa using h
 
-/-- See Note [custom simps projection]. -/
+/-- See note [customSimpsProjection]. -/
 def Simps.coe {s : α} (P : Partition s) : Set α := P
 
 initialize_simps_projections Partition (parts → coe, as_prefix coe)

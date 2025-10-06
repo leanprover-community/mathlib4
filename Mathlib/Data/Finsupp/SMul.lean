@@ -97,7 +97,7 @@ section
 
 /-!
 Throughout this section, some `Monoid` and `Semiring` arguments are specified with `{}` instead of
-`[]`. See note [implicit instance arguments].
+`[]`. See note [implicitInstanceArguments].
 -/
 
 theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}

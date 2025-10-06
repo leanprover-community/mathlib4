@@ -156,7 +156,7 @@ variable [Monoid M] [Monoid A] [MulDistribMulAction M A]
 
 /-- Pullback a multiplicative distributive multiplicative action along an injective monoid
 homomorphism. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B where
   __ := hf.mulAction f smul
@@ -165,7 +165,7 @@ protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f
 
 /-- Pushforward a multiplicative distributive multiplicative action along a surjective monoid
 homomorphism. -/
--- See note [reducible non-instances]
+-- See note [reducibleNonInstances]
 protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B where
   __ := hf.mulAction f smul

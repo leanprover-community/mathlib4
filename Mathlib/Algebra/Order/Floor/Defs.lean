@@ -269,7 +269,7 @@ variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 /-! #### A floor ring as a floor semiring -/
 
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
   floor a := ⌊a⌋.toNat
   ceil a := ⌈a⌉.toNat

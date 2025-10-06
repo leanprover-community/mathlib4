@@ -96,12 +96,12 @@ def symm (h : X ≃ₕ Y) : Y ≃ₕ X where
 theorem coe_invFun (h : HomotopyEquiv X Y) : (⇑h.invFun : Y → X) = ⇑h.symm :=
   rfl
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
 def Simps.apply (h : X ≃ₕ Y) : X → Y :=
   h
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
 def Simps.symm_apply (h : X ≃ₕ Y) : Y → X :=
   h.symm

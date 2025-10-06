@@ -87,7 +87,7 @@ theorem ext : (p : ℚ) = (q : ℚ) → p = q :=
 protected theorem coe_injective : Injective ((↑) : ℚ≥0 → ℚ) :=
   Subtype.coe_injective
 
--- See note [specialised high priority simp lemma]
+-- See note [specialisedHighPrioritySimpLemma]
 @[simp high, norm_cast]
 theorem coe_inj : (p : ℚ) = q ↔ p = q :=
   Subtype.coe_inj
@@ -143,7 +143,7 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
   max_eq_left <| le_sub_comm.2 <| by rwa [sub_zero]
 
--- See note [specialised high priority simp lemma]
+-- See note [specialisedHighPrioritySimpLemma]
 @[simp high]
 theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 
@@ -226,7 +226,7 @@ theorem sub_def (p q : ℚ≥0) : p - q = toNNRat (p - q) :=
 theorem abs_coe (q : ℚ≥0) : |(q : ℚ)| = q :=
   abs_of_nonneg q.2
 
--- See note [specialised high priority simp lemma]
+-- See note [specialisedHighPrioritySimpLemma]
 @[simp high]
 theorem nonpos_iff_eq_zero (q : ℚ≥0) : q ≤ 0 ↔ q = 0 :=
   ⟨fun h => le_antisymm h q.2, fun h => h.symm ▸ q.2⟩

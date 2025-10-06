@@ -53,7 +53,7 @@ namespace NumberField
 
 variable (K L : Type*) [Field K] [Field L]
 
--- See note [lower instance priority]
+-- See note [lowerInstancePriority]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
 protected theorem isAlgebraic [NumberField K] : Algebra.IsAlgebraic ℚ K :=

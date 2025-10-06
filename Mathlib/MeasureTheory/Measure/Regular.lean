@@ -323,7 +323,7 @@ regular one and the inner regular one). -/
 class InnerRegularCompactLTTop (μ : Measure α) : Prop where
   protected innerRegular : InnerRegularWRT μ IsCompact (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A regular measure is weakly regular in an R₁ space. -/
 instance (priority := 100) Regular.weaklyRegular [R1Space α] [Regular μ] :
     WeaklyRegular μ where
@@ -980,7 +980,7 @@ theorem restrict_of_measure_ne_top [BorelSpace α] [WeaklyRegular μ] {A : Set �
     InnerRegularWRT.restrict_of_measure_ne_top innerRegular_measurable h'A
   exact this V_open.measurableSet r hr
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Any finite measure on a metrizable space (or even a pseudo metrizable space)
 is weakly regular. -/
 instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type*}
@@ -989,7 +989,7 @@ instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type
     WeaklyRegular μ :=
   (InnerRegularWRT.of_pseudoMetrizableSpace μ).weaklyRegular_of_finite μ
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Any locally finite measure on a second countable metrizable space
 (or even a pseudo metrizable space) is weakly regular. -/
 instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFinite {X : Type*}
@@ -1092,7 +1092,7 @@ instance Regular.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAct
     {μ : Measure A} (g : Gᵈᵐᵃ) [Regular μ] : Regular (g • μ) :=
   .map <| .smul ((DomMulAct.mk.symm g : G)⁻¹)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Any locally finite measure on a `σ`-compact pseudometrizable space is regular. -/
 instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]

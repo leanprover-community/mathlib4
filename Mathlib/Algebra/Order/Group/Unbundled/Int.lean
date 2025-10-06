@@ -10,7 +10,7 @@ import Mathlib.Data.Int.Basic
 /-!
 # Facts about `ℤ` as an (unbundled) ordered group
 
-See note [foundational algebra order theory].
+See note [foundationalAlgebraOrderTheory].
 
 ## Recursors
 

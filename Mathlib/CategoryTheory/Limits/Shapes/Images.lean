@@ -648,7 +648,7 @@ def HasImageMap.imageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq :
     [HasImageMap sq] : ImageMap sq :=
   Classical.choice <| @HasImageMap.has_image_map _ _ _ _ _ _ sq _
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) hasImageMapOfIsIso {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
     (sq : f ⟶ g) [IsIso sq] : HasImageMap sq :=
   HasImageMap.mk

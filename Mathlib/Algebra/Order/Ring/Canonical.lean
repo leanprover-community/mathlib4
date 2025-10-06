@@ -19,7 +19,7 @@ universe u
 
 variable {R : Type u}
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass
     [AddZeroClass R] [One R] [LE R] [CanonicallyOrderedAdd R] : ZeroLEOneClass R where
   zero_le_one := zero_le _
@@ -32,7 +32,7 @@ lemma Odd.pos [Semiring R] [PartialOrder R] [CanonicallyOrderedAdd R] [Nontrivia
 
 namespace CanonicallyOrderedAdd
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring R]
     [LE R] [CanonicallyOrderedAdd R] : MulLeftMono R := by
   refine ⟨fun a b c h => ?_⟩
@@ -41,7 +41,7 @@ instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring R]
   rw [mul_add]
   apply self_le_add_right
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) toMulRightMono [NonUnitalNonAssocSemiring R]
     [LE R] [CanonicallyOrderedAdd R] : MulRightMono R := by
   refine ⟨fun a b c h => ?_⟩

@@ -50,7 +50,7 @@ instance Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperS
 
 variable [PseudoMetricSpace α]
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A proper pseudo metric space is sigma compact, and therefore second countable. -/
 instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
     SecondCountableTopology α := by
@@ -78,17 +78,17 @@ theorem ProperSpace.of_seq_closedBall {β : Type*} {l : Filter β} [NeBot l] {x 
     hci.of_isClosed_subset isClosed_closedBall <| closedBall_subset_closedBall' hir
 
 -- A compact pseudometric space is proper
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) proper_of_compact [CompactSpace α] : ProperSpace α :=
   ⟨fun _ _ => isClosed_closedBall.isCompact⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A proper space is locally compact -/
 instance (priority := 100) locallyCompact_of_proper [ProperSpace α] : LocallyCompactSpace α :=
   .of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
     isCompact_closedBall _ _
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- A proper space is complete -/
 instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace α :=
   ⟨fun {f} hf => by

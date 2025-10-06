@@ -633,7 +633,7 @@ instance : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Equiv.Simps.invFun (e : α ≃ β) : β → α := e.symm
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
@@ -657,7 +657,7 @@ local infix:25 (priority := high) " ≃ " => FaultyManualCoercion.Equiv
 
 variable {α β γ : Sort _}
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 noncomputable def Equiv.Simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
 
 run_cmd liftTermElabM <| do
@@ -683,7 +683,7 @@ instance : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Equiv.Simps.invFun (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv
@@ -715,7 +715,7 @@ instance : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Equiv.Simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
 
 run_cmd liftTermElabM <| do
@@ -744,7 +744,7 @@ instance : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 -- test: intentionally using different universe levels for Equiv.symm than for Equiv
 def Equiv.Simps.invFun {α : Sort w} {β : Sort u} (e : α ≃ β) : β → α := e.symm
 
@@ -767,7 +767,7 @@ instance : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
@@ -807,7 +807,7 @@ instance : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → coe, as_prefix coe, invFun → symm_apply)
 

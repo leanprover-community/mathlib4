@@ -90,9 +90,9 @@ instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
-/-- See Note [custom simps projection] -/
+/-- See note [customSimpsProjection] -/
 @[to_additive
-/-- See Note [custom simps projection] -/]
+/-- See note [customSimpsProjection] -/]
 def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
 
 initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val_inv, as_prefix val_inv)

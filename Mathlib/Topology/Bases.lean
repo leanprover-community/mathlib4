@@ -744,14 +744,14 @@ theorem nonempty_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
 
 variable (α)
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
   ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
         (countable_countableBasis α).mono inter_subset_left⟩⟩
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) [Countable α] [FirstCountableTopology α] :
     SecondCountableTopology α where
   is_open_generated_countable := by
@@ -800,7 +800,7 @@ instance {ι : Type*} {X : ι → Type*} [Countable ι] [∀ a, TopologicalSpace
     [∀ a, SecondCountableTopology (X a)] : SecondCountableTopology (∀ a, X a) :=
   secondCountableTopology_iInf fun _ => secondCountableTopology_induced _ _ _
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 instance (priority := 100) SecondCountableTopology.to_separableSpace [SecondCountableTopology α] :
     SeparableSpace α := by
   choose p hp using fun s : countableBasis α => nonempty_of_mem_countableBasis s.2

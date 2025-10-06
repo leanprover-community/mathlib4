@@ -57,7 +57,7 @@ theorem toLinearMap_injective :
 theorem ext ⦃f g : Q₁ →qᵢ Q₂⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
-/-- See Note [custom simps projection]. -/
+/-- See note [customSimpsProjection]. -/
 protected def Simps.apply (f : Q₁ →qᵢ Q₂) : M₁ → M₂ := f
 
 initialize_simps_projections Isometry (toFun → apply)

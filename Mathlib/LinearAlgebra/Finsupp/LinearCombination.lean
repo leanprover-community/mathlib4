@@ -274,7 +274,7 @@ variable (S) in
 in `f`, as a bilinear map of `v` and `f`.
 In the absence of `SMulCommClass R S M`, use `Finsupp.linearCombination`.
 
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+See note [bundledMapsOverDifferentRings] for why separate `R` and `S` semirings are used.
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
   toFun v := linearCombination R v
@@ -300,7 +300,7 @@ variable (v : α → M)
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
 
 This map is linear in `v` if `R` is commutative, and always linear in `f`.
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+See note [bundledMapsOverDifferentRings] for why separate `R` and `S` semirings are used.
 -/
 protected def Fintype.linearCombination : (α → R) →ₗ[R] M where
   toFun f := ∑ i, f i • v i
@@ -340,7 +340,7 @@ theorem Fintype.range_linearCombination :
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
 
 This map is linear in `v` if `R` is commutative, and always linear in `f`.
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+See note [bundledMapsOverDifferentRings] for why separate `R` and `S` semirings are used.
 -/
 protected def Fintype.bilinearCombination : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
   toFun v := Fintype.linearCombination R v

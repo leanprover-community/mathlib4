@@ -37,7 +37,7 @@ theorem isQuotientMap_projIcc : IsQuotientMap (projIcc a b h) :=
 theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h f) ↔ Continuous f :=
   isQuotientMap_projIcc.continuous_iff.symm
 
-/-- See Note [continuity lemma statement]. -/
+/-- See note [continuityLemmaStatement]. -/
 @[fun_prop]
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)
     (hg : Continuous g) : Continuous fun a => IccExtend h (f a) (g a) :=

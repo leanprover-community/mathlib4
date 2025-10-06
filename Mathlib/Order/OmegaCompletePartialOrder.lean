@@ -430,7 +430,7 @@ end Prod
 
 namespace CompleteLattice
 
--- see Note [lower instance priority]
+-- see note [lowerInstancePriority]
 /-- Any complete lattice has an `ω`-CPO structure where the countable supremum is a special case
 of arbitrary suprema. -/
 instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α where
@@ -546,7 +546,7 @@ theorem toOrderHom_eq_coe (f : α →𝒄 β) : f.1 = f := rfl
 
 @[simp] theorem coe_toOrderHom (f : α →𝒄 β) : ⇑f.1 = f := rfl
 
-/-- See Note [custom simps projection]. We specify this explicitly because we don't have a DFunLike
+/-- See note [customSimpsProjection]. We specify this explicitly because we don't have a DFunLike
 instance.
 -/
 def Simps.apply (h : α →𝒄 β) : α → β :=
