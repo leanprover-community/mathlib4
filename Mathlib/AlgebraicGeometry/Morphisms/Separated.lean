@@ -297,6 +297,9 @@ instance [X.IsSeparated] : IsClosedImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
 
 instance (priority := 900) {X : Scheme.{u}} [IsAffine X] : X.IsSeparated := ⟨inferInstance⟩
 
+instance (priority := low) {X : Scheme.{u}} [X.IsSeparated] : QuasiSeparatedSpace X :=
+  quasiSeparatedSpace_of_quasiSeparated (terminal.from X)
+
 instance (priority := 900) [X.IsSeparated] : IsSeparated f := by
   apply (config := { allowSynthFailures := true }) @IsSeparated.of_comp (g := terminal.from Y)
   rw [terminal.comp_from]
