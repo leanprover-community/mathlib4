@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Prime.Defs
@@ -121,15 +120,11 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
 theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m ≤ sqrt p → ¬m ∣ p :=
   prime_def_lt'.trans <|
     and_congr_right fun p2 =>
-      ⟨fun a m m2 l => a m m2 <| lt_of_le_of_lt l <| sqrt_lt_self p2, fun a =>
-        have : ∀ {m k : ℕ}, m ≤ k → 1 < m → p ≠ m * k := fun {m k} mk m1 e =>
-          a m m1 (le_sqrt.2 (e.symm ▸ Nat.mul_le_mul_left m mk)) ⟨k, e⟩
-        fun m m2 l ⟨k, e⟩ => by
-        rcases le_total m k with mk | km
-        · exact this mk m2 e
+      ⟨fun a m m2 l => a m m2 <| lt_of_le_of_lt l <| sqrt_lt_self p2, fun a m m2 l mdvd@⟨k, e⟩ => by
+        rcases le_sqrt_of_eq_mul e with hm | hk
+        · exact a m m2 hm mdvd
         · rw [mul_comm] at e
-          refine this km (Nat.lt_of_mul_lt_mul_right (a := m) ?_) e
-          rwa [one_mul, ← e]⟩
+          exact a k (Nat.lt_of_mul_lt_mul_right (a := m) (by rwa [one_mul, ← e])) hk ⟨m, e⟩⟩
 
 theorem prime_iff_not_exists_mul_eq {p : ℕ} :
     p.Prime ↔ 2 ≤ p ∧ ¬ ∃ m n, m < p ∧ n < p ∧ m * n = p := by
@@ -137,10 +132,10 @@ theorem prime_iff_not_exists_mul_eq {p : ℕ} :
   simp_rw [prime_def_lt, dvd_def, exists_imp]
   refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
   simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]
-  refine forall₂_congr fun n hp ↦ ⟨by aesop, fun hpn ↦ ?_⟩
-  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by omega)
-  exact (Nat.mul_eq_right (by omega)).mp
-    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by omega))))
+  refine forall₂_congr fun n hp ↦ ⟨by simp_all, fun hpn ↦ ?_⟩
+  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by cutsat)
+  exact (Nat.mul_eq_right (by cutsat)).mp
+    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by cutsat))))
 
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
@@ -428,8 +423,14 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
 
 alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 
+instance instDecidablePredPrime : DecidablePred (_root_.Prime : ℕ → Prop) := fun n ↦
+  decidable_of_iff (Nat.Prime n) Nat.prime_iff
+
 theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
   prime_iff
+
+instance instDecidablePredIrreducible : DecidablePred (Irreducible : ℕ → Prop) :=
+  decidablePrime
 
 /-- The type of prime numbers -/
 def Primes :=

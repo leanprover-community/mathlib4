@@ -28,7 +28,7 @@ s ∈ G  ↔  ∀ i:ℕ, ∃ n, [n..∞] × {i} ⊆ s
 Now `⋃ i, [i..∞] × {i}` is in `G` but not in `F`.
 As product filter we want to have `F` as result.
 
-## Notations
+## Notation
 
 * `f ×ˢ g` : `Filter.prod f g`, localized in `Filter`.
 
@@ -187,12 +187,16 @@ lemma Frequently.of_curry {la : Filter α} {lb : Filter β} {p : α × β → Pr
     (h : ∃ᶠ x in la, ∃ᶠ y in lb, p (x, y)) : ∃ᶠ xy in la ×ˢ lb, p xy :=
   h.uncurry
 
+theorem Eventually.image_of_prod {y : α → β} {r : α → β → Prop}
+    (hy : Tendsto y f g) (hr : ∀ᶠ p in f ×ˢ g, r p.1 p.2) : ∀ᶠ x in f, r x (y x) := by
+  obtain ⟨p, hp, q, hq, hr⟩ := eventually_prod_iff.mp hr
+  filter_upwards [hp, hy.eventually hq] with _ hp hq using hr hp hq
+
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/
 theorem Eventually.diag_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
-    ∀ᶠ i in f, p (i, i) := by
-  obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  apply (ht.and hs).mono fun x hx => hst hx.1 hx.2
+    ∀ᶠ i in f, p (i, i) :=
+  h.image_of_prod (r := p.curry) tendsto_id
 
 theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α × α) × γ → Prop} :
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
@@ -236,9 +240,8 @@ theorem prod_comap_comap_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β�
 theorem prod_comm' : f ×ˢ g = comap Prod.swap (g ×ˢ f) := by
   simp only [prod_eq_inf, comap_comap, Function.comp_def, inf_comm, Prod.swap, comap_inf]
 
-theorem prod_comm : f ×ˢ g = map (fun p : β × α => (p.2, p.1)) (g ×ˢ f) := by
+theorem prod_comm : f ×ˢ g = map Prod.swap (g ×ˢ f) := by
   rw [prod_comm', ← map_swap_eq_comap_swap]
-  rfl
 
 theorem mem_prod_iff_left {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by
@@ -278,6 +281,23 @@ theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [N
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ˢ g, p x) ↔ ∀ᶠ y : β × α in g ×ˢ f, p y.swap := by
   rw [prod_comm]; rfl
+
+/-- A technical lemma which is a generalization of `Filter.Eventually.trans_prod`. -/
+lemma Eventually.eventually_prod_of_eventually_swap {h : Filter γ}
+    [NeBot g] {p : α → β → Prop} {q : β → γ → Prop} {r : α → γ → Prop}
+    (hp : ∀ᶠ x in f, ∀ᶠ y in g, p x y) (hq : ∀ᶠ z in h, ∀ᶠ y in g, q y z)
+    (hpqr : ∀ x y z, p x y → q y z → r x z) :
+    ∀ᶠ xz in f ×ˢ h, r xz.1 xz.2 := by
+  refine eventually_prod_iff.mpr ⟨_, hp, _, hq, fun {x} hx {z} hz ↦ ?_⟩
+  rcases (hx.and hz).exists with ⟨y, hpy, hqy⟩
+  exact hpqr x y z hpy hqy
+
+lemma Eventually.trans_prod {h : Filter γ}
+    [NeBot g] {p : α → β → Prop} {q : β → γ → Prop} {r : α → γ → Prop}
+    (hp : ∀ᶠ xy in f ×ˢ g, p xy.1 xy.2) (hq : ∀ᶠ yz in g ×ˢ h, q yz.1 yz.2)
+    (hpqr : ∀ x y z, p x y → q y z → r x z) :
+    ∀ᶠ xz in f ×ˢ h, r xz.1 xz.2 :=
+  hp.curry.eventually_prod_of_eventually_swap (eventually_swap_iff.mp hq |>.curry) hpqr
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by

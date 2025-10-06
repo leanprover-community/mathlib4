@@ -57,7 +57,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
 
     let pathRest := if mutablePath.isEmpty then [] else mutablePath.tail!
 
-    return { expr := nextExp, val? := toString count , listRest := pathRest }
+    return { expr := nextExp, val? := toString count, listRest := pathRest }
 
   | Expr.lam n _ b _ => do
     let name := match n with

@@ -186,10 +186,11 @@ theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀
 
 /-- Recurse on a tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
 @[elab_as_elim]
-def consInduction {α : Sort*} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
-    (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
-  | 0, x => by convert h0
-  | _ + 1, x => consCases (fun _ _ ↦ h _ _ <| consInduction h0 h _) x
+def consInduction {α : Sort*} {motive : ∀ {n : ℕ}, (Fin n → α) → Sort v} (elim0 : motive Fin.elim0)
+    (cons : ∀ {n} (x₀) (x : Fin n → α), motive x → motive (Fin.cons x₀ x)) :
+    ∀ {n : ℕ} (x : Fin n → α), motive x
+  | 0, x => by convert elim0
+  | _ + 1, x => consCases (fun _ _ ↦ cons _ _ <| consInduction elim0 cons _) x
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
     (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by
@@ -294,7 +295,7 @@ theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
 /-- Variant of `append_left` using `Fin.castLE` instead of `Fin.castAdd`. -/
 @[simp]
 theorem append_left' (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
-    append u v (Fin.castLE (by omega) i) = u i :=
+    append u v (Fin.castLE (by cutsat) i) = u i :=
   addCases_left _
 
 @[simp]
@@ -763,8 +764,6 @@ section InsertNth
 
 variable {α : Fin (n + 1) → Sort*} {β : Sort*}
 
-/- Porting note: Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
-automatic insertion and specifying that motive seems to work. -/
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
 `Fin.succAbove i j`, `j : Fin n`. This version is elaborated as eliminator and works for
 propositions, see also `Fin.insertNth` for a version without an `@[elab_as_elim]`
@@ -774,9 +773,8 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     (p : ∀ j : Fin n, α (i.succAbove j)) (j : Fin (n + 1)) : α j :=
   if hj : j = i then Eq.rec x hj.symm
   else
-    if hlt : j < i then @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castPred_of_lt _ _ hlt) (p _)
-    else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred_of_lt _ _ <|
-    (Fin.lt_or_lt_of_ne hj).resolve_left hlt) (p _)
+    if hlt : j < i then (succAbove_castPred_of_lt _ _ hlt) ▸ (p _)
+    else (succAbove_pred_of_lt _ _ <| (Fin.lt_or_lt_of_ne hj).resolve_left hlt) ▸ (p _)
 
 -- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change.
 alias forall_iff_succ := forall_fin_succ
@@ -788,8 +786,8 @@ lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ P (last n) ∧ ∀ i : Fin n, P i.castSucc :=
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ lastCases h.1 h.2⟩
 
-/-- A finite sequence of properties P holds for {0 , ... , m + n - 1} iff
-it holds separately for both {0 , ... , m - 1} and {m, ..., m + n - 1}. -/
+/-- A finite sequence of properties P holds for {0, ..., m + n - 1} iff
+it holds separately for both {0, ..., m - 1} and {m, ..., m + n - 1}. -/
 theorem forall_fin_add {m n} (P : Fin (m + n) → Prop) :
     (∀ i, P i) ↔ (∀ i, P (castAdd _ i)) ∧ (∀ j, P (natAdd _ j)) :=
   ⟨fun h => ⟨fun _ => h _, fun _ => h _⟩, fun ⟨hm, hn⟩ => Fin.addCases hm hn⟩
@@ -821,7 +819,7 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
     (∃ i, P i) ↔ P p ∨ ∃ i, P (p.succAbove i) where
   mp := by
     rintro ⟨i, hi⟩
-    induction' i using p.succAboveCases
+    induction i using p.succAboveCases
     · exact .inl hi
     · exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
@@ -906,20 +904,14 @@ theorem insertNth_right_injective {p : Fin (n + 1)} (x : α p) :
     Function.Injective (insertNth p x) :=
   insertNth_injective2.right _
 
-/- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
-automatic insertion and specifying that motive seems to work. -/
 theorem insertNth_apply_below {i j : Fin (n + 1)} (h : j < i) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
-    i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _
-    (succAbove_castPred_of_lt _ _ h) (p <| j.castPred _) := by
+    i.insertNth x p j = succAbove_castPred_of_lt _ _ h ▸ (p <| j.castPred _) := by
   rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_lt h), dif_pos h]
 
-/- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
-automatic insertion and specifying that motive seems to work. -/
 theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
-    i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _
-    (succAbove_pred_of_lt _ _ h) (p <| j.pred _) := by
+    i.insertNth x p j = succAbove_pred_of_lt _ _ h ▸ (p <| j.pred _) := by
   rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_gt h), dif_neg (Fin.lt_asymm h)]
 
 theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :

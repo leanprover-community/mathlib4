@@ -91,7 +91,6 @@ instance (priority := 100) [IsFinite f] : IsProper f :=
 lemma UniversallyClosed.of_comp_of_isSeparated [UniversallyClosed (f ≫ g)] [IsSeparated g] :
     UniversallyClosed f := by
   rw [← Limits.pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  have := MorphismProperty.pullback_snd (P := @UniversallyClosed) (f ≫ g) g inferInstance
   infer_instance
 
 @[stacks 01W6 "(2)"]

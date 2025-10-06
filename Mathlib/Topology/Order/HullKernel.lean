@@ -80,7 +80,7 @@ lemma hull_inf (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     · exact inf_le_of_left_le h1
     · exact inf_le_of_right_le h3
 
-variable [DecidableEq α] [OrderTop α]
+variable [OrderTop α]
 
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
 relative-closed set of the form `hull T a` where `a = ⨅ F`. -/
@@ -88,15 +88,15 @@ open Finset in
 lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     hull T (inf F id) = T ↓∩ upperClosure F.toSet := by
   rw [coe_upperClosure]
-  induction' F using Finset.induction_on with a F' _ I4
-  · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
+  induction F using Finset.cons_induction with
+  | empty =>
+    simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
       inf_empty]
     by_contra hf
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
     obtain ⟨x, hx⟩ := hf
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr (eq_top_iff.mpr hx))
-  · simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
-      preimage_iUnion, inf_insert, id_eq, hull_inf hT, I4]
+  | cons a F' _ I4 => simp [hull_inf hT, I4]
 
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
 set of the form `(hull T a)ᶜ` where `a = ⨅ F`. -/
@@ -145,7 +145,7 @@ lemma hull_sSup (S : Set α) : hull T (sSup S) = ⋂₀ { hull T a | a ∈ S } :
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `(hull T a)ᶜ` for some `a` in `α`.-/
-lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
+lemma isOpen_iff [TopologicalSpace α] [IsLower α] (hT : ∀ p ∈ T, InfPrime p)
     (S : Set T) : IsOpen S ↔ ∃ (a : α), S = (hull T a)ᶜ := by
   constructor <;> intro h
   · let R := {a : α | (hull T a)ᶜ ⊆ S}
@@ -157,7 +157,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
 
 /- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the
 form `hull T a` for some `a` in `α`.-/
-lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
+lemma isClosed_iff [TopologicalSpace α] [IsLower α] (hT : ∀ p ∈ T, InfPrime p)
     {S : Set T} : IsClosed S ↔ ∃ (a : α), S = hull T a := by
   simp only [← isOpen_compl_iff, isOpen_iff hT, compl_inj_iff]
 
@@ -191,24 +191,24 @@ When `T` is order generating, the `kernel` and the `hull` form a Galois insertio
 def gi (hG : OrderGenerates T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (OrderDual.toDual ∘ kernel)
     (hull T ∘ OrderDual.ofDual) :=
-  gc.toGaloisInsertion fun a ↦ (by
+  gc.toGaloisInsertion fun a ↦ by
     rw [OrderDual.le_toDual]
     obtain ⟨S, hS⟩ := hG a
     exact le_of_le_of_eq (sInf_le_sInf (image_val_mono (fun c hcS => mem_preimage.mpr (mem_Ici.mpr
       (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
-      hS.symm)
+      hS.symm
 
 lemma kernel_hull (hG : OrderGenerates T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
   rfl
 
-lemma hull_kernel_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α]
+lemma hull_kernel_of_isClosed [TopologicalSpace α] [IsLower α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerates T) {C : Set T} (h : IsClosed C) :
-     hull T (kernel C) = C := by
+    hull T (kernel C) = C := by
   obtain ⟨a, ha⟩ := (isClosed_iff hT).mp h
   rw [ha, kernel_hull hG]
 
-lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq α]
+lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerates T) (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = hull T (kernel S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]

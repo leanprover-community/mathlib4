@@ -20,7 +20,7 @@ and that `ℚ_[p]` is Cauchy complete.
 ## Important definitions
 
 * `Padic` : the type of `p`-adic numbers
-* `padicNormE` : the rational valued `p`-adic norm on `ℚ_[p]`
+* `padicNormE` : the rational-valued `p`-adic norm on `ℚ_[p]`
 * `Padic.addValuation` : the additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`
 
 ## Notation
@@ -140,6 +140,18 @@ lemma Rat.padicValuation_le_one_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
         rw [Int.natCast_dvd] at h'
         exact Nat.not_coprime_of_dvd_of_dvd (Nat.Prime.one_lt Fact.out) h h' x.reduced.symm
   · simp [zero_lt_iff]
+
+theorem Rat.surjective_padicValuation (p : ℕ) [hp : Fact (p.Prime)] :
+    Function.Surjective (Rat.padicValuation p) := by
+  intro x
+  induction x with
+  | zero => simp
+  | coe x =>
+    induction x with | ofAdd x
+    simp_rw [Rat.padicValuation, WithZero.exp, Valuation.coe_mk, MonoidWithZeroHom.coe_mk]
+    rcases le_or_gt 0 x with (hx | hx)
+    · exact ⟨(p ^ x.natAbs)⁻¹, by simp [hp.out.ne_zero, hx]⟩
+    · exact ⟨p ^ x.natAbs, by simp [hp.out.ne_zero, padicValRat.pow, abs_eq_neg_self.2 hx.le]⟩
 
 noncomputable section
 
@@ -818,29 +830,33 @@ theorem rat_dense (q : ℚ_[p]) {ε : ℝ} (hε : 0 < ε) : ∃ r : ℚ, ‖q - 
   let ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)
   ⟨r, lt_trans (by simpa [Norm.norm] using hr) hε'r⟩
 
+lemma denseRange_ratCast : DenseRange ((↑) : ℚ → ℚ_[p]) := by
+  intro x
+  rw [Metric.mem_closure_range_iff]
+  exact fun _ ↦ Padic.rat_dense _ x
+
 end NormedSpace
 
 end Padic
 
-namespace padicNormE
+namespace Padic
+
+variable {p : ℕ} [hp : Fact p.Prime]
 
 section NormedSpace
 
-variable {p : ℕ} [hp : Fact p.Prime]
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
-protected theorem mul (q r : ℚ_[p]) : ‖q * r‖ = ‖q‖ * ‖r‖ := by simp [Norm.norm, map_mul]
+protected theorem padicNormE.mul (q r : ℚ_[p]) : ‖q * r‖ = ‖q‖ * ‖r‖ := by simp [Norm.norm, map_mul]
 
-protected theorem is_norm (q : ℚ_[p]) : ↑(padicNormE q) = ‖q‖ := rfl
+protected theorem padicNormE.is_norm (q : ℚ_[p]) : ↑(padicNormE q) = ‖q‖ := rfl
 
 theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := by
   dsimp [norm]
-  exact mod_cast nonarchimedean' _ _
+  exact mod_cast padicNormE.nonarchimedean' _ _
 
 theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ := by
   dsimp [norm] at h ⊢
   have : padicNormE q ≠ padicNormE r := mod_cast h
-  exact mod_cast add_eq_max_of_ne' this
+  exact mod_cast padicNormE.add_eq_max_of_ne' this
 
 @[simp]
 theorem eq_padicNorm (q : ℚ) : ‖(q : ℚ_[p])‖ = padicNorm p q := by
@@ -858,13 +874,11 @@ theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   rw [norm_p]
   exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
 
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
+@[simp high] -- Shortcut lemma with higher priority.
 theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
   rw [norm_zpow, norm_p, zpow_neg, inv_zpow]
 
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
+@[simp high] -- Shortcut lemma with higher priority.
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
   rw [← norm_p_zpow, zpow_natCast]
 
@@ -875,13 +889,13 @@ instance : NontriviallyNormedField ℚ_[p] :=
         rw [norm_inv, norm_p, inv_inv]
         exact mod_cast hp.1.one_lt⟩ }
 
-protected theorem image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
+protected theorem padicNormE.image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
   Quotient.inductionOn q fun f hf ↦
     have : ¬f ≈ 0 := (PadicSeq.ne_zero_iff_nequiv_zero f).1 hf
     let ⟨n, hn⟩ := PadicSeq.norm_values_discrete f this
     ⟨n, by rw [← hn]; rfl⟩
 
-protected theorem is_rat (q : ℚ_[p]) : ∃ q' : ℚ, ‖q‖ = q' := by
+protected theorem padicNormE.is_rat (q : ℚ_[p]) : ∃ q' : ℚ, ‖q‖ = q' := by
   classical
   exact if h : q = 0 then ⟨0, by simp [h]⟩
   else
@@ -904,7 +918,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       norm_num [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
-      rw [padicNormE.eq_padicNorm]
+      rw [eq_padicNorm]
       norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
@@ -918,7 +932,8 @@ theorem norm_int_le_one (z : ℤ) : ‖(z : ℚ_[p])‖ ≤ 1 :=
   suffices ‖((z : ℚ) : ℚ_[p])‖ ≤ 1 by simpa
   norm_rat_le_one <| by simp [hp.1.ne_one]
 
-theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣ k := by
+@[simp]
+theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣ k := by
   constructor
   · intro h
     contrapose! h
@@ -926,7 +941,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
     rw [eq_comm]
     calc
       ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by norm_cast
-      _ = padicNorm p k := padicNormE.eq_padicNorm _
+      _ = padicNorm p k := eq_padicNorm _
       _ = 1 := mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
     push_cast
@@ -935,8 +950,28 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
       _ ≤ ‖(p : ℚ_[p])‖ * 1 :=
         mul_le_mul le_rfl (by simpa using norm_int_le_one _) (norm_nonneg _) (norm_nonneg _)
       _ < 1 := by
-        rw [mul_one, padicNormE.norm_p]
+        rw [mul_one, norm_p]
         exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
+
+@[deprecated (since := "2025-08-15")] alias norm_int_lt_one_iff_dvd := norm_intCast_lt_one_iff
+
+@[simp]
+lemma norm_natCast_lt_one_iff {n : ℕ} :
+    ‖(n : ℚ_[p])‖ < 1 ↔ p ∣ n := by
+  simpa [Int.natCast_dvd_natCast] using norm_intCast_lt_one_iff (p := p) (k := n)
+
+@[simp]
+lemma norm_intCast_eq_one_iff {z : ℤ} :
+    ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
+  rw [← not_iff_not]
+  simp [Nat.coprime_comm, ← norm_natCast_lt_one_iff, - norm_intCast_lt_one_iff,
+    Int.isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, Int.gcd,
+    ← hp.out.dvd_iff_not_coprime, norm_natAbs, - cast_natAbs, norm_int_le_one]
+
+@[simp]
+lemma norm_natCast_eq_one_iff {n : ℕ} :
+    ‖(n : ℚ_[p])‖ = 1 ↔ p.Coprime n := by
+  simpa [p.coprime_comm] using norm_intCast_eq_one_iff (p := p) (z := n)
 
 theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
     ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k := by
@@ -945,21 +980,35 @@ theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
 
-theorem eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
+theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
-    not_lt_of_ge (by rw [padicNormE.add_eq_max_of_ne hne]; apply le_max_right) h
+    not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_right) h
 
-theorem eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
+@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_right := norm_eq_of_norm_add_lt_right
+
+theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
-    not_lt_of_ge (by rw [padicNormE.add_eq_max_of_ne hne]; apply le_max_left) h
+    not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_left) h
+
+@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_left := norm_eq_of_norm_add_lt_left
+
+theorem norm_eq_of_norm_sub_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ := by
+  rw [← norm_neg z2]
+  apply norm_eq_of_norm_add_lt_right
+  simp [← sub_eq_add_neg, h]
+
+theorem norm_eq_of_norm_sub_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ := by
+  rw [eq_comm]
+  apply norm_eq_of_norm_sub_lt_right
+  simpa [← norm_neg (z1 - _)] using h
+
+@[simp]
+lemma norm_natCast_p_sub_one :
+    ‖((p - 1 : ℕ) : ℚ_[p])‖ = 1 := by
+  rw [norm_natCast_eq_one_iff]
+  exact (coprime_self_sub_right hp.out.one_le).mpr p.coprime_one_right
 
 end NormedSpace
-
-end padicNormE
-
-namespace Padic
-
-variable {p : ℕ} [hp : Fact p.Prime]
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
   isComplete f := by
@@ -988,7 +1037,7 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
   obtain ⟨N, hN⟩ := Setoid.symm (CauSeq.equiv_lim f) _ ha
   calc
     ‖f.lim‖ = ‖f.lim - f N + f N‖ := by simp
-    _ ≤ max ‖f.lim - f N‖ ‖f N‖ := padicNormE.nonarchimedean _ _
+    _ ≤ max ‖f.lim - f N‖ ‖f N‖ := nonarchimedean _ _
     _ ≤ a := max_le (le_of_lt (hN _ le_rfl)) (hf _)
 
 open Filter Set
@@ -1026,11 +1075,9 @@ theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : �
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
-    -- Porting note: was `contrapose! hf`
-    intro hf'
-    apply hf
+    contrapose! hf
     apply Quotient.sound
-    simpa using hf'
+    simpa using hf
 
 @[simp]
 lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q := by
@@ -1038,7 +1085,7 @@ lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q :=
   · simp only [Rat.cast_zero, valuation_zero, padicValRat.zero]
   refine neg_injective ((zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).injective
     <| (norm_eq_zpow_neg_valuation (mod_cast hq)).symm.trans ?_)
-  rw [padicNormE.eq_padicNorm, ← Rat.cast_natCast, ← Rat.cast_zpow, Rat.cast_inj]
+  rw [eq_padicNorm, ← Rat.cast_natCast, ← Rat.cast_zpow, Rat.cast_inj]
   exact padicNorm.eq_zpow_of_nonzero hq
 
 @[simp]
@@ -1068,7 +1115,7 @@ theorem le_valuation_add {x y : ℚ_[p]} (hxy : x + y ≠ 0) :
   · simpa only [hx, zero_add] using min_le_right _ _
   by_cases hy : y = 0
   · simpa only [hy, add_zero] using min_le_left _ _
-  have : ‖x + y‖ ≤ max ‖x‖ ‖y‖ := padicNormE.nonarchimedean x y
+  have : ‖x + y‖ ≤ max ‖x‖ ‖y‖ := nonarchimedean x y
   simpa only [norm_eq_zpow_neg_valuation hxy, norm_eq_zpow_neg_valuation hx,
     norm_eq_zpow_neg_valuation hy, le_max_iff,
     zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt : 1 < (p : ℝ)), neg_le_neg_iff, ← min_le_iff]

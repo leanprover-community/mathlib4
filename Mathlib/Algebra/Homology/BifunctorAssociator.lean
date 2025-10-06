@@ -633,7 +633,7 @@ lemma d_eq :
   rw [add_assoc]
   congr 1
   apply mapBifunctor₂₃.hom_ext (c₁₂ := c₁₂)
-  intros i₁ i₂ i₃ h
+  intro i₁ i₂ i₃ h
   simp only [Preadditive.comp_add, ι_D₂, ι_D₃]
   rw [ι_eq _ _ _ _ _ _ _ _ _ _ _ _ _ rfl
       (by rw [← h, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄]; rfl),
