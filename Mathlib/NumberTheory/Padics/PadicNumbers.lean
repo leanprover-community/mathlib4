@@ -148,13 +148,10 @@ theorem Rat.surjective_padicValuation (p : ℕ) [hp : Fact (p.Prime)] :
   | zero => simp
   | coe x =>
     induction x with | ofAdd x
-    simp_rw [Rat.padicValuation, WithZero.exp, Valuation.coe_mk, MonoidWithZeroHom.coe_mk,
-      ZeroHom.coe_mk]
+    simp_rw [Rat.padicValuation, WithZero.exp, Valuation.coe_mk, MonoidWithZeroHom.coe_mk]
     rcases le_or_gt 0 x with (hx | hx)
-    · use (p ^ x.natAbs)⁻¹
-      simp [hp.out.ne_zero, hx]
-    · use p ^ x.natAbs
-      simp [hp.out.ne_zero, padicValRat.pow, abs_eq_neg_self.2 (le_of_lt hx)]
+    · exact ⟨(p ^ x.natAbs)⁻¹, by simp [hp.out.ne_zero, hx]⟩
+    · exact ⟨p ^ x.natAbs, by simp [hp.out.ne_zero, padicValRat.pow, abs_eq_neg_self.2 hx.le]⟩
 
 noncomputable section
 
