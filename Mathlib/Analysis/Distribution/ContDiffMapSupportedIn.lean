@@ -419,21 +419,21 @@ variable {E F n K}
 @[simp]
 protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
-      ‖(f.iteratedFDeriv' i : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+      ‖(f.iteratedFDerivWithOrder i : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
   rfl
 
 protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
   ext f
   rw [ContDiffMapSupportedIn.seminorm_apply,
-      coe_iteratedFDeriv'_of_gt hin]
+      coe_iteratedFDerivWithOrder_of_gt hin]
   exact norm_zero
 
 theorem norm_toBoundedContinuousFunctionₗ (f : 𝓓^{n}_{K}(E, F)) :
     ‖toBoundedContinuousFunctionₗ 𝕜 f‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
   simp only [BoundedContinuousFunction.norm_eq_iSup_norm, toBoundedContinuousFunctionₗ_apply_apply,
     ContDiffMapSupportedIn.seminorm_apply]
-  simp only [toBoundedContinuousFunction_apply, iteratedFDeriv'_apply, CharP.cast_eq_zero,
+  simp only [toBoundedContinuousFunction_apply, iteratedFDerivWithOrder_apply, CharP.cast_eq_zero,
   zero_le, ↓reduceIte, norm_iteratedFDeriv_zero]
 
 /-- The inclusion of the space  `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
@@ -449,14 +449,15 @@ noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜]
 
 protected theorem continuous_iff {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
     Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous
-      (toBoundedContinuousFunctionₗ 𝕜 ∘ ContDiffMapSupportedIn.iteratedFDeriv' i ∘ φ) := by
+      (toBoundedContinuousFunctionₗ 𝕜 ∘ ContDiffMapSupportedIn.iteratedFDerivWithOrder i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
   constructor <;> intro H i
   · exact fun _ ↦ H i
   · by_cases hin : i ≤ n
     · exact H i hin
-    · simp [iteratedFDeriv_toBoundedContinuousFunctionₗ, iteratedFDerivₗ'_eq_iteratedFDeriv',
-            coe_iteratedFDeriv'_of_gt' (lt_of_not_ge hin), continuous_zero]
+    · simp [iteratedFDeriv_toBoundedContinuousFunctionₗ,
+        iteratedFDerivWithOrderₗ_eq_iteratedFDerivWithOrder,
+        coe_iteratedFDerivWithOrder_of_gt' (lt_of_not_ge hin), continuous_zero]
 
 end Topology
 
