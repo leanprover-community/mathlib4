@@ -176,7 +176,7 @@ lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
 
 section PositiveSemidefinite
 
-/-- A sesquilinear form `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
+/-- A bilinear form `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
 structure IsNonneg [LE R] (B : BilinForm R M) where
   nonneg : ∀ x, 0 ≤ B x x
 
