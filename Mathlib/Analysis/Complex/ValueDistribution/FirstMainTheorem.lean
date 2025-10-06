@@ -106,7 +106,7 @@ function.
 -/
 theorem isBigO_characteristic_sub_characteristic_inv (h : MeromorphicOn f ⊤) :
     |characteristic f ⊤ - characteristic f⁻¹ ⊤| =O[atTop] (1 : ℝ → ℝ) :=
-  isBigO_of_le' (c := max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖|) _ 
+  isBigO_of_le' (c := max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖|) _
     (fun R ↦ by simpa using characteristic_sub_characteristic_inv_le h (R := R))
 
 end FirstPart
