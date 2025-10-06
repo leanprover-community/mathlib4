@@ -27,6 +27,7 @@ namespace AlgebraicGeometry.Scheme
 /-- A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
 Despite the definition, any quasi-compact locally closed subscheme of an affine scheme is
 quasi-affine. See `IsQuasiAffine.of_isImmersion` -/
+@[stacks 01P6]
 class IsQuasiAffine (X : Scheme.{u}) : Prop extends
   CompactSpace X, IsOpenImmersion X.toSpecΓ
 
@@ -40,6 +41,7 @@ instance (priority := low) [X.IsQuasiAffine] : X.IsSeparated where
     infer_instance
 
 /-- Superceded by `IsQuasiAffine.of_isImmersion`. -/
+@[stacks 01P9]
 private lemma IsQuasiAffine.of_isOpenImmersion [CompactSpace X]
     [Y.IsQuasiAffine] [IsOpenImmersion f] : X.IsQuasiAffine := by
   suffices IsOpenImmersion X.toSpecΓ by constructor
@@ -84,6 +86,7 @@ private lemma IsQuasiAffine.of_isOpenImmersion [CompactSpace X]
     · infer_instance
 
 /-- Any quasicompact locally closed subscheme of an quasi-affine scheme is quasi-affine. -/
+@[stacks 0BCK]
 lemma IsQuasiAffine.of_isImmersion
     [Y.IsQuasiAffine] [IsImmersion f] [CompactSpace X] : X.IsQuasiAffine := by
   wlog hY : IsAffine Y
