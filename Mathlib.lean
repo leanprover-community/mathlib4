@@ -3905,7 +3905,6 @@ import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.DerivationBundle
 import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.Elaborators
 import Mathlib.Geometry.Manifold.GroupLieAlgebra
 import Mathlib.Geometry.Manifold.Instances.Icc
 import Mathlib.Geometry.Manifold.Instances.Real
@@ -3929,6 +3928,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.Metrizable
+import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.PoincareConjecture
 import Mathlib.Geometry.Manifold.Riemannian.Basic
