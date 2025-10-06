@@ -153,7 +153,7 @@ lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : (x * x') �
 theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
 
-lemma zero_srel_mul_of_zero_srel {x y : R} (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
+lemma zero_srel_mul {x y : R} (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
   contrapose! hy
   rw [not_srel_iff] at hy ⊢
   rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
@@ -163,7 +163,7 @@ variable (R) in
 /-- The submonoid of elements `x : R` whose valuation is positive. -/
 def posSubmonoid : Submonoid R where
   carrier := { x | 0 <ᵥ x }
-  mul_mem' := zero_srel_mul_of_zero_srel
+  mul_mem' := zero_srel_mul
   one_mem' := zero_srel_one
 
 @[simp]
@@ -440,9 +440,7 @@ instance : LinearOrder (ValueGroupWithZero R) where
 @[simp]
 theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
     ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔ x * s <ᵥ y * t := by
-  rw [lt_iff_le_not_ge, srel_iff]
-  refine and_iff_right_iff_imp.mpr ?_
-  exact (rel_total _ _).resolve_right
+  rw [lt_iff_not_ge, srel_iff, mk_le_mk]
 
 instance : Bot (ValueGroupWithZero R) where
   bot := 0
@@ -574,8 +572,7 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
 lemma _root_.Valuation.Compatible.srel_iff_lt {Γ₀ : Type*}
     [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [v.Compatible] {x y : R} :
     x <ᵥ y ↔ v x < v y := by
-  simpa [lt_iff_le_not_ge, ← Valuation.Compatible.rel_iff_le, srel_iff] using
-    (rel_total _ _).resolve_right
+  simp [lt_iff_not_ge, ← Valuation.Compatible.rel_iff_le, srel_iff]
 
 @[simp]
 lemma _root_.Valuation.apply_posSubmonoid_ne_zero {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
