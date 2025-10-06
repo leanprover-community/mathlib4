@@ -112,20 +112,6 @@ variable {f : M → M'} {s : Set M} {m : M}
 #guard_msgs in
 #check MDiffAt f
 
--- TODO: understand why this fails and fix it!
-/--
-error: Application type mismatch: The argument
-  a✝
-has type
-  M
-of sort `Type u_4` but is expected to have type
-  Type ?u.63952
-of sort `Type (?u.63952 + 1)` in the application
-  @modelWithCornersSelf a✝
--/
-#guard_msgs in
-#check MDiffAt2 f
-
 /-- info: MDifferentiableAt I I' f m : Prop -/
 #guard_msgs in
 #check MDiffAt f m
@@ -322,63 +308,63 @@ section
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff X
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff σ
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff[s] σ'
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt (X)
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt ((σ))
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff[s] σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt[s] σ'
@@ -418,7 +404,11 @@ of sort `Type (max u_10 u_4)` but is expected to have type
   WithTop ℕ∞
 of sort `Type`
 ---
-error: Term m is not a function.
+error: Expected
+  m
+of type
+  M
+to be a function
 -/
 #guard_msgs in
 #check CMDiffAt[s] f m
@@ -432,7 +422,11 @@ of sort `Type (max u_10 u_4)` but is expected to have type
   WithTop ℕ∞
 of sort `Type`
 ---
-error: Term m is not a function.
+error: Expected
+  m
+of type
+  M
+to be a function
 -/
 #guard_msgs in
 #check CMDiffAt[s] f m
@@ -591,63 +585,63 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 X
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 σ
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff[s] 0 σ'
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 (X)
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 ((σ))
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff[s] 0 σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 σ'
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt[s] 0 σ'
@@ -844,27 +838,15 @@ info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f sorry : TangentSpace 𝓘(𝕜, E)
 #guard_msgs in
 #check mfderiv% f m'
 
--- TODO: is the old error message better?
-/-
-error: Application type mismatch: The argument
-  s'
-has type
-  Set.{u_4} M
-of sort `Type u_4` but is expected to have type
-  Set.{u_2} E
-of sort `Type u_2` in the application
-  mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s'
--/
-
 -- Error messages: argument s has mismatched type.
 /--
-error: The domain E of f is not definitionally equal to the carrier of the type 'Set M' of the set 's' passed in
+error: The domain E of f is not definitionally equal to the carrier type of the set s' : Set M
 -/
 #guard_msgs in
 #check mfderiv[s'] f
 
 /--
-error: The domain E of f is not definitionally equal to the carrier of the type 'Set M' of the set 's' passed in
+error: The domain E of f is not definitionally equal to the carrier type of the set s' : Set M
 -/
 #guard_msgs in
 #check mfderiv[s'] f m
@@ -875,14 +857,14 @@ section
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv% X x
 
 /--
 error: Term σ is a dependent function, of type (x : M) → V x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv% σ x
@@ -891,14 +873,14 @@ variable {t : Set E} {p : E}
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv[t] σ' p
 
 /--
 error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
-Hint: you can use the 'T%' elaborator to convert a dependent function to a non-dependent one
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv[t] σ'
@@ -906,3 +888,44 @@ Hint: you can use the 'T%' elaborator to convert a dependent function to a non-d
 end
 
 end mfderiv
+
+section trace
+
+/- Test that basic tracing works. -/
+
+set_option trace.Elab.DiffGeo true
+
+variable {f : Unit → Unit}
+
+/--
+error: Could not find models with corners for Unit
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Unit is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on Unit among local instances.
+[Elab.DiffGeo.MDiff] ❌️ ChartedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on Unit among local instances.
+[Elab.DiffGeo.MDiff] ❌️ NormedField
+  [Elab.DiffGeo.MDiff] Failed with error:
+      failed to synthesize
+        NontriviallyNormedField Unit
+      ⏎
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check mfderiv% f
+
+/--
+info: fun a ↦ TotalSpace.mk' Unit a (f a) : Unit → TotalSpace Unit (Trivial Unit Unit)
+---
+trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
+-/
+#guard_msgs in
+#check T% f
+
+end trace
