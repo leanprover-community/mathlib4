@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 import Mathlib.CategoryTheory.SmallRepresentatives
+import Mathlib.CategoryTheory.Comma.CardinalArrow
 
 /-!
 # Closure of a property of objects under colimits of bounded cardinality
@@ -63,5 +64,18 @@ lemma colimitsCardinalClosure_le {Q : ObjectProperty C} [Q.IsClosedUnderIsomorph
     P.colimitsCardinalClosure κ ≤ Q := by
   have (i : SmallCategoryCardinalLT κ) := hQ _ i.hasCardinalLT
   exact colimitsClosure_le h
+
+section
+
+open Limits
+
+instance isStableUnderRetracts_colimitsCardinalClosure [Fact κ.IsRegular] :
+    (P.colimitsCardinalClosure κ).IsStableUnderRetracts := by
+  have := P.isClosedUnderColimitsOfShape_colimitsCardinalClosure κ
+    WalkingParallelPair (HasCardinalLT.of_le (by simp; infer_instance)
+    (Cardinal.IsRegular.aleph0_le Fact.out))
+  infer_instance
+
+end
 
 end CategoryTheory.ObjectProperty

@@ -131,6 +131,13 @@ lemma isCardinalPresentable_of_le [IsCardinalPresentable X κ]
     IsCardinalPresentable X κ' :=
   (coyoneda.obj (op X)).isCardinalAccessible_of_le h
 
+variable (C) {κ} in
+lemma isCardinalPresentable_monotone {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    isCardinalPresentable C κ ≤ isCardinalPresentable C κ' := by
+  intro X hX
+  rw [isCardinalPresentable_iff] at hX ⊢
+  exact isCardinalPresentable_of_le _ h
+
 include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
