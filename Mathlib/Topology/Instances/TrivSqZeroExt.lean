@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
