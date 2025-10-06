@@ -498,7 +498,7 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
     unfold c
     refine prod_pow_factorization_eq_self ?_
     intro p p_mem
-    exact prime_of_mem_primeFactors ((Finsupp.support_mapRange) p_mem)
+    exact prime_of_mem_primeFactors (Finsupp.support_mapRange p_mem)
   have mul_factorization_p_eq_and_n_dvd_a_factorization_p p :
       m * a.factorization p = n * b.factorization p ∧ n ∣ a.factorization p := by
     have := congrFun (congrArg DFunLike.coe factorization_pow_eq) p
