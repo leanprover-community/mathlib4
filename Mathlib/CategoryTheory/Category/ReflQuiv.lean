@@ -184,8 +184,9 @@ def freeReflMap {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W
 
 theorem freeReflMap_naturality
     {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
-  FreeRefl.quotientFunctor V ⋙ freeReflMap F =
-    freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W := Quotient.lift_spec _ _ _
+    FreeRefl.quotientFunctor V ⋙ freeReflMap F =
+    freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W :=
+  Quotient.lift_spec _ _ _
 
 /-- The functor sending a reflexive quiver to the free category it generates, a quotient of
 its path category -/

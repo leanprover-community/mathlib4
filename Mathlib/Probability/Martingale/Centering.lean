@@ -48,11 +48,11 @@ theorem predictablePart_zero : predictablePart f ℱ μ 0 = 0 := by
   simp_rw [predictablePart, Finset.range_zero, Finset.sum_empty]
 
 theorem adapted_predictablePart : Adapted ℱ fun n => predictablePart f ℱ μ (n + 1) := fun _ =>
-  Finset.stronglyMeasurable_sum' _ fun _ hin =>
+  Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_succ_iff.mp hin))
 
 theorem adapted_predictablePart' : Adapted ℱ fun n => predictablePart f ℱ μ n := fun _ =>
-  Finset.stronglyMeasurable_sum' _ fun _ hin =>
+  Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_le hin))
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable

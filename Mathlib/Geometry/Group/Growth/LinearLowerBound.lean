@@ -67,7 +67,7 @@ lemma pow_right_strictMonoOn (hX₁ : 1 ∈ X) (hX : X.Nontrivial) :
   · simp [eq_comm (a := (1 : Set _)), coe_set_eq_one, -Set.subset_singleton_iff,
       hX.coe.not_subset_singleton] at hm
   · calc (X : Set G) ^ (n - 1)
-    _ = X ^ (n - m) * X ^ (m - 1) := by rw [← pow_add]; congr 1; omega
+    _ = X ^ (n - m) * X ^ (m - 1) := by rw [← pow_add]; congr 1; cutsat
     _ = closure (X : Set G) := by rw [hm, Set.pow_mul_subgroupClosure hX.nonempty.to_set]
 
 @[to_additive]
@@ -80,7 +80,7 @@ lemma pow_right_strictMono (hX₁ : 1 ∈ X) (hXclosure : (closure (X : Set G) :
   simpa [h] using pow_right_strictMonoOn hX₁ hX
 
 /-- The growth of a set generating an infinite group is at least linear. -/
-@[to_additive "The growth of a set generating an infinite group is at least linear."]
+@[to_additive /-- The growth of a set generating an infinite group is at least linear. -/]
 lemma add_one_le_card_pow (hX₁ : 1 ∈ X) (hXclosure : (closure (X : Set G) : Set G).Infinite) :
     ∀ n, n + 1 ≤ #(X ^ n)
   | 0 => by simp

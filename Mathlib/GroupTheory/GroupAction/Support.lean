@@ -28,7 +28,7 @@ section SMul
 variable (G) [SMul G α] [SMul G β]
 
 /-- A set `s` supports `b` if `g • b = b` whenever `g • a = a` for all `a ∈ s`. -/
-@[to_additive "A set `s` supports `b` if `g +ᵥ b = b` whenever `g +ᵥ a = a` for all `a ∈ s`."]
+@[to_additive /-- A set `s` supports `b` if `g +ᵥ b = b` whenever `g +ᵥ a = a` for all `a ∈ s`. -/]
 def Supports (s : Set α) (b : β) :=
   ∀ g : G, (∀ ⦃a⦄, a ∈ s → g • a = a) → g • b = b
 

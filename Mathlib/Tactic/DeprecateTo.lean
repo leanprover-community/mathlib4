@@ -3,6 +3,7 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Batteries.Tactic.Alias
 import Lean.Meta.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Lemma

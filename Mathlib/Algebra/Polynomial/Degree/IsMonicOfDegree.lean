@@ -5,7 +5,6 @@ Authors: Michael Stoll
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Monic polynomials of given degree
@@ -64,7 +63,7 @@ lemma IsMonicOfDegree.exists_natDegree_lt {p : R[X]} {n : ℕ} (hn : n ≠ 0)
     rw [add_comm, hp.natDegree_eq, hp.leadingCoeff_eq, map_one, one_mul]
   · refine p.eraseLead_natDegree_le.trans_lt ?_
     rw [hp.natDegree_eq]
-    omega
+    cutsat
 
 lemma IsMonicOfDegree.mul {p q : R[X]} {m n : ℕ} (hp : IsMonicOfDegree p m)
     (hq : IsMonicOfDegree q n) :
@@ -171,7 +170,7 @@ lemma isMonicOfDegree_monomial_one (n : ℕ) : IsMonicOfDegree (monomial n (1 : 
   simpa only [monomial_one_right_eq_X_pow] using isMonicOfDegree_X_pow R n
 
 lemma isMonicOfDegree_X_add_one (r : R) : IsMonicOfDegree (X + C r) 1 :=
-  (isMonicOfDegree_X R).add_right (by compute_degree!)
+  (isMonicOfDegree_X R).add_right (by rw [natDegree_C]; exact zero_lt_one)
 
 lemma isMonicOfDegree_one_iff {f : R[X]} : IsMonicOfDegree f 1 ↔ ∃ r : R, f = X + C r := by
   refine ⟨fun H ↦ ?_, fun ⟨r, H⟩ ↦ H ▸ isMonicOfDegree_X_add_one r⟩
@@ -179,11 +178,15 @@ lemma isMonicOfDegree_one_iff {f : R[X]} : IsMonicOfDegree f 1 ↔ ∃ r : R, f 
   ext1 n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
-  · exact H.coeff_eq (isMonicOfDegree_X_add_one _) (by omega)
+  · exact H.coeff_eq (isMonicOfDegree_X_add_one _) (by cutsat)
 
 lemma isMonicOfDegree_add_add_two (a b : R) : IsMonicOfDegree (X ^ 2 + C a * X + C b) 2 := by
   rw [add_assoc]
-  exact (isMonicOfDegree_X_pow R 2).add_right <| by compute_degree!
+  exact (isMonicOfDegree_X_pow R 2).add_right <|
+    calc
+    _ ≤ max (C a * X).natDegree (C b).natDegree := natDegree_add_le ..
+    _ = (C a * X).natDegree := by simp
+    _ < 2 := natDegree_C_mul_le .. |>.trans natDegree_X_le |>.trans_lt one_lt_two
 
 lemma isMonicOfDegree_two_iff {f : R[X]} :
     IsMonicOfDegree f 2 ↔ ∃ a b : R, f = X ^ 2 + C a * X + C b := by
@@ -193,7 +196,7 @@ lemma isMonicOfDegree_two_iff {f : R[X]} :
   · obtain rfl : n = 0 := Nat.lt_one_iff.mp hn
     simp
   · simp
-  · exact H.coeff_eq (isMonicOfDegree_add_add_two ..) (by omega)
+  · exact H.coeff_eq (isMonicOfDegree_add_add_two ..) (by cutsat)
 
 end Semiring
 
@@ -213,9 +216,8 @@ lemma IsMonicOfDegree.natDegree_sub_lt {p q : R[X]} {n : ℕ} (hn : n ≠ 0) (hp
   rw [← sub_sub_sub_cancel_right p q (X ^ n)]
   replace hp := hp.natDegree_sub_X_pow hn
   replace hq := hq.natDegree_sub_X_pow hn
-  set p' := p - X ^ n -- do not confuse `compute_degree!`
-  set q' := q - X ^ n
-  compute_degree!
+  rw [← Nat.le_sub_one_iff_lt (Nat.zero_lt_of_ne_zero hn)] at hp hq ⊢
+  exact (natDegree_sub_le_iff_left hq).mpr hp
 
 lemma IsMonicOfDegree.sub {p q : R[X]} {n : ℕ} (hp : IsMonicOfDegree p n) (hq : q.natDegree < n) :
     IsMonicOfDegree (p - q) n := by
@@ -225,11 +227,16 @@ lemma IsMonicOfDegree.sub {p q : R[X]} {n : ℕ} (hp : IsMonicOfDegree p n) (hq 
 variable [Nontrivial R]
 
 lemma isMonicOfDegree_X_sub_one (r : R) : IsMonicOfDegree (X - C r) 1 :=
-  (isMonicOfDegree_X R).sub (by compute_degree!)
+  (isMonicOfDegree_X R).sub (by rw [natDegree_C]; exact zero_lt_one)
 
 lemma isMonicOfDegree_sub_add_two (a b : R) : IsMonicOfDegree (X ^ 2 - C a * X + C b) 2 := by
   rw [sub_add]
-  exact (isMonicOfDegree_X_pow R 2).add_right <| by compute_degree!
+  exact (isMonicOfDegree_X_pow R 2).add_right <| by
+    rw [natDegree_neg]
+    calc
+    _ ≤ max (C a * X).natDegree (C b).natDegree := natDegree_sub_le ..
+    _ = (C a * X).natDegree := by simp
+    _ < 2 := natDegree_C_mul_le .. |>.trans natDegree_X_le |>.trans_lt one_lt_two
 
 /-- A version of `Polynomial.isMonicOfDegree_two_iff` with negated middle coefficient. -/
 lemma isMonicOfDegree_two_iff' {f : R[X]} :
@@ -250,7 +257,7 @@ lemma IsMonicOfDegree.of_dvd_add {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha 
     ∃ q : R[X], IsMonicOfDegree q (m - n) ∧ a = q * b - r := by
   obtain ⟨q, hq⟩ := exists_eq_mul_left_of_dvd  h
   refine ⟨q, hb.of_mul_right ?_, eq_sub_iff_add_eq.mpr hq⟩
-  rw [← hq, show m - n + n = m by omega]
+  rw [← hq, show m - n + n = m by cutsat]
   exact ha.add_right hr
 
 lemma IsMonicOfDegree.of_dvd_sub {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha : IsMonicOfDegree a m)

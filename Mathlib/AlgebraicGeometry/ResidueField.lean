@@ -44,8 +44,7 @@ def residueField (x : X) : CommRingCat :=
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
-instance (x : X) : Unique (Spec (X.residueField x)) :=
-  inferInstanceAs (Unique (Spec (CommRingCat.of _)))
+instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs (Unique (Spec <| .of _))
 
 /-- The residue map from the stalk to the residue field. -/
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
@@ -256,9 +255,7 @@ lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :
 
 lemma range_fromSpecResidueField (x : X.carrier) :
     Set.range (X.fromSpecResidueField x).base = {x} := by
-  ext s
-  simp only [Set.mem_range, fromSpecResidueField_apply, Set.mem_singleton_iff, eq_comm (a := s)]
-  grind
+  simp
 
 lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
     (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :

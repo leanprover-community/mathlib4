@@ -160,6 +160,7 @@ theorem Subset.trans {s t u : Multiset α} : s ⊆ t → t ⊆ u → s ⊆ u := 
 theorem subset_iff {s t : Multiset α} : s ⊆ t ↔ ∀ ⦃x⦄, x ∈ s → x ∈ t :=
   Iff.rfl
 
+@[gcongr]
 theorem mem_of_subset {s t : Multiset α} {a : α} (h : s ⊆ t) : a ∈ s → a ∈ t :=
   @h _
 
@@ -222,12 +223,14 @@ def card : Multiset α → ℕ := Quot.lift length fun _l₁ _l₂ => Perm.lengt
 theorem coe_card (l : List α) : card (l : Multiset α) = length l :=
   rfl
 
+@[gcongr]
 theorem card_le_card {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
 
 theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card s → s = t :=
   leInductionOn h fun s h₂ => congr_arg _ <| s.eq_of_length_le h₂
 
+@[gcongr]
 theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
   lt_of_not_ge fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
 

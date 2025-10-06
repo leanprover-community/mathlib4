@@ -127,14 +127,40 @@ echo
 echo "### [auto] checkout master and pull the latest changes"
 
 git fetch $MAIN_REMOTE master
-git checkout master
-git pull $MAIN_REMOTE master
+
+# Ensure local master branch exists and tracks $MAIN_REMOTE/master
+if git show-ref --verify --quiet refs/heads/master; then
+  git checkout master
+  git pull $MAIN_REMOTE master
+else
+  git checkout -b master $MAIN_REMOTE/master
+fi
 
 echo
 echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
-git checkout "bump/$BUMPVERSION"
-git pull $MAIN_REMOTE "bump/$BUMPVERSION"
+# Check if the local branch exists
+if git show-ref --verify --quiet refs/heads/bump/$BUMPVERSION; then
+  # Local branch exists, check what it's tracking
+  tracking_branch=$(git rev-parse --abbrev-ref --symbolic-full-name bump/$BUMPVERSION@{u} 2>/dev/null || echo "")
+  if [ -z "$tracking_branch" ] || [ "$tracking_branch" != "$NIGHTLY_REMOTE/bump/$BUMPVERSION" ]; then
+    echo "Error: Local branch 'bump/$BUMPVERSION' exists but is not properly tracking '$NIGHTLY_REMOTE/bump/$BUMPVERSION'"
+    if [ -z "$tracking_branch" ]; then
+      echo "The branch is not tracking any remote branch."
+    else
+      echo "The branch is tracking '$tracking_branch' instead."
+    fi
+    echo "Please delete the local branch or update its tracking configuration."
+    exit 1
+  fi
+  # Branch exists and is tracking the correct remote, checkout it
+  git checkout "bump/$BUMPVERSION"
+else
+  # Local branch doesn't exist, create it tracking the nightly-testing remote
+  # Use --track to explicitly specify which remote branch to track
+  git checkout --track "$NIGHTLY_REMOTE/bump/$BUMPVERSION"
+fi
+git pull --no-rebase $NIGHTLY_REMOTE "bump/$BUMPVERSION"
 git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
@@ -179,7 +205,25 @@ git push
 echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from nightly-testing"
 
-git checkout -b "bump/nightly-$NIGHTLYDATE" || git checkout "bump/nightly-$NIGHTLYDATE"
+# Check if the branch already exists on the nightly-testing remote
+bump_nightly_exists=$(git ls-remote --heads $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE" | grep -q . && echo "yes" || echo "no")
+
+if [ "$bump_nightly_exists" = "yes" ]; then
+  echo "Branch 'bump/nightly-$NIGHTLYDATE' already exists on $NIGHTLY_REMOTE. Reusing existing branch."
+  # Check if local branch exists
+  if git show-ref --verify --quiet refs/heads/bump/nightly-$NIGHTLYDATE; then
+    git checkout "bump/nightly-$NIGHTLYDATE"
+    git pull $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
+  else
+    # Create local branch tracking the remote
+    git checkout --track "$NIGHTLY_REMOTE/bump/nightly-$NIGHTLYDATE"
+  fi
+else
+  echo "Creating new branch 'bump/nightly-$NIGHTLYDATE'"
+  git checkout -b "bump/nightly-$NIGHTLYDATE"
+fi
+
+# Always merge the latest nightly changes
 git merge --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
@@ -221,45 +265,68 @@ pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
 # as the user might have inadvertently already committed changes
 # In general, we do not want this command to fail.
 git commit --allow-empty -m "$pr_title"
-git push --set-upstream $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
+
+# Check if branch already exists on remote
+if [ "$bump_nightly_exists" = "yes" ]; then
+  echo "Branch already exists on remote, pushing updates..."
+  git push $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
+else
+  echo "Creating new branch on remote..."
+  git push --set-upstream $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
+fi
 
 # Check if there is a diff between bump/nightly-$NIGHTLYDATE and bump/$BUMPVERSION
 if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .; then
 
   echo
   echo "### [auto] create a PR for the new branch"
-  echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION'"
-  echo "Running the following 'gh' command to do this:"
-  gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION --repo leanprover-community/mathlib4-nightly-testing"
-  echo "> $gh_command"
-  gh_output=$(eval $gh_command)
-  # Extract the PR number from the output
-  pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
+
+  # Check if a PR already exists for this branch
+  existing_pr=$(gh pr list --head "bump/nightly-$NIGHTLYDATE" --repo leanprover-community/mathlib4-nightly-testing --json number --jq '.[0].number' 2>/dev/null || echo "")
+
+  if [ -n "$existing_pr" ]; then
+    echo "PR #$existing_pr already exists for branch 'bump/nightly-$NIGHTLYDATE'"
+    echo "Link: https://github.com/leanprover-community/mathlib4-nightly-testing/pull/$existing_pr"
+    pr_number="$existing_pr"
+  else
+    echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION'"
+    echo "Running the following 'gh' command to do this:"
+    gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION --repo leanprover-community/mathlib4-nightly-testing"
+    echo "> $gh_command"
+    gh_output=$(eval $gh_command)
+    # Extract the PR number from the output
+    pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
+  fi
 
   echo
   echo "### [auto] post a link to the PR on Zulip"
 
   zulip_title="nightly#$pr_number adaptations for nightly-$NIGHTLYDATE"
-  zulip_body=$(printf "> %s\n\nPlease review this PR. At the end of the month this diff will land in 'master'." "$pr_title nightly#$pr_number")
+  zulip_body=$(printf "> %s\n\nPlease review this PR. At the next toolchain release this diff will land in 'master'." "$pr_title nightly#$pr_number")
 
-  echo "Posting the link to the PR in a new thread on the #nightly-testing channel on Zulip"
-  echo "Here is the message:"
-  echo "Title: $zulip_title"
-  echo " Body: $zulip_body"
+  # Only post to Zulip if we created a new PR
+  if [ -z "$existing_pr" ]; then
+    echo "Posting the link to the PR in a new thread on the #nightly-testing channel on Zulip"
+    echo "Here is the message:"
+    echo "Title: $zulip_title"
+    echo " Body: $zulip_body"
 
-  if command -v zulip-send >/dev/null 2>&1; then
-    zulip_command="zulip-send --stream nightly-testing --subject \"$zulip_title\" --message \"$zulip_body\""
-    echo "Running the following 'zulip-send' command to do this:"
-    echo "> $zulip_command"
-    eval $zulip_command
-  else
-    echo "Zulip CLI is not installed. Install it to send messages automatically."
-    if [ "$AUTO" = "yes" ]; then
-      exit 1
+    if command -v zulip-send >/dev/null 2>&1; then
+      zulip_command="zulip-send --stream nightly-testing --subject \"$zulip_title\" --message \"$zulip_body\""
+      echo "Running the following 'zulip-send' command to do this:"
+      echo "> $zulip_command"
+      eval $zulip_command
     else
-      echo "Please send the message manually."
-      read -p "Press enter to continue"
+      echo "Zulip CLI is not installed. Install it to send messages automatically."
+      if [ "$AUTO" = "yes" ]; then
+        exit 1
+      else
+        echo "Please send the message manually."
+        read -p "Press enter to continue"
+      fi
     fi
+  else
+    echo "Reusing existing PR #$pr_number, skipping Zulip message"
   fi
 
 # else, let the user know that no PR is needed
@@ -275,7 +342,7 @@ echo
 echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch into it"
 
 git checkout nightly-testing
-git pull $NIGHTLY_REMOTE nightly-testing
+git pull --no-rebase $NIGHTLY_REMOTE nightly-testing
 git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts

@@ -27,7 +27,7 @@ and the exactness lemmas are
 - `KaehlerDifferential.map_surjective`
 -/
 
-open KaehlerDifferential TensorProduct MvPolynomial
+open KaehlerDifferential Module MvPolynomial TensorProduct
 
 namespace Algebra
 
@@ -126,7 +126,7 @@ section instanceProblem
 
 -- Note: these instances are needed to prevent instance search timeouts.
 attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
+  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZero.toZero
 
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ

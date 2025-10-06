@@ -44,6 +44,15 @@ structure LocalizerMorphism where
 
 namespace LocalizerMorphism
 
+variable {W₁ W₂} in
+/-- Constructor for localizer morphisms given by a functor `F : C₁ ⥤ C₂`
+under the stronger assumption that the classes of morphisms `W₁` and `W₂`
+satisfy `W₁ = W₂.inverseImage F`. -/
+@[simps]
+def ofEq {F : C₁ ⥤ C₂} (hW : W₁ = W₂.inverseImage F) : LocalizerMorphism W₁ W₂ where
+  functor := F
+  map := by rw [hW]
+
 /-- The identity functor as a morphism of localizers. -/
 @[simps]
 def id : LocalizerMorphism W₁ W₁ where
@@ -101,7 +110,7 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
 include W₁ W₂ Φ L₁ L₂ L₁' L₂'
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
-it will be so for any choice of localized categoriees. -/
+it will be so for any choice of localized categories. -/
 lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
   let E₁ := Localization.uniq L₁ L₁' W₁
   let E₂ := Localization.uniq L₂ L₂' W₂

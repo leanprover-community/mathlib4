@@ -38,8 +38,6 @@ theorem isIdempotentElem_toSubmodule (S : Subalgebra R A) :
     rw [← mul_one x]
     exact Submodule.mul_mem_mul hx1 (show (1 : A) ∈ S from one_mem S)
 
-@[deprecated (since := "2025-01-12")] alias mul_self := isIdempotentElem_toSubmodule
-
 /-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
 theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S T : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule T)
@@ -76,7 +74,7 @@ scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 
 open Pointwise
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : R') (S : Subalgebra R A) : ↑(m • S) = m • (S : Set A) :=
   rfl
 

@@ -57,8 +57,7 @@ lemma isStrictlySupported_op_iff :
   ⟨(fun _ ↦ ⟨fun i' hi' ↦ (K.op.isZero_X_of_isStrictlySupported e.op i' hi').unop⟩),
     (fun _ ↦ ⟨fun i' hi' ↦ (K.isZero_X_of_isStrictlySupported e i' hi').op⟩)⟩
 
-instance [K.IsStrictlySupported e] :
-    K.op.IsStrictlySupported e.op := by
+instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op := by
   rw [isStrictlySupported_op_iff]
   infer_instance
 
@@ -112,9 +111,7 @@ lemma isSupportedOutside_op_iff :
 variable {K e} in
 lemma IsStrictlySupportedOutside.isSupportedOutside (h : K.IsStrictlySupportedOutside e) :
     K.IsSupportedOutside e where
-  exactAt i := by
-    rw [exactAt_iff]
-    exact ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
+  exactAt i := ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
 
 instance [HasZeroObject C] : (0 : HomologicalComplex C c').IsStrictlySupported e where
   isZero i _ := (eval _ _ i).map_isZero (Limits.isZero_zero _)
@@ -136,9 +133,6 @@ lemma isZero_iff_isStrictlySupported_and_isStrictlySupportedOutside :
     · obtain ⟨i, rfl⟩ := hn
       exact h₂.isZero i
     · exact K.isZero_X_of_isStrictlySupported e _ (by simpa using hn)
-
-instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op where
-  isZero j hj' := (K.isZero_X_of_isStrictlySupported e j hj').op
 
 end
 

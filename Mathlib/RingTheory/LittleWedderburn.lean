@@ -52,7 +52,7 @@ open Module Polynomial
 variable {D}
 
 private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
-  [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
+    [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
@@ -138,7 +138,7 @@ end InductionHyp
 private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
-  induction' hn : Fintype.card D using Nat.strong_induction_on with n IH generalizing D
+  induction hn : Fintype.card D using Nat.strong_induction_on generalizing D with | _ n IH
   apply InductionHyp.center_eq_top
   intro R hR x y hx hy
   suffices (⟨y, hy⟩ : R) ∈ Subring.center R by

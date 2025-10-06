@@ -30,7 +30,7 @@ coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` 
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
-assert_not_exists Basis Ideal ContinuousMul
+assert_not_exists Module.Basis Ideal ContinuousMul
 
 universe u v w x
 
@@ -104,7 +104,7 @@ theorem mapsTo_closedBall (hf : LipschitzWith K f) (x : α) (r : ℝ) :
 
 theorem dist_lt_mul_of_lt (hf : LipschitzWith K f) (hK : K ≠ 0) (hr : dist x y < r) :
     dist (f x) (f y) < K * r :=
-  (hf.dist_le_mul x y).trans_lt <| (mul_lt_mul_left <| NNReal.coe_pos.2 hK.bot_lt).2 hr
+  (hf.dist_le_mul x y).trans_lt <| by gcongr
 
 theorem mapsTo_ball (hf : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ) :
     MapsTo f (Metric.ball x r) (Metric.ball (f x) (K * r)) := fun _y hy =>
@@ -309,7 +309,7 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
     ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn f g s := by
   /- An extension is given by `g y = Inf {f x + K * dist y x | x ∈ s}`. Taking `x = y`, one has
     `g y ≤ f y` for `y ∈ s`, and the other inequality holds because `f` is `K`-Lipschitz, so that it
-    can not counterbalance the growth of `K * dist y x`. One readily checks from the formula that
+    cannot counterbalance the growth of `K * dist y x`. One readily checks from the formula that
     the extended function is also `K`-Lipschitz. -/
   rcases eq_empty_or_nonempty s with (rfl | hs)
   · exact ⟨fun _ => 0, (LipschitzWith.const _).weaken (zero_le _), eqOn_empty _ _⟩

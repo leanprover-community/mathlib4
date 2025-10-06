@@ -48,8 +48,8 @@ variable [Mul α]
 
 /-- An element `a` of a type `α` with multiplication satisfies `IsSquare a` if `a = r * r`,
 for some root `r : α`. -/
-@[to_additive "An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
-for some `r : α`."]
+@[to_additive /-- An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
+for some `r : α`. -/]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
 @[to_additive]
@@ -98,11 +98,11 @@ instance Multiplicative.instDecidablePredIsSquare [DecidablePred (Even : α → 
 
 end Add
 
-@[to_additive (attr := simp, grind)]
+@[to_additive (attr := simp)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
-@[deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
-@[deprecated (since := "2024-12-27")] alias even_zero := Even.zero
+grind_pattern IsSquare.one => IsSquare (1 : α)
+grind_pattern Even.zero => Even (0 : α)
 
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
@@ -126,26 +126,19 @@ variable [Monoid α] {n : ℕ} {a : α}
 lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
 
 @[to_additive Even.exists_two_nsmul
-  "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
+  /-- Alias of the forwards direction of `even_iff_exists_two_nsmul`. -/]
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 
 -- provable by simp in `Algebra.Ring.Parity`
 @[to_additive (attr := aesop safe) Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
-@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
-@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
-
 @[to_additive (attr := aesop unsafe 80%) Even.nsmul_right]
 lemma IsSquare.pow (n : ℕ) (ha : IsSquare a) : IsSquare (a ^ n) := by
   aesop (add simp Commute.mul_pow)
 
-@[deprecated (since := "2025-01-19")] alias Even.nsmul := Even.nsmul_right
-
 @[to_additive (attr := aesop unsafe 90%) Even.nsmul_left]
 lemma Even.isSquare_pow (hn : Even n) : ∀ a : α, IsSquare (a ^ n) := by aesop (add simp pow_add)
-
-@[deprecated (since := "2025-01-19")] alias Even.nsmul' := Even.nsmul_left
 
 end Monoid
 
@@ -176,7 +169,7 @@ lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare 
   aesop (add simp zpow_add)
 
 example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
-  IsSquare <| a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (n + n)) := by aesop
+    IsSquare <| a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (n + n)) := by aesop
 
 example {G : Type*} [AddCommGroup G] {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
-  Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop
+    Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop

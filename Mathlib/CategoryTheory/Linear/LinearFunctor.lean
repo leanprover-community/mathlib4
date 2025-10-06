@@ -31,7 +31,7 @@ variable (R : Type*) [Semiring R] {C D : Type*} [Category C] [Category D]
 /-- An additive functor `F` is `R`-linear provided `F.map` is an `R`-module morphism. -/
 class Functor.Linear : Prop where
   /-- the functor induces a linear map on morphisms -/
-  map_smul : ∀ {X Y : C} (f : X ⟶ Y) (r : R), F.map (r • f) = r • F.map f := by aesop_cat
+  map_smul : ∀ {X Y : C} (f : X ⟶ Y) (r : R), F.map (r • f) = r • F.map f := by cat_disch
 
 lemma Functor.linear_iff (F : C ⥤ D) :
     Functor.Linear R F ↔ ∀ (X : C) (r : R), F.map (r • 𝟙 X) = r • 𝟙 (F.obj X) := by
@@ -111,11 +111,10 @@ end Functor
 
 namespace Equivalence
 
-instance inverseLinear (e : C ≌ D) [e.functor.Linear R] :
-  e.inverse.Linear R where
-    map_smul r f := by
-      apply e.functor.map_injective
-      simp
+instance inverseLinear (e : C ≌ D) [e.functor.Linear R] : e.inverse.Linear R where
+  map_smul r f := by
+    apply e.functor.map_injective
+    simp
 
 end Equivalence
 
