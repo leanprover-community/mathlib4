@@ -142,4 +142,13 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
       mul_one, zero_mul] at hq
     rw [Int.natAbs_of_nonneg hq, num_divInt_den]
 
+theorem abs_def' (q : ℚ) : |q| = ⟨q.num.natAbs, q.den, q.den_ne_zero, q.reduced⟩ := by
+  rw [abs_def, ← Rat.mk_eq_divInt q.num.natAbs q.den q.den_ne_zero q.reduced]
+
+theorem abs_num_eq_num_natAbs (q : ℚ) : |q|.num = q.num.natAbs := by
+  rw [abs_def']
+
+theorem abs_den_eq_den (q : ℚ) : |q|.den = q.den := by
+  rw [abs_def']
+
 end Rat
