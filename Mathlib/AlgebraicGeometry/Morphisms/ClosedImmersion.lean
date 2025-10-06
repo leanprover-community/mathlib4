@@ -210,6 +210,21 @@ lemma lift_fac {X Y Z : Scheme.{u}}
   nth_rw 2 [← f.toImage_imageι]
   simp [lift, - Scheme.Hom.toImage_imageι, g.toImage_imageι]
 
+lemma isIso_of_ker_eq {Z₁ Z₂ X : Scheme.{u}} (i₁ : Z₁ ⟶ X) (i₂ : Z₂ ⟶ X)
+    [IsClosedImmersion i₁] [IsClosedImmersion i₂] (f : Z₁ ⟶ Z₂)
+    (h : f ≫ i₂ = i₁) (h' : i₁.ker = i₂.ker) : IsIso f := by
+  let f' : MorphismProperty.Over.mk ⊤ i₁ ‹_› ⟶ .mk ⊤ i₂ ‹_› := MorphismProperty.Over.homMk f h
+  suffices h : IsIso f'.op by
+    rwa [isIso_op_iff, ← isIso_iff_of_reflects_iso _ (MorphismProperty.Over.forget ..),
+      ← isIso_iff_of_reflects_iso _ (Over.forget _)] at h
+  rw [← isIso_iff_of_reflects_iso _ (IsClosedImmersion.overEquivIdealSheafData X).functor]
+  simpa [IsClosedImmersion.overEquivIdealSheafData] using ⟨homOfLE h'.le, by simp, by simp⟩
+
+lemma isIso_lift {Z₁ Z₂ X : Scheme.{u}} (i₁ : Z₁ ⟶ X) (i₂ : Z₂ ⟶ X)
+    [IsClosedImmersion i₁] [IsClosedImmersion i₂] (h : i₁.ker = i₂.ker) :
+    IsIso (lift i₁ i₂ h.le) :=
+  isIso_of_ker_eq i₂ i₁ _ (by simp) h.symm
+
 end IsClosedImmersion
 
 section Affine
