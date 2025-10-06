@@ -306,30 +306,27 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 -- Inferring a model with corners on the trivial bundle over the tangent space of a manifold.
 -- TODO: why does this fail; this is not supposed to happen!
 /--
-error: Could not find models with corners for TotalSpace F (TangentSpace I)
+error: failed to synthesize
+  TopologicalSpace (TotalSpace F (TangentSpace I))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
-  [Elab.DiffGeo.MDiff] ❌️ TangentSpace
-    [Elab.DiffGeo.MDiff] Failed with error:
-        TangentSpace I is not a `TangentSpace`
+[Elab.DiffGeo.MDiff] ✅️ TotalSpace
   [Elab.DiffGeo.MDiff] ❌️ From base info
     [Elab.DiffGeo.MDiff] Failed with error:
         No `baseInfo` provided
+  [Elab.DiffGeo.MDiff] ✅️ TangentSpace
+    [Elab.DiffGeo.MDiff] This is the total space of the tangent bundle of M
+    [Elab.DiffGeo.MDiff] Found model: I.prod I.tangent
+  [Elab.DiffGeo.MDiff] Found model: I.prod I.tangent
+[Elab.DiffGeo.MDiff] Finding a model for: F
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      Having a TotalSpace as source is not yet supported
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on TotalSpace F (TangentSpace I) among local instances.
-[Elab.DiffGeo.MDiff] ❌️ ChartedSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on TotalSpace F (TangentSpace I) among local instances.
-[Elab.DiffGeo.MDiff] ❌️ NormedField
-  [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize
-        NontriviallyNormedField (TotalSpace F (TangentSpace I))
-      ⏎
-      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+      F is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ✅️ NormedSpace
+  [Elab.DiffGeo.MDiff] Field is: 𝕜
+  [Elab.DiffGeo.MDiff] Found model: 𝓘(𝕜, F)
 -/
 #guard_msgs in
 variable {h : Bundle.TotalSpace F (TangentSpace I : M → Type _) → F} in
