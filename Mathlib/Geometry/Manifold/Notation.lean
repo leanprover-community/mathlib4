@@ -243,6 +243,8 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
+  /-- Attempt to find a model from a `TotalSpace` first by seeing if it is the total space of a 
+  tangent bundle, then by attempting to use any provided `baseInfo`. -/
   fromTotalSpace : TermElabM Expr := do
     match_expr e with
     | Bundle.TotalSpace _ F V => do
@@ -250,14 +252,16 @@ where
       if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
       throwError "Having a TotalSpace as source is not yet supported"
     | _ => throwError "{e} is not a `Bundle.TotalSpace`."
+  /-- Attempt to find a model from the total space of a tangent bundle. -/
   fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
     match_expr V with
-    | TangentSpace _k _ _E _ _ _H _ I M _ _ _x => do
+    | TangentSpace _k _ _E _ _ _H _ I M _ _ => do
       trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
       let srcIT : Term ← Term.exprToSyntax I
-      let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
+      let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
       Term.elabTerm resTerm none
     | _ => throwError "{V} is not a `TangentSpace`"
+  /-- Attempt to use the provided `baseInfo` to find a model. -/
   fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
     if let some (src, srcI) := baseInfo then
       trace[Elab.DiffGeo.MDiff] "Using base info {src}, {srcI}"
@@ -275,6 +279,7 @@ where
       Term.elabTerm iTerm none
     else
       throwError "No `baseInfo` provided"
+  /-- Attempt to find the trivial model on a normed space. -/
   fromNormedSpace : TermElabM Expr := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
@@ -284,6 +289,7 @@ where
       | throwError "Couldn't find a `NormedSpace` structure on {e} among local instances."
     trace[Elab.DiffGeo.MDiff] "Field is: {K}"
     mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+  /-- Attempt to find a model with corners on a manifold. -/
   fromChartedSpace : TermElabM Expr := do
     let some H ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
         match_expr type with
@@ -299,6 +305,8 @@ where
         | _ => return none
       | throwError "Couldn't find a `ModelWithCorners` with model space {H} in the local context."
     return m
+  /-- Attempt to find a model with corners from a normed field. We attempt to find a global
+  instance here. -/
   fromNormedField : TermElabM Expr := do
     let eT : Term ← Term.exprToSyntax e
     let iTerm : Term ← ``(𝓘($eT, $eT))
