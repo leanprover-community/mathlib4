@@ -432,14 +432,13 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     · rfl
     · simp only [coeff_zero]
 
-@[deprecated (since := "2025-08-19")]
-  alias weightedHomogeneousComponent_of_isWeightedHomogeneous_same :=
+@[deprecated (since := "2025-10-06")]
+alias weightedHomogeneousComponent_of_isWeightedHomogeneous_same :=
   IsWeightedHomogeneous.weightedHomogeneousComponent_same
 
-theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_ne
-    {m n : M} {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) (hn : n ≠ m) :
-    weightedHomogeneousComponent w n p = 0 :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_ne n hp hn
+@[deprecated (since := "2025-10-06")]
+alias weightedHomogeneousComponent_of_isWeightedHomogeneous_ne :=
+  IsWeightedHomogeneous.weightedHomogeneousComponent_ne
 
 variable (R w)
 
@@ -474,7 +473,7 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
   convert @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
   · rw [IsWeightedHomogeneous.weightedHomogeneousComponent_same (x m).prop]
   · intro n _ hmn
-    rw [weightedHomogeneousComponent_of_isWeightedHomogeneous_ne (x n).prop hmn.symm]
+    exact IsWeightedHomogeneous.weightedHomogeneousComponent_ne m (x n).prop hmn.symm
   · rw [DFinsupp.notMem_support_iff]
     intro hm; rw [hm, Submodule.coe_zero, map_zero]
 
