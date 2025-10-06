@@ -63,24 +63,6 @@ theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :
 
 attribute [instance 100] IsGalois.to_isSeparable IsGalois.to_normal
 
-section Notation
-
-notation "Gal(" L:100 "/" K ")" => L ≃ₐ[K] L
-
-open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Pretty printer for the `Gal(L/K)` notation. -/
-@[app_delab AlgEquiv]
-partial def delabGal : Delab := whenPPOption getPPNotation do
-  guard <| (← getExpr).isAppOfArity ``AlgEquiv 8
-  let [u, v, _] := (← getExpr).getAppFn'.constLevels! | failure
-  let #[R, A, B, _, _, _, _, _] := (← getExpr).getAppArgs | failure
-  guard (A == B) -- We require that A = B syntatically, not merely defeq.
-  let some _ ← Meta.synthInstance? (.app (.const `Field [u]) R) | failure
-  let some _ ← Meta.synthInstance? (.app (.const `Field [v]) A) | failure
-  `(Gal($(← withNaryArg 1 <| delab)/$(← withNaryArg 0 <| delab)))
-
-end Notation
-
 -- see Note [lower instance priority]
 variable (F E)
 

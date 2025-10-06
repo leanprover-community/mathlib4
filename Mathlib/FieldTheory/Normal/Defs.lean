@@ -17,6 +17,23 @@ In this file we define normal field extensions.
 - `Normal F K` where `K` is a field extension of `F`.
 -/
 
+section Notation
+
+notation "Gal(" L:100 "/" K ")" => L ≃ₐ[K] L
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for the `Gal(L/K)` notation. -/
+@[app_delab AlgEquiv]
+partial def delabGal : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``AlgEquiv 8
+  let [u, v, _] := (← getExpr).getAppFn'.constLevels! | failure
+  let #[R, A, B, _, _, _, _, _] := (← getExpr).getAppArgs | failure
+  guard (A == B) -- We require that A = B syntatically, not merely defeq.
+  let some _ ← Meta.synthInstance? (.app (.const `Field [u]) R) | failure
+  let some _ ← Meta.synthInstance? (.app (.const `Field [v]) A) | failure
+  `(Gal($(← withNaryArg 1 <| delab)/$(← withNaryArg 0 <| delab)))
+
+end Notation
 
 noncomputable section
 
@@ -179,11 +196,11 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
       (by simp only [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
 
 /-- Restriction to a normal subfield as a group homomorphism -/
-def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* Gal(E/F) :=
+def AlgEquiv.restrictNormalHom [Normal F E] : Gal(K₁/F) →* Gal(E/F) :=
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 
 lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F L]
-    (σ : (K₁ ≃ₐ[F] K₁)) (x : L) : restrictNormalHom L σ x = σ x :=
+    (σ : Gal(K₁/F)) (x : L) : restrictNormalHom L σ x = σ x :=
   AlgEquiv.restrictNormal_commutes σ L x
 
 variable (F K₁)
