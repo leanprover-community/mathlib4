@@ -58,9 +58,9 @@ structure ValuativeCommSq {X Y : Scheme.{u}} (f : X ⟶ Y) where
   [algebra : Algebra R K]
   [isFractionRing : IsFractionRing R K]
   /-- The top map in a valuative commutative map. -/
-  (i₁ : Spec(K) ⟶ X)
+  (i₁ : Spec (.of K) ⟶ X)
   /-- The bottom map in a valuative commutative map. -/
-  (i₂ : Spec(R) ⟶ Y)
+  (i₂ : Spec (.of R) ⟶ Y)
   (commSq : CommSq i₁ (Spec.map (CommRingCat.ofHom (algebraMap R K))) f i₂)
 
 namespace ValuativeCommSq
@@ -145,9 +145,9 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
   replace H := H (pullback.snd i₂ f) i₂ (pullback.fst i₂ f) (.of_hasPullback i₂ f)
   let lft := pullback.lift (Spec.map (CommRingCat.ofHom (algebraMap R K))) i₁ w.symm
   obtain ⟨x, h₁, h₂⟩ := @H (lft.base (closedPoint _)) _ (specializes_closedPoint (R := R) _)
-  let e : CommRingCat.of R ≅ Spec(R).presheaf.stalk ((pullback.fst i₂ f).base x) :=
+  let e : CommRingCat.of R ≅ (Spec <| .of R).presheaf.stalk ((pullback.fst i₂ f).base x) :=
     (stalkClosedPointIso (.of R)).symm ≪≫
-      Spec(R).presheaf.stalkCongr (.of_eq h₂.symm)
+      (Spec <| .of R).presheaf.stalkCongr (.of_eq h₂.symm)
   let α := e.hom ≫ (pullback.fst i₂ f).stalkMap x
   have : IsLocalHom e.hom.hom := isLocalHom_of_isIso e.hom
   have : IsLocalHom α.hom := inferInstanceAs
@@ -156,7 +156,7 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
   have hαβ : α ≫ β = CommRingCat.ofHom (algebraMap R K) := by
     simp only [CommRingCat.coe_of, Iso.trans_hom, Iso.symm_hom, TopCat.Presheaf.stalkCongr_hom,
       Category.assoc, α, e, β, stalkClosedPointIso_inv, StructureSheaf.toStalk]
-    change (Scheme.ΓSpecIso (.of R)).inv ≫ Spec(R).presheaf.germ _ _ _ ≫ _ = _
+    change (Scheme.ΓSpecIso (.of R)).inv ≫ (Spec <| .of R).presheaf.germ _ _ _ ≫ _ = _
     simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ_assoc]
     -- `map_top` introduces defeq problems, according to `check_compositions`.
     -- This is probably the cause of the `erw` needed below.
@@ -276,7 +276,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
   dsimp at *
   have h := hl₁'.trans hl₂'.symm
   let Z := pullback (pullback.diagonal f) (pullback.lift l₁ l₂ h)
-  let g : Z ⟶ Spec(S.R) := pullback.snd _ _
+  let g : Z ⟶ Spec (.of S.R) := pullback.snd _ _
   have : IsClosedImmersion g := MorphismProperty.pullback_snd _ _ inferInstance
   have hZ : IsAffine Z := by
     rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
@@ -290,7 +290,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
     refine (HasAffineProperty.iff_of_isAffine (P := MorphismProperty.isomorphisms Scheme)).mpr ?_
     exact ⟨hZ, (ConcreteCategory.isIso_iff_bijective _).mpr h⟩
   constructor
-  · let l : Spec(S.K) ⟶ Z :=
+  · let l : Spec (.of S.K) ⟶ Z :=
       pullback.lift S.i₁ (Spec.map (CommRingCat.ofHom (algebraMap S.R S.K))) (by
         apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
         · simpa using hl₁.symm
