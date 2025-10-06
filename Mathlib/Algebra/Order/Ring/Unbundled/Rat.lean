@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Data.Rat.Defs
 import Mathlib.Algebra.Ring.Int.Defs
 
@@ -141,10 +142,12 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
       mul_one, zero_mul] at hq
     rw [Int.natAbs_of_nonneg hq, num_divInt_den]
 
-theorem abs_def' (q : ℚ) : |q| = ⟨q.num.natAbs, q.den, q.den_ne_zero, q.reduced⟩ := by
-  rw [abs_def, ← Rat.mk_eq_divInt q.num.natAbs q.den q.den_ne_zero q.reduced]
+theorem abs_def' (q : ℚ) :
+    |q| = ⟨|q.num|, q.den, q.den_ne_zero, q.num.abs_eq_natAbs ▸ q.reduced⟩ := by
+  (refine ext ?_ ?_ <;> dsimp only; rw [Int.abs_eq_natAbs]) <;>
+  rw [abs_def, ← Rat.mk_eq_divInt q.num.natAbs _ q.den_ne_zero q.reduced]
 
-theorem abs_num_eq_num_natAbs (q : ℚ) : |q|.num = q.num.natAbs := by
+theorem abs_num_eq_num_natAbs (q : ℚ) : |q|.num = |q.num| := by
   rw [abs_def']
 
 theorem abs_den_eq_den (q : ℚ) : |q|.den = q.den := by
