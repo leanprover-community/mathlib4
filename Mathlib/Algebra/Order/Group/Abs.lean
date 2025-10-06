@@ -7,8 +7,8 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
-/-
-# Absolute values inordered groups
+/-!
+# Absolute values in ordered groups
 
 The absolute value of an element in a group which is also a lattice is its supremum with its
 negation. This generalizes the usual absolute value on real numbers (`|x| = max x (-x)`).
