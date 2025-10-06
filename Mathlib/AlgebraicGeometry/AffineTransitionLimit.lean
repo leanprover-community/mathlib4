@@ -658,13 +658,13 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
         · simp)
     refine ⟨U, hU, hxU, j.left, j.hom, ?_⟩
     have hf : f.left = j.hom := by simpa using Over.w f
-    convert congr(((D.obj _).presheaf.map
-      (eqToHom ((D.map j.hom ⁻¹ᵁ U).ι_image_top.symm)).op) $hj)
+    let t' : Γ(D.map j.hom ⁻¹ᵁ U, ⊤) ⟶ Γ(D.obj j.left, D.map j.hom ⁻¹ᵁ U) :=
+      (D.obj _).presheaf.map (eqToHom ((D.map j.hom ⁻¹ᵁ U).ι_image_top.symm)).op
+    convert congr(t' $hj)
     · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
       simp only [Scheme.Hom.app_eq_appLE, homOfLE_leOfHom, ← ConcreteCategory.comp_apply, hf,
-        Scheme.Hom.map_appLE, eqToHom_op, TopologicalSpace.Opens.map_top, Scheme.Hom.resLE_appLE]
-      erw [← ConcreteCategory.comp_apply]
-      simp
+        Scheme.Hom.map_appLE, TopologicalSpace.Opens.map_top, Scheme.Hom.resLE_appLE]
+      simp [t']
     · simp
   choose U hU hxU j f H using this
   obtain ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover (U ·) (fun x ↦ (U x).2.mem_nhds (hxU x))
