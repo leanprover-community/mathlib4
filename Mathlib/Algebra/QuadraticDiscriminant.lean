@@ -103,9 +103,7 @@ theorem discrim_eq_zero_of_existsUnique (ha : a ≠ 0) (h : ∃! x, a * (x * x) 
   generalize discrim a b c = d at h
   obtain ⟨x, rfl, hx⟩ := h
   specialize hx (-(x + b / a))
-  field_simp [ha] at hx
-  specialize hx (by ring)
-  linear_combination -(2 * a * x + b) * hx
+  grind
 
 theorem discrim_eq_zero_iff (ha : a ≠ 0) :
     discrim a b c = 0 ↔ (∃! x, a * (x * x) + b * x + c = 0) := by

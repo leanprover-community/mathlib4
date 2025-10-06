@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Skeletal
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.Logic.UnivLE
 import Mathlib.Logic.Small.Basic
 
@@ -179,6 +180,14 @@ noncomputable def equivalence : C ≌ ShrinkHoms C where
 instance : (functor C).IsEquivalence := (equivalence C).isEquivalence_functor
 instance : (inverse C).IsEquivalence := (equivalence C).isEquivalence_inverse
 
+instance {T : Type u} [Unique T] : Unique (ShrinkHoms.{u} T) where
+  default := ShrinkHoms.toShrinkHoms (default : T)
+  uniq _ := congr_arg ShrinkHoms.fromShrinkHoms (Unique.uniq _ _)
+
+instance {T : Type u} [Category.{v} T] [IsDiscrete T] : IsDiscrete (ShrinkHoms.{u} T) where
+  subsingleton _ _ := { allEq _ _ := Shrink.ext (Subsingleton.elim _ _) }
+  eq_of_hom f := IsDiscrete.eq_of_hom  (C := T) ((equivShrink _).symm f)
+
 end ShrinkHoms
 
 namespace Shrink
@@ -241,7 +250,7 @@ instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [Locally
     EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=
   suffices Small.{w} (ObjectProperty.FullSubcategory (· ∈ s)) from
     essentiallySmall_of_small_of_locallySmall _
-  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by aesop_cat)
+  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by cat_disch)
 
 end FullSubcategory
 
@@ -258,5 +267,26 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
 
 instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
+
+instance [Small.{w} C] [LocallySmall.{w} C] :
+    Small.{w} (Arrow C) := by
+  let φ (f : Arrow C) : Σ (s t : C), s ⟶ t := ⟨_, _, f.hom⟩
+  refine small_of_injective (f := φ) ?_
+  rintro ⟨s, t, f⟩ ⟨s', t', f'⟩ h
+  obtain rfl : s = s' := congr_arg Sigma.fst h
+  simp only [Functor.id_obj, Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
+  obtain rfl : t = t' := h.1
+  obtain rfl : f = f' := by simpa using h
+  rfl
+
+instance [Small.{w} C] [LocallySmall.{w} C]
+    {D : Type u'} [Category.{v'} D] [Small.{w} D] [LocallySmall.{w} D] :
+    Small.{w} (C ⥤ D) := by
+  refine small_of_injective (f := fun F (f : Arrow C) ↦ Arrow.mk (F.map f.hom))
+    (fun F G h ↦ Functor.ext (fun X ↦ ?_) (fun X Y f ↦ ?_))
+  · exact congr_arg Comma.left (congr_fun h (Arrow.mk (𝟙 X)))
+  · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr_fun h (Arrow.mk f)
+    rw [Arrow.mk_eq_mk_iff] at this
+    tauto
 
 end CategoryTheory

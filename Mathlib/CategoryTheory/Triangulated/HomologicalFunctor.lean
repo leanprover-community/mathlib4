@@ -32,16 +32,12 @@ The exactness of this long exact sequence is given by three lemmas
 If `F` is a homological functor, we define the strictly full triangulated subcategory
 `F.homologicalKernel`: it consists of objects `X : C` such that for all `n : ℤ`,
 `(F.shift n).obj X` (or `F.obj (X⟦n⟧)`) is zero. We show that a morphism `f` in `C`
-belongs to `F.homologicalKernel.W` (i.e. the cone of `f` is in this kernel) iff
+belongs to `F.homologicalKernel.trW` (i.e. the cone of `f` is in this kernel) iff
 `(F.shift n).map f` is an isomorphism for all `n : ℤ`.
 
 Note: depending on the sources, homological functors are sometimes
 called cohomological functors, while certain authors use "cohomological functors"
 for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
-
-## TODO
-
-* The long exact sequence in homology attached to an homological functor.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -60,6 +56,17 @@ variable {C D A : Type*} [Category C] [HasShift C ℤ]
 namespace Functor
 
 variable (F : C ⥤ A)
+
+/-- The kernel of a homological functor `F : C ⥤ A` is the strictly full
+triangulated subcategory consisting of objects `X` such that
+for all `n : ℤ`, `F.obj (X⟦n⟧)` is zero. -/
+def homologicalKernel : ObjectProperty C :=
+  fun X ↦ ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧))
+
+lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
+    F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
+  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
+    homologicalKernel, comp_obj]
 
 section Pretriangulated
 
@@ -96,28 +103,25 @@ lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.IsHomological] (e : F₁ 
   ⟨fun T hT => ShortComplex.exact_of_iso (ShortComplex.mapNatIso _ e)
     (F₁.map_distinguished_exact T hT)⟩
 
-/-- The kernel of a homological functor `F : C ⥤ A` is the strictly full
-triangulated subcategory consisting of objects `X` such that
-for all `n : ℤ`, `F.obj (X⟦n⟧)` is zero. -/
-def homologicalKernel [F.IsHomological] :
-    Triangulated.Subcategory C := Triangulated.Subcategory.mk'
-  (fun X => ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧)))
-  (fun n => by
-    rw [IsZero.iff_id_eq_zero, ← F.map_id, ← Functor.map_id,
-      id_zero, Functor.map_zero, Functor.map_zero])
-  (fun X a hX b => IsZero.of_iso (hX (a + b)) (F.mapIso ((shiftFunctorAdd C a b).app X).symm))
-  (fun T hT h₁ h₃ n => (F.map_distinguished_exact _
-    (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
-      (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _))
+section
 
-instance [F.IsHomological] : F.homologicalKernel.P.IsClosedUnderIsomorphisms := by
-  dsimp only [homologicalKernel]
-  infer_instance
+variable [F.IsHomological]
 
-lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ] (X : C) :
-    F.homologicalKernel.P X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
-  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
-  rfl
+instance : F.homologicalKernel.IsClosedUnderIsomorphisms where
+  of_iso e hX n := (hX n).of_iso ((shiftFunctor C n ⋙ F).mapIso e.symm)
+
+instance : F.homologicalKernel.IsTriangulated where
+  exists_zero := ⟨0, isZero_zero C,
+    fun n ↦ (shiftFunctor C n ⋙ F).map_isZero (isZero_zero C)⟩
+  toIsStableUnderShift := ⟨fun a ↦ ⟨fun X hX b ↦
+    (hX (a + b)).of_iso (F.mapIso ((shiftFunctorAdd C a b).app X).symm)⟩⟩
+  toIsTriangulatedClosed₂ :=
+    ObjectProperty.IsTriangulatedClosed₂.mk' (fun T hT h₁ h₃ n ↦
+      (F.map_distinguished_exact _
+        (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
+          ((h₁ n).eq_of_src _ _) ((h₃ n).eq_of_tgt _ _))
+
+end
 
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
@@ -215,16 +219,17 @@ lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
-    ((F.shiftIso 1 n₀ n₁ (by omega)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
+    ((F.shiftIso 1 n₀ n₁ (by cutsat)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
-  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by omega)).app _))
+  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by cutsat)).app _))
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
-    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁ (by omega)]
+    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁
+      (by cutsat)]
 
 lemma homologySequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=
@@ -243,10 +248,10 @@ lemma homologySequence_mono_shift_map_mor₂_iff :
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
 end
 
-lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
-    F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
+lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
+    F.homologicalKernel.trW f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
-  apply (F.homologicalKernel.mem_W_iff_of_distinguished _ hT).trans
+  apply (F.homologicalKernel.trW_iff_of_distinguished _ hT).trans
   have h₁ := fun n => (F.homologySequence_exact₃ _ hT n _ rfl).isZero_X₂_iff
   have h₂ := fun n => F.homologySequence_mono_shift_map_mor₁_iff _ hT n _ rfl
   have h₃ := fun n => F.homologySequence_epi_shift_map_mor₁_iff _ hT n
@@ -260,6 +265,9 @@ lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
     apply isIso_of_mono_of_epi
   · intros
     constructor <;> infer_instance
+
+@[deprecated (since := "2025-07-21")]
+alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
 
 open ComposableArrows
 

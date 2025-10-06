@@ -46,6 +46,18 @@ theorem ClusterPt.frequently {F : Filter X} {p : X → Prop} (hx : ClusterPt x F
     (hp : ∀ᶠ y in 𝓝 x, p y) : ∃ᶠ y in F, p y :=
   clusterPt_iff_frequently.mp hx {y | p y} hp
 
+theorem Filter.HasBasis.clusterPt_iff_frequently' {ι} {p : ι → Prop} {s : ι → Set X} {F : Filter X}
+    (hx : F.HasBasis p s) : ClusterPt x F ↔ ∀ i, p i → ∃ᶠ x in 𝓝 x, x ∈ s i := by
+  simp only [(𝓝 x).basis_sets.clusterPt_iff hx, Filter.frequently_iff]
+  exact ⟨fun h a b c d ↦ h d b, fun h a b c d ↦ h c d b⟩
+
+theorem clusterPt_iff_frequently' {F : Filter X} : ClusterPt x F ↔ ∀ s ∈ F, ∃ᶠ y in 𝓝 x, y ∈ s :=
+  F.basis_sets.clusterPt_iff_frequently'
+
+theorem ClusterPt.frequently' {F : Filter X} {p : X → Prop} (hx : ClusterPt x F)
+    (hp : ∀ᶠ y in F, p y) : ∃ᶠ y in 𝓝 x, p y :=
+  clusterPt_iff_frequently'.mp hx {y | p y} hp
+
 theorem clusterPt_iff_nonempty {F : Filter X} :
     ClusterPt x F ↔ ∀ ⦃U : Set X⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
   inf_neBot_iff
@@ -239,6 +251,9 @@ lemma notMem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_closure_iff_nhdsWithin_eq_bot := notMem_closure_iff_nhdsWithin_eq_bot
+
+theorem mem_interior_iff_not_clusterPt_compl : x ∈ interior s ↔ ¬ClusterPt x (𝓟 sᶜ) := by
+  rw [← mem_closure_iff_clusterPt, closure_compl, mem_compl_iff, not_not]
 
 /-- If `x` is not an isolated point of a topological space, then `{x}ᶜ` is dense in the whole
 space. -/

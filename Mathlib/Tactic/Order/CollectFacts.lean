@@ -86,6 +86,7 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
     | _ => pure ()
     return idx
 
+-- The linter claims `u` is unused, but it used on the next line.
 set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
 def collectFactsImp : CollectFactsM Unit := do

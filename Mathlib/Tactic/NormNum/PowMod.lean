@@ -56,9 +56,8 @@ theorem natPow_zero_natMod_one : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 1) = n
 
 theorem natPow_zero_natMod_succ_succ :
     Nat.mod (Nat.pow a (nat_lit 0)) (Nat.succ (Nat.succ m)) = nat_lit 1 := by
-  rw [natPow_zero]
-  apply Nat.mod_eq_of_lt
-  exact Nat.one_lt_succ_succ _
+  rfl
+
 theorem natPow_one_natMod : Nat.mod (Nat.pow a (nat_lit 1)) m = Nat.mod a m := by rw [natPow_one]
 
 theorem IsNatPowModT.bit1 :
@@ -94,7 +93,7 @@ partial def evalNatPowMod (a b m : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.mod (Nat.pow 
   else
     have c₀ : Q(ℕ) := mkRawNatLit (a.natLit! % m.natLit!)
     haveI : $c₀ =Q Nat.mod $a $m := ⟨⟩
-    let ⟨c, p⟩ := go b.natLit!.log2 a m (mkRawNatLit 1) c₀ b _ .rfl
+    let ⟨c, p⟩ := go b.natLit!.log2 a m q(nat_lit 1) c₀ b _ .rfl
     ⟨c, q(($p).run)⟩
 where
   /-- Invariants: `a ^ b₀ % m = c₀`, `depth > 0`, `b >>> depth = b₀` -/

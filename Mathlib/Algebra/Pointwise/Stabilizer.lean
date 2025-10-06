@@ -222,12 +222,6 @@ lemma mem_stabilizer_set_iff_smul_set_subset {s : Set α} (hs : s.Finite) :
   rw [stabilizer_coe_finset, mem_stabilizer_finset_iff_smul_finset_subset, ← Finset.coe_smul_finset,
     Finset.coe_subset]
 
-@[deprecated (since := "2024-11-25")]
-alias mem_stabilizer_of_finite_iff_smul_le := mem_stabilizer_set_iff_subset_smul_set
-
-@[deprecated (since := "2024-11-25")]
-alias mem_stabilizer_of_finite_iff_le_smul := mem_stabilizer_set_iff_smul_set_subset
-
 @[to_additive]
 lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :
     a ∈ stabilizer G s ↔ ∀ ⦃b⦄, b ∈ s → a • b ∈ s := by
@@ -250,7 +244,7 @@ local notation " q " => ((↑) : G → Q)
 @[to_additive]
 lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by
   ext a
-  induction' a using QuotientGroup.induction_on with a
+  induction a using QuotientGroup.induction_on with | _ a
   simp only [mem_stabilizer_iff, Subgroup.mem_bot, QuotientGroup.eq_one_iff]
   have : q a • q '' s = q '' (a • s) :=
     (image_smul_distrib (QuotientGroup.mk' <| stabilizer G s) _ _).symm

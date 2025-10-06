@@ -62,8 +62,8 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- Porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
--- until the `ContinuousLinearMapClass` instance is declared
+/-- This has to come after `WeakDual.CharacterSpace.instFunLike`, otherwise the right-hand side
+gets coerced via `Subtype.val` instead of directly via `DFunLike`. -/
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
   rfl
@@ -141,7 +141,7 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   { CharacterSpace.instNonUnitalAlgHomClass with
     map_one := map_one'
     commutes := fun φ r => by
-      rw [Algebra.algebraMap_eq_smul_one, Algebra.id.map_eq_id, RingHom.id_apply]
+      rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_self, RingHom.id_apply]
       rw [map_smul, Algebra.id.smul_eq_mul, map_one' φ, mul_one] }
 
 /-- An element of the character space of a unital algebra, as an algebra homomorphism. -/
@@ -198,8 +198,7 @@ variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 
 /-- The `RingHom.ker` of `φ : characterSpace 𝕜 A` is maximal. -/
 instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal :=
-  RingHom.ker_isMaximal_of_surjective φ fun z =>
-    ⟨algebraMap 𝕜 A z, by simp only [AlgHomClass.commutes, Algebra.id.map_eq_id, RingHom.id_apply]⟩
+  RingHom.ker_isMaximal_of_surjective φ fun z ↦ ⟨algebraMap 𝕜 A z, by simp [AlgHomClass.commutes]⟩
 
 end Kernel
 

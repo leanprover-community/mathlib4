@@ -51,7 +51,6 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
     exact (FixedPoints.finrank_eq_card G L).symm
   · rw [Nat.card_eq_zero_of_infinite, eq_comm]
     contrapose! hG
-    rw [not_infinite_iff_finite]
     have : FiniteDimensional K L := FiniteDimensional.of_finrank_pos (Nat.zero_lt_of_ne_zero hG)
     exact Finite.of_injective (MulSemiringAction.toAlgAut G K L)
       (fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp)
@@ -65,7 +64,7 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
     have := isGalois G K L
     have := finiteDimensional G K L
     rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
-      Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank K L]
+      IsGalois.card_aut_eq_finrank K L]
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
 
 /-- If `G` and `H` are finite Galois groups for `L/K`, then `G` is isomorphic to `H`. -/

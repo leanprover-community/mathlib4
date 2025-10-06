@@ -83,9 +83,9 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   apply Finset.sum_bij φ
   · -- φ(S) is contained in Sᶜ
     intro ij hij
-    simp only [S, φ, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and,
-      Fin.val_succ, Fin.coe_castLT] at hij ⊢
-    omega
+    simp_rw [S, φ, Finset.compl_filter, Finset.mem_filter_univ, Fin.val_succ,
+      Fin.coe_castLT] at hij ⊢
+    cutsat
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
     rw [Prod.mk_inj]
@@ -93,12 +93,11 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
       by simpa [φ, Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
-    simp only [S, Finset.mem_univ, Finset.compl_filter, not_le, Finset.mem_filter, true_and] at hij'
+    simp_rw [S, Finset.compl_filter, Finset.mem_filter_univ, not_le] at hij'
     refine ⟨(j'.pred <| ?_, Fin.castSucc i'), ?_, ?_⟩
     · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
-    · simpa only [S, Finset.mem_univ, forall_true_left, Prod.forall, Finset.mem_filter,
-        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_sub_one_of_lt hij'
+    · simpa [S] using Nat.le_sub_one_of_lt hij'
     · simp only [φ, Fin.castLT_castSucc, Fin.succ_pred]
   · -- identification of corresponding terms in both sums
     rintro ⟨i, j⟩ hij

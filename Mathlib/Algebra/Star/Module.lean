@@ -164,7 +164,7 @@ theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     selfAdjointPart R x = ⟨x, hx⟩ :=
   Subtype.eq (hx.coe_selfAdjointPart_apply R)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
+@[simp]
 theorem selfAdjointPart_comp_subtype_selfAdjoint :
     (selfAdjointPart R).comp (selfAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun x ↦ x.2.selfAdjointPart_apply R
@@ -173,17 +173,17 @@ theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     skewAdjointPart R x = 0 := Subtype.eq <| by
   rw [skewAdjointPart_apply_coe, hx.star_eq, sub_self, smul_zero, ZeroMemClass.coe_zero]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
+@[simp]
 theorem skewAdjointPart_comp_subtype_selfAdjoint :
     (skewAdjointPart R).comp (selfAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun x ↦ x.2.skewAdjointPart_apply R
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
+@[simp]
 theorem selfAdjointPart_comp_subtype_skewAdjoint :
     (selfAdjointPart R).comp (skewAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by simp [hx]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
+@[simp]
 theorem skewAdjointPart_comp_subtype_skewAdjoint :
     (skewAdjointPart R).comp (skewAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by
@@ -223,3 +223,9 @@ lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R
   ⟨fun hr ↦ h <| algebraMap_star_comm r (A := A) ▸ hr.star_eq, IsSelfAdjoint.algebraMap A⟩
 
 end algebraMap
+
+theorem IsIdempotentElem.star_iff {R : Type*} [Mul R] [StarMul R] {a : R} :
+    IsIdempotentElem (star a) ↔ IsIdempotentElem a := by
+  simp [IsIdempotentElem, ← star_mul]
+
+alias ⟨_, IsIdempotentElem.star⟩ := IsIdempotentElem.star_iff

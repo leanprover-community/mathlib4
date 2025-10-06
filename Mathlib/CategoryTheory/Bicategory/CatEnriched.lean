@@ -61,10 +61,10 @@ theorem comp_eq {X Y Z : CatEnriched C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 instance {X Y : CatEnriched C} : Category (X ⟶ Y) := inferInstanceAs (Category (X ⟶[Cat] Y).α)
 
-/-- The horizonal composition on 2-morphisms is defined using the action on arrows of the
+/-- The horizontal composition on 2-morphisms is defined using the action on arrows of the
 composition bifunctor from the enriched category structure. -/
 def hComp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
-  (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).map (η, θ)
+    (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).map (η, θ)
 
 @[simp]
 theorem id_hComp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
@@ -246,7 +246,7 @@ instance {X Y : CatEnrichedOrdinary C} : Category (X ⟶ Y) where
 @[simp] theorem Hom.base_eqToHom {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α : f = g) :
     Hom.base (eqToHom α) = eqToHom (congrArg _ α) := by cases α; rfl
 
-/-- The horizonal composition on 2-morphisms is defined using the action on arrows of the
+/-- The horizontal composition on 2-morphisms is defined using the action on arrows of the
 composition bifunctor from the enriched category structure. -/
 def hComp {a b c : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c}
     (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' :=

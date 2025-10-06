@@ -316,7 +316,7 @@ theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x
     rw [Cofix.dest_corec]
   rw [← comp_map, ← appendFun_comp, id_comp]
   rw [← comp_map, ← appendFun_comp, id_comp, ← Cofix.mk]
-  congr
+  congr 1
   apply congrArg
   funext x
   apply Quot.sound
@@ -499,7 +499,7 @@ theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
     dsimp [Function.comp_def]
     intros
     exact ⟨_, rfl, rfl⟩
-  · congr with y
+  · congr 1 with y
     erw [appendFun_id_id]
     simp [MvFunctor.id_map, Sum.elim]
 

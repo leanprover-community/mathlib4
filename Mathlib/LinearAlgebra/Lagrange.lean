@@ -405,7 +405,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
       WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (#s - 1))]
     convert degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
-    rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
+    rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff_of_subset hst, add_comm]
   · simp_rw [eval_finset_sum, eval_mul]
     by_cases hi' : i ∈ s
     · rw [← add_sum_erase _ _ hi', eval_basis_self (hvt.mono hst) hi',
@@ -523,8 +523,8 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
 
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
 @[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one [IsDomain R]
-  (G : Subgroup Rˣ) [Fintype G] :
-  nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
+    (G : Subgroup Rˣ) [Fintype G] :
+    nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
   have h : degree (1 : R[X]) < degree ((X : R[X]) ^ Fintype.card G) := by simp [Fintype.card_pos]
   apply eq_of_degree_le_of_eval_index_eq (v := ((↑) : Rˣ → R)) (G : Set Rˣ).toFinset
   · exact Units.val_injective.injOn
@@ -533,7 +533,7 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
       nsmul_eq_mul, mul_one, Nat.cast_inj]
     exact rfl
   · rw [nodal_monic, leadingCoeff_sub_of_degree_lt h, monic_X_pow]
-  · intros i hi
+  · intro i hi
     rw [eval_nodal_at_node hi]
     replace hi : i ∈ G := by simpa using hi
     obtain ⟨g, rfl⟩ : ∃ g : G, g.val = i := ⟨⟨i, hi⟩, rfl⟩

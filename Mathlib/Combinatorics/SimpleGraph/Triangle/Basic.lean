@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
@@ -60,7 +61,7 @@ nonrec lemma EdgeDisjointTriangles.mono (h : G ≤ H) (hH : H.EdgeDisjointTriang
 
 lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
     (G.map f).EdgeDisjointTriangles := by
-  rw [EdgeDisjointTriangles, cliqueSet_map (by norm_num : 3 ≠ 1),
+  rw [EdgeDisjointTriangles, cliqueSet_map (by simp : 3 ≠ 1),
     (Finset.map_injective f).injOn.pairwise_image]
   classical
   rintro s hs t ht hst
@@ -208,7 +209,7 @@ private lemma farFromTriangleFree_of_disjoint_triangles_aux {tris : Finset (Fins
     (htris : tris ⊆ G.cliqueFinset 3)
     (pd : (tris : Set (Finset α)).Pairwise fun x y ↦ (x ∩ y : Set α).Subsingleton) (hHG : H ≤ G)
     (hH : H.CliqueFree 3) : #tris ≤ #G.edgeFinset - #H.edgeFinset := by
-  rw [← card_sdiff (edgeFinset_mono hHG), ← card_attach]
+  rw [← card_sdiff_of_subset (edgeFinset_mono hHG), ← card_attach]
   by_contra! hG
   have ⦃t⦄ (ht : t ∈ tris) :
     ∃ x y, x ∈ t ∧ y ∈ t ∧ x ≠ y ∧ s(x, y) ∈ G.edgeFinset \ H.edgeFinset := by
@@ -238,7 +239,7 @@ lemma farFromTriangleFree_of_disjoint_triangles (tris : Finset (Finset α))
     (tris_big : ε * (card α ^ 2 : ℕ) ≤ #tris) :
     G.FarFromTriangleFree ε := by
   rw [farFromTriangleFree_iff]
-  intros H _ hG hH
+  intro H _ hG hH
   rw [← Nat.cast_sub (card_le_card <| edgeFinset_mono hG)]
   exact tris_big.trans
     (Nat.cast_le.2 <| farFromTriangleFree_of_disjoint_triangles_aux htris pd hG hH)
@@ -252,29 +253,14 @@ end DecidableEq
 
 variable [Nonempty α]
 
-lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ := by
-  classical
-  by_contra! hε
-  refine lt_irrefl (ε * card α ^ 2) ?_
-  have hε₀ : 0 < ε := hε.trans_lt' (by norm_num)
-  rw [inv_le_iff_one_le_mul₀ (zero_lt_two' 𝕜)] at hε
+lemma FarFromTriangleFree.lt_half (hε : G.FarFromTriangleFree ε) : ε < 2⁻¹ := by
+  refine lt_of_mul_lt_mul_right (α := 𝕜) (a := Fintype.card α ^ 2) ?_ (by positivity)
   calc
-    _ ≤ (#G.edgeFinset : 𝕜) := by
-      simpa using hG.le_card_sub_card bot_le (cliqueFree_bot (le_succ _))
-    _ ≤ ε * 2 * #G.edgeFinset := le_mul_of_one_le_left (by positivity) (by assumption)
-    _ < ε * card α ^ 2 := ?_
-  rw [mul_assoc, mul_lt_mul_left hε₀]
-  norm_cast
-  calc
-    _ ≤ 2 * (completeGraph α).edgeFinset.card := by gcongr; exact le_top
-    _ < card α ^ 2 := ?_
-  rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), Finset.card_univ, Sym2.card]
-  simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),
-    funext (propext <| Sym2.isDiag_iff_mem_range_diag ·), univ_filter_mem_range, mul_tsub,
-    Nat.mul_div_cancel' (card α).even_mul_succ_self.two_dvd]
-  rw [card_image_of_injective _ Sym2.diag_injective, Finset.card_univ, mul_add_one (α := ℕ),
-    two_mul, sq, add_tsub_add_eq_tsub_right]
-  apply tsub_lt_self <;> positivity
+        ε * Fintype.card α ^ 2
+    _ ≤ #G.edgeFinset := by simpa using hε.le_card_edgeFinset (by simp)
+    _ ≤ (Fintype.card α).choose 2 := by gcongr; exact card_edgeFinset_le_card_choose_two
+    _ < 2⁻¹ * Fintype.card α ^ 2 := by
+      simpa [← div_eq_inv_mul] using Nat.choose_lt_pow_div (by positivity) le_rfl
 
 lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
   hG.lt_half.trans two_inv_lt_one
