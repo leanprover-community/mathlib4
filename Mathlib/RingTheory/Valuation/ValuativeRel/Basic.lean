@@ -190,14 +190,18 @@ def valueSetoid : Setoid (R × posSubmonoid R) where
         simpa using this
   }
 
-instance (S : Subring R) : ValuativeRel S where
-  rel r s := (r : R) ≤ᵥ s
+/-- Pull a `ValuativeRel` instace along a ring homomorphism. -/
+@[simps -isSimp]
+protected abbrev comap {S : Type*} [CommRing S] (f : S →+* R) : ValuativeRel S where
+  rel r s := f r ≤ᵥ f s
   rel_total _ _ := rel_total _ _
   rel_trans := rel_trans
-  rel_add := rel_add
-  rel_mul_right _ := rel_mul_right _
-  rel_mul_cancel := rel_mul_cancel
-  not_rel_one_zero := not_rel_one_zero
+  rel_add {_ _ _} := by simpa using rel_add (R := R)
+  rel_mul_right _ := by simpa using rel_mul_right _
+  rel_mul_cancel {_ _ _} := by simpa using rel_mul_cancel (R := R)
+  not_rel_one_zero := by simpa using not_rel_one_zero
+
+instance (S : Subring R) : ValuativeRel S := .comap S.subtype
 
 lemma coe_rel_coe (S : Subring R) {x y : S} : (x : R) ≤ᵥ y ↔ x ≤ᵥ y := .rfl
 
