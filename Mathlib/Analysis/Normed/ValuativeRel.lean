@@ -91,13 +91,11 @@ instance {K : Type*} [NormedField K] [IsUltrametricDist K] :
           coe_nnnorm, mem_setOf_eq, Metric.mem_ball, dist_zero_right]
         order
   · intro γ _
-    obtain ⟨r, s, hr⟩ := ValuativeRel.valuation_surjective γ.val
+    obtain ⟨r, s, hr⟩ := ValuativeRel.exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
     simp_rw [← hr, ← Valuation.map_div, ← he.lt_iff_lt]
     simp only [valuation'_apply, map_div₀, ← NNReal.coe_lt_coe, coe_nnnorm, NNReal.coe_div]
     simp_rw [← dist_zero_right]
-    rcases eq_or_ne r 0 with rfl | hr
-    · simp [eq_comm] at hr
     refine Metric.ball_mem_nhds _ ?_
-    simp [hr]
+    simp
 
 end NormedField
