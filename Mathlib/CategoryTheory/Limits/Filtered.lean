@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Types.Yoneda
 /-!
 # Filtered categories and limits
 
-In this file , we show that `C` is filtered if and only if for every functor `F : J ⥤ C` from a
+In this file, we show that `C` is filtered if and only if for every functor `F : J ⥤ C` from a
 finite category there is some `X : C` such that `lim Hom(F·, X)` is nonempty.
 
 Furthermore, we define the type classes `HasCofilteredLimitsOfSize` and `HasFilteredColimitsOfSize`.

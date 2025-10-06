@@ -9,8 +9,8 @@ import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.Complex.Module
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -141,7 +141,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
-    single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
+    single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
 /-- `Finsupp.comapSMul` can form a non-equal diamond with `Finsupp.smulZeroClass` even when
@@ -149,13 +149,13 @@ the domain is a group. -/
 example {k : Type _} [Semiring k] [Nontrivial kˣ] :
     (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
-  haveI : Nontrivial k := ⟨⟨u, 1, Units.ext.ne hu⟩⟩
+  haveI : Nontrivial k := Units.val_injective.nontrivial
   intro h
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
-    smul_eq_mul, single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
+    smul_eq_mul, single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
 end Finsupp

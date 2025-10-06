@@ -63,7 +63,7 @@ theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
       rw [this, ← ofRealHom_eq_coe, ← ofRealHom_eq_coe]
       apply Polynomial.map_aeval_eq_aeval_map (by simp)
   · norm_cast
-    omega
+    cutsat
 
 /--
 Express the value of `sinZeta` at an odd integer `> 1` as a value of the Bernoulli polynomial.
@@ -89,7 +89,7 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
       rw [this, ← ofRealHom_eq_coe, ← ofRealHom_eq_coe]
       apply Polynomial.map_aeval_eq_aeval_map (by simp)
   · norm_cast
-    omega
+    cutsat
 
 /-- Reformulation of `cosZeta_two_mul_nat` using `Gammaℂ`. -/
 theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
@@ -99,7 +99,7 @@ theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
   congr 1
   have : (2 * k)! = (2 * k) * Complex.Gamma (2 * k) := by
     rw [(by { norm_cast; omega } : 2 * (k : ℂ) = ↑(2 * k - 1) + 1), Complex.Gamma_nat_eq_factorial,
-      ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.sub_add_cancel (by omega)]
+      ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.sub_add_cancel (by cutsat)]
   simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div,
     mul_right_comm (2 : ℂ) (k : ℂ)]
   norm_cast
@@ -187,8 +187,8 @@ theorem hurwitzZeta_neg_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZeta x (-k) =
     -1 / (k + 1) * ((Polynomial.bernoulli (k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rcases Nat.even_or_odd' k with ⟨n, (rfl | rfl)⟩
-  · exact_mod_cast hurwitzZeta_neg_two_mul_nat (by omega : n ≠ 0) hx
-  · exact_mod_cast hurwitzZeta_one_sub_two_mul_nat (by omega : n + 1 ≠ 0) hx
+  · exact_mod_cast hurwitzZeta_neg_two_mul_nat (by cutsat : n ≠ 0) hx
+  · exact_mod_cast hurwitzZeta_one_sub_two_mul_nat (by cutsat : n + 1 ≠ 0) hx
 
 end HurwitzZeta
 
@@ -204,7 +204,7 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
     riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1)
       * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
   convert congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat hk).tsum_eq
-  · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by omega)]
+  · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by cutsat)]
     simp [push_cast]
   · norm_cast
 
@@ -216,8 +216,8 @@ theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
-  · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by norm_num,
-      zeta_nat_eq_tsum_of_gt_one (by norm_num : 1 < 4)]
+  · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by simp,
+      zeta_nat_eq_tsum_of_gt_one (by simp : 1 < 4)]
     simp only [push_cast]
   · norm_cast
 

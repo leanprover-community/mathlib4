@@ -79,7 +79,7 @@ lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
 
 /-- A nonempty set is scaled by zero to the singleton set containing 0. -/
 @[simp] lemma zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
-  simp only [← image_smul, image_eta, zero_smul, h.image_const, singleton_zero]
+  simp only [← image_smul, zero_smul, h.image_const, singleton_zero]
 
 lemma zero_smul_set_subset (s : Set β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ ↦ zero_smul α x
@@ -105,7 +105,7 @@ end SMulWithZero
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Set β → Set β`. -/
 protected noncomputable def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
-   DistribSMul α (Set β) where
+    DistribSMul α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
 
 scoped[Pointwise] attribute [instance] Set.distribSMulSet
@@ -171,18 +171,11 @@ lemma preimage_smul_inv₀ (ha : a ≠ 0) (t : Set β) : (fun x ↦ a⁻¹ • x
 lemma smul_set_subset_smul_set_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ a • B ↔ A ⊆ B :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_set_subset_smul_set_iff
 
-@[deprecated (since := "2024-12-28")]
-alias set_smul_subset_set_smul_iff₀ := smul_set_subset_smul_set_iff₀
-
 lemma smul_set_subset_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_set_subset_iff_subset_inv_smul_set
 
-@[deprecated (since := "2024-12-28")] alias set_smul_subset_iff₀ := smul_set_subset_iff₀
-
 lemma subset_smul_set_iff₀ (ha : a ≠ 0) {A B : Set β} : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
   show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_smul_set_iff
-
-@[deprecated (since := "2024-12-28")] alias subset_set_smul_iff₀ := subset_smul_set_iff₀
 
 lemma smul_set_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
   show Units.mk0 a ha • _ = _ from smul_set_inter

@@ -50,12 +50,12 @@ protected def inv.aux : R → R⟦X⟧ → R⟦X⟧ :=
   MvPowerSeries.inv.aux
 
 theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
-    coeff R n (inv.aux a φ) =
+    coeff n (inv.aux a φ) =
       if n = 0 then a
       else
         -a *
           ∑ x ∈ antidiagonal n,
-            if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
+            if x.2 < n then coeff x.1 φ * coeff x.2 (inv.aux a φ) else 0 := by
   rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
   simp only [Finsupp.single_eq_zero]
   split_ifs; · rfl
@@ -82,40 +82,40 @@ def invOfUnit (φ : R⟦X⟧) (u : Rˣ) : R⟦X⟧ :=
   MvPowerSeries.invOfUnit φ u
 
 theorem coeff_invOfUnit (n : ℕ) (φ : R⟦X⟧) (u : Rˣ) :
-    coeff R n (invOfUnit φ u) =
+    coeff n (invOfUnit φ u) =
       if n = 0 then ↑u⁻¹
       else
         -↑u⁻¹ *
           ∑ x ∈ antidiagonal n,
-            if x.2 < n then coeff R x.1 φ * coeff R x.2 (invOfUnit φ u) else 0 :=
+            if x.2 < n then coeff x.1 φ * coeff x.2 (invOfUnit φ u) else 0 :=
   coeff_inv_aux n (↑u⁻¹ : R) φ
 
 @[simp]
 theorem constantCoeff_invOfUnit (φ : R⟦X⟧) (u : Rˣ) :
-    constantCoeff R (invOfUnit φ u) = ↑u⁻¹ := by
+    constantCoeff (invOfUnit φ u) = ↑u⁻¹ := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
 
 @[simp]
-theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff R φ = u) :
+theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
     φ * invOfUnit φ u = 1 :=
   MvPowerSeries.mul_invOfUnit φ u <| h
 
 @[simp]
-theorem invOfUnit_mul (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff R φ = u) :
+theorem invOfUnit_mul (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
     invOfUnit φ u * φ = 1 :=
   MvPowerSeries.invOfUnit_mul φ u h
 
 theorem isUnit_iff_constantCoeff {φ : R⟦X⟧} :
-    IsUnit φ ↔ IsUnit (constantCoeff R φ) :=
+    IsUnit φ ↔ IsUnit (constantCoeff φ) :=
   MvPowerSeries.isUnit_iff_constantCoeff
 
 /-- Two ways of removing the constant coefficient of a power series are the same. -/
 theorem sub_const_eq_shift_mul_X (φ : R⟦X⟧) :
-    φ - C R (constantCoeff R φ) = (mk fun p ↦ coeff R (p + 1) φ) * X :=
+    φ - C (constantCoeff φ) = (mk fun p ↦ coeff (p + 1) φ) * X :=
   sub_eq_iff_eq_add.mpr (eq_shift_mul_X_add_const φ)
 
 theorem sub_const_eq_X_mul_shift (φ : R⟦X⟧) :
-    φ - C R (constantCoeff R φ) = X * mk fun p ↦ coeff R (p + 1) φ :=
+    φ - C (constantCoeff φ) = X * mk fun p ↦ coeff (p + 1) φ :=
   sub_eq_iff_eq_add.mpr (eq_X_mul_shift_add_const φ)
 
 end Ring
@@ -130,55 +130,55 @@ protected def inv : k⟦X⟧ → k⟦X⟧ :=
 
 instance : Inv k⟦X⟧ := ⟨PowerSeries.inv⟩
 
-theorem inv_eq_inv_aux (φ : k⟦X⟧) : φ⁻¹ = inv.aux (constantCoeff k φ)⁻¹ φ :=
+theorem inv_eq_inv_aux (φ : k⟦X⟧) : φ⁻¹ = inv.aux (constantCoeff φ)⁻¹ φ :=
   rfl
 
 theorem coeff_inv (n) (φ : k⟦X⟧) :
-    coeff k n φ⁻¹ =
-      if n = 0 then (constantCoeff k φ)⁻¹
+    coeff n φ⁻¹ =
+      if n = 0 then (constantCoeff φ)⁻¹
       else
-        -(constantCoeff k φ)⁻¹ *
+        -(constantCoeff φ)⁻¹ *
           ∑ x ∈ antidiagonal n,
-            if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 := by
-  rw [inv_eq_inv_aux, coeff_inv_aux n (constantCoeff k φ)⁻¹ φ]
+            if x.2 < n then coeff x.1 φ * coeff x.2 φ⁻¹ else 0 := by
+  rw [inv_eq_inv_aux, coeff_inv_aux n (constantCoeff φ)⁻¹ φ]
 
 @[simp]
-theorem constantCoeff_inv (φ : k⟦X⟧) : constantCoeff k φ⁻¹ = (constantCoeff k φ)⁻¹ :=
+theorem constantCoeff_inv (φ : k⟦X⟧) : constantCoeff φ⁻¹ = (constantCoeff φ)⁻¹ :=
   MvPowerSeries.constantCoeff_inv φ
 
-theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff k φ = 0 :=
+theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
   MvPowerSeries.inv_eq_zero
 
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
 
 @[simp]
-theorem invOfUnit_eq (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) :
+theorem invOfUnit_eq (φ : k⟦X⟧) (h : constantCoeff φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
-  MvPowerSeries.invOfUnit_eq _ _
+  rfl
 
 @[simp]
-theorem invOfUnit_eq' (φ : k⟦X⟧) (u : Units k) (h : constantCoeff k φ = u) :
+theorem invOfUnit_eq' (φ : k⟦X⟧) (u : Units k) (h : constantCoeff φ = u) :
     invOfUnit φ u = φ⁻¹ :=
   MvPowerSeries.invOfUnit_eq' φ _ h
 
 @[simp]
-protected theorem mul_inv_cancel (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) : φ * φ⁻¹ = 1 :=
+protected theorem mul_inv_cancel (φ : k⟦X⟧) (h : constantCoeff φ ≠ 0) : φ * φ⁻¹ = 1 :=
   MvPowerSeries.mul_inv_cancel φ h
 
 @[simp]
-protected theorem inv_mul_cancel (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) : φ⁻¹ * φ = 1 :=
+protected theorem inv_mul_cancel (φ : k⟦X⟧) (h : constantCoeff φ ≠ 0) : φ⁻¹ * φ = 1 :=
   MvPowerSeries.inv_mul_cancel φ h
 
-theorem eq_mul_inv_iff_mul_eq {φ₁ φ₂ φ₃ : k⟦X⟧} (h : constantCoeff k φ₃ ≠ 0) :
+theorem eq_mul_inv_iff_mul_eq {φ₁ φ₂ φ₃ : k⟦X⟧} (h : constantCoeff φ₃ ≠ 0) :
     φ₁ = φ₂ * φ₃⁻¹ ↔ φ₁ * φ₃ = φ₂ :=
   MvPowerSeries.eq_mul_inv_iff_mul_eq h
 
-theorem eq_inv_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff k ψ ≠ 0) :
+theorem eq_inv_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff ψ ≠ 0) :
     φ = ψ⁻¹ ↔ φ * ψ = 1 :=
   MvPowerSeries.eq_inv_iff_mul_eq_one h
 
-theorem inv_eq_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff k ψ ≠ 0) :
+theorem inv_eq_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff ψ ≠ 0) :
     ψ⁻¹ = φ ↔ φ * ψ = 1 :=
   MvPowerSeries.inv_eq_iff_mul_eq_one h
 
@@ -189,7 +189,7 @@ instance : InvOneClass k⟦X⟧ :=
   { inferInstanceAs <| InvOneClass <| MvPowerSeries Unit k with }
 
 @[simp]
-theorem C_inv (r : k) : (C k r)⁻¹ = C k r⁻¹ :=
+theorem C_inv (r : k) : (C r)⁻¹ = C r⁻¹ :=
   MvPowerSeries.C_inv _
 
 @[simp]
@@ -202,10 +202,10 @@ theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ 
 /-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
   field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`. -/
 def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
-  have : Invertible (constantCoeff k (divXPowOrder f)) := by
+  have : Invertible (constantCoeff (divXPowOrder f)) := by
     apply invertibleOfNonzero
     simpa [constantCoeff_divXPowOrder_eq_zero_iff.not]
-  unitOfInvertible (constantCoeff k (divXPowOrder f))
+  unitOfInvertible (constantCoeff (divXPowOrder f))
 
 /-- `Inv_divided_by_X_pow_order` is the inverse of the element obtained by diving a non-zero power
 series by the largest power of `X` dividing it. Useful to create a term of type `Units`, done in
@@ -308,8 +308,8 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
       exact Prime.not_dvd_one X_prime
     · intro I f hI hfX hfI
       rw [Ideal.mem_span_singleton, X_dvd_iff] at hfX
-      have hfI0 : C k (f 0) ∈ I := by
-        have : C k (f 0) = f - (f - C k (f 0)) := by rw [sub_sub_cancel]
+      have hfI0 : C (f 0) ∈ I := by
+        have : C (f 0) = f - (f - C (f 0)) := by rw [sub_sub_cancel]
         rw [this]
         apply Ideal.sub_mem I hfI
         apply hI
@@ -317,7 +317,7 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
           coeff_zero_eq_constantCoeff_apply, sub_eq_zero, coeff_zero_eq_constantCoeff]
         rfl
       rw [← Ideal.eq_top_iff_one]
-      apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map (C k) (Ne.isUnit hfX))
+      apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map C (Ne.isUnit hfX))
   rw [IsLocalRing.eq_maximalIdeal hX]
 
 instance : NormalizationMonoid k⟦X⟧ where
@@ -327,7 +327,7 @@ instance : NormalizationMonoid k⟦X⟧ where
     simp only [← mul_inv, inv_inj]
     simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
-      Units.ext_iff, val_unitOfInvertible, Units.val_mul, divXPowOrder_mul_divXPowOrder]
+      Units.ext_iff, Units.val_mul, divXPowOrder_mul_divXPowOrder]
   normUnit_coe_units := by
     intro u
     set u₀ := u.1 with hu
@@ -357,7 +357,7 @@ theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
 
 open IsLocalRing
 
-theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff k) = maximalIdeal _ :=
+theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff (R := k)) = maximalIdeal _ :=
   Ideal.ext fun _ ↦ by
     rw [RingHom.mem_ker, maximalIdeal_eq_span_X, Ideal.mem_span_singleton, X_dvd_iff]
 

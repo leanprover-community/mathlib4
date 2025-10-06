@@ -260,7 +260,7 @@ noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) 
             this, Equiv.symm_apply_apply]
         · have := l.fac_right =≫ sq₁₃.fst
           dsimp at this ⊢
-          simp only [Category.assoc, sq₁₃.π_fst, IsPullback.lift_fst] at this
+          simp only [Category.assoc, sq₁₃.π_fst] at this
           simp only [sq₁₂.inr_ι_assoc, ← adj₂.homEquiv_symm_naturality_one,
             this, Equiv.symm_apply_apply, arrowHomEquiv_apply_right_fst, Arrow.mk_left]
       fac_right := by

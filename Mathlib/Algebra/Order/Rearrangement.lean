@@ -3,7 +3,7 @@ Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Finset.Max
@@ -75,7 +75,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
   set τ : Perm ι := σ.trans (swap a (σ a)) with hτ
   have hτs : {x | τ x ≠ x} ⊆ s := by
     intro x hx
-    simp only [τ, Ne, Set.mem_setOf_eq, Equiv.coe_trans, Equiv.swap_comp_apply] at hx
+    simp only [τ, Ne, Set.mem_setOf_eq, Equiv.swap_comp_apply] at hx
     split_ifs at hx with h₁ h₂
     · obtain rfl | hax := eq_or_ne x a
       · contradiction
@@ -84,7 +84,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     · exact mem_of_mem_insert_of_ne (hσ hx) (ne_of_apply_ne _ h₂)
   specialize hind (hfg.subset <| subset_insert _ _) hτs
   simp_rw [sum_insert has]
-  refine le_trans ?_ (add_le_add_left hind _)
+  grw [← hind]
   obtain hσa | hσa := eq_or_ne a (σ a)
   · rw [hτ, ← hσa, swap_self, trans_refl]
   have h1s : σ⁻¹ a ∈ s := by

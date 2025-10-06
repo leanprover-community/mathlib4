@@ -42,7 +42,7 @@ lemma image_out (C : Set G.ConnectedComponent) :
 lemma existsUnique_rep (hrep : Represents s C) (h : c ∈ C) : ∃! x, x ∈ s ∩ c.supp := by
   obtain ⟨x, ⟨hx, rfl⟩⟩ := hrep.2.2 h
   use x
-  simp only [Set.mem_inter_iff, hx, SetLike.mem_coe, mem_supp_iff, and_self, and_imp, true_and]
+  simp only [Set.mem_inter_iff, hx, mem_supp_iff, and_self, and_imp, true_and]
   exact fun y hy hyx ↦ hrep.2.1 hy hx hyx
 
 lemma exists_inter_eq_singleton (hrep : Represents s C) (h : c ∈ C) : ∃ x, s ∩ c.supp = {x} := by
@@ -86,7 +86,7 @@ lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedC
   · simpa [hrep.ncard_sdiff_of_notMem
       (by simpa [Set.ncard_image_of_injective, ← Nat.not_odd_iff_even] using h)] using h
   · have : K.supp.ncard ≠ 0 := Nat.ne_of_odd_add (Nat.not_even_iff_odd.mp h)
-    rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by omega)]
+    rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by cutsat)]
     simpa [Nat.even_sub] using Nat.not_even_iff_odd.mp h
 
 end SimpleGraph

@@ -101,9 +101,9 @@ theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q.Prime → q ∣ n → q % 4 ≠ 3 := by
   refine ⟨fun H q hqp hqd => hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H => ?_⟩
   induction n using induction_on_primes with
-  | h₀ => exact False.elim (hn.ne_zero rfl)
-  | h₁ => exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
-  | h p n hpp ih =>
+  | zero => exact False.elim (hn.ne_zero rfl)
+  | one => exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
+  | prime_mul p n hpp ih =>
     haveI : Fact p.Prime := ⟨hpp⟩
     have hcp : p.Coprime n := by
       by_contra hc
@@ -121,11 +121,11 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   refine ⟨?_, fun H q _ => H⟩
   intro H
   refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq => ?_)
-  · exact fun _ => by norm_num
-  · exact fun _ => by norm_num
+  · exact fun _ => by simp
+  · exact fun _ => by simp
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
-    rw [show 3 = 3 % 4 by norm_num, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
+    rw [show 3 = 3 % 4 by simp, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
 
@@ -138,9 +138,9 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
 theorem Nat.eq_sq_add_sq_of_isSquare_mod_neg_one {n : ℕ} (h : IsSquare (-1 : ZMod n)) :
     ∃ x y : ℕ, n = x ^ 2 + y ^ 2 := by
   induction n using induction_on_primes with
-  | h₀ => exact ⟨0, 0, rfl⟩
-  | h₁ => exact ⟨0, 1, rfl⟩
-  | h p n hpp ih =>
+  | zero => exact ⟨0, 0, rfl⟩
+  | one => exact ⟨0, 1, rfl⟩
+  | prime_mul p n hpp ih =>
     haveI : Fact p.Prime := ⟨hpp⟩
     have hp : IsSquare (-1 : ZMod p) := ZMod.isSquare_neg_one_of_dvd ⟨n, rfl⟩ h
     obtain ⟨u, v, huv⟩ := Nat.Prime.sq_add_sq (ZMod.exists_sq_eq_neg_one_iff.mp hp)
@@ -153,7 +153,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     (hc : IsCoprime x y) : IsSquare (-1 : ZMod n.natAbs) := by
   obtain ⟨u, v, huv⟩ : IsCoprime x n := by
     have hc2 : IsCoprime (x ^ 2) (y ^ 2) := hc.pow
-    rw [show y ^ 2 = n + -1 * x ^ 2 by omega] at hc2
+    rw [show y ^ 2 = n + -1 * x ^ 2 by cutsat] at hc2
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
   have H : u * y * (u * y) - -1 = n * (-v ^ 2 * n + u ^ 2 + 2 * v) := by
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv
@@ -198,7 +198,7 @@ section Main
 /-- A (positive) natural number `n` is a sum of two squares if and only if the exponent of
 every prime `q` such that `q % 4 = 3` in the prime factorization of `n` is even.
 (The assumption `0 < n` is not present, since for `n = 0`, both sides are satisfied;
-the right hand side holds, since `padicValNat q 0 = 0` by definition.) -/
+the right-hand side holds, since `padicValNat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∀ {q : ℕ}, q.Prime → q % 4 = 3 → Even (padicValNat q n) := by
   rcases n.eq_zero_or_pos with (rfl | hn₀)

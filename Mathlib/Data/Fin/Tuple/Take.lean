@@ -82,8 +82,8 @@ theorem take_succ_eq_snoc (m : ℕ) (h : m < n) (v : (i : Fin n) → α i) :
     simp [take, snoc, castLE]
   | succ m _ =>
     induction i using reverseInduction with
-    | last => simp [take, snoc, castLT]; congr
-    | cast i _ => simp [snoc_cast_add]
+    | last => simp [take, snoc]; congr
+    | cast i _ => simp
 
 /-- `take` commutes with `update` for indices in the range of `take`. -/
 @[simp]

@@ -71,7 +71,7 @@ alias ⟨pairwise_edist_eq, _⟩ := congruent_iff_pairwise_edist_eq
 `congruent_iff_pairwise_edist_eq`. -/
 alias ⟨_, of_pairwise_edist_eq⟩ := congruent_iff_pairwise_edist_eq
 
-@[refl] protected lemma refl (v₁ : ι → P₁): v₁ ≅ v₁ := fun _ _ ↦ rfl
+@[refl] protected lemma refl (v₁ : ι → P₁) : v₁ ≅ v₁ := fun _ _ ↦ rfl
 
 @[symm] protected lemma symm (h : v₁ ≅ v₂) : v₂ ≅ v₁ := fun i₁ i₂ ↦ (h i₁ i₂).symm
 

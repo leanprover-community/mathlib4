@@ -72,7 +72,7 @@ theorem final_of_final_costructuredArrowToOver (L : A ⥤ T) (R : B ⥤ T) [Fina
   let sT : T ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} T := AsSmall.equiv
   let L' := sA.inverse ⋙ L ⋙ sT.functor
   let R' := sB.inverse ⋙ R ⋙ sT.functor
-  have (b) : (CostructuredArrow.toOver L' (R'.obj b)).Final := by
+  have (b : _) : (CostructuredArrow.toOver L' (R'.obj b)).Final := by
     dsimp only [L', R', CostructuredArrow.toOver] at hB ⊢
     let x := (sB.inverse ⋙ R ⋙ sT.functor).obj b
     let F'' : CostructuredArrow (sA.inverse ⋙ L ⋙ sT.functor) x ⥤ CostructuredArrow (𝟭 _) x :=

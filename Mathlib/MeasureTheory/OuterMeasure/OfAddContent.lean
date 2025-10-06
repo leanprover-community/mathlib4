@@ -46,7 +46,7 @@ namespace MeasureTheory.AddContent
 
 variable {α : Type*} {C : Set (Set α)} {s : Set α}
 
-/-- For `m : AddContent C` sigma-sub-aditive, finite on `C`, the `OuterMeasure` given by `m`
+/-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `OuterMeasure` given by `m`
 coincides with `m` on `C`. -/
 theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent C)
     (m_sigma_subadd : m.IsSigmaSubadditive) (m_top : ∀ s ∉ C, m s = ∞) (hs : s ∈ C) :
@@ -60,7 +60,7 @@ theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent C)
       refine m_sigma_subadd (fun i ↦ hC.inter_mem _ hs _ (hf i)) ?_
       rwa [← inter_iUnion, inter_eq_self_of_subset_left hs_subset]
     _ ≤ ∑' i, m (f i) := by
-      refine  ENNReal.summable.tsum_le_tsum (fun i ↦ ?_) ENNReal.summable
+      refine ENNReal.summable.tsum_le_tsum (fun i ↦ ?_) ENNReal.summable
       exact addContent_mono hC (hC.inter_mem _ hs _ (hf i)) (hf i) Set.inter_subset_right
 
 /-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `inducedOuterMeasure` given by `m`
@@ -140,7 +140,7 @@ noncomputable def measureCaratheodory (m : AddContent C) (hC : IsSetSemiring C)
       apply le_inducedOuterMeasure.mpr fun s hs ↦ ?_
       have hs_meas : MeasurableSet[(inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem
           addContent_empty).caratheodory] s := by
-        show (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).IsCaratheodory s
+        change (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).IsCaratheodory s
         exact isCaratheodory_inducedOuterMeasure_of_mem hC m hs
       rw [OuterMeasure.trim_eq _ hs_meas, m.inducedOuterMeasure_eq hC m_sigma_subadd hs] }
 

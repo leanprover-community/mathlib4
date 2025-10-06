@@ -29,6 +29,7 @@ variable {ι : Type*} {α : ι → Type*}
 
 section Disjoint
 
+section LocallyFiniteOrder
 variable [DecidableEq ι] [∀ i, Preorder (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Σ i, α i) where
@@ -86,6 +87,52 @@ theorem Ioc_mk_mk : Ioc (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioc a b).map (Embe
 @[simp]
 theorem Ioo_mk_mk : Ioo (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioo a b).map (Embedding.sigmaMk i) :=
   dif_pos rfl
+
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderBot
+variable [∀ i, Preorder (α i)] [∀ i, LocallyFiniteOrderBot (α i)]
+
+instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Σ i, α i) where
+  finsetIic | ⟨i, a⟩ => (Iic a).map (Embedding.sigmaMk i)
+  finsetIio | ⟨i, a⟩ => (Iio a).map (Embedding.sigmaMk i)
+  finset_mem_Iic := fun ⟨i, a⟩ ⟨j, b⟩ => by
+    obtain rfl | hij := eq_or_ne i j
+    · simp
+    · simp [hij, le_def, hij.symm]
+  finset_mem_Iio := fun ⟨i, a⟩ ⟨j, b⟩ => by
+    obtain rfl | hij := eq_or_ne i j
+    · simp
+    · simp [hij, lt_def, hij.symm]
+
+variable (i : ι) (a : α i)
+
+@[simp] theorem Iic_mk : Iic (⟨i, a⟩ : Sigma α) = (Iic a).map (Embedding.sigmaMk i) := rfl
+@[simp] theorem Iio_mk : Iio (⟨i, a⟩ : Sigma α) = (Iio a).map (Embedding.sigmaMk i) := rfl
+
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTop
+variable [∀ i, Preorder (α i)] [∀ i, LocallyFiniteOrderTop (α i)]
+
+instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (Σ i, α i) where
+  finsetIci | ⟨i, a⟩ => (Ici a).map (Embedding.sigmaMk i)
+  finsetIoi | ⟨i, a⟩ => (Ioi a).map (Embedding.sigmaMk i)
+  finset_mem_Ici := fun ⟨i, a⟩ ⟨j, b⟩ => by
+    obtain rfl | hij := eq_or_ne i j
+    · simp
+    · simp [hij, le_def]
+  finset_mem_Ioi := fun ⟨i, a⟩ ⟨j, b⟩ => by
+    obtain rfl | hij := eq_or_ne i j
+    · simp
+    · simp [hij, lt_def]
+
+variable (i : ι) (a : α i)
+
+@[simp] theorem Ici_mk : Ici (⟨i, a⟩ : Sigma α) = (Ici a).map (Embedding.sigmaMk i) := rfl
+@[simp] theorem Ioi_mk : Ioi (⟨i, a⟩ : Sigma α) = (Ioi a).map (Embedding.sigmaMk i) := rfl
+
+end LocallyFiniteOrderTop
 
 end Disjoint
 
