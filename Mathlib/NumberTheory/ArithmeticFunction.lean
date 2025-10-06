@@ -958,7 +958,7 @@ theorem sigma_eq_one_iff (k n : ℕ) : σ k n = 1 ↔ n = 1 := by
   · rintro rfl
     simp
 
-theorem sigma_apply_from_factorization {k n : ℕ} (hn : n ≠ 0) :
+theorem sigma_eq_prod_primeFactors_sum_range_factorization_pow_mul {k n : ℕ} (hn : n ≠ 0) :
     σ k n = ∏ p ∈ n.primeFactors, ∑ i ∈ .range (n.factorization p + 1), p ^ (i * k) := by
   rw [isMultiplicative_sigma.multiplicative_factorization _ hn]
   exact Finset.prod_congr n.support_factorization fun _ h ↦
