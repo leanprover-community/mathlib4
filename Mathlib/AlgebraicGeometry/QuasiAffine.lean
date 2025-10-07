@@ -65,12 +65,17 @@ lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
   exact SetLike.coe_injective (Set.image_preimage_eq_of_subset
     (hrU.trans (Set.image_subset_range _ _)))
 
-/-- A qcqs scheme is quasi-affine if it can be covered by affine basic opens of global sections. -/
+/-- A quasi-compact scheme is quasi-affine if
+it can be covered by affine basic opens of global sections. -/
 lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpace X]
-    [QuasiSeparatedSpace X]
     (H : ∀ x : X, ∃ r : Γ(X, ⊤), IsAffineOpen (X.basicOpen r) ∧ x ∈ X.basicOpen r) :
     IsQuasiAffine X := by
   suffices IsOpenImmersion X.toSpecΓ by constructor
+  have : QuasiSeparatedSpace X := by
+    choose r hr hxr using H
+    exact .of_isOpenCover (U := (X.basicOpen <| r ·))
+      (eq_top_iff.mpr fun _ _ ↦ Opens.mem_iSup.mpr ⟨_, hxr _⟩)
+      (fun _ ↦ isRetroCompact_basicOpen _) (fun x ↦ (hr _).isQuasiSeparated)
   refine IsLocalAtTarget.of_forall_source_exists_preimage _ fun x ↦ ?_
   obtain ⟨r, hr, hxr⟩ := H x
   refine ⟨PrimeSpectrum.basicOpen r, (X.toSpecΓ_preimage_basicOpen r).ge hxr, ?_⟩

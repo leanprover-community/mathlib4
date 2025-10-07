@@ -83,7 +83,12 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   refine Set.image_preimage_eq_inter_range.trans ?_
   simp
 
-lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
+lemma isRetroCompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
+  IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr
+    ((quasiCompact_iff_spectral (X.basicOpen s).ι).mp inferInstance)
+
+/-- Superseded by `isAffine_of_isAffineOpen_basicOpen`. -/
+private lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     QuasiSeparatedSpace X := by
   rw [quasiSeparatedSpace_iff_affine]
@@ -101,6 +106,7 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
     exact (V.2.basicOpen _).isCompact
 
+@[stacks 01QF]
 lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     IsAffine X := by
