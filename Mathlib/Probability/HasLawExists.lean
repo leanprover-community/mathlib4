@@ -27,7 +27,7 @@ lemma exists_hasLaw_indepFun {ι : Type v} (𝓧 : ι → Type u)
     {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)} (μ : (i : ι) → Measure (𝓧 i))
     [hμ : ∀ i, IsProbabilityMeasure (μ i)] :
     ∃ Ω : Type (max u v), ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : (i : ι) → Ω → (𝓧 i),
-      (∀ i, HasLaw (X i) (μ i) P) ∧ (iIndepFun X P) ∧ (IsProbabilityMeasure P):= by
+      (∀ i, HasLaw (X i) (μ i) P) ∧ iIndepFun X P ∧ IsProbabilityMeasure P := by
   use Π i, (𝓧 i), .pi, infinitePi μ, fun i ↦ Function.eval i
   refine ⟨fun i ↦ MeasurePreserving.hasLaw (measurePreserving_eval_infinitePi _ _), ?_, ?_⟩
   · rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop), map_id']
