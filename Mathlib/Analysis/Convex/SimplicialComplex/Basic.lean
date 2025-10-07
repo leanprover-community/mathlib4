@@ -19,7 +19,7 @@ underlying set of a simplex.
 ## Main declarations
 
 * `SimplicialComplex 𝕜 E`: A simplicial complex in the `𝕜`-module `E`.
-* `SimplicialComplex.vertices`: The zero dimensional faces of a simplicial complex.
+* `SimplicialComplex.vertices`: The zero-dimensional faces of a simplicial complex.
 * `SimplicialComplex.facets`: The maximal faces of a simplicial complex.
 
 ## Notation
@@ -140,7 +140,7 @@ def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset
 /-! ### Vertices -/
 
 
-/-- The vertices of a simplicial complex are its zero dimensional faces. -/
+/-- The vertices of a simplicial complex are its zero-dimensional faces. -/
 def vertices (K : SimplicialComplex 𝕜 E) : Set E :=
   { x | {x} ∈ K.faces }
 
