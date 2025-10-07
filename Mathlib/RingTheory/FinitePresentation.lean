@@ -360,8 +360,8 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
 /-- If `f : A →ₐ[R] B` is a surjection between finitely-presented `R`-algebras, then the kernel of
 `f` is finitely generated. -/
 theorem ker_fG_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
-    [FiniteType R A] [FinitePresentation R B] : (RingHom.ker f.toRingHom).FG := by
-  obtain ⟨n, g, hg⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp ‹_›
+    [FinitePresentation R A] [FinitePresentation R B] : (RingHom.ker f.toRingHom).FG := by
+  obtain ⟨n, g, hg, _⟩ := FinitePresentation.out (R := R) (A := A)
   convert (ker_fg_of_mvPolynomial (f.comp g) (hf.comp hg)).map g.toRingHom
   simp_rw [RingHom.ker_eq_comap_bot, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
   rw [← Ideal.comap_comap, Ideal.map_comap_of_surjective (g : MvPolynomial (Fin n) R →+* A) hg]
