@@ -79,7 +79,7 @@ private noncomputable def inductiveStepRealization (n : ℕ)
 
 /--
 All steps of building the abstract filtered closure together with the realization function,
-as a function of `ℕ`.  -/
+as a function of `ℕ`. -/
 private noncomputable def bundledAbstractFilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
