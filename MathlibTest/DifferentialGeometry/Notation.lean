@@ -157,30 +157,35 @@ variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 
 #check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
 #check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ s
+
+
 /--
 error: Application type mismatch: The argument
-  M
+  φ
 has type
-  Type u_4
+  OpenPartialHomeomorph M E
 but is expected to have type
-  ModelWithCorners ?𝕜 ?E ?H
+  ?M → ?M'
 in the application
-  @MDifferentiableWithinAt ?𝕜 ?inst✝ ?E ?inst✝¹ ?inst✝² ?H ?inst✝³ M
+  MDifferentiableWithinAt I 𝓘(𝕜, E) φ
 -/
 #guard_msgs in
 #check MDiffAt[s] φ
+
 /--
 error: Application type mismatch: The argument
-  M
+  ψ
 has type
-  Type u_4
+  PartialEquiv M E
 but is expected to have type
-  ModelWithCorners ?𝕜 ?E ?H
+  ?M → ?M'
 in the application
-  @MDifferentiableWithinAt ?𝕜 ?inst✝ ?E ?inst✝¹ ?inst✝² ?H ?inst✝³ M
+  MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
 -/
 #guard_msgs in
 #check MDiffAt[s] ψ
+
+#exit
 
 -- Testing an error message.
 section
