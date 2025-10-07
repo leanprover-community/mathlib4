@@ -87,20 +87,13 @@ omit [ChartedSpace H M] [ChartedSpace H' M'] in
 lemma isLocalSourceTargetProperty_immersionAtProp :
     IsLocalSourceTargetProperty (ImmersionAtProp F I I' M M') where
   mono_source {f φ ψ s} hs hf := by
-    have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
     obtain ⟨equiv, hf⟩ := hf
-    use equiv
-    exact hf.mono (by simpa using this)
+    exact ⟨equiv, hf.mono (by simp; grind)⟩
   congr {f g φ ψ s} hfg hs hφ hf := by
     obtain ⟨equiv, hf⟩ := hf
-    use equiv
-    apply EqOn.trans ?_ (hf.mono (by simp))
-    intro x hx
-    set Φ := φ.extend I
-    have aux : Φ.source ⊆ s := by simpa [Φ]
-    have : (f ∘ Φ.symm) x = (g ∘ Φ.symm) x := hfg <| aux (PartialEquiv.map_target _ hx)
-    rw [Function.comp_apply, ← this]
-    simp [Φ]
+    refine ⟨equiv, EqOn.trans (fun x hx ↦ ?_) (hf.mono (by simp))⟩
+    have aux : (φ.extend I).source ⊆ s := by simpa
+    grind [→ PartialEquiv.map_target]
 
 variable (F I I' n) in
 /-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
