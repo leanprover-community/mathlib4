@@ -87,16 +87,6 @@ lemma IsOpenImmersion.of_forall_source_exists (f : X ⟶ Y)
     ⟨by simpa using show ∀ x, ∃ j y, (i j).base y = x from (⟨_, hxi ·⟩), by simpa⟩⟩
   exact IsOpenImmersion.of_openCover_source f 𝒰 hf hi
 
-lemma IsOpenImmersion.of_forall_source_exists_preimage (f : X ⟶ Y)
-    (hX : ∀ x, ∃ (U : Y.Opens), f.base x ∈ U ∧ IsOpenImmersion ((f ⁻¹ᵁ U).ι ≫ f)) :
-    IsOpenImmersion f := by
-  refine .of_forall_source_exists f (fun x y e ↦ ?_) fun x ↦ ?_
-  · obtain ⟨U, hxU, H⟩ := hX x
-    exact congr($(((f ⁻¹ᵁ U).ι ≫ f).isOpenEmbedding.injective (a₁ := ⟨x, hxU⟩)
-      (a₂ := ⟨y, show f.base y ∈ U from e ▸ hxU⟩) e).1)
-  · obtain ⟨U, hxU, H⟩ := hX x
-    exact ⟨_, (f ⁻¹ᵁ U).ι, inferInstance, ⟨⟨x, hxU⟩, rfl⟩, H⟩
-
 theorem isOpenImmersion_eq_inf :
     @IsOpenImmersion = (topologically IsOpenEmbedding) ⊓
       stalkwise (fun f ↦ Function.Bijective f) := by

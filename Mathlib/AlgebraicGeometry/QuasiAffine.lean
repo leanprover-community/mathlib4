@@ -11,7 +11,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 ## Main results
 - `IsQuasiAffine`:
-  A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
+  A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an immersion.
+  This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
 - `IsQuasiAffine.of_isImmersion`:
   Any quasi-compact locally closed subscheme of a quasi-affine scheme is quasi-affine.
 
@@ -23,12 +24,11 @@ universe u
 
 namespace AlgebraicGeometry.Scheme
 
-/-- A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
-Despite the definition, any quasi-compact locally closed subscheme of an affine scheme is
-quasi-affine. See `IsQuasiAffine.of_isImmersion` -/
+/-- A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an immersion.
+This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion. -/
 @[stacks 01P6]
 class IsQuasiAffine (X : Scheme.{u}) : Prop extends
-  CompactSpace X, IsOpenImmersion X.toSpecΓ
+  CompactSpace X, IsImmersion X.toSpecΓ
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
@@ -39,18 +39,18 @@ instance (priority := low) [X.IsQuasiAffine] : X.IsSeparated where
     rw [← terminal.comp_from X.toSpecΓ]
     infer_instance
 
+instance [X.IsQuasiAffine] : IsOpenImmersion X.toSpecΓ := by
+  have : IsIso X.toSpecΓ.imageι := by delta Hom.imageι Hom.image; rw [X.ker_toSpecΓ]; infer_instance
+  rw [← X.toSpecΓ.toImage_imageι]
+  infer_instance
+
 /-- Any quasicompact locally closed subscheme of an quasi-affine scheme is quasi-affine. -/
 @[stacks 0BCK]
 lemma IsQuasiAffine.of_isImmersion
     [Y.IsQuasiAffine] [IsImmersion f] [CompactSpace X] : X.IsQuasiAffine := by
-  suffices IsOpenImmersion X.toSpecΓ by constructor
-  have : IsImmersion (X.toSpecΓ ≫ Spec.map (Hom.appTop f)) := by
-    rw [← toSpecΓ_naturality]; infer_instance
+  have : IsImmersion (X.toSpecΓ ≫ Spec.map f.appTop) := by rw [← toSpecΓ_naturality]; infer_instance
   have : IsImmersion X.toSpecΓ := .of_comp _ (Spec.map f.appTop)
-  have : QuasiCompact X.toSpecΓ := (quasiCompact_over_affine_iff _).mpr ‹_›
-  have : IsIso X.toSpecΓ.imageι := by delta Hom.imageι Hom.image; rw [X.ker_toSpecΓ]; infer_instance
-  rw [← X.toSpecΓ.toImage_imageι]
-  infer_instance
+  constructor
 
 lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
     Opens.IsBasis { X.basicOpen r | (r : Γ(X, ⊤)) (_ : IsAffineOpen (X.basicOpen r)) } := by
@@ -71,7 +71,7 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
     (H : ∀ x : X, ∃ r : Γ(X, ⊤), IsAffineOpen (X.basicOpen r) ∧ x ∈ X.basicOpen r) :
     IsQuasiAffine X := by
   suffices IsOpenImmersion X.toSpecΓ by constructor
-  refine IsOpenImmersion.of_forall_source_exists_preimage _ fun x ↦ ?_
+  refine IsLocalAtTarget.of_forall_source_exists_preimage _ fun x ↦ ?_
   obtain ⟨r, hr, hxr⟩ := H x
   refine ⟨PrimeSpectrum.basicOpen r, (X.toSpecΓ_preimage_basicOpen r).ge hxr, ?_⟩
   suffices IsOpenImmersion ((X.basicOpen r).ι ≫ X.toSpecΓ) by

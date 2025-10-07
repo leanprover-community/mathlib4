@@ -181,23 +181,19 @@ instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) :
     IsImmersion (pullback.mapDesc f g i) :=
   MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i) inferInstance
 
-/-- Given `f : X ⟶ Y` and `g : Y ⟶ Z`, the induced map `X ⟶ X ×[Z] Y` is an immersion. -/
-instance (f : X ⟶ Y) (g : Y ⟶ Z) :
-    IsImmersion (pullback.lift (𝟙 _) f (Category.id_comp (f ≫ g))) := by
-  rw [← MorphismProperty.cancel_left_of_respectsIso @IsImmersion (pullback.fst f (𝟙 Y))]
-  rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _
-    (pullback.congrHom rfl (Category.id_comp g)).inv]
-  convert (inferInstanceAs <| IsImmersion (pullback.mapDesc f (𝟙 _) g)) using 1
-  ext : 1 <;> simp [pullback.condition]
+instance : MorphismProperty.HasOfPostcompProperty @IsImmersion ⊤ :=
+  MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
+    fun _ _ _ _ ↦ inferInstanceAs (IsImmersion _)
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion f] :
-    IsImmersion (pullback.snd f g) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion g] : IsImmersion (pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ ‹_›
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion f] : IsImmersion (pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ ‹_›
 
-lemma of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion (f ≫ g)] :
-    IsImmersion f := by
-  rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  infer_instance
+lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion (f ≫ g)] :
+    IsImmersion f :=
+  MorphismProperty.HasOfPostcompProperty.of_postcomp (W' := ⊤) _ g trivial ‹_›
 
 theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
     IsImmersion (f ≫ g) ↔ IsImmersion f :=
