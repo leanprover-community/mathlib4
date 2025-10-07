@@ -78,6 +78,6 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
     convert this <;> rw [toSpecΓ_preimage_basicOpen]
   rw [← Opens.toSpecΓ_SpecMap_map_top]
   have := isLocalization_basicOpen_of_qcqs isCompact_univ isQuasiSeparated_univ r
-  refine MorphismProperty.comp_mem _ hr.isoSpec.hom _ inferInstance (.of_isLocalization r)
+  exact MorphismProperty.comp_mem _ hr.isoSpec.hom _ inferInstance (.of_isLocalization r)
 
 end AlgebraicGeometry.Scheme
