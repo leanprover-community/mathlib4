@@ -30,6 +30,8 @@ This shortens the overall argument, as the definition of submersions has the sam
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
 
 ## TODO
+* Show `IsImmersion(At)` is stable under replacing `F` by an isomorphic copy.
+* The set where `LiftSourceTargetPropertyAt` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
 * `IsImmersionAt.prodMap`: the product of two immersions is an immersion
@@ -52,6 +54,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 
 open scoped Topology ContDiff
 open Function Set Manifold
+
+namespace Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -188,9 +192,9 @@ lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
 lemma property (h : IsImmersionAt F I I' n f x) :
     LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') := h
 
-/-- Roig and Domingues [roigdomingues1992] only require this condition on the local charts:
-in our setting, this is *slightly* weaker than `map_source_subset_source`: the latter implies
-that `h.codChart.extend I' ∘ f` maps `h.domChart.source` to
+/-- Roig and Domingues [roigdomingues1992] only require this inclusion between the targets of the
+local charts: in our setting, this is *slightly* weaker than `map_source_subset_source`:
+the latter implies that `h.codChart.extend I' ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend I').target = (h.codChart.extend I) '' h.codChart.source`,
 but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
@@ -260,3 +264,5 @@ theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n 
   heq ▸ h
 
 end IsImmersion
+
+end Manifold
