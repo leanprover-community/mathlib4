@@ -61,8 +61,8 @@ theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
   have := exists_of_mem_map h
   grind
 
-theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigma.mk a b ∈ l := by
-  grind [exists_of_mem_keys, => mem_keys_of_mem]
+theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigma.mk a b ∈ l :=
+  ⟨exists_of_mem_keys, fun ⟨_, h⟩ => mem_keys_of_mem h⟩
 
 theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l := by
   grind [mem_keys]
@@ -87,7 +87,8 @@ theorem nodupKeys_iff_pairwise {l} : NodupKeys l ↔ Pairwise (fun s s' : Sigma 
   pairwise_map
 
 theorem NodupKeys.pairwise_ne {l} (h : NodupKeys l) :
-    Pairwise (fun s s' : Sigma β => s.1 ≠ s'.1) l := by grind [nodupKeys_iff_pairwise]
+    Pairwise (fun s s' : Sigma β => s.1 ≠ s'.1) l :=
+  nodupKeys_iff_pairwise.1 h
 
 @[simp]
 theorem nodupKeys_nil : @NodupKeys α β [] :=
@@ -109,7 +110,8 @@ theorem notMem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : 
 alias not_mem_keys_of_nodupKeys_cons := notMem_keys_of_nodupKeys_cons
 
 theorem nodupKeys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
-    NodupKeys l := by grind
+    NodupKeys l :=
+  (nodupKeys_cons.1 h).2
 
 theorem NodupKeys.eq_of_fst_eq {l : List (Sigma β)} (nd : NodupKeys l) {s s' : Sigma β} (h : s ∈ l)
     (h' : s' ∈ l) : s.1 = s'.1 → s = s' :=
