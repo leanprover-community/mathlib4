@@ -127,7 +127,7 @@ end coeq
 end IsCardinalFiltered
 
 open IsCardinalFiltered in
-lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
+lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     IsFiltered J := by
   rw [IsFiltered.iff_cocone_nonempty.{w}]
@@ -138,13 +138,16 @@ lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
     infer_instance
   exact ⟨cocone F hA⟩
 
+@[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalFiltered :=
+  isFiltered_of_isCardinalDirected
+
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     IsCardinalFiltered J Cardinal.aleph0.{w} ↔ IsFiltered J := by
   constructor
   · intro
-    exact isFiltered_of_isCardinalDirected J Cardinal.aleph0
+    exact isFiltered_of_isCardinalFiltered J Cardinal.aleph0
   · intro
     constructor
     intro A _ F hA
