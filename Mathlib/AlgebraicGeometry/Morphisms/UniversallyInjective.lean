@@ -89,7 +89,8 @@ instance universallyInjective_isStableUnderComposition :
 instance : MorphismProperty.IsMultiplicative @UniversallyInjective where
   id_mem _ := inferInstance
 
-instance universallyInjective_isLocalAtTarget : IsLocalAtTarget @UniversallyInjective :=
+instance universallyInjective_isZariskiLocalAtTarget :
+    IsZariskiLocalAtTarget @UniversallyInjective :=
   universallyInjective_eq_diagonal.symm ▸ inferInstance
 
 end AlgebraicGeometry

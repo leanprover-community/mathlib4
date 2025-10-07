@@ -342,14 +342,14 @@ end IsClosedImmersion
 end Affine
 
 /-- Being a closed immersion is local at the target. -/
-instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion :=
+instance IsClosedImmersion.isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsClosedImmersion :=
   eq_inf ▸ inferInstance
 
 /-- On morphisms with affine target, being a closed immersion is precisely having affine source
 and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
     (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.appTop)) := by
-  convert HasAffineProperty.of_isLocalAtTarget @IsClosedImmersion
+  convert HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
 /-- Being a closed immersion is stable under base change. -/
@@ -374,10 +374,10 @@ instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] :
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by
   wlog hY : IsAffine Y
-  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
+  · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
       (iSup_affineOpens_eq_top Y)]
     intro U
-    have H : IsClosedImmersion (f ∣_ U) := IsLocalAtTarget.restrict h U
+    have H : IsClosedImmersion (f ∣_ U) := IsZariskiLocalAtTarget.restrict h U
     exact this _ U.2
   obtain ⟨_, hf⟩ := h.isAffine_surjective_of_isAffine
   rw [HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)]
@@ -403,7 +403,7 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton 
     (f : X ⟶ Y) (g : Y ⟶ X) (hg : g ≫ f = 𝟙 Y) :
     IsClosedImmersion g := by
   wlog hX : ∃ R, X = Spec R
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) X.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) X.affineCover]
     intro i
     by_cases hxU : Set.range g.base ⊆ (X.affineCover.f i).opensRange
     · rw [Scheme.Cover.pullbackHom,

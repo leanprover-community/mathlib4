@@ -65,7 +65,7 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsP
   rw [isProper_eq]
   infer_instance
 
-instance : IsLocalAtTarget @IsProper := by
+instance : IsZariskiLocalAtTarget @IsProper := by
   rw [isProper_eq]
   infer_instance
 
