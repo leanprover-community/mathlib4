@@ -104,19 +104,30 @@ def bind (E : PreZeroHypercover.{w} T) (F : ∀ i, PreZeroHypercover.{w'} (E.X i
   X ij := (F ij.1).X ij.2
   f ij := (F ij.1).f ij.2 ≫ E.f ij.1
 
-/-- Replace the indexing type of a pre-`0`-hypercover. -/
+/-- Restrict the indexing type to `ι` by precomposing with a function `ι → E.I₀`. -/
 @[simps]
-def reindex (E : PreZeroHypercover.{w} T) {ι : Type w'} (e : ι ≃ E.I₀) :
+def restrictIndex (E : PreZeroHypercover.{w} T) {ι : Type w'} (f : ι → E.I₀) :
     PreZeroHypercover.{w'} T where
   I₀ := ι
-  X := E.X ∘ e
-  f i := E.f (e i)
+  X := E.X ∘ f
+  f i := E.f (f i)
 
 @[simp]
-lemma presieve₀_reindex {ι : Type w'} (e : ι ≃ E.I₀) : (E.reindex e).presieve₀ = E.presieve₀ := by
+lemma presieve₀_restrictIndex_equiv {ι : Type w'} (e : ι ≃ E.I₀) :
+    (E.restrictIndex e).presieve₀ = E.presieve₀ := by
   refine le_antisymm (fun Y g ⟨i⟩ ↦ ⟨e i⟩) fun Y g ⟨i⟩ ↦ ?_
   obtain ⟨i, rfl⟩ := e.surjective i
   exact ⟨i⟩
+
+/-- Replace the indexing type of a pre-`0`-hypercover. -/
+@[simps!]
+def reindex (E : PreZeroHypercover.{w} T) {ι : Type w'} (e : ι ≃ E.I₀) :
+    PreZeroHypercover.{w'} T :=
+  E.restrictIndex e
+
+@[simp]
+lemma presieve₀_reindex {ι : Type w'} (e : ι ≃ E.I₀) : (E.reindex e).presieve₀ = E.presieve₀ := by
+  simp [reindex]
 
 /-- Pairwise intersection of two pre-`0`-hypercovers. -/
 @[simps!]
@@ -415,6 +426,18 @@ def map (F : C ⥤ D) (E : ZeroHypercover.{w} J S) (h : J ≤ K.comap F) :
     exact h _ E.mem₀
 
 end Functoriality
+
+protected class Small (E : ZeroHypercover.{w} J S) where
+  exists_restrictIndex_mem : ∃ (ι : Type w') (f : ι → E.I₀), (E.restrictIndex f).presieve₀ ∈ J S
+
+instance (E : ZeroHypercover.{w} J S) [Small.{w'} E.I₀] : ZeroHypercover.Small.{w'} E where
+  exists_restrictIndex_mem := ⟨_, (equivShrink E.I₀).symm, by simp [E.mem₀]⟩
+
+noncomputable
+def restrictIndexOfSmall (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] :
+    ZeroHypercover.{w'} J S where
+  __ := E.toPreZeroHypercover.restrictIndex (Small.exists_restrictIndex_mem).choose_spec.choose
+  mem₀ := (Small.exists_restrictIndex_mem).choose_spec.choose_spec
 
 end ZeroHypercover
 
