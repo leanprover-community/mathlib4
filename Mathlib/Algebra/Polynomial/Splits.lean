@@ -585,11 +585,12 @@ theorem eval_derivative_div_eval_of_ne_zero_of_splits {p : K[X]} {x : K}
   rw [eval_derivative_eq_eval_mul_sum_of_splits h hx]
   exact mul_div_cancel_left₀ _ hx
 
-theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]}
-    (hP : P.Splits (RingHom.id K)) :
-    coeff P 0 = P.leadingCoeff * (-1) ^ P.natDegree * P.roots.prod := by
+theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]} (hP : P.Splits <| .id K) :
+    P.coeff 0 = (-1) ^ P.natDegree * P.leadingCoeff * P.roots.prod := by
   nth_rw 1 [eq_prod_roots_of_splits_id hP]
-  simp [hP, coeff_zero_eq_eval_zero, eval_multiset_prod, mul_assoc, splits_iff_card_roots.mp]
+  simp only [coeff_zero_eq_eval_zero, eval_mul, eval_C, eval_multiset_prod, Function.comp_apply,
+    Multiset.map_map, eval_sub, eval_X, zero_sub, Multiset.prod_map_neg]
+  grind [splits_iff_card_roots]
 
 /-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
 theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
@@ -597,15 +598,15 @@ theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
   convert coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits hP
   simp [hmo]
 
-theorem nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits {P : K[X]}
-    (hP : P.Splits (RingHom.id K)) : P.nextCoeff = -P.roots.sum * P.leadingCoeff := by
-  nth_rw 1 [eq_prod_roots_of_splits_id hP, nextCoeff_C_mul, Monic.nextCoeff_multiset_prod] <;>
-  simp [mul_comm, Multiset.sum_map_neg', monic_X_sub_C]
+theorem nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits {P : K[X]} (hP : P.Splits <| .id K) :
+    P.nextCoeff = -P.leadingCoeff * P.roots.sum := by
+  nth_rw 1 [eq_prod_roots_of_splits_id hP]
+  simp [Multiset.sum_map_neg', monic_X_sub_C, Monic.nextCoeff_multiset_prod]
 
 /-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the sum of the roots. -/
 theorem sum_roots_eq_nextCoeff_of_monic_of_split {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (RingHom.id K)) : P.nextCoeff = -P.roots.sum := by
-  rw [← mul_one <| -P.roots.sum]
+  rw [neg_eq_neg_one_mul]
   convert nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits hP
   simp [hmo]
 
