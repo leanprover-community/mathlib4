@@ -286,9 +286,7 @@ theorem parts_eq_iff_1 {p1 p2 : Set X × G × Set X} (h1 : p1 ∈ P.parts) (h2 :
   simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
     not_and] at h4
   have h5 := @h4 p1.1 p1.2.1 p1.2.2 h1 p2.1 p2.2.1 p2.2.2 h2 (by grind)
-  simp only [h3, Prod.mk.eta, disjoint_self, bot_eq_empty] at h5
-  have have_body_congr' := P.bot_notMem p2 h2
-  contradiction
+  simp only [h3, Prod.mk.eta, disjoint_self, bot_eq_empty, P.bot_notMem p2 h2] at h5
 
 theorem parts_eq_iff_2 {p1 p2 : Set X × G × Set X} (h1 : p1 ∈ P.parts) (h2 : p2 ∈ P.parts) :
     p1 = p2 ↔ p1.2.2 = p2.2.2 := by
@@ -298,11 +296,8 @@ theorem parts_eq_iff_2 {p1 p2 : Set X × G × Set X} (h1 : p1 ∈ P.parts) (h2 :
   simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
     not_and] at h4
   have h5 := @h4 p1.1 p1.2.1 p1.2.2 h1 p2.1 p2.2.1 p2.2.2 h2 (by grind)
-  simp only [h3, Prod.mk.eta, disjoint_self, bot_eq_empty] at h5
-  have have_body_congr' := P.bot_notMem p2 h2
-  rw [← P.decomp _ h2] at h5
-  simp only [image_smul, smul_set_eq_empty] at h5
-  contradiction
+  simp only [h3, ← P.decomp _ h2, image_smul, disjoint_self, bot_eq_empty, smul_set_eq_empty,
+    P.bot_notMem p2 h2] at h5
 
 /--
 The piece of the partition containing `x`, the group element associated to that piece,
@@ -352,10 +347,10 @@ theorem target_part_mem_parts (x : X) (h : x ∈ P.target) : (P.target_part x h)
 
 theorem decomp_inv (x : X) (h : x ∈ P.target) :
     ∃ y ∈ (P.target_part x h).1, (P.target_part x h).2.1 • y = x := by
-  let h1 := P.decomp (P.target_part x h) (by exact Equipartition.target_part_mem_parts P x h)
+  let h1 := P.decomp (P.target_part x h) <| Equipartition.target_part_mem_parts P x h
   simp [Set.ext_iff] at h1
   rw [← @mem_smul_set]
-  exact (h1 x).mpr (by exact Equipartition.target_part_spec P x h)
+  exact (h1 x).mpr <| Equipartition.target_part_spec P x h
 
 theorem target_part_decomp (x : X) (h : x ∈ P.target) :
     (P.target_part x h).2.1⁻¹ • x ∈ (P.target_part x h).1 := by
@@ -371,13 +366,13 @@ theorem part_eq_target_part_iff_mem (x : X) (hx : x ∈ P.target) (part : Set X 
   · intro h
     rw [P.parts_eq_iff_2 (target_part_mem_parts P x hx) hp]
     by_contra h1
-    have test := Finset.SupIndep.pairwiseDisjoint P.supIndepTarget
-    simp [PairwiseDisjoint, Set.Pairwise] at test
-    have test := test part.1 part.2.1 part.2.2 hp (P.target_part x hx).1 (P.target_part x hx).2.1
+    have h2 := Finset.SupIndep.pairwiseDisjoint P.supIndepTarget
+    simp [PairwiseDisjoint, Set.Pairwise] at h2
+    have h2 := h2 part.1 part.2.1 part.2.2 hp (P.target_part x hx).1 (P.target_part x hx).2.1
             (P.target_part x hx).2.2 (by simpa using target_part_mem_parts P x hx) (by grind)
-    simp [Disjoint] at test
-    have test := @test {x} (by simp [h]) (by simpa using target_part_spec P x hx)
-    simp at test
+    simp only [Prod.mk.eta, Disjoint, le_eq_subset, bot_eq_empty, subset_empty_iff] at h2
+    have h2 := @h2 {x} (by simp [h]) (by simpa using target_part_spec P x hx)
+    simp at h2
   · intro h
     rw [← h]
     exact target_part_spec P x hx
@@ -388,13 +383,13 @@ theorem part_eq_source_part_iff_mem (x : X) (hx : x ∈ P.source) (part : Set X 
   · intro h
     rw [P.parts_eq_iff_2 (source_part_mem_parts P x hx) hp]
     by_contra h1
-    have test := Finset.SupIndep.pairwiseDisjoint P.supIndepSource
+    have h2 := Finset.SupIndep.pairwiseDisjoint P.supIndepSource
     simp only [PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, ne_eq, Prod.forall, Prod.mk.injEq,
-      not_and] at test
-    have test := test part.1 part.2.1 part.2.2 hp (P.source_part x hx).1 (P.source_part x hx).2.1
+      not_and] at h2
+    have h2 := h2 part.1 part.2.1 part.2.2 hp (P.source_part x hx).1 (P.source_part x hx).2.1
             (P.source_part x hx).2.2 (by simpa using source_part_mem_parts P x hx) (by grind)
-    have test := @test {x} (by simp [h]) (by simpa using source_part_spec P x hx)
-    simp at test
+    have h2 := @h2 {x} (by simp [h]) (by simpa using source_part_spec P x hx)
+    simp at h2
   · intro h
     rw [← h]
     exact source_part_spec P x hx
