@@ -330,7 +330,7 @@ lemma Scheme.Opens.toSpecΓ_SpecMap_map {X : Scheme} (U V : X.Opens) (h : U ≤ 
   simp [← Spec.map_comp, ← X.presheaf.map_comp, toSpecΓ_naturality_assoc]
 
 @[reassoc (attr := simp)]
-lemma Opens.toSpecΓ_SpecMap_map_top {X : Scheme} (U : X.Opens) :
+lemma Scheme.Opens.toSpecΓ_SpecMap_map_top {X : Scheme} (U : X.Opens) :
     U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE le_top).op) = U.ι ≫ X.toSpecΓ := by
   simp [toSpecΓ, ← Spec.map_comp, ← Functor.map_comp, toSpecΓ_naturality]
 
