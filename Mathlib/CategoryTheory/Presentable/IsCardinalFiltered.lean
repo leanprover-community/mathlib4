@@ -183,7 +183,7 @@ instance isCardinalFiltered_under
     (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J κ] (j₀ : J) : IsCardinalFiltered (Under j₀) κ where
   nonempty_cocone {A _} F hA := ⟨by
-    have := isFiltered_of_isCardinalDirected J κ
+    have := isFiltered_of_isCardinalFiltered J κ
     let c := cocone (F ⋙ Under.forget j₀) hA
     let x (a : A) : j₀ ⟶ IsFiltered.max j₀ c.pt := (F.obj a).hom ≫ c.ι.app a ≫
       IsFiltered.rightToMax j₀ c.pt
