@@ -68,6 +68,11 @@ theorem star_isometry : Isometry (star : E → E) :=
 instance (priority := 100) NormedStarGroup.to_continuousStar : ContinuousStar E :=
   ⟨star_isometry.continuous⟩
 
+noncomputable
+instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] [StarModule 𝕜 E] :
+    NormedSpace 𝕜 (selfAdjoint E) where
+  norm_smul_le _ _ := norm_smul_le _ (_ : E)
+
 end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
