@@ -130,25 +130,26 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_snd_assoc]
       rfl
   let 𝒰 := S.affineOpenCover.openCover
-  let 𝒱 (i) := ((𝒰.pullbackCover f).X i).affineOpenCover.openCover
-  let 𝒲 (i) := ((𝒰.pullbackCover g).X i).affineOpenCover.openCover
+  let 𝒱 (i) := ((𝒰.pullback₁ f).X i).affineOpenCover.openCover
+  let 𝒲 (i) := ((𝒰.pullback₁ g).X i).affineOpenCover.openCover
   let U (ijk : Σ i, (𝒱 i).I₀ × (𝒲 i).I₀) : TopologicalSpace.Opens (X.carrier × Y) :=
-    ⟨{ P | P.1 ∈ ((𝒱 ijk.1).f ijk.2.1 ≫ (𝒰.pullbackCover f).f ijk.1).opensRange ∧
-          P.2 ∈ ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullbackCover g).f ijk.1).opensRange },
+    ⟨{ P | P.1 ∈ ((𝒱 ijk.1).f ijk.2.1 ≫ (𝒰.pullback₁ f).f ijk.1).opensRange ∧
+          P.2 ∈ ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange },
       (continuous_fst.1 _ ((𝒱 ijk.1).f ijk.2.1 ≫
-      (𝒰.pullbackCover f).f ijk.1).opensRange.2).inter (continuous_snd.1 _
-      ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullbackCover g).f ijk.1).opensRange.2)⟩
+      (𝒰.pullback₁ f).f ijk.1).opensRange.2).inter (continuous_snd.1 _
+      ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange.2)⟩
   have : Set.range L ⊆ (iSup U :) := by
-    simp only [Scheme.Cover.pullbackCover_I₀, Scheme.Cover.pullbackCover_X, Set.range_subset_iff]
+    simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+      PreZeroHypercover.pullback₁_I₀, PreZeroHypercover.pullback₁_X, Set.range_subset_iff]
     intro z
     simp only [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup, Sigma.exists, Prod.exists]
     obtain ⟨is, s, hsx⟩ := 𝒰.exists_eq (f.base ((pullback.fst f g).base z))
     have hsy : (𝒰.f is).base s = g.base ((pullback.snd f g).base z) := by
       rwa [← Scheme.comp_base_apply, ← pullback.condition, Scheme.comp_base_apply]
-    obtain ⟨x : (𝒰.pullbackCover f).X is, hx⟩ :=
+    obtain ⟨x : (𝒰.pullback₁ f).X is, hx⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ hsx.symm
-    obtain ⟨y : (𝒰.pullbackCover g).X is, hy⟩ :=
+    obtain ⟨y : (𝒰.pullback₁ g).X is, hy⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ hsy.symm
     obtain ⟨ix, x, rfl⟩ := (𝒱 is).exists_eq x
@@ -178,12 +179,12 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       congr 5
       apply pullback.hom_ext <;> simp [𝓤, ← pullback.condition, ← pullback.condition_assoc]
   · intro i
-    have := H (S.affineOpenCover.X i.1) (((𝒰.pullbackCover f).X i.1).affineOpenCover.X i.2.1)
-        (((𝒰.pullbackCover g).X i.1).affineOpenCover.X i.2.2)
+    have := H (S.affineOpenCover.X i.1) (((𝒰.pullback₁ f).X i.1).affineOpenCover.X i.2.1)
+        (((𝒰.pullback₁ g).X i.1).affineOpenCover.X i.2.2)
         ((𝒱 i.1).f i.2.1 ≫ 𝒰.pullbackHom f i.1)
         ((𝒲 i.1).f i.2.2 ≫ 𝒰.pullbackHom g i.1)
-        ((𝒱 i.1).f i.2.1 ≫ (𝒰.pullbackCover f).f i.1)
-        ((𝒲 i.1).f i.2.2 ≫ (𝒰.pullbackCover g).f i.1)
+        ((𝒱 i.1).f i.2.1 ≫ (𝒰.pullback₁ f).f i.1)
+        ((𝒲 i.1).f i.2.2 ≫ (𝒰.pullback₁ g).f i.1)
         (𝒰.f i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
         inferInstance inferInstance inferInstance
     convert this using 7

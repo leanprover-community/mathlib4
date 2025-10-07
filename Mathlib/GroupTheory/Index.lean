@@ -564,7 +564,7 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     dsimp only [f] at he
     simpa [hle₁, hle₂, he] using hc'
   have := (fintypeOfIndexNeZero h).finite
-  have hcard := Finite.card_le_of_injective f hf
+  have hcard := Nat.card_le_card_of_injective f hf
   simp [← index_eq_card] at hcard
 
 @[to_additive]

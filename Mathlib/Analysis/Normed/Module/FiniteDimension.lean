@@ -9,12 +9,14 @@ import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.Algebra.AffineSubspace
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
 import Mathlib.LinearAlgebra.Dimension.LinearMap
+
 
 /-!
 # Finite-dimensional normed spaces over complete fields
@@ -674,6 +676,29 @@ theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSp
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO_nat hg.norm h.norm_right
+
+
+open Nat Asymptotics in
+/-- This is a version of `summable_norm_mul_geometric_of_norm_lt_one` for more general codomains. We
+keep the original one due to import restrictions. -/
+theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
+    [NormOneClass F] [NormMulClass F] {k : ℕ} {r : F} (hr : ‖r‖ < 1) {u : ℕ → F}
+    (hu : u =O[atTop] fun n ↦ ((n ^ k : ℕ) : F)) : Summable fun n : ℕ ↦ ‖u n * r ^ n‖ := by
+  rcases exists_between hr with ⟨r', hrr', h⟩
+  apply summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h).norm
+  calc
+  fun n ↦ ‖(u n) * r ^ n‖
+  _ =O[atTop] fun n ↦ ‖u n‖ * ‖r‖ ^ n := by
+      apply (IsBigOWith.of_bound (c := ‖(1 : ℝ)‖) ?_).isBigO
+      filter_upwards [eventually_norm_pow_le r] with n hn
+      simp
+  _ =O[atTop] fun n ↦ ‖((n : F) ^ k)‖ * ‖r‖ ^ n := by
+      simpa [Nat.cast_pow] using
+      (isBigO_norm_left.mpr (isBigO_norm_right.mpr hu)).mul (isBigO_refl (fun n ↦ (‖r‖ ^ n)) atTop)
+  _ =O[atTop] fun n ↦ ‖r' ^ n‖ := by
+      convert isBigO_norm_right.mpr (isBigO_norm_left.mpr
+        (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
+      simp only [norm_pow, norm_mul]
 
 theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :
