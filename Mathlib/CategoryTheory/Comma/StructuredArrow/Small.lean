@@ -32,7 +32,7 @@ instance small_inverseImage_proj_of_locallySmall
     rw [this]
     infer_instance
   ext X
-  simp only [ObjectProperty.prop_inverseImage_iff, proj_obj, ObjectProperty.prop_ofObj_iff,
+  simp only [ObjectProperty.prop_inverseImage_iff, proj_obj, ObjectProperty.ofObj_iff,
     Sigma.exists, Subtype.exists, exists_prop]
   exact ⟨fun h ↦ ⟨_, h, _, rfl⟩, by rintro ⟨_, h, _, rfl⟩; exact h⟩
 
@@ -52,7 +52,7 @@ instance small_inverseImage_proj_of_locallySmall
     rw [this]
     infer_instance
   ext X
-  simp only [ObjectProperty.prop_inverseImage_iff, proj_obj, ObjectProperty.prop_ofObj_iff,
+  simp only [ObjectProperty.prop_inverseImage_iff, proj_obj, ObjectProperty.ofObj_iff,
     Sigma.exists, Subtype.exists, exists_prop]
   exact ⟨fun h ↦ ⟨_, h, _, rfl⟩, by rintro ⟨_, h, _, rfl⟩; exact h⟩
 

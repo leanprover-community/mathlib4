@@ -71,7 +71,7 @@ lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparatin
   rintro _ ⟨i⟩ α
   apply freeYonedaHomEquiv.symm.injective
   simpa only [freeYonedaHomEquiv_symm_comp] using
-    h _ (ObjectProperty.prop_ofObj _ ⟨X, i⟩) (freeYonedaHomEquiv.symm α)
+    h _ (ObjectProperty.ofObj_apply _ ⟨X, i⟩) (freeYonedaHomEquiv.symm α)
 
 lemma isSeparator {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S))
     [HasCoproduct (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))]

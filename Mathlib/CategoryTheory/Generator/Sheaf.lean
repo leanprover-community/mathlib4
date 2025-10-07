@@ -47,7 +47,7 @@ lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparatin
   rintro _ ⟨X, i⟩ a
   apply ((sheafificationAdjunction _ _).homEquiv _ _).symm.injective
   simpa only [← Adjunction.homEquiv_naturality_right_symm] using
-    hfg _ (ObjectProperty.prop_ofObj _ ⟨X, i⟩)
+    hfg _ (ObjectProperty.ofObj_apply _ ⟨X, i⟩)
       (((sheafificationAdjunction _ _).homEquiv _ _).symm a)
 
 lemma isSeparator {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S))
