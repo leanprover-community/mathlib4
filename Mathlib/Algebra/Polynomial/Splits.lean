@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Polynomial.Factors
 import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.Data.List.Prime
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -187,11 +186,7 @@ theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map
 
 theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : natDegree (f.map i) ≠ 0) :
     (f.map i).roots ≠ 0 :=
-  let ⟨x, hx⟩ := exists_root_of_splits' i hs fun h => hf0 <| natDegree_eq_of_degree_eq_some h
-  fun h => by
-  rw [← eval_map] at hx
-  have : f.map i ≠ 0 := by intro; simp_all
-  cases h.subst ((mem_roots this).2 hx)
+  roots_ne_zero_of_factors hs hf0
 
 /-- Pick a root of a polynomial that splits. See `rootOfSplits` for polynomials over a field
 which has simpler assumptions. -/
@@ -203,21 +198,8 @@ theorem map_rootOfSplits' {f : K[X]} (hf : f.Splits i) (hfd) :
   Classical.choose_spec <| exists_root_of_splits' i hf hfd
 
 theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p) :
-    (p.map i).natDegree = Multiset.card (p.map i).roots := by
-  by_cases hp : p.map i = 0
-  · rw [hp, natDegree_zero, roots_zero, Multiset.card_zero]
-  obtain ⟨q, he, hd, hr⟩ := exists_prod_multiset_X_sub_C_mul (p.map i)
-  rw [← splits_id_iff_splits, ← he] at hsplit
-  rw [← he] at hp
-  have hq : q ≠ 0 := fun h => hp (by rw [h, mul_zero])
-  rw [← hd, add_eq_left]
-  by_contra h
-  have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]
-  have := roots_ne_zero_of_splits' (RingHom.id L) (splits_of_splits_mul' _ ?_ hsplit).2 h'
-  · rw [map_id] at this
-    exact this hr
-  · rw [map_id]
-    exact mul_ne_zero (monic_multisetProd_X_sub_C _).ne_zero hq
+    (p.map i).natDegree = Multiset.card (p.map i).roots :=
+  hsplit.natDegree_eq_card_roots
 
 theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i ≠ 0)
     (hsplit : Splits i p) : (p.map i).degree = Multiset.card (p.map i).roots := by
@@ -433,15 +415,10 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
     (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits i f :=
   factors_iff_exists_multiset.mpr ⟨s, leadingCoeff_map i ▸ hs⟩
 
-theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f :=
-  UniqueFactorizationMonoid.induction_on_prime f (fun _ => splits_zero _)
-    (fun _ hu _ => splits_of_degree_le_one _ ((isUnit_iff_degree_eq_zero.1 hu).symm ▸ by decide))
-    fun _ p ha0 hp ih hfi =>
-    splits_mul _
-      (splits_of_degree_eq_one _
-        ((splits_of_splits_mul _ (mul_ne_zero hp.1 ha0) hfi).1.def.resolve_left hp.1 hp.irreducible
-          (by rw [map_id])))
-      (ih (splits_of_splits_mul _ (mul_ne_zero hp.1 ha0) hfi).2)
+theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f := by
+  simp only [Splits, factors_iff_exists_multiset]
+  rintro ⟨m, hm⟩
+  exact ⟨m.map i, by simpa [Polynomial.map_multiset_prod] using congr_arg (map i) hm⟩
 
 end UFD
 
