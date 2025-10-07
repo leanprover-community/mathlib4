@@ -339,12 +339,40 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
     return (srcI, tgtI)
   | _ =>
     match_expr etype with
-    | OpenPartialHomeomorph X Y _ _ =>
-      trace[Elab.DiffGeo.MDiff] m!"found a partial homeomorphism from {X} to {Y}"
-      return (X, Y)
-    | PartialEquiv X Y =>
-      trace[Elab.DiffGeo.MDiff] m!"found a partial equivalence from {X} to {Y}"
-      return (X, Y)
+    | OpenPartialHomeomorph src tgt _ _ =>
+      trace[Elab.DiffGeo.MDiff] m!"found a partial homeomorphism from {src} to {tgt}"
+      if tgt.hasLooseBVars then
+        -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
+        throwError "Term {e} is a dependent function, of type {etype}\nHint: you can use the `T%` \
+          elaborator to convert a dependent function to a non-dependent one"
+      let srcI ← findModel src
+      if let some es := es then
+        let estype ← inferType es
+        /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
+        `estype` are acceptable.
+        TODO: consider attempting to coerce `es` to a `Set`. -/
+        if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
+          throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
+            the set {es} : {estype}"
+      let tgtI ← findModel tgt (src, srcI)
+      return (srcI, tgtI)
+    | PartialEquiv src tgt =>
+      trace[Elab.DiffGeo.MDiff] m!"found a partial equivalence from {src} to {tgt}"
+      if tgt.hasLooseBVars then
+        -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
+        throwError "Term {e} is a dependent function, of type {etype}\nHint: you can use the `T%` \
+          elaborator to convert a dependent function to a non-dependent one"
+      let srcI ← findModel src
+      if let some es := es then
+        let estype ← inferType es
+        /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
+        `estype` are acceptable.
+        TODO: consider attempting to coerce `es` to a `Set`. -/
+        if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
+          throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
+            the set {es} : {estype}"
+      let tgtI ← findModel tgt (src, srcI)
+      return (srcI, tgtI)
     | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
 end Elab
