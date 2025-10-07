@@ -433,7 +433,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
   obtain ⟨hp, hx⟩ := hp
   induction p using snocInduction generalizing x with
   | h0 =>
-    simp only [snoc_zero, Path.cast_coe]
+    simp only [snoc_zero]
     use Path.refl x
     simp [hx]
   | @h n p y hp₂ =>
