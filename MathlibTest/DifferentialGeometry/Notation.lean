@@ -138,11 +138,14 @@ in the application
 #guard_msgs in
 #check MDiffAt[s] φ
 /--
-error: Expected
-  ψ
-of type
-  PartialEquiv M E
-to be a function
+error: Application type mismatch: The argument
+  M
+has type
+  Type u_4
+but is expected to have type
+  ModelWithCorners ?𝕜 ?E ?H
+in the application
+  @MDifferentiableWithinAt ?𝕜 ?inst✝ ?E ?inst✝¹ ?inst✝² ?H ?inst✝³ M
 -/
 #guard_msgs in
 #check MDiffAt[s] ψ
