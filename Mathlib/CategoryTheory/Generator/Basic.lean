@@ -400,7 +400,7 @@ namespace StructuredArrow
 
 variable (S : D) (T : C ⥤ D)
 
-theorem isCoseparating_proj_preimage {P : ObjectProperty C} (hP : P.IsCoseparating) :
+theorem isCoseparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsCoseparating) :
     (P.inverseImage (proj S T)).IsCoseparating  := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.right (hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl))
@@ -411,7 +411,7 @@ namespace CostructuredArrow
 
 variable (S : C ⥤ D) (T : D)
 
-theorem isSeparating_proj_preimage {P : ObjectProperty C} (hP : P.IsSeparating) :
+theorem isSeparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsSeparating) :
     (P.inverseImage (proj S T)).IsSeparating  := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.left (hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl))
@@ -939,5 +939,9 @@ end HasGenerator
   ObjectProperty.isCoseparating_iff_mono
 @[deprecated (since := "2025-10-07")] alias IsSeparating.isSeparator_coproduct :=
   ObjectProperty.IsSeparating.isSeparator_coproduct
+@[deprecated (since := "2025-10-07")] alias StructuredArrow.isCoseparating_proj_preimage :=
+  StructuredArrow.isCoseparating_inverseImage_proj
+@[deprecated (since := "2025-10-07")] alias CostructuredArrow.isSeparating_proj_preimage :=
+  CostructuredArrow.isSeparating_inverseImage_proj
 
 end CategoryTheory
