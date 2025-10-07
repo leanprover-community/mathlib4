@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.Tactic.DepRewrite
 
 /-!
 # A functor from a small category to a filtered category factors through a small filtered category
@@ -82,7 +83,7 @@ as a function of `ℕ`.
 
 The function is defined by well-founded recursion, but we really want to use its
 definitional equalities in the proofs below, so lets make it semireducible. -/
-@[semireducible] private noncomputable def bundledAbstractFilteredClosure :
+private noncomputable def bundledAbstractFilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
   | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractFilteredClosure m)⟩
@@ -103,19 +104,35 @@ theorem small_fullSubcategory_filteredClosure :
     (fun _ _ => ObjectProperty.FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
-  | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
+  | base x =>
+      refine ⟨⟨0, ?_⟩, ?_⟩
+      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+        exact ULift.up x
+      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
+        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+        rfl
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max ?_ ?_ x y⟩, rfl⟩
-    all_goals apply Nat.lt_succ_of_le
-    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    refine ⟨⟨(Max.max n m).succ, ?_⟩, ?_⟩
+    · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      refine FilteredClosureSmall.InductiveStep.max ?_ ?_ x y
+      all_goals apply Nat.lt_succ_of_le
+      exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
+      rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      rfl
   | coeq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq ?_ ?_ x y g g'⟩, rfl⟩
-    all_goals apply Nat.lt_succ_of_le
-    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    refine ⟨⟨(Max.max n m).succ, ?_⟩, ?_⟩
+    · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      refine FilteredClosureSmall.InductiveStep.coeq ?_ ?_ x y g g'
+      all_goals apply Nat.lt_succ_of_le
+      exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
+      rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      rfl
 
 instance : EssentiallySmall.{max v w} (filteredClosure f).FullSubcategory :=
   have : LocallySmall.{max v w} (filteredClosure f).FullSubcategory := locallySmall_max.{w, v, u}
