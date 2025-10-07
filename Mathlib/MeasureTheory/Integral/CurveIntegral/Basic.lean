@@ -280,7 +280,8 @@ theorem curveIntegral_trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegr
     intervalIntegral.integral_smul,
     intervalIntegral.smul_integral_comp_mul_left (f := (curveIntegralFun ω γbc <| · - 1)),
     intervalIntegral.integral_comp_sub_right]
-  norm_num [curveIntegral_def]
+  simp only [curveIntegral_def]
+  norm_num
 
 theorem curveIntegralFun_segment [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (a b : E)
     {t : ℝ} (ht : t ∈ I) : curveIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
@@ -534,20 +535,20 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
   · rw [curveIntegrable_segment]
     exact intervalIntegrable_const
 
-/-- The integral of `ω` along `[a -[ℝ] b]` has derivative `ω a` in `b` at `b = a`.
+/-- The integral of `ω` along `[a -[ℝ] b]`, as a function of `b`, has derivative `ω a` at `b = a`.
 This is a `HasFDerivWithinAt` version assuming that `ω` is continuous on `s`. -/
 theorem HasFDerivWithinAt.curveIntegral_segment_source (hs : Convex ℝ s) (hω : ContinuousOn ω s)
     (ha : a ∈ s) : HasFDerivWithinAt (∫ᶜ x in .segment a ·, ω x) (ω a) s a :=
   .curveIntegral_segment_source' hs (mem_of_superset self_mem_nhdsWithin hω) ha
 
-/-- The integral of `ω` along `[a -[ℝ] b]` has derivative `ω a` in `b` at `b = a`.
+/-- The integral of `ω` along `[a -[ℝ] b]`, as a function of `b`, has derivative `ω a` at `b = a`.
 This is a `HasFDerivAt` version assuming that `ω` is continuous in a neighborhood of `a`. -/
 theorem HasFDerivAt.curveIntegral_segment_source' (hω : ∀ᶠ z in 𝓝 a, ContinuousAt ω z) :
     HasFDerivAt (∫ᶜ x in .segment a ·, ω x) (ω a) a :=
   HasFDerivWithinAt.curveIntegral_segment_source' convex_univ
     (by simpa only [nhdsWithin_univ, continuousWithinAt_univ]) (mem_univ _) |>.hasFDerivAt_of_univ
 
-/-- The integral of `ω` along `[a -[ℝ] b]` has derivative `ω a` in `b` at `b = a`.
+/-- The integral of `ω` along `[a -[ℝ] b]`, as a function of `b`, has derivative `ω a` at `b = a`.
 This is a `HasFDerivAt` version assuming that `ω` is continuous on the whole space. -/
 theorem HasFDerivAt.curveIntegral_segment_source (hω : Continuous ω) :
     HasFDerivAt (∫ᶜ x in .segment a ·, ω x) (ω a) a :=
