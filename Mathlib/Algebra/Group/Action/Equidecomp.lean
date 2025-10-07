@@ -459,47 +459,33 @@ Chooses the group element that is applied to a certain `x` in the source of f.
 noncomputable def source_witness (f : Equidecomp X G) {x : X} (h : x ∈ f.source) : G :=
   (f.isDecompOn x h).choose
 
+theorem source_witness_spec (f : Equidecomp X G) {x : X} (h : x ∈ f.source) :
+  f.source_witness h ∈ f.witness ∧ f x = f.source_witness h • x := (f.isDecompOn x h).choose_spec
+
 /--
 Chooses the group element which was used to send an element of the source to `y`.
 -/
 noncomputable def target_witness (f : Equidecomp X G) {y : X} (h : y ∈ f.target) : G :=
-  (f.isDecompOn (f.invFun y) (f.map_target' h)).choose
+  f.source_witness (f.map_target' h)
 
-def target_witness_spec (f : Equidecomp X G) {y : X} (h : y ∈ f.target) :
+theorem target_witness_spec (f : Equidecomp X G) {y : X} (h : y ∈ f.target) :
   f.target_witness h ∈ f.witness ∧ y = f.target_witness h • (f.invFun y):= by
-  rw [target_witness]
+  rw [target_witness, source_witness]
   have h1 := (f.isDecompOn (f.invFun y) (f.map_target' h)).choose_spec
   have h2 : f (f.invFun y) = y := by
     rw [f.right_inv' h]
   grind
 
-
-theorem target_witness_of (f : Equidecomp X G) {x : X} (h : x ∈ f.source) (g : G) (hg : g • x ∈ f.target) (h1 : f x = g • x):
-    f.target_witness hg = g := by
-  apply_fun (. • x)
-  simp
-  let h2 := (f.target_witness_spec hg).2
-
-  simp_rw [← h1] at h2
-  rw [f.left_inv' h] at h2
-  simp_rw [h1] at h2
-  rw [← h2]
-  simp [Function.Injective]
-
-
-
-
-
-
-
-
 open scoped Classical in noncomputable def minimal_witness (f : Equidecomp X G) : Finset G :=
   {w ∈ f.witness | ∃ a, ∃ h, @f.source_witness _ _ _ _ a h = w}
 
-
-
-open scoped Classical in noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G where
-  parts := Finset.image (fun g ↦ ({x : X | if h : x ∈ f.source then f.source_witness h = g else false},g,{y : X | if h : y ∈ f.target then f.target_witness h = g else false})) f.minimal_witness
+/-
+Constructs an `Equipartition` from an `Equidecomp`.
+-/
+open Classical in noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G where
+  parts := Finset.image (fun g ↦
+    ({x : X | if h : x ∈ f.source then f.source_witness h = g else false},g,
+     {y : X | if h : y ∈ f.target then f.target_witness h = g else false})) f.minimal_witness
   bot_notMem p h := by
     simp only [Bool.false_eq_true, dite_else_false, Finset.mem_image] at h
     rcases h with ⟨g, ⟨hg, h⟩⟩
@@ -512,21 +498,30 @@ open scoped Classical in noncomputable def to_equipartition (f : Equidecomp X G)
     simp only [Bool.false_eq_true, dite_else_false, Finset.mem_image] at hp
     rcases hp with ⟨g, ⟨hg, hp⟩⟩
     subst hp
-    simp only [image_smul]
     apply le_antisymm
-    . simp only [le_eq_subset, subset_setOf, mem_smul_set, mem_setOf_eq, forall_exists_index,
-      and_imp]
-      intro x1 x2 hx2 h1 h2
+    · simp only [image_smul, target_witness, invFun_as_coe, le_eq_subset, subset_setOf,
+      mem_smul_set, mem_setOf_eq, forall_exists_index, and_imp]
+      intro x1 x2 h1 h2 h3
       subst h2
-
-
-
-    #exit
-
-
-#exit
-
-
+      rw [← (f.source_witness_spec h1).2] at h3
+      have h5 : x1 ∈ f.target := by
+        rw [← h3]
+        exact f.map_source' h1
+      apply_fun f.invFun at h3
+      rw [f.left_inv' h1] at h3
+      simp [h3, h5]
+    · simp only [target_witness, invFun_as_coe, image_smul, le_eq_subset, setOf_subset,
+      mem_smul_set, mem_setOf_eq, forall_exists_index]
+      intro x1 hx1 h1
+      use f.invFun x1
+      subst h1
+      simp only [invFun_as_coe, exists_prop, and_true]
+      refine And.intro (PartialEquiv.map_target f.toPartialEquiv hx1) ?_
+      have h4 := (f.source_witness_spec (id (Eq.refl (f.symm x1)) ▸ target_witness._proof_1 f
+        (Eq.mpr_prop (Eq.refl (x1 ∈ f.target)) ((Iff.of_eq (Eq.refl (x1 ∈ f.target))).mpr hx1))
+        : f.symm x1 ∈ f.source)).2
+      simp_rw [symm_toPartialEquiv] at h4
+      rw [← h4, right_inv hx1]
   supIndepSource s h1 p h2 := by
     simp_all only [Bool.false_eq_true, dite_else_false, Finset.mem_image, Finset.sup_set_eq_biUnion,
       disjoint_iUnion_right, Prod.forall]
@@ -552,11 +547,10 @@ open scoped Classical in noncomputable def to_equipartition (f : Equidecomp X G)
       disjoint_iUnion_right, Prod.forall]
     intro s' g' b' hA'
     rcases h2 with ⟨g,⟨hg, hpg⟩⟩
-    simp only [← hpg]
-    simp only [Finset.subset_image_iff] at h1
+    simp only [← hpg, Finset.subset_image_iff] at h1 ⊢
     rcases h1 with ⟨s_g, ⟨h_s_g, h_s_g_s⟩⟩
     rw [← h_s_g_s] at hA'
-    simp at hA'
+    simp only [Finset.mem_image, Prod.mk.injEq, existsAndEq, true_and] at hA'
     rcases hA' with ⟨hg', ⟨hs', hb'⟩⟩
     simp only [← hb', Set.disjoint_iff, subset_empty_iff, eq_empty_iff_forall_notMem, mem_inter_iff,
       mem_setOf_eq, not_and, not_exists, forall_exists_index]
@@ -564,9 +558,6 @@ open scoped Classical in noncomputable def to_equipartition (f : Equidecomp X G)
     rw [hg_]
     have h : g ∉ s_g := by grind
     grind
-
-
-
 
 end Group
 
