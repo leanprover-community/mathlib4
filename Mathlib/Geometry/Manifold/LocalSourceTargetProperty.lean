@@ -147,6 +147,7 @@ lemma congr_iff (hP : IsLocalSourceTargetProperty P)
     P f φ ψ ↔ P g φ ψ :=
   ⟨hP.congr hfg hs hφ, hP.congr hfg.symm hs hφ⟩
 
+-- XXX: should `PartialHomeomorph.restr_source'` be tagged with grind?
 /-- If `P` is a local property, by monotonicity w.r.t. restricting `domChart`,
 if `f` is continuous at `x`, to prove `LiftSourceTargetPropertyAt I I' n f x P`
 we need not check the condition `f '' domChart.source ⊆ codChart.source`. -/
@@ -181,8 +182,15 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
       exact (hfg.mono this).image_eq.symm.le
     · exact Subset.trans (image_mono (by simp)) hf.map_source_subset_source
   · apply hP.congr (hfg.mono hss') hs
-    · grind [PartialHomeomorph.restr_toPartialEquiv, PartialEquiv.restr_source, interior_subset]
+    · grind [PartialHomeomorph.restr_source']
     exact hP.mono_source hs hf.property
+
+/-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
+and `f` and `g` are eventually equal near `x`,
+then `f` has property `P` at `x` if and only if `g` has property `P` at `x`. -/
+lemma congr_iff_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[nhds x] g) :
+    LiftSourceTargetPropertyAt I I' n f x P ↔ LiftSourceTargetPropertyAt I I' n g x P :=
+  ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
 
 end LiftSourceTargetPropertyAt
 
