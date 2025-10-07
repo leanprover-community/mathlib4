@@ -99,4 +99,8 @@ instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
     use i, (H i).isoPullback.inv.base w
     simpa [← Scheme.comp_base_apply]
 
+/-- The Zariski precoverage on the category of schemes is the precoverage defined by
+jointly surjective families of open immersions. -/
+abbrev zariskiPrecoverage : Precoverage Scheme.{u} := precoverage @IsOpenImmersion
+
 end AlgebraicGeometry.Scheme
