@@ -46,7 +46,7 @@ def keys : List (Sigma β) → List α :=
 theorem keys_nil : @keys α β [] = [] :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem keys_cons {s} {l : List (Sigma β)} : (s :: l).keys = s.1 :: l.keys :=
   rfl
 
@@ -81,6 +81,7 @@ alias not_eq_key := ne_key
 
 
 /-- Determines whether the store uses a key several times. -/
+@[grind]
 def NodupKeys (l : List (Sigma β)) : Prop :=
   l.keys.Nodup
 
@@ -99,6 +100,7 @@ theorem nodupKeys_nil : @NodupKeys α β [] :=
 theorem nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} :
     NodupKeys (s :: l) ↔ s.1 ∉ l.keys ∧ NodupKeys l := by simp [keys, NodupKeys]
 
+@[grind =]
 theorem nodupKeys_middle {s : Sigma β} :
     (l₁ ++ s :: l₂).NodupKeys ↔ (s :: (l₁ ++ l₂)).NodupKeys := by
   simp_all [NodupKeys, keys, nodup_middle]
@@ -160,18 +162,19 @@ def dlookup (a : α) : List (Sigma β) → Option (β a)
   | [] => none
   | ⟨a', b⟩ :: l => if h : a' = a then some (Eq.recOn h b) else dlookup a l
 
-@[simp]
+@[simp, grind =]
 theorem dlookup_nil (a : α) : dlookup a [] = @none (β a) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem dlookup_cons_eq (l) (a : α) (b : β a) : dlookup a (⟨a, b⟩ :: l) = some b :=
   dif_pos rfl
 
-@[simp]
+@[simp, grind =]
 theorem dlookup_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → dlookup a (s :: l) = dlookup a l
   | ⟨_, _⟩, h => dif_neg h.symm
 
+@[grind _=_]
 theorem dlookup_isSome {a : α} : ∀ {l : List (Sigma β)}, (dlookup a l).isSome ↔ a ∈ l.keys
   | [] => by simp
   | ⟨a', b⟩ :: l => by
