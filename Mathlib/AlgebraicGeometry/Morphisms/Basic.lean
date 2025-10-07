@@ -109,8 +109,7 @@ namespace AlgebraicGeometry
 abbrev IsZariskiLocalAtTarget (P : MorphismProperty Scheme.{u}) :=
   P.IsLocalAtTarget Scheme.zariskiPrecoverage
 
-@[deprecated (since := "2025-10-07")]
-alias IsLocalAtTarget := IsZariskiLocalAtTarget
+@[deprecated (since := "2025-10-07")] alias IsLocalAtTarget := IsZariskiLocalAtTarget
 
 namespace IsZariskiLocalAtTarget
 
@@ -189,8 +188,7 @@ end IsZariskiLocalAtTarget
 abbrev IsZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) :=
   P.IsLocalAtSource Scheme.zariskiPrecoverage
 
-@[deprecated (since := "2025-10-07")]
-alias IsLocalAtSource := IsZariskiLocalAtSource
+@[deprecated (since := "2025-10-07")] alias IsLocalAtSource := IsZariskiLocalAtSource
 
 namespace IsZariskiLocalAtSource
 
@@ -479,8 +477,7 @@ lemma of_isZariskiLocalAtTarget (P : MorphismProperty Scheme.{u})
       exact P.of_zeroHypercover_target Y.affineCover
         fun i ↦ of_targetAffineLocally_of_isPullback (.of_hasPullback _ _) hf
 
-@[deprecated (since := "2025-10-07")]
-alias of_isLocalAtTarget := of_isZariskiLocalAtTarget
+@[deprecated (since := "2025-10-07")] alias of_isLocalAtTarget := of_isZariskiLocalAtTarget
 
 lemma copy {P P'} {Q Q'} [HasAffineProperty P Q]
     (e : P = P') (e' : Q = Q') : HasAffineProperty P' Q' where

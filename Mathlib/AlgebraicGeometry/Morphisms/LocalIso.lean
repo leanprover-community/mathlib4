@@ -54,6 +54,8 @@ lemma le_of_isZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) [P.Contains
   rw [IsZariskiLocalAtSource.iff_of_openCover 𝒰 (P := P)]
   exact fun _ ↦ IsZariskiLocalAtSource.of_isOpenImmersion _
 
+@[deprecated (since := "2025-10-07")] alias le_of_isLocalAtSource := le_of_isZariskiLocalAtSource
+
 /-- `IsLocalIso` is the weakest source-Zariski-local property containing identities. -/
 lemma eq_iInf :
     @IsLocalIso = ⨅ (P : MorphismProperty Scheme.{u}) (_ : P.ContainsIdentities)

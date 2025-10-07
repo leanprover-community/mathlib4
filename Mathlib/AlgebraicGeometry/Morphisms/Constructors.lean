@@ -193,6 +193,9 @@ theorem universally_isZariskiLocalAtTarget (P : MorphismProperty Scheme)
         · rw [← cancel_mono (Scheme.Opens.ι _)]
           simp [morphismRestrict_ι_assoc, h.1.1]
 
+@[deprecated (since := "2025-10-07")]
+alias universally_isLocalAtTarget := universally_isZariskiLocalAtTarget
+
 lemma universally_isZariskiLocalAtSource (P : MorphismProperty Scheme)
     [IsZariskiLocalAtSource P] : IsZariskiLocalAtSource P.universally := by
   refine .mk_of_iff ?_
@@ -211,6 +214,9 @@ lemma universally_isZariskiLocalAtSource (P : MorphismProperty Scheme)
       PreZeroHypercover.pullback₁_X, PreZeroHypercover.pullback₁_f]
     rw [← pullbackLeftPullbackSndIso_hom_fst, P.cancel_left_of_respectsIso]
     exact hf i _ _ _ (IsPullback.of_hasPullback ..)
+
+@[deprecated (since := "2025-10-07")]
+alias universally_isLocalAtSource := universally_isZariskiLocalAtSource
 
 end Universally
 
@@ -271,6 +277,9 @@ lemma topologically_isZariskiLocalAtTarget [(topologically P).RespectsIso]
     rw [← morphismRestrict_base]
     exact hf i
 
+@[deprecated (since := "2025-10-07")]
+alias topologically_isLocalAtTarget := topologically_isZariskiLocalAtTarget
+
 /-- A variant of `topologically_isZariskiLocalAtTarget`
 that takes one iff statement instead of two implications. -/
 lemma topologically_isZariskiLocalAtTarget' [(topologically P).RespectsIso]
@@ -283,6 +292,9 @@ lemma topologically_isZariskiLocalAtTarget' [(topologically P).RespectsIso]
   refine (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
   rw [IsOpenCover, ← top_le_iff]
   exact le_iSup (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ⟨0⟩
+
+@[deprecated (since := "2025-10-07")]
+alias topologically_isLocalAtTarget' := topologically_isZariskiLocalAtTarget'
 
 lemma topologically_isZariskiLocalAtSource [(topologically P).RespectsIso]
     (hP₁ : ∀ {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
@@ -297,6 +309,9 @@ lemma topologically_isZariskiLocalAtSource [(topologically P).RespectsIso]
   · introv hU hf
     exact hP₂ f.base f.continuous _ hU hf
 
+@[deprecated (since := "2025-10-07")]
+alias topologically_isLocalAtSource := topologically_isZariskiLocalAtSource
+
 /-- A variant of `topologically_isZariskiLocalAtSource`
 that takes one iff statement instead of two implications. -/
 lemma topologically_isZariskiLocalAtSource' [(topologically P).RespectsIso]
@@ -309,6 +324,9 @@ lemma topologically_isZariskiLocalAtSource' [(topologically P).RespectsIso]
   refine (hP f (![⊤, U] ∘ Equiv.ulift) ?_ hf).mp hs ⟨1⟩
   rw [IsOpenCover, ← top_le_iff]
   exact le_iSup (![⊤, U] ∘ Equiv.ulift) ⟨0⟩
+
+@[deprecated (since := "2025-10-07")]
+alias topologically_isLocalAtSource' := topologically_isZariskiLocalAtSource'
 
 end Topologically
 
@@ -351,6 +369,9 @@ lemma stalkwiseIsZariskiLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P
     exact ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
       morphismRestrictStalkMap f (U i) ⟨x, hi⟩).mp <| hf i ⟨x, hi⟩
 
+@[deprecated (since := "2025-10-07")]
+alias stalkwiseIsLocalAtTarget_of_respectsIso := stalkwiseIsZariskiLocalAtTarget_of_respectsIso
+
 /-- If `P` respects isos, then `stalkwise P` is local at the source. -/
 lemma stalkwise_isZariskiLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
     IsZariskiLocalAtSource (stalkwise P) := by
@@ -364,6 +385,9 @@ lemma stalkwise_isZariskiLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso 
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp hy
     rw [← hP.cancel_right_isIso _ ((U i).ι.stalkMap ⟨x, hi⟩)]
     simpa [Scheme.stalkMap_comp] using hf i ⟨x, hi⟩
+
+@[deprecated (since := "2025-10-07")]
+alias stalkwise_isLocalAtSource_of_respectsIso := stalkwise_isZariskiLocalAtSource_of_respectsIso
 
 lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
     stalkwise P (Spec.map φ) ↔ ∀ (p : Ideal S) (_ : p.IsPrime),
