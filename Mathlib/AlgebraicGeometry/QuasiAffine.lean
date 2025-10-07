@@ -75,7 +75,7 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
     choose r hr hxr using H
     exact .of_isOpenCover (U := (X.basicOpen <| r ·))
       (eq_top_iff.mpr fun _ _ ↦ Opens.mem_iSup.mpr ⟨_, hxr _⟩)
-      (fun _ ↦ isRetroCompact_basicOpen _) (fun x ↦ (hr _).isQuasiSeparated)
+      (fun _ ↦ isRetrocompact_basicOpen _) (fun x ↦ (hr _).isQuasiSeparated)
   refine IsLocalAtTarget.of_forall_source_exists_preimage _ fun x ↦ ?_
   obtain ⟨r, hr, hxr⟩ := H x
   refine ⟨PrimeSpectrum.basicOpen r, (X.toSpecΓ_preimage_basicOpen r).ge hxr, ?_⟩
