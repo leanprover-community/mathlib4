@@ -353,7 +353,8 @@ variable {f g : R[X]} (hfg : f = g)
 @[simp] lemma algEquivOfEq_root : algEquivOfEq hfg (root f) = root g := by
   simp [algEquivOfEq]
 
-@[simp] lemma algEquivOfEq_symm_root : (algEquivOfEq hfg).symm (root g) = root f := by
+@[simp] lemma algEquivOfEq_symm : (algEquivOfEq hfg).symm = algEquivOfEq hfg.symm := by
+  ext
   simp [algEquivOfEq]
 
 end

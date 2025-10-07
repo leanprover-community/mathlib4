@@ -364,7 +364,7 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
   AlgHom.congr_fun (@aeval_X_left R _) p
 
-lemma aeval_X_left_of_algebra_apply [CommSemiring S] [Algebra R S] (p : R[X]) :
+lemma aeval_X_left_eq_map [CommSemiring S] [Algebra R S] (p : R[X]) :
     aeval X p = map (algebraMap R S) p :=
   rfl
 

@@ -29,7 +29,7 @@ variable {R : Type*} [CommRing R]
 lemma aeval_quotientMk_X {S : Type*} [CommRing S] [Algebra R S]
     (g : R[X]) (I : Ideal S[X]) :
     aeval (Ideal.Quotient.mk I X) g = Ideal.Quotient.mk I (g.map (algebraMap R S)) := by
-  simp [← Ideal.Quotient.algebraMap_eq, aeval_algebraMap_apply, aeval_X_left_of_algebra_apply]
+  simp [← Ideal.Quotient.algebraMap_eq, aeval_algebraMap_apply, aeval_X_left_eq_map]
 
 @[simp]
 lemma aeval_quotientMk_mvPolynomialX {α : Type*} (I : Ideal (MvPolynomial α R)) (i : α)

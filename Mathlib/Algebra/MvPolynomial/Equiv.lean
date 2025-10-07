@@ -360,6 +360,12 @@ lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X :=
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
   simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
+@[simp]
+lemma optionEquivLeft_rename_some (p : MvPolynomial S₁ R) :
+    optionEquivLeft R S₁ (rename .some p) = .C p := by
+  apply (optionEquivLeft R S₁).symm.injective
+  simp [MvPolynomial.optionEquivLeft_symm_apply]
+
 theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
     optionEquivLeft R S₁ (monomial m r) = .monomial (m none) (monomial m.some r) := by
   rw [optionEquivLeft_apply, aeval_monomial, prod_option_index]
@@ -474,11 +480,7 @@ lemma algebraMap_option_apply (p : MvPolynomial α R) :
 noncomputable def optionEquivLeft' :
     MvPolynomial (Option α) R ≃ₐ[MvPolynomial α R] (MvPolynomial α R)[X] where
   __ := optionEquivLeft R α
-  commutes' p := by
-    induction p using MvPolynomial.induction_on with
-    | C a => simp [optionEquivLeft_C]
-    | add p q _ _ => simp_all
-    | mul_X p n hn => simp_all [optionEquivLeft_X_some]
+  commutes' p := by simp
 
 @[simp]
 lemma coe_optionEquivLeft' :
