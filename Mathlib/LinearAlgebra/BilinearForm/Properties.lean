@@ -186,21 +186,29 @@ lemma isNonneg_def [LE R] {B : BilinForm R M} : B.IsNonneg ↔ ∀ x, 0 ≤ B x 
 @[simp]
 lemma isNonneg_zero [Preorder R] : IsNonneg (0 : BilinForm R M) := ⟨fun _ ↦ le_rfl⟩
 
+/-- A bilinear form is nonnegative if and only if it is nonnegative as a sesquilinear form. -/
+lemma isNonneg_iff [LE R] {B : BilinForm R M} : B.IsNonneg ↔ LinearMap.IsNonneg B :=
+  isNonneg_def.trans LinearMap.isNonneg_def.symm
+
 /-- A bilinear form `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
-structure IsPosSemidef [LE R] (B : BilinForm R M) extends B.IsSymm, B.IsNonneg
+structure IsPosSemidef [LE R] (B : BilinForm R M) extends
+  isSymm : B.IsSymm,
+  isNonneg : B.IsNonneg
 
 variable {B : BilinForm R M}
-
-alias IsPosSemidef.isSymm := IsPosSemidef.toIsSymm
-alias IsPosSemidef.isNonneg := IsPosSemidef.toIsNonneg
 
 lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsNonneg :=
   ⟨fun h ↦ ⟨h.isSymm, h.isNonneg⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
 
 @[simp]
 lemma isPosSemidef_zero [Preorder R] : IsPosSemidef (0 : BilinForm R M) where
-  toIsSymm := isSymm_zero
-  toIsNonneg := isNonneg_zero
+  isSymm := isSymm_zero
+  isNonneg := isNonneg_zero
+
+/-- A bilinear form is positive semidefinite if and only if it is positive semidefinite
+as a sesquilinear form. -/
+lemma isPosSemidef_iff [LE R] {B : BilinForm R M} : B.IsPosSemidef ↔ LinearMap.IsPosSemidef B :=
+  isPosSemidef_def.trans <| (isSymm_iff.and isNonneg_iff).trans LinearMap.isPosSemidef_def.symm
 
 end PositiveSemidefinite
 
