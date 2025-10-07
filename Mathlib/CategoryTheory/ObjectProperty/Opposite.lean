@@ -69,7 +69,7 @@ lemma isoClosure_op (P : ObjectProperty C) :
   exact ⟨fun ⟨Y, h, ⟨e⟩⟩ ↦ ⟨op Y, h, ⟨e.op.symm⟩⟩,
     fun ⟨Y, h, ⟨e⟩⟩ ↦ ⟨Y.unop, h, ⟨e.unop.symm⟩⟩⟩
 
-lemma isoClosure_unop (P : ObjectProperty Cᵒᵖ) :
+lemma unop_isoClosure (P : ObjectProperty Cᵒᵖ) :
     P.isoClosure.unop = P.unop.isoClosure := by
   rw [← op_injective_iff, P.unop.isoClosure_op, op_unop, op_unop]
 
