@@ -243,24 +243,15 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
-  /-- Attempt to find a model from a `TotalSpace` first by seeing if it is the total space of a
-  tangent bundle, then by attempting to use any provided `baseInfo`. -/
+  /-- Attempt to find a model from a `TotalSpace` first by attempting to use any provided
+  `baseInfo`, then by seeing if it is the total space of a tangent bundle. -/
   fromTotalSpace : TermElabM Expr := do
     match_expr e with
     | Bundle.TotalSpace _ F V => do
-      if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
       if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
+      if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
       throwError "Having a TotalSpace as source is not yet supported"
     | _ => throwError "{e} is not a `Bundle.TotalSpace`."
-  /-- Attempt to find a model from the total space of a tangent bundle. -/
-  fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
-    match_expr V with
-    | TangentSpace _k _ _E _ _ _H _ I M _ _ => do
-      trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
-      let srcIT : Term ← Term.exprToSyntax I
-      let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
-      Term.elabTerm resTerm none
-    | _ => throwError "{V} is not a `TangentSpace`"
   /-- Attempt to use the provided `baseInfo` to find a model. -/
   fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
     if let some (src, srcI) := baseInfo then
@@ -279,6 +270,15 @@ where
       Term.elabTerm iTerm none
     else
       throwError "No `baseInfo` provided"
+  /-- Attempt to find a model from the total space of a tangent bundle. -/
+  fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
+    match_expr V with
+    | TangentSpace _k _ _E _ _ _H _ I M _ _ => do
+      trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
+      let srcIT : Term ← Term.exprToSyntax I
+      let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
+      Term.elabTerm resTerm none
+    | _ => throwError "{V} is not a `TangentSpace`"
   /-- Attempt to find the trivial model on a normed space. -/
   fromNormedSpace : TermElabM Expr := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
