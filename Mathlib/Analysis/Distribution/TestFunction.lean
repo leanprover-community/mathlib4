@@ -62,6 +62,8 @@ with compact support. -/
 scoped[Distributions] notation "𝓓(" E ", " F ")" =>
   TestFunction E F ⊤
 
+namespace TestFunction
+
 open Distributions
 
 /-- `TestFunctionClass B E F n K` states that `B` is a type of `n`-times continously
@@ -87,8 +89,6 @@ instance (B : Type*) (E F : outParam <| Type*)
   map_bounded f := by
     rcases (map_continuous f).bounded_above_of_compact_support (compact_supp f) with ⟨C, hC⟩
     exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
-
-namespace TestFunction
 
 instance toTestFunctionClass :
     TestFunctionClass 𝓓^{n}(E, F) E F n where
