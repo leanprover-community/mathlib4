@@ -640,6 +640,12 @@ instance compCreatesLimitsOfShape [CreatesLimitsOfShape J F] [CreatesLimitsOfSha
 instance compCreatesLimits [CreatesLimitsOfSize.{w, w'} F] [CreatesLimitsOfSize.{w, w'} G] :
     CreatesLimitsOfSize.{w, w'} (F ⋙ G) where CreatesLimitsOfShape := inferInstance
 
+instance preservesLimit_comp_of_createsLimit [CreatesLimit K F] [PreservesLimit K (F ⋙ G)] :
+    PreservesLimit (K ⋙ F) G where
+  preserves hc := ⟨IsLimit.ofIsoLimit (isLimitOfPreserves (F ⋙ G) (liftedLimitIsLimit hc))
+    ((Functor.mapConeMapCone (liftLimit hc)).symm ≪≫
+      (Cones.functoriality _ _).mapIso (liftedLimitMapsToOriginal hc))⟩
+
 instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
     CreatesColimit K (F ⋙ G) where
   lifts c t :=
@@ -656,6 +662,12 @@ instance compCreatesColimitsOfShape [CreatesColimitsOfShape J F] [CreatesColimit
 
 instance compCreatesColimits [CreatesColimitsOfSize.{w, w'} F] [CreatesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (F ⋙ G) where CreatesColimitsOfShape := inferInstance
+
+instance preservesColimit_comp_of_createsColimit [CreatesColimit K F] [PreservesColimit K (F ⋙ G)] :
+    PreservesColimit (K ⋙ F) G where
+  preserves hc := ⟨IsColimit.ofIsoColimit (isColimitOfPreserves (F ⋙ G) (liftedColimitIsColimit hc))
+    ((Functor.mapCoconeMapCocone (liftColimit hc)).symm ≪≫
+      (Cocones.functoriality _ _).mapIso (liftedColimitMapsToOriginal hc))⟩
 
 end Comp
 

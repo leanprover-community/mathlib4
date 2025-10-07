@@ -174,7 +174,7 @@ Also see `AffineSpace.SpecIso`.
 -/
 @[simps -isSimp hom inv]
 def isoOfIsAffine [IsAffine S] :
-    𝔸(n; S) ≅ Spec(MvPolynomial n Γ(S, ⊤)) where
+    𝔸(n; S) ≅ Spec <| .of <| MvPolynomial n Γ(S, ⊤) where
       hom := 𝔸(n; S).toSpecΓ ≫ Spec.map (CommRingCat.ofHom
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)))
       inv := homOfVector (Spec.map (CommRingCat.ofHom C) ≫ S.isoSpec.inv)
@@ -237,7 +237,7 @@ instance [IsAffine S] : IsAffine 𝔸(n; S) := .of_isIso (isoOfIsAffine n S).hom
 variable (n) in
 /-- The affine space over an affine base is isomorphic to the spectrum of the polynomial ring. -/
 def SpecIso (R : CommRingCat.{max u v}) :
-    𝔸(n; Spec R) ≅ Spec(MvPolynomial n R) :=
+    𝔸(n; Spec R) ≅ Spec <| .of <| MvPolynomial n R :=
   isoOfIsAffine _ _ ≪≫ Scheme.Spec.mapIso (MvPolynomial.mapEquiv _
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv).toCommRingCatIso.op
 
@@ -434,8 +434,8 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
     wlog hS : ∃ R, S = Spec R
     · obtain ⟨x⟩ := ‹Nonempty S›
       obtain ⟨y, hy⟩ := S.affineCover.covers x
-      exact this (S.affineCover.X x) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
-        (isPullback_map (S.affineCover.f x)) h) ⟨y⟩ ⟨_, rfl⟩
+      exact this (S.affineCover.X _) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
+        (isPullback_map (S.affineCover.f _)) h) ⟨y⟩ ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hS
     have : Nontrivial R := (subsingleton_or_nontrivial R).resolve_left fun H ↦
         not_isEmpty_of_nonempty (Spec R) (inferInstanceAs (IsEmpty (PrimeSpectrum R)))

@@ -11,14 +11,13 @@ import Mathlib.Order.Preorder.Chain
 
 This file defines antichains. An antichain is a set where any two distinct elements are not related.
 If the relation is `(≤)`, this corresponds to incomparability and usual order antichains. If the
-relation is `G.adj` for `G : SimpleGraph α`, this corresponds to independent sets of `G`.
+relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent sets of `G`.
 
 ## Definitions
 
 * `IsAntichain r s`: Any two elements of `s : Set α` are unrelated by `r : α → α → Prop`.
 * `IsStrongAntichain r s`: Any two elements of `s : Set α` are not related by `r : α → α → Prop`
   to a common element.
-* `IsAntichain.mk r s`: Turns `s` into an antichain by keeping only the "maximal" elements.
 -/
 
 assert_not_exists CompleteLattice
@@ -37,6 +36,12 @@ def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
   s.Pairwise rᶜ
 
 namespace IsAntichain
+
+@[simp] protected theorem empty : IsAntichain r ∅ :=
+  pairwise_empty _
+
+@[simp] protected theorem singleton : IsAntichain r {a} :=
+  pairwise_singleton _ _
 
 protected theorem subset (hs : IsAntichain r s) (h : t ⊆ s) : IsAntichain r t :=
   hs.mono h
@@ -165,8 +170,13 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
 
 end IsAntichain
 
-theorem isAntichain_singleton (a : α) (r : α → α → Prop) : IsAntichain r {a} :=
-  pairwise_singleton _ _
+theorem isAntichain_union :
+    IsAntichain r (s ∪ t) ↔
+      IsAntichain r s ∧ IsAntichain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → rᶜ a b ∧ rᶜ b a := by
+  rw [IsAntichain, IsAntichain, IsAntichain, pairwise_union]
+
+@[deprecated (since := "2025-09-20")]
+alias isAntichain_singleton := IsAntichain.singleton
 
 theorem Set.Subsingleton.isAntichain (hs : s.Subsingleton) (r : α → α → Prop) : IsAntichain r s :=
   hs.pairwise _
@@ -203,12 +213,12 @@ theorem IsAntichain.not_lt (hs : IsAntichain (· ≤ ·) s) (ha : a ∈ s) (hb :
 theorem isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
-    exact ⟨isAntichain_singleton _ _, isLeast_singleton⟩⟩
+    exact ⟨IsAntichain.singleton, isLeast_singleton⟩⟩
 
 theorem isAntichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
-    exact ⟨isAntichain_singleton _ _, isGreatest_singleton⟩⟩
+    exact ⟨IsAntichain.singleton, isGreatest_singleton⟩⟩
 
 theorem IsAntichain.least_iff (hs : IsAntichain (· ≤ ·) s) : IsLeast s a ↔ s = {a} :=
   (and_iff_right hs).symm.trans isAntichain_and_least_iff
@@ -254,7 +264,15 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α]
+variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
+
+lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
+    IsAntichain (· ≤ ·) s :=
+  fun _a ha _b hb hab' hab ↦ (hf ha hb <| hab.lt_of_ne hab').not_ge (hf' ha hb hab)
+
+lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
+    IsAntichain (· ≤ ·) s :=
+  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_gt (hf' ha hb <| hab.lt_of_ne hab')
 
 theorem isAntichain_iff_forall_not_lt :
     IsAntichain (· ≤ ·) s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬a < b :=
@@ -327,16 +345,6 @@ end IsStrongAntichain
 theorem Set.Subsingleton.isStrongAntichain (hs : s.Subsingleton) (r : α → α → Prop) :
     IsStrongAntichain r s :=
   hs.pairwise _
-
-variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
-
-lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
-    IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb <| hab.lt_of_ne hab').not_ge (hf' ha hb hab)
-
-lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
-    IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_gt (hf' ha hb <| hab.lt_of_ne hab')
 
 end General
 
