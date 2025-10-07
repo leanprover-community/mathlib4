@@ -6680,6 +6680,7 @@ import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.AddCircle.Defs
 import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
 import Mathlib.Topology.Instances.AddCircle.Real
+import Mathlib.Topology.Instances.CantorSet
 import Mathlib.Topology.Instances.CantorSet.Basic
 import Mathlib.Topology.Instances.CantorSet.Cardinality
 import Mathlib.Topology.Instances.CantorSet.Lemmas
