@@ -171,14 +171,11 @@ theorem Monoid.fg_iff :
 on finite generators. -/
 @[to_additive /-- A additive monoid is finitely generated iff there exists a surjective homomorphism
 from a `FreeAddMonoid` on finite generators.-/]
-theorem Monoid.fg_iff_freeMonoid_hom_surjective {M} [Monoid M] :
-    Monoid.FG M ↔ ∃ (S : Set M) (_ : Finite S) (φ : FreeMonoid S →* M), Function.Surjective φ := by
-  constructor
-  · intro hfg
-    obtain ⟨S, hclosure, hfin⟩ := fg_iff.mp hfg
-    refine ⟨S, hfin, FreeMonoid.lift (·), ?_⟩
-    simp [← MonoidHom.mrange_eq_top, ← hclosure, ← Submonoid.closure_eq_mrange]
-  · rintro ⟨S, hfin, φ, hφ⟩
+theorem Monoid.fg_iff_exists_freeMonoid_hom_surjective :
+    Monoid.FG M ↔ ∃ (S : Set M) (_ : S.Finite) (φ : FreeMonoid S →* M), Function.Surjective φ := by
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeMonoid.lift Subtype.val, ?_⟩, ?_⟩
+  · rwa [← MonoidHom.mrange_eq_top, ← Submonoid.closure_eq_mrange]
+  · rintro ⟨S, hfin : Finite S, φ, hφ⟩
     refine fg_iff.mpr ⟨φ '' Set.range FreeMonoid.of, ?_, Set.toFinite _⟩
     simp [← MonoidHom.map_mclosure, hφ, FreeMonoid.closure_range_of, ← MonoidHom.mrange_eq_map]
 
@@ -404,14 +401,11 @@ theorem Group.fg_iff' :
 on finite generators. -/
 @[to_additive /-- An additive group is finitely generated iff there exists a surjective homomorphism
 from a `FreeAddGroup` on finite generators. -/]
-theorem Group.fg_iff_freeGroup_hom_surjective {G} [Group G] :
-    Group.FG G ↔ ∃ (S : Set G) (_ : Finite S) (φ : FreeGroup S →* G), Function.Surjective φ := by
-  constructor
-  · intro hfg
-    obtain ⟨S, hclosure, hfin⟩ := fg_iff.mp hfg
-    refine ⟨S, hfin, FreeGroup.lift (·), ?_⟩
-    simp [← MonoidHom.range_eq_top, ← hclosure, FreeGroup.range_lift_eq_closure]
-  · rintro ⟨S, hfin, φ, hφ⟩
+theorem Group.fg_iff_exists_freeGroup_hom_surjective :
+    Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite) (φ : FreeGroup S →* G), Function.Surjective φ := by
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeGroup.lift Subtype.val, ?_⟩, ?_⟩
+  · rwa [← MonoidHom.range_eq_top, ← FreeGroup.closure_eq_range]
+  · rintro ⟨S, hfin : Finite S, φ, hφ⟩
     refine fg_iff.mpr ⟨φ '' Set.range FreeGroup.of, ?_, Set.toFinite _⟩
     simp [← MonoidHom.map_closure, Subgroup.map_top_of_surjective, hφ]
 
