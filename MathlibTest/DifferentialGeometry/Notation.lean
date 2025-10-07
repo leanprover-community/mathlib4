@@ -519,7 +519,7 @@ end
 /-! (Extended) charts -/
 section
 
-variable {φ : OpenPartialHomeomorph M H} {ψ : PartialEquiv M E}
+variable {φ : OpenPartialHomeomorph M H} {ψ : PartialEquiv M E} {s : Set M}
 
 /-- info: ContMDiff I I 37 ↑φ : Prop -/
 #guard_msgs in
@@ -532,6 +532,14 @@ variable {φ : OpenPartialHomeomorph M H} {ψ : PartialEquiv M E}
 /-- info: MDifferentiable I 𝓘(𝕜, E) ↑ψ : Prop -/
 #guard_msgs in
 #check MDiff ψ
+
+/-- info: MDifferentiableWithinAt I I (↑φ) s : M → Prop -/
+#guard_msgs in
+#check MDiffAt[s] φ
+
+/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑ψ) s : M → Prop -/
+#guard_msgs in
+#check MDiffAt[s] ψ
 
 end
 
