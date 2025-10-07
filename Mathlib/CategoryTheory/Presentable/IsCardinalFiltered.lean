@@ -138,8 +138,8 @@ lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
     infer_instance
   exact ⟨cocone F hA⟩
 
-@[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalFiltered :=
-  isFiltered_of_isCardinalDirected
+@[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
+  isFiltered_of_isCardinalFiltered
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 
