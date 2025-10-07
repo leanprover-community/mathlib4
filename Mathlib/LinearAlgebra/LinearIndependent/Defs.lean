@@ -203,9 +203,6 @@ theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
 theorem linearIndependent_set_coe_iff :
     LinearIndependent R (fun x : s ↦ v x) ↔ LinearIndepOn R v s := Iff.rfl
 
-@[deprecated (since := "2025-02-20")] alias
-  linearIndependent_set_subtype := linearIndependent_set_coe_iff
-
 theorem linearIndependent_subtype_iff {s : Set M} :
     LinearIndependent R (Subtype.val : s → M) ↔ LinearIndepOn R id s := Iff.rfl
 
@@ -379,8 +376,6 @@ theorem linearIndepOn_iff_image {ι} {s : Set ι} {f : ι → M} (hf : Set.InjOn
     LinearIndepOn R f s ↔ LinearIndepOn R id (f '' s) :=
   linearIndependent_equiv' (Equiv.Set.imageOfInjOn _ _ hf) rfl
 
-@[deprecated (since := "2025-02-14")] alias linearIndependent_image := linearIndepOn_iff_image
-
 theorem linearIndepOn_range_iff {ι} {f : ι → ι'} (hf : Injective f) (g : ι' → M) :
     LinearIndepOn R g (range f) ↔ LinearIndependent R (g ∘ f) :=
   Iff.symm <| linearIndependent_equiv' (Equiv.ofInjective f hf) rfl
@@ -393,30 +388,15 @@ theorem linearIndepOn_id_range_iff {ι} {f : ι → M} (hf : Injective f) :
 
 alias ⟨LinearIndependent.of_linearIndepOn_id_range, _⟩ := linearIndepOn_id_range_iff
 
-@[deprecated (since := "2025-02-15")] alias linearIndependent_subtype_range :=
-    linearIndepOn_id_range_iff
-
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.of_subtype_range :=
-    LinearIndependent.of_linearIndepOn_id_range
-
 theorem LinearIndependent.linearIndepOn_id (i : LinearIndependent R v) :
     LinearIndepOn R id (range v) := by
   simpa using i.comp _ (rangeSplitting_injective v)
-
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.to_subtype_range :=
-    LinearIndependent.linearIndepOn_id
-
-@[deprecated (since := "2025-02-14")] alias
-  LinearIndependent.coe_range := LinearIndependent.linearIndepOn_id
 
 /-- A version of `LinearIndependent.linearIndepOn_id` with the set range equality as a hypothesis.
 -/
 theorem LinearIndependent.linearIndepOn_id' (hv : LinearIndependent R v) {t : Set M}
     (ht : Set.range v = t) : LinearIndepOn R id t :=
   ht ▸ hv.linearIndepOn_id
-
-@[deprecated (since := "2025-02-16")] alias LinearIndependent.to_subtype_range' :=
-    LinearIndependent.linearIndepOn_id'
 
 section Indexed
 
@@ -461,9 +441,6 @@ theorem linearIndependent_restrict_iff :
 theorem LinearIndepOn.linearIndependent_restrict (hs : LinearIndepOn R v s) :
     LinearIndependent R (s.restrict v) :=
   hs
-
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.restrict_of_comp_subtype :=
-    LinearIndepOn.linearIndependent_restrict
 
 theorem linearIndepOn_iff_linearCombinationOnₛ :
     LinearIndepOn R v s ↔ Injective (Finsupp.linearCombinationOn ι M R v s) := by
@@ -840,42 +817,25 @@ theorem linearIndepOn_iff : LinearIndepOn R v s ↔
   linearIndepOn_iffₛ.trans ⟨fun h l hl ↦ h l hl 0 (zero_mem _), fun h f hf g hg eq ↦
     sub_eq_zero.mp (h (f - g) (sub_mem hf hg) <| by rw [map_sub, eq, sub_self])⟩
 
-@[deprecated (since := "2025-02-15")] alias linearIndependent_comp_subtype := linearIndepOn_iff
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_subtype := linearIndepOn_iff
-
 /-- An indexed set of vectors is linearly dependent iff there is a nontrivial
 `Finsupp.linearCombination` of the vectors that is zero. -/
 theorem linearDepOn_iff' : ¬LinearIndepOn R v s ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.linearCombination R v f = 0 ∧ f ≠ 0 := by
   simp [linearIndepOn_iff]
 
-@[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype' := linearDepOn_iff'
-
 /-- A version of `linearDepOn_iff'` with `Finsupp.linearCombination` unfolded. -/
 theorem linearDepOn_iff : ¬LinearIndepOn R v s ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ ∑ i ∈ f.support, f i • v i = 0 ∧ f ≠ 0 :=
   linearDepOn_iff'
 
-@[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype := linearDepOn_iff
-
 theorem linearIndepOn_iff_disjoint : LinearIndepOn R v s ↔
       Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.linearCombination R v) := by
   rw [linearIndepOn_iff, LinearMap.disjoint_ker]
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_comp_subtype_disjoint :=
-    linearIndepOn_iff_disjoint
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_subtype_disjoint :=
-    linearIndepOn_iff_disjoint
 
 theorem linearIndepOn_iff_linearCombinationOn :
     LinearIndepOn R v s ↔ (LinearMap.ker <| Finsupp.linearCombinationOn ι M R v s) = ⊥ :=
   linearIndepOn_iff_linearCombinationOnₛ.trans <|
     LinearMap.ker_eq_bot (M := Finsupp.supported R R s).symm
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_iff_linearCombinationOn :=
-  linearIndepOn_iff_linearCombinationOn
 
 /-- A version of `linearIndepOn_iff` where the linear combination is a `Finset` sum. -/
 lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι → R), (t : Set ι) ⊆ s →

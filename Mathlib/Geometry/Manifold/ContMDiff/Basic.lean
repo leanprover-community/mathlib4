@@ -166,9 +166,9 @@ section Iterate
 theorem ContMDiffOn.iterate {f : M → M} (hf : ContMDiffOn I I n f s)
     (hmaps : Set.MapsTo f s s) (k : ℕ) :
     ContMDiffOn I I n (f^[k]) s := by
-  induction' k with k h
-  · simpa using contMDiffOn_id
-  · simpa using h.comp hf hmaps
+  induction k with
+  | zero => simpa using contMDiffOn_id
+  | succ k h => simpa using h.comp hf hmaps
 
 /-- The iterates of `C^n` functions are `C^n`. -/
 theorem ContMDiff.iterate {f : M → M} (hf : ContMDiff I I n f) (k : ℕ) :
@@ -419,7 +419,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   intro z hz
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
-  rw [h.toPartialHomeomorph_right_inv]
+  rw [h.toOpenPartialHomeomorph_right_inv]
   · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
     exact letI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
@@ -427,20 +427,20 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
     have := hz.1
     rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
     have := this.1
-    rw [mem_preimage, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
-      h.toPartialHomeomorph_target] at this
+    rw [mem_preimage, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
+      h.toOpenPartialHomeomorph_target] at this
     exact this
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
-      n (IsOpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
+      n (IsOpenEmbedding.toOpenPartialHomeomorph e h).symm (range e) := by
   haveI := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiffOn_iff]
   constructor
-  · rw [← h.toPartialHomeomorph_target]
-    exact (h.toPartialHomeomorph e).continuousOn_symm
+  · rw [← h.toOpenPartialHomeomorph_target]
+    exact (h.toOpenPartialHomeomorph e).continuousOn_symm
   · intro z hz
     -- show the function is actually the identity on the range of I ∘ e
     apply contDiffOn_id.congr
@@ -450,7 +450,7 @@ lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     have : I.symm z ∈ range e := by
       rw [ModelWithCorners.symm, ← mem_preimage]
       exact hz.2.1
-    rw [h.toPartialHomeomorph_right_inv e this]
+    rw [h.toOpenPartialHomeomorph_right_inv e this]
     apply I.right_inv
     exact mem_of_subset_of_mem (extChartAt_target_subset_range _) hz.1
 
@@ -463,9 +463,9 @@ space `H'`. If `e' ∘ f : M → H'` is `C^n`, then `f` is `C^n`.
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
 lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
     haveI := h'.singletonChartedSpace; ContMDiff I I' n f := by
-  have : f = (h'.toPartialHomeomorph e').symm ∘ e' ∘ f := by
+  have : f = (h'.toOpenPartialHomeomorph e').symm ∘ e' ∘ f := by
     ext
-    rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toPartialHomeomorph_left_inv]
+    rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toOpenPartialHomeomorph_left_inv]
   rw [this]
   apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_isOpenEmbedding_symm h') hf

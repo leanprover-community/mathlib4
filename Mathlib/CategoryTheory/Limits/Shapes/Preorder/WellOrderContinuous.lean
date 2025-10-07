@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Fin.SuccPred
+import Mathlib.Data.Fin.SuccPredOrder
 import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.Order.Interval.Set.Limit
 import Mathlib.Order.SuccPred.InitialSeg

@@ -466,10 +466,10 @@ theorem mk_zero_of (f : AdicCauchySequence I M)
     AdicCompletion.mk I M f = 0 := by
   obtain ⟨k, h⟩ := h
   ext n
-  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by omega)
+  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by cutsat)
   rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
-    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by omega)]
-  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by omega))) hl
+    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by cutsat)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by

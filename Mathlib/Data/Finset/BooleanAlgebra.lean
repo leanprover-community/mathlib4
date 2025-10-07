@@ -8,7 +8,7 @@ import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fintype.Defs
 
 /-!
-# `Finset`s are a boolean algebra
+# `Finset`s are a Boolean algebra
 
 This file provides the `BooleanAlgebra (Finset α)` instance, under the assumption that `α` is a
 `Fintype`.
@@ -16,7 +16,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 ## Main results
 
 * `Finset.boundedOrder`: `Finset.univ` is the top element of `Finset α`
-* `Finset.booleanAlgebra`: `Finset α` is a boolean algebra if `α` is finite
+* `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
 
 assert_not_exists Monoid
@@ -231,8 +231,7 @@ theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y => 
 /-- Note this is a special case of `(Finset.image_preimage f univ _).symm`. -/
 theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y => y ∈ Set.range f]
     [DecidableEq β] : (Finset.univ.filter fun y => y ∈ Set.range f) = Finset.univ.image f := by
-  letI : DecidablePred (fun y => ∃ x, f x = y) := by simpa using ‹_›
-  exact univ_filter_exists f
+  grind
 
 theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :
     (univ.filter p : Set α) = { x | p x } := by simp
