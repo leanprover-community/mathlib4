@@ -640,8 +640,6 @@ open PadicSeq
 
 variable {p : ℕ} [Fact p.Prime]
 
-example (p : Prop) [Decidable p] (h : p) : (if p then (0 : ℕ) else 1) = 0 := by exact if_pos h
-
 theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
