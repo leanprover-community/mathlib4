@@ -84,8 +84,8 @@ This "preserved under pullbacks" condition is automatically satisfied in abelian
 example [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
 ```
 -/
-instance faithful_pullback {X Y : C} (f : X ⟶ Y) [∀ Z (g : Z ⟶ Y), Epi (pullback.fst g f)] :
-    (pullback f).Faithful := by
+instance faithful_pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f]
+    [∀ Z (g : Z ⟶ Y), Epi (pullback.fst g f)] : (pullback f).Faithful := by
   have (Z : Over Y) : Epi ((mapPullbackAdj f).counit.app Z) := by
     simp only [Functor.comp_obj, Functor.id_obj, mapPullbackAdj_counit_app]; infer_instance
   exact (mapPullbackAdj f).faithful_R_of_epi_counit_app
@@ -197,8 +197,8 @@ This "preserved under pushouts" condition is automatically satisfied in abelian 
 example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
 ```
 -/
-instance faithful_pushout {X Y : C} (f : X ⟶ Y) [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] :
-    (pushout f).Faithful := by
+instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
+    [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] : (pushout f).Faithful := by
   have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by simp; infer_instance
   exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
