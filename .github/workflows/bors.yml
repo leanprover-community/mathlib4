@@ -196,6 +196,33 @@ jobs:
           cd pr-branch
           lake env
 
+      - name: validate lake-manifest.json inputRevs
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          cd pr-branch
+
+          # Check that all inputRevs in lake-manifest.json match the required pattern
+          echo "Validating lake-manifest.json inputRevs..."
+
+          # Extract all inputRevs from the manifest
+          invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
+            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?)$' || true)
+
+          if [ -n "$invalid_revs" ]; then
+            echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
+            echo "$invalid_revs"
+            echo ""
+            echo "All inputRevs must be one of:"
+            echo "  - 'main'"
+            echo "  - 'master'"
+            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3 or v1.2.3-pre)"
+            exit 1
+          else
+            echo "✅ All inputRevs in lake-manifest.json are valid"
+          fi
+
       - name: get cache (1/3 - setup and initial fetch)
         id: get_cache_part1_setup
         shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
@@ -608,6 +635,12 @@ jobs:
         run: |
           lake build Batteries Qq Aesop ProofWidgets Plausible
 
+      - name: build AesopTest (nightly-testing only)
+        # Only run on the mathlib4-nightly-testing repository
+        if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
+        run: |
+          lake build AesopTest
+
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `lean4checker.yml`.
       # Output is posted to the zulip topic
@@ -648,25 +681,13 @@ jobs:
           lint-bib-file: true
           ref: ${{ github.sha }}
 
-  build_and_lint:
-    name: CI Success
-    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
-    needs: [style_lint, post_steps]
-    runs-on: ubuntu-latest
-    steps:
-      - name: succeed
-        run: |
-          echo "Success: Required build and lint checks completed!"
-
   final:
     name: Post-CI job
     if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
-      # This action is used to determine the PR metadata in the event of a push.
-      - if: github.event_name != 'pull_request_target'
-        id: PR_from_push
+      - id: PR_from_push
         uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
@@ -675,6 +696,7 @@ jobs:
           # Only return if PR is still open
           filterOutClosed: true
 
+      # TODO: delete this step and rename `PR_from_push` to `PR` if the above step seems to work properly
       # Combine the output from the previous action with the metadata supplied by GitHub itself.
       # Note that if we fall back to github.event.pull_request data, the list of labels is generated when this workflow is triggered
       # and not updated afterwards!
