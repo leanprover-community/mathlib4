@@ -14,8 +14,6 @@ variable {R S : Type*}
 
 namespace Function.Injective
 variable [Semiring R] [PartialOrder R]
--- variable [Zero S] [One S] [Add S] [Mul S] [SMul ℕ S] [Pow S ℕ] [NatCast S]
--- variable (f : S → R) (hf : Injective f)
 
 /-- Pullback an `IsOrderedRing` under an injective map. -/
 protected lemma isOrderedRing [IsOrderedRing R] [Semiring S] [PartialOrder S]
