@@ -94,7 +94,7 @@ theorem IsPath.mk' {u v : V} {p : G.Walk u v} (h : p.support.Nodup) : p.IsPath :
 theorem isPath_def {u v : V} (p : G.Walk u v) : p.IsPath ↔ p.support.Nodup :=
   ⟨IsPath.support_nodup, IsPath.mk'⟩
 
-theorem isPath_iff_support_get_injective {u v : V} {p : G.Walk u v} :
+theorem isPath_iff_injective_get_support {u v : V} {p : G.Walk u v} :
     p.IsPath ↔ (p.support.get ·).Injective :=
   p.isPath_def.trans List.nodup_iff_injective_get
 
