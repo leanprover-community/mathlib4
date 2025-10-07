@@ -134,47 +134,25 @@ lemma isStrongGenerator_iff_exists_extremalEpi
     (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
     ((Discrete.equivalence (equivShrink.{w} _))).symm, _, hP.extremalEpi_coproductFrom X⟩
 
-end ObjectProperty
-
-section
-
-variable (hS : ∀ (X : C), ∃ (J : Type w) (_ : SmallCategory J)
-  (p : ColimitPresentation J X), ∀ (j : J), ∃ (G : S), Nonempty (p.diag.obj j ≅ G.1))
-
-include hS
-
-lemma IsSeparating.mk_of_exists_colimitPresentation :
-    IsSeparating S := by
-  intro X Y f g h
-  obtain ⟨J, _, p, hp⟩ := hS X
-  choose t ht using hp
-  let e (j : J) := (ht j).some
-  refine p.isColimit.hom_ext (fun j ↦ ?_)
-  rw [← cancel_epi (e j).inv]
-  simpa only [Category.assoc] using h _ (t j).2 ((e j).inv ≫ p.ι.app j)
-
-lemma IsStrongGenerator.mk_of_exists_colimitPresentation :
-    IsStrongGenerator S := by
+lemma IsStrongGenerator.mk_of_exists_colimitPresentation
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : SmallCategory J), Nonempty (P.ColimitOfShape J X)) :
+    P.IsStrongGenerator := by
   rw [isStrongGenerator_iff]
-  refine ⟨IsSeparating.mk_of_exists_colimitPresentation hS,
+  refine ⟨IsSeparating.mk_of_exists_colimitsOfShape hP,
     fun X Y i _ hi ↦ ?_⟩
   suffices ∃ (r : Y ⟶ X), r ≫ i = 𝟙 Y by
     obtain ⟨r, fac⟩ := this
     exact ⟨r, by simp [← cancel_mono i, fac], fac⟩
-  obtain ⟨J, _, p, hp⟩ := hS Y
-  have (j : J) : ∃ (l : p.diag.obj j ⟶ X), l ≫ i = p.ι.app j := by
-    obtain ⟨G, ⟨e⟩⟩ := hp j
-    obtain ⟨l, hl⟩ := hi G (e.inv ≫ p.ι.app j)
-    exact ⟨e.hom ≫ l, by simp [hl]⟩
-  choose φ hφ using this
+  obtain ⟨J, _, ⟨p⟩⟩ := hP Y
+  choose φ hφ using fun j ↦ hi _ (p.prop_diag_obj j) (p.ι.app j)
+  dsimp at hφ
   let c : Cocone p.diag := Cocone.mk _
     { app := φ
       naturality j₁ j₂ f := by simp [← cancel_mono i, hφ] }
   refine ⟨p.isColimit.desc c, p.isColimit.hom_ext (fun j ↦ ?_)⟩
-  have := p.isColimit.fac c j
-  dsimp [c] at this ⊢
-  rw [reassoc_of% this, hφ, Category.comp_id]
+  dsimp
+  rw [p.isColimit.fac_assoc, hφ, Category.comp_id]
 
-end
+end ObjectProperty
 
 end CategoryTheory
