@@ -18,8 +18,8 @@ properties:
   immersions `f₁` and `f₂`.
 - `AffineTargetMorphismProperty.of`: Given a morphism property `P` of schemes,
   this is the restriction of `P` to morphisms with affine target. If `P` is local at the
-  target, we have `(toAffineTargetMorphismProperty P).targetAffineLocally = P`
-  (see `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isZariskiLocalAtTarget`).
+  target, we have `(toAffineTargetMorphismProperty P).targetAffineLocally = P`, see:
+  `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isZariskiLocalAtTarget`
 - `MorphismProperty.topologically`: Given a property `P` of maps of topological spaces,
   `(topologically P) f` holds if `P` holds for the underlying continuous map of `f`.
 - `MorphismProperty.stalkwise`: Given a property `P` of ring homs,
@@ -195,7 +195,7 @@ theorem universally_isZariskiLocalAtTarget (P : MorphismProperty Scheme)
 
 lemma universally_isZariskiLocalAtSource (P : MorphismProperty Scheme)
     [IsZariskiLocalAtSource P] : IsZariskiLocalAtSource P.universally := by
-  refine ⟨inferInstance, ?_⟩
+  refine .mk_of_iff ?_
   intro X Y f 𝒰
   refine ⟨fun hf i ↦ ?_, fun hf ↦ ?_⟩
   · apply MorphismProperty.universally_mk'

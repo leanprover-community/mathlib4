@@ -407,7 +407,8 @@ lemma isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarge
 
 open _root_.PrimeSpectrum in
 variable (P) in
-lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarget P] [IsZariskiLocalAtSource P] :
+lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarget P]
+    [IsZariskiLocalAtSource P] :
     HasRingHomProperty P (fun f ↦ P (Spec.map (CommRingCat.ofHom f))) where
   isLocal_ringHomProperty :=
     isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget P
@@ -436,7 +437,8 @@ lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
       ∀ (p : Ideal S) (_ : p.IsPrime), P (Localization.localRingHom _ p φ rfl) := by
   have := stalkwiseIsZariskiLocalAtTarget_of_respectsIso hP
   have := stalkwise_isZariskiLocalAtSource_of_respectsIso hP
-  convert of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget (P := AlgebraicGeometry.stalkwise P) with R S _ _ φ
+  convert of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget
+    (P := AlgebraicGeometry.stalkwise P) with R S _ _ φ
   exact (stalkwise_Spec_map_iff hP (CommRingCat.ofHom φ)).symm
 
 lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
@@ -446,7 +448,8 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
       intro U
       rw [morphismRestrict_comp]
-      exact this _ _ (IsZariskiLocalAtTarget.restrict hf _) (IsZariskiLocalAtTarget.restrict hg _) U.2
+      exact this _ _ (IsZariskiLocalAtTarget.restrict hf _)
+        (IsZariskiLocalAtTarget.restrict hg _) U.2
     wlog hY : IsAffine Y generalizing X Y
     · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (Y.affineCover.pullback₁ f)]
       intro i
@@ -579,7 +582,8 @@ lemma iff_exists_appLE_locally
       Q (f.appLE U V e).hom := by
   have := respects_isOpenImmersion (P := P)
     (RingHom.locally_StableUnderCompositionWithLocalizationAwaySource hQ)
-  refine ⟨fun hf x ↦ ?_, fun hf ↦ (IsZariskiLocalAtSource.iff_exists_resLE (P := P)).mpr <| fun x ↦ ?_⟩
+  refine ⟨fun hf x ↦ ?_,
+      fun hf ↦ (IsZariskiLocalAtSource.iff_exists_resLE (P := P)).mpr <| fun x ↦ ?_⟩
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open Y)
       (Opens.mem_top <| f.base x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X)

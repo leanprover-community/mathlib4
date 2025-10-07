@@ -38,7 +38,8 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 instance : MorphismProperty.RespectsIso (topologically Function.Injective) :=
   topologically_respectsIso _ (fun e ↦ e.injective) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance injective_isZariskiLocalAtTarget : IsZariskiLocalAtTarget (topologically Function.Injective) := by
+instance injective_isZariskiLocalAtTarget :
+    IsZariskiLocalAtTarget (topologically Function.Injective) := by
   refine topologically_isZariskiLocalAtTarget _ (fun _ s _ _ h ↦ h.restrictPreimage s)
     fun f ι U H _ hf x₁ x₂ e ↦ ?_
   obtain ⟨i, hxi⟩ : ∃ i, f x₁ ∈ U i := by simpa using congr(f x₁ ∈ $H)
@@ -158,7 +159,8 @@ section IsOpenEmbedding
 instance : (topologically IsOpenEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance isOpenEmbedding_isZariskiLocalAtTarget : IsZariskiLocalAtTarget (topologically IsOpenEmbedding) :=
+instance isOpenEmbedding_isZariskiLocalAtTarget :
+    IsZariskiLocalAtTarget (topologically IsOpenEmbedding) :=
   topologically_isZariskiLocalAtTarget' _ fun _ _ _ hU ↦ hU.isOpenEmbedding_iff_restrictPreimage
 
 end IsOpenEmbedding
@@ -168,7 +170,8 @@ section IsClosedEmbedding
 instance : (topologically IsClosedEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance isClosedEmbedding_isZariskiLocalAtTarget : IsZariskiLocalAtTarget (topologically IsClosedEmbedding) :=
+instance isClosedEmbedding_isZariskiLocalAtTarget :
+    IsZariskiLocalAtTarget (topologically IsClosedEmbedding) :=
   topologically_isZariskiLocalAtTarget' _ fun _ _ _ hU ↦ hU.isClosedEmbedding_iff_restrictPreimage
 
 end IsClosedEmbedding
@@ -239,7 +242,8 @@ instance specializingMap_respectsIso : (topologically @SpecializingMap).Respects
   · introv hf hg
     exact hf.comp hg
 
-instance specializingMap_isZariskiLocalAtTarget : IsZariskiLocalAtTarget (topologically @SpecializingMap) := by
+instance specializingMap_isZariskiLocalAtTarget :
+    IsZariskiLocalAtTarget (topologically @SpecializingMap) := by
   apply topologically_isZariskiLocalAtTarget
   · introv _ _ hf
     rw [specializingMap_iff_closure_singleton_subset] at hf ⊢

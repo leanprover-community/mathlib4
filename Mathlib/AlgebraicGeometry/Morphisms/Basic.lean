@@ -579,7 +579,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
       rw [← pullbackSymmetry_hom_comp_snd, Q.cancel_left_of_respectsIso]
       apply of_isPullback (.of_hasPullback _ _) H)
 
-lemma isLocalAtSource
+lemma isZariskiLocalAtSource
     (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] (𝒰 : Scheme.OpenCover.{u} X),
         Q f ↔ ∀ i, Q (𝒰.f i ≫ f)) : IsZariskiLocalAtSource P := by
   refine .mk_of_iff ?_
