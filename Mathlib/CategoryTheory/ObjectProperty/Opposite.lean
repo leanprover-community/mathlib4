@@ -96,7 +96,7 @@ def subtypeOpEquiv (P : ObjectProperty C) :
 @[simp]
 lemma op_ofObj {ι : Type*} (X : ι → C) : (ofObj X).op = ofObj (fun i ↦ op (X i)) := by
   ext Z
-  simp only [op_iff, prop_ofObj_iff]
+  simp only [op_iff, ofObj_iff]
   constructor
   · rintro ⟨i, hi⟩
     exact ⟨i, by rw [hi]⟩

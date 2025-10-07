@@ -61,11 +61,11 @@ lemma prop_map_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
 inductive strictMap (P : ObjectProperty C) (F : C ⥤ D) : ObjectProperty D
   | mk (X : C) (hX : P X) : strictMap P F (F.obj X)
 
-lemma prop_strictMap_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
+lemma strictMap_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
     P.strictMap F Y ↔ ∃ (X : C), P X ∧ F.obj X = Y :=
   ⟨by rintro ⟨X, hX⟩; exact ⟨X, hX, rfl⟩, by rintro ⟨X, hX, rfl⟩; exact ⟨X, hX⟩⟩
 
-lemma prop_strictMap_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
+lemma strictMap_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.strictMap F (F.obj X) :=
   ⟨X, hX⟩
 
@@ -88,9 +88,9 @@ inductive ofObj : ObjectProperty C
   | mk (i : ι) : ofObj (X i)
 
 @[simp]
-lemma prop_ofObj (i : ι) : ofObj X (X i) := ⟨i⟩
+lemma ofObj_apply (i : ι) : ofObj X (X i) := ⟨i⟩
 
-lemma prop_ofObj_iff (Y : C) : ofObj X Y ↔ ∃ i, X i = Y := by
+lemma ofObj_iff (Y : C) : ofObj X Y ↔ ∃ i, X i = Y := by
   constructor
   · rintro ⟨i⟩
     exact ⟨i, rfl⟩
@@ -105,7 +105,7 @@ lemma ofObj_le_iff (P : ObjectProperty C) :
 lemma strictMap_ofObj (F : C ⥤ D) :
     (ofObj X).strictMap F = ofObj (F.obj ∘ X) := by
   ext Y
-  simp [prop_ofObj_iff, prop_strictMap_iff]
+  simp [ofObj_iff, strictMap_iff]
 
 end
 
@@ -113,7 +113,7 @@ end
 abbrev singleton (X : C) : ObjectProperty C := ofObj (fun (_ : Unit) ↦ X)
 
 @[simp]
-lemma prop_singleton_iff (X Y : C) : singleton X Y ↔ X = Y := by simp [prop_ofObj_iff]
+lemma singleton_iff (X Y : C) : singleton X Y ↔ X = Y := by simp [ofObj_iff]
 
 @[simp]
 lemma singleton_le_iff {X : C} {P : ObjectProperty C} :
@@ -124,14 +124,14 @@ lemma singleton_le_iff {X : C} {P : ObjectProperty C} :
 lemma strictMap_singleton (X : C) (F : C ⥤ D) :
     (singleton X).strictMap F = singleton (F.obj X) := by
   ext
-  simp [prop_strictMap_iff]
+  simp [strictMap_iff]
 
 /-- The property of objects in a category that is satisfied by `X : C` and `Y : C`. -/
 def pair (X Y : C) : ObjectProperty C :=
   ofObj (Sum.elim (fun (_ : Unit) ↦ X) (fun (_ : Unit) ↦ Y))
 
 @[simp]
-lemma prop_pair_iff (X Y Z : C) :
+lemma pair_iff (X Y Z : C) :
     pair X Y Z ↔ X = Z ∨ Y = Z := by
   constructor
   · rintro ⟨_ | _⟩ <;> tauto
