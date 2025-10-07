@@ -63,8 +63,8 @@ theorem MonotoneOn.deriv_intervalIntegrable {f : ℝ → ℝ} {a b : ℝ} (hf : 
   have G_liminf : ∀ᵐ (x : ℝ),
       Filter.liminf (fun (n : ℕ) ↦ ‖G (n : ℝ)⁻¹ x‖ₑ) Filter.atTop = ‖deriv g x‖ₑ:= by
     filter_upwards [G_lim] with x hx using hx.enorm.liminf_eq
-  have G_fatou := MeasureTheory.lintegral_liminf_le₀' (s := Ioc a b)
-    (fun n ↦ G_integrable (n : ℝ)⁻¹ |>.aestronglyMeasurable |>.aemeasurable |>.enorm) (by simp)
+  have G_fatou := MeasureTheory.lintegral_liminf_le₀'
+    (fun n ↦ G_integrable (n : ℝ)⁻¹ |>.aestronglyMeasurable |>.aemeasurable |>.enorm) (Ioc a b)
   have G_bound {n : ℕ} (hn : n ≠ 0) :
       n * (∫ (x : ℝ) in a..b, g (x + (n : ℝ)⁻¹) - g x) ≤ g b - g a := by
     have n_inv_mul : (n : ℝ) * (n : ℝ)⁻¹ = 1 := mul_inv_cancel₀ (by norm_cast)
