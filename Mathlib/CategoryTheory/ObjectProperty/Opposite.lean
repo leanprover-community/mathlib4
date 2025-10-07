@@ -73,4 +73,34 @@ lemma isoClosure_unop (P : ObjectProperty Cᵒᵖ) :
     P.isoClosure.unop = P.unop.isoClosure := by
   rw [← op_injective_iff, P.unop.isoClosure_op, op_unop, op_unop]
 
+/-- The bijection `Subtype P.op ≃ Subtype P` for `P : ObjectProperty C`. -/
+def subtypeOpEquiv (P : ObjectProperty C) :
+    Subtype P.op ≃ Subtype P where
+  toFun x := ⟨x.1.unop, x.2⟩
+  invFun x := ⟨op x.1, x.2⟩
+
+@[simp]
+lemma op_ofObj {ι : Type*} (X : ι → C) : (ofObj X).op = ofObj (fun i ↦ op (X i)) := by
+  ext Z
+  simp only [op_iff, prop_ofObj_iff]
+  constructor
+  · rintro ⟨i, hi⟩
+    exact ⟨i, by rw [hi]⟩
+  · rintro ⟨i, hi⟩
+    exact ⟨i, by rw [← hi]⟩
+
+@[simp]
+lemma unop_ofObj {ι : Type*} (X : ι → Cᵒᵖ) : (ofObj X).unop = ofObj (fun i ↦ (X i).unop) :=
+  op_injective ((op_ofObj _).symm)
+
+@[simp high]
+lemma op_singleton (X : C) :
+    (singleton X).op = singleton (op X) := by
+  simp
+
+@[simp high]
+lemma unop_singleton (X : Cᵒᵖ) :
+    (singleton X).unop = singleton X.unop := by
+  simp
+
 end CategoryTheory.ObjectProperty
