@@ -853,11 +853,6 @@ end CyclotomicRing
 
 end IsDomain
 
--- TODO: move to suitable place
-theorem Polynomial.separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
-    (cyclotomic n K).Separable :=
-  .of_dvd (separable_X_pow_sub_C 1 NeZero.out one_ne_zero) (cyclotomic.dvd_X_pow_sub_one n K)
-
 section IsSepClosed
 
 variable [IsSepClosed K]
