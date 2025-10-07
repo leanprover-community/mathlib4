@@ -354,12 +354,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
 
 @[simp]
 theorem cases_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
-    PFunctor.M.cases f (M.mk x) = f x := by
-  dsimp only [M.mk, PFunctor.M.cases, dest, head, Approx.sMk, head']
-  cases x; dsimp only [Approx.sMk]
-  simp only [Eq.mpr]
-  apply congrFun
-  rfl
+    PFunctor.M.cases f (M.mk x) = f x := rfl
 
 @[simp]
 theorem casesOn_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
