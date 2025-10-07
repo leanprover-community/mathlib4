@@ -28,8 +28,8 @@ namespace Rat
 
 variable {a b c p q : ℚ}
 
-@[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b :=
-  divInt_nonneg ha <| Int.natCast_nonneg _
+@[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
+  simpa using divInt_nonneg ha (Int.natCast_nonneg _)
 
 theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) : 0 ≤ Rat.ofScientific m s e := by
   rw [Rat.ofScientific]
@@ -52,8 +52,8 @@ protected lemma divInt_le_divInt {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
   rw [Rat.le_iff_sub_nonneg, ← Int.sub_nonneg]
   simp [sub_eq_add_neg, ne_of_gt b0, ne_of_gt d0, Int.mul_pos d0 b0]
 
-protected lemma lt_iff_le_not_ge (a b : ℚ) : a < b ↔ a ≤ b ∧ ¬b ≤ a := by
-  grind
+protected lemma lt_iff_le_not_ge (a b : ℚ) : a < b ↔ a ≤ b ∧ ¬b ≤ a :=
+  Std.LawfulOrderLT.lt_iff a b
 
 instance linearOrder : LinearOrder ℚ where
   le_refl _ := Rat.le_refl
@@ -119,8 +119,7 @@ instance : AddLeftMono ℚ where
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
-  simp only [lt_iff_le_not_ge]
-  simp [*, div_def', Rat.divInt_le_divInt]
+  grind [lt_iff_le_not_ge, Rat.divInt_le_divInt, div_def', num_intCast, den_intCast]
 
 theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_iff]
 
