@@ -41,7 +41,7 @@ variable (i : K →+* L)
 
 /-- A polynomial `Splits` iff it is zero or all of its irreducible factors have `degree` 1.
 This will eventually be replaced by `Polynomial.Factors`. -/
-abbrev Splits (f : K[X]) : Prop :=
+def Splits (f : K[X]) : Prop :=
   Factors (f.map i)
 
 @[simp]
