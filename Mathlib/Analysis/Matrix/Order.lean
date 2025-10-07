@@ -53,7 +53,7 @@ lemma nonneg_iff_posSemidef {A : Matrix n n 𝕜} : 0 ≤ A ↔ A.PosSemidef := 
 
 protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff_posSemidef
 
-attribute [aesop 20% apply (rule_sets := [CStarAlgebra])] PosSemidef.nonneg
+attribute [aesop forward (rules_sets := [CStarAlgebra])] PosSemidef.nonneg
 
 /-- The partial order on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
 abbrev instPartialOrder : PartialOrder (Matrix n n 𝕜) where
