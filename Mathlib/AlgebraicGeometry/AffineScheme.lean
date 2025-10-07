@@ -329,11 +329,6 @@ lemma Scheme.Opens.toSpecΓ_SpecMap_map {X : Scheme} (U V : X.Opens) (h : U ≤ 
   delta Scheme.Opens.toSpecΓ
   simp [← Spec.map_comp, ← X.presheaf.map_comp, toSpecΓ_naturality_assoc]
 
-@[reassoc (attr := simp)]
-lemma Scheme.Opens.toSpecΓ_SpecMap_map_top {X : Scheme} (U : X.Opens) :
-    U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE le_top).op) = U.ι ≫ X.toSpecΓ := by
-  simp [toSpecΓ, ← Spec.map_comp, ← Functor.map_comp, toSpecΓ_naturality]
-
 @[simp]
 lemma Scheme.Opens.toSpecΓ_top {X : Scheme} :
     (⊤ : X.Opens).toSpecΓ = (⊤ : X.Opens).ι ≫ X.toSpecΓ := by
@@ -343,6 +338,11 @@ lemma Scheme.Opens.toSpecΓ_top {X : Scheme} :
 lemma Scheme.Opens.toSpecΓ_appTop {X : Scheme.{u}} (U : X.Opens) :
     U.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
   simp [Scheme.Opens.toSpecΓ]
+
+@[reassoc]
+lemma Scheme.Opens.toSpecΓ_SpecMap_map_top {X : Scheme} (U : X.Opens) :
+    U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE le_top).op) = U.ι ≫ X.toSpecΓ := by
+  simp
 
 namespace IsAffineOpen
 
