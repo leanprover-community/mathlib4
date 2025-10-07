@@ -640,6 +640,8 @@ open PadicSeq
 
 variable {p : ℕ} [Fact p.Prime]
 
+example (p : Prop) [Decidable p] (h : p) : (if p then (0 : ℕ) else 1) = 0 := by exact if_pos h
+
 theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
@@ -651,7 +653,8 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
     rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
-  unfold PadicSeq.norm at hge; split_ifs at hge
+  unfold PadicSeq.norm at hge
+  rw [dif_neg hne] at hge
   apply not_le_of_gt _ hge
   cases _root_.le_total N (stationaryPoint hne) with
   | inl hgen =>
