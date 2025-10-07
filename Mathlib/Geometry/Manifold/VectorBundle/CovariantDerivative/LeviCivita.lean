@@ -685,7 +685,7 @@ vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
 -- TODO: is this true if E is infinite-dimensional? trace the origin of the `Fintype` assumptions!
 lemma congr_of_forall_product [FiniteDimensional ℝ E]
     (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
-  by_cases hE : Subsingleton E
+  obtain (_hE | hE) := subsingleton_or_nontrivial E
   · ext x
     have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
     apply Subsingleton.allEq _
@@ -693,7 +693,6 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   let b := Basis.ofVectorSpace ℝ E
   let t := trivializationAt E (TangentSpace I : M → Type _) x
   have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
   -- The linear ordering on the indexing set of `b` is only used in this proof,
   -- so our choice does not matter.
