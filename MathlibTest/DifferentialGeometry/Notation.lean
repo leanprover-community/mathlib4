@@ -165,6 +165,29 @@ Note: Expected a function because this term is being applied to the argument
 
 end
 
+-- Testing the precedence of parsing of the "within" set: regression test.
+section
+
+variable {ι : Type} {i : ι} {s : ι → Set M}
+
+/-- info: MDifferentiableOn I I' f (s i) : Prop -/
+#guard_msgs in
+#check MDiff[s i] f
+/-- info: MDifferentiableWithinAt I I' f (s i) m : Prop -/
+#guard_msgs in
+#check MDiffAt[s i] f m
+/-- info: ContMDiffOn I I' 2 f (s i) : Prop -/
+#guard_msgs in
+#check CMDiff[s i] 2 f
+/-- info: ContMDiffWithinAt I I' 0 f (s i) m : Prop -/
+#guard_msgs in
+#check CMDiffAt[s i] 0 f m
+/-- info: mfderivWithin I I' f (s i) m : TangentSpace I m →L[𝕜] TangentSpace I' (f m) -/
+#guard_msgs in
+#check mfderiv[s i] f m
+
+end
+
 -- Function from a manifold into a normed space.
 variable {g : M → E}
 
