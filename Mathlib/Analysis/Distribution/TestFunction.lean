@@ -166,18 +166,12 @@ lemma add_apply (f g : 𝓓^{n}(E, F)) (x : E) : (f + g) x = f x + g x :=
 instance : Neg 𝓓^{n}(E, F) where
   neg f := TestFunction.mk (-f) (f.contDiff.neg) (f.compact_supp.neg)
 
-instance instSub : Sub 𝓓^{n}(E, F) :=
-  ⟨fun f g =>
-    ⟨f - g, (f.contDiff').sub (g.contDiff'),
-    sub_eq_add_neg (f : E → F) g ▸ f.compact_supp.add g.compact_supp.neg
-    ⟩
-  ⟩
+instance instSub : Sub 𝓓^{n}(E, F) where
+  sub f g := TestFunction.mk (f - g) (f.contDiff.sub g.contDiff) (f.compact_supp.sub g.compact_supp)
 
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-   SMul R 𝓓^{n}(E, F) :=
-  ⟨fun c f ↦
-    TestFunction.mk (c • (f : E → F)) (f.contDiff.const_smul c)  f.compact_supp.smul_left
-  ⟩
+   SMul R 𝓓^{n}(E, F) where
+  smul c f := TestFunction.mk (c • (f : E → F)) (f.contDiff.const_smul c)  f.compact_supp.smul_left
 
 @[simp]
 lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
