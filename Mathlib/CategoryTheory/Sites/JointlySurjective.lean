@@ -14,7 +14,8 @@ families as coverings. We show that this precoverage is stable under the standar
 
 ## Notes
 
-See `CategoryTheory.Sites.Types` for the Grothendieck topology of jointly surjective covers.
+See `Mathlib/CategoryTheory/Sites/Types.lean` for the Grothendieck topology of jointly surjective
+covers.
 -/
 
 universe u
