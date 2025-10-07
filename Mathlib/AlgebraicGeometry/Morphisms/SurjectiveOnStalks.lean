@@ -61,7 +61,7 @@ instance : IsZariskiLocalAtTarget @SurjectiveOnStalks :=
   eq_stalkwise ▸ stalkwiseIsZariskiLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
 
 instance : IsZariskiLocalAtSource @SurjectiveOnStalks :=
-  eq_stalkwise ▸ stalkwise_isLocalAtSource_of_respectsIso RingHom.surjective_respectsIso
+  eq_stalkwise ▸ stalkwise_isZariskiLocalAtSource_of_respectsIso RingHom.surjective_respectsIso
 
 lemma Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
     SurjectiveOnStalks (Spec.map φ) ↔ RingHom.SurjectiveOnStalks φ.hom := by

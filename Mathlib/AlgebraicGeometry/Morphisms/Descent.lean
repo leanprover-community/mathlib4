@@ -42,7 +42,7 @@ variable (P P' : MorphismProperty Scheme.{u})
 If `P` is local at the source, every quasi-compact scheme is dominated by an
 affine scheme via `p : Y ⟶ X` such that `p` satisfies `P`.
 -/
-lemma Scheme.exists_hom_isAffine_of_isLocalAtSource (X : Scheme.{u}) [CompactSpace X]
+lemma Scheme.exists_hom_isAffine_of_isZariskiLocalAtSource (X : Scheme.{u}) [CompactSpace X]
     [IsZariskiLocalAtSource P] [P.ContainsIdentities] :
     ∃ (Y : Scheme.{u}) (p : Y ⟶ X), Surjective p ∧ P p ∧ IsAffine Y := by
   let 𝒰 := X.affineCover.finiteSubcover
@@ -134,7 +134,7 @@ lemma IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact [IsZariskiLocalAtTar
   intro R X Y f g hf h
   wlog hX : ∃ T, X = Spec T generalizing X
   · have _ : CompactSpace X := by simpa [← quasiCompact_over_affine_iff f] using hf.2
-    obtain ⟨Y, p, hsurj, hP', hY⟩ := X.exists_hom_isAffine_of_isLocalAtSource @IsLocalIso
+    obtain ⟨Y, p, hsurj, hP', hY⟩ := X.exists_hom_isAffine_of_isZariskiLocalAtSource @IsLocalIso
     refine this (f := (Y.isoSpec.inv ≫ p) ≫ f) ?_ ?_ ⟨_, rfl⟩
     · rw [Category.assoc, (P' ⊓ @QuasiCompact).cancel_left_of_respectsIso]
       exact ⟨P'.comp_mem _ _ (H₁ _ ⟨hP', hsurj⟩) hf.1, inferInstance⟩

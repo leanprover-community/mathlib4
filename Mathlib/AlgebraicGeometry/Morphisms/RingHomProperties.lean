@@ -358,7 +358,7 @@ theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
   ⟨fun H _ ↦ appLE P f H ⟨_, isAffineOpen_top _⟩ _ le_top, of_iSup_eq_top U hU⟩
 
 instance : IsZariskiLocalAtSource P := by
-  apply HasAffineProperty.isLocalAtSource
+  apply HasAffineProperty.isZariskiLocalAtSource
   intro X Y f _ 𝒰
   simp_rw [← HasAffineProperty.iff_of_isAffine (P := P),
     iff_of_source_openCover 𝒰.affineRefinement.openCover,
@@ -375,7 +375,7 @@ lemma containsIdentities (hP : RingHom.ContainsIdentities Q) : P.ContainsIdentit
 
 variable (P) in
 open _root_.PrimeSpectrum in
-lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
+lemma isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget
     [IsZariskiLocalAtTarget P] [IsZariskiLocalAtSource P] :
     RingHom.PropertyIsLocal fun f ↦ P (Spec.map (CommRingCat.ofHom f)) := by
   have hP : RingHom.RespectsIso (fun f ↦ P (Spec.map (CommRingCat.ofHom f))) :=
@@ -407,14 +407,14 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
 
 open _root_.PrimeSpectrum in
 variable (P) in
-lemma of_isLocalAtSource_of_isLocalAtTarget [IsZariskiLocalAtTarget P] [IsZariskiLocalAtSource P] :
+lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarget P] [IsZariskiLocalAtSource P] :
     HasRingHomProperty P (fun f ↦ P (Spec.map (CommRingCat.ofHom f))) where
   isLocal_ringHomProperty :=
-    isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget P
+    isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget P
   eq_affineLocally' := by
     let Q := affineLocally (fun f ↦ P (Spec.map (CommRingCat.ofHom f)))
     have : HasRingHomProperty Q (fun f ↦ P (Spec.map (CommRingCat.ofHom f))) :=
-      ⟨isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget P, rfl⟩
+      ⟨isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget P, rfl⟩
     change P = Q
     ext X Y f
     wlog hY : ∃ R, Y = Spec R generalizing X Y
@@ -435,8 +435,8 @@ lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
     HasRingHomProperty (stalkwise P) fun {_ S _ _} φ ↦
       ∀ (p : Ideal S) (_ : p.IsPrime), P (Localization.localRingHom _ p φ rfl) := by
   have := stalkwiseIsZariskiLocalAtTarget_of_respectsIso hP
-  have := stalkwise_isLocalAtSource_of_respectsIso hP
-  convert of_isLocalAtSource_of_isLocalAtTarget (P := AlgebraicGeometry.stalkwise P) with R S _ _ φ
+  have := stalkwise_isZariskiLocalAtSource_of_respectsIso hP
+  convert of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget (P := AlgebraicGeometry.stalkwise P) with R S _ _ φ
   exact (stalkwise_Spec_map_iff hP (CommRingCat.ofHom φ)).symm
 
 lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :

@@ -78,7 +78,7 @@ instance : IsZariskiLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) :
   ext
   exact (ConcreteCategory.isIso_iff_bijective _).symm
 
-instance isOpenImmersion_isLocalAtTarget : IsZariskiLocalAtTarget @IsOpenImmersion :=
+instance isOpenImmersion_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
 
 end AlgebraicGeometry

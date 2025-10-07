@@ -309,7 +309,7 @@ end Scheme
 
 instance IsSeparated.hasAffineProperty :
     HasAffineProperty @IsSeparated fun X _ _ _ ↦ X.IsSeparated := by
-  convert HasAffineProperty.of_isLocalAtTarget @IsSeparated with X Y f hY
+  convert HasAffineProperty.of_isZariskiLocalAtTarget @IsSeparated with X Y f hY
   rw [Scheme.isSeparated_iff, ← terminal.comp_from f, IsSeparated.comp_iff]
   rfl
 

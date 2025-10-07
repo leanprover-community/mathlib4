@@ -47,7 +47,7 @@ instance : IsStableUnderBaseChange @IsLocalIso := by
   infer_instance
 
 /-- `IsLocalIso` is weaker than every source-Zariski-local property containing identities. -/
-lemma le_of_isLocalAtSource (P : MorphismProperty Scheme.{u}) [P.ContainsIdentities]
+lemma le_of_isZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) [P.ContainsIdentities]
     [IsZariskiLocalAtSource P] : @IsLocalIso ≤ P := by
   intro X Y f hf
   obtain ⟨𝒰, h⟩ := eq_sourceLocalClosure_isOpenImmersion ▸ hf
@@ -60,7 +60,7 @@ lemma eq_iInf :
       (_ : IsZariskiLocalAtSource P), P := by
   refine le_antisymm ?_ ?_
   · simp only [le_iInf_iff]
-    apply le_of_isLocalAtSource
+    apply le_of_isZariskiLocalAtSource
   · refine iInf_le_of_le @IsLocalIso (iInf_le_of_le inferInstance (iInf_le _ ?_))
     infer_instance
 

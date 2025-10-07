@@ -19,7 +19,7 @@ properties:
 - `AffineTargetMorphismProperty.of`: Given a morphism property `P` of schemes,
   this is the restriction of `P` to morphisms with affine target. If `P` is local at the
   target, we have `(toAffineTargetMorphismProperty P).targetAffineLocally = P`
-  (see `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isLocalAtTarget`).
+  (see `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isZariskiLocalAtTarget`).
 - `MorphismProperty.topologically`: Given a property `P` of maps of topological spaces,
   `(topologically P) f` holds if `P` holds for the underlying continuous map of `f`.
 - `MorphismProperty.stalkwise`: Given a property `P` of ring homs,
@@ -149,7 +149,7 @@ instance (P) {Q} [HasAffineProperty P Q] : HasAffineProperty P.diagonal Q.diagon
         (fun i ↦ of_targetAffineLocally_of_isPullback (.of_hasPullback _ _) H)
 
 instance (P) [IsZariskiLocalAtTarget P] : IsZariskiLocalAtTarget P.diagonal :=
-  letI := HasAffineProperty.of_isLocalAtTarget P
+  letI := HasAffineProperty.of_isZariskiLocalAtTarget P
   inferInstance
 
 open MorphismProperty in
@@ -173,7 +173,7 @@ end Diagonal
 
 section Universally
 
-theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
+theorem universally_isZariskiLocalAtTarget (P : MorphismProperty Scheme)
     (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens)
       (_ : IsOpenCover U), (∀ i, P (f ∣_ U i)) → P f) : IsZariskiLocalAtTarget P.universally := by
   apply IsZariskiLocalAtTarget.mk'
@@ -193,7 +193,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
         · rw [← cancel_mono (Scheme.Opens.ι _)]
           simp [morphismRestrict_ι_assoc, h.1.1]
 
-lemma universally_isLocalAtSource (P : MorphismProperty Scheme)
+lemma universally_isZariskiLocalAtSource (P : MorphismProperty Scheme)
     [IsZariskiLocalAtSource P] : IsZariskiLocalAtSource P.universally := by
   refine ⟨inferInstance, ?_⟩
   intro X Y f 𝒰
@@ -255,7 +255,7 @@ lemma topologically_respectsIso
 
 /-- To check that a topologically defined morphism property is local at the target,
 we may check the corresponding properties on topological spaces. -/
-lemma topologically_isLocalAtTarget [(topologically P).RespectsIso]
+lemma topologically_isZariskiLocalAtTarget [(topologically P).RespectsIso]
     (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β)
       (_ : Continuous f) (_ : IsOpen s), P f → P (s.restrictPreimage f))
     (hP₃ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
@@ -271,20 +271,20 @@ lemma topologically_isLocalAtTarget [(topologically P).RespectsIso]
     rw [← morphismRestrict_base]
     exact hf i
 
-/-- A variant of `topologically_isLocalAtTarget`
+/-- A variant of `topologically_isZariskiLocalAtTarget`
 that takes one iff statement instead of two implications. -/
-lemma topologically_isLocalAtTarget' [(topologically P).RespectsIso]
+lemma topologically_isZariskiLocalAtTarget' [(topologically P).RespectsIso]
     (hP : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
       (U : ι → Opens β) (_ : IsOpenCover U) (_ : Continuous f),
       P f ↔ (∀ i, P ((U i).carrier.restrictPreimage f))) :
     IsZariskiLocalAtTarget (topologically P) := by
-  refine topologically_isLocalAtTarget P ?_ (fun f _ U hU hU' ↦ (hP f U hU hU').mpr)
+  refine topologically_isZariskiLocalAtTarget P ?_ (fun f _ U hU hU' ↦ (hP f U hU hU').mpr)
   introv hf hs H
   refine (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
   rw [IsOpenCover, ← top_le_iff]
   exact le_iSup (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ⟨0⟩
 
-lemma topologically_isLocalAtSource [(topologically P).RespectsIso]
+lemma topologically_isZariskiLocalAtSource [(topologically P).RespectsIso]
     (hP₁ : ∀ {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
       (_ : Continuous f) (U : Opens X), P f → P (f ∘ ((↑) : U → X)))
     (hP₂ : ∀ {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
@@ -297,14 +297,14 @@ lemma topologically_isLocalAtSource [(topologically P).RespectsIso]
   · introv hU hf
     exact hP₂ f.base f.continuous _ hU hf
 
-/-- A variant of `topologically_isLocalAtSource`
+/-- A variant of `topologically_isZariskiLocalAtSource`
 that takes one iff statement instead of two implications. -/
-lemma topologically_isLocalAtSource' [(topologically P).RespectsIso]
+lemma topologically_isZariskiLocalAtSource' [(topologically P).RespectsIso]
     (hP : ∀ {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) {ι : Type u}
       (U : ι → Opens X) (_ : IsOpenCover U) (_ : Continuous f),
       P f ↔ (∀ i, P (f ∘ ((↑) : U i → X)))) :
     IsZariskiLocalAtSource (topologically P) := by
-  refine topologically_isLocalAtSource P ?_ (fun f hf _ U hU hf' ↦ (hP f U hU hf).mpr hf')
+  refine topologically_isZariskiLocalAtSource P ?_ (fun f hf _ U hU hf' ↦ (hP f U hU hf).mpr hf')
   introv hf hs
   refine (hP f (![⊤, U] ∘ Equiv.ulift) ?_ hf).mp hs ⟨1⟩
   rw [IsOpenCover, ← top_le_iff]
@@ -352,7 +352,7 @@ lemma stalkwiseIsZariskiLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P
       morphismRestrictStalkMap f (U i) ⟨x, hi⟩).mp <| hf i ⟨x, hi⟩
 
 /-- If `P` respects isos, then `stalkwise P` is local at the source. -/
-lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
+lemma stalkwise_isZariskiLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
     IsZariskiLocalAtSource (stalkwise P) := by
   letI := stalkwise_respectsIso hP
   apply IsZariskiLocalAtSource.mk'
@@ -381,11 +381,11 @@ namespace AffineTargetMorphismProperty
 
 /-- If `P` is local at the target, to show that `P` is stable under base change, it suffices to
 check this for base change along a morphism of affine schemes. -/
-lemma isStableUnderBaseChange_of_isStableUnderBaseChangeOnAffine_of_isLocalAtTarget
+lemma isStableUnderBaseChange_of_isStableUnderBaseChangeOnAffine_of_isZariskiLocalAtTarget
     (P : MorphismProperty Scheme) [IsZariskiLocalAtTarget P]
     (hP₂ : (of P).IsStableUnderBaseChange) :
     P.IsStableUnderBaseChange :=
-  letI := HasAffineProperty.of_isLocalAtTarget P
+  letI := HasAffineProperty.of_isZariskiLocalAtTarget P
   HasAffineProperty.isStableUnderBaseChange hP₂
 
 end AffineTargetMorphismProperty

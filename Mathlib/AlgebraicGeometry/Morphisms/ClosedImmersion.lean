@@ -342,14 +342,14 @@ end IsClosedImmersion
 end Affine
 
 /-- Being a closed immersion is local at the target. -/
-instance IsClosedImmersion.isLocalAtTarget : IsZariskiLocalAtTarget @IsClosedImmersion :=
+instance IsClosedImmersion.isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsClosedImmersion :=
   eq_inf ▸ inferInstance
 
 /-- On morphisms with affine target, being a closed immersion is precisely having affine source
 and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
     (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.appTop)) := by
-  convert HasAffineProperty.of_isLocalAtTarget @IsClosedImmersion
+  convert HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
 /-- Being a closed immersion is stable under base change. -/

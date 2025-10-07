@@ -82,14 +82,14 @@ instance snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyOpen 
 
 instance : IsZariskiLocalAtTarget @UniversallyOpen := by
   rw [eq]
-  apply universally_isLocalAtTarget
+  apply universally_isZariskiLocalAtTarget
   intro X Y f ι U hU H
   simp_rw [topologically, morphismRestrict_base] at H
   exact hU.isOpenMap_iff_restrictPreimage.mpr H
 
 instance : IsZariskiLocalAtSource @UniversallyOpen := by
   rw [eq]
-  exact universally_isLocalAtSource _
+  exact universally_isZariskiLocalAtSource _
 
 end UniversallyOpen
 
@@ -122,7 +122,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
 
 /-- Any flat morphism is generalizing. -/
 lemma Flat.generalizingMap [Flat f] : GeneralizingMap f.base := by
-  have := HasRingHomProperty.of_isLocalAtSource_of_isLocalAtTarget.{u}
+  have := HasRingHomProperty.of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget.{u}
     (topologically GeneralizingMap)
   change topologically GeneralizingMap f
   rw [HasRingHomProperty.iff_appLE (P := topologically GeneralizingMap)]
