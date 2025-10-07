@@ -57,8 +57,7 @@ but at this point we don't know yet that `μ` has a first moment. -/
 lemma charFunDual_eq_of_forall_strongDual_eq_zero (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0)
     (L : StrongDual ℝ E) :
     charFunDual μ L = exp (- Var[L; μ] / 2) := by
-  rw [charFunDual_eq L, integral_complex_ofReal, hμ L]
-  simp [neg_div]
+  simp [charFunDual_eq L, integral_complex_ofReal, hμ L, neg_div]
 
 lemma map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
     (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0) (θ : ℝ) :
