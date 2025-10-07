@@ -134,7 +134,7 @@ lemma isStrongGenerator_iff_exists_extremalEpi
     (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
     ((Discrete.equivalence (equivShrink.{w} _))).symm, _, hP.extremalEpi_coproductFrom X⟩
 
-lemma IsStrongGenerator.mk_of_exists_colimitPresentation
+lemma IsStrongGenerator.mk_of_exists_colimitsOfShape
     (hP : ∀ (X : C), ∃ (J : Type w) (_ : SmallCategory J), Nonempty (P.ColimitOfShape J X)) :
     P.IsStrongGenerator := by
   rw [isStrongGenerator_iff]
