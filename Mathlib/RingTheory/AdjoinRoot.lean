@@ -340,7 +340,7 @@ end Prime
 
 section
 
-/-- If `f = g`, `R` adjoint a root of `f` is isomorphic to `R` adjoint a root of `g`. -/
+/-- If `f = g`, `R` adjoin a root of `f` is isomorphic to `R` adjoin a root of `g`. -/
 def algEquivOfEq {f g : R[X]} (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
   .ofAlgHom
     (liftHom f (root g) (by simp [hfg]))
