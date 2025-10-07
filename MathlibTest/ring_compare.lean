@@ -77,7 +77,7 @@ error: ring failed, ring expressions not equal up to an additive constant
 K : Type u_1
 inst✝² : Field K
 inst✝¹ : LinearOrder K
-inst✝ : IsStrictOrderedRing K
+inst✝ : IsOrderedRing K
 x y : K
 ⊢ 1 + x + y ≤ 3 + y
 -/
@@ -89,7 +89,7 @@ error: comparison failed, LHS is larger
 K : Type u_1
 inst✝² : Field K
 inst✝¹ : LinearOrder K
-inst✝ : IsStrictOrderedRing K
+inst✝ : IsOrderedRing K
 x y : K
 ⊢ 4 + x + y ≤ 3 + x + y
 -/
@@ -101,7 +101,7 @@ error: ring failed, ring expressions not equal up to an additive constant
 K : Type u_1
 inst✝² : Field K
 inst✝¹ : LinearOrder K
-inst✝ : IsStrictOrderedRing K
+inst✝ : IsOrderedRing K
 x y : K
 ⊢ 1 + x + y < 3 + y
 -/
@@ -113,7 +113,7 @@ error: comparison failed, LHS is at least as large
 K : Type u_1
 inst✝² : Field K
 inst✝¹ : LinearOrder K
-inst✝ : IsStrictOrderedRing K
+inst✝ : IsOrderedRing K
 x y : K
 ⊢ 4 + x + y < 4 + x + y
 -/
