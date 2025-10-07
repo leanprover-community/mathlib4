@@ -83,7 +83,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   refine Set.image_preimage_eq_inter_range.trans ?_
   simp
 
-lemma isRetroCompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
+lemma isRetrocompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
   IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr
     ((quasiCompact_iff_spectral (X.basicOpen s).ι).mp inferInstance)
 
