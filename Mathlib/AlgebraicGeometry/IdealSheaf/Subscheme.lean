@@ -38,7 +38,7 @@ variable (I : IdealSheafData X)
 
 /-- `Spec (𝒪ₓ(U)/I(U))`, the object to be glued into the closed subscheme. -/
 def glueDataObj (U : X.affineOpens) : Scheme :=
-  Spec(Γ(X, U) ⧸ I.ideal U)
+  Spec <| .of <| Γ(X, U) ⧸ I.ideal U
 
 /-- `Spec (𝒪ₓ(U)/I(U)) ⟶ Spec (𝒪ₓ(U)) = U`, the closed immersion into `U`. -/
 noncomputable
@@ -477,11 +477,11 @@ def subschemeCover : I.subscheme.AffineOpenCover where
   I₀ := X.affineOpens
   X U := .of <| Γ(X, U) ⧸ I.ideal U
   f U := I.glueData.ι U ≫ I.subschemeIso.inv
-  idx x := (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).idx x.1
+  idx x := (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).idx x.1
   covers x := by
-    let U := (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).idx x.1
+    let U := (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).idx x.1
     obtain ⟨⟨y, hy : y ∈ U.1⟩, rfl : y = x.1⟩ :=
-      (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).covers x.1
+      (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).covers x.1
     exact (I.opensRange_glueData_ι_subschemeIso_inv U).ge hy
 
 @[simp]
@@ -639,7 +639,7 @@ lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
 
 private noncomputable
 def Hom.toImageAux : X ⟶ f.image :=
-  ((Y.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top Y)).pullbackCover f).glueMorphisms
+  Cover.glueMorphisms ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullback₁ f)
     (fun U ↦ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).liftQuotient _
       (by exact ideal_ker_le_ker_ΓSpecIso_inv_comp f U) ≫ f.ker.subschemeCover.f U) (by
     intro U V
@@ -649,7 +649,7 @@ def Hom.toImageAux : X ⟶ f.image :=
 
 private lemma Hom.toImageAux_spec :
     f.toImageAux ≫ f.imageι = f := by
-  apply ((Y.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top Y)).pullbackCover f).hom_ext
+  apply Cover.hom_ext ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullback₁ f)
   intro U
   simp only [Hom.toImageAux, Cover.ι_glueMorphisms_assoc]
   simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc, pullback.condition]
