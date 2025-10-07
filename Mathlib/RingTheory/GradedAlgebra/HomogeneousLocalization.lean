@@ -131,7 +131,6 @@ end Neg
 
 section SMul
 
--- variable {𝒜 : ι → σ} (x : Submonoid A) {α : Type*} [∀ i, SMul α (𝒜 i)]
 variable {𝒜 : ι → σ} (x : Submonoid A) {α : Type*} [SMul α A] [SMulMemClass σ α A]
 
 instance : SMul α (NumDenSameDeg 𝒜 x) where
@@ -141,20 +140,9 @@ instance : SMul α (NumDenSameDeg 𝒜 x) where
 theorem deg_smul (c : NumDenSameDeg 𝒜 x) (m : α) : (m • c).deg = c.deg :=
   rfl
 
--- -- MOVE!
--- @[simp] lemma _root_.SetLike.coe_smul {M' α S' : Type*} [SetLike S' M'] (s : S') [SMul M' α]
---     (c : s) (x : α) : c • x = (↑c : M') • x := rfl
-
 @[simp]
 theorem num_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).num : A) = m • c.num :=
   rfl
-
--- @[simp]
--- theorem num_smul [SMul α A] [∀ i, IsScalarTower α (𝒜 i) A]
---     (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).num : A) = m • c.num := by
---   change ((m • c.num : 𝒜 c.deg) : A) = _
---   rw [← mul_one ((_ : 𝒜 _) : A), ← smul_eq_mul, ← SetLike.coe_smul, IsScalarTower.smul_assoc,
---     SetLike.coe_smul, smul_eq_mul, mul_one]
 
 @[simp]
 theorem den_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).den : A) = c.den :=
@@ -330,8 +318,6 @@ end
 
 section SMul
 variable {𝒜 : ι → σ} (x : Submonoid A)
--- variable {α : Type*} [∀ i, SMul α (𝒜 i)] [SMul α A]
--- variable [∀ i, IsScalarTower α (𝒜 i) A] [IsScalarTower α A A]
 variable {α : Type*} [SMul α A] [IsScalarTower α A A] [SMulMemClass σ α A]
 
 instance : SMul α (HomogeneousLocalization 𝒜 x) where
