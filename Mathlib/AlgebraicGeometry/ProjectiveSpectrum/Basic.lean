@@ -11,7 +11,7 @@ import Mathlib.AlgebraicGeometry.Gluing
 
 # Basic properties of the scheme `Proj A`
 
-The scheme `Proj 𝒜` for a graded algebra `𝒜` is constructed in
+The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
 `AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean`.
 In this file we provide basic properties of the scheme.
 

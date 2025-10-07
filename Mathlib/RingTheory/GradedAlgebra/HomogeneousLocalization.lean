@@ -627,7 +627,7 @@ variable (ℬ : ι → τ) [GradedRing ℬ]
 variable {P : Submonoid A} {Q : Submonoid B}
 
 /--
-Let `A, B` be two graded algebras with the same indexing set and `g : A → B` be a graded algebra
+Let `A, B` be two graded rings with the same indexing set and `g : A → B` be a graded ring
 homomorphism (i.e. `g(Aₘ) ⊆ Bₘ`). Let `P ≤ A` be a submonoid and `Q ≤ B` be a submonoid such that
 `P ≤ g⁻¹ Q`, then `g` induce a map from the homogeneous localizations `A⁰_P` to the homogeneous
 localizations `B⁰_Q`.
@@ -652,7 +652,7 @@ def map (g : A →+* B)
     num_one, den_one, map_one]; rfl
 
 /--
-Let `A` be a graded algebra and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
+Let `A` be a graded ring and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
 at `P` embeds into the homogeneous localization of `A` at `Q`.
 -/
 abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
@@ -844,7 +844,7 @@ section span
 
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
 /--
-Let `𝒜` be a graded algebra, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,
+Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,
 where `vᵢ` has degree `dvᵢ`.
 If `f : A` has degree `d`, then `𝒜_(f)` is generated (as a module) over `𝒜₀` by
 elements of the form `(∏ i, vᵢ ^ aᵢ) / fᵃ` such that `∑ aᵢ • dvᵢ = a • d`.
@@ -965,7 +965,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
 
 variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜] in
 /--
-Let `𝒜` be a graded algebra, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,
+Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,
 where `vᵢ` has degree `dvᵢ`.
 If `f : A` has degree `d`, then `𝒜_(f)` is generated (as an algebra) over `𝒜₀` by
 elements of the form `(∏ i, vᵢ ^ aᵢ) / fᵃ` such that `∑ aᵢ • dvᵢ = a • d` and `∀ i, aᵢ ≤ d`.

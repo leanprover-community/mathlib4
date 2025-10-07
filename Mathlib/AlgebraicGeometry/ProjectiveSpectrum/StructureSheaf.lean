@@ -15,9 +15,9 @@ In `Mathlib/AlgebraicGeometry/Topology.lean`, we have given a topology on `Proje
 this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 
 ## Notation
-- `R` is a commutative semiring;
-- `A` is a commutative ring and an `R`-algebra;
-- `𝒜 : ℕ → Submodule R A` is the grading of `A`;
+- `A` is a commutative ring;
+- `σ` is a class of additive subgroups of `A`;
+- `𝒜 : ℕ → σ` is the grading of `A`;
 - `U` is opposite object of some open subset of `ProjectiveSpectrum.top`.
 
 ## Main definitions and results
