@@ -202,26 +202,12 @@ this is not a mathematically meaningful difference.`
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
 continuous at `x` (see `mk_of_continuousAt`), which is easy to acertain in practice.
 -/
--- TODO: can this proof be golfed further?
 lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend I').target := by
-  have : (h.domChart.extend I).target = (h.domChart.extend I) '' (h.domChart.extend I).source := by
-    rw [PartialEquiv.image_source_eq_target]
-  rw [this, PartialHomeomorph.extend_source]
-  set Ψ := h.codChart.extend I'
-  set Φ := h.domChart.extend I
-  suffices (Ψ ∘ f ∘ Φ.symm) '' (Φ '' h.domChart.source) ⊆ Ψ.target by
-    have aux : h.domChart.source = Φ.source := h.domChart.extend_source.symm
-    rw [aux, PartialEquiv.image_source_eq_target] at this ⊢
-    rwa [h.writtenInCharts.image_eq] at this
-  calc
-   _ = (Ψ ∘ f ∘ ↑Φ.symm ∘ Φ) '' h.domChart.source := by simp [← image_comp]
-   _ = (Ψ ∘ f) '' ((Φ.symm ∘ Φ) '' h.domChart.source) := by simp [← image_comp]
-   _ = (Ψ ∘ f) '' h.domChart.source := by rw [h.domChart.extend_left_inv' fun ⦃a⦄ a ↦ a]
-   _ = Ψ '' (f '' h.domChart.source) := by rw [image_comp]
-   _ ⊆ Ψ '' h.codChart.source := by gcongr; exact h.map_source_subset_source
-   _ = Ψ '' Ψ.source := by rw [PartialHomeomorph.extend_source]
-   _ ⊆ _ := Ψ.map_source''
+  rw [← h.writtenInCharts.image_eq, Set.image_comp, Set.image_comp,
+    PartialEquiv.symm_image_target_eq_source, PartialHomeomorph.extend_source,
+    ← PartialEquiv.image_source_eq_target]
+  grw [h.map_source_subset_source, PartialHomeomorph.extend_source]
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
