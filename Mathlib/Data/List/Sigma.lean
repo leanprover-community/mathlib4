@@ -178,7 +178,7 @@ theorem dlookup_isSome {a : α} {l : List (Sigma β)} : (dlookup a l).isSome ↔
 theorem dlookup_eq_none {a : α} {l : List (Sigma β)} : dlookup a l = none ↔ a ∉ l.keys := by
   simp [← dlookup_isSome, Option.isNone_iff_eq_none]
 
-theorem of_mem_dlookup {a : α} {b : β a} {l : List (Sigma β)} : 
+theorem of_mem_dlookup {a : α} {b : β a} {l : List (Sigma β)} :
     b ∈ dlookup a l → Sigma.mk a b ∈ l := by
   induction l with
   | nil => grind
