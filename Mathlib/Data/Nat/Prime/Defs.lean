@@ -190,6 +190,9 @@ theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k
 If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
 Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
 If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`.
+
+This definition is by well-founded recursion, so `rfl` or `decide` cannot be used.
+One can use `norm_num` to prove `Nat.prime n` for small `n`.
 -/
 def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
