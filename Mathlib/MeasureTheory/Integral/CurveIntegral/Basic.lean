@@ -280,7 +280,8 @@ theorem curveIntegral_trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegr
     intervalIntegral.integral_smul,
     intervalIntegral.smul_integral_comp_mul_left (f := (curveIntegralFun ω γbc <| · - 1)),
     intervalIntegral.integral_comp_sub_right]
-  norm_num [curveIntegral_def]
+  simp only [curveIntegral_def]
+  norm_num
 
 theorem curveIntegralFun_segment [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (a b : E)
     {t : ℝ} (ht : t ∈ I) : curveIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
