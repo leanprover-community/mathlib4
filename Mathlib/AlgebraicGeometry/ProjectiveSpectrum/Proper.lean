@@ -83,8 +83,8 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     (f := (pullbackDiagonalMapIdIso ..).inv) _).mp ?_
   let e₁ : pullback ((affineOpenCover 𝒜).f i ≫ toSpecZero 𝒜)
         ((affineOpenCover 𝒜).f j ≫ toSpecZero 𝒜) ≅
-        Spec (.of <| TensorProduct (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)) := by
-    refine pullback.congrHom ?_ ?_ ≪≫ pullbackSpecIso (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)
+        Spec (.of <| TensorProduct (𝒜 0) (Away 𝒜 (i.2 : A)) (Away 𝒜 (j.2 : A))) := by
+    refine pullback.congrHom ?_ ?_ ≪≫ pullbackSpecIso (𝒜 0) (Away 𝒜 (i.2 : A)) (Away 𝒜 (j.2 : A))
     · simp [affineOpenCover, affineOpenCoverOfIrrelevantLESpan, awayι_toSpecZero]; rfl
     · simp [affineOpenCover, affineOpenCoverOfIrrelevantLESpan, awayι_toSpecZero]; rfl
   let e₂ : pullback ((affineOpenCover 𝒜).f i) ((affineOpenCover 𝒜).f j) ≅
