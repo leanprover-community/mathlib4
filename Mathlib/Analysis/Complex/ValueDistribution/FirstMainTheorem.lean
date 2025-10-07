@@ -105,7 +105,7 @@ plane, then the characteristic functions of `f` and `f⁻¹` agree asymptoticall
 function.
 -/
 theorem isBigO_characteristic_sub_characteristic_inv (h : MeromorphicOn f ⊤) :
-    |characteristic f ⊤ - characteristic f⁻¹ ⊤| =O[atTop] (1 : ℝ → ℝ) :=
+    (characteristic f ⊤ - characteristic f⁻¹ ⊤) =O[atTop] (1 : ℝ → ℝ) :=
   isBigO_of_le' (c := max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖|) _
     (fun R ↦ by simpa using characteristic_sub_characteristic_inv_le h (R := R))
 
@@ -154,14 +154,14 @@ Second part of the First Main Theorem of Value Distribution Theory, qualitative 
 meromorphic on the complex plane, then the characteristic functions for the value `⊤` of the
 function `f` and `f - a₀` agree asymptotically up to a bounded function.
 -/
-theorem isBigO_abs_characteristic_sub_characteristic_shift (h : MeromorphicOn f ⊤) :
-    |characteristic f ⊤ - characteristic (f · - a₀) ⊤| =O[atTop] (1 : ℝ → ℝ) :=
+theorem isBigO_characteristic_sub_characteristic_shift (h : MeromorphicOn f ⊤) :
+    (characteristic f ⊤ - characteristic (f · - a₀) ⊤) =O[atTop] (1 : ℝ → ℝ) :=
   isBigO_of_le' (c := log⁺ ‖a₀‖ + log 2) _
     (fun R ↦ by simpa using abs_characteristic_sub_characteristic_shift_le h)
 
 @[deprecated (since := "2025-10-06")]
 alias abs_characteristic_sub_characteristic_shift_eqO :=
-  isBigO_abs_characteristic_sub_characteristic_shift
+  isBigO_characteristic_sub_characteristic_shift
 
 end SecondPart
 
