@@ -314,6 +314,32 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   | cons hadj p =>
     simp_all [Walk.isPath_def]
 
+lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
+    [Fintype G.edgeSet] :
+    ∃ (u v : V) (p : G.Walk u v) (_ : p.IsTrail),
+      ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsTrail), p'.length ≤ p.length := by
+  let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsTrail ∧ p.length = n}
+  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
+    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
+  obtain ⟨x⟩ := N
+  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
+  refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
+  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
+  cutsat
+
+lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
+    [Fintype G.edgeSet] :
+    ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
+      ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsPath), p'.length ≤ p.length := by
+  let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsPath ∧ p.length = n}
+  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
+    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_card_edgeFinset
+  obtain ⟨x⟩ := N
+  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
+  refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
+  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
+  cutsat
+
 /-! ### About paths -/
 
 instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := by
@@ -383,19 +409,6 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
       (by cutsat : 0 ≤ (q.cons h).length)
       (by rwa [getVert_cons _ _ n.add_one_ne_zero, getVert_zero])
     omega
-
-lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
-    [Fintype G.edgeSet] :
-    ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
-      ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsPath), p'.length ≤ p.length := by
-  let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsPath ∧ p.length = n}
-  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_card_edgeFinset
-  obtain ⟨x⟩ := N
-  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
-  refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
-  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
-  grind
 
 /-! ### About cycles -/
 
