@@ -67,7 +67,9 @@ private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ 
     nth_rewrite 2 [← pow_one pB.gen]
     rw [powerBasis_gen hPirr.ne_zero, hζ'.pow_eq_pow_iff_modEq, ← hζ.eq_orderOf,
       ← natCast_eq_natCast_iff]
-    simpa using Units.val_inj.mpr <| pow_orderOf_eq_one (unitOfCoprime _ (hn.pow_left f))
+    simpa only [Nat.cast_pow, Nat.cast_one, coe_unitOfCoprime, Units.val_one,
+      Units.val_pow_eq_pow_val] using Units.val_inj.mpr <| pow_orderOf_eq_one
+      (unitOfCoprime _ (hn.pow_left f))
   · let φ := frobeniusAlgEquivOfAlgebraic K (AdjoinRoot P)
     have : (φ ^ orderOf φ) (root P) = root P := by simp [pow_orderOf_eq_one φ]
     simp only [AlgEquiv.coe_pow, φ, coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, hK] at this
