@@ -90,7 +90,7 @@ The bijection between the primes over `p` in `S` and the primes over the maximal
 -/
 noncomputable def primesOverEquivPrimesOver (hp : p ≠ ⊥) :
     p.primesOver S ≃ (maximalIdeal Rₚ).primesOver Sₚ := {
-  toFun := fun P ↦  ⟨map (algebraMap S Sₚ) P.1, isPrime_map_of_liesOver p Sₚ P.1,
+  toFun := fun P ↦ ⟨map (algebraMap S Sₚ) P.1, isPrime_map_of_liesOver p Sₚ P.1,
     liesOver_map_of_liesOver p Rₚ Sₚ P.1⟩
   invFun := fun Q ↦ ⟨comap (algebraMap S Sₚ) Q.1, IsPrime.under S Q.1,
     liesOver_comap_of_liesOver p Rₚ Q.1⟩
