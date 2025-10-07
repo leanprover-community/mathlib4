@@ -326,6 +326,12 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 #guard_msgs in
 #check MDiffAt (T% σ')
 
+section
+
+variable [IsManifold I 2 M]
+
+variable {h : Bundle.TotalSpace F (TangentSpace I : M → Type _) → F} {h' : TangentBundle I M → F}
+
 -- Test the inference of a model with corners on a trivial bundle over the tangent space of a
 -- manifold. (This code path is not covered by the other tests, hence should be kept.)
 -- Stating smoothness this way does not make sense, but finding a model with corners should work.
@@ -353,11 +359,39 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
   [Elab.DiffGeo.MDiff] Found model: 𝓘(𝕜, F)
 -/
 #guard_msgs in
-variable {h : Bundle.TotalSpace F (TangentSpace I : M → Type _) → F} in
 set_option trace.Elab.DiffGeo true in
 #check MDiff h
 
--- TODO: add a test with the correct spelling of this!
+-- The reason this test fails is that Bundle.TotalSpace F (TangentSpace I : M → Type _) is not
+-- the way to state smoothness.
+/--
+error: failed to synthesize
+  TopologicalSpace (TotalSpace F (TangentSpace I))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth IsManifold I.tangent 1 (Bundle.TotalSpace F (TangentSpace I : M → Type _))
+
+-- The correct way is this.
+/-- info: TotalSpace.isManifold E (TangentSpace I) -/
+#guard_msgs in
+#synth IsManifold I.tangent 1 (TangentBundle I M)
+
+/-- info: MDifferentiable I.tangent 𝓘(𝕜, F) h' : Prop -/
+#guard_msgs in
+#check MDifferentiable I.tangent 𝓘(𝕜, F) h'
+
+/-- info: MDifferentiable (I.prod 𝓘(𝕜, E)) 𝓘(𝕜, F) h' : Prop -/
+#guard_msgs in
+#check MDifferentiable (I.prod (𝓘(𝕜, E))) 𝓘(𝕜, F) h'
+
+-- TODO: implement special handling for the tangent bundle
+/-- error: Could not find models with corners for TangentBundle I M -/
+#guard_msgs in
+#check MDiff h'
+
+end
 
 /-! Error messages in case of a forgotten `T%`. -/
 section
