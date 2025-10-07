@@ -102,7 +102,7 @@ section Fernique
 
 variable [SecondCountableTopology E]
 
-/-- the convolution of a Gaussian measure `μ` and its map by `x ↦ -x` is centered. -/
+/-- The convolution of a Gaussian measure `μ` and its map by `x ↦ -x` is centered. -/
 lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
     (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ)))[L] = 0 := by
   rw [integral_conv (by fun_prop)]
