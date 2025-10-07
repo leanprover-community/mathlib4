@@ -295,7 +295,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rw [if_pos]
   · gcongr
     exact (hi.2 _).1
-  rfl
+  simp [j]
 
 /-- There is a cube in the valley -/
 theorem nonempty_bcubes : (bcubes cs c).Nonempty :=
