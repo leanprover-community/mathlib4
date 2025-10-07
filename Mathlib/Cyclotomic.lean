@@ -1,5 +1,6 @@
 import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 import Mathlib.Misc
 
 open Polynomial in
@@ -75,7 +76,7 @@ theorem IsCyclotomicExtension.Rat.inertiaDeg_of_coprime (m : ℕ) [NeZero m] {K 
   rw [this]
   have h := hQ.2
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff] at h
-  · rw [foo (p := p) (f := 1)]
+  · rw [Polynomial.natDegree_of_dvd_cyclotomic_of_irreducible (p := p) (f := 1)]
     · simp
       exact (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
     · simp
@@ -86,7 +87,6 @@ theorem IsCyclotomicExtension.Rat.inertiaDeg_of_coprime (m : ℕ) [NeZero m] {K 
       rw [← Polynomial.cyclotomic_eq_minpoly' m (𝓞 K) _ (NeZero.pos _)]
       exact IsPrimitiveRoot.toInteger_isPrimitiveRoot _
     · exact h.1
-    · exact h.2.1
   · exact Polynomial.map_monic_ne_zero (minpoly.monic ζ.isIntegral)
 
 -- Golf `IsCyclotomicExtension.of_union_of_dvd` using this

@@ -4,7 +4,6 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.Algebra.Group.NatPowAssoc
-import Mathlib.Riccardo
 import Mathlib.Algebra.CharP.Two
 
 theorem Nat.eq_or_eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (h' : a.totient = b.totient) :
