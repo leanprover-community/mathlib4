@@ -506,7 +506,7 @@ lemma antitone_of_hasDerivAt_nonpos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Lagrange's **Mean Value Theorem**, applied to convex domains. -/
-theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ] ℝ}
+theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → StrongDual ℝ E}
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ∃ z ∈ segment ℝ x y, f y - f x = f' z (y - x) := by
   -- Use `g = AffineMap.lineMap x y` to parametrize the segment
@@ -519,7 +519,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
     (hf _ (hmaps ht)).comp_hasDerivWithinAt t AffineMap.hasDerivWithinAt_lineMap hmaps
   -- apply 1-variable mean value theorem to pullback
   have hMVT : ∃ t ∈ Ioo (0 : ℝ) 1, f' (g t) (y - x) = (f (g 1) - f (g 0)) / (1 - 0) := by
-    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by norm_num) ?_ ?_
+    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by simp) ?_ ?_
     · exact fun t Ht => (hfg t Ht).continuousWithinAt
     · exact fun t Ht => (hfg t <| hsub Ht).hasDerivAt (Icc_mem_nhds Ht.1 Ht.2)
   -- reinterpret on domain

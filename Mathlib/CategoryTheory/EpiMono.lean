@@ -32,6 +32,26 @@ instance op_mono_of_epi {A B : C} (f : A ⟶ B) [Epi f] : Mono f.op :=
 instance op_epi_of_mono {A B : C} (f : A ⟶ B) [Mono f] : Epi f.op :=
   ⟨fun _ _ eq => Quiver.Hom.unop_inj ((cancel_mono f).1 (Quiver.Hom.op_inj eq))⟩
 
+@[simp]
+lemma op_mono_iff {X Y : C} (f : X ⟶ Y) :
+    Mono f.op ↔ Epi f :=
+  ⟨fun _ ↦ unop_epi_of_mono f.op, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma op_epi_iff {X Y : C} (f : X ⟶ Y) :
+    Epi f.op ↔ Mono f :=
+  ⟨fun _ ↦ unop_mono_of_epi f.op, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma unop_mono_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Mono f.unop ↔ Epi f :=
+  ⟨fun _ ↦ op_epi_of_mono f.unop, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma unop_epi_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Epi f.unop ↔ Mono f :=
+  ⟨fun _ ↦ op_mono_of_epi f.unop, fun _ ↦ inferInstance⟩
+
 /-- A split monomorphism is a morphism `f : X ⟶ Y` with a given retraction `retraction f : Y ⟶ X`
 such that `f ≫ retraction f = 𝟙 X`.
 

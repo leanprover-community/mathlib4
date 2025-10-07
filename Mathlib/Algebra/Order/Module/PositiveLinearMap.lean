@@ -81,6 +81,10 @@ instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
     apply DFunLike.coe_injective'
     exact h
 
+@[ext]
+lemma ext {f g : E₁ →ₚ[R] E₂} (h : ∀ x, f x = g x) : f = g :=
+  DFunLike.ext f g h
+
 instance : LinearMapClass (E₁ →ₚ[R] E₂) R E₁ E₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := f.toLinearMap.map_smul'

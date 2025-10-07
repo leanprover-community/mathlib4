@@ -442,7 +442,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
     fun n ↦ Metric.isOpen_thickening
   have key := fun (n : ℕ) ↦ h (Fthicks_open n).measurableSet (rs_null n)
   apply ENNReal.le_of_forall_pos_le_add
-  intros ε ε_pos μF_finite
+  intro ε ε_pos μF_finite
   have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
   have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
@@ -664,7 +664,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     (ENNReal.tendsto_toNNReal_iff (by simp) (by simp)).2 tendsto_measure_iUnion_accumulate
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
-  refine ⟨(Finset.range (n + 1)).image f, by simp; grind, ?_, ?_⟩
+  refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
   · convert hn
     simp [accumulate_def]
     grind

@@ -14,9 +14,9 @@ import Mathlib.Data.Int.Cast.Basic
 ## Implementation note
 
 The `nsmul` and `zsmul` assumptions on any transfer definition for an algebraic structure involving
-both addition and multiplication (eg `AddMonoidWithOne`) is `∀ n x, f (n • x) = n • f x`, which is
+both addition and multiplication (e.g. `AddMonoidWithOne`) is `∀ n x, f (n • x) = n • f x`, which is
 what we would expect.
-However, we cannot do the same for transfer definitions built using `to_additive` (eg `AddMonoid`)
+However, we cannot do the same for transfer definitions built using `to_additive` (e.g. `AddMonoid`)
 as we want the multiplicative versions to be `∀ x n, f (x ^ n) = f x ^ n`.
 As a result, we must use `Function.swap` when using additivised transfer definitions in
 non-additivised ones.
@@ -188,6 +188,8 @@ protected abbrev ring [Ring R] (zero : f 0 = 0)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : Ring S where
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
+  -- zsmul included here explicitly to make sure it's picked correctly by `fast_instance%`.
+  zsmul := fun n x ↦ n • x
   __ := hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
   __ := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
 

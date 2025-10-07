@@ -297,7 +297,7 @@ def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun :=
 
 variable (R) in
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
-conjugation, and is available under the notation `conj` in the locale `ComplexConjugate`.
+conjugation, and is available under the notation `conj` in the scope `ComplexConjugate`.
 
 Note that this is the preferred form (over `starRingAut`, available under the same hypotheses)
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
@@ -367,7 +367,7 @@ instance Int.instStarRing : StarRing ℤ := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
 instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 
-/-- A star module `A` over a star ring `R` is a module which is a star add monoid,
+/-- A star module `A` over a star ring `R` is a module which is a star additive monoid,
 and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
 

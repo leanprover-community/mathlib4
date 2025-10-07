@@ -212,8 +212,8 @@ variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 
 lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A} {f : C(S, R)}
-    (h : QuasispectrumRestricts a f) (h_id : φ (.id rfl) = a) :
-    h.nonUnitalStarAlgHom φ (.id rfl) = a := by
+    (h : QuasispectrumRestricts a f) (h_id : φ (.id _) = a) :
+    h.nonUnitalStarAlgHom φ (.id _) = a := by
   simp only [QuasispectrumRestricts.nonUnitalStarAlgHom_apply]
   convert h_id
   ext x
