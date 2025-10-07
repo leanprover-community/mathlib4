@@ -715,12 +715,8 @@ Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
   refine ext_to_Spec <| (cancel_mono (basicOpen 𝒜₂ (f s)).topIso.hom).mp ?_
   simp [basicOpenIsoSpec_hom, basicOpenToSpec_app_top, awayToSection_comp_appLE _ _ hs]
 
--- ????
-@[deprecated (since := "2025-09-30")]
-noncomputable alias Proj.openCoverOfISupEqTop := Proj.openCoverOfIsOpenCover
-
 @[simps! I₀ f] noncomputable def mapAffineOpenCover : (Proj 𝒜₂).AffineOpenCover :=
-  Proj.openCoverOfISupEqTop _ (fun s : (affineOpenCover 𝒜₁).I₀ ↦ f s.2) (fun s ↦ f.2 s.2.2)
+  Proj.affineOpenCoverOfIrrelevantLESpan _ (fun s : (affineOpenCover 𝒜₁).I₀ ↦ f s.2) (fun s ↦ f.2 s.2.2)
     (fun s ↦ s.1.2) <| ((HomogeneousIdeal.toIdeal_le_toIdeal_iff _).mpr hf).trans <|
     Ideal.map_le_of_le_comap <| (HomogeneousIdeal.irrelevant_toIdeal_le _).mpr fun i hi x hx ↦
     Ideal.subset_span ⟨⟨⟨i, hi⟩, ⟨x, hx⟩⟩, rfl⟩
@@ -749,6 +745,7 @@ variable {R₁ R₂ R₃ A₁ A₂ A₃ ι : Type*}
   [CommRing R₁] [CommRing R₂] [CommRing R₃] [CommRing A₁] [CommRing A₂] [CommRing A₃]
   [Algebra R₁ A₁] [Algebra R₂ A₂] [Algebra R₃ A₃]
 
+/-- graded ring equiv -/
 structure GradedAlgEquiv (𝒜₁ : ι → Submodule R₁ A₁) (𝒜₂ : ι → Submodule R₂ A₂)
     extends RingEquiv A₁ A₂, GradedAlgHom 𝒜₁ 𝒜₂
 
@@ -917,8 +914,8 @@ theorem map_comp (h₁₂) (h₂₃) :
 
 theorem map_id : map .id GradedAlgHom.id_admissible = 𝟙 (Proj 𝒜₁) := by
   refine (affineOpenCover _).openCover.hom_ext _ _ fun s ↦ ?_
-  simp only [affineOpenCover, Proj.openCoverOfIsOpenCover, Scheme.AffineOpenCover.openCover_X,
-    Scheme.AffineOpenCover.openCover_f, Category.comp_id]
+  simp only [affineOpenCover, Proj.affineOpenCoverOfIrrelevantLESpan,
+    Scheme.AffineOpenCover.openCover_X, Scheme.AffineOpenCover.openCover_f, Category.comp_id]
   conv_lhs => exact awayι_comp_map .id _ _ _ s.2.2
   generalize_proofs h₁ h₂ h₃
   have : HomogeneousLocalization.Away.map GradedAlgHom.id h₁ = RingHom.id _ := by
@@ -1862,8 +1859,10 @@ noncomputable def Proj.openCoverPullback :
     (fun f ↦ pullback (Spec.map (ofHom (algebraMap R S)))
       (Spec.map (ofHom (algebraMap R (HomogeneousLocalization.Away 𝒜 f.2)))))
     (fun f ↦ pullback.map _ _ _ _ (𝟙 _) (Proj.awayι 𝒜 f.2 f.2.2 f.1.2) (𝟙 _) (by simp) (by simp))
-    (Equiv.refl _) (fun _ ↦ pullback.congrHom rfl (by simp [affineOpenCover, openCoverOfIsOpenCover]))
-    fun f ↦ pullback.hom_ext (by simp) (by simp [Proj.affineOpenCover, Proj.openCoverOfIsOpenCover])
+    (Equiv.refl _) (fun _ ↦ pullback.congrHom rfl
+      (by simp [affineOpenCover, affineOpenCoverOfIrrelevantLESpan]))
+    fun f ↦ pullback.hom_ext (by simp)
+      (by simp [Proj.affineOpenCover, Proj.affineOpenCoverOfIrrelevantLESpan])
 
 @[simp] lemma Proj.opensRange_openCoverPullback {f} :
     ((Proj.openCoverPullback 𝒜 S).f f).opensRange =
