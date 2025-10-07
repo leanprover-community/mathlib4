@@ -113,15 +113,15 @@ theorem toRingHom_eq_coe (f : 𝒜 →+*ᵍ ℬ) : f.toRingHom = f :=
   rfl
 
 @[simp]
-theorem toMonoidHom_eq_coe (f : 𝒜 →+*ᵍ ℬ) : f.toMonoidHom = f :=
+theorem toMonoidHom_eq_coe (f : 𝒜 →+*ᵍ ℬ) : ((f : A →+* B) : A →* B) = f :=
   rfl
 
 @[simp]
-theorem toMonoidWithZeroHom_eq_coe (f : 𝒜 →+*ᵍ ℬ) : f.toMonoidWithZeroHom = f := by
+theorem toMonoidWithZeroHom_eq_coe (f : 𝒜 →+*ᵍ ℬ) : (f : A →+* B).toMonoidWithZeroHom = f :=
   rfl
 
 @[simp]
-theorem toAddMonoidHom_eq_coe (f : 𝒜 →+*ᵍ ℬ) : f.toAddMonoidHom = f :=
+theorem toAddMonoidHom_eq_coe (f : 𝒜 →+*ᵍ ℬ) : ((f : A →+* B) : A →+ B) = f :=
   rfl
 
 /-- Copy of a `GradedRingHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -284,7 +284,8 @@ variable [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
 section
 variable (𝒜 : ι → σ) (ℬ : ι → τ)
 
-@[simps] def addHom (f : 𝒜 →+*ᵍ ℬ) (i : ι) : 𝒜 i →+ ℬ i where
+/-- A graded ring homomorphism descends to an additive homomorphism on each indexed component. -/
+@[simps!] def addHom (f : 𝒜 →+*ᵍ ℬ) (i : ι) : 𝒜 i →+ ℬ i where
   toFun x := ⟨f x, f.map_mem _ _ x.2⟩
   map_zero' := by ext; simp
   map_add' x y := by ext; simp
@@ -294,7 +295,8 @@ end
 section
 variable [AddMonoid ι] (𝒜 : ι → σ) (ℬ : ι → τ) [SetLike.GradedMonoid 𝒜] [SetLike.GradedMonoid ℬ]
 
-@[simps] def zero (f : 𝒜 →+*ᵍ ℬ) : 𝒜 0 →+* ℬ 0 where
+/-- A graded ring homomorphism descends to a ring homomorphism on the zeroth component. -/
+@[simps!] def zero (f : 𝒜 →+*ᵍ ℬ) : 𝒜 0 →+* ℬ 0 where
   __ := f.addHom _ _ 0
   map_one' := Subtype.ext f.map_one
   map_mul' _ _ := Subtype.ext <| f.map_mul ..
