@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Algebra.Group.Action.Basic
 
 /-!
 
@@ -221,8 +222,8 @@ Each part has a source, a group element and a target.
 The sources and targets of every part are supremum independent (and not empty), which ensures that
 they form a `Finpartition` of the source and target of the whole Equipartition.
 `decomp` ensures that applying the group element of a part to its source gives the target.
-This definition is equivalent to the one given at `Equidecomp`.
-It is mainly useful for constructing concrete Equidecompositions.
+This definition is equivalent to the one given at `Equidecomp`, but it is more useful for
+constructing concrete Equidecompositions.
 -/
 structure Equipartition (X : Type*) (G : Type*) [SMul G X] where
   parts : Finset (Set X × G × Set X)
@@ -311,6 +312,7 @@ theorem source_part_spec (x : X) (h : x ∈ P.source) : x ∈ (P.source_part x h
   rw [Equipartition.source_part]
   have h1 : ∃ p ∈ P.parts, x ∈ p.1 := by simp [source, mem_iUnion] at h ⊢; assumption
   exact (Classical.choose_spec h1).2
+
 
 theorem source_part_mem_parts (x : X) (h : x ∈ P.source) : (P.source_part x h) ∈ P.parts := by
   rw [Equipartition.source_part]
@@ -450,6 +452,121 @@ open scoped Classical in noncomputable def to_equidecomp : Equidecomp X G where
     · simp [hx]
 
 end Equipartition
+
+/--
+Chooses the group element that is applied to a certain `x` in the source of f.
+-/
+noncomputable def source_witness (f : Equidecomp X G) {x : X} (h : x ∈ f.source) : G :=
+  (f.isDecompOn x h).choose
+
+/--
+Chooses the group element which was used to send an element of the source to `y`.
+-/
+noncomputable def target_witness (f : Equidecomp X G) {y : X} (h : y ∈ f.target) : G :=
+  (f.isDecompOn (f.invFun y) (f.map_target' h)).choose
+
+def target_witness_spec (f : Equidecomp X G) {y : X} (h : y ∈ f.target) :
+  f.target_witness h ∈ f.witness ∧ y = f.target_witness h • (f.invFun y):= by
+  rw [target_witness]
+  have h1 := (f.isDecompOn (f.invFun y) (f.map_target' h)).choose_spec
+  have h2 : f (f.invFun y) = y := by
+    rw [f.right_inv' h]
+  grind
+
+
+theorem target_witness_of (f : Equidecomp X G) {x : X} (h : x ∈ f.source) (g : G) (hg : g • x ∈ f.target) (h1 : f x = g • x):
+    f.target_witness hg = g := by
+  apply_fun (. • x)
+  simp
+  let h2 := (f.target_witness_spec hg).2
+
+  simp_rw [← h1] at h2
+  rw [f.left_inv' h] at h2
+  simp_rw [h1] at h2
+  rw [← h2]
+  simp [Function.Injective]
+
+
+
+
+
+
+
+
+open scoped Classical in noncomputable def minimal_witness (f : Equidecomp X G) : Finset G :=
+  {w ∈ f.witness | ∃ a, ∃ h, @f.source_witness _ _ _ _ a h = w}
+
+
+
+open scoped Classical in noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G where
+  parts := Finset.image (fun g ↦ ({x : X | if h : x ∈ f.source then f.source_witness h = g else false},g,{y : X | if h : y ∈ f.target then f.target_witness h = g else false})) f.minimal_witness
+  bot_notMem p h := by
+    simp only [Bool.false_eq_true, dite_else_false, Finset.mem_image] at h
+    rcases h with ⟨g, ⟨hg, h⟩⟩
+    subst h
+    simp only [ne_eq, eq_empty_iff_forall_notMem, mem_setOf_eq, not_exists, not_forall,
+      Decidable.not_not]
+    simp only [minimal_witness, Finset.mem_filter] at hg
+    grind
+  decomp p hp := by
+    simp only [Bool.false_eq_true, dite_else_false, Finset.mem_image] at hp
+    rcases hp with ⟨g, ⟨hg, hp⟩⟩
+    subst hp
+    simp only [image_smul]
+    apply le_antisymm
+    . simp only [le_eq_subset, subset_setOf, mem_smul_set, mem_setOf_eq, forall_exists_index,
+      and_imp]
+      intro x1 x2 hx2 h1 h2
+      subst h2
+
+
+
+    #exit
+
+
+#exit
+
+
+  supIndepSource s h1 p h2 := by
+    simp_all only [Bool.false_eq_true, dite_else_false, Finset.mem_image, Finset.sup_set_eq_biUnion,
+      disjoint_iUnion_right, Prod.forall]
+    intro h3 p_1 p_2 p_3 h4
+    rw [Finset.subset_image_iff] at h1
+    rcases h1 with ⟨s', ⟨h1, h5⟩⟩
+    rcases h2 with ⟨g', ⟨hg, h2⟩⟩
+    simp [← h2]
+    rw [← h5] at h4
+    simp at h4
+    rcases h4 with ⟨h4_1, ⟨h4_2, h4_3⟩⟩
+    rw [← h4_2]
+    rw [Set.disjoint_iff]
+    rw [@inter_setOf_eq_sep]
+    simp only [mem_setOf_eq, subset_empty_iff]
+    rw [@eq_empty_iff_forall_notMem]
+    simp only [mem_setOf_eq, not_and, not_exists, forall_exists_index]
+    have h : g' ∉ s' := by grind
+    grind
+  supIndepTarget := by
+    intro s h1 p h2 hp
+    simp_all only [Bool.false_eq_true, dite_else_false, Finset.mem_image, Finset.sup_set_eq_biUnion,
+      disjoint_iUnion_right, Prod.forall]
+    intro s' g' b' hA'
+    rcases h2 with ⟨g,⟨hg, hpg⟩⟩
+    simp only [← hpg]
+    simp only [Finset.subset_image_iff] at h1
+    rcases h1 with ⟨s_g, ⟨h_s_g, h_s_g_s⟩⟩
+    rw [← h_s_g_s] at hA'
+    simp at hA'
+    rcases hA' with ⟨hg', ⟨hs', hb'⟩⟩
+    simp only [← hb', Set.disjoint_iff, subset_empty_iff, eq_empty_iff_forall_notMem, mem_inter_iff,
+      mem_setOf_eq, not_and, not_exists, forall_exists_index]
+    intro x hx hg_ _
+    rw [hg_]
+    have h : g ∉ s_g := by grind
+    grind
+
+
+
 
 end Group
 
