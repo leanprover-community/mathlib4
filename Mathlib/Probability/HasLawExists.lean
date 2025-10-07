@@ -20,17 +20,19 @@ namespace ProbabilityTheory
 universe u v
 
 lemma _root_.Measure.exists_hasLaw {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧} (μ : Measure 𝓧) :
-    ∃ Ω : Type u, ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : Ω → 𝓧, HasLaw X μ P :=
-  ⟨𝓧, m𝓧, μ, id, .id⟩
+    ∃ Ω : Type u, ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : Ω → 𝓧,
+      Measurable X ∧ HasLaw X μ P :=
+  ⟨𝓧, m𝓧, μ, id, measurable_id, .id⟩
 
 lemma exists_hasLaw_indepFun {ι : Type v} (𝓧 : ι → Type u)
     {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)} (μ : (i : ι) → Measure (𝓧 i))
     [hμ : ∀ i, IsProbabilityMeasure (μ i)] :
     ∃ Ω : Type (max u v), ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : (i : ι) → Ω → (𝓧 i),
-      (∀ i, HasLaw (X i) (μ i) P) ∧ iIndepFun X P ∧ IsProbabilityMeasure P := by
+      (∀ i, Measurable (X i)) ∧ (∀ i, HasLaw (X i) (μ i) P)
+        ∧ iIndepFun X P ∧ IsProbabilityMeasure P := by
   use Π i, (𝓧 i), .pi, infinitePi μ, fun i ↦ Function.eval i
-  refine ⟨fun i ↦ MeasurePreserving.hasLaw (measurePreserving_eval_infinitePi _ _), ?_,
-    by infer_instance⟩
+  refine ⟨by fun_prop, fun i ↦ MeasurePreserving.hasLaw (measurePreserving_eval_infinitePi _ _),
+    ?_, by infer_instance⟩
   rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by fun_prop), map_id']
   congr
   funext i
@@ -39,7 +41,7 @@ lemma exists_hasLaw_indepFun {ι : Type v} (𝓧 : ι → Type u)
 lemma exists_iid (ι : Type v) {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧}
     (μ : Measure 𝓧) [IsProbabilityMeasure μ] :
     ∃ Ω : Type (max u v), ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : ι → Ω → 𝓧,
-      (∀ i, HasLaw (X i) μ P) ∧ iIndepFun X P ∧ IsProbabilityMeasure P :=
+      (∀ i, Measurable (X i)) ∧ (∀ i, HasLaw (X i) μ P) ∧ iIndepFun X P ∧ IsProbabilityMeasure P :=
   exists_hasLaw_indepFun (fun _ ↦ 𝓧) (fun _ ↦ μ)
 
 end ProbabilityTheory
