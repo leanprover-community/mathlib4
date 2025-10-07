@@ -252,8 +252,7 @@ def comp (g : N →ₚₗ[R] P) (f : M →ₚₗ[R] N) : M →ₚₗ[R] P where
 theorem comp_toFun' (S : Type u) [CommSemiring S] [Algebra R S] :
     (g.comp f).toFun' S = (g.toFun' S).comp (f.toFun' S) := rfl
 
-theorem comp_assoc : h.comp (g.comp f) = (h.comp g).comp f := by
-  ext; simp only [comp_toFun']; rfl
+theorem comp_assoc : h.comp (g.comp f) = (h.comp g).comp f := rfl
 
 theorem comp_id : g.comp id = g := by ext; rfl
 

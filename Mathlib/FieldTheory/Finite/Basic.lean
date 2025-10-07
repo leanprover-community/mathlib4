@@ -470,7 +470,6 @@ open Polynomial
 
 theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
   obtain ⟨p, hp⟩ := CharP.exists K
-  letI := hp
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   haveI : Fact p.Prime := ⟨hp⟩
   dsimp at hn

@@ -126,6 +126,19 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
   le_gronwallBound_of_liminf_deriv_right_le (continuous_norm.comp_continuousOn hf)
     (fun x hx _r hr => (hf' x hx).liminf_right_slope_norm_le hr) ha bound
 
+/-- Let `f : [a, b] → E` be a differentiable function such that `f a = 0`
+and `‖f'(x)‖ ≤ K ‖f(x)‖` for some constant `K`. Then `f = 0` on `[a, b]`. -/
+theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right {f f' : ℝ → E} {K a b : ℝ}
+    (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
+    (ha : f a = 0) (bound : ∀ x ∈ Ico a b, ‖f' x‖ ≤ K * ‖f x‖) :
+    ∀ x ∈ Set.Icc a b, f x = 0 := by
+  intro x hx
+  apply norm_le_zero_iff.mp
+  calc ‖f x‖
+    _ ≤ gronwallBound 0 K 0 (x - a) :=
+      norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
+    _ = 0 := by rw [gronwallBound_ε0_δ0]
+
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
 
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
@@ -247,7 +260,7 @@ theorem ODE_solution_unique_of_mem_Icc_left
   have hv' : ∀ t ∈ Ico (-b) (-a), LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
     intro t ht
     replace ht : -t ∈ Ioc a b := by
-      simp at ht ⊢
+      simp only [mem_Ico, mem_Ioc] at ht ⊢
       constructor <;> linarith
     rw [← one_mul K]
     exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _ ht)

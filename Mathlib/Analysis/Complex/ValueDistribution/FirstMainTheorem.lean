@@ -19,7 +19,7 @@ of the characteristic function `characteristic f ⊤` under modifications of `f`
   the function `f` and `f - const` agree up to a constant, see Proposition 2.2 on p. 168 of [Lang,
   *Introduction to Complex Hyperbolic Spaces*][MR886677]
 
-See Section~VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section~1.1 of
+See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 
@@ -62,7 +62,8 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
     by_cases h : 0 ≤ log⁺ ‖f θ‖ - log⁺ ‖f θ - a₀‖
     · simpa [abs_of_nonneg h, sub_le_iff_le_add, add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
         using (posLog_norm_add_le (f θ - a₀) a₀)
-    · simp [abs_of_nonpos (le_of_not_ge h), neg_sub, add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
+    · simp only [abs_of_nonpos (le_of_not_ge h), neg_sub, tsub_le_iff_right,
+        add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
       convert posLog_norm_add_le (-f θ) (a₀) using 2
       · rw [← norm_neg]
         abel_nf
