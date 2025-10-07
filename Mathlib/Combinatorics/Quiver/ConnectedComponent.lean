@@ -46,6 +46,7 @@ namespace WeaklyConnectedComponent
 
 variable {V}
 
+/-- The canonical map from a vertex to its weakly connected component. -/
 protected def mk : V → WeaklyConnectedComponent V :=
   @Quotient.mk' _ (zigzagSetoid V)
 
@@ -75,7 +76,8 @@ section StronglyConnected
 
 variable (V : Type*) [Quiver V]
 
-/-- Strong connectivity: every ordered pair of vertices is joined by a (possibly empty) directed path. -/
+/-- Strong connectivity: every ordered pair of vertices is joined by a (possibly empty)
+directed path. -/
 def IsStronglyConnected : Prop :=
   ∀ i j : V, Nonempty (Path i j)
 
@@ -117,8 +119,9 @@ def StronglyConnectedComponent (V : Type*) [Quiver V] : Type _ :=
 
 namespace StronglyConnectedComponent
 
-variable {V} [Quiver V]
+variable {V}
 
+/-- The canonical map from a vertex to its strongly connected component. -/
 protected def mk : V → StronglyConnectedComponent V :=
   @Quotient.mk' _ (stronglyConnectedSetoid V)
 
@@ -146,12 +149,12 @@ end StronglyConnectedComponent
 
 variable {V}
 
-lemma stronglyConnectedComponent_eq_of_path {a b : V} [Quiver V]
+lemma stronglyConnectedComponent_eq_of_path {a b : V}
     (hab : Nonempty (Path a b)) (hba : Nonempty (Path b a)) :
     (a : StronglyConnectedComponent V) = b :=
   (StronglyConnectedComponent.eq (a := a) (b := b)).2 ⟨hab, hba⟩
 
-lemma exists_path_of_stronglyConnectedComponent_eq {a b : V} [Quiver V]
+lemma exists_path_of_stronglyConnectedComponent_eq {a b : V}
     (h : (a : StronglyConnectedComponent V) = b) :
     (Nonempty (Path a b)) ∧ (Nonempty (Path b a)) :=
   (StronglyConnectedComponent.eq (a := a) (b := b)).1 h
@@ -195,3 +198,4 @@ lemma isSStronglyConnected_of_hasEdge {V} [Quiver V]
   exact ⟨p, hp_pos⟩
 
 end StronglyConnected
+end Quiver
