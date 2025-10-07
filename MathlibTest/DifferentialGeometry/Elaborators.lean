@@ -303,8 +303,9 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 #guard_msgs in
 #check MDiffAt (T% σ')
 
--- Inferring a model with corners on the trivial bundle over the tangent space of a manifold.
--- TODO: why does this fail; this is not supposed to happen!
+-- Test the inference of a model with corners on a trivial bundle over the tangent space of a
+-- manifold. (This code path is not covered by the other tests, hence should be kept.)
+-- Stating smoothness this way does not make sense, but finding a model with corners should work.
 /--
 error: failed to synthesize
   TopologicalSpace (TotalSpace F (TangentSpace I))
@@ -333,6 +334,7 @@ variable {h : Bundle.TotalSpace F (TangentSpace I : M → Type _) → F} in
 set_option trace.Elab.DiffGeo true in
 #check MDiff h
 
+-- TODO: add a test with the correct spelling of this!
 
 /-! Error messages in case of a forgotten `T%`. -/
 section
