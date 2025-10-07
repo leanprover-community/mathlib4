@@ -198,7 +198,7 @@ so we mark this as `@[semireducible]`.
 In future, we may want to remove this annotation and instead use `norm_num` instead of `decide`
 in these situations.
 -/
-@[semireducible] def minFacAux (n : ℕ) : ℕ → ℕ
+def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
     if n < k * k then n
     else
@@ -371,7 +371,7 @@ theorem minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
     rw [h] at this
     exact not_prime_one this
   · rintro rfl
-    rfl
+    simp [minFac, minFacAux]
 
 @[simp]
 theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
@@ -383,10 +383,8 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have ub := minFac_le_of_dvd (le_refl 2) h
     have lb := minFac_pos n
     refine ub.eq_or_lt.resolve_right fun h' => ?_
-    have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
-    rw [eq_comm, Nat.minFac_eq_one_iff] at this
-    subst this
-    exact not_lt_of_ge (le_of_dvd lb h) h'
+    suffices n.minFac = 1 by simp_all
+    exact (le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')).symm
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
