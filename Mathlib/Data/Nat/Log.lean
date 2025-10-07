@@ -225,6 +225,11 @@ theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
   · rw [div_eq_of_lt h, log_of_lt h, log_zero_right]
   rw [log_of_one_lt_of_le hb h, Nat.add_sub_cancel_right]
 
+lemma log_div_base_pow (b n k : ℕ) : log b (n / b ^ k) = log b n - k := by
+  induction k with
+  | zero => grind
+  | succ k hk => rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, log_div_base, hk, sub_add_eq]
+
 @[simp]
 theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   rcases le_or_gt b 1 with hb | hb
