@@ -43,7 +43,7 @@ theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a
 theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
 
 @[simp] theorem card_replicate (n) (a : α) : card (replicate n a) = n :=
-  length_replicate n a
+  length_replicate
 
 theorem mem_replicate {a b : α} {n : ℕ} : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   List.mem_replicate
@@ -109,19 +109,19 @@ variable [DecidableEq α] {s t u : Multiset α}
 
 @[simp]
 theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n := by
-  convert List.count_replicate_self a n
+  convert List.count_replicate_self (a := a)
   rw [← coe_count, coe_replicate]
 
 theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = a then n else 0 := by
-  convert List.count_replicate a b n
+  convert List.count_replicate (a := a)
   · rw [← coe_count, coe_replicate]
   · simp
 
 theorem le_count_iff_replicate_le {a : α} {s : Multiset α} {n : ℕ} :
     n ≤ count a s ↔ replicate n a ≤ s :=
   Quot.inductionOn s fun _l => by
-    simp only [quot_mk_to_coe'', mem_coe, coe_count]
-    exact le_count_iff_replicate_sublist.trans replicate_le_coe.symm
+    simp only [quot_mk_to_coe'', coe_count]
+    exact replicate_sublist_iff.symm.trans replicate_le_coe.symm
 
 end
 

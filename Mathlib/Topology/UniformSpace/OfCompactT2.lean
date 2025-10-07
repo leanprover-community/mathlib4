@@ -38,9 +38,10 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
   uniformity := 𝓝ˢ (diagonal γ)
   symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm
   comp := by
-    /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
+      /-
+        This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
-        -/
+      -/
     set 𝓝Δ := 𝓝ˢ (diagonal γ)
     -- The filter of neighborhoods of Δ
     set F := 𝓝Δ.lift' fun s : Set (γ × γ) => s ○ s
@@ -87,12 +88,12 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- Indeed assume for contradiction there is some (u, v) in the intersection.
     obtain ⟨⟨u, v⟩, ⟨u_in, v_in⟩, w, huw, hwv⟩ :=
       clusterPt_iff_nonempty.mp hxy.of_inf_left hV₁₂ this
-    -- So u ∈ V₁, v ∈ V₂, and there exists some w such that (u, w) ∈ W and (w ,v) ∈ W.
+    -- So u ∈ V₁, v ∈ V₂, and there exists some w such that (u, w) ∈ W and (w, v) ∈ W.
     -- Because u is in V₁ which is disjoint from U₂ and U₃, (u, w) ∈ W forces (u, w) ∈ U₁ ×ˢ U₁.
     have uw_in : (u, w) ∈ U₁ ×ˢ U₁ :=
       (huw.resolve_right fun h => h.1 <| Or.inl u_in).resolve_right fun h =>
         hU₁₂.le_bot ⟨VU₁ u_in, h.1⟩
-    -- Similarly, because v ∈ V₂, (w ,v) ∈ W forces (w, v) ∈ U₂ ×ˢ U₂.
+    -- Similarly, because v ∈ V₂, (w, v) ∈ W forces (w, v) ∈ U₂ ×ˢ U₂.
     have wv_in : (w, v) ∈ U₂ ×ˢ U₂ :=
       (hwv.resolve_right fun h => h.2 <| Or.inr v_in).resolve_left fun h =>
         hU₁₂.le_bot ⟨h.2, VU₂ v_in⟩
@@ -104,4 +105,4 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     rw [iSup_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
     suffices ∀ y ≠ x, comap (fun _ : γ ↦ x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
     intro y hxy
-    simp [comap_const_of_not_mem (compl_singleton_mem_nhds hxy) (not_not_intro rfl)]
+    simp [comap_const_of_notMem (compl_singleton_mem_nhds hxy) (not_not_intro rfl)]

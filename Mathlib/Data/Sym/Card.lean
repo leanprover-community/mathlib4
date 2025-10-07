@@ -142,7 +142,7 @@ lemma two_mul_card_image_offDiag (s : Finset α) : 2 * #(s.offDiag.image Sym2.mk
       and_iff_right_iff_imp]
     -- `hxy'` is used in `exact`
     rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
-  rw [this, card_insert_of_not_mem, card_singleton]
+  rw [this, card_insert_of_notMem, card_singleton]
   simp only [not_and, Prod.mk_inj, mem_singleton]
   exact fun _ => hxy'
 

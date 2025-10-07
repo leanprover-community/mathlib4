@@ -77,7 +77,7 @@ variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C] [e.IsRe
 /-- Given `e : ComplexShape.Embedding c c'`, this is the restriction
 functor `HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/
 @[simps]
-noncomputable def restrictionFunctor [HasZeroMorphisms C] :
+def restrictionFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c' ⥤ HomologicalComplex C c where
   obj K := K.restriction e
   map φ := HomologicalComplex.restrictionMap φ e

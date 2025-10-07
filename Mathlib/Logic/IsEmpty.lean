@@ -43,8 +43,7 @@ protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
 theorem Function.Surjective.isEmpty [IsEmpty α] {f : α → β} (hf : f.Surjective) : IsEmpty β :=
   ⟨fun y ↦ let ⟨x, _⟩ := hf y; IsEmpty.false x⟩
 
--- Note on type class argument order:
--- We want type class search to look for `IsEmpty (p x)` instances before `Nonempty α` instances.
+-- See note [instance argument order]
 instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [h : Nonempty α] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
 
@@ -131,11 +130,11 @@ instance (priority := 100) : Subsingleton α :=
 
 end IsEmpty
 
-@[simp]
+@[simp, push]
 theorem not_nonempty_iff : ¬Nonempty α ↔ IsEmpty α :=
   ⟨fun h ↦ ⟨fun x ↦ h ⟨x⟩⟩, fun h1 h2 ↦ h2.elim h1.elim⟩
 
-@[simp]
+@[simp, push]
 theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
   not_iff_comm.mp not_nonempty_iff
 
@@ -223,7 +222,7 @@ theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
   simp only [RightTotal, IsEmpty.forall_iff]
 
 theorem rightTotal_iff_isEmpty_right [IsEmpty α] : RightTotal R ↔ IsEmpty β := by
-  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff, imp_self]
+  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff]
 
 @[simp]
 theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=

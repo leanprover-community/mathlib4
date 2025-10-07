@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+import Mathlib.LinearAlgebra.Dimension.Subsingleton
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -17,6 +18,7 @@ This file provides a `FreeMonoid X` basis on the `FreeAlgebra R X`, and uses it 
 dimension of the algebra is the cardinality of `List X`
 -/
 
+open Module
 
 universe u v
 

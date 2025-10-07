@@ -46,7 +46,7 @@ variable (R : Type u) [Ring R]
 
 /-- The category of R-modules and their morphisms.
 
- Note that in the case of `R = ℤ`, we can not
+Note that in the case of `R = ℤ`, we cannot
 impose here that the `ℤ`-multiplication field from the module structure is defeq to the one coming
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
@@ -152,8 +152,6 @@ lemma hom_surjective {M N : ModuleCat.{v} R} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
   hom_bijective.surjective
 
-@[deprecated (since := "2024-10-06")] alias asHom := ModuleCat.ofHom
-
 @[simp]
 lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
     [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
@@ -185,13 +183,8 @@ lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv
 def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end
-
-instance : Inhabited (ModuleCat R) :=
-  ⟨of R R⟩
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
@@ -230,7 +223,7 @@ variable {R}
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 module. -/
-@[simps]
+@[deprecated Iso.refl (since := "2025-05-15")]
 def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M
@@ -239,7 +232,6 @@ theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M whe
   unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
     ext x
     rw [Subsingleton.elim x (0 : M)]
-    dsimp
     simp⟩⟩
   unique_from X := ⟨⟨⟨ofHom (0 : X →ₗ[R] M)⟩, fun f => by
     ext x
@@ -258,22 +250,6 @@ open ModuleCat
 /-- Reinterpreting a linear map in the category of `R`-modules -/
 scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.ofHom f
 
-@[deprecated (since := "2024-10-06")] alias ModuleCat.asHom_apply := ModuleCat.ofHom_apply
-
--- Since `of` and the coercion now roundtrip reducibly, we don't need to distinguish in which place
--- we need to add `of` when coercing from linear maps to morphisms.
-@[deprecated ModuleCat.ofHom (since := "2024-11-29")] alias ModuleCat.asHomRight := ModuleCat.ofHom
-@[deprecated ModuleCat.ofHom (since := "2024-11-29")] alias ModuleCat.asHomLeft := ModuleCat.ofHom
-
-/-- Reinterpreting a linear map in the category of `R`-modules.
-This notation is deprecated: use `↟` instead.
--/
-scoped[ModuleCat] notation "↾" f:1024 => ModuleCat.asHomRight f
-/-- Reinterpreting a linear map in the category of `R`-modules.
-This notation is deprecated: use `↟` instead.
--/
-scoped[ModuleCat] notation "↿" f:1024 => ModuleCat.asHomLeft f
-
 section
 
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
@@ -284,23 +260,6 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
   inv := ofHom (e.symm : X₂ →ₗ[R] X₁)
   hom_inv_id := by ext; apply e.left_inv
   inv_hom_id := by ext; apply e.right_inv
-
-/-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
-@[deprecated LinearEquiv.toModuleIso (since := "2024-11-29")]
-abbrev LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M ≅ N :=
-  i.toModuleIso
-
-/-- Build an isomorphism in the category `ModuleCat R` from a `LinearEquiv` between `Module`s. -/
-@[deprecated LinearEquiv.toModuleIso (since := "2024-11-29")]
-abbrev LinearEquiv.toModuleIso'Left {X₁ : ModuleCat.{v} R} [AddCommGroup X₂] [Module R X₂]
-    (e : X₁ ≃ₗ[R] X₂) : X₁ ≅ ModuleCat.of R X₂ :=
-  e.toModuleIso
-
-/-- Build an isomorphism in the category `ModuleCat R` from a `LinearEquiv` between `Module`s. -/
-@[deprecated LinearEquiv.toModuleIso (since := "2024-11-29")]
-abbrev LinearEquiv.toModuleIso'Right [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{v} R}
-    (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ X₂ :=
-  e.toModuleIso
 
 namespace CategoryTheory.Iso
 
@@ -375,6 +334,19 @@ instance forget₂_addCommGrp_additive :
 def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
   { homEquiv with
     map_add' := fun _ _ => rfl }
+
+theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
+  refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
+  rw [← LinearMap.id_apply (R := R) x, ← ModuleCat.hom_id]
+  simp only [(CategoryTheory.Limits.IsZero.iff_id_eq_zero M).mp h, hom_zero, LinearMap.zero_apply]
+
+lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
+  mp := subsingleton_of_isZero
+  mpr _ := isZero_of_subsingleton M
+
+@[simp]
+lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
+    IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
 end AddCommGroup
 
@@ -465,20 +437,15 @@ variable (M N : ModuleCat.{v} R)
   toFun := ModuleCat.Hom.hom
   invFun := ModuleCat.ofHom
   map_mul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
-
-/-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/
-@[deprecated (since := "2025-01-23")] alias endMulEquiv := endRingEquiv
 
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
   toFun r := AddCommGrp.ofHom
     { toFun := fun (m : M) => r • m
-      map_zero' := by dsimp; rw [smul_zero]
-      map_add' := fun x y => by dsimp; rw [smul_add] }
+      map_zero' := by rw [smul_zero]
+      map_add' := fun x y => by rw [smul_add] }
   map_one' := AddCommGrp.ext (fun x => by simp)
   map_zero' := AddCommGrp.ext (fun x => by simp)
   map_mul' r s := AddCommGrp.ext (fun (x : M) => (smul_smul r s x).symm)
@@ -498,10 +465,10 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   toFun r :=
     { app := fun M => M.smul r
       naturality := fun _ _ _ => smul_naturality _ r }
-  map_one' := NatTrans.ext (by aesop_cat)
-  map_zero' := NatTrans.ext (by aesop_cat)
-  map_mul' _ _ := NatTrans.ext (by aesop_cat)
-  map_add' _ _ := NatTrans.ext (by aesop_cat)
+  map_one' := NatTrans.ext (by cat_disch)
+  map_zero' := NatTrans.ext (by cat_disch)
+  map_mul' _ _ := NatTrans.ext (by cat_disch)
+  map_add' _ _ := NatTrans.ext (by cat_disch)
 
 /-- Given `A : AddCommGrp` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/

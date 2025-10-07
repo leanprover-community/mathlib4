@@ -232,7 +232,6 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
   map_add' := by simp [tmul, TensorProduct.add_tmul]
   map_one' := rfl
   map_mul' a₁ a₂ := by
-    dsimp
     classical
     rw [← DirectSum.sum_support_decompose 𝒜 a₂, Finset.mul_sum]
     simp_rw [tmul, sum_tmul, map_sum, Finset.mul_sum]
@@ -297,7 +296,7 @@ variable {C} [Ring C] [Algebra R C]
 product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
 def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a)) :
+    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ) ^ (j * i) • (g b * f a)) :
     (𝒜 ᵍ⊗[R] ℬ) →ₐ[R] C :=
   AlgHom.ofLinearMap
     (LinearMap.mul' R C

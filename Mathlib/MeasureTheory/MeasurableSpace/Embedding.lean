@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.Tactic.FunProp
 
 /-!
@@ -332,7 +332,7 @@ protected theorem measurableEmbedding (e : α ≃ᵐ β) : MeasurableEmbedding e
 
 /-- Equal measurable spaces are equivalent. -/
 protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace β] (h : α = β)
-    (hi : HEq i₁ i₂) : α ≃ᵐ β where
+    (hi : i₁ ≍ i₂) : α ≃ᵐ β where
   toEquiv := Equiv.cast h
   measurable_toFun := by
     subst h
@@ -457,7 +457,7 @@ def sumProdDistrib (α β γ) [MeasurableSpace α] [MeasurableSpace β] [Measura
       refine (prodCongr Set.rangeInr (Set.univ _)).symm.measurable_comp_iff.1 ?_
       exact measurable_inr
   measurable_invFun :=
-    measurable_sum ((measurable_inl.comp measurable_fst).prodMk measurable_snd)
+    measurable_fun_sum ((measurable_inl.comp measurable_fst).prodMk measurable_snd)
       ((measurable_inr.comp measurable_fst).prodMk measurable_snd)
 
 /-- Products distribute over sums (on the left) as measurable spaces. -/
@@ -487,7 +487,6 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a where
   __ := Equiv.piCongrLeft π f
   measurable_toFun := measurable_piCongrLeft f
   measurable_invFun := by
-    simp only [invFun_as_coe, coe_fn_symm_mk]
     rw [measurable_pi_iff]
     exact fun i => measurable_pi_apply (f i)
 
@@ -684,7 +683,7 @@ theorem of_measurable_inverse_on_range {g : range f → α} (hf₁ : Measurable 
     (hf₂ : MeasurableSet (range f)) (hg : Measurable g) (H : LeftInverse g (rangeFactorization f)) :
     MeasurableEmbedding f := by
   set e : α ≃ᵐ range f :=
-    ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective surjective_onto_range⟩,
+    ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective rangeFactorization_surjective⟩,
       hf₁.subtype_mk, hg⟩
   exact (MeasurableEmbedding.subtype_coe hf₂).comp e.measurableEmbedding
 
@@ -701,7 +700,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   -- the crux of which is finding a fixed point of this F.
   -- However, we must find this fixed point manually instead of invoking Knaster-Tarski
   -- in order to make sure it is measurable.
-  suffices Σ'A : Set α, MeasurableSet A ∧ F A = A by
+  suffices Σ' A : Set α, MeasurableSet A ∧ F A = A by
     classical
     rcases this with ⟨A, Ameas, Afp⟩
     let B := f '' A
@@ -716,15 +715,15 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     rw [this]
     exact (hg.equivImage _).symm
   have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>
-    compl_subset_compl.mpr <| Set.image_subset _ <| compl_subset_compl.mpr <| Set.image_subset _ h
+    compl_subset_compl.mpr <| Set.image_mono <| compl_subset_compl.mpr <| Set.image_mono h
   let X : ℕ → Set α := fun n => F^[n] univ
   refine ⟨iInter X, ?_, ?_⟩
-  · apply MeasurableSet.iInter
-    intro n
-    induction' n with n ih
-    · exact MeasurableSet.univ
-    rw [Function.iterate_succ', Function.comp_apply]
-    exact (hg.measurableSet_image' (hf.measurableSet_image' ih).compl).compl
+  · refine MeasurableSet.iInter fun n ↦ ?_
+    induction n with
+    | zero => exact MeasurableSet.univ
+    | succ n ih =>
+      rw [Function.iterate_succ', Function.comp_apply]
+      exact (hg.measurableSet_image' (hf.measurableSet_image' ih).compl).compl
   apply subset_antisymm
   · apply subset_iInter
     intro n
@@ -743,6 +742,34 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   by_contra h
   apply hx
   exact ⟨y, h, rfl⟩
+
+@[simp]
+lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
+    hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
+  simp [MeasurableEmbedding.equivRange, MeasurableEquiv.cast, MeasurableEquiv.Set.univ,
+    MeasurableEmbedding.equivImage]
+
+@[simp]
+lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
+    hf.equivRange.symm ⟨f x, mem_range_self x⟩ = x := by
+  nth_rw 3 [← hf.equivRange.symm_apply_apply x]
+  rw [hf.equivRange_apply]
+
+/-- The left-inverse of a `MeasurableEmbedding` -/
+protected noncomputable
+def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
+  open Classical in
+  if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
+
+@[fun_prop, measurability]
+lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
+    Measurable (hf.invFun : β → α) :=
+  open Classical in
+  Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
+
+lemma leftInverse_invFun [Nonempty α] (hf : MeasurableEmbedding f) : hf.invFun.LeftInverse f := by
+  intro x
+  simp [MeasurableEmbedding.invFun]
 
 end MeasurableEmbedding
 

@@ -65,14 +65,7 @@ variable [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} {s : Set �
 
 /-- This lemma is strictly weaker than `hitting_of_le`. -/
 theorem hitting_of_lt {m : ι} (h : m < n) : hitting u s n m ω = m := by
-  simp_rw [hitting]
-  have h_not : ¬∃ (j : ι) (_ : j ∈ Set.Icc n m), u j ω ∈ s := by
-    push_neg
-    intro j
-    rw [Set.Icc_eq_empty_of_lt h]
-    simp only [Set.mem_empty_iff_false, IsEmpty.forall_iff]
-  simp only [exists_prop] at h_not
-  simp only [h_not, if_false]
+  grind [hitting, not_le, Set.Icc_eq_empty]
 
 theorem hitting_le {m : ι} (ω : Ω) : hitting u s n m ω ≤ m := by
   simp only [hitting]
@@ -82,7 +75,7 @@ theorem hitting_le {m : ι} (ω : Ω) : hitting u s n m ω ≤ m := by
     exact (csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter hj₁ hj₂)).trans hj₁.2
   · exact le_rfl
 
-theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂ : n ≤ k) :
+theorem notMem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   classical
   intro h
@@ -90,6 +83,8 @@ theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂
   refine not_le.2 hk₁ ?_
   simp_rw [hitting, if_pos hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_hitting := notMem_of_lt_hitting
 
 theorem hitting_eq_end_iff {m : ι} : hitting u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by
@@ -189,14 +184,12 @@ theorem hitting_eq_hitting_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂)
   simp only [hitting, if_pos h']
   obtain ⟨j, hj₁, hj₂⟩ := h'
   rw [if_pos]
-  · refine le_antisymm ?_ (csInf_le_csInf bddBelow_Icc.inter_of_left ⟨j, hj₁, hj₂⟩
-      (Set.inter_subset_inter_left _ (Set.Icc_subset_Icc_right h)))
+  · refine le_antisymm ?_ (by gcongr; exacts [bddBelow_Icc.inter_of_left, ⟨j, hj₁, hj₂⟩])
     refine le_csInf ⟨j, Set.Icc_subset_Icc_right h hj₁, hj₂⟩ fun i hi => ?_
     by_cases hi' : i ≤ m₁
     · exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hi.1.1, hi'⟩, hi.2⟩
     · change j ∈ {i | u i ω ∈ s} at hj₂
-      exact ((csInf_le bddBelow_Icc.inter_of_left ⟨hj₁, hj₂⟩).trans (hj₁.2.trans le_rfl)).trans
-        (le_of_lt (not_le.1 hi'))
+      exact ((csInf_le bddBelow_Icc.inter_of_left ⟨hj₁, hj₂⟩).trans hj₁.2).trans (le_of_not_ge hi')
   exact ⟨j, ⟨hj₁.1, hj₁.2.trans h⟩, hj₂⟩
 
 theorem hitting_mono {m₁ m₂ : ι} (hm : m₁ ≤ m₂) : hitting u s n m₁ ω ≤ hitting u s n m₂ ω := by
@@ -219,7 +212,7 @@ theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFounde
     {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : Adapted f u)
     (hs : MeasurableSet s) : IsStoppingTime f (hitting u s n n') := by
   intro i
-  rcases le_or_lt n' i with hi | hi
+  rcases le_or_gt n' i with hi | hi
   · have h_le : ∀ ω, hitting u s n n' ω ≤ i := fun x => (hitting_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hitting u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
@@ -252,7 +245,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
     (⋃ i ≤ n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n}) ∪
       ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} := by
     ext x
-    simp [← exists_or, ← or_and_right, le_or_lt]
+    simp [← or_and_right, le_or_gt]
   have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} = ∅ := by
     ext x
     simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
@@ -268,13 +261,13 @@ section CompleteLattice
 variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β}
 
 theorem hitting_eq_sInf (ω : Ω) : hitting u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} := by
-  simp only [hitting, Set.mem_Icc, bot_le, le_top, and_self_iff, exists_true_left, Set.Icc_bot,
+  simp only [hitting, Set.Icc_bot,
     Set.Iic_top, Set.univ_inter, ite_eq_left_iff, not_exists]
-  intro h_nmem_s
+  intro h_notMem_s
   symm
   rw [sInf_eq_top]
-  simp only [Set.mem_univ, true_and] at h_nmem_s
-  exact fun i hi_mem_s => absurd hi_mem_s (h_nmem_s i)
+  simp only [Set.mem_univ, true_and] at h_notMem_s
+  exact fun i hi_mem_s => absurd hi_mem_s (h_notMem_s i)
 
 end CompleteLattice
 
@@ -285,7 +278,7 @@ variable {u : ι → Ω → β} {s : Set β}
 
 theorem hitting_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :
     hitting u s ⊥ n ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s := by
-  rcases lt_or_le i n with hi | hi
+  rcases lt_or_ge i n with hi | hi
   · rw [hitting_le_iff_of_lt _ hi]
     simp
   · simp only [(hitting_le ω).trans hi, true_iff]

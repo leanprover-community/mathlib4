@@ -169,11 +169,7 @@ theorem length_mul_simple_ne (w : W) (i : B) : ℓ (w * s i) ≠ ℓ w := by
   intro eq
   have length_mod_two := cs.length_mul_mod_two w (s i)
   rw [eq, length_simple] at length_mod_two
-  rcases Nat.mod_two_eq_zero_or_one (ℓ w) with even | odd
-  · rw [even, Nat.succ_mod_two_eq_one_iff.mpr even] at length_mod_two
-    contradiction
-  · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
-    contradiction
+  cutsat
 
 theorem length_simple_mul_ne (w : W) (i : B) : ℓ (s i * w) ≠ ℓ w := by
   convert cs.length_mul_simple_ne w⁻¹ i using 1
@@ -189,13 +185,13 @@ theorem length_mul_simple (w : W) (i : B) :
     have length_ge := cs.length_mul_ge_length_sub_length w (s i)
     simp only [length_simple, tsub_le_iff_right] at length_ge
     -- length_ge : ℓ w ≤ ℓ (w * s i) + 1
-    omega
+    cutsat
   · -- gt : ℓ w < ℓ (w * s i)
     left
     have length_le := cs.length_mul_le w (s i)
     simp only [length_simple] at length_le
     -- length_le : ℓ (w * s i) ≤ ℓ w + 1
-    omega
+    cutsat
 
 theorem length_simple_mul (w : W) (i : B) :
     ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s i * w) + 1 = ℓ w := by
@@ -232,7 +228,7 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
     _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j]
     _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j))  := cs.length_mul_le _ _
   unfold IsReduced
-  omega
+  cutsat
 
 theorem IsReduced.take {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
     cs.IsReduced (ω.take j) :=
@@ -244,12 +240,12 @@ theorem IsReduced.drop {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduce
 
 theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : m > M i i') :
     ¬cs.IsReduced (alternatingWord i i' m) := by
-  induction' hm with m _ ih
-  · -- Base case; m = M i i' + 1
+  induction hm with
+  | refl => -- Base case; m = M i i' + 1
     suffices h : ℓ (π (alternatingWord i i' (M i i' + 1))) < M i i' + 1 by
       unfold IsReduced
       rw [Nat.succ_eq_add_one, length_alternatingWord]
-      omega
+      cutsat
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
     have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by omega
@@ -260,7 +256,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       _ = M i i' - 1                                  := length_alternatingWord _ _ _
       _ ≤ M i i'                                      := Nat.sub_le _ _
       _ < M i i' + 1                                  := Nat.lt_succ_self _
-  · -- Inductive step
+  | step m ih => -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
     apply IsReduced.drop (j := 1) at ih
@@ -308,32 +304,32 @@ theorem isLeftDescent_iff {w : W} {i : B} :
   unfold IsLeftDescent
   constructor
   · intro _
-    exact (cs.length_simple_mul w i).resolve_left (by omega)
-  · omega
+    exact (cs.length_simple_mul w i).resolve_left (by cutsat)
+  · cutsat
 
 theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
   unfold IsLeftDescent
   constructor
   · intro _
-    exact (cs.length_simple_mul w i).resolve_right (by omega)
-  · omega
+    exact (cs.length_simple_mul w i).resolve_right (by cutsat)
+  · cutsat
 
 theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
   unfold IsRightDescent
   constructor
   · intro _
-    exact (cs.length_mul_simple w i).resolve_left (by omega)
-  · omega
+    exact (cs.length_mul_simple w i).resolve_left (by cutsat)
+  · cutsat
 
 theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
   unfold IsRightDescent
   constructor
   · intro _
-    exact (cs.length_mul_simple w i).resolve_right (by omega)
-  · omega
+    exact (cs.length_mul_simple w i).resolve_right (by cutsat)
+  · cutsat
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by

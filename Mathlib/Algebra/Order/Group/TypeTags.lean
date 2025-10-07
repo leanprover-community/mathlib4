@@ -5,24 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Tactic.Linter.DeprecatedModule
 
-/-! # Ordered group structures on `Multiplicative α` and `Additive α`. -/
-
-
-variable {α : Type*}
-
-instance Multiplicative.orderedCommGroup [OrderedAddCommGroup α] :
-    OrderedCommGroup (Multiplicative α) :=
-  { Multiplicative.commGroup, Multiplicative.orderedCommMonoid with }
-
-instance Additive.orderedAddCommGroup [OrderedCommGroup α] :
-    OrderedAddCommGroup (Additive α) :=
-  { Additive.addCommGroup, Additive.orderedAddCommMonoid with }
-
-instance Multiplicative.linearOrderedCommGroup [LinearOrderedAddCommGroup α] :
-    LinearOrderedCommGroup (Multiplicative α) :=
-  { Multiplicative.linearOrder, Multiplicative.orderedCommGroup with }
-
-instance Additive.linearOrderedAddCommGroup [LinearOrderedCommGroup α] :
-    LinearOrderedAddCommGroup (Additive α) :=
-  { Additive.linearOrder, Additive.orderedAddCommGroup with }
+deprecated_module (since := "2025-04-16")

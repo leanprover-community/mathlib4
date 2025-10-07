@@ -18,7 +18,7 @@ Fourier transform of `f`, under the following hypotheses:
 * `f` is a continuous function `ℝ → ℂ`.
 * The sum `∑ (n : ℤ), 𝓕 f n` is convergent.
 * For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), sup { ‖f(x + n)‖ | x ∈ K }` is convergent.
-See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
+  See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
 
 These hypotheses are potentially a little awkward to apply, so we also provide the less general but
 easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
@@ -34,7 +34,7 @@ open Function hiding comp_apply
 
 open Set hiding restrict_apply
 
-open Complex hiding abs_of_nonneg
+open Complex
 
 open Real
 
@@ -76,7 +76,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
-      simp only [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
+      simp only [mul_comp] at eadd ⊢
       simp_rw [eadd]
     -- Rearrange sum of interval integrals into an integral over `ℝ`.
     _ = ∫ x, e x * f x := by
@@ -141,7 +141,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
   refine fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
-  rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
+  rw [mul_assoc, mul_le_mul_iff_right₀ hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
   convert claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
   · exact abs_of_pos hx'.1

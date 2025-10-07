@@ -14,7 +14,7 @@ This file defines a few notions of separations of sets in a metric space.
 The first notion (`Metric.IsSeparated`) is quantitative and about a single set: A set `s` is
 `ε`-separated if its elements are pairwise at distance at least `ε` from each other.
 
-The second notion ( `Metric.AreSeparated`) is qualitative and about two sets: Two sets `s` and `t`
+The second notion (`Metric.AreSeparated`) is qualitative and about two sets: Two sets `s` and `t`
 are separated if the distance between `x ∈ s` and `y ∈ t` is bounded from below by a positive
 constant.
 -/
@@ -53,9 +53,12 @@ lemma isSeparated_insert :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < edist x y :=
   pairwise_insert_of_symmetric fun _ _ ↦ by simp [edist_comm]
 
-lemma isSeparated_insert_of_not_mem (hx : x ∉ s) :
+lemma isSeparated_insert_of_notMem (hx : x ∉ s) :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < edist x y :=
-  pairwise_insert_of_symmetric_of_not_mem (fun _ _ ↦ by simp [edist_comm]) hx
+  pairwise_insert_of_symmetric_of_notMem (fun _ _ ↦ by simp [edist_comm]) hx
+
+@[deprecated (since := "2025-05-23")]
+alias isSeparated_insert_of_not_mem := isSeparated_insert_of_notMem
 
 protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :
     IsSeparated ε (insert x s) := isSeparated_insert.2 ⟨hs, h⟩
@@ -73,8 +76,6 @@ This notion is useful, e.g., to define metric outer measures.
 /-- Two sets in an (extended) metric space are called *metric separated* if the (extended) distance
 between `x ∈ s` and `y ∈ t` is bounded from below by a positive constant. -/
 def AreSeparated (s t : Set X) := ∃ r, r ≠ 0 ∧ ∀ x ∈ s, ∀ y ∈ t, r ≤ edist x y
-
-@[deprecated (since := "2025-01-21")] alias IsMetricSeparated := AreSeparated
 
 namespace AreSeparated
 
@@ -137,8 +138,9 @@ theorem union_right_iff {t'} :
 
 theorem finite_iUnion_left_iff {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set X}
     {t : Set X} : AreSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, AreSeparated (s i) t := by
-  refine Finite.induction_on _ hI (by simp) @fun i I _ _ hI => ?_
-  rw [biUnion_insert, forall_mem_insert, union_left_iff, hI]
+  induction I, hI using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ hI => rw [biUnion_insert, forall_mem_insert, union_left_iff, hI]
 
 alias ⟨_, finite_iUnion_left⟩ := finite_iUnion_left_iff
 

@@ -48,19 +48,7 @@ theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 
-theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
-  rw [mem_Icc, mem_Icc]
-  constructor <;> intro <;> constructor <;> linarith
-
-instance hasZero : Zero I :=
-  ⟨⟨0, zero_mem⟩⟩
-
-instance hasOne : One I :=
-  ⟨⟨1, by constructor <;> norm_num⟩⟩
-
-instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
-
-instance : BoundedOrder I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
+@[deprecated (since := "2025-08-14")] alias mem_iff_one_sub_mem := Icc.mem_iff_one_sub_mem
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -69,12 +57,6 @@ lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
-instance : Nonempty I :=
-  ⟨0⟩
-
-instance : Mul I :=
-  ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
-
 theorem mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 
@@ -82,7 +64,7 @@ theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
 /-- Unit interval central symmetry. -/
-def symm : I → I := fun t => ⟨1 - t, mem_iff_one_sub_mem.mp t.prop⟩
+def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
@@ -106,6 +88,21 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
+
+lemma image_coe_preimage_symm {s : Set I} :
+    Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
+  simp [symm_involutive, ← Function.Involutive.image_eq_preimage, image_image]
+
+@[simp]
+theorem symm_projIcc (x : ℝ) :
+    symm (projIcc 0 1 zero_le_one x) = projIcc 0 1 zero_le_one (1 - x) := by
+  ext
+  rcases le_total x 0 with h₀ | h₀
+  · simp [projIcc_of_le_left, projIcc_of_right_le, h₀]
+  · rcases le_total x 1 with h₁ | h₁
+    · lift x to I using ⟨h₀, h₁⟩
+      simp_rw [← coe_symm_eq, projIcc_val]
+    · simp [projIcc_of_le_left, projIcc_of_right_le, h₁]
 
 @[continuity, fun_prop]
 theorem continuous_symm : Continuous σ :=
@@ -228,7 +225,22 @@ instance : LinearOrderedCommMonoidWithZero I where
     simp only [← Subtype.coe_le_coe, coe_mul]
     apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
     simp [h_ij]
-  __ := inferInstanceAs (LinearOrder I)
+
+lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by
+  rw [preimage_subtype_val_Iic]
+  exact Icc_bot.symm
+
+lemma subtype_Iio_eq_Ico (x : I) : Subtype.val⁻¹' (Iio ↑x) = Ico 0 x := by
+  rw [preimage_subtype_val_Iio]
+  exact Ico_bot.symm
+
+lemma subtype_Ici_eq_Icc (x : I) : Subtype.val⁻¹' (Ici ↑x) = Icc x 1 := by
+  rw [preimage_subtype_val_Ici]
+  exact Icc_top.symm
+
+lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by
+  rw [preimage_subtype_val_Ioi]
+  exact Ioc_top.symm
 
 end unitInterval
 
@@ -236,14 +248,16 @@ section partition
 
 namespace Set.Icc
 
-variable {α} [LinearOrderedAddCommGroup α] {a b c d : α} (h : a ≤ b) {δ : α}
+variable {α} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+  {a b c d : α} (h : a ≤ b) {δ : α}
 
 -- TODO: Set.projIci, Set.projIic
 /-- `Set.projIcc` is a contraction. -/
 lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| : α) ≤ |c - d| := by
   wlog hdc : d ≤ c generalizing c d
-  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_le hdc)
-  rw [abs_eq_self.2 (sub_nonneg.2 hdc), abs_eq_self.2 (sub_nonneg.2 <| monotone_projIcc h hdc)]
+  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_ge hdc)
+  rw [abs_eq_self.2 (sub_nonneg.2 hdc),
+    abs_eq_self.2 (sub_nonneg.2 <| mod_cast monotone_projIcc h hdc)]
   rw [← sub_nonneg] at hdc
   refine (max_sub_max_le_max _ _ _ _).trans (max_le (by rwa [sub_self]) ?_)
   refine ((le_abs_self _).trans <| abs_min_sub_min_le_max _ _ _ _).trans (max_le ?_ ?_)
@@ -254,6 +268,7 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
 `[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
 def addNSMul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
 
+omit [IsOrderedAddMonoid α] in
 lemma addNSMul_zero : addNSMul h δ 0 = a := by
   rw [addNSMul, zero_smul, add_zero, projIcc_left]
 
@@ -268,13 +283,13 @@ lemma monotone_addNSMul (hδ : 0 ≤ δ) : Monotone (addNSMul h δ) :=
   fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul_left hδ hnm)
 
 lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
-    (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n+1))) :
+    (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n + 1))) :
     (|t - addNSMul h δ n| : α) ≤ δ :=
   calc
     (|t - addNSMul h δ n| : α) = t - addNSMul h δ n            := abs_eq_self.2 <| sub_nonneg.2 ht.1
-    _ ≤ projIcc a b h (a + (n+1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
-    _ ≤ (|projIcc a b h (a + (n+1) • δ) - addNSMul h δ n| : α) := le_abs_self _
-    _ ≤ |a + (n+1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
+    _ ≤ projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
+    _ ≤ (|projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n| : α) := le_abs_self _
+    _ ≤ |a + (n + 1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
     _ ≤ δ := by
           rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
           exact (abs_eq_self.mpr hδ).le
@@ -342,7 +357,8 @@ end Tactic.Interactive
 
 section
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
 -- We only need the ordering on `𝕜` here to avoid talking about flipping the interval over.
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.

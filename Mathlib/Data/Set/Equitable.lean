@@ -31,7 +31,7 @@ def EquitableOn [LE β] [Add β] [One β] (s : Set α) (f : α → β) : Prop :=
 
 @[simp]
 theorem equitableOn_empty [LE β] [Add β] [One β] (f : α → β) : EquitableOn ∅ f := fun a _ ha =>
-  (Set.not_mem_empty a ha).elim
+  (Set.notMem_empty a ha).elim
 
 theorem equitableOn_iff_exists_le_le_add_one {s : Set α} {f : α → ℕ} :
     s.EquitableOn f ↔ ∃ b, ∀ a ∈ s, b ≤ f a ∧ f a ≤ b + 1 := by
@@ -66,7 +66,7 @@ end LinearOrder
 
 section OrderedSemiring
 
-variable [OrderedSemiring β]
+variable [Semiring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem Subsingleton.equitableOn {s : Set α} (hs : s.Subsingleton) (f : α → β) : s.EquitableOn f :=
   fun i j hi hj => by

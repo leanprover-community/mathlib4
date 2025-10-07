@@ -3,9 +3,9 @@ Copyright (c) 2024 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Distributive.Monoidal
 import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 
@@ -19,18 +19,17 @@ for all objects `X`, `Y`, and `Z` in `C`.
 
 ## Implementation Details
 
-Given a category with chosen finite products, the cartesian monoidal structure is provided by the
-instance `monoidalOfChosenFiniteProducts`. A cartesian distributive category is then defined as a
-monoidal distributive category with respect to this monoidal structure.
+A Cartesian distributive category is defined as a Cartesian monoidal category which is
+monoidal distributive.
 
 ## Main results
 
-- The coproduct coprojections are monic in a cartesian distributive category.
+- The coproduct coprojections are monic in a Cartesian distributive category.
 
 
 ## TODO
 
-- Every cartesian distributive category is finitary distributive, meaning that
+- Every Cartesian distributive category is finitary distributive, meaning that
   the left tensor product functor `X ⊗ -` preserves all finite coproducts.
 
 - Show that any extensive distributive category can be embedded into a topos.
@@ -47,23 +46,24 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory Distributive ChosenFiniteProducts
+open Category Limits MonoidalCategory Distributive CartesianMonoidalCategory
 
-variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [HasBinaryCoproducts C]
+variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C] [HasBinaryCoproducts C]
 
-/-- A category `C` with finite products is cartesian distributive if is monoidal distributive
-with respect to the cartesian monoidal structure. -/
+/-- A category `C` with finite products is Cartesian distributive if is monoidal distributive
+with respect to the Cartesian monoidal structure. -/
 abbrev IsCartesianDistributive :=
   IsMonoidalDistrib C
 
 namespace IsCartesianDistributive
 
-/-- To show a category is cartesian distributive it is enough to show it is left distributive.
-The right distributivity is inferred from symmetry of the cartesian monoidal structure. -/
+/-- To show a category is Cartesian distributive it is enough to show it is left distributive.
+The right distributivity is inferred from symmetry of the Cartesian monoidal structure. -/
 lemma of_isMonoidalLeftDistrib [IsMonoidalLeftDistrib C] : IsCartesianDistributive C :=
+  letI : BraidedCategory C := Nonempty.some inferInstance
   SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
-/-- The coproduct coprojections are monic in a cartesian distributive category. -/
+/-- The coproduct coprojections are monic in a Cartesian distributive category. -/
 instance monoCoprod [IsCartesianDistributive C] : MonoCoprod C :=
   MonoCoprod.mk' fun A B =>
     ⟨_, coprodIsCoprod A B, ⟨fun {Z} f g he ↦ by

@@ -41,7 +41,7 @@ Suppose that `μ` is inner regular for finite measure sets with respect to compa
 and `ν` is a locally finite measure.
 Let `1 ≤ p < ∞` be an extended nonnegative real number.
 Then the composition of a function `g : Lp E p ν`
-and a measure preserving continuous function `f : C(X, Y)`
+and a measure-preserving continuous function `f : C(X, Y)`
 is continuous in both variables. -/
 theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
     Continuous fun gf : Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν} ↦
@@ -52,8 +52,8 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
   intro f hf
   lift f to Lp.simpleFunc E p ν using hf
   induction f using Lp.simpleFunc.induction hp₀ hp with
-  | h_add hfp hgp _ ihf ihg => exact ihf.add ihg
-  | @h_ind c s hs hνs =>
+  | add hfp hgp _ ihf ihg => exact ihf.add ihg
+  | @indicatorConst c s hs hνs =>
     dsimp only [Lp.simpleFunc.coe_indicatorConst, Lp.indicatorConstLp_compMeasurePreserving]
     refine continuous_indicatorConstLp_set hp fun f ↦ ?_
     apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtype_val _ f.2

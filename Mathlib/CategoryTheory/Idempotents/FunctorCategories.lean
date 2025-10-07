@@ -111,7 +111,7 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
 
 instance : (karoubiFunctorCategoryEmbedding J C).Full where
   map_surjective {P Q} f :=
-   ⟨{ f :=
+    ⟨{f :=
         { app := fun j => (f.app j).f
           naturality := fun j j' φ => by
             rw [← Karoubi.comp_p_assoc]
@@ -133,7 +133,7 @@ equals the functor `(J ⥤ C) ⥤ (J ⥤ Karoubi C)` given by the composition wi
 `toKaroubi C : C ⥤ Karoubi C`. -/
 theorem toKaroubi_comp_karoubiFunctorCategoryEmbedding :
     toKaroubi _ ⋙ karoubiFunctorCategoryEmbedding J C =
-      (whiskeringRight J _ _).obj (toKaroubi C) := by
+      (Functor.whiskeringRight J _ _).obj (toKaroubi C) := by
   apply Functor.ext
   · intro X Y f
     ext j

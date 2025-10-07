@@ -20,7 +20,7 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 * `RingHom`: (Semi)ring homomorphisms. Monoid homomorphisms which are also additive monoid
   homomorphism.
 
-## Notations
+## Notation
 
 * `→ₙ+*`: Non-unital (semi)ring homs
 * `→+*`: (Semi)ring homs
@@ -41,7 +41,7 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 `RingHom`, `SemiringHom`
 -/
 
-assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map Set.range
+assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map
 
 open Function
 
@@ -462,18 +462,6 @@ protected theorem map_add (f : α →+* β) : ∀ a b, f (a + b) = f a + f b :=
 /-- Ring homomorphisms preserve multiplication. -/
 protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
   map_mul f
-
-@[simp]
-theorem map_ite_zero_one {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F)
-    (p : Prop) [Decidable p] :
-    f (ite p 0 1) = ite p 0 1 := by
-  split_ifs with h <;> simp [h]
-
-@[simp]
-theorem map_ite_one_zero {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F)
-    (p : Prop) [Decidable p] :
-    f (ite p 1 0) = ite p 1 0 := by
-  split_ifs with h <;> simp [h]
 
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/
 theorem codomain_trivial_iff_map_one_eq_zero : (0 : β) = 1 ↔ f 1 = 0 := by rw [map_one, eq_comm]

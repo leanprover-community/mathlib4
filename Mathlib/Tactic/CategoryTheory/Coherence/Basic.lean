@@ -12,8 +12,8 @@ import Mathlib.CategoryTheory.Category.Basic
 
 This file provides the function `BicategoryLike.main` for proving equalities in monoidal categories
 and bicategories. Using `main`, we will define the following tactics:
-- `monoidal` at `Mathlib.Tactic.CategoryTheory.Monoidal.Basic`
-- `bicategory` at `Mathlib.Tactic.CategoryTheory.Bicategory.Basic`
+- `monoidal` at `Mathlib/Tactic/CategoryTheory/Monoidal/Basic.lean`
+- `bicategory` at `Mathlib/Tactic/CategoryTheory/Bicategory/Basic.lean`
 
 The `main` first normalizes the both sides using `eval`, then compares the corresponding components.
 It closes the goal at non-structural parts with `rfl` and the goal at structural parts by
@@ -66,7 +66,7 @@ def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
     let e ← instantiateMVars <| ← mvarId.getType
     let some (_, e₁, e₂) := (← whnfR e).eq? | throwError "requires an equality goal"
     match (← whnfR e₁).getAppFnArgs, (← whnfR e₂).getAppFnArgs with
-    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]) ,
+    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]),
       (``CategoryStruct.comp, #[_, _, _, _, _, α', η']) =>
       match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
       | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),

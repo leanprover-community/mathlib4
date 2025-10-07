@@ -75,7 +75,7 @@ variable [HasZeroMorphisms V]
 protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.symm where
   X i := op (X.X i)
   d i j := (X.d j i).op
-  shape i j hij := by simp only; rw [X.shape j i hij, op_zero]
+  shape i j hij := by rw [X.shape j i hij, op_zero]
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
@@ -83,7 +83,7 @@ protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.sym
 protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒᵖ c where
   X i := op (X.X i)
   d i j := (X.d j i).op
-  shape i j hij := by simp only; rw [X.shape j i hij, op_zero]
+  shape i j hij := by rw [X.shape j i hij, op_zero]
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
@@ -91,7 +91,7 @@ protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒ
 protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.symm where
   X i := unop (X.X i)
   d i j := (X.d j i).unop
-  shape i j hij := by simp only; rw [X.shape j i hij, unop_zero]
+  shape i j hij := by rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
@@ -99,7 +99,7 @@ protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.s
 protected def unopSymm (X : HomologicalComplex Vᵒᵖ c.symm) : HomologicalComplex V c where
   X i := unop (X.X i)
   d i j := (X.d j i).unop
-  shape i j hij := by simp only; rw [X.shape j i hij, unop_zero]
+  shape i j hij := by rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
 variable (V c)
@@ -198,8 +198,7 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
   counitIso := unopCounitIso V c
   functor_unitIso_comp X := by
     ext
-    simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
-      opFunctor_map_f, Quiver.Hom.unop_op, Hom.isoOfComponents_hom_f]
+    simp only [comp_f]
     exact Category.comp_id _
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :

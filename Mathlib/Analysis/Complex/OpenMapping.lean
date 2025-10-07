@@ -61,7 +61,7 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
   refine ⟨z, ball_subset_closedBall hz1, sub_eq_zero.mp ?_⟩
   have h6 := h1.differentiableOn.eventually_differentiableAt (isOpen_ball.mem_nhds hz1)
   refine (eventually_eq_or_eq_zero_of_isLocalMin_norm h6 hz2).resolve_left fun key => ?_
-  have h7 : ∀ᶠ w in 𝓝 z, f w = f z := by filter_upwards [key] with h; field_simp
+  have h7 : ∀ᶠ w in 𝓝 z, f w = f z := by filter_upwards [key] with h; simp
   replace h7 : ∃ᶠ w in 𝓝[≠] z, f w = f z := (h7.filter_mono nhdsWithin_le_nhds).frequently
   have h8 : IsPreconnected (ball z₀ r) := (convex_ball z₀ r).isPreconnected
   have h9 := h3.eqOn_of_preconnected_of_frequently_eq analyticOnNhd_const h8 hz1 h7
@@ -101,7 +101,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   obtain ⟨x, hx, hfx⟩ := (isCompact_sphere z₀ r).exists_isMinOn h8 h9
   refine ⟨‖f x - f z₀‖ / 2, half_pos (norm_sub_pos_iff.mpr (h7 x hx)), ?_⟩
   exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx hz) (not_eventually.mp h)).trans
-    (image_subset f (closedBall_subset_closedBall inf_le_right))
+    (by gcongr; exact inf_le_right)
 
 /-- The *open mapping theorem* for holomorphic functions, local version: is a function `g : E → ℂ`
 is analytic at a point `z₀`, then either it is constant in a neighborhood of `z₀`, or it maps every
@@ -165,6 +165,3 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
     rintro z ⟨w, hw1, rfl⟩
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
         (image_mem_map (hs2.mem_nhds hw1))
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.is_constant_or_isOpen := AnalyticOnNhd.is_constant_or_isOpen
