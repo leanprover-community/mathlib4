@@ -191,6 +191,14 @@ lemma isNonneg_iff [LE R] {B : BilinForm R M} : B.IsNonneg ↔ LinearMap.IsNonne
 lemma isNonneg_zero [Preorder R] : IsNonneg (0 : BilinForm R M) :=
   isNonneg_iff.2 LinearMap.isNonneg_zero
 
+protected lemma IsNonneg.add [Preorder R] [AddLeftMono R] {B C : BilinForm R M}
+    (hB : B.IsNonneg) (hC : C.IsNonneg) : (B + C).IsNonneg where
+  nonneg x := add_nonneg (hB.nonneg x) (hC.nonneg x)
+
+protected lemma IsNonneg.smul [Preorder R] [PosMulMono R] {B : BilinForm R M} {c : R}
+    (hB : B.IsNonneg) (hc : 0 ≤ c) : (c • B).IsNonneg where
+  nonneg x := mul_nonneg hc (hB.nonneg x)
+
 /-- A bilinear form `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
 structure IsPosSemidef [LE R] (B : BilinForm R M) extends
   isSymm : B.IsSymm,
@@ -209,6 +217,14 @@ lemma isPosSemidef_iff [LE R] {B : BilinForm R M} : B.IsPosSemidef ↔ LinearMap
 @[simp]
 lemma isPosSemidef_zero [Preorder R] : IsPosSemidef (0 : BilinForm R M) :=
   isPosSemidef_iff.2 LinearMap.isPosSemidef_zero
+
+protected lemma IsPosSemidef.add [Preorder R] [AddLeftMono R] {B C : BilinForm R M}
+    (hB : B.IsPosSemidef) (hC : C.IsPosSemidef) : (B + C).IsPosSemidef :=
+  isPosSemidef_iff.2 ((isPosSemidef_iff.1 hB).add (isPosSemidef_iff.1 hC))
+
+protected lemma IsPosSemidef.smul [Preorder R] [PosMulMono R] {B : BilinForm R M} {c : R}
+    (hB : B.IsPosSemidef) (hc : 0 ≤ c) : (c • B).IsPosSemidef :=
+  isPosSemidef_def.2 ⟨hB.isSymm.smul c, hB.isNonneg.smul hc⟩
 
 end PositiveSemidefinite
 
