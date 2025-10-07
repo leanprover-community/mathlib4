@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.GroupTheory.Index
+import Mathlib.GroupTheory.Commensurable
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
@@ -77,3 +77,12 @@ lemma Subgroup.discreteTopology_iff_of_finite_relIndex {H K : Subgroup G} (hHK :
     (hind : H.relIndex K ≠ 0) : DiscreteTopology H ↔ DiscreteTopology K := by
   rw [← discreteTopology_iff_of_index_ne_zero hind,
     (subgroupOfContinuousMulEquivOfLe hHK).symm.discreteTopology_iff]
+
+@[to_additive]
+lemma Subgroup.Commensurable.discreteTopology_iff
+    {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]
+    {H K : Subgroup G} (h : Commensurable H K) :
+    DiscreteTopology H ↔ DiscreteTopology K := by
+  rw [Commensurable, ← Subgroup.inf_relIndex_left H K, ← Subgroup.inf_relIndex_right H K] at h
+  rw [← Subgroup.discreteTopology_iff_of_finite_relIndex inf_le_right h.1,
+    ← Subgroup.discreteTopology_iff_of_finite_relIndex inf_le_left h.2]
