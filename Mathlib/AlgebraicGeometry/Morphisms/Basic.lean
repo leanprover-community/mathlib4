@@ -18,11 +18,44 @@ the target, its behaviour is entirely determined by its definition on morphisms 
 which we call an `AffineTargetMorphismProperty`. In this file, we provide API lemmas for properties
 local at the target, and special support for those properties whose `AffineTargetMorphismProperty`
 takes on a more simple form. We also provide API lemmas for properties local at the target.
+The main interfaces of the API are the typeclasses `IsLocalAtTarget`, `IsLocalAtSource` and
+`HasAffineProperty`, which we describle in detail below.
 
-The properties local at the target and local at the source are defined generally for
-categories equipped with a `Precoverage`. We provide abbreviations `IsZariskiLocalAtTarget`
-and `IsZariskiLocalAtSource` for the special case of the Zariski precoverage on the category
-of schemes.
+## `IsZariskiLocalAtTarget`
+
+- `AlgebraicGeometry.IsZariskiLocalAtTarget`: We say that `IsZariskiLocalAtTarget P` for
+`P : MorphismProperty Scheme` if
+1. `P` respects isomorphisms.
+2. `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.
+
+For a morphism property `P` local at the target and `f : X ⟶ Y`, we provide these API lemmas:
+
+- `AlgebraicGeometry.IsZariskiLocalAtTarget.of_isPullback`:
+    `P` is preserved under pullback along open immersions.
+- `AlgebraicGeometry.IsZariskiLocalAtTarget.restrict`:
+    `P f → P (f ∣_ U)` for an open `U` of `Y`.
+- `AlgebraicGeometry.IsZariskiLocalAtTarget.iff_of_iSup_eq_top`:
+    `P f ↔ ∀ i, P (f ∣_ U i)` for a family `U i` of open sets covering `Y`.
+- `AlgebraicGeometry.IsZariskiLocalAtTarget.iff_of_openCover`:
+    `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for `𝒰 : Y.openCover`.
+
+## `IsZariskiLocalAtSource`
+
+- `AlgebraicGeometry.IsZariskiLocalAtSource`: We say that `IsZariskiLocalAtSource P` for
+`P : MorphismProperty Scheme` if
+1. `P` respects isomorphisms.
+2. `P` holds for `𝒰.map i ≫ f` for an open cover `𝒰` of `X` iff `P` holds for `f : X ⟶ Y`.
+
+For a morphism property `P` local at the source and `f : X ⟶ Y`, we provide these API lemmas:
+
+- `AlgebraicGeometry.IsZariskiLocalAtSource.comp`:
+    `P` is preserved under composition with open immersions at the source.
+- `AlgebraicGeometry.IsZariskiLocalAtSource.iff_of_iSup_eq_top`:
+    `P f ↔ ∀ i, P (U.ι ≫ f)` for a family `U i` of open sets covering `X`.
+- `AlgebraicGeometry.IsZariskiLocalAtSource.iff_of_openCover`:
+    `P f ↔ ∀ i, P (𝒰.map i ≫ f)` for `𝒰 : X.openCover`.
+- `AlgebraicGeometry.IsZariskiLocalAtSource.of_isOpenImmersion`: If `P` contains identities then `P`
+    holds for open immersions.
 
 ## `AffineTargetMorphismProperty`
 
@@ -55,6 +88,12 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
     `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for affine open covers `𝒰` of `Y`.
 - `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange`:
     If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
+
+## Implementation details
+
+The properties `IsZariskiLocalAtTarget` and `IsZariskiLocalAtSource` are defined as abbreviations
+for the respective local property of morphism properties defined generally for categories equipped
+with a `Precoverage`.
 -/
 
 
