@@ -116,9 +116,13 @@ being an immersion at `x` includes a choice of linear isomorphism between `E × 
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
   LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M')
 
-namespace IsImmersionAt
-
 variable {f g : M → M'} {x : M}
+
+lemma IsImmersionAt.def :
+    IsImmersionAt F I I' n f x ↔
+      LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') := by rfl
+
+namespace IsImmersionAt
 
 lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorph M H)
     (codChart : PartialHomeomorph M' H')
@@ -190,7 +194,8 @@ lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
   Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
 
 lemma property (h : IsImmersionAt F I I' n f x) :
-    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') := h
+    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') :=
+  IsImmersionAt.def.1 h
 
 /-- Roig and Domingues [roigdomingues1992] only require this inclusion between the targets of the
 local charts: in our setting, this is *slightly* weaker than `map_source_subset_source`:
