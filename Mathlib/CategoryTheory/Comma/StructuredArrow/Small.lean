@@ -6,7 +6,6 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.ObjectProperty.Small
-import Mathlib.Logic.Small.Set
 
 /-!
 # Small sets in the category of structured arrows
