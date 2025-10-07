@@ -85,6 +85,8 @@ functions with support in a compact `K`. -/
 scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
 
+namespace ContDiffMapSupportedIn
+
 open Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
@@ -114,8 +116,6 @@ instance (B : Type*) (E F : outParam <| Type*)
     have := HasCompactSupport.intro K.isCompact (map_zero_on_compl f)
     rcases (map_continuous f).bounded_above_of_compact_support this with ⟨C, hC⟩
     exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
-
-namespace ContDiffMapSupportedIn
 
 instance toContDiffMapSupportedInClass :
     ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
