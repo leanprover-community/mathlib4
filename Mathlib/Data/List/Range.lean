@@ -77,7 +77,6 @@ theorem ranges_disjoint (l : List ℕ) :
       obtain ⟨s', _, rfl⟩ := mem_map.mp hs
       intro u hu
       rw [mem_map]
-      rintro ⟨v, _, rfl⟩
       rw [mem_range] at hu
       cutsat
     · rw [pairwise_map]
