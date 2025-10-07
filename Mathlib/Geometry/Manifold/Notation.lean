@@ -337,6 +337,12 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
           the set {es} : {estype}"
     let tgtI ← findModel tgt (src, srcI)
     return (srcI, tgtI)
+  | mkApp4 (.const ``OpenPartialHomeomorph [_uX, _uY]) X Y _ _ =>
+    trace[Elab.DiffGeo.MDiff] m!"found a partial homeomorphism from {X} to {Y}"
+    return (X, Y)
+  | mkApp4 (.const ``PartialEquiv [_uX, _uY]) X Y _ _ =>
+    trace[Elab.DiffGeo.MDiff] m!"found a partial equivalence from {X} to {Y}"
+    return (X, Y)
   | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
 end Elab
