@@ -407,7 +407,7 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective :
   · rwa [← MonoidHom.range_eq_top, ← FreeGroup.closure_eq_range]
   · rintro ⟨S, hfin : Finite S, φ, hφ⟩
     refine fg_iff.mpr ⟨φ '' Set.range FreeGroup.of, ?_, Set.toFinite _⟩
-    simp [← MonoidHom.map_closure, Subgroup.map_top_of_surjective, hφ]
+    simp [← MonoidHom.map_closure, hφ, FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
 
 /-- A group is finitely generated if and only if it is finitely generated as a monoid. -/
 @[to_additive /-- An additive group is finitely generated if and only
