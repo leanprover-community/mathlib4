@@ -63,7 +63,7 @@ instance (P : ObjectProperty Cᵒᵖ) [P.IsClosedUnderIsomorphisms] :
     P.unop.IsClosedUnderIsomorphisms where
   of_iso e hX := P.prop_of_iso e.symm.op hX
 
-lemma isoClosure_op (P : ObjectProperty C) :
+lemma op_isoClosure (P : ObjectProperty C) :
     P.isoClosure.op = P.op.isoClosure := by
   ext ⟨X⟩
   exact ⟨fun ⟨Y, h, ⟨e⟩⟩ ↦ ⟨op Y, h, ⟨e.op.symm⟩⟩,
