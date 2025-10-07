@@ -24,7 +24,7 @@ In any theorem proving environment,
 there are difficult decisions surrounding the design of the "algebraic hierarchy".
 
 There is a danger of exponential explosion in the number of gadgets,
-especially once interactions between algebraic and order/topological/etc structures are considered.
+especially once interactions between algebraic and order/topological/etc. structures are considered.
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
 1. when there is "real mathematics" to be done with them, or
@@ -249,4 +249,3 @@ instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
 where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
 type class synthesis order in this situation.
 -/
-

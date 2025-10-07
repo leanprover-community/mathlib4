@@ -32,7 +32,7 @@ open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
 open scoped Real Topology FourierTransform RealInnerProductSpace
 
-open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
+open Complex hiding exp continuous_exp
 
 noncomputable section
 
@@ -225,7 +225,7 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
   · rw [← div_div, div_self <| ofReal_ne_zero.mpr pi_ne_zero, one_div, inv_cpow, ← one_div]
     rw [Ne, arg_eq_pi_iff, not_and_or, not_lt]
     exact Or.inl hb.le
-  · field_simp [ofReal_ne_zero.mpr pi_ne_zero]
+  · field_simp
     ring_nf
     simp only [I_sq]
     ring

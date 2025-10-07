@@ -1,5 +1,20 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 
+section terminalReplacement
+
+section omega
+
+set_option linter.tacticAnalysis.omegaToCutsat true
+
+/-- warning: `cutsat` can replace `omega` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  omega
+
+end omega
+
+end terminalReplacement
+
 section rwMerge
 
 set_option linter.tacticAnalysis.rwMerge true
@@ -58,4 +73,52 @@ example : 1 + 1 = 2 := by
   have : 1 + 1 < 4 := by omega
   rfl
 
+universe u v
+
+-- This next example used to fail with `unknown universe level 'v'`.
+
+/--
+warning: replace the proof with 'grind': let T : Type max u v := Sigma f;
+  have : 1 + 1 = 2 := rfl;
+  rfl
+-/
+#guard_msgs in
+example {α : Type u} (f : α → Type max u v) : 1 = 1 := by
+  let T : Type max u v := Sigma f
+  have : 1 + 1 = 2 := rfl -- Extra line to ensure the linter picks it up.
+  rfl
+
 end replaceWithGrind
+
+section introMerge
+
+set_option linter.tacticAnalysis.introMerge true
+
+/-- warning: Try this: intro a b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a
+  intro b
+  rfl
+
+/-- warning: Try this: intro _ b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro
+  intro b
+  rfl
+
+/-- warning: Try this: intro a _ -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a
+  intro _
+  rfl
+
+
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a b
+  rfl
+
+end introMerge

@@ -56,7 +56,7 @@ the Jordan-Hölder theorem for modules/groups and the API should be transferred 
 theorems in this file will have stronger versions for modules. There will also need to be an API for
 mapping composition series across homomorphisms. It is also probably possible to
 provide an instance of `JordanHolderLattice` for any `ModularLattice`, and in this case the
-Jordan-Hölder theorem will say that there is a well defined notion of length of a modular lattice.
+Jordan-Hölder theorem will say that there is a well-defined notion of length of a modular lattice.
 However an instance of `JordanHolderLattice` for a modular lattice will not be able to contain
 the correct notion of isomorphism for modules, so a separate instance for modules will still be
 required and this will clash with the instance for modular lattices, and so at least one of these
@@ -196,7 +196,6 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
 theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
   simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val]
 
-open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     (hx : x ≠ s.last) (hxs : x ∈ s) : x ∈ s.eraseLast := by
   rcases hxs with ⟨i, rfl⟩
@@ -204,9 +203,7 @@ theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_nontrivial ⟨_, ⟨i, rfl⟩, _, s.last_mem, hx⟩),
       Nat.add_one_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [last, s.inj, Fin.ext_iff] using hx)
-  -- TODO: This can surely be improved: there is a double coercion hidden here:
-  refine ⟨Fin.castSucc (n := s.length + 1) i, ?_⟩
-  simp [Nat.mod_eq_of_lt hi]
+  exact ⟨⟨↑i, hi⟩, by simp⟩
 
 theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     x ∈ s.eraseLast ↔ x ≠ s.last ∧ x ∈ s := by
@@ -225,7 +222,7 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
   rw [last_eraseLast, last]
-  have := s.step ⟨s.length - 1, by omega⟩
+  have := s.step ⟨s.length - 1, by cutsat⟩
   simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
   convert this using 3
   exact (tsub_add_cancel_of_le h).symm

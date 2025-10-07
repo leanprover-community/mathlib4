@@ -37,7 +37,7 @@ This is the variant with an indexed basis instead. -/
 lemma PrespectralSpace.of_isTopologicalBasis' {ι : Type*} {b : ι → Set X}
     (basis : IsTopologicalBasis (Set.range b)) (isCompact_basis : ∀ i, IsCompact (b i)) :
     PrespectralSpace X :=
-  .of_isTopologicalBasis basis (by aesop)
+  .of_isTopologicalBasis basis (by simp_all)
 
 instance (priority := low) [NoetherianSpace X] : PrespectralSpace X :=
   .of_isTopologicalBasis isTopologicalBasis_opens fun _ _ ↦ NoetherianSpace.isCompact _
