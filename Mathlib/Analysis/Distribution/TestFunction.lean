@@ -66,6 +66,8 @@ with compact support. -/
 scoped[Distributions] notation "𝓓(" E ", " F ")" =>
   TestFunction E F ⊤
 
+namespace TestFunction
+
 open Distributions
 
 /-- `TestFunctionClass B E F n K` states that `B` is a type of `n`-times continously
@@ -91,8 +93,6 @@ instance (B : Type*) (E F : outParam <| Type*)
   map_bounded f := by
     rcases (map_continuous f).bounded_above_of_compact_support (compact_supp f) with ⟨C, hC⟩
     exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
-
-namespace TestFunction
 
 instance toTestFunctionClass :
     TestFunctionClass 𝓓^{n}(E, F) E F n where
@@ -188,24 +188,6 @@ lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [Continuous
 lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
     (c : R) (f : 𝓓^{n}(E, F)) (x : E) : (c • f) x = c • (f x) :=
   rfl
-
-instance instNSMul : SMul ℕ 𝓓^{n}(E, F) :=
- ⟨fun c f ↦
-    {
-      toFun := c • f
-      contDiff' := (f.contDiff').const_smul c
-      compact_supp' := f.compact_supp.smul_left
-    }
-  ⟩
-
-instance instZSMul : SMul ℤ 𝓓^{n}(E, F) :=
- ⟨fun c f ↦
-    {
-      toFun := c • f
-      contDiff' := (f.contDiff').const_smul c
-      compact_supp' := f.compact_supp.smul_left
-    }
-  ⟩
 
 instance : AddCommGroup 𝓓^{n}(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
