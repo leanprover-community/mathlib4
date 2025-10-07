@@ -671,8 +671,30 @@ theorem algHomOfDvd_apply_root {p q : K[X]} (hpq : q ∣ p) :
     algHomOfDvd hpq (root p) = root q := by
   rw [algHomOfDvd, liftHom_root]
 
-@[deprecated (since := "2025-09-19")]
-alias algEquivOfEq_apply_root := algEquivOfEq_root
+/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`, where
+  the two polynomials `p q : K[X]` are equal. -/
+noncomputable def algEquivOfEq {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
+    AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
+  ofAlgHom (algHomOfDvd (dvd_of_eq h_eq.symm)) (algHomOfDvd (dvd_of_eq h_eq))
+    (PowerBasis.algHom_ext (powerBasis (h_eq ▸ hp))
+      (by rw [algHomOfDvd, powerBasis_gen (h_eq ▸ hp), AlgHom.coe_comp, Function.comp_apply,
+        algHomOfDvd, liftHom_root, liftHom_root, AlgHom.coe_id, id_eq]))
+    (PowerBasis.algHom_ext (powerBasis hp)
+      (by rw [algHomOfDvd, powerBasis_gen hp, AlgHom.coe_comp, Function.comp_apply, algHomOfDvd,
+          liftHom_root, liftHom_root, AlgHom.coe_id, id_eq]))
+
+theorem coe_algEquivOfEq {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
+    (algEquivOfEq hp h_eq).toFun = liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]) :=
+  rfl
+
+theorem algEquivOfEq_toAlgHom {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
+    (algEquivOfEq hp h_eq).toAlgHom = liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]) :=
+  rfl
+
+/-- `algEquivOfEq` sends `AdjoinRoot.root p` to `AdjoinRoot.root q`. -/
+theorem algEquivOfEq_apply_root {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
+    algEquivOfEq hp h_eq (root p) = root q := by
+  rw [← coe_algHom, algEquivOfEq_toAlgHom, liftHom_root]
 
 /-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`,
 where the two polynomials `p q : K[X]` are associated. -/
@@ -719,7 +741,7 @@ noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
     (h_mp : minpoly K x = minpoly K y) : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := by
   have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, (h_mp ▸ aeval _ _)⟩
   exact AlgEquiv.trans (adjoinRootEquivAdjoin K hx.isIntegral).symm
-    (AlgEquiv.trans (AdjoinRoot.algEquivOfEq h_mp)
+    (AlgEquiv.trans (AdjoinRoot.algEquivOfEq (ne_zero hx.isIntegral) h_mp)
       (adjoinRootEquivAdjoin K hy.isIntegral))
 
 /-- `minpoly.algEquiv` sends the generator of `K⟮x⟯` to the generator of `K⟮y⟯`. -/
@@ -727,7 +749,7 @@ theorem algEquiv_apply {x y : L} (hx : IsAlgebraic K x) (h_mp : minpoly K x = mi
     algEquiv hx h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by
   have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, (h_mp ▸ aeval _ _)⟩
   rw [algEquiv, trans_apply, ← adjoinRootEquivAdjoin_apply_root K hx.isIntegral,
-    symm_apply_apply, trans_apply, AdjoinRoot.algEquivOfEq_root,
+    symm_apply_apply, trans_apply, AdjoinRoot.algEquivOfEq_apply_root,
     adjoinRootEquivAdjoin_apply_root K hy.isIntegral]
 
 end minpoly
@@ -781,8 +803,8 @@ theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set 
   apply (Cardinal.lift_le.mpr (Subfield.cardinalMk_closure_le_max _)).trans
   rw [lift_max, sup_le_iff, lift_aleph0]
   refine ⟨(Cardinal.lift_le.mpr ((mk_union_le _ _).trans <| add_le_max _ _)).trans ?_, le_sup_right⟩
-  simp_rw [lift_max, lift_aleph0]
-  grw [mk_range_le_lift]
+  simp_rw [lift_max, lift_aleph0, sup_assoc]
+  exact sup_le_sup_right mk_range_le_lift _
 
 theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
     #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by

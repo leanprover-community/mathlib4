@@ -360,29 +360,26 @@ lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X :=
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
   simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
-@[simp]
-lemma optionEquivLeft_rename_some (p : MvPolynomial S₁ R) :
-    optionEquivLeft R S₁ (rename .some p) = .C p := by
-  apply (optionEquivLeft R S₁).symm.injective
-  simp [MvPolynomial.optionEquivLeft_symm_apply]
-
 theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
     optionEquivLeft R S₁ (monomial m r) = .monomial (m none) (monomial m.some r) := by
   rw [optionEquivLeft_apply, aeval_monomial, prod_option_index]
   · rw [MvPolynomial.monomial_eq, ← Polynomial.C_mul_X_pow_eq_monomial]
     simp only [Polynomial.algebraMap_apply, algebraMap_eq, Option.elim_none, Option.elim_some,
       map_mul, mul_assoc]
+    apply congr_arg₂ _ rfl
     simp only [mul_comm, map_finsuppProd, map_pow]
-  · simp
+  · intros; simp
   · intros; rw [pow_add]
 
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
 equals the coefficient of `n` in `f` -/
 theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
-    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) = coeff n f := by
-  induction f using MvPolynomial.induction_on' generalizing n with
-  | monomial j r =>
-    rw [optionEquivLeft_monomial]
+    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) =
+      coeff n f := by
+  induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing n
+  swap
+  · simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
+  · rw [optionEquivLeft_monomial]
     classical
     simp only [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial, apply_ite]
     simp only [coeff_zero]
@@ -394,7 +391,6 @@ theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomi
       apply False.elim (hj _)
       simp only [Finsupp.ext_iff, Option.forall, hj_none, true_and]
       simpa only [Finsupp.ext_iff] using hj_some
-  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
 
 theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Option S₁) R) :
     eval (fun x ↦ Option.elim x y s) f =
@@ -458,37 +454,6 @@ lemma totalDegree_coeff_optionEquivLeft_le
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
   · simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff R S₁] using hσ
-
-end
-
-section
-
-variable (α : Type*)
-
-/-- `R[Xᵢ, Y]` is an `R[Xᵢ]`-algebra. -/
-noncomputable def algebraOption : Algebra (MvPolynomial α R) (MvPolynomial (Option α) R) :=
-  (MvPolynomial.rename some).toAlgebra
-
-attribute [local instance] algebraOption
-
-@[simp]
-lemma algebraMap_option_apply (p : MvPolynomial α R) :
-    algebraMap (MvPolynomial α R) (MvPolynomial (Option α) R) p = rename some p :=
-  rfl
-
-/-- `MvPolynomial.optionEquivLeft` as an algebra homomorphism over `MvPolynomial α R`. -/
-noncomputable def optionEquivLeft' :
-    MvPolynomial (Option α) R ≃ₐ[MvPolynomial α R] (MvPolynomial α R)[X] where
-  __ := optionEquivLeft R α
-  commutes' p := by simp
-
-@[simp]
-lemma coe_optionEquivLeft' :
-    ⇑(optionEquivLeft' R α) = optionEquivLeft R α := rfl
-
-@[simp]
-lemma coe_optionEquivLeft'_symm :
-    ⇑(optionEquivLeft' R α).symm = (optionEquivLeft R α).symm := rfl
 
 end
 
