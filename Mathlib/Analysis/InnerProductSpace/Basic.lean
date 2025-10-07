@@ -94,12 +94,10 @@ lemma inner_smul_right_eq_smul (x y : E) (r : 𝕝) : ⟪x, r • y⟫ = r • �
   rw [← inner_conj_symm, inner_smul_left_eq_star_smul, starRingEnd_apply, starRingEnd_apply,
     star_smul, star_star, ← starRingEnd_apply, inner_conj_symm]
 
--- **mine**
 lemma inner_smul_add_smul_right_eq_smul
     (x y z : E) (r s : 𝕝) : ⟪x, r • y + s • z⟫ = r • ⟪x, y⟫ + s • ⟪x, z⟫ := by
   simp only [inner_add_right, inner_smul_right_eq_smul]
 
--- **mine**
 lemma inner_smul_add_smul_left_eq_star_smul
     (x y z : E) (r s : 𝕝) : ⟪r • x + s • y, z⟫ = r† • ⟪x, z⟫ + s† • ⟪y, z⟫ := by
   simp only [inner_add_left, inner_smul_left_eq_star_smul]
