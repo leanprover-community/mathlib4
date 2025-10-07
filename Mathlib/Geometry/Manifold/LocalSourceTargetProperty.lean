@@ -159,18 +159,9 @@ lemma mk_of_continuousAt (hf : ContinuousAt f x)
     (hfP : P f domChart codChart) : LiftSourceTargetPropertyAt I I' n f x P := by
   obtain ⟨s, hs, hsopen, hxs⟩ := mem_nhds_iff.mp <|
     hf.preimage_mem_nhds (codChart.open_source.mem_nhds hfx)
-  have : f '' (domChart.restr s).source ⊆ codChart.source := by
-    refine Subset.trans ?_ (image_subset_iff.mpr hs)
-    gcongr
-    rw [domChart.restr_source' _ hsopen]
-    exact inter_subset_right
-  have hmono : ((domChart.restr s).extend I).target ⊆ (domChart.extend I).target := by
-    have {a b c : Set E} : a ∩ (b ∩ c) ⊆ b := by intro; aesop
-    simpa using this
-  exact ⟨domChart.restr s, codChart,
-    by rw [domChart.restr_source, interior_eq_iff_isOpen.mpr hsopen]; exact mem_inter hx hxs, hfx,
-    restr_mem_maximalAtlas (G := contDiffGroupoid n I) hdomChart hsopen, hcodChart, this,
-    hP.mono_source hsopen hfP⟩
+  exact ⟨domChart.restr s, codChart, by grind [PartialHomeomorph.restr_source'], hfx,
+    restr_mem_maximalAtlas (contDiffGroupoid n I) hdomChart hsopen, hcodChart,
+    by grind [PartialHomeomorph.restr_source'], hP.mono_source hsopen hfP⟩
 
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 if `f` has property `P` at `x` and `f` and `g` are eventually equal near `x`,
