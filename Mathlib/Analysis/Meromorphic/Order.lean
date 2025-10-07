@@ -391,6 +391,16 @@ theorem meromorphicOrderAt_const_natCast (z₀ : 𝕜) (n : ℕ) :
     meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
   meromorphicOrderAt_const z₀ (n : 𝕜)
 
+open Classical in
+/--
+Variant of `meromorphicOrderAt_const`, for constant functions defined by coercion from natural
+numbers.
+-/
+@[simp] theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) :
+    meromorphicOrderAt (ofNat(n) : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) := by
+  convert meromorphicOrderAt_const z₀ (n : 𝕜)
+  simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
+
 /-!
 ## Order at a Point: Behaviour under Ring Operations
 
