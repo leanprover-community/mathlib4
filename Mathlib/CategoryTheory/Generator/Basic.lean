@@ -314,7 +314,7 @@ theorem isCoseparating_iff_mono
     simp
     simpa using hh _ hG _
 
-variable {P}
+end ObjectProperty
 
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a complete well-powered
     category with a small coseparating set has an initial object.
@@ -322,8 +322,8 @@ variable {P}
     In fact, it follows from the Special Adjoint Functor Theorem that `C` is already cocomplete,
     see `hasColimits_of_hasLimits_of_isCoseparating`. -/
 theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
-    [HasLimitsOfSize.{w, w} C] [ObjectProperty.Small.{w} P]
-    (hP : IsCoseparating P) : HasInitial C := by
+    [HasLimitsOfSize.{w, w} C] {P : ObjectProperty C} [ObjectProperty.Small.{w} P]
+    (hP : P.IsCoseparating) : HasInitial C := by
   have := hasFiniteLimits_of_hasLimitsOfSize C
   haveI : HasProductsOfShape (Subtype P) C := hasProductsOfShape_of_small C (Subtype P)
   haveI := fun A => hasProductsOfShape_of_small.{w} C (Σ G : Subtype P, A ⟶ (G : C))
@@ -333,7 +333,7 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
   refine fun A => ⟨⟨?_⟩, fun f => ?_⟩
   · let s := Pi.lift fun f : Σ G : Subtype P, A ⟶ (G : C) => Pi.π (Subtype.val : Subtype P → C) f.1
     let t := Pi.lift (@Sigma.snd (Subtype P) fun G => A ⟶ (G : C))
-    haveI : Mono t := (isCoseparating_iff_mono P).1 hP A
+    haveI : Mono t := P.isCoseparating_iff_mono.1 hP A
     exact Subobject.ofLEMk _ (pullback.fst _ _ : pullback s t ⟶ _) bot_le ≫ pullback.snd _ _
   · suffices ∀ (g : Subobject.underlying.obj ⊥ ⟶ A), f = g by
       apply this
@@ -349,12 +349,10 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
     In fact, it follows from the Special Adjoint Functor Theorem that `C` is already complete, see
     `hasLimits_of_hasColimits_of_isSeparating`. -/
 theorem hasTerminal_of_isSeparating [LocallySmall.{w} Cᵒᵖ] [WellPowered.{w} Cᵒᵖ]
-    [HasColimitsOfSize.{w, w} C] [ObjectProperty.Small.{w} P]
-    (hP : IsSeparating P) : HasTerminal C := by
-  haveI : HasInitial Cᵒᵖ := hasInitial_of_isCoseparating ((isCoseparating_op_iff _).2 hP)
+    [HasColimitsOfSize.{w, w} C] {P : ObjectProperty C} [ObjectProperty.Small.{w} P]
+    (hP : P.IsSeparating) : HasTerminal C := by
+  haveI : HasInitial Cᵒᵖ := hasInitial_of_isCoseparating (P.isCoseparating_op_iff.2 hP)
   exact hasTerminal_of_hasInitial_op
-
-end ObjectProperty
 
 section WellPowered
 
@@ -607,7 +605,8 @@ theorem isSeparator_coprod_of_isSeparator_right (G H : C) [HasBinaryCoproduct G 
     (hH : IsSeparator H) : IsSeparator (G ⨿ H) :=
   (isSeparator_coprod _ _).2 <| ObjectProperty.IsSeparating.of_le hH <| by simp
 
-theorem IsSeparating.isSeparator_coproduct {β : Type w} {f : β → C} [HasCoproduct f]
+theorem ObjectProperty.IsSeparating.isSeparator_coproduct
+    {β : Type w} {f : β → C} [HasCoproduct f]
     (hS : ObjectProperty.IsSeparating (.ofObj f)) : IsSeparator (∐ f) :=
   (isSeparator_sigma _).2 hS
 
@@ -938,9 +937,7 @@ end HasGenerator
   ObjectProperty.isSeparating_iff_epi
 @[deprecated (since := "2025-10-07")] alias isCoseparating_iff_mono :=
   ObjectProperty.isCoseparating_iff_mono
-@[deprecated (since := "2025-10-07")] alias hasInitial_of_isCoseparating :=
-  ObjectProperty.hasInitial_of_isCoseparating
-@[deprecated (since := "2025-10-07")] alias hasTerminal_of_isSeparating :=
-  ObjectProperty.hasTerminal_of_isSeparating
+@[deprecated (since := "2025-10-07")] alias IsSeparating.isSeparator_coproduct :=
+  ObjectProperty.IsSeparating.isSeparator_coproduct
 
 end CategoryTheory
