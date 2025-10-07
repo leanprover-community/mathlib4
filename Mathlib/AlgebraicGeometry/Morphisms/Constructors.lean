@@ -148,24 +148,24 @@ instance (P) {Q} [HasAffineProperty P Q] : HasAffineProperty P.diagonal Q.diagon
     · exact fun H ↦ HasAffineProperty.diagonal_of_openCover_diagonal P f Y.affineCover
         (fun i ↦ of_targetAffineLocally_of_isPullback (.of_hasPullback _ _) H)
 
-instance (P) [IsLocalAtTarget P] : IsLocalAtTarget P.diagonal :=
+instance (P) [IsZariskiLocalAtTarget P] : IsZariskiLocalAtTarget P.diagonal :=
   letI := HasAffineProperty.of_isLocalAtTarget P
   inferInstance
 
 open MorphismProperty in
 instance (P : MorphismProperty Scheme)
     [P.HasOfPostcompProperty @IsOpenImmersion] [P.RespectsRight @IsOpenImmersion]
-    [IsLocalAtSource P] : IsLocalAtSource P.diagonal := by
+    [IsZariskiLocalAtSource P] : IsZariskiLocalAtSource P.diagonal := by
   let g {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens) :=
     pullback.map (U.ι ≫ f) (U.ι ≫ f) f f U.ι U.ι (𝟙 Y) (by simp) (by simp)
-  refine IsLocalAtSource.mk' (fun {X Y} f U hf ↦ ?_) (fun {X Y} f {ι} U hU hf ↦ ?_)
+  refine IsZariskiLocalAtSource.mk' (fun {X Y} f U hf ↦ ?_) (fun {X Y} f {ι} U hU hf ↦ ?_)
   · change P _
     apply P.of_postcomp (W' := @IsOpenImmersion) (pullback.diagonal (U.ι ≫ f)) (g f U) inferInstance
     rw [← pullback.comp_diagonal]
-    apply IsLocalAtSource.comp
+    apply IsZariskiLocalAtSource.comp
     exact hf
   · change P _
-    refine IsLocalAtSource.of_iSup_eq_top U hU fun i ↦ ?_
+    refine IsZariskiLocalAtSource.of_iSup_eq_top U hU fun i ↦ ?_
     rw [pullback.comp_diagonal]
     exact RespectsRight.postcomp (P := P) (Q := @IsOpenImmersion) (g _ _) inferInstance _ (hf i)
 
@@ -175,8 +175,8 @@ section Universally
 
 theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
     (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens)
-      (_ : IsOpenCover U), (∀ i, P (f ∣_ U i)) → P f) : IsLocalAtTarget P.universally := by
-  apply IsLocalAtTarget.mk'
+      (_ : IsOpenCover U), (∀ i, P (f ∣_ U i)) → P f) : IsZariskiLocalAtTarget P.universally := by
+  apply IsZariskiLocalAtTarget.mk'
   · exact fun {X Y} f U => P.universally.of_isPullback
       (isPullback_morphismRestrict f U).flip
   · intro X Y f ι U hU H X' Y' i₁ i₂ f' h
@@ -194,7 +194,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
           simp [morphismRestrict_ι_assoc, h.1.1]
 
 lemma universally_isLocalAtSource (P : MorphismProperty Scheme)
-    [IsLocalAtSource P] : IsLocalAtSource P.universally := by
+    [IsZariskiLocalAtSource P] : IsZariskiLocalAtSource P.universally := by
   refine ⟨inferInstance, ?_⟩
   intro X Y f 𝒰
   refine ⟨fun hf i ↦ ?_, fun hf ↦ ?_⟩
@@ -202,10 +202,10 @@ lemma universally_isLocalAtSource (P : MorphismProperty Scheme)
     intro T g _
     rw [← P.cancel_left_of_respectsIso (pullbackLeftPullbackSndIso g f _).hom,
       pullbackLeftPullbackSndIso_hom_fst]
-    exact IsLocalAtSource.comp (hf _ _ _ (IsPullback.of_hasPullback ..)) _
+    exact IsZariskiLocalAtSource.comp (hf _ _ _ (IsPullback.of_hasPullback ..)) _
   · apply MorphismProperty.universally_mk'
     intro T g _
-    rw [IsLocalAtSource.iff_of_openCover (P := P) (𝒰.pullback₁ <| pullback.snd g f)]
+    rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (𝒰.pullback₁ <| pullback.snd g f)]
     intro i
     dsimp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
       PreZeroHypercover.pullback₁_X, PreZeroHypercover.pullback₁_f]
@@ -261,8 +261,8 @@ lemma topologically_isLocalAtTarget [(topologically P).RespectsIso]
     (hP₃ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
       (U : ι → Opens β) (_ : IsOpenCover U) (_ : Continuous f),
       (∀ i, P ((U i).carrier.restrictPreimage f)) → P f) :
-    IsLocalAtTarget (topologically P) := by
-  apply IsLocalAtTarget.mk'
+    IsZariskiLocalAtTarget (topologically P) := by
+  apply IsZariskiLocalAtTarget.mk'
   · intro X Y f U hf
     simp_rw [topologically, morphismRestrict_base]
     exact hP₂ f.base U.carrier f.base.hom.2 U.2 hf
@@ -277,7 +277,7 @@ lemma topologically_isLocalAtTarget' [(topologically P).RespectsIso]
     (hP : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
       (U : ι → Opens β) (_ : IsOpenCover U) (_ : Continuous f),
       P f ↔ (∀ i, P ((U i).carrier.restrictPreimage f))) :
-    IsLocalAtTarget (topologically P) := by
+    IsZariskiLocalAtTarget (topologically P) := by
   refine topologically_isLocalAtTarget P ?_ (fun f _ U hU hU' ↦ (hP f U hU hU').mpr)
   introv hf hs H
   refine (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
@@ -290,8 +290,8 @@ lemma topologically_isLocalAtSource [(topologically P).RespectsIso]
     (hP₂ : ∀ {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
       (_ : Continuous f) {ι : Type u} (U : ι → Opens X),
       IsOpenCover U → (∀ i, P (f ∘ ((↑) : U i → X))) → P f) :
-    IsLocalAtSource (topologically P) := by
-  apply IsLocalAtSource.mk'
+    IsZariskiLocalAtSource (topologically P) := by
+  apply IsZariskiLocalAtSource.mk'
   · introv hf
     exact hP₁ f.base f.continuous _ hf
   · introv hU hf
@@ -303,7 +303,7 @@ lemma topologically_isLocalAtSource' [(topologically P).RespectsIso]
     (hP : ∀ {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) {ι : Type u}
       (U : ι → Opens X) (_ : IsOpenCover U) (_ : Continuous f),
       P f ↔ (∀ i, P (f ∘ ((↑) : U i → X)))) :
-    IsLocalAtSource (topologically P) := by
+    IsZariskiLocalAtSource (topologically P) := by
   refine topologically_isLocalAtSource P ?_ (fun f hf _ U hU hf' ↦ (hP f U hU hf).mpr hf')
   introv hf hs
   refine (hP f (![⊤, U] ∘ Equiv.ulift) ?_ hf).mp hs ⟨1⟩
@@ -336,12 +336,12 @@ lemma stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
     exact (RingHom.RespectsIso.cancel_left_isIso hP _ _).mpr <| hf x
 
 /-- If `P` respects isos, then `stalkwise P` is local at the target. -/
-lemma stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
-    IsLocalAtTarget (stalkwise P) := by
+lemma stalkwiseIsZariskiLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
+    IsZariskiLocalAtTarget (stalkwise P) := by
   have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
     RingHom.toMorphismProperty_respectsIso_iff.mp hP
   letI := stalkwise_respectsIso hP
-  apply IsLocalAtTarget.mk'
+  apply IsZariskiLocalAtTarget.mk'
   · intro X Y f U hf x
     apply ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
       morphismRestrictStalkMap f U x).mpr <| hf _
@@ -353,9 +353,9 @@ lemma stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
 
 /-- If `P` respects isos, then `stalkwise P` is local at the source. -/
 lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
-    IsLocalAtSource (stalkwise P) := by
+    IsZariskiLocalAtSource (stalkwise P) := by
   letI := stalkwise_respectsIso hP
-  apply IsLocalAtSource.mk'
+  apply IsZariskiLocalAtSource.mk'
   · intro X Y f U hf x
     rw [Scheme.stalkMap_comp, CommRingCat.hom_comp, hP.cancel_right_isIso]
     exact hf _
@@ -382,7 +382,7 @@ namespace AffineTargetMorphismProperty
 /-- If `P` is local at the target, to show that `P` is stable under base change, it suffices to
 check this for base change along a morphism of affine schemes. -/
 lemma isStableUnderBaseChange_of_isStableUnderBaseChangeOnAffine_of_isLocalAtTarget
-    (P : MorphismProperty Scheme) [IsLocalAtTarget P]
+    (P : MorphismProperty Scheme) [IsZariskiLocalAtTarget P]
     (hP₂ : (of P).IsStableUnderBaseChange) :
     P.IsStableUnderBaseChange :=
   letI := HasAffineProperty.of_isLocalAtTarget P

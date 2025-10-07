@@ -32,7 +32,7 @@ lemma isomorphisms_eq_stalkwise :
     (H.1.1.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
-instance : IsLocalAtTarget (isomorphisms Scheme) :=
+instance : IsZariskiLocalAtTarget (isomorphisms Scheme) :=
   isomorphisms_eq_isOpenImmersion_inf_surjective ▸ inferInstance
 
 instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.appTop) := by
@@ -41,7 +41,7 @@ instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X �
     (inferInstanceAs (IsIso (Spec.map (f.appTop)))),
     fun (_ : IsIso f) ↦ ⟨.of_isIso f, inferInstance⟩⟩
 
-instance : IsLocalAtTarget (monomorphisms Scheme) :=
+instance : IsZariskiLocalAtTarget (monomorphisms Scheme) :=
   diagonal_isomorphisms (C := Scheme).symm ▸ inferInstance
 
 end AlgebraicGeometry

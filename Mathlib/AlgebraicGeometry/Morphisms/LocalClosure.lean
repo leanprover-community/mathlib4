@@ -68,7 +68,7 @@ instance [P.RespectsRight Q] : (sourceLocalClosure W P).RespectsRight Q := by
 instance [P.RespectsIso] : (sourceLocalClosure W P).RespectsIso where
 
 instance [P.RespectsIso] [P.RespectsLeft @IsOpenImmersion] :
-    IsLocalAtSource (sourceLocalClosure IsOpenImmersion P) where
+    IsZariskiLocalAtSource (sourceLocalClosure IsOpenImmersion P) where
   iff_of_openCover' {X Y} f 𝒰 := by
     refine ⟨fun ⟨𝒱, h⟩ ↦ fun i ↦ ⟨𝒱.pullback₁ (𝒰.f i), fun j ↦ ?_⟩, fun h ↦ ?_⟩
     · simpa [pullback.condition_assoc] using

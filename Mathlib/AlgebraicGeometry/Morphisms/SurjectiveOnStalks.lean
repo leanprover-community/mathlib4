@@ -57,10 +57,10 @@ lemma eq_stalkwise :
     @SurjectiveOnStalks = stalkwise (Function.Surjective ·) := by
   ext; exact surjectiveOnStalks_iff _
 
-instance : IsLocalAtTarget @SurjectiveOnStalks :=
-  eq_stalkwise ▸ stalkwiseIsLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
+instance : IsZariskiLocalAtTarget @SurjectiveOnStalks :=
+  eq_stalkwise ▸ stalkwiseIsZariskiLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
 
-instance : IsLocalAtSource @SurjectiveOnStalks :=
+instance : IsZariskiLocalAtSource @SurjectiveOnStalks :=
   eq_stalkwise ▸ stalkwise_isLocalAtSource_of_respectsIso RingHom.surjective_respectsIso
 
 lemma Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :

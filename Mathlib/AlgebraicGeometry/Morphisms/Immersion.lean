@@ -101,8 +101,8 @@ lemma isImmersion_eq_inf : @IsImmersion = (@IsPreimmersion ⊓
 
 namespace IsImmersion
 
-instance : IsLocalAtTarget @IsImmersion := by
-  suffices IsLocalAtTarget (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
+instance : IsZariskiLocalAtTarget @IsImmersion := by
+  suffices IsZariskiLocalAtTarget (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
     isImmersion_eq_inf ▸ inferInstance
   apply (config := { allowSynthFailures := true }) topologically_isLocalAtTarget'
   · refine { precomp := ?_, postcomp := ?_ }

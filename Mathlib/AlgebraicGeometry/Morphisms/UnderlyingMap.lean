@@ -38,7 +38,7 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 instance : MorphismProperty.RespectsIso (topologically Function.Injective) :=
   topologically_respectsIso _ (fun e ↦ e.injective) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance injective_isLocalAtTarget : IsLocalAtTarget (topologically Function.Injective) := by
+instance injective_isLocalAtTarget : IsZariskiLocalAtTarget (topologically Function.Injective) := by
   refine topologically_isLocalAtTarget _ (fun _ s _ _ h ↦ h.restrictPreimage s)
     fun f ι U H _ hf x₁ x₂ e ↦ ?_
   obtain ⟨i, hxi⟩ : ∃ i, f x₁ ∈ U i := by simpa using congr(f x₁ ∈ $H)
@@ -75,7 +75,7 @@ instance : MorphismProperty.RespectsIso @Surjective :=
   surjective_eq_topologically ▸ topologically_respectsIso _ (fun e ↦ e.surjective)
     (fun _ _ hf hg ↦ hg.comp hf)
 
-instance surjective_isLocalAtTarget : IsLocalAtTarget @Surjective := by
+instance surjective_isLocalAtTarget : IsZariskiLocalAtTarget @Surjective := by
   have : MorphismProperty.RespectsIso @Surjective := inferInstance
   rw [surjective_eq_topologically] at this ⊢
   refine topologically_isLocalAtTarget _ (fun _ s _ _ h ↦ h.restrictPreimage s) ?_
@@ -125,10 +125,10 @@ section IsOpenMap
 instance : (topologically IsOpenMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenMap) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance isOpenMap_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenMap) :=
+instance isOpenMap_isLocalAtTarget : IsZariskiLocalAtTarget (topologically IsOpenMap) :=
   topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isOpenMap_iff_restrictPreimage
 
-instance : IsLocalAtSource (topologically IsOpenMap) :=
+instance : IsZariskiLocalAtSource (topologically IsOpenMap) :=
   topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.isOpenMap_iff_comp
 
 end IsOpenMap
@@ -138,7 +138,7 @@ section IsClosedMap
 instance : (topologically IsClosedMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedMap) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance isClosedMap_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedMap) :=
+instance isClosedMap_isLocalAtTarget : IsZariskiLocalAtTarget (topologically IsClosedMap) :=
   topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isClosedMap_iff_restrictPreimage
 
 end IsClosedMap
@@ -148,7 +148,7 @@ section IsEmbedding
 instance : (topologically IsEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance isEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsEmbedding) :=
+instance isEmbedding_isLocalAtTarget : IsZariskiLocalAtTarget (topologically IsEmbedding) :=
   topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isEmbedding_iff_restrictPreimage
 
 end IsEmbedding
@@ -158,7 +158,7 @@ section IsOpenEmbedding
 instance : (topologically IsOpenEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance isOpenEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenEmbedding) :=
+instance isOpenEmbedding_isLocalAtTarget : IsZariskiLocalAtTarget (topologically IsOpenEmbedding) :=
   topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isOpenEmbedding_iff_restrictPreimage
 
 end IsOpenEmbedding
@@ -168,7 +168,7 @@ section IsClosedEmbedding
 instance : (topologically IsClosedEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
-instance isClosedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedEmbedding) :=
+instance isClosedEmbedding_isLocalAtTarget : IsZariskiLocalAtTarget (topologically IsClosedEmbedding) :=
   topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isClosedEmbedding_iff_restrictPreimage
 
 end IsClosedEmbedding
@@ -207,7 +207,7 @@ lemma IsDominant.comp_iff [IsDominant f] : IsDominant (f ≫ g) ↔ IsDominant g
 instance IsDominant.respectsIso : MorphismProperty.RespectsIso @IsDominant :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
 
-instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
+instance IsDominant.isLocalAtTarget : IsZariskiLocalAtTarget @IsDominant :=
   have : MorphismProperty.RespectsIso (topologically DenseRange) :=
     dominant_eq_topologically ▸ IsDominant.respectsIso
   dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
@@ -239,7 +239,7 @@ instance specializingMap_respectsIso : (topologically @SpecializingMap).Respects
   · introv hf hg
     exact hf.comp hg
 
-instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @SpecializingMap) := by
+instance specializingMap_isLocalAtTarget : IsZariskiLocalAtTarget (topologically @SpecializingMap) := by
   apply topologically_isLocalAtTarget
   · introv _ _ hf
     rw [specializingMap_iff_closure_singleton_subset] at hf ⊢
@@ -273,10 +273,10 @@ instance : (topologically GeneralizingMap).RespectsIso :=
   topologically_respectsIso _ (fun f ↦ f.isOpenEmbedding.generalizingMap
     f.isOpenEmbedding.isOpen_range.stableUnderGeneralization) (fun _ _ hf hg ↦ hf.comp hg)
 
-instance : IsLocalAtSource (topologically GeneralizingMap) :=
+instance : IsZariskiLocalAtSource (topologically GeneralizingMap) :=
   topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.generalizingMap_iff_comp
 
-instance : IsLocalAtTarget (topologically GeneralizingMap) :=
+instance : IsZariskiLocalAtTarget (topologically GeneralizingMap) :=
   topologically_isLocalAtTarget' (fun _ ↦ _) fun _ _ _ hU _ ↦
     hU.generalizingMap_iff_restrictPreimage
 
