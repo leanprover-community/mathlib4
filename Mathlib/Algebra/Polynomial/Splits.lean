@@ -413,23 +413,7 @@ open UniqueFactorizationMonoid Associates
 
 theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
     (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits i f :=
-<<<<<<< HEAD
   factors_iff_exists_multiset.mpr ⟨s, leadingCoeff_map i ▸ hs⟩
-=======
-  letI := Classical.decEq K
-  if hf0 : f = 0 then hf0.symm ▸ splits_zero i
-  else
-    Or.inr fun {p} hp hdp => by
-      rw [irreducible_iff_prime] at hp
-      rw [hs, ← Multiset.prod_toList] at hdp
-      obtain hd | hd := hp.2.2 _ _ hdp
-      · refine (hp.2.1 <| isUnit_of_dvd_unit hd ?_).elim
-        exact isUnit_C.2 ((leadingCoeff_ne_zero.2 hf0).isUnit.map i)
-      · obtain ⟨q, hq, hd⟩ := hp.dvd_prod_iff.1 hd
-        obtain ⟨a, _, rfl⟩ := Multiset.mem_map.1 (Multiset.mem_toList.1 hq)
-        rw [degree_eq_degree_of_associated ((hp.dvd_prime_iff_associated <| prime_X_sub_C a).1 hd)]
-        exact degree_X_sub_C a
->>>>>>> master
 
 theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f := by
   simp only [Splits, factors_iff_exists_multiset]
