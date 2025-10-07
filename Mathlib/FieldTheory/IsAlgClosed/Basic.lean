@@ -108,49 +108,49 @@ theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
 
-theorem roots_eq_zero_iff_natDegree_zero [IsAlgClosed k] {p : k[X]} :
+theorem roots_eq_zero_iff_natDegree_eq_zero [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p.natDegree = 0 :=
   roots_eq_zero_iff.trans eq_C_coeff_zero_iff_natDegree_eq_zero
 
-theorem roots_eq_zero_iff_degree_le_zero [IsAlgClosed k] {p : k[X]} : p.roots = 0 ↔ p.degree ≤ 0 :=
-  roots_eq_zero_iff_natDegree_zero.trans natDegree_eq_zero_iff_degree_le_zero
+theorem roots_eq_zero_iff_degree_nonpos [IsAlgClosed k] {p : k[X]} : p.roots = 0 ↔ p.degree ≤ 0 :=
+  roots_eq_zero_iff_natDegree_eq_zero.trans natDegree_eq_zero_iff_degree_le_zero
 
-theorem roots_card_eq_natDegree [IsAlgClosed k] {p : k[X]} : p.roots.card = p.natDegree := by
+theorem card_roots_eq_natDegree [IsAlgClosed k] {p : k[X]} : p.roots.card = p.natDegree := by
   have ⟨_, _, hdeg, hroots⟩ := exists_prod_multiset_X_sub_C_mul p
-  simp [← hdeg, roots_eq_zero_iff_natDegree_zero.mp hroots]
+  simp [← hdeg, roots_eq_zero_iff_natDegree_eq_zero.mp hroots]
 
-theorem map_roots_card_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [Semiring A] [Field B]
+theorem card_roots_map_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [Semiring A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} (hf : f p.leadingCoeff ≠ 0) :
     (p.map f).roots.card = p.natDegree :=
-  natDegree_map_of_leadingCoeff_ne_zero _ hf ▸ roots_card_eq_natDegree
+  natDegree_map_of_leadingCoeff_ne_zero _ hf ▸ card_roots_eq_natDegree
 
-theorem map_roots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [Semiring A] [Field B]
+theorem card_roots_map_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [Semiring A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} (h : IsUnit p.leadingCoeff) :
     (p.map f).roots.card = p.natDegree :=
-  natDegree_map_of_isUnit_leadingCoeff f h ▸ roots_card_eq_natDegree
+  natDegree_map_of_isUnit_leadingCoeff f h ▸ card_roots_eq_natDegree
 
-theorem map_roots_card_eq_natDegree_of_injective {A B : Type*} [Semiring A] [Field B]
+theorem card_roots_map_eq_natDegree_of_injective {A B : Type*} [Semiring A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} (hf : Function.Injective f) :
     (p.map f).roots.card = p.natDegree :=
-  natDegree_map_eq_of_injective hf ▸ roots_card_eq_natDegree
+  natDegree_map_eq_of_injective hf ▸ card_roots_eq_natDegree
 
-theorem map_roots_card_eq_natDegree_from_simpleRing {A B : Type*} [Ring A] [IsSimpleRing A]
+theorem card_roots_map_eq_natDegree_from_simpleRing {A B : Type*} [Ring A] [IsSimpleRing A]
     [Field B] [IsAlgClosed B] (f : A →+* B) {p : A[X]} : (p.map f).roots.card = p.natDegree :=
-  natDegree_map_from_simpleRing f p ▸ roots_card_eq_natDegree
+  natDegree_map_from_simpleRing f p ▸ card_roots_eq_natDegree
 
-theorem aroots_card_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommRing A] [Field B]
+theorem card_aroots_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommRing A] [Field B]
     [IsAlgClosed B] [Algebra A B] {p : A[X]} (hf : algebraMap A B p.leadingCoeff ≠ 0) :
     (p.aroots B).card = p.natDegree :=
-  map_roots_card_eq_natDegree_of_leadingCoeff_ne_zero _ hf
+  card_roots_map_eq_natDegree_of_leadingCoeff_ne_zero _ hf
 
-theorem aroots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing A] [Field B]
+theorem card_aroots_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing A] [Field B]
     [IsAlgClosed B] [Algebra A B] {p : A[X]} (h : IsUnit p.leadingCoeff) :
     (p.aroots B).card = p.natDegree :=
-  map_roots_card_eq_natDegree_of_isUnit_leadingCoeff _ h
+  card_roots_map_eq_natDegree_of_isUnit_leadingCoeff _ h
 
-theorem aroots_card_eq_natDegree {A B : Type*} [CommRing A] [Field B] [IsAlgClosed B] [Algebra A B]
+theorem card_aroots_eq_natDegree {A B : Type*} [CommRing A] [Field B] [IsAlgClosed B] [Algebra A B]
     [FaithfulSMul A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
-  map_roots_card_eq_natDegree_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
+  card_roots_map_eq_natDegree_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
 
 theorem dvd_iff_roots_le_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
     p ∣ q ↔ p.roots ≤ q.roots :=

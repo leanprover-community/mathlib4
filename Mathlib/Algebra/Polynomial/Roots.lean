@@ -111,21 +111,21 @@ theorem ne_zero_of_mem_roots (h : a ∈ p.roots) : p ≠ 0 :=
 theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 
-theorem roots_zero_iff_isRoot_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
+theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
   constructor <;> intro h
   · ext a
     simp only [IsRoot, Pi.bot_apply, Prop.bot_eq_false, iff_false]
     exact mem_roots hp0 |>.not.mp <| by simp [h]
   · exact eq_zero_of_forall_notMem fun x hx ↦ h ▸ mem_roots hp0 |>.mp hx
 
-theorem roots_zero_iff_zero_or_isRoot_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
+theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
   by_cases hp0 : p = 0
   · exact ⟨fun _ ↦ Or.inl hp0, fun _ ↦ hp0 ▸ roots_zero⟩
   exact ⟨
-    fun h ↦ Or.inr <| roots_zero_iff_isRoot_bot hp0 |>.mp h,
+    fun h ↦ Or.inr <| roots_eq_zero_iff_isRoot_eq_bot hp0 |>.mp h,
     fun h ↦ Or.elim h
       (fun h ↦ False.elim <| hp0 h)
-      (fun h ↦ roots_zero_iff_isRoot_bot hp0 |>.mpr h),
+      (fun h ↦ roots_eq_zero_iff_isRoot_eq_bot hp0 |>.mpr h),
   ⟩
 
 theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
@@ -736,15 +736,15 @@ theorem Monic.isUnit_leadingCoeff_of_dvd {a p : R[X]} (hp : Monic p) (hap : a �
     IsUnit a.leadingCoeff :=
   isUnit_of_dvd_one (by simpa only [hp.leadingCoeff] using leadingCoeff_dvd_leadingCoeff hap)
 
-theorem Irreducible.roots_card_le_one (hirr : Irreducible p) : p.roots.card ≤ 1 := by
+theorem card_roots_le_one_of_irreducible (hirr : Irreducible p) : p.roots.card ≤ 1 := by
   obtain hp | ⟨x, hx⟩ := p.roots.empty_or_exists_mem
   · simp [hp]
   convert p.card_roots'
   exact (natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hirr <|
     isRoot_of_mem_roots hx).symm
 
-theorem Irreducible.roots_zero_of_natDegree_ne_one (hirr : Irreducible p) (hdeg : p.natDegree ≠ 1) :
-    p.roots = 0 := by
+theorem roots_eq_zero_of_irreducible_natDegree_ne_one (hirr : Irreducible p)
+    (hdeg : p.natDegree ≠ 1) : p.roots = 0 := by
   by_contra hroots
   have ⟨x, hx⟩ := exists_mem_of_ne_zero hroots
   exact hdeg <| natDegree_eq_of_degree_eq_some <|
@@ -824,17 +824,17 @@ theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A �
   · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero, le_rfl]
   exact map_roots_le ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 
-theorem map_roots_card_le_degree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
+theorem card_roots_map_le_degree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
     {f : A →+* B} (p : A[X]) (hp0 : p ≠ 0) : (p.map f).roots.card ≤ p.degree := by
   by_cases hpm0 : p.map f = 0
   · simp [hp0, hpm0, Polynomial.zero_le_degree_iff]
   exact card_roots hpm0 |>.trans degree_map_le
 
-theorem map_roots_card_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
+theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
     {f : A →+* B} (p : A[X]) : (p.map f).roots.card ≤ p.natDegree :=
   card_roots' _ |>.trans natDegree_map_le
 
-theorem map_roots_filter_range_eq_roots_map [IsDomain A] [IsDomain B] {f : A →+* B}
+theorem filter_roots_map_range_eq_map_roots [IsDomain A] [IsDomain B] {f : A →+* B}
     [DecidableEq A] [DecidableEq B] [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)
     (p : A[X]) : (p.map f).roots.filter (· ∈ f.range) = p.roots.map f := by
   ext b
@@ -860,13 +860,13 @@ theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p
     {f : A →+* B} (hf : Function.Injective f) (hroots : Multiset.card p.roots = p.natDegree) :
     p.roots.map f = (p.map f).roots := by
   apply Multiset.eq_of_le_of_card_le (map_roots_le_of_injective p hf)
-  simpa only [Multiset.card_map, hroots] using map_roots_card_le_natDegree p
+  simpa only [Multiset.card_map, hroots] using card_roots_map_le_natDegree p
 
 theorem roots_map_of_map_ne_zero_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}
     (f : A →+* B) (h : p.map f ≠ 0) (hroots : p.roots.card = p.natDegree) :
     p.roots.map f = (p.map f).roots :=
   eq_of_le_of_card_le (map_roots_le h) <| by
-    simpa only [Multiset.card_map, hroots] using map_roots_card_le_natDegree p
+    simpa only [Multiset.card_map, hroots] using card_roots_map_le_natDegree p
 
 theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]} (hm : p.Monic)
     (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f = (p.map f).roots :=
