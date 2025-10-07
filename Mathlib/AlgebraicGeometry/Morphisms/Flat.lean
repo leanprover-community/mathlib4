@@ -82,7 +82,7 @@ lemma iff_flat_stalkMap : Flat f ↔ ∀ x, (f.stalkMap x).hom.Flat :=
 
 instance {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
     [∀ i, Flat (f i)] : Flat (Sigma.desc f) :=
-  IsLocalAtSource.sigmaDesc (fun _ ↦ inferInstance)
+  IsZariskiLocalAtSource.sigmaDesc (fun _ ↦ inferInstance)
 
 /-- A surjective, quasi-compact, flat morphism is a quotient map. -/
 @[stacks 02JY]

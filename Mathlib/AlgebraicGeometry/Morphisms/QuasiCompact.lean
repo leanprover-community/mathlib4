@@ -206,12 +206,12 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
   refine ⟨fun h ↦ h.specializingMap, fun H ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
   · change topologically @IsClosedMap f
-    rw [IsLocalAtTarget.iff_of_openCover (P := topologically @IsClosedMap) Y.affineCover]
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := topologically @IsClosedMap) Y.affineCover]
     intro i
     haveI hqc : QuasiCompact (Y.affineCover.pullbackHom f i) :=
-        IsLocalAtTarget.of_isPullback (.of_hasPullback _ _) inferInstance
+        IsZariskiLocalAtTarget.of_isPullback (.of_hasPullback _ _) inferInstance
     refine this (Y.affineCover.pullbackHom f i) ?_ ⟨_, rfl⟩
-    exact IsLocalAtTarget.of_isPullback
+    exact IsZariskiLocalAtTarget.of_isPullback
       (P := topologically @SpecializingMap) (.of_hasPullback _ _) H
   obtain ⟨S, rfl⟩ := hY
   clear * - H
