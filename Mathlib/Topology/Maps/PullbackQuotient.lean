@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury G. Kudryashov
+-/
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.AlexandrovDiscrete
@@ -22,7 +27,7 @@ def Equiv.pullbackProdFst (f : X → Y) (Z : Type w) :
   left_inv a := Subtype.eq <| Prod.ext rfl <| Prod.ext a.2 rfl
   right_inv _ := rfl
 
-variable  [TopologicalSpace X] [TopologicalSpace Y]
+variable [TopologicalSpace X] [TopologicalSpace Y]
 
 @[fun_prop]
 theorem Continuous.pullbackFst (f : X → Z) (g : Y → Z) :
@@ -46,18 +51,18 @@ def Homeomorph.pullbackProdFst (f : X → Y) (hf : Continuous f) (Z : Type*) [To
   continuous_toFun := by dsimp; fun_prop
   continuous_invFun := by dsimp; fun_prop
 
+@[simps!] -- TODO: better `symm_apply`
 def Homeomorph.piOptionHomeomorphProd {ι : Type*} {X : Option ι → Type*}
     [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X none × (∀ i, X (some i)) where
   toEquiv := .piOptionEquivProd
-  continuous_toFun := .prod_mk (by fun_prop) (by fun_prop)
+  continuous_toFun := .prodMk (by fun_prop) (by fun_prop)
   continuous_invFun := continuous_pi <| Option.rec (by fun_prop) <| by fun_prop
 
 @[simps! -fullyApplied apply symm_apply toEquiv]
 def Fin.insertNthHomeomorph {n : ℕ} (X : Fin (n + 1) → Type*) [∀ i, TopologicalSpace (X i)]
     (i : Fin (n + 1)) : (X i × ∀ j, X (i.succAbove j)) ≃ₜ (∀ j, X j) where
   toEquiv := Fin.insertNthEquiv X i
-  continuous_invFun := Continuous.prod_mk (continuous_apply _) <|
-    continuous_pi fun _ ↦ continuous_apply _
+  continuous_invFun := .prodMk (continuous_apply _) <| continuous_pi fun _ ↦ continuous_apply _
   continuous_toFun := continuous_fst.finInsertNth _  continuous_snd
 
 @[mk_iff]
@@ -135,6 +140,19 @@ protected theorem isQuotientMap {f : X → Y} (hf : IsPullbackQuotientMap f) : I
 protected theorem id : IsPullbackQuotientMap (id : X → X) :=
   IsOpenQuotientMap.id.isPullbackQuotientMap
 
+theorem of_isEmpty [IsEmpty Y] (f : X → Y) : IsPullbackQuotientMap f where
+  continuous := have := f.isEmpty; continuous_of_discreteTopology
+  exists_clusterPt_comap {y} := isEmptyElim y
+
+theorem of_subsingleton [Nonempty X] [Subsingleton Y] (f : X → Y) : IsPullbackQuotientMap f where
+  continuous := by
+    obtain rfl : ‹TopologicalSpace Y› = ⊤ := Subsingleton.elim _ _
+    apply continuous_top
+  exists_clusterPt_comap := by
+    intro y l hl
+    obtain rfl : l = ⊤ := have := hl.neBot.mono inf_le_right; l.eq_top_of_neBot
+    simp [ClusterPt, Subsingleton.elim _ y]
+
 theorem exists_finset_biUnion_image_mem_nhds {ι : Type*} {f : X → Y} (hf : IsPullbackQuotientMap f)
     {y : Y} {s : ι → Set X} (hys : f ⁻¹' {y} ⊆ ⋃ i, s i) (hso : ∀ i, IsOpen (s i)) :
     ∃ t : Finset ι, ⋃ i ∈ t, f '' s i ∈ 𝓝 y := by
@@ -197,20 +215,6 @@ protected theorem prodMap {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpac
     IsPullbackQuotientMap.prodSwap.comp (H₂.comp .prodSwap)
   H₃.comp H₁
 
-/-- Auxiliary lemma. Use the next lemma instead. -/
-private theorem piMap_fin {n : ℕ} {X Y : Fin n → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, TopologicalSpace (Y i)] {f : ∀ i, X i → Y i} (h : ∀ i, IsPullbackQuotientMap (f i)) :
-    IsPullbackQuotientMap (fun (x : ∀ i, X i) i ↦ f i (x i)) := by
-  induction n with
-  | zero => convert (Homeomorph.homeomorphOfUnique (∀ i, X i) (∀ i, Y i)).isPullbackQuotientMap
-  | succ n ihn =>
-    have H₁ : IsPullbackQuotientMap fun (x : ∀ i, X (.succ i)) i ↦ f (.succ i) (x i) :=
-     ihn fun _ ↦ h _
-    have H₂ := (h 0).prodMap H₁
-    convert (Fin.insertNthHomeomorph Y 0).isPullbackQuotientMap.comp <|
-      H₂.comp (Fin.insertNthHomeomorph X 0).symm.isPullbackQuotientMap with x i
-    cases i using Fin.cases <;> rfl
-
 protected theorem piMap {ι : Type*} {X Y : ι → Type*} [Finite ι] [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f : ∀ i, X i → Y i} (h : ∀ i, IsPullbackQuotientMap (f i)) :
     IsPullbackQuotientMap (Pi.map f) := by
@@ -219,22 +223,16 @@ protected theorem piMap {ι : Type*} {X Y : ι → Type*} [Finite ι] [∀ i, To
     have := (ih fun i ↦ h (e i)).comp (Homeomorph.piCongrLeft e).symm.isPullbackQuotientMap
     convert (Homeomorph.piCongrLeft e).isPullbackQuotientMap.comp this
     ext x i
---    rcases e.surjective i with ⟨i, rfl⟩
+    rcases e.surjective i with ⟨i, rfl⟩
     unfold Pi.map
     simp [Homeomorph.piCongrLeft]
-  | h_empty => _
-  | h_option => _
-/-
-  rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
-  have H₁ : IsPullbackQuotientMap (fun (x : ∀ k, X (e.symm k)) i ↦ f _ (x i)) :=
-    piMap_fin fun _ ↦ h _
-  have H₂ : IsPullbackQuotientMap
-      (fun x k ↦ f (e.symm k) (x (e.symm k)) : (∀ i, X i) → (∀ k, Y (e.symm k))) :=
-    H₁.comp (Homeomorph.piCongrLeft e.symm).symm.isPullbackQuotientMap
-  convert (Homeomorph.piCongrLeft e.symm).isPullbackQuotientMap.comp H₂ with x i
-  rcases e.symm.surjective i with ⟨k, rfl⟩
-  simp
--/
+  | h_empty =>
+    apply of_subsingleton
+  | h_option ih =>
+    convert (Homeomorph.piOptionHomeomorphProd).symm.isPullbackQuotientMap.comp <|
+      ((h none).prodMap (ih (h <| some ·))).comp <|
+      (Homeomorph.piOptionHomeomorphProd).isPullbackQuotientMap
+    ext g (_ | _) <;> simp
 
 theorem of_forall_pullback_nhdsAdjoint {f : X → Y} (hf : Continuous f)
     (h : ∀ (Z : Type v) (z : Z) (l : Filter Z) (e : Z ≃ Y), Tendsto e l (𝓝 (e z)) →
