@@ -154,10 +154,7 @@ variable [∀ n, PseudoMetricSpace (Y n)]
 
 private lemma min_le_geometric {x y : X} (n : ℕ) :
     ‖(1 / 2) ^ n * min (dist (f n x) (f n y)) 1‖ ≤ (1 / 2) ^ n := by
-  simp only [one_div, inv_pow, Real.norm_eq_abs, abs_mul, abs_inv, abs_pow, Nat.abs_ofNat,
-    inv_pos, Nat.ofNat_pos, pow_pos, mul_le_iff_le_one_right]
-  rw [abs_of_nonneg (by positivity)]
-  exact min_le_right ..
+  simp [abs_of_nonneg]
 
 private lemma summable_min {x y : X} :
     Summable fun n ↦ (1 / 2) ^ n * min (dist (f n x) (f n y)) 1 :=
