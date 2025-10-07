@@ -9,7 +9,7 @@ import Mathlib.Data.Matrix.Reflection
 /-!
 # Simprocs for matrices
 
-In this file we provide a simproc for transpose of explicit matrices.
+In this file we provide a simproc for diagonal matrices.
 -/
 
 open Matrix
