@@ -433,7 +433,7 @@ lemma isoLimit_inv_π (g : StructuredArrow Y L) :
 
 end IsPointwiseRightKanExtensionAt
 
-/-- Given `E : Functor.LeftExtension L F`, this is the property of objects where
+/-- Given `E : Functor.RightExtension L F`, this is the property of objects where
 `E` is a pointwise right Kan extension. -/
 def isPointwiseRightKanExtensionAt : ObjectProperty D :=
   fun Y ↦ Nonempty (E.IsPointwiseRightKanExtensionAt Y)
