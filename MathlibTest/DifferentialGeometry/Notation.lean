@@ -152,6 +152,33 @@ variable {f : M → M'} {s : Set M} {m : M}
 #guard_msgs in
 #check MDiff[s] f
 
+-- A partial homeomorphism or partial equivalence.
+variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
+
+#check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
+#check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ s
+/--
+error: Application type mismatch: The argument
+  M
+has type
+  Type u_4
+but is expected to have type
+  ModelWithCorners ?𝕜 ?E ?H
+in the application
+  @MDifferentiableWithinAt ?𝕜 ?inst✝ ?E ?inst✝¹ ?inst✝² ?H ?inst✝³ M
+-/
+#guard_msgs in
+#check MDiffAt[s] φ
+/--
+error: Expected
+  ψ
+of type
+  PartialEquiv M E
+to be a function
+-/
+#guard_msgs in
+#check MDiffAt[s] ψ
+
 -- Testing an error message.
 section
 
