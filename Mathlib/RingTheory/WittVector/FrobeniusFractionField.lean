@@ -201,16 +201,15 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
   rcases n with - | n
-  · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation]
-    simp only [coeff_mk, frobeniusRotationCoeff]
+  · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
+      coeff_mk, frobeniusRotationCoeff]
     exact solution_spec' _ ha₁ _
   · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP,
-      frobeniusRotation]
+      frobeniusRotation, coeff_mk, frobeniusRotationCoeff]
     have :=
       succNthVal_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobeniusRotationCoeff p ha₁ ha₂ i.val)
         ha₁ ha₂
     simp only [frobeniusRotationCoeff, Fin.val_zero] at this
-    simp only [coeff_mk, frobeniusRotationCoeff]
     convert this using 3; clear this
     apply TruncatedWittVector.ext
     intro i
