@@ -25,7 +25,6 @@ components in directed graphs.
 -/
 
 universe v u
-
 namespace Quiver
 
 variable (V : Type*) [Quiver.{u + 1} V]
@@ -33,12 +32,12 @@ variable (V : Type*) [Quiver.{u + 1} V]
 /-- Two vertices are related in the zigzag setoid if there is a
 zigzag of arrows from one to the other. -/
 def zigzagSetoid : Setoid V :=
-  ⟨fun a b ↦ Nonempty (@Path (Symmetrify V) _ a b),
-   fun _ ↦ ⟨Path.nil⟩,
-   fun ⟨p⟩ ↦ ⟨p.reverse⟩,
-   fun ⟨p⟩ ⟨q⟩ ↦ ⟨p.comp q⟩⟩
+  ⟨fun a b ↦ Nonempty (@Path (Symmetrify V) _ a b), fun _ ↦ ⟨Path.nil⟩, fun ⟨p⟩ ↦
+    ⟨p.reverse⟩, fun ⟨p⟩ ⟨q⟩ ↦ ⟨p.comp q⟩⟩
 
-/-- The type of weakly connected components of a directed graph. -/
+/-- The type of weakly connected components of a directed graph. Two vertices are
+in the same weakly connected component if there is a zigzag of arrows from one
+to the other. -/
 def WeaklyConnectedComponent : Type _ :=
   Quotient (zigzagSetoid V)
 
@@ -46,7 +45,7 @@ namespace WeaklyConnectedComponent
 
 variable {V}
 
-/-- The canonical map from a vertex to its weakly connected component. -/
+/-- The weakly connected component corresponding to a vertex. -/
 protected def mk : V → WeaklyConnectedComponent V :=
   @Quotient.mk' _ (zigzagSetoid V)
 
@@ -57,8 +56,7 @@ instance [Inhabited V] : Inhabited (WeaklyConnectedComponent V) :=
   ⟨show V from default⟩
 
 protected theorem eq (a b : V) :
-    (a : WeaklyConnectedComponent V) = b ↔
-      Nonempty (@Path (Symmetrify V) _ a b) :=
+    (a : WeaklyConnectedComponent V) = b ↔ Nonempty (@Path (Symmetrify V) _ a b) :=
   Quotient.eq''
 
 end WeaklyConnectedComponent
@@ -97,29 +95,27 @@ def IsSStronglyConnected : Prop :=
 @[simp] lemma isSStronglyConnected_iff :
     IsSStronglyConnected V ↔ ∀ i j : V, ∃ p : Path i j, 0 < p.length := Iff.rfl
 
-lemma IsStronglyConnected.nonempty_path {V} [Quiver V]
+lemma IsStronglyConnected.nonempty_path
     (h : IsStronglyConnected V) (i j : V) : Nonempty (Path i j) := h i j
 
-lemma IsSStronglyConnected.exists_pos_path {V} [Quiver V]
+lemma IsSStronglyConnected.exists_pos_path
     (h : IsSStronglyConnected V) (i j : V) : ∃ p : Path i j, 0 < p.length := h i j
 
-lemma IsSStronglyConnected.exists_pos_cycle {V} [Quiver V]
+lemma IsSStronglyConnected.exists_pos_cycle
     (h : IsSStronglyConnected V) (i : V) : ∃ p : Path i i, 0 < p.length := h i i
 
-lemma IsSStronglyConnected.isStronglyConnected {V} [Quiver V]
+lemma IsSStronglyConnected.isStronglyConnected
     (h : IsSStronglyConnected V) : IsStronglyConnected V := by
   intro i j; obtain ⟨p, _⟩ := h i j; exact ⟨p⟩
 
 /-- Equivalence relation identifying vertices connected by directed paths in both directions. -/
-def stronglyConnectedSetoid (V : Type*) [Quiver V] : Setoid V :=
+def stronglyConnectedSetoid : Setoid V :=
   ⟨fun a b => (Nonempty (Path a b)) ∧ (Nonempty (Path b a)),
-   fun _ => ⟨⟨Path.nil⟩, ⟨Path.nil⟩⟩,
-   fun ⟨hab, hba⟩ => ⟨hba, hab⟩,
-   fun ⟨hab, hba⟩ ⟨hbc, hcb⟩ =>
+   fun _ => ⟨⟨Path.nil⟩, ⟨Path.nil⟩⟩, fun ⟨hab, hba⟩ => ⟨hba, hab⟩, fun ⟨hab, hba⟩ ⟨hbc, hcb⟩ =>
      ⟨⟨hab.some.comp hbc.some⟩, ⟨hcb.some.comp hba.some⟩⟩⟩
 
 /-- The type of strongly connected components (bidirectional reachability classes). -/
-def StronglyConnectedComponent (V : Type*) [Quiver V] : Type _ :=
+def StronglyConnectedComponent : Type _ :=
   Quotient (stronglyConnectedSetoid V)
 
 namespace StronglyConnectedComponent
@@ -142,8 +138,7 @@ protected lemma eq (a b : V) :
 
 @[simp] lemma mk_eq_mk {a b : V} :
     (StronglyConnectedComponent.mk a : StronglyConnectedComponent V) =
-    StronglyConnectedComponent.mk b ↔
-    (Nonempty (Path a b) ∧ Nonempty (Path b a)) :=
+    StronglyConnectedComponent.mk b ↔ (Nonempty (Path a b) ∧ Nonempty (Path b a)) :=
   StronglyConnectedComponent.eq a b
 
 lemma IsSStronglyConnected.pos_cycle
@@ -164,7 +159,7 @@ lemma exists_path_of_stronglyConnectedComponent_eq {a b : V}
     (Nonempty (Path a b)) ∧ (Nonempty (Path b a)) :=
   (StronglyConnectedComponent.eq (a := a) (b := b)).1 h
 
-lemma stronglyConnectedComponent_singleton_iff {V} [Quiver V] (v : V) :
+lemma stronglyConnectedComponent_singleton_iff (v : V) :
     (∀ w : V, (w : StronglyConnectedComponent V) = v → w = v) ↔
     (∀ w : V, w ≠ v → ¬(Nonempty (Path v w) ∧ Nonempty (Path w v))) := by
   constructor
@@ -172,15 +167,15 @@ lemma stronglyConnectedComponent_singleton_iff {V} [Quiver V] (v : V) :
     obtain ⟨hab, hba⟩ := h_bidir
     have h_same_scc : (w : StronglyConnectedComponent V) = v :=
       stronglyConnectedComponent_eq_of_path (a := w) (b := v) hba hab
-    obtain rfl := h_singleton w h_same_scc
-    exact hw_ne rfl
+    obtain ⟨rfl⟩ := h_singleton w h_same_scc
+    contradiction
   · intro h_no_bidir w h_same_scc
     by_contra hw_ne
     obtain ⟨hab, hba⟩ :=
       exists_path_of_stronglyConnectedComponent_eq (a := w) (b := v) h_same_scc
     exact (h_no_bidir w hw_ne) ⟨hba, hab⟩
 
-lemma symmetrify_isStronglyConnected_of_isStronglyConnected {V} [Quiver V]
+lemma symmetrify_isStronglyConnected_of_isStronglyConnected
     (h : IsStronglyConnected V) : IsStronglyConnected (Symmetrify V) := by
   intro a b
   obtain ⟨p⟩ := h a b
@@ -188,12 +183,11 @@ lemma symmetrify_isStronglyConnected_of_isStronglyConnected {V} [Quiver V]
   | nil => exact ⟨Path.nil⟩
   | cons q e ih => exact ⟨ih.some.cons (Sum.inl e)⟩
 
-lemma isSStronglyConnected_of_hasEdge {V} [Quiver V]
+lemma isSStronglyConnected_of_hasEdge
     (h_sc : IsStronglyConnected V)
-    (h_edge : ∃ (i j : V), Nonempty (i ⟶ j)) :
+    {i₀ j₀ : V} (e₀ : i₀ ⟶ j₀) :
     IsSStronglyConnected V := by
   intro i j
-  obtain ⟨i₀, j₀, ⟨e₀⟩⟩ := h_edge
   obtain ⟨p₁⟩ := h_sc i i₀
   obtain ⟨p₂⟩ := h_sc j₀ j
   let p : Path i j := p₁.comp (e₀.toPath.comp p₂)
