@@ -1827,6 +1827,7 @@ import Mathlib.Analysis.Normed.Lp.WithLp
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.Normed.Module.Alternating.Basic
 import Mathlib.Analysis.Normed.Module.Alternating.Curry
+import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
 import Mathlib.Analysis.Normed.Module.Ball.Action
 import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
@@ -1896,6 +1897,7 @@ import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.DualNumber
+import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
