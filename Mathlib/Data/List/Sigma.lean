@@ -50,6 +50,9 @@ theorem keys_nil : @keys α β [] = [] :=
 theorem keys_cons {s} {l : List (Sigma β)} : (s :: l).keys = s.1 :: l.keys :=
   rfl
 
+theorem keys_append : (l₁ ++ l₂).keys = l₁.keys ++ l₂.keys := by
+  simp [keys]
+
 theorem mem_keys_of_mem {s : Sigma β} {l : List (Sigma β)} : s ∈ l → s.1 ∈ l.keys :=
   mem_map_of_mem
 
@@ -95,6 +98,10 @@ theorem nodupKeys_nil : @NodupKeys α β [] :=
 @[simp]
 theorem nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} :
     NodupKeys (s :: l) ↔ s.1 ∉ l.keys ∧ NodupKeys l := by simp [keys, NodupKeys]
+
+theorem nodupKeys_middle {s : Sigma β} :
+    (l₁ ++ s :: l₂).NodupKeys ↔ (s :: (l₁ ++ l₂)).NodupKeys := by
+  simp_all [NodupKeys, keys, nodup_middle]
 
 theorem notMem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     s.1 ∉ l.keys :=
@@ -235,6 +242,20 @@ theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a
     (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
 
+theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
+    (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH =>
+    rw [cons_append]
+    obtain rfl | hb := Decidable.eq_or_ne a x.1
+    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.or]
+    · rw [dlookup_cons_ne _ _ hb, dlookup_cons_ne _ _ hb, IH]
+
+theorem sublist_dlookup {l₁ l₂ : List (Sigma β)} {a : α} {b : β a}
+    (nd₂ : l₂.NodupKeys) (s : l₁ <+ l₂) (mem : b ∈ l₁.dlookup a) : b ∈ l₂.dlookup a := by
+  grind [Option.mem_def, dlookup_append, => perm_dlookup, → Sublist.exists_perm_append]
+
 /-! ### `lookupAll` -/
 
 
@@ -313,16 +334,6 @@ theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodu
     (p : l₁ ~ l₂) : lookupAll a l₁ = lookupAll a l₂ := by
   have nd₂ := (perm_nodupKeys p).mp nd₁
   simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ p]
-
-theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
-    (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
-  induction l₁ with
-  | nil => rfl
-  | cons x l₁ IH =>
-    rw [cons_append]
-    obtain rfl | hb := Decidable.eq_or_ne a x.1
-    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.or]
-    · rw [dlookup_cons_ne _ _ hb, dlookup_cons_ne _ _ hb, IH]
 
 /-! ### `kreplace` -/
 
