@@ -562,11 +562,15 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
         exact id congr_fun hxy ⟨i, Nat.lt_succ_of_le hi⟩)
     fun _ _ => Finset.finite_toSet _
 
+/-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
+instead of requiring it to be non-zero and `NoZeroSMulDivisors`. -/
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical
   rw [rootSet_def, Finset.mem_coe, mem_toFinset, mem_aroots']
 
+/-- A version of `mem_rootSet'` that requires `NoZeroSMulDivisors` and for the polynomial to be
+non-zero instead of requiring it to be non-zero after mapping. -/
 theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : S} : a ∈ p.rootSet S ↔ p ≠ 0 ∧ aeval a p = 0 := by
   rw [mem_rootSet', Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective T S)]
@@ -602,10 +606,6 @@ theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
     x ∈ p.rootSet R ↔ aeval x p = 0 := by
   classical
   exact Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
-
-theorem mem_rootSet'' [CommRing S] {p : S[X]} [Algebra S R] [FaithfulSMul S R] {x : R}
-    (hp : p ≠ 0) : x ∈ p.rootSet R ↔ aeval x p = 0 :=
-  mem_rootSet_of_injective (FaithfulSMul.algebraMap_injective _ _) hp
 
 @[simp]
 theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
