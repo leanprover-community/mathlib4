@@ -109,8 +109,6 @@ namespace AlgebraicGeometry
 abbrev IsZariskiLocalAtTarget (P : MorphismProperty Scheme.{u}) :=
   P.IsLocalAtTarget Scheme.zariskiPrecoverage
 
-@[deprecated (since := "2025-10-07")] alias IsLocalAtTarget := IsZariskiLocalAtTarget
-
 namespace IsZariskiLocalAtTarget
 
 /--
@@ -188,8 +186,6 @@ end IsZariskiLocalAtTarget
 abbrev IsZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) :=
   P.IsLocalAtSource Scheme.zariskiPrecoverage
 
-@[deprecated (since := "2025-10-07")] alias IsLocalAtSource := IsZariskiLocalAtSource
-
 namespace IsZariskiLocalAtSource
 
 /--
@@ -266,10 +262,6 @@ lemma isZariskiLocalAtTarget [P.IsMultiplicative]
     intro i
     rw [← Scheme.Cover.pullbackHom_map]
     exact P.comp_mem _ _ (h i) (of_isOpenImmersion _)
-
-@[deprecated (since := "2025-10-07")]
-alias _root_.AlgebraicGeometry.IsLocalAtSource.isLocalAtTarget :=
-  isZariskiLocalAtTarget
 
 lemma sigmaDesc {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}}
     {f : ∀ i, Y i ⟶ X} (hf : ∀ i, P (f i)) : P (Sigma.desc f) := by
@@ -646,5 +638,81 @@ lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismPro
 instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty @IsOpenImmersion :=
   HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
+
+section Deprecations
+
+@[deprecated (since := "2025-10-07")] alias IsLocalAtTarget := IsZariskiLocalAtTarget
+
+namespace IsLocalAtTarget
+
+@[deprecated (since := "2025-10-07")]
+alias mk' := IsZariskiLocalAtTarget.mk'
+
+@[deprecated (since := "2025-10-07")]
+alias of_iSup_eq_top := IsZariskiLocalAtTarget.of_iSup_eq_top
+
+@[deprecated (since := "2025-10-07")]
+alias iff_of_iSup_eq_top := IsZariskiLocalAtTarget.iff_of_iSup_eq_top
+
+@[deprecated (since := "2025-10-07")]
+alias of_openCover := IsZariskiLocalAtTarget.of_openCover
+
+@[deprecated (since := "2025-10-07")]
+alias iff_of_openCover := IsZariskiLocalAtTarget.iff_of_openCover
+
+@[deprecated (since := "2025-10-07")]
+alias of_isPullback := IsZariskiLocalAtTarget.of_isPullback
+
+@[deprecated (since := "2025-10-07")]
+alias restrict := IsZariskiLocalAtTarget.restrict
+
+@[deprecated (since := "2025-10-07")]
+alias of_range_subset_iSup := IsZariskiLocalAtTarget.of_range_subset_iSup
+
+end IsLocalAtTarget
+
+@[deprecated (since := "2025-10-07")] alias IsLocalAtSource := IsZariskiLocalAtSource
+
+namespace IsLocalAtSource
+
+@[deprecated (since := "2025-10-07")]
+alias mk' := IsZariskiLocalAtSource.mk'
+
+@[deprecated (since := "2025-10-07")]
+alias comp := IsZariskiLocalAtSource.comp
+
+@[deprecated (since := "2025-10-07")]
+alias respectsLeft_isOpenImmersion := IsZariskiLocalAtSource.respectsLeft_isOpenImmersion
+
+@[deprecated (since := "2025-10-07")]
+alias of_iSup_eq_top := IsZariskiLocalAtSource.of_iSup_eq_top
+
+@[deprecated (since := "2025-10-07")]
+alias iff_of_iSup_eq_top := IsZariskiLocalAtSource.iff_of_iSup_eq_top
+
+@[deprecated (since := "2025-10-07")]
+alias of_openCover := IsZariskiLocalAtSource.of_openCover
+
+@[deprecated (since := "2025-10-07")]
+alias iff_of_openCover := IsZariskiLocalAtSource.iff_of_openCover
+
+@[deprecated (since := "2025-10-07")]
+alias of_isOpenImmersion := IsZariskiLocalAtSource.of_isOpenImmersion
+
+@[deprecated (since := "2025-10-07")]
+alias isLocalAtTarget := IsZariskiLocalAtSource.isZariskiLocalAtTarget
+
+@[deprecated (since := "2025-10-07")]
+alias sigmaDesc := IsZariskiLocalAtSource.sigmaDesc
+
+@[deprecated (since := "2025-10-07")]
+alias resLE := IsZariskiLocalAtSource.resLE
+
+@[deprecated (since := "2025-10-07")]
+alias iff_exists_resLE := IsZariskiLocalAtSource.iff_exists_resLE
+
+end IsLocalAtSource
+
+end Deprecations
 
 end AlgebraicGeometry
