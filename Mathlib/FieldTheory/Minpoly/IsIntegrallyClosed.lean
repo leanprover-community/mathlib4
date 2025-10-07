@@ -190,24 +190,6 @@ example {x : S} (B : PowerBasis R S)
   deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin' :=
   _root_.PowerBasis.ofAdjoinEqTop'
 
-/--
-If `x` generates `S` over `R` and is integral over `R`, then it defines a power basis.
-See `PowerBasis.ofAdjoinEqTop` for a version over a field.
--/
-def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x) (hx' : adjoin R {x} = ⊤) :
-    PowerBasis R S :=
-  (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
-
-@[simp]
-theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
-    (hx' : adjoin R {x} = ⊤) :
-    (PowerBasis.ofAdjoinEqTop' hx hx').dim = (minpoly R x).natDegree := rfl
-
-@[simp]
-theorem _root_.PowerBasis.ofAdjoinEqTop'_gen {x : S} (hx : IsIntegral R x)
-    (hx' : adjoin R {x} = ⊤) : (PowerBasis.ofAdjoinEqTop' hx hx').gen = x := by
-  simp [PowerBasis.ofAdjoinEqTop']
-
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
     (hx' : adjoin R {x} = ⊤) :

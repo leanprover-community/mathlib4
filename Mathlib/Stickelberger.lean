@@ -199,54 +199,34 @@ variable {K : Type*} [Field K]
 
 section Psi
 
-variable {A : Type*} [CommRing A] (ζ : A) (hζ : IsPrimitiveRoot ζ p)
+variable {A : Type*} [CommRing A]
+
+section T
+
+variable (ζ : Aˣ) (hζ : IsPrimitiveRoot ζ p)
 
 /-- Docstring. -/
-abbrev T₀ : ℕ → A := fun a ↦ ζ ^ a
+abbrev T₀ : ℤ → A := fun a ↦ (ζ ^ a : Aˣ)
 
 @[simp]
-theorem T₀_apply (a : ℕ) :  T₀ ζ a = ζ ^ a := rfl
+theorem T₀_apply (a : ℤ) :  T₀ ζ a = (ζ ^ a : Aˣ) := rfl
 
-theorem T₀_add (a b : ℕ) : T₀ ζ (a + b) = (T₀ ζ a) * (T₀ ζ b) := by
-  rw [T₀_apply, pow_add]
-
--- theorem T₀_neg (a : ℤ) : T₀ ζ (- a) = (T₀ ζ a)⁻¹ := by
--- rw [T₀_apply, T₀_apply, zpow_neg]
+theorem T₀_add (a b : ℤ) : T₀ ζ (a + b) = (T₀ ζ a) * (T₀ ζ b) := by
+  rw [T₀_apply, T₀_apply, T₀_apply, zpow_add, Units.val_mul]
 
 variable {ζ}
 
-theorem T₀_eq_one_iff (hζ : IsPrimitiveRoot ζ p) {a : ℕ} : T₀ ζ a = 1 ↔ p ∣ a := by
-  rw [T₀_apply, hζ.pow_eq_one_iff_dvd]
+theorem T₀_eq_one_iff (hζ : IsPrimitiveRoot ζ p) {a : ℤ} : T₀ ζ a = 1 ↔ (p : ℤ) ∣ a := by
+  rw [T₀_apply, Units.val_eq_one, hζ.zpow_eq_one_iff_dvd]
 
-variable [NeZero p] [IsDomain A]
+variable [NeZero p]
 
-theorem T₀_ne_zero (hζ : IsPrimitiveRoot ζ p) {a : ℕ} : T₀ ζ a ≠ 0 :=
-  pow_ne_zero a (hζ.ne_zero (NeZero.ne _))
-
--- theorem T₀_sub (hζ : IsPrimitiveRoot ζ p) (a b : ℤ) : T₀ ζ (a - b) = (T₀ ζ a) * (T₀ ζ b)⁻¹ := by
---   rw [sub_eq_add_neg, T₀_add p hζ, T₀_neg]
-
-theorem T₀_eq_T₀_iff (hζ : IsPrimitiveRoot ζ p) {a b : ℕ} :
+theorem T₀_eq_T₀_iff (hζ : IsPrimitiveRoot ζ p) {a b : ℤ} :
     T₀ ζ a = T₀ ζ b ↔ (p : ℤ) ∣ a - b := by
-  have := hζ.isUnit_unit (NeZero.pos _)
+  simp [← (hζ.isUnit_unit (NeZero.ne _)).zpow_eq_one_iff_dvd, zpow_sub, _root_.mul_inv_eq_one,
+    ← Units.val_inj]
 
-  rw [T₀_apply, T₀_apply]
-  rw [← (hζ.isUnit (NeZero.pos _)).unit_spec]
-  have := (hζ.isUnit (NeZero.pos _)).unit_pow a
-
-
-  -- ← mul_inv_eq_one₀]
-  have : ζ = u.val := by
-    rw [@IsUnit.unit_spec]
-  have h := FaithfulSMul.algebraMap_injective A (FractionRing A)
-  rw [← h.eq_iff, T₀_apply, T₀_apply, map_pow, map_pow]
-  have : IsPrimitiveRoot (algebraMap A (FractionRing A) ζ) p := by
-    refine IsPrimitiveRoot.map_of_injective hζ h
-  have := this.pow_eq_one_iff_dvd
-  rw [← mul_inv_eq_one₀]
-  rw?
-
-  -- rw [← mul_inv_eq_one₀ (T₀_ne_zero p hζ), ← T₀_sub p hζ, T₀_eq_one_iff p hζ]
+theorem T₀_ne_zero {a : ℕ} [Nontrivial A] : T₀ ζ a ≠ 0 := ne_zero _
 
 /-- Docstring. -/
 def T₁ (hζ : IsPrimitiveRoot ζ p) : ℤ ⧸ 𝒑 → A := by
@@ -257,16 +237,13 @@ def T₁ (hζ : IsPrimitiveRoot ζ p) : ℤ ⧸ 𝒑 → A := by
 @[simp]
 theorem T₁_apply (x : ℤ) : T₁ p hζ (Ideal.Quotient.mk 𝒑 x) = T₀ ζ x := rfl
 
-theorem T₁_neg (a : ℤ ⧸ 𝒑) : T₁ p hζ (- a) = (T₁ p hζ a)⁻¹ := by
-  rw [← Ideal.Quotient.mk_out a, T₁_apply, ← T₀_neg, ← T₁_apply p, ← Ideal.Quotient.mk_eq_mk,
-    ← Submodule.Quotient.mk_neg, Ideal.Quotient.mk_eq_mk]
+-- theorem T₁_neg (a : ℤ ⧸ 𝒑) : T₁ p hζ (- a) = (T₁ p hζ a)⁻¹ := by
+--   rw [← Ideal.Quotient.mk_out a, T₁_apply, ← T₀_neg, ← T₁_apply p, ← Ideal.Quotient.mk_eq_mk,
+--     ← Submodule.Quotient.mk_neg, Ideal.Quotient.mk_eq_mk]
 
 theorem T₁_add (a b : ℤ ⧸ 𝒑) : T₁ p hζ (a + b) = (T₁ p hζ a) * (T₁ p hζ b) := by
-  rw [← Ideal.Quotient.mk_out a, ← Ideal.Quotient.mk_out b, T₁_apply, T₁_apply, ← T₀_add p hζ,
+  rw [← Ideal.Quotient.mk_out a, ← Ideal.Quotient.mk_out b, T₁_apply, T₁_apply, ← T₀_add,
     ← T₁_apply p, map_add]
-
-theorem T₁_sub (a b : ℤ ⧸ 𝒑) : T₁ p hζ (a - b) = (T₁ p hζ a) * (T₁ p hζ b)⁻¹ := by
-  rw [sub_eq_add_neg, T₁_add, T₁_neg]
 
 theorem T₁_zero : T₁ p hζ 0 = 1 := by
   change T₁ p hζ (Ideal.Quotient.mk 𝒑 0) = 1
@@ -279,11 +256,13 @@ theorem T₁_injective : Function.Injective (T₁ p hζ) := by
     ← Ideal.mem_span_singleton, ← Submodule.Quotient.eq, Submodule.Quotient.mk_out,
     Submodule.Quotient.mk_out] at h
 
-variable {K : Type*} [Field K] (P : Ideal (𝓞 K))
+end T
+
+variable [NeZero p] {ζ : A} (hζ : IsPrimitiveRoot ζ p) {K : Type*} [Field K] (P : Ideal (𝓞 K))
 
 def Psi [P.LiesOver 𝒑] : AddChar ((𝓞 K) ⧸ P) A := {
-  toFun := fun x ↦ T₁ p hζ <| Algebra.trace (ℤ ⧸ 𝒑) ((𝓞 K) ⧸ P) x
-  map_zero_eq_one' := by simpa [map_zero] using T₁_zero p hζ
+  toFun := fun x ↦ T₁ p (hζ.isUnit_unit (NeZero.ne _)) <| Algebra.trace (ℤ ⧸ 𝒑) ((𝓞 K) ⧸ P) x
+  map_zero_eq_one' := by simpa [map_zero] using T₁_zero p _
   map_add_eq_mul' a b := by rw [map_add, T₁_add] }
 
 end Psi
@@ -340,8 +319,8 @@ variable (L : Type*) [Field L] [NumberField L] [Algebra K L]
   [hL : IsCyclotomicExtension {p * (p ^ f - 1)} ℚ L] (𝓟 : Ideal (𝓞 L)) [𝓟.IsMaximal]
 
 open Classical in
-def Omega [P.LiesOver 𝒑] : MulChar ((𝓞 K) ⧸ P) L := {
-  toFun := fun x ↦ if hx : IsUnit x then algebraMap (𝓞 K) L (omega p f P hx.unit).val else 0
+def Omega [P.LiesOver 𝒑] : MulChar ((𝓞 K) ⧸ P) (𝓞 L) := {
+  toFun := fun x ↦ if hx : IsUnit x then algebraMap (𝓞 K) (𝓞 L) (omega p f P hx.unit).val else 0
   map_one' := by simp
   map_mul' x y := by
     by_cases h : IsUnit (x * y)
@@ -353,11 +332,10 @@ def Omega [P.LiesOver 𝒑] : MulChar ((𝓞 K) ⧸ P) L := {
       · rw [dif_neg h, dif_neg hy, mul_zero]
   map_nonunit' x hx := by rw [dif_neg hx] }
 
-def GaussSum [P.LiesOver 𝒑] (a : ℤ) : L := by
-  have hζ : ∃ ζ : L, IsPrimitiveRoot ζ p := by
-    apply hL.exists_prim_root_of_dvd
-    exact ⟨p * (p ^ f - 1), rfl, NeZero.ne _, ⟨p ^ f - 1, rfl⟩⟩
-  exact gaussSum (Omega p f P L ^ (- a)) (Psi p hζ.choose_spec P)
+variable {ζ : 𝓞 L} (hζ : IsPrimitiveRoot ζ p)
+
+def GaussSum [P.LiesOver 𝒑] (a : ℤ) : (𝓞 L) := gaussSum (Omega p f P L ^ (- a)) (Psi p hζ P)
+
 
 
 

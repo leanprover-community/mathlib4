@@ -41,8 +41,8 @@ theorem foo {P : K[X]} (hP : P ∣ cyclotomic n K) (hPirr : Irreducible P) (hPmo
       coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, hK]
     nth_rewrite 2 [← pow_one pB.gen]
     rw [powerBasis_gen hPirr.ne_zero, hζ'.pow_eq_pow_iff_modEq, ← hζ.eq_orderOf,
-      ← ZMod.natCast_eq_natCast_iff]
-    simpa using Units.val_inj.mpr <| pow_orderOf_eq_one (unitOfCoprime _ hn)
+      ← ZMod.natCast_eq_natCast_iff, Nat.cast_pow, Nat.cast_one]
+    exact Units.val_inj.mpr <| pow_orderOf_eq_one (unitOfCoprime _ hn)
 
 #exit
 

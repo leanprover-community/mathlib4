@@ -111,7 +111,7 @@ theorem NumberField.dvd_torsionOrder_of_isPrimitiveRoot {n : ℕ} [NeZero n] {K 
     [NumberField K] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
     n ∣ torsionOrder K := by
   rw [torsionOrder, Fintype.card_eq_nat_card]
-  replace hζ := (hζ.toInteger_isPrimitiveRoot).isUnit_unit (NeZero.pos n)
+  replace hζ := (hζ.toInteger_isPrimitiveRoot).isUnit_unit (NeZero.ne n)
   have hζ' := CommGroup.mem_torsion_of_isPrimitiveRoot n hζ
   convert orderOf_dvd_natCard (⟨_, hζ'⟩ : torsion K)
   rw [Subgroup.orderOf_mk]

@@ -603,7 +603,7 @@ theorem Module.Basis.traceDual_eq_iff {v : ι → L} :
 The dual basis of a powerbasis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
 with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 -/
-lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
+lemma Module.Basis.traceDual_powerBasis_eq (pb : _root_.PowerBasis K L) (i) :
     pb.basis.traceDual i =
       (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
   revert i
