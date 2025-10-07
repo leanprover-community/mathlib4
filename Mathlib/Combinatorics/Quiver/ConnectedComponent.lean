@@ -25,6 +25,7 @@ components in directed graphs.
 -/
 
 universe v u
+
 namespace Quiver
 
 variable (V : Type*) [Quiver.{u + 1} V]
@@ -141,8 +142,7 @@ protected lemma eq (a b : V) :
     StronglyConnectedComponent.mk b ↔ (Nonempty (Path a b) ∧ Nonempty (Path b a)) :=
   StronglyConnectedComponent.eq a b
 
-lemma IsSStronglyConnected.pos_cycle
-    {V} [Quiver V] (h : IsSStronglyConnected V) (v : V) :
+lemma IsSStronglyConnected.pos_cycle (h : IsSStronglyConnected V) (v : V) :
     ∃ p : Path v v, 0 < p.length := h v v
 
 end StronglyConnectedComponent
@@ -175,16 +175,15 @@ lemma stronglyConnectedComponent_singleton_iff (v : V) :
       exists_path_of_stronglyConnectedComponent_eq (a := w) (b := v) h_same_scc
     exact (h_no_bidir w hw_ne) ⟨hba, hab⟩
 
-lemma symmetrify_isStronglyConnected_of_isStronglyConnected
-    (h : IsStronglyConnected V) : IsStronglyConnected (Symmetrify V) := by
+lemma IsStronglyConnected.isStronglyConnected_symmetrify (h : IsStronglyConnected V) :
+    IsStronglyConnected (Symmetrify V) := by
   intro a b
   obtain ⟨p⟩ := h a b
   induction p with
   | nil => exact ⟨Path.nil⟩
   | cons q e ih => exact ⟨ih.some.cons (Sum.inl e)⟩
 
-lemma isSStronglyConnected_of_hasEdge
-    (h_sc : IsStronglyConnected V)
+lemma IsStronglyConnected.isSStronglyConnected_of_hom (h_sc : IsStronglyConnected V)
     {i₀ j₀ : V} (e₀ : i₀ ⟶ j₀) :
     IsSStronglyConnected V := by
   intro i j
@@ -197,4 +196,5 @@ lemma isSStronglyConnected_of_hasEdge
   exact ⟨p, hp_pos⟩
 
 end StronglyConnected
+
 end Quiver
