@@ -627,6 +627,18 @@ lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ 
 lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=
   ball_one_subset_slitPlane <| by simpa
 
+open Metric in
+/-- A subset of the circle centered at the origin in `ℂ` of radius `r` is a subset of
+the `slitPlane` if it does not contain `-r`. -/
+lemma subset_slitPlane_iff_of_subset_sphere {r : ℝ} {s : Set ℂ} (hs : s ⊆ sphere 0 r) :
+    s ⊆ slitPlane ↔ (-r : ℂ) ∉ s := by
+  simp_rw +singlePass [← not_iff_not, Set.subset_def, mem_slitPlane_iff_not_le_zero]
+  push ¬ _
+  refine ⟨?_, fun hr ↦ ⟨_, hr, by simpa using hs hr⟩⟩
+  rintro ⟨z, hzs, hz⟩
+  have : ‖z‖ = r := by simpa using hs hzs
+  simpa [← this, ← norm_neg z ▸ eq_coe_norm_of_nonneg (neg_nonneg.mpr hz)]
+
 end slitPlane
 
 lemma _root_.IsCompact.reProdIm {s t : Set ℝ} (hs : IsCompact s) (ht : IsCompact t) :
