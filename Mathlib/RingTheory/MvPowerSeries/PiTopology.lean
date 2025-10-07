@@ -9,10 +9,10 @@ import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Instances.ENat
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-! # Product topology on multivariate power series
 
@@ -242,9 +242,7 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
   rw [Pi.hasSum]
   intro d
-  convert hasSum_single d ?_ using 1
-  · exact (coeff_monomial_same d _).symm
-  · exact fun d' h ↦ coeff_monomial_ne (Ne.symm h) _
+  simpa using hasSum_single d (fun d' h ↦ coeff_monomial_ne h.symm _)
 
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
