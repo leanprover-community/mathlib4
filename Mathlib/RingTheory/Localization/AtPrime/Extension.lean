@@ -8,7 +8,7 @@ import Mathlib.RingTheory.DedekindDomain.Dvr
 /-!
 # Primes in an extension of localization at prime
 
-Let `R ⊆ S` be an extension of rings and `p` be a prime ideal of `R`. Let `Rₚ` be the
+Let `R ⊆ S` be an extension of Dedekind rings and `p` be a prime ideal of `R`. Let `Rₚ` be the
 localization of `R` at the complement of `p` and `Sₚ` the localization of `S` at the (image)
 of the complement of `p`.
 
@@ -26,14 +26,14 @@ bijection.
 
 -/
 
-namespace IsLocalization.AtPrime
-
 open Algebra IsLocalRing Ideal Localization.AtPrime
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
   (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ]
   (Sₚ : Type*) [CommRing Sₚ] [Algebra S Sₚ] [IsLocalization (algebraMapSubmonoid S p.primeCompl) Sₚ]
   [Algebra Rₚ Sₚ] (P : Ideal S) [hPp : P.LiesOver p]
+
+namespace IsLocalization.AtPrime
 
 include p in
 theorem isPrime_map_of_liesOver [P.IsPrime] : (P.map (algebraMap S Sₚ)).IsPrime :=
@@ -43,18 +43,29 @@ theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := b
   convert congr_arg (Ideal.map (algebraMap R Rₚ)) (comap_maximalIdeal Rₚ p).symm
   rw [map_comap p.primeCompl]
 
+include p in
+theorem comap_map_of_isMaximal [P.IsMaximal] :
+    Ideal.comap (algebraMap S Sₚ) (Ideal.map (algebraMap S Sₚ) P) = P :=
+  comap_map_eq_self_of_isMaximal _ (isPrime_map_of_liesOver p Sₚ P).ne_top
+
 /--
 The nonzero prime ideals of `Sₚ` are prime ideals over the maximal ideal of `Rₚ`.
 See `Localization.AtPrime.primesOverEquivPrimesOver` for the bijection between the prime ideals
 of `Sₚ` over the maximal ideal of `Rₚ` and the primes ideals of `S` above `p`.
 -/
-theorem mem_primesOver_of_isPrime {Q : Ideal Sₚ} [Q.IsPrime] [Algebra.IsIntegral Rₚ Sₚ]
-    [Ring.DimensionLEOne Sₚ] (hQ : Q ≠ ⊥) :
+theorem mem_primesOver_of_isPrime {Q : Ideal Sₚ} [Q.IsMaximal] [Algebra.IsIntegral Rₚ Sₚ] :
     Q ∈ (maximalIdeal Rₚ).primesOver Sₚ := by
   refine ⟨inferInstance, ?_⟩
   rw [liesOver_iff, ← eq_maximalIdeal]
-  have : Q.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hQ inferInstance
   exact IsMaximal.under Rₚ Q
+
+theorem liesOver_comap_of_liesOver {T : Type*} [CommRing T] [Algebra R T] [Algebra Rₚ T]
+    [Algebra S T] [IsScalarTower R S T] [IsScalarTower R Rₚ T] (Q : Ideal T)
+    [Q.LiesOver (maximalIdeal Rₚ)] : (comap (algebraMap S T) Q).LiesOver p := by
+  have : Q.LiesOver p := by
+    have : (maximalIdeal Rₚ).LiesOver p := (liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
+    exact LiesOver.trans Q (IsLocalRing.maximalIdeal Rₚ) p
+  exact comap_liesOver Q p <| IsScalarTower.toAlgHom R S T
 
 variable [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
 
@@ -65,40 +76,32 @@ theorem liesOver_map_of_liesOver [P.IsPrime] :
   exact under_map_eq_map P p ((liesOver_iff P p).mp hPp)
     (map_eq_maximalIdeal p Rₚ ▸ maximalIdeal.isMaximal Rₚ) (isPrime_map_of_liesOver p Sₚ _).ne_top
 
-theorem exists_primesOver_map_eq_of_primesOver (Q : (maximalIdeal Rₚ).primesOver Sₚ) :
-    ∃ q : p.primesOver S, q.val.map (algebraMap S Sₚ) = Q := by
-  refine ⟨⟨comap (algebraMap S Sₚ) Q, ⟨IsPrime.under _ _, ?_⟩⟩, ?_⟩
-  · have : Q.1.LiesOver p := by
-      have : (maximalIdeal Rₚ).LiesOver p := (liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
-      exact LiesOver.trans Q.1 (IsLocalRing.maximalIdeal Rₚ) p
-    exact comap_liesOver Q.1 p <| IsScalarTower.toAlgHom R S Sₚ
-  · refine le_antisymm  map_comap_le fun x hx ↦ ?_
-    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := mk'_surjective (algebraMapSubmonoid S p.primeCompl) x
-    refine (mk'_mem_map_algebraMap_iff _ _ _ _ _).mpr ⟨s, hs, ?_⟩
-    exact Ideal.mul_mem_left _ _ <| mk'_mem_iff.mp hx
+end IsLocalization.AtPrime
+section IsDedekindDomain
 
-variable [IsDedekindDomain S] [NoZeroSMulDivisors R S] [NeZero p]
+open IsLocalization AtPrime
+
+variable [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] [IsDedekindDomain S]
+  [NoZeroSMulDivisors R S]
 
 /--
 The bijection between the primes over `p` in `S` and the primes over the maximal ideal of `Rₚ` in
 `Sₚ`.
 -/
-noncomputable def primesOverEquivPrimesOver : p.primesOver S ≃ (maximalIdeal Rₚ).primesOver Sₚ :=
-  Equiv.ofBijective (fun Q ↦ ⟨Q.1.map (algebraMap S Sₚ), isPrime_map_of_liesOver p Sₚ Q.1,
-    liesOver_map_of_liesOver p Rₚ Sₚ Q.1⟩)
-    ⟨fun P₁ P₂ h ↦ by
-      have : P₁.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
-        (ne_bot_of_mem_primesOver (NeZero.ne _) P₁.prop) (primesOver.isPrime p P₁)
-      have : P₂.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
-        (ne_bot_of_mem_primesOver (NeZero.ne _) P₂.prop) (primesOver.isPrime p P₂)
-      have : (Ideal.map (algebraMap S Sₚ) P₁).IsPrime := isPrime_map_of_liesOver p Sₚ P₁.1
-      have : (Ideal.map (algebraMap S Sₚ) P₂).IsPrime := isPrime_map_of_liesOver p Sₚ P₂.1
-      simpa [comap_map_eq_self_of_isMaximal _ IsPrime.ne_top', SetCoe.ext_iff]
-        using congr_arg (comap (algebraMap S Sₚ) ·) <| Subtype.mk_eq_mk.mp h,
-    fun Q ↦ by simpa [Subtype.ext_iff_val] using exists_primesOver_map_eq_of_primesOver p Rₚ Sₚ Q⟩
+noncomputable def primesOverEquivPrimesOver (hp : p ≠ ⊥) :
+    p.primesOver S ≃ (maximalIdeal Rₚ).primesOver Sₚ := {
+  toFun := fun P ↦  ⟨map (algebraMap S Sₚ) P.1, isPrime_map_of_liesOver p Sₚ P.1,
+    liesOver_map_of_liesOver p Rₚ Sₚ P.1⟩
+  invFun := fun Q ↦ ⟨comap (algebraMap S Sₚ) Q.1, IsPrime.under S Q.1,
+    liesOver_comap_of_liesOver p Rₚ Q.1⟩
+  left_inv P := by
+    have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
+        (ne_bot_of_mem_primesOver hp P.prop) (primesOver.isPrime p P)
+    exact SetCoe.ext <| IsLocalization.AtPrime.comap_map_of_isMaximal p Sₚ P.1
+  right_inv Q := SetCoe.ext <| map_comap (algebraMapSubmonoid S p.primeCompl) Sₚ Q }
 
 @[simp]
-theorem primesOverEquivPrimesOver_apply (P : p.primesOver S) :
-    primesOverEquivPrimesOver p Rₚ Sₚ P = Ideal.map (algebraMap S Sₚ) P := rfl
+theorem primesOverEquivPrimesOver_apply (hp : p ≠ ⊥) (P : p.primesOver S) :
+    primesOverEquivPrimesOver p Rₚ Sₚ hp P = Ideal.map (algebraMap S Sₚ) P := rfl
 
-end IsLocalization.AtPrime
+end IsDedekindDomain
