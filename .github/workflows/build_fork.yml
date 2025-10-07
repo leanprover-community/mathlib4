@@ -685,16 +685,6 @@ jobs:
           lint-bib-file: true
           ref: ${{ github.event.pull_request.head.sha }}
 
-  build_and_lint:
-    name: CI Success
-    if: github.event.pull_request.head.repo.fork
-    needs: [style_lint, post_steps]
-    runs-on: ubuntu-latest
-    steps:
-      - name: succeed
-        run: |
-          echo "Success: Required build and lint checks completed!"
-
   final:
     name: Post-CI job (fork)
     if: github.event.pull_request.head.repo.fork
