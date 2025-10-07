@@ -59,7 +59,7 @@ that differ from each other by a normalization factor.
 We use the following one:
 
 $$
-dω(x_0, \dots, x_n) = \sum_{i=0}^n (-1)^i ∂_{x_i}ω(x_0, \dots, \widehat{x_i}, \dots, x_n),
+dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
 $$
 
 where $$\widehat{x_i}$$ means that we omit this element of the tuple, see `extDeriv_apply`.
@@ -74,7 +74,7 @@ that differ from each other by a normalization factor.
 We use the following one:
 
 $$
-dω(x_0, \dots, x_n) = \sum_{i=0}^n (-1)^i ∂_{x_i}ω(x_0, \dots, \widehat{x_i}, \dots, x_n),
+dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
 $$
 
 where $$\widehat{x_i}$$ means that we omit this element of the tuple, see `extDerivWithin_apply`.
