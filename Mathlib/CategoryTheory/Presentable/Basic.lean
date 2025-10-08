@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
@@ -106,6 +107,13 @@ when the functor `Hom(X, _)` preserves colimits indexed by
 `κ`-filtered categories. -/
 abbrev IsCardinalPresentable : Prop := (coyoneda.obj (op X)).IsCardinalAccessible κ
 
+variable (C) in
+/-- The property of objects that are `κ`-presentable. -/
+def isCardinalPresentable : ObjectProperty C := fun X ↦ IsCardinalPresentable X κ
+
+lemma isCardinalPresentable_iff (X : C) :
+    isCardinalPresentable C κ X ↔ IsCardinalPresentable X κ := Iff.rfl
+
 lemma preservesColimitsOfShape_of_isCardinalPresentable [IsCardinalPresentable X κ]
     (J : Type w) [SmallCategory.{w} J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J (coyoneda.obj (op X)) :=
@@ -123,10 +131,22 @@ lemma isCardinalPresentable_of_le [IsCardinalPresentable X κ]
     IsCardinalPresentable X κ' :=
   (coyoneda.obj (op X)).isCardinalAccessible_of_le h
 
+variable (C) {κ} in
+lemma isCardinalPresentable_monotone {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    isCardinalPresentable C κ ≤ isCardinalPresentable C κ' := by
+  intro X hX
+  rw [isCardinalPresentable_iff] at hX ⊢
+  exact isCardinalPresentable_of_le _ h
+
 include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
   Functor.isCardinalAccessible_of_natIso (coyoneda.mapIso e.symm.op) κ
+
+instance : (isCardinalPresentable C κ).IsClosedUnderIsomorphisms where
+  of_iso e hX := by
+    rw [isCardinalPresentable_iff] at hX ⊢
+    exact isCardinalPresentable_of_iso e _
 
 lemma isCardinalPresentable_of_equivalence
     {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
@@ -163,6 +183,14 @@ lemma isCardinalPresentable_iff_of_isEquivalence
       (show F.inv.obj (F.obj X) ≅ X from F.asEquivalence.unitIso.symm.app X :) κ
   · intro
     infer_instance
+
+variable {X} in
+lemma IsCardinalPresentable.exists_hom_of_isColimit [IsCardinalPresentable X κ]
+    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f : X ⟶ c.pt) :
+    ∃ (j : J) (f' : X ⟶ F.obj j), f' ≫ c.ι.app j = f := by
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  exact Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (op X)) hc) f
 
 end
 
