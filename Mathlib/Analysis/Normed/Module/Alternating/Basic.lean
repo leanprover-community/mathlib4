@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, Heather Macbeth, Patrick Massot
 -/
 import Mathlib.Topology.Algebra.Module.Alternating.Topology
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 
 /-!
 # Operator norm on the space of continuous alternating maps
