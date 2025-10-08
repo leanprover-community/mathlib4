@@ -564,3 +564,5 @@ theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
   exact ⟨γ, t, h⟩
 
 end PathConnectedSpace
+
+instance [CompactSpace X] : CompactSpace <| ZerothHomotopy X := Quotient.compactSpace
