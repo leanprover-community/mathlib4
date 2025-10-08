@@ -5,7 +5,7 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.RingTheory.Coprime.Basic
 
 /-!
