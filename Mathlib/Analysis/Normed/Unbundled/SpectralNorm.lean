@@ -910,8 +910,8 @@ instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :
 
 omit [Algebra.IsAlgebraic K L] in
 lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra K E] [Algebra L E]
-    [IsScalarTower K L E] [IsSplittingField L E (mapAlg K L (minpoly K x))]
-    [Algebra.IsAlgebraic K E] {a : E} (ha : a ∈ ((mapAlg K E) (minpoly K x)).roots) :
+    [IsScalarTower K L E] [Algebra.IsAlgebraic K E] {a : E}
+    (ha : a ∈ ((mapAlg K E) (minpoly K x)).roots) :
     (spectralMulAlgNorm K E) a = (spectralMulAlgNorm K E) ((algebraMap L E) x) := by
   simp only [spectralMulAlgNorm_def, spectralNorm]
   rw [← minpoly.eq_of_root (Algebra.IsAlgebraic.isAlgebraic ((algebraMap L E) x))]
