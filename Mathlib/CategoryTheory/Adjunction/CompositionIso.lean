@@ -14,7 +14,7 @@ and show that the left adjoint functors satisfy properties similar to the left/r
 unitality and the associativity of pseudofunctors if the right adjoint functors
 satisfy the corresponding properties.
 
-This shall used be to study the behaviour with respect to composition of
+This shall be used to study the behaviour with respect to composition of
 the pullback functors on presheaves of modules, by reducing these definitions and
 properties to the (obvious) case of the pushforward functors. Similar results shall
 be obtainted for sheaves of modules (TODO).
