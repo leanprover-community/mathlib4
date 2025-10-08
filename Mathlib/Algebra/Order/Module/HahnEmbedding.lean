@@ -18,7 +18,7 @@ This file proves a variant of the Hahn embedding theorem:
 
 For a linearly ordered module `M` over an Archimedean division ring `K`,
 there exists a strictly monotone linear map to lexicographically ordered
-`HahnSeries (FiniteArchimedeanClass M) R` with an archimedean `K`-module `R`,
+`HahnSeries (FiniteArchimedeanClass M) R` with an Archimedean `K`-module `R`,
 as long as there are embeddings from a certain family of Archimedean submodules to `R`.
 
 The family of Archimedean submodules `HahnEmbedding.ArchimedeanStrata K M` is indexed by
@@ -290,7 +290,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     rw [← Submodule.coe_eq_zero, ← Submodule.mem_bot K]
     convert ← (f ⊤).prop
     simp
-  -- The dictating term for `HahnSeries` < is at the lowest archimedean class of `f.support`
+  -- The dictating term for `HahnSeries` < is at the lowest Archimedean class of `f.support`
   refine (HahnSeries.lt_iff _ _).mpr ⟨⟨f.support.min' hsupport, htop⟩, ?_, ?_⟩
   · intro j hj
     rw [seed.coeff_baseEmbedding hf.symm]
@@ -299,7 +299,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     contrapose! hj
     rw [← Subtype.coe_le_coe, Subtype.coe_mk]
     exact Finset.min'_le f.support _ hj
-  -- Show that `f`'s value at dominating archimedean class is positive
+  -- Show that `f`'s value at dominating Archimedean class is positive
   rw [seed.coeff_baseEmbedding hf.symm]
   suffices (seed.coeff (f.support.min' hsupport)) 0 <
       (seed.coeff (f.support.min' hsupport)) (f (f.support.min' hsupport)) by

@@ -9,17 +9,17 @@ import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
 /-!
 
-# Definition of (Non-archimedean) local fields
+# Definition of (non-Archimedean) local fields
 
 Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),
-we say that it is a non-archimedean local field if the topology comes from the given valuation,
+we say that it is a non-Archimedean local field if the topology comes from the given valuation,
 and it is locally compact and non-discrete.
 
 -/
 
 /--
 Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),
-we say that it is a non-archimedean local field if the topology comes from the given valuation,
+we say that it is a non-Archimedean local field if the topology comes from the given valuation,
 and it is locally compact and non-discrete.
 
 This implies the following typeclasses via `inferInstance`
