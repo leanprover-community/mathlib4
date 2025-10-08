@@ -52,8 +52,8 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 section Rotation
 
 /-- Characteristic function of a centered Gaussian measure.
-The hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` can be simplified to `μ[id] = 0`,
-but at this point we don't know yet that `μ` has a first moment. -/
+For a Gaussian measure, the hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` is equivalent to the simpler
+`μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it. -/
 lemma charFunDual_eq_of_forall_strongDual_eq_zero (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0)
     (L : StrongDual ℝ E) :
     charFunDual μ L = exp (- Var[L; μ] / 2) := by
