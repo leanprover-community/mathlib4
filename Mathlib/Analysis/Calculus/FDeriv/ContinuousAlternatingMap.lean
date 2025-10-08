@@ -116,4 +116,3 @@ theorem DifferentiableAt.continuousAlternatingMapCompContinuousLinearMap
   classical
   exact hf.hasFDerivAt.continuousAlternatingMapCompContinuousLinearMap hg.hasFDerivAt
     |>.differentiableAt
-
