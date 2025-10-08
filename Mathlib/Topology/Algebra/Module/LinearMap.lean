@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.Algebra.Module.LinearMap.DivisionRing
 import Mathlib.LinearAlgebra.Projection
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Continuous linear maps
@@ -705,6 +706,11 @@ theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
   ext
   simp
 
+theorem range_smulRight_apply {R : Type*} [DivisionSemiring R] [Module R M₁] [Module R M₂]
+    [TopologicalSpace R] [ContinuousSMul R M₂] {f : M₁ →L[R] R} (hf : f ≠ 0) (x : M₂) :
+    range (f.smulRight x) = Submodule.span R {x} :=
+  LinearMap.range_smulRight_apply (by simpa [coe_inj, ← coe_zero] using hf) x
+
 section ToSpanSingleton
 
 variable (R₁)
@@ -1244,7 +1250,7 @@ variable (𝕜 E) in
 def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing := topDualPairing
+@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing := topDualPairing
 
 @[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
 
@@ -1253,7 +1259,7 @@ theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
     (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
 
-@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
+@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
 
 @[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
 
