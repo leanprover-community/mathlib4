@@ -45,32 +45,33 @@ theorem invOf_sub_invOf [Ring R] (a b : R) [Invertible a] [Invertible b] :
     ⅟a - ⅟b = ⅟a * (b - a) * ⅟b := by
   rw [mul_sub, invOf_mul_self, sub_mul, one_mul, mul_assoc, mul_invOf_self, mul_one]
 
+lemma neg_add_eq_mul_invOf_mul_same_iff [Ring R] {a b : R} [Invertible a] [Invertible b] :
+    -(b + a) = a * ⅟b * a ↔ -1 = ⅟a * b + ⅟b * a :=
+  calc -(b + a) = a * ⅟b * a
+      ↔ -a = b + a * ⅟b * a := ⟨by grind, fun h ↦ by simp [h]⟩
+    _ ↔ -a = a * ⅟a * b + a * ⅟b * a := by rw [mul_invOf_self, one_mul]
+    _ ↔ -a = a * (⅟a * b + ⅟b * a) := by simp only [mul_add, mul_assoc]
+    _ ↔ -1 = ⅟a * b + ⅟b * a := ⟨fun h ↦ by simpa using congr_arg (⅟a * ·) h, fun h ↦ by simp [← h]⟩
+
+lemma neg_one_eq_of_invOf_add_eq_add_invOf [Ring R] {a b : R} [Invertible a]
+    [Invertible b] [Invertible (a + b)] (h : ⅟(a + b) = ⅟a + ⅟b) : -1 = ⅟a * b + ⅟b * a := by
+  have : 1 = 2 + ⅟a * b + ⅟b * a := by
+    rw [← invOf_mul_self (a + b), h, add_mul, mul_add, mul_add, invOf_mul_self a,
+        invOf_mul_self b, ← add_assoc, add_assoc 1 _, add_comm 1 _, add_assoc 2 _,
+        add_comm 2 _, add_assoc, one_add_one_eq_two]
+  apply (add_left_inj 2).mp
+  conv => lhs; rw [← one_add_one_eq_two, ← add_assoc, neg_add_cancel, zero_add]
+  rw [add_comm, ← add_assoc]
+  exact this
+
 theorem eq_of_invOf_add_eq_invOf_add_invOf [Ring R] {a b : R} [Invertible a] [Invertible b]
     [Invertible (a + b)] (h : ⅟(a + b) = ⅟a + ⅟b) :
     a * ⅟b * a = b * ⅟a * b := by
-  have h_neg_identity : -1 = ⅟a * b + ⅟b * a := by
-    have : 1 = 2 + ⅟a * b + ⅟b * a := by
-      rw [← invOf_mul_self (a + b), h, add_mul, mul_add, mul_add, invOf_mul_self a,
-          invOf_mul_self b, ← add_assoc, add_assoc 1 _, add_comm 1 _, add_assoc 2 _,
-          add_comm 2 _, add_assoc, one_add_one_eq_two]
-    apply (add_left_inj 2).mp
-    conv => lhs; rw [← one_add_one_eq_two, ← add_assoc, neg_add_cancel, zero_add]
-    rw [add_comm, ← add_assoc]
-    exact this
-  have helper {x y : R} [Invertible x] [Invertible y] (h' : -1 = ⅟x * y + ⅟y * x)
-      : -(y + x) = x * ⅟y * x := by
-    apply add_right_cancel
-    rw [(by simp : -(y + x) + y = -x)]
-    conv => rhs; rhs; rw [(by simp : y = x * ⅟x * y)]
-    rw [mul_assoc, mul_assoc, ← mul_add x]
-    rw [(by simp : -x = x * (-1))]
-    apply (mul_right_inj_of_invertible x).mpr
-    rw [add_comm]
-    exact h'
-  have h_a_binv_a : -(b + a) = a * ⅟b * a := helper h_neg_identity
+  have h' := neg_one_eq_of_invOf_add_eq_add_invOf h
+  have h_a_binv_a : -(b + a) = a * ⅟b * a := neg_add_eq_mul_invOf_mul_same_iff.mpr h'
   have h_b_ainv_b : -(a + b) = b * ⅟a * b := by
-    rw [add_comm] at h_neg_identity
-    exact helper h_neg_identity
+    rw [add_comm] at h'
+    exact neg_add_eq_mul_invOf_mul_same_iff.mpr h'
   rw [← h_a_binv_a, ← h_b_ainv_b, add_comm]
 
 /-- A version of `inv_add_inv'` for `Ring.inverse`. -/
