@@ -1058,6 +1058,10 @@ theorem mul_finsum' {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r 
     (h : (support f).Finite) : (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum h
 
+/--
+For finite sets, multiplication commutes with `finsum_mem`. See `mul_finsum_mem'` for a statement
+assuming finiteness of support.
+-/
 theorem mul_finsum_mem' {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (f : α → R) (r : R)
     (hs : s.Finite) : (r * ∑ᶠ a ∈ s, f a) = ∑ᶠ a ∈ s, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum_mem f hs
@@ -1070,6 +1074,10 @@ theorem finsum_mul' {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r 
     (h : (support f).Finite) : (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
 
+/--
+For finite sets, multiplication commutes with `finsum_mem`. See `finsum_mem_mul'` for a statement
+assuming finiteness of support.
+-/
 theorem finsum_mem_mul' {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (f : α → R) (r : R)
     (hs : s.Finite) : (∑ᶠ a ∈ s, f a) * r = ∑ᶠ a ∈ s, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum_mem f hs
@@ -1088,6 +1096,19 @@ theorem mul_finsum {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] 
   · exact mul_finsum' f r h
   simp [finsum_def, h, (by aesop : (r * f ·).support = f.support)]
 
+/--
+If `R` has no zero divisors, then multiplication commutes with `finsum_mem`. See `mul_finsum_mem'`
+for a statement assuming finiteness of support.
+-/
+theorem mul_finsum_mem {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] {s : Set α}
+    (f : α → R) (r : R) :
+    (r * ∑ᶠ a ∈ s, f a) = ∑ᶠ a ∈ s, r * f a := by
+  rw [mul_finsum]
+  congr
+  ext a
+  by_cases h : a ∈ s
+  <;> simp_all
+
 open Classical in
 /--
 If `R` has no zero divisors, then multiplication commutes with finsums. See `finsum_mul'` for a
@@ -1101,6 +1122,19 @@ theorem finsum_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] 
   by_cases h : f.support.Finite
   · exact finsum_mul' f r h
   simp [finsum_def, h, (by aesop : (f · * r).support = f.support)]
+
+/--
+If `R` has no zero divisors, then multiplication commutes with `finsum_mem`. See `finsum_mem_mul'`
+for a statement assuming finiteness of support.
+-/
+theorem finsum_mem_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] {s : Set α}
+    (f : α → R) (r : R) :
+    (∑ᶠ a ∈ s, f a) * r = ∑ᶠ a ∈ s, f a * r := by
+  rw [finsum_mul]
+  congr
+  ext a
+  by_cases h : a ∈ s
+  <;> simp_all
 
 @[to_additive (attr := simp)]
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).Finite) (a : α) :
