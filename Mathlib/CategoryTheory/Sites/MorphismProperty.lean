@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Coverage
+import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # The site induced by a morphism property
@@ -51,6 +52,12 @@ instance [P.IsStableUnderComposition] : P.precoverage.IsStableUnderComposition w
   comp_mem_coverings {ι} S X f hf σ Y g hg Z p := by
     intro ⟨i⟩
     exact P.comp_mem _ _ (hg _ ⟨i.2⟩) (hf ⟨i.1⟩)
+
+instance : Precoverage.Small P.precoverage where
+  zeroHypercoverSmall E := by
+    constructor
+    use PEmpty, PEmpty.elim
+    simp
 
 lemma precoverage_monotone (hPQ : P ≤ Q) : precoverage P ≤ precoverage Q :=
   fun _ _ hR _ _ hg ↦ hPQ _ (hR hg)

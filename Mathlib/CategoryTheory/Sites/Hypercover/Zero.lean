@@ -461,6 +461,14 @@ def restrictIndexOfSmall (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'}
   __ := E.toPreZeroHypercover.restrictIndex (Small.restrictFun E)
   mem₀ := Small.mem₀ E
 
+instance (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] {T : C} (f : T ⟶ S)
+    [IsStableUnderBaseChange.{w} J] [IsStableUnderBaseChange.{w'} J]
+    [∀ (i : E.I₀), HasPullback f (E.f i)] :
+    ZeroHypercover.Small.{w'} (E.pullback₁ f) := by
+  use Small.Index E, Small.restrictFun E
+  have _ (i) : HasPullback f (E.restrictIndexOfSmall.f i) := by dsimp; infer_instance
+  exact ((restrictIndexOfSmall.{w'} E).pullback₁ f).mem₀
+
 end ZeroHypercover
 
 lemma mem_iff_exists_zeroHypercover {X : C} {R : Presieve X} :
@@ -469,9 +477,9 @@ lemma mem_iff_exists_zeroHypercover {X : C} {R : Presieve X} :
   obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   use ⟨⟨ι, Y, f⟩, hR⟩
 
-/-- A precoverage is `w`-small, if every `0`-hypercover is `w`-small. -/
+/-- A precoverage is `w'`-`w`-small, if every `w`-`0`-hypercover is `w'`-small. -/
 class Small (J : Precoverage C) : Prop where
-  zeroHypercoverSmall : ∀ {S : C} (E : ZeroHypercover.{v} J S), ZeroHypercover.Small.{w} E
+  zeroHypercoverSmall : ∀ {S : C} (E : ZeroHypercover.{w} J S), ZeroHypercover.Small.{w'} E
 
 attribute [instance] Small.zeroHypercoverSmall
 
