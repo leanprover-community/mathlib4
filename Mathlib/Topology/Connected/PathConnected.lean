@@ -565,4 +565,12 @@ theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
 
 end PathConnectedSpace
 
+/-- The preimage of a singleton in `ZerothHomotopy` is the path component of an element in the
+equivalence class. -/
+theorem ZerothHomotopy.preimage_singleton_eq_pathComponent (x : X) :
+    Quotient.mk' (s := pathSetoid X) ⁻¹' {⟦x⟧} = pathComponent x := by
+  ext y
+  rw [mem_preimage, mem_singleton_iff, eq_comm, mem_pathComponent_iff]
+  exact Quotient.eq
+
 instance [CompactSpace X] : CompactSpace <| ZerothHomotopy X := Quotient.compactSpace
