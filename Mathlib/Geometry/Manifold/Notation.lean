@@ -233,10 +233,11 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"   fromTotalSpace   then return m
-  if let some m ← tryStrategy m!"NormedSpace"  fromNormedSpace  then return m
-  if let some m ← tryStrategy m!"ChartedSpace" fromChartedSpace then return m
-  if let some m ← tryStrategy m!"NormedField"  fromNormedField  then return m
+  if let some m ← tryStrategy m!"TotalSpace"    fromTotalSpace    then return m
+  if let some m ← tryStrategy m!"TangentBundle" fromTangentBundle then return m
+  if let some m ← tryStrategy m!"NormedSpace"   fromNormedSpace   then return m
+  if let some m ← tryStrategy m!"ChartedSpace"  fromChartedSpace  then return m
+  if let some m ← tryStrategy m!"NormedField"   fromNormedField   then return m
   throwError "Could not find models with corners for {e}"
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -250,6 +251,15 @@ where
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
       throwError "Having a TotalSpace as source is not yet supported"
     | _ => throwError "{e} is not a `Bundle.TotalSpace`."
+  /-- Attempt to find a model on a `TangentBundle` -/
+  fromTangentBundle : TermElabM Expr := do
+    match_expr e with
+    | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
+      trace[Elab.DiffGeo.MDiff] "{e} is a TangentBundle over model {I} on {M}"
+      let srcIT : Term ← Term.exprToSyntax I
+      let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
+      Term.elabTerm resTerm none
+    | _ => throwError "{e} is not a `TangentBundle`"
   /-- Attempt to use the provided `baseInfo` to find a model. -/
   fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
     if let some (src, srcI) := baseInfo then
