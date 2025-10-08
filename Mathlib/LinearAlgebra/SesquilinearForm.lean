@@ -215,6 +215,10 @@ end IsSymm
 @[simp]
 theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := ⟨fun _ _ => map_zero _⟩
 
+protected lemma IsSymm.add {C : M →ₛₗ[I] M →ₗ[R] R} (hB : B.IsSymm) (hC : C.IsSymm) :
+    (B + C).IsSymm where
+  eq x y := by simp [hB.eq, hC.eq]
+
 theorem BilinMap.isSymm_iff_eq_flip {N : Type*} [AddCommMonoid N] [Module R N]
     {B : LinearMap.BilinMap R M N} : (∀ x y, B x y = B y x) ↔ B = B.flip := by
   simp [LinearMap.ext_iff₂]
@@ -223,6 +227,49 @@ theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.fl
   isSymm_def.trans BilinMap.isSymm_iff_eq_flip
 
 end Symmetric
+
+/-! ### Positive semidefinite sesquilinear forms -/
+
+section PositiveSemidefinite
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I₁ I₂ : R →+* R}
+
+/-- A sesquilinear form `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
+structure IsNonneg [LE R] (B : M →ₛₗ[I₁] M →ₛₗ[I₂] R) where
+  nonneg : ∀ x, 0 ≤ B x x
+
+lemma isNonneg_def [LE R] {B : M →ₛₗ[I₁] M →ₛₗ[I₂] R} : B.IsNonneg ↔ ∀ x, 0 ≤ B x x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+@[simp]
+lemma isNonneg_zero [Preorder R] : IsNonneg (0 : M →ₛₗ[I₁] M →ₛₗ[I₂] R) := ⟨fun _ ↦ le_rfl⟩
+
+protected lemma IsNonneg.add [Preorder R] [AddLeftMono R] {B C : M →ₛₗ[I₁] M →ₛₗ[I₂] R}
+    (hB : B.IsNonneg) (hC : C.IsNonneg) : (B + C).IsNonneg where
+  nonneg x := add_nonneg (hB.nonneg x) (hC.nonneg x)
+
+protected lemma IsNonneg.smul [Preorder R] [PosMulMono R] {B : M →ₛₗ[I₁] M →ₛₗ[I₂] R} {c : R}
+    (hB : B.IsNonneg) (hc : 0 ≤ c) : (c • B).IsNonneg where
+  nonneg x := mul_nonneg hc (hB.nonneg x)
+
+/-- A sesquilinear form `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
+structure IsPosSemidef [LE R] (B : M →ₛₗ[I₁] M →ₗ[R] R) extends
+  isSymm : B.IsSymm,
+  isNonneg : B.IsNonneg
+
+lemma isPosSemidef_def [LE R] {B : M →ₛₗ[I₁] M →ₗ[R] R} : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsNonneg :=
+  ⟨fun h ↦ ⟨h.isSymm, h.isNonneg⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+
+@[simp]
+lemma isPosSemidef_zero [Preorder R] : IsPosSemidef (0 : M →ₛₗ[I₁] M →ₗ[R] R) where
+  isSymm := isSymm_zero
+  isNonneg := isNonneg_zero
+
+protected lemma IsPosSemidef.add [Preorder R] [AddLeftMono R] {B C : M →ₛₗ[I₁] M →ₗ[R] R}
+    (hB : B.IsPosSemidef) (hC : C.IsPosSemidef) : (B + C).IsPosSemidef :=
+  isPosSemidef_def.2 ⟨hB.isSymm.add hC.isSymm, hB.isNonneg.add hC.isNonneg⟩
+
+end PositiveSemidefinite
 
 /-! ### Alternating bilinear maps -/
 
