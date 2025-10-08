@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 # The category of sheaves of modules over a scheme
 
 In this file, we define the abelian category of sheaves of modules
-`X.Modules` over a scheme `X`.
+`X.Modules` over a scheme `X`, and study its basic functoriality.
 
 -/
 
@@ -33,13 +33,9 @@ instance {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
       (Opens.grothendieckTopology _) :=
   Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance {X : Type u} [TopologicalSpace X] :
-    (Opens.grothendieckTopology X).PreservesSheafification (forget AddCommGrp.{u}) := by
-  infer_instance
-
 end TopologicalSpace.Opens
 
+-- to be moved
 namespace AlgebraicGeometry.LocallyRingedSpace
 
 variable {X Y : LocallyRingedSpace} (f : X.Hom Y)
@@ -59,12 +55,10 @@ variable (X) in
 /-- The category of sheaves of modules over a scheme. -/
 abbrev Modules := SheafOfModules.{u} X.ringCatSheaf
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-noncomputable instance : HasSheafify (Opens.grothendieckTopology X) AddCommGrp.{u} :=
+example : HasSheafify (Opens.grothendieckTopology X) AddCommGrp.{u} :=
   inferInstance
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-noncomputable instance : Abelian X.Modules := inferInstance
+example : Abelian X.Modules := inferInstance
 
 def Hom.toRingCatSheafHom (f : X ⟶ Y) :
     Y.ringCatSheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
