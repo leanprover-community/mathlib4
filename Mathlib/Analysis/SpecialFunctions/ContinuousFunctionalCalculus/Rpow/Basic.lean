@@ -11,6 +11,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -327,13 +328,15 @@ lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
 end pi
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
-* `0 ≤ a`
-* `a = sqrt a * sqrt a`
-* `a = b * b` for some nonnegative `b`
-* `a = b * b` for some self-adjoint `b`
-* `a = star b * b` for some `b`
-* `a = b * star b` for some `b`
-* `a` is self-adjoint and has nonnegative spectrum -/
+1. `0 ≤ a`
+2. `a = sqrt a * sqrt a`
+3. `a = b * b` for some nonnegative `b`
+4. `a = b * b` for some self-adjoint `b`
+5. `a = star b * b` for some `b`
+6. `a = b * star b` for some `b`
+7. `a = a⁺`
+8. `a` is self-adjoint and `a⁻ = 0`
+9. `a` is self-adjoint and has nonnegative spectrum -/
 theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
     [ 0 ≤ a,
       a = sqrt a * sqrt a,
@@ -341,8 +344,13 @@ theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
       ∃ b : A, IsSelfAdjoint b ∧ a = b * b,
       ∃ b : A, a = star b * b,
       ∃ b : A, a = b * star b,
+      a = a⁺,
+      IsSelfAdjoint a ∧ a⁻ = 0,
       IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ].TFAE := by
-  tfae_have 1 ↔ 7 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
+  tfae_have 1 ↔ 9 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
+  tfae_have 1 ↔ 7 := eq_comm.eq ▸ (CFC.posPart_eq_self a).symm
+  tfae_have 1 ↔ 8 := ⟨fun h => ⟨h.isSelfAdjoint, negPart_eq_zero_iff a |>.mpr h⟩,
+    fun h => negPart_eq_zero_iff a |>.mp h.2⟩
   tfae_have 1 → 2 := fun h => sqrt_mul_sqrt_self a |>.symm
   tfae_have 2 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, h⟩
   tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
@@ -361,6 +369,10 @@ theorem _root_.CStarAlgebra.nonneg_iff_eq_star_mul_self {a : A} :
     0 ≤ a ↔ ∃ b, a = star b * b := CStarAlgebra.nonneg_TFAE.out 0 4
 theorem _root_.CStarAlgebra.nonneg_iff_eq_mul_star_self {a : A} :
     0 ≤ a ↔ ∃ b, a = b * star b := CStarAlgebra.nonneg_TFAE.out 0 5
+theorem _root_.CStarAlgebra.nonneg_iff_eq_posPart {a : A} :
+    0 ≤ a ↔ a = a⁺ := CStarAlgebra.nonneg_TFAE.out 0 6
+theorem _root_.CStarAlgebra.nonneg_iff_isSelfAdjoint_and_negPart_eq_zero {a : A} :
+    0 ≤ a ↔ IsSelfAdjoint a ∧ a⁻ = 0 := CStarAlgebra.nonneg_TFAE.out 0 7
 
 end sqrt
 
@@ -697,8 +709,10 @@ lemma _root_.IsStrictlyPositive.rpow {a : A} {y : ℝ} (ha : IsStrictlyPositive 
 5. `a = b * b` for some self-adjoint and invertible `b`,
 6. `a = star b * b` for some invertible `b`,
 7. `a = b * star b` for some invertible `b`,
-8. `0 ≤ a` and `a` is invertible,
-9. `a` is self-adjoint and has positive spectrum. -/
+8. `a⁺` is invertible and `a = a⁺`,
+9. `a` is invertible and self-adjoint, and `a⁻ = 0`,
+10. `0 ≤ a` and `a` is invertible,
+11. `a` is self-adjoint and has positive spectrum. -/
 theorem _root_.CStarAlgebra.isStrictlyPositive_TFAE {a : A} :
     [IsStrictlyPositive a,
      IsStrictlyPositive (sqrt a) ∧ a = sqrt a * sqrt a,
@@ -707,10 +721,12 @@ theorem _root_.CStarAlgebra.isStrictlyPositive_TFAE {a : A} :
      ∃ b, IsUnit b ∧ IsSelfAdjoint b ∧ a = b * b,
      ∃ b, IsUnit b ∧ a = star b * b,
      ∃ b, IsUnit b ∧ a = b * star b,
+     IsUnit a⁺ ∧ a = a⁺,
+     IsUnit a ∧ IsSelfAdjoint a ∧ a⁻ = 0,
      0 ≤ a ∧ IsUnit a,
      IsSelfAdjoint a ∧ ∀ x ∈ spectrum ℝ a, 0 < x].TFAE := by
-  tfae_have 1 ↔ 8 := IsStrictlyPositive.iff_of_unital
-  tfae_have 1 ↔ 9 := ⟨fun h => ⟨h.isSelfAdjoint,
+  tfae_have 1 ↔ 10 := IsStrictlyPositive.iff_of_unital
+  tfae_have 1 ↔ 11 := ⟨fun h => ⟨h.isSelfAdjoint,
       StarOrderedRing.isStrictlyPositive_iff_spectrum_pos a |>.mp h⟩,
     fun h => (StarOrderedRing.isStrictlyPositive_iff_spectrum_pos a).mpr h.2⟩
   tfae_have 1 → 2 := fun h => ⟨h.sqrt, sqrt_mul_sqrt_self a |>.symm⟩
@@ -719,7 +735,15 @@ theorem _root_.CStarAlgebra.isStrictlyPositive_TFAE {a : A} :
   tfae_have 4 → 5 := fun ⟨b, hb, hab⟩ => ⟨b, hb.isUnit, hb.isSelfAdjoint, hab⟩
   tfae_have 5 → 6 := fun ⟨b, hb, hbsa, hab⟩ => ⟨b, hb, hbsa.symm ▸ hab⟩
   tfae_have 6 → 7 := fun ⟨b, hb, hab⟩ => ⟨star b, hb.star, star_star b |>.symm ▸ hab⟩
-  tfae_have 7 → 8 := fun ⟨b, hb, hab⟩ => ⟨hab ▸ mul_star_self_nonneg _, hab ▸ hb.mul hb.star⟩
+  tfae_have 7 → 8 := fun ⟨b, hb, hab⟩ => by
+    rw [hab, ← CStarAlgebra.nonneg_iff_eq_posPart.mp (mul_star_self_nonneg b)]
+    exact ⟨hb.mul hb.star, rfl⟩
+  tfae_have 7 → 10 := fun ⟨b, hb, hab⟩ => ⟨hab ▸ mul_star_self_nonneg _, hab ▸ hb.mul hb.star⟩
+  tfae_have 8 → 9 := fun h => by
+    rw [h.2]
+    simp [h.1, posPart_nonneg a |>.isSelfAdjoint, negPart_eq_zero_iff, posPart_nonneg]
+  tfae_have 9 → 1 := fun h => h.1.isStrictlyPositive <|
+    CStarAlgebra.nonneg_iff_isSelfAdjoint_and_negPart_eq_zero.mpr h.2
   tfae_finish
 
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isStrictlyPositive_sqrt_and_eq_sqrt_mul_sqrt
@@ -740,9 +764,15 @@ theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_mul_star_self
     {a : A} : IsStrictlyPositive a ↔ ∃ b, IsUnit b ∧ a = b * star b :=
   CStarAlgebra.isStrictlyPositive_TFAE.out 0 6
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isUnit_posPart_and_eq_posPart
+    {a : A} : IsStrictlyPositive a ↔ IsUnit a⁺ ∧ a = a⁺ :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 7
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isUnit_and_isSelfAdjoint_and_negPart_eq_zero
+    {a : A} : IsStrictlyPositive a ↔ IsUnit a ∧ IsSelfAdjoint a ∧ a⁻ = 0 :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 8
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isSelfAdjoint_and_spectrum_pos
     {a : A} : IsStrictlyPositive a ↔ IsSelfAdjoint a ∧ ∀ x ∈ spectrum ℝ a, 0 < x :=
-  CStarAlgebra.isStrictlyPositive_TFAE.out 0 8
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 10
 
 end unital_vs_nonunital
 
