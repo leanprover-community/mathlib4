@@ -31,7 +31,6 @@ This shortens the overall argument, as the definition of submersions has the sam
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
 
 ## TODO
-* Show `IsImmersion(At)` is stable under replacing `F` by an isomorphic copy.
 * The set where `LiftSourceTargetPropertyAt` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
@@ -214,16 +213,28 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
-lemma congr_of_eventuallyEq {x : M} (hf : IsImmersionAt F I I' n f x) (hfg : f =ᶠ[nhds x] g) :
+lemma congr_of_eventuallyEq (hf : IsImmersionAt F I I' n f x) (hfg : f =ᶠ[nhds x] g) :
     IsImmersionAt F I I' n g x :=
   LiftSourceTargetPropertyAt.congr_of_eventuallyEq
     isLocalSourceTargetProperty_immersionAtProp hf.property hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
 then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
-lemma congr_iff {x : M} (hfg : f =ᶠ[nhds x] g) :
+lemma congr_iff (hfg : f =ᶠ[nhds x] g) :
     IsImmersionAt F I I' n f x ↔ IsImmersionAt F I I' n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
+
+lemma trans_F (h : IsImmersionAt F I I' n f x) (e : F ≃L[𝕜] F') : IsImmersionAt F' I I' n f x := by
+  refine ⟨h.domChart, h.codChart, h.mem_domChart_source, h.mem_codChart_source,
+    h.domChart_mem_maximalAtlas, h.codChart_mem_maximalAtlas, h.map_source_subset_source, ?_⟩
+  use ((ContinuousLinearEquiv.refl 𝕜 E).prodCongr e.symm).trans h.equiv
+  apply Set.EqOn.trans h.writtenInCharts
+  intro x hx
+  simp
+
+/-- Being an immersion at `x` is stable under replacing `F` by an isomorphism copy. -/
+lemma congr_F (e : F ≃L[𝕜] F') : IsImmersionAt F I I' n f x ↔ IsImmersionAt F' I I' n f x :=
+  ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
 end IsImmersionAt
 
@@ -249,6 +260,10 @@ lemma isImmersionAt (h : IsImmersion F I I' n f) (x : M) : IsImmersionAt F I I' 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
   heq ▸ h
+
+/-- Being an immersion is stable under replacing `F` by an isomorphism copy. -/
+lemma congr_F {e : F ≃L[𝕜] F'} : IsImmersion F I I' n f ↔ IsImmersion F' I I' n f :=
+  ⟨fun h x ↦ (h x).trans_F (e := e), fun h x ↦ (h x).trans_F (e := e.symm)⟩
 
 end IsImmersion
 
