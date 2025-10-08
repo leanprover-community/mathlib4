@@ -620,7 +620,7 @@ lemma setIntegral_mono_on' {X : Type*} {mX : MeasurableSpace X}
     exact h x
 
 lemma tendsto_of_limsup_measure_closed_le' {Ω ι : Type*} [MeasurableSpace Ω]
-    [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [OpensMeasurableSpace Ω]
+    [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
     {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
     {L : Filter ι} [L.IsCountablyGenerated]
     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ (μs i : Measure Ω) F) L ≤ (μ : Measure Ω) F) :
@@ -628,13 +628,63 @@ lemma tendsto_of_limsup_measure_closed_le' {Ω ι : Type*} [MeasurableSpace Ω]
   refine tendsto_of_forall_isOpen_le_liminf' ?_
   rwa [← limsup_measure_closed_le_iff_liminf_measure_open_ge]
 
--- lemma tendsto_of_limsup_measure_closed_le {Ω ι : Type*} [MeasurableSpace Ω]
---     [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [OpensMeasurableSpace Ω]
---     {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
---     {L : Filter ι} [L.IsCountablyGenerated]
---     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) L ≤ μ F) :
---     Tendsto μs L (𝓝 μ) := by
---   sorry
+lemma tendsto_of_limsup_measure_closed_le_nat {Ω : Type*} [MeasurableSpace Ω]
+    [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ℕ → ProbabilityMeasure Ω}
+    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) atTop ≤ μ F) :
+    Tendsto μs atTop (𝓝 μ) := by
+  refine tendsto_of_limsup_measure_closed_le' fun F hF_closed ↦ ?_
+  specialize h F hF_closed
+  have aux : ENNReal.ofNNReal (limsup (fun i ↦ μs i F) atTop) =
+          limsup (ENNReal.ofNNReal ∘ fun i ↦ μs i F) atTop := by
+    refine Monotone.map_limsup_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · F) ?_ ?_ ?_
+    · exact ENNReal.continuous_coe.continuousAt
+    · exact ⟨1, by simp⟩
+    · exact ⟨0, by simp⟩
+  have obs := ENNReal.coe_mono h
+  simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
+  convert obs
+  simp
+
+lemma tendsto_of_limsup_measure_closed_le {Ω ι : Type*} [MeasurableSpace Ω]
+    [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    {L : Filter ι} [L.IsCountablyGenerated]
+    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) L ≤ μ F) :
+    Tendsto μs L (𝓝 μ) := by
+  apply Filter.tendsto_of_seq_tendsto fun u hu ↦ ?_
+  apply tendsto_of_limsup_measure_closed_le_nat fun G hG ↦ ?_
+  apply le_trans ?_ (h G hG)
+  change atTop.limsup ((fun i ↦ μs i G) ∘ u) ≤ _
+  rw [limsup_comp]
+  exact limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩
+
+lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*}
+    {mΩ : MeasurableSpace Ω} [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
+    {μ : ProbabilityMeasure Ω}
+    (s : Set Ω) (hs : IsClosed s)
+    {δs : ℕ → ℝ} (δs_pos : ∀ (n : ℕ), 0 < δs n) (δs_lim : Tendsto δs atTop (𝓝 0)) :
+    Tendsto (fun n : ℕ ↦
+      ∫ ω, (thickenedIndicator (δs_pos n) s ω : ℝ) ∂μ)
+      atTop (𝓝 ((μ : Measure Ω).real s)) := by
+  let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δs_pos n) s ω
+  have h_int n (ν : Measure Ω) [IsProbabilityMeasure ν] : Integrable (fs n) ν := by
+    refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
+    simp only [thickenedIndicator_apply, Real.norm_eq_abs, NNReal.abs_eq, NNReal.coe_le_one, fs]
+    exact thickenedIndicator_le_one (δs_pos _) s x
+  have h := tendsto_lintegral_thickenedIndicator_of_isClosed μ hs δs_pos δs_lim
+  have h_eq (n : ℕ) : ∫⁻ ω, thickenedIndicator (δs_pos n) s ω ∂μ
+      = ENNReal.ofReal (∫ ω, fs n ω ∂μ) := by
+    rw [lintegral_coe_eq_integral]
+    exact h_int _ _
+  simp_rw [h_eq] at h
+  rw [Measure.real_def]
+  have h_eq' : (fun n ↦ ∫ ω, fs n ω ∂μ) = fun n ↦ (ENNReal.ofReal (∫ ω, fs n ω ∂μ)).toReal := by
+    ext n
+    rw [ENNReal.toReal_ofReal]
+    refine integral_nonneg fun x ↦ ?_
+    simp [fs]
+  rwa [h_eq', ENNReal.tendsto_toReal_iff (by simp) (by finiteness)]
 
 theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : MeasurableSpace Ω}
     [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {F : Filter γ} [F.IsCountablyGenerated]
@@ -666,52 +716,33 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
     simp only [one_div, Real.norm_eq_abs, NNReal.abs_eq, NNReal.coe_le_one, fs]
     exact thickenedIndicator_le_one _ s x
-  have key₁ : Tendsto (fun n ↦ ∫ ω, fs n ω ∂μ) atTop (𝓝 ((μ : Measure Ω).real s)) := by
-    -- todo: extract lemma
-    have h := tendsto_lintegral_thickenedIndicator_of_isClosed μ hs (fun _ ↦ by positivity)
-      (δs := fun n ↦ (1 : ℝ) / (n + 1)) tendsto_one_div_add_atTop_nhds_zero_nat
-    have h_eq (n : ℕ) : ∫⁻ ω, thickenedIndicator (δ := (1 : ℝ) / (n + 1)) (by positivity) s ω ∂μ
-        = ENNReal.ofReal (∫ ω, fs n ω ∂μ) := by
-      rw [lintegral_coe_eq_integral]
-      exact h_int _ _
-    simp_rw [h_eq] at h
-    rw [Measure.real_def]
-    have h_eq' : (fun n ↦ ∫ ω, fs n ω ∂μ) = fun n ↦ (ENNReal.ofReal (∫ ω, fs n ω ∂μ)).toReal := by
-      ext n
-      rw [ENNReal.toReal_ofReal]
-      refine integral_nonneg fun x ↦ ?_
-      simp [fs]
-    rwa [h_eq', ENNReal.tendsto_toReal_iff (by simp) (by finiteness)]
+  have key₁ : Tendsto (fun n ↦ ∫ ω, fs n ω ∂μ) atTop (𝓝 ((μ : Measure Ω).real s)) :=
+    tendsto_integral_thickenedIndicator_of_isClosed s hs (δs := fun n ↦ (1 : ℝ) / (n + 1))
+      (fun _ ↦ by positivity) tendsto_one_div_add_atTop_nhds_zero_nat
   have room₁ : (μ : Measure Ω).real s < (μ : Measure Ω).real s + ε / 2 := by simp [ε_pos]
   obtain ⟨M, hM⟩ := eventually_atTop.mp <| key₁.eventually_lt_const room₁
   have key₂ := h (fs M) ?_ ?_
   rotate_left
   · refine ⟨1, fun x y ↦ ?_⟩
-    simp only [Real.dist_eq]
-    rw [abs_le]
+    simp only [Real.dist_eq, abs_le]
     have h1 x : fs M x ≤ 1 := thickenedIndicator_le_one _ _ _
     have h2 x : 0 ≤ fs M x := by simp [fs]
     grind
   · exact ⟨_, lipschitzWith_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s⟩
   have room₂ : ∫ a, fs M a ∂μ < ∫ a, fs M a ∂μ + ε / 2 := by simp [ε_pos]
-  have ev_near := key₂.eventually_le_const room₂
-  have ev_near' : ∀ᶠ x in F, (μs x : Measure Ω).real s ≤ ∫ a, fs M a ∂μ + ε / 2 := by
-    refine ev_near.mono fun x hx ↦ le_trans ?_ hx
+  have ev_near : ∀ᶠ x in F, (μs x : Measure Ω).real s ≤ ∫ a, fs M a ∂μ + ε / 2 := by
+    refine (key₂.eventually_le_const room₂).mono fun x hx ↦ le_trans ?_ hx
     rw [← integral_indicator_one hs.measurableSet]
-    refine integral_mono ?_ ?_ ?_
-    · rw [integrable_indicator_iff hs.measurableSet]
-      exact (integrable_const _).integrableOn
-    · exact h_int _ _
-    have h : _ ≤ fs M :=
-      (indicator_le_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s)
-    simpa using h
-  apply (Filter.limsup_le_limsup ev_near' ?_ ?_).trans
-  rotate_left
+    refine integral_mono ?_ (h_int _ _) ?_
+    · exact (integrable_indicator_iff hs.measurableSet).mpr (integrable_const _).integrableOn
+    · have h : _ ≤ fs M :=
+        (indicator_le_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s)
+      simpa using h
+  apply (Filter.limsup_le_limsup ev_near ?_ isBoundedUnder_const).trans
+  · rw [limsup_const]
+    apply (add_le_add (hM M rfl.le).le (le_refl (ε / 2))).trans_eq
+    ring
   · exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
-  · exact isBoundedUnder_const
-  rw [limsup_const]
-  apply (add_le_add (hM M rfl.le).le (le_refl (ε / 2))).trans_eq
-  ring
 
 lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
     (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ)
@@ -799,17 +830,15 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
     _ ≤ ∫ a in {x | ‖f' n x - f n x‖ < ε / 2}, L * (ε / 2) ∂μ
         + ∫ a in {x | ε / 2 ≤ ‖f' n x - f n x‖}, M ∂μ := by
       gcongr ?_ + ?_
-      · refine setIntegral_mono_on' ?_ ?_ ?_ ?_
+      · refine setIntegral_mono_on' ?_ integrableOn_const ?_ ?_
         · exact h_int_sub.integrableOn
-        · exact integrableOn_const
         · exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
         · intro x hx
           simp only [Set.mem_setOf_eq] at hx
           rw [← dist_eq_norm] at hx ⊢
           exact hF_lip.dist_le_mul_of_le hx.le
-      · refine setIntegral_mono ?_ ?_ fun a ↦ ?_
+      · refine setIntegral_mono ?_ integrableOn_const fun a ↦ ?_
         · exact h_int_sub.integrableOn
-        · exact integrableOn_const
         · rw [← dist_eq_norm]
           convert hF_bounded _ _
     _ = L * (ε / 2) * μ.real {x | ‖f' n x - f n x‖ < ε / 2}
