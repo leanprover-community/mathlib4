@@ -52,8 +52,6 @@ theorem fract_mem (x : ℝ) : fract x ∈ I :=
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
-@[simp, norm_cast] theorem coe_zero : ((0 : I) : ℝ) = 0 := rfl
-@[simp, norm_cast] theorem coe_one : ((1 : I) : ℝ) = 1 := rfl
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Integral.PathIntegral.Basic
+import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.DiffContOnCl
@@ -95,7 +95,7 @@ section PathIntegral
 
 attribute [fun_prop] Continuous.IccExtend
 
-theorem ContinuousMap.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn
+theorem ContinuousMap.Homotopy.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn
     {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
     {a b c d : E}
     {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F} {γ₁ : Path a b} {γ₂ : Path c d} {s : Set E}
@@ -104,8 +104,8 @@ theorem ContinuousMap.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWith
     (hφs : ∀ a, φ a ∈ s)
     (hF : ContDiffOn ℝ 2 (fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2)
       (I ×ˢ I)) :
-    pathIntegral ω γ₁ + pathIntegral ω (φ.evalAt 1) =
-      pathIntegral ω γ₂ + pathIntegral ω (φ.evalAt 0) := by
+    curveIntegral ω γ₁ + curveIntegral ω (φ.evalAt 1) =
+      curveIntegral ω γ₂ + curveIntegral ω (φ.evalAt 0) := by
   set ψ : ℝ × ℝ → E := fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2
   have hψs : ∀ a, ψ a ∈ s := fun _ ↦ hφs _
   set U : Set (ℝ × ℝ) := Ioo 0 1 ×ˢ Ioo 0 1 with hU
@@ -187,12 +187,12 @@ theorem ContinuousMap.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWith
       ext
       apply φ.extend_apply_of_le_zero le_rfl
     have hfi (s : ℝ) (hs : s ∈ I) :
-        ∫ t in (0)..1, f (s, t) = pathIntegral ω ⟨φ.extend s, rfl, rfl⟩ := by
-      rw [pathIntegral]
+        ∫ t in (0)..1, f (s, t) = curveIntegral ω ⟨φ.extend s, rfl, rfl⟩ := by
+      rw [curveIntegral]
       apply intervalIntegral.integral_congr
       intro t ht
       rw [uIcc_of_le zero_le_one] at ht
-      simp only [ContinuousLinearMap.comp_apply, pathIntegralFun, f, η, dψ]
+      simp only [ContinuousLinearMap.comp_apply, curveIntegralFun, f, η, dψ]
       congr 1
       have : HasDerivWithinAt (fun u : ℝ ↦ ((s : ℝ), u)) (0, 1) I t :=
         (hasDerivWithinAt_const _ _ _).prodMk (hasDerivWithinAt_id _ _)
@@ -205,18 +205,18 @@ theorem ContinuousMap.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWith
       · intro u hu
         rw [← Icc_prod_Icc]
         exact ⟨hs, hu⟩
-    have hf₀ : ∫ t in (0)..1, f (0, t) = pathIntegral ω γ₁ := by
+    have hf₀ : ∫ t in (0)..1, f (0, t) = curveIntegral ω γ₁ := by
       rw [hfi 0 (by simp)]
-      simp [pathIntegral, pathIntegralFun, Path.extend]
-    have hf₁ : ∫ t in (0)..1, f (1, t) = pathIntegral ω γ₂ := by
+      simp [curveIntegral, curveIntegralFun, Path.extend]
+    have hf₁ : ∫ t in (0)..1, f (1, t) = curveIntegral ω γ₂ := by
       rw [hfi 1 (by simp)]
-      simp [pathIntegral, pathIntegralFun, Path.extend]
-    have hgt (s : I) : pathIntegral ω (φ.evalAt s) = -∫ t in (0)..1, g (t, s) := by
-      rw [← intervalIntegral.integral_neg, pathIntegral]
+      simp [curveIntegral, curveIntegralFun, Path.extend]
+    have hgt (s : I) : curveIntegral ω (φ.evalAt s) = -∫ t in (0)..1, g (t, s) := by
+      rw [← intervalIntegral.integral_neg, curveIntegral]
       apply intervalIntegral.integral_congr
       intro t ht
       rw [uIcc_of_le zero_le_one] at ht
-      simp only [ContinuousLinearMap.comp_apply, pathIntegralFun, g, η, dψ, neg_neg]
+      simp only [ContinuousLinearMap.comp_apply, curveIntegralFun, g, η, dψ, neg_neg]
       congr 1
       · simp [ψ]
       · have : HasDerivWithinAt (fun u : ℝ ↦ (u, (s : ℝ))) (1, 0) I t :=
@@ -236,21 +236,21 @@ theorem ContinuousMap.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWith
   · rw [integrableOn_congr_fun hdiv measurableSet_Icc]
     exact integrableOn_zero
 
-theorem hasFDerivWithinAt_pathIntegral_segment_target_source {𝕜 : Type*} [RCLike 𝕜]
+theorem hasFDerivWithinAt_curveIntegral_segment_target_source {𝕜 : Type*} [RCLike 𝕜]
     {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F]
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F] {a : E}
     {ω : E → E →L[𝕜] F} {s : Set E} (hs : Convex ℝ s) (hω : ContinuousOn ω s) (ha : a ∈ s) :
-    HasFDerivWithinAt (pathIntegral (ω · |>.restrictScalars ℝ) <| .segment a ·) (ω a) s a := by
+    HasFDerivWithinAt (curveIntegral (ω · |>.restrictScalars ℝ) <| .segment a ·) (ω a) s a := by
   simp only [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Path.segment_same,
-    pathIntegral_refl, sub_zero]
+    curveIntegral_refl, sub_zero]
   rw [Asymptotics.isLittleO_iff]
   intro ε hε
   rcases Metric.continuousWithinAt_iff.mp (hω a ha) ε hε with ⟨δ, hδ₀, hδ⟩
   rw [eventually_nhdsWithin_iff]
   filter_upwards [Metric.ball_mem_nhds _ hδ₀] with b hb hbs
   have : ∫ t in (0)..1, ω a (b - a) = ω a (b - a) := by simp
-  rw [pathIntegral_segment, ← this, ← intervalIntegral.integral_sub]
+  rw [curveIntegral_segment, ← this, ← intervalIntegral.integral_sub]
   · suffices ∀ t ∈ Ι (0 : ℝ) 1, ‖ω (lineMap a b t) (b - a) - ω a (b - a)‖ ≤ ε * ‖b - a‖ by
       refine (intervalIntegral.norm_integral_le_of_norm_le_const this).trans_eq ?_
       simp
@@ -292,22 +292,22 @@ def ContinuousMap.Homotopy.linear {X : Type*} [TopologicalSpace X] (f g : C(X, E
 lemma ContinuousMap.Homotopy.evalAt_linear {X : Type*} [TopologicalSpace X] (f g : C(X, E))
     (x : X) : (Homotopy.linear f g).evalAt x = .segment (f x) (g x) := rfl
 
-theorem Convex.pathIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric
+theorem Convex.curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric
     {s : Set E} (hs : Convex ℝ s) {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F}
     (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
     (hdω : ∀ a ∈ s, ∀ x ∈ tangentConeAt ℝ s a, ∀ y ∈ tangentConeAt ℝ s a, dω a x y = dω a y x)
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
-    pathIntegral ω (.segment a b) + pathIntegral ω (.segment b c) =
-      pathIntegral ω (.segment a c) := by
+    curveIntegral ω (.segment a b) + curveIntegral ω (.segment b c) =
+      curveIntegral ω (.segment a c) := by
   set φ := ContinuousMap.Homotopy.linear (Path.segment a b : C(I, E)) (Path.segment a c)
-  have := φ.pathIntegral_add_pathIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn hω hdω ?_ ?_
+  have := φ.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn hω hdω ?_ ?_
   · convert this using 2
     · simp only [φ]
       -- TODO: why do we need to explicitly give `f`?
       rw [ContinuousMap.Homotopy.evalAt_linear (Path.segment a b : C(I, E))]
       dsimp only [ContinuousMap.coe_coe]
       rw [← Path.cast_segment (Path.segment a b).target (Path.segment a c).target,
-        pathIntegral_cast]
+        curveIntegral_cast]
     · simp only [φ]
       rw [ContinuousMap.Homotopy.evalAt_linear (Path.segment a b : C(I, E))]
       dsimp only [ContinuousMap.coe_coe]
@@ -324,17 +324,17 @@ theorem Convex.pathIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric
     apply_rules [ContDiff.add, ContDiff.smul, contDiff_const, ContDiff.neg, contDiff_fst,
       contDiff_snd]
 
-theorem Convex.hasFDerivWithinAt_pathIntegral_segment_of_hasFDerivWithinAt_symmetric
+theorem Convex.hasFDerivWithinAt_curveIntegral_segment_of_hasFDerivWithinAt_symmetric
     [CompleteSpace F] {s : Set E} (hs : Convex ℝ s) {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F}
     (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
     (hdω : ∀ a ∈ s, ∀ x ∈ tangentConeAt ℝ s a, ∀ y ∈ tangentConeAt ℝ s a, dω a x y = dω a y x)
     (ha : a ∈ s) (hb : b ∈ s) :
-    HasFDerivWithinAt (fun x ↦ pathIntegral ω (.segment a x)) (ω b) s b := by
-  suffices HasFDerivWithinAt (fun x ↦ pathIntegral ω (.segment a b) + pathIntegral ω (.segment b x))
-      (ω b) s b from
+    HasFDerivWithinAt (fun x ↦ curveIntegral ω (.segment a x)) (ω b) s b := by
+  suffices HasFDerivWithinAt (fun x ↦
+      curveIntegral ω (.segment a b) + curveIntegral ω (.segment b x)) (ω b) s b from
     this.congr' (fun _ h ↦
-      (hs.pathIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric hω hdω ha hb h).symm) hb
-  exact .const_add _ <| hasFDerivWithinAt_pathIntegral_segment_target_source hs
+      (hs.curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric hω hdω ha hb h).symm) hb
+  exact .const_add _ <| hasFDerivWithinAt_curveIntegral_segment_target_source hs
     (fun x hx ↦ (hω x hx).continuousWithinAt) hb
 
 theorem Convex.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric [CompleteSpace F]
@@ -344,9 +344,9 @@ theorem Convex.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric [C
     ∃ f, ∀ a ∈ s, HasFDerivWithinAt f (ω a) s a := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨a, ha⟩
   · simp
-  · use (pathIntegral ω <| .segment a ·)
+  · use (curveIntegral ω <| .segment a ·)
     intro b hb
-    exact hs.hasFDerivWithinAt_pathIntegral_segment_of_hasFDerivWithinAt_symmetric hω hdω ha hb
+    exact hs.hasFDerivWithinAt_curveIntegral_segment_of_hasFDerivWithinAt_symmetric hω hdω ha hb
 
 theorem Convex.exists_forall_hasFDerivWithinAt_of_fderivWithin_symmetric [CompleteSpace F]
     {s : Set E} (hs : Convex ℝ s) {ω : E → E →L[ℝ] F} (hω : DifferentiableOn ℝ ω s)
