@@ -18,6 +18,51 @@ open Functor
 
 namespace Adjunction
 
+@[simps! -isSimp]
+def leftAdjointIdIso {F : C₀ ⥤ C₀} {G : C₀ ⥤ C₀} (adj : F ⊣ G) (e : G ≅ 𝟭 C₀) :
+    F ≅ 𝟭 C₀ := (conjugateIsoEquiv .id adj).symm e.symm
+
+section
+
+variable {F₀₁ : C₀ ⥤ C₁} {F₁₂ : C₁ ⥤ C₂} {F₀₂ : C₀ ⥤ C₂}
+  {G₁₀ : C₁ ⥤ C₀} {G₂₁ : C₂ ⥤ C₁} {G₂₀ : C₂ ⥤ C₀}
+
+@[simps! -isSimp]
+def leftAdjointCompIso
+    (adj₀₁ : F₀₁ ⊣ G₁₀) (adj₁₂ : F₁₂ ⊣ G₂₁) (adj₀₂ : F₀₂ ⊣ G₂₀)
+    (e₀₁₂ : G₂₁ ⋙ G₁₀ ≅ G₂₀) :
+    F₀₁ ⋙ F₁₂ ≅ F₀₂ :=
+  (conjugateIsoEquiv adj₀₂ (adj₀₁.comp adj₁₂)).symm e₀₁₂.symm
+
+end
+
+lemma leftAdjointCompIso_comp_id
+    {F₀₁ : C₀ ⥤ C₁} {F₁₁' : C₁ ⥤ C₁} {G₁₀ : C₁ ⥤ C₀} {G₁'₁ : C₁ ⥤ C₁}
+    (adj₀₁ : F₀₁ ⊣ G₁₀) (adj₁₁' : F₁₁' ⊣ G₁'₁)
+    (e₀₁₁' : G₁'₁ ⋙ G₁₀ ≅ G₁₀) (e₁'₁ : G₁'₁ ≅ 𝟭 _)
+    (h : e₀₁₁' = isoWhiskerRight e₁'₁ G₁₀ ≪≫ leftUnitor G₁₀) :
+    leftAdjointCompIso adj₀₁ adj₁₁' adj₀₁ e₀₁₁' =
+      isoWhiskerLeft _ (leftAdjointIdIso adj₁₁' e₁'₁) ≪≫ rightUnitor F₀₁ := by
+  subst h
+  ext X₀
+  simp [leftAdjointCompIso_hom_app, leftAdjointIdIso_hom_app,
+    ← Functor.map_comp_assoc, -Functor.map_comp]
+
+lemma leftAdjointCompIso_id_comp
+    {F₀₀' : C₀ ⥤ C₀} {F₀'₁ : C₀ ⥤ C₁} {G₀'₀ : C₀ ⥤ C₀} {G₁₀' : C₁ ⥤ C₀}
+    (adj₀₀' : F₀₀' ⊣ G₀'₀) (adj₀'₁ : F₀'₁ ⊣ G₁₀')
+    (e₀₀'₁ : G₁₀' ⋙ G₀'₀ ≅ G₁₀') (e₀'₀ : G₀'₀ ≅ 𝟭 _)
+    (h : e₀₀'₁ = isoWhiskerLeft G₁₀' e₀'₀ ≪≫ rightUnitor G₁₀') :
+    leftAdjointCompIso adj₀₀' adj₀'₁ adj₀'₁ e₀₀'₁ =
+      isoWhiskerRight (leftAdjointIdIso adj₀₀' e₀'₀) F₀'₁ ≪≫ leftUnitor F₀'₁ := by
+  subst h
+  ext X₀
+  have h₁ := congr_map F₀'₁ (adj₀₀'.counit.naturality (adj₀'₁.unit.app X₀))
+  have h₂ := congr_map (F₀₀' ⋙ F₀'₁) (e₀'₀.inv.naturality (adj₀'₁.unit.app X₀))
+  simp only [id_obj, comp_obj, Functor.id_map, Functor.comp_map, Functor.map_comp] at h₁ h₂
+  simp [leftAdjointCompIso_hom_app, leftAdjointIdIso_hom_app,
+    reassoc_of% h₂, reassoc_of% h₁]
+
 section
 
 variable
@@ -27,10 +72,6 @@ variable
   (adj₁₃ : F₁₃ ⊣ G₃₁) (adj₀₃ : F₀₃ ⊣ G₃₀)
   (e₀₁₂ : G₂₁ ⋙ G₁₀ ≅ G₂₀) (e₁₂₃ : G₃₂ ⋙ G₂₁ ≅ G₃₁)
   (e₀₁₃ : G₃₁ ⋙ G₁₀ ≅ G₃₀) (e₀₂₃ : G₃₂ ⋙ G₂₀ ≅ G₃₀)
-
-@[simps! -isSimp]
-def leftAdjointCompIso : F₀₁ ⋙ F₁₂ ≅ F₀₂ :=
-  (conjugateIsoEquiv adj₀₂ (adj₀₁.comp adj₁₂)).symm e₀₁₂.symm
 
 lemma leftAdjointCompIso₀₁₃_eq_conjugateIsoEquiv_symm :
     isoWhiskerLeft _ (leftAdjointCompIso adj₁₂ adj₂₃ adj₁₃ e₁₂₃) ≪≫
@@ -63,37 +104,6 @@ lemma leftAdjointCompIso_assoc
   simpa using congr_app (congr_arg Iso.inv h.symm) X₃
 
 end
-
-@[simps! -isSimp]
-def leftAdjointIdIso {F₀₁ : C₀ ⥤ C₀} {G₁₀ : C₀ ⥤ C₀} (adj : F₀₁ ⊣ G₁₀) (e₁₀ : G₁₀ ≅ 𝟭 C₀) :
-    F₀₁ ≅ 𝟭 C₀ := (conjugateIsoEquiv .id adj).symm e₁₀.symm
-
-lemma leftAdjointCompIso_comp_id
-    {F₀₁ : C₀ ⥤ C₁} {F₁₂ : C₁ ⥤ C₁} {G₁₀ : C₁ ⥤ C₀} {G₂₁ : C₁ ⥤ C₁}
-    (adj₀₁ : F₀₁ ⊣ G₁₀) (adj₁₂ : F₁₂ ⊣ G₂₁)
-    (e₀₁₂ : G₂₁ ⋙ G₁₀ ≅ G₁₀) (e₂₁ : G₂₁ ≅ 𝟭 _)
-    (h : e₀₁₂ = isoWhiskerRight e₂₁ G₁₀ ≪≫ leftUnitor G₁₀) :
-    leftAdjointCompIso adj₀₁ adj₁₂ adj₀₁ e₀₁₂ =
-      isoWhiskerLeft _ (leftAdjointIdIso adj₁₂ e₂₁) ≪≫ rightUnitor F₀₁ := by
-  subst h
-  ext X₀
-  simp [leftAdjointCompIso_hom_app, leftAdjointIdIso_hom_app,
-    ← Functor.map_comp_assoc, -Functor.map_comp]
-
-lemma leftAdjointCompIso_id_comp
-    {F₀₁ : C₀ ⥤ C₀} {F₁₂ : C₀ ⥤ C₁} {G₁₀ : C₀ ⥤ C₀} {G₂₁ : C₁ ⥤ C₀}
-    (adj₀₁ : F₀₁ ⊣ G₁₀) (adj₁₂ : F₁₂ ⊣ G₂₁)
-    (e₀₁₂ : G₂₁ ⋙ G₁₀ ≅ G₂₁) (e₁₀ : G₁₀ ≅ 𝟭 _)
-    (h : e₀₁₂ = isoWhiskerLeft G₂₁ e₁₀ ≪≫ rightUnitor G₂₁) :
-    leftAdjointCompIso adj₀₁ adj₁₂ adj₁₂ e₀₁₂ =
-      isoWhiskerRight (leftAdjointIdIso adj₀₁ e₁₀) F₁₂ ≪≫ leftUnitor F₁₂ := by
-  subst h
-  ext X₀
-  have h₁ := congr_map F₁₂ (adj₀₁.counit.naturality (adj₁₂.unit.app X₀))
-  have h₂ := congr_map (F₀₁ ⋙ F₁₂) (e₁₀.inv.naturality (adj₁₂.unit.app X₀))
-  simp only [id_obj, comp_obj, Functor.id_map, Functor.comp_map, Functor.map_comp] at h₁ h₂
-  simp [leftAdjointCompIso_hom_app, leftAdjointIdIso_hom_app,
-    reassoc_of% h₂, reassoc_of% h₁]
 
 end Adjunction
 
