@@ -20,7 +20,7 @@ a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`.
 
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
-open CategoryTheory
+open CategoryTheory Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
@@ -57,7 +57,7 @@ def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 noncomputable def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
-    pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (Functor.whiskeringLeft _ _ _).obj F.op :=
+    pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
 variable {F}
@@ -73,7 +73,7 @@ noncomputable def pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 noncomputable def pushforwardCompToPresheaf :
-    pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (Functor.whiskeringLeft _ _ _).obj F.op :=
+    pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
 lemma pushforward_obj_map_apply (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
@@ -123,8 +123,7 @@ lemma pushforward_assoc :
     pushforwardComp.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ' ≪≫
       isoWhiskerLeft _ (pushforwardComp.{v} φ ψ) =
     pushforwardComp.{v} (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ') ≪≫
-      isoWhiskerRight (pushforwardComp.{v} ψ ψ') _ ≪≫
-        Functor.associator _ _ _ := by ext; rfl
+      isoWhiskerRight (pushforwardComp.{v} ψ ψ') _ ≪≫ associator _ _ _ := by ext; rfl
 
 lemma pushforward_hom_app_assoc (M : PresheafOfModules.{v} T') :
     (pushforwardComp (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ').hom.app M ≫
@@ -142,11 +141,11 @@ lemma pushforward_inv_app_assoc (M : PresheafOfModules.{v} T') :
 end
 
 lemma pushforward_id_comp :
-    pushforwardComp.{v} (F := 𝟭 C) (𝟙 S) φ = (Functor.rightUnitor _).symm ≪≫
+    pushforwardComp.{v} (F := 𝟭 C) (𝟙 S) φ = (rightUnitor _).symm ≪≫
       isoWhiskerLeft (pushforward.{v} φ) (pushforwardId S).symm := by ext; rfl
 
 lemma pushforward_comp_id :
-    pushforwardComp.{v} (G := 𝟭 _) φ (𝟙 R) = (Functor.leftUnitor _).symm ≪≫
+    pushforwardComp.{v} (G := 𝟭 _) φ (𝟙 R) = (leftUnitor _).symm ≪≫
       isoWhiskerRight (pushforwardId R).symm (pushforward.{v} φ) := by ext; rfl
 
 end

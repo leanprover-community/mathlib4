@@ -20,7 +20,7 @@ The existence of this left adjoint functor is obtained under suitable universe a
 
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
-open CategoryTheory Limits Opposite
+open CategoryTheory Limits Opposite Functor
 
 namespace PresheafOfModules
 
@@ -82,15 +82,15 @@ lemma pullbackObjIsDefined_eq_top :
     pullbackObjIsDefined.{u} φ = ⊤ := by
   ext M
   simp only [Pi.top_apply, Prop.top_eq_true, iff_true]
-  apply Functor.leftAdjointObjIsDefined_of_isColimit
+  apply leftAdjointObjIsDefined_of_isColimit
     M.isColimitFreeYonedaCoproductsCokernelCofork
   rintro (_ | _)
   all_goals
-    apply Functor.leftAdjointObjIsDefined_colimit _
+    apply leftAdjointObjIsDefined_colimit _
       (fun _ ↦ pullbackObjIsDefined_free_yoneda _ _)
 
 instance : (pushforward.{u} φ).IsRightAdjoint :=
-  Functor.isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
+  isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
     (pullbackObjIsDefined_eq_top φ)
 
 end
@@ -104,7 +104,7 @@ variable {F : C ⥤ D} {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u
   {G : D ⥤ E} {T : Eᵒᵖ ⥤ RingCat.{u}} (ψ : R ⟶ G.op ⋙ T)
 
 instance : (pushforward.{v} (F := 𝟭 C) (𝟙 S)).IsRightAdjoint :=
-  Functor.isRightAdjoint_of_iso (pushforwardId.{v} S).symm
+  isRightAdjoint_of_iso (pushforwardId.{v} S).symm
 
 variable (S) in
 noncomputable def pullbackId : pullback.{v} (F := 𝟭 C) (𝟙 S) ≅ 𝟭 _ :=
@@ -123,7 +123,7 @@ section
 variable [(pushforward.{v} ψ).IsRightAdjoint]
 
 instance : (pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ)).IsRightAdjoint :=
-  Functor.isRightAdjoint_of_iso (pushforwardComp.{v} φ ψ).symm
+  isRightAdjoint_of_iso (pushforwardComp.{v} φ ψ).symm
 
 noncomputable def pullbackComp :
     pullback.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ≅
@@ -149,12 +149,12 @@ lemma pullback_assoc :
     pullbackComp.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ' ≪≫
       isoWhiskerRight (pullbackComp.{v} φ ψ) _ =
     pullbackComp.{v} (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ') ≪≫
-      isoWhiskerLeft _ (pullbackComp.{v} ψ ψ') ≪≫ (Functor.associator _ _ _).symm := by
+      isoWhiskerLeft _ (pullbackComp.{v} ψ ψ') ≪≫ (associator _ _ _).symm := by
   ext M : 3
   apply ((pullbackPushforwardAdjunction _).homEquiv _ _).injective
   dsimp
   conv_lhs =>
-    simp only [Functor.map_comp, unit_app_comp_pushforward_map_pullbackComp_hom_assoc,
+    simp only [map_comp, unit_app_comp_pushforward_map_pullbackComp_hom_assoc,
       CategoryTheory.Functor.map_id, Category.comp_id, ← NatTrans.naturality,
       Functor.comp_obj, Functor.comp_map]
     simp only [← Functor.map_comp_assoc, Adjunction.unit_naturality]
