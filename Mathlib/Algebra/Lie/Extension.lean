@@ -27,6 +27,8 @@ homomorphisms as parameters, and `Extension` is a structure that includes the mi
 
 -/
 
+suppress_compilation
+
 namespace LieAlgebra
 
 variable {R N L M V : Type*}
@@ -63,6 +65,12 @@ lemma isExtension.of_surjective (f : L →ₗ⁅R⁆ M) (hf : Function.Surjectiv
   range_eq_top := (LieHom.range_eq_top f).mpr hf
   exact := LieIdeal.incl_range f.ker
 
+lemma IsExtension.range_eq_ker (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) (h : IsExtension i p) :
+    LinearMap.range i.toLinearMap = p.ker := by
+  have := h.exact
+  rw [← LieSubalgebra.coe_set_eq] at this
+  exact Submodule.ext fun x ↦ Eq.to_iff (congrFun this x)
+
 namespace Extension
 
 /-- The bundled `LieAlgebra.Extension` corresponding to `LieAlgebra.IsExtension` -/
@@ -76,17 +84,50 @@ instance : LieRing E.L := E.instLieRing
 
 instance : LieAlgebra R E.L := E.instLieAlgebra
 
-lemma incl_injective (E : Extension R N M) : Function.Injective E.incl :=
+lemma incl_injective : Function.Injective E.incl :=
   (LieHom.ker_eq_bot E.incl).mp (IsExtension.ker_eq_bot E.extension)
 
-lemma proj_surjective (E : Extension R N M) : Function.Surjective E.proj :=
+lemma proj_surjective : Function.Surjective E.proj :=
   (LieHom.range_eq_top E.proj).mp (IsExtension.range_eq_top E.extension)
 
-lemma exact (E : Extension R N M) : E.incl.range = E.proj.ker :=
+lemma exact : E.incl.range = E.proj.ker :=
   IsExtension.exact E.extension
 
-lemma proj_incl (E : Extension R N M) (x : N) : E.proj (E.incl x) = 0 :=
+@[simp]
+lemma proj_incl (x : N) : E.proj (E.incl x) = 0 :=
   LieHom.mem_ker.mp <| LieHom.mem_ker.mpr <| le_of_eq (exact E) <| LieHom.mem_range_self E.incl x
+
+/-- The equivalence between the range of the inclusion and the source. -/
+def sectLeft (E : Extension R N M) : E.incl.range ≃ₗ[R] N :=
+  (LinearEquiv.ofInjective E.incl.toLinearMap E.incl_injective).symm
+
+/-- The equivalence between the kernel of projection and range of inclusion. -/
+def projInclEquiv : E.proj.ker ≃ₗ[R] E.incl.range :=
+  LinearEquiv.ofEq (LieSubmodule.toSubmodule (LieHom.ker E.proj))
+    (LinearMap.range E.incl.toLinearMap)
+    (Submodule.ext (fun x ↦ ((LieSubalgebra.ext_iff' _ _).mp E.extension.exact) x)).symm
+
+/-- Delete this. -/
+def kerProjEquiv :
+    E.proj.ker ≃ₗ[R] N := E.projInclEquiv ≪≫ₗ E.sectLeft
+
+lemma eq_of_proj_eq (E : Extension R N M) {p : E.L →ₗ[R] N} {x y : E.L} (h : p x = p y)
+    (hp : p ∘ₗ E.incl.toLinearMap = LinearMap.id) (hE : E.proj x = E.proj y) : x = y := by
+  have : x - y ∈ LinearMap.ker E.proj.toLinearMap := LinearMap.sub_mem_ker_iff.mpr hE
+  have : ∃ z : N, E.incl z = x - y := by
+    rw [← LieHom.ker_toSubmodule] at this
+    rw [← LieHom.mem_range, exact]
+    exact this
+  obtain ⟨z, hz⟩ := this
+  have hcomp : (p ∘ₗ E.incl) z = z := by
+    rw [LinearMap.ext_iff] at hp
+    exact hp z
+  rw [← LieHom.coe_toLinearMap] at hz
+  have : p (x - y) = 0 := by
+    rw [LinearMap.map_sub, h, sub_eq_zero]
+  rw [LinearMap.comp_apply, hz, this] at hcomp
+  rw [← hcomp, LinearMap.map_zero] at hz
+  rw [← sub_eq_zero, ← hz]
 
 /-- `Extension`s are equivalent iff there is a homomorphism making a commuting diagram. -/
 @[ext] structure Equiv (E' : Extension R N M) where
@@ -149,6 +190,8 @@ instance : Group (E.Equiv E) where
   inv_mul_cancel x := by ext; simp
 
 end Equiv
+
+open LieModule.Cohomology
 
 /-- A one-field structure giving a type synonym for a direct product. We use this to describe an
 alternative Lie algebra structure on the product, where the bracket is shifted by a 2-cocycle. -/
@@ -244,7 +287,9 @@ def LieEquiv.ofCoboundary (c' : twoCocycle R L V) (x : oneCochain R L V)
     simp [smul_sub]
   map_lie' {a b} := by
     refine (Equiv.apply_eq_iff_eq_symm_apply (ofProd c')).mpr ?_
-    simp [bracket_ofTwoCocycleAlg, h, d₁₂_apply_apply]
+    simp only [bracket_ofTwoCocycleAlg, Equiv.symm_apply_apply, h, Submodule.coe_add,
+      LinearMap.add_apply, Prod.mk.injEq, true_and]
+    simp only [twoCochain_val_apply (d₁₂ R L V x), d₁₂_apply_apply, trivial_lie_zero]
     abel
   invFun z := ofProd c (((ofProd c').symm z).1, ((ofProd c').symm z).2 + x ((ofProd c').symm z).1)
   left_inv y := by simp

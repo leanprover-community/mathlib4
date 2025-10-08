@@ -82,7 +82,7 @@ theorem sum_untop [AddCommMonoid Γ] (s : Finset σ) {f : σ → WithTop Γ}
   | empty => simp
   | cons i s his ih =>
     simp only [sum_cons]
-    rw [sum_cons, WithTop.add_eq_top, Mathlib.Tactic.PushNeg.not_or_eq] at hs
+    rw [sum_cons, WithTop.add_eq_top, not_or] at hs
     rw [add_untop (h i) hs.2]
     exact congrArg (HAdd.hAdd ((f i).untop (h i))) (ih hs.right)
 --#find_home! sum_untop --[Mathlib.Algebra.BigOperators.Group.Finset]
