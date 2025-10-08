@@ -53,13 +53,19 @@ section Rotation
 
 /-- Characteristic function of a centered Gaussian measure.
 For a Gaussian measure, the hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` is equivalent to the simpler
-`μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it. -/
+`μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it.
+See `charFunDual_eq_of_integral_eq_zero` -/
 lemma charFunDual_eq_of_forall_strongDual_eq_zero (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0)
     (L : StrongDual ℝ E) :
     charFunDual μ L = exp (- Var[L; μ] / 2) := by
   simp [charFunDual_eq L, integral_complex_ofReal, hμ L, neg_div]
 
-lemma map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
+/-- For a centered Gaussian measure `μ`, the product measure `μ.prod μ` is invariant under rotation.
+The hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` is equivalent to the simpler
+`μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it.
+See `map_rotation_eq_self`. -/
+lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
+    [SecondCountableTopology E] [CompleteSpace E]
     (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0) (θ : ℝ) :
     (μ.prod μ).map (ContinuousLinearMap.rotation θ) = μ.prod μ := by
   refine Measure.ext_of_charFunDual ?_
@@ -180,7 +186,8 @@ theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian 
   obtain ⟨C, hC_pos, hC⟩ : ∃ C, 0 < C
       ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) (μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)) :=
     exists_integrable_exp_sq_of_map_rotation_eq_self
-      (map_rotation_eq_self (integral_dual_conv_map_neg_eq_zero (μ := μ)) _)
+      (map_rotation_eq_self_of_forall_strongDual_eq_zero
+        (integral_dual_conv_map_neg_eq_zero (μ := μ)) _)
   -- We must now prove that the integrability with respect to
   -- `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` implies integrability with respect to `μ` for
   -- another constant `C' < C`.
@@ -250,6 +257,21 @@ lemma noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
     rw [Measure.map_apply (by fun_prop) (measurableSet_singleton _)] at hL_zero
     refine measure_mono_null ?_ hL_zero
     exact fun ⦃a⦄ ↦ congrArg ⇑L
+
+/-- Characteristic function of a centered Gaussian measure. -/
+lemma charFunDual_eq_of_integral_eq_zero (hμ : μ[id] = 0) (L : StrongDual ℝ E) :
+    charFunDual μ L = exp (- Var[L; μ] / 2) := by
+  refine charFunDual_eq_of_forall_strongDual_eq_zero (fun L ↦ ?_) L
+  simp only [id_eq] at hμ
+  simp [integral_dual, hμ]
+
+/-- For a centered Gaussian measure `μ`, the product measure `μ.prod μ` is invariant under
+rotation. -/
+lemma map_rotation_eq_self (hμ : μ[id] = 0) (θ : ℝ) :
+    (μ.prod μ).map (ContinuousLinearMap.rotation θ) = μ.prod μ := by
+  refine map_rotation_eq_self_of_forall_strongDual_eq_zero (fun L ↦ ?_) θ
+  simp only [id_eq] at hμ
+  simp [integral_dual, hμ]
 
 end FiniteMoments
 
