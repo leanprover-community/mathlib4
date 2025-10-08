@@ -29,7 +29,29 @@ We use this to construct local extensions of a vector to a section which is smoo
 trivialisation domain.
 
 ## Main definitions and results
-TODO: this doc-string is outdated, needs to be augmented for the recent refactoring!
+
+* `IsLocalFrameOn`: a family of sections `s i` of `V → M` is called a **C^k local frame** on a set
+  `U ⊆ M` iff each section `s i` is `C^k` on `U`, and the section values `s i x` form a basis for
+  each `x ∈ U`
+
+Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
+* `IsLocalFrameOn.toBasisAt hs`: for each `x ∈ U`, the vectors `sᵢ x` form a basis of `F`
+* `IsLocalFrameOn.repr hs` describes the coefficient of sections of `V` w.r.t. `{sᵢ}`.
+  `hs.repr i` is a linear map from sections of `V` to functions `M → 𝕜`.
+* `IsLocalFrameOn.repr_spec hs`: for a local frame `{sᵢ}` near `x`, for each section `t` we have
+  `t = ∑ i, (hs.repr i t) • sᵢ`.
+* `IsLocalFrameOn.repr_sum_eq hs t hx` proves that `t x = ∑ i, (hs.repr i t) x • sᵢ x`, provided
+  that `hx : x ∈ U`.
+* `IsLocalFrameOn.repr_congr hs`: the coefficient `hs.repr i` of `t` in the local frame `{sᵢ}`
+  only depends on `t` at `x`.
+* `IsLocalFrameOn.eq_iff_repr hs`: two sections `t` and `t'` are equal at `x` if and only if their
+  coefficients at `x` w.r.t. `{sᵢ}` agree.
+* `IsLocalFrameOn.contMDiffOn_repr hs`: if `t` is a `C^k` section, each coefficient
+  `hs.repr i t` is `C^k` on `U`
+* `IsLocalFrameOn.contMDiffAt_iff_repr hs`: a section `t` is `C^k` at `x ∈ U`
+  iff all of its frame coefficients are
+* `IsLocalFrameOn.contMDiffOn_iff_repr hs`: a section `t` is `C^k` on an open set `t ⊆ U`
+  iff all of its frame coefficients are
 
 * `Basis.localFrame e b`: the local frame on `V` w.r.t. a local trivialisation `e` of `V` and a
   basis `b` of `F`. Use `b.localFrame e i` to access the i-th section in that frame.
@@ -48,10 +70,6 @@ TODO: this doc-string is outdated, needs to be augmented for the recent refactor
   iff all of its frame coefficients are
 * `b.contMDiffOn_iff_localFrame_repr e`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
   iff all of its frame coefficients are
-
-* TODO: mention all the localExtensionOn definitions and results
-
-TODO add a more complete doc-string!
 
 ## Implementation notes
 * local frames use the junk value pattern: they are defined on all of `M`, but their value is
@@ -272,32 +290,6 @@ lemma mdifferentiableAt_of_repr_aux [Fintype ι]
 
 end
 
-set_option linter.style.commandStart true
-
-section pullback
-
-variable {E' : Type*} [NormedAddCommGroup E']
-  [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] -- [IsManifold I 0 M]
-  -- [ContMDiffVectorBundle n F V I]
-
--- Note: there is some mathematical content to the sorry. The `have` statement is
--- about maps to the total space of the original bundle and we want to look at
--- the same map seen as a map into the total space of the pullback bundle.
-lemma pullback (hs : IsLocalFrameOn I F n s u) (f : ContMDiffMap I' I M' M n) :
-    letI (x : M') : AddCommGroup ((f *ᵖ V) x) := inferInstanceAs (AddCommGroup <| V (f x))
-    letI (x : M') : Module 𝕜 ((f *ᵖ V) x) := inferInstanceAs (Module 𝕜 <| V (f x))
-    IsLocalFrameOn I' F n (V := f *ᵖ V) (fun i x' ↦ s i (f x')) (f ⁻¹' u) :=
-  letI (x : M') : AddCommGroup ((f *ᵖ V) x) := inferInstanceAs (AddCommGroup <| V (f x))
-  letI (x : M') : Module 𝕜 ((f *ᵖ V) x) := inferInstanceAs (Module 𝕜 <| V (f x))
-  { linearIndependent hx := hs.linearIndependent hx,
-    generating hx := hs.generating hx,
-    contMDiffOn (i : ι) := by
-      have := (hs.contMDiffOn i).comp (s := f ⁻¹' u) f.contMDiff.contMDiffOn subset_rfl
-      sorry
-      }
-end pullback
-
 end IsLocalFrameOn
 
 end IsLocalFrame
@@ -379,16 +371,6 @@ lemma localFrame_toBasis_at_coe
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) {x : M} (i : ι) (hx : x ∈ e.baseSet) :
     b.localFrame_toBasis_at e hx i = b.localFrame e i x := by simp [hx]
-
--- -- XXX: is this result actually needed now? perhaps not, because of the toBasis definition?
--- /-- At each point `x ∈ M`, the sections `{sⁱ(x)}` of a local frame form a basis for `V x`. -/
--- def isBasis_localFrame
---     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
---     [MemTrivializationAtlas e]
---     (b : Basis ι 𝕜 F) : sorry := by
---   -- the b i form a basis of F,
---   -- and the trivialisation e is a linear equivalence (thus preserves bases)
---   sorry
 
 variable [ContMDiffVectorBundle 1 F V I]
 
@@ -663,99 +645,3 @@ lemma mdifferentiableOn_baseSet_iff_localFrame_repr
 end MDifferentiable
 
 end
-
--- local extension of a vector field in a trivialisation's base set
-section extendLocally
-
-variable {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F}
-  {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-  [MemTrivializationAtlas e] {x : M}
-
-open scoped Classical in
--- TODO: add longer docs!
--- a starting point (not fully updated any more) is this:
-/- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
-The details of the extension are mostly unspecified: for covariant derivatives, the value of
-`s` at points other than `x` will not matter (except for shorter proofs).
-Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v`.
--/
-
--- comment: need not be smooth (outside of e.baseSet), but this is a useful building block for
--- global smooth extensions of vector fields
--- the latter caps this with a smooth bump function, which need not exist if k=C
--- In contrast, this definition makes sense over any field
--- (for example, *locally* holomorphic sections always exist),
-
-/--
-Extend a vector `v ∈ V x` to a local section of `V`, w.r.t. a chosen local trivialisation.
-This construction uses a choice of local frame near `x`, w.r.t. to a basis `b` of `F` and a
-compatible local trivialisation `e` of `V` near `x`: the resulting extension has constant
-coefficients on `e.baseSet` w.r.t. this trivialisation (and is zero otherwise).
-
-In particular, our construction is smooth on `e.baseSet`, and linear in the input vector `v`.
--/
-noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (x : M) (v : V x) : (x' : M) → V x' :=
-  fun x' ↦ if hx : x ∈ e.baseSet then
-    letI bV := b.localFrame_toBasis_at e hx; ∑ i, bV.repr v i • b.localFrame e i x'
-    else 0
-
-variable (b e) in
-@[simp]
-lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
-    ((localExtensionOn b e x v) x) = v := by
-  simp [localExtensionOn, hx]
-
-omit [IsManifold I 0 M] in
-/-- A local extension has constant frame coefficients within its defining trivialisation. -/
-lemma localExtensionOn_localFrame_repr (b : Basis ι 𝕜 F) [ContMDiffVectorBundle 1 F V I]
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) (v : V x) (i : ι)
-    {x' : M} (hx' : x' ∈ e.baseSet) :
-    b.localFrame_repr I e i (localExtensionOn b e x v) x' =
-      b.localFrame_repr I e i (localExtensionOn b e x v) x := by
-  simp [localExtensionOn, hx, hx']
-
--- By construction, localExtensionOn is a linear map.
-
-variable (b e) in
-lemma localExtensionOn_add (v v' : V x) :
-    localExtensionOn b e x (v + v') = localExtensionOn b e x v + localExtensionOn b e x v' := by
-  ext x'
-  by_cases hx: x ∈ e.baseSet; swap
-  · simp [hx, localExtensionOn]
-  · simp [hx, localExtensionOn, add_smul, Finset.sum_add_distrib]
-
-variable (b e) in
-lemma localExtensionOn_zero :
-    localExtensionOn b e x 0 = 0 := by
-  ext x'
-  by_cases hx: x ∈ e.baseSet <;> simp [hx, localExtensionOn]
-
-variable (b e) in
-lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
-    localExtensionOn b e x (a • v) = a • localExtensionOn b e x v := by
-  ext x'
-  by_cases hx: x ∈ e.baseSet; swap
-  · simp [hx, localExtensionOn]
-  · simp [hx, localExtensionOn, Finset.smul_sum]
-    set B := Basis.localFrame_toBasis_at e b hx
-    congr
-    ext i
-    rw [mul_smul a ((B.repr v) i)]
-
-variable (F) in
-omit [IsManifold I 0 M] in
-lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
-    {x : M} (hx : x ∈ e.baseSet) (v : V x) [ContMDiffVectorBundle ∞ F V I] :
-    CMDiff[e.baseSet] ∞ (T% (localExtensionOn b e x v)) := by
-  -- The local frame coefficients of `localExtensionOn` w.r.t. the frame induced by `e` are
-  -- constant, hence smoothness follows.
-  rw [contMDiffOn_baseSet_iff_localFrame_repr b]
-  intro i
-  apply (contMDiffOn_const (c := (b.localFrame_repr I e i) (localExtensionOn b e x v) x)).congr
-  intro y hy
-  rw [localExtensionOn_localFrame_repr b hx v i hy]
-
-end extendLocally
