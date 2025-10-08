@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
+Authors: David Loeffler, Alvan Caleb Arulandu
 -/
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
@@ -452,9 +452,105 @@ theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by
   contrapose! hs
   simpa only [hs, neg_re, ← ofReal_natCast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
 
+lemma integral_re {X : Type*} [MeasurableSpace X]
+    (μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
+    ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := _root_.integral_re hf
+
+lemma setIntegral_re {X : Type*} [MeasurableSpace X]
+    (μ : Measure X) {s : Set X} {f : X → ℂ} (hf : IntegrableOn f s μ) :
+    ∫ x in s, (f x).re ∂μ = (∫x in s, f x ∂μ).re := Complex.integral_re _ hf.integrable
+
+lemma intervalIntegral_re (μ: Measure ℝ) {a b : ℝ} {f:ℝ → ℂ} (hab: a ≤ b)
+    (hf: IntervalIntegrable f μ a b) :
+    ∫ x in (a)..b, (f x).re = (∫ x in (a)..b, f x).re := by
+    repeat rw [intervalIntegral.integral_of_le hab]
+    apply setIntegral_re
+    rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le hab]
+    have : IntervalIntegrable f μ a b = IntervalIntegrable f volume a b := by
+      dsimp
+      sorry
+    rw [← this]
+    exact hf
+
 end Complex
 
 namespace Real
+
+/-- The `Beta` function (of a real variables `a` and `b`). -/
+@[pp_nodot]
+def Beta (a b : ℝ) : ℝ :=
+  (Complex.betaIntegral a b).re
+
+lemma integrable_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X}
+    {f : X → ℝ} : Integrable f μ ↔ Integrable (fun x ↦ (f x : ℂ)) μ :=
+    ⟨fun hf ↦ hf.ofReal, fun hf ↦ hf.re⟩
+
+lemma integrableOn_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
+    {f : X → ℝ} : IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ := integrable_iff_ofReal
+
+lemma intervalIntegrable_iff_ofReal {μ : Measure ℝ} {a b : ℝ} {f : ℝ → ℝ}  (hab: a ≤ b):
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable (fun x ↦ (f x : ℂ)) μ a b := by
+    repeat rw [intervalIntegrable_iff_integrableOn_Ioc_of_le]
+    apply integrableOn_iff_ofReal
+    all_goals exact hab
+
+lemma BetaIntegral_ofReal_interval {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    (∫ (x : ℝ) in (0)..1, (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)).re =
+      ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+  rw [intervalIntegral.integral_of_le (by norm_num), intervalIntegral.integral_of_le (by norm_num),
+    ← Complex.setIntegral_re]
+  refine setIntegral_congr (measurableSet_Ioc) fun x hx ↦ ?_
+  rw [mem_Ioc] at hx
+  norm_cast
+  rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow]
+  simp
+  any_goals linarith
+  have ha' : 0 < (a: ℂ).re := by
+    rw [Complex.ofReal_re]
+    exact ha
+  have hb' : 0 < (b : ℂ).re := by
+    rw [Complex.ofReal_re]
+    exact hb
+
+  rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num)]
+  exact Complex.betaIntegral_convergent ha' hb'
+
+lemma BetaIntegral_ofReal {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    Beta a b = ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+    rw [Beta, Complex.betaIntegral, BetaIntegral_ofReal_interval ha hb]
+
+lemma Beta_integrand_intervalIntegrable {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
+    IntervalIntegrable (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
+  have ha' : 0 < (↑a : ℂ).re := by
+    rw [Complex.ofReal_re]
+    exact ha
+  have hb' : 0 < (↑b : ℂ).re := by
+    rw [Complex.ofReal_re]
+    exact hb
+  have : IntervalIntegrable (fun x ↦ (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) volume 0 1 ↔
+    IntervalIntegrable (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
+    rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
+    intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
+    integrableOn_iff_ofReal]
+    refine integrableOn_congr_fun (fun x hx ↦ ?_) measurableSet_Ioc
+    rw [mem_Ioc] at hx
+    norm_cast
+    rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow]
+    simp
+    any_goals linarith
+
+  rw [← this]
+  exact Complex.betaIntegral_convergent ha' hb'
+
+lemma Beta_pos {a b : ℝ} (ha : 0 < a) (hb : 0 < b) : Beta a b > 0 := by
+  rw [Beta, Complex.betaIntegral, BetaIntegral_ofReal_interval ha hb]
+  apply intervalIntegral.intervalIntegral_pos_of_pos_on
+  · exact Beta_integrand_intervalIntegrable ha hb
+  · simp
+    intros x hxpos hx1
+    have hp : 1 - x > 0 := by linarith
+    positivity
+  · exact zero_lt_one
 
 /-- The sequence with `n`-th term `n ^ s * n! / (s * (s + 1) * ... * (s + n))`, for real `s`. We
 will show that this tends to `Γ(s)` as `n → ∞`. -/
