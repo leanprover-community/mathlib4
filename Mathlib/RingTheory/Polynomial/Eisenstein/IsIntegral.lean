@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
@@ -120,7 +120,7 @@ end Cyclotomic
 section IsIntegral
 
 variable {K : Type v} {L : Type z} {p : R} [CommRing R] [Field K] [Field L]
-variable [Algebra K L] [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algebra.IsSeparable K L]
+variable [Algebra K L] [Algebra R L] [Algebra R K] [IsScalarTower R K L]
 variable [IsDomain R] [IsFractionRing R K] [IsIntegrallyClosed R]
 
 local notation "𝓟" => Submodule.span R {(p : R)}
