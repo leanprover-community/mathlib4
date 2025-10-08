@@ -22,6 +22,7 @@ namespace RealProdLexBool
 
 instance instTopologicalSpace : TopologicalSpace (ℝ ×ₗ Bool) := Preorder.topology _
 instance instOrderTopology : OrderTopology (ℝ ×ₗ Bool) := ⟨rfl⟩
+noncomputable instance instLinearOrder : LinearOrder (ℝ ×ₗ Bool) := inferInstance
 
 instance instSeparableSpace : SeparableSpace (ℝ ×ₗ Bool) := by
   refine ⟨⟨range fun q : ℚ ↦ toLex (q, false), countable_range _, ?_⟩⟩
