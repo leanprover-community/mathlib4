@@ -186,6 +186,7 @@ lemma abs_rclike_smul (r : 𝕜) (a : A) : abs (r • a) = ‖r‖ • abs a := 
     simp [-algebraMap_smul, ← smul_mul_assoc, ← mul_comm (starRingEnd _ _), RCLike.conj_mul, sq]
   · simp [abs_smul]
 
+variable (𝕜) in
 lemma abs_eq_cfcₙ_coe_norm (a : A) (ha : p a := by cfc_tac) :
     abs a = cfcₙ (fun z : 𝕜 ↦ (‖z‖ : 𝕜)) a := by
   rw [abs, sqrt_eq_iff _ _ (hb := cfcₙ_norm_nonneg _ _), ← cfcₙ_mul ..]
@@ -196,9 +197,13 @@ lemma cfcₙ_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((fun z ↦ (‖z‖ : 𝕜)) '' quasispectrum 𝕜 a) := by cfc_cont_tac) :
     cfcₙ (f ‖·‖) a = cfcₙ f (abs a) := by
   obtain (hf0 | hf0) := em (f 0 = 0)
-  · rw [cfcₙ_comp' f (‖·‖) a, ← abs_eq_cfcₙ_coe_norm a]
+  · rw [cfcₙ_comp' f (‖·‖) a, ← abs_eq_cfcₙ_coe_norm _ a]
   · rw [cfcₙ_apply_of_not_map_zero _ hf0,
       cfcₙ_apply_of_not_map_zero _ (fun h ↦ (hf0 <| by simpa using h).elim)]
+
+lemma quasispectrum_abs (a : A) (ha : p a := by cfc_tac) :
+    quasispectrum 𝕜 (abs a) = (fun z ↦ (‖z‖ : 𝕜)) '' quasispectrum 𝕜 a := by
+  rw [abs_eq_cfcₙ_coe_norm 𝕜 a ha, cfcₙ_map_quasispectrum ..]
 
 end RCLike
 
@@ -264,10 +269,14 @@ lemma abs_algebraMap_rclike (c : 𝕜) : abs (algebraMap 𝕜 A c) = algebraMap 
 lemma cfc_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((fun z ↦ (‖z‖ : 𝕜)) '' spectrum 𝕜 a) := by cfc_cont_tac) :
     cfc (f ‖·‖) a = cfc f (abs a) := by
-  rw [abs_eq_cfcₙ_coe_norm a (𝕜 := 𝕜), cfcₙ_eq_cfc, ← cfc_comp' ..]
+  rw [abs_eq_cfcₙ_coe_norm 𝕜 a, cfcₙ_eq_cfc, ← cfc_comp' ..]
 
 lemma abs_sq (a : A) : (abs a) ^ 2 = star a * a := by
   rw [sq, abs_mul_abs]
+
+lemma spectrum_abs (a : A) (ha : p a := by cfc_tac) :
+    spectrum 𝕜 (abs a) = (fun z ↦ (‖z‖ : 𝕜)) '' spectrum 𝕜 a := by
+  rw [abs_eq_cfcₙ_coe_norm 𝕜 a, cfcₙ_eq_cfc, cfc_map_spectrum ..]
 
 end RCLike
 
