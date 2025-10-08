@@ -287,7 +287,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
     simp only [notMem_empty, not_and, Set.mem_singleton_iff,
       mem_vaddAntidiagonal, iff_false]
     rintro rfl h2 h1
-    rw [IsLeftCancelVAdd.left_cancel a1 a2 a h1] at h2
+    rw [IsCancelVAdd.left_cancel a1 a2 a h1] at h2
     exact h2 hx
   trans ∑ ij ∈ {(b, a)},
     (HahnSeries.single b r).coeff ij.fst • ((of R).symm x).coeff ij.snd
@@ -296,7 +296,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
     simp only [Set.mem_singleton_iff, Prod.mk_inj, mem_vaddAntidiagonal, mem_singleton]
     constructor
     · rintro ⟨rfl, _, h1⟩
-      exact ⟨rfl, IsLeftCancelVAdd.left_cancel a1 a2 a h1⟩
+      exact ⟨rfl, IsCancelVAdd.left_cancel a1 a2 a h1⟩
     · rintro ⟨rfl, rfl⟩
       exact ⟨rfl, by exact hx, rfl⟩
   · simp

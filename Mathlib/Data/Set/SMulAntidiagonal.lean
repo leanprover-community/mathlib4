@@ -62,7 +62,7 @@ variable [SMul G P] [IsCancelSMul G P] {x y : smulAntidiagonal s t a}
 theorem fst_eq_fst_iff_snd_eq_snd :
     (x : G × P).1 = (y : G × P).1 ↔ (x : G × P).2 = (y : G × P).2 :=
   ⟨fun h =>
-    IsLeftCancelSMul.left_cancel _ _ _
+    IsCancelSMul.left_cancel _ _ _
       (y.2.2.2.trans <| by
           rw [← h]
           exact x.2.2.2.symm).symm,
