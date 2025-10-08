@@ -43,7 +43,9 @@ notation:25 𝒜 " →+*ᵍ " ℬ => GradedRingHom 𝒜 ℬ
 
 /-- `GradedRingHomClass F 𝒜 ℬ` states that `F` is a type of graded (semi)ring homomorphisms.
 You should extend this class when you extend `GradedRingHom`. -/
-class GradedRingHomClass (F : Type*) (𝒜 : outParam (ι → σ)) (ℬ : outParam (ι → τ))
+class GradedRingHomClass (F : Type*) {ι A B σ τ : outParam Type*}
+    [Semiring A] [Semiring B] [SetLike σ A] [SetLike τ B]
+    (𝒜 : outParam (ι → σ)) (ℬ : outParam (ι → τ))
     [FunLike F A B] : Prop
   extends RingHomClass F A B where
   map_mem (f : F) {i : ι} {x : A} : x ∈ 𝒜 i → f x ∈ ℬ i
@@ -277,16 +279,18 @@ end GradedRingHom
 
 end SetLike
 
-namespace GradedRingHom
+section GradedRingHomClass
 
 variable [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
 
 section
 variable (𝒜 : ι → σ) (ℬ : ι → τ)
+variable {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
 
+-- Note: if `GradedAddHom` is added later, then the assumptions can be relaxed.
 /-- A graded ring homomorphism descends to an additive homomorphism on each indexed component. -/
-@[simps!] def addHom (f : 𝒜 →+*ᵍ ℬ) (i : ι) : 𝒜 i →+ ℬ i where
-  toFun x := ⟨f x, f.map_mem _ _ x.2⟩
+@[simps!] def gradedAddHom (f : F) (i : ι) : 𝒜 i →+ ℬ i where
+  toFun x := ⟨f x, map_mem _ _ f x.2⟩
   map_zero' := by ext; simp
   map_add' x y := by ext; simp
 
@@ -294,33 +298,35 @@ end
 
 section
 variable [AddMonoid ι] (𝒜 : ι → σ) (ℬ : ι → τ) [SetLike.GradedMonoid 𝒜] [SetLike.GradedMonoid ℬ]
+variable {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
 
 /-- A graded ring homomorphism descends to a ring homomorphism on the zeroth component. -/
-@[simps!] def zero (f : 𝒜 →+*ᵍ ℬ) : 𝒜 0 →+* ℬ 0 where
-  __ := f.addHom _ _ 0
-  map_one' := Subtype.ext f.map_one
-  map_mul' _ _ := Subtype.ext <| f.map_mul ..
+@[simps!] def gradedZeroRingHom (f : F) : 𝒜 0 →+* ℬ 0 where
+  __ := gradedAddHom _ _ f 0
+  map_one' := Subtype.ext <| map_one _
+  map_mul' _ _ := Subtype.ext <| map_mul ..
 
 end
 
 section GradedRing
 variable [DecidableEq ι] [AddMonoid ι] (𝒜 : ι → σ) (ℬ : ι → τ) [GradedRing 𝒜] [GradedRing ℬ]
+variable {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
 
-@[simp] lemma decompose_map (f : 𝒜 →+*ᵍ ℬ) {x : A} :
-    DirectSum.decompose ℬ (f x) = .map (f.addHom _ _) (.decompose 𝒜 x) := by
+@[simp] lemma decompose_map (f : F) {x : A} :
+    DirectSum.decompose ℬ (f x) = .map (gradedAddHom _ _ f) (.decompose 𝒜 x) := by
   classical
   rw [← DirectSum.sum_support_decompose 𝒜 x, map_sum, DirectSum.decompose_sum,
     DirectSum.decompose_sum, map_sum]
   congr 1
   ext n : 1
-  rw [DirectSum.decompose_of_mem _ (f.map_mem _ _ (Subtype.prop _)),
+  rw [DirectSum.decompose_of_mem _ (map_mem _ _ f (Subtype.prop _)),
     DirectSum.decompose_of_mem _ (Subtype.prop _), DirectSum.map_of]
   rfl
 
-lemma map_coe_decompose (f : 𝒜 →+*ᵍ ℬ) {x : A} {i : ι} :
+lemma map_coe_decompose (f : F) {x : A} {i : ι} :
     f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i := by
-  simp
+  simp [decompose_map 𝒜]
 
 end GradedRing
 
-end GradedRingHom
+end GradedRingHomClass
