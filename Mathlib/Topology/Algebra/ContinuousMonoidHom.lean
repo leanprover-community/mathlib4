@@ -562,7 +562,7 @@ variable {e}
 @[simp] lemma toContinuousMulEquiv_toMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) = e :=
   rfl
 
-@[simp] lemma toContinuousMulEquiv_toHomeomorph :
+@[simp] lemma toHomeomorph_toContinuousMulEquiv :
     (e.toContinuousMulEquiv he : G ≃ₜ H) = e.toHomeomorph he :=
   rfl
 
