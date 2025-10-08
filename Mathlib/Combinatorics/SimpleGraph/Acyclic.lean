@@ -65,15 +65,15 @@ variable {G}
 /-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
 lemma IsAcyclic.map {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
     (hinj : Function.Injective f) (h : G'.IsAcyclic) : G.IsAcyclic :=
-  fun _ c ↦ map_isCycle_iff_of_injective hinj |>.not.mp <| h <| c.map f
+  fun _ _ ↦ map_isCycle_iff_of_injective hinj |>.not.mp <| h _
 
 lemma IsAcyclic.embedding {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G ↪g G')
     (h : G'.IsAcyclic) : G.IsAcyclic :=
   h.map f f.injective
 
 /-- Isomorphic graphs are acyclic together. -/
-lemma Iso.isAcyclic_iff {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G ≃g G')
-    : G.IsAcyclic ↔ G'.IsAcyclic :=
+lemma Iso.isAcyclic_iff {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G ≃g G') :
+    G.IsAcyclic ↔ G'.IsAcyclic :=
   ⟨fun h ↦ h.embedding f.symm, fun h ↦ h.embedding f⟩
 
 lemma IsAcyclic.of_map {V V' : Type*} {G : SimpleGraph V} (f : V ↪ V') (h : G.map f |>.IsAcyclic) :
