@@ -67,7 +67,7 @@ variable {s : E → E'} in
 These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
 
 **Warning.** These elaborators are a proof of concept; the implementation should be considered a
-prototype. Don't rewrite all of mathlib to use it just yet. Notable bugs and limitations include
+prototype. Don't rewrite all of mathlib to use it just yet. Notable limitations include
 the following.
 
 ## TODO
@@ -76,10 +76,8 @@ the following.
   is correct 90% of the time).
   For products of vector spaces `E × F`, this could print a warning about making a choice between
   the model in `E × F` and the product of the models on `E` and `F`.
-- extend the elaborators to support `OpenPartialHomeomorph`s and `PartialEquiv`s
-- better error messages (as needed)
-- further testing and fixing of edge cases
-- add tests for all of the above
+- better error messages (as needed), with tests
+- further testing and fixing of edge cases (with tests)
 - add delaborators for these elaborators
 
 -/
@@ -235,10 +233,11 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"   fromTotalSpace   then return m
-  if let some m ← tryStrategy m!"NormedSpace"  fromNormedSpace  then return m
-  if let some m ← tryStrategy m!"ChartedSpace" fromChartedSpace then return m
-  if let some m ← tryStrategy m!"NormedField"  fromNormedField  then return m
+  if let some m ← tryStrategy m!"TotalSpace"    fromTotalSpace    then return m
+  if let some m ← tryStrategy m!"TangentBundle" fromTangentBundle then return m
+  if let some m ← tryStrategy m!"NormedSpace"   fromNormedSpace   then return m
+  if let some m ← tryStrategy m!"ChartedSpace"  fromChartedSpace  then return m
+  if let some m ← tryStrategy m!"NormedField"   fromNormedField   then return m
   throwError "Could not find models with corners for {e}"
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -252,6 +251,15 @@ where
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
       throwError "Having a TotalSpace as source is not yet supported"
     | _ => throwError "{e} is not a `Bundle.TotalSpace`."
+  /-- Attempt to find a model on a `TangentBundle` -/
+  fromTangentBundle : TermElabM Expr := do
+    match_expr e with
+    | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
+      trace[Elab.DiffGeo.MDiff] "{e} is a TangentBundle over model {I} on {M}"
+      let srcIT : Term ← Term.exprToSyntax I
+      let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
+      Term.elabTerm resTerm none
+    | _ => throwError "{e} is not a `TangentBundle`"
   /-- Attempt to use the provided `baseInfo` to find a model. -/
   fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
     if let some (src, srcI) := baseInfo then
@@ -341,14 +349,14 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
 
 end Elab
 
-open Elab
+open Elab Lean.Meta
 
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← Term.elabTerm f none
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
 
@@ -356,7 +364,7 @@ scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
 trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
 
@@ -383,16 +391,19 @@ scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
-  let et ← Term.elabTerm t none
+  let et ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels et es
   mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
 
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "MDiff" ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``MDifferentiable #[srcI, tgtI, e]
+
+-- We ensure the type of `n` before checking `f` is a function to provide better error messages
+-- in case e.g. just `n` was forgotten.
 
 /-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
 trying to determine `I` and `J` from the local context.
@@ -400,8 +411,8 @@ trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
 
@@ -410,7 +421,7 @@ trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
 The argument `x` can be omitted. -/
 scoped elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
@@ -420,8 +431,8 @@ trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
 
@@ -429,8 +440,8 @@ scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : te
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
-  let e ← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let e ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
 
@@ -438,14 +449,14 @@ scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "mfderiv[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e es
   mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
 
 /-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``mfderiv #[srcI, tgtI, e]
 
