@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.Order.CompletePartialOrder
 
@@ -37,8 +38,8 @@ open scoped Topology ENNReal InnerProductSpace
 all `i : ι`, `u i` tends to `c` at infinity, and that furthermore the limsup of `i ↦ u i r` along
 the cofinite filter tends to the same `c` as `r` tends to infinity.
 Then the supremum function `r ↦ ⨆ i, u i r` also tends to `c` at infinity. -/
-lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice α] {β : Type*}
-    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {ι : Type*}
+lemma tendsto_iSup_of_tendsto_limsup {α β ι : Type*} [ConditionallyCompleteLattice α]
+    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {u : ι → α → β} {c : β}
     (h_all : ∀ i, Tendsto (u i) atTop (𝓝 c))
     (h_limsup : Tendsto (fun r : α ↦ limsup (fun i ↦ u i r) cofinite) atTop (𝓝 c))
@@ -47,10 +48,11 @@ lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice 
   classical
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨n0⟩⟩
   · simpa using h_limsup
-  refine tendsto_order.2 ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
-  · filter_upwards [] with r
+  refine tendsto_order.mpr ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
+  · filter_upwards with r
     have : c ≤ u n0 r := Antitone.le_of_tendsto (h_anti n0) (h_all n0) r
     exact hb.trans_le (this.trans (le_iSup_iff.mpr fun b a ↦ a n0))
+  -- `⊢ ∀ᶠ (b_1 : α) in atTop, ⨆ i, u i b_1 < b` for `b > c`
   let b' := if h : (Set.Ioo c b).Nonempty then h.some else c
   have hb'b : b' < b := by
     simp only [b']
@@ -93,8 +95,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice 
   simp only [eventually_atTop, ge_iff_le]
   refine ⟨r ⊔ ⨆ n : {n | b'' < u n r}, rs n, fun v hv ↦ ?_⟩
   apply lt_of_le_of_lt _ hb''b.2
-  simp only [Set.mem_setOf_eq, iSup_exists, iSup_le_iff, forall_apply_eq_imp_iff]
-  intro n
+  refine iSup_le fun n ↦ ?_
   by_cases hn : b'' < u n r
   · refine hrs n v ?_
     calc rs n
