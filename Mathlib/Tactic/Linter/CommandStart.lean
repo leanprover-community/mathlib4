@@ -332,8 +332,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
     for s in scan do
-      let center := origSubstring.stopPos - s.srcEndPos
-      let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
+      let center := origSubstring.stopPos.unoffsetBy s.srcEndPos
+      let rg : String.Range := ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
       if s.msg.startsWith "Oh no" then
         Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
           m!"This should not have happened: please report this issue!"

@@ -143,7 +143,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     align (pos : String.Pos.Raw) :=
       let i := partitionPoint aligns (·.1 ≤ pos)
       let (a, b) := aligns[i - 1]!
-      pos - a + b
+      pos.unoffsetBy a |>.offsetBy b
     let s := { s with pos := align s'.pos, errorMsg := s'.errorMsg }
     if s.hasError then return s
     let rec
