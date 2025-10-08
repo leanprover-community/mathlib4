@@ -207,7 +207,6 @@ variable [TopologicalSpace A] [DiscreteTopology A]
 /-- Cylinders are open when `A` is discrete. -/
 lemma isOpen_cylinder (U : Finset G) (x : G → A) :
     IsOpen (cylinder U x) := by
-  classical
   have hopen : ∀ i ∈ (↑U : Set G), IsOpen ({x i} : Set A) := by
     intro i _; simp
   have hpi :
