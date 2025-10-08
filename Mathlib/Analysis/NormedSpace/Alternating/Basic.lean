@@ -309,6 +309,18 @@ variable (𝕜 E)
 @[simp] theorem nnnorm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_constOfIsEmpty _ _ _
 
+variable (ι F) in
+/-- `constOfIsEmpty` as a linear isometry equivalence. -/
+@[simps]
+def constOfIsEmptyLIE [IsEmpty ι] : F ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] F) where
+  toFun := constOfIsEmpty _ _ _
+  invFun f := f 0
+  left_inv x := by simp
+  right_inv f := by ext x; simp [Subsingleton.allEq x 0]
+  map_add' f g := rfl
+  map_smul' c f := rfl
+  norm_map' := norm_constOfIsEmpty _ _
+
 end
 
 variable (𝕜 E F G) in
