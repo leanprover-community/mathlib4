@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Andrew Yang, Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Equivalence
@@ -59,6 +59,7 @@ namespace CategoryTheory
 open Category Limits Comonad
 
 variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
 
 namespace Over
 
@@ -66,7 +67,7 @@ open Limits
 
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
-@[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
+@[simps! (config := { simpRhs := true }) obj_left obj_hom map_left]
 def pullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd g.hom f)
   map := fun g {h} {k} =>
@@ -103,7 +104,8 @@ This "preserved under pullbacks" condition is automatically satisfied in abelian
 example [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
 ```
 -/
-instance faithful_pullback {X Y : C} (f : X ⟶ Y) [∀ Z (g : Z ⟶ Y), Epi (pullback.fst g f)] :
+instance faithful_pullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y)
+    [∀ Z (g : Z ⟶ Y), Epi (pullback.fst g f)] :
     (pullback f).Faithful := by
   have (Z : Over Y) : Epi ((mapPullbackAdj f).counit.app Z) := by
     simp only [Functor.comp_obj, Functor.id_obj, mapPullbackAdj_counit_app]; infer_instance
@@ -193,7 +195,7 @@ end Reindex
 
 section BinaryProduct
 
-open ChosenFiniteProducts Sigma Reindex
+open CartesianMonoidalCategory Sigma Reindex MonoidalCategory
 
 variable [HasFiniteWidePullbacks C] {X : C}
 
@@ -212,17 +214,20 @@ def isBinaryProductSigmaReindex (Y Z : Over X) :
     · exact congr_arg CommaMorphism.left (h ⟨ .right⟩)
     · exact congr_arg CommaMorphism.left (h ⟨ .left ⟩)
 
-attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
+attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
 
-/-- The object `(Sigma Y) (Reindex Y Z)` is isomorphic to the binary product `Y × Z`
+instance (X : C) : CartesianMonoidalCategory (Over X) := by
+  infer_instance
+
+/-- The object `(Sigma Y) (Reindex Y Z)` is isomorphic to the binary product `Y ⊗ Z`
 in `Over X`. -/
 @[simps!]
 def sigmaReindexIsoProd (Y Z : Over X) :
-    (Sigma Y) (Reindex Y Z) ≅ Limits.prod Y Z := by
+    (Sigma Y) (Reindex Y Z) ≅ (Y ⊗ Z) := by
   apply IsLimit.conePointUniqueUpToIso (isBinaryProductSigmaReindex Y Z) (prodIsProd Y Z)
 
-/-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the `(map f).obj ((pullback f).obj Y)`
-is isomorphic to the binary product of `(Over.mk f)` and `Y`. -/
+/-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the object
+`(map f).obj ((pullback f).obj Y)` is isomorphic to the binary product of `(Over.mk f)` and `Y`. -/
 def sigmaReindexIsoProdMk {Y : C} (f : Y ⟶ X) (Z : Over X) :
     (map f).obj ((pullback f).obj Z) ≅ Limits.prod (Over.mk f) Z :=
   sigmaReindexIsoProd (Over.mk f) _
@@ -243,20 +248,19 @@ end Over
 
 section TensorLeft
 
-open MonoidalCategory Over Functor ChosenFiniteProducts
+open MonoidalCategory Over Functor CartesianMonoidalCategory
 
-attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
-attribute [local instance] monoidalOfChosenFiniteProducts
+attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
 
 variable [HasFiniteWidePullbacks C] {X : C}
 
 /-- The pull-push composition `(Over.pullback Y.hom) ⋙ (Over.map Y.hom)` is naturally isomorphic
-to the left tensor product functor `Y × _` in `Over X`-/
+to the left tensor product functor `Y × _` in `Over X`. -/
 def Over.sigmaReindexNatIsoTensorLeft (Y : Over X) :
     (pullback Y.hom) ⋙ (map Y.hom) ≅ tensorLeft Y := by
   fapply NatIso.ofComponents
   · intro Z
-    simp only [const_obj_obj, Functor.id_obj, comp_obj, tensorLeft_obj, tensorObj, Over.pullback]
+    simp only [const_obj_obj, Functor.id_obj, comp_obj, Over.pullback]
     exact sigmaReindexIsoProd Y Z
   · intro Z Z' f
     simp
@@ -312,13 +316,15 @@ variable (X : C)
 Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
-def forgetAdjStar : forget X ⊣ star X := (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
+def forgetAdjStar [HasBinaryProducts C] :
+    forget X ⊣ star X :=
+  (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
 
-instance : (star X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
+instance [HasBinaryProducts C] : (star X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`. -/
-instance : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
+instance [HasBinaryProducts C] : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 namespace forgetAdjStar
 
@@ -475,12 +481,14 @@ instance isRightAdjoint_post [HasPushouts D] {Y : D} {G : D ⥤ C} [G.IsRightAdj
 
 /-- The category under any object `X` factors through the category under the initial object `I`. -/
 @[simps!]
-noncomputable def forgetMapInitial {I : C} (hI : IsInitial I) :
+noncomputable def forgetMapInitial {I : C} (X : C) (hI : IsInitial I) :
     forget X ≅ map (hI.to X) ⋙ (equivalenceOfIsInitial hI).functor :=
   NatIso.ofComponents fun X ↦ .refl _
 
 section HasBinaryCoproducts
 variable [HasBinaryCoproducts C]
+
+variable (X : C)
 
 /-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`. -/
 @[simps! obj_left obj_hom map_left]
