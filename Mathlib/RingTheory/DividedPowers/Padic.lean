@@ -65,77 +65,35 @@ noncomputable def dividedPowers_of_injective (f : A →+* B) (hf : Injective f)
     (hJ : DividedPowers J) (hIJ : I.map f = J)
     (hmem : ∀ (n : ℕ) {x : A} (_ : x ∈ I), ∃ (y : A) (_ : n ≠ 0 → y ∈ I), f y = hJ.dpow n (f x)) :
     DividedPowers I where
-  dpow n x := open Classical in if hx : x ∈ I then f.toFun.invFun (hJ.dpow n (f x)) else 0
+  dpow n x := open Classical in if hx : x ∈ I then Exists.choose (hmem n hx) else 0
   dpow_null hx := by simp [dif_neg hx]
   dpow_zero {x} hx := by
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, dif_pos hx]
-    have h1 : f.toFun.invFun 1 = 1 := by
-      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-        MonoidHom.coe_coe, ← hf.eq_iff, map_one]
-      rw [invFun_eq ⟨1, map_one f⟩]
-    rw [← h1, hJ.dpow_zero (hIJ ▸ Ideal.mem_map_of_mem f hx)]
-    rfl
+    simp only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (hmem 0 hx)).2, map_one]
+    rw [hJ.dpow_zero (hIJ ▸ Ideal.mem_map_of_mem f hx)]
   dpow_one hx := by
-    simp only [dif_pos hx]
-    obtain ⟨y, hy, h⟩ := hmem 1 hx
-    rw [hJ.dpow_one (hIJ ▸ Ideal.mem_map_of_mem f hx)] at h ⊢
-    simp [← h, Function.leftInverse_invFun hf y, hf h]
-  dpow_mem {n x} hn hx := by
-    obtain ⟨y, hy, h⟩ := hmem n hx
-    simp [dif_pos hx, ← h, Function.leftInverse_invFun hf y, hy hn]
+    simpa only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2]
+      using hJ.dpow_one (hIJ ▸ Ideal.mem_map_of_mem f hx)
+  dpow_mem {n x} hn hx := by simpa only [dif_pos hx] using (Exists.choose_spec (hmem n hx)).1 hn
   dpow_add {n x y} hx hy := by
     have hxy : x + y ∈ I := Ideal.add_mem _ hx hy
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, dif_pos hxy, dif_pos hx, dif_pos hy]
-    rw [← hf.eq_iff, map_sum]
-    obtain ⟨a, ha, h⟩ := hmem n hxy
-    by_cases hn0 : n = 0
-    · simp only [hn0, Finset.antidiagonal_zero, Prod.mk_zero_zero, map_mul, Prod.snd_zero,
-        Finset.sum_singleton, Prod.fst_zero, hJ.dpow_zero (hIJ ▸ Ideal.mem_map_of_mem f hx),
-        invFun_eq ⟨1, map_one f⟩,  hJ.dpow_zero (hIJ ▸ Ideal.mem_map_of_mem f hy),
-        hJ.dpow_zero (hIJ ▸ Ideal.mem_map_of_mem f hxy), mul_one]
-    · rw [invFun_eq ⟨a, h⟩, map_add,
-        hJ.dpow_add (hIJ ▸ Ideal.mem_map_of_mem f hx) (hIJ ▸ Ideal.mem_map_of_mem f hy)]
-      apply Finset.sum_congr rfl
-      intros m hm
-      rw [map_mul]
-      congr
-      · obtain ⟨ax, _, hax⟩ := hmem m.1 hx
-        rw [invFun_eq ⟨ax, hax⟩]
-      · obtain ⟨ay, _, hay⟩ := hmem m.2 hy
-        rw [invFun_eq ⟨ay, hay⟩]
+    simpa only [dif_pos hxy, dif_pos hx, dif_pos hy, ← hf.eq_iff, map_sum, map_mul,
+      (Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2, map_add]
+      using hJ.dpow_add (hIJ ▸ I.mem_map_of_mem f hx) (hIJ ▸ I.mem_map_of_mem f hy)
   dpow_mul {n a x} hx := by
     have hax : a * x ∈ I := Ideal.mul_mem_left _ _ hx
-    obtain ⟨b, _, hb⟩ := hmem n hx
-    obtain ⟨c, _, hc⟩ := hmem n hax
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, dif_pos hax, dif_pos hx]
-    rw [← hf.eq_iff, map_mul f (a^n), invFun_eq ⟨b, hb⟩, invFun_eq ⟨c, hc⟩, map_mul,
-      hJ.dpow_mul (hIJ ▸ Ideal.mem_map_of_mem f hx), map_pow]
-  mul_dpow {m n x} hx := by
-    obtain ⟨a, _, ha⟩ := hmem m hx
-    obtain ⟨b, _, hb⟩ := hmem n hx
-    obtain ⟨c, _, hc⟩ := hmem (m + n) hx
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, dif_pos hx, ← hf.eq_iff, map_mul]
-    rw [invFun_eq ⟨a, ha⟩, invFun_eq ⟨b, hb⟩,  invFun_eq ⟨c, hc⟩,
-      hJ.mul_dpow (hIJ ▸ Ideal.mem_map_of_mem f hx), map_natCast]
+    simpa only [(Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2, dif_pos hax, dif_pos hx,
+    ← hf.eq_iff, map_mul, map_pow] using hJ.dpow_mul (hIJ ▸ I.mem_map_of_mem f hx)
+  mul_dpow hx := by simpa only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (hmem _ hx)).2,
+    map_mul, map_natCast] using hJ.mul_dpow (hIJ ▸ I.mem_map_of_mem f hx)
   dpow_comp {n m x} hm hx := by
-    classical
-    obtain ⟨a, _, ha⟩ := hmem m hx
-    obtain ⟨b, _, hb⟩ := hmem (n * m) hx
-    have hc : f ((n.uniformBell m) * b) = (n.uniformBell m) * hJ.dpow (n * m) (f x) := by
-      simp [hb]
-    have hinv : invFun f.toFun (hJ.dpow m (f x)) ∈ I := by
-      obtain ⟨y, hy, h⟩ := hmem m hx
-      simp [← h, Function.leftInverse_invFun hf y, hy hm]
-    simp only [dif_pos hx, dif_pos hinv]
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe]
-    rw [← hf.eq_iff, invFun_eq ⟨a, ha⟩, map_mul, invFun_eq ⟨b, hb⟩,
-      hJ.dpow_comp hm (hIJ ▸ Ideal.mem_map_of_mem f hx), map_natCast,
-      invFun_eq ⟨(n.uniformBell m) * b, hc⟩]
+    simp only [dif_pos hx, ← hf.eq_iff, map_mul, map_natCast]
+    -- the condition for the other `dif_pos` is a bit messy so we use `rw` to
+    -- spin it off into a separate branch
+    rw [dif_pos]
+    · simp only [(Exists.choose_spec (_ : ∃ a, ∃ _, f a = _)).2]
+      exact hJ.dpow_comp hm (hIJ ▸ I.mem_map_of_mem f hx)
+    · rw [dif_pos hx]
+      exact (Exists.choose_spec (hmem m hx)).1 hm
 
 end Injective
 
@@ -222,10 +180,8 @@ lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
     have heq : Coe.ringHom ⟨dpow' p n x, dpow'_int p n hx⟩ =
         inverse (n ! : ℚ_[p]) * Coe.ringHom x ^ n := by
       simp [dpow', inverse_eq_inv', Coe.ringHom_apply]
-    rw [← hinj.eq_iff, RatAlgebra.dpow_apply, if_pos (by trivial), ← heq]
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe]
-    rw [apply_invFun_apply (f := Coe.ringHom)]
+    simpa only [← hinj.eq_iff, (Exists.choose_spec (_ : ∃ a, ∃ _, Coe.ringHom a = _)).2,
+      RatAlgebra.dpow_apply, Submodule.mem_top] using heq.symm
   · rfl
 
 end Padic
