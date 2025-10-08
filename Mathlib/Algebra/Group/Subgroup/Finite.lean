@@ -170,7 +170,7 @@ open Set
 
 variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
 
-@[to_additive]
+@[to_additive (attr := deprecated Submonoid.pi_mem_of_mulSingle_mem_aux (since := "2025-10-08"))]
 theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
     (x : ∀ i, f i) (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
     x ∈ H :=
@@ -187,6 +187,20 @@ additive groups. -/]
 theorem pi_le_iff [DecidableEq η] [Finite η] {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i, f i)} :
     pi univ H ≤ J ↔ ∀ i : η, map (MonoidHom.mulSingle f i) (H i) ≤ J :=
   Submonoid.pi_le_iff
+
+@[to_additive]
+theorem closure_pi [Finite η] {s : Π i, Set (f i)} (hs : ∀ i, 1 ∈ s i) :
+    closure (univ.pi fun i => s i) = pi univ fun i => closure (s i) :=
+  le_antisymm
+    ((closure_le _).2 <| pi_subset_pi_iff.2 <| .inl fun _ _ => subset_closure)
+    (by
+      classical
+      exact pi_le_iff.mpr fun i => (gc_map_comap _).l_le <| (closure_le _).2 fun _x hx =>
+          subset_closure <| mem_univ_pi.mpr fun j => by
+        by_cases H : j = i
+        · subst H
+          simpa
+        · simpa [H] using hs _)
 
 end Pi
 
