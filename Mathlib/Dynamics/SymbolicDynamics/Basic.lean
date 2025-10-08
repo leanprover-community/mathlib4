@@ -3,11 +3,8 @@ Copyright (c) 2025 S. Gangloff. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: S. Gangloff
 -/
-
-import Mathlib.Topology.Basic
 import Mathlib.Topology.Constructions
-import Mathlib.Data.Finset.Basic
-import Mathlib.Logic.Equiv.Defs
+
 /-!
 # Symbolic dynamics on cancellative monoids
 
