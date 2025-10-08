@@ -290,10 +290,7 @@ theorem den_div_natCast_eq_one_iff (m n : ℕ) (hn : n ≠ 0) : ((m : ℚ) / n).
   (den_div_intCast_eq_one_iff m n (Int.ofNat_ne_zero.mpr hn)).trans Int.ofNat_dvd
 
 theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
-  rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt, divInt_eq_div, Nat.cast_one]
-  apply num_div_eq_of_coprime ha0
-  rw [Int.natAbs_one]
-  exact Nat.coprime_one_left _
+  simp [*]
 
 theorem inv_natCast_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 :=
   inv_intCast_num_of_pos (mod_cast ha0 : 0 < (a : ℤ))
@@ -328,11 +325,7 @@ theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.den = OfN
   simp [den_inv, Int.natAbs_eq_iff]
 
 theorem den_inv_of_ne_zero {q : ℚ} (hq : q ≠ 0) : (q⁻¹).den = q.num.natAbs := by
-  have hq' : q.num ≠ 0 := by simpa using hq
-  rw [inv_def, divInt_eq_div, div_eq_mul_inv, mul_den, inv_intCast_den, if_neg hq']
-  norm_cast
-  rw [one_mul, inv_intCast_num, Int.natAbs_mul, Int.natAbs_sign_of_ne_zero hq', mul_one,
-    Int.natAbs_cast, q.reduced.symm, Nat.div_one]
+  simp [*]
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, b ≠ 0 → p (a / b) where
   mp h _ _ _ := h _
