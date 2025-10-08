@@ -66,7 +66,7 @@ namespace TestFunction
 
 open Distributions
 
-/-- `TestFunctionClass B E F n K` states that `B` is a type of `n`-times continously
+/-- `TestFunctionClass B E F n K` states that `B` is a type of bundled `n`-times continously
 differentiable functions `E → F` with compact support. -/
 class TestFunctionClass (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
@@ -209,6 +209,8 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
 
 end Module
 
+section Topology
+
 variable (n : ℕ∞) (F)
 
 /-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(E, F)` as a linear map. -/
@@ -243,5 +245,7 @@ theorem continuous_toTestFunction (K : Compacts E) :
   have : originalTop 𝕜 F n ≤ TestFunction.topologicalSpace E F n := by
     exact le_sInf (by aesop)
   exact le_trans (le_sSup (by aesop)) this
+
+end Topology
 
 end TestFunction
