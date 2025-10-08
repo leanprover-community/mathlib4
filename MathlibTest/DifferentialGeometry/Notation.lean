@@ -92,10 +92,12 @@ end TotalSpace
 /-! Tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 
--- Start with some basic tests: a simple function, both in applied and unapplied form.
 variable {EM' : Type*} [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+/-! Some basic tests: a simple function, both in applied and unapplied form -/
+section basic
 
 -- General case: a function between two manifolds.
 variable {f : M → M'} {s : Set M} {m : M}
@@ -368,11 +370,15 @@ variable {f : 𝕜 → 𝕜} {u : Set 𝕜} {a : 𝕜}
 #guard_msgs in
 #check MDiff[u] f
 
--- This elaborator can be combined with the total space elaborator.
--- XXX: these tests might be incomplete; extend as needed!
+end basic
 
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+
+/-! These elaborators can be combined with the total space elaborator. -/
+section interaction
+
+-- XXX: these tests might be incomplete; extend as needed!
 
 /-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) fun m ↦ TotalSpace.mk' E m (X m) : M → Prop -/
 #guard_msgs in
@@ -387,6 +393,8 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 -/
 #guard_msgs in
 #check MDiffAt (T% σ')
+
+end interaction
 
 section
 
