@@ -275,8 +275,8 @@ def MDifferentiable (f : M → M') :=
   ∀ x, MDifferentiableAt I I' f x
 
 variable (I I') in
-/-- Prop registering if a partial homeomorphism is a local diffeomorphism on its source -/
-def PartialHomeomorph.MDifferentiable (f : PartialHomeomorph M M') :=
+/-- Prop registering if an open partial homeomorphism is a local diffeomorphism on its source -/
+def OpenPartialHomeomorph.MDifferentiable (f : OpenPartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
 
 variable (I I') in
