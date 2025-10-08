@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Data.Int.Cast.Field
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Cast.Pi
@@ -44,13 +44,7 @@ variable [AddGroupWithOne β] [CharZero β] {n : ℤ}
 lemma support_intCast (hn : n ≠ 0) : support (n : α → β) = univ :=
   support_const <| Int.cast_ne_zero.2 hn
 
-@[deprecated (since := "2024-04-17")]
-alias support_int_cast := support_intCast
-
 lemma mulSupport_intCast (hn : n ≠ 1) : mulSupport (n : α → β) = univ :=
   mulSupport_const <| Int.cast_ne_one.2 hn
-
-@[deprecated (since := "2024-04-17")]
-alias mulSupport_int_cast := mulSupport_intCast
 
 end Function

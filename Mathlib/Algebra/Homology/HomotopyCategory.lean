@@ -83,16 +83,19 @@ instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0, by
     rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
 
-instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).Full :=
+instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Full :=
   Quotient.full_whiskeringLeft_functor _ _
 
-instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
+instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
   Quotient.faithful_whiskeringLeft_functor _ _
 
 variable {V c}
 
--- Porting note: removed @[simp] attribute because it hinders the automatic application of the
--- more useful `quotient_map_out`
+lemma quotient_obj_surjective (X : HomotopyCategory V c) :
+    ∃ (K : HomologicalComplex V c), (quotient _ _).obj K = X :=
+  ⟨_, rfl⟩
+
+-- Not `@[simp]` because it hinders the automatic application of the more useful `quotient_map_out`
 theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as = C :=
   rfl
 
@@ -100,7 +103,6 @@ theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as
 theorem quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient V c).map f.out = f :=
   Quot.out_eq _
 
--- Porting note: added to ease the port
 theorem quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
     Quot.mk _ f = (quotient V c).map f := rfl
 
@@ -121,7 +123,6 @@ def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
   apply homotopyOfEq
   simp
 
-@[simp 1100]
 theorem quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (g : D ⟶ E) :
     (quotient V c).map (Quot.out f ≫ Quot.out g) = f ≫ g := by simp
 
@@ -202,7 +203,6 @@ namespace CategoryTheory
 
 variable {V} {W : Type*} [Category W] [Preadditive W]
 
--- Porting note: given a simpler definition of this functor
 /-- An additive functor induces a functor between homotopy categories. -/
 @[simps! obj]
 def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
@@ -242,12 +242,12 @@ def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
-    NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by aesop_cat
+    NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by cat_disch
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W} [F.Additive]
     [G.Additive] [H.Additive] (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomotopyCategory (α ≫ β) c =
-      NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by aesop_cat
+      NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by cat_disch
 
 end CategoryTheory

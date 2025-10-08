@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Notation.Pi.Basic
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Spread
@@ -25,8 +26,6 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 -- We enforce to only import `Algebra.Group.Defs` and basic logic
 assert_not_exists Set.range MonoidHom MonoidWithZero DenselyOrdered
 
-open Function
-
 universe u v₁ v₂ v₃
 
 variable {I : Type u}
@@ -39,112 +38,6 @@ variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
 variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
-
-/-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
-
-@[to_additive]
-instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
-  ⟨fun _ => 1⟩
-
-@[to_additive (attr := simp)]
-theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
-  rfl
-
-@[to_additive]
-theorem one_def [∀ i, One <| f i] : (1 : ∀ i, f i) = fun _ => 1 :=
-  rfl
-
-@[to_additive (attr := simp)] lemma _root_.Function.const_one [One β] : const α (1 : β) = 1 := rfl
-
-@[to_additive (attr := simp)]
-theorem one_comp [One γ] (x : α → β) : (1 : β → γ) ∘ x = 1 :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem comp_one [One β] (x : β → γ) : x ∘ (1 : α → β) = const α (x 1) :=
-  rfl
-
-@[to_additive]
-instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
-  ⟨fun f g i => f i * g i⟩
-
-@[to_additive (attr := simp)]
-theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
-  rfl
-
-@[to_additive]
-theorem mul_def [∀ i, Mul <| f i] : x * y = fun i => x i * y i :=
-  rfl
-
-@[to_additive (attr := simp)]
-lemma _root_.Function.const_mul [Mul β] (a b : β) : const α a * const α b = const α (a * b) := rfl
-
-@[to_additive]
-theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x ∘ z * y ∘ z :=
-  rfl
-
-@[to_additive]
-instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
-  ⟨fun s x => fun i => s • x i⟩
-
-@[to_additive existing instSMul]
-instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
-  ⟨fun x b i => x i ^ b⟩
-
-@[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
-theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
-  rfl
-
-@[to_additive (attr := to_additive) (reorder := 5 6) smul_def]
-theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
-  rfl
-
-@[to_additive (attr := simp, to_additive) (reorder := 2 3, 5 6) smul_const]
-lemma _root_.Function.const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) := rfl
-
-@[to_additive (attr := to_additive) (reorder := 6 7) smul_comp]
-theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
-  rfl
-
--- Use `Pi.ofNat_apply` instead
-
-@[to_additive]
-instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
-  ⟨fun f i => (f i)⁻¹⟩
-
-@[to_additive (attr := simp)]
-theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
-  rfl
-
-@[to_additive]
-theorem inv_def [∀ i, Inv <| f i] : x⁻¹ = fun i => (x i)⁻¹ :=
-  rfl
-
-@[to_additive]
-lemma _root_.Function.const_inv [Inv β] (a : β) : (const α a)⁻¹ = const α a⁻¹ := rfl
-
-@[to_additive]
-theorem inv_comp [Inv γ] (x : β → γ) (y : α → β) : x⁻¹ ∘ y = (x ∘ y)⁻¹ :=
-  rfl
-
-@[to_additive]
-instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
-  ⟨fun f g i => f i / g i⟩
-
-@[to_additive (attr := simp)]
-theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
-  rfl
-
-@[to_additive]
-theorem div_def [∀ i, Div <| f i] : x / y = fun i => x i / y i :=
-  rfl
-
-@[to_additive]
-theorem div_comp [Div γ] (x y : β → γ) (z : α → β) : (x / y) ∘ z = x ∘ z / y ∘ z :=
-  rfl
-
-@[to_additive (attr := simp)]
-lemma _root_.Function.const_div [Div β] (a b : β) : const α a / const α b = const α (a / b) := rfl
 
 @[to_additive]
 instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
@@ -196,7 +89,7 @@ instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f
   __ := divInvMonoid
   __ := involutiveInv
   mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
-  inv_eq_of_mul := by intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
+  inv_eq_of_mul := by intro _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
 
 @[to_additive instSubtractionCommMonoid]
 instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) :=
@@ -244,104 +137,6 @@ instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) :=
 instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) :=
   { leftCancelMonoid, commMonoid with }
 
-section
-
-variable [DecidableEq I]
-variable [∀ i, One (f i)] [∀ i, One (g i)] [∀ i, One (h i)]
-
-/-- The function supported at `i`, with value `x` there, and `1` elsewhere. -/
-@[to_additive "The function supported at `i`, with value `x` there, and `0` elsewhere."]
-def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
-  Function.update 1 i x
-
-@[to_additive (attr := simp)]
-theorem mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
-  Function.update_self i x _
-
-@[to_additive (attr := simp)]
-theorem mulSingle_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i' = 1 :=
-  Function.update_of_ne h x _
-
-/-- Abbreviation for `mulSingle_eq_of_ne h.symm`, for ease of use by `simp`. -/
-@[to_additive (attr := simp)
-  "Abbreviation for `single_eq_of_ne h.symm`, for ease of use by `simp`."]
-theorem mulSingle_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x i' = 1 :=
-  mulSingle_eq_of_ne h.symm x
-
-@[to_additive (attr := simp)]
-theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
-  Function.update_eq_self _ _
-
--- Porting note:
--- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
--- 2) Why do I have to specify the type of `(1 : I → β)`?
--- 3) Removed `{β : Sort*}` as `[One β]` converts it to a type anyways.
-/-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
-@[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
-theorem mulSingle_apply [One β] (i : I) (x : β) (i' : I) :
-    (mulSingle i x : I → β) i' = if i' = i then x else 1 :=
-  Function.update_apply (1 : I → β) i x i'
-
--- Porting note: Same as above.
-/-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
-@[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
-theorem mulSingle_comm [One β] (i : I) (x : β) (i' : I) :
-    (mulSingle i x : I → β) i' = (mulSingle i' x : I → β) i := by
-  simp [mulSingle_apply, eq_comm]
-
-@[to_additive]
-theorem apply_mulSingle (f' : ∀ i, f i → g i) (hf' : ∀ i, f' i 1 = 1) (i : I) (x : f i) (j : I) :
-    f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
-  simpa only [Pi.one_apply, hf', mulSingle] using Function.apply_update f' 1 i x j
-
-@[to_additive apply_single₂]
-theorem apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 1 1 = 1) (i : I)
-    (x : f i) (y : g i) (j : I) :
-    f' j (mulSingle i x j) (mulSingle i y j) = mulSingle i (f' i x y) j := by
-  by_cases h : j = i
-  · subst h
-    simp only [mulSingle_eq_same]
-  · simp only [mulSingle_eq_of_ne h, hf']
-
-@[to_additive]
-theorem mulSingle_op {g : I → Type*} [∀ i, One (g i)] (op : ∀ i, f i → g i)
-    (h : ∀ i, op i 1 = 1) (i : I) (x : f i) :
-    mulSingle i (op i x) = fun j => op j (mulSingle i x j) :=
-  Eq.symm <| funext <| apply_mulSingle op h i x
-
-@[to_additive]
-theorem mulSingle_op₂ {g₁ g₂ : I → Type*} [∀ i, One (g₁ i)] [∀ i, One (g₂ i)]
-    (op : ∀ i, g₁ i → g₂ i → f i) (h : ∀ i, op i 1 1 = 1) (i : I) (x₁ : g₁ i) (x₂ : g₂ i) :
-    mulSingle i (op i x₁ x₂) = fun j => op j (mulSingle i x₁ j) (mulSingle i x₂ j) :=
-  Eq.symm <| funext <| apply_mulSingle₂ op h i x₁ x₂
-
-variable (f)
-
-@[to_additive]
-theorem mulSingle_injective (i : I) : Function.Injective (mulSingle i : f i → ∀ i, f i) :=
-  Function.update_injective _ i
-
-@[to_additive (attr := simp)]
-theorem mulSingle_inj (i : I) {x y : f i} : mulSingle i x = mulSingle i y ↔ x = y :=
-  (Pi.mulSingle_injective _ _).eq_iff
-
-end
-
-/-- The mapping into a product type built from maps into each component. -/
-@[simp]
-protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
-  (f' i, g' i)
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
-  rfl
-
 end Pi
 
 namespace Function
@@ -357,24 +152,14 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
     Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ := by
   classical
   funext x
-  simp only [not_exists, extend_def, Pi.mul_apply, apply_dite₂, dite_eq_ite, ite_self]
--- Porting note: The Lean3 statement was
--- `funext <| λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
--- which converts to
--- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
--- However this does not work, and we're not sure why.
+  simp [Function.extend_def, apply_dite₂]
 
 @[to_additive]
 theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
     Function.extend f g⁻¹ e⁻¹ = (Function.extend f g e)⁻¹ := by
   classical
   funext x
-  simp only [not_exists, extend_def, Pi.inv_apply, apply_dite Inv.inv]
--- Porting note: The Lean3 statement was
--- `funext <| λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
--- which converts to
--- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
--- However this does not work, and we're not sure why.
+  simp [Function.extend_def, apply_dite Inv.inv]
 
 @[to_additive]
 theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
@@ -382,11 +167,6 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   classical
   funext x
   simp [Function.extend_def, apply_dite₂]
--- Porting note: The Lean3 statement was
--- `funext <| λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
--- which converts to
--- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
--- However this does not work, and we're not sure why.
 
 end Extend
 
@@ -407,7 +187,7 @@ lemma comp_ne_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : In
 end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/
-@[to_additive "If the zero function is surjective, the codomain is trivial."]
+@[to_additive /-- If the zero function is surjective, the codomain is trivial. -/]
 def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surjective (1 : α → β)) :
     Unique β :=
   h.uniqueOfSurjectiveConst α (1 : β)

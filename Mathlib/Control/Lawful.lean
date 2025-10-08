@@ -16,13 +16,10 @@ namespace StateT
 
 section
 
-variable {σ : Type u}
-variable {m : Type u → Type v}
-variable {α : Type u}
+variable {σ : Type u} {m : Type u → Type v} {α β : Type u}
 
-/-
-Porting note:
-In Lean 4, `StateT` doesn't require a constructor, but it appears confusing to declare the
+/--
+`StateT` doesn't require a constructor, but it appears confusing to declare the
 following theorem as a simp theorem.
 ```lean
 @[simp]
@@ -33,14 +30,19 @@ If we declare this theorem as a simp theorem, `StateT.run f st` is simplified to
 reduction. This breaks the structure of `StateT`.
 So, we declare a constructor-like definition `StateT.mk` and a simp theorem for it.
 -/
-
 protected def mk (f : σ → m (α × σ)) : StateT σ m α := f
 
 @[simp]
 theorem run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
   rfl
 
--- Porting note: `StateT.adapt` is removed.
+/-- A copy of `LawfulFunctor.map_const` for `StateT` that holds even if `m` is not lawful. -/
+protected lemma map_const [Monad m] :
+    (Functor.mapConst : α → StateT σ m β → StateT σ m α) = Functor.map ∘ Function.const β :=
+  rfl
+
+@[simp] lemma run_mapConst [Monad m] [LawfulMonad m] (x : StateT σ m α) (y : β) (st : σ) :
+    (Functor.mapConst y x).run st = Prod.map (Function.const α y) id <$> x.run st := run_map _ _ _
 
 end
 
@@ -71,9 +73,8 @@ section
 variable {m : Type u → Type v}
 variable {α σ : Type u}
 
-/-
-Porting note:
-In Lean 4, `ReaderT` doesn't require a constructor, but it appears confusing to declare the
+/--
+`ReaderT` doesn't require a constructor, but it appears confusing to declare the
 following theorem as a simp theorem.
 ```lean
 @[simp]
@@ -84,7 +85,6 @@ If we declare this theorem as a simp theorem, `ReaderT.run f st` is simplified t
 reduction. This breaks the structure of `ReaderT`.
 So, we declare a constructor-like definition `ReaderT.mk` and a simp theorem for it.
 -/
-
 protected def mk (f : σ → m α) : ReaderT σ m α := f
 
 @[simp]
@@ -94,64 +94,3 @@ theorem run_mk (f : σ → m α) (r : σ) : ReaderT.run (ReaderT.mk f) r = f r :
 end
 
 end ReaderT
-
-namespace OptionT
-
-variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
-
-@[ext] theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
-  h
-
--- Porting note: This is proven by proj reduction in Lean 3.
-@[simp]
-theorem run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
-  rfl
-
-section Monad
-variable [Monad m]
-
-@[simp]
-theorem run_pure (a) : (pure a : OptionT m α).run = pure (some a) :=
-  rfl
-
-@[simp]
-theorem run_bind (f : α → OptionT m β) :
-    (x >>= f).run = x.run >>= fun
-                              | some a => OptionT.run (f a)
-                              | none   => pure none :=
-  rfl
-
-@[simp]
-theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <$> x.run := by
-  rw [← bind_pure_comp _ x.run]
-  change x.run >>= (fun
-                     | some a => OptionT.run (pure (f a))
-                     | none   => pure none) = _
-  apply bind_congr
-  intro a; cases a <;> simp [Option.map, Option.bind]
-
-@[simp]
-theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
-    (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
-  rfl
-
-end Monad
-
-@[simp]
-theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
-    (monadMap (@f) x : OptionT m α).run = monadMap (@f) x.run :=
-  rfl
-
-end OptionT
-
-instance (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (OptionT m) :=
-  LawfulMonad.mk'
-    (id_map := by
-      intros; apply OptionT.ext; simp only [OptionT.run_map]
-      rw [map_congr, id_map]
-      intro a; cases a <;> rfl)
-    (bind_assoc := by
-      intros; apply OptionT.ext; simp only [OptionT.run_bind, bind_assoc]
-      rw [bind_congr]
-      intro a; cases a <;> simp)
-    (pure_bind := by intros; apply OptionT.ext; simp)

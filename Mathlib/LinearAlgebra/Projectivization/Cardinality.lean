@@ -3,7 +3,7 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.GroupAction.Quotient
@@ -59,16 +59,18 @@ lemma finite_iff_of_finite [Finite k] : Finite (ℙ k V) ↔ Finite V := by
 See `Projectivization.card'` and `Projectivization.card''` for other spellings of the formula. -/
 lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
   nontriviality V
-  wlog h : Finite k
-  · simp only [not_finite_iff_infinite] at h
+  cases finite_or_infinite k with
+  | inr h =>
     have : Infinite V := Module.Free.infinite k V
     simp
-  wlog h : Finite V
-  · simp only [not_finite_iff_infinite] at h
+  | inl h =>
+  cases finite_or_infinite V with
+  | inr h =>
     have := not_iff_not.mpr (finite_iff_of_finite k V)
-    simp only [not_finite_iff_infinite] at this
+    push_neg at this
     have : Infinite (ℙ k V) := by rwa [this]
     simp
+  | inl h =>
   classical
   haveI : Fintype V := Fintype.ofFinite V
   haveI : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
@@ -82,7 +84,7 @@ natural subtraction. -/
 lemma card' [Finite V] : Nat.card V = Nat.card (ℙ k V) * (Nat.card k - 1) + 1 := by
   rw [← card k V]
   have : Nat.card V > 0 := Nat.card_pos
-  omega
+  cutsat
 
 end
 
@@ -91,19 +93,16 @@ variable (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 /-- Cardinality formula for the points of `ℙ k V` if `k` and `V` are finite expressed
 as a fraction. -/
 lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 1) := by
-  haveI : Fintype k := Fintype.ofFinite k
-  rw [card k]
   have : 1 < Nat.card k := Finite.one_lt_card
-  have h : 0 ≠ (Nat.card k - 1) := by omega
-  exact Nat.eq_div_of_mul_eq_left (Ne.symm h) rfl
+  rw [card k, Nat.mul_div_cancel]
+  cutsat
 
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
   wlog hf : Finite V
-  · simp only [not_finite_iff_infinite] at hf
-    have : Infinite (ℙ k V) := by
-      rw [← not_finite_iff_infinite, not_iff_not.mpr (finite_iff_of_finite k V)]
-      simpa
+  · have : Infinite (ℙ k V) := by
+      contrapose! hf
+      rwa [finite_iff_of_finite] at hf
     have : n = 0 := by
       rw [← h]
       apply Module.finrank_of_not_finite
@@ -111,12 +110,11 @@ lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
       simpa using Module.finite_of_finite k
     simp [this]
   have : 1 < Nat.card k := Finite.one_lt_card
-  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by omega) ?_
+  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by cutsat) ?_
   let e : V ≃ₗ[k] (Fin n → k) := LinearEquiv.ofFinrankEq _ _ (by simpa)
   have hc : Nat.card V = Nat.card k ^ n := by simp [Nat.card_congr e.toEquiv, Nat.card_fun]
   zify
-  have hn : 1 ≤ Nat.card k := Nat.one_le_of_lt Finite.one_lt_card
-  conv_rhs => rw [Int.natCast_sub hn, Int.natCast_one, geom_sum_mul]
+  conv_rhs => rw [Int.natCast_sub this.le, Int.natCast_one, geom_sum_mul]
   rw [← Int.natCast_mul, ← card k V, hc]
   simp
 

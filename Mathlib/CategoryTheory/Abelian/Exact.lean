@@ -27,7 +27,7 @@ true in more general settings.
 * `X ⟶ Y ⟶ Z ⟶ 0` is exact if and only if the second map is a cokernel of the first, and
   `0 ⟶ X ⟶ Y ⟶ Z` is exact if and only if the first map is a kernel of the second.
 * A functor `F` such that for all `S`, we have `S.Exact → (S.map F).Exact` preserves both
-finite limits and colimits.
+  finite limits and colimits.
 
 -/
 
@@ -124,7 +124,7 @@ def Exact.isColimitCoimage (h : S.Exact) :
     (fun u hu => cokernel.desc (kernel.ι S.g) u
       (by rw [← cokernel.π_desc S.f u hu, ← Category.assoc, h, zero_comp]))
     (by simp) ?_
-  intros _ _ _ _ hm
+  intro _ _ _ _ hm
   ext
   rw [hm, cokernel.π_desc]
 
@@ -176,7 +176,7 @@ theorem Abelian.tfae_mono {X Y : C} (f : X ⟶ Y) (Z : C) :
   tfae_finish
 
 open List in
-theorem Abelian.tfae_epi {X Y : C} (f : X ⟶ Y) (Z : C ) :
+theorem Abelian.tfae_epi {X Y : C} (f : X ⟶ Y) (Z : C) :
     TFAE [Epi f, cokernel.π f = 0, (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).Exact] := by
   tfae_have 2 → 1 := epi_of_cokernel_π_eq_zero _
   tfae_have 1 → 2
@@ -211,9 +211,6 @@ end
 end Functor
 
 namespace Functor
-
-@[deprecated (since := "2024-07-09")] alias CategoryTheory.Functor.map_exact :=
-  ShortComplex.Exact.map
 
 open Limits Abelian
 
@@ -263,11 +260,6 @@ lemma preservesHomology_of_map_exact : L.PreservesHomology where
       infer_instance
     exact (hL (ShortComplex.mk _ _ (kernel.condition f))
       (ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel f))).fIsKernel
-
-@[deprecated (since := "2024-07-09")] alias preservesKernelsOfMapExact :=
-  PreservesHomology.preservesKernels
-@[deprecated (since := "2024-07-09")] alias preservesCokernelsOfMapExact :=
-  PreservesHomology.preservesCokernels
 
 end
 

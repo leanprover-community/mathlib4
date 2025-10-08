@@ -14,14 +14,14 @@ This file defines a type copy of `E →L[𝕜] F` (where `E` and `F` are topolog
 which is endowed with the weak operator topology (WOT) rather than the topology of bounded
 convergence (which is the usual one induced by the operator norm in the normed setting).
 The WOT is defined as the coarsest topology such that the functional `fun A => y (A x)` is
-continuous for any `x : E` and `y : F →L[𝕜] 𝕜`. Equivalently, a function `f` tends to
+continuous for any `x : E` and `y : StrongDual 𝕜 F`. Equivalently, a function `f` tends to
 `A : E →WOT[𝕜] F` along filter `l` iff `y (f a x)` tends to `y (A x)` along the same filter.
 
 Basic non-topological properties of `E →L[𝕜] F` (such as the module structure) are copied over to
 the type copy.
 
 We also prove that the WOT is induced by the family of seminorms `‖y (A x)‖` for `x : E` and
-`y : F →L[𝕜] 𝕜`.
+`y : StrongDual 𝕜 F`.
 
 ## Main declarations
 
@@ -33,13 +33,13 @@ We also prove that the WOT is induced by the family of seminorms `‖y (A x)‖`
 * `ContinuousLinearMap.continuous_toWOT`: the inclusion map is continuous, i.e. the WOT is coarser
   than the norm topology.
 * `ContinuousLinearMapWOT.withSeminorms`: the WOT is induced by the family of seminorms
-  `‖y (A x)‖` for `x : E` and `y : F →L[𝕜] 𝕜`.
+  `‖y (A x)‖` for `x : E` and `y : StrongDual 𝕜 F`.
 
 ## Notation
 
 * The type copy of `E →L[𝕜] F` endowed with the weak operator topology is denoted by
   `E →WOT[𝕜] F`.
-* We locally use the notation `F⋆` for `F →L[𝕜] 𝕜`.
+* We locally use the notation `F⋆` for `StrongDual 𝕜 F`.
 
 ## Implementation notes
 
@@ -65,7 +65,7 @@ variable {𝕜 : Type*} {E : Type*} {F : Type*} [NormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
-local notation X "⋆" => X →L[𝕜] 𝕜
+local notation X "⋆" => StrongDual 𝕜 X
 
 /-!
 ### Basic properties common with `E →L[𝕜] F`
@@ -85,21 +85,21 @@ instance instAddCommMonoid [ContinuousAdd F] : AddCommMonoid (E →WOT[𝕜] F) 
 ```
 would cause the following to fail :
 ```
-example [TopologicalAddGroup F] :
+example [IsTopologicalAddGroup F] :
   (instAddCommMonoid : AddCommMonoid (E →WOT[𝕜] F)) =
     instAddCommGroup.toAddCommMonoid := rfl
 ```
 -/
 
 unseal ContinuousLinearMapWOT in
-instance instAddCommGroup [TopologicalAddGroup F] : AddCommGroup (E →WOT[𝕜] F) :=
+instance instAddCommGroup [IsTopologicalAddGroup F] : AddCommGroup (E →WOT[𝕜] F) :=
   inferInstanceAs <| AddCommGroup (E →L[𝕜] F)
 
 unseal ContinuousLinearMapWOT in
-instance instModule [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] : Module 𝕜 (E →WOT[𝕜] F) :=
+instance instModule [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] : Module 𝕜 (E →WOT[𝕜] F) :=
   inferInstanceAs <| Module 𝕜 (E →L[𝕜] F)
 
-variable (𝕜) (E) (F) [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable (𝕜) (E) (F) [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 unseal ContinuousLinearMapWOT in
 /-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
@@ -165,7 +165,7 @@ of this topology. In particular, we show that it is a topological vector space.
 -/
 section Topology
 
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜) (E) (F) in
 /-- The function that induces the topology on `E →WOT[𝕜] F`, namely the function that takes
@@ -205,9 +205,6 @@ lemma isEmbedding_inducingFn [SeparatingDual 𝕜 F] : IsEmbedding (inducingFn �
   rw [ContinuousLinearMapWOT.ext_dual_iff]
   simpa [funext_iff] using hAB
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_inducingFn := isEmbedding_inducingFn
-
 open Filter in
 /-- The defining property of the weak operator topology: a function `f` tends to
 `A : E →WOT[𝕜] F` along filter `l` iff `y (f a x)` tends to `y (A x)` along the same filter. -/
@@ -226,18 +223,24 @@ instance instContinuousAdd : ContinuousAdd (E →WOT[𝕜] F) := .induced (induc
 instance instContinuousNeg : ContinuousNeg (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 instance instContinuousSMul : ContinuousSMul 𝕜 (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 
-instance instTopologicalAddGroup : TopologicalAddGroup (E →WOT[𝕜] F) where
+#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add this instance explicitly to avoid a
+limitation with parent instance inference. TODO(kmill): fix this. -/
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E →WOT[𝕜] F) where
+  toContinuousAdd := inferInstance
 
 instance instUniformSpace : UniformSpace (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F) inferInstance
 
-instance instUniformAddGroup : UniformAddGroup (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F)
+instance instIsUniformAddGroup : IsUniformAddGroup (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F)
+
+@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
+  ContinuousLinearMapWOT.instIsUniformAddGroup
 
 end Topology
 
 /-! ### The WOT is induced by a family of seminorms -/
 section Seminorms
 
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 /-- The family of seminorms that induce the weak operator topology, namely `‖y (A x)‖` for
 all `x` and `y`. -/
@@ -256,7 +259,6 @@ def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
 
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) :=
   let e : E × F⋆ ≃ (Σ _ : E × F⋆, Fin 1) := .symm <| .sigmaUnique _ _
-  have : Nonempty (Σ _ : E × F⋆, Fin 1) := e.symm.nonempty
   isInducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜 𝕜)
     |>.congr_equiv e
 
@@ -272,7 +274,7 @@ end Seminorms
 
 section toWOT_continuous
 
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [ContinuousSMul 𝕜 E]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [ContinuousSMul 𝕜 E]
 
 /-- The weak operator topology is coarser than the bounded convergence topology, i.e. the inclusion
 map is continuous. -/

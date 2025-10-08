@@ -10,9 +10,9 @@ import Lean.Elab.Command
 import Mathlib.Tactic.Linter.Header
 
 /-!
-# The `oldObtain` linter, against stream-of-conciousness `obtain`
+# The `oldObtain` linter, against stream-of-consciousness `obtain`
 
-The `oldObtain` linter flags any occurrences of "stream-of-conciousness" `obtain`,
+The `oldObtain` linter flags any occurrences of "stream-of-consciousness" `obtain`,
 i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 
 ## Example
@@ -49,7 +49,7 @@ case... but by now, the "old" syntax is not clearly better.)
 In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
 could also be used, as was in fact clearer. -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter.Style
 
@@ -60,11 +60,7 @@ def isObtainWithoutProof : Syntax → Bool
   | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false
 
-/-- Deprecated alias for `Mathlib.Linter.Style.isObtainWithoutProof`. -/
-@[deprecated isObtainWithoutProof (since := "2024-12-07")]
-def is_obtain_without_proof := @isObtainWithoutProof
-
-/-- The `oldObtain` linter emits a warning upon uses of the "stream-of-conciousness" variants
+/-- The `oldObtain` linter emits a warning upon uses of the "stream-of-consciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
 register_option linter.oldObtain : Bool := {
   defValue := false
@@ -73,12 +69,12 @@ register_option linter.oldObtain : Bool := {
 
 /-- The `oldObtain` linter: see docstring above -/
 def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.oldObtain (← getOptions) do
+    unless getLinterValue linter.oldObtain (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     if let some head := stx.find? isObtainWithoutProof then
-      Linter.logLint linter.oldObtain head m!"Please remove stream-of-conciousness `obtain` syntax"
+      Linter.logLint linter.oldObtain head m!"Please remove stream-of-consciousness `obtain` syntax"
 
 initialize addLinter oldObtainLinter
 

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.Algebra.Homology.ShortComplex.Retract
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Quasi-isomorphisms
@@ -50,6 +52,15 @@ lemma quasiIsoAt_iff' (f : K ⟶ L) (i j k : ι) (hi : c.prev j = i) (hk : c.nex
   rw [quasiIsoAt_iff]
   exact ShortComplex.quasiIso_iff_of_arrow_mk_iso _ _
     (Arrow.isoOfNatIso (natIsoSc' C c i j k hi hk) (Arrow.mk f))
+
+lemma quasiIsoAt_of_retract {f : K ⟶ L} {f' : K' ⟶ L'}
+    (h : RetractArrow f f') (i : ι) [K.HasHomology i] [L.HasHomology i]
+    [K'.HasHomology i] [L'.HasHomology i] [hf' : QuasiIsoAt f' i] :
+    QuasiIsoAt f i := by
+  rw [quasiIsoAt_iff] at hf' ⊢
+  have : RetractArrow ((shortComplexFunctor C c i).map f)
+    ((shortComplexFunctor C c i).map f') := h.map (shortComplexFunctor C c i).mapArrow
+  exact ShortComplex.quasiIso_of_retract this
 
 lemma quasiIsoAt_iff_isIso_homologyMap (f : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] :
@@ -223,6 +234,12 @@ lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   simpa only [← quasiIso_iff_of_arrow_mk_iso φ φ' e]
 
+lemma quasiIso_of_retractArrow {f : K ⟶ L} {f' : K' ⟶ L'}
+    (h : RetractArrow f f') [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+    [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] [QuasiIso f'] :
+    QuasiIso f where
+  quasiIsoAt i := quasiIsoAt_of_retract h i
+
 namespace HomologicalComplex
 
 section PreservesHomology
@@ -274,10 +291,35 @@ variable (C c)
 def quasiIso [CategoryWithHomology C] :
     MorphismProperty (HomologicalComplex C c) := fun _ _ f => QuasiIso f
 
-variable {C c}
+variable {C c} [CategoryWithHomology C]
 
 @[simp]
-lemma mem_quasiIso_iff [CategoryWithHomology C] (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
+lemma mem_quasiIso_iff (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
+
+instance : (quasiIso C c).IsMultiplicative where
+  id_mem _ := by
+    rw [mem_quasiIso_iff]
+    infer_instance
+  comp_mem _ _ hf hg := by
+    rw [mem_quasiIso_iff] at hf hg ⊢
+    infer_instance
+
+instance : (quasiIso C c).HasTwoOutOfThreeProperty where
+  of_postcomp f g hg hfg := by
+    rw [mem_quasiIso_iff] at hg hfg ⊢
+    rwa [← quasiIso_iff_comp_right f g]
+  of_precomp f g hf hfg := by
+    rw [mem_quasiIso_iff] at hf hfg ⊢
+    rwa [← quasiIso_iff_comp_left f g]
+
+instance : (quasiIso C c).IsStableUnderRetracts where
+  of_retract h hg := by
+    rw [mem_quasiIso_iff] at hg ⊢
+    exact quasiIso_of_retractArrow h
+
+instance : (quasiIso C c).RespectsIso :=
+  MorphismProperty.respectsIso_of_isStableUnderComposition
+    (fun _ _ _ (_ : IsIso _) ↦ by rw [mem_quasiIso_iff]; infer_instance)
 
 end HomologicalComplex
 

@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 
@@ -43,6 +44,13 @@ noncomputable abbrev CommSq.cokernelCofork (sq : CommSq f g inl inr) :
     CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biprod.desc inl inr) (by simp [sq.w])
 
+/-- The short complex attached to the cokernel cofork of a commutative square. -/
+@[simps]
+noncomputable def CommSq.shortComplex (sq : CommSq f g inl inr) : ShortComplex C where
+  f := biprod.lift f (-g)
+  g := biprod.desc inl inr
+  zero := by simp [sq.w]
+
 /-- A commutative square in a preadditive category is a pushout square iff
 the corresponding diagram `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₄` a cokernel. -/
 noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g inl inr) :
@@ -52,7 +60,7 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
       (fun s ↦ PushoutCocone.IsColimit.desc h
         (biprod.inl ≫ s.π) (biprod.inr ≫ s.π) (by
           rw [← sub_eq_zero, ← assoc, ← assoc, ← Preadditive.sub_comp]
-          convert s.condition <;> aesop_cat))
+          convert s.condition <;> cat_disch))
       (fun s ↦ by
         dsimp
         ext
@@ -88,7 +96,7 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
         apply Cofork.IsColimit.hom_ext h
         convert (h.fac (CokernelCofork.ofπ (biprod.desc s.inl s.inr)
           (by simp [s.condition])) .one).symm
-        aesop_cat)
+        cat_disch)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
@@ -96,6 +104,12 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
 noncomputable def IsPushout.isColimitCokernelCofork (h : IsPushout f g inl inr) :
     IsColimit h.cokernelCofork :=
   h.isColimitEquivIsColimitCokernelCofork h.isColimit
+
+lemma IsPushout.epi_shortComplex_g (h : IsPushout f g inl inr) :
+    Epi h.shortComplex.g := by
+  rw [Preadditive.epi_iff_cancel_zero]
+  intro _ b hb
+  exact Cofork.IsColimit.hom_ext h.isColimitCokernelCofork (by simpa using hb)
 
 end Pushout
 
@@ -108,6 +122,14 @@ noncomputable abbrev CommSq.kernelFork (sq : CommSq fst snd f g) :
     KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (biprod.lift fst snd) (by simp [sq.w])
 
+/-- The short complex attached to the kernel fork of a commutative square.
+(This is similar to `CommSq.shortComplex`, but with different signs.) -/
+@[simps]
+noncomputable def CommSq.shortComplex' (sq : CommSq fst snd f g) : ShortComplex C where
+  f := biprod.lift fst snd
+  g := biprod.desc f (-g)
+  zero := by simp [sq.w]
+
 /-- A commutative square in a preadditive category is a pullback square iff
 the corresponding diagram `0 ⟶ X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₁` a kernel. -/
 noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g) :
@@ -117,7 +139,7 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
       (fun s ↦ PullbackCone.IsLimit.lift h
         (s.ι ≫ biprod.fst) (s.ι ≫ biprod.snd) (by
           rw [← sub_eq_zero, assoc, assoc, ← Preadditive.comp_sub]
-          convert s.condition <;> aesop_cat))
+          convert s.condition <;> cat_disch))
       (fun s ↦ by
         dsimp
         ext
@@ -151,7 +173,7 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
         apply Fork.IsLimit.hom_ext h
         convert (h.fac (KernelFork.ofι (biprod.lift s.fst s.snd)
           (by simp [s.condition])) .zero).symm
-        aesop_cat)
+        cat_disch)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
@@ -159,6 +181,12 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
 noncomputable def IsPullback.isLimitKernelFork (h : IsPullback fst snd f g) :
     IsLimit h.kernelFork :=
   h.isLimitEquivIsLimitKernelFork h.isLimit
+
+lemma IsPullback.mono_shortComplex'_f (h : IsPullback fst snd f g) :
+    Mono h.shortComplex'.f := by
+  rw [Preadditive.mono_iff_cancel_zero]
+  intro _ b hb
+  exact Fork.IsLimit.hom_ext h.isLimitKernelFork (by simpa using hb)
 
 end Pullback
 

@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instance for the product of two fintypes.
@@ -18,7 +18,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Set
 
@@ -55,15 +55,16 @@ theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
 
 section
 
+attribute [local instance] Fintype.ofFinite in
 @[simp]
 theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
   refine
     ⟨fun H => ?_, fun H =>
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩
-  rw [and_comm]; contrapose! H; intro H'
+  rw [and_comm]
   rcases Infinite.nonempty (α × β) with ⟨a, b⟩
-  haveI := fintypeOfNotInfinite (H.1 ⟨b⟩); haveI := fintypeOfNotInfinite (H.2 ⟨a⟩)
-  exact H'.false
+  contrapose! H; haveI := H.1 ⟨b⟩; haveI := H.2 ⟨a⟩
+  infer_instance
 
 instance Pi.infinite_of_left {ι : Sort*} {π : ι → Type*} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by

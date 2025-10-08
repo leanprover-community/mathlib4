@@ -18,21 +18,19 @@ for defining categories of topological spaces, by giving it the induced category
 
 open CategoryTheory
 
-attribute [local instance] HasForget.instFunLike
-
 universe u
 
 /-- The type sequential topological spaces. -/
 structure Sequential where
   /-- The underlying topological space of an object of `Sequential`. -/
-  toTop : TopCat.{u}
+  toTop : TopCat.{u} -- TODO: turn this into `extends`
   /-- The underlying topological space is sequential. -/
   [is_sequential : SequentialSpace toTop]
 
 namespace Sequential
 
 instance : Inhabited Sequential.{u} :=
-  ⟨{ toTop := { α := ULift (Fin 37) } }⟩
+  ⟨{ toTop := TopCat.of (ULift (Fin 37)) }⟩
 
 instance : CoeSort Sequential Type* :=
   ⟨fun X => X.toTop⟩
@@ -42,13 +40,13 @@ attribute [instance] is_sequential
 instance : Category.{u, u+1} Sequential.{u} :=
   InducedCategory.category toTop
 
-instance : HasForget.{u} Sequential.{u} :=
-  InducedCategory.hasForget _
+instance : ConcreteCategory.{u} Sequential.{u} (C(·, ·)) :=
+  InducedCategory.concreteCategory toTop
 
 variable (X : Type u) [TopologicalSpace X] [SequentialSpace X]
 
 /-- Constructor for objects of the category `Sequential`. -/
-def of : Sequential.{u} where
+abbrev of : Sequential.{u} where
   toTop := TopCat.of X
   is_sequential := ‹_›
 
@@ -57,7 +55,7 @@ def of : Sequential.{u} where
 def sequentialToTop : Sequential.{u} ⥤ TopCat.{u} :=
   inducedFunctor _
 
-/-- The functor to `TopCat` is indeed fully faithful.-/
+/-- The functor to `TopCat` is indeed fully faithful. -/
 def fullyFaithfulSequentialToTop : sequentialToTop.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
@@ -70,8 +68,8 @@ instance : sequentialToTop.{u}.Faithful :=
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps hom inv]
 def isoOfHomeo {X Y : Sequential.{u}} (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ⟨f, f.continuous⟩
-  inv := ⟨f.symm, f.symm.continuous⟩
+  hom := TopCat.ofHom ⟨f, f.continuous⟩
+  inv := TopCat.ofHom ⟨f.symm, f.symm.continuous⟩
   hom_inv_id := by
     ext x
     exact f.symm_apply_apply x
@@ -84,10 +82,10 @@ def isoOfHomeo {X Y : Sequential.{u}} (f : X ≃ₜ Y) : X ≅ Y where
 def homeoOfIso {X Y : Sequential.{u}} (f : X ≅ Y) : X ≃ₜ Y where
   toFun := f.hom
   invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+  left_inv := f.hom_inv_id_apply
+  right_inv := f.inv_hom_id_apply
+  continuous_toFun := f.hom.hom.continuous
+  continuous_invFun := f.inv.hom.continuous
 
 /-- The equivalence between isomorphisms in `Sequential` and homeomorphisms
 of topological spaces. -/
@@ -95,11 +93,5 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : Sequential.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 end Sequential

@@ -36,10 +36,11 @@ lemma LinearIndependent.linearIndependent_of_exact_of_retraction
     revert hy
     generalize f y = x
     intro hy
-    induction' hy using Submodule.span_induction with m hm
-    · obtain ⟨i, rfl⟩ := hm
-      apply hsa
-    all_goals simp_all
+    induction hy using Submodule.span_induction with
+    | mem m hm => obtain ⟨i, rfl⟩ := hm; apply hsa
+    | zero => simp_all
+    | add => simp_all
+    | smul => simp_all
   replace hs := DFunLike.congr_fun hs y
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
   rw [← hs, hz, map_zero]
@@ -57,7 +58,7 @@ private lemma top_le_span_of_aux (v : κ ⊕ σ → M)
     replace hs := DFunLike.congr_fun hs (s m)
     simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
     simp [hs]
-  have : m ∈ Submodule.span R (Set.range v) := hsp trivial
+  have : m ∈ Submodule.span R (Set.range v) := hsp Submodule.mem_top
   obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp this
   simp only [LinearMap.mem_ker, Finsupp.sum, map_sum, map_smul,
     Finset.sum_sum_eq_sum_toLeft_add_sum_toRight, map_add, hslzero, smul_zero,
@@ -83,10 +84,10 @@ if `s vᵢ = 0` for `i : κ` and `(s vⱼ)ⱼ` is linear independent for `j : σ
 the images of `vᵢ` for `i : κ` form a basis of `P`.
 
 For convenience this is stated for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`. -/
-noncomputable def Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
+noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
     (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
     (hlib : LinearIndependent R (s ∘ v ∘ b))
     (hab : Codisjoint (Set.range a) (Set.range b)) :
     Basis κ R P :=
-  Basis.mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
+  .mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))

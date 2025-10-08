@@ -37,6 +37,7 @@ An element `x : M` can be reinterpreted as an element of `End (SingleObj.star M)
   `CategoryTheory.SingleObj`, so we give all names explicitly.
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v w
 
@@ -74,10 +75,8 @@ theorem comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g 
 /-- If `M` is finite and in universe zero, then `SingleObj M` is a `FinCategory`. -/
 instance finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M) where
 
-/-- Groupoid structure on `SingleObj M`.
-
-See <https://stacks.math.columbia.edu/tag/0019>.
--/
+/-- Groupoid structure on `SingleObj M`. -/
+@[stacks 0019]
 instance groupoid : Groupoid (SingleObj G) where
   inv x := x⁻¹
   inv_comp := mul_inv_cancel
@@ -94,7 +93,7 @@ abbrev star : SingleObj M :=
   Quiver.SingleObj.star M
 
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
-     monoid M. -/
+monoid `M`. -/
 def toEnd : M ≃* End (SingleObj.star M) :=
   { Equiv.refl M with map_mul' := fun _ _ => rfl }
 
@@ -104,12 +103,8 @@ theorem toEnd_def (x : M) : toEnd M x = x :=
 variable (N : Type v) [Monoid N]
 
 /-- There is a 1-1 correspondence between monoid homomorphisms `M → N` and functors between the
-    corresponding single-object categories. It means that `SingleObj` is a fully faithful
-    functor.
-
-See <https://stacks.math.columbia.edu/tag/001F> --
-although we do not characterize when the functor is full or faithful.
--/
+corresponding single-object categories. It means that `SingleObj` is a fully faithful functor. -/
+@[stacks 001F "We do not characterize when the functor is full or faithful."]
 def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
   toFun f :=
     { obj := id
@@ -120,8 +115,8 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
     { toFun := fun x => f.map ((toEnd M) x)
       map_one' := f.map_id _
       map_mul' := fun x y => f.map_comp y x }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 theorem mapHom_id : mapHom M M (MonoidHom.id M) = 𝟭 _ :=
   rfl
@@ -135,7 +130,7 @@ theorem mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
 variable {C : Type v} [Category.{w} C]
 
 /-- Given a function `f : C → G` from a category to a group, we get a functor
-    `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
+`C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]
 def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   obj _ := ()
@@ -145,7 +140,6 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
     simp only [SingleObj.id_as_one, mul_inv_cancel]
   map_comp := by
     intros
-    dsimp
     rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_cancel, mul_one]
 
 /-- A monoid homomorphism `f: M → End X` into the endomorphisms of an object `X` of a category `C`
@@ -240,12 +234,14 @@ open CategoryTheory
 /-- The fully faithful functor from `MonCat` to `Cat`. -/
 def toCat : MonCat ⥤ Cat where
   obj x := Cat.of (SingleObj x)
-  map {x y} f := SingleObj.mapHom x y f
+  map {x y} f := SingleObj.mapHom x y f.hom
 
 instance toCat_full : toCat.Full where
-  map_surjective := (SingleObj.mapHom _ _).surjective
+  map_surjective y :=
+    let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y
+    ⟨ofHom x, h⟩
 
 instance toCat_faithful : toCat.Faithful where
-  map_injective h := by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
+  map_injective h := MonCat.hom_ext <| by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
 
 end MonCat

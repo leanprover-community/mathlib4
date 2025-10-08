@@ -38,7 +38,6 @@ import shutil
 
 ERR_IBY = 11 # isolated by
 ERR_IWH = 22 # isolated where
-ERR_SEM = 13 # the substring " ;"
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
@@ -197,9 +196,6 @@ def isolated_by_dot_semicolon_check(lines, path):
                     line = f"{indent}{line.lstrip()[3:]}"
         elif line.lstrip() == "where":
             errors += [(ERR_IWH, line_nr, path)]
-        if " ;" in line:
-            errors += [(ERR_SEM, line_nr, path)]
-            line = line.replace(" ;", ";")
         if line.lstrip().startswith(":"):
             errors += [(ERR_CLN, line_nr, path)]
         newlines.append((line_nr, line))
@@ -236,8 +232,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_IWH:
             output_message(path, line_nr, "ERR_IWH", "Line is an isolated where")
-        if errno == ERR_SEM:
-            output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
         if errno == ERR_CLN:
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:

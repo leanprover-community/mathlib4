@@ -50,10 +50,10 @@ lemma abelianImageToKernel_comp_kernel_ι :
 instance : Mono S.abelianImageToKernel :=
   mono_of_mono_fac S.abelianImageToKernel_comp_kernel_ι
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 lemma abelianImageToKernel_comp_kernel_ι_comp_cokernel_π :
     S.abelianImageToKernel ≫ kernel.ι S.g ≫ cokernel.π S.f = 0 := by
-  simp only [abelianImageToKernel_comp_kernel_ι_assoc, kernel.condition]
+  simp
 
 /-- `Abelian.image S.f` is the kernel of `kernel.ι S.g ≫ cokernel.π S.f` -/
 noncomputable def abelianImageToKernelIsKernel :

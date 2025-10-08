@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.IsTensorProduct
 
@@ -26,15 +27,15 @@ The following meta-properties of predicates on ring homomorphisms are defined
 
 universe u
 
-open CategoryTheory Opposite CategoryTheory.Limits
+open CategoryTheory Opposite CategoryTheory.Limits TensorProduct
 
 namespace RingHom
 
--- Porting Note: Deleted variable `f` here, since it wasn't used explicitly
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
+variable {P Q : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop}
 
 section RespectsIso
 
+variable (P) in
 /-- A property `RespectsIso` if it still holds when composed with an isomorphism -/
 def RespectsIso : Prop :=
   (∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
@@ -42,22 +43,20 @@ def RespectsIso : Prop :=
     ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : S →+* T) (e : R ≃+* S) (_ : P f), P (f.comp e.toRingHom)
 
-variable {P}
-
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
   ⟨fun H => by
     convert hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
-    exact (IsIso.inv_hom_id_assoc _ _).symm, hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
+    simp [← CommRingCat.hom_comp], hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
     convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
-    change f = f ≫ g ≫ inv g
-    simp, hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
+    simp [← CommRingCat.hom_comp],
+   hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
-theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
+theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
     (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
     [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
     P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) := by
@@ -85,17 +84,27 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
   dsimp [e, e₁, e₂, IsLocalization.Away.map]
   simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
 
+@[deprecated (since := "2025-03-01")]
+alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
+
+lemma RespectsIso.and (hP : RespectsIso P) (hQ : RespectsIso Q) :
+    RespectsIso (fun f ↦ P f ∧ Q f) := by
+  refine ⟨?_, ?_⟩
+  · introv hf
+    exact ⟨hP.1 f e hf.1, hQ.1 f e hf.2⟩
+  · introv hf
+    exact ⟨hP.2 f e hf.1, hQ.2 f e hf.2⟩
+
 end RespectsIso
 
 section StableUnderComposition
 
+variable (P) in
 /-- A property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
 def StableUnderComposition : Prop :=
   ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
     ∀ (f : R →+* S) (g : S →+* T) (_ : P f) (_ : P g), P (g.comp f)
-
-variable {P}
 
 theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition @P)
     (hP' : ∀ {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S), P e.toRingHom) :
@@ -108,10 +117,16 @@ theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition 
     apply hP
     exacts [hP' e, H]
 
+lemma StableUnderComposition.and (hP : StableUnderComposition P) (hQ : StableUnderComposition Q) :
+    StableUnderComposition (fun f ↦ P f ∧ Q f) := by
+  introv R hf hg
+  exact ⟨hP f g hf.1 hg.1, hQ f g hf.2 hg.2⟩
+
 end StableUnderComposition
 
 section IsStableUnderBaseChange
 
+variable (P) in
 /-- A morphism property `P` is `IsStableUnderBaseChange` if `P(S →+* A)` implies
 `P(B →+* A ⊗[S] B)`. -/
 def IsStableUnderBaseChange : Prop :=
@@ -121,37 +136,20 @@ def IsStableUnderBaseChange : Prop :=
         ∀ [Algebra.IsPushout R S R' S'], P (algebraMap R S) → P (algebraMap R' S')
 
 theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
-    (h₂ :
-      ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
-        ∀ [Algebra R S] [Algebra R T],
-          P (algebraMap R T) →
-            P (Algebra.TensorProduct.includeLeftRingHom : S →+* TensorProduct R S T)) :
+    (h₂ : ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T],
+      P (algebraMap R T) → P (algebraMap S (S ⊗[R] T))) :
     IsStableUnderBaseChange @P := by
   introv R h H
   let e := h.symm.1.equiv
-  let f' :=
-    Algebra.TensorProduct.productMap (IsScalarTower.toAlgHom R R' S')
-      (IsScalarTower.toAlgHom R S S')
-  have : ∀ x, e x = f' x := by
-    intro x
-    change e.toLinearMap.restrictScalars R x = f'.toLinearMap x
-    congr 1
-    apply TensorProduct.ext'
-    intro x y
-    simp [e, f', IsBaseChange.equiv_tmul, Algebra.smul_def]
-  -- Porting Note: This had a lot of implicit inferences which didn't resolve anymore.
-  -- Added those in
-  convert h₁.1 (_ : R' →+* TensorProduct R R' S) (_ : TensorProduct R R' S ≃+* S')
-      (h₂ H : P (_ : R' →+* TensorProduct R R' S))
-  swap
-  · refine { e with map_mul' := fun x y => ?_ }
-    change e (x * y) = e x * e y
-    simp_rw [this]
-    exact map_mul f' _ _
-  · ext x
-    change _ = e (x ⊗ₜ[R] 1)
-    -- Porting note: Had `dsimp only [e]` here, which didn't work anymore
-    rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
+  let f' := Algebra.TensorProduct.productMap (IsScalarTower.toAlgHom R R' S')
+    (IsScalarTower.toAlgHom R S S')
+  have hef (x : _) : e x = f' x := by
+    suffices e.toLinearMap.restrictScalars R = f'.toLinearMap from congr($this x)
+    exact ext' fun x y ↦ by simp [e, f', IsBaseChange.equiv_tmul, Algebra.smul_def]
+  have hemul (x y : _) : e (x * y) = e x * e y := by simp_rw [hef, map_mul]
+  convert h₁.1 _ { e with map_mul' := hemul } (h₂ H)
+  ext x
+  simp [e, h.symm.1.equiv_tmul, Algebra.smul_def]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
@@ -164,18 +162,23 @@ theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChang
       colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit R S T⟩ WalkingSpan.left,
     CommRingCat.hom_comp, hP'.cancel_right_isIso]
   dsimp only [CommRingCat.pushoutCocone_inl, PushoutCocone.ι_app_left]
-  apply hP R T S (TensorProduct R S T)
+  apply hP R T S (S ⊗[R] T)
   exact H
+
+lemma IsStableUnderBaseChange.and (hP : IsStableUnderBaseChange P)
+    (hQ : IsStableUnderBaseChange Q) :
+    IsStableUnderBaseChange (fun f ↦ P f ∧ Q f) := by
+  introv R _ h
+  exact ⟨hP R S R' S' h.1, hQ R S R' S' h.2⟩
 
 end IsStableUnderBaseChange
 
 section ToMorphismProperty
 
+variable (P) in
 /-- The categorical `MorphismProperty` associated to a property of ring homs expressed
 non-categorical terms. -/
 def toMorphismProperty : MorphismProperty CommRingCat := fun _ _ f ↦ P f.hom
-
-variable {P}
 
 lemma toMorphismProperty_respectsIso_iff :
     RespectsIso P ↔ (toMorphismProperty P).RespectsIso := by
@@ -191,6 +194,17 @@ lemma toMorphismProperty_respectsIso_iff :
     exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f)
 
+lemma isStableUnderCobaseChange_toMorphismProperty_iff :
+    (toMorphismProperty P).IsStableUnderCobaseChange ↔ IsStableUnderBaseChange P := by
+  refine ⟨fun h R S R' S' _ _ _ _ _ _ _ _ _ _ _ hsq hRS ↦ ?_,
+      fun h ↦ ⟨fun {R} S R' S' f g f' g' hsq hf ↦ ?_⟩⟩
+  · rw [← CommRingCat.isPushout_iff_isPushout] at hsq
+    exact h.1 (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
+  · algebraize [f.hom, g.hom, f'.hom, g'.hom, f'.hom.comp g.hom]
+    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.1.1).hom x)
+    have : Algebra.IsPushout R S R' S' := (CommRingCat.isPushout_iff_isPushout.mp hsq).symm
+    exact h (R := R) (S := S) _ _ hf
+
 /-- Variant of `MorphismProperty.arrow_mk_iso_iff` specialized to morphism properties in
 `CommRingCat` given by ring hom properties. -/
 lemma RespectsIso.arrow_mk_iso_iff (hQ : RingHom.RespectsIso P) {A B A' B' : CommRingCat}
@@ -202,5 +216,49 @@ lemma RespectsIso.arrow_mk_iso_iff (hQ : RingHom.RespectsIso P) {A B A' B' : Com
   rw [MorphismProperty.arrow_mk_iso_iff (toMorphismProperty P) e]
 
 end ToMorphismProperty
+
+section Descent
+
+variable (Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
+
+variable (R S T : Type u) [CommRing R] [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
+
+variable (P) in
+/-- A property of ring homomorphisms `Q` codescends along `Q'` if whenever
+`R' →+* R' ⊗[R] S` satisfies `Q` and `R →+* R'` satisfies `Q'`, then `R →+* S` satisfies `Q`. -/
+def CodescendsAlong : Prop :=
+  ∀ (R S R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
+  ∀ [Algebra R S] [Algebra R R'] [Algebra R S'] [Algebra S S'] [Algebra R' S'],
+    ∀ [IsScalarTower R S S'] [IsScalarTower R R' S'],
+      ∀ [Algebra.IsPushout R S R' S'],
+        Q (algebraMap R R') → P (algebraMap R' S') → P (algebraMap R S)
+
+lemma CodescendsAlong.mk (h₁ : RespectsIso P)
+    (h₂ : ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
+      ∀ [Algebra R S] [Algebra R T],
+        Q (algebraMap R S) → P (algebraMap S (S ⊗[R] T)) → P (algebraMap R T)) :
+    CodescendsAlong P Q := by
+  introv R h hQ H
+  let e := h.symm.equiv
+  have : (e.symm : _ →+* _).comp (algebraMap R' S') = algebraMap R' (R' ⊗[R] S) := by
+    ext r
+    simp [e]
+  apply h₂ hQ
+  rw [← this]
+  exact h₁.1 _ _ H
+
+lemma CodescendsAlong.algebraMap_tensorProduct (hPQ : CodescendsAlong P Q)
+    (h : Q (algebraMap R S)) (H : P (algebraMap S (S ⊗[R] T))) :
+    P (algebraMap R T) :=
+  let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
+  hPQ R T S (S ⊗[R] T) h H
+
+lemma CodescendsAlong.includeRight (hPQ : CodescendsAlong P Q) (h : Q (algebraMap R T))
+    (H : P ((Algebra.TensorProduct.includeRight.toRingHom : T →+* S ⊗[R] T))) :
+    P (algebraMap R S) := by
+  let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
+  apply hPQ R S T (S ⊗[R] T) h H
+
+end Descent
 
 end RingHom

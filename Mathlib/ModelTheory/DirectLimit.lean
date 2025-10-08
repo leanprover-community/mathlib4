@@ -57,10 +57,12 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
     (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k => f' k) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
-  induction' k with k ih
-  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  induction k with
+  | zero =>
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [natLERec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
-  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  | succ k ih =>
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 
@@ -70,17 +72,18 @@ instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i 
 
 end DirectedSystem
 
--- Porting note: Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
--- which depends on `f`. This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
--- Otherwise we have a "cannot find synthesization order" error. See the discussion at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
-
 set_option linter.unusedVariables false in
-/-- Alias for `Σ i, G i`. -/
+/-- Alias for `Σ i, G i`.
+
+Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma` which depends on `f`.
+This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
+Otherwise we have a "cannot find synthesization order" error.
+See also the discussion at
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
+-/
 @[nolint unusedArguments]
 protected abbrev Structure.Sigma (f : ∀ i j, i ≤ j → G i ↪[L] G j) := Σ i, G i
 
--- Porting note: Setting up notation for `Language.Structure.Sigma`: add a little asterisk to `Σ`
 local notation "Σˣ" => Structure.Sigma
 
 /-- Constructor for `FirstOrder.Language.Structure.Sigma` alias. -/
@@ -125,14 +128,11 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
       @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
         refine ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, ?_⟩
-        rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
-        · symm
-          rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map]
-          assumption
-        assumption⟩
+        rw [← DirectedSystem.map_map _ hiij hijijk, hij, DirectedSystem.map_map]
+        rw [← DirectedSystem.map_map _ hkjk hjkijk, ← hjk, DirectedSystem.map_map]⟩
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
- -/
+-/
 noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.Structure (Σˣ f) where
   funMap F x :=
     ⟨_,
@@ -150,11 +150,7 @@ end DirectLimit
 def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :=
   Quotient (DirectLimit.setoid G f)
 
-attribute [local instance] DirectLimit.setoid
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added local instance
-attribute [local instance] DirectLimit.sigmaStructure
-
+attribute [local instance] DirectLimit.setoid DirectLimit.sigmaStructure
 
 instance [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=
@@ -245,7 +241,7 @@ theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x 
   rw [relMap_quotient_mk']
   obtain ⟨k, _, _⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
-  rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i]
+  rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i (fun _ ⟨_, hj⟩ => le_of_eq hj.symm)]
   rw [unify_sigma_mk_self]
 
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → DirectLimit G f) :
@@ -265,14 +261,13 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → Di
 variable (L ι)
 
 /-- The canonical map from a component to the direct limit. -/
-def of (i : ι) : G i ↪[L] DirectLimit G f where
+noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
   toFun := fun a => ⟦.mk f i a⟧
   inj' x y h := by
     rw [Quotient.eq] at h
     obtain ⟨j, h1, _, h3⟩ := h
     exact (f i j h1).injective h3
   map_fun' F x := by
-    simp only
     rw [← funMap_quotient_mk'_sigma_mk']
     rfl
   map_rel' := by
@@ -288,8 +283,8 @@ variable {L ι G f}
 theorem of_apply {i : ι} {x : G i} : of L ι G f i x = ⟦.mk f i x⟧ :=
   rfl
 
--- Porting note: removed the `@[simp]`, it is not in simp-normal form, but the simp-normal version
--- of this theorem would not be useful.
+-- This is not a simp-lemma because it is not in simp-normal form,
+-- but the simp-normal version of this theorem would not be useful.
 theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x := by
   rw [of_apply, of_apply, Quotient.eq]
   refine Setoid.symm ⟨j, hij, refl j, ?_⟩
@@ -329,7 +324,7 @@ variable (L ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
-def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+noncomputable def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f ↪[L] P where
   toFun :=
     Quotient.lift (fun x : Σˣ f => (g x.1) x.2) fun x y xy => by
@@ -442,7 +437,7 @@ instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion 
 namespace DirectLimit
 
 /-- The map from a direct limit of a system of substructures of `M` into `M`. -/
-def liftInclusion :
+noncomputable def liftInclusion :
     DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ↪[L] M :=
   DirectLimit.lift L ι (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h))
     (fun _ ↦ Substructure.subtype _) (fun _ _ _ _ ↦ rfl)

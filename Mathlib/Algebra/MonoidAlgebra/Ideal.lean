@@ -3,9 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Span
+import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 # Lemmas about ideals of `MonoidAlgebra` and `AddMonoidAlgebra`
@@ -40,16 +40,15 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
         exact ⟨xm * d, (mul_assoc _ _ _).symm⟩ }
   change _ ↔ x ∈ RHS
   constructor
-  · revert x
-    rw [← SetLike.le_def] -- Porting note: refine needs this even though it's defeq?
-    refine Ideal.span_le.2 ?_
+  · suffices Ideal.span (⇑(of k G) '' s) ≤ RHS from @this x
+    rw [Ideal.span_le]
     rintro _ ⟨i, hi, rfl⟩ m hm
     refine ⟨_, hi, 1, ?_⟩
     obtain rfl := Finset.mem_singleton.mp (Finsupp.support_single_subset hm)
     exact (one_mul _).symm
   · intro hx
     rw [← Finsupp.sum_single x]
-    refine Ideal.sum_mem _ fun i hi => ?_  -- Porting note: changed `apply` to `refine`
+    apply Ideal.sum_mem _ fun i hi ↦ ?_
     obtain ⟨d, hd, d2, rfl⟩ := hx _ hi
     convert Ideal.mul_mem_left _ (id <| Finsupp.single d2 <| x (d2 * d) : MonoidAlgebra k G) _
     pick_goal 3

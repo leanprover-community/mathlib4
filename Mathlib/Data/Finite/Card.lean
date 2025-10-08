@@ -58,9 +58,6 @@ theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
 
 namespace Finite
 
-theorem cast_card_eq_mk {α : Type*} [Finite α] : ↑(Nat.card α) = Cardinal.mk α :=
-  Cardinal.cast_toNat_of_lt_aleph0 (Cardinal.lt_aleph0_of_finite α)
-
 theorem card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
@@ -82,21 +79,12 @@ theorem card_option [Finite α] : Nat.card (Option α) = Nat.card α + 1 := by
   haveI := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_option]
 
-theorem card_le_of_injective [Finite β] (f : α → β) (hf : Function.Injective f) :
-    Nat.card α ≤ Nat.card β := by
-  haveI := Fintype.ofFinite β
-  haveI := Fintype.ofInjective f hf
-  simpa only [Nat.card_eq_fintype_card] using Fintype.card_le_of_injective f hf
+@[deprecated (since := "2025-10-02")] alias card_le_of_injective := Nat.card_le_card_of_injective
 
 theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
-  card_le_of_injective _ f.injective
+  Nat.card_le_card_of_injective _ f.injective
 
-theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
-    Nat.card β ≤ Nat.card α := by
-  classical
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofSurjective f hf
-  simpa only [Nat.card_eq_fintype_card] using Fintype.card_le_of_surjective f hf
+@[deprecated (since := "2025-10-02")] alias card_le_of_surjective := Nat.card_le_card_of_surjective
 
 theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
   haveI := Fintype.ofFinite α
@@ -107,7 +95,7 @@ theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
 theorem card_le_of_injective' {f : α → β} (hf : Function.Injective f)
     (h : Nat.card β = 0 → Nat.card α = 0) : Nat.card α ≤ Nat.card β :=
   (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
-    @card_le_of_injective α β (Nat.finite_of_card_ne_zero h) f hf
+    @Nat.card_le_card_of_injective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- If `f` is an embedding, then `Nat.card α ≤ Nat.card β`. We must also assume
   `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
@@ -120,7 +108,7 @@ theorem card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card 
 theorem card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
     (h : Nat.card α = 0 → Nat.card β = 0) : Nat.card β ≤ Nat.card α :=
   (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
-    @card_le_of_surjective α β (Nat.finite_of_card_ne_zero h) f hf
+    @Nat.card_le_card_of_surjective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_eq_zero_of_surjective {f : α → β} (hf : Function.Surjective f) (h : Nat.card β = 0) :
@@ -141,16 +129,13 @@ theorem card_eq_zero_of_injective [Nonempty α] {f : α → β} (hf : Function.I
 theorem card_eq_zero_of_embedding [Nonempty α] (f : α ↪ β) (h : Nat.card α = 0) : Nat.card β = 0 :=
   card_eq_zero_of_injective f.2 h
 
-theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
-  simp only [Nat.card_eq_fintype_card, Fintype.card_sum]
+@[deprecated (since := "2025-10-02")] alias card_sum := Nat.card_sum
 
 theorem card_image_le {s : Set α} [Finite s] (f : α → β) : Nat.card (f '' s) ≤ Nat.card s :=
-  card_le_of_surjective _ Set.surjective_onto_image
+  Nat.card_le_card_of_surjective _ Set.imageFactorization_surjective
 
 theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ Nat.card α :=
-  card_le_of_surjective _ Set.surjective_onto_range
+  Nat.card_le_card_of_surjective _ Set.rangeFactorization_surjective
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
   classical
@@ -171,18 +156,17 @@ theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := 
   unfold ENat.card
   apply symm
   rw [Cardinal.natCast_eq_toENat_iff]
-  exact Finite.cast_card_eq_mk
+  exact Nat.cast_card
 
 end ENat
 
 namespace Set
 
 theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
-  cases' _root_.finite_or_infinite (↥(s ∪ t)) with h h
+  rcases _root_.finite_or_infinite (↥(s ∪ t)) with h | h
   · rw [finite_coe_iff, finite_union, ← finite_coe_iff, ← finite_coe_iff] at h
     cases h
-    rw [← @Nat.cast_le Cardinal, Nat.cast_add, Finite.cast_card_eq_mk, Finite.cast_card_eq_mk,
-      Finite.cast_card_eq_mk]
+    rw [← @Nat.cast_le Cardinal, Nat.cast_add, Nat.cast_card, Nat.cast_card, Nat.cast_card]
     exact Cardinal.mk_union_le s t
   · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
 
@@ -198,7 +182,7 @@ theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t 
 
 theorem eq_of_subset_of_card_le (ht : t.Finite) (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) :
     s = t :=
-  (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <| ht.card_lt_card h
+  (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_gt <| ht.card_lt_card h
 
 theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s ↔ e '' s ⊆ s :=
   ⟨fun h ↦ by rw [h], fun h ↦ hs.eq_of_subset_of_card_le h <|

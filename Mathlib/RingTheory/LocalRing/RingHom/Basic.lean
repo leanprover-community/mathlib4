@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 
@@ -25,43 +25,29 @@ variable [Semiring R] [Semiring S] [Semiring T]
 theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
   map_nonunit _ := id
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_id := isLocalHom_id
-
 -- see note [lower instance priority]
 @[instance 100]
 theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
     [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_toRingHom := isLocalHom_toRingHom
-
 @[instance]
 theorem RingHom.isLocalHom_comp (g : S →+* T) (f : R →+* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
-@[deprecated (since := "2024-10-10")]
-alias RingHom.isLocalRingHom_comp := RingHom.isLocalHom_comp
-
 theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_comp := isLocalHom_of_comp
-
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
-theorem RingHom.domain_isLocalRing {R S : Type*} [CommSemiring R] [CommSemiring S] [IsLocalRing S]
+theorem RingHom.domain_isLocalRing {R S : Type*} [Semiring R] [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) [IsLocalHom f] : IsLocalRing R := by
   haveI : Nontrivial R := f.domain_nontrivial
   apply IsLocalRing.of_nonunits_add
   intro a b
   simp_rw [← map_mem_nonunits_iff f, f.map_add]
   exact IsLocalRing.nonunits_add
-
-@[deprecated (since := "2024-11-12")] alias RingHom.domain_localRing := RingHom.domain_isLocalRing
 
 end
 
@@ -86,8 +72,8 @@ section
 variable [CommSemiring R] [IsLocalRing R] [CommSemiring S] [IsLocalRing S]
 
 /-- A ring homomorphism between local rings is a local ring hom iff it reflects units,
-i.e. any preimage of a unit is still a unit. https://stacks.math.columbia.edu/tag/07BJ
--/
+i.e. any preimage of a unit is still a unit. -/
+@[stacks 07BJ]
 theorem local_hom_TFAE (f : R →+* S) :
     List.TFAE
       [IsLocalHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,
@@ -105,7 +91,7 @@ theorem local_hom_TFAE (f : R →+* S) :
 
 end
 
-theorem of_surjective [CommSemiring R] [IsLocalRing R] [CommSemiring S] [Nontrivial S] (f : R →+* S)
+theorem of_surjective [CommSemiring R] [IsLocalRing R] [Semiring S] [Nontrivial S] (f : R →+* S)
     [IsLocalHom f] (hf : Function.Surjective f) : IsLocalRing S :=
   of_isUnit_or_isUnit_of_isUnit_add (by
     intro a b hab
@@ -127,7 +113,7 @@ lemma _root_.IsLocalHom.of_surjective [CommRing R] [CommRing S] [Nontrivial S] [
 alias _root_.Function.Surjective.isLocalHom := _root_.IsLocalHom.of_surjective
 
 /-- If `f : R →+* S` is a surjective local ring hom, then the induced units map is surjective. -/
-theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R →+* S)
+theorem surjective_units_map_of_local_ringHom [Semiring R] [Semiring S] (f : R →+* S)
     (hf : Function.Surjective f) (h : IsLocalHom f) :
     Function.Surjective (Units.map <| f.toMonoidHom) := by
   intro a
@@ -145,19 +131,15 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
 
 end IsLocalRing
 
-@[deprecated (since := "2024-11-11")] alias LocalRing.local_hom_TFAE := IsLocalRing.local_hom_TFAE
-@[deprecated (since := "2024-11-11")] alias LocalRing.of_surjective := IsLocalRing.of_surjective
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.surjective_units_map_of_local_ringHom :=
-  IsLocalRing.surjective_units_map_of_local_ringHom
-
 namespace RingEquiv
 
-protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [CommSemiring B]
+protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [Semiring B]
     (e : A ≃+* B) : IsLocalRing B :=
   haveI := e.symm.toEquiv.nontrivial
   IsLocalRing.of_surjective (e : A →+* B) e.surjective
 
-@[deprecated (since := "2024-11-09")] alias localRing := RingEquiv.isLocalRing
-
 end RingEquiv
+
+instance {R : Type*} [CommRing R] [IsLocalRing R] {n : ℕ} [Nontrivial (ZMod n)] (f : R →+* ZMod n) :
+    IsLocalHom f :=
+  (ZMod.ringHom_surjective f).isLocalHom

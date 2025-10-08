@@ -17,8 +17,6 @@ It also defines better delaborators for product projections.
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
-@[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
-
 namespace Prod
 
 lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
@@ -45,8 +43,6 @@ theorem snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :
 theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
   rfl
 
-@[deprecated (since := "2024-10-17")] alias map_mk := map_apply
-
 attribute [mfld_simps] map_apply
 
 -- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.
@@ -60,23 +56,29 @@ theorem map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ 
 theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
   funext <| map_snd f g
 
--- Porting note: `@[simp]` tag removed because auto-generated `mk.injEq` simplifies LHS
--- @[simp]
-theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=
-  Iff.of_eq (mk.injEq _ _ _ _)
+theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ := by simp
 
-theorem mk.inj_left {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
+@[deprecated (since := "2025-03-06")] alias mk.inj_iff := mk_inj
+
+theorem mk_right_injective {α β : Type*} (a : α) : (mk a : β → α × β).Injective := by
   intro b₁ b₂ h
-  simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
+  simpa only [true_and, Prod.mk_inj, eq_self_iff_true] using h
 
-theorem mk.inj_right {α β : Type*} (b : β) :
-    Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
+@[deprecated (since := "2025-03-06")] alias mk.inj_left := mk_right_injective
+
+theorem mk_left_injective {α β : Type*} (b : β) : (fun a ↦ mk a b : α → α × β).Injective := by
   intro b₁ b₂ h
-  simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
+  simpa only [and_true, eq_self_iff_true, mk_inj] using h
 
-lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+@[deprecated (since := "2025-03-06")] alias mk.inj_right := mk_left_injective
 
-lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
+lemma mk_right_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ :=
+    (mk_right_injective _).eq_iff
+
+lemma mk_left_inj {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk_left_injective _).eq_iff
+
+@[deprecated (since := "2025-03-06")] alias mk_inj_left := mk_right_inj
+@[deprecated (since := "2025-03-06")] alias mk_inj_right := mk_left_inj
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
@@ -87,8 +89,6 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
 @[simp]
 theorem map_iterate (f : α → α) (g : β → β) (n : ℕ) :
     (Prod.map f g)^[n] = Prod.map f^[n] g^[n] := by induction n <;> simp [*, Prod.map_comp_map]
-
-@[deprecated (since := "2024-07-03")] alias iterate_prod_map := Prod.map_iterate
 
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
   fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
@@ -167,7 +167,7 @@ theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α 
   | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (_root_.trans hxy₂ hyz₂)
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
-  IsTrans (α × β) (Prod.Lex r s) :=
+    IsTrans (α × β) (Prod.Lex r s) :=
   ⟨fun _ _ _ ↦ Lex.trans⟩
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
@@ -192,12 +192,20 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
     · exact Or.inr (.left _ _ hji) ⟩
 
 instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
-  IsTrichotomous (α × β) (Prod.Lex r s) :=
+    IsTrichotomous (α × β) (Prod.Lex r s) :=
 ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
   { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
+
+instance [IsAsymm α r] [IsAsymm β s] :
+    IsAsymm (α × β) (Prod.Lex r s) where
+  asymm
+  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₁
+  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => IsAsymm.asymm _ _ h₁ h₁
+  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₂
+  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => IsAsymm.asymm _ _ h₁ h₂
 
 end Prod
 
@@ -230,13 +238,6 @@ theorem RightInverse.prodMap :
 theorem Involutive.prodMap {f : α → α} {g : β → β} :
     Involutive f → Involutive g → Involutive (map f g) :=
   LeftInverse.prodMap
-
-@[deprecated (since := "2024-05-08")] alias Injective.Prod_map := Injective.prodMap
-@[deprecated (since := "2024-05-08")] alias Surjective.Prod_map := Surjective.prodMap
-@[deprecated (since := "2024-05-08")] alias Bijective.Prod_map := Bijective.prodMap
-@[deprecated (since := "2024-05-08")] alias LeftInverse.Prod_map := LeftInverse.prodMap
-@[deprecated (since := "2024-05-08")] alias RightInverse.Prod_map := RightInverse.prodMap
-@[deprecated (since := "2024-05-08")] alias Involutive.Prod_map := Involutive.prodMap
 
 end Function
 

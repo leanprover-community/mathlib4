@@ -32,7 +32,7 @@ namespace ModuleCat
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
 /-- The categorical subobjects of a module `M` are in one-to-one correspondence with its
-    submodules. -/
+submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
     { invFun := fun S => LinearMap.range S.arrow.hom
@@ -43,8 +43,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           apply LinearEquiv.ofBijective (LinearMap.codRestrict
             (LinearMap.range S.arrow.hom) S.arrow.hom _)
           constructor
-          · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
-            rw [ker_eq_bot_of_mono]
+          · simp [← LinearMap.ker_eq_bot,  ker_eq_bot_of_mono]
           · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
               Submodule.comap_subtype_self]
             exact LinearMap.mem_range_self _
@@ -54,12 +53,11 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         convert congr_arg LinearMap.range (ModuleCat.hom_ext_iff.mp
             (underlyingIso_arrow (ofHom N.subtype))) using 1
         · have :
-            -- Porting note: added the `.toLinearEquiv.toLinearMap`
             (underlyingIso (ofHom N.subtype)).inv =
               ofHom (underlyingIso (ofHom N.subtype)).symm.toLinearEquiv.toLinearMap := by
               ext x
               rfl
-          rw [this, hom_comp, LinearEquiv.range_comp]
+          rw [this, hom_comp, hom_ofHom, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
         refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
@@ -81,11 +79,8 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f.hom) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): the whole proof was just `simp [toKernelSubobject]`.
-  suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
-    convert this
-  rw [Iso.trans_inv, ← LinearMap.coe_comp, ← hom_comp, Category.assoc]
-  simp
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10959): the whole proof was just `simp [toKernelSubobject]`.
+  simp [toKernelSubobject, -hom_comp, ← ConcreteCategory.comp_apply]
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
 are equal if they differ by an element of the image.
@@ -93,25 +88,10 @@ are equal if they differ by an element of the image.
 The application is for homology:
 two elements in homology are equal if they differ by a boundary.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/11215): TODO compiler complains that this is marked with `@[ext]`.
--- Should this be changed?
--- @[ext] this is no longer an ext lemma under the current interpretation see eg
--- the conversation beginning at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
--- Goal.20state.20not.20updating.2C.20bugs.2C.20etc.2E/near/338456803
 theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [HasImage f]
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
     (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
   subst w
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): The proof from here used to just be `simp`.
-  simp only [map_add, add_right_eq_self]
-  -- TODO: add a `@[simp]` lemma along the lines of:
-  -- ```
-  -- lemma ModuleCat.Hom.cokernel_condition : (cokernel.π g).hom (g.hom x) = 0
-  -- ```
-  -- ideally generated for all concrete categories (using a metaprogram like `@[elementwise]`?).
-  -- See also: https://github.com/leanprover-community/mathlib4/pull/19511#discussion_r1867083077
-  change ((factorThruImageSubobject f) ≫ g ≫ (cokernel.π g)).hom l = 0
   simp
 
 end ModuleCat

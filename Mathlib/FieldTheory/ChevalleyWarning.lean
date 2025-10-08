@@ -91,7 +91,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = (∏ j, x₀ j ^ d j) * a ^ d i := mul_comm _ _
   -- the remaining step of the calculation above
   rintro ⟨j, hj⟩
-  show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
+  change (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
   rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
@@ -107,7 +107,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   have hq : 0 < q - 1 := by rw [← Fintype.card_units, Fintype.card_pos_iff]; exact ⟨1⟩
   let S : Finset (σ → K) := {x | ∀ i ∈ s, eval x (f i) = 0}
   have hS (x : σ → K) : x ∈ S ↔ ∀ i ∈ s, eval x (f i) = 0 := by simp [S]
-  /- The polynomial `F = ∏ i in s, (1 - (f i)^(q - 1))` has the nice property
+  /- The polynomial `F = ∏ i ∈ s, (1 - (f i)^(q - 1))` has the nice property
     that it takes the value `1` on elements of `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}`
     while it is `0` outside that locus.
     Hence the sum of its values is equal to the cardinality of
@@ -133,9 +133,9 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     rw [Fintype.card_of_subtype S hS, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one, ←
       Fintype.sum_extend_by_zero S, sum_congr rfl fun x _ => hF x]
   -- With these preparations under our belt, we will approach the main goal.
-  show p ∣ Fintype.card { x // ∀ i : ι, i ∈ s → eval x (f i) = 0 }
+  change p ∣ Fintype.card { x // ∀ i : ι, i ∈ s → eval x (f i) = 0 }
   rw [← CharP.cast_eq_zero_iff K, ← key]
-  show (∑ x, eval x F) = 0
+  change (∑ x, eval x F) = 0
   -- We are now ready to apply the main machine, proven before.
   apply F.sum_eval_eq_zero
   -- It remains to verify the crucial assumption of this machine
@@ -145,9 +145,9 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     _ ≤ ∑ i ∈ s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_
     -- see ↓
     _ = (q - 1) * ∑ i ∈ s, (f i).totalDegree := (mul_sum ..).symm
-    _ < (q - 1) * Fintype.card σ := by rwa [mul_lt_mul_left hq]
+    _ < (q - 1) * Fintype.card σ := by gcongr
   -- Now we prove the remaining step from the preceding calculation
-  show (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree
+  change (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree
   calc
     (1 - f i ^ (q - 1)).totalDegree ≤
         max (1 : MvPolynomial σ K).totalDegree (f i ^ (q - 1)).totalDegree := totalDegree_sub _ _
@@ -174,9 +174,6 @@ theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fin
     p ∣ Fintype.card { x : σ → K // eval x f = 0 } := by
   let F : Unit → MvPolynomial σ K := fun _ => f
   have : (∑ i : Unit, (F i).totalDegree) < Fintype.card σ := h
-  -- Porting note: was
-  -- `simpa only [F, Fintype.univ_punit, forall_eq, mem_singleton] using`
-  -- `  char_dvd_card_solutions_of_sum_lt p this`
   convert char_dvd_card_solutions_of_sum_lt p this
   aesop
 

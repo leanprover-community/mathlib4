@@ -25,10 +25,10 @@ where `k` is the residue field of `S`.
 theorem Algebra.FormallySmooth.iff_injective_lTensor_residueField {R S} [CommRing R]
     [CommRing S] [IsLocalRing S] [Algebra R S] (P : Algebra.Extension R S)
     [FormallySmooth R P.Ring]
-    [Module.Free P.Ring (Ω[P.Ring⁄R])] [Module.Finite P.Ring (Ω[P.Ring⁄R])]
+    [Module.Free P.Ring Ω[P.Ring⁄R]] [Module.Finite P.Ring Ω[P.Ring⁄R]]
     (h' : P.ker.FG) :
     Algebra.FormallySmooth R S ↔
-        Function.Injective (P.cotangentComplex.lTensor (ResidueField S)) := by
+      Function.Injective (P.cotangentComplex.lTensor (ResidueField S)) := by
   have : Module.Finite P.Ring P.Cotangent :=
     have : Module.Finite P.Ring P.ker := ⟨(Submodule.fg_top _).mpr h'⟩
     .of_surjective _ Extension.Cotangent.mk_surjective

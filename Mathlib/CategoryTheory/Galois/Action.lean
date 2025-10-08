@@ -12,13 +12,13 @@ import Mathlib.CategoryTheory.Galois.Prorepresentability
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
 from finite `Aut F`-sets to finite sets. In this file we collect basic properties
-of the induced functor `H : C ⥤ Action FintypeCat (MonCat.of (Aut F))`.
+of the induced functor `H : C ⥤ Action FintypeCat (Aut F)`.
 
-See `Mathlib.CategoryTheory.Galois.Full` for the proof that `H` is (faithfully) full.
+See `Mathlib/CategoryTheory/Galois/Full.lean` for the proof that `H` is (faithfully) full.
 
 -/
 
-universe u v
+universe u
 
 namespace CategoryTheory
 
@@ -26,11 +26,11 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u} [Category.{v} C] (F : C ⥤ FintypeCat.{u})
+variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u})
 
 /-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
-the forgetful functor from `Action FintypeCat (MonCat.of (Aut F))` to `FintypeCat`. -/
-def functorToAction : C ⥤ Action FintypeCat.{u} (MonCat.of (Aut F)) where
+the forgetful functor from `Action FintypeCat (Aut F)` to `FintypeCat`. -/
+def functorToAction : C ⥤ Action FintypeCat.{u} (Aut F) where
   obj X := Action.FintypeCat.ofMulAction (Aut F) (F.obj X)
   map f := {
     hom := F.map f
@@ -69,12 +69,12 @@ instance : Functor.ReflectsIsomorphisms (functorToAction F) where
     isIso_of_reflects_iso f F
 
 noncomputable instance : PreservesFiniteCoproducts (functorToAction F) :=
-  ⟨fun J _ ↦ Action.preservesColimitsOfShape_of_preserves (functorToAction F)
-    (inferInstanceAs <| PreservesColimitsOfShape (Discrete J) F)⟩
+  ⟨fun _ ↦ Action.preservesColimitsOfShape_of_preserves (functorToAction F)
+    (inferInstanceAs <| PreservesColimitsOfShape (Discrete _) F)⟩
 
 noncomputable instance : PreservesFiniteProducts (functorToAction F) :=
-  ⟨fun J _ ↦ Action.preservesLimitsOfShape_of_preserves (functorToAction F)
-    (inferInstanceAs <| PreservesLimitsOfShape (Discrete J) F)⟩
+  ⟨fun _ ↦ Action.preservesLimitsOfShape_of_preserves (functorToAction F)
+    (inferInstanceAs <| PreservesLimitsOfShape (Discrete _) F)⟩
 
 noncomputable instance (G : Type*) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) (functorToAction F) :=

@@ -56,9 +56,8 @@ relative to that shift is called pretriangulated if the following hold:
   ```
   where the left square commutes, and whose rows are distinguished triangles,
   there exists a morphism `c : Z ⟶ Z'` such that `(a,b,c)` is a triangle morphism.
-
-See <https://stacks.math.columbia.edu/tag/0145>
 -/
+@[stacks 0145]
 class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
   /-- a class of triangle which are called `distinguished` -/
   distinguishedTriangles : Set (Triangle C)
@@ -75,7 +74,7 @@ class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
   rotate_distinguished_triangle :
     ∀ T : Triangle C, T ∈ distinguishedTriangles ↔ T.rotate ∈ distinguishedTriangles
   /-- given two distinguished triangle, a commutative square
-        can be extended as morphism of triangles -/
+  can be extended as morphism of triangles -/
   complete_distinguished_triangle_morphism :
     ∀ (T₁ T₂ : Triangle C) (_ : T₁ ∈ distinguishedTriangles) (_ : T₂ ∈ distinguishedTriangles)
       (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (_ : T₁.mor₁ ≫ b = a ≫ T₂.mor₁),
@@ -86,15 +85,13 @@ namespace Pretriangulated
 
 variable [∀ n : ℤ, Functor.Additive (CategoryTheory.shiftFunctor C n)] [hC : Pretriangulated C]
 
--- Porting note: increased the priority so that we can write `T ∈ distTriang C`, and
--- not just `T ∈ (distTriang C)`
 /-- distinguished triangles in a pretriangulated category -/
-notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _
+notation:60 "distTriang " C:60 => @distinguishedTriangles C _ _ _ _ _ _
 
 variable {C}
 
 lemma distinguished_iff_of_iso {T₁ T₂ : Triangle C} (e : T₁ ≅ T₂) :
-    (T₁ ∈ distTriang C) ↔ T₂ ∈ distTriang C :=
+    T₁ ∈ distTriang C ↔ T₂ ∈ distTriang C :=
   ⟨fun hT₁ => isomorphic_distinguished _ hT₁ _ e.symm,
     fun hT₂ => isomorphic_distinguished _ hT₂ _ e⟩
 
@@ -115,11 +112,9 @@ theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `f ≫ g = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
-theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
+the composition `f ≫ g = 0`. -/
+@[reassoc, stacks 0146]
+theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ distTriang C) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
       T.mor₁ rfl
@@ -130,10 +125,8 @@ theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `g ≫ h = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `g ≫ h = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₂ ≫ T.mor₃ = 0 :=
   comp_distTriang_mor_zero₁₂ T.rotate (rot_of_distTriang T H)
@@ -143,10 +136,8 @@ theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C)
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `h ≫ f⟦1⟧ = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `h ≫ f⟦1⟧ = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₃ ≫ T.mor₁⟦1⟧' = 0 := by
   have H₂ := rot_of_distTriang T.rotate (rot_of_distTriang T H)
@@ -179,7 +170,7 @@ lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
   refine ⟨T'.obj₂, ((shiftEquiv C (1 : ℤ)).unitIso.app X).hom ≫ T'.mor₁, T'.mor₂,
     isomorphic_distinguished _ (inv_rot_of_distTriang _ (inv_rot_of_distTriang _ mem)) _ ?_⟩
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat)
+    (by cat_disch) (by cat_disch)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
 /-- A commutative square involving the morphisms `mor₂` of two distinguished triangles
@@ -239,7 +230,7 @@ include hT
 lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
     ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
   obtain ⟨g, ⟨hg₁, _⟩⟩ := complete_distinguished_triangle_morphism T _ hT
-    (contractible_distinguished₁ X) 0 f (by aesop_cat)
+    (contractible_distinguished₁ X) 0 f (by cat_disch)
   exact ⟨g, by simpa using hg₁.symm⟩
 
 lemma yoneda_exact₃ {X : C} (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) :
@@ -249,12 +240,12 @@ lemma yoneda_exact₃ {X : C} (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) :
 lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂) (hf : f ≫ T.mor₂ = 0) :
     ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
   obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ T
-    (contractible_distinguished X) hT f 0 (by aesop_cat)
+    (contractible_distinguished X) hT f 0 (by cat_disch)
   exact ⟨a, by simpa using ha₁⟩
 
 lemma coyoneda_exact₁ {X : C} (f : X ⟶ T.obj₁⟦(1 : ℤ)⟧) (hf : f ≫ T.mor₁⟦1⟧' = 0) :
     ∃ (g : X ⟶ T.obj₃), f = g ≫ T.mor₃ :=
-  coyoneda_exact₂ _ (rot_of_distTriang _ (rot_of_distTriang _ hT)) f (by aesop_cat)
+  coyoneda_exact₂ _ (rot_of_distTriang _ (rot_of_distTriang _ hT)) f (by cat_disch)
 
 lemma coyoneda_exact₃ {X : C} (f : X ⟶ T.obj₃) (hf : f ≫ T.mor₃ = 0) :
     ∃ (g : X ⟶ T.obj₂), f = g ≫ T.mor₂ :=
@@ -532,7 +523,7 @@ lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
   dsimp at he₁ he₂
   refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
   refine Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by simp)
+    (by cat_disch) (by cat_disch) (by simp)
 
 lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
     binaryProductTriangle X₁ X₂ ∈ distTriang C :=
@@ -571,8 +562,8 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
   let φ : ∀ j, T' ⟶ T j := fun j => completeDistinguishedTriangleMorphism _ _
     hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp [f₁, T'])
   let φ' := productTriangle.lift _ φ
-  have h₁ : φ'.hom₁ = 𝟙 _ := by aesop_cat
-  have h₂ : φ'.hom₂ = 𝟙 _ := by aesop_cat
+  have h₁ : φ'.hom₁ = 𝟙 _ := by cat_disch
+  have h₂ : φ'.hom₂ = 𝟙 _ := by cat_disch
   have : IsIso φ'.hom₁ := by rw [h₁]; infer_instance
   have : IsIso φ'.hom₂ := by rw [h₂]; infer_instance
   suffices IsIso φ'.hom₃ by

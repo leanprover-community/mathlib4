@@ -19,7 +19,7 @@ has exactly one fixed point, so `|S|` is odd and the involution defined by
 `(x, y, z) ↦ (x, z, y)` also has a fixed point." — [Don Zagier](Zagier1990)
 
 This elementary proof (`Nat.Prime.sq_add_sq'`) is independent of `Nat.Prime.sq_add_sq` in
-`Mathlib.NumberTheory.SumTwoSquares`, which uses the unique factorisation of `ℤ[i]`.
+`Mathlib/NumberTheory/SumTwoSquares.lean`, which uses the unique factorisation of `ℤ[i]`.
 For a geometric interpretation of the piecewise involution (`Zagier.complexInvo`)
 see [Moritz Firsching's MathOverflow answer](https://mathoverflow.net/a/299696).
 -/
@@ -47,9 +47,9 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
   · apply_fun (· % 4) at h
     simp [mul_assoc, Nat.add_mod] at h
   all_goals
-    cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
+    rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
     all_goals
-      simp only [e, self_eq_add_left, ne_eq, add_eq_zero, and_false, not_false_eq_true,
+      simp only [e, right_eq_add, ne_eq, add_eq_zero, and_false, not_false_eq_true,
         mul_eq_left₀, reduceCtorEq] at h
       simp only [h, zero_add] at hk
       exact Nat.not_prime_one hk.out
@@ -147,7 +147,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
   rw [mem_fixedPoints_iff, complexInvo, Subtype.mk.injEq] at mem
   split_ifs at mem with less more <;>
     -- less (completely handled by the pre-applied `simp_all only`)
-    simp_all only [not_lt, Prod.mk.injEq, add_right_eq_self, mul_eq_zero, false_or,
+    simp_all only [not_lt, Prod.mk.injEq, add_eq_left, mul_eq_zero, false_or,
       lt_self_iff_false, reduceCtorEq]
   · -- more
     obtain ⟨_, _, _⟩ := mem; simp_all
@@ -158,9 +158,9 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
     replace mem := (mul_left_cancel₀ two_ne_zero mem).symm
     subst mem
     rw [show x * x + 4 * x * z = x * (x + 4 * z) by linarith] at h
-    cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
+    rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
     · rw [e, mul_one] at h
-      simp_all [h, show z = 0 by linarith [e]]
+      simp_all [show z = 0 by linarith [e]]
     · simp only [e, mul_left_eq_self₀, add_eq_zero, and_false, or_false, reduceCtorEq] at h
       simp only [h, true_and]
       linarith [e]

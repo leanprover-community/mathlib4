@@ -9,7 +9,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 /-!
 # Right-angled triangles
 
-This file proves basic geometrical results about distances and angles in (possibly degenerate)
+This file proves basic geometric results about distances and angles in (possibly degenerate)
 right-angled triangles in real inner product spaces and Euclidean affine spaces.
 
 ## Implementation notes
@@ -120,7 +120,7 @@ theorem angle_add_lt_pi_div_two_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) 
 theorem cos_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
     Real.cos (angle x (x + y)) = ‖x‖ / ‖x + y‖ := by
   rw [angle_add_eq_arccos_of_inner_eq_zero h,
-    Real.cos_arccos (le_trans (by norm_num) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
+    Real.cos_arccos (le_trans (by simp) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
       (div_le_one_of_le₀ _ (norm_nonneg _))]
   rw [mul_self_le_mul_self_iff (norm_nonneg _) (norm_nonneg _),
     norm_add_sq_eq_norm_sq_add_norm_sq_real h]
@@ -130,7 +130,7 @@ theorem cos_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
 theorem sin_angle_add_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 : x ≠ 0 ∨ y ≠ 0) :
     Real.sin (angle x (x + y)) = ‖y‖ / ‖x + y‖ := by
   rw [angle_add_eq_arcsin_of_inner_eq_zero h h0,
-    Real.sin_arcsin (le_trans (by norm_num) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
+    Real.sin_arcsin (le_trans (by simp) (div_nonneg (norm_nonneg _) (norm_nonneg _)))
       (div_le_one_of_le₀ _ (norm_nonneg _))]
   rw [mul_self_le_mul_self_iff (norm_nonneg _) (norm_nonneg _),
     norm_add_sq_eq_norm_sq_add_norm_sq_real h]
@@ -321,12 +321,12 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   [NormedAddTorsor V P]
 
 /-- **Pythagorean theorem**, if-and-only-if angle-at-point form. -/
-theorem dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two (p1 p2 p3 : P) :
-    dist p1 p3 * dist p1 p3 = dist p1 p2 * dist p1 p2 + dist p3 p2 * dist p3 p2 ↔
-      ∠ p1 p2 p3 = π / 2 := by
-  erw [dist_comm p3 p2, dist_eq_norm_vsub V p1 p3, dist_eq_norm_vsub V p1 p2,
-    dist_eq_norm_vsub V p2 p3, ← norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two,
-    vsub_sub_vsub_cancel_right p1, ← neg_vsub_eq_vsub_rev p2 p3, norm_neg]
+theorem dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two (p₁ p₂ p₃ : P) :
+    dist p₁ p₃ * dist p₁ p₃ = dist p₁ p₂ * dist p₁ p₂ + dist p₃ p₂ * dist p₃ p₂ ↔
+      ∠ p₁ p₂ p₃ = π / 2 := by
+  erw [dist_comm p₃ p₂, dist_eq_norm_vsub V p₁ p₃, dist_eq_norm_vsub V p₁ p₂,
+    dist_eq_norm_vsub V p₂ p₃, ← norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two,
+    vsub_sub_vsub_cancel_right p₁, ← neg_vsub_eq_vsub_rev p₂ p₃, norm_neg]
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/
 theorem angle_eq_arccos_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π / 2) :

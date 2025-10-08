@@ -3,10 +3,11 @@ Copyright (c) 2019 Johannes Hölzl, Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Zhouhang Zhou
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 
@@ -19,7 +20,7 @@ To use this space as a basis for the `L^p` spaces and for the Bochner integral, 
 equivalence classes of strongly measurable functions (or, equivalently, of almost everywhere
 strongly measurable functions.)
 
-See `L1Space.lean` for `L¹` space.
+See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 
 ## Notation
 
@@ -32,32 +33,32 @@ See `L1Space.lean` for `L¹` space.
 ## Main statements
 
 * The linear structure of `L⁰` :
-    Addition and scalar multiplication are defined on `L⁰` in the natural way, i.e.,
-    `[f] + [g] := [f + g]`, `c • [f] := [c • f]`. So defined, `α →ₘ β` inherits the linear structure
-    of `β`. For example, if `β` is a module, then `α →ₘ β` is a module over the same ring.
+  Addition and scalar multiplication are defined on `L⁰` in the natural way, i.e.,
+  `[f] + [g] := [f + g]`, `c • [f] := [c • f]`. So defined, `α →ₘ β` inherits the linear structure
+  of `β`. For example, if `β` is a module, then `α →ₘ β` is a module over the same ring.
 
-    See `mk_add_mk`,  `neg_mk`,     `mk_sub_mk`,  `smul_mk`,
-        `add_toFun`, `neg_toFun`, `sub_toFun`, `smul_toFun`
+  See `mk_add_mk`, `neg_mk`, `mk_sub`, `smul_mk`,
+  `coeFn_add`, `coeFn_neg`, `coeFn_sub`, `coeFn_smul`
 
 * The order structure of `L⁰` :
-    `≤` can be defined in a similar way: `[f] ≤ [g]` if `f a ≤ g a` for almost all `a` in domain.
-    And `α →ₘ β` inherits the preorder and partial order of `β`.
+  `≤` can be defined in a similar way: `[f] ≤ [g]` if `f a ≤ g a` for almost all `a` in domain.
+  And `α →ₘ β` inherits the preorder and partial order of `β`.
 
-    TODO: Define `sup` and `inf` on `L⁰` so that it forms a lattice. It seems that `β` must be a
-    linear order, since otherwise `f ⊔ g` may not be a measurable function.
+  TODO: Define `sup` and `inf` on `L⁰` so that it forms a lattice. It seems that `β` must be a
+  linear order, since otherwise `f ⊔ g` may not be a measurable function.
 
 ## Implementation notes
 
-* `f.toFun`      : To find a representative of `f : α →ₘ β`, use the coercion `(f : α → β)`, which
+* `f.cast`:      To find a representative of `f : α →ₘ β`, use the coercion `(f : α → β)`, which
                  is implemented as `f.toFun`.
                  For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
                  characterizing, say, `(f op g : α → β)`.
-* `ae_eq_fun.mk` : To constructs an `L⁰` function `α →ₘ β` from an almost everywhere strongly
+* `AEEqFun.mk`:  To constructs an `L⁰` function `α →ₘ β` from an almost everywhere strongly
                  measurable function `f : α → β`, use `ae_eq_fun.mk`
-* `comp`         : Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
-                 continuous. Use `comp_measurable` if `g` is only measurable (this requires the
+* `comp`:        Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
+                 continuous. Use `compMeasurable` if `g` is only measurable (this requires the
                  target space to be second countable).
-* `comp₂`        : Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
+* `comp₂`:       Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
                  For example, `[f + g]` is `comp₂ (+)`
 
 
@@ -92,8 +93,8 @@ def Measure.aeEqSetoid (μ : Measure α) : Setoid { f : α → β // AEStronglyM
 variable (α)
 
 /-- The space of equivalence classes of almost everywhere strongly measurable functions, where two
-    strongly measurable functions are equivalent if they agree almost everywhere, i.e.,
-    they differ on a set of measure `0`. -/
+strongly measurable functions are equivalent if they agree almost everywhere, i.e.,
+they differ on a set of measure `0`. -/
 def AEEqFun (μ : Measure α) : Type _ :=
   Quotient (μ.aeEqSetoid β)
 
@@ -112,7 +113,7 @@ section
 variable [TopologicalSpace β]
 
 /-- Construct the equivalence class `[f]` of an almost everywhere measurable function `f`, based
-    on the equivalence relation of being almost everywhere equal. -/
+on the equivalence relation of being almost everywhere equal. -/
 def mk {β : Type*} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasurable f μ) : α →ₘ[μ] β :=
   Quotient.mk'' ⟨f, hf⟩
 
@@ -129,19 +130,23 @@ def cast (f : α →ₘ[μ] β) : α → β :=
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
 
+@[fun_prop]
 protected theorem stronglyMeasurable (f : α →ₘ[μ] β) : StronglyMeasurable f := by
   simp only [cast]
   split_ifs with h
   · exact stronglyMeasurable_const
   · apply AEStronglyMeasurable.stronglyMeasurable_mk
 
+@[fun_prop]
 protected theorem aestronglyMeasurable (f : α →ₘ[μ] β) : AEStronglyMeasurable f μ :=
   f.stronglyMeasurable.aestronglyMeasurable
 
+@[fun_prop]
 protected theorem measurable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     (f : α →ₘ[μ] β) : Measurable f :=
   f.stronglyMeasurable.measurable
 
+@[fun_prop]
 protected theorem aemeasurable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     (f : α →ₘ[μ] β) : AEMeasurable f μ :=
   f.measurable.aemeasurable
@@ -169,7 +174,7 @@ theorem ext {f g : α →ₘ[μ] β} (h : f =ᵐ[μ] g) : f = g := by
   rwa [← f.mk_coeFn, ← g.mk_coeFn, mk_eq_mk]
 
 theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f := by
-  rw [← mk_eq_mk, mk_coeFn]
+  rw [← mk_eq_mk (hf := AEEqFun.aestronglyMeasurable ..) (hg := hf), mk_coeFn]
 
 @[elab_as_elim]
 theorem induction_on (f : α →ₘ[μ] β) {p : (α →ₘ[μ] β) → Prop} (H : ∀ f hf, p (mk f hf)) : p f :=
@@ -192,7 +197,7 @@ theorem induction_on₃ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpac
 end
 
 /-!
-### Composition of an a.e. equal function with a (quasi) measure preserving function
+### Composition of an a.e. equal function with a (quasi-)measure-preserving function
 -/
 
 section compQuasiMeasurePreserving
@@ -201,7 +206,7 @@ variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure 
 
 open MeasureTheory.Measure (QuasiMeasurePreserving)
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
@@ -232,7 +237,7 @@ section compMeasurePreserving
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β}
   {f : α → β} {g : β → γ}
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
 definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
@@ -259,8 +264,8 @@ end compMeasurePreserving
 variable [TopologicalSpace β] [TopologicalSpace γ]
 
 /-- Given a continuous function `g : β → γ`, and an almost everywhere equal function `[f] : α →ₘ β`,
-    return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
-    `[g ∘ f] : α →ₘ γ`. -/
+return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
+`[g ∘ f] : α →ₘ γ`. -/
 def comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
   Quotient.liftOn' f (fun f => mk (g ∘ (f : α → β)) (hg.comp_aestronglyMeasurable f.2))
     fun _ _ H => mk_eq_mk.2 <| H.fun_comp g
@@ -269,6 +274,15 @@ def comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : α →ₘ[
 theorem comp_mk (g : β → γ) (hg : Continuous g) (f : α → β) (hf) :
     comp g hg (mk f hf : α →ₘ[μ] β) = mk (g ∘ f) (hg.comp_aestronglyMeasurable hf) :=
   rfl
+
+@[simp]
+theorem comp_id (f : α →ₘ[μ] β) : comp id (continuous_id) f = f := by
+  rcases f; rfl
+
+@[simp]
+theorem comp_comp (g : γ → δ) (g' : β → γ) (hg : Continuous g) (hg' : Continuous g')
+    (f : α →ₘ[μ] β) : comp g hg (comp g' hg' f) = comp (g ∘ g') (hg.comp hg') f := by
+  rcases f; rfl
 
 theorem comp_eq_mk (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) :
     comp g hg f = mk (g ∘ f) (hg.comp_aestronglyMeasurable f.aestronglyMeasurable) := by
@@ -291,8 +305,8 @@ variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [Measur
   [PseudoMetrizableSpace γ] [OpensMeasurableSpace γ] [SecondCountableTopology γ]
 
 /-- Given a measurable function `g : β → γ`, and an almost everywhere equal function `[f] : α →ₘ β`,
-    return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
-    `[g ∘ f] : α →ₘ γ`. This requires that `γ` has a second countable topology. -/
+return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
+`[g ∘ f] : α →ₘ γ`. This requires that `γ` has a second countable topology. -/
 def compMeasurable (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
   Quotient.liftOn' f
     (fun f' => mk (g ∘ (f' : α → β)) (hg.comp_aemeasurable f'.2.aemeasurable).aestronglyMeasurable)
@@ -319,17 +333,17 @@ end CompMeasurable
 
 /-- The class of `x ↦ (f x, g x)`. -/
 def pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : α →ₘ[μ] β × γ :=
-  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prod_mk g.2))
-    fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prod_mk Hg
+  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prodMk g.2))
+    fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prodMk Hg
 
 @[simp]
 theorem pair_mk_mk (f : α → β) (hf) (g : α → γ) (hg) :
-    (mk f hf : α →ₘ[μ] β).pair (mk g hg) = mk (fun x => (f x, g x)) (hf.prod_mk hg) :=
+    (mk f hf : α →ₘ[μ] β).pair (mk g hg) = mk (fun x => (f x, g x)) (hf.prodMk hg) :=
   rfl
 
 theorem pair_eq_mk (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) :
     f.pair g =
-      mk (fun x => (f x, g x)) (f.aestronglyMeasurable.prod_mk g.aestronglyMeasurable) := by
+      mk (fun x => (f x, g x)) (f.aestronglyMeasurable.prodMk g.aestronglyMeasurable) := by
   simp only [← pair_mk_mk, mk_coeFn, f.aestronglyMeasurable, g.aestronglyMeasurable]
 
 theorem coeFn_pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : f.pair g =ᵐ[μ] fun x => (f x, g x) := by
@@ -337,9 +351,9 @@ theorem coeFn_pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : f.pair g =ᵐ
   apply coeFn_mk
 
 /-- Given a continuous function `g : β → γ → δ`, and almost everywhere equal functions
-    `[f₁] : α →ₘ β` and `[f₂] : α →ₘ γ`, return the equivalence class of the function
-    `fun a => g (f₁ a) (f₂ a)`, i.e., the almost everywhere equal function
-    `[fun a => g (f₁ a) (f₂ a)] : α →ₘ γ` -/
+`[f₁] : α →ₘ β` and `[f₂] : α →ₘ γ`, return the equivalence class of the function
+`fun a => g (f₁ a) (f₂ a)`, i.e., the almost everywhere equal function
+`[fun a => g (f₁ a) (f₂ a)] : α →ₘ γ` -/
 def comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β) (f₂ : α →ₘ[μ] γ) :
     α →ₘ[μ] δ :=
   comp _ hg (f₁.pair f₂)
@@ -348,7 +362,7 @@ def comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →�
 theorem comp₂_mk_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α → β) (f₂ : α → γ)
     (hf₁ hf₂) :
     comp₂ g hg (mk f₁ hf₁ : α →ₘ[μ] β) (mk f₂ hf₂) =
-      mk (fun a => g (f₁ a) (f₂ a)) (hg.comp_aestronglyMeasurable (hf₁.prod_mk hf₂)) :=
+      mk (fun a => g (f₁ a) (f₂ a)) (hg.comp_aestronglyMeasurable (hf₁.prodMk hf₂)) :=
   rfl
 
 theorem comp₂_eq_pair (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -357,7 +371,7 @@ theorem comp₂_eq_pair (g : β → γ → δ) (hg : Continuous (uncurry g)) (f�
 
 theorem comp₂_eq_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
     (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ = mk (fun a => g (f₁ a) (f₂ a))
-      (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prod_mk f₂.aestronglyMeasurable)) := by
+      (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prodMk f₂.aestronglyMeasurable)) := by
   rw [comp₂_eq_pair, pair_eq_mk, comp_mk]; rfl
 
 theorem coeFn_comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -372,9 +386,9 @@ variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β]
   [MeasurableSpace δ] [PseudoMetrizableSpace δ] [OpensMeasurableSpace δ] [SecondCountableTopology δ]
 
 /-- Given a measurable function `g : β → γ → δ`, and almost everywhere equal functions
-    `[f₁] : α →ₘ β` and `[f₂] : α →ₘ γ`, return the equivalence class of the function
-    `fun a => g (f₁ a) (f₂ a)`, i.e., the almost everywhere equal function
-    `[fun a => g (f₁ a) (f₂ a)] : α →ₘ γ`. This requires `δ` to have second-countable topology. -/
+`[f₁] : α →ₘ β` and `[f₂] : α →ₘ γ`, return the equivalence class of the function
+`fun a => g (f₁ a) (f₂ a)`, i.e., the almost everywhere equal function
+`[fun a => g (f₁ a) (f₂ a)] : α →ₘ γ`. This requires `δ` to have second-countable topology. -/
 def comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
     (f₂ : α →ₘ[μ] γ) : α →ₘ[μ] δ :=
   compMeasurable _ hg (f₁.pair f₂)
@@ -384,7 +398,7 @@ theorem comp₂Measurable_mk_mk (g : β → γ → δ) (hg : Measurable (uncurry
     (f₂ : α → γ) (hf₁ hf₂) :
     comp₂Measurable g hg (mk f₁ hf₁ : α →ₘ[μ] β) (mk f₂ hf₂) =
       mk (fun a => g (f₁ a) (f₂ a))
-        (hg.comp_aemeasurable (hf₁.aemeasurable.prod_mk hf₂.aemeasurable)).aestronglyMeasurable :=
+        (hg.comp_aemeasurable (hf₁.aemeasurable.prodMk hf₂.aemeasurable)).aestronglyMeasurable :=
   rfl
 
 theorem comp₂Measurable_eq_pair (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -395,7 +409,7 @@ theorem comp₂Measurable_eq_mk (g : β → γ → δ) (hg : Measurable (uncurry
     (f₂ : α →ₘ[μ] γ) :
     comp₂Measurable g hg f₁ f₂ =
       mk (fun a => g (f₁ a) (f₂ a))
-        (hg.comp_aemeasurable (f₁.aemeasurable.prod_mk f₂.aemeasurable)).aestronglyMeasurable := by
+        (hg.comp_aemeasurable (f₁.aemeasurable.prodMk f₂.aemeasurable)).aestronglyMeasurable := by
   rw [comp₂Measurable_eq_pair, pair_eq_mk, compMeasurable_mk]; rfl
 
 theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -406,7 +420,7 @@ theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry
 end
 
 /-- Interpret `f : α →ₘ[μ] β` as a germ at `ae μ` forgetting that `f` is almost everywhere
-    strongly measurable. -/
+strongly measurable. -/
 def toGerm (f : α →ₘ[μ] β) : Germ (ae μ) β :=
   Quotient.liftOn' f (fun f => ((f : α → β) : Germ (ae μ) β)) fun _ _ H => Germ.coe_eq.2 H
 
@@ -414,7 +428,8 @@ def toGerm (f : α →ₘ[μ] β) : Germ (ae μ) β :=
 theorem mk_toGerm (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β).toGerm = f :=
   rfl
 
-theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by rw [← mk_toGerm, mk_coeFn]
+theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by
+  rw [← mk_toGerm f f.aestronglyMeasurable, mk_coeFn]
 
 theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae μ) β) := fun f g H =>
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
@@ -455,12 +470,12 @@ theorem comp₂Measurable_toGerm [PseudoMetrizableSpace β] [MeasurableSpace β]
   induction_on₂ f₁ f₂ fun f₁ _ f₂ _ => by simp
 
 /-- Given a predicate `p` and an equivalence class `[f]`, return true if `p` holds of `f a`
-    for almost all `a` -/
+for almost all `a` -/
 def LiftPred (p : β → Prop) (f : α →ₘ[μ] β) : Prop :=
   f.toGerm.LiftPred p
 
 /-- Given a relation `r` and equivalence class `[f]` and `[g]`, return true if `r` holds of
-    `(f a, g a)` for almost all `a` -/
+`(f a, g a)` for almost all `a` -/
 def LiftRel (r : β → γ → Prop) (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : Prop :=
   f.toGerm.LiftRel r g.toGerm
 
@@ -469,7 +484,9 @@ theorem liftRel_mk_mk {r : β → γ → Prop} {f : α → β} {g : α → γ} {
   Iff.rfl
 
 theorem liftRel_iff_coeFn {r : β → γ → Prop} {f : α →ₘ[μ] β} {g : α →ₘ[μ] γ} :
-    LiftRel r f g ↔ ∀ᵐ a ∂μ, r (f a) (g a) := by rw [← liftRel_mk_mk, mk_coeFn, mk_coeFn]
+    LiftRel r f g ↔ ∀ᵐ a ∂μ, r (f a) (g a) := by
+  rw [← liftRel_mk_mk (hf := f.aestronglyMeasurable) (hg := g.aestronglyMeasurable),
+    mk_coeFn, mk_coeFn]
 
 section Order
 
@@ -576,7 +593,8 @@ theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function
 @[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by
   simp only [cast]
-  split_ifs with h; swap; · exact h.elim ⟨b, rfl⟩
+  split_ifs with h
+  case neg => exact h.elim ⟨b, rfl⟩
   have := Classical.choose_spec h
   set b' := Classical.choose h
   simp_rw [const, mk_eq_mk, EventuallyEq, ← const_def, eventually_const] at this
@@ -694,7 +712,7 @@ instance instMonoid : Monoid (α →ₘ[μ] γ) :=
   toGerm_injective.monoid toGerm one_toGerm mul_toGerm pow_toGerm
 
 /-- `AEEqFun.toGerm` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`AEEqFun.toGerm` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `AEEqFun.toGerm` as an `AddMonoidHom`. -/]
 def toGermMonoidHom : (α →ₘ[μ] γ) →* (ae μ).Germ γ where
   toFun := toGerm
   map_one' := one_toGerm
@@ -708,7 +726,7 @@ instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →�
 
 section Group
 
-variable [Group γ] [TopologicalGroup γ]
+variable [Group γ] [IsTopologicalGroup γ]
 
 section Inv
 
@@ -736,7 +754,7 @@ section Div
 instance instDiv : Div (α →ₘ[μ] γ) :=
   ⟨comp₂ Div.div continuous_div'⟩
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note: LHS does not simplify.
+@[to_additive (attr := simp)]
 theorem mk_div (f g : α → γ) (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     mk (f / g) (hf.div hg) = (mk f hf : α →ₘ[μ] γ) / mk g hg :=
   rfl
@@ -772,19 +790,19 @@ end ZPow
 
 end Group
 
-instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
+instance instAddGroup [AddGroup γ] [IsTopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
   toGerm_injective.addGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
     (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
 
-instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
+instance instAddCommGroup [AddCommGroup γ] [IsTopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
   { add_comm := add_comm }
 
 @[to_additive existing]
-instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
+instance instGroup [Group γ] [IsTopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
   toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
 
 @[to_additive existing]
-instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
+instance instCommGroup [CommGroup γ] [IsTopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
   { mul_comm := mul_comm }
 
 section Module
@@ -817,7 +835,7 @@ theorem lintegral_mk (f : α → ℝ≥0∞) (hf) : (mk f hf : α →ₘ[μ] ℝ
   rfl
 
 theorem lintegral_coeFn (f : α →ₘ[μ] ℝ≥0∞) : ∫⁻ a, f a ∂μ = f.lintegral := by
-  rw [← lintegral_mk, mk_coeFn]
+  rw [← lintegral_mk (hf := f.aestronglyMeasurable), mk_coeFn]
 
 @[simp]
 nonrec theorem lintegral_zero : lintegral (0 : α →ₘ[μ] ℝ≥0∞) = 0 :=
@@ -836,12 +854,30 @@ theorem lintegral_mono {f g : α →ₘ[μ] ℝ≥0∞} : f ≤ g → lintegral 
 section Abs
 
 theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β] [AddGroup β]
-    [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
+    [IsTopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
   simp_rw [abs]
   filter_upwards [AEEqFun.coeFn_sup f (-f), AEEqFun.coeFn_neg f] with x hx_sup hx_neg
   rw [hx_sup, hx_neg, Pi.neg_apply]
 
 end Abs
+
+section Star
+
+variable {R : Type*} [TopologicalSpace R]
+
+instance [Star R] [ContinuousStar R] : Star (α →ₘ[μ] R) where
+  star f := (AEEqFun.comp _ continuous_star f)
+
+lemma coeFn_star [Star R] [ContinuousStar R] (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
+  coeFn_comp _ (continuous_star) f
+
+instance [InvolutiveStar R] [ContinuousStar R] : InvolutiveStar (α →ₘ[μ] R) where
+  star_involutive f := comp_comp _ _ _ _ f |>.trans <| by simp [star_involutive.comp_self]
+
+instance [Star R] [TrivialStar R] [ContinuousStar R] : TrivialStar (α →ₘ[μ] R) where
+  star_trivial f := show comp _ _ f = f by simp [funext star_trivial, ← Function.id_def]
+
+end Star
 
 section PosPart
 
@@ -863,6 +899,17 @@ theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => 
 
 end PosPart
 
+section AELimit
+
+/-- The ae-limit is ae-unique. -/
+theorem tendsto_ae_unique {ι : Type*} [T2Space β]
+    {g h : α → β} {f : ι → α → β} {l : Filter ι} [l.NeBot]
+    (hg : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (g ω)))
+    (hh : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (h ω))) : g =ᵐ[μ] h := by
+  filter_upwards [hg, hh] with ω hg1 hh1 using tendsto_nhds_unique hg1 hh1
+
+end AELimit
+
 end AEEqFun
 
 end MeasureTheory
@@ -882,12 +929,12 @@ def toAEEqFun (f : C(α, β)) : α →ₘ[μ] β :=
 theorem coeFn_toAEEqFun (f : C(α, β)) : f.toAEEqFun μ =ᵐ[μ] f :=
   AEEqFun.coeFn_mk f _
 
-variable [Group β] [TopologicalGroup β]
+variable [Group β] [IsTopologicalGroup β]
 
 /-- The `MulHom` from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/
-@[to_additive "The `AddHom` from the group of continuous maps from `α` to `β` to the group of
-equivalence classes of `μ`-almost-everywhere measurable functions."]
+@[to_additive /-- The `AddHom` from the group of continuous maps from `α` to `β` to the group of
+equivalence classes of `μ`-almost-everywhere measurable functions. -/]
 def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
   toFun := ContinuousMap.toAEEqFun μ
   map_one' := rfl
@@ -896,7 +943,7 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
 
 variable {𝕜 : Type*} [Semiring 𝕜]
 variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
-  [TopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
+  [IsTopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
 
 /-- The linear map from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/

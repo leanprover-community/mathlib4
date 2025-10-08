@@ -91,7 +91,7 @@ initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_app
 lemma ratio_toDilation (e : X ≃ᵈ Y) : ratio e.toDilation = ratio e := rfl
 
 /-- Identity map as a `DilationEquiv`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
@@ -100,7 +100,7 @@ def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
 @[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
 
 /-- Composition of `DilationEquiv`s. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
   toEquiv := e₁.1.trans e₂.1
   __ := e₂.toDilation.comp e₁.toDilation
@@ -191,7 +191,16 @@ lemma _root_.IsometryEquiv.toDilationEquiv_apply (e : X ≃ᵢ Y) (x : X) :
 
 @[simp]
 lemma _root_.IsometryEquiv.toDilationEquiv_symm (e : X ≃ᵢ Y) :
-    e.toDilationEquiv.symm = e.symm.toDilationEquiv :=
+    e.symm.toDilationEquiv = e.toDilationEquiv.symm :=
+  rfl
+
+@[simp]
+lemma _root_.IsometryEquiv.coe_toDilationEquiv (e : X ≃ᵢ Y) : ⇑e.toDilationEquiv = e :=
+  rfl
+
+@[simp]
+lemma _root_.IsometryEquiv.coe_symm_toDilationEquiv (e : X ≃ᵢ Y) :
+    ⇑e.toDilationEquiv.symm = e.symm :=
   rfl
 
 @[simp]
@@ -210,11 +219,15 @@ def toHomeomorph (e : X ≃ᵈ Y) : X ≃ₜ Y where
   __ := e.toEquiv
 
 @[simp]
+lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[simp]
 lemma coe_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph = e :=
   rfl
 
 @[simp]
-lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+lemma coe_symm_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 end PseudoEMetricSpace

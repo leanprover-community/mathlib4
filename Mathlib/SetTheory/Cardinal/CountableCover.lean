@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
 
 /-!
 # Cardinality of a set with a countable cover
@@ -31,7 +32,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
     [Countable ι] {f : ι → Set α} {l : Filter ι} [NeBot l]
     {t : Set α} (ht : ∀ x ∈ t, ∀ᶠ i in l, x ∈ f i)
     (h'f : ∀ i, #(f i) ≤ a) : #t ≤ a := by
-  rcases lt_or_le a ℵ₀ with ha|ha
+  rcases lt_or_ge a ℵ₀ with ha|ha
   /- case `a` finite. In this case, it suffices to show that any finite subset `s` of `t` has
   cardinality at most `a`. For this, we pick `i` such that `f i` contains all the points in `s`,
   and apply the assumption that the cardinality of `f i` is at most `a`.   -/

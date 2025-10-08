@@ -24,6 +24,7 @@ namespace MorphismProperty
 
 /-- A class of morphisms is stable under retracts if a retract of such a morphism still
 lies in the class. -/
+@[mk_iff]
 class IsStableUnderRetracts (P : MorphismProperty C) : Prop where
   of_retract {X Y Z W : C} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g) (hg : P g) : P f
 
@@ -46,6 +47,50 @@ instance IsStableUnderRetracts.isomorphisms : (isomorphisms C).IsStableUnderRetr
     refine ⟨h.i.right ≫ inv g ≫ h.r.left, ?_, ?_⟩
     · rw [← h.i_w_assoc, IsIso.hom_inv_id_assoc, h.retract_left]
     · rw [Category.assoc, Category.assoc, h.r_w, IsIso.inv_hom_id_assoc, h.retract_right]
+
+instance (P₁ P₂ : MorphismProperty C)
+    [P₁.IsStableUnderRetracts] [P₂.IsStableUnderRetracts] :
+    (P₁ ⊓ P₂).IsStableUnderRetracts where
+  of_retract := fun h ⟨h₁, h₂⟩ ↦ ⟨of_retract h h₁, of_retract h h₂⟩
+
+/-- The class of morphisms that are retracts of morphisms
+belonging to `P : MorphismProperty C`. -/
+def retracts (P : MorphismProperty C) : MorphismProperty C :=
+  fun _ _ f ↦ ∃ (Z W : C) (g : Z ⟶ W) (_ : RetractArrow f g), P g
+
+lemma le_retracts (P : MorphismProperty C) : P ≤ P.retracts := by
+  intro X Y f hf
+  exact ⟨_, _, f, { i := 𝟙 _, r := 𝟙 _}, hf⟩
+
+lemma retracts_monotone : Monotone (retracts (C := C)) := by
+  intro _ _ h _ _ _ ⟨_, _, _, hg, hg'⟩
+  exact ⟨_, _, _, hg, h _ hg'⟩
+
+lemma isStableUnderRetracts_iff_retracts_le (P : MorphismProperty C) :
+    P.IsStableUnderRetracts ↔ P.retracts ≤ P := by
+  rw [isStableUnderRetracts_iff]
+  constructor
+  · intro h₁ X Y f ⟨_, _, _, h₂, h₃⟩
+    exact h₁ h₂ h₃
+  · intro h₁ _ _ _ _ _ _ h₂ h₃
+    exact h₁ _ ⟨_, _, _, h₂, h₃⟩
+
+lemma retracts_le (P : MorphismProperty C) [P.IsStableUnderRetracts] :
+    P.retracts ≤ P := by
+  rwa [← isStableUnderRetracts_iff_retracts_le]
+
+@[simp]
+lemma retracts_le_iff {P Q : MorphismProperty C} [Q.IsStableUnderRetracts] :
+    P.retracts ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact le_trans P.le_retracts
+  · intro h
+    exact le_trans (retracts_monotone h) Q.retracts_le
+
+instance {P : MorphismProperty C} [P.IsStableUnderRetracts] :
+    P.RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _
+    (fun _ _ e ↦ of_retract (Retract.ofIso e.symm))
 
 end MorphismProperty
 

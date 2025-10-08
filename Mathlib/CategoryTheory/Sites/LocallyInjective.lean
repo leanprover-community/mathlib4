@@ -29,10 +29,9 @@ namespace CategoryTheory
 open Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
-  {D : Type u'} [Category.{v'} D] [HasForget.{w} D]
+  {D : Type u'} [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
+  [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
   (J : GrothendieckTopology C)
-
-attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 namespace Presheaf
 
@@ -40,18 +39,18 @@ namespace Presheaf
 elements in `F.obj X`, this is the sieve of `X.unop` consisting of morphisms `f`
 such that `F.map f.op x = F.map f.op y`. -/
 @[simps]
-def equalizerSieve {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) : Sieve X.unop where
+def equalizerSieve {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : ToType (F.obj X)) : Sieve X.unop where
   arrows _ f := F.map f.op x = F.map f.op y
   downward_closed {X Y} f hf g := by
     dsimp at hf ⊢
     simp [hf]
 
 @[simp]
-lemma equalizerSieve_self_eq_top {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x : F.obj X) :
+lemma equalizerSieve_self_eq_top {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x : ToType (F.obj X)) :
     equalizerSieve x x = ⊤ := by aesop
 
 @[simp]
-lemma equalizerSieve_eq_top_iff {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) :
+lemma equalizerSieve_eq_top_iff {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : ToType (F.obj X)) :
     equalizerSieve x y = ⊤ ↔ x = y := by
   constructor
   · intro h
@@ -66,11 +65,11 @@ is locally injective for a Grothendieck topology `J` on `C` if
 whenever two sections of `F₁` are sent to the same section of `F₂`, then these two
 sections coincide locally. -/
 class IsLocallyInjective : Prop where
-  equalizerSieve_mem {X : Cᵒᵖ} (x y : F₁.obj X) (h : φ.app X x = φ.app X y) :
+  equalizerSieve_mem {X : Cᵒᵖ} (x y : ToType (F₁.obj X)) (h : φ.app X x = φ.app X y) :
     equalizerSieve x y ∈ J X.unop
 
 lemma equalizerSieve_mem [IsLocallyInjective J φ]
-    {X : Cᵒᵖ} (x y : F₁.obj X) (h : φ.app X x = φ.app X y) :
+    {X : Cᵒᵖ} (x y : ToType (F₁.obj X)) (h : φ.app X x = φ.app X y) :
     equalizerSieve x y ∈ J X.unop :=
   IsLocallyInjective.equalizerSieve_mem x y h
 
@@ -89,20 +88,22 @@ instance [IsIso φ] : IsLocallyInjective J φ :=
     change IsIso ((forget D).map (φ.app X))
     infer_instance))
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
-    IsLocallyInjective J (whiskerRight φ (forget D)) where
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isLocallyInjective_forget_iff :
-    IsLocallyInjective J (whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
   constructor
   · intro
-    exact ⟨fun x y h => equalizerSieve_mem J (whiskerRight φ (forget D)) x y h⟩
+    exact ⟨fun x y h => equalizerSieve_mem J (Functor.whiskerRight φ (forget D)) x y h⟩
   · intro
     infer_instance
 
 lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
-    IsLocallyInjective J φ ↔ ∀ ⦃X : Cᵒᵖ⦄ (x y : F₁.obj X),
+    IsLocallyInjective J φ ↔ ∀ ⦃X : Cᵒᵖ⦄ (x y : ToType (F₁.obj X)),
       equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop → equalizerSieve x y ∈ J X.unop := by
   constructor
   · intro _ X x y h
@@ -121,7 +122,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
     exact ⟨fun {X} x y h => hφ x y (by simp [h])⟩
 
 lemma equalizerSieve_mem_of_equalizerSieve_app_mem
-    {X : Cᵒᵖ} (x y : F₁.obj X) (h : equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop)
+    {X : Cᵒᵖ} (x y : ToType (F₁.obj X)) (h : equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop)
     [IsLocallyInjective J φ] :
     equalizerSieve x y ∈ J X.unop :=
   (isLocallyInjective_iff_equalizerSieve_mem_imp J φ).1 inferInstance x y h
@@ -166,6 +167,7 @@ lemma isLocallyInjective_iff_injective_of_separated
     exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
     IsLocallyInjective J G.ι :=
   isLocallyInjective_of_injective _ _ (fun X => by
@@ -175,6 +177,8 @@ instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
 section
 
 open GrothendieckTopology.Plus
+
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallyInjective J (J.toPlus P) where
@@ -189,7 +193,8 @@ instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
   rw [GrothendieckTopology.plusMap_toPlus]
   infer_instance
 
-instance isLocallyInjective_toSheafify' [HasForget.{max u v} D]
+instance isLocallyInjective_toSheafify' {CD : D → Type (max u v)}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{max u v} D FD]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] :
     IsLocallyInjective J (toSheafify J P) := by
@@ -221,11 +226,12 @@ instance isLocallyInjective_of_iso [IsIso φ] : IsLocallyInjective φ := by
 
 lemma mono_of_injective
     (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X)) : Mono φ :=
-  have := fun X ↦ ConcreteCategory.mono_of_injective _ (hφ X)
+  have : ∀ X, Mono (φ.val.app X) := fun X ↦ ConcreteCategory.mono_of_injective _ (hφ X)
   (sheafToPresheaf _ _).mono_of_mono_map (NatTrans.mono_of_mono_app φ.1)
 
 variable [J.HasSheafCompose (forget D)]
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective φ] :
     IsLocallyInjective ((sheafCompose J (forget D)).map φ) :=
   Presheaf.isLocallyInjective_forget J φ.1
@@ -233,7 +239,7 @@ instance isLocallyInjective_forget [IsLocallyInjective φ] :
 lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=
   Presheaf.isLocallyInjective_iff_injective_of_separated _ _ (by
-    apply Presieve.isSeparated_of_isSheaf
+    apply Presieve.IsSheaf.isSeparated
     rw [← isSheaf_iff_isSheaf_of_type]
     exact ((sheafCompose J (forget D)).obj F₁).2)
 
@@ -242,9 +248,10 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   rw [← isLocallyInjective_iff_injective]
   infer_instance
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
-    IsLocallyInjective (imageSheafι f) := by
-  dsimp [imageSheafι]
+    IsLocallyInjective (Sheaf.imageι f) := by
+  dsimp [Sheaf.imageι]
   infer_instance
 
 end Sheaf

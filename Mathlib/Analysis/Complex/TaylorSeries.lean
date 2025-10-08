@@ -24,24 +24,16 @@ see `Complex.hasSum_taylorSeries_of_entire`, `Complex.taylorSeries_eq_of_entire`
 `Complex.taylorSeries_eq_of_entire'`.
 -/
 
-#adaptation_note
-/--
-Due to https://github.com/leanprover/lean4/issues/5126, we've had to change all
-the `⦃⦄` stricit implicit variable statements in this file to normal `{}` implicit variables.
-
-Once this issue is fixed, we should change them back. For now it doesn't break anything downstream.
--/
-
 namespace Complex
 
 open Nat
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {f : ℂ → E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] ⦃f : ℂ → E⦄
 
 section ball
 
-variable {c : ℂ} {r : ℝ} (hf : DifferentiableOn ℂ f (Metric.ball c r))
-variable {z : ℂ} (hz : z ∈ Metric.ball c r)
+variable ⦃c : ℂ⦄ ⦃r : ℝ⦄ (hf : DifferentiableOn ℂ f (Metric.ball c r))
+variable ⦃z : ℂ⦄ (hz : z ∈ Metric.ball c r)
 
 include hf hz in
 /-- A function that is complex differentiable on the open ball of radius `r` around `c`
@@ -82,8 +74,8 @@ end ball
 
 section emetric
 
-variable {c : ℂ} {r : ENNReal} (hf : DifferentiableOn ℂ f (EMetric.ball c r))
-variable {z : ℂ} (hz : z ∈ EMetric.ball c r)
+variable ⦃c : ℂ⦄ ⦃r : ENNReal⦄ (hf : DifferentiableOn ℂ f (EMetric.ball c r))
+variable ⦃z : ℂ⦄ (hz : z ∈ EMetric.ball c r)
 
 include hf hz in
 /-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
@@ -116,7 +108,7 @@ end emetric
 
 section entire
 
-variable {f : ℂ → E} (hf : Differentiable ℂ f) (c z : ℂ)
+variable ⦃f : ℂ → E⦄ (hf : Differentiable ℂ f) (c z : ℂ)
 
 include hf in
 /-- A function that is complex differentiable on the complex plane is given by evaluating

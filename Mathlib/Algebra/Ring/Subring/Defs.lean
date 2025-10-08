@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 -/
 import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.RingTheory.NonUnitalSubring.Defs
 
 /-!
@@ -62,7 +61,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists OrderedRing
+assert_not_exists RelIso Even OrderedCommMonoid
 
 universe u v w
 
@@ -72,8 +71,8 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] extends
-  SubsemiringClass S R, NegMemClass S R : Prop
+class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] : Prop
+    extends SubsemiringClass S R, NegMemClass S R
 
 -- See note [lower instance priority]
 instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
@@ -85,10 +84,8 @@ instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : T
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
-
-@[deprecated _root_.intCast_mem (since := "2024-04-05")] alias coe_int_mem := intCast_mem
 
 namespace SubringClass
 
@@ -97,14 +94,14 @@ instance (priority := 75) toHasIntCast : IntCast s :=
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
-instance (priority := 75) toRing : Ring s :=
+instance (priority := 75) toRing : Ring s := fast_instance%
   Subtype.coe_injective.ring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
-    CommRing s :=
+    CommRing s := fast_instance%
   Subtype.coe_injective.commRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) fun _ => rfl
@@ -119,17 +116,24 @@ def subtype (s : S) : s →+* R :=
   { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
     toFun := (↑) }
 
+variable {s} in
 @[simp]
-theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
+lemma subtype_apply (x : s) :
+    SubringClass.subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_natCast (n : ℕ) : ((n : s) : R) = n :=
-  map_natCast (subtype s) n
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
 
 @[simp, norm_cast]
-theorem coe_intCast (n : ℤ) : ((n : s) : R) = n :=
-  map_intCast (subtype s) n
+theorem coe_intCast (n : ℤ) : ((n : s) : R) = n := rfl
 
 end SubringClass
 
@@ -150,12 +154,34 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
--- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
--- projection `s.toSubmonoid`
-
 instance : SetLike (Subring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+initialize_simps_projections Subring (carrier → coe, as_prefix coe)
+
+/-- The actual `Subring` obtained from an element of a `SubringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [Ring R] [SetLike S R] [SubringClass S R]
+    (s : S) : Subring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  neg_mem' := neg_mem
+  one_mem' := one_mem _
+
+instance (priority := 100) : CanLift (Set R) (Subring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
+      (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → -x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        one_mem' := h.2.2.1
+        mul_mem' := h.2.2.2.1
+        neg_mem' := h.2.2.2.2 },
+      rfl ⟩
 
 instance : SubringClass (Subring R) R where
   zero_mem s := s.zero_mem'
@@ -163,8 +189,6 @@ instance : SubringClass (Subring R) R where
   one_mem s := s.one_mem'
   mul_mem {s} := s.mul_mem'
   neg_mem {s} := s.neg_mem'
-
-initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
 /-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
 def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R where __ := S
@@ -329,16 +353,22 @@ def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 
 @[simp]
-theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
+lemma subtype_apply {s : Subring R} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subring R) :
+    Function.Injective s.subtype :=
+  s.toSubmonoid.subtype_injective
+
+@[simp]
+theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 
 @[norm_cast]
-theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
-  map_natCast s.subtype
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
 
 @[norm_cast]
-theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
-  map_intCast s.subtype
+theorem coe_intCast (n : ℤ) : ((n : s) : R) = n := rfl
 
 /-! ## Partial order -/
 
@@ -346,9 +376,6 @@ theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
--- dsimp cannot prove this
-@[simp, nolint simpNF]
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
@@ -356,9 +383,6 @@ theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ 
 theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
--- dsimp cannot prove this
-@[simp, nolint simpNF]
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
@@ -378,8 +402,3 @@ lemma Subring.toNonUnitalSubring_toSubring (S : Subring R) :
 
 lemma NonUnitalSubring.toSubring_toNonUnitalSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) :
     (NonUnitalSubring.toSubring S h1).toNonUnitalSubring = S := by cases S; rfl
-
-theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
-    (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k using 1
-  simp

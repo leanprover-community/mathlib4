@@ -198,6 +198,10 @@ instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
 instance [K.IsStrictlySupported e] : IsIso (K.ιTruncLE e) :=
   inferInstanceAs (IsIso ((unopFunctor C c'.symm).map (K.op.πTruncGE e.op).op))
 
+lemma isIso_ιTruncLE_iff : IsIso (K.ιTruncLE e) ↔ K.IsStrictlySupported e :=
+  ⟨fun _ ↦ isStrictlySupported_of_iso (asIso (K.ιTruncLE e)) e,
+    fun _ ↦ inferInstance⟩
+
 end
 
 end HomologicalComplex

@@ -86,7 +86,7 @@ lemma card_pow_le [DecidableEq G] {A : Finset G} (hA : IsApproximateSubgroup K (
     obtain ⟨F, hF, hSF⟩ := hA.sq_covBySMul
     calc
       (#(A ^ (n + 2)) : ℝ) ≤ #(F ^ (n + 1) * A) := by
-        gcongr; exact mod_cast Set.pow_subset_pow_mul_of_sq_subset_mul hSF (by omega)
+        gcongr; exact mod_cast Set.pow_subset_pow_mul_of_sq_subset_mul hSF (by cutsat)
       _ ≤ #(F ^ (n + 1)) * #A := mod_cast Finset.card_mul_le
       _ ≤ #F ^ (n + 1) * #A := by gcongr; exact mod_cast Finset.card_pow_le
       _ ≤ K ^ (n + 1) * #A := by gcongr
@@ -126,7 +126,7 @@ lemma of_small_tripling [DecidableEq G] {A : Finset G} (hA₁ : 1 ∈ A) (hAsymm
   sq_covBySMul := by
     replace hA := calc (#(A ^ 4 * A) : ℝ)
       _ = #(A ^ 5) := by rw [← pow_succ]
-      _ ≤ K ^ 3 * #A := small_pow_of_small_tripling' (by omega) hA hAsymm
+      _ ≤ K ^ 3 * #A := small_pow_of_small_tripling (by omega) hA hAsymm
     have hA₀ : A.Nonempty := ⟨1, hA₁⟩
     obtain ⟨F, -, hF, hAF⟩ := ruzsa_covering_mul hA₀ hA
     exact ⟨F, hF, by norm_cast; simpa [div_eq_mul_inv, pow_succ, mul_assoc, hAsymm] using hAF⟩
@@ -178,7 +178,7 @@ end IsApproximateSubgroup
 open Set in
 /-- A `1`-approximate subgroup is the same thing as a subgroup. -/
 @[to_additive (attr := simp)
-"A `1`-approximate subgroup is the same thing as a subgroup."]
+/-- A `1`-approximate subgroup is the same thing as a subgroup. -/]
 lemma isApproximateSubgroup_one {A : Set G} :
     IsApproximateSubgroup 1 (A : Set G) ↔ ∃ H : Subgroup G, H = A where
   mp hA := by
@@ -186,7 +186,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
       let H : Subgroup G :=
         { carrier := A
           one_mem' := hA.one_mem
-          inv_mem' hx := by dsimp; rwa [← hA.inv_eq_self, inv_mem_inv]
+          inv_mem' hx := by rwa [← hA.inv_eq_self, inv_mem_inv]
           mul_mem' hx hy := this (mul_mem_mul hx hy) }
       ⟨H, rfl⟩
     obtain ⟨x, hx⟩ : ∃ x : G, A * A ⊆ x • A := by
@@ -197,14 +197,14 @@ lemma isApproximateSubgroup_one {A : Set G} :
       · simp [hA.nonempty.ne_empty] at hKA
       · rw [Finset.coe_singleton, singleton_smul, sq] at hKA
         use x
-    have hx' : x ⁻¹ • (A * A) ⊆ A := by rwa [← subset_set_smul_iff]
+    have hx' : x ⁻¹ • (A * A) ⊆ A := by rwa [← subset_smul_set_iff]
     have hx_inv : x⁻¹ ∈ A := by
       simpa using hx' (smul_mem_smul_set (mul_mem_mul hA.one_mem hA.one_mem))
     have hx_sq : x * x ∈ A := by
       rw [← hA.inv_eq_self]
       simpa using hx' (smul_mem_smul_set (mul_mem_mul hx_inv hA.one_mem))
     calc A * A ⊆ x • A := by assumption
-      _ = x⁻¹ • (x * x) • A := by simp [sq, smul_smul]
+      _ = x⁻¹ • (x * x) • A := by simp [smul_smul]
       _ ⊆ x⁻¹ • (A • A) := smul_set_mono (smul_set_subset_smul hx_sq)
       _ ⊆ A := hx'
   mpr := by rintro ⟨H, rfl⟩; exact .subgroup

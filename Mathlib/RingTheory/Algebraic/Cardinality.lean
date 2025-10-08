@@ -32,7 +32,7 @@ theorem lift_cardinalMk_le_sigma_polynomial :
       let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
       ⟨p.1, x, by
         dsimp
-        have := (Polynomial.map_ne_zero_iff (NoZeroSMulDivisors.algebraMap_injective R L)).2 p.2.1
+        have := (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective R L)).2 p.2.1
         rw [Polynomial.mem_roots this, Polynomial.IsRoot, Polynomial.eval_map,
           ← Polynomial.aeval_def, p.2.2]⟩)
     fun x y => by
@@ -62,15 +62,10 @@ theorem cardinalMk_le_sigma_polynomial :
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) := by
   simpa only [lift_id] using lift_cardinalMk_le_sigma_polynomial R L
 
-@[deprecated (since := "2024-11-10")]
-alias cardinal_mk_le_sigma_polynomial := cardinalMk_le_sigma_polynomial
-
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
 of the base ring or `ℵ₀`. -/
 @[stacks 09GK]
 theorem cardinalMk_le_max : #L ≤ max #R ℵ₀ := by
   simpa only [lift_id] using lift_cardinalMk_le_max R L
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
 
 end Algebra.IsAlgebraic

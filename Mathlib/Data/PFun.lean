@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
+import Batteries.WF
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
-import Batteries.WF
+import Mathlib.Tactic.GeneralizeProofs
 
 /-!
 # Partial functions
@@ -49,7 +50,6 @@ Monad operations:
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 -/
-
 
 open Function
 
@@ -99,6 +99,7 @@ theorem ext' {f g : α →. β} (H1 : ∀ a, a ∈ Dom f ↔ a ∈ Dom g) (H2 : 
     f = g :=
   funext fun a => Part.ext' (H1 a) (H2 a)
 
+@[ext]
 theorem ext {f g : α →. β} (H : ∀ a b, b ∈ f a ↔ b ∈ g a) : f = g :=
   funext fun a => Part.ext (H a)
 
@@ -108,7 +109,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 
 /-- The type of partial functions `α →. β` is equivalent to
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
-def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
+def equivSubtype : (α →. β) ≃ Σ p : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun _ =>
     funext fun _ => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 
@@ -141,7 +142,7 @@ def graph (f : α →. β) : Set (α × β) :=
 
 /-- Graph of a partial function as a relation. `x` and `y` are related iff `f x` is defined and
 "equals" `y`. -/
-def graph' (f : α →. β) : Rel α β := fun x y => y ∈ f x
+def graph' (f : α →. β) : SetRel α β := {(x, y) : α × β | y ∈ f x}
 
 /-- The range of a partial function is the set of values
   `f x` where `x` is in the domain of `f`. -/
@@ -221,15 +222,15 @@ def fix (f : α →. β ⊕ α) : α →. β := fun a =>
 
 theorem dom_of_mem_fix {f : α →. β ⊕ α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
   let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-  rw [WellFounded.fixFEq] at h₂; exact h₂.fst.fst
+  rw [WellFounded.fixF_eq] at h₂; exact h₂.fst.fst
 
 theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     b ∈ f.fix a ↔ Sum.inl b ∈ f a ∨ ∃ a', Sum.inr a' ∈ f a ∧ b ∈ f.fix a' :=
   ⟨fun h => by
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-    rw [WellFounded.fixFEq] at h₂
+    rw [WellFounded.fixF_eq] at h₂
     simp only [Part.mem_assert_iff] at h₂
-    cases' h₂ with h₂ h₃
+    obtain ⟨h₂, h₃⟩ := h₂
     split at h₃
     next e => simp only [Part.mem_some_iff] at h₃; subst b; exact Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
@@ -238,7 +239,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
     · refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
-      · rw [WellFounded.fixFEq]
+      · rw [WellFounded.fixF_eq]
         -- Porting note: used to be simp [h₁, h₂]
         apply Part.mem_assert h₁
         split
@@ -247,12 +248,12 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
         next e =>
           injection h₂.symm.trans e
     · simp only [fix, Part.mem_assert_iff] at h₃
-      cases' h₃ with h₃ h₄
+      obtain ⟨h₃, h₄⟩ := h₃
       refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
-      · cases' h with h₁ h₂
-        rw [WellFounded.fixFEq]
+      · obtain ⟨h₁, h₂⟩ := h
+        rw [WellFounded.fixF_eq]
         -- Porting note: used to be simp [h₁, h₂, h₄]
         apply Part.mem_assert h₁
         split
@@ -318,7 +319,7 @@ theorem fixInduction'_stop {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {
     @fixInduction' _ _ C _ _ _ h hbase hind = hbase a fa := by
   unfold fixInduction'
   rw [fixInduction_spec]
-  -- Porting note: the explicit motive required because `simp` behaves differently
+  -- Porting note: the explicit motive required because `simp` does not apply `Part.get_eq_of_mem`
   refine Eq.rec (motive := fun x e ↦
       Sum.casesOn x ?_ ?_ (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) ?_
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
@@ -331,7 +332,7 @@ theorem fixInduction'_fwd {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a
     @fixInduction' _ _ C _ _ _ h hbase hind = hind a a' h' fa (fixInduction' h' hbase hind) := by
   unfold fixInduction'
   rw [fixInduction_spec]
-  -- Porting note: the explicit motive required because `simp` behaves differently
+  -- Porting note: the explicit motive required because `simp` does not apply `Part.get_eq_of_mem`
   refine Eq.rec (motive := fun x e =>
       Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x ?_ ?_
       (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = _) ?_
@@ -351,17 +352,16 @@ theorem mem_image (y : β) (s : Set α) : y ∈ f.image s ↔ ∃ x ∈ s, y ∈
   Iff.rfl
 
 theorem image_mono {s t : Set α} (h : s ⊆ t) : f.image s ⊆ f.image t :=
-  Rel.image_mono _ h
+  SetRel.image_mono h
 
 theorem image_inter (s t : Set α) : f.image (s ∩ t) ⊆ f.image s ∩ f.image t :=
-  Rel.image_inter _ s t
+  SetRel.image_inter_subset _
 
 theorem image_union (s t : Set α) : f.image (s ∪ t) = f.image s ∪ f.image t :=
-  Rel.image_union _ s t
+  SetRel.image_union _ s t
 
 /-- Preimage of a set under a partial function. -/
-def preimage (s : Set β) : Set α :=
-  Rel.image (fun x y => x ∈ f y) s
+def preimage (s : Set β) : Set α := f.graph'.preimage s
 
 theorem Preimage_def (s : Set β) : f.preimage s = { x | ∃ y ∈ s, y ∈ f x } :=
   rfl
@@ -374,13 +374,13 @@ theorem preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y,
   Part.dom_iff_mem.mpr ⟨y, fxy⟩
 
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t :=
-  Rel.preimage_mono _ h
+  SetRel.preimage_mono h
 
 theorem preimage_inter (s t : Set β) : f.preimage (s ∩ t) ⊆ f.preimage s ∩ f.preimage t :=
-  Rel.preimage_inter _ s t
+  SetRel.preimage_inter_subset _
 
 theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ f.preimage t :=
-  Rel.preimage_union _ s t
+  SetRel.preimage_union _ s t
 
 theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 
@@ -402,10 +402,10 @@ theorem compl_dom_subset_core (s : Set β) : f.Domᶜ ⊆ f.core s := fun x hx y
   absurd ((mem_dom f x).mpr ⟨y, fxy⟩) hx
 
 theorem core_mono {s t : Set β} (h : s ⊆ t) : f.core s ⊆ f.core t :=
-  Rel.core_mono _ h
+  SetRel.core_mono h
 
 theorem core_inter (s t : Set β) : f.core (s ∩ t) = f.core s ∩ f.core t :=
-  Rel.core_inter _ s t
+  SetRel.core_inter _ s t
 
 theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
     x ∈ (res f s).core t ↔ x ∈ s → f x ∈ t := by simp [mem_core, mem_res]
@@ -427,7 +427,7 @@ theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ 
   Set.eq_of_subset_of_subset (Set.subset_inter (f.preimage_subset_core s) (f.preimage_subset_dom s))
     fun x ⟨xcore, xdom⟩ =>
     let y := (f x).get xdom
-    have ys : y ∈ s := xcore _ (Part.get_mem _)
+    have ys : y ∈ s := xcore (Part.get_mem _)
     show x ∈ f.preimage s from ⟨(f x).get xdom, ys, Part.get_mem _⟩
 
 theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Domᶜ := by
@@ -437,7 +437,7 @@ theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Do
 theorem preimage_asSubtype (f : α →. β) (s : Set β) :
     f.asSubtype ⁻¹' s = Subtype.val ⁻¹' f.preimage s := by
   ext x
-  simp only [Set.mem_preimage, Set.mem_setOf_eq, PFun.asSubtype, PFun.mem_preimage]
+  simp only [Set.mem_preimage, PFun.asSubtype, PFun.mem_preimage]
   show f.fn x.val _ ∈ s ↔ ∃ y ∈ s, y ∈ f x.val
   exact
     Iff.intro (fun h => ⟨_, h, Part.get_mem _⟩) fun ⟨y, ys, fxy⟩ =>
@@ -544,7 +544,6 @@ theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
   · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  -- Porting note: was just `[exists_and_left, exists_and_right]`
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 /-- Product of partial functions. -/
@@ -575,17 +574,17 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
 theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
     prodLift (f.comp ((Prod.fst : α × β → α) : α × β →. α))
         (g.comp ((Prod.snd : α × β → β) : α × β →. β)) =
-      prodMap f g :=
-  ext fun a => by simp
+      prodMap f g := by
+  aesop
 
 @[simp]
-theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
-  ext fun _ _ ↦ by simp [eq_comm]
+theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ := by
+  aesop
 
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
-    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- Porting note: was `by tidy`, below is a golfed version of the `tidy?` proof
+    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
+  -- `aesop` can prove this but takes over a second, so we do it manually
   ext <| fun ⟨_, _⟩ ⟨_, _⟩ ↦
   ⟨fun ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
    fun ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩

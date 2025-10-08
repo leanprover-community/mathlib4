@@ -9,7 +9,8 @@ import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
 # Level one modular forms
 
-This file contains results specific to modular forms of level one, ie. modular forms for `SL(2, ℤ)`.
+This file contains results specific to modular forms of level one, i.e. modular forms for
+`SL(2, ℤ)`.
 
 TODO: Add finite-dimensionality of these spaces of modular forms.
 
@@ -29,7 +30,7 @@ variable [SlashInvariantFormClass F Γ(1) k]
 lemma exists_one_half_le_im_and_norm_le (hk : k ≤ 0) (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1 / 2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ :=
   let ⟨γ, hγ, hdenom⟩ := exists_one_half_le_im_smul_and_norm_denom_le τ
-  ⟨γ • τ, hγ, by simpa only [slash_action_eqn'' _ (mem_Gamma_one γ),
+  ⟨γ • τ, hγ, by simpa only [slash_action_eqn_SL'' _ (mem_Gamma_one γ),
     norm_mul, norm_zpow] using le_mul_of_one_le_left (norm_nonneg _) <|
       one_le_zpow_of_nonpos₀ (norm_pos_iff.2 (denom_ne_zero _ _)) hdenom hk⟩
 
@@ -37,14 +38,14 @@ variable (k) in
 /-- If a constant function is modular of weight `k`, then either `k = 0`, or the constant is `0`. -/
 lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) :
     k = 0 ∨ c = 0 := by
-  have hI := slash_action_eqn'' f (mem_Gamma_one S) I
-  have h2I2 := slash_action_eqn'' f (mem_Gamma_one S) ⟨2 * Complex.I, by norm_num⟩
-  simp only [sl_moeb, hf, Function.const, denom_S, coe_mk_subtype] at hI h2I2
+  have hI := slash_action_eqn_SL'' f (mem_Gamma_one S) I
+  have h2I2 := slash_action_eqn_SL'' f (mem_Gamma_one S) ⟨2 * Complex.I, by simp⟩
+  simp_rw [sl_moeb, hf, Function.const, denom_S, coe_mk_subtype] at hI h2I2
   nth_rw 1 [h2I2] at hI
   simp only [mul_zpow, coe_I, mul_eq_mul_right_iff, mul_left_eq_self₀] at hI
   refine hI.imp_left (Or.casesOn · (fun H ↦ ?_) (False.elim ∘ zpow_ne_zero k I_ne_zero))
   rwa [← ofReal_ofNat, ← ofReal_zpow, ← ofReal_one, ofReal_inj,
-    zpow_eq_one_iff_right₀ (by norm_num) (by norm_num)] at H
+    zpow_eq_one_iff_right₀ (by simp) (by simp)] at H
 
 end SlashInvariantForm
 
@@ -61,8 +62,8 @@ private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     rcases eq_or_ne q 0 with rfl | hq'
     · refine ⟨0, by simpa only [norm_zero] using exp_nonneg _, le_rfl⟩
     · obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f
-        ⟨_, im_invQParam_pos_of_abs_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'⟩
-      exact ⟨_, abs_qParam_le_of_one_half_le_im hξ,
+        ⟨_, im_invQParam_pos_of_norm_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'⟩
+      exact ⟨_, norm_qParam_le_of_one_half_le_im hξ,
         by simpa only [← eq_cuspFunction 1 f, Nat.cast_one, coe_mk_subtype,
           qParam_right_inv one_ne_zero hq'] using hξ₂⟩
 
@@ -70,8 +71,8 @@ private theorem levelOne_nonpos_wt_const (hk : k ≤ 0) (f : F) :
     ⇑f = Function.const _ (cuspFunction 1 f 0) := by
   ext z
   have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
-    simpa only [Metric.mem_ball, dist_zero_right, Complex.norm_eq_abs, neg_mul, mul_zero, div_one,
-      Real.exp_zero] using (abs_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
+    simpa only [Metric.mem_ball, dist_zero_right, neg_mul, mul_zero, div_one, Real.exp_zero]
+      using (norm_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
   simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, Function.const_apply] using
     (cuspFunction_eqOn_const_of_nonpos_wt hk f) hQ
 

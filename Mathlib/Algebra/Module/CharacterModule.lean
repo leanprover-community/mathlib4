@@ -6,7 +6,7 @@ Authors: Jujian Zhang, Junyan Xu
 
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Injective
-import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Topology.Instances.AddCircle.Defs
 import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
@@ -46,7 +46,7 @@ namespace CharacterModule
 
 instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
-  coe_injective' _ _ _ := by aesop
+  coe_injective' _ _ _ := by simp_all
 
 instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add _ _ _ := by rw [AddMonoidHom.map_add]
@@ -205,9 +205,7 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
   · split_ifs at hn
     · cases hn
     · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn
-  · split_ifs with h
-    · norm_num
-    · exact Nat.pos_of_ne_zero h
+  · grind
 
 lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
     ∃ (c : CharacterModule A), c a ≠ 0 :=
@@ -236,8 +234,8 @@ lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective
   obtain ⟨b, rfl⟩ := QuotientAddGroup.mk'_surjective _ a
   suffices eq : dual (Submodule.mkQ _) c = 0 from congr($eq b)
   refine hf ?_
-  rw [← LinearMap.comp_apply, ← dual_comp, LinearMap.range_mkQ_comp, dual_zero]
-  rfl
+  rw [← LinearMap.comp_apply, ← dual_comp, LinearMap.range_mkQ_comp, dual_zero,
+    LinearMap.zero_apply, dual_apply, AddMonoidHom.zero_comp]
 
 lemma dual_injective_iff_surjective {f : A →ₗ[R] A'} :
     Function.Injective (dual f) ↔ Function.Surjective f :=

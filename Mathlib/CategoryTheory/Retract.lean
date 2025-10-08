@@ -26,13 +26,22 @@ structure Retract (X Y : C) where
   i : X ⟶ Y
   /-- the split epimorphism -/
   r : Y ⟶ X
-  retract : i ≫ r = 𝟙 X := by aesop_cat
+  retract : i ≫ r = 𝟙 X := by cat_disch
 
 namespace Retract
 
 attribute [reassoc (attr := simp)] retract
 
 variable {X Y : C} (h : Retract X Y)
+
+open Opposite
+
+/-- Retracts are preserved when passing to the opposite category. -/
+@[simps]
+def op : Retract (op X) (op Y) where
+  i := h.r.op
+  r := h.i.op
+  retract := by simp [← op_comp, h.retract]
 
 /-- If `X` is a retract of `Y`, then `F.obj X` is a retract of `F.obj Y`. -/
 @[simps]
@@ -52,6 +61,24 @@ def map (F : C ⥤ D) : Retract (F.obj X) (F.obj Y) where
 instance : IsSplitEpi h.r := ⟨⟨h.splitEpi⟩⟩
 
 instance : IsSplitMono h.i := ⟨⟨h.splitMono⟩⟩
+
+variable (X) in
+/-- Any object is a retract of itself. -/
+@[simps]
+def refl : Retract X X where
+  i := 𝟙 X
+  r := 𝟙 X
+
+/-- A retract of a retract is a retract. -/
+@[simps]
+def trans {Z : C} (h' : Retract Y Z) : Retract X Z where
+  i := h.i ≫ h'.i
+  r := h'.r ≫ h.r
+
+/-- If `e : X ≅ Y`, then `X` is a retract of `Y`. -/
+def ofIso (e : X ≅ Y) : Retract X Y where
+  i := e.hom
+  r := e.inv
 
 end Retract
 
@@ -102,5 +129,15 @@ instance : IsSplitMono h.i.left := ⟨⟨h.left.splitMono⟩⟩
 instance : IsSplitMono h.i.right := ⟨⟨h.right.splitMono⟩⟩
 
 end RetractArrow
+
+namespace Iso
+
+/-- If `X` is isomorphic to `Y`, then `X` is a retract of `Y`. -/
+@[simps]
+def retract {X Y : C} (e : X ≅ Y) : Retract X Y where
+  i := e.hom
+  r := e.inv
+
+end Iso
 
 end CategoryTheory

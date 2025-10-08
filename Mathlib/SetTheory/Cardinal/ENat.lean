@@ -76,7 +76,7 @@ lemma ofENat_lt_aleph0 {m : ℕ∞} : (m : Cardinal) < ℵ₀ ↔ m < ⊤ :=
 @[simp] lemma one_lt_ofENat {m : ℕ∞} : 1 < (m : Cardinal) ↔ 1 < m := by norm_cast
 
 @[simp, norm_cast] lemma ofNat_lt_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
-  (ofNat(m) : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
+    (ofNat(m) : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
 
 lemma ofENat_mono : Monotone ofENat := ofENat_strictMono.monotone
 
@@ -159,7 +159,7 @@ lemma toENatAux_nat (n : ℕ) : toENatAux n = n := Nat.cast_injective.extend_app
 lemma toENatAux_zero : toENatAux 0 = 0 := toENatAux_nat 0
 
 lemma toENatAux_eq_top {a : Cardinal} (ha : ℵ₀ ≤ a) : toENatAux a = ⊤ :=
-  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_lt <| hn ▸ nat_lt_aleph0 n
+  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_gt <| hn ▸ nat_lt_aleph0 n
 
 lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
   | (n : ℕ) => toENatAux_nat n
@@ -168,12 +168,12 @@ lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
 attribute [local simp] toENatAux_nat toENatAux_zero toENatAux_ofENat
 
 lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
-  cases lt_or_le x ℵ₀ with
+  cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (ofENat_le_aleph0 n).trans hx]
 
 theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
-  cases lt_or_le x ℵ₀ with
+  cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (nat_lt_aleph0 n).trans_le hx]
 
@@ -189,8 +189,8 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
   toFun := toENatAux
   map_one' := toENatAux_nat 1
   map_mul' x y := by
-    wlog hle : x ≤ y; · rw [mul_comm, this y x (le_of_not_le hle), mul_comm]
-    cases lt_or_le y ℵ₀ with
+    wlog hle : x ≤ y; · rw [mul_comm, this y x (le_of_not_ge hle), mul_comm]
+    cases lt_or_ge y ℵ₀ with
     | inl hy =>
       lift x to ℕ using hle.trans_lt hy; lift y to ℕ using hy
       simp only [← Nat.cast_mul, toENatAux_nat]
@@ -202,8 +202,8 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
         · rwa [Ne, toENatAux_eq_zero]
         · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
-    wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_le hle), add_comm]
-    cases lt_or_le y ℵ₀ with
+    wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_ge hle), add_comm]
+    cases lt_or_ge y ℵ₀ with
     | inl hy =>
       lift x to ℕ using hle.trans_lt hy; lift y to ℕ using hy
       simp only [← Nat.cast_add, toENatAux_nat]
@@ -255,6 +255,10 @@ lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
     toENat a = ofNat(n) ↔ a = OfNat.ofNat n := toENat_eq_nat
 
 @[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
+
+lemma toENat_ne_top {a : Cardinal} : toENat a ≠ ⊤ ↔ a < ℵ₀ := by simp
+
+@[simp] lemma toENat_lt_top {a : Cardinal} : toENat a < ⊤ ↔ a < ℵ₀ := by simp [lt_top_iff_ne_top]
 
 @[simp]
 theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by

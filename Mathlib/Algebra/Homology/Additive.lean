@@ -3,6 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
@@ -76,19 +77,9 @@ theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
 
 instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
-    (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
 
--- Porting note: proofs had to be provided here, otherwise Lean tries to apply
--- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
 instance : Preadditive (HomologicalComplex V c) where
-  add_comp _ _ _ f f' g := by
-    ext
-    simp only [comp_f, add_f_apply]
-    rw [Preadditive.add_comp]
-  comp_add _ _ _ f g g' := by
-    ext
-    simp only [comp_f, add_f_apply]
-    rw [Preadditive.comp_add]
 
 /-- The `i`-th component of a chain map, as an additive map from chain maps to morphisms. -/
 @[simps!]
@@ -111,7 +102,6 @@ def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     { X := fun i => F.obj (C.X i)
       d := fun i j => F.map (C.d i j)
       shape := fun i j w => by
-        dsimp only
         rw [C.shape _ _ w, F.map_zero]
       d_comp_d' := fun i j k _ _ => by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
   map f :=
@@ -160,7 +150,7 @@ def NatTrans.mapHomologicalComplex {F G : W₁ ⥤ W₂}
 @[simp]
 theorem NatTrans.mapHomologicalComplex_id
     (c : ComplexShape ι) (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] :
-    NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by aesop_cat
+    NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by cat_disch
 
 @[simp]
 theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ ⥤ W₂}
@@ -168,9 +158,9 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
     (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomologicalComplex (α ≫ β) c =
       NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
-  aesop_cat
+  cat_disch
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
     (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :
@@ -248,14 +238,14 @@ noncomputable def singleMapHomologicalComplex (j : ι) :
           ext i
           dsimp
           split_ifs with h
-          · simp [h]
+          · simp
           · rw [zero_comp, ← F.map_id,
               (isZero_single_obj_X c j X _ h).eq_of_src (𝟙 _) 0, F.map_zero]
         inv_hom_id := by
           ext i
           dsimp
           split_ifs with h
-          · simp [h]
+          · simp
           · apply (isZero_single_obj_X c j _ _ h).eq_of_src })
     fun f => by
       ext i

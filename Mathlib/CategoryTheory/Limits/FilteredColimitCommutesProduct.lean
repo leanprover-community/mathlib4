@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
-import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 
 /-!
@@ -136,9 +136,9 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     let yk' : (pointwiseProduct F).obj k :=
       (pointwiseProduct F).map (IsFiltered.rightToMax ky ky') yk₀'
     obtain rfl : y = colimit.ι (pointwiseProduct F) k yk := by
-      simp only [k, yk, Types.Colimit.w_apply', hyk₀]
+      simp only [k, yk, Types.Colimit.w_apply, hyk₀]
     obtain rfl : y' = colimit.ι (pointwiseProduct F) k yk' := by
-      simp only [k, yk', Types.Colimit.w_apply', hyk₀']
+      simp only [k, yk', Types.Colimit.w_apply, hyk₀']
     dsimp only [pointwiseProduct_obj] at yk yk'
     have hch : ∀ (s : α), ∃ (i' : I s) (hi' : k s ⟶ i'),
         (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk) =

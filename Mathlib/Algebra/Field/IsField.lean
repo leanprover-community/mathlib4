@@ -47,6 +47,18 @@ theorem Field.toIsField (R : Type u) [Field R] : IsField R :=
 theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial R :=
   ⟨h.exists_pair_ne⟩
 
+lemma IsField.isDomain {R : Type u} [Semiring R] (h : IsField R) : IsDomain R where
+  mul_left_cancel_of_ne_zero ha _ _ hb := by
+    obtain ⟨x, hx⟩ := h.mul_inv_cancel ha
+    simpa [← mul_assoc, h.mul_comm, hx] using congr_arg (x * ·) hb
+  mul_right_cancel_of_ne_zero ha _ _ hb := by
+    obtain ⟨x, hx⟩ := h.mul_inv_cancel ha
+    simpa [mul_assoc, hx] using congr_arg (· * x) hb
+  exists_pair_ne := h.exists_pair_ne
+
+instance {R : Type u} [Semifield R] : IsDomain R :=
+  (Semifield.toIsField _).isDomain
+
 @[simp]
 theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
   fun h =>
@@ -65,10 +77,11 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
   nnqsmul_def _ _ := rfl
 
 /-- Transferring from `IsField` to `Field`. -/
-noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
-  { ‹Ring R›, IsField.toSemifield h with
-    qsmul := _
-    qsmul_def := fun _ _ => rfl }
+noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R where
+  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slow
+  __ := h.toSemifield
+  qsmul := _
+  qsmul_def := fun _ _ => rfl
 
 /-- For each field, and for each nonzero element of said field, there is a unique inverse.
 Since `IsField` doesn't remember the data of an `inv` function and as such,

@@ -24,7 +24,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a topological space `M'`.
   {M' : Type*} [TopologicalSpace M']
   -- declare functions, sets, points and smoothness indices
-  {e : PartialHomeomorph M H} {x : M}
+  {e : OpenPartialHomeomorph M H} {x : M}
 
 /-! ### Atlas members are `C^n` -/
 
@@ -78,8 +78,12 @@ theorem contMDiffAt_extChartAt' {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
   contMDiffAt_extend (chart_mem_maximalAtlas x) h
 
-theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x :=
-  contMDiffAt_extChartAt' <| mem_chart_source H x
+omit [IsManifold I n M] in
+theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x := by
+  rw [contMDiffAt_iff_source]
+  apply contMDiffWithinAt_id.congr_of_eventuallyEq_of_mem _ (by simp)
+  filter_upwards [extChartAt_target_mem_nhdsWithin x] with y hy
+  exact PartialEquiv.right_inv (extChartAt I x) hy
 
 theorem contMDiffOn_extChartAt : ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
   fun _x' hx' => (contMDiffAt_extChartAt' hx').contMDiffWithinAt
@@ -109,8 +113,27 @@ theorem contMDiffWithinAt_extChartAt_symm_range
   (contMDiffWithinAt_extChartAt_symm_target x hy).mono_of_mem_nhdsWithin
     (extChartAt_target_mem_nhdsWithin_of_mem hy)
 
+omit [IsManifold I n M] in
+theorem contMDiffWithinAt_extChartAt_symm_target_self (x : M) :
+    ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target
+      (extChartAt I x x) := by
+  rw [contMDiffWithinAt_iff_target]
+  constructor
+  · apply ContinuousAt.continuousWithinAt
+    apply ContinuousAt.comp _ I.continuousAt_symm
+    exact (chartAt H x).symm.continuousAt (by simp)
+  · apply contMDiffWithinAt_id.congr_of_mem (fun y hy ↦ ?_) (by simp)
+    convert PartialEquiv.right_inv (extChartAt I x) hy
+    simp
+
+omit [IsManifold I n M] in
+theorem contMDiffWithinAt_extChartAt_symm_range_self (x : M) :
+    ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (range I) (extChartAt I x x) :=
+  (contMDiffWithinAt_extChartAt_symm_target_self x).mono_of_mem_nhdsWithin
+    (extChartAt_target_mem_nhdsWithin x)
+
 /-- An element of `contDiffGroupoid n I` is `C^n`. -/
-theorem contMDiffOn_of_mem_contDiffGroupoid {e' : PartialHomeomorph H H}
+theorem contMDiffOn_of_mem_contDiffGroupoid {e' : OpenPartialHomeomorph H H}
     (h : e' ∈ contDiffGroupoid n I) : ContMDiffOn I I n e' e'.source :=
   (contDiffWithinAt_localInvariantProp n).liftPropOn_of_mem_groupoid contDiffWithinAtProp_id h
 
@@ -122,7 +145,7 @@ section IsLocalStructomorph
 
 variable [ChartedSpace H M'] [IsM' : IsManifold I n M']
 
-theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M M'}
+theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : OpenPartialHomeomorph M M'}
     (hf : LiftPropOn (contDiffGroupoid n I).IsLocalStructomorphWithinAt f f.source) :
     ContMDiffOn I I n f f.source := by
   -- It suffices to show regularity near each `x`
@@ -168,7 +191,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
 /-- Let `M` and `M'` be manifolds with the same model-with-corners, `I`.  Then `f : M → M'`
 is a local structomorphism for `I`, if and only if it is manifold-`C^n` on the domain of definition
 in both directions. -/
-theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') :
+theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M M') :
     LiftPropOn (contDiffGroupoid n I).IsLocalStructomorphWithinAt f f.source ↔
       ContMDiffOn I I n f f.source ∧ ContMDiffOn I I n f.symm f.target := by
   constructor
@@ -184,7 +207,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     obtain ⟨-, hxf⟩ := h x hx
     refine ⟨(f.symm.continuousAt hX).continuousWithinAt, fun h2x => ?_⟩
     obtain ⟨e, he, h2e, hef, hex⟩ :
-      ∃ e : PartialHomeomorph H H,
+      ∃ e : OpenPartialHomeomorph H H,
         e ∈ contDiffGroupoid n I ∧
           e.source ⊆ (c.symm ≫ₕ f ≫ₕ c').source ∧
             EqOn (c' ∘ f ∘ c.symm) e e.source ∧ c x ∈ e.source := by
@@ -192,7 +215,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
       have h2 : c' ∘ f ∘ c.symm = ⇑(c.symm ≫ₕ f ≫ₕ c') := rfl
       have hcx : c x ∈ c.symm ⁻¹' f.source := by simp only [c, hx, mfld_simps]
       rw [h2]
-      rw [← h1, h2, PartialHomeomorph.isLocalStructomorphWithinAt_iff'] at hxf
+      rw [← h1, h2, OpenPartialHomeomorph.isLocalStructomorphWithinAt_iff'] at hxf
       · exact hxf hcx
       · dsimp [x, c]; mfld_set_tac
       · apply Or.inl
@@ -200,7 +223,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     have h2X : c' X = e (c (f.symm X)) := by
       rw [← hef hex]
       dsimp only [Function.comp_def]
-      have hfX : f.symm X ∈ c.source := by simp only [c, x, hX, mfld_simps]
+      have hfX : f.symm X ∈ c.source := by simp only [c, x, mfld_simps]
       rw [c.left_inv hfX, f.right_inv hX]
     have h3e : EqOn (c ∘ f.symm ∘ c'.symm) e.symm (c'.symm ⁻¹' f.target ∩ e.target) := by
       have h1 : EqOn (c.symm ≫ₕ f ≫ₕ c').symm e.symm (e.target ∩ e.target) := by
@@ -210,14 +233,14 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
         · rw [inter_self]; exact hef.symm
       have h2 : e.target ⊆ (c.symm ≫ₕ f ≫ₕ c').target := by
         intro x hx; rw [← e.right_inv hx, ← hef (e.symm.mapsTo hx)]
-        exact PartialHomeomorph.mapsTo _ (h2e <| e.symm.mapsTo hx)
+        exact OpenPartialHomeomorph.mapsTo _ (h2e <| e.symm.mapsTo hx)
       rw [inter_self] at h1
       rwa [inter_eq_right.mpr]
       refine h2.trans ?_
       mfld_set_tac
     refine ⟨e.symm, StructureGroupoid.symm _ he, h3e, ?_⟩
     rw [h2X]; exact e.mapsTo hex
-  · -- We now show the converse: a partial homeomorphism `f : M → M'` which is `C^n` in both
+  · -- We now show the converse: an open partial homeomorphism `f : M → M'` which is `C^n` in both
     -- directions is a local structomorphism.  We do this by proposing
     -- `((chart_at H x).symm.trans f).trans (chart_at H (f x))` as a candidate for a structomorphism
     -- of `H`.

@@ -3,7 +3,7 @@ Copyright (c) 2020 Xi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
@@ -191,12 +191,12 @@ protected theorem StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ :
 @[symm]
 protected theorem StateEqRs.symm {t : Register} (ζ₁ ζ₂ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₁ := by
-  simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
+  simp_all [StateEqRs]
 
 @[trans]
 protected theorem StateEqRs.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
-  simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
+  simp_all [StateEqRs]
 
 /-- Machine states ζ₁ and ζ₂ are equal except for registers {x | x ≥ t}. -/
 def StateEq (t : Register) (ζ₁ ζ₂ : State) : Prop :=
@@ -209,18 +209,17 @@ protected theorem StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by 
 
 @[symm]
 protected theorem StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ := by
-  simp [StateEq]; intros
+  simp only [StateEq, and_imp]; intros
   constructor <;> (symm; assumption)
 
 @[trans]
 protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₃ → ζ₁ ≃[t] ζ₃ := by
-  simp [StateEq]; intros
+  simp only [StateEq, and_imp]; intros
   constructor
   · simp_all only
   · trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
   ⟨@StateEq.trans _⟩
 
@@ -228,22 +227,21 @@ instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t 
 @[trans]
 protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
-  simp [StateEq]; intros
+  simp only [StateEq, and_imp]; intros
   trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
   ⟨@StateEqStateEqRs.trans _⟩
 
 /-- Writing the same value to register `t` gives `≃[t + 1]` from `≃[t]`. -/
 theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t] ζ₂) (v : Word) :
     write t v ζ₁ ≃[t + 1] write t v ζ₂ := by
-  simp [StateEq, StateEqRs] at *
+  simp only [StateEq, StateEqRs, write] at *
   constructor; · exact h.1
   intro r hr
   have hr : r ≤ t := Register.le_of_lt_succ hr
   rcases lt_or_eq_of_le hr with hr | hr
-  · cases' h with _ h
+  · obtain ⟨_, h⟩ := h
     specialize h r hr
     simp_all
   · simp_all
@@ -251,7 +249,7 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
 /-- Writing the same value to any register preserves `≃[t]/ac`. -/
 theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t]/ac ζ₂)
     (r : Register) (v : Word) : write r v ζ₁ ≃[t]/ac write r v ζ₂ := by
-  simp [StateEqRs] at *
+  simp only [StateEqRs, write] at *
   intro r' hr'
   specialize h r' hr'
   congr
@@ -259,10 +257,10 @@ theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : 
 /-- `≃[t + 1]` with writing to register `t` implies `≃[t]`. -/
 theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
     (h : ζ₁ ≃[t + 1] write t v ζ₂) : ζ₁ ≃[t] ζ₂ := by
-  simp [StateEq, StateEqRs] at *
+  simp only [StateEq, write, StateEqRs] at *
   constructor; · exact h.1
   intro r hr
-  cases' h with _ h
+  obtain ⟨_, h⟩ := h
   specialize h r (lt_trans hr (Register.lt_succ_self _))
   rwa [if_neg (ne_of_lt hr)] at h
 
@@ -283,8 +281,7 @@ theorem compiler_correctness
   -- 5.III
   | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂
-    simp only [compile, List.append_assoc, List.singleton_append, List.cons_append, outcome_append,
-      outcome, value]
+    simp only [compile, List.append_assoc, List.cons_append, outcome_append, outcome, value]
     generalize value e_s₁ ξ = ν₁ at e_ih_s₁ ⊢
     generalize value e_s₂ ξ = ν₂ at e_ih_s₂ ⊢
     generalize dν : ν₁ + ν₂ = ν
@@ -316,11 +313,11 @@ theorem compiler_correctness
     have hζ₃ : ζ₃ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := calc
       ζ₃ = outcome (compile map e_s₂ (t + 1)) ζ₂ := by simp_all
       _ ≃[t + 1] { ζ₂ with ac := ν₂ } := by apply e_ih_s₂ <;> assumption
-      _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simp [StateEq]; apply hζ₂
+      _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simpa [StateEq]
     have hζ₃_ν₂ : ζ₃.ac = ν₂ := by simp_all [StateEq]
     have hζ₃_ν₁ : read t ζ₃ = ν₁ := by
-      simp [StateEq, StateEqRs] at hζ₃ ⊢
-      cases' hζ₃ with _ hζ₃
+      simp only [StateEq, StateEqRs, write, read] at hζ₃ ⊢
+      obtain ⟨_, hζ₃⟩ := hζ₃
       specialize hζ₃ t (Register.lt_succ_self _)
       simp_all
     have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν } := calc

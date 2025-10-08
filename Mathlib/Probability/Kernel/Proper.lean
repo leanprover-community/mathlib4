@@ -3,7 +3,7 @@ Copyright (c) 2024 Yaël Dillies, Kalle Kytölä, Kin Yau James Wong. All rights
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kalle Kytölä, Kin Yau James Wong
 -/
-import Mathlib.Probability.Kernel.Basic
+import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!
 # Proper kernels
@@ -66,10 +66,10 @@ alias ⟨IsProper.restrict_eq_indicator_smul, IsProper.of_restrict_eq_indicator_
 alias ⟨IsProper.inter_eq_indicator_mul, IsProper.of_inter_eq_indicator_mul⟩ :=
   isProper_iff_inter_eq_indicator_mul
 
-lemma IsProper.setLIntegral_eq_bind (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) {μ : Measure[𝓧] X}
+lemma IsProper.setLIntegral_eq_comp (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) {μ : Measure[𝓧] X}
     (hA : MeasurableSet[𝓧] A) (hB : MeasurableSet[𝓑] B) :
-    ∫⁻ a in B, π a A ∂μ = μ.bind π (A ∩ B) := by
-  rw [Measure.bind_apply (by measurability) (π.measurable.mono h𝓑𝓧 le_rfl)]
+    ∫⁻ a in B, π a A ∂μ = (π ∘ₘ μ) (A ∩ B) := by
+  rw [Measure.bind_apply (by measurability) (π.measurable.mono h𝓑𝓧 le_rfl).aemeasurable]
   simp only [hπ.inter_eq_indicator_mul h𝓑𝓧 hA hB, ← indicator_mul_const, Pi.one_apply, one_mul]
   rw [← lintegral_indicator (h𝓑𝓧 _ hB)]
   rfl
@@ -127,7 +127,7 @@ lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf
     rw [lintegral_const_mul, hπ.lintegral_indicator_mul h𝓑𝓧 hf hA]
     · measurability
   · rintro g₁ g₂ - _ hg₂_meas hg₁ hg₂
-    simp only [Pi.add_apply, mul_add, add_mul]
+    simp only [Pi.add_apply, add_mul]
     rw [lintegral_add_right, hg₁, hg₂]
     · exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
   · rintro g' hg'_meas hg'_mono hg'

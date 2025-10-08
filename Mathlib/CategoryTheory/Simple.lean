@@ -16,7 +16,7 @@ We define simple objects in any category with zero morphisms.
 A simple object is an object `Y` such that any monomorphism `f : X ⟶ Y`
 is either an isomorphism or zero (but not both).
 
-This is formalized as a `Prop` valued typeclass `Simple X`.
+This is formalized as a `Prop`-valued typeclass `Simple X`.
 
 In some contexts, especially representation theory, simple objects are called "irreducibles".
 
@@ -128,7 +128,7 @@ section Abelian
 variable [Abelian C]
 
 /-- In an abelian category, an object satisfying the dual of the definition of a simple object is
-    simple. -/
+simple. -/
 theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso f ↔ f ≠ 0) :
     Simple X :=
   ⟨fun {Y} f I => by
@@ -174,7 +174,7 @@ variable [Preadditive C] [HasBinaryBiproducts C]
 -- There are another three potential variations of this lemma,
 -- but as any one suffices to prove `indecomposable_of_simple` we will not give them all.
 theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
-  rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_right_eq_self]
+  rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_eq_left]
   constructor
   · intro h
     replace h := h =≫ biprod.snd
@@ -189,7 +189,7 @@ theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
     refine or_iff_not_imp_left.mpr fun h => ?_
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
-    have : Simple (Y ⊞ Z) := Simple.of_iso i.symm -- Porting note: this instance is needed
+    have : Simple (Y ⊞ Z) := Simple.of_iso i.symm
     rw [← Simple.mono_isIso_iff_nonzero biprod.inl] at h
     rwa [Biprod.isIso_inl_iff_isZero] at h⟩
 
@@ -216,7 +216,7 @@ instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
 theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by
-  constructor; intros Y f hf; constructor
+  constructor; intro Y f hf; constructor
   · intro i
     rw [Subobject.isIso_iff_mk_eq_top] at i
     intro w

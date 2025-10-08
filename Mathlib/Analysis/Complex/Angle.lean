@@ -37,11 +37,8 @@ Note that this does not hold when `x` or `y` is `0` as the LHS is `π / 2` while
 lemma angle_eq_abs_arg (hx : x ≠ 0) (hy : y ≠ 0) : angle x y = |(x / y).arg| := by
   refine Real.arccos_eq_of_eq_cos (abs_nonneg _) (abs_arg_le_pi _) ?_
   rw [Real.cos_abs, Complex.cos_arg (div_ne_zero hx hy)]
-  have := (map_ne_zero Complex.abs).2 hx
-  have := (map_ne_zero Complex.abs).2 hy
   simp [div_eq_mul_inv, Complex.normSq_eq_norm_sq]
   field_simp
-  ring
 
 lemma angle_one_left (hy : y ≠ 0) : angle 1 y = |y.arg| := by simp [angle_eq_abs_arg, hy]
 lemma angle_one_right (hx : x ≠ 0) : angle x 1 = |x.arg| := by simp [angle_eq_abs_arg, hx]
@@ -86,19 +83,19 @@ lemma norm_sub_mem_Icc_angle (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     rintro rfl
     simp at hy
   subst y
-  rw [norm_eq_abs, abs_eq_one_iff'] at hx
+  rw [norm_eq_one_iff'] at hx
   obtain ⟨θ, hθ, rfl⟩ := hx
   rw [angle_exp_one, exp_mul_I, add_sub_right_comm, (toIocMod_eq_self _).2]
   · norm_cast
-    rw [norm_eq_abs, abs_add_mul_I]
+    rw [norm_add_mul_I]
     refine ⟨Real.le_sqrt_of_sq_le ?_, ?_⟩
-    · rw [mul_pow, ← _root_.abs_pow, abs_sq]
+    · rw [mul_pow, ← abs_pow, abs_sq]
       calc
         _ = 2 * (1 - (1 - 2 / π ^ 2 * θ ^ 2)) := by ring
         _ ≤ 2 * (1 - θ.cos) := by
             gcongr; exact Real.cos_le_one_sub_mul_cos_sq <| abs_le.2 <| Ioc_subset_Icc_self hθ
         _  = _ := by linear_combination -θ.cos_sq_add_sin_sq
-    · rw [Real.sqrt_le_left (by positivity), ← _root_.abs_pow, abs_sq]
+    · rw [Real.sqrt_le_left (by positivity), ← abs_pow, abs_sq]
       calc
         _ = 2 * (1 - θ.cos) := by linear_combination θ.cos_sq_add_sin_sq
         _ ≤ 2 * (1 - (1 - θ ^ 2 / 2)) := by gcongr; exact Real.one_sub_sq_div_two_le_cos

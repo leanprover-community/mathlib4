@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Order.Compare
-import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Option.Basic
 
@@ -46,12 +45,12 @@ of this data structure.
 
 Based on weight balanced trees:
 
- * Stephen Adams, "Efficient sets: a balancing act",
-   Journal of Functional Programming 3(4):553-562, October 1993,
-   <http://www.swiss.ai.mit.edu/~adams/BB/>.
- * J. Nievergelt and E.M. Reingold,
-   "Binary search trees of bounded balance",
-   SIAM journal of computing 2(1), March 1973.
+* Stephen Adams, "Efficient sets: a balancing act",
+  Journal of Functional Programming 3(4):553-562, October 1993,
+  <http://www.swiss.ai.mit.edu/~adams/BB/>.
+* J. Nievergelt and E.M. Reingold,
+  "Binary search trees of bounded balance",
+  SIAM journal of computing 2(1), March 1973.
 
 Ported from Haskell's `Data.Set`.
 
@@ -69,8 +68,6 @@ universe u
 inductive Ordnode (α : Type u) : Type u
   | nil : Ordnode α
   | node (size : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α
-
--- Porting note: `Nat.Partrec.Code.recOn` is noncomputable in Lean4, so we make it computable.
 compile_inductive% Ordnode
 
 namespace Ordnode
@@ -120,14 +117,11 @@ instance : Singleton α (Ordnode α) :=
 
 /-- O(1). Get the size of the set.
 
-     size {2, 1, 1, 4} = 3  -/
+`size {2, 1, 1, 4} = 3` -/
 @[inline]
 def size : Ordnode α → ℕ
   | nil => 0
   | node sz _ _ _ => sz
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
   rfl
@@ -182,7 +176,6 @@ instance {α} [Repr α] : Repr (Ordnode α) :=
 O(1). Rebalance a tree which was previously balanced but has had its left
 side grow by 1, or its right side shrink by 1. -/
 def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- Porting note: removed `clean`
   rcases id r with _ | rs
   · rcases id l with _ | ⟨ls, ll, lx, lr⟩
     · exact ι x
@@ -217,7 +210,6 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 O(1). Rebalance a tree which was previously balanced but has had its right
 side grow by 1, or its left side shrink by 1. -/
 def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- Porting note: removed `clean`
   rcases id l with _ | ls
   · rcases id r with _ | ⟨rs, rl, rx, rr⟩
     · exact ι x
@@ -252,7 +244,6 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 O(1). Rebalance a tree which was previously balanced but has had one side change
 by at most 1. -/
 def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- Porting note: removed `clean`
   rcases id l with _ | ⟨ls, ll, lx, lr⟩
   · rcases id r with _ | ⟨rs, rl, rx, rr⟩
     · exact ι x
@@ -327,7 +318,7 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | nil => False
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 
-instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+instance Any.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (Any P t)
   | nil => isFalse id
   | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l
@@ -356,9 +347,9 @@ of the tree.
 
 To see the difference with `Emem`, we need a preorder that is not a partial order.
 For example, suppose we compare pairs of numbers using only their first coordinate. Then:
--- Porting note: Verify below example
-    emem (0, 1) {(0, 0), (1, 2)} = false
-    amem (0, 1) {(0, 0), (1, 2)} = true
+-- TODO: Verify below example
+    Emem (0, 1) {(0, 0), (1, 2)} = false
+    Amem (0, 1) {(0, 0), (1, 2)} = true
     (0, 1) ∈ {(0, 0), (1, 2)} = true
 
 The `∈` relation is equivalent to `Amem` as long as the `Ordnode` is well formed,
@@ -366,8 +357,7 @@ and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 
-instance Amem.decidable [LE α] [DecidableRel (α := α) (· ≤ ·)] (x : α) :
-    ∀ t, Decidable (Amem x t) := by
+instance Amem.decidable [LE α] [DecidableLE α] (x : α) : ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.
@@ -506,13 +496,6 @@ assumption on the relative sizes.
     link {1, 2} 4 {5, 6} = {1, 2, 4, 5, 6}
     link {1, 3} 2 {5} = precondition violation -/
 def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
-  -- Porting note: Previous code was:
-  -- (Ordnode.recOn l (insertMin x)) fun ls ll lx lr IHll IHlr r =>
-  --   (Ordnode.recOn r (insertMax l x)) fun rs rl rx rr IHrl IHrr =>
-  --     if delta * ls < rs then balanceL IHrl rx rr
-  --     else if delta * rs < ls then balanceR ll lx (IHlr r) else node' l x r
-  --
-  -- failed to elaborate eliminator, expected type is not available.
   match l with
   | nil => insertMin x
   | node ls ll lx lr => fun r ↦
@@ -593,7 +576,6 @@ def toRevList (t : Ordnode α) : List α :=
 instance [ToString α] : ToString (Ordnode α) :=
   ⟨fun t => "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
 
--- Porting note removed unsafe
 instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
   format := fun t => Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
 
@@ -613,7 +595,7 @@ instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
 def powerset (t : Ordnode α) : Ordnode (Ordnode α) :=
   insertMin nil <| foldr (fun x ts => glue (insertMin (ι x) (map (insertMin x) ts)) ts) t nil
 
-/-- O(m * n). The cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
+/-- O(m * n). The Cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
 
      prod {1, 2} {2, 3} = {(1, 2), (1, 3), (2, 2), (2, 3)} -/
 protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α × β) :=
@@ -770,7 +752,7 @@ def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordn
 
 /-- Auxiliary definition for `ofAscList`.
 
-**Note:** This function is defined by well founded recursion, so it will probably not compute
+**Note:** This function is defined by well-founded recursion, so it will probably not compute
 in the kernel, meaning that you probably can't prove things like
 `ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`.
 This implementation is optimized for VM evaluation. -/
@@ -807,7 +789,7 @@ def ofAscList : List α → Ordnode α
 
 section
 
-variable [LE α] [DecidableRel (α := α) (· ≤ ·)]
+variable [LE α] [DecidableLE α]
 
 /-- O(log n). Does the set (approximately) contain the element `x`? That is,
 is there an element that is equivalent to `x` in the order?
@@ -1088,7 +1070,6 @@ def findGeAux (x : α) : Ordnode α → α → α
     | Ordering.eq => y
     | Ordering.gt => findGeAux x r best
 
--- Porting note: find_le → findGe
 /-- O(log n). Get the smallest element in the tree that is `≥ x`.
 
      findGe 2 {1, 2, 4} = some 2
@@ -1212,7 +1193,7 @@ def ofList (l : List α) : Ordnode α :=
     ofList' [2, 1, 1, 3] = {1, 2, 3} -/
 def ofList' : List α → Ordnode α
   | [] => nil
-  | x :: xs => if List.Chain (fun a b => ¬b ≤ a) x xs then ofAscList (x :: xs) else ofList (x :: xs)
+  | l@(_ :: _) => if List.IsChain (fun a b => ¬b ≤ a) l then ofAscList l else ofList l
 
 /-- O(n * log n). Map a function on a set. Unlike `map` this has no requirements on
 `f`, and the resulting set may be smaller than the input if `f` is noninjective.
@@ -1220,7 +1201,7 @@ Equivalent elements are selected with a preference for smaller source elements.
 
     image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
     image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
-def image {α β} [LE β] [DecidableRel (α := β) (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
+def image {α β} [LE β] [DecidableLE β] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)
 
 end

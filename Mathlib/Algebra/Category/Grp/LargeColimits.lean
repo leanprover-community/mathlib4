@@ -36,12 +36,12 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
   change Function.Bijective (Quot.desc F c).toIntLinearMap
   rw [← CharacterModule.dual_bijective_iff_bijective]
   refine ⟨fun χ ψ eq ↦ ?_, fun χ ↦ ?_⟩
-  · apply (AddMonoidHom.postcompEquiv (@AddEquiv.ulift (AddCircle (1 : ℚ)) _).symm _).injective
+  · apply AddEquiv.ulift.symm.addMonoidHomCongrRightEquiv.injective
     apply ofHom_injective
     refine hc.hom_ext (fun j ↦ ?_)
     ext x
-    rw [comp_apply, comp_apply, ← Quot.ι_desc _ c j x]
-    exact ULift.down_injective (DFunLike.congr_fun eq (Quot.ι F j x))
+    rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
+    exact DFunLike.congr_fun eq (Quot.ι F j x)
   · set c' : Cocone F :=
       { pt := AddCommGrp.of (ULift (AddCircle (1 : ℚ)))
         ι :=
@@ -49,11 +49,9 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
                        (Quot.ι F j))
             naturality {j j'} u := by
               ext
-              change ofHom ((AddEquiv.ulift.symm.toAddMonoidHom.comp χ).comp _) (F.map u _) = _
               dsimp
-              rw [Quot.map_ι F (f := u)]
-              rfl } }
-    use AddEquiv.ulift.toAddMonoidHom.comp (hc.desc c')
+              rw [Quot.map_ι F (f := u)] } }
+    use AddEquiv.ulift.toAddMonoidHom.comp (hc.desc c').hom
     refine Quot.addMonoidHom_ext _ (fun j x ↦ ?_)
     dsimp
     rw [Quot.ι_desc]

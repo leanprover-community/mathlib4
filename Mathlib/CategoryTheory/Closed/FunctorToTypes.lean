@@ -13,7 +13,7 @@ Show that `C ⥤ Type max w v u` is monoidal closed for `C` a category in `Type 
 `Type v`, and `w` an arbitrary universe.
 
 ## TODO
-It should be shown that `C ⥤ Type max w v u` is cartesian closed.
+It should be shown that `C ⥤ Type max w v u` is Cartesian closed.
 
 -/
 
@@ -61,6 +61,7 @@ def adj : tensorLeft F ⊣ rightAdj F where
   counit := { app := fun G ↦ functorHomEquiv F _ G (𝟙 _) }
 
 instance closed : Closed F where
+  rightAdj := rightAdj F
   adj := adj F
 
 instance monoidalClosed : MonoidalClosed (C ⥤ Type max w v u) where

@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 /-!
 # Functions which vanish as distributions vanish as functions
 
-In a finite dimensional normed real vector space endowed with a Borel measure, consider a locally
+In a finite-dimensional normed real vector space endowed with a Borel measure, consider a locally
 integrable function whose integral against all compactly supported smooth functions vanishes. Then
 the function is almost everywhere zero.
 This is proved in `ae_eq_zero_of_integral_contDiff_smul_eq_zero`.
@@ -86,14 +86,14 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
           rw [Real.norm_of_nonneg this.1]
           exact this.2
         exact mul_le_of_le_one_left (norm_nonneg _) this
-      · have : g n x = 0 := by rw [← nmem_support, g_supp]; contrapose! hxK; exact vK n hxK
+      · have : g n x = 0 := by rw [← notMem_support, g_supp]; contrapose! hxK; exact vK n hxK
         simp [this]
     have D : ∀ᵐ x ∂μ, Tendsto (fun n => g n x • f x) atTop (𝓝 (s.indicator f x)) := by
       filter_upwards with x
       by_cases hxs : x ∈ s
       · have : ∀ n, g n x = 1 := fun n ↦ hg n x hxs
         simp [this, indicator_of_mem hxs f]
-      · simp_rw [indicator_of_not_mem hxs f]
+      · simp_rw [indicator_of_notMem hxs f]
         apply tendsto_const_nhds.congr'
         suffices H : ∀ᶠ n in atTop, g n x = 0 by
           filter_upwards [H] with n hn using by simp [hn]
@@ -101,7 +101,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
           rw [← hs.isClosed.closure_eq, closure_eq_iInter_thickening s] at hxs
           simpa using hxs
         filter_upwards [(tendsto_order.1 u_lim).2 _ εpos] with n hn
-        rw [← nmem_support, g_supp]
+        rw [← notMem_support, g_supp]
         contrapose! hε
         exact thickening_mono hn.le s hε
     exact tendsto_integral_of_dominated_convergence bound A B C D
@@ -198,8 +198,8 @@ theorem ae_eq_of_integral_contDiff_smul_eq
     (fun g g_diff g_supp ↦ h g g_diff.contDiff g_supp)
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
-  manifold has zero integral when multiplied by any smooth function compactly supported
-  in an open set `U`, then `f` vanishes almost everywhere in `U`. -/
+  vector space has zero integral when multiplied by any smooth function compactly supported
+  in `U`, then `f` vanishes almost everywhere in `U`. -/
 theorem IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero {U : Set E} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ∞ g → HasCompactSupport g → tsupport g ⊆ U →

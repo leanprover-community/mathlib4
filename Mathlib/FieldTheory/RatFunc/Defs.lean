@@ -3,7 +3,8 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -13,16 +14,16 @@ Files in this folder define the field `RatFunc K` of rational functions over a f
 is the field of fractions of `K[X]` and provide the main results concerning it. This file contains
 the basic definition.
 
-For connections with Laurent Series, see `Mathlib.RingTheory.LaurentSeries`.
+For connections with Laurent Series, see `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main definitions
 We provide a set of recursion and induction principles:
- - `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
-   if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.
- - `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
-   if `f` is well-defined in the sense that `f (a * p) (a * q) = f p' q'`.
- - `RatFunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
-   rational functions
+- `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
+  if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.
+- `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
+  if `f` is well-defined in the sense that `f (a * p) (a * q) = f p' q'`.
+- `RatFunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
+  rational functions
 
 ## Implementation notes
 
@@ -47,8 +48,6 @@ the codomain is not a field or even an integral domain.
 -/
 
 noncomputable section
-
-open scoped Classical
 
 open scoped nonZeroDivisors Polynomial
 
@@ -86,8 +85,6 @@ theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → Fr
 @[simp] lemma toFractionRing_inj {x y : RatFunc K} :
     toFractionRing x = toFractionRing y ↔ x = y :=
   toFractionRing_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toFractionRing_eq_iff := toFractionRing_inj
 
 /-- Non-dependent recursion principle for `RatFunc K`:
 To construct a term of `P : Sort*` out of `x : RatFunc K`,
@@ -179,9 +176,9 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ 
     (RatFunc.mk p q).liftOn f @H = f p q := by
   by_cases hq : q = 0
   · subst hq
-    simp only [mk_zero, f0, ← Localization.mk_zero 1, Localization.liftOn_mk,
+    simp only [mk_zero, f0, ← Localization.mk_zero 1,
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
-  · simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
+  · simp only [mk_eq_localization_mk _ hq, liftOn_ofFractionRing_mk]
 
 /-- Non-dependent recursion principle for `RatFunc K`: if `f p q : P` for all `p q`,
 such that `f (a * p) (a * q) = f p q`, then we can find a value of `P`

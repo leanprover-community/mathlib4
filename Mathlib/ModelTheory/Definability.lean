@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Finset.Preimage
 import Mathlib.ModelTheory.Semantics
 
 /-!
@@ -15,12 +14,12 @@ This file defines what it means for a set over a first-order structure to be def
 ## Main Definitions
 
 - `Set.Definable` is defined so that `A.Definable L s` indicates that the
-  set `s` of a finite cartesian power of `M` is definable with parameters in `A`.
+  set `s` of a finite Cartesian power of `M` is definable with parameters in `A`.
 - `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
   `(s : Set M)` is definable with parameters in `A`.
 - `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
   `(s : Set (M × M))` is definable with parameters in `A`.
-- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
+- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the Boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
 
 ## Main Results
@@ -67,8 +66,7 @@ theorem definable_iff_exists_formula_sum :
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
     coe_con, Term.realize_relabel]
-  congr
-  ext a
+  congr 1 with a
   rcases a with (_ | _) | _ <;> rfl
 
 theorem empty_definable_iff :
@@ -128,15 +126,21 @@ theorem definable_finset_sup {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ 
     rw [Finset.sup_insert]
     exact (hf i).union h
 
-theorem definable_finset_biInter {ι : Type*} {f : ι → Set (α → M)}
+theorem definable_biInter_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 
-theorem definable_finset_biUnion {ι : Type*} {f : ι → Set (α → M)}
+@[deprecated (since := "2025-08-28")]
+alias definable_finset_biInter := definable_biInter_finset
+
+theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
+
+@[deprecated (since := "2025-08-28")]
+alias definable_finset_biUnion := definable_biUnion_finset
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
@@ -188,7 +192,7 @@ theorem definable_iff_finitely_definable :
     exact Definable.mono hd hA0
 
 /-- This lemma is only intended as a helper for `Definable.image_comp`. -/
-theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
+theorem Definable.image_comp_sumInl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine ⟨(BoundedFormula.relabel id φ).exs, ?_⟩
@@ -211,9 +215,9 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
       (congr rfl (ext fun x => ?_)).mp
         (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
-                (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
+                (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sumInl_fin
           _)
-    simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
+    simp only [mem_image, exists_exists_and_eq_and]
     refine exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => ?_)
     simp
 
@@ -226,7 +230,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
     have h :=
       (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
                 (Equiv.sumCongr (_root_.Equiv.refl _)
-                  (Fintype.equivFin _).symm)).image_comp_sum_inl_fin
+                  (Fintype.equivFin _).symm)).image_comp_sumInl_fin
             _).preimage_comp
         (rangeSplitting f)
     have h' :
@@ -235,10 +239,10 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
           refine fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
           simp
-      refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
+      refine (congr rfl (ext ?_)).mp (definable_biInter_finset h' Finset.univ)
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
-    simp only [Equiv.coe_trans, mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
+    simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
       mem_setOf_eq]
     constructor
     · rintro ⟨⟨y, ys, hy⟩, hx⟩
@@ -320,8 +324,10 @@ theorem mem_top : x ∈ (⊤ : L.DefinableSet A α) :=
   mem_univ x
 
 @[simp]
-theorem not_mem_bot {x : α → M} : ¬x ∈ (⊥ : L.DefinableSet A α) :=
-  not_mem_empty x
+theorem notMem_bot {x : α → M} : x ∉ (⊥ : L.DefinableSet A α) :=
+  notMem_empty x
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup : x ∈ s ⊔ t ↔ x ∈ s ∨ x ∈ t :=
@@ -332,11 +338,11 @@ theorem mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t :=
   Iff.rfl
 
 @[simp]
-theorem mem_compl : x ∈ sᶜ ↔ ¬x ∈ s :=
+theorem mem_compl : x ∈ sᶜ ↔ x ∉ s :=
   Iff.rfl
 
 @[simp]
-theorem mem_sdiff : x ∈ s \ t ↔ x ∈ s ∧ ¬x ∈ t :=
+theorem mem_sdiff : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t :=
   Iff.rfl
 
 @[simp, norm_cast]

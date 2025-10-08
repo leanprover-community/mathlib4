@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence.Defs
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings
@@ -41,7 +42,7 @@ add_decl_doc RingCon.toAddCon
 variable {R : Type*}
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
-    relation. -/
+relation. -/
 inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Prop
   | of : ∀ x y, r x y → RingConGen.Rel r x y
   | refl : ∀ x, RingConGen.Rel r x x
@@ -53,7 +54,7 @@ inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Pr
       RingConGen.Rel r (w * y) (x * z)
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
-    relation. -/
+relation. -/
 def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R where
   r := RingConGen.Rel r
   iseqv := ⟨RingConGen.Rel.refl, @RingConGen.Rel.symm _ _ _ _, @RingConGen.Rel.trans _ _ _ _⟩
@@ -75,6 +76,9 @@ instance : FunLike (RingCon R) R (R → Prop) where
     congr!
     rw [Setoid.ext_iff, (show ⇑x = ⇑y from h)]
     simp
+
+@[simp]
+theorem coe_mk (s : Con R) (h) : ⇑(mk s h) = s := rfl
 
 theorem rel_eq_coe : c.r = c :=
   rfl
@@ -104,7 +108,7 @@ protected theorem sub {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
 protected theorem neg {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     {a b} (h : t a b) : t (-a) (-b) := t.toAddCon.neg h
 
-protected theorem nsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
+protected theorem nsmul {S : Type*} [AddMonoid S] [Mul S] (t : RingCon S)
     (m : ℕ) {x y : S} (hx : t x y) : t (m • x) (m • y) := t.toAddCon.nsmul m hx
 
 protected theorem zsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
@@ -121,6 +125,7 @@ theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
 theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
 
 /-- Extensionality rule for congruence relations. -/
+@[ext]
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
 
@@ -286,9 +291,6 @@ instance : NatCast c.Quotient :=
 theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
-
 end NatCast
 
 section IntCast
@@ -301,9 +303,6 @@ instance : IntCast c.Quotient :=
 @[simp, norm_cast]
 theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
 
 end IntCast
 
@@ -320,45 +319,47 @@ The operations above on the quotient by `c : RingCon R` preserve the algebraic s
 
 section Algebraic
 
-instance [NonUnitalNonAssocSemiring R] (c : RingCon R) : NonUnitalNonAssocSemiring c.Quotient :=
+instance [NonUnitalNonAssocSemiring R] (c : RingCon R) :
+    NonUnitalNonAssocSemiring c.Quotient := fast_instance%
   Function.Surjective.nonUnitalNonAssocSemiring _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance [NonAssocSemiring R] (c : RingCon R) : NonAssocSemiring c.Quotient :=
+instance [NonAssocSemiring R] (c : RingCon R) : NonAssocSemiring c.Quotient := fast_instance%
   Function.Surjective.nonAssocSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-instance [NonUnitalSemiring R] (c : RingCon R) : NonUnitalSemiring c.Quotient :=
+instance [NonUnitalSemiring R] (c : RingCon R) : NonUnitalSemiring c.Quotient := fast_instance%
   Function.Surjective.nonUnitalSemiring _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance [Semiring R] (c : RingCon R) : Semiring c.Quotient :=
+instance [Semiring R] (c : RingCon R) : Semiring c.Quotient := fast_instance%
   Function.Surjective.semiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-instance [CommSemiring R] (c : RingCon R) : CommSemiring c.Quotient :=
+instance [CommSemiring R] (c : RingCon R) : CommSemiring c.Quotient := fast_instance%
   Function.Surjective.commSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-instance [NonUnitalNonAssocRing R] (c : RingCon R) : NonUnitalNonAssocRing c.Quotient :=
+instance [NonUnitalNonAssocRing R] (c : RingCon R) :
+    NonUnitalNonAssocRing c.Quotient := fast_instance%
   Function.Surjective.nonUnitalNonAssocRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance [NonAssocRing R] (c : RingCon R) : NonAssocRing c.Quotient :=
+instance [NonAssocRing R] (c : RingCon R) : NonAssocRing c.Quotient := fast_instance%
   Function.Surjective.nonAssocRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) fun _ => rfl
 
-instance [NonUnitalRing R] (c : RingCon R) : NonUnitalRing c.Quotient :=
+instance [NonUnitalRing R] (c : RingCon R) : NonUnitalRing c.Quotient := fast_instance%
   Function.Surjective.nonUnitalRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance [Ring R] (c : RingCon R) : Ring c.Quotient :=
+instance [Ring R] (c : RingCon R) : Ring c.Quotient := fast_instance%
   Function.Surjective.ring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
-instance [CommRing R] (c : RingCon R) : CommRing c.Quotient :=
+instance [CommRing R] (c : RingCon R) : CommRing c.Quotient := fast_instance%
   Function.Surjective.commRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
