@@ -608,30 +608,45 @@ def evalAtom :
   | some (p : Q($a = $e')) => (q(atom_eq_pow_one_mul_smul_one_add_zero' $p))
   ⟩
 
+-- def postprocess (mvarId : MVarId) : MetaM MVarId := do
+--   -- collect the available `push_cast` lemmas
+--   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+--   let simps : Array Name := #[``Polynomial.smul_eq_C_mul, ``MvPolynomial.smul_eq_C_mul,  ``Polynomial.map_add,
+--     ``Polynomial.map_smul, ]
+--   for thm in simps do
+--     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
+--     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
+--   -- now run `simp` with these lemmas, and (importantly) *no* simprocs
+--   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
+--   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
+--     throwError "internal error in polynomial tactic: postprocessing should not close goals"
+--   return r
+
+
 --TODO: This is broken.
 /-- Handle scalar multiplication when the scalar ring R' doesn't match the base ring R.
 Assumes R is an R'-algebra (i.e., R' is smaller), and casts the scalar using algebraMap. -/
 def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(Type v)}
     {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
     (cacheR : Ring.Cache q($sR)) (cacheA : Ring.Cache q($sA))
-    (smul : Q(SMul $R' $A)) (r' : Q($R')) (a : Q($A)) :
+    (smul : Q(HSMul $R' $A $A)) (r' : Q($R')) (a : Q($A)) :
     MetaM <| Σ r : Q($R), Q($r • $a = $r' • $a) := do
-    -- AtomM (Result (ExSum sAlg) q($r' • $a')) := do
-  -- Synthesize the algebra instance showing R is an R'-algebra
   if (← isDefEq R R') then
     have : u =QL u' := ⟨⟩
     have : $R =Q $R' := ⟨⟩
     assumeInstancesCommute
     return ⟨q($r'), q(rfl)⟩
   let _sR' ← synthInstanceQ q(CommSemiring $R')
+  -- Synthesize the algebra instance showing R is an R'-algebra
   let _algR'R ← synthInstanceQ q(Algebra $R' $R)
-  let _ist ← synthInstanceQ q(IsScalarTower $R' $R $A)
   -- TODO: Determine if I should be synthing this instance.
   let _mod ← synthInstanceQ q(Module $R' $A)
+  let _ist ← synthInstanceQ q(IsScalarTower $R' $R $A)
   assumeInstancesCommute
   let r_cast : Q($R) := q(algebraMap $R' $R $r')
-  have : Q($r_cast = algebraMap $R' $R $r') := q(rfl)
-  return ⟨r_cast, q(algebraMap_smul $R $r' $a)⟩
+  return ⟨r_cast, q(
+    algebraMap_smul $R $r' $a
+    )⟩
 
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
     {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Algebra.Cache q($sR))
@@ -652,7 +667,7 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       have : $a =Q $a' := ⟨⟩
       try
         let ⟨r, (pf_smul : Q($r • $a = $r' • $a))⟩ ←
-          evalSMulCast sAlg cacheR.toCache cacheA.toCache inst r' a
+          evalSMulCast q($sAlg) cacheR.toCache cacheA.toCache q(inferInstance) r' a
         let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR.toCache q($r)
         let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
         let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
@@ -664,15 +679,16 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
     | _ => els
   | ``DFunLike.coe, _, _ => match e with
     | ~q(DFunLike.coe (@algebraMap $R' _ $inst₁ $inst₂ $inst₃) $r') =>
-      try
-        let ⟨r, pf_smul⟩ ← evalSMulCast sAlg cacheR.toCache cacheA.toCache q(inferInstance) r' q(1)
+      -- try
+        let ⟨r, pf_smul⟩ ←
+          evalSMulCast q($sAlg) cacheR.toCache cacheA.toCache q(inferInstance) q($r') q(1)
         let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR.toCache q($r)
         let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q(1)
         let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
         have pe : Q($e = $r' • 1) := q(Algebra.algebraMap_eq_smul_one $r')
         assumeInstancesCommute
         return ⟨ef, vf, q(eval_smul_eq (($pe).trans ($pf_smul).symm) (smul_congr $pr $pa $pf))⟩
-      catch | _ => els
+      -- catch | _ => els
     | _ => els
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
     | ~q($a + $b) =>
@@ -1172,12 +1188,14 @@ example (x y : ℚ) (m n : ℕ) : (x^n + 1)^2 = 0 := by
 example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   match_scalars_alg with ℤ
   exact sorryAlgebraTest
-  exact sorryAlgebraTest
 
+example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
+  algebra
+
+-- weird behaviour
 example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   algebra_nf
   exact sorryAlgebraTest
-
 
 
 example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by
