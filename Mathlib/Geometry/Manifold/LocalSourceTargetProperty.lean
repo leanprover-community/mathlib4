@@ -170,7 +170,7 @@ if `f` has property `P` at `x` and `f` and `g` are eventually equal near `x`,
 then `g` has property `P` at `x`. -/
 lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
     (hf : LiftSourceTargetPropertyAt I I' n f x P)
-    (h' : f =ᶠ[nhds x] g) : LiftSourceTargetPropertyAt I I' n g x P := by
+    (h' : f =ᶠ[𝓝 x] g) : LiftSourceTargetPropertyAt I I' n g x P := by
   obtain ⟨s', hxs', hfg⟩ := h'.exists_mem
   obtain ⟨s, hss', hs, hxs⟩ := mem_nhds_iff.mp hxs'
   refine ⟨hf.domChart.restr s, hf.codChart, ?_, ?_, ?_, hf.codChart_mem_maximalAtlas, ?_, ?_⟩
