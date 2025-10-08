@@ -20,7 +20,7 @@ group naturally induces a uniform structure.
 ## Main results
 
 * `IsTopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
-  to construct a canonical uniformity for a topological add group.
+  to construct a canonical uniformity for a topological additive group.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
 -/
@@ -117,6 +117,55 @@ theorem UniformContinuous.div_const [UniformSpace β] {f : β → α} (hf : Unif
 theorem uniformContinuous_div_const (a : α) : UniformContinuous fun b : α => b / a :=
   uniformContinuous_id.div_const _
 
+@[to_additive]
+theorem Filter.Tendsto.uniformity_mul {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) (hg : Tendsto g l (𝓤 α)) :
+    Tendsto (f * g) l (𝓤 α) :=
+  have : Tendsto (fun (p : (α × α) × (α × α)) ↦ p.1 * p.2) (𝓤 α ×ˢ 𝓤 α) (𝓤 α) := by
+    simpa [UniformContinuous, uniformity_prod_eq_prod] using uniformContinuous_mul (α := α)
+  this.comp (hf.prodMk hg)
+
+@[to_additive]
+theorem Filter.Tendsto.uniformity_inv {ι : Type*} {f : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) :
+    Tendsto (f⁻¹) l (𝓤 α) :=
+  have : Tendsto (· ⁻¹) (𝓤 α) (𝓤 α) := uniformContinuous_inv
+  this.comp hf
+
+@[to_additive]
+theorem Filter.Tendsto.uniformity_inv_iff {ι : Type*} {f : ι → α × α} {l : Filter ι} :
+    Tendsto (f⁻¹) l (𝓤 α) ↔ Tendsto f l (𝓤 α) :=
+  ⟨fun H ↦ inv_inv f ▸ H.uniformity_inv, Filter.Tendsto.uniformity_inv⟩
+
+@[to_additive]
+theorem Filter.Tendsto.uniformity_div {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) (hg : Tendsto g l (𝓤 α)) :
+    Tendsto (f / g) l (𝓤 α) := by
+  rw [div_eq_mul_inv]
+  exact hf.uniformity_mul hg.uniformity_inv
+
+/-- If `f : ι → G × G` converges to the uniformity, then any `g : ι → G × G` converges to the
+uniformity iff `f * g` does. This is often useful when `f` is valued in the diagonal,
+in which case its convergence is automatic. -/
+@[to_additive /-- If `f : ι → G × G` converges to the uniformity, then any `g : ι → G × G`
+converges to the uniformity iff `f + g` does. This is often useful when `f` is valued in the
+diagonal, in which case its convergence is automatic. -/]
+theorem Filter.Tendsto.uniformity_mul_iff_right {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) :
+    Tendsto (f * g) l (𝓤 α) ↔ Tendsto g l (𝓤 α) :=
+  ⟨fun hfg ↦ by simpa using hf.uniformity_inv.uniformity_mul hfg, hf.uniformity_mul⟩
+
+/-- If `g : ι → G × G` converges to the uniformity, then any `f : ι → G × G` converges to the
+uniformity iff `f * g` does. This is often useful when `g` is valued in the diagonal,
+in which case its convergence is automatic. -/
+@[to_additive /-- If `g : ι → G × G` converges to the uniformity, then any `f : ι → G × G`
+converges to the uniformity iff `f + g` does. This is often useful when `g` is valued in the
+diagonal, in which case its convergence is automatic. -/]
+theorem Filter.Tendsto.uniformity_mul_iff_left {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hg : Tendsto g l (𝓤 α)) :
+    Tendsto (f * g) l (𝓤 α) ↔ Tendsto f l (𝓤 α) :=
+  ⟨fun hfg ↦ by simpa using hfg.uniformity_mul hg.uniformity_inv, fun hf ↦ hf.uniformity_mul hg⟩
+
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
@@ -157,19 +206,6 @@ instance (priority := 10) IsUniformGroup.to_topologicalGroup : IsTopologicalGrou
   UniformGroup.to_topologicalGroup := IsUniformGroup.to_topologicalGroup
 
 @[to_additive]
-instance Prod.instIsUniformGroup [UniformSpace β] [Group β] [IsUniformGroup β] :
-    IsUniformGroup (α × β) :=
-  ⟨((uniformContinuous_fst.comp uniformContinuous_fst).div
-          (uniformContinuous_fst.comp uniformContinuous_snd)).prodMk
-      ((uniformContinuous_snd.comp uniformContinuous_fst).div
-        (uniformContinuous_snd.comp uniformContinuous_snd))⟩
-
-@[deprecated (since := "2025-03-31")] alias Prod.instUniformAddGroup :=
-  Prod.instIsUniformAddGroup
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias Prod.instUniformGroup := Prod.instIsUniformGroup
-
-@[to_additive]
 theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a)) = 𝓤 α :=
   le_antisymm (uniformContinuous_id.mul uniformContinuous_const)
     (calc
@@ -190,62 +226,17 @@ instance : IsUniformGroup αᵐᵒᵖ :=
 
 end MulOpposite
 
-section LatticeOps
-
-variable [Group β]
-
-@[to_additive]
-theorem isUniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @IsUniformGroup β u _) :
-    @IsUniformGroup β (sInf us) _ :=
-  @IsUniformGroup.mk β (_) _ <|
-    uniformContinuous_sInf_rng.mpr fun u hu =>
-      uniformContinuous_sInf_dom₂ hu hu (@IsUniformGroup.uniformContinuous_div β u _ (h u hu))
-
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_sInf := isUniformAddGroup_sInf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_sInf := isUniformGroup_sInf
-
-@[to_additive]
-theorem isUniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
-    (h' : ∀ i, @IsUniformGroup β (us' i) _) : @IsUniformGroup β (⨅ i, us' i) _ := by
-  rw [← sInf_range]
-  exact isUniformGroup_sInf (Set.forall_mem_range.mpr h')
-
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_iInf := isUniformAddGroup_iInf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_iInf := isUniformGroup_iInf
-
-@[to_additive]
-theorem isUniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @IsUniformGroup β u₁ _)
-    (h₂ : @IsUniformGroup β u₂ _) : @IsUniformGroup β (u₁ ⊓ u₂) _ := by
-  rw [inf_eq_iInf]
-  refine isUniformGroup_iInf fun b => ?_
-  cases b <;> assumption
-
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_inf := isUniformAddGroup_inf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_inf := isUniformGroup_inf
-
-end LatticeOps
-
 section
 
 variable (α)
 
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one : 𝓤 α = comap (fun x : α × α => x.2 / x.1) (𝓝 (1 : α)) := by
-  rw [nhds_eq_comap_uniformity, Filter.comap_comap]
-  refine le_antisymm (Filter.map_le_iff_le_comap.1 ?_) ?_
-  · intro s hs
-    rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_div hs with ⟨t, ht, hts⟩
-    refine mem_map.2 (mem_of_superset ht ?_)
-    rintro ⟨a, b⟩
-    simpa [subset_def] using hts a b a
-  · intro s hs
-    rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_mul hs with ⟨t, ht, hts⟩
-    refine ⟨_, ht, ?_⟩
-    rintro ⟨a, b⟩
-    simpa [subset_def] using hts 1 (b / a) a
+  refine eq_of_forall_le_iff fun 𝓕 ↦ ?_
+  rw [nhds_eq_comap_uniformity, comap_comap, ← tendsto_iff_comap,
+    ← (tendsto_diag_uniformity Prod.fst 𝓕).uniformity_mul_iff_left, ← tendsto_id']
+  congrm Tendsto ?_ _ _
+  ext <;> simp
 
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one_swapped :
@@ -348,9 +339,9 @@ theorem uniformContinuous_of_tendsto_one {hom : Type*} [UniformSpace β] [Group 
 /-- A group homomorphism (a bundled morphism of a type that implements `MonoidHomClass`) between
 two uniform groups is uniformly continuous provided that it is continuous at one. See also
 `continuous_of_continuousAt_one`. -/
-@[to_additive "An additive group homomorphism (a bundled morphism of a type that implements
+@[to_additive /-- An additive group homomorphism (a bundled morphism of a type that implements
 `AddMonoidHomClass`) between two uniform additive groups is uniformly continuous provided that it
-is continuous at zero. See also `continuous_of_continuousAt_zero`."]
+is continuous at zero. See also `continuous_of_continuousAt_zero`. -/]
 theorem uniformContinuous_of_continuousAt_one {hom : Type*} [UniformSpace β] [Group β]
     [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     (f : hom) (hf : ContinuousAt f 1) :
@@ -364,8 +355,8 @@ theorem MonoidHom.uniformContinuous_of_continuousAt_one [UniformSpace β] [Group
 
 /-- A homomorphism from a uniform group to a discrete uniform group is continuous if and only if
 its kernel is open. -/
-@[to_additive "A homomorphism from a uniform additive group to a discrete uniform additive group is
-continuous if and only if its kernel is open."]
+@[to_additive /-- A homomorphism from a uniform additive group to a discrete uniform additive group
+is continuous if and only if its kernel is open. -/]
 theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSpace β]
     [DiscreteTopology β] [Group β] [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     {f : hom} :
@@ -375,18 +366,6 @@ theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSp
   · apply uniformContinuous_of_continuousAt_one
     rw [ContinuousAt, nhds_discrete β, map_one, tendsto_pure]
     exact hf.mem_nhds (map_one f)
-
-@[deprecated (since := "2024-11-18")] alias UniformAddGroup.uniformContinuous_iff_open_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_open_ker,
-deprecated (since := "2024-11-18")] alias UniformGroup.uniformContinuous_iff_open_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-@[deprecated (since := "2025-03-30")] alias UniformAddGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_isOpen_ker,
-deprecated (since := "2025-03-30")] alias UniformGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-
 
 @[to_additive]
 theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β] [Group β]
@@ -409,14 +388,14 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
-`topologicalGroup_is_uniform_of_compactSpace`). -/
-@[to_additive "The right uniformity on a topological additive group (as opposed to the left
+`IsUniformGroup.of_compactSpace`). -/
+@[to_additive /-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
-additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
+additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
 def IsTopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
   symm :=
@@ -460,9 +439,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
     div_div_div_comm _ (Prod.snd (Prod.snd _)), ← nhds_prod_eq]
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
-@[deprecated (since := "2025-02-28")]
-alias comm_topologicalAddGroup_is_uniform := isUniformAddGroup_of_addCommGroup
-@[to_additive existing, deprecated (since := "2025-02-28")]
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
 @[deprecated (since := "2025-03-30")]
 alias uniformAddGroup_of_addCommGroup := isUniformAddGroup_of_addCommGroup
@@ -578,7 +554,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhds
   obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhds
   have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 := by
-    show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
+    change Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
   rcases extend_Z_bilin_aux de hφ W_nhds x₀ y₁ with ⟨U₂, U₂_nhds, HU⟩
   rcases extend_Z_bilin_aux df cont_flip W_nhds y₀ x₁ with ⟨V₂, V₂_nhds, HV⟩

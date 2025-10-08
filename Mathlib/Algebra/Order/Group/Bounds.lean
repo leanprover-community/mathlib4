@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Least upper bound and the greatest lower bound in linear ordered additive commutative groups

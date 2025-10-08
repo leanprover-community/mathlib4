@@ -168,6 +168,9 @@ theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
 theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 
+theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
+  simp [sInf_def]
+
 @[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
   convert Real.sSup_empty
@@ -374,7 +377,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
-    omega
+    cutsat
   use 2 * k ^ 2
   calc
     ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _

@@ -212,7 +212,7 @@ theorem IsLindelof.disjoint_nhdsSet_right {l : Filter X} [CountableInterFilter l
     (hs : IsLindelof s) : Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
 
-/-- For every family of closed sets whose intersection avoids a Lindelö set,
+/-- For every family of closed sets whose intersection avoids a Lindelöf set,
 there exists a countable subfamily whose intersection avoids this Lindelöf set. -/
 theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelof s)
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
@@ -564,10 +564,6 @@ theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelo
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
-/-- A compact space `X` is Lindelöf. -/
-instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
-
 theorem countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X] : Countable X :=
   countable_univ_iff.mp isLindelof_univ.countable_of_discrete
 
@@ -608,15 +604,10 @@ theorem Topology.IsInducing.isLindelof_iff {f : X → Y} (hf : IsInducing f) :
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.isLindelof_iff := IsInducing.isLindelof_iff
-
 /-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is Lindelöf
 if and only if `s` is Lindelöf. -/
 theorem Topology.IsEmbedding.isLindelof_iff {f : X → Y} (hf : IsEmbedding f) :
     IsLindelof s ↔ IsLindelof (f '' s) := hf.isInducing.isLindelof_iff
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isLindelof_iff := IsEmbedding.isLindelof_iff
 
 /-- The preimage of a Lindelöf set under an inducing map is a Lindelöf set. -/
 theorem Topology.IsInducing.isLindelof_preimage {f : X → Y} (hf : IsInducing f)
@@ -624,15 +615,12 @@ theorem Topology.IsInducing.isLindelof_preimage {f : X → Y} (hf : IsInducing f
   replace hK := hK.inter_right hf'
   rwa [hf.isLindelof_iff, image_preimage_eq_inter_range]
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isLindelof_preimage := IsInducing.isLindelof_preimage
-
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
 theorem Topology.IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
   hf.isInducing.isLindelof_preimage (hf.isClosed_range) hK
 
-/-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
+/-- A closed embedding is proper, i.e., inverse images of Lindelöf sets are contained in Lindelöf.
 Moreover, the preimage of a Lindelöf set is Lindelöf, see
 `Topology.IsClosedEmbedding.isLindelof_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : IsClosedEmbedding f) :
@@ -676,7 +664,7 @@ instance [LindelofSpace X] [LindelofSpace Y] : LindelofSpace (X ⊕ Y) where
     exact (isLindelof_range continuous_inl).union (isLindelof_range continuous_inr)
 
 instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ i, LindelofSpace (X i)] :
-    LindelofSpace (Σi, X i) where
+    LindelofSpace (Σ i, X i) where
   isLindelof_univ := by
     rw [Sigma.univ]
     exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk

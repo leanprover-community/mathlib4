@@ -62,5 +62,5 @@ jobs:
         run: |
           # ${{ github.event.action }} is either "closed" or "reopened"
           # We add the "closed-pr" emoji to the message, if it is "closed"
-          # and to remove the emoji if the action is "reopen".
+          # and remove the emoji if the action is "reopen".
           python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"

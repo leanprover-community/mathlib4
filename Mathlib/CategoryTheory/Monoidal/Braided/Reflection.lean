@@ -39,20 +39,20 @@ variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
 /-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
-    (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
-  d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
+    (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
+    d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
   (β_ _ _).hom ≫ (_ ◁ adj.unit.app _) ≫ adj.unit.app _ ≫
-    R.map (inv (L.map (adj.unit.app _ ⊗ adj.unit.app _))) ≫ (L ⋙ R).map (β_ _ _).hom ≫
+    R.map (inv (L.map (adj.unit.app _ ⊗ₘ adj.unit.app _))) ≫ (L ⋙ R).map (β_ _ _).hom ≫
       (L ⋙ R).map ((ihom.ev _).app _) ≫ inv (adj.unit.app _)
 
 /-- The retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetraction (c : C) (d : D)
-    [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
+    [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
   curry <| adjRetractionAux adj c d
 
 private lemma adjRetraction_is_retraction (c : C) (d : D)
-    [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
+    [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
     adj.unit.app ((ihom d).obj (R.obj c)) ≫ adjRetraction adj c d = 𝟙 _ := by
   suffices (_ ◁ adj.unit.app _) ≫ adjRetractionAux adj c d = (ihom.ev _).app _ by
     simp only [id_obj, comp_obj, adjRetraction, ← curry_natural_left, this]
@@ -60,7 +60,8 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
   simp only [id_obj, comp_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
     braiding_naturality_right_assoc]
   slice_lhs 2 3 =>
-    simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, Category.id_comp, Category.comp_id]
+    simp only [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp,
+      Category.comp_id]
   slice_lhs 2 4 =>
     rw [← adj.unit_naturality_assoc]
   simp
@@ -85,7 +86,7 @@ theorem isIso_tfae : List.TFAE
     [ ∀ (c : C) (d : D), IsIso (adj.unit.app ((ihom d).obj (R.obj c)))
     , ∀ (c : C) (d : D), IsIso ((pre (adj.unit.app d)).app (R.obj c))
     , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ▷ d'))
-    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d')))] := by
+    , ∀ (d d' : D), IsIso (L.map ((adj.unit.app d) ⊗ₘ (adj.unit.app d')))] := by
   tfae_have 3 → 4
   | h => by
     -- We can commute the tensor product in the condition that `L.map ((adj.unit.app d) ▷ d')` is
@@ -100,9 +101,9 @@ theorem isIso_tfae : List.TFAE
     intro d d'
     -- We then write the tensor product of the two units as the composition of the whiskered units,
     -- and conclude.
-    have : (adj.unit.app d) ⊗ (adj.unit.app d') =
+    have : (adj.unit.app d) ⊗ₘ (adj.unit.app d') =
         (adj.unit.app d ▷ d') ≫ (((L ⋙ R).obj _) ◁ adj.unit.app d') := by
-      simp [← tensorHom_id, ← id_tensorHom, ← tensor_comp]
+      simp [← tensorHom_id, ← id_tensorHom, tensorHom_comp_tensorHom]
     rw [this, map_comp]
     infer_instance
   tfae_have 4 → 1
@@ -160,7 +161,7 @@ theorem isIso_tfae : List.TFAE
       types_id_apply]
     have : f = R.map (R.preimage f) := by simp
     rw [this]
-    simp [← map_comp, ← map_comp_assoc, -map_preimage]
+    simp [← map_comp, -map_preimage]
   tfae_have 2 ↔ 3 := by
     conv => lhs; intro c d; rw [isIso_iff_isIso_yoneda_map]
     conv => rhs; intro d d'; rw [isIso_iff_isIso_coyoneda_map]
@@ -196,7 +197,7 @@ open Functor.OplaxMonoidal Functor.LaxMonoidal Functor.Monoidal
 variable [MonoidalCategory C]
 variable {L : D ⥤ C} [L.Monoidal] {R : C ⥤ D} [R.Faithful] [R.Full] (adj : L ⊣ R)
 
-instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d'))) := by
+instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ₘ (adj.unit.app d'))) := by
   have := δ _ _ _ ≫= μ_natural L (adj.unit.app d) (adj.unit.app d')
   rw [δ_μ_assoc] at this
   rw [← this]
@@ -216,7 +217,7 @@ noncomputable def closed (c : C) : Closed c where
       (FullyFaithful.ofFullyFaithful R)
       (FullyFaithful.id _) ?_ ?_
     · refine NatIso.ofComponents (fun _ ↦ (μIso L _ _).symm ≪≫
-        asIso ((adj.counit.app _) ⊗ (adj.counit.app _))) (fun _ ↦ ?_)
+        asIso ((adj.counit.app _) ⊗ₘ (adj.counit.app _))) (fun _ ↦ ?_)
       dsimp
       rw [Category.assoc, ← δ_natural_right_assoc,
         tensorHom_def', ← MonoidalCategory.whiskerLeft_comp_assoc,

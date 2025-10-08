@@ -58,6 +58,8 @@ end Quiver
 
 namespace CategoryTheory
 
+open Functor
+
 variable [Category.{v₁} C]
 
 /-- The opposite category. -/
@@ -356,13 +358,13 @@ theorem op_comp {H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) :
 lemma op_whiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ⟶ G) :
     NatTrans.op (whiskerRight α H) =
     (Functor.opComp _ _).hom ≫ whiskerRight (NatTrans.op α) H.op ≫ (Functor.opComp _ _).inv := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 lemma op_whiskerLeft {E : Type*} [Category E] {H : E ⥤ C} (α : F ⟶ G) :
     NatTrans.op (whiskerLeft H α) =
     (Functor.opComp _ _).hom ≫ whiskerLeft H.op (NatTrans.op α) ≫ (Functor.opComp _ _).inv := by
-  aesop_cat
+  cat_disch
 
 /-- The "unopposite" of a natural transformation. -/
 @[simps]
@@ -384,14 +386,14 @@ lemma unop_whiskerRight {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H 
     NatTrans.unop (whiskerRight α H) =
     (Functor.unopComp _ _).hom ≫ whiskerRight (NatTrans.unop α) H.unop ≫
       (Functor.unopComp _ _).inv := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Eᵒᵖ ⥤ Cᵒᵖ} (α : F ⟶ G) :
     NatTrans.unop (whiskerLeft H α) =
     (Functor.unopComp _ _).hom ≫ whiskerLeft H.unop (NatTrans.unop α) ≫
       (Functor.unopComp _ _).inv := by
-  aesop_cat
+  cat_disch
 
 /-- Given a natural transformation `α : F.op ⟶ G.op`,
 we can take the "unopposite" of each component obtaining a natural transformation `G ⟶ F`.
@@ -445,7 +447,7 @@ theorem leftOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.leftOp (α ≫ β) 
 lemma leftOpWhiskerRight {E : Type*} [Category E] {H : E ⥤ C} (α : F ⟶ G) :
     (whiskerLeft H α).leftOp = (Functor.leftOpComp H G).hom ≫ whiskerLeft _ α.leftOp ≫
       (Functor.leftOpComp H F).inv := by
-  aesop_cat
+  cat_disch
 
 /-- Given a natural transformation `α : F.leftOp ⟶ G.leftOp`, for `F G : C ⥤ Dᵒᵖ`,
 taking `op` of each component gives a natural transformation `G ⟶ F`.
@@ -487,7 +489,7 @@ theorem rightOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.rightOp (α ≫ β
 lemma rightOpWhiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ⟶ G) :
     (whiskerRight α H).rightOp = (Functor.rightOpComp G H).hom ≫ whiskerRight α.rightOp H.op ≫
       (Functor.rightOpComp F H).inv := by
-  aesop_cat
+  cat_disch
 
 /-- Given a natural transformation `α : F.rightOp ⟶ G.rightOp`, for `F G : Cᵒᵖ ⥤ D`,
 taking `unop` of each component gives a natural transformation `G ⟶ F`.
@@ -625,67 +627,67 @@ theorem unop_symm {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ≅ G) : NatIso.unop α.sy
 lemma op_isoWhiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ≅ G) :
     NatIso.op (isoWhiskerRight α H) =
     (Functor.opComp _ _) ≪≫ isoWhiskerRight (NatIso.op α) H.op ≪≫ (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 lemma op_isoWhiskerLeft {E : Type*} [Category E] {H : E ⥤ C} (α : F ≅ G) :
     NatIso.op (isoWhiskerLeft H α) =
     (Functor.opComp _ _) ≪≫ isoWhiskerLeft H.op (NatIso.op α) ≪≫ (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 lemma unop_whiskerRight {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Dᵒᵖ ⥤ Eᵒᵖ} (α : F ≅ G) :
     NatIso.unop (isoWhiskerRight α H) =
     (Functor.unopComp _ _) ≪≫ isoWhiskerRight (NatIso.unop α) H.unop ≪≫
       (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Eᵒᵖ ⥤ Cᵒᵖ} (α : F ≅ G) :
     NatIso.unop (isoWhiskerLeft H α) =
     (Functor.unopComp _ _) ≪≫ isoWhiskerLeft H.unop (NatIso.unop α) ≪≫
       (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 lemma op_leftUnitor :
     NatIso.op F.leftUnitor =
     F.op.leftUnitor.symm ≪≫
       isoWhiskerRight (Functor.opId C).symm F.op ≪≫
       (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 lemma op_rightUnitor :
     NatIso.op F.rightUnitor =
     F.op.rightUnitor.symm ≪≫
       isoWhiskerLeft F.op (Functor.opId D).symm ≪≫
       (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
-lemma op_associator {E E': Type*} [Category E] [Category E'] {F : C ⥤ D} {G : D ⥤ E} {H : E ⥤ E'} :
+lemma op_associator {E E' : Type*} [Category E] [Category E'] {F : C ⥤ D} {G : D ⥤ E} {H : E ⥤ E'} :
     NatIso.op (Functor.associator F G H) =
       Functor.opComp _ _ ≪≫ isoWhiskerLeft F.op (Functor.opComp _ _) ≪≫
         (Functor.associator F.op G.op H.op).symm ≪≫
         isoWhiskerRight (Functor.opComp _ _).symm H.op ≪≫ (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 lemma unop_leftUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
     NatIso.unop F.leftUnitor =
     F.unop.leftUnitor.symm ≪≫
       isoWhiskerRight (Functor.unopId C).symm F.unop ≪≫
       (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 lemma unop_rightUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
     NatIso.unop F.rightUnitor =
     F.unop.rightUnitor.symm ≪≫
       isoWhiskerLeft F.unop (Functor.unopId D).symm ≪≫
       (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
-lemma unop_associator {E E': Type*} [Category E] [Category E']
+lemma unop_associator {E E' : Type*} [Category E] [Category E']
     {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Eᵒᵖ} {H : Eᵒᵖ ⥤ E'ᵒᵖ} :
     NatIso.unop (Functor.associator F G H) =
       Functor.unopComp _ _ ≪≫ isoWhiskerLeft F.unop (Functor.unopComp _ _) ≪≫
         (Functor.associator F.unop G.unop H.unop).symm ≪≫
         isoWhiskerRight (Functor.unopComp _ _).symm H.unop ≪≫ (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 end NatIso
 
@@ -743,8 +745,6 @@ def opEquiv''' (A B : C) : (Opposite.op A ⟶ Opposite.op B) ≃ (B ⟶ A) :=
 def opEquiv (A B : Cᵒᵖ) : (A ⟶ B) ≃ (B.unop ⟶ A.unop) where
   toFun f := f.unop
   invFun g := g.op
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 instance subsingleton_of_unop (A B : Cᵒᵖ) [Subsingleton (unop B ⟶ unop A)] : Subsingleton (A ⟶ B) :=
   (opEquiv A B).subsingleton
@@ -763,12 +763,6 @@ Note this is definitionally the same as the other three variants:
 def isoOpEquiv (A B : Cᵒᵖ) : (A ≅ B) ≃ (B.unop ≅ A.unop) where
   toFun f := f.unop
   invFun g := g.op
-  left_inv _ := by
-    ext
-    rfl
-  right_inv _ := by
-    ext
-    rfl
 
 namespace Functor
 
@@ -788,7 +782,7 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ where
         dsimp [opUnopIso]
         rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
-        aesop_cat)
+        cat_disch)
   counitIso := NatIso.ofComponents fun F => F.unopOpIso
 
 /-- The equivalence of functor categories induced by `leftOp` and `rightOp`.
@@ -808,7 +802,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
         dsimp
         rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
-        aesop_cat)
+        cat_disch)
   counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
 
 instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where

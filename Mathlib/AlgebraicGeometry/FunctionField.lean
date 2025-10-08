@@ -155,13 +155,13 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
   rw [hU.primeIdealOf_genericPoint, genericPoint_eq_bot_of_affine]
   ext; exact mem_nonZeroDivisors_iff_ne_zero
 
-instance (x : X) : IsAffine (X.affineCover.obj x) :=
+instance (x : X) : IsAffine (X.affineCover.X x) :=
   AlgebraicGeometry.isAffine_Spec _
 
 instance [IsIntegral X] (x : X) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
-  let U : X.Opens := (X.affineCover.map x).opensRange
-  have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.map x)
+  let U : X.Opens := (X.affineCover.f ((X.affineCover.idx x))).opensRange
+  have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.f _)
   let x : U := ⟨x, X.affineCover.covers x⟩
   have : Nonempty U := ⟨x⟩
   let M := (hU.primeIdealOf x).asIdeal.primeCompl
@@ -172,5 +172,8 @@ instance [IsIntegral X] (x : X) :
   have := functionField_isScalarTower X U x
   .isFractionRing_of_isDomain_of_isLocalization M ↑(Presheaf.stalk X.presheaf x)
     (Scheme.functionField X)
+
+instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
+  Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
 
 end AlgebraicGeometry

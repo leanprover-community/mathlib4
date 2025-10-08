@@ -144,15 +144,12 @@ theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) 
 theorem AlgebraicIndependent.of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
   algebraicIndependent_iff.2 fun _ _ => Subsingleton.elim _ _
 
-@[deprecated (since := "2025-02-07")] alias algebraicIndependent_of_subsingleton :=
-  AlgebraicIndependent.of_subsingleton
-
 theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
     IsTranscendenceBasis R x ↔ Nonempty ι := by
   have := Module.subsingleton R A
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨.of_subsingleton, fun s hs hx ↦
     hx.antisymm fun a _ ↦ ⟨Classical.arbitrary _, Subsingleton.elim ..⟩⟩⟩
-  by_contra hι; rw [not_nonempty_iff] at hι
+  by_contra! hι
   have := h.2 {0} .of_subsingleton
   simp [range_eq_empty, eq_comm (a := ∅)] at this
 
@@ -178,7 +175,7 @@ theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R
   have : (aeval x : MvPolynomial ι K →ₐ[K] A).toRingHom.comp (MvPolynomial.map (algebraMap R K)) =
       (aeval x : MvPolynomial ι R →ₐ[R] A).toRingHom := by
     ext <;> simp [algebraMap_eq_smul_one]
-  show Injective (aeval x).toRingHom
+  change Injective (aeval x).toRingHom
   rw [← this, RingHom.coe_comp]
   exact Injective.comp ai (MvPolynomial.map_injective _ hinj)
 
@@ -493,8 +490,6 @@ section Field
 
 variable {K : Type*} [Field K] [Algebra K A]
 
-/- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
-simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]
   exact RingHom.injective _

@@ -26,7 +26,7 @@ This is generalised to the case of a comonadic functor `D ⥤ C`.
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 open CategoryTheory.Limits
 

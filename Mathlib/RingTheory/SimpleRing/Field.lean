@@ -49,6 +49,6 @@ lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.ce
 end IsSimpleRing
 
 lemma isSimpleRing_iff_isField (A : Type*) [CommRing A] : IsSimpleRing A ↔ IsField A :=
-  ⟨fun _ ↦ Subring.topEquiv.symm.toMulEquiv.isField _ <| by
+  ⟨fun _ ↦ Subring.topEquiv.symm.toMulEquiv.isField <| by
     rw [← Subring.center_eq_top A]; exact IsSimpleRing.isField_center A,
     fun h ↦ letI := h.toField; inferInstance⟩

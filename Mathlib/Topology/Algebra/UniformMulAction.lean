@@ -25,6 +25,8 @@ TODO: Generalise the results here from the concrete `Completion` to any `Abstrac
 
 universe u v w x y
 
+open scoped Uniformity
+
 noncomputable section
 
 variable (R : Type u) (M : Type v) (N : Type w) (X : Type x) (Y : Type y) [UniformSpace X]
@@ -98,8 +100,8 @@ lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuous
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
-@[to_additive "If an additive action is central, then its right action is uniform
-continuous when its left action is."]
+@[to_additive /-- If an additive action is central, then its right action is uniform
+continuous when its left action is. -/]
 instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X]
     [UniformContinuousConstSMul M X] : UniformContinuousConstSMul Mᵐᵒᵖ X :=
   ⟨MulOpposite.rec' fun c ↦ by simpa only [op_smul_eq_smul] using uniformContinuous_const_smul c⟩
@@ -149,6 +151,31 @@ theorem uniformContinuous_div_const' {R : Type*} [DivisionRing R] [UniformSpace 
   uniformContinuous_id.div_const' _
 
 end Ring
+
+section Unit
+
+open scoped Pointwise
+
+variable {M X}
+
+@[to_additive]
+theorem IsUnit.smul_uniformity [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
+    (hc : IsUnit c) : c • 𝓤 X = 𝓤 X :=
+  let ⟨d, hcd⟩ := hc.exists_right_inv
+  have cU : c • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul c
+  have dU : d • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul d
+  le_antisymm cU <| by simpa [smul_smul, hcd] using Filter.smul_filter_le_smul_filter (a := c) dU
+
+@[to_additive (attr := simp)]
+theorem smul_uniformity [Group M] [MulAction M X] [UniformContinuousConstSMul M X] (c : M) :
+    c • 𝓤 X = 𝓤 X :=
+  Group.isUnit _ |>.smul_uniformity
+
+theorem smul_uniformity₀ [GroupWithZero M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
+    (hc : c ≠ 0) : c • 𝓤 X = 𝓤 X :=
+  hc.isUnit.smul_uniformity
+
+end Unit
 
 namespace UniformSpace
 

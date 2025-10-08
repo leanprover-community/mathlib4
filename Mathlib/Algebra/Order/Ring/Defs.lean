@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Tactic.Tauto
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
@@ -138,6 +139,11 @@ class IsStrictOrderedRing (R : Type*) [Semiring R] [PartialOrder R] extends
 attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
 attribute [instance 100] IsStrictOrderedRing.toNontrivial
 
+instance [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] : Lean.Grind.OrderedRing R where
+  zero_lt_one := zero_lt_one
+  mul_lt_mul_of_pos_left := IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _
+  mul_lt_mul_of_pos_right := IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _
+
 lemma IsOrderedRing.of_mul_nonneg [Ring R] [PartialOrder R] [IsOrderedAddMonoid R]
     [ZeroLEOneClass R] (mul_nonneg : ∀ a b : R, 0 ≤ a → 0 ≤ b → 0 ≤ a * b) :
     IsOrderedRing R where
@@ -167,8 +173,9 @@ instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono R where
 
 end IsOrderedRing
 
+-- see Note [lower instance priority]
 /-- Turn an ordered domain into a strict ordered ring. -/
-lemma IsOrderedRing.toIsStrictOrderedRing (R : Type*)
+instance (priority := 50) IsOrderedRing.toIsStrictOrderedRing (R : Type*)
     [Ring R] [PartialOrder R] [IsOrderedRing R] [NoZeroDivisors R] [Nontrivial R] :
     IsStrictOrderedRing R :=
   .of_mul_pos fun _ _ ap bp ↦ (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
@@ -222,10 +229,10 @@ instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R
 -- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
 -- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain R where
-  mul_left_cancel_of_ne_zero {a b c} ha h := by
+  mul_left_cancel_of_ne_zero {a} ha _ _ h := by
     obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_left ha).injective h, (strictMono_mul_left_of_pos ha).injective h]
-  mul_right_cancel_of_ne_zero {b a c} ha h := by
+  mul_right_cancel_of_ne_zero {a} ha _ _ h := by
     obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
 

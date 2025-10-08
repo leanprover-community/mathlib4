@@ -46,7 +46,7 @@ open scoped Polynomial
 
 /-- The integers with infinitesimals adjoined. -/
 def IntWithEpsilon :=
-  ℤ[X] deriving Nontrivial
+  ℤ[X] deriving Nontrivial, CommRing, Inhabited
 
 local notation "ℤ[ε]" => IntWithEpsilon
 
@@ -54,22 +54,12 @@ local notation "ε" => (X : ℤ[ε])
 
 namespace IntWithEpsilon
 
-instance nontrivial : Nontrivial IntWithEpsilon := inferInstance
-
--- The `CommRing` and `Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance commRing : CommRing IntWithEpsilon := Polynomial.commRing
-
-instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩
-
 instance linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (toLex ∘ coeff) coeff_injective
 
-instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] := by
-  refine (toLex.injective.comp coeff_injective).isOrderedAddMonoid _ ?_ ?_ ?_ <;>
-  (first | rfl | intros) <;> funext <;>
-  (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
-    ← nsmul_eq_mul, ← zsmul_eq_mul]; rfl)
+instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
+  Function.Injective.isOrderedAddMonoid
+    (toLex ∘ coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]

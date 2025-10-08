@@ -26,7 +26,7 @@ surjection `P →ₐ[R] R`.
   A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
 
 - `Algebra.Extension.Cotangent`:
-  The cotangent space wrt an extension `P → S` by `I`, i.e. the space `I/I²`.
+  The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
 
 -/
 
@@ -60,7 +60,7 @@ attribute [instance] commRing algebra₁ algebra₂ isScalarTower
 
 attribute [simp] algebraMap_σ
 
--- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid unsensical instances
+-- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid nonsensical instances
 @[nolint unusedArguments]
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
@@ -226,7 +226,7 @@ lemma Hom.comp_id (f : Hom P P') : f.comp (Hom.id P) = f := by ext; simp
 
 @[simp]
 lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by
-  ext; simp [Hom.id, aeval_X_left]
+  ext; simp [Hom.id]
 
 /-- A map between extensions induce a map between kernels. -/
 @[simps]
@@ -300,10 +300,8 @@ variable (x y : P.Cotangent) (w z : P.ker.Cotangent)
 end Cotangent
 
 lemma Cotangent.smul_eq_zero_of_mem (p : P.Ring) (hp : p ∈ P.ker) (m : P.ker.Cotangent) :
-    p • m = 0 := by
-  obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ m
-  rw [← map_smul, Ideal.toCotangent_eq_zero, Submodule.coe_smul, smul_eq_mul, pow_two]
-  exact Ideal.mul_mem_mul hp x.2
+    p • m = 0 :=
+  Ideal.Cotangent.smul_eq_zero_of_mem hp m
 
 attribute [local simp] RingHom.mem_ker
 
@@ -331,8 +329,8 @@ instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R
     [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ P.Cotangent := by
   constructor
-  intros r s m
-  show algebraMap R₂ S (r • s) • m = (algebraMap _ S r) • (algebraMap _ S s) • m
+  intro r s m
+  change algebraMap R₂ S (r • s) • m = (algebraMap _ S r) • (algebraMap _ S s) • m
   rw [Algebra.smul_def, map_mul, mul_smul, ← IsScalarTower.algebraMap_apply]
 
 /-- The action of `R₀` on `P.Cotangent` for an extension `P → S`, if `S` is an `R₀` algebra. -/

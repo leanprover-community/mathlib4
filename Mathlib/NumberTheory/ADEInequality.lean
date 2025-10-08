@@ -103,7 +103,7 @@ def sumInv (pqr : Multiset ℕ+) : ℚ :=
   Multiset.sum (pqr.map fun (x : ℕ+) => x⁻¹)
 
 theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ := by
-  simp only [sumInv, add_zero, insert_eq_cons, add_assoc, map_cons, sum_cons,
+  simp only [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons,
     map_singleton, sum_singleton]
 
 /-- A multiset `pqr` of positive natural numbers is `admissible`
@@ -148,7 +148,7 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
     norm_num
 
 theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by
-  have h3 : (0 : ℚ) < 3 := by norm_num
+  have h3 : (0 : ℚ) < 3 := by simp
   contrapose! H
   rw [sumInv_pqr]
   have h3q := H.trans hpq
@@ -156,44 +156,44 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   have hp : (p : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv₀ _ h3]
     · assumption_mod_cast
-    · norm_num
+    · simp
   have hq : (q : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv₀ _ h3]
     · assumption_mod_cast
-    · norm_num
+    · simp
   have hr : (r : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv₀ _ h3]
     · assumption_mod_cast
-    · norm_num
+    · simp
   calc
     (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := add_le_add (add_le_add hp hq) hr
     _ = 1 := by norm_num
 
 theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 := by
-  have h4 : (0 : ℚ) < 4 := by norm_num
+  have h4 : (0 : ℚ) < 4 := by simp
   contrapose! H
   rw [sumInv_pqr]
   have h4r := H.trans hqr
   have hq : (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv₀ _ h4]
     · assumption_mod_cast
-    · norm_num
+    · simp
   have hr : (r : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv₀ _ h4]
     · assumption_mod_cast
-    · norm_num
+    · simp
   calc
     (2⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹) ≤ 2⁻¹ + 4⁻¹ + 4⁻¹ := add_le_add (add_le_add le_rfl hq) hr
     _ = 1 := by norm_num
 
 theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
-  have h6 : (0 : ℚ) < 6 := by norm_num
+  have h6 : (0 : ℚ) < 6 := by simp
   contrapose! H
   rw [sumInv_pqr]
   have hr : (r : ℚ)⁻¹ ≤ 6⁻¹ := by
     rw [inv_le_inv₀ _ h6]
     · assumption_mod_cast
-    · norm_num
+    · simp
   calc
     (2⁻¹ + 3⁻¹ + (r : ℚ)⁻¹ : ℚ) ≤ 2⁻¹ + 3⁻¹ + 6⁻¹ := add_le_add (add_le_add le_rfl le_rfl) hr
     _ = 1 := by norm_num

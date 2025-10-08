@@ -90,8 +90,10 @@ theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
   apply tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
   simp [Set.range_eq_univ.mpr surjective_primeCounting']
 
-theorem tensto_primeCounting : Tendsto π atTop atTop :=
+theorem tendsto_primeCounting : Tendsto π atTop atTop :=
   (tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
+
+@[deprecated (since := "2025-07-08")] alias tensto_primeCounting := tendsto_primeCounting
 
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
@@ -120,7 +122,7 @@ theorem primesBelow_card_eq_primeCounting' (n : ℕ) : #n.primesBelow = primeCou
   exact (count_eq_card_filter_range Prime n).symm
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
-theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
+theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
     π' (k + n) ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by

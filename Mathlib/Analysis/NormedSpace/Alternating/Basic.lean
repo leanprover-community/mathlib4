@@ -309,6 +309,18 @@ variable (𝕜 E)
 @[simp] theorem nnnorm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_constOfIsEmpty _ _ _
 
+variable (ι F) in
+/-- `constOfIsEmpty` as a linear isometry equivalence. -/
+@[simps]
+def constOfIsEmptyLIE [IsEmpty ι] : F ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] F) where
+  toFun := constOfIsEmpty _ _ _
+  invFun f := f 0
+  left_inv x := by simp
+  right_inv f := by ext x; simp [Subsingleton.allEq x 0]
+  map_add' f g := rfl
+  map_smul' c f := rfl
+  norm_map' := norm_constOfIsEmpty _ _
+
 end
 
 variable (𝕜 E F G) in
@@ -320,8 +332,6 @@ def prodLIE : (E [⋀^ι]→L[𝕜] F) × (E [⋀^ι]→L[𝕜] G) ≃ₗᵢ[�
     (ContinuousLinearMap.snd 𝕜 F G).compContinuousAlternatingMap f)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
   norm_map' f := opNorm_prod f.1 f.2
 
 variable (𝕜 E) in
@@ -568,8 +578,7 @@ variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
 
 namespace ContinuousAlternatingMap
 
-/-- Continuous alternating maps themselves form a normed group with respect to
-    the operator norm. -/
+/-- Continuous alternating maps themselves form a normed group with respect to the operator norm. -/
 instance instNormedAddCommGroup : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
   NormedAddCommGroup.ofSeparation fun _f hf ↦
     toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf

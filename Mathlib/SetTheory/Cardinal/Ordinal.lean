@@ -39,9 +39,6 @@ lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
 
 end Cardinal
 
-@[deprecated mk_iUnion_Ordinal_le_of_le (since := "2024-11-02")]
-alias Ordinal.Cardinal.mk_iUnion_Ordinal_le_of_le := mk_iUnion_Ordinal_le_of_le
-
 /-! ### Cardinality of ordinals -/
 
 namespace Ordinal
@@ -80,23 +77,23 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
   · simpa using one_lt_omega0.le.trans ha
   · intro b IH
     rw [opow_succ, card_mul, card_succ, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
-    · apply (max_le_max_left _ IH).trans
+    · grw [IH]
       rw [← max_assoc, max_self]
-      exact max_le_max_left _ le_self_add
+      grw [← le_self_add]
     · rw [ne_eq, card_eq_zero, opow_eq_zero]
       rintro ⟨rfl, -⟩
       cases omega0_pos.not_ge ha
     · rwa [aleph0_le_card]
   · intro b hb IH
-    rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isLimit hb]
+    rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isSuccLimit hb]
     apply (card_iSup_Iio_le_card_mul_iSup _).trans
     rw [Cardinal.lift_id, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
     · apply max_le _ (le_max_right _ _)
       apply ciSup_le'
-      intro c
-      exact (IH c.1 c.2).trans (max_le_max_left _ (card_le_card c.2.le))
-    · simpa using hb.pos.ne'
-    · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isLimit hb⟩ ?_
+      rintro ⟨c, (hcb : c < b)⟩
+      grw [IH c hcb, hcb]
+    · simpa using hb.ne_bot
+    · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isSuccLimit hb⟩ ?_
       · exact Cardinal.bddAbove_of_small _
       · simpa
 
@@ -181,9 +178,5 @@ theorem IsInitial.principal_mul {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) 
 
 theorem principal_mul_omega (o : Ordinal) : Principal (· * ·) (ω_ o) :=
   (isInitial_omega o).principal_mul (omega0_le_omega o)
-
-@[deprecated principal_add_omega (since := "2024-11-08")]
-theorem _root_.Cardinal.principal_add_aleph (o : Ordinal) : Principal (· + ·) (ℵ_ o).ord :=
-  principal_add_ord <| aleph0_le_aleph o
 
 end Ordinal
