@@ -77,11 +77,12 @@ instance {n : ℕ} : Mono (ballInclusion n) := TopCat.mono_iff_injective _ |>.mp
   obtain rfl : x = y := by simpa [ballInclusion, disk] using h
   congr
 
-instance compact_disk (n : ℕ) : CompactSpace (𝔻 n) := by
+instance (n : ℕ) : CompactSpace (𝔻 n) := by
   convert Homeomorph.compactSpace Homeomorph.ulift.symm
   infer_instance
 
-instance compact_sphere (n : ℕ) : CompactSpace (∂𝔻 n) := by
+instance (n : ℕ) : CompactSpace (∂𝔻 n) := by
   convert Homeomorph.compactSpace Homeomorph.ulift.symm
   infer_instance
+
 end TopCat
