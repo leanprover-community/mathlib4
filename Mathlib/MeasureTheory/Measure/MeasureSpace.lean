@@ -168,7 +168,7 @@ theorem measure_sUnion {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise Di
 theorem measure_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑ p ∈ s, μ (f p) := by
-  rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype]
+  rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype (L := .unconditional s)]
   exact measure_biUnion₀ s.countable_toSet hd hm
 
 theorem measure_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)

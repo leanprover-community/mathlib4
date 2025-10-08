@@ -6,18 +6,20 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.Lie.Abelian
 
 /-!
-# Lie algebra cohomology in low degree with trivial coefficients
-This file defines low degree cochains of Lie algebras with coefficients given by a
-module with trivial action. They are useful in the construction of central extensions, so we
-treat these easier cases separately from the general theory of Lie algebra cohomology.
+# Lie algebra cohomology in low degree
+This file defines low degree cochains of Lie algebras with coefficients given by a module. They are
+useful in the construction of central extensions, so we treat these easier cases separately from the
+general theory of Lie algebra cohomology.
+
 ## Main definitions
 * `LieAlgebra.oneCochain`: an abbreviation for a linear map.
 * `LieAlgebra.twoCochain`: a structure describing 2-cochains where the coefficients take trivial
   action.
 * `LieAlgebra.d₁₂`: The coboundary map taking 1-cochains to 2-cochains.
 * `LieAlgebra.d₂₃`: A coboundary map taking 2-cochains to a space containing 3-cochains.
+* `LieAlgebra.twoCocycle`: The submodule of 2-cocycles.
+
 ## TODO
-* cocycles, cohomology
 * comparison to the Chevalley-Eilenberg complex.
 * construction and classification of central extensions
 ## References
@@ -44,9 +46,7 @@ def twoCochain : Submodule R (L →ₗ[R] L →ₗ[R] M) where
 
 section
 
-variable {R : Type*} [CommRing R]
-variable {L : Type*} [LieRing L] [LieAlgebra R L]
-variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {R L M}
 
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
@@ -57,6 +57,13 @@ instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_add a := a.1.map_add
   map_smulₛₗ a := a.1.map_smul
+
+@[simp]
+lemma twoCochain_alt (a : twoCochain R L M) (x : L) : a x x = 0 := a.2 x
+
+lemma twoCochain_skew (a : twoCochain R L M) (x y : L) : - a x y = a y x := by
+  rw [neg_eq_iff_add_eq_zero, add_comm]
+  simpa [map_add] using twoCochain_alt a (x + y)
 
 lemma twoCochain_val_apply (a : twoCochain R L M) (x : L) :
   a.val x = a x := rfl
@@ -71,18 +78,12 @@ lemma smul_apply_apply (r : R) (a : twoCochain R L M) (x y : L) :
     (r • a) x y = r • (a x y) := by
   rfl
 
-@[simp]
-lemma twoCochain_alt (a : twoCochain R L M) (x : L) : a x x = 0 := a.2 x
-
-lemma twoCochain_skew (a : twoCochain R L M) (x y : L) : - a x y = a y x := by
-  rw [neg_eq_iff_add_eq_zero, add_comm]
-  simpa [map_add] using twoCochain_alt a (x + y)
-
 end
 
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- The coboundary operator taking degree 1 cochains to degree 2 cochains. -/
+@[simps]
 def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
   toFun f :=
     { val :=
@@ -98,6 +99,10 @@ def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
 
 lemma d₁₂_apply_apply (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := rfl
+
+lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R L M) (x y : L) :
+    d₁₂ R L M f x y = - f ⁅x, y⁆ := by
+  simp
 
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
 def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
