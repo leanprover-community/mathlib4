@@ -63,13 +63,13 @@ variable {G}
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
 /-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
-lemma IsAcyclic.map {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
+lemma IsAcyclic.comap {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
     (hinj : Function.Injective f) (h : G'.IsAcyclic) : G.IsAcyclic :=
   fun _ _ ↦ map_isCycle_iff_of_injective hinj |>.not.mp <| h _
 
 lemma IsAcyclic.embedding {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G ↪g G')
     (h : G'.IsAcyclic) : G.IsAcyclic :=
-  h.map f f.injective
+  h.comap f f.injective
 
 /-- Isomorphic graphs are acyclic together. -/
 lemma Iso.isAcyclic_iff {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G ≃g G') :
@@ -90,17 +90,17 @@ lemma IsAcyclic.induce (h : G.IsAcyclic) (s : Set V) : G.induce s |>.IsAcyclic :
 
 /-- A subgraph of an acyclic graph is acyclic. -/
 lemma IsAcyclic.subgraph (h : G.IsAcyclic) (H : G.Subgraph) : H.coe.IsAcyclic :=
-  h.map _ H.hom_injective
+  h.comap _ H.hom_injective
 
 /-- A spanning subgraph of an acyclic graph is acyclic. -/
 lemma IsAcyclic.anti {G G' : SimpleGraph V} (hsub : G ≤ G') (h : G'.IsAcyclic) : G.IsAcyclic :=
-  h.map ⟨_, fun h ↦ hsub h⟩ Function.injective_id
+  h.comap ⟨_, fun h ↦ hsub h⟩ Function.injective_id
 
 /-- A connected component of an acyclic graph is a tree. -/
 lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComponent) :
     c.toSimpleGraph.IsTree where
   isConnected := c.connected_toSimpleGraph
-  IsAcyclic := h.map c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
+  IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
