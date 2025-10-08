@@ -46,6 +46,7 @@ instance : BorelSpace (WithTop ι) := ⟨rfl⟩
 
 variable [MeasurableSpace ι] [BorelSpace ι]
 
+/-- Measurable equivalence between the non-top elements of `WithTop ι` and `ι`. -/
 noncomputable
 def MeasurableEquiv.withTopEquiv [Nonempty ι] : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
   (WithTop.neTopHomeomorph ι).toMeasurableEquiv
@@ -90,7 +91,8 @@ lemma _root_.Measurable.untopA {α} {mα : MeasurableSpace α} [Nonempty ι]
     {f : α → WithTop ι} (hf : Measurable f) :
     Measurable (fun x ↦ (f x).untopA) := measurable_untopA.comp hf
 
-def measurableEquivSum [Nonempty ι] : WithTop ι ≃ᵐ ι ⊕ Unit :=
+/-- Measurable equivalence between `WithTop ι` and `ι ⊕ Unit`. -/
+def measurableEquivSum : WithTop ι ≃ᵐ ι ⊕ Unit :=
   { Equiv.optionEquivSumPUnit ι with
     measurable_toFun := measurable_of_measurable_comp_coe measurable_inl
     measurable_invFun := measurable_fun_sum measurable_coe (@measurable_const _ Unit _ _ ⊤) }

@@ -198,7 +198,8 @@ lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) := isEmbedding_coe
 
 end Coe
 
-/-- Send an element of `WithTop ι` to `ι`, with an arbitrary default value for `⊤`. -/
+/-- Function that sends an element of `WithTop ι` to `ι`,
+with an arbitrary default value for `⊤`. -/
 noncomputable
 abbrev _root_.WithTop.untopA [Nonempty ι] : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
 
@@ -215,6 +216,7 @@ lemma continuousOn_untopA [Nonempty ι] : ContinuousOn WithTop.untopA { a : With
   fun _a ha ↦ ContinuousAt.continuousWithinAt (WithTop.tendsto_untopA ha)
 
 variable (ι) in
+/-- Equivalence between the non-top elements of `WithTop ι` and `ι`. -/
 noncomputable
 def neTopEquiv [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ ι where
   toFun x := WithTop.untopA x
@@ -225,6 +227,7 @@ def neTopEquiv [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ ι where
   right_inv x := by simp
 
 variable (ι) in
+/-- Homeomorphism between the non-top elements of `WithTop ι` and `ι`. -/
 noncomputable
 def neTopHomeomorph [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
   toEquiv := neTopEquiv ι
