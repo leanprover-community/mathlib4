@@ -339,7 +339,7 @@ open MeasureTheory Module BoundedContinuousFunction
 variable [MeasurableSpace E]
 variable (μ : Measure E)
 
-variable {E F}
+variable {F}
 
 noncomputable def testAgainst : 𝓓^{n}(E, F) → F := (∫ x, · x ∂μ)
 
@@ -359,6 +359,7 @@ lemma map_integrable' (f : 𝓓^{n}_{K}(E, F)) : Integrable f μ  := by
 
 variable [SecondCountableTopology E] [SecondCountableTopology F] [MeasurableSpace F] [BorelSpace F]
 
+@[simps!]
 noncomputable def testAgainstₗ : 𝓓^{n}(E, F) →ₗ[𝕜] F :=
   { toFun := testAgainst n μ
     map_add' := fun f g ↦ integral_add (Measure.map_integrable n μ f) (Measure.map_integrable n μ g)
