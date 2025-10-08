@@ -797,7 +797,7 @@ lemma trajMeasure_map_frestrictLe_compProd_kernel_eq_trajMeasure_map {a : ℕ} :
     partialTraj_compProd_kernel_eq_traj_map]
 
 /-- A regular conditional probability distribution of the point at time `a + 1` given the
-trajectory up to time `a` is the kernel `κ a`. -/
+trajectory up to time `a` corresponds to the kernel `κ a`. -/
 lemma condDistrib_trajMeasure_ae_eq_kernel {a : ℕ}
     [StandardBorelSpace (X (a + 1))] [Nonempty (X (a + 1))] :
     condDistrib (fun x ↦ x (a + 1)) (frestrictLe a) (trajMeasure μ₀ κ)
