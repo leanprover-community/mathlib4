@@ -318,9 +318,7 @@ lemma contMDiffAt_aux (hs : CMDiffAt n (T% s) x) (ht : CMDiffAt n (T% t) x) (hs'
 
 def ContMDiffWithinAt.orthogonalProjection
     (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
-    -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!
-    letI S : (x : B) → E x := fun x ↦ (Submodule.span ℝ {s x}).starProjection (t x);
-    CMDiffAt[u] n (T% S) x := by
+    CMDiffAt[u] n (T% (fun x ↦ (Submodule.span ℝ {s x}).starProjection (t x))) x := by
   simp_rw [Submodule.starProjection_singleton]
   exact (contMDiffWithinAt_aux hs ht hs').smul_section hs
 
