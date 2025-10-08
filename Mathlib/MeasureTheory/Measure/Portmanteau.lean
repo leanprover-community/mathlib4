@@ -749,6 +749,13 @@ lemma lipschitzWith_zero_iff {E F : Type*} [PseudoEMetricSpace E] [EMetricSpace 
     LipschitzWith (0 : ℝ≥0) f ↔ ∀ x y, f x = f y := by
   simp [LipschitzWith]
 
+@[fun_prop, measurability]
+lemma AEMeasurable.dist {Ω E : Type*} {mΩ : MeasurableSpace Ω} {mE : MeasurableSpace E}
+    [PseudoMetricSpace E] [SecondCountableTopology E] [BorelSpace E]
+    {f g : Ω → E} {μ : Measure Ω} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (fun x ↦ dist (f x) (g x)) μ :=
+  (@continuous_dist E _).aemeasurable2 hf hg
+
 /-- Let `f, f'` be two sequences of measurable functions such that `f n` converges in distribution
 to `g`, and `f' n - f n` converges in probability to `0`.
 Then `f' n` converges in distribution to `g`. -/
@@ -830,26 +837,20 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
         + ∫ a in {x | ε / 2 ≤ ‖f' n x - f n x‖}, ‖F (f' n a) - F (f n a)‖ ∂μ := by
       symm
       simp_rw [← not_lt]
-      refine integral_add_compl₀ ?_ ?_
-      · refine nullMeasurableSet_lt ?_ (by fun_prop)
-        simp_rw [← dist_eq_norm]
-        -- missing AEMeasurable.dist
-        exact (@continuous_dist E _).aemeasurable2 (by fun_prop) (by fun_prop)
-      · exact h_int_sub
+      refine integral_add_compl₀ ?_ h_int_sub
+      exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
     _ ≤ ∫ a in {x | ‖f' n x - f n x‖ < ε / 2}, L * (ε / 2) ∂μ
         + ∫ a in {x | ε / 2 ≤ ‖f' n x - f n x‖}, M ∂μ := by
       gcongr ?_ + ?_
-      · refine setIntegral_mono_on' ?_ integrableOn_const ?_ ?_
-        · exact h_int_sub.integrableOn
+      · refine setIntegral_mono_on' h_int_sub.integrableOn integrableOn_const ?_ ?_
         · exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
         · intro x hx
           simp only [Set.mem_setOf_eq] at hx
           rw [← dist_eq_norm] at hx ⊢
           exact hF_lip.dist_le_mul_of_le hx.le
-      · refine setIntegral_mono ?_ integrableOn_const fun a ↦ ?_
-        · exact h_int_sub.integrableOn
-        · rw [← dist_eq_norm]
-          convert hF_bounded _ _
+      · refine setIntegral_mono h_int_sub.integrableOn integrableOn_const fun a ↦ ?_
+        rw [← dist_eq_norm]
+        convert hF_bounded _ _
     _ = L * (ε / 2) * μ.real {x | ‖f' n x - f n x‖ < ε / 2}
         + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖} := by
       simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply, Set.univ_inter,
@@ -863,22 +864,19 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
       exact measureReal_le_one
   have h_tendsto :
       Tendsto (fun n ↦ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
-          + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)|) l (𝓝 (L * ε / 2)) := by
+        + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)|) l (𝓝 (L * ε / 2)) := by
     suffices Tendsto (fun n ↦ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
-          + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)|) l (𝓝 (L * ε / 2 + M * 0 + 0)) by
+        + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)|) l (𝓝 (L * ε / 2 + M * 0 + 0)) by
       simpa
-    refine Tendsto.add ?_ ?_
-    · refine Tendsto.add ?_ (Tendsto.const_mul _ ?_)
-      · rw [mul_div_assoc]
-        exact tendsto_const_nhds
-      · simp only [tendstoInMeasure_iff_norm, Pi.zero_apply, sub_zero] at hff'
-        have h_tendsto := hff' (ε / 2) (by positivity) -- the result, up to `μ.real` vs `μ`
-        refine Tendsto.comp ?_ h_tendsto
-        exact ENNReal.tendsto_toReal (ENNReal.zero_ne_top)
+    refine (Tendsto.add ?_ (Tendsto.const_mul _ ?_)).add ?_
+    · rw [mul_div_assoc]
+      exact tendsto_const_nhds
+    · simp only [tendstoInMeasure_iff_norm, Pi.zero_apply, sub_zero] at hff'
+      have h_tendsto := hff' (ε / 2) (by positivity) -- the result, up to `μ.real` vs `μ`
+      refine Tendsto.comp ?_ h_tendsto
+      exact ENNReal.tendsto_toReal (ENNReal.zero_ne_top)
     · simp_rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hfg
-      have h := hfg F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
-      rw [tendsto_iff_dist_tendsto_zero] at h
-      simpa using h
+      simpa [tendsto_iff_dist_tendsto_zero] using hfg F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
   have h_lt : L * ε / 2 < L * ε := by
     rw [mul_div_assoc]
     gcongr
