@@ -1393,6 +1393,7 @@ import Mathlib.Analysis.Analytic.Order
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Analytic.Uniqueness
+import Mathlib.Analysis.Analytic.WithLp
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.Completion
@@ -1748,6 +1749,7 @@ import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Order
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.MellinInversion
@@ -2671,6 +2673,7 @@ import Mathlib.CategoryTheory.ObjectProperty.Extensions
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+import Mathlib.CategoryTheory.ObjectProperty.Opposite
 import Mathlib.CategoryTheory.ObjectProperty.Retract
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.ObjectProperty.Small
@@ -4617,6 +4620,7 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleAverage
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.CircleTransform
+import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.ExpDecay
@@ -5297,6 +5301,7 @@ import Mathlib.Probability.Distributions.Pareto
 import Mathlib.Probability.Distributions.Poisson
 import Mathlib.Probability.Distributions.Uniform
 import Mathlib.Probability.HasLaw
+import Mathlib.Probability.HasLawExists
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.CharacteristicFunction
