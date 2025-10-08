@@ -24,7 +24,7 @@ open WithZero
 
 /-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an homomorphism of monoids with zero. -/
 @[simps!]
-def valueGroup₀.monoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
+def ValueGroup₀.monoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
   WithZero.map' (valueGroup f).subtype
 
 lemma valueGroup₀.monoidWithZeroHom_strictMono :
