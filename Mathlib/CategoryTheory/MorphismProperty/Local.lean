@@ -165,7 +165,7 @@ instance inf (P Q : MorphismProperty C) [IsLocalAtSource P K] [IsLocalAtSource Q
 
 end IsLocalAtSource
 
-lemma of_zeroHypercover_source {P : MorphismProperty C} {K : Precoverage C} [K.HasPullbacks]
+lemma of_zeroHypercover_source {P : MorphismProperty C} {K : Precoverage C}
     [P.IsLocalAtSource K] {X Y : C} {f : X ⟶ Y} (𝒰 : Precoverage.ZeroHypercover.{w} K X)
     [Precoverage.ZeroHypercover.Small.{v} 𝒰] (h : ∀ i, P (𝒰.f i ≫ f)) :
     P f := by
