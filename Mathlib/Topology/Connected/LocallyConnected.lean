@@ -135,13 +135,15 @@ theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU
     LocallyConnectedSpace U :=
   hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace
 
+/-- If a space is locally connected, the topology of its connected components is discrete. -/
+instance [LocallyConnectedSpace α] : DiscreteTopology <| ConnectedComponents α := by
+  refine singletons_open_iff_discrete.mp fun c ↦ ?_
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c
+  simp [← ConnectedComponents.isQuotientMap_coe.isOpen_preimage,
+    connectedComponents_preimage_singleton, isOpen_connectedComponent]
+
 /-- A locally connected compact space has finitely many connected components. -/
-instance [LocallyConnectedSpace α] [CompactSpace α] : Finite <| ConnectedComponents α := by
-  have ⟨s, hsU⟩ := IsCompact.elim_finite_subcover isCompact_univ connectedComponent
-    (fun (_ : α) ↦ isOpen_connectedComponent)
-    fun x _ ↦ ⟨connectedComponent x, ⟨⟨x, rfl⟩, mem_connectedComponent⟩⟩
-  refine Finite.of_surjective (fun (i : s) ↦ i) <| Quotient.ind fun x ↦ ?_
-  have ⟨i, hi, h⟩ := mem_iUnion₂.mp <| hsU (a := x) trivial
-  exact ⟨⟨i, hi⟩, Quotient.sound <| connectedComponent_eq h⟩
+instance [LocallyConnectedSpace α] [CompactSpace α] : Finite <| ConnectedComponents α :=
+  finite_of_compact_of_discrete
 
 end LocallyConnectedSpace
