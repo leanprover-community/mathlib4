@@ -427,17 +427,39 @@ def map (F : C ⥤ D) (E : ZeroHypercover.{w} J S) (h : J ≤ K.comap F) :
 
 end Functoriality
 
+/--
+A `w`-`0`-hypercover `E` is `w'`-small if there exists an indexing type `ι` in `Type w'` and a
+restriction map `ι → E.I₀` such that the restriction of `E` to `ι` is still covering.
+
+Note: This is weaker than `E.I₀` being `w'`-small. For example, every Zariski cover of
+`X : Scheme.{u}` is `u`-small, because `X` itself suffices as indexing type.
+-/
 protected class Small (E : ZeroHypercover.{w} J S) where
-  exists_restrictIndex_mem : ∃ (ι : Type w') (f : ι → E.I₀), (E.restrictIndex f).presieve₀ ∈ J S
+  exists_restrictIndex_mem (E) : ∃ (ι : Type w') (f : ι → E.I₀), (E.restrictIndex f).presieve₀ ∈ J S
 
 instance (E : ZeroHypercover.{w} J S) [Small.{w'} E.I₀] : ZeroHypercover.Small.{w'} E where
   exists_restrictIndex_mem := ⟨_, (equivShrink E.I₀).symm, by simp [E.mem₀]⟩
 
+/-- The `w'`-index type of a `w'`-small `0`-hypercover. -/
+def Small.Index (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] : Type w' :=
+  (Small.exists_restrictIndex_mem E).choose
+
+/-- The index restriction function of a small `0`-hypercover. -/
+noncomputable def Small.restrictFun (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] :
+    Index E → E.I₀ :=
+  (Small.exists_restrictIndex_mem E).choose_spec.choose
+
+lemma Small.mem₀ (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] :
+    (E.restrictIndex <| Small.restrictFun E).presieve₀ ∈ J S :=
+  (Small.exists_restrictIndex_mem E).choose_spec.choose_spec
+
+/-- Restrict a `w'`-small `0`-hypercover to a `w'`-`0`-hypercover. -/
+@[simps toPreZeroHypercover]
 noncomputable
 def restrictIndexOfSmall (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] :
     ZeroHypercover.{w'} J S where
-  __ := E.toPreZeroHypercover.restrictIndex (Small.exists_restrictIndex_mem).choose_spec.choose
-  mem₀ := (Small.exists_restrictIndex_mem).choose_spec.choose_spec
+  __ := E.toPreZeroHypercover.restrictIndex (Small.restrictFun E)
+  mem₀ := Small.mem₀ E
 
 end ZeroHypercover
 
@@ -446,6 +468,12 @@ lemma mem_iff_exists_zeroHypercover {X : C} {R : Presieve X} :
   refine ⟨fun hR ↦ ?_, fun ⟨𝒰, hR⟩ ↦ hR ▸ 𝒰.mem₀⟩
   obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   use ⟨⟨ι, Y, f⟩, hR⟩
+
+/-- A precoverage is `w`-small, if every `0`-hypercover is `w`-small. -/
+class Small (J : Precoverage C) : Prop where
+  zeroHypercoverSmall : ∀ {S : C} (E : ZeroHypercover.{v} J S), ZeroHypercover.Small.{w} E
+
+attribute [instance] Small.zeroHypercoverSmall
 
 end Precoverage
 
