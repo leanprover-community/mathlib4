@@ -67,7 +67,7 @@ lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
   · exact measurable_of_measurable_on_compl_singleton ⊤
       (MeasurableEquiv.withTopEquiv.symm.measurable_comp_iff.1 h)
 
-lemma measurable_ut [Nonempty ι] : Measurable (WithTop.ut (ι := ι)) :=
+lemma measurable_untopA [Nonempty ι] : Measurable (WithTop.untopA (ι := ι)) :=
   measurable_of_measurable_comp_coe measurable_id
 
 lemma measurable_coe :
@@ -86,9 +86,9 @@ lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} [SecondCount
     exact hf measurableSet_Iic
 
 @[fun_prop]
-lemma _root_.Measurable.ut {α} {mα : MeasurableSpace α} [Nonempty ι]
+lemma _root_.Measurable.untopA {α} {mα : MeasurableSpace α} [Nonempty ι]
     {f : α → WithTop ι} (hf : Measurable f) :
-    Measurable (fun x ↦ (f x).ut) := measurable_ut.comp hf
+    Measurable (fun x ↦ (f x).untopA) := measurable_untopA.comp hf
 
 def measurableEquivSum [Nonempty ι] : WithTop ι ≃ᵐ ι ⊕ Unit :=
   { Equiv.optionEquivSumPUnit ι with
@@ -779,7 +779,7 @@ variable [Nonempty ι]
 /-- Given a map `u : ι → Ω → E`, its stopped value with respect to the stopping
 time `τ` is the map `x ↦ u (τ ω) ω`. -/
 noncomputable
-def stoppedValue (u : ι → Ω → β) (τ : Ω → WithTop ι) : Ω → β := fun ω => u (τ ω).ut ω
+def stoppedValue (u : ι → Ω → β) (τ : Ω → WithTop ι) : Ω → β := fun ω => u (τ ω).untopA ω
 
 theorem stoppedValue_const (u : ι → Ω → β) (i : ι) : (stoppedValue u fun _ => i) = u i :=
   rfl
@@ -792,7 +792,7 @@ variable [LinearOrder ι]
 Intuitively, the stopped process stops evolving once the stopping time has occurred. -/
 noncomputable
 def stoppedProcess (u : ι → Ω → β) (τ : Ω → WithTop ι) : ι → Ω → β :=
-  fun i ω => u (min (i : WithTop ι) (τ ω)).ut ω
+  fun i ω => u (min (i : WithTop ι) (τ ω)).untopA ω
 
 theorem stoppedProcess_eq_stoppedValue {u : ι → Ω → β} {τ : Ω → WithTop ι} :
     stoppedProcess u τ = fun i : ι => stoppedValue u fun ω => min i (τ ω) := rfl
@@ -814,7 +814,7 @@ theorem stoppedProcess_eq_of_le {u : ι → Ω → β} {τ : Ω → WithTop ι} 
     stoppedProcess u τ i ω = u i ω := by simp [stoppedProcess, min_eq_left h]
 
 theorem stoppedProcess_eq_of_ge {u : ι → Ω → β} {τ : Ω → WithTop ι} {i : ι} {ω : Ω} (h : τ ω ≤ i) :
-    stoppedProcess u τ i ω = u (τ ω).ut ω := by simp [stoppedProcess, min_eq_right h]
+    stoppedProcess u τ i ω = u (τ ω).untopA ω := by simp [stoppedProcess, min_eq_right h]
 
 section ProgMeasurable
 
@@ -822,8 +822,8 @@ variable [MeasurableSpace ι] [TopologicalSpace ι] [OrderTopology ι] [SecondCo
   [BorelSpace ι] [TopologicalSpace β] {u : ι → Ω → β} {τ : Ω → WithTop ι} {f : Filtration ι m}
 
 theorem progMeasurable_min_stopping_time [PseudoMetrizableSpace ι] (hτ : IsStoppingTime f τ) :
-    ProgMeasurable f fun i ω ↦ (min (i : WithTop ι) (τ ω)).ut := by
-  refine fun i ↦ (Measurable.ut ?_).stronglyMeasurable
+    ProgMeasurable f fun i ω ↦ (min (i : WithTop ι) (τ ω)).untopA := by
+  refine fun i ↦ (Measurable.untopA ?_).stronglyMeasurable
   let m_prod : MeasurableSpace (Set.Iic i × Ω) := Subtype.instMeasurableSpace.prod (f i)
   let m_set : ∀ t : Set (Set.Iic i × Ω), MeasurableSpace t := fun _ =>
     @Subtype.instMeasurableSpace (Set.Iic i × Ω) _ m_prod
@@ -888,20 +888,20 @@ theorem ProgMeasurable.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace 
 
 theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : IsStoppingTime f τ)
     {n : ι} (hτ_le : ∀ ω, τ ω ≤ n) : StronglyMeasurable[f n] (stoppedValue u τ) := by
-  have hτ_le' ω : (τ ω).ut ≤ n := by
+  have hτ_le' ω : (τ ω).untopA ≤ n := by
     specialize hτ_le ω
-    simp only [WithTop.ut]
+    simp only [WithTop.untopA]
     have : τ ω ≠ ⊤ := ne_top_of_le_ne_top (by simp) hτ_le
     lift τ ω to ι using this with t ht
     simp only [WithTop.untopD_coe, ge_iff_le]
     exact mod_cast hτ_le
   have : stoppedValue u τ =
-      (fun p : Set.Iic n × Ω => u (↑p.fst) p.snd) ∘ fun ω => (⟨(τ ω).ut, hτ_le' ω⟩, ω) := by
+      (fun p : Set.Iic n × Ω => u (↑p.fst) p.snd) ∘ fun ω => (⟨(τ ω).untopA, hτ_le' ω⟩, ω) := by
     ext1 ω; simp only [stoppedValue, Function.comp_apply]
   rw [this]
   refine StronglyMeasurable.comp_measurable (h n) ?_
   refine (Measurable.subtype_mk ?_).prodMk measurable_id
-  exact (hτ.measurable_of_le hτ_le).ut
+  exact (hτ.measurable_of_le hτ_le).untopA
 
 lemma measurableSet_preimage_stoppedValue_inter [PseudoMetrizableSpace β] [MeasurableSpace β]
     [BorelSpace β]
@@ -948,8 +948,8 @@ theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] 
   · have : stoppedValue u τ ⁻¹' t ∩ {ω | τ ω = ⊤}
        = (fun ω ↦ u (Classical.arbitrary ι) ω) ⁻¹' t ∩ {ω | τ ω = ⊤} := by
       ext ω
-      simp only [Set.mem_inter_iff, Set.mem_preimage, stoppedValue, WithTop.ut, Set.mem_setOf_eq,
-        and_congr_left_iff]
+      simp only [Set.mem_inter_iff, Set.mem_preimage, stoppedValue, WithTop.untopA,
+        Set.mem_setOf_eq, and_congr_left_iff]
       intro h
       simp [h]
     rw [this]
@@ -972,7 +972,7 @@ theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι}
   ext y
   classical
   rw [stoppedValue, Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
-  suffices {i ∈ s | y ∈ {ω : Ω | τ ω = (i : ι)}} = ({(τ y).ut} : Finset ι) by
+  suffices {i ∈ s | y ∈ {ω : Ω | τ ω = (i : ι)}} = ({(τ y).untopA} : Finset ι) by
     rw [this, Finset.sum_singleton]
   ext1 ω
   simp only [Set.mem_setOf_eq, Finset.mem_filter, Finset.mem_singleton]
@@ -1175,9 +1175,9 @@ variable {u : ℕ → Ω → β} {τ π : Ω → ℕ∞}
 
 theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ∞) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
-      (∑ i ∈ Finset.Ico (τ ω).ut (π ω).ut, (u (i + 1) - u i)) ω := by
+      (∑ i ∈ Finset.Ico (τ ω).untopA (π ω).untopA, (u (i + 1) - u i)) ω := by
   ext ω
-  have h_le' : (τ ω).ut ≤ (π ω).ut := by
+  have h_le' : (τ ω).untopA ≤ (π ω).untopA := by
     have hτ_top : τ ω ≠ ⊤ := ne_top_of_le_ne_top (mod_cast hπ ω) (hle ω)
     specialize hle ω
     lift τ ω to ℕ using hτ_top with t ht
@@ -1202,7 +1202,7 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
   specialize hbdd ω
   lift τ ω to ℕ using hτ_top ω with t ht
   lift π ω to ℕ using hπ_top ω with b hb
-  simp only [WithTop.ut_coe_enat, Nat.cast_le, Nat.cast_lt, iff_and_self, and_imp]
+  simp only [WithTop.untopA_coe_enat, Nat.cast_le, Nat.cast_lt, iff_and_self, and_imp]
   simp only [Nat.cast_le] at hbdd
   grind
 

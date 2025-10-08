@@ -198,25 +198,26 @@ lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) := isEmbedding_coe
 
 end Coe
 
+/-- Send an element of `WithTop ι` to `ι`, with an arbitrary default value for `⊤`. -/
 noncomputable
-abbrev _root_.WithTop.ut [Nonempty ι] : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
+abbrev _root_.WithTop.untopA [Nonempty ι] : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
 
 @[simp]
-lemma ut_coe_enat (n : ℕ) : WithTop.ut (n : ℕ∞) = n := rfl
+lemma untopA_coe_enat (n : ℕ) : WithTop.untopA (n : ℕ∞) = n := rfl
 
-lemma tendsto_ut [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
-    Tendsto WithTop.ut (𝓝 a) (𝓝 a.ut) := by
+lemma tendsto_untopA [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
+    Tendsto WithTop.untopA (𝓝 a) (𝓝 a.untopA) := by
   lift a to ι using ha
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
 
-lemma continuousOn_ut [Nonempty ι] : ContinuousOn WithTop.ut { a : WithTop ι | a ≠ ⊤ } :=
-  fun _a ha ↦ ContinuousAt.continuousWithinAt (WithTop.tendsto_ut ha)
+lemma continuousOn_untopA [Nonempty ι] : ContinuousOn WithTop.untopA { a : WithTop ι | a ≠ ⊤ } :=
+  fun _a ha ↦ ContinuousAt.continuousWithinAt (WithTop.tendsto_untopA ha)
 
 variable (ι) in
 noncomputable
 def neTopEquiv [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ ι where
-  toFun x := WithTop.ut x
+  toFun x := WithTop.untopA x
   invFun x := ⟨x, WithTop.coe_ne_top⟩
   left_inv := fun x => Subtype.eq <| by
     lift (x : WithTop ι) to ι using x.2 with y
@@ -227,14 +228,14 @@ variable (ι) in
 noncomputable
 def neTopHomeomorph [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
   toEquiv := neTopEquiv ι
-  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_ut
+  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_untopA
   continuous_invFun := continuous_coe.subtype_mk _
 
 variable (ι) in
 /-- If `ι` has a top element, then `WithTop ι` is homeomorphic to `ι ⊕ Unit`. -/
 noncomputable
 def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
-  toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.ut
+  toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.untopA
   invFun x := match x with
     | Sum.inl i => (i : WithTop ι)
     | Sum.inr () => ⊤
@@ -249,7 +250,7 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
       rw [this]
       exact isOpen_Ioi
     refine continuous_if' (by simp [h_fr]) (by simp [h_fr]) (by simp) ?_
-    exact Continuous.comp_continuousOn (by fun_prop) continuousOn_ut
+    exact Continuous.comp_continuousOn (by fun_prop) continuousOn_untopA
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
 
 end WithTop

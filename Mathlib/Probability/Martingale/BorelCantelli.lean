@@ -77,7 +77,7 @@ theorem stoppedAbove_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ic
   filter_upwards [hbdd] with ω hbddω
   rw [stoppedAbove, stoppedProcess]
   simp only [ENat.some_eq_coe]
-  by_cases h_zero : (min (i : ℕ∞) (leastGE f r ω)).ut = 0
+  by_cases h_zero : (min (i : ℕ∞) (leastGE f r ω)).untopA = 0
   · simp only [h_zero, hf0, Pi.zero_apply]
     positivity
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_one_of_ne_zero h_zero
@@ -89,8 +89,7 @@ theorem stoppedAbove_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ic
     have h_top : min (i : ℕ∞) (leastGE f r ω) ≠ ⊤ :=
       ne_top_of_le_ne_top (by simp) (min_le_left _ _)
     lift min (i : ℕ∞) (leastGE f r ω) to ℕ using h_top with p
-    have : (p : ℕ∞).ut = p := rfl
-    simp only [this, Nat.cast_lt, gt_iff_lt] at *
+    simp only [WithTop.untopA_coe_enat, Nat.cast_lt, gt_iff_lt] at *
     omega
 
 @[deprecated (since := "2025-09-08")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le

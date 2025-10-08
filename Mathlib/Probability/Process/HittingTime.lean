@@ -191,7 +191,7 @@ theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Se
 
 lemma hittingAfter_mem_set [WellFoundedLT ι] [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)]
     (h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s) :
-    u (hittingAfter u s n ω).ut ω ∈ s := by
+    u (hittingAfter u s n ω).untopA ω ∈ s := by
   simp_rw [hittingAfter, if_pos h_exists]
   have h_nonempty : {i : ι | n ≤ i ∧ u i ω ∈ s}.Nonempty := by
     obtain ⟨k, hk₁, hk₂⟩ := h_exists
@@ -213,7 +213,7 @@ theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}
 
 lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)]
     (hl : hittingAfter u s n ω ≠ ⊤) :
-    u (hittingAfter u s n ω).ut ω ∈ s := by
+    u (hittingAfter u s n ω).untopA ω ∈ s := by
   simp only [ne_eq, hittingAfter_eq_top_iff, not_forall, not_not] at hl
   obtain ⟨j, hj₁, hj₂⟩ := hl
   refine hittingAfter_mem_set ?_
@@ -258,7 +258,7 @@ lemma hittingAfter_le_iff [WellFoundedLT ι] [∀ ω, Decidable (∃ j, n ≤ j 
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
     have h_le := le_hittingAfter (u := u) (s := s) (n := n) ω
-    refine ⟨(hittingAfter u s n ω).ut, ?_, hittingAfter_mem_set_of_ne_top h_top⟩
+    refine ⟨(hittingAfter u s n ω).untopA, ?_, hittingAfter_mem_set_of_ne_top h_top⟩
     lift (hittingAfter u s n ω) to ι using h_top with i'
     norm_cast at h' h_le
   · obtain ⟨j, hj₁, hj₂⟩ := h'
@@ -295,7 +295,7 @@ lemma hittingAfter_lt_iff [WellFoundedLT ι] [∀ ω, Decidable (∃ j, n ≤ j 
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
     have h_le := le_hittingAfter (u := u) (s := s) (n := n) ω
-    refine ⟨(hittingAfter u s n ω).ut, ?_, hittingAfter_mem_set_of_ne_top h_top⟩
+    refine ⟨(hittingAfter u s n ω).untopA, ?_, hittingAfter_mem_set_of_ne_top h_top⟩
     lift (hittingAfter u s n ω) to ι using h_top with i'
     norm_cast at h' h_le
   · obtain ⟨j, hj₁, hj₂⟩ := h'
@@ -389,9 +389,9 @@ theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOr
     [BorelSpace β] {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → WithTop ι}
     (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
-    IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).ut N x : ι) := by
+    IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).untopA N x : ι) := by
   intro n
-  have h₁ : {x | hittingBtwn u s (τ x).ut N x ≤ n} =
+  have h₁ : {x | hittingBtwn u s (τ x).untopA N x ≤ n} =
     (⋃ i ≤ n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n}) ∪
       ⋃ i > n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n} := by
     ext x
