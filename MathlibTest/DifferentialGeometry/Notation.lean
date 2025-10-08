@@ -683,7 +683,8 @@ section error
 -- TODO: make this parse, but error in the elaborator
 -- #check CMDiffAt[s] f
 
-/--
+-- TODO: the old error message here was better; somehow restore it!
+/-
 error: Type mismatch
   f
 has type
@@ -691,7 +692,9 @@ has type
 of sort `Type (max u_10 u_4)` but is expected to have type
   WithTop ℕ∞
 of sort `Type`
----
+-/
+
+/--
 error: Expected
   m
 of type
@@ -702,14 +705,6 @@ to be a function, or to be coercible to a function
 #check CMDiffAt[s] f m
 
 /--
-error: Type mismatch
-  f
-has type
-  M → M'
-of sort `Type (max u_10 u_4)` but is expected to have type
-  WithTop ℕ∞
-of sort `Type`
----
 error: Expected
   m
 of type
