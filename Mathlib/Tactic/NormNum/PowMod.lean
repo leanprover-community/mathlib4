@@ -49,14 +49,15 @@ theorem IsNatPowModT.bit0 :
   ⟨fun h1 => by simp only [two_mul, Nat.pow_eq, pow_add, ← h1, Nat.mul_eq]; exact Nat.mul_mod ..⟩
 
 theorem natPow_zero_natMod_zero : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 0) = nat_lit 1 := by
-  with_unfolding_all rfl
+  simp [Nat.mod, Nat.modCore]
+
 theorem natPow_zero_natMod_one : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 1) = nat_lit 0 := by
-  with_unfolding_all rfl
+  simp [Nat.mod, Nat.modCore_eq]
+
 theorem natPow_zero_natMod_succ_succ :
     Nat.mod (Nat.pow a (nat_lit 0)) (Nat.succ (Nat.succ m)) = nat_lit 1 := by
-  rw [natPow_zero]
-  apply Nat.mod_eq_of_lt
-  exact Nat.one_lt_succ_succ _
+  rfl
+
 theorem natPow_one_natMod : Nat.mod (Nat.pow a (nat_lit 1)) m = Nat.mod a m := by rw [natPow_one]
 
 theorem IsNatPowModT.bit1 :
@@ -64,7 +65,7 @@ theorem IsNatPowModT.bit1 :
       (Nat.mod (Nat.mul c (Nat.mod (Nat.mul c a) m)) m) :=
   ⟨by
     rintro rfl
-    show a ^ (2 * b + 1) % m = (a ^ b % m) * ((a ^ b % m * a) % m) % m
+    change a ^ (2 * b + 1) % m = (a ^ b % m) * ((a ^ b % m * a) % m) % m
     rw [pow_add, two_mul, pow_add, pow_one, Nat.mul_mod (a ^ b % m) a, Nat.mod_mod,
       ← Nat.mul_mod (a ^ b) a, ← Nat.mul_mod, mul_assoc]⟩
 
@@ -92,7 +93,7 @@ partial def evalNatPowMod (a b m : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.mod (Nat.pow 
   else
     have c₀ : Q(ℕ) := mkRawNatLit (a.natLit! % m.natLit!)
     haveI : $c₀ =Q Nat.mod $a $m := ⟨⟩
-    let ⟨c, p⟩ := go b.natLit!.log2 a m (mkRawNatLit 1) c₀ b _ .rfl
+    let ⟨c, p⟩ := go b.natLit!.log2 a m q(nat_lit 1) c₀ b _ .rfl
     ⟨c, q(($p).run)⟩
 where
   /-- Invariants: `a ^ b₀ % m = c₀`, `depth > 0`, `b >>> depth = b₀` -/

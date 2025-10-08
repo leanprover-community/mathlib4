@@ -97,15 +97,13 @@ instance : Category (Dial C) where
     F := π(π₁, prod.map F.f (𝟙 _) ≫ G.F) ≫ F.F
     le := comp_le_lemma F G
   }
-  id_comp f := by simp; rfl
-  comp_id f := by simp; rfl
   assoc f g h := by
     simp only [Category.assoc, Hom.mk.injEq, true_and]
     rw [← Category.assoc, ← Category.assoc]; congr 1
     ext <;> simp
 
 @[ext] theorem hom_ext {X Y : Dial C} {x y : X ⟶ Y} (hf : x.f = y.f) (hF : x.F = y.F) : x = y :=
-   Hom.ext hf hF
+  Hom.ext hf hF
 
 /--
 An isomorphism in `Dial C` can be induced by isomorphisms on the source and target,

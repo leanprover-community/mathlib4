@@ -28,15 +28,14 @@ additional data. We provide the notation `a △ b` for making a `Tree Unit` with
 inductive Tree.{u} (α : Type u) : Type u
   | nil : Tree α
   | node : α → Tree α → Tree α → Tree α
-  deriving DecidableEq, Repr -- Porting note: Removed `has_reflect`, added `Repr`.
+  deriving DecidableEq, Repr
+compile_inductive% Tree
 
 namespace Tree
 
 universe u
 
 variable {α : Type u}
-
--- Porting note: replaced with `deriving Repr` which builds a better instance anyway
 
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
@@ -119,9 +118,6 @@ def right : Tree α → Tree α
 
 /-- A node with `Unit` data -/
 scoped infixr:65 " △ " => Tree.node ()
-
--- Porting note: workaround for https://github.com/leanprover/lean4/issues/2049
-compile_inductive% Tree
 
 /-- Induction principle for `Tree Unit`s -/
 @[elab_as_elim]

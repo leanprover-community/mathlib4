@@ -3,10 +3,10 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.BilinearForm.Basic
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Bilinear form and linear maps
@@ -19,15 +19,15 @@ A lot of this file is now redundant following the replacement of the dedicated `
 structure with `LinearMap.BilinForm`, which is just an alias for `M →ₗ[R] M →ₗ[R] R`. For example
 `LinearMap.BilinForm.toLinHom` is now just the identity map. This redundant code should be removed.
 
-## Notations
+## Notation
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
-the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
+the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the commutative semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
- - `V`, ... is a vector space over the field `K`.
+- `M`, `M'`, ... are modules over the commutative semiring `R`,
+- `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
+- `V`, ... is a vector space over the field `K`.
 
 ## References
 
@@ -40,6 +40,7 @@ Bilinear form,
 
 open LinearMap (BilinForm)
 open LinearMap (BilinMap)
+open Module
 
 universe u v w
 
@@ -205,8 +206,6 @@ theorem congr_apply (e : M ≃ₗ[R] M') (B : BilinForm R M) (x y : M') :
 
 @[simp]
 theorem congr_symm (e : M ≃ₗ[R] M') : (congr e).symm = congr e.symm := by
-  ext
-  simp only [congr_apply, LinearEquiv.symm_symm]
   rfl
 
 @[simp]

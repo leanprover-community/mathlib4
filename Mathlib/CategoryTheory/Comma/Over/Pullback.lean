@@ -3,6 +3,7 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang, Sina Hazratpour
 -/
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
@@ -87,13 +88,26 @@ def mapPullbackAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pul
             Over.homMk (pullback.lift u.left x.hom <| by simp)
           invFun := fun v => Over.homMk (v.left ≫ pullback.fst _ _) <| by
             simp [← Over.w v, pullback.condition]
-          left_inv := by aesop_cat
+          left_inv := by cat_disch
           right_inv := fun v => by
             ext
             dsimp
             ext
             · simp
             · simpa using (Over.w v).symm } }
+
+/-- The pullback along an epi that's preserved under pullbacks is faithful.
+
+This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
+```
+example [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
+```
+-/
+instance faithful_pullback {X Y : C} (f : X ⟶ Y) [∀ Z (g : Z ⟶ Y), Epi (pullback.fst g f)] :
+    (pullback f).Faithful := by
+  have (Z : Over Y) : Epi ((mapPullbackAdj f).counit.app Z) := by
+    simp only [Functor.comp_obj, Functor.id_obj, mapPullbackAdj_counit_app]; infer_instance
+  exact (mapPullbackAdj f).faithful_R_of_epi_counit_app
 
 @[deprecated (since := "2024-07-08")]
 noncomputable alias mapAdjunction := mapPullbackAdj
@@ -298,14 +312,13 @@ variable (X : C)
 Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
-def forgetAdjStar [HasBinaryProducts C] : forget X ⊣ star X :=
-  (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
+def forgetAdjStar : forget X ⊣ star X := (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
+
+instance : (star X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
-`Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
--/
-instance [HasBinaryProducts C] : (forget X).IsLeftAdjoint  :=
-  ⟨_, ⟨forgetAdjStar X⟩⟩
+`Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`. -/
+instance : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 namespace forgetAdjStar
 
@@ -409,9 +422,21 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) : pushout f ⊣ map f :=
         ext
         · simp
         · simpa using (Under.w u).symm
-      right_inv := by aesop_cat
+      right_inv := by cat_disch
     }
   }
+
+/-- The pushout along a mono that's preserved under pushouts is faithful.
+
+This "preserved under pushouts" condition is automatically satisfied in abelian categories:
+```
+example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
+```
+-/
+instance faithful_pushout {X Y : C} (f : X ⟶ Y) [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] :
+    (pushout f).Faithful := by
+  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by simp; infer_instance
+  exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
 def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
@@ -419,21 +444,61 @@ def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
     (Under.mapId X).symm
 
 /-- pushout commutes with composition (up to natural isomorphism). -/
-def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
+def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
   (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _) ).symm
     (mapComp f g).symm
 
-instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
+@[deprecated (since := "2025-04-15")]
+noncomputable alias pullbackComp := pushoutComp
+
+instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
-/-- If `X : C` is initial, then the under category of `X` is equivalent to `C`. -/
-def equivalenceOfIsInitial {C : Type*} [Category C] {X : C} (hX : IsInitial X) :
-    Under X ≌ C where
-  functor := Under.forget X
-  inverse := { obj Y := Under.mk (hX.to Y), map f := Under.homMk f }
-  unitIso := NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _) (hX.hom_ext _ _))
-  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+omit [HasPushouts C] in
+open pushout in
+/-- If `G` is a right adjoint and its source category has pushouts, then so is
+`post G : Under Y ⥤ Under (G Y)`.
 
+If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
+`(G Y ⟶ X) ↦ (Y ⟶ Y ⨿_{F G Y} F X ⟶ F X)`. -/
+@[simps!]
+def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+    post F ⋙ pushout (a.counit.app Y) ⊣ post G :=
+  ((postAdjunctionLeft a).comp (mapPushoutAdj (a.counit.app Y))).ofNatIsoRight <|
+    NatIso.ofComponents fun Y ↦ isoMk (.refl _)
+
+omit [HasPushouts C] in
+open pushout in
+instance isRightAdjoint_post [HasPushouts D] {Y : D} {G : D ⥤ C} [G.IsRightAdjoint] :
+    (post (X := Y) G).IsRightAdjoint :=
+  let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
+
+/-- The category under any object `X` factors through the category under the initial object `I`. -/
+@[simps!]
+noncomputable def forgetMapInitial {I : C} (hI : IsInitial I) :
+    forget X ≅ map (hI.to X) ⋙ (equivalenceOfIsInitial hI).functor :=
+  NatIso.ofComponents fun X ↦ .refl _
+
+section HasBinaryCoproducts
+variable [HasBinaryCoproducts C]
+
+/-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`. -/
+@[simps! obj_left obj_hom map_left]
+def costar : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
+
+/-- The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `costar X`.
+
+Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
+`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
+def costarAdjForget : costar X ⊣ forget X := (Monad.adj _).comp (algebraEquivUnder X).toAdjunction
+
+instance : (costar X).IsLeftAdjoint := ⟨_, ⟨costarAdjForget X⟩⟩
+
+/-- Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
+`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
+instance : (forget X).IsRightAdjoint := ⟨_, ⟨costarAdjForget X⟩⟩
+
+end HasBinaryCoproducts
 end Under
 
 end CategoryTheory

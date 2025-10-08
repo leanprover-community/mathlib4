@@ -64,11 +64,18 @@ lemma logb_self_eq_one_iff : logb b b = 1 ↔ b ≠ 0 ∧ b ≠ 1 ∧ b ≠ -1 :
   Iff.trans ⟨fun h h' => by simp [logb, h'] at h, div_self⟩ log_ne_zero
 
 @[simp]
-theorem logb_abs (x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
+theorem logb_abs_base (b x : ℝ) : logb |b| x = logb b x := by rw [logb, logb, log_abs]
 
 @[simp]
-theorem logb_neg_eq_logb (x : ℝ) : logb b (-x) = logb b x := by
-  rw [← logb_abs x, ← logb_abs (-x), abs_neg]
+theorem logb_abs (b x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
+
+@[simp]
+theorem logb_neg_base_eq_logb (b x : ℝ) : logb (-b) x = logb b x := by
+  rw [← logb_abs_base b x, ← logb_abs_base (-b) x, abs_neg]
+
+@[simp]
+theorem logb_neg_eq_logb (b x : ℝ) : logb b (-x) = logb b x := by
+  rw [← logb_abs b x, ← logb_abs b (-x), abs_neg]
 
 theorem logb_mul (hx : x ≠ 0) (hy : y ≠ 0) : logb b (x * y) = logb b x + logb b y := by
   simp_rw [logb, log_mul hx hy, add_div]
@@ -77,7 +84,10 @@ theorem logb_div (hx : x ≠ 0) (hy : y ≠ 0) : logb b (x / y) = logb b x - log
   simp_rw [logb, log_div hx hy, sub_div]
 
 @[simp]
-theorem logb_inv (x : ℝ) : logb b x⁻¹ = -logb b x := by simp [logb, neg_div]
+theorem logb_inv (b x : ℝ) : logb b x⁻¹ = -logb b x := by simp [logb, neg_div]
+
+@[simp]
+theorem logb_inv_base (b x : ℝ) : logb b⁻¹ x = -logb b x := by simp [logb, div_neg]
 
 theorem inv_logb (a b : ℝ) : (logb a b)⁻¹ = logb b a := by simp_rw [logb, inv_div]
 
@@ -115,15 +125,10 @@ section BPosAndNeOne
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 include b_pos b_ne_one
 
-private theorem log_b_ne_zero : log b ≠ 0 := by
-  have b_ne_zero : b ≠ 0 := by linarith
-  have b_ne_minus_one : b ≠ -1 := by linarith
-  simp [b_ne_one, b_ne_zero, b_ne_minus_one]
-
 @[simp]
 theorem logb_rpow : logb b (b ^ x) = x := by
   rw [logb, div_eq_iff, log_rpow b_pos]
-  exact log_b_ne_zero b_pos b_ne_one
+  exact log_ne_zero_of_pos_of_ne_one b_pos b_ne_one
 
 theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
@@ -131,7 +136,7 @@ theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
     apply rpow_pos_of_pos b_pos
   · simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
-  field_simp [log_b_ne_zero b_pos b_ne_one]
+  field_simp [log_ne_zero_of_pos_of_ne_one b_pos b_ne_one]
 
 @[simp]
 theorem rpow_logb (hx : 0 < x) : b ^ logb b x = x := by
@@ -173,7 +178,7 @@ include hb
 
 private theorem b_pos : 0 < b := by linarith
 
--- Porting note: prime added to avoid clashing with `b_ne_one` further down the file
+-- Name has a prime added to avoid clashing with `b_ne_one` further down the file
 private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]
@@ -243,7 +248,7 @@ theorem strictMonoOn_logb : StrictMonoOn (logb b) (Set.Ioi 0) := fun _ hx _ _ hx
 
 theorem strictAntiOn_logb : StrictAntiOn (logb b) (Set.Iio 0) := by
   rintro x (hx : x < 0) y (hy : y < 0) hxy
-  rw [← logb_abs y, ← logb_abs x]
+  rw [← logb_abs b y, ← logb_abs b x]
   refine logb_lt_logb hb (abs_pos.2 hy.ne) ?_
   rwa [abs_of_neg hy, abs_of_neg hx, neg_lt_neg_iff]
 
@@ -324,7 +329,7 @@ theorem strictAntiOn_logb_of_base_lt_one : StrictAntiOn (logb b) (Set.Ioi 0) := 
 
 theorem strictMonoOn_logb_of_base_lt_one : StrictMonoOn (logb b) (Set.Iio 0) := by
   rintro x (hx : x < 0) y (hy : y < 0) hxy
-  rw [← logb_abs y, ← logb_abs x]
+  rw [← logb_abs b y, ← logb_abs b x]
   refine logb_lt_logb_of_base_lt_one b_pos b_lt_one (abs_pos.2 hy.ne) ?_
   rwa [abs_of_neg hy, abs_of_neg hx, neg_lt_neg_iff]
 
@@ -396,7 +401,7 @@ theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log 
   · simp
   rw [← Nat.cast_inj (R := ℤ), Int.natCast_floor_eq_floor, floor_logb_natCast (by simp),
     Int.log_natCast]
-  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by cutsat))
 
 @[norm_cast]
 theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
@@ -407,31 +412,62 @@ theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog 
   · simp
   rw [← Nat.cast_inj (R := ℤ), Int.natCast_ceil_eq_ceil, ceil_logb_natCast (by simp),
     Int.clog_natCast]
-  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by cutsat))
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
   rw [Real.floor_logb_natCast (Nat.cast_nonneg a), Int.log_natCast, Int.cast_natCast]
+
+lemma log2_le_logb (n : ℕ) : Nat.log2 n ≤ Real.logb 2 n := by
+  calc (Nat.log2 n : ℝ) = Nat.log 2 n := mod_cast Nat.log2_eq_log_two
+  _ ≤ Real.logb 2 n := natLog_le_logb _ _
 
 @[simp]
 theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨ x = 1 ∨ x = -1 := by
   simp_rw [logb, div_eq_zero_iff, log_eq_zero]
   tauto
 
-theorem tendsto_logb_nhdsWithin_zero (hb : 1 < b) :
-    Tendsto (logb b) (𝓝[≠] 0) atBot :=
-  tendsto_log_nhdsWithin_zero.atBot_div_const (log_pos hb)
+theorem tendsto_logb_nhdsNE_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[≠] 0) atBot :=
+  tendsto_log_nhdsNE_zero.atBot_div_const (log_pos hb)
 
-theorem tendsto_logb_nhdsWithin_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero := tendsto_logb_nhdsNE_zero
+
+theorem tendsto_logb_nhdsNE_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[≠] 0) atTop :=
-  tendsto_log_nhdsWithin_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+  tendsto_log_nhdsNE_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
 
-lemma tendsto_logb_nhdsWithin_zero_right (hb : 1 < b) : Tendsto (logb b) (𝓝[>] 0) atBot :=
-  tendsto_log_nhdsWithin_zero_right.atBot_div_const (log_pos hb)
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_of_base_lt_one := tendsto_logb_nhdsNE_zero_of_base_lt_one
 
-lemma tendsto_logb_nhdsWithin_zero_right_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
+lemma tendsto_logb_nhdsGT_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[>] 0) atBot :=
+  tendsto_log_nhdsGT_zero.atBot_div_const (log_pos hb)
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_right := tendsto_logb_nhdsGT_zero
+
+lemma tendsto_logb_nhdsGT_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[>] 0) atTop :=
-  tendsto_log_nhdsWithin_zero_right.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+  tendsto_log_nhdsGT_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_right_of_base_lt_one := tendsto_logb_nhdsGT_zero_of_base_lt_one
+
+/--
+The function `|logb b x|` tends to `+∞` as `x` tendsto `+∞`.
+See also `tendsto_logb_atTop` and `tendsto_logb_atTop_of_base_lt_one`.
+-/
+lemma tendsto_abs_logb_atTop (hb : b ≠ -1 ∧ b ≠ 0 ∧ b ≠ 1) :
+    Tendsto (|logb b ·|) atTop atTop := by
+  wlog hb₀ : 0 < b generalizing b
+  · exact (this (b := -b) (by simp [hb, neg_eq_iff_eq_neg]) (by linarith +splitNe)).congr (by simp)
+  wlog hb₁ : 1 < b generalizing b
+  · exact (this (b := b⁻¹) (by simp [hb, inv_eq_iff_eq_inv, inv_neg]) (by simpa)
+      ((one_lt_inv₀ hb₀).2 (by linarith +splitNe))).congr (by simp)
+  refine (tendsto_logb_atTop hb₁).congr' ?_
+  filter_upwards [eventually_ge_atTop 1] with x hx₁
+  rw [abs_of_nonneg]
+  exact logb_nonneg hb₁ hx₁
 
 theorem continuousOn_logb : ContinuousOn (logb b) {0}ᶜ := continuousOn_log.div_const _
 
@@ -454,19 +490,17 @@ theorem continuousAt_logb_iff (hb₀ : 0 < b) (hb : b ≠ 1) : ContinuousAt (log
   rintro h rfl
   cases lt_or_gt_of_ne hb with
   | inl hb₁ =>
-      exact not_tendsto_nhds_of_tendsto_atTop (tendsto_logb_nhdsWithin_zero_of_base_lt_one hb₀ hb₁)
+      exact not_tendsto_nhds_of_tendsto_atTop (tendsto_logb_nhdsNE_zero_of_base_lt_one hb₀ hb₁)
         _ (h.tendsto.mono_left inf_le_left)
   | inr hb₁ =>
-      exact not_tendsto_nhds_of_tendsto_atBot (tendsto_logb_nhdsWithin_zero hb₁)
+      exact not_tendsto_nhds_of_tendsto_atBot (tendsto_logb_nhdsNE_zero hb₁)
         _ (h.tendsto.mono_left inf_le_left)
 
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     logb b (∏ i ∈ s, f i) = ∑ i ∈ s, logb b (f i) := by
-  classical
-    induction' s using Finset.induction_on with a s ha ih
-    · simp
-    simp only [Finset.mem_insert, forall_eq_or_imp] at hf
-    simp [ha, ih hf.2, logb_mul hf.1 (Finset.prod_ne_zero_iff.2 hf.2)]
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons => simp_all [logb_mul, Finset.prod_ne_zero_iff]
 
 protected theorem _root_.Finsupp.logb_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : logb b (f.prod g) = f.sum fun a c ↦ logb b (g a c) :=
@@ -476,9 +510,82 @@ theorem logb_nat_eq_sum_factorization (n : ℕ) :
     logb b n = n.factorization.sum fun p t => t * logb b p := by
   simp only [logb, mul_div_assoc', log_nat_eq_sum_factorization n, Finsupp.sum, Finset.sum_div]
 
--- TODO add other limits and continuous API lemmas analogous to those in Log.lean
+theorem tendsto_pow_logb_div_mul_add_atTop (a c : ℝ) (n : ℕ) (ha : a ≠ 0) :
+    Tendsto (fun x => logb b x ^ n / (a * x + c)) atTop (𝓝 0) := by
+  cases eq_or_ne (log b) 0 with
+  | inl h => simpa [logb, h] using ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
+  | inr h => apply (tendsto_pow_log_div_mul_add_atTop (a * (log b) ^ n) (c * (log b) ^ n) n
+                (by positivity)).congr fun x ↦ by simp [field, div_pow, logb]
+
+theorem isLittleO_pow_logb_id_atTop {n : ℕ} : (fun x => logb b x ^ n) =o[atTop] id := by
+  rw [Asymptotics.isLittleO_iff_tendsto']
+  · simpa using tendsto_pow_logb_div_mul_add_atTop 1 0 n one_ne_zero
+  · filter_upwards [eventually_ne_atTop (0 : ℝ)] with x h₁ h₂ using (h₁ h₂).elim
+
+theorem isLittleO_logb_id_atTop : logb b =o[atTop] id :=
+  isLittleO_pow_logb_id_atTop.congr_left fun _ => pow_one _
+
+theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b ≠ 1) :
+    (fun _ => c) =o[atTop] logb b := by
+  rw [Asymptotics.isLittleO_const_left, or_iff_not_imp_left]
+  intro hc
+  exact tendsto_abs_logb_atTop hb
 
 end Real
+
+section Continuity
+
+open Real
+
+variable {α : Type*}
+variable {b : ℝ}
+
+theorem Filter.Tendsto.logb {f : α → ℝ} {l : Filter α} {x : ℝ}
+    (h : Tendsto f l (𝓝 x)) (hx : x ≠ 0) :
+    Tendsto (fun y => logb b (f y)) l (𝓝 (logb b x)) :=
+  (continuousAt_logb hx).tendsto.comp h
+
+variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {a : α}
+
+@[fun_prop]
+theorem Continuous.logb (hf : Continuous f) (h₀ : ∀ x, f x ≠ 0) :
+    Continuous fun x => logb b (f x) :=
+  continuousOn_logb.comp_continuous hf h₀
+
+@[fun_prop]
+nonrec theorem ContinuousAt.logb (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
+    ContinuousAt (fun x => logb b (f x)) a :=
+  hf.logb h₀
+
+nonrec theorem ContinuousWithinAt.logb (hf : ContinuousWithinAt f s a) (h₀ : f a ≠ 0) :
+    ContinuousWithinAt (fun x => logb b (f x)) s a :=
+  hf.logb h₀
+
+@[fun_prop]
+theorem ContinuousOn.logb (hf : ContinuousOn f s) (h₀ : ∀ x ∈ s, f x ≠ 0) :
+    ContinuousOn (fun x => logb b (f x)) s := fun x hx => (hf x hx).logb (h₀ x hx)
+
+end Continuity
+
+section TendstoCompAddSub
+
+open Filter
+
+namespace Real
+
+variable {b : ℝ}
+
+theorem tendsto_logb_comp_add_sub_logb (y : ℝ) :
+    Tendsto (fun x : ℝ => logb b (x + y) - logb b x) atTop (𝓝 0) := by
+  simpa [sub_div] using (tendsto_log_comp_add_sub_log y).div_const (log b)
+
+theorem tendsto_logb_nat_add_one_sub_logb :
+    Tendsto (fun k : ℕ => logb b (k + 1) - logb b k) atTop (𝓝 0) :=
+  (tendsto_logb_comp_add_sub_logb 1).comp tendsto_natCast_atTop_atTop
+
+end Real
+
+end TendstoCompAddSub
 
 section Induction
 
@@ -488,7 +595,7 @@ then `P` is true for all `x ≥ x₀`. -/
 lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
     (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
     (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
-      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
+      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n + 1) * x₀), P z)) :
     ∀ x ≥ x₀, P x := by
   suffices ∀ n : ℕ, ∀ x ∈ Set.Ico x₀ (r ^ (n + 1) * x₀), P x by
     intro x hx

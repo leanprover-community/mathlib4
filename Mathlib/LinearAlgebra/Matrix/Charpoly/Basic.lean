@@ -3,9 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.RingTheory.MatrixPolynomialAlgebra
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -58,9 +59,36 @@ theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
     map_apply, sub_eq_neg_self]
 
+@[simp]
+theorem charmatrix_zero : charmatrix (0 : Matrix n n R) = Matrix.scalar n (X : R[X]) := by
+  simp [charmatrix]
+
+@[simp]
+theorem charmatrix_diagonal (d : n → R) :
+    charmatrix (diagonal d) = diagonal fun i => X - C (d i) := by
+  rw [charmatrix, scalar_apply, RingHom.mapMatrix_apply, diagonal_map (map_zero _), diagonal_sub]
+
+@[simp]
+theorem charmatrix_one : charmatrix (1 : Matrix n n R) = diagonal fun _ => X - 1 :=
+  charmatrix_diagonal _
+
+@[simp]
+theorem charmatrix_natCast (k : ℕ) :
+    charmatrix (k : Matrix n n R) = diagonal fun _ => X - (k : R[X]) :=
+  charmatrix_diagonal _
+
+@[simp]
+theorem charmatrix_ofNat (k : ℕ) [k.AtLeastTwo] :
+    charmatrix (ofNat(k) : Matrix n n R) = diagonal fun _ => X - ofNat(k) :=
+  charmatrix_natCast _
+
+@[simp]
+theorem charmatrix_transpose (M : Matrix n n R) : (Mᵀ).charmatrix = M.charmatrixᵀ := by
+  simp [charmatrix, transpose_map]
+
 theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
   ext k i j
-  simp only [matPolyEquiv_coeff_apply, coeff_sub, Pi.sub_apply]
+  simp only [matPolyEquiv_coeff_apply, coeff_sub]
   by_cases h : i = j
   · subst h
     rw [charmatrix_apply_eq, coeff_sub]
@@ -96,10 +124,42 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
-/-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
--/
+/-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
+
+theorem eval_charpoly (M : Matrix m m R) (t : R) :
+    M.charpoly.eval t = (Matrix.scalar _ t - M).det := by
+  rw [Matrix.charpoly, ← Polynomial.coe_evalRingHom, RingHom.map_det, Matrix.charmatrix]
+  congr
+  ext i j
+  obtain rfl | hij := eq_or_ne i j <;> simp [*]
+
+@[simp]
+theorem charpoly_isEmpty [IsEmpty n] {A : Matrix n n R} : charpoly A = 1 := by
+  simp [charpoly]
+
+@[simp]
+theorem charpoly_zero : charpoly (0 : Matrix n n R) = X ^ Fintype.card n := by
+  simp [charpoly]
+
+theorem charpoly_diagonal (d : n → R) : charpoly (diagonal d) = ∏ i, (X - C (d i)) := by
+  simp [charpoly]
+
+theorem charpoly_one : charpoly (1 : Matrix n n R) = (X - 1) ^ Fintype.card n := by
+  simp [charpoly]
+
+theorem charpoly_natCast (k : ℕ) :
+    charpoly (k : Matrix n n R) = (X - (k : R[X])) ^ Fintype.card n := by
+  simp [charpoly]
+
+theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
+    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n:=
+  charpoly_natCast _
+
+@[simp]
+theorem charpoly_transpose (M : Matrix n n R) : (Mᵀ).charpoly = M.charpoly := by
+  simp [charpoly]
 
 theorem charpoly_reindex (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
@@ -152,7 +212,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Using the algebra isomorphism `Matrix n n R[X] ≃ₐ[R] Polynomial (Matrix n n R)`,
   -- we have the same identity in `Polynomial (Matrix n n R)`.
   apply_fun matPolyEquiv at h
-  simp only [_root_.map_mul, matPolyEquiv_charmatrix] at h
+  simp only [map_mul, matPolyEquiv_charmatrix] at h
   -- Because the coefficient ring `Matrix n n R` is non-commutative,
   -- evaluation at `M` is not multiplicative.
   -- However, any polynomial which is a product of the form $N * (t I - M)$
@@ -165,5 +225,66 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   rw [matPolyEquiv_smul_one, eval_map] at h
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
+
+/--
+A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
+See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.
+-/
+theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
+    X ^ Fintype.card n * (A * B).charpoly = X ^ Fintype.card m * (B * A).charpoly := by
+  -- This proof follows https://math.stackexchange.com/a/311362/315369
+  let M := fromBlocks (scalar m X) (A.map C) (B.map C) (1 : Matrix n n R[X])
+  let N := fromBlocks (-1 : Matrix m m R[X]) 0 (B.map C) (-scalar n X)
+  have hMN :
+      M * N = fromBlocks (-scalar m X + (A * B).map C) (-(X : R[X]) • A.map C) 0 (-scalar n X) := by
+    simp [M, N, fromBlocks_multiply, smul_eq_mul_diagonal, -diagonal_neg]
+  have hNM : N * M = fromBlocks (-scalar m X) (-A.map C) 0 ((B * A).map C - scalar n X) := by
+    simp [M, N, fromBlocks_multiply, sub_eq_add_neg, -scalar_apply, scalar_comm, Commute.all]
+  have hdet_MN : (M * N).det = (-1 : R[X]) ^ (Fintype.card m + Fintype.card n) *
+      (X ^ Fintype.card n * (scalar m X - (A * B).map C).det) := by
+    rw [hMN, det_fromBlocks_zero₂₁, neg_add_eq_sub, ← neg_sub, det_neg]
+    simp
+    ring
+  have hdet_NM : (N * M).det = (-1 : R[X]) ^ (Fintype.card m + Fintype.card n) *
+      (X ^ Fintype.card m * (scalar n X - (B * A).map C).det) := by
+    rw [hNM, det_fromBlocks_zero₂₁, ← neg_sub, det_neg (_ - _)]
+    simp
+    ring
+  dsimp only [charpoly, charmatrix, RingHom.mapMatrix_apply]
+  rw [← (isUnit_neg_one.pow _).isRegular.left.eq_iff, ← hdet_NM, ← hdet_MN, det_mul_comm]
+
+theorem charpoly_mul_comm_of_le
+    (A : Matrix m n R) (B : Matrix n m R) (hle : Fintype.card n ≤ Fintype.card m) :
+    (A * B).charpoly = X ^ (Fintype.card m - Fintype.card n) * (B * A).charpoly := by
+  rw [← (isRegular_X_pow _).left.eq_iff, ← mul_assoc, ← pow_add,
+    Nat.add_sub_cancel' hle, charpoly_mul_comm']
+
+/-- A version of `charpoly_mul_comm'` for square matrices. -/
+theorem charpoly_mul_comm (A B : Matrix n n R) : (A * B).charpoly = (B * A).charpoly :=
+  (isRegular_X_pow _).left.eq_iff.mp <| charpoly_mul_comm' A B
+
+theorem charpoly_vecMulVec (u v : n → R) :
+    (vecMulVec u v).charpoly = X ^ Fintype.card n - (u ⬝ᵥ v) • X ^ (Fintype.card n - 1) := by
+  cases isEmpty_or_nonempty n
+  · simp
+  · have h : 1 ≤ Fintype.card n := NeZero.one_le
+    rw [vecMulVec_eq (ι := Unit), charpoly_mul_comm_of_le (n := Unit) _ _ h, charpoly, charmatrix]
+    simp [-Matrix.map_mul, mul_sub, ← pow_succ, h, dotProduct_comm, smul_eq_C_mul]
+
+theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
+    (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
+  rw [Matrix.charpoly_mul_comm, ← mul_assoc]
+  simp
+
+theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
+    (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
+  charpoly_units_conj M⁻¹ N
+
+theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
+    (M - scalar n μ).charpoly  = M.charpoly.comp (X + C μ) := by
+  simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
+  congr! with σ _ i _
+  by_cases hi : σ i = i <;> simp [hi]
+  ring
 
 end Matrix

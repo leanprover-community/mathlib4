@@ -3,8 +3,8 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
 import Mathlib.Topology.DiscreteSubset
-import Mathlib.MeasureTheory.Measure.Typeclasses
 
 /-!
 # Theorems combining measure theory and topology
@@ -23,5 +23,4 @@ theorem ae_restrict_le_codiscreteWithin
   intro s hs
   have := discreteTopology_of_codiscreteWithin hs
   rw [mem_ae_iff, Measure.restrict_apply' hU]
-  apply Set.Countable.measure_zero (TopologicalSpace.separableSpace_iff_countable.1
-    TopologicalSpace.SecondCountableTopology.to_separableSpace)
+  apply Set.Countable.measure_zero (TopologicalSpace.separableSpace_iff_countable.1 inferInstance)

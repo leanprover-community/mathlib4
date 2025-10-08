@@ -261,7 +261,7 @@ instance (S : LightProfinite) : Countable (Clopens S) := by
   rw [TopologicalSpace.Clopens.countable_iff_secondCountable]
   infer_instance
 
-instance instCountableDiscreteQuotient (S : LightProfinite)  :
+instance instCountableDiscreteQuotient (S : LightProfinite) :
     Countable (DiscreteQuotient ((lightToProfinite.obj S))) :=
   (DiscreteQuotient.finsetClopens_inj S).countable
 
@@ -362,7 +362,7 @@ instance : LightDiagram'.toLightFunctor.{u}.Full where
 instance : LightDiagram'.toLightFunctor.{u}.EssSurj where
   mem_essImage Y :=
     ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨lightDiagramToProfinite.preimageIso (
-      (Limits.lim.mapIso (isoWhiskerRight ((isoWhiskerLeft Y.diagram
+      (Limits.lim.mapIso (Functor.isoWhiskerRight ((Functor.isoWhiskerLeft Y.diagram
       Skeleton.equivalence.counitIso)) toProfinite)) ≪≫
       (limit.isLimit _).conePointUniqueUpToIso Y.isLimit)⟩⟩
 

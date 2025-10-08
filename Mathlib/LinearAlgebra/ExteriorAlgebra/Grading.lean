@@ -84,9 +84,9 @@ lemma ιMulti_span :
   rw [Submodule.eq_top_iff']
   intro x
   induction x using DirectSum.Decomposition.inductionOn fun i => ⋀[R]^i M with
-  | h_zero => exact Submodule.zero_mem _
-  | h_add _ _ hm hm' => exact Submodule.add_mem _ hm hm'
-  | h_homogeneous hm =>
+  | zero => exact Submodule.zero_mem _
+  | add _ _ hm hm' => exact Submodule.add_mem _ hm hm'
+  | homogeneous hm =>
     let ⟨m, hm⟩ := hm
     apply Set.mem_of_mem_of_subset hm
     rw [← ιMulti_span_fixedDegree]

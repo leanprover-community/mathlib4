@@ -3,9 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Order.CompleteLattice
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # The category of "pairwise intersections".
@@ -74,22 +74,24 @@ def comp : ∀ {o₁ o₂ o₃ : Pairwise ι} (_ : Hom o₁ o₂) (_ : Hom o₂ 
   | _, _, _, left i j, id_single _ => left i j
   | _, _, _, right i j, id_single _ => right i j
 
+instance : CategoryStruct (Pairwise ι) where
+  Hom := Hom
+  id := id
+  comp := @comp _
+
 section
 
 open Lean Elab Tactic in
-/-- A helper tactic for `aesop_cat` and `Pairwise`. -/
+/-- A helper tactic for `cat_disch` and `Pairwise`. -/
 def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
 instance : Category (Pairwise ι) where
-  Hom := Hom
-  id := id
-  comp f g := comp f g
 
 end
 
-variable {α : Type v} (U : ι → α)
+variable {α : Type u} (U : ι → α)
 
 section
 

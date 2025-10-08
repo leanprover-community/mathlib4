@@ -208,6 +208,7 @@ instance bicategory : Bicategory (FreeBicategory B) where
 
 variable {a b c d : FreeBicategory B}
 
+/-- `Hom₂.mk η` is an abbreviation for `Quot.mk Rel η`. -/
 abbrev Hom₂.mk {f g : a ⟶ b} (η : Hom₂ f g) : f ⟶ g :=
   Quot.mk Rel η
 
@@ -228,9 +229,8 @@ theorem mk_whisker_right {f g : a ⟶ b} (η : Hom₂ f g) (h : b ⟶ c) :
 
 variable (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 
--- Porting note: I can not get this to typecheck, and I don't understand why.
--- theorem id_def : Hom.id a = 𝟙 a :=
---   rfl
+theorem id_def : Hom.id (B := B) a = 𝟙 a :=
+  rfl
 
 theorem comp_def : Hom.comp f g = f ≫ g :=
   rfl
@@ -300,7 +300,6 @@ variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [Bicategory.{w₂
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
--- @[simp] -- Porting note: adding `@[simp]` causes a PANIC.
 def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (liftHom F f ⟶ liftHom F g)
   | _, _, _, _, Hom₂.id _ => 𝟙 _
   | _, _, _, _, Hom₂.associator _ _ _ => (α_ _ _ _).hom
@@ -313,10 +312,9 @@ def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (l
   | _, _, _, _, Hom₂.whisker_left f η => liftHom F f ◁ liftHom₂ η
   | _, _, _, _, Hom₂.whisker_right h η => liftHom₂ η ▷ liftHom F h
 
-attribute [local simp] whisker_exchange
-
+attribute [local simp] whisker_exchange in
 theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom₂ f g} (H : Rel η θ) :
-    liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; aesop_cat)
+    liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; cat_disch)
 
 /-- A prefunctor from a quiver `B` to a bicategory `C` can be lifted to a pseudofunctor from
 `free_bicategory B` to `C`.
@@ -331,17 +329,16 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   -- Porting note: We'd really prefer not to be doing this by hand.
   -- in mathlib3 `tidy` did these inductions for us.
   map₂_comp := by
-    intros a b f g h η θ
+    intro a b f g h η θ
     induction η using Quot.rec
     · induction θ using Quot.rec <;> rfl
     · rfl
-  -- Porting note: still borked from here. The infoview doesn't update properly for me.
   map₂_whisker_left := by
     intro a b c f g h η
     induction η using Quot.rec
-    · aesop_cat
+    · cat_disch
     · rfl
-  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; induction η using Quot.rec <;> aesop_cat
+  map₂_whisker_right := by intro _ _ _ _ _ η h; dsimp; induction η using Quot.rec <;> cat_disch
 
 end
 

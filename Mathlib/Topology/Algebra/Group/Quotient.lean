@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
@@ -14,6 +14,8 @@ import Mathlib.Topology.Maps.OpenQuotient
 In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
+
+assert_not_exists Cardinal
 
 open Topology
 open scoped Pointwise
@@ -34,10 +36,7 @@ instance [CompactSpace G] (N : Subgroup G) : CompactSpace (G ⧸ N) :=
 theorem isQuotientMap_mk (N : Subgroup G) : IsQuotientMap (mk : G → G ⧸ N) :=
   isQuotientMap_quot_mk
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_mk := isQuotientMap_mk
-
-@[to_additive]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
   continuous_quot_mk
 
@@ -76,15 +75,11 @@ instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace
 
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-10-05"))]
-theorem continuous_smul₁ (x : G ⧸ N) : Continuous fun g : G => g • x :=
-  continuous_id.smul continuous_const
-
 variable (N)
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
-  "Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient."]
+  /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/]
 theorem nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
   (isOpenQuotientMap_mk.map_nhds_eq _).symm
 
@@ -95,8 +90,8 @@ instance instFirstCountableTopology [FirstCountableTopology G] :
 
 /-- The quotient of a second countable topological group by a subgroup is second countable. -/
 @[to_additive
-  "The quotient of a second countable additive topological group by a subgroup is second
-  countable."]
+  /-- The quotient of a second countable additive topological group by a subgroup is second
+  countable. -/]
 instance instSecondCountableTopology [SecondCountableTopology G] :
     SecondCountableTopology (G ⧸ N) :=
   ContinuousConstSMul.secondCountableTopology

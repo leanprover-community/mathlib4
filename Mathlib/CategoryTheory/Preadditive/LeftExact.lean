@@ -3,9 +3,8 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
@@ -13,7 +12,9 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 We show that a functor is left exact in the sense that it preserves finite limits, if it
 preserves kernels. The dual result holds for right exact functors and cokernels.
+
 ## Main results
+
 * We first derive preservation of binary product in the lemma
   `preservesBinaryProductsOfPreservesKernels`,
 * then show the preservation of equalizers in `preservesEqualizerOfPreservesKernels`,
@@ -54,7 +55,7 @@ def isLimitMapConeBinaryFanOfPreservesKernels {X Y Z : C} (π₁ : Z ⟶ X) (π�
     (BinaryBicone.isBilimitOfKernelInl (F.mapBinaryBicone bc)
     (isLimitMapConeForkEquiv' F bc.inl_snd (isLimitOfPreserves F hf))).isLimit
 
-/-- A kernel preserving functor between preadditive categories preserves any pair being a limit. -/
+/-- A kernel-preserving functor between preadditive categories preserves any pair being a limit. -/
 lemma preservesBinaryProduct_of_preservesKernels
     [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] {X Y : C} :
     PreservesLimit (pair X Y) F where
@@ -65,11 +66,11 @@ lemma preservesBinaryProduct_of_preservesKernels
 
 attribute [local instance] preservesBinaryProduct_of_preservesKernels
 
-/-- A kernel preserving functor between preadditive categories preserves binary products. -/
+/-- A kernel-preserving functor between preadditive categories preserves binary products. -/
 lemma preservesBinaryProducts_of_preservesKernels
     [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
-  PreservesLimitsOfShape (Discrete WalkingPair) F where
-    preservesLimit := preservesLimit_of_iso_diagram F (diagramIsoPair _).symm
+    PreservesLimitsOfShape (Discrete WalkingPair) F where
+  preservesLimit := preservesLimit_of_iso_diagram F (diagramIsoPair _).symm
 
 attribute [local instance] preservesBinaryProducts_of_preservesKernels
 
@@ -110,13 +111,12 @@ lemma preservesEqualizers_of_preservesKernels
 -/
 lemma preservesFiniteLimits_of_preservesKernels [HasFiniteProducts C] [HasEqualizers C]
     [HasZeroObject C] [HasZeroObject D] [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
-    PreservesFiniteLimits F := by
-  letI := preservesEqualizers_of_preservesKernels F
-  letI := preservesTerminalObject_of_preservesZeroMorphisms F
-  letI := preservesLimitsOfShape_pempty_of_preservesTerminal F
-  letI : PreservesFiniteProducts F :=
-    ⟨fun _ ↦ preservesFiniteProducts_of_preserves_binary_and_terminal F _⟩
-  exact preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts F
+    PreservesFiniteLimits F :=
+  have := preservesEqualizers_of_preservesKernels F
+  have := preservesTerminalObject_of_preservesZeroMorphisms F
+  have := preservesLimitsOfShape_pempty_of_preservesTerminal F
+  have : PreservesFiniteProducts F :=.of_preserves_binary_and_terminal F
+  preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts F
 
 end FiniteLimits
 
@@ -135,7 +135,7 @@ def isColimitMapCoconeBinaryCofanOfPreservesCokernels {X Y Z : C} (ι₁ : X ⟶
       (BinaryBicone.isBilimitOfCokernelFst (F.mapBinaryBicone bc)
           (isColimitMapCoconeCoforkEquiv' F bc.inr_fst (isColimitOfPreserves F hf))).isColimit
 
-/-- A cokernel preserving functor between preadditive categories preserves any pair being
+/-- A cokernel-preserving functor between preadditive categories preserves any pair being
 a colimit. -/
 lemma preservesCoproduct_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] {X Y : C} :
@@ -148,7 +148,7 @@ lemma preservesCoproduct_of_preservesCokernels
 
 attribute [local instance] preservesCoproduct_of_preservesCokernels
 
-/-- A cokernel preserving functor between preadditive categories preserves binary coproducts. -/
+/-- A cokernel-preserving functor between preadditive categories preserves binary coproducts. -/
 lemma preservesBinaryCoproducts_of_preservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] :
     PreservesColimitsOfShape (Discrete WalkingPair) F where

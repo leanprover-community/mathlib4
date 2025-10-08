@@ -41,7 +41,7 @@ example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A
 ```
 -/
 macro "tauto_set" : tactic => `(tactic|
-  · simp_all only [
+  · simp_all -failIfUnchanged only [
       Set.ext_iff, Set.subset_def,
       Set.mem_union, Set.mem_compl_iff, Set.mem_inter_iff,
       Set.symmDiff_def, Set.diff_eq, Set.disjoint_iff

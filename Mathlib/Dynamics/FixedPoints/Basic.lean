@@ -36,6 +36,10 @@ open Function (Commute)
 theorem isFixedPt_id (x : α) : IsFixedPt id x :=
   (rfl :)
 
+/-- A function fixes every point iff it is the identity. -/
+@[simp] theorem forall_isFixedPt_iff : (∀ x, IsFixedPt f x) ↔ f = id :=
+  ⟨funext, fun h ↦ h ▸ isFixedPt_id⟩
+
 namespace IsFixedPt
 
 instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=

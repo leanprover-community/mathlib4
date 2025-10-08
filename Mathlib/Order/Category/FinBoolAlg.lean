@@ -11,9 +11,9 @@ import Mathlib.Tactic.ApplyFun
 import Mathlib.Data.Set.Subsingleton
 
 /-!
-# The category of finite boolean algebras
+# The category of finite Boolean algebras
 
-This file defines `FinBoolAlg`, the category of finite boolean algebras.
+This file defines `FinBoolAlg`, the category of finite Boolean algebras.
 
 ## TODO
 
@@ -32,7 +32,7 @@ universe u
 
 open CategoryTheory OrderDual Opposite
 
-/-- The category of finite boolean algebras with bounded lattice morphisms. -/
+/-- The category of finite Boolean algebras with bounded lattice morphisms. -/
 structure FinBoolAlg extends BoolAlg where
   [isFintype : Fintype toBoolAlg]
 
@@ -97,10 +97,6 @@ def dual : FinBoolAlg ⥤ FinBoolAlg where
   obj X := of Xᵒᵈ
   map f := BoolAlg.ofHom f.hom.dual
 
-#adaptation_note /--
-sThis apparently became slower in nightly-2025-02-12. (Possibly due to changes in `simp +arith`?)
--/
-set_option maxHeartbeats 400000 in
 /-- The equivalence between `FinBoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : FinBoolAlg ≌ FinBoolAlg where

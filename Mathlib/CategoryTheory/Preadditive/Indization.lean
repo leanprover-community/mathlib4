@@ -24,7 +24,7 @@ attribute [local instance] HasFiniteBiproducts.of_hasFiniteCoproducts in
 noncomputable instance : Preadditive (Ind C) :=
   .ofFullyFaithful (((Ind.leftExactFunctorEquivalence C).trans
     (AddCommGrp.leftExactFunctorForgetEquivalence _).symm).fullyFaithfulFunctor.comp
-      (fullyFaithfulFullSubcategoryInclusion _))
+      (ObjectProperty.fullyFaithfulι _))
 
 instance : HasFiniteBiproducts (Ind C) :=
   HasFiniteBiproducts.of_hasFiniteCoproducts

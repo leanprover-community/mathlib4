@@ -32,9 +32,6 @@ class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOnSta
 lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : IsEmbedding f.base :=
   IsPreimmersion.base_embedding
 
-@[deprecated (since := "2024-10-26")]
-alias Scheme.Hom.embedding := Scheme.Hom.isEmbedding
-
 lemma isPreimmersion_eq_inf :
     @IsPreimmersion = (@SurjectiveOnStalks ⊓ topologically IsEmbedding : MorphismProperty _) := by
   ext
@@ -43,7 +40,7 @@ lemma isPreimmersion_eq_inf :
 
 namespace IsPreimmersion
 
-instance : IsLocalAtTarget @IsPreimmersion :=
+instance : IsZariskiLocalAtTarget @IsPreimmersion :=
   isPreimmersion_eq_inf ▸ inferInstance
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsPreimmersion f where
@@ -58,12 +55,8 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion f]
     [IsPreimmersion g] : IsPreimmersion (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
 
-instance (priority := 900) {X Y} (f : X ⟶ Y) [IsPreimmersion f] : Mono f := by
-  refine (Scheme.forgetToLocallyRingedSpace ⋙
-    LocallyRingedSpace.forgetToSheafedSpace).mono_of_mono_map ?_
-  apply SheafedSpace.mono_of_base_injective_of_stalk_epi
-  · exact f.isEmbedding.injective
-  · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
+instance (priority := 900) {X Y} (f : X ⟶ Y) [IsPreimmersion f] : Mono f :=
+  SurjectiveOnStalks.mono_of_injective f.isEmbedding.injective
 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
     [IsPreimmersion (f ≫ g)] : IsPreimmersion f where

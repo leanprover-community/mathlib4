@@ -14,7 +14,7 @@ Notable examples include principal ideal rings, valuation rings, and the ring of
 
 ## Main results
 - `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
-- `IsBezout.TFAE`: For a Bézout domain, noetherian ↔ PID ↔ UFD ↔ ACCP
+- `IsBezout.TFAE`: For a Bézout domain, Noetherian ↔ PID ↔ UFD ↔ ACCP
 
 -/
 

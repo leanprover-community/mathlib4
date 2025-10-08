@@ -152,7 +152,6 @@ theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
 @[simp]
 theorem equiv_trans (f : α ≃ₜ β) (g : β ≃ₜ γ) :
     Compacts.equiv (f.trans g) = (Compacts.equiv f).trans (Compacts.equiv g) :=
-  -- Porting note: can no longer write `map_comp _ _ _ _` and unify
   Equiv.ext <| map_comp g f g.continuous f.continuous
 
 @[simp]
@@ -398,7 +397,7 @@ end PositiveCompacts
 
 /-! ### Compact open sets -/
 
-/-- The type of compact open sets of a topological space. This is useful in non Hausdorff contexts,
+/-- The type of compact open sets of a topological space. This is useful in non-Hausdorff contexts,
 in particular spectral spaces. -/
 structure CompactOpens (α : Type*) [TopologicalSpace α] extends Compacts α where
   isOpen' : IsOpen carrier
@@ -450,6 +449,12 @@ instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
 
 instance : SemilatticeSup (CompactOpens α) := SetLike.coe_injective.semilatticeSup _ coe_sup
 instance : OrderBot (CompactOpens α) := OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) coe_bot
+
+@[simp]
+lemma coe_finsetSup {ι : Type*} {f : ι → CompactOpens α} {s : Finset ι} :
+    (↑(s.sup f) : Set α) = ⋃ i ∈ s, f i := by
+  classical
+  induction s using Finset.induction_on <;> simp [*]
 
 instance : Inhabited (CompactOpens α) :=
   ⟨⊥⟩

@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
@@ -14,7 +15,7 @@ limits for `K`.
 -/
 
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
 noncomputable section
 
@@ -138,6 +139,13 @@ lemma liftedLimitMapsToOriginal_inv_map_π
     from (by simp), ← Category.assoc, ← Cone.category_comp_hom]
   simp
 
+lemma liftedLimitMapsToOriginal_hom_π
+    {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
+      (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j = F.map ((liftLimit t).π.app j) := by
+  rw [← liftedLimitMapsToOriginal_inv_map_π (t := t)]
+  simp only [Functor.mapCone_pt, Functor.comp_obj, ← Category.assoc, ← Cone.category_comp_hom,
+    Iso.hom_inv_id, Cone.category_id_hom, Category.id_comp, Functor.const_obj_obj]
+
 /-- The lifted cone is a limit. -/
 def liftedLimitIsLimit {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)}
     (t : IsLimit c) : IsLimit (liftLimit t) :=
@@ -254,8 +262,8 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphism
         exact IsLimit.ofIsoLimit hd' (asIso f).symm⟩ }
 
 /-- If `F` reflects isomorphisms and we can lift a single limit cone to a limit cone, then `F`
-    creates limits. Note that unlike `createsLimitOfReflectsIso`, to apply this result it is
-    necessary to know that `K ⋙ F` actually has a limit. -/
+creates limits. Note that unlike `createsLimitOfReflectsIso`, to apply this result it is
+necessary to know that `K ⋙ F` actually has a limit. -/
 def createsLimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     {c : Cone (K ⋙ F)} (hc : IsLimit c) (h : LiftsToLimit K F c hc) : CreatesLimit K F :=
   createsLimitOfReflectsIso fun _ t =>
@@ -308,7 +316,6 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
         { app := fun j => F.preimage (i.hom ≫ l.π.app j)
           naturality := fun Y Z f =>
             F.map_injective <| by
-              dsimp
               simpa using (l.w f).symm } }
     (Cones.ext i fun j => by simp only [Functor.map_preimage, Functor.mapCone_π_app])
 
@@ -335,33 +342,16 @@ instance (priority := 100) preservesLimit_of_createsLimit_and_hasLimit (K : J �
     ((liftedLimitMapsToOriginal (limit.isLimit _)).symm ≪≫
       (Cones.functoriality K F).mapIso ((liftedLimitIsLimit (limit.isLimit _)).uniqueUpToIso t))⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitOfCreatesLimitAndHasLimit (K : J ⥤ C) (F : C ⥤ D)
-    [CreatesLimit K F] [HasLimit (K ⋙ F)] : PreservesLimit K F :=
-  preservesLimit_of_createsLimit_and_hasLimit _ _
-
 -- see Note [lower instance priority]
 /-- `F` preserves the limit of shape `J` if it creates these limits and `D` has them. -/
 instance (priority := 100) preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape
     (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] : PreservesLimitsOfShape J F where
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape
-    (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] :
-    PreservesLimitsOfShape J F :=
-  preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape _
 
 -- see Note [lower instance priority]
 /-- `F` preserves limits if it creates limits and `D` has limits. -/
 instance (priority := 100) preservesLimits_of_createsLimits_and_hasLimits (F : C ⥤ D)
     [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
     PreservesLimitsOfSize.{w, w'} F where
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitsOfCreatesLimitsAndHasLimits (F : C ⥤ D)
-    [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
-    PreservesLimitsOfSize.{w, w'} F :=
-  preservesLimits_of_createsLimits_and_hasLimits _
 
 /-- If `F` reflects isomorphisms and we can lift any colimit cocone to a colimit cocone,
 then `F` creates colimits.
@@ -386,8 +376,8 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphi
         exact IsColimit.ofIsoColimit hd' (asIso f)⟩ }
 
 /-- If `F` reflects isomorphisms and we can lift a single colimit cocone to a colimit cocone, then
-    `F` creates limits. Note that unlike `createsColimitOfReflectsIso`, to apply this result it is
-    necessary to know that `K ⋙ F` actually has a colimit. -/
+`F` creates limits. Note that unlike `createsColimitOfReflectsIso`, to apply this result it is
+necessary to know that `K ⋙ F` actually has a colimit. -/
 def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     {c : Cocone (K ⋙ F)} (hc : IsColimit c) (h : LiftsToColimit K F c hc) : CreatesColimit K F :=
   createsColimitOfReflectsIso fun _ t =>
@@ -401,10 +391,6 @@ def createsColimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D}
     [F.ReflectsIsomorphisms] [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
   createsColimitOfReflectsIso' (isColimitOfPreserves F (colimit.isColimit _))
     ⟨⟨_, Iso.refl _⟩, colimit.isColimit _⟩
-
-@[deprecated (since := "2025-02-01")]
-noncomputable alias createsColimitOfFullyFaithfulOfPreserves :=
-  createsColimitOfReflectsIsomorphismsOfPreserves
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
@@ -445,7 +431,6 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.
         { app := fun j => F.preimage (l.ι.app j ≫ i.inv)
           naturality := fun Y Z f =>
             F.map_injective <| by
-              dsimp
               simpa [← cancel_mono i.hom] using l.w f } }
     (Cocones.ext i fun j => by simp)
 
@@ -470,34 +455,17 @@ instance (priority := 100) preservesColimit_of_createsColimit_and_hasColimit (K 
         (Cocones.functoriality K F).mapIso
           ((liftedColimitIsColimit (colimit.isColimit _)).uniqueUpToIso t))⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesColimitOfCreatesColimitAndHasColimit (K : J ⥤ C) (F : C ⥤ D)
-    [CreatesColimit K F] [HasColimit (K ⋙ F)] : PreservesColimit K F :=
-  preservesColimit_of_createsColimit_and_hasColimit _ _
-
 -- see Note [lower instance priority]
 /-- `F` preserves the colimit of shape `J` if it creates these colimits and `D` has them. -/
 instance (priority := 100) preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape
     (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
     PreservesColimitsOfShape J F where
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape
-    (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
-    PreservesColimitsOfShape J F :=
-  preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape _
-
 -- see Note [lower instance priority]
 /-- `F` preserves limits if it creates limits and `D` has limits. -/
 instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
     PreservesColimitsOfSize.{w, w'} F where
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesColimitsOfCreatesColimitsAndHasColimits (F : C ⥤ D)
-    [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
-    PreservesColimitsOfSize.{w, w'} F :=
-  preservesColimits_of_createsColimits_and_hasColimits _
 
 /-- Transfer creation of limits along a natural isomorphism in the diagram. -/
 def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [CreatesLimit K₁ F] :
@@ -672,6 +640,12 @@ instance compCreatesLimitsOfShape [CreatesLimitsOfShape J F] [CreatesLimitsOfSha
 instance compCreatesLimits [CreatesLimitsOfSize.{w, w'} F] [CreatesLimitsOfSize.{w, w'} G] :
     CreatesLimitsOfSize.{w, w'} (F ⋙ G) where CreatesLimitsOfShape := inferInstance
 
+instance preservesLimit_comp_of_createsLimit [CreatesLimit K F] [PreservesLimit K (F ⋙ G)] :
+    PreservesLimit (K ⋙ F) G where
+  preserves hc := ⟨IsLimit.ofIsoLimit (isLimitOfPreserves (F ⋙ G) (liftedLimitIsLimit hc))
+    ((Functor.mapConeMapCone (liftLimit hc)).symm ≪≫
+      (Cones.functoriality _ _).mapIso (liftedLimitMapsToOriginal hc))⟩
+
 instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
     CreatesColimit K (F ⋙ G) where
   lifts c t :=
@@ -688,6 +662,12 @@ instance compCreatesColimitsOfShape [CreatesColimitsOfShape J F] [CreatesColimit
 
 instance compCreatesColimits [CreatesColimitsOfSize.{w, w'} F] [CreatesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (F ⋙ G) where CreatesColimitsOfShape := inferInstance
+
+instance preservesColimit_comp_of_createsColimit [CreatesColimit K F] [PreservesColimit K (F ⋙ G)] :
+    PreservesColimit (K ⋙ F) G where
+  preserves hc := ⟨IsColimit.ofIsoColimit (isColimitOfPreserves (F ⋙ G) (liftedColimitIsColimit hc))
+    ((Functor.mapCoconeMapCocone (liftColimit hc)).symm ≪≫
+      (Cocones.functoriality _ _).mapIso (liftedColimitMapsToOriginal hc))⟩
 
 end Comp
 

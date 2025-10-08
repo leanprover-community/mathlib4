@@ -38,8 +38,8 @@ if and only if it is fundamental, see `Pell.pos_generator_iff_fundamental`.
 
 ## References
 
-* [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
-   (Section 17.5)][IrelandRosen1990]
+* [K. Ireland, M. Rosen, *A classical introduction to modern number theory* (Section 17.5)]
+  [IrelandRosen1990]
 
 ## Tags
 
@@ -93,8 +93,6 @@ def Solution₁ (d : ℤ) : Type :=
 namespace Solution₁
 
 variable {d : ℤ}
-
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): manual deriving
 
 instance instCommGroup : CommGroup (Solution₁ d) :=
   inferInstanceAs (CommGroup (unitary (ℤ√d)))
@@ -213,7 +211,7 @@ theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare 
   have hp := a.prop
   rintro ⟨b, rfl⟩
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
-  omega
+  cutsat
 
 /-- A solution with `x = 1` is trivial. -/
 theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by
@@ -235,13 +233,9 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   rw [← abs_of_pos ha, ← abs_of_pos hb, ← abs_mul, ← sq_lt_sq, mul_pow a.x, a.prop_x, b.prop_x, ←
     sub_pos]
   ring_nf
-  rcases le_or_lt 0 d with h | h
+  rcases le_or_gt 0 d with h | h
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
-    -- Porting note: was
-    -- rw [zero_pow two_ne_zero, zero_add, zero_mul, zero_add]
-    -- exact one_pos
-    -- but this relied on the exact output of `ring_nf`
     simp
 
 /-- The set of solutions with `x` and `y` positive is closed under multiplication. -/
@@ -304,7 +298,7 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
           ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
           ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
       simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
-        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
+        x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
     assumption
 
 end Solution₁
@@ -340,7 +334,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     push_cast
     rw [← abs_div, abs_sq, sub_div, mul_div_cancel_right₀ _ h0.ne', ← div_pow, h1, ←
       sq_sqrt (Int.cast_pos.mpr h₀).le, sq_sub_sq, abs_mul, ← mul_one_div]
-    refine mul_lt_mul'' (((abs_add ξ q).trans ?_).trans_lt hM₁) h (abs_nonneg _) (abs_nonneg _)
+    refine mul_lt_mul'' (((abs_add_le ξ q).trans ?_).trans_lt hM₁) h (abs_nonneg _) (abs_nonneg _)
     rw [two_mul, add_assoc, add_le_add_iff_left, ← sub_le_iff_le_add']
     rw [mem_setOf, abs_sub_comm] at h
     refine (abs_sub_abs_le_abs_sub (q : ℝ) ξ).trans (h.le.trans ?_)
@@ -379,15 +373,9 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   refine ⟨(q₁.num * q₂.num - d * (q₁.den * q₂.den)) / m, (q₁.num * q₂.den - q₂.num * q₁.den) / m,
       ?_, ?_⟩
   · qify [hd₁, hd₂]
-    field_simp [hm₀]
+    field_simp
     norm_cast
-    conv_rhs =>
-      rw [sq]
-      congr
-      · rw [← h₁]
-      · rw [← h₂]
-    push_cast
-    ring
+    grind
   · qify [hd₂]
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩
     exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
@@ -487,7 +475,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   exact b.prop
 
 /-- The map sending an integer `n` to the `y`-coordinate of `a^n` for a fundamental
-solution `a` is stritcly increasing. -/
+solution `a` is strictly increasing. -/
 theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     StrictMono fun n : ℤ => (a ^ n).y := by
   have H : ∀ n : ℤ, 0 ≤ n → (a ^ n).y < (a ^ (n + 1)).y := by
@@ -501,12 +489,12 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
   refine strictMono_int_of_lt_succ fun n => ?_
-  rcases le_or_lt 0 n with hn | hn
+  rcases le_or_gt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
     have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
-    exact H _ (by omega)
+    exact H _ (by cutsat)
 
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
 theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
@@ -540,8 +528,8 @@ of any positive solution. -/
 theorem y_le_y {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : a₁.y ≤ a.y := by
   have H : d * (a₁.y ^ 2 - a.y ^ 2) = a₁.x ^ 2 - a.x ^ 2 := by rw [a.prop_x, a₁.prop_x]; ring
-  rw [← abs_of_pos hay, ← abs_of_pos h.2.1, ← sq_le_sq, ← mul_le_mul_left h.d_pos, ← sub_nonpos, ←
-    mul_sub, H, sub_nonpos, sq_le_sq, abs_of_pos (zero_lt_one.trans h.1),
+  rw [← abs_of_pos hay, ← abs_of_pos h.2.1, ← sq_le_sq, ← mul_le_mul_iff_right₀ h.d_pos,
+    ← sub_nonpos, ← mul_sub, H, sub_nonpos, sq_le_sq, abs_of_pos (zero_lt_one.trans h.1),
     abs_of_pos (zero_lt_one.trans hax)]
   exact h.x_le_x hax
 
@@ -567,41 +555,38 @@ the `x`-coordinate stays positive. -/
 theorem mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : 0 < (a * a₁⁻¹).x := by
   simp only [x_mul, x_inv, y_inv, mul_neg, lt_add_neg_iff_add_lt, zero_add]
-  refine (mul_lt_mul_left <| zero_lt_one.trans hax).mp ?_
-  rw [(by ring : a.x * (d * (a.y * a₁.y)) = d * a.y * (a.x * a₁.y))]
-  refine ((mul_le_mul_left <| mul_pos h.d_pos hay).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
-  rw [← mul_assoc, mul_assoc d, ← sq, a.prop_y, ← sub_pos]
-  ring_nf
-  exact zero_lt_one.trans h.1
+  refine lt_of_mul_lt_mul_left ?_ <| zero_le_one.trans hax.le
+  calc a.x * (d * (a.y * a₁.y))
+    _ = d * a.y * (a.x * a₁.y) := by ring
+    _ ≤ d * a.y * (a.y * a₁.x) := by have := x_mul_y_le_y_mul_x h hax hay; have := h.d_pos; gcongr
+    _ = (a.x ^ 2 - 1) * a₁.x := by rw [← a.prop_y]; ring
+    _ < a.x * (a.x * a₁.x) := by linarith [h.1]
 
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
 the `x`-coordinate decreases. -/
 theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : (a * a₁⁻¹).x < a.x := by
   simp only [x_mul, x_inv, y_inv, mul_neg, add_neg_lt_iff_le_add']
-  refine (mul_lt_mul_left h.2.1).mp ?_
-  rw [(by ring : a₁.y * (a.x * a₁.x) = a.x * a₁.y * a₁.x)]
-  refine
-    ((mul_le_mul_right <| zero_lt_one.trans h.1).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
+  refine lt_of_mul_lt_mul_left ?_ h.2.1.le
+  calc a₁.y * (a.x * a₁.x)
+    _ = a.x * a₁.y * a₁.x := by ring
+    _ ≤ a.y * a₁.x * a₁.x := by have := h.1; have := x_mul_y_le_y_mul_x h hax hay; gcongr
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
-  -- Porting note: was `ring_nf`
   suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc
     a.y ^ 2 = 1 * a.y ^ 2 := (one_mul _).symm
-    _ ≤ d * a.y ^ 2 := (mul_le_mul_right <| sq_pos_of_pos hay).mpr h.d_pos
+    _ ≤ d * a.y ^ 2 := (mul_le_mul_iff_left₀ <| sq_pos_of_pos hay).mpr h.d_pos
     _ < d * a.y ^ 2 + 1 := lt_add_one _
     _ = (1 + d * a.y ^ 2) * 1 := by rw [add_comm, mul_one]
     _ ≤ (1 + d * a.y ^ 2) * a₁.y ^ 2 :=
-      (mul_le_mul_left (by have := h.d_pos; positivity)).mpr (sq_pos_of_pos h.2.1)
+      (mul_le_mul_iff_right₀ (by have := h.d_pos; positivity)).mpr (sq_pos_of_pos h.2.1)
 
 /-- Any nonnegative solution is a power with nonnegative exponent of a fundamental solution. -/
 theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
     (hay : 0 ≤ a.y) : ∃ n : ℕ, a = a₁ ^ n := by
   lift a.x to ℕ using hax.le with ax hax'
-  -- Porting note: added
-  clear hax
   induction ax using Nat.strong_induction_on generalizing a with | h x ih =>
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
@@ -621,7 +606,6 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     have hxx₂ := h.mul_inv_x_lt_x hx₁ hy
     have hyy := h.mul_inv_y_nonneg hx₁ hy
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
-    -- Porting note: `ih` has its arguments in a different order compared to lean 3.
     obtain ⟨n, hn⟩ := ih x' (mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
     exact ⟨n + 1, by rw [pow_succ', ← hn, mul_comm a, ← mul_assoc, mul_inv_cancel, one_mul]⟩
 

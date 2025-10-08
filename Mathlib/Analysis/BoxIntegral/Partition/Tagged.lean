@@ -36,7 +36,7 @@ prepartition. For simplicity we require that `tag` is defined for all boxes in `
 we will use only the values of `tag` on the boxes of the partition. -/
 structure TaggedPrepartition (I : Box ι) extends Prepartition I where
   /-- Choice of tagged point of each box in this prepartition:
-    we extend this to a total function, on all boxes in `ι → ℝ`. -/
+  we extend this to a total function, on all boxes in `ι → ℝ`. -/
   tag : Box ι → ι → ℝ
   /-- Each tagged point belongs to `I` -/
   tag_mem_Icc : ∀ J, tag J ∈ Box.Icc I
@@ -66,7 +66,6 @@ theorem iUnion_mk (π : Prepartition I) (f h) : (mk π f h).iUnion = π.iUnion :
 @[simp]
 theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 
--- Porting note: Previous proof was `:= Set.mem_iUnion₂`
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_iUnion₂
@@ -86,7 +85,7 @@ theorem isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
   Prepartition.isPartition_iff_iUnion_eq
 
 /-- The tagged partition made of boxes of `π` that satisfy predicate `p`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def filter (p : Box ι → Prop) : TaggedPrepartition I :=
   ⟨π.1.filter p, π.2, π.3⟩
 
@@ -156,7 +155,7 @@ returns the tagged partition of `I` into all the boxes of all `πi J hJ`. The ta
 is defined to be the `π.tag` of the box of the partition `π` that includes `J`.
 
 Note that usually the result is not a Henstock partition. -/
-@[simps (config := .asFn) tag]
+@[simps -fullyApplied tag]
 def biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J : Box ι, Prepartition J) :
     TaggedPrepartition I where
   toPrepartition := π.toPrepartition.biUnion πi
@@ -248,7 +247,7 @@ theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.I
     _ ≤ 2 * r (π.tag J) := diam_closedBall (le_of_lt (r _).2)
 
 /-- Tagged prepartition with single box and prescribed tag. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def single (I J : Box ι) (hJ : J ≤ I) (x : ι → ℝ) (h : x ∈ Box.Icc I) : TaggedPrepartition I :=
   ⟨Prepartition.single I J hJ, fun _ => x, fun _ => h⟩
 
@@ -274,7 +273,6 @@ theorem isHenstock_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     IsHenstock (single I J hJ x h) ↔ x ∈ Box.Icc J :=
   forall_mem_single (fun x J => x ∈ Box.Icc J) hJ h
 
---@[simp] -- Porting note: Commented out, because `simp only [isHenstock_single_iff]` simplifies it
 theorem isHenstock_single (h : x ∈ Box.Icc I) : IsHenstock (single I I le_rfl x h) :=
   (isHenstock_single_iff (le_refl I) h).2 h
 

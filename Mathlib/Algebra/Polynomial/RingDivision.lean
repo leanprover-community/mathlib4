@@ -74,7 +74,7 @@ variable [Ring S]
 theorem aeval_modByMonic_eq_self_of_root [Algebra R S] {p q : R[X]} (hq : q.Monic) {x : S}
     (hx : aeval x q = 0) : aeval x (p %ₘ q) = aeval x p := by
     --`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
-  rw [modByMonic_eq_sub_mul_div p hq, _root_.map_sub, _root_.map_mul, hx, zero_mul,
+  rw [modByMonic_eq_sub_mul_div p hq, map_sub, map_mul, hx, zero_mul,
     sub_zero]
 
 end
@@ -120,15 +120,21 @@ section nonZeroDivisors
 open scoped nonZeroDivisors
 
 theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ R[X]⁰ :=
-  mem_nonZeroDivisors_iff.2 fun _ hx ↦ (mul_left_eq_zero_iff h).1 hx
+  mem_nonzeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
 
-theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ := by
-  refine mem_nonZeroDivisors_iff.2 fun x hx ↦ leadingCoeff_eq_zero.1 ?_
-  by_contra hx'
-  rw [← mul_right_mem_nonZeroDivisors_eq_zero_iff h] at hx'
-  simp only [← leadingCoeff_mul' hx', hx, leadingCoeff_zero, not_true] at hx'
+theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
+  mem_nonzeroDivisors_of_coeff_mem _ h
+
+theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
+  mem_nonzeroDivisors_of_coeff_mem _ h
 
 end nonZeroDivisors
+
+theorem natDegree_pos_of_monic_of_aeval_eq_zero [Nontrivial R] [Semiring S] [Algebra R S]
+    [FaithfulSMul R S] {p : R[X]} (hp : p.Monic) {x : S} (hx : aeval x p = 0) :
+    0 < p.natDegree :=
+  natDegree_pos_of_aeval_root (Monic.ne_zero hp) hx
+    ((injective_iff_map_eq_zero (algebraMap R S)).mp (FaithfulSMul.algebraMap_injective R S))
 
 theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
@@ -150,7 +156,6 @@ theorem rootMultiplicity_X_sub_C_self [Nontrivial R] {x : R} :
     rootMultiplicity x (X - C x) = 1 :=
   pow_one (X - C x) ▸ rootMultiplicity_X_sub_C_pow x 1
 
--- Porting note: swapped instance argument order
 theorem rootMultiplicity_X_sub_C [Nontrivial R] [DecidableEq R] {x y : R} :
     rootMultiplicity x (X - C y) = if x = y then 1 else 0 := by
   split_ifs with hxy

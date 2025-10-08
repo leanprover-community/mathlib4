@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
-# Final functors betwen intervals
+# Final functors between intervals
 
 -/
 

@@ -6,7 +6,7 @@ Authors: Kim Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
@@ -236,8 +236,6 @@ def isColimitOfConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F.unop}
 def isLimitOfCoconeOfConeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F.unop}
     (hc : IsColimit (coconeOfConeUnop c)) : IsLimit c :=
   isLimitConeUnopOfCocone F hc
-
-@[deprecated (since := "2024-11-01")] alias isColimitConeOfCoconeUnop := isColimitCoconeOfConeUnop
 
 /-- If `F.leftOp : Jᵒᵖ ⥤ C` has a colimit, we can construct a limit for `F : J ⥤ Cᵒᵖ`.
 -/
@@ -558,7 +556,7 @@ variable [HasCoproduct Z]
 instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discrete.functor Z)
 
 instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
-  hasLimitEquivalenceComp (Discrete.opposite α).symm
+  hasLimit_equivalence_comp (Discrete.opposite α).symm
 
 instance : HasProduct (op <| Z ·) := hasLimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
@@ -577,9 +575,7 @@ noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit 
   refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
     (IsLimit.whiskerEquivalence hc.op (Discrete.opposite α).symm))
     (Cones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
-  dsimp
-  erw [Category.id_comp, Category.comp_id]
-  rfl
+  simp [e, Cofan.inj]
 
 /--
 The canonical isomorphism from the opposite of an abstract coproduct to the corresponding product
@@ -599,6 +595,17 @@ def opCoproductIsoProduct :
   opCoproductIsoProduct' (coproductIsCoproduct Z) (productIsProduct (op <| Z ·))
 
 end
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct'_hom_comp_proj {c : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hf : IsLimit f) (i : α) :
+    (opCoproductIsoProduct' hc hf).hom ≫ f.proj i = (c.inj i).op := by
+  simp [opCoproductIsoProduct', Fan.proj]
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct_hom_comp_π [HasCoproduct Z] (i : α) :
+    (opCoproductIsoProduct Z).hom ≫ Pi.π _ i = (Sigma.ι _ i).op :=
+  Limits.opCoproductIsoProduct'_hom_comp_proj ..
 
 theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) (b : α) :
@@ -640,8 +647,8 @@ theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z)
     (productIsProduct (op <| Z ·)) (Cofan.mk _ π)
-  · ext; simp [Sigma.desc, coproductIsCoproduct]
-  · ext; simp [Pi.lift, productIsProduct]
+  · simp [Sigma.desc, coproductIsCoproduct]
+  · simp [Pi.lift, productIsProduct]
 
 end OppositeCoproducts
 
@@ -736,8 +743,8 @@ theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op  = Sigma.desc (fun a ↦ (π a).op) := by
   convert opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z)
     (coproductIsCoproduct (op <| Z ·)) (Fan.mk _ π)
-  · ext; simp [Pi.lift, productIsProduct]
-  · ext; simp [Sigma.desc, coproductIsCoproduct]
+  · simp [Pi.lift, productIsProduct]
+  · simp [Sigma.desc, coproductIsCoproduct]
 
 end OppositeProducts
 
@@ -747,7 +754,7 @@ variable {A B : C} [HasBinaryProduct A B]
 
 instance : HasBinaryCoproduct (op A) (op B) := by
   have : HasProduct fun x ↦ (WalkingPair.casesOn x A B : C) := ‹_›
-  show HasCoproduct _
+  change HasCoproduct _
   convert inferInstanceAs (HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
@@ -762,7 +769,7 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom_inv_id := by
     apply Quiver.Hom.unop_inj
     ext <;>
-    · simp only [limit.lift_π]
+    · simp only
       apply Quiver.Hom.op_inj
       simp
   inv_hom_id := by
@@ -836,7 +843,7 @@ instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
 def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     span f.op g.op ≅ walkingCospanOpEquiv.inverse ⋙ (cospan f g).op :=
   NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
-    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> aesop_cat)
+    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
 /-- The canonical isomorphism relating `(Cospan f g).op` and `Span f.op g.op` -/
 @[simps!]
@@ -855,7 +862,7 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
 def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     cospan f.op g.op ≅ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
   NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
-    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> aesop_cat)
+    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
 /-- The canonical isomorphism relating `(Span f g).op` and `Cospan f.op g.op` -/
 @[simps!]
@@ -1039,7 +1046,7 @@ end Pullback
 section Pushout
 
 /-- The pushout of `f` and `g` in `C` is isomorphic to the pullback of
- `f.op` and `g.op` in `Cᵒᵖ`. -/
+`f.op` and `g.op` in `Cᵒᵖ`. -/
 noncomputable def pushoutIsoUnopPullback {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [h : HasPushout f g]
     [HasPullback f.op g.op] : pushout f g ≅ unop (pullback f.op g.op) :=
   IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)

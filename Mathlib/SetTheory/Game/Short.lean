@@ -5,8 +5,13 @@ Authors: Kim Morrison
 -/
 
 import Mathlib.Data.Fintype.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Game.Birthday
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Short` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Short games
@@ -180,7 +185,7 @@ instance listShortGet :
 
 instance shortOfLists : ∀ (L R : List PGame) [ListShort L] [ListShort R], Short (PGame.ofLists L R)
   | L, R, _, _ => by
-    exact Short.mk (fun i ↦ inferInstance) fun j ↦ listShortGet R (↑j.down) (ofLists.proof_2 R j)
+    exact Short.mk (fun i ↦ inferInstance) fun j ↦ listShortGet R (↑j.down) (Fin.is_lt j.down)
 
 /-- If `x` is a short game, and `y` is a relabelling of `x`, then `y` is also short. -/
 def shortOfRelabelling : ∀ {x y : PGame.{u}}, Relabelling x y → Short x → Short y

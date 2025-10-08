@@ -3,12 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Data.Set.Monotone
-import Mathlib.Data.Set.Image
-import Mathlib.Order.WellFounded
+import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.MinImports
 
 /-!
 # Order homomorphisms and sets
@@ -75,6 +74,7 @@ open Set
 variable [Preorder α]
 
 /-- Order isomorphism between two equal sets. -/
+@[simps! apply symm_apply]
 def setCongr (s t : Set α) (h : s = t) :
     s ≃o t where
   toEquiv := Equiv.setCongr h

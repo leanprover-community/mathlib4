@@ -68,6 +68,7 @@ instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
 
+attribute [local instance] uliftCategory in
 /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
 arbitrary universe. -/
 lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
@@ -88,8 +89,6 @@ lemma preservesFiniteLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFi
     PreservesFiniteLimits G where
   preservesFiniteLimits _ _ _ := preservesLimitsOfShape_of_natIso h
 
-/- Porting note: adding this class because quantified classes don't behave well
-https://github.com/leanprover-community/mathlib4/pull/2764 -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J` for `Finite J`.
 We require this for `J = Fin n` in the definition,
 then generalize to `J : Type u` in the instance. -/
@@ -224,6 +223,7 @@ instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ 
     [PreservesColimits F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
 
+attribute [local instance] uliftCategory in
 /-- We can always derive `PreservesFiniteColimits C`
 by showing that we are preserving colimits at an arbitrary universe. -/
 lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
@@ -245,8 +245,6 @@ lemma preservesFiniteColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [Preserves
     PreservesFiniteColimits G where
   preservesFiniteColimits _ _ _ := preservesColimitsOfShape_of_natIso h
 
-/- Porting note: adding this class because quantified classes don't behave well
-https://github.com/leanprover-community/mathlib4/pull/2764 -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J` for `Fintype J`.
 We require this for `J = Fin n` in the definition,
 then generalize to `J : Type u` in the instance. -/

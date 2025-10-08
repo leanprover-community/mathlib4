@@ -27,6 +27,8 @@ With `open scoped RightActions`, this provides:
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
+assert_not_exists Ring
+
 variable {M α : Type*}
 
 /-! ### Actions _on_ the opposite type

@@ -3,7 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Comma.CardinalArrow
@@ -53,7 +52,7 @@ namespace IsCardinalFiltered
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
-/-- A choice of cocone for a functor `F : A ⥤ J` such that `HasCardinatLT (Arrow A) κ`
+/-- A choice of cocone for a functor `F : A ⥤ J` such that `HasCardinalLT (Arrow A) κ`
 when `J` is a `κ`-filtered category, and `Arrow A` has cardinality `< κ`. -/
 noncomputable def cocone {A : Type v'} [Category.{u'} A]
     (F : A ⥤ J) (hA : HasCardinalLT (Arrow A) κ) :
@@ -195,6 +194,6 @@ instance isCardinalFiltered_under
               ext
               have := c.w f
               dsimp at this ⊢
-              simp only [reassoc_of% this, Category.assoc, Category.comp_id] } }⟩
+              simp only [reassoc_of% this, Category.comp_id] } }⟩
 
 end CategoryTheory

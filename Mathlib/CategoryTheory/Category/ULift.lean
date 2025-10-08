@@ -42,6 +42,8 @@ universe w₁ v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
+attribute [local instance] uliftCategory
+
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The functorial version of `ULift.up`. -/
@@ -69,8 +71,7 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
       inv := { app := fun _ => 𝟙 _ } }
 
 section ULiftHom
-/- Porting note: obviously we don't want code that looks like this long term
-the ability to turn off unused universe parameter error is desirable -/
+
 /-- `ULiftHom.{w} C` is an alias for `C`, which is endowed with a category instance
   whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 -/
@@ -122,9 +123,7 @@ def ULiftHom.equiv : C ≌ ULiftHom C where
   counitIso := NatIso.ofComponents fun _ => eqToIso rfl
 
 end ULiftHom
-/- Porting note: we want to keep around the category instance on `D`
-so Lean can figure out things further down. So `AsSmall` has been
-nolinted. -/
+
 /-- `AsSmall C` is a small category equivalent to `C`.
   More specifically, if `C : Type u` is endowed with `Category.{v} C`, then
   `AsSmall.{w} C : Type (max w v u)` is endowed with an instance of a small category.

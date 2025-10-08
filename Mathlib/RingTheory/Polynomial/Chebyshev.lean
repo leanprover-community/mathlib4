@@ -63,10 +63,7 @@ open Polynomial
 variable (R R' : Type*) [CommRing R] [CommRing R']
 
 /-- `T n` is the `n`-th Chebyshev polynomial of the first kind. -/
--- Well-founded definitions are now irreducible by default;
--- as this was implemented before this change,
--- we just set it back to semireducible to avoid needing to change any proofs.
-@[semireducible] noncomputable def T : ℤ → R[X]
+noncomputable def T : ℤ → R[X]
   | 0 => 1
   | 1 => X
   | (n : ℕ) + 2 => 2 * X * T (n + 1) - T n
@@ -102,21 +99,26 @@ theorem T_eq (n : ℤ) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 2)
 
 @[simp]
-theorem T_zero : T R 0 = 1 := rfl
+theorem T_zero : T R 0 = 1 := by simp [T]
 
 @[simp]
-theorem T_one : T R 1 = X := rfl
+theorem T_one : T R 1 = X := by simp [T]
 
-theorem T_neg_one : T R (-1) = X := show 2 * X * 1 - X = X by ring
+theorem T_neg_one : T R (-1) = X := by
+  change T R (Int.negSucc 0) = X
+  rw [T]
+  suffices 2 * X - X = X by simpa
+  ring
+
 
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
-  simpa [pow_two, mul_assoc] using T_add_two R 0
+  unfold T; simp [pow_two, mul_assoc]
 
 @[simp]
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => show 2 * X * 1 - X = X; ring
+  | one => simp only [T_neg_one, T_one]
   | add_two n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
@@ -158,10 +160,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
     ring
 
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
--- Well-founded definitions are now irreducible by default;
--- as this was implemented before this change,
--- we just set it back to semireducible to avoid needing to change any proofs.
-@[semireducible] noncomputable def U : ℤ → R[X]
+noncomputable def U : ℤ → R[X]
   | 0 => 1
   | 1 => 2 * X
   | (n : ℕ) + 2 => 2 * X * U (n + 1) - U n
@@ -186,10 +185,10 @@ theorem U_eq (n : ℤ) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 2)
 
 @[simp]
-theorem U_zero : U R 0 = 1 := rfl
+theorem U_zero : U R 0 = 1 := by simp [U]
 
 @[simp]
-theorem U_one : U R 1 = 2 * X := rfl
+theorem U_one : U R 1 = 2 * X := by simp [U]
 
 @[simp]
 theorem U_neg_one : U R (-1) = 0 := by simpa using U_sub_one R 0
@@ -287,7 +286,7 @@ theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
-@[semireducible] noncomputable def C : ℤ → R[X]
+noncomputable def C : ℤ → R[X]
   | 0 => 2
   | 1 => X
   | (n : ℕ) + 2 => X * C (n + 1) - C n
@@ -312,12 +311,16 @@ theorem C_eq (n : ℤ) : C R n = X * C R (n - 1) - C R (n - 2) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 2)
 
 @[simp]
-theorem C_zero : C R 0 = 2 := rfl
+theorem C_zero : C R 0 = 2 := by simp [C]
 
 @[simp]
-theorem C_one : C R 1 = X := rfl
+theorem C_one : C R 1 = X := by simp [C]
 
-theorem C_neg_one : C R (-1) = X := show X * 2 - X = X by ring
+theorem C_neg_one : C R (-1) = X := by
+  change C R (Int.negSucc 0) = X
+  rw [C]
+  suffices X * 2 - X = X by simpa
+  ring
 
 theorem C_two : C R 2 = X ^ 2 - 2 := by
   simpa [pow_two, mul_assoc] using C_add_two R 0
@@ -326,7 +329,7 @@ theorem C_two : C R 2 = X ^ 2 - 2 := by
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => show X * 2 - X = X; ring
+  | one => simp only [C_neg_one, C_one]
   | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)
@@ -366,14 +369,14 @@ theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
   | zero => simp
   | one => simp
   | add_two n ih1 ih2 =>
-    simp only [C_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+    simp only [C_add_two, eval_sub, eval_mul, eval_X, mul_neg, mul_one, ih1,
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
     norm_cast
     norm_num
     ring
   | neg_add_one n ih1 ih2 =>
-    simp only [C_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1, neg_mul,
+    simp only [C_sub_one, eval_sub, eval_mul, eval_X, mul_neg, mul_one, ih1, neg_mul,
       ih2, Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, sub_neg_eq_add,
       Int.negOnePow_sub]
     ring
@@ -393,7 +396,7 @@ theorem T_eq_half_mul_C_comp_two_mul_X [Invertible (2 : R)] (n : ℤ) :
 /-- `S n` is the `n`th rescaled Chebyshev polynomial of the second kind (also known as a
 Vieta–Fibonacci polynomial), given by $S_n(2x) = U_n(x)$. See
 `Polynomial.Chebyshev.S_comp_two_mul_X`. -/
-@[semireducible] noncomputable def S : ℤ → R[X]
+noncomputable def S : ℤ → R[X]
   | 0 => 1
   | 1 => X
   | (n : ℕ) + 2 => X * S (n + 1) - S n
@@ -418,10 +421,10 @@ theorem S_eq (n : ℤ) : S R n = X * S R (n - 1) - S R (n - 2) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 2)
 
 @[simp]
-theorem S_zero : S R 0 = 1 := rfl
+theorem S_zero : S R 0 = 1 := by simp [S]
 
 @[simp]
-theorem S_one : S R 1 = X := rfl
+theorem S_one : S R 1 = X := by simp [S]
 
 @[simp]
 theorem S_neg_one : S R (-1) = 0 := by simpa using S_sub_one R 0
@@ -460,11 +463,11 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
   | zero => simp
   | one => simp; norm_num
   | add_two n ih1 ih2 =>
-    simp only [S_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one, ih1,
+    simp only [S_add_two, eval_sub, eval_mul, eval_X, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, ih2, Int.cast_ofNat]
     ring
   | neg_add_one n ih1 ih2 =>
-    simp only [S_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one,
+    simp only [S_sub_one, eval_sub, eval_mul, eval_X,
       ih1, Int.cast_neg, Int.cast_natCast, ih2, Int.cast_add, Int.cast_one, Int.cast_sub,
       sub_add_cancel]
     ring
@@ -475,14 +478,14 @@ theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := 
   | zero => simp
   | one => simp; norm_num
   | add_two n ih1 ih2 =>
-    simp only [S_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+    simp only [S_add_two, eval_sub, eval_mul, eval_X, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
     norm_cast
     norm_num
     ring
   | neg_add_one n ih1 ih2 =>
-    simp only [S_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+    simp only [S_sub_one, eval_sub, eval_mul, eval_X, mul_neg, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
     norm_cast
@@ -498,11 +501,11 @@ theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
 
 theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R (n + 1) = 1 := by
   induction n with
-  | hz => simp; ring
-  | hp n ih =>
+  | zero => simp; ring
+  | succ n ih =>
     have h₁ := S_add_two R n
     linear_combination (norm := ring_nf) (S R (2 + n) - S R n) * h₁ + ih
-  | hn n ih =>
+  | pred n ih =>
     have h₁ := S_sub_one R (-n)
     linear_combination (norm := ring_nf) (S R (-1 - n) - S R (1 - n)) * h₁ + ih
 
@@ -617,7 +620,7 @@ theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
   | one =>
-    simp [T_two, U_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow, add_mul]
+    simp
   | add_two n ih1 ih2 =>
     have h₁ := congr_arg derivative (T_add_two R n)
     have h₂ := U_sub_one R n
@@ -668,8 +671,6 @@ theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := b
     have h₂ := T_sub_two R (m - (-k - 1))
     have h₃ := T_add_two R (-k - 1)
     linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X : R[X]) * ih1
-
-@[deprecated (since := "2024-12-03")] alias mul_T := T_mul_T
 
 /-- The product of two Chebyshev `C` polynomials is the sum of two other Chebyshev `C` polynomials.
 -/

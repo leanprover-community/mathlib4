@@ -1,22 +1,43 @@
 name: Post PR summary comment
 
 on:
-  pull_request:
+  pull_request_target:
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
 
 jobs:
   build:
     name: "post-or-update-summary-comment"
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
+        ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
+        path: pr-branch
+
+    # Checkout the master branch into a subdirectory
+    - name: Checkout master branch
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        # When testing the scripts, comment out the "ref: master"
+        ref: master
+        path: master-branch
 
     - name: Update the merge-conflict label
       run: |
+        cd pr-branch
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
+        git config user.name "leanprover-community-mathlib4-bot"
+        git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+
         if git merge origin/master --no-ff --no-commit
         then
           git merge --abort || true
@@ -27,16 +48,19 @@ jobs:
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
         else
-          echo "This PR has merge conflicts with main."
+          echo "This PR has merge conflicts with master."
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request POST \
-            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
-            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+            --header 'Accept: application/vnd.github+json' \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
+            --data '{"labels":["merge-conflict"]}'
         fi
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
       with:
         python-version: 3.12
 
@@ -46,46 +70,118 @@ jobs:
         sudo apt-get install -y jq
         # If you have additional dependencies, install them here
 
-    - name: Get changed files
+    - name: Get changed and removed/renamed files
       run: |
+        cd pr-branch
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
-        git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt  # get the list of changed files
+
+        # Get the list of all changed files.
+        echo "Saving the changed files to 'changed_files.txt'..."
+        git diff --name-only origin/${{ github.base_ref }}... | tee changed_files.txt
+
+        # Get all files which were removed or renamed.
+        echo "Checking for removed files..."
+
+        # Shows the `D`eleted files, one per line.
+        git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_files.txt
+        echo "Checking for renamed files..."
+
+        # Shows the `R`enamed files, in human-readable format
+        # The `awk` pipe
+        # * extracts into an array the old name as the key and the new name as the value
+        # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.
+        git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}... |
+          awk '
+            /^rename from / {
+                file=$0
+                gsub(/rename from /, "", file)
+                oldFile=file
+              }
+            /^rename to / {
+                file=$0
+                gsub(/rename to /, "", file)
+                oldNew[oldFile]=file
+              } END {
+                for(old in oldNew) {
+                  printf("`%s` was renamed to `%s`\n", old, oldNew[old])
+                }
+              }' | tee renamed_files.txt
+
+    - name: Compute (re)moved files without deprecation
+      run: |
+        cd pr-branch
+        touch moved_without_deprecation.txt
+        touch extraneous_deprecated_module.txt
+        git checkout ${{ github.base_ref }}
+        while IFS= read -r file
+        do
+          if grep ^deprecated_module "${file}" ; then
+            # shellcheck disable=SC2016
+            printf '\n⚠️ **warning**: removed file `%s` contains a module deprecation: please add this in a follow-up PR instead\n' "${file}" |
+              tee -a extraneous_deprecated_module.txt
+          else
+            # shellcheck disable=SC2016
+            printf '\nnote: file `%s` was removed.\nPlease create a follow-up pull request adding a module deprecation. Thanks!\n' "${file}" |
+              tee -a moved_without_deprecation.txt
+          fi
+        done < removed_files.txt
+        IFS=$'\n'
+        while IFS= read -r file
+        do
+          if grep ^deprecated_module "${file}" ; then
+            # shellcheck disable=SC2016
+            printf '\n⚠️ **warning**: renamed file `%s` contains a module deprecation: please add this in a follow-up PR instead\n' "${file}" |
+              tee -a extraneous_deprecated_module.txt
+          else
+            # shellcheck disable=SC2016
+            printf '\nnote: file `%s` without a module deprecation\nPlease create a follow-up pull request adding one. Thanks!\n' "${file}" |
+              tee -a moved_without_deprecation.txt
+          fi
+        done < renamed_files.txt
+
+        # we return to the PR branch, since the next step wants it!
+        git checkout -
 
     - name: Compute transitive imports
       run: |
+        cd pr-branch
         # the checkout dance, to avoid a detached head
         git checkout master
         git checkout -
         currentHash="$(git rev-parse HEAD)"
+        printf 'currentHash=%s\n' "${currentHash}"
 
-        # Compute the counts for the HEAD of the PR
-        python ./scripts/count-trans-deps.py "Mathlib/" > head.json
+        echo "Compute the counts for the HEAD of the PR"
+        python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > head.json
 
         # Checkout the merge base
-        git checkout "$(git merge-base master ${{ github.sha }})"
+        git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
 
-        # Compute the counts for the merge base
-        python ./scripts/count-trans-deps.py "Mathlib/" > base.json
+        echo "Compute the counts for the merge base"
+        python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > base.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
-        git checkout "${currentHash}"
+        git checkout "${currentHash}" --
+
     - name: Post or update the summary comment
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH_NAME: ${{ github.head_ref }}
       run: |
+        cd pr-branch
+        currentHash="$(git rev-parse HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
 
-        graphAndHighPercentReports=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
+        graphAndHighPercentReports=$(python ../master-branch/scripts/import-graph-report.py base.json head.json changed_files.txt)
 
-        ## Import count comment
+        echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          ./scripts/import_trans_difference.sh
+          ../master-branch/scripts/import_trans_difference.sh
         )
 
-        ## High percentage imports
+        echo "Produce high percentage imports"
         high_percentages=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed -n '/^Import changes exceeding/,$p'
         )
@@ -105,23 +201,59 @@ jobs:
           importCount="$(printf '#### Import changes for modified files\n\n%s\n' "${importCount}")"
         fi
 
-        ## Declarations' diff comment
-        declDiff=$(./scripts/declarations_diff.sh)
+        echo "Compute Declarations' diff comment"
+        declDiff=$(../master-branch/scripts/declarations_diff.sh)
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
         else
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
-        git checkout "${BRANCH_NAME}"
-        currentHash="$(git rev-parse HEAD)"
+        git checkout "${currentHash}" --
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
+        printf 'hashURL: %s' "${hashURL}"
 
-        ## Technical debt changes
-        techDebtVar="$(./scripts/technical-debt-metrics.sh pr_summary)"
+        echo "Compute technical debt changes"
+        techDebtVar="$(../master-branch/scripts/technical-debt-metrics.sh pr_summary)"
 
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
 
+        echo "Include any errors about removed or renamed files without deprecation,"
+        echo "as well as errors about extraneous deprecated_module additions."
+        if [ -s moved_without_deprecation.txt ]
+        then
+          printf '\n\n---\n\n' >> please_merge_master.md
+          cat moved_without_deprecation.txt >> please_merge_master.md
+        fi
+        if [ -s extraneous_deprecated_module.txt ]
+        then
+          printf '\n\n---\n\n' >> please_merge_master.md
+          cat extraneous_deprecated_module.txt >> please_merge_master.md
+        fi
+
         cat please_merge_master.md
-        ./scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
+        ../master-branch/scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
+
+    - name: Update the file-removed label
+      run: |
+        cd pr-branch
+        undeprecatedMoves="$(cat moved_without_deprecation.txt)"
+        if [ -n "$undeprecatedMoves" ]; then
+          echo "This PR has undeprecated module (re)movals."
+          # we use curl rather than octokit/request-action so that the job won't fail
+          # (and send an annoying email) if the labels don't exist
+          curl --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
+            --data '{"labels":["file-removed"]}'
+        else
+          echo "This PR (re)moves no modules without deprecations."
+          # we use curl rather than octokit/request-action so that the job won't fail
+          # (and send an annoying email) if the labels don't exist
+          curl --request DELETE \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/file-removed \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+        fi

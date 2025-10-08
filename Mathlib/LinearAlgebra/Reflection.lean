@@ -3,12 +3,15 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.Algebra.Module.Torsion
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
 import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Reflections in linear algebra
@@ -24,24 +27,24 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 
 ## Main definitions / results:
 
- * `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
-   the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
-   discharging this proof obligation.
- * `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
-   that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
-   linear map.
- * `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
-   $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
-   commutative ring. This is used to define reflection representations of Coxeter groups.
- * `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
-   finite spanning sets that is useful in the theory of root data / systems.
+* `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
+  the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
+  discharging this proof obligation.
+* `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
+  that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
+  linear map.
+* `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
+  $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
+  commutative ring. This is used to define reflection representations of Coxeter groups.
+* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections that preserve
+  finite spanning sets. It is useful in the theory of root data / systems.
 
 ## TODO
 
 Related definitions of reflection exists elsewhere in the library. These more specialised
 definitions, which require an ambient `InnerProductSpace` structure, are `reflection` (of type
 `LinearIsometryEquiv`) and `EuclideanGeometry.reflection` (of type `AffineIsometryEquiv`). We
-should connect (or unify) these definitions with `Module.reflecton` defined here.
+should connect (or unify) these definitions with `Module.reflection` defined here.
 
 -/
 
@@ -75,7 +78,7 @@ lemma preReflection_apply_self (h : f x = 2) :
 
 lemma involutive_preReflection (h : f x = 2) :
     Involutive (preReflection x f) :=
-  fun y ↦ by simp [map_sub, h, smul_sub, two_smul, preReflection_apply]
+  fun y ↦ by simp [map_sub, h, two_smul, preReflection_apply]
 
 lemma preReflection_preReflection (g : Dual R M) (h : f x = 2) :
     preReflection (preReflection x f y) (preReflection f (Dual.eval R M x) g) =
@@ -121,6 +124,29 @@ lemma invOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) :
 lemma bijOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) (h' : MapsTo (reflection h) Φ Φ) :
     BijOn (reflection h) Φ Φ :=
   (invOn_reflection_of_mapsTo h).bijOn h' h'
+
+lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
+    (p : Submodule R M) (hx : x ∈ p) :
+    p ∈ End.invtSubmodule (reflection h) := by
+  suffices ∀ y ∈ p, reflection h y ∈ p from
+    (End.mem_invtSubmodule _).mpr fun y hy ↦ by simpa using this y hy
+  intro y hy
+  simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
+
+lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M]
+    (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
+    p ∈ End.invtSubmodule (reflection h) ↔ p ≤ LinearMap.ker f := by
+  refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
+  · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
+    suffices f y • x ∈ p by
+      have aux : f y • x ∈ p ⊓ (R ∙ x) := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
+      rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
+      exact aux.resolve_right hx
+    specialize h' hy
+    simp only [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply] at h'
+    simpa using p.sub_mem h' hy
+  · have hy' : f y = 0 := by simpa using h' hy
+    simpa [reflection_apply, hy']
 
 /-! ### Powers of the product of two reflections
 
@@ -175,11 +201,11 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
     push_cast
-    rw [← Int.ediv_add_emod m 2]
+    rw [← Int.mul_ediv_add_emod m 2]
     set k : ℤ := m / 2
     set e : ℤ := m % 2
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
-      add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
+      add_mul_ediv_left _ k (by simp : (2 : ℤ) ≠ 0)]
     have he : e = 0 ∨ e = 1 := by omega
     clear_value e
     /- Now, equate the coefficients on both sides. These linear combinations were
@@ -253,8 +279,8 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
       (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
     simp [S_sub_two, ht]
   induction m with
-  | hz => simp
-  | hp m ih =>
+  | zero => simp
+  | succ m ih =>
     -- Apply the inductive hypothesis.
     rw [add_comm (m : ℤ) 1, zpow_one_add, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
     -- Expand out all the reflections and use `hf`, `hg`.
@@ -263,7 +289,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
     match_scalars
     · linear_combination (norm := ring_nf) -S_eval_t_sub_two (m + 1)
     · ring_nf
-  | hn m ih =>
+  | pred m ih =>
     -- Apply the inductive hypothesis.
     rw [sub_eq_add_neg (-m : ℤ) 1, add_comm (-m : ℤ) (-1), zpow_add, zpow_neg_one, mul_inv_rev,
       reflection_inv, reflection_inv, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
@@ -289,7 +315,7 @@ lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ)
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R m).eval t * -g x) • y := by
   rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self hf hg m t ht]
   -- Expand out all the reflections and use `hf`, `hg`.
-  simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
+  simp only [reflection_apply, map_add, map_smul, hg]
   -- Equate coefficients of `x` and `y`.
   module
 
@@ -320,20 +346,20 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
     simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
-      LinearMap.id_coe, LinearEquiv.coe_coe, LinearMap.mul_apply, LinearMap.add_apply, id_eq,
+      LinearMap.id_coe, LinearEquiv.coe_coe, Module.End.mul_apply, LinearMap.add_apply, id_eq,
       LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel_left,
       smul_neg, sub_neg_eq_add, sub_smul]
     abel
   replace hu : ∀ (n : ℕ),
       ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
-    intros n
+    intro n
     induction n with
     | zero => simp
     | succ n ih =>
       have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by
         ext; simp [hf₁, hg₁]
       rw [pow_succ', LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
-      simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
+      simp_rw [Module.End.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
         add_assoc, Nat.cast_succ, add_smul, one_smul]
   suffices IsOfFinOrder u by
     obtain ⟨n, hn₀, hn₁⟩ := isOfFinOrder_iff_pow_eq_one.mp this

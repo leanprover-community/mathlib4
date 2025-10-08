@@ -5,12 +5,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
   Patrick Massot
 -/
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.ApplyFun
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.FinCases
 
 /-!
 # Huang's sensitivity theorem
@@ -62,7 +62,7 @@ instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
 instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
-(ie. the image of zero). -/
+(i.e. the image of zero). -/
 def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
 
 namespace Q
@@ -154,7 +154,13 @@ end Q
 /-- The free vector space on vertices of a hypercube, defined inductively. -/
 def V : ℕ → Type
   | 0 => ℝ
-  | Nat.succ n => V n × V n
+  | n + 1 => V n × V n
+
+@[simp]
+theorem V_zero : V 0 = ℝ := rfl
+
+@[simp]
+theorem V_succ {n : ℕ} : V (n + 1) = (V n × V n) := rfl
 
 namespace V
 
@@ -193,24 +199,22 @@ variable {n : ℕ}
 
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
-  induction' n with n IH
-  · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
+  induction n with
+  | zero => simp [Subsingleton.elim (α := Q 0) p q, ε, e]
+  | succ n IH =>
     dsimp [ε, e]
-    simp
-    rfl
-  · dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
-      repeat rw [Bool.cond_true]
-      repeat rw [Bool.cond_false]
-      simp only [LinearMap.fst_apply, LinearMap.snd_apply, LinearMap.comp_apply, IH, V]
+      simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
+        LinearMap.comp_apply, IH]
       congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
-  induction' n with n ih
-  · dsimp [ε] at h; exact h fun _ => true
-  · obtain ⟨v₁, v₂⟩ := v
+  induction n with
+  | zero => dsimp [ε] at h; exact h fun _ => true
+  | succ n ih =>
+    obtain ⟨v₁, v₂⟩ := v
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
       let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
@@ -229,7 +233,8 @@ and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval_same := by simp [duality]
   eval_of_ne _ _ h := by simp [duality, h]
-  total := @epsilon_total _
+  total h := sub_eq_zero.mp <| epsilon_total fun i ↦ by
+    simpa only [map_sub, sub_eq_zero] using h i
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
 since this cardinal is finite, as a natural number in `finrank_V` -/
@@ -256,7 +261,7 @@ theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
 defined inductively as a ℝ-linear map from `V n` to `V n`. -/
 noncomputable def f : ∀ n, V n →ₗ[ℝ] V n
   | 0 => 0
-  | Nat.succ n =>
+  | n + 1 =>
     LinearMap.prod (LinearMap.coprod (f n) LinearMap.id) (LinearMap.coprod LinearMap.id (-f n))
 
 /-! The preceding definition uses linear map constructions to automatically
@@ -283,18 +288,19 @@ theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
   | zero =>  simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
   | succ n IH =>
-    cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
+    cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc]; abel
 
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/
 
 open Classical in
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
-  induction' n with n IH
-  · intro p q
+theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
+  induction n with
+  | zero =>
     dsimp [f]
     simp [Q.not_adjacent_zero]
-  · intro p q
+    rfl
+  | succ n IH =>
     have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split_ifs <;> norm_num
     dsimp only [e, ε, f, V]; rw [LinearMap.prod_apply]; dsimp; cases hp : p 0 <;> cases hq : q 0
     all_goals
@@ -316,19 +322,19 @@ variable {m : ℕ}
 
 
 theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
-  delta g; intro v; erw [LinearMap.prod_apply]; simp
+  delta g; intro v; simp
 
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
+  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
   have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
-  simp [this, f_squared, smul_add, add_smul, smul_smul, V]
+  simp [this, f_squared, smul_add, add_smul, smul_smul]
   abel
 
 /-!
@@ -415,7 +421,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
   let s := √ (m + 1)
-  suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_right H_q_pos).mp ‹_›
+  suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_iff_left₀ H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
   calc
     s * |ε q y| = |ε q (s • y)| := by
@@ -425,7 +431,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ =
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
             a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
-      erw [(f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
+      rw [lc_def, (f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
            Finsupp.linearCombination_apply]
     _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)
@@ -439,7 +445,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ = #((coeffs y).support ∩ q.adjacent.toFinset) * |coeffs y q| := by
       congr with x; simp; rfl
     _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
-      refine (mul_le_mul_right H_q_pos).2 ?_
+      refine (mul_le_mul_iff_left₀ H_q_pos).2 ?_
       norm_cast
       apply card_le_card
       rw [Set.toFinset_inter]

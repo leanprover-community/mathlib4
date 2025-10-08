@@ -36,6 +36,7 @@ structure FunPropDecls where
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
+set_option linter.style.docString.empty false in
 /-- -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
@@ -54,17 +55,17 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
-  let (xs,bi,b) ← forallMetaTelescope info.type
+  let (xs, bi, b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
-    throwError "invalid fun_prop declaration, has to be `Prop` valued function"
+    throwError "invalid fun_prop declaration, has to be `Prop`-valued function"
 
   let lvls := info.levelParams.map (fun l => Level.param l)
   let e := mkAppN (.const declName lvls) xs
   let path ← DiscrTree.mkPath e
 
   -- find the argument position of the function `f` in `P f`
-  let mut .some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
+  let mut some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
     if (← inferType x).isForall && bi.isExplicit then
       return true
     else
@@ -90,19 +91,18 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
 
   let decls ← ext.decls.getMatch e (← read)
 
-  if decls.size = 0 then
+  if h : decls.size = 0 then
     return none
+  else
+    if decls.size > 1 then
+      throwError "fun_prop bug: expression {← ppExpr e} matches multiple function properties\n\
+        {decls.map (fun d => d.funPropName)}"
 
-  if decls.size > 1 then
-    throwError "\
-fun_prop bug: expression {← ppExpr e} matches multiple function properties
-{decls.map (fun d => d.funPropName)}"
+    let decl := decls[0]
+    unless decl.funArgId < e.getAppNumArgs do return none
+    let f := e.getArg! decl.funArgId
 
-  let decl := decls[0]!
-  unless decl.funArgId < e.getAppNumArgs do return none
-  let f := e.getArg! decl.funArgId
-
-  return (decl,f)
+    return (decl,f)
 
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
@@ -115,15 +115,15 @@ def isFunPropGoal (e : Expr) : MetaM Bool := do
 /-- Returns function property declaration from `e = P f`. -/
 def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do
   match ← getFunProp? e with
-  | .some (decl,_) => return decl
-  | .none => return none
+  | some (decl, _) => return decl
+  | none => return none
 
 
 /-- Returns function `f` from `e = P f` and `P` is function property. -/
 def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
   match ← getFunProp? e with
-  | .some (_,f) => return f
-  | .none => return none
+  | some (_, f) => return f
+  | none => return none
 
 
 open Elab Term in

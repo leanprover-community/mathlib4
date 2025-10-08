@@ -37,7 +37,7 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | (n : ℕ) => abs_of_nonneg <| ofNat_zero_le _
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 
-@[simp, norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
+@[norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
 
@@ -76,9 +76,9 @@ theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := b
   | (n : ℕ) => simp [abs_eq_natAbs]
   | -[n+1] =>
       simp only [negSucc_ne_zero, abs_eq_natAbs, natAbs_negSucc, succ_eq_add_one,
-        natCast_add, Nat.cast_ofNat_Int, add_left_eq_self, natCast_eq_zero, false_or, reduceNeg]
-      rw [negSucc_eq']
-      omega
+        Int.natCast_add, cast_ofNat_Int, add_eq_right, natCast_eq_zero, false_or, reduceNeg]
+      rw [negSucc_eq]
+      cutsat
 
 theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
   add_one_le_iff.mpr (abs_pos.mpr h₀)
@@ -87,10 +87,10 @@ lemma eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 :=
   by_contra h
   have := Int.natAbs_le_of_dvd_ne_zero h1 h
   rw [Int.abs_eq_natAbs] at h2
-  omega
+  cutsat
 
 lemma abs_sub_lt_of_lt_lt {m a b : ℕ} (ha : a < m) (hb : b < m) : |(b : ℤ) - a| < m := by
-  rw [abs_lt]; omega
+  rw [abs_lt]; cutsat
 
 /-! #### `/`  -/
 
@@ -105,14 +105,14 @@ theorem ediv_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b
 theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
   abs_by_cases (fun i => a % i = a % b) rfl (emod_neg _ _)
 
-theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
+theorem emod_lt_abs (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
 
 /-! ### properties of `/` and `%` -/
 
 theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
   suffices ∀ (a : ℤ) (n : ℕ), |a / n| ≤ |a| from fun a b =>
-    match b, eq_nat_or_neg b with
+    match b, Int.eq_nat_or_neg b with
     | _, ⟨n, Or.inl rfl⟩ => this _ _
     | _, ⟨n, Or.inr rfl⟩ => by rw [Int.ediv_neg, abs_neg]; apply this
   fun a n => by
@@ -123,12 +123,17 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
       | -[m+1], 0 => Nat.zero_le _
       | -[m+1], n + 1 => Nat.succ_le_succ (Nat.div_le_self _ _))
 
-theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
-  rw [abs_eq_natAbs, natAbs_sign_of_nonzero hz, Int.ofNat_one]
+theorem abs_sign_of_ne_zero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
+  rw [abs_eq_natAbs, natAbs_sign_of_ne_zero hz, Int.ofNat_one]
 
-protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
+@[deprecated (since := "2025-09-03")]
+alias abs_sign_of_nonzero := abs_sign_of_ne_zero
+
+protected theorem sign_eq_ediv_abs' (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
+
+@[deprecated (since := "2025-03-10")] alias sign_eq_ediv_abs := Int.sign_eq_ediv_abs'
 
 protected theorem sign_eq_abs_ediv (a : ℤ) : sign a = |a| / a :=
   if az : a = 0 then by simp [az]

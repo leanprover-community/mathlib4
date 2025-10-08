@@ -54,8 +54,8 @@ theorem prod_antidiagonal_eq_prod_range_succ_mk {M : Type*} [CommMonoid M] (f : 
 
 /-- This lemma matches more generally than `Finset.Nat.prod_antidiagonal_eq_prod_range_succ_mk` when
 using `rw ← `. -/
-@[to_additive "This lemma matches more generally than
-`Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ← `."]
+@[to_additive /-- This lemma matches more generally than
+`Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` when using `rw ← `. -/]
 theorem prod_antidiagonal_eq_prod_range_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     ∏ ij ∈ antidiagonal n, f ij.1 ij.2 = ∏ k ∈ range n.succ, f k (n - k) :=
   prod_antidiagonal_eq_prod_range_succ_mk _ _
