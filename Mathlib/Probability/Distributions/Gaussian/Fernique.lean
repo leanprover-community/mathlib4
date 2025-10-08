@@ -31,19 +31,6 @@ As a consequence, a Gaussian measure has finite moments of all orders.
 open MeasureTheory ProbabilityTheory Complex NormedSpace
 open scoped ENNReal NNReal Real Topology
 
-section Aux
-
-lemma two_mul_le_add_mul_sq {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {a b ε : R} (hε : 0 < ε) :
-    2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
-  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
-  calc 2 * a * b
-  _ = (2 * (ε * a) * b) / ε := by field_simp
-  _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
-  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by field_simp
-
-end Aux
-
 namespace ProbabilityTheory.IsGaussian
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
