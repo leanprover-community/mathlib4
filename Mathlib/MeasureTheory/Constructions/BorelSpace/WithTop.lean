@@ -9,13 +9,16 @@ import Mathlib.Topology.Order.WithTop
 /-!
 # Borel measurable space on `WithTop`
 
-## Main definitions
-
-* `FooBar`
+For `ι` a linear order with the order topology, we define the Borel measurable space on `WithTop ι`.
+We then prove that the natural inclusion `ι → WithTop ι` is measurable, and that the function
+`WithTop.untopA : WithTop ι → ι` (which sends `⊤` to an arbitrary element of `ι`) is measurable.
 
 ## Main statements
 
-* `fooBar_unique`
+* `measurable_of_measurable_comp_coe`: if `f : WithTop ι → α` is such that `f ∘ coe` is measurable,
+  then `f` is measurable.
+* `Measurable.withTop_coe`: the function `fun x : ι ↦ (x : WithTop ι)` is measurable.
+* `Measurable.untopA`: the function `WithTop.untopA : WithTop ι → ι` is measurable.
 
 -/
 

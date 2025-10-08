@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.Probability.Process.Adapted
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 
 /-!
