@@ -339,13 +339,13 @@ lemma aux_computation2' :
     have : MDifferentiableWithinAt 𝓘(𝕜, E) I φ.symm φ.target (φ x) := by
       have := mdifferentiableWithinAt_extChartAt_symm (I := I) (mem_extChartAt_target x)
       exact this.mono (extChartAt_target_subset_range x)
-    simp only [this, if_true]
-    simp only [writtenInExtChartAt, extChartAt, PartialHomeomorph.extend,
-        PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-        PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
-        PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
-        PartialEquiv.trans_refl, PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq,
-        preimage_id_eq, id_eq, modelWithCornersSelf_coe, range_id, inter_univ]
+    simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
+      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+      OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
+      PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
+      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
+      PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
+      range_id, inter_univ]
     rw [extChartAt_to_inv x, ← extChartAt_coe]
     -- debug why this line is needed!
     change fderivWithin 𝕜 (↑(extChartAt I x) ∘ ↑φ.symm) (extChartAt I x).target (φ x) = _
@@ -369,13 +369,13 @@ lemma aux_computation2 :
     rw [mfderivWithin]
     have : MDifferentiableWithinAt 𝓘(𝕜, E) I (↑φ.symm) (range ↑I) (φ x) :=
       mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
-    simp? [this] says
-      simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, PartialHomeomorph.extend,
-        PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-        PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
-        PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
-        PartialEquiv.trans_refl, PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq,
-        preimage_id_eq, id_eq, modelWithCornersSelf_coe, range_id, inter_univ]
+    simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
+      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+      OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
+      PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
+      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
+      PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
+      range_id, inter_univ]
     rw [extChartAt_to_inv x, ← extChartAt_coe]
     have : fderivWithin 𝕜 (φ ∘ φ.symm) (range I) (φ x) = fderivWithin 𝕜 id (range I) (φ x) := by
       refine fderivWithin_congr' ?_ ?_

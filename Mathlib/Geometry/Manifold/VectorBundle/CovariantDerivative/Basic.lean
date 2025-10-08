@@ -215,7 +215,7 @@ lemma mfderiv_smul [IsManifold I 1 M] {f : M → F} {s : M → 𝕜} {x : M} (hf
   have uniq : UniqueDiffWithinAt 𝕜 (range I) (I (φ x)) :=
     ModelWithCorners.uniqueDiffWithinAt_image I
   erw [fderivWithin_smul uniq hs' hf']
-  simp [PartialHomeomorph.left_inv φ (ChartedSpace.mem_chart_source x)]
+  simp [φ.left_inv (ChartedSpace.mem_chart_source x)]
   rfl
 
 end general_lemmas
