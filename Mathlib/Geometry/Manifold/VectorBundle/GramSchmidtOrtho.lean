@@ -7,7 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
-import Mathlib.Geometry.Manifold.Elaborators
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Gram-Schmidt orthonormalisation on sections of Riemannian vector bundles

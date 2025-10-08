@@ -5,9 +5,9 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-import Mathlib.Geometry.Manifold.Elaborators
 
 /-!
 # The tensoriality criterion
