@@ -439,18 +439,22 @@ lemma imaginaryPart_comp_subtype_selfAdjoint :
     LinearMap.comp_zero]
 
 @[simp]
+lemma selfAdjoint.realPart_coe {x : selfAdjoint A} : ℜ (x : A) = x :=
+  Subtype.ext x.property.coe_realPart
+
+@[simp]
+lemma selfAdjoint.imaginaryPart_coe {x : selfAdjoint A} : ℑ (x : A) = 0 :=
+  x.property.imaginaryPart
+
 lemma imaginaryPart_realPart {x : A} : ℑ (ℜ x : A) = 0 :=
   (ℜ x).property.imaginaryPart
 
-@[simp]
 lemma imaginaryPart_imaginaryPart {x : A} : ℑ (ℑ x : A) = 0 :=
   (ℑ x).property.imaginaryPart
 
-@[simp]
 lemma realPart_idem {x : A} : ℜ (ℜ x : A) = ℜ x :=
   Subtype.ext <| (ℜ x).property.coe_realPart
 
-@[simp]
 lemma realPart_imaginaryPart {x : A} : ℜ (ℑ x : A) = ℑ x :=
   Subtype.ext <| (ℑ x).property.coe_realPart
 
