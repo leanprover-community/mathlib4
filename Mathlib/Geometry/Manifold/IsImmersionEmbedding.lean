@@ -191,9 +191,11 @@ lemma property (h : IsImmersionAt F I I' n f x) :
     LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') :=
   IsImmersionAt.def.1 h
 
-/-- Roig and Domingues [roigdomingues1992] only require this inclusion between the targets of the
-local charts: in our setting, this is *slightly* weaker than `map_source_subset_source`:
-the latter implies that `h.codChart.extend I' ∘ f` maps `h.domChart.source` to
+/--
+Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
+between the targets of the local charts: using mathlib's formalisation conventions, that condition
+is *slightly* weaker than `map_source_subset_source`: the latter implies that
+`h.codChart.extend I' ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend I').target = (h.codChart.extend I) '' h.codChart.source`,
 but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
