@@ -159,4 +159,14 @@ theorem chainHeight_coe_univ : (@Set.univ ↑s).chainHeight (r ↑· ↑·) = s.
   have hs : Subtype.val ⁻¹'o (r · ·) = (fun x y : s ↦ r x y) := by funext; simp
   simpa [hs] using hc.symm
 
+@[simp]
+theorem chainHeight_coe_univ_le [LE α] :
+    (@Set.univ ↑s).chainHeight (· ≤ ·) = s.chainHeight (· ≤ ·) := by
+  simpa using chainHeight_coe_univ s (· ≤ ·)
+
+@[simp]
+theorem chainHeight_coe_univ_lt [LT α] :
+    (@Set.univ ↑s).chainHeight (· < ·) = s.chainHeight (· < ·) := by
+  simpa using chainHeight_coe_univ s (· < ·)
+
 end Set
