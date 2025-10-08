@@ -159,7 +159,7 @@ def mulShift (g : G) (x : G → A) : G → A :=
 
 /-- Composition of right-translation shifts corresponds to multiplication in the group. -/
 @[to_additive addShift_mul] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
-  mulShift (g₁ * g₂) x = mulShift g₁ (mulShift g₂ x) := by
+    mulShift (g₁ * g₂) x = mulShift g₁ (mulShift g₂ x) := by
   ext h; simp [mulShift, mul_assoc]
 
 
