@@ -246,6 +246,14 @@ end
 
 end ExSum
 
+structure Cache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) extends Ring.Cache sA where
+  crA : Option Q(CommRing $A)
+
+def mkCache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) : MetaM (Cache sA) := do return {
+  crA := (← trySynthInstanceQ q(CommRing $A)).toOption
+  toCache := ← Ring.mkCache sA
+}
+
 /- Copied from `ring` -/
 structure Result {u : Lean.Level} {A : Q(Type u)} (E : Q($A) → Type) (e : Q($A)) where
   /-- The normalized result. -/
@@ -409,18 +417,20 @@ def evalMul {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     let ⟨_, vd, pd⟩ ← evalAdd sAlg vc₁ vc₂
     return ⟨_, vd, q(add_mul_of_add $pc₁ $pc₂ $pd)⟩
 
-def evalNegProd {a : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A)) (va : ExProd sAlg a) :
+def evalNegProd {a : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A)) (va : ExProd sAlg a) :
     MetaM <| Result (ExProd sAlg) q(-$a) := do
   match va with
-  | .smul vr =>
-    let ⟨s, vs, pb⟩ ← Ring.evalNeg sR rR vr
-    return ⟨_, .smul vs, (q(neg_smul_one (R := $R) (A := $A) $pb):)⟩
+  | .smul (r := r) vr =>
+    assumeInstancesCommute
+    let ⟨s, vs, (pb : Q(-$r = $s))⟩ ← Ring.evalNeg sR (q(inferInstance)) vr
+    return ⟨_, .smul vs, (q(neg_smul_one (R := $R) (A := $A) $pb))⟩
   | .mul (x := x) (e := e) vx ve vb =>
+    assumeInstancesCommute
     let ⟨_, vc, pc⟩ ← evalNegProd rR rA vb
     return ⟨_, .mul vx ve vc,
-      (q(neg_pow_mul $x $e (R := $R) (A := $A) $pc):)⟩
+      (q(neg_pow_mul $x $e $pc))⟩
 
-def evalNeg {a : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A)) (va : ExSum sAlg a) :
+def evalNeg {a : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A)) (va : ExSum sAlg a) :
     MetaM <| Result (ExSum sAlg) q(-$a) := do
   match va with
   | .zero =>
@@ -429,9 +439,9 @@ def evalNeg {a : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A)) (va : ExSum sAlg a) 
   | .add va₁ va₂ =>
     let ⟨_, vb₁, pb₁⟩ ← evalNegProd sAlg rR rA va₁
     let ⟨_, vb₂, pb₂⟩ ← evalNeg rR rA va₂
-    return ⟨_, .add vb₁ vb₂, (q(neg_add (R := $R) (A := $A) $pb₁ $pb₂):)⟩
+    return ⟨_, .add vb₁ vb₂, (q(neg_add (A := $A) $pb₁ $pb₂):)⟩
 
-def evalSub {a b : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A))
+def evalSub {a b : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A))
     (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     MetaM <| Result (ExSum sAlg) q($a - $b) := do
   let ⟨_c, vc, pc⟩ ← evalNeg sAlg rR rA vb
@@ -446,7 +456,7 @@ def _root_.Mathlib.Tactic.Ring.Cache.cast (c : Ring.Cache sR) :
     czα := c.czα
 
 variable {a} in
-def evalCast (c : Ring.Cache q($sR)) :
+def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     NormNum.Result a → Option (Result (ExSum sAlg) a)
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute
@@ -457,11 +467,13 @@ def evalCast (c : Ring.Cache q($sR)) :
     pure ⟨_, (ExProd.smul (mkNat lit)).toSum,
       (q(by simp [← Algebra.algebraMap_eq_smul_one]; exact ($p).out))⟩
   | .isNegNat rA lit p => do
-    let some rR := c.rα | none
-    let ⟨r, vr⟩ := Ring.ExProd.mkNegNat sR rR lit.natLit!
+    let some crR := cR.crA | none
+    let some crA := cA.crA | none
+    let some rR := cR.rα | none
+    let ⟨r, vr⟩ := Ring.ExProd.mkNegNat q($sR) q($rR) lit.natLit!
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
     assumeInstancesCommute
-    pure ⟨_, (ExProd.smul vr.toSum).toSum, (q(isInt_negOfNat_eq (R := $R) $p):)⟩
+    pure ⟨_, (ExProd.smul vr.toSum).toSum, (q(isInt_negOfNat_eq $p))⟩
   -- We don't handle rational expressions in A at the moment.
   | _ => none
 
@@ -620,11 +632,11 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
   return ⟨r_cast, q(sorry)⟩
 
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
-    {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Ring.Cache q($sR))
-    (cacheA : Ring.Cache q($sA)) (e : Q($A)) :
+    {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Algebra.Cache q($sR))
+    (cacheA : Algebra.Cache q($sA)) (e : Q($A)) :
     AtomM (Result (ExSum sAlg) e) := Lean.withIncRecDepth do
   let els := do
-    try evalCast sAlg cacheR (← derive e)
+    try evalCast sAlg cacheR cacheA (← derive e)
     catch _ => evalAtom sAlg e
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, cacheA.rα, cacheA.dsα with
@@ -637,8 +649,9 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       have a : Q($A) := a'
       have : $a =Q $a' := ⟨⟩
       try
-        let ⟨r, (pf_smul : Q($r • $a = $r' • $a))⟩ ← evalSMulCast sAlg cacheR cacheA inst r' a
-        let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
+        let ⟨r, (pf_smul : Q($r • $a = $r' • $a))⟩ ←
+          evalSMulCast sAlg cacheR.toCache cacheA.toCache inst r' a
+        let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR.toCache q($r)
         let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
         let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
         assumeInstancesCommute
@@ -650,8 +663,8 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
   | ``DFunLike.coe, _, _ => match e with
     | ~q(DFunLike.coe (@algebraMap $R' _ $inst₁ $inst₂ $inst₃) $r') =>
       try
-        let ⟨r, pf_smul⟩ ← evalSMulCast sAlg cacheR cacheA q(inferInstance) r' q(1)
-        let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
+        let ⟨r, pf_smul⟩ ← evalSMulCast sAlg cacheR.toCache cacheA.toCache q(inferInstance) r' q(1)
+        let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR.toCache q($r)
         let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q(1)
         let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
         have pe : Q($e = $r' • 1) := q(Algebra.algebraMap_eq_smul_one $r')
@@ -668,16 +681,20 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
     | _ => els
   | ``Neg.neg, some rA, _ => match e with
     | ~q(-$a) =>
-      let some rR := cacheR.rα | els
+      let some crR := cacheR.crA | els
+      let some crA := cacheA.crA | els
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
-      let ⟨b, vb, p⟩ ← evalNeg sAlg rR rA va
+      let ⟨b, vb, p⟩ ← evalNeg sAlg crR crA va
+      assumeInstancesCommute
       pure ⟨b, vb, q(eval_neg $pa $p)⟩
   | ``HSub.hSub, some rA, _ | ``Sub.sub, some rA, _ => match e with
     | ~q($a - $b) =>
-      let some rR := cacheR.rα | els
+      let some crR := cacheR.crA | els
+      let some crA := cacheA.crA | els
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨_, vb, pb⟩ ← eval sAlg cacheR cacheA b
-      let ⟨c, vc, p⟩ ← evalSub sAlg rR rA va vb
+      let ⟨c, vc, p⟩ ← evalSub sAlg crR crA va vb
+      assumeInstancesCommute
       pure ⟨c, vc, q(eval_sub $pa $pb $p)⟩
     | _ => els
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
@@ -743,8 +760,8 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
 
   have e₁ : Q($A) := e₁
   have e₂ : Q($A) := e₂
-  let cr ← Ring.mkCache sR
-  let ca ← Ring.mkCache sA
+  let cr ← Algebra.mkCache sR
+  let ca ← Algebra.mkCache sA
   let (⟨a, exa, pa⟩ : Result (ExSum sAlg) e₁) ← eval sAlg cr ca e₁
   let (⟨b, exb, pb⟩ : Result (ExSum sAlg) e₂) ← eval sAlg cr ca e₂
 
@@ -824,23 +841,23 @@ def inferBase (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
   IO.println s!"Inferred ring {← ppExpr res.2}"
   return res
 
-def isAtomOrDerivable (c : Ring.Cache sR) (e : Q($A)) : AtomM (Option (Option (Result (ExSum sAlg) e))) := do
+def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)) : AtomM (Option (Option (Result (ExSum sAlg) e))) := do
   let els := try
-      pure <| some (evalCast sAlg c (← derive e))
+      pure <| some (evalCast sAlg cr ca (← derive e))
     catch _ => pure (some none)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  match n, c.rα, c.dsα with
-  | ``HAdd.hAdd, _, _ | ``Add.add, _, _
-  | ``HMul.hMul, _, _ | ``Mul.mul, _, _
-  | ``HSMul.hSMul, _, _
-  | ``HPow.hPow, _, _ | ``Pow.pow, _, _
-  | ``Neg.neg, some _, _
-  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
-  | ``Inv.inv, _, some _
-  | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
+  match n, ca.crA, cr.crA, ca.dsα with
+  | ``HAdd.hAdd, _, _, _ | ``Add.add, _, _, _
+  | ``HMul.hMul, _, _, _ | ``Mul.mul, _, _, _
+  | ``HSMul.hSMul, _, _, _
+  | ``HPow.hPow, _, _, _ | ``Pow.pow, _, _, _
+  | ``Neg.neg, some _, some _, _
+  | ``HSub.hSub, some _, some _, _ | ``Sub.sub, some _, some _, _
+  | ``Inv.inv, _, _, some _
+  | ``HDiv.hDiv, _, _, some _ | ``Div.div, _, _, some _ => pure none
   -- for algebraMap, should probably match more closely.
-  | ``DFunLike.coe, _, _ => pure none
-  | _, _, _ => els
+  | ``DFunLike.coe, _, _, _ => pure none
+  | _, _, _, _ => els
 
 def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
@@ -849,10 +866,10 @@ def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := 
   let sA ← synthInstanceQ q(CommSemiring $A)
   let sR ← synthInstanceQ q(CommSemiring $R)
   let sAlg ← synthInstanceQ q(Algebra $R $A)
-  let cr ← Ring.mkCache sR
-  let ca ← Ring.mkCache sA
+  let cr ← Algebra.mkCache sR
+  let ca ← Algebra.mkCache sA
   assumeInstancesCommute
-  let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sAlg) cr q($e) with
+  let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sAlg) cr ca q($e) with
   | none => eval sAlg cr ca e -- `none` indicates that `eval` will find something algebraic.
   | some none => failure -- No point rewriting atoms
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
@@ -905,8 +922,8 @@ where
   and returns a proof that they are equal (or fails). -/
   algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
       {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (e₁ e₂ : Q($A)) : AtomM Q($e₁ = $e₂) := do
-    let cr ← Ring.mkCache sR
-    let ca ← Ring.mkCache sA
+    let cr ← Algebra.mkCache sR
+    let ca ← Algebra.mkCache sA
     profileitM Exception "algebra" (← getOptions) do
       let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
       let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂
@@ -1040,8 +1057,8 @@ where
   algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
       {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (e₁ e₂ : Q($A)) :
       AtomM (Q($e₁ = $e₂) × List MVarId) := do
-    let cr ← Ring.mkCache sR
-    let ca ← Ring.mkCache sA
+    let cr ← Algebra.mkCache sR
+    let ca ← Algebra.mkCache sA
     profileitM Exception "algebra" (← getOptions) do
       let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
       let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂

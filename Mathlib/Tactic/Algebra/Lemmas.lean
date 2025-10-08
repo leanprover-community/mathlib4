@@ -12,10 +12,44 @@ open Mathlib.Meta.NormNum
 
 namespace Mathlib.Tactic.Algebra
 
+section ring
+
+variable {R A : Type*} [sR : CommRing R] [sA : CommRing A] [sAlg : Algebra R A]
+
+theorem neg_smul_one {r s : R} (h : -r = s) :
+    -(r • (1 : A)) = s • 1 := by
+  simp [← h]
+
+theorem neg_pow_mul (x : A) (e : ℕ) {b c : A} (h : -b = c) :
+    -(x ^ e * b) = x ^ e * c := by
+  simp [← h]
+
+theorem neg_add {a b c d : A} (ha : -a = c) (hb : -b = d) :
+    -(a + b) = c + d := by
+  simp [← ha, hb, add_comm]
+
+theorem sub_eq_add_neg' {a b c d : A} (hc : -b = c) (hd : a + c = d) :
+    a - b = d := by
+  subst_vars
+  exact sub_eq_add_neg a b
+
+theorem isInt_negOfNat_eq {a : A} {lit : ℕ} (h : IsInt a (Int.negOfNat lit)) :
+    a = (Int.rawCast (Int.negOfNat lit) + 0 : R) • (1 : A) + 0 := by
+  simp [h.out, ← Algebra.algebraMap_eq_smul_one]
+
+theorem eval_neg {a a' b : A} (ha : a = a') (hb : -a' = b) :
+    -a = b := by
+  grind
+
+theorem eval_sub {a b a' b' c : A} (ha : a = a') (hb : b = b') (hc : a' - b' = c) :
+    a - b = c := by
+  grind
+
+end ring
+
 variable {R A : Type*} [sR : CommSemiring R] [sA : CommSemiring A] [sAlg : Algebra R A]
 
-theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R}
-    (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :
+theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R} (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :
     a₁ + a₂ + (b₁ + b₂) = c₁ + c₂ := by
   rw [← h₁, ← h₂, add_assoc, add_assoc, add_left_comm a₂]
 
@@ -93,36 +127,9 @@ theorem add_add_add_comm' {a₁ a₂ b₁ b₂ c : A}
   subst_vars
   ring
 
-theorem neg_smul_one {r s : R} [Ring R] [Ring A] [Algebra R A]
-    (h : -r = s) :
-    -(r • (1 : A)) = s • 1 := by
-  sorry
-
-
-theorem neg_pow_mul (x : A) (e : ℕ) {b c : A} [Ring R] [Ring A]
-    (h : -b = c) :
-    -(x ^ e * b) = x ^ e * c := by
-  sorry
-
-theorem neg_add {a b c d : A} [Ring R] [Ring A]
-    (ha : -a = c) (hb : -b = d) :
-    -(a + b) = c + d := by
-  sorry
-
-theorem sub_eq_add_neg' {a b c d : A} [Ring R] [Ring A]
-    (hc : -b = c) (hd : a + c = d) :
-    a - b = d := by
-  subst_vars
-  sorry
-
 theorem isNat_zero_eq {a : A} [AddMonoidWithOne A]
     (h : IsNat a 0) :
     a = 0 := by
-  sorry
-
-theorem isInt_negOfNat_eq {a : A} {lit : ℕ} [Ring R] [Ring A]
-    (h : IsInt a (Int.negOfNat lit)) :
-    a = (Int.rawCast (Int.negOfNat lit) + 0 : R) • (1 : A) + 0 := by
   sorry
 
 theorem pow_eq_pow_mul_smul_one {a : A} {b : ℕ} :
@@ -192,16 +199,6 @@ theorem atom_eq_pow_one_mul_smul_one_add_zero' {a e : A}
 theorem eval_add {a b a' b' c : A}
     (ha : a = a') (hb : b = b') (hc : a' + b' = c) :
     a + b = c := by
-  sorry
-
-theorem eval_neg {a a' b : A} [Ring A]
-    (ha : a = a') (hb : -a' = b) :
-    -a = b := by
-  sorry
-
-theorem eval_sub {a b a' b' c : A} [Ring A]
-    (ha : a = a') (hb : b = b') (hc : a' - b' = c) :
-    a - b = c := by
   sorry
 
 theorem eval_mul {a b a' b' c : A}
@@ -290,3 +287,5 @@ theorem add_mul_of_add {a₁ a₂ b c₁ c₂ c : A}
     (pc₁ : a₁ * b = c₁) (pc₂ : a₂ * b = c₂) (pd : c₁ + c₂ = c) :
     (a₁ + a₂) * b = c := by
   sorry
+
+end Mathlib.Tactic.Algebra
