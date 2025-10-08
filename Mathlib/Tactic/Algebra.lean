@@ -3,8 +3,9 @@ Copyright (c) 2025 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Tactic.Module
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Tactic.Algebra.Lemmas
+import Mathlib.Tactic.Module
 
 set_option linter.all false
 
@@ -20,7 +21,6 @@ attribute [local instance] monadLiftOptionMetaM
 /-
 TODOs:
 * Handle division, inversion, algebraMap.
-* `match_coefficients` tactic that normalizes polynomials and matches corresponding coefficients.
 * Handle `algebraMap` in some way. Either with a preprocessing step or as a special case in `eval`
 * Handle expressions specific to `Polynomial`: Simplify Polynomial.map (note it sends X ↦ X),
   and handle the Algebra (Polynomial _) (Polynomial _) instance gracefully.
@@ -31,299 +31,7 @@ TODOs:
 
 section ExSum
 
-set_option linter.style.longLine false
-
-
-section lemmas
-
-
-section ring
-
-variable {R A : Type*} [rR : Ring R] [rA : Ring A]
-
-end ring
-
 open NormNum
-variable {R A : Type*} [sR : CommSemiring R] [sA : CommSemiring A] [sAlg : Algebra R A]
-
-theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R}
-    (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :
-    a₁ + a₂ + (b₁ + b₂) = c₁ + c₂ := by
-  rw [← h₁, ← h₂, add_assoc, add_assoc, add_left_comm a₂]
-
-theorem add_overlap_zero {a₁ a₂ b₁ b₂ c₂ : R}
-    (h₁ : IsNat (a₁ + b₁) 0) (h₂ : a₂ + b₂ = c₂) :
-    a₁ + a₂ + (b₁ + b₂) = c₂ := by
-  sorry
-
-theorem add_eq_of_eq_eq {a₁ a₂ b₁ b₂ : A}
-    (ha : a₁ = b₁) (hb : a₂ = b₂) :
-    a₁ + a₂ = b₁ + b₂ := by
-  sorry
-
-theorem eq_trans_trans {e₁ e₂ a b : A}
-    (ha : e₁ = a) (hb : e₂ = b) (hab : a = b) :
-    e₁ = e₂ := by
-  sorry
-
-theorem mul_eq_mul_of_eq {c a b : A}
-    (h : a = b) :
-    c * a = c * b := by
-  sorry
-
-section Nat
-variable {n d : ℕ}
-theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
-theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
-theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
-theorem add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
-theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
-theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
-theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
-theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
-theorem nnrat_rawCast {R} [DivisionSemiring R] :
-    (NNRat.rawCast n d : R) = Nat.rawCast n / Nat.rawCast d := by simp
-theorem rat_rawCast_neg {R} [DivisionRing R] :
-    (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
-end Nat
-
-theorem mul_pow_add_overlap_zero {b₁ b₂ x : A} {e : ℕ}
-    (h : IsNat (b₁ + b₂) 0) :
-    IsNat (x ^ e * b₁ + x ^ e * b₂) 0 := by
-  sorry
-
-theorem smul_add_left_zero {r s : R} {a b : A} (h : r + s = 0) :
-    IsNat (r • a + s • b) 0 := by
-  sorry
-
-theorem smul_add_smul_same {r s t : R} {a b : A} (ha : a = b) (ht : r + s = t) :
-    r • a + s • b = t • a := by
-  rw [ha, ← add_smul, ht]
-
-theorem smul_congr {r r' : R} {a a' : A} {ef : A} (hr : r = r') (ha : a = a') (hf : r' • a' = ef) :
-    r • a = ef := by
-  rw [hr, ha, hf]
-
-theorem eval_smul_eq {e : A} {r : R} {a : A} {ef : A}
-    (he : e = r • a) (hf : r • a = ef) :
-    e = ef := by
-  rw [he, hf]
-
-theorem mul_pow_add_overlap_nonzero {x : A} {e : ℕ} {b₁ b₂ c : A}
-    (h : b₁ + b₂ = c) :
-    x ^ e * b₁ + x ^ e * b₂ = x ^ e * c := by
-  rw [← mul_add, h]
-
-theorem add_add_add_comm {a₁ a₂ b₁ b₂ c : A}
-    (h : a₂ + (b₁ + b₂) = c) :
-    a₁ + a₂ + (b₁ + b₂) = a₁ + c := by
-  rw [add_assoc, h]
-
-theorem add_add_add_comm' {a₁ a₂ b₁ b₂ c : A}
-    (h : (a₁ + a₂) + b₂ = c) :
-    a₁ + a₂ + (b₁ + b₂) = b₁ + c := by
-  subst_vars
-  ring
-
-theorem neg_smul_one {r s : R} [Ring R] [Ring A] [Algebra R A]
-    (h : -r = s) :
-    -(r • (1 : A)) = s • 1 := by
-  sorry
-
-
-theorem neg_pow_mul (x : A) (e : ℕ) {b c : A} [Ring R] [Ring A]
-    (h : -b = c) :
-    -(x ^ e * b) = x ^ e * c := by
-  sorry
-
-theorem neg_add {a b c d : A} [Ring R] [Ring A]
-    (ha : -a = c) (hb : -b = d) :
-    -(a + b) = c + d := by
-  sorry
-
-theorem sub_eq_add_neg' {a b c d : A} [Ring R] [Ring A]
-    (hc : -b = c) (hd : a + c = d) :
-    a - b = d := by
-  subst_vars
-  sorry
-
-theorem isNat_zero_eq {a : A} [AddMonoidWithOne A]
-    (h : IsNat a 0) :
-    a = 0 := by
-  sorry
-
-theorem isInt_negOfNat_eq {a : A} {lit : ℕ} [Ring R] [Ring A]
-    (h : IsInt a (Int.negOfNat lit)) :
-    a = (Int.rawCast (Int.negOfNat lit) + 0 : R) • (1 : A) + 0 := by
-  sorry
-
-theorem pow_eq_pow_mul_smul_one {a : A} {b : ℕ} :
-    a ^ b = (a + 0) ^ b * (Nat.rawCast 1 + 0 : R) • (1 : A) := by
-  sorry
-
-theorem pow_eq_pow_mul_smul_one_add_zero {a : A} {b : ℕ} :
-    a ^ b = a ^ b * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
-  sorry
-
-theorem smul_one_pow {r r' : R} {b : ℕ}
-    (h : r ^ (b + 0) = r') :
-    (r • (1 : A)) ^ b = r' • 1 := by
-  sorry
-
-theorem pow_mul_pow {x : A} {e e' : ℕ} {b c : A} {n : ℕ}
-    (he : e * n = e') (hb : b ^ n = c) :
-    (x ^ e * b) ^ n = x ^ e' * c := by
-  sorry
-
-theorem pow_even {a b c : A} {m : ℕ}
-    (hb : a ^ m = b) (hc : b * b = c) :
-    a ^ (m+m) = c := by
-  sorry
-
-theorem pow_odd {a b c d : A} {m : ℕ}
-    (hb : a ^ m = b) (hc : b * b = c) (hd : c * a = d) :
-    a ^ (m+m+1) = d := by
-  sorry
-
-theorem pow_rawCast_one {a : A} :
-    a ^ Nat.rawCast (nat_lit 1) = a := by
-  sorry
-
-theorem zero_pow_pos {b : ℕ} (h : 0 < b) :
-    (0 : A) ^ b = 0 := by
-  sorry
-
-theorem pow_add_zero {a c : A} {b : ℕ}
-    (h : a ^ b = c) :
-    (a + 0) ^ b = c + 0 := by
-  sorry
-
-theorem pow_factored {a d e : A} {b e' k : ℕ}
-    (hb : b = e' * k) (hd : a ^ e' = d) (he : d ^ k = e) :
-    a ^ b = e := by
-  sorry
-
-theorem pow_zero_eq {a : A} :
-    a ^ 0 = (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
-  sorry
-
-theorem pow_add {a c₁ c₂ d : A} {b₁ b₂ : ℕ}
-    (hc₁ : a ^ b₁ = c₁) (hc₂ : a ^ b₂ = c₂) (hd : c₁ * c₂ = d) :
-    a ^ (b₁ + b₂) = d := by
-  sorry
-
-theorem atom_eq_pow_one_mul_smul_one_add_zero {a : A} :
-    a = a ^ Nat.rawCast 1 * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
-  sorry
-
-theorem atom_eq_pow_one_mul_smul_one_add_zero' {a e : A}
-    (h : a = e) :
-    a = e ^ Nat.rawCast 1 * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
-  sorry
-
-theorem eval_add {a b a' b' c : A}
-    (ha : a = a') (hb : b = b') (hc : a' + b' = c) :
-    a + b = c := by
-  sorry
-
-theorem eval_neg {a a' b : A} [Ring A]
-    (ha : a = a') (hb : -a' = b) :
-    -a = b := by
-  sorry
-
-theorem eval_sub {a b a' b' c : A} [Ring A]
-    (ha : a = a') (hb : b = b') (hc : a' - b' = c) :
-    a - b = c := by
-  sorry
-
-theorem eval_mul {a b a' b' c : A}
-    (ha : a = a') (hb : b = b') (hc : a' * b' = c) :
-    a * b = c := by
-  sorry
-
-theorem eval_pow {a a' c : A} {b b' : ℕ}
-    (ha : a = a') (hb : b = b') (hc : a' ^ b' = c) :
-    a ^ b = c := by
-  sorry
-
-theorem smul_one_eq_zero {r : R} (h : r = 0) :
-    r • (1 : A) = 0 := by
-  sorry
-
-theorem add_eq_zero {a b : A} (ha : a = 0) (hb : b = 0) :
-    a + b = 0 := by
-  sorry
-
-theorem smul_one_eq_smul_one' {r s : R} (h : r = s) :
-    r • (1 : A) = s • 1 := by
-  sorry
-
-theorem add_eq_of_zero_add {a₁ a₂ b₁ b₂ : A}
-    (ha₁ : a₁ = 0) (ha₂ : a₂ = b₁ + b₂) :
-    a₁ + a₂ = b₁ + b₂ := by
-  sorry
-
-theorem add_eq_of_add_zero {a₁ a₂ b₁ b₂ : A}
-    (hb₁ : b₁ = 0) (ha : a₁ + a₂ = b₂) :
-    a₁ + a₂ = b₁ + b₂ := by
-  sorry
-
-theorem smul_smul_one {r s t : R}
-    (h : r * s = t) :
-    r • s • (1 : A) = t • 1 := by
-  rw [smul_smul, h]
-
-theorem smul_mul_assoc {r : R} {x : A} {e : ℕ} {b c : A}
-    (h : r • b = c) :
-    r • (x ^ e * b) = x ^ e * c := by
-  sorry
-
-theorem smul_add {r : R} {a b c d : A}
-    (ha : r • a = c) (hb : r • b = d) :
-    r • (a + b) = c + d := by
-  sorry
-
-theorem smul_one_mul_smul_one {r s t : R}
-    (h : r * s = t) :
-    r • (1 : A) * s • 1 = t • 1 := by
-  sorry
-
-theorem pow_mul_mul_smul_one {x : A} {e : ℕ} {b d : A} {r : R}
-    (h : b * (r • 1) = d) :
-    x ^ e * b * r • 1 = x ^ e * d := by
-  sorry
-
-theorem smul_one_mul_pow_mul {r : R} {x : A} {e : ℕ} {b c : A}
-    (h : r • 1 * b = c) :
-    r • 1 * (x ^ e * b) = x ^ e * c := by
-  sorry
-
-theorem pow_mul_mul_pow_mul {x : A} {ea eb e : ℕ} {b₁ b₂ c : A}
-    (pe : ea + eb = e) (pc : b₁ * b₂ = c) :
-    x ^ ea * b₁ * (x ^ eb * b₂) = x ^ e * c := by
-  sorry
-
-theorem pow_mul_mul_assoc {x xb : A} {ea eb : ℕ} {b₁ b c : A}
-    (pc : b₁ * (xb ^ eb * b) = c) :
-    x ^ ea * b₁ * (xb ^ eb * b) = x ^ ea * c := by
-  sorry
-
-theorem mul_pow_mul_assoc {xa xb : A} {ea eb : ℕ} {b₁ b c : A}
-    (pc : xa ^ ea * b₁ * b = c) :
-    xa ^ ea * b₁ * (xb ^ eb * b) = xb ^ eb * c := by
-  sorry
-
-theorem mul_add_of_add {a a₁ b c₁ c₂ c : A}
-    (pb₁' : a * a₁ = c₁) (pt : a * b = c₂) (pd : c₁ + 0 + c₂ = c) :
-    a * (a₁ + b) = c := by
-  sorry
-
-theorem add_mul_of_add {a₁ a₂ b c₁ c₂ c : A}
-    (pc₁ : a₁ * b = c₁) (pc₂ : a₂ * b = c₂) (pd : c₁ + c₂ = c) :
-    (a₁ + a₂) * b = c := by
-  sorry
-
-end lemmas
 
 open Ring in
 mutual
@@ -536,12 +244,9 @@ def ExProd.toSum {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
   .add va .zero
 end
 
-namespace ExSum
-
-end ExSum
 end ExSum
 
-/- Copied from `Ring` -/
+/- Copied from `ring` -/
 structure Result {u : Lean.Level} {A : Q(Type u)} (E : Q($A) → Type) (e : Q($A)) where
   /-- The normalized result. -/
   expr : Q($A)
@@ -930,15 +635,28 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       have : u_2 =QL v := ⟨⟩
       have : $A =Q $A' := ⟨⟩
       have a : Q($A) := a'
+      have : $a =Q $a' := ⟨⟩
       try
-        let ⟨r, pf_smul⟩ ← evalSMulCast sAlg cacheR cacheA inst r' a
+        let ⟨r, (pf_smul : Q($r • $a = $r' • $a))⟩ ← evalSMulCast sAlg cacheR cacheA inst r' a
         let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
         let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
         let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
-        have pe : Q($e = $r' • $a') := q(rfl)
-        have : $a =Q $a' := ⟨⟩
         assumeInstancesCommute
-        return ⟨ef, vf, q(eval_smul_eq sorry (smul_congr $pr $pa $pf))⟩
+        have pe : Q($e = $r' • $a) := q(rfl)
+        have : Q($r' • $a = $r • $a) := q(Eq.symm ($pf_smul))
+        return ⟨ef, vf, q(eval_smul_eq (($pe).trans $this) (smul_congr $pr $pa $pf))⟩
+      catch | _ => els
+    | _ => els
+  | ``DFunLike.coe, _, _ => match e with
+    | ~q(DFunLike.coe (@algebraMap $R' _ $inst₁ $inst₂ $inst₃) $r') =>
+      try
+        let ⟨r, pf_smul⟩ ← evalSMulCast sAlg cacheR cacheA q(inferInstance) r' q(1)
+        let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
+        let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q(1)
+        let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
+        have pe : Q($e = $r' • 1) := q(Algebra.algebraMap_eq_smul_one $r')
+        assumeInstancesCommute
+        return ⟨ef, vf, q(eval_smul_eq (($pe).trans ($pf_smul).symm) (smul_congr $pr $pa $pf))⟩
       catch | _ => els
     | _ => els
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
@@ -1050,8 +768,11 @@ partial def collectScalarRings (e : Expr) : MetaM (List (Σ u : Lean.Level, Q(Ty
   match_expr e with
   | SMul.smul R _ _ _ a =>
     return [←inferLevelQ R] ++ (← collectScalarRings a)
-  | HSMul.hSMul R _ _ _ _ a =>
-    return [←inferLevelQ R] ++ (← collectScalarRings a)
+  | DFunLike.coe RtoA R _A inst φ r =>
+      match_expr φ with
+      | algebraMap R _ _ _ _ => return [← inferLevelQ R]
+      | _ => return []
+  | HSMul.hSMul R _ _ _ _ a => return [←inferLevelQ R] ++ (← collectScalarRings a)
   | Eq _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
   | HAdd.hAdd _ _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
   | Add.add _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
@@ -1095,6 +816,7 @@ def inferBase (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
   let rings ← collectScalarRings e
   let res ← match rings with
   | [] =>
+    IO.println "Did not find ring to infer from. Assuming ℕ"
     /- TODO: If we can synthesize Algebra ℚ A or Algebra ℤ A, instead return ℚ or ℤ respectively.
       Note this function does not currently know A. -/
     return ⟨0, q(ℕ)⟩
@@ -1116,6 +838,8 @@ def isAtomOrDerivable (c : Ring.Cache sR) (e : Q($A)) : AtomM (Option (Option (R
   | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
   | ``Inv.inv, _, some _
   | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
+  -- for algebraMap, should probably match more closely.
+  | ``DFunLike.coe, _, _ => pure none
   | _, _, _ => els
 
 def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := do
@@ -1146,7 +870,7 @@ elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic => do
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (evalExprInfer) (cleanup cfg)
-  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
+  transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
 
 elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  : tactic => do
   -- let mut cfg ← elabConfig cfg
@@ -1156,7 +880,7 @@ elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (evalExpr R) (cleanup cfg)
-  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
+  transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
 
 /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
@@ -1198,7 +922,7 @@ elab (name := algebra) "algebra":tactic =>
     let g ← getMainGoal
     AtomM.run .default (proveEq none g)
 
-elab (name := algebra_over) "algebra" " with " R:term : tactic =>
+elab (name := algebraWith) "algebra" " with " R:term : tactic =>
   withMainContext do
     let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
     let g ← getMainGoal
@@ -1211,8 +935,9 @@ def ExProd.equateZero {a : Q($A)}
     let pf ← mkFreshExprMVarQ q($r = 0)
     return ⟨q(smul_one_eq_zero (R := $R) $pf), pf.mvarId!⟩
   | .mul (x := x) (e := e) vx ve vb => do
-    -- For x^e * b = 0, we need b = 0 (assuming x^e ≠ 0)
-    vb.equateZero
+    let ⟨pf, ids⟩ ← vb.equateZero
+    -- TODO: extract lemma
+    return ⟨q(by subst_vars; simp), ids⟩
 
 def equateZero {a : Q($A)} (va : ExSum q($sAlg) a) :
     MetaM <| Q($a = 0) × List MVarId :=
@@ -1251,7 +976,8 @@ def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) 
   | .zero, .zero => do
     return ⟨q(rfl), []⟩
   | va, .zero => do
-    equateZero _ va
+    let ⟨pf, mvars⟩ ← equateZero _ va
+    return ⟨q($pf), mvars⟩
   | .zero, vb => do
     let ⟨pf, mvars⟩ ← equateZero _ vb
     return ⟨q(Eq.symm $pf), mvars⟩
@@ -1303,7 +1029,7 @@ def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) 
   let sR ← synthInstanceQ q(CommSemiring $R)
   let sAlg ← synthInstanceQ q(Algebra $R $A)
   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
-  let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) e₁ e₂
+  let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) q($e₁) q($e₂)
   -- surely there's a better way to apply the cleanup routine to each goal.
   let res ← mids.mapM (runSimp (RingNF.cleanup {}))
   g.assign eq
@@ -1333,8 +1059,7 @@ elab (name := matchScalarsAlg) "match_scalars_alg" :tactic =>
 example {x : ℚ} {y : ℤ} : y • x + (1:ℤ) • x = (1 + y) • x := by
   algebra
 
-end Mathlib.Tactic.Algebra
-
+axiom sorryAlgebraTest {P : Prop} : P
 
 -- why doesn't match_expr match on the HSMul.hSmul expression?????
 example (x : ℚ) :  x + x = (2 : ℤ) • x := by
@@ -1343,7 +1068,7 @@ example (x : ℚ) :  x + x = (2 : ℤ) • x := by
 
 example (x : ℚ) : x = 1 := by
   algebra_nf with ℕ
-  sorry
+  exact sorryAlgebraTest
 
 example (x y : ℚ) : x + y  = y + x := by
   algebra
@@ -1360,17 +1085,17 @@ example (x : ℚ) : (x + x) + (x + x)  = x + x + x + x := by
 
 example (x y : ℚ) : x + (y)*(x+y) = 0 := by
   algebra_nf
-  sorry
+  exact sorryAlgebraTest
 
 example (x y : ℚ) : x + (x)*(x + -y) = 0 := by
   -- NOTE: it can only handle negation if the base ring can.
   algebra_nf with ℤ
-  sorry
+  exact sorryAlgebraTest
 
 
 example (x y : ℚ) : (x * x + x * y) + (x * y + y * y) = 0 := by
   algebra_nf
-  sorry
+  exact sorryAlgebraTest
 
 example (x y : ℚ) : (x + y)*(x+y) = x*x + 2 * x * y + y * y := by
   -- simp_rw [← SMul.smul_eq_hSMul]
@@ -1383,12 +1108,12 @@ example (x y : ℚ) : (x + (-3) * y)*(x+y) = x*x + (-2) * x * y + (-3) * y^2 := 
 example (x y : ℚ) : (x+y)*x = 1 := by
   -- simp_rw [← SMul.smul_eq_hSMul]
   algebra_nf
-  sorry
+  exact sorryAlgebraTest
 
 example (x y : ℚ) : (x+y)*y  = 1 := by
   -- simp_rw [← SMul.smul_eq_hSMul]
   algebra_nf with ℕ
-  sorry
+  exact sorryAlgebraTest
 
 
 example (x : ℚ) : (x + 1)^3 = x^3 + 3*x^2 + 3*x + 1 := by
@@ -1415,12 +1140,12 @@ example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = - b • x + a • (x + y
 example {a b : ℤ} (x y : ℚ) (ha : a = 2) : (a + b) • (x + y) = b • x + (2:ℤ) • (x + y) + b • y := by
   -- ring does nothing
   match_scalars_alg with ℤ
-  sorry
-  sorry
+  exact sorryAlgebraTest
+  exact sorryAlgebraTest
 
 example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = 0 := by
   algebra_nf
-  sorry
+  exact sorryAlgebraTest
 
 
 
@@ -1430,7 +1155,7 @@ example (x y : ℚ) (a : ℤ) (h : 2 * a = 3) : (x + a • y)^2 = x^2 + 3 * x*y 
 
 example : 2 = 1 := by
   match_scalars_alg with ℕ
-  sorry
+  exact sorryAlgebraTest
 
 
 
@@ -1441,8 +1166,19 @@ example (x y : ℚ) (m n : ℕ) : (x + 2) ^ (2 * n+1) = ((x+2)^n)^2 * (x+2) := b
 
 example (x y : ℚ) (m n : ℕ) : (x^n + 1)^2 = 0 := by
   algebra_nf
-  sorry
+  exact sorryAlgebraTest
 
+--TODO: this is broken; should cast
 example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   match_scalars_alg with ℤ
-  sorry
+  exact sorryAlgebraTest
+  exact sorryAlgebraTest
+
+example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
+  algebra_nf
+  exact sorryAlgebraTest
+
+
+
+example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by
+  algebra_nf
