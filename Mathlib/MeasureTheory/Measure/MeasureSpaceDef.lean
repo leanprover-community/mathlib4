@@ -421,11 +421,11 @@ theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurab
 theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
   measurable_const.aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem aemeasurable_id : AEMeasurable id μ :=
   measurable_id.aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem aemeasurable_id' : AEMeasurable (fun x => x) μ :=
   measurable_id.aemeasurable
 
