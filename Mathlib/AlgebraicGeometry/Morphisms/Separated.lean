@@ -130,7 +130,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
     openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
-    hf (by rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.condition])
+    hf (by rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition])
   let i := 𝒰.idx (f.base ((pullback.fst f f).base x))
   obtain ⟨y : 𝒰.X i, hy : (𝒰.f i).base y = f.base _⟩ :=
     𝒰.covers (f.base ((pullback.fst f f).base x))
@@ -159,14 +159,14 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   let j := (𝒱 i).idx z
   obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, (pullback.diagonal ((𝒱 i).f j ≫ pullback.snd f (𝒰.f i))).base w, ?_⟩
-  rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
+  rw [← hz₁, ← hy, ← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply]
   simp only [diagonalCover, openCoverOfBase_I₀,
     Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
     Cover.pullbackHom, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
     PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X,
-    PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, comp_coeBase,
+    PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, Hom.comp_base,
     TopCat.hom_comp, ContinuousMap.comp_apply, ContinuousMap.comp_assoc]
-  simp_rw [← Scheme.comp_base_apply]
+  simp_rw [← Scheme.Hom.comp_apply]
   congr 5
   apply pullback.hom_ext <;> simp
 

@@ -73,7 +73,7 @@ theorem IsStableUnderBaseChange.pullback_fst_appTop
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
   erw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
       (AffineScheme.ofHom g)]
-  rw [Scheme.comp_appTop, CommRingCat.hom_comp, hP'.cancel_right_isIso,
+  rw [Scheme.Hom.comp_appTop, CommRingCat.hom_comp, hP'.cancel_right_isIso,
     AffineScheme.forgetToScheme_map]
   have := congr_arg Quiver.Hom.unop
       (PreservesPullback.iso_hom_fst AffineScheme.Γ.rightOp (AffineScheme.ofHom f)
@@ -115,7 +115,7 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
       CommRingCat.hom_comp, h₁.cancel_right_isIso]
     exact H ⟨_, U.prop.image_of_isOpenImmersion e.hom⟩
   · introv H U
-    rw [Scheme.comp_appLE, CommRingCat.hom_comp, h₁.cancel_left_isIso]
+    rw [Scheme.Hom.comp_appLE, CommRingCat.hom_comp, h₁.cancel_left_isIso]
     exact H U
 
 theorem affineLocally_respectsIso (h : RingHom.RespectsIso P) : (affineLocally P).RespectsIso :=
@@ -324,8 +324,8 @@ theorem of_source_openCover [IsAffine Y]
     specialize H i
     rw [← (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso _
       ((IsOpenImmersion.isoOfRangeEq (𝒰.f i) (S i).1.ι
-      Subtype.range_coe.symm).inv.app _), ← CommRingCat.hom_comp, ← Scheme.comp_appTop,
-      IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, Scheme.comp_appTop,
+      Subtype.range_coe.symm).inv.app _), ← CommRingCat.hom_comp, ← Scheme.Hom.comp_appTop,
+      IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, Scheme.Hom.comp_appTop,
       Scheme.Opens.ι_appTop, Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
     exact (f.appLE_congr _ rfl (by simp) (fun f => Q f.hom)).mp H
 
@@ -528,7 +528,7 @@ private lemma respects_isOpenImmersion_aux
       let f' : (V s).toScheme ⟶ U.ι ⁻¹ᵁ s := f ∣_ U.ι ⁻¹ᵁ s
       have hf' : P f' := IsLocalAtTarget.restrict hf _
       let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
-        (by simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp, Scheme.Opens.range_ι,
+        (by simpa only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, Scheme.Opens.range_ι,
           Opens.map_coe, Set.image_preimage_eq_iff, heq, Opens.coe_sSup] using le_sSup s.2)
       have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
         simp only [V, IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
@@ -539,7 +539,7 @@ private lemma respects_isOpenImmersion_aux
         use a, ha.symm
     · apply f.preimage_iSup_eq_top
       apply U.ι.image_injective
-      simp only [U.ι.image_iSup, U.ι.image_preimage_eq_opensRange_inter, Scheme.Opens.opensRange_ι]
+      simp only [U.ι.image_iSup, U.ι.image_preimage_eq_opensRange_inf, Scheme.Opens.opensRange_ι]
       conv_rhs => rw [Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι, heq]
       ext : 1
       have (i : Us) : U ⊓ i.1 = i.1 := by simp [heq, le_sSup i.property]

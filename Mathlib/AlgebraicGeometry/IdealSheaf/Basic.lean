@@ -454,7 +454,7 @@ nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
         intro x hxZ
         refine (PrimeSpectrum.mem_vanishingIdeal _ _).mp hx
           ((Spec.map (X.presheaf.map (homOfLE _).op)).base x) ?_
-        rwa [Set.mem_preimage, ← Scheme.comp_base_apply,
+        rwa [Set.mem_preimage, ← Scheme.Hom.comp_apply,
           IsAffineOpen.map_fromSpec _ (X.affineBasicOpen f).2]
       · letI : Algebra Γ(X, U) Γ(X, X.affineBasicOpen f) := F.hom.toAlgebra
         have : IsLocalization.Away f Γ(X, X.basicOpen f) :=
@@ -464,7 +464,7 @@ nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
         have : Topology.IsOpenEmbedding (Spec.map F).base :=
           localization_away_isOpenEmbedding Γ(X, X.basicOpen f) f
         rw [← U.2.map_fromSpec (X.affineBasicOpen f).2 (homOfLE (X.basicOpen_le f)).op,
-          Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp] at hx
+          Scheme.Hom.comp_base, TopCat.coe_comp, Set.preimage_comp] at hx
         generalize U.2.fromSpec.base ⁻¹' Z = Z' at hx ⊢
         replace hx : x ∈ vanishingIdeal ((Spec.map F).base ⁻¹' Z') := hx
         obtain ⟨I, hI, e⟩ :=
@@ -607,7 +607,7 @@ lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
 
 lemma Hom.le_ker_comp (f : X ⟶ Y) (g : Y.Hom Z) : g.ker ≤ (f ≫ g).ker := by
   refine ofIdeals_mono fun U ↦ ?_
-  rw [Scheme.comp_app f g U, CommRingCat.hom_comp, ← RingHom.comap_ker]
+  rw [Scheme.Hom.comp_app f g U, CommRingCat.hom_comp, ← RingHom.comap_ker]
   exact Ideal.ker_le_comap _
 
 lemma ker_eq_top_of_isEmpty (f : X.Hom Y) [IsEmpty X] : f.ker = ⊤ :=
@@ -730,7 +730,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
         ((coe_support_inter _ ⟨⊤, isAffineOpen_top _⟩).ge ⟨?_, Set.mem_univ x⟩).1
       · have := image_closure_subset_closure_image (f := (𝒰.f i).base)
           (𝒰.f i).base.1.2 (Set.mem_image_of_mem _ this)
-        rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, 𝒰.pullbackHom_map] at this
+        rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, 𝒰.pullbackHom_map] at this
         exact closure_mono (Set.range_comp_subset_range _ _) this
       · rw [← (𝒰.f i).isOpenEmbedding.injective.mem_set_image, Scheme.image_zeroLocus,
           ker_ideal_of_isPullback_of_isOpenImmersion f (𝒰.pullbackHom f i)

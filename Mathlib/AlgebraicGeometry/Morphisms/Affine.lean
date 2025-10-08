@@ -63,7 +63,7 @@ instance (priority := 900) [IsAffineHom f] : QuasiCompact f :=
 instance [IsAffineHom f] [IsAffineHom g] : IsAffineHom (f ≫ g) := by
   constructor
   intro U hU
-  rw [Scheme.comp_base, Opens.map_comp_obj]
+  rw [Scheme.Hom.comp_base, Opens.map_comp_obj]
   apply IsAffineHom.isAffine_preimage
   apply IsAffineHom.isAffine_preimage
   exact hU

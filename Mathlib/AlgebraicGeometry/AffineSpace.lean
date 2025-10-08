@@ -84,7 +84,7 @@ def toSpecMvPolyIntEquiv : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
     rw [Adjunction.homEquiv_symm_apply, Adjunction.homEquiv_symm_apply]
     simp only [Functor.rightOp_obj, Scheme.Γ_obj, Scheme.Spec_obj, algebraMap_int_eq,
       RingEquiv.toRingHom_eq_coe, TopologicalSpace.Opens.map_top, Functor.rightOp_map, op_comp,
-      Scheme.Γ_map, unop_comp, Quiver.Hom.unop_op, Scheme.comp_app, Scheme.toSpecΓ_appTop,
+      Scheme.Γ_map, unop_comp, Quiver.Hom.unop_op, Scheme.Hom.comp_app, Scheme.toSpecΓ_appTop,
       Scheme.ΓSpecIso_naturality, ΓSpec.adjunction_counit_app, Category.assoc,
       Iso.cancel_iso_inv_left, ← Iso.eq_inv_comp]
     apply of_mvPolynomial_int_ext
@@ -94,7 +94,7 @@ def toSpecMvPolyIntEquiv : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
   right_inv v := by
     ext i
     simp only [algebraMap_int_eq, RingEquiv.toRingHom_eq_coe, TopologicalSpace.Opens.map_top,
-      Scheme.comp_app, Scheme.toSpecΓ_appTop, Scheme.ΓSpecIso_naturality, CommRingCat.comp_apply,
+      Scheme.Hom.comp_app, Scheme.toSpecΓ_appTop, Scheme.ΓSpecIso_naturality, CommRingCat.comp_apply,
       CommRingCat.coe_of]
     -- TODO: why does `simp` not apply this lemma?
     rw [CommRingCat.hom_inv_apply]
@@ -185,7 +185,7 @@ def isoOfIsAffine [IsAffine S] :
           rw [← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp, eval₂Hom_comp_C,
             CommRingCat.ofHom_hom, ← Scheme.toSpecΓ_naturality_assoc]
           simp [Scheme.isoSpec]
-        · simp only [Category.assoc, Scheme.comp_app, Scheme.comp_coeBase,
+        · simp only [Category.assoc, Scheme.Hom.comp_app, Scheme.Hom.comp_base,
             TopologicalSpace.Opens.map_comp_obj, TopologicalSpace.Opens.map_top,
             Scheme.toSpecΓ_appTop, Scheme.ΓSpecIso_naturality, CommRingCat.comp_apply,
             homOfVector_appTop_coord, Function.comp_apply, CommRingCat.coe_of, Scheme.id_app,
@@ -195,8 +195,8 @@ def isoOfIsAffine [IsAffine S] :
           exact eval₂_X _ _ _
       inv_hom_id := by
         apply ext_of_isAffine
-        simp only [Scheme.comp_coeBase, TopologicalSpace.Opens.map_comp_obj,
-          TopologicalSpace.Opens.map_top, Scheme.comp_app, Scheme.toSpecΓ_appTop,
+        simp only [Scheme.Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
+          TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, Scheme.toSpecΓ_appTop,
           Scheme.ΓSpecIso_naturality, Category.assoc, Scheme.id_app, ← Iso.eq_inv_comp,
           Category.comp_id]
         ext : 1
@@ -205,10 +205,10 @@ def isoOfIsAffine [IsAffine S] :
           rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom, eval₂Hom_comp_C,
             ← CommRingCat.hom_comp, ← CommRingCat.hom_ext_iff,
             ← cancel_mono (Scheme.ΓSpecIso _).hom]
-          rw [← Scheme.comp_appTop, homOfVector_over, Scheme.comp_appTop]
+          rw [← Scheme.Hom.comp_appTop, homOfVector_over, Scheme.Hom.comp_appTop]
           simp only [Category.assoc, Scheme.ΓSpecIso_naturality, CommRingCat.of_carrier,
             ← Scheme.toSpecΓ_appTop]
-          rw [← Scheme.comp_appTop_assoc, Scheme.isoSpec, asIso_inv, IsIso.hom_inv_id]
+          rw [← Scheme.Hom.comp_appTop_assoc, Scheme.isoSpec, asIso_inv, IsIso.hom_inv_id]
           simp
         · intro i
           rw [CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, coe_eval₂Hom]
@@ -247,7 +247,7 @@ lemma SpecIso_hom_appTop (R : CommRingCat.{max u v}) :
       CommRingCat.ofHom (eval₂Hom ((Scheme.ΓSpecIso _).inv ≫
         (𝔸(n; Spec R) ↘ Spec R).appTop).hom (coord (Spec R))) := by
   simp only [SpecIso, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom,
-    Scheme.Spec_map, Quiver.Hom.unop_op, TopologicalSpace.Opens.map_top, Scheme.comp_app,
+    Scheme.Spec_map, Quiver.Hom.unop_op, TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app,
     isoOfIsAffine_hom_appTop, Scheme.ΓSpecIso_naturality_assoc]
   congr 1
   ext : 1
@@ -259,7 +259,7 @@ lemma SpecIso_hom_appTop (R : CommRingCat.{max u v}) :
 lemma SpecIso_inv_appTop_coord (R : CommRingCat.{max u v}) (i) :
     (SpecIso n R).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) := by
   simp only [SpecIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, Scheme.Spec_map,
-    Quiver.Hom.unop_op, TopologicalSpace.Opens.map_top, Scheme.comp_app, CommRingCat.comp_apply]
+    Quiver.Hom.unop_op, TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, CommRingCat.comp_apply]
   rw [isoOfIsAffine_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
       CommRingCat.comp_apply]
   congr 1
@@ -319,7 +319,7 @@ lemma map_Spec_map {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
   · simp only [map_over, Category.assoc, SpecIso_inv_over, SpecIso_inv_over_assoc,
       ← Spec.map_comp, ← CommRingCat.ofHom_comp]
     rw [map_comp_C, CommRingCat.ofHom_comp, CommRingCat.ofHom_hom]
-  · simp only [TopologicalSpace.Opens.map_top, Scheme.comp_app, CommRingCat.comp_apply]
+  · simp only [TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, CommRingCat.comp_apply]
     conv_lhs => enter[2]; tactic => exact map_appTop_coord _ _
     conv_rhs => enter[2]; tactic => exact SpecIso_inv_appTop_coord _ _
     rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,

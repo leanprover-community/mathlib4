@@ -366,7 +366,7 @@ lemma spread_out_of_isGermInjective' [LocallyOfFiniteType sY] {x : X} [X.IsGermI
       φ = U.fromSpecStalkOfMem x hxU ≫ f ∧ f ≫ sY = U.ι ≫ sX := by
   have := spread_out_of_isGermInjective sX sY ?_ (Scheme.stalkClosedPointTo φ) ?_
   · simpa only [Scheme.Spec_stalkClosedPointTo_fromSpecStalk] using this
-  · rw [← Scheme.comp_base_apply, h, Scheme.comp_base_apply, Scheme.fromSpecStalk_closedPoint]
+  · rw [← Scheme.Hom.comp_apply, h, Scheme.Hom.comp_apply, Scheme.fromSpecStalk_closedPoint]
   · apply Spec.map_injective
     rw [← cancel_mono (S.fromSpecStalk _)]
     simpa only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,

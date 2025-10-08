@@ -192,7 +192,7 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   apply (⨆ i, U i).ι.image_injective
   dsimp
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
-  simp [Scheme.Hom.image_preimage_eq_opensRange_inter, le_iSup U]
+  simp [Scheme.Hom.image_preimage_eq_opensRange_inf, le_iSup U]
 
 instance top : IsLocalAtTarget (⊤ : MorphismProperty Scheme.{u}) where
   iff_of_openCover' := by simp

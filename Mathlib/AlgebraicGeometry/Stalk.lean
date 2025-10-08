@@ -92,7 +92,7 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecStalk x) :=
 lemma IsAffineOpen.fromSpecStalk_closedPoint {U : Opens X} (hU : IsAffineOpen U)
     {x : X} (hxU : x ∈ U) :
     (hU.fromSpecStalk hxU).base (closedPoint (X.presheaf.stalk x)) = x := by
-  rw [IsAffineOpen.fromSpecStalk, Scheme.comp_base_apply]
+  rw [IsAffineOpen.fromSpecStalk, Scheme.Hom.comp_apply]
   rw [← hU.primeIdealOf_eq_map_closedPoint ⟨x, hxU⟩, hU.fromSpec_primeIdealOf ⟨x, hxU⟩]
 
 namespace Scheme
@@ -109,7 +109,7 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
           (Spec (X.presheaf.stalk x)).presheaf.map (homOfLE le_top).op := by
   obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open
     hxU U.2
-  rw [← hV.fromSpecStalk_eq_fromSpecStalk hxV, IsAffineOpen.fromSpecStalk, Scheme.comp_app,
+  rw [← hV.fromSpecStalk_eq_fromSpecStalk hxV, IsAffineOpen.fromSpecStalk, Scheme.Hom.comp_app,
     hV.fromSpec_app_of_le _ hVU, ← X.presheaf.germ_res (homOfLE hVU) x hxV]
   simp [Category.assoc, ← ΓSpecIso_inv_naturality_assoc]
 
@@ -309,7 +309,7 @@ lemma germ_stalkClosedPointTo_Spec_fromSpecStalk
     X.presheaf.germ U _ hU ≫ stalkClosedPointTo (Spec.map f ≫ X.fromSpecStalk x) =
       X.presheaf.germ U x (by simpa using hU) ≫ f := by
   have : (Spec.map f ≫ X.fromSpecStalk x).base (closedPoint R) = x := by
-    rw [comp_base_apply, Spec_closedPoint, fromSpecStalk_closedPoint]
+    rw [Hom.comp_apply, Spec_closedPoint, fromSpecStalk_closedPoint]
   have : x ∈ U := this ▸ hU
   simp only [germ_stalkClosedPointTo, comp_app,
     fromSpecStalk_app (X := X) (x := x) this, Category.assoc, Iso.trans_hom, Functor.mapIso_hom,
@@ -374,7 +374,7 @@ def SpecToEquivOfLocalRing :
     obtain ⟨x, ⟨f, hf⟩⟩ := xf
     symm
     refine SpecToEquivOfLocalRing_eq_iff.mpr ⟨?_, ?_⟩
-    · simp only [Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply, Spec_closedPoint,
+    · simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply, Spec_closedPoint,
         Scheme.fromSpecStalk_closedPoint]
     · refine TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ?_
       simp only [Scheme.germ_stalkClosedPointTo_Spec_fromSpecStalk,

@@ -129,7 +129,7 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
   base_closed := by
     have h := (f ≫ g).isClosedEmbedding
-    simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
+    simp only [Scheme.Hom.comp_base, TopCat.coe_comp] at h
     refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.injective.of_comp ?_
     intro Z hZ
     rw [IsClosedEmbedding.isClosed_iff_image_isClosed g.isClosedEmbedding,
@@ -270,7 +270,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   let W (i : 𝒰.I₀) : TopologicalSpace.Opens (𝒰.X i) := (𝒰.X i).basicOpen ((res i) (φ s))
   have hwle (i : 𝒰.I₀) : W i ≤ (𝒰.f i)⁻¹ᵁ U := by
     change (𝒰.X i).basicOpen ((𝒰.f i ≫ f).appTop s) ≤ _
-    rw [← Scheme.preimage_basicOpen_top, Scheme.comp_coeBase, Opens.map_comp_obj]
+    rw [← Scheme.preimage_basicOpen_top, Scheme.Hom.comp_base, Opens.map_comp_obj]
     refine Scheme.Hom.preimage_le_preimage_of_le _
       (le_trans (f.preimage_le_preimage_of_le bsle) (le_of_eq ?_))
     simp [Set.preimage_image_eq _ hfinj₁]
@@ -310,7 +310,7 @@ the induced map on global sections is surjective. -/
 theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
     IsAffine X ∧ Function.Surjective (f.appTop) := by
   refine ⟨isAffine_of_isAffineHom f, ?_⟩
-  simp only [← f.toImage_imageι, Scheme.comp_appTop, CommRingCat.hom_comp, RingHom.coe_comp,
+  simp only [← f.toImage_imageι, Scheme.Hom.comp_appTop, CommRingCat.hom_comp, RingHom.coe_comp,
     Scheme.Hom.image, Scheme.Hom.imageι]
   rw [Scheme.Hom.appTop, Scheme.Hom.appTop, f.ker.subschemeι_app ⟨⊤, isAffineOpen_top Y⟩,
     CommRingCat.hom_comp, RingHom.coe_comp]

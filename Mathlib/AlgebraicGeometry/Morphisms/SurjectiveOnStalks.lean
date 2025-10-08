@@ -121,13 +121,13 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨x, rfl⟩ := (Scheme.homeoOfIso (pullbackSpecIso R A B).symm).surjective x
     simp only [Scheme.homeoOfIso_apply, Function.comp_apply]
     ext
-    · simp only [L, ← Scheme.comp_base_apply, pullback.lift_fst, Iso.symm_hom,
+    · simp only [L, ← Scheme.Hom.comp_apply, pullback.lift_fst, Iso.symm_hom,
         Iso.inv_hom_id]
-      erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_fst_assoc]
+      erw [← Scheme.Hom.comp_apply, pullbackSpecIso_inv_fst_assoc]
       rfl
-    · simp only [L, ← Scheme.comp_base_apply, pullback.lift_snd, Iso.symm_hom,
+    · simp only [L, ← Scheme.Hom.comp_apply, pullback.lift_snd, Iso.symm_hom,
         Iso.inv_hom_id]
-      erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_snd_assoc]
+      erw [← Scheme.Hom.comp_apply, pullbackSpecIso_inv_snd_assoc]
       rfl
   let 𝒰 := S.affineOpenCover.openCover
   let 𝒱 (i) := ((𝒰.pullback₁ f).X i).affineOpenCover.openCover
@@ -145,7 +145,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     simp only [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup, Sigma.exists, Prod.exists]
     obtain ⟨is, s, hsx⟩ := 𝒰.exists_eq (f.base ((pullback.fst f g).base z))
     have hsy : (𝒰.f is).base s = g.base ((pullback.snd f g).base z) := by
-      rwa [← Scheme.comp_base_apply, ← pullback.condition, Scheme.comp_base_apply]
+      rwa [← Scheme.Hom.comp_apply, ← pullback.condition, Scheme.Hom.comp_apply]
     obtain ⟨x : (𝒰.pullback₁ f).X is, hx⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ hsx.symm
@@ -174,8 +174,8 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     · simp [pullback.condition]
     · simp [pullback.condition]
     · dsimp only
-      rw [← hx₁', ← hz, ← Scheme.comp_base_apply]
-      erw [← Scheme.comp_base_apply]
+      rw [← hx₁', ← hz, ← Scheme.Hom.comp_apply]
+      erw [← Scheme.Hom.comp_apply]
       congr 5
       apply pullback.hom_ext <;> simp [𝓤, ← pullback.condition, ← pullback.condition_assoc]
   · intro i

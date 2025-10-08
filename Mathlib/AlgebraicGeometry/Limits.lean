@@ -218,21 +218,21 @@ private lemma isOpenImmersion_sigmaDesc_aux
     · fun_prop
     · rintro ⟨ix, x⟩ ⟨iy, y⟩ e
       have : (α ix).base x = (α iy).base y := by
-        simpa [← Scheme.comp_base_apply] using e
+        simpa [← Scheme.Hom.comp_apply] using e
       obtain rfl : ix = iy := by
         by_contra h
         exact Set.disjoint_iff_forall_ne.mp (hα h) ⟨x, rfl⟩ ⟨y, this.symm⟩ rfl
       rw [(α ix).isOpenEmbedding.injective this]
     · rw [isOpenMap_sigma]
       intro i
-      simpa [← Scheme.comp_base_apply] using (α i).isOpenEmbedding.isOpenMap
+      simpa [← Scheme.Hom.comp_apply] using (α i).isOpenEmbedding.isOpenMap
   · intro x
     have ⟨y, hy⟩ := (Scheme.IsLocallyDirected.openCover (Discrete.functor f)).covers x
     rw [← hy]
     refine IsIso.of_isIso_fac_right
       (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
-    · simp [← Scheme.comp_base_apply]
+    · simp [← Scheme.Hom.comp_apply]
     · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
 
 open scoped Function in
@@ -266,7 +266,7 @@ lemma nonempty_isColimit_cofanMk_of [Small.{u} σ]
   have : x ∈ ⨆ i, (f i).opensRange := by rwa [hcov]
   obtain ⟨i, y, rfl⟩ := by simpa only [Opens.iSup_mk, Opens.mem_mk, Set.mem_iUnion] using this
   use Sigma.ι X i |>.base y
-  simp [← Scheme.comp_base_apply]
+  simp [← Scheme.Hom.comp_apply]
 
 variable (X Y : Scheme.{u})
 
@@ -386,7 +386,7 @@ lemma coprodSpec_coprodMk (x) :
     (coprodSpec R S).base (coprodMk _ _ x) = (PrimeSpectrum.primeSpectrumProd R S).symm x := by
   apply PrimeSpectrum.ext
   obtain (x | x) := x <;>
-    simp only [coprodMk_inl, coprodMk_inr, ← Scheme.comp_base_apply,
+    simp only [coprodMk_inl, coprodMk_inr, ← Scheme.Hom.comp_apply,
       coprodSpec, coprod.inl_desc, coprod.inr_desc]
   · change Ideal.comap _ _ = x.asIdeal.prod ⊤
     ext; simp [Ideal.prod, CommRingCat.ofHom]

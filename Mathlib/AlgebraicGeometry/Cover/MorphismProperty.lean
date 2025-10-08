@@ -106,7 +106,7 @@ def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : 
     [IsIso f] : Cover.{v} (precoverage P) Y :=
   .mkOfCovers PUnit (fun _ ↦ X)
     (fun _ ↦ f)
-    (fun x ↦ ⟨⟨⟩, (inv f).base x, by simp [← comp_base_apply]⟩)
+    (fun x ↦ ⟨⟨⟩, (inv f).base x, by simp [← Hom.comp_apply]⟩)
     (fun _ ↦ P.of_isIso f)
 
 instance : JointlySurjective (precoverage P) where

@@ -57,7 +57,7 @@ instance quasiCompact_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCo
     [QuasiCompact g] : QuasiCompact (f ≫ g) := by
   constructor
   intro U hU hU'
-  rw [Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp]
+  rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.preimage_comp]
   apply QuasiCompact.isCompact_preimage
   · exact Continuous.isOpen_preimage (by fun_prop) _ hU
   apply QuasiCompact.isCompact_preimage <;> assumption
@@ -188,7 +188,7 @@ lemma compactSpace_iff_exists :
   refine Function.Surjective.comp (g := (Sigma.desc 𝒰.f).base)
     (fun x ↦ ?_) (∐ 𝒰.X).isoSpec.inv.surjective
   obtain ⟨y, hy⟩ := 𝒰.covers x
-  exact ⟨(Sigma.ι 𝒰.X (𝒰.idx x)).base y, by rw [← Scheme.comp_base_apply, Sigma.ι_desc, hy]⟩
+  exact ⟨(Sigma.ι 𝒰.X (𝒰.idx x)).base y, by rw [← Scheme.Hom.comp_apply, Sigma.ι_desc, hy]⟩
 
 lemma isCompact_iff_exists {U : X.Opens} :
     IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f.base = U := by
@@ -198,7 +198,7 @@ lemma isCompact_iff_exists {U : X.Opens} :
   rw [← Set.range_eq_univ]
   apply show Function.Injective (U.ι.base '' ·) from Set.image_val_injective
   simp only [Set.image_univ, Scheme.Opens.range_ι]
-  rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, IsOpenImmersion.lift_fac]
+  rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsOpenImmersion.lift_fac]
 
 @[stacks 01K9]
 lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
@@ -222,7 +222,7 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
       compactSpace_iff_exists.mp ((quasiCompact_over_affine_iff f).mp inferInstance)
     have inst : QuasiCompact (g ≫ f) := HasAffineProperty.iff_of_isAffine.mpr (by infer_instance)
     have := this _ (g ≫ f) (g.base ⁻¹' Z) (hZ.preimage g.continuous)
-    simp_rw [Scheme.comp_base, TopCat.comp_app, ← Set.image_image,
+    simp_rw [Scheme.Hom.comp_base, TopCat.comp_app, ← Set.image_image,
       Set.image_preimage_eq _ hg] at this
     exact this H ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hX

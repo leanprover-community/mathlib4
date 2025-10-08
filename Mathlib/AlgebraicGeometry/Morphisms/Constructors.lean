@@ -230,7 +230,7 @@ lemma topologically_isStableUnderComposition
       (f : α → β) (g : β → γ) (_ : P f) (_ : P g), P (g ∘ f)) :
     (topologically P).IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
-    simp only [topologically, Scheme.comp_coeBase, TopCat.coe_comp]
+    simp only [topologically, Scheme.Hom.comp_base, TopCat.coe_comp]
     exact hP _ _ hf hg
 
 /-- If a property of maps of topological spaces is satisfied by all homeomorphisms,
@@ -325,12 +325,12 @@ variable {P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop
 lemma stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
     (stalkwise P).RespectsIso where
   precomp {X Y Z} e (he : IsIso e) f hf := by
-    simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
+    simp only [stalkwise, Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply]
     intro x
     rw [Scheme.stalkMap_comp]
     exact (RingHom.RespectsIso.cancel_right_isIso hP _ _).mpr <| hf (e.base x)
   postcomp {X Y Z} e (he : IsIso _) f hf := by
-    simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
+    simp only [stalkwise, Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply]
     intro x
     rw [Scheme.stalkMap_comp]
     exact (RingHom.RespectsIso.cancel_left_isIso hP _ _).mpr <| hf x

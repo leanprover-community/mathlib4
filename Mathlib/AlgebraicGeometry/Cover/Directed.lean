@@ -105,7 +105,7 @@ instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected w
         hxij, ConcreteCategory.comp_apply]
     obtain ⟨z, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback xi xj this
     obtain ⟨l, gi, gj, y, rfl⟩ := 𝒰.exists_lift_trans_eq z
-    refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.comp_base_apply]
+    refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.Hom.comp_apply]
 
 /--
 The canonical cocone with point `X` on the functor induced by the locally directed cover `𝒰`.
@@ -144,7 +144,7 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
       apply pullback.hom_ext <;> apply pullback.hom_ext <;> simp [iso]
     obtain ⟨k, hki, hkj, yk, hyk⟩ := 𝒰.exists_lift_trans_eq ((iso.hom ≫ pullback.snd _ _).base x)
     refine ⟨k, hki, hkj, show x ∈ Set.range _ from ?_⟩
-    rw [this, Scheme.comp_base, TopCat.coe_comp, Set.range_comp, Pullback.range_map]
+    rw [this, Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, Pullback.range_map]
     use iso.hom.base x
     simp only [id.base, TopCat.hom_id, ContinuousMap.coe_id, Set.range_id, Set.preimage_univ,
       Set.univ_inter, Set.mem_preimage, Set.mem_range, iso_hom_base_inv_base_apply, and_true]
@@ -241,7 +241,7 @@ def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [Preorder �
     · simp_rw [pullback.condition, Scheme.Hom.opensRange_comp]
       exact Set.image_subset_range _ _
     · apply (pullback.fst (𝒰.f i) (𝒰.f j) ≫ 𝒰.f i).isOpenEmbedding.injective
-      rw [← Scheme.comp_base_apply, pullback.lift_fst_assoc, IsOpenImmersion.lift_fac, hy]
+      rw [← Scheme.Hom.comp_apply, pullback.lift_fst_assoc, IsOpenImmersion.lift_fac, hy]
 
 section Constructions
 

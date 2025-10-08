@@ -142,14 +142,14 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
 lemma specTensorTo_base_fst (p : Spec T.tensor) :
     (pullback.fst f g).base (T.SpecTensorTo.base p) = T.x := by
   simp only [SpecTensorTo]
-  rw [← Scheme.comp_base_apply]
+  rw [← Scheme.Hom.comp_apply]
   simp
 
 @[simp]
 lemma specTensorTo_base_snd (p : Spec T.tensor) :
     (pullback.snd f g).base (T.SpecTensorTo.base p) = T.y := by
   simp only [SpecTensorTo]
-  rw [← Scheme.comp_base_apply]
+  rw [← Scheme.Hom.comp_apply]
   simp
 
 @[reassoc (attr := simp)]
@@ -213,7 +213,7 @@ def SpecOfPoint (t : ↑(pullback f g)) : Spec (Triplet.ofPoint t).tensor :=
 @[simp]
 lemma SpecTensorTo_SpecOfPoint (t : ↑(pullback f g)) :
     (Triplet.ofPoint t).SpecTensorTo.base (SpecOfPoint t) = t := by
-  simp [SpecOfPoint, ← Scheme.comp_base_apply, ofPointTensor_SpecTensorTo]
+  simp [SpecOfPoint, ← Scheme.Hom.comp_apply, ofPointTensor_SpecTensorTo]
 
 @[reassoc (attr := simp)]
 lemma tensorCongr_SpecTensorTo {T T' : Triplet f g} (h : T = T') :
@@ -261,8 +261,8 @@ def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
     have : (Spec.map (Hom.residueFieldMap T.SpecTensorTo p)).base (⊥ : PrimeSpectrum _) =
         (⊥ : PrimeSpectrum _) :=
       (PrimeSpectrum.instUnique).uniq _
-    simp only [SpecOfPoint, Triplet.tensorCongr_inv, ← this, ← Scheme.comp_base_apply,
-      ← Scheme.comp_base_apply]
+    simp only [SpecOfPoint, Triplet.tensorCongr_inv, ← this, ← Scheme.Hom.comp_apply,
+      ← Scheme.Hom.comp_apply]
     simp [Triplet.Spec_ofPointTensor_SpecTensorTo]
 
 @[simp]
@@ -310,7 +310,7 @@ lemma range_fst : Set.range (pullback.fst f g).base = f.base ⁻¹' Set.range g.
   ext x
   refine ⟨?_, fun ⟨y, hy⟩ ↦ ?_⟩
   · rintro ⟨a, rfl⟩
-    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.comp_base_apply, pullback.condition]
+    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.Hom.comp_apply, pullback.condition]
     simp
   · obtain ⟨a, ha⟩ := Triplet.exists_preimage (Triplet.mk' x y hy.symm)
     use a, ha.left
@@ -319,7 +319,7 @@ lemma range_snd : Set.range (pullback.snd f g).base = g.base ⁻¹' Set.range f.
   ext x
   refine ⟨?_, fun ⟨y, hy⟩ ↦ ?_⟩
   · rintro ⟨a, rfl⟩
-    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.comp_base_apply, ← pullback.condition]
+    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.Hom.comp_apply, ← pullback.condition]
     simp
   · obtain ⟨a, ha⟩ := Triplet.exists_preimage (Triplet.mk' y x hy)
     use a, ha.right
@@ -343,10 +343,10 @@ lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ 
   · rintro ⟨t, rfl⟩
     constructor
     · use (pullback.fst f g).base t
-      rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
+      rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply]
       simp
     · use (pullback.snd f g).base t
-      rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
+      rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply]
       simp
   · intro ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
     let T₁ : Triplet (pullback.fst f' g') i₁ := Triplet.mk' z x hx.symm
@@ -357,7 +357,7 @@ lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ 
       Triplet.mk' w₁ w₂ <| by simp [hw₁.left, hw₂.left, T₁, T₂]
     obtain ⟨t, _, ht₂⟩ := T.exists_preimage
     use (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).hom.base t
-    rw [pullback_map_eq_pullbackFstFstIso_inv, ← Scheme.comp_base_apply, Iso.hom_inv_id_assoc]
+    rw [pullback_map_eq_pullbackFstFstIso_inv, ← Scheme.Hom.comp_apply, Iso.hom_inv_id_assoc]
     simp [ht₂, T, hw₂.left, T₂]
 
 end Pullback

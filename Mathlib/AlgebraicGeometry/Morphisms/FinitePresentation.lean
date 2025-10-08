@@ -105,7 +105,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
       Subtype.range_coe_subtype, Set.setOf_mem_eq]
     change _ = (Y.affineCover.pullbackHom f i ≫
       (Y.affineCover.f i).isoOpensRange.hom ≫ Opens.ι _).base.hom '' _
-    rw [Scheme.Hom.isoOpensRange_hom_ι, Cover.pullbackHom_map, Scheme.comp_base, TopCat.hom_comp,
+    rw [Scheme.Hom.isoOpensRange_hom_ι, Cover.pullbackHom_map, Scheme.Hom.comp_base, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range]
     simp [IsOpenImmersion.range_pullback_fst_of_right, Set.image_inter_preimage]
   obtain ⟨R, rfl⟩ := hY
@@ -118,7 +118,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
       HasAffineProperty.iff_of_isAffine.mpr (inferInstanceAs (CompactSpace (Spec _)))
     convert this (hs.preimage_of_isOpenEmbedding (𝒰.f i).isOpenEmbedding) _
       (𝒰.f i ≫ f) ⟨_, rfl⟩
-    rw [Scheme.comp_base, ← TopCat.Hom.hom, ← TopCat.Hom.hom, TopCat.hom_comp,
+    rw [Scheme.Hom.comp_base, ← TopCat.Hom.hom, ← TopCat.Hom.hom, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range, coe_opensRange]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f

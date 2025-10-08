@@ -48,7 +48,7 @@ private lemma IsQuasiAffine.of_isOpenImmersion [CompactSpace X]
   have : X.IsSeparated := ⟨by rw [← terminal.comp_from f]; infer_instance⟩
   apply IsOpenImmersion.of_forall_source_exists
   · refine .of_comp (f := (Spec.map f.appTop).base) ?_
-    rw [← TopCat.coe_comp, ← comp_coeBase, ← toSpecΓ_naturality]
+    rw [← TopCat.coe_comp, ← Hom.comp_base, ← toSpecΓ_naturality]
     exact (f ≫ Y.toSpecΓ).isOpenEmbedding.injective
   · intro x
     obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrf⟩ :=

@@ -295,7 +295,7 @@ def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
   left_inv := Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField K X
   right_inv f := by
     rw [SpecToEquivOfField_eq_iff]
-    simp only [CommRingCat.coe_of, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply,
+    simp only [CommRingCat.coe_of, Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply,
       Scheme.fromSpecResidueField_apply, exists_true_left]
     rw [← Spec.map_inj, Spec.map_comp, ← cancel_mono (X.fromSpecResidueField _)]
     erw [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField]

@@ -127,8 +127,8 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
   refine ⟨l.base (closedPoint A), ?_, ?_⟩
   · simp_rw [← Scheme.fromSpecResidueField_apply x' (closedPoint (X.residueField x')), ← hl₁]
     exact (specializes_closedPoint _).map l.base.hom.2
-  · rw [← Scheme.comp_base_apply, hl₂]
-    simp only [Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
+  · rw [← Scheme.Hom.comp_apply, hl₂]
+    simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply]
     have : (Spec.map stalk_y_to_A).base (closedPoint A) = closedPoint (Y.presheaf.stalk y) :=
       comap_closedPoint (S := A) (stalk_y_to_residue_x'.hom.codRestrict A.toSubring hA)
     rw [this, Y.fromSpecStalk_closedPoint]
@@ -162,7 +162,7 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
     -- This is probably the cause of the `erw` needed below.
     simp only [TopologicalSpace.Opens.map_top]
     rw [Scheme.germ_stalkClosedPointTo lft ⊤ trivial]
-    erw [← Scheme.comp_app_assoc lft (pullback.fst i₂ f)]
+    erw [← Scheme.Hom.comp_app_assoc lft (pullback.fst i₂ f)]
     rw [pullback.lift_fst]
     simp
   have hbij := (bijective_rangeRestrict_comp_of_valuationRing (R := R) (K := K) α.hom β.hom
@@ -307,7 +307,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
       change P _
       rw [← MorphismProperty.arrow_mk_iso_iff (P := P) e]
       exact FaithfulSMul.algebraMap_injective S.R S.K
-    rw [Scheme.comp_appTop] at this
+    rw [Scheme.Hom.comp_appTop] at this
     exact Function.Injective.of_comp this
   · rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
     exact this.right
