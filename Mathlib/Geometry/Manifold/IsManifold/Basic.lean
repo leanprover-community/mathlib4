@@ -228,13 +228,13 @@ instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
 protected def symm : PartialEquiv E H :=
   I.toPartialEquiv.symm
 
-/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
+/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
 because it is a composition of multiple projections. -/
 def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
   I
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.symm_apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : E → H :=
   I.symm
@@ -485,7 +485,7 @@ section ModelWithCornersProd
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
-`(E × E, H × E)`. See note [manifoldTypeTags] for explanation about `ModelProd H H'`
+`(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
 vs `H × H'`. -/
 @[simps -isSimp]
 def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
@@ -513,7 +513,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
-corners `pi I` on `(Π i, E i, ModelPi H)`. See note [manifoldTypeTags] for explanation about
+corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
 `ModelPi H`. -/
 def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Type v} [Fintype ι]
     {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}

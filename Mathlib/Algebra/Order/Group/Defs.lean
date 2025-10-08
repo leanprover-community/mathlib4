@@ -61,7 +61,7 @@ alias OrderedCommGroup.lt_of_mul_lt_mul_left := lt_of_mul_lt_mul_left'
 
 attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 @[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid]
 instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
     [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
@@ -121,14 +121,14 @@ theorem exists_one_lt' [Nontrivial α] : ∃ a : α, 1 < a := by
   · exact ⟨y⁻¹, one_lt_inv'.mpr h⟩
   · exact ⟨y, h⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) LinearOrderedCommGroup.to_noMaxOrder [Nontrivial α] : NoMaxOrder α :=
   ⟨by
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
     exact fun a => ⟨a * y, lt_mul_of_one_lt_right' a hy⟩⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) LinearOrderedCommGroup.to_noMinOrder [Nontrivial α] : NoMinOrder α :=
   ⟨by

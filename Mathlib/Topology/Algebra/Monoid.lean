@@ -558,11 +558,11 @@ theorem Subsemigroup.topologicalClosure_minimal (s : Subsemigroup M) {t : Subsem
 /-- If a subsemigroup of a topological semigroup is commutative, then so is its topological
 closure.
 
-See note [reducibleNonInstances] -/
+See note [reducible non-instances] -/
 @[to_additive /-- If a submonoid of an additive topological monoid is commutative, then so is its
 topological closure.
 
-See note [reducibleNonInstances] -/]
+See note [reducible non-instances] -/]
 abbrev Subsemigroup.commSemigroupTopologicalClosure [T2Space M] (s : Subsemigroup M)
     (hs : ∀ x y : s, x * y = y * x) : CommSemigroup s.topologicalClosure :=
   { MulMemClass.toSemigroup s.topologicalClosure with
@@ -623,7 +623,7 @@ theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M}
 @[to_additive /-- If a submonoid of an additive topological monoid is commutative, then so is its
 topological closure.
 
-See note [reducibleNonInstances]. -/]
+See note [reducible non-instances]. -/]
 abbrev Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
   { s.topologicalClosure.toMonoid, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }

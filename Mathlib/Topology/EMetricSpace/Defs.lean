@@ -89,7 +89,7 @@ We make the uniformity/topology part of the data instead of deriving it from the
 ensures that we do not get a diamond when doing
 `[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
-See note [forgetfulInheritance]. -/
+See Note [forgetful inheritance]. -/
 class PseudoEMetricSpace (α : Type u) : Type u extends EDist α  where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
@@ -262,9 +262,9 @@ open EMetric
 /-- Auxiliary function to replace the uniformity on a pseudoemetric space with
 a uniformity which is equal to the original one, but maybe not defeq.
 This is useful if one wants to construct a pseudoemetric space with a
-specified uniformity. See note [forgetfulInheritance] explaining why having definitionally
+specified uniformity. See Note [forgetful inheritance] explaining why having definitionally
 the right uniformity is often important.
-See note [reducibleNonInstances].
+See note [reducible non-instances].
 -/
 abbrev PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoEMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoEMetricSpace α where
@@ -276,7 +276,7 @@ abbrev PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : Pseu
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist α _)
 
 /-- The extended pseudometric induced by a function taking values in a pseudoemetric space.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace β) :
     PseudoEMetricSpace α where
   edist x y := edist (f x) (f y)
@@ -584,7 +584,7 @@ We make the uniformity/topology part of the data instead of deriving it from the
 This e.g. ensures that we do not get a diamond when doing
 `[EMetricSpace α] [EMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
-See note [forgetfulInheritance]. -/
+See Note [forgetful inheritance]. -/
 class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
@@ -624,9 +624,9 @@ theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x 
 /-- Auxiliary function to replace the uniformity on an emetric space with
 a uniformity which is equal to the original one, but maybe not defeq.
 This is useful if one wants to construct an emetric space with a
-specified uniformity. See note [forgetfulInheritance] explaining why having definitionally
+specified uniformity. See Note [forgetful inheritance] explaining why having definitionally
 the right uniformity is often important.
-See note [reducibleNonInstances].
+See note [reducible non-instances].
 -/
 abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : EMetricSpace γ where
@@ -641,9 +641,9 @@ abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpa
 /-- Auxiliary function to replace the topology on an emetric space with
 a topology which is equal to the original one, but maybe not defeq.
 This is useful if one wants to construct an emetric space with a
-specified topology. See note [forgetfulInheritance] explaining why having definitionally
+specified topology. See Note [forgetful inheritance] explaining why having definitionally
 the right topology is often important.
-See note [reducibleNonInstances].
+See note [reducible non-instances].
 -/
 abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricSpace γ)
     (H : T = m.toUniformSpace.toTopologicalSpace) : EMetricSpace γ where
@@ -656,7 +656,7 @@ abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricS
   uniformity_edist := PseudoEMetricSpace.uniformity_edist
 
 /-- The extended metric induced by an injective function taking values in an emetric space.
-See note [reducibleNonInstances]. -/
+See Note [reducible non-instances]. -/
 abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with

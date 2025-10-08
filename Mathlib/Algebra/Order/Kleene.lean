@@ -93,11 +93,11 @@ class KleeneAlgebra (α : Type*) extends IdemSemiring α, KStar α where
   protected mul_kstar_le_self : ∀ a b : α, b * a ≤ b → b * a∗ ≤ b
   protected kstar_mul_le_self : ∀ a b : α, a * b ≤ b → a∗ * b ≤ b
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toOrderBot [IdemSemiring α] : OrderBot α :=
   { ‹IdemSemiring α› with }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Construct an idempotent semiring from an idempotent addition. -/
 abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemSemiring α :=
   { ‹Semiring α› with
@@ -154,25 +154,25 @@ theorem add_le_iff : a + b ≤ c ↔ a ≤ c ∧ b ≤ c := by simp
 theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
     IsOrderedAddMonoid α :=
   { add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
       grw [hbc] }
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
     CanonicallyOrderedAdd α where
   exists_add_of_le h := ⟨_, h.add_eq_right.symm⟩
   le_add_self a b := add_eq_left_iff_le.1 <| by rw [add_assoc, add_idem]
   le_self_add a b := add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]⟩
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toMulRightMono : MulRightMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
 
@@ -316,7 +316,7 @@ end Pi
 
 namespace Function.Injective
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Pullback an `IdemSemiring` instance along an injective function. -/
 protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
     [NatCast β] [Max β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
@@ -330,7 +330,7 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
     bot := ⊥
     bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
 protected abbrev idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
     [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
@@ -341,7 +341,7 @@ protected abbrev idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add 
   { hf.commSemiring f zero one add mul nsmul npow natCast,
     hf.idemSemiring f zero one add mul nsmul npow natCast sup bot with }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
 protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
     [SMul ℕ β] [NatCast β] [Max β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)

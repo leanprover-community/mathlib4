@@ -91,7 +91,7 @@ theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ 
   nth_rw 1 [← neg_neg b]
   rwa [← neg_inf, neg_le_neg_iff, inf_comm _ b, inf_comm _ a]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- Let `α` be a normed lattice ordered group, then the order dual is also a
 normed lattice ordered group.
 -/
@@ -136,7 +136,7 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊔ y - 0 ⊔ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_sup_sub_sup_le_add_norm x y 0 0
   simpa only [sup_idem, sub_zero] using h
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- Let `α` be a normed lattice ordered group. Then the infimum is jointly continuous.
 -/
 instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
@@ -148,12 +148,12 @@ instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
     ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) HasSolidNorm.continuousSup {α : Type*}
     [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α] : ContinuousSup α :=
   OrderDual.continuousSup αᵒᵈ
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /--
 Let `α` be a normed lattice ordered group. Then `α` is a topological lattice in the norm topology.
 -/
@@ -199,7 +199,7 @@ theorem isClosed_le_of_isClosed_nonneg {G}
   rw [this]
   exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) HasSolidNorm.orderClosedTopology {E}
     [NormedAddCommGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] :
     OrderClosedTopology E :=

@@ -121,7 +121,7 @@ instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
   map_mul := fun f => f.map_mul'
   map_one := fun f => f.map_one'
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply {R α β : Type*} [CommSemiring R]
     [Semiring α] [Algebra R α] [Semiring β]
     [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]

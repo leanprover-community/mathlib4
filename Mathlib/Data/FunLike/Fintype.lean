@@ -72,7 +72,7 @@ theorem FunLike.finite [Finite α] [Finite γ] : Finite G :=
 
 end Sort'
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) FunLike.toDecidableEq {F α β : Type*}
     [DecidableEq β] [Fintype α] [FunLike F α β] : DecidableEq F :=
   fun a b ↦ decidable_of_iff ((a : α → β) = b) DFunLike.coe_injective.eq_iff

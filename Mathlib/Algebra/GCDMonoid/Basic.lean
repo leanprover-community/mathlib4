@@ -866,7 +866,7 @@ section UniqueUnit
 
 variable [CancelCommMonoidWithZero α] [Subsingleton αˣ]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) NormalizationMonoid.ofUniqueUnits : NormalizationMonoid α where
   normUnit _ := 1
   normUnit_zero := rfl
@@ -1261,7 +1261,7 @@ namespace CommGroupWithZero
 
 variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) : NormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
   normUnit_zero := dif_pos rfl

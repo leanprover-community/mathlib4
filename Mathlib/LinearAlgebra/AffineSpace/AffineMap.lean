@@ -704,7 +704,7 @@ variable (R)
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the
 linear part.
 
-See note [bundledMapsOverDifferentRings] -/
+See note [bundled maps over different rings] -/
 @[simps]
 def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) where
   toFun f := ⟨f 0, f.linear⟩

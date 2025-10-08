@@ -143,17 +143,17 @@ partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) : ℤ × (c : Q(ℤ)
       have pb : Q(2 * $b₀ + 1 = $b) := (q(Eq.refl $b) : Expr)
       ⟨-c.natLit!, q(.negOfNat $c), q(intPow_negOfNat_bit1 $p $pb $pc)⟩
 
--- see note [normNumLemmaFunctionEquality]
+-- see note [norm_num lemma function equality]
 theorem isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {b a' b' c : ℕ},
     f = HPow.hPow → IsNat a a' → IsNat b b' → Nat.pow a' b' = c → IsNat (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
--- see note [normNumLemmaFunctionEquality]
+-- see note [norm_num lemma function equality]
 theorem isInt_pow {α} [Ring α] : ∀ {f : α → ℕ → α} {a : α} {b : ℕ} {a' : ℤ} {b' : ℕ} {c : ℤ},
     f = HPow.hPow → IsInt a a' → IsNat b b' → Int.pow a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
--- see note [normNumLemmaFunctionEquality]
+-- see note [norm_num lemma function equality]
 theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsRat a an ad → IsNat b b' →
     Int.pow an b' = cn → Nat.pow ad b' = cd →

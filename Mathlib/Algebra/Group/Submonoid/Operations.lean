@@ -641,7 +641,7 @@ def mrange (f : M →* N) : Submonoid N :=
 ```
 -/
 
-/-- The range of a monoid homomorphism is a submonoid. See note [rangeCopyPattern]. -/
+/-- The range of a monoid homomorphism is a submonoid. See Note [range copy pattern]. -/
 @[to_additive /-- The range of an `AddMonoidHom` is an `AddSubmonoid`. -/]
 def mrange (f : F) : Submonoid N :=
   ((⊤ : Submonoid M).map f).copy (Set.range f) Set.image_univ.symm

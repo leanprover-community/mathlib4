@@ -623,7 +623,7 @@ theorem eq_of_inf_eq_sup_eq {a b c : α} (h₁ : b ⊓ a = c ⊓ a) (h₂ : b �
 
 end DistribLattice
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 abbrev DistribLattice.ofInfSupLe
     [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) : DistribLattice α where
@@ -634,7 +634,7 @@ abbrev DistribLattice.ofInfSupLe
 ### Lattices derived from linear orders
 -/
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.toLattice {α : Type u} [LinearOrder α] : Lattice α where
   sup := max
   inf := min
@@ -711,7 +711,7 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [IsTotal α (· �
 
 /-- A lattice with total order is a linear order.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] : LinearOrder α where
   toDecidableLE := ‹_›
@@ -721,7 +721,7 @@ abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
   max_def := by exact congr_fun₂ sup_eq_maxDefault
   min_def := by exact congr_fun₂ inf_eq_minDefault
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) {α : Type u} [LinearOrder α] : DistribLattice α where
   le_sup_inf _ b c :=
     match le_total b c with
@@ -1129,7 +1129,7 @@ end Prod
 namespace Subtype
 
 /-- A subtype forms a `⊔`-semilattice if `⊔` preserves the property.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 protected abbrev semilatticeSup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
     SemilatticeSup { x : α // P x } where
@@ -1139,7 +1139,7 @@ protected abbrev semilatticeSup [SemilatticeSup α] {P : α → Prop}
   sup_le _ _ _ h1 h2 := sup_le h1 h2
 
 /-- A subtype forms a `⊓`-semilattice if `⊓` preserves the property.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 protected abbrev semilatticeInf [SemilatticeInf α] {P : α → Prop}
     (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
     SemilatticeInf { x : α // P x } where
@@ -1149,7 +1149,7 @@ protected abbrev semilatticeInf [SemilatticeInf α] {P : α → Prop}
   le_inf _ _ _ h1 h2 := le_inf h1 h2
 
 /-- A subtype forms a lattice if `⊔` and `⊓` preserve the property.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 protected abbrev lattice [Lattice α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y))
     (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) : Lattice { x : α // P x } where
   __ := Subtype.semilatticeInf Pinf
@@ -1187,7 +1187,7 @@ section lift
 
 /-- A type endowed with `⊔` is a `SemilatticeSup`, if it admits an injective map that
 preserves `⊔` to a `SemilatticeSup`.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 protected abbrev Function.Injective.semilatticeSup [Max α] [SemilatticeSup β] (f : α → β)
     (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
     SemilatticeSup α where
@@ -1208,7 +1208,7 @@ protected abbrev Function.Injective.semilatticeSup [Max α] [SemilatticeSup β] 
 
 /-- A type endowed with `⊓` is a `SemilatticeInf`, if it admits an injective map that
 preserves `⊓` to a `SemilatticeInf`.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 protected abbrev Function.Injective.semilatticeInf [Min α] [SemilatticeInf β] (f : α → β)
     (hf_inj : Function.Injective f) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     SemilatticeInf α where
@@ -1229,7 +1229,7 @@ protected abbrev Function.Injective.semilatticeInf [Min α] [SemilatticeInf β] 
 
 /-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `Lattice`.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 protected abbrev Function.Injective.lattice [Max α] [Min α] [Lattice β] (f : α → β)
     (hf_inj : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
@@ -1239,7 +1239,7 @@ protected abbrev Function.Injective.lattice [Max α] [Min α] [Lattice β] (f : 
 
 /-- A type endowed with `⊔` and `⊓` is a `DistribLattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `DistribLattice`.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribLattice [Max α] [Min α] [DistribLattice β] (f : α → β)
     (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :

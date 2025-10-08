@@ -368,12 +368,12 @@ section LinearOrder
 
 variable [LinearOrder α]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosMulReflectLE [PosMulStrictMono α] :
     PosMulReflectLE α where
   elim := (covariant_lt_iff_contravariant_le _ _ _).1 CovariantClass.elim
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) MulPosStrictMono.toMulPosReflectLE [MulPosStrictMono α] :
     MulPosReflectLE α where
   elim := (covariant_lt_iff_contravariant_le _ _ _).1 CovariantClass.elim

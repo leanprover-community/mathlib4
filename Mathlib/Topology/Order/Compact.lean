@@ -137,7 +137,7 @@ theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [Comp
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 /-- A complete linear order is a compact space.
 
 We do not register an instance for a `[CompactIccSpace α]` because this would only add instances

@@ -334,12 +334,12 @@ end Set
 
 
 /-- The betweenness relation obtained from "looping around" `≤`.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev LE.toBtw (α : Type*) [LE α] : Btw α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
 
 /-- The strict betweenness relation obtained from "looping around" `<`.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev LT.toSBtw (α : Type*) [LT α] : SBtw α where
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
 
@@ -359,7 +359,7 @@ lemma sbtw_iff [LT α] : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ 
 end
 
 /-- The circular preorder obtained from "looping around" a preorder.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
@@ -379,7 +379,7 @@ abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder
     grind
 
 /-- The circular partial order obtained from "looping around" a partial order.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : CircularPartialOrder α :=
   { Preorder.toCircularPreorder α with
     btw_antisymm := fun {a b c} => by
@@ -395,7 +395,7 @@ abbrev PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : Circ
       · exact Or.inr (Or.inr <| hca.antisymm hac) }
 
 /-- The circular order obtained from "looping around" a linear order.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder α :=
   { PartialOrder.toCircularPartialOrder α with
     btw_total := fun a b c => by

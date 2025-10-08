@@ -267,7 +267,7 @@ theorem ge_iff_eq' (h : a ≤ b) : b ≤ a ↔ b = a :=
 
 end LE.le
 
--- See note [decidableNamespace]
+-- See Note [decidable namespace]
 protected theorem Decidable.le_iff_eq_or_lt [DecidableLE α] : a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
@@ -281,7 +281,7 @@ lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := hab.not_lt_iff
 
 @[deprecated (since := "2025-06-08")] alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
--- See note [decidableNamespace]
+-- See Note [decidable namespace]
 protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_ge h₃)⟩
@@ -289,7 +289,7 @@ protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ 
 theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b := open scoped Classical in
   Decidable.eq_iff_le_not_lt
 
--- See note [decidableNamespace]
+-- See Note [decidable namespace]
 protected theorem Decidable.eq_or_lt_of_le [DecidableLE α] (h : a ≤ b) : a = b ∨ a < b :=
   (Decidable.lt_or_eq_of_le h).symm
 
@@ -324,7 +324,7 @@ theorem Ne.not_le_or_not_ge (h : a ≠ b) : ¬a ≤ b ∨ ¬b ≤ a := not_and_o
 
 @[deprecated (since := "2025-06-07")] alias Ne.not_le_or_not_le := Ne.not_le_or_not_ge
 
--- See note [decidableNamespace]
+-- See Note [decidable namespace]
 protected theorem Decidable.ne_iff_lt_iff_le [DecidableEq α] : (a ≠ b ↔ a < b) ↔ a ≤ b :=
   ⟨fun h ↦ Decidable.byCases le_of_eq (le_of_lt ∘ h.mp), fun h ↦ ⟨lt_of_le_of_ne h, ne_of_lt⟩⟩
 
@@ -965,7 +965,7 @@ end Function
 
 /-- Pull back a `Preorder` instance along an injective function.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
     Preorder α where
@@ -976,7 +976,7 @@ abbrev Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
 
 /-- Pull back a `PartialOrder` instance along an injective function.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α → β)
     (hf : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
@@ -986,7 +986,7 @@ abbrev Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α
 
 /-- Pull back a `LinearOrder` instance along an injective function.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] [Min α] [Ord α]
     [DecidableEq α] [DecidableLE α] [DecidableLT α] (f : α → β)
     (hf : Function.Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
@@ -1015,7 +1015,7 @@ They should be avoided if the types already define any order or decidability ins
 
 See also `Function.Injective.preorder` when only the proof fields need to be transferred.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α :=
   letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
   letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
@@ -1026,7 +1026,7 @@ function `f : α → β`.
 
 See also `Function.Injective.partialOrder` when only the proof fields need to be transferred.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev PartialOrder.lift [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
   letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
   letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
@@ -1052,7 +1052,7 @@ fields.
 
 See also `Function.Injective.linearOrder` when only the proof fields need to be transferred.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
@@ -1068,7 +1068,7 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
 for a version that takes `[Max α]` and `[Min α]`, then uses them as `max` and `min`. See
 `LinearOrder.liftWithOrd'` for a version which does not auto-generate `compare` fields.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev LinearOrder.lift' [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=
   @LinearOrder.lift α β _ ⟨fun x y ↦ if f x ≤ f y then y else x⟩
     ⟨fun x y ↦ if f x ≤ f y then x else y⟩ f inj
@@ -1080,7 +1080,7 @@ function `f : α → β`. This version takes `[Max α]` and `[Min α]` as argume
 them for `max` and `min` fields. It also takes `[Ord α]` as an argument and uses them for `compare`
 fields. See `LinearOrder.lift` for a version that autogenerates `compare` fields, and
 `LinearOrder.liftWithOrd'` for one that auto-generates `min` and `max` fields.
-fields. See note [reducibleNonInstances]. -/
+fields. See note [reducible non-instances]. -/
 abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : α → β)
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
@@ -1096,7 +1096,7 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
 function `f : α → β`. This version auto-generates `min` and `max` fields. It also takes `[Ord α]`
 as an argument and uses them for `compare` fields. See `LinearOrder.lift` for a version that
 autogenerates `compare` fields, and `LinearOrder.liftWithOrd` for one that doesn't auto-generate
-`min` and `max` fields. fields. See note [reducibleNonInstances]. -/
+`min` and `max` fields. fields. See note [reducible non-instances]. -/
 abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
     (inj : Injective f)
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=

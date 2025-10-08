@@ -191,7 +191,7 @@ theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / s
 
 /-- Any commutative monoid admits the trivial `*`-structure.
 
-See note [reducibleNonInstances].
+See note [reducible non-instances].
 -/
 abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
   star := id
@@ -356,7 +356,7 @@ theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) =
 
 /-- Any commutative semiring admits the trivial `*`-structure.
 
-See note [reducibleNonInstances].
+See note [reducible non-instances].
 -/
 abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
   { starMulOfComm with

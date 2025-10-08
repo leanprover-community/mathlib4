@@ -10,7 +10,7 @@ import Mathlib.Algebra.Group.Defs
 
 This file contains the additive and multiplicative monoid instances on the natural numbers.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 -/
 
 assert_not_exists MonoidWithZero DenselyOrdered

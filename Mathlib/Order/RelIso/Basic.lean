@@ -589,12 +589,12 @@ theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
 protected def symm (f : r ≃r s) : s ≃r r :=
   ⟨f.toEquiv.symm, @fun a b => by erw [← f.map_rel_iff, f.1.apply_symm_apply, f.1.apply_symm_apply]⟩
 
-/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
+/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/
 def Simps.apply (h : r ≃r s) : α → β :=
   h
 
-/-- See note [customSimpsProjection]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.symm_apply (h : r ≃r s) : β → α :=
   h.symm
 

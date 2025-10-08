@@ -95,13 +95,13 @@ theorem coe_coe (e : P₁ ≃ᴬ[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
 theorem coe_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 
-/-- See note [customSimpsProjection].
+/-- See Note [custom simps projection].
   We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (e : P₁ ≃ᴬ[k] P₂) : P₁ → P₂ :=
   e
 
-/-- See note [customSimpsProjection]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.symm_apply (e : P₁ ≃ᴬ[k] P₂) : P₂ → P₁ :=
   e.symm
 

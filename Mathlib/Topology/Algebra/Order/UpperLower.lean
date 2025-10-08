@@ -35,7 +35,7 @@ class HasUpperLowerClosure (α : Type*) [TopologicalSpace α] [Preorder α] : Pr
 
 variable {α : Type*} [TopologicalSpace α]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) IsOrderedMonoid.to_hasUpperLowerClosure
     [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]

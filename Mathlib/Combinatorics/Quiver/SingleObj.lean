@@ -43,11 +43,11 @@ variable {α β γ}
 
 lemma ext {x y : SingleObj α} : x = y := Unit.ext x y
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Equip `SingleObj α` with a reverse operation. -/
 abbrev hasReverse (rev : α → α) : HasReverse (SingleObj α) := ⟨rev⟩
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Equip `SingleObj α` with an involutive reverse operation. -/
 abbrev hasInvolutiveReverse (rev : α → α) (h : Function.Involutive rev) :
     HasInvolutiveReverse (SingleObj α) where

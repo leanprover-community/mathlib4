@@ -86,7 +86,7 @@ class IsJordan [Mul A] : Prop where
 class IsCommJordan [CommMagma A] : Prop where
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- A (commutative) Jordan multiplication is also a Jordan multiplication -/
 instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_comm, mul_comm a b]
@@ -100,7 +100,7 @@ instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A
   rmul_comm_rmul_rmul a b := by
     rw [mul_comm b a, IsCommJordan.lmul_comm_rmul_rmul, mul_comm]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms -/
 instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_assoc]
@@ -109,7 +109,7 @@ instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   lmul_lmul_comm_rmul a b := by rw [← mul_assoc]
   rmul_comm_rmul_rmul a b := by rw [← mul_assoc, ← mul_assoc]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) CommSemigroup.isCommJordan [CommSemigroup A] : IsCommJordan A where
   lmul_comm_rmul_rmul _ _ := mul_assoc _ _ _
 

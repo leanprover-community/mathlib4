@@ -88,7 +88,7 @@ variable [Module S N] [SMulCommClass R₂ S N]
 /-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
 `N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.liftAddHom`.
 
-See note [bundledMapsOverDifferentRings] for why separate `R` and `S` semirings are used.
+See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
 def lsum : (α → M →ₛₗ[σ] N) ≃ₗ[S] (α →₀ M) →ₛₗ[σ] N where
   toFun F :=

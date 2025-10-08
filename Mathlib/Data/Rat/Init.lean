@@ -49,10 +49,10 @@ variable {K : Type*} [NNRatCast K]
 This is just the bare function in order to aid in creating instances of `DivisionSemiring`. -/
 @[coe, reducible, match_pattern] protected def NNRat.cast : ℚ≥0 → K := NNRatCast.nnratCast
 
--- See note [coercionIntoRings]
+-- See note [coercion into rings]
 instance NNRatCast.toCoeTail [NNRatCast K] : CoeTail ℚ≥0 K where coe := NNRat.cast
 
--- See note [coercionIntoRings]
+-- See note [coercion into rings]
 instance NNRatCast.toCoeHTCT [NNRatCast K] : CoeHTCT ℚ≥0 K where coe := NNRat.cast
 
 instance Rat.instNNRatCast : NNRatCast ℚ := ⟨Subtype.val⟩

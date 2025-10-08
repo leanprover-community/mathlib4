@@ -88,7 +88,7 @@ class Dist (α : Type*) where
 export Dist (dist)
 
 -- the uniform structure and the emetric space structure are embedded in the metric space structure
--- to avoid instance diamond issues. See note [forgetfulInheritance].
+-- to avoid instance diamond issues. See Note [forgetful inheritance].
 /-- This is an internal lemma used inside the default of `PseudoMetricSpace.edist`. -/
 private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
@@ -114,7 +114,7 @@ We make the uniformity/topology part of the data instead of deriving it from the
 ensures that we do not get a diamond when doing
 `[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
-See note [forgetfulInheritance]. -/
+See Note [forgetful inheritance]. -/
 class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
@@ -149,7 +149,7 @@ variable [PseudoMetricSpace α]
 
 attribute [instance] PseudoMetricSpace.toUniformSpace PseudoMetricSpace.toBornology
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
   ⟨PseudoMetricSpace.edist⟩
 
@@ -254,7 +254,7 @@ class NNDist (α : Type*) where
 
 export NNDist (nndist)
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- Distance as a nonnegative real number. -/
 instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
   ⟨fun a b => ⟨dist a b, dist_nonneg⟩⟩
@@ -904,7 +904,7 @@ theorem Metric.uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | ed
   simp only [PseudoMetricSpace.uniformity_dist, dist_nndist, edist_nndist,
     Metric.uniformity_edist_aux]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- A pseudometric space induces a pseudoemetric space -/
 instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetricSpace α :=
   { ‹PseudoMetricSpace α› with
@@ -951,8 +951,8 @@ theorem Metric.emetric_ball_top (x : α) : EMetric.ball x ⊤ = univ :=
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
-See note [forgetfulInheritance].
-See note [reducibleNonInstances].
+See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
@@ -973,8 +973,8 @@ example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
 
 /-- Build a new pseudo metric space from an old one where the bundled topological structure is
 provably (but typically non-definitionaly) equal to some given topological structure.
-See note [forgetfulInheritance].
-See note [reducibleNonInstances].
+See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev PseudoMetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : PseudoMetricSpace γ)
     (H : U = m.toUniformSpace.toTopologicalSpace) : PseudoMetricSpace γ :=
@@ -989,7 +989,7 @@ theorem PseudoMetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m :
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
 distance is given separately, to be able to prescribe some expression which is not defeq to the
-push-forward of the edistance to reals. See note [reducibleNonInstances]. -/
+push-forward of the edistance to reals. See note [reducible non-instances]. -/
 abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {α : Type u} [e : PseudoEMetricSpace α]
     (dist : α → α → ℝ) (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤)
     (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) : PseudoMetricSpace α where
@@ -1016,8 +1016,8 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace 
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionaly) equal to some given bornology structure.
-See note [forgetfulInheritance].
-See note [reducibleNonInstances].
+See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev PseudoMetricSpace.replaceBornology {α} [B : Bornology α] (m : PseudoMetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :

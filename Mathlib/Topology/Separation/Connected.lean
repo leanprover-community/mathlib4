@@ -15,7 +15,7 @@ variable {X : Type*} [TopologicalSpace X]
 open Filter Set
 open scoped Topology
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
     T1Space X := by
   rw [((t1Space_TFAE X).out 0 1 :)]

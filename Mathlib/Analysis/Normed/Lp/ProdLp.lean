@@ -277,7 +277,7 @@ antiLipschitz.
 
 We only register this emetric space structure as a temporary instance, as the true instance (to be
 registered later) will have as uniformity exactly the product uniformity, instead of the one coming
-from the edistance (which is equal to it, but not defeq). See note [forgetfulInheritance]
+from the edistance (which is equal to it, but not defeq). See Note [forgetful inheritance]
 explaining why having definitionally the right uniformity is often important.
 -/
 
@@ -336,7 +336,7 @@ this as a temporary pseudoemetric space instance, we will show that the uniform 
 structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
-See note [reducibleNonInstances] -/
+See note [reducible non-instances] -/
 abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist

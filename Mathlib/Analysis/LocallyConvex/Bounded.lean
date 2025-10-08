@@ -344,7 +344,7 @@ theorem isVonNBounded_covers : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : S
 
 variable (𝕜 E)
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- The von Neumann bornology defined by the von Neumann bounded sets.
 
 Note that this is not registered as an instance, in order to avoid diamonds with the

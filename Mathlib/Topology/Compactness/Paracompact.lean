@@ -156,7 +156,7 @@ instance (priority := 200) [CompactSpace X] [ParacompactSpace Y] : ParacompactSp
 instance (priority := 200) [ParacompactSpace X] [CompactSpace Y] : ParacompactSpace (X × Y) :=
   (Homeomorph.prodComm X Y).paracompactSpace_iff.2 inferInstance
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 /-- A compact space is paracompact. -/
 instance (priority := 100) paracompact_of_compact [CompactSpace X] : ParacompactSpace X := by
   -- the proof is trivial: we choose a finite subcover using compactness, and use it
@@ -262,7 +262,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [WeaklyLocallyCo
     refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set isClosed_univ fun x _ ↦ hB x
   ⟨α, c, r, fun a ↦ (hp a).2, univ_subset_iff.1 hU, hfin⟩
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 /-- A locally compact sigma compact Hausdorff space is paracompact. See also
 `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis` for a more precise statement. -/
 instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLocallyCompactSpace X]

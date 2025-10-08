@@ -166,7 +166,7 @@ end CommRingRing
 end algebraMap
 
 /-- Creating an algebra from a morphism to the center of a semiring.
-See note [reducibleNonInstances].
+See note [reducible non-instances].
 
 *Warning:* In general this should not be used if `S` already has a `SMul R S`
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
@@ -192,7 +192,7 @@ theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R
   rfl
 
 /-- Creating an algebra from a morphism to a commutative semiring.
-See note [reducibleNonInstances].
+See note [reducible non-instances].
 
 *Warning:* In general this should not be used if `S` already has a `SMul R S`
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
@@ -217,7 +217,7 @@ variable {R : Type u} {S : Type v} {A : Type w} {B : Type*}
 If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `A` is an `Algebra`
 over `R`.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x : A), r • (1 : A) * x = r • x)
     (h₂ : ∀ (r : R) (x : A), x * r • (1 : A) = r • x) : Algebra R A where
@@ -234,7 +234,7 @@ abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
 If `(r • x) * y = x * (r • y) = r • (x * y)` for all `r : R` and `x y : A`, then `A`
 is an `Algebra` over `R`.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x y : A), r • x * y = r • (x * y))
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=
@@ -266,7 +266,7 @@ lemma _root_.toAlgebra_algebraMap [Algebra R S] :
     (algebraMap R S).toAlgebra = ‹_› :=
   algebra_ext _ _ fun _ ↦ rfl
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
     Module R A where
   one_smul _ := by simp [smul_def']
@@ -383,7 +383,7 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
 instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
-  -- see note [reducibleNonInstances].
+  -- see library note [reducible non-instances].
   toSMul := Mul.toSMul _
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 

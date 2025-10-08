@@ -197,8 +197,8 @@ def symm : S'.Equiv S where
   inl_comm := by rw [MulEquiv.symm_comp_eq, ← equiv.inl_comm]
   rightHom_comm := by rw [MulEquiv.comp_symm_eq, ← equiv.rightHom_comm]
 
-/-- See note [customSimpsProjection]. -/
-@[to_additive /-- See note [customSimpsProjection]. -/]
+/-- See Note [custom simps projection]. -/
+@[to_additive /-- See Note [custom simps projection]. -/]
 def Simps.symm_apply : E' → E := equiv.symm
 
 @[to_additive (attr := simp)]

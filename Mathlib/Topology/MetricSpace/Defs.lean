@@ -49,7 +49,7 @@ We make the uniformity/topology part of the data instead of deriving it from the
 This e.g. ensures that we do not get a diamond when doing
 `[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
-See note [forgetfulInheritance]. -/
+See Note [forgetful inheritance]. -/
 class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 
@@ -131,8 +131,8 @@ end Metric
 
 /-- Build a new metric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
-See note [forgetfulInheritance].
-See note [reducibleNonInstances].
+See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : MetricSpace γ where
@@ -145,8 +145,8 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
 
 /-- Build a new metric space from an old one where the bundled topological structure is provably
 (but typically non-definitionaly) equal to some given topological structure.
-See note [forgetfulInheritance].
-See note [reducibleNonInstances].
+See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
     (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) : MetricSpace γ :=
@@ -159,8 +159,8 @@ theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : Metri
 
 /-- Build a new metric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionaly) equal to some given bornology structure.
-See note [forgetfulInheritance].
-See note [reducibleNonInstances].
+See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) : MetricSpace α :=

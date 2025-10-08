@@ -240,7 +240,7 @@ def coeIdeal (I : Ideal R) : FractionalIdeal S P :=
   ⟨coeSubmodule P I,
    isFractional_of_le_one _ <| by simpa using coeSubmodule_mono P (le_top : I ≤ ⊤)⟩
 
--- Is a `CoeTC` rather than `Coe` to speed up failing inference, see note [use has_coe_t]
+-- Is a `CoeTC` rather than `Coe` to speed up failing inference, see library note [use has_coe_t]
 /-- Map an ideal `I` to a fractional ideal by forgetting `I` is integral.
 
 This is a bundled version of `IsLocalization.coeSubmodule : Ideal R → Submodule R P`,

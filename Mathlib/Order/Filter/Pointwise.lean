@@ -45,12 +45,12 @@ distribute over pointwise operations. For example,
 
 For `α` a semigroup/monoid, `Filter α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • f`, where `n : ℕ`, is ambiguous between
-pointwise scaling and repeated pointwise addition. See note [pointwiseNatAction].
+pointwise scaling and repeated pointwise addition. See note [pointwise nat action].
 
 ## Implementation notes
 
 We put all instances in the scope `Pointwise`, so that these instances are not available by
-default. Note that we do not mark them as reducible (as argued by note [reducibleNonInstances])
+default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
 since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`).
 
@@ -440,23 +440,23 @@ instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· /
 end Div
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
-note [pointwiseNatAction]. -/
+Note [pointwise nat action]. -/
 protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
   ⟨nsmulRec⟩
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
-`Filter`. See note [pointwiseNatAction]. -/
+`Filter`. See Note [pointwise nat action]. -/
 @[to_additive existing]
 protected def instNPow [One α] [Mul α] : Pow (Filter α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `Filter`. See note [pointwiseNatAction]. -/
+addition/subtraction!) of a `Filter`. See Note [pointwise nat action]. -/
 protected def instZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Filter α) :=
   ⟨zsmulRec⟩
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
-multiplication/division!) of a `Filter`. See note [pointwiseNatAction]. -/
+multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
 @[to_additive existing]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩

@@ -90,7 +90,7 @@ lemma tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobound
 
 end Filter
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousInv₀ α := by
   refine ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 ?_⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
@@ -111,7 +111,7 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
 @[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
   NormedDivisionRing.to_continuousInv₀
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/
 instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
     IsTopologicalDivisionRing α where

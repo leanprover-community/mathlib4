@@ -268,7 +268,7 @@ abbrev vert (G' : Subgraph G) (v : V) (h : v ∈ G'.verts) : G'.verts := ⟨v, h
 
 /--
 Create an equal copy of a subgraph (see `copy_eq`) with possibly different definitional equalities.
-See note [rangeCopyPattern].
+See Note [range copy pattern].
 -/
 def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
     (adj' : V → V → Prop) (hadj : adj' = G'.Adj) : Subgraph G where

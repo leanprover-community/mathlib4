@@ -96,7 +96,7 @@ theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_
 @[simp]
 theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
 
--- note [lowerInstancePriority]
+-- Note [lower instance priority]
 instance (priority := 100) toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
     mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
@@ -362,7 +362,7 @@ theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a
 instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ‹Inhabited α›
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
 following data:
 
@@ -396,7 +396,7 @@ instance [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
 
 variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Every Boolean algebra has the structure of a Boolean ring with the following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)

@@ -552,7 +552,7 @@ namespace CompleteBooleanAlgebra
 /-- Every atomic complete Boolean algebra is completely atomic.
 
 This is not made an instance to avoid typeclass loops. -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 abbrev toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
     CompleteAtomicBooleanAlgebra α where
   __ := ‹CompleteBooleanAlgebra α›
@@ -817,11 +817,11 @@ protected def distribLattice : DistribLattice α :=
   { (inferInstance : Lattice α) with
     le_sup_inf := fun x y z => by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) : IsAtomic α :=
   ⟨fun b => (eq_bot_or_eq_top b).imp_right fun h => ⟨⊤, ⟨isAtom_top, ge_of_eq h⟩⟩⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 (by infer_instance)
 

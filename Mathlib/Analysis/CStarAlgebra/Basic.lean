@@ -101,7 +101,7 @@ lemma of_le_norm_mul_star_self
 
 variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- In a C*-ring, star preserves the norm. -/
 instance (priority := 100) to_normedStarGroup : NormedStarGroup E where
   norm_star_le x := by
@@ -193,7 +193,7 @@ theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
   have : 0 < ‖(1 : E)‖ := norm_pos_iff.mpr one_ne_zero
   rw [← mul_left_inj' this.ne', ← norm_star_mul_self, mul_one, star_one, one_mul]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) [Nontrivial E] : NormOneClass E :=
   ⟨norm_one⟩
 

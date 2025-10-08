@@ -42,12 +42,12 @@ class ContinuousSup (L : Type*) [TopologicalSpace L] [Max L] : Prop where
   /-- The supremum is continuous -/
   continuous_sup : Continuous fun p : L × L => p.1 ⊔ p.2
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) OrderDual.continuousSup (L : Type*) [TopologicalSpace L] [Min L]
     [ContinuousInf L] : ContinuousSup Lᵒᵈ where
   continuous_sup := @ContinuousInf.continuous_inf L _ _ _
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) OrderDual.continuousInf (L : Type*) [TopologicalSpace L] [Max L]
     [ContinuousSup L] : ContinuousInf Lᵒᵈ where
   continuous_inf := @ContinuousSup.continuous_sup L _ _ _
@@ -58,11 +58,11 @@ Then `L` is said to be a *topological lattice*.
 class TopologicalLattice (L : Type*) [TopologicalSpace L] [Lattice L] : Prop
   extends ContinuousInf L, ContinuousSup L
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) OrderDual.topologicalLattice (L : Type*) [TopologicalSpace L]
     [Lattice L] [TopologicalLattice L] : TopologicalLattice Lᵒᵈ where
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.topologicalLattice {L : Type*} [TopologicalSpace L]
     [LinearOrder L] [OrderClosedTopology L] : TopologicalLattice L where
   continuous_inf := continuous_min

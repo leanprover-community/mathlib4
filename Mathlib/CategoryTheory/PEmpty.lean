@@ -12,7 +12,7 @@ Defines a category structure on `PEmpty`, and the unique functor `PEmpty ⥤ C` 
 -/
 
 universe w v v' u u'
--- morphism levels before object levels. See note [categoryTheoryUniverses].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] (D : Type u') [Category.{v'} D]

@@ -663,7 +663,7 @@ protected theorem IsCompact.totallyBounded {s : Set α} (h : IsCompact s) : Tota
 protected theorem IsCompact.isComplete {s : Set α} (h : IsCompact s) : IsComplete s :=
   (isCompact_iff_totallyBounded_isComplete.1 h).2
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) complete_of_compact {α : Type u} [UniformSpace α] [CompactSpace α] :
     CompleteSpace α :=
   ⟨fun hf => by simpa using (isCompact_iff_totallyBounded_isComplete.1 isCompact_univ).2 _ hf⟩

@@ -417,7 +417,7 @@ theorem order_separated [OrderTopology α] {a₁ a₂ : α} (h : a₁ < a₂) :
   let ⟨x, hx, y, hy, h⟩ := h.exists_disjoint_Iio_Ioi
   ⟨Iio x, Ioi y, isOpen_gt' _, isOpen_lt' _, hx, hy, h⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) OrderTopology.to_orderClosedTopology [OrderTopology α] :
     OrderClosedTopology α where
   isClosed_le' := isOpen_compl_iff.1 <| isOpen_prod_iff.mpr fun a₁ a₂ (h : ¬a₁ ≤ a₂) =>

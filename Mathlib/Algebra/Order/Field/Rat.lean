@@ -14,7 +14,7 @@ This file used to contain the linear ordered field instance on the rational numb
 
 TODO: rename this file to `Mathlib/Algebra/Order/GroupWithZero/NNRat.lean`
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 
 ## Tags
 

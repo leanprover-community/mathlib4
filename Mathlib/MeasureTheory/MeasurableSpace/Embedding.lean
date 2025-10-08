@@ -225,11 +225,11 @@ def symm (ab : α ≃ᵐ β) : β ≃ᵐ α where
 theorem coe_toEquiv_symm (e : α ≃ᵐ β) : (e.toEquiv.symm : β → α) = e.symm :=
   rfl
 
-/-- See note [customSimpsProjection]. We need to specify this projection explicitly in this case,
+/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (h : α ≃ᵐ β) : α → β := h
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 
 initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)

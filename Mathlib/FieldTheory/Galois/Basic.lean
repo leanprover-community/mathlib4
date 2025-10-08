@@ -63,7 +63,7 @@ theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :
 
 attribute [instance 100] IsGalois.to_isSeparable IsGalois.to_normal
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 variable (F E)
 
 namespace IsGalois
@@ -152,7 +152,7 @@ theorem IsGalois.tower_top_of_isGalois [IsGalois F E] : IsGalois K E :=
 
 variable {F E}
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsGalois.tower_top_intermediateField (K : IntermediateField F E)
     [IsGalois F E] : IsGalois K E :=
   IsGalois.tower_top_of_isGalois F K E

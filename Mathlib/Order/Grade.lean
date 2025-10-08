@@ -238,7 +238,7 @@ theorem grade_ofDual [GradeOrder 𝕆 α] (a : αᵒᵈ) : grade 𝕆 (ofDual a)
 
 /-! #### Lifting a graded order -/
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeOrder.liftLeft [GradeOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder ℙ α where
@@ -246,26 +246,26 @@ abbrev GradeOrder.liftLeft [GradeOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictM
   grade_strictMono := hf.comp grade_strictMono
   covBy_grade _ _ h := hcovBy _ _ <| h.grade _
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeMinOrder.liftLeft [GradeMinOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmin : ∀ a, IsMin a → IsMin (f a)) : GradeMinOrder ℙ α :=
   { GradeOrder.liftLeft f hf hcovBy with isMin_grade := fun _ ha => hmin _ <| ha.grade _ }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeMaxOrder.liftLeft [GradeMaxOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeMaxOrder ℙ α :=
   { GradeOrder.liftLeft f hf hcovBy with isMax_grade := fun _ ha => hmax _ <| ha.grade _ }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeBoundedOrder.liftLeft [GradeBoundedOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmin : ∀ a, IsMin a → IsMin (f a))
     (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeBoundedOrder ℙ α :=
   { GradeMinOrder.liftLeft f hf hcovBy hmin, GradeMaxOrder.liftLeft f hf hcovBy hmax with }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeOrder.liftRight [GradeOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder 𝕆 α where
@@ -273,19 +273,19 @@ abbrev GradeOrder.liftRight [GradeOrder 𝕆 β] (f : α → β) (hf : StrictMon
   grade_strictMono := grade_strictMono.comp hf
   covBy_grade _ _ h := (hcovBy _ _ h).grade _
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeMinOrder.liftRight [GradeMinOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmin : ∀ a, IsMin a → IsMin (f a)) : GradeMinOrder 𝕆 α :=
   { GradeOrder.liftRight f hf hcovBy with isMin_grade := fun _ ha => (hmin _ ha).grade _ }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeMaxOrder.liftRight [GradeMaxOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeMaxOrder 𝕆 α :=
   { GradeOrder.liftRight f hf hcovBy with isMax_grade := fun _ ha => (hmax _ ha).grade _ }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeBoundedOrder.liftRight [GradeBoundedOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmin : ∀ a, IsMin a → IsMin (f a))
@@ -295,13 +295,13 @@ abbrev GradeBoundedOrder.liftRight [GradeBoundedOrder 𝕆 β] (f : α → β) (
 /-! #### `Fin n`-graded to `ℕ`-graded to `ℤ`-graded -/
 
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A `Fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
 inferable. -/
 abbrev GradeOrder.finToNat (n : ℕ) [GradeOrder (Fin n) α] : GradeOrder ℕ α :=
   (GradeOrder.liftLeft (_ : Fin n → ℕ) Fin.val_strictMono) fun _ _ => CovBy.coe_fin
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A `Fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
 inferable. -/
 abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrder ℕ α :=

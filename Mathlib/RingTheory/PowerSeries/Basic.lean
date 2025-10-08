@@ -940,7 +940,7 @@ instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
 instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
   (map (algebraMap R A)).toAlgebra
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) algebraPolynomial' {A : Type*} [CommSemiring A] [Algebra R A[X]] :
     Algebra R A⟦X⟧ :=
   RingHom.toAlgebra <| Polynomial.coeToPowerSeries.ringHom.comp (algebraMap R A[X])

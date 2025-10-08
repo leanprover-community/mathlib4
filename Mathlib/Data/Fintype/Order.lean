@@ -55,19 +55,19 @@ section Nonempty
 
 variable (α) [Nonempty α]
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Constructs the `⊥` of a finite nonempty `SemilatticeInf`. -/
 abbrev toOrderBot [SemilatticeInf α] : OrderBot α where
   bot := univ.inf' univ_nonempty id
   bot_le a := inf'_le _ <| mem_univ a
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
 abbrev toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
   le_top a := le_sup' id <| mem_univ a
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Constructs the `⊤` and `⊥` of a finite nonempty `Lattice`. -/
 abbrev toBoundedOrder [Lattice α] : BoundedOrder α :=
   { toOrderBot α, toOrderTop α with }
@@ -79,7 +79,7 @@ section BoundedOrder
 variable (α)
 
 open scoped Classical in
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A finite bounded lattice is complete. -/
 noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
   __ := ‹Lattice α›
@@ -91,7 +91,7 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
   le_sInf := fun _ _ ha => Finset.le_inf fun _ hb => ha _ <| Set.mem_toFinset.mp hb
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice.MinimalAxioms α where
@@ -107,12 +107,12 @@ noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [
     simp_rw [Set.mem_toFinset]
     rfl
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice α := .ofMinimalAxioms (toCompleteDistribLatticeMinimalAxioms _)
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A finite bounded linear order is complete.
 
 If the `α` is already a `BiheytingAlgebra`, then prefer to construct this instance manually using
@@ -122,13 +122,13 @@ noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
   { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra _ with }
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A finite Boolean algebra is complete. -/
 noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A finite Boolean algebra is complete and atomic. -/
 noncomputable abbrev toCompleteAtomicBooleanAlgebra [BooleanAlgebra α] :
     CompleteAtomicBooleanAlgebra α :=
@@ -140,13 +140,13 @@ section Nonempty
 
 variable (α) [Nonempty α]
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A nonempty finite lattice is complete. If the lattice is already a `BoundedOrder`, then use
 `Fintype.toCompleteLattice` instead, as this gives definitional equality for `⊥` and `⊤`. -/
 noncomputable abbrev toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice α :=
   @toCompleteLattice _ _ _ <| toBoundedOrder α
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A nonempty finite linear order is complete. If the linear order is already a `BoundedOrder`,
 then use `Fintype.toCompleteLinearOrder` instead, as this gives definitional equality for `⊥` and
 `⊤`. -/

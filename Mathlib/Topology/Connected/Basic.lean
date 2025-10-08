@@ -616,9 +616,9 @@ class ConnectedSpace (α : Type u) [TopologicalSpace α] : Prop extends Preconne
   /-- A connected space is nonempty. -/
   toNonempty : Nonempty α
 
-attribute [instance 50] ConnectedSpace.toNonempty  -- see note [lowerInstancePriority]
+attribute [instance 50] ConnectedSpace.toNonempty  -- see Note [lower instance priority]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 theorem isConnected_univ [ConnectedSpace α] : IsConnected (univ : Set α) :=
   ⟨univ_nonempty, isPreconnected_univ⟩
 
@@ -692,12 +692,12 @@ instance [∀ i, TopologicalSpace (X i)] [∀ i, PreconnectedSpace (X i)] :
 instance [∀ i, TopologicalSpace (X i)] [∀ i, ConnectedSpace (X i)] : ConnectedSpace (∀ i, X i) :=
   ⟨inferInstance⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) PreirreducibleSpace.preconnectedSpace (α : Type u) [TopologicalSpace α]
     [PreirreducibleSpace α] : PreconnectedSpace α :=
   ⟨isPreirreducible_univ.isPreconnected⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IrreducibleSpace.connectedSpace (α : Type u) [TopologicalSpace α]
     [IrreducibleSpace α] : ConnectedSpace α where toNonempty := IrreducibleSpace.toNonempty
 

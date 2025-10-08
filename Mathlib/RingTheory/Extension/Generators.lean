@@ -82,7 +82,7 @@ instance : Algebra P.Ring S := P.algebra
 /-- The designated section of w.r.t. a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.σ : S → P.Ring := P.σ
 
 initialize_simps_projections Algebra.Generators (σ' → σ)

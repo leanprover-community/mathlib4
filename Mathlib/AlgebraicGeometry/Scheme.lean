@@ -89,7 +89,7 @@ abbrev Hom.toLRSHom {X Y : Scheme.{u}} (f : X.Hom Y) :
     X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
   f.toLRSHom'
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Hom.Simps.toLRSHom {X Y : Scheme.{u}} (f : X.Hom Y) :
     X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
   f.toLRSHom

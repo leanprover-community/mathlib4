@@ -40,13 +40,13 @@ def finiteColimitCocone [SemilatticeSup α] [OrderBot α] (F : J ⥤ α) : Colim
       ι := { app := fun _ => homOfLE (Finset.le_sup (Fintype.complete _)) } }
   isColimit := { desc := fun s => homOfLE (Finset.sup_le fun j _ => (s.ι.app j).down.down) }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) hasFiniteLimits_of_semilatticeInf_orderTop [SemilatticeInf α]
     [OrderTop α] : HasFiniteLimits α := ⟨by
   intro J 𝒥₁ 𝒥₂
   exact { has_limit := fun F => HasLimit.mk (finiteLimitCone F) }⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) hasFiniteColimits_of_semilatticeSup_orderBot [SemilatticeSup α]
     [OrderBot α] : HasFiniteColimits α := ⟨by
   intro J 𝒥₁ 𝒥₂
@@ -92,7 +92,7 @@ theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : T
   simp only [← Finset.sup_map, Finset.univ_map_equiv_to_embedding]
   rfl
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) [SemilatticeInf α] [OrderTop α] : HasBinaryProducts α := by
   have : ∀ x y : α, HasLimit (pair x y) := by
     letI := hasFiniteLimits_of_hasFiniteLimits_of_size.{u} α
@@ -111,7 +111,7 @@ theorem prod_eq_inf [SemilatticeInf α] [OrderTop α] (x y : α) : Limits.prod x
     -- Note: finset.inf is realized as a fold, hence the definitional equality
     _ = x ⊓ y := by rw [inf_top_eq]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) [SemilatticeSup α] [OrderBot α] : HasBinaryCoproducts α := by
   have : ∀ x y : α, HasColimit (pair x y) := by
     letI := hasFiniteColimits_of_hasFiniteColimits_of_size.{u} α
@@ -182,11 +182,11 @@ def colimitCocone (F : J ⥤ α) : ColimitCocone F where
     { desc := fun s =>
         homOfLE (CompleteLattice.sSup_le _ _ (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) hasLimits_of_completeLattice : HasLimitsOfSize.{w, w'} α where
   has_limits_of_shape _ := { has_limit := fun F => HasLimit.mk (limitCone F) }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) hasColimits_of_completeLattice : HasColimitsOfSize.{w, w'} α where
   has_colimits_of_shape _ := { has_colimit := fun F => HasColimit.mk (colimitCocone F) }
 

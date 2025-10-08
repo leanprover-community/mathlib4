@@ -66,7 +66,7 @@ theorem lipschitz_with_lipschitz_const_mul :
   rw [← lipschitzWith_iff_dist_le_mul]
   exact lipschitzWith_lipschitz_const_mul_edist
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) LipschitzMul.continuousMul : ContinuousMul β :=
   ⟨lipschitzWith_lipschitz_const_mul_edist.continuous⟩
@@ -128,7 +128,7 @@ theorem dist_smul_pair (x : α) (y₁ y₂ : β) : dist (x • y₁) (x • y₂
 theorem dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0 :=
   IsBoundedSMul.dist_pair_smul' x₁ x₂ y
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- The typeclass `IsBoundedSMul` on a metric-space scalar action implies continuity of the
 action. -/
 instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β where

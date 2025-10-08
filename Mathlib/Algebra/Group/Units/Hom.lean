@@ -269,7 +269,7 @@ theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
--- see note [lowerInstancePriority]
+-- see note [lower instance priority]
 @[instance 100]
 theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
     IsLocalHom (f : R →* S) :=

@@ -94,7 +94,7 @@ of filters on `α × α` have type `Set (α × α)`.
 
 The structure `UniformSpace X` bundles a uniform structure on `X`, a topology on `X` and
 an assumption saying those are compatible. This may not seem mathematically reasonable at first,
-but is in fact an instance of the forgetful inheritance pattern. See note [forgetfulInheritance]
+but is in fact an instance of the forgetful inheritance pattern. See Note [forgetful inheritance]
 below.
 
 ## References
@@ -336,7 +336,7 @@ theorem UniformSpace.Core.nhds_toTopologicalSpace {α : Type u} (u : Core α) (x
     exact hVU ⟨b, hb, hc⟩
 
 -- the topological structure is embedded in the uniform structure
--- to avoid instance diamond issues. See note [forgetfulInheritance].
+-- to avoid instance diamond issues. See Note [forgetful inheritance].
 /-- A uniform space is a generalization of the "uniform" topological aspects of a
   metric space. It consists of a filter on `α × α` called the "uniformity", which
   satisfies properties analogous to the reflexivity, symmetry, and triangle properties

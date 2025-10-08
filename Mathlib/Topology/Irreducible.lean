@@ -165,7 +165,7 @@ and where there is no non-trivial pair of disjoint opens. -/
 class IrreducibleSpace (X : Type*) [TopologicalSpace X] : Prop extends PreirreducibleSpace X where
   toNonempty : Nonempty X
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 attribute [instance 50] IrreducibleSpace.toNonempty
 
 theorem IrreducibleSpace.isIrreducible_univ (X : Type*) [TopologicalSpace X] [IrreducibleSpace X] :

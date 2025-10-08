@@ -566,7 +566,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
 @[to_additive] instance [h : TwoUniqueProds G] : TwoUniqueProds Gᵐᵒᵖ :=
   of_mulOpposite <| (MulEquiv.opOp G).twoUniqueProds_iff.mp h
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
@@ -600,7 +600,7 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
       · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| min'_le _ _ <| mul_mem_mul ha hb1).elim
 
 open MulOpposite in
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- This instance asserts that if `G` has a left-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive

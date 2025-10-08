@@ -85,19 +85,19 @@ namespace RingEquivClass
 
 variable [EquivLike F R S]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) toAddEquivClass [Mul R] [Add R]
     [Mul S] [Add S] [h : RingEquivClass F R S] : AddEquivClass F R S :=
   { h with }
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
     [h : RingEquivClass F R S] : RingHomClass F R S :=
   { h with
     map_zero := map_zero
     map_one := map_one }
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
   { h with
@@ -313,7 +313,7 @@ end symm
 
 section simps
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : R ≃+* S) : S → R :=
   e.symm
 

@@ -34,7 +34,7 @@ discrete categories.
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [categoryTheoryUniverses].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 
 -- This is intentionally a structure rather than a type synonym

@@ -226,7 +226,7 @@ end EMetric
 
 variable {γ : Type w} [EMetricSpace γ]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- An emetric space is separated -/
 instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
   t0 _ _ h := eq_of_edist_eq_zero <| inseparable_iff.1 h

@@ -103,12 +103,12 @@ theorem eq_bot_iff_generator_eq_zero (S : Submodule R M) [S.IsPrincipal] :
 protected lemma fg {S : Submodule R M} (h : S.IsPrincipal) : S.FG :=
   ⟨{h.generator}, by simp only [Finset.coe_singleton, span_singleton_generator]⟩
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) _root_.PrincipalIdealRing.isNoetherianRing [IsPrincipalIdealRing R] :
     IsNoetherianRing R where
   noetherian S := (IsPrincipalIdealRing.principal S).fg
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) _root_.IsPrincipalIdealRing.of_isNoetherianRing_of_isBezout
     [IsNoetherianRing R] [IsBezout R] : IsPrincipalIdealRing R where
   principal S := IsBezout.isPrincipal_of_FG S (IsNoetherian.noetherian S)
@@ -258,7 +258,7 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
   ⟨fun hxy => div_add_mod x y ▸ S.add_mem (S.mul_mem_right _ hy) hxy, fun hx =>
     (mod_eq_sub_mul_div x y).symm ▸ S.sub_mem hx (S.mul_mem_right _ hy)⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R where
   principal S := by classical exact
     ⟨if h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty then
@@ -336,7 +336,7 @@ theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [C
     (a : R) (ha : a ≠ 0) (h : ∀ b ∈ factors a, f b ∈ s) (hf : ∀ c : Rˣ, f c ∈ s) : f a ∈ s :=
   mem_submonoid_of_factors_subset_of_units_subset (s.comap f.toMonoidHom) ha h hf
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- A principal ideal domain has unique factorization -/
 instance (priority := 100) to_uniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
   { (IsNoetherianRing.wfDvdMonoid : WfDvdMonoid R) with

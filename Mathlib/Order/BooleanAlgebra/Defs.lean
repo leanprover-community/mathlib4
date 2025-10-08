@@ -114,7 +114,7 @@ class BooleanAlgebra (α : Type u) extends
   /-- `x ⇨ y` is equal to `y ⊔ xᶜ` -/
   himp_eq : ∀ x y : α, x ⇨ y = y ⊔ xᶜ := by aesop
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) BooleanAlgebra.toBoundedOrder [h : BooleanAlgebra α] : BoundedOrder α :=
   { h with }
 

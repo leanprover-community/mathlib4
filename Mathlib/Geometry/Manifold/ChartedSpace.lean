@@ -790,12 +790,12 @@ solves this problem. -/
 
 
 /-- Same thing as `H × H'`. We introduce it for technical reasons,
-see note [manifoldTypeTags]. -/
+see note [Manifold type tags]. -/
 def ModelProd (H : Type*) (H' : Type*) :=
   H × H'
 
 /-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
-see note [manifoldTypeTags]. -/
+see note [Manifold type tags]. -/
 def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 

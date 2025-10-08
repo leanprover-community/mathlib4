@@ -12,7 +12,7 @@ import Mathlib.Tactic.Spread
 
 This file contains the `CancelCommMonoidWithZero` instance on the natural numbers.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 -/
 
 assert_not_exists Ring

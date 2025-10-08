@@ -103,7 +103,7 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
 
@@ -780,7 +780,7 @@ theorem subtype_comp_codRestrict (f : M →[L] N) (p : L.Substructure N) (h : �
   ext fun _ => rfl
 
 /-- The range of a first-order hom `f : M → N` is a submodule of `N`.
-See note [rangeCopyPattern]. -/
+See Note [range copy pattern]. -/
 def range (f : M →[L] N) : L.Substructure N :=
   (map f ⊤).copy (Set.range f) Set.image_univ.symm
 

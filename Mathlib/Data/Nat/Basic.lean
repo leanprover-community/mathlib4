@@ -17,7 +17,7 @@ import Mathlib.Util.AssertExists
 This file builds on `Mathlib/Data/Nat/Init.lean` by adding basic lemmas on natural numbers
 depending on Mathlib definitions.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 -/
 
 /- We don't want to import the algebraic hierarchy in this file. -/

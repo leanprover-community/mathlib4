@@ -351,12 +351,12 @@ theorem le_mul_norm_div {f : E → F} (hf : AntilipschitzWith K f) (x y : E) :
 end AntilipschitzWith
 end PseudoEMetricSpace
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) SeminormedCommGroup.to_lipschitzMul : LipschitzMul E :=
   ⟨⟨1 + 1, LipschitzWith.prod_fst.mul LipschitzWith.prod_snd⟩⟩
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 /-- A seminormed group is a uniform group, i.e., multiplication and division are uniformly
 continuous. -/
 @[to_additive /-- A seminormed group is a uniform additive group, i.e., addition and subtraction are
@@ -365,7 +365,7 @@ instance (priority := 100) SeminormedCommGroup.to_isUniformGroup : IsUniformGrou
   ⟨(LipschitzWith.prod_fst.div LipschitzWith.prod_snd).uniformContinuous⟩
 
 -- short-circuit type class inference
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance

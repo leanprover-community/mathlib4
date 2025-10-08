@@ -65,7 +65,7 @@ instance instLinearMapClass : LinearMapClass (LieDerivation R L M) R L M where
 
 theorem toFun_eq_coe : D.toFun = ⇑D := rfl
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply (D : LieDerivation R L M) : L → M := D
 
 initialize_simps_projections LieDerivation (toFun → apply)

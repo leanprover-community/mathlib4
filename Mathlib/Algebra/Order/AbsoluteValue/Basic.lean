@@ -72,7 +72,7 @@ theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h�
 theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 
-/-- See note [customSimpsProjection]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.apply (f : AbsoluteValue R S) : R → S :=
   f
 

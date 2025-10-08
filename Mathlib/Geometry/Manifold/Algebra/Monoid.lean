@@ -36,7 +36,7 @@ we formulate the definitions and lemmas for any model.
 `[ContinuousMul G]` in a proof about a `C^n` monoid, then they need to either add
 `[ContinuousMul G]` as an assumption (worse) or use `haveI` in the proof (better). -/
 
--- See note [designChoicesSmoothAlgebraicStructures]
+-- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) additive monoid or a `C^n` additive
 semigroup. A `C^n` additive monoid over `G`, for example, is obtained by requiring both the
 instances `AddMonoid G` and `ContMDiffAdd I n G`. -/
@@ -47,7 +47,7 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     extends IsManifold I n G where
   contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
 
--- See note [designChoicesSmoothAlgebraicStructures]
+-- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
 A `C^n` monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
 and `ContMDiffMul I n G`. -/
@@ -101,9 +101,9 @@ theorem contMDiff_mul [ContMDiffMul I n G] : ContMDiff (I.prod I) I n fun p : G 
 
 include I n in
 /-- If the multiplication is `C^n`, then it is continuous. This is not an instance for technical
-reasons, see note [designChoicesSmoothAlgebraicStructures]. -/
+reasons, see note [Design choices about smooth algebraic structures]. -/
 @[to_additive /-- If the addition is `C^n`, then it is continuous. This is not an instance for
-technical reasons, see note [designChoicesSmoothAlgebraicStructures]. -/]
+technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem continuousMul_of_contMDiffMul [ContMDiffMul I n G] : ContinuousMul G :=
   ⟨(contMDiff_mul I n).continuous⟩
 

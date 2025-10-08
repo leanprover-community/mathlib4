@@ -67,7 +67,7 @@ theorem ofNat_encode (a) : ofNat α (encode a) = a :=
 def eqv (α) [Denumerable α] : α ≃ ℕ :=
   ⟨encode, ofNat α, ofNat_encode, encode_ofNat⟩
 
--- See note [lowerInstancePriority]
+-- See Note [lower instance priority]
 instance (priority := 100) : Infinite α :=
   Infinite.of_surjective _ (eqv α).surjective
 

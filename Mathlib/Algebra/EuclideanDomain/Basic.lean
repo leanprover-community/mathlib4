@@ -29,7 +29,7 @@ variable [EuclideanDomain R]
 /-- The well-founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0` -/
 local infixl:50 " ≺ " => EuclideanDomain.r
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) toMulDivCancelClass : MulDivCancelClass R where
   mul_div_cancel a b hb := by
     refine (eq_of_sub_eq_zero ?_).symm
@@ -203,13 +203,13 @@ theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b :=
       (by dsimp [P]; rw [mul_one, mul_zero, zero_add])
   rwa [xgcdAux_val, xgcd_val] at this
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : NoZeroDivisors R :=
   haveI := Classical.decEq R
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} h =>
       or_iff_not_and_not.2 fun h0 => h0.1 <| by rw [← mul_div_cancel_right₀ a h0.2, h, zero_div] }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
   { e, NoZeroDivisors.to_isDomain R with }
 

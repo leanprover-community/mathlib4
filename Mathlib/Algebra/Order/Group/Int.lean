@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Monoid.Defs
 This file contains the instance necessary to show that the integers are a linear ordered
 additive group.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 -/
 
 -- We should need only a minimal development of sets in order to get here.

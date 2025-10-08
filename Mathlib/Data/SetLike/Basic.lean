@@ -44,7 +44,7 @@ instance : SetLike (MySubobject X) X :=
 @[ext] theorem ext {p q : MySubobject X} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q := SetLike.ext h
 
 /-- Copy of a `MySubobject` with a new `carrier` equal to the old one. Useful to fix definitional
-equalities. See note [rangeCopyPattern]. -/
+equalities. See Note [range copy pattern]. -/
 protected def copy (p : MySubobject X) (s : Set X) (hs : s = ↑p) : MySubobject X :=
   { carrier := s
     op_mem' := hs.symm ▸ p.op_mem' }

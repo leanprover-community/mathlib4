@@ -48,7 +48,7 @@ theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
 
 @[deprecated (since := "2025-04-20")] alias closed := isClosed
 
-/-- See note [customSimpsProjection]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
 
 initialize_simps_projections Closeds (carrier → coe, as_prefix coe)
@@ -292,7 +292,7 @@ lemma isOpen (s : Clopens α) : IsOpen (s : Set α) := s.isClopen.isOpen
 
 lemma isClosed (s : Clopens α) : IsClosed (s : Set α) := s.isClopen.isClosed
 
-/-- See note [customSimpsProjection]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
 
 initialize_simps_projections Clopens (carrier → coe, as_prefix coe)
@@ -378,7 +378,7 @@ theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) :
 
 theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.is_closed'
 
-/-- See note [customSimpsProjection]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.coe (s : IrreducibleCloseds α) : Set α := s
 
 initialize_simps_projections IrreducibleCloseds (carrier → coe, as_prefix coe)

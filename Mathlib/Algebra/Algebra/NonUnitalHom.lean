@@ -84,7 +84,7 @@ abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace NonUnitalAlgHomClass
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass
     {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
     {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
@@ -96,7 +96,7 @@ variable [Semiring R] [Semiring S] {φ : R →+* S}
   {A B : Type*} [NonUnitalNonAssocSemiring A] [Module R A]
   [NonUnitalNonAssocSemiring B] [Module S B]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) {F R S A B : Type*}
     {_ : Semiring R} {_ : Semiring S} {φ : R →+* S}
     {_ : NonUnitalSemiring A} {_ : NonUnitalSemiring B} [Module R A] [Module S B] [FunLike F A B]
@@ -162,7 +162,7 @@ instance : FunLike (A →ₛₙₐ[φ] B) A B where
 theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
   rfl
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply (f : A →ₛₙₐ[φ] B) : A → B := f
 
 initialize_simps_projections NonUnitalAlgHom
@@ -433,7 +433,7 @@ variable {F R : Type*} [CommSemiring R]
 variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) [FunLike F A B] [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smulₛₗ := map_smul }
 

@@ -58,7 +58,7 @@ theorem sup_sdiff_inf (x y : α) : x \ y ⊔ x ⊓ y = x := by rw [sup_comm, sup
 @[simp]
 theorem inf_sdiff_inf (x y : α) : x \ y ⊓ (x ⊓ y) = ⊥ := by rw [inf_comm, inf_inf_sdiff]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) GeneralizedBooleanAlgebra.toOrderBot : OrderBot α where
   __ := GeneralizedBooleanAlgebra.toBot
   bot_le a := by
@@ -116,7 +116,7 @@ theorem inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
 @[simp]
 theorem inf_sdiff_self_left : y \ x ⊓ x = ⊥ := by rw [inf_comm, inf_sdiff_self_right]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra :
     GeneralizedCoheytingAlgebra α where
   __ := ‹GeneralizedBooleanAlgebra α›
@@ -427,7 +427,7 @@ end GeneralizedBooleanAlgebra
 /-!
 ### Boolean algebras
 -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- A bounded generalized Boolean algebra is a Boolean algebra. -/
 abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [OrderTop α] :
     BooleanAlgebra α where
@@ -467,7 +467,7 @@ theorem himp_eq : x ⇨ y = y ⊔ xᶜ :=
 instance (priority := 100) BooleanAlgebra.toComplementedLattice : ComplementedLattice α :=
   ⟨fun x => ⟨xᶜ, isCompl_compl⟩⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) BooleanAlgebra.toGeneralizedBooleanAlgebra :
     GeneralizedBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
@@ -475,7 +475,7 @@ instance (priority := 100) BooleanAlgebra.toGeneralizedBooleanAlgebra :
   inf_inf_sdiff a b := by
     rw [sdiff_eq, ← inf_inf_distrib_left, inf_compl_eq_bot', inf_bot_eq]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra
@@ -643,7 +643,7 @@ instance Pi.instBooleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, Boolea
 
 section lift
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Pullback a `GeneralizedBooleanAlgebra` along an injection. -/
 protected abbrev Function.Injective.generalizedBooleanAlgebra [Max α] [Min α] [Bot α] [SDiff α]
     [GeneralizedBooleanAlgebra β] (f : α → β) (hf : Injective f)
@@ -655,7 +655,7 @@ protected abbrev Function.Injective.generalizedBooleanAlgebra [Max α] [Min α] 
   sup_inf_sdiff a b := hf <| by rw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
   inf_inf_sdiff a b := hf <| by rw [map_inf, map_sdiff, map_inf, inf_inf_sdiff, map_bot]
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
 protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [Bot α] [HasCompl α]
     [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)

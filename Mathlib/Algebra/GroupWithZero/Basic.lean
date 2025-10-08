@@ -199,7 +199,7 @@ section CancelMonoidWithZero
 
 variable [CancelMonoidWithZero M₀] {a b c : M₀}
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisors M₀ :=
   ⟨fun ab0 => or_iff_not_imp_left.mpr fun ha => mul_left_cancel₀ ha <|
     ab0.trans (mul_zero _).symm⟩
@@ -277,7 +277,7 @@ theorem inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
   rw [← inv_mul_cancel_left₀ (left_ne_zero_of_mul_eq_one h) b, h, mul_one]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
   { ‹GroupWithZero G₀› with
     inv := Inv.inv,
@@ -294,7 +294,7 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
       simp [mul_assoc, ha, hb],
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.toCancelMonoidWithZero : CancelMonoidWithZero G₀ :=
   { (‹_› : GroupWithZero G₀) with
     mul_left_cancel_of_ne_zero {x} hx y z h := by

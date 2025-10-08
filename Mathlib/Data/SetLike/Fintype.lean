@@ -21,7 +21,7 @@ SetLike objects. If we add those instances, we should remove this one. -/
 noncomputable instance (priority := 100) {A B : Type*} [SetLike A B] [Fintype B] : Fintype A :=
   Fintype.ofInjective SetLike.coe SetLike.coe_injective
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) {A B : Type*} [SetLike A B] [Finite B] : Finite A :=
   Finite.of_injective SetLike.coe SetLike.coe_injective
 

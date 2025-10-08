@@ -238,40 +238,40 @@ variable {α β} {a a₁ a₂ : α} {b b₁ b₂ : β}
 section Mul
 variable [Zero α] [Mul α] [Preorder α]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) PosMulMono.toPosSMulMono [PosMulMono α] : PosSMulMono α α where
   smul_le_smul_of_nonneg_left _a ha _b₁ _b₂ hb := mul_le_mul_of_nonneg_left hb ha
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosSMulStrictMono [PosMulStrictMono α] :
     PosSMulStrictMono α α where
   smul_lt_smul_of_pos_left _a ha _b₁ _b₂ hb := mul_lt_mul_of_pos_left hb ha
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) PosMulReflectLT.toPosSMulReflectLT [PosMulReflectLT α] :
     PosSMulReflectLT α α where
   lt_of_smul_lt_smul_left _a ha _b₁ _b₂ h := lt_of_mul_lt_mul_left h ha
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) PosMulReflectLE.toPosSMulReflectLE [PosMulReflectLE α] :
     PosSMulReflectLE α α where
   le_of_smul_le_smul_left _a ha _b₁ _b₂ h := le_of_mul_le_mul_left h ha
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) MulPosMono.toSMulPosMono [MulPosMono α] : SMulPosMono α α where
   smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := mul_le_mul_of_nonneg_right ha hb
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) MulPosStrictMono.toSMulPosStrictMono [MulPosStrictMono α] :
     SMulPosStrictMono α α where
   smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := mul_lt_mul_of_pos_right ha hb
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) MulPosReflectLT.toSMulPosReflectLT [MulPosReflectLT α] :
     SMulPosReflectLT α α where
   lt_of_smul_lt_smul_right _b hb _a₁ _a₂ h := lt_of_mul_lt_mul_right h hb
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) MulPosReflectLE.toSMulPosReflectLE [MulPosReflectLE α] :
     SMulPosReflectLE α α where
   le_of_smul_le_smul_right _b hb _a₁ _a₂ h := le_of_mul_le_mul_right h hb
@@ -421,11 +421,11 @@ end Preorder
 section PartialOrder
 variable [Semiring α] [PartialOrder α]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IsOrderedRing.toIsOrderedModule [IsOrderedRing α] :
     IsOrderedModule α α where
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toIsStrictOrderedModule [IsStrictOrderedRing α] :
     IsStrictOrderedModule α α where
 
@@ -437,7 +437,7 @@ variable [Preorder α] [LinearOrder β]
 section Left
 variable [Zero α]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLE [PosSMulStrictMono α β] :
     PosSMulReflectLE α β where
   le_of_smul_le_smul_left _a ha _b₁ _b₂ := (strictMono_smul_left_of_pos ha).le_iff_le.1
@@ -487,7 +487,7 @@ variable [LinearOrder α] [Preorder β]
 section Right
 variable [Zero β]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) SMulPosStrictMono.toSMulPosReflectLE [SMulPosStrictMono α β] :
     SMulPosReflectLE α β where
   le_of_smul_le_smul_right _b hb _a₁ _a₂ h :=
@@ -636,29 +636,29 @@ end PartialOrder
 section PartialOrder
 variable [PartialOrder α] [PartialOrder β]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulMono [PosSMulStrictMono α β] :
     PosSMulMono α β :=
   PosSMulMono.of_pos fun _a ha ↦ (strictMono_smul_left_of_pos ha).monotone
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) SMulPosStrictMono.toSMulPosMono [SMulPosStrictMono α β] :
     SMulPosMono α β :=
   SMulPosMono.of_pos fun _b hb ↦ (strictMono_smul_right_of_pos hb).monotone
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) PosSMulReflectLE.toPosSMulReflectLT [PosSMulReflectLE α β] :
     PosSMulReflectLT α β :=
   PosSMulReflectLT.of_pos fun a ha b₁ b₂ h ↦
     (le_of_smul_le_smul_of_pos_left h.le ha).lt_of_ne <| by rintro rfl; simp at h
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) SMulPosReflectLE.toSMulPosReflectLT [SMulPosReflectLE α β] :
     SMulPosReflectLT α β :=
   SMulPosReflectLT.of_pos fun b hb a₁ a₂ h ↦
     (le_of_smul_le_smul_of_pos_right h.le hb).lt_of_ne <| by rintro rfl; simp at h
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedModule.toIsOrderedModule [IsStrictOrderedModule α β] :
     IsOrderedModule α β where
 

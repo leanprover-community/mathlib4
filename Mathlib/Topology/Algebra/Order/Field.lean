@@ -88,7 +88,7 @@ theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
   rw [← neg_pos, ← h, Nat.cast_pos] at hn
   simpa only [h, neg_neg] using tendsto_pow_neg_atTop hn.ne'
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toContinuousInv₀ [ContinuousMul 𝕜] :
     ContinuousInv₀ 𝕜 := .of_nhds_one <| tendsto_order.2 <| by
   refine ⟨fun x hx => ?_, fun x hx => ?_⟩
@@ -137,7 +137,7 @@ variable {𝕜 α : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {l : Filter α} {f g : α → 𝕜}
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.topologicalRing : IsTopologicalRing 𝕜 :=
   .of_norm abs abs_nonneg (fun _ _ ↦ (abs_mul _ _).le) <| by
     simpa using nhds_basis_abs_sub_lt (0 : 𝕜)

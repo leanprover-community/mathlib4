@@ -123,7 +123,7 @@ instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
 /-- A T₆ space is a perfectly normal T₀ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, PerfectlyNormalSpace X
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
 instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
 

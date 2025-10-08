@@ -163,11 +163,11 @@ lemma IsStrictOrderedRing.of_mul_pos [Ring R] [PartialOrder R] [IsOrderedAddMono
 section IsOrderedRing
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 200) IsOrderedRing.toPosMulMono : PosMulMono R where
   elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_left _ _ _ h x.2
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono R where
   elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_right _ _ _ h x.2
 
@@ -183,15 +183,15 @@ instance (priority := 50) IsOrderedRing.toIsStrictOrderedRing (R : Type*)
 section IsStrictOrderedRing
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 200) IsStrictOrderedRing.toPosMulStrictMono : PosMulStrictMono R where
   elim x _ _ h := IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h x.prop
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 200) IsStrictOrderedRing.toMulPosStrictMono : MulPosStrictMono R where
   elim x _ _ h := IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _ h x.prop
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing R where
   __ := ‹IsStrictOrderedRing R›
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
@@ -204,11 +204,11 @@ theorem AddMonoidWithOne.toCharZero {R}
   cast_injective :=
     (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toCharZero :
     CharZero R := AddMonoidWithOne.toCharZero
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toNoMaxOrder : NoMaxOrder R :=
   ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
 
@@ -218,7 +218,7 @@ section LinearOrder
 
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by
     contrapose! hab
@@ -227,7 +227,7 @@ instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R
       (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
 
 -- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain R where
   mul_left_cancel_of_ne_zero {a} ha _ _ h := by
     obtain ha | ha := ha.lt_or_gt

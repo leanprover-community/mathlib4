@@ -62,7 +62,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite
 
 namespace CategoryTheory.Limits
 
--- morphism levels before object levels. See note [categoryTheoryUniverses].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 universe v₁ u₁ v₂ u₂ v₃ u₃ v v' v'' u u' u''
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
@@ -116,12 +116,12 @@ theorem HasLimits.has_limits_of_shape {C : Type u} [Category.{v} C] [HasLimits C
 
 variable {J C}
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) hasLimitOfHasLimitsOfShape {J : Type u₁} [Category.{v₁} J]
     [HasLimitsOfShape J C] (F : J ⥤ C) : HasLimit F :=
   HasLimitsOfShape.has_limit F
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) hasLimitsOfShapeOfHasLimits {J : Type u₁} [Category.{v₁} J]
     [HasLimitsOfSize.{v₁, u₁} C] : HasLimitsOfShape J C :=
   HasLimitsOfSize.has_limits_of_shape J
@@ -633,12 +633,12 @@ theorem HasColimits.hasColimitsOfShape {C : Type u} [Category.{v} C] [HasColimit
 
 variable {J C}
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) hasColimitOfHasColimitsOfShape {J : Type u₁} [Category.{v₁} J]
     [HasColimitsOfShape J C] (F : J ⥤ C) : HasColimit F :=
   HasColimitsOfShape.has_colimit F
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) hasColimitsOfShapeOfHasColimitsOfSize {J : Type u₁} [Category.{v₁} J]
     [HasColimitsOfSize.{v₁, u₁} C] : HasColimitsOfShape J C :=
   HasColimitsOfSize.has_colimits_of_shape J

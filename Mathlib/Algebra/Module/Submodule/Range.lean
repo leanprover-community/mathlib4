@@ -52,7 +52,7 @@ section
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 /-- The range of a linear map `f : M → M₂` is a submodule of `M₂`.
-See note [rangeCopyPattern]. -/
+See Note [range copy pattern]. -/
 def range [RingHomSurjective τ₁₂] (f : F) : Submodule R₂ M₂ :=
   (map f ⊤).copy (Set.range f) Set.image_univ.symm
 

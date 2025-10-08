@@ -33,7 +33,7 @@ namespace Preorder
 
 open CategoryTheory
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /--
 The category structure coming from a preorder. There is a morphism `X ⟶ Y` if and only if `X ≤ Y`.
 

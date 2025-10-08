@@ -205,7 +205,7 @@ variable [Semigroup α]
 section LE
 variable [LE α] [CanonicallyOrderedMul α]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 10) CanonicallyOrderedMul.toMulLeftMono :
     MulLeftMono α where

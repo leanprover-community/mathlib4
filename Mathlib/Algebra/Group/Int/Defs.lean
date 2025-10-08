@@ -10,7 +10,7 @@ import Mathlib.Algebra.Group.Defs
 
 This file contains the additive group and multiplicative monoid instances on the integers.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 -/
 
 assert_not_exists Ring DenselyOrdered

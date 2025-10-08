@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 universe v v₂ u u₂
 
--- morphism levels before object levels. See note [categoryTheoryUniverses].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 /-- A `Groupoid` is a category such that all morphisms are isomorphisms. -/
 class Groupoid (obj : Type u) : Type max u (v + 1) extends Category.{v} obj where
   /-- The inverse morphism -/
@@ -63,7 +63,7 @@ section
 
 variable {C : Type u} [Groupoid.{v} C] {X Y : C}
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsIso.of_groupoid (f : X ⟶ Y) : IsIso f :=
   ⟨⟨Groupoid.inv f, Groupoid.comp_inv f, Groupoid.inv_comp f⟩⟩
 

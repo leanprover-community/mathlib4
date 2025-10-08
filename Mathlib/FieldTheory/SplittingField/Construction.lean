@@ -55,7 +55,7 @@ theorem irreducible_factor (f : K[X]) : Irreducible (factor f) := by
   · exact (Classical.choose_spec H).1
   · exact irreducible_X
 
-/-- See note [factNonInstances]. -/
+/-- See note [fact non-instances]. -/
 theorem fact_irreducible_factor (f : K[X]) : Fact (Irreducible (factor f)) :=
   ⟨irreducible_factor f⟩
 

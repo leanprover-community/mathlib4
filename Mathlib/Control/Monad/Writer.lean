@@ -137,7 +137,7 @@ export MonadWriterAdapter (adaptWriter)
 variable {m : Type u → Type*}
 /-- Transitivity.
 
-see note [lowerInstancePriority] -/
+see Note [lower instance priority] -/
 instance (priority := 100) monadWriterAdapterTrans {n : Type u → Type v}
     [MonadWriterAdapter ω m] [MonadFunctor m n] : MonadWriterAdapter ω n where
   adaptWriter f := monadMap (fun {α} ↦ (adaptWriter f : m α → m α))

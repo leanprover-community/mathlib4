@@ -323,7 +323,7 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
--- See note [implicitInstanceArguments].
+-- See note [implicit instance arguments].
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
@@ -347,7 +347,7 @@ section coe
 
 /-!
 Throughout this section, some `Semiring` arguments are specified with `{}` instead of `[]`.
-See note [implicitInstanceArguments].
+See note [implicit instance arguments].
 -/
 
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}

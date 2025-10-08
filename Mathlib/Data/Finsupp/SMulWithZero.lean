@@ -45,7 +45,7 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀
 
 /-!
 Throughout this section, some `Monoid` and `Semiring` arguments are specified with `{}` instead of
-`[]`. See note [implicitInstanceArguments].
+`[]`. See note [implicit instance arguments].
 -/
 
 @[simp, norm_cast]

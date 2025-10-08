@@ -20,7 +20,7 @@ section ContMDiffRing
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
 
--- See note [designChoicesSmoothAlgebraicStructures]
+-- See note [Design choices about smooth algebraic structures]
 /-- A `C^n` (semi)ring is a (semi)ring `R` where addition and multiplication are `C^n`.
 If `R` is a ring, then negation is automatically `C^n`, as it is multiplication with `-1`. -/
 class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
@@ -28,13 +28,13 @@ class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     extends ContMDiffAdd I n R where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : R × R => p.1 * p.2
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) ContMDiffRing.toContMDiffMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
     [Semiring R] [TopologicalSpace R] [ChartedSpace H R] [h : ContMDiffRing I n R] :
     ContMDiffMul I n R :=
   { h with }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) ContMDiffRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type*)
     [Ring R] [TopologicalSpace R] [ChartedSpace H R] [ContMDiffRing I n R] : LieAddGroup I n R where
   compatible := StructureGroupoid.compatible (contDiffGroupoid n I)
@@ -43,7 +43,7 @@ instance (priority := 100) ContMDiffRing.toLieAddGroup (I : ModelWithCorners �
 
 end ContMDiffRing
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) instFieldContMDiffRing
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} :
     ContMDiffRing 𝓘(𝕜) n 𝕜 :=
@@ -60,7 +60,7 @@ variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [Nontriv
   (n : WithTop ℕ∞)
 
 /-- A `C^n` (semi)ring is a topological (semi)ring. This is not an instance for technical reasons,
-see note [designChoicesSmoothAlgebraicStructures]. -/
+see note [Design choices about smooth algebraic structures]. -/
 theorem topologicalSemiring_of_contMDiffRing [Semiring R] [ContMDiffRing I n R] :
     IsTopologicalSemiring R :=
   { continuousMul_of_contMDiffMul I n, continuousAdd_of_contMDiffAdd I n with }

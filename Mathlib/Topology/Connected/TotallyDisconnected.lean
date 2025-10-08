@@ -199,12 +199,12 @@ covering the whole space. -/
   /-- The universal set `Set.univ` in a totally separated space is totally separated. -/
   isTotallySeparated_univ : IsTotallySeparated (univ : Set α)
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) TotallySeparatedSpace.totallyDisconnectedSpace (α : Type u)
     [TopologicalSpace α] [TotallySeparatedSpace α] : TotallyDisconnectedSpace α :=
   ⟨TotallySeparatedSpace.isTotallySeparated_univ.isTotallyDisconnected⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [TopologicalSpace α]
     [DiscreteTopology α] : TotallySeparatedSpace α :=
   ⟨fun _ _ b _ h => ⟨{b}ᶜ, {b}, isOpen_discrete _, isOpen_discrete _, h, rfl,

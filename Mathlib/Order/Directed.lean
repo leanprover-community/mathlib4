@@ -148,7 +148,7 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
       ⟨c, hc⟩⟩,
     @directedOn_univ _ _⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r :=
   directed_id_iff.1 <| IsTotal.directed _
 
@@ -313,21 +313,21 @@ lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn 
 
 end PartialOrder
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :
     IsDirected α (· ≤ ·) :=
   ⟨fun a b => ⟨a ⊔ b, le_sup_left, le_sup_right⟩⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) SemilatticeInf.to_isDirected_ge [SemilatticeInf α] :
     IsDirected α (· ≥ ·) :=
   ⟨fun a b => ⟨a ⊓ b, inf_le_left, inf_le_right⟩⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsDirected α (· ≤ ·) :=
   ⟨fun _ _ => ⟨⊤, le_top _, le_top _⟩⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 

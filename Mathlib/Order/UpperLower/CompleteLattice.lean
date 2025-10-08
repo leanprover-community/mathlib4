@@ -33,7 +33,7 @@ instance : SetLike (UpperSet α) α where
   coe := UpperSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-/-- See note [customSimpsProjection]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.coe (s : UpperSet α) : Set α := s
 
 initialize_simps_projections UpperSet (carrier → coe, as_prefix coe)
@@ -59,7 +59,7 @@ instance : SetLike (LowerSet α) α where
   coe := LowerSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-/-- See note [customSimpsProjection]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.coe (s : LowerSet α) : Set α := s
 
 initialize_simps_projections LowerSet (carrier → coe, as_prefix coe)

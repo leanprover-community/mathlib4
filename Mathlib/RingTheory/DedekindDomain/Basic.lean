@@ -148,7 +148,7 @@ theorem isDedekindDomain_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionR
              fun {_} => (isIntegrallyClosed_iff K).mp inferInstance⟩,
    fun ⟨hid, hr, hd, hi⟩ => { hid, hr, hd, (isIntegrallyClosed_iff K).mpr @hi with }⟩
 
--- See note [lowerInstancePriority]
+-- See library note [lower instance priority]
 instance (priority := 100) IsPrincipalIdealRing.isDedekindDomain
     [IsDomain A] [IsPrincipalIdealRing A] :
     IsDedekindDomain A :=

@@ -143,7 +143,7 @@ def linearEquivFunOnFintype [Fintype ι] : (Π₀ i, M i) ≃ₗ[R] (Π i, M i) 
 
 /-- The `DFinsupp` version of `Finsupp.lsum`.
 
-See note [bundledMapsOverDifferentRings] for why separate `R` and `S` semirings are used. -/
+See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
 @[simps]
 def lsum [Semiring S] [Module S N] [SMulCommClass R S N] :
     (∀ i, M i →ₗ[R] N) ≃ₗ[S] (Π₀ i, M i) →ₗ[R] N where

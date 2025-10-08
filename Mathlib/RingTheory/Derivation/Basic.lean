@@ -71,7 +71,7 @@ instance : AddMonoidHomClass (Derivation R A M) A M where
 theorem toFun_eq_coe : D.toFun = ⇑D :=
   rfl
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply (D : Derivation R A M) : A → M := D
 
 initialize_simps_projections Derivation (toFun → apply)

@@ -447,7 +447,7 @@ lemma lift_braiding_hom {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
 lemma lift_braiding_inv {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
     lift f g ≫ (β_ Y X).inv = lift g f := by aesop
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := low) toSymmetricCategory [BraidedCategory C] : SymmetricCategory C where
 
 /-- `CartesianMonoidalCategory` implies `BraidedCategory`.

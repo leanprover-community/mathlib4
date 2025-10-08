@@ -77,7 +77,7 @@ admits as basis of neighborhoods in the quotient topology the sets `{x | ‖x‖
 
 Once this mathematical point is settled, we have two topologies that are propositionally equal. This
 is not good enough for the type class system. As usual we ensure *definitional* equality
-using forgetful inheritance, see note [forgetfulInheritance]. A (semi)-normed group structure
+using forgetful inheritance, see Note [forgetful inheritance]. A (semi)-normed group structure
 includes a uniform space structure which includes a topological space structure, together
 with propositional fields asserting compatibility conditions.
 The usual way to define a `SeminormedAddCommGroup` is to let Lean build a uniform space structure

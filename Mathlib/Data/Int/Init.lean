@@ -15,7 +15,7 @@ import Mathlib.Tactic.TypeStar
 
 This file contains some basic lemmas about integers.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
 upstreamed to Batteries easily.

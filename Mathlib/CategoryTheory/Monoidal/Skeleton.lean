@@ -29,7 +29,7 @@ universe v u
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 /-- If `C` is monoidal and skeletal, it is a monoid.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   mul X Y := (X ⊗ Y : C)
   one := (𝟙_ C : C)

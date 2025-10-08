@@ -541,13 +541,13 @@ def walkingSpanOpEquiv : WalkingSpanᵒᵖ ≌ WalkingCospan :=
 def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
   widePullbackShapeOpEquiv _
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- Having wide pullback at any universe level implies having binary pullbacks. -/
 instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Category.{v} D]
     [HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D :=
   hasWidePullbacks_shrink WalkingPair
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- Having wide pushout at any universe level implies having binary pushouts. -/
 instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category.{v} D]
     [HasWidePushouts.{w} D] : HasPushouts.{v,u} D :=

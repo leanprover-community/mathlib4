@@ -70,7 +70,7 @@ a `Unique α` instance. This is a def because the typeclass search cannot
 arbitrarily invent the `a : α` term. Nevertheless, these instances are all
 equivalent by `Unique.Subsingleton.unique`.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
   default := a
   uniq _ := Subsingleton.elim _ _
@@ -99,7 +99,7 @@ section
 
 variable {α : Sort*} [Unique α]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) : Inhabited α :=
   toInhabited ‹Unique α›
 
@@ -109,7 +109,7 @@ theorem eq_default (a : α) : a = default :=
 theorem default_eq (a : α) : default = a :=
   (uniq _ a).symm
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) instSubsingleton : Subsingleton α :=
   subsingleton_of_forall_eq _ eq_default
 

@@ -179,7 +179,7 @@ theorem StrictMono.div_const {β : Type*} [Preorder β] {f : β → α} (hf : St
     (hc : 0 < c) : StrictMono fun x => f x / c := by
   simpa only [div_eq_mul_inv] using hf.mul_const (inv_pos.2 hc)
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrdered α where
   dense a₁ a₂ h :=
     ⟨(a₁ + a₂) / 2,

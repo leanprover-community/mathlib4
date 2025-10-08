@@ -114,7 +114,7 @@ namespace Field
 
 variable (K : Type*) [Field K]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) : IsLocalRing K := by
   classical exact IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a =>
     if h : a = 0 then Or.inr (by rw [h, sub_zero]; exact isUnit_one)

@@ -64,7 +64,7 @@ end AddCommGroup
 variable (R) in
 /-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
 structure.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev Module.addCommMonoidToAddCommGroup
     [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
   { (inferInstance : AddCommMonoid M) with

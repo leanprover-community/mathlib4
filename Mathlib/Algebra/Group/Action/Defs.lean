@@ -48,7 +48,7 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 @[to_additive /-- See also `AddMonoid.toAddAction` -/]
 instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
@@ -247,7 +247,7 @@ def comp.smul (g : N → M) (n : N) (a : α) : α := g n • a
 variable (α)
 
 /-- An action of `M` on `α` and a function `N → M` induces an action of `N` on `α`. -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 -- Since this is reducible, we make sure to go via
 -- `SMul.comp.smul` to prevent typeclass inference unfolding too far
 @[to_additive /-- An additive action of `M` on `α` and a function `N → M` induces an additive
@@ -383,7 +383,7 @@ lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n �
   rw [smul_iterate]
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 @[to_additive
     /-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
@@ -393,7 +393,7 @@ protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : 
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 @[to_additive
     /-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
 protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
@@ -408,7 +408,7 @@ variable (M)
 /-- The regular action of a monoid on itself by left multiplication.
 
 This is promoted to a module by `Semiring.toModule`. -/
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 @[to_additive
 /-- The regular action of a monoid on itself by left addition.
 

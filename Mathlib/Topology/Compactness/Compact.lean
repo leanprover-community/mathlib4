@@ -691,7 +691,7 @@ theorem generalized_tube_lemma (hs : IsCompact s) {t : Set Y} (ht : IsCompact t)
   rcases hp with ⟨⟨u, v⟩, ⟨⟨huo, hsu⟩, hvo, htv⟩, hn⟩
   exact ⟨u, v, huo, hvo, hsu, htv, hn⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 10) Subsingleton.compactSpace [Subsingleton X] : CompactSpace X :=
   ⟨subsingleton_univ.isCompact⟩
 
@@ -1014,12 +1014,12 @@ theorem Prod.noncompactSpace_iff :
     NoncompactSpace (X × Y) ↔ NoncompactSpace X ∧ Nonempty Y ∨ Nonempty X ∧ NoncompactSpace Y := by
   simp [← Filter.cocompact_neBot_iff, ← Filter.coprod_cocompact, Filter.coprod_neBot_iff]
 
--- See note [lowerInstancePriority]
+-- See Note [lower instance priority]
 instance (priority := 100) Prod.noncompactSpace_left [NoncompactSpace X] [Nonempty Y] :
     NoncompactSpace (X × Y) :=
   Prod.noncompactSpace_iff.2 (Or.inl ⟨‹_›, ‹_›⟩)
 
--- See note [lowerInstancePriority]
+-- See Note [lower instance priority]
 instance (priority := 100) Prod.noncompactSpace_right [Nonempty X] [NoncompactSpace Y] :
     NoncompactSpace (X × Y) :=
   Prod.noncompactSpace_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)

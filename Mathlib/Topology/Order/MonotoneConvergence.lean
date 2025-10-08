@@ -60,7 +60,7 @@ instance OrderDual.infConvergenceClass [Preorder α] [TopologicalSpace α] [SupC
     InfConvergenceClass αᵒᵈ :=
   ⟨‹SupConvergenceClass α›.1⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] : SupConvergenceClass α := by
   refine ⟨fun a s ha => tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩⟩
@@ -69,7 +69,7 @@ instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α]
     exact (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
   · exact Eventually.of_forall fun x => (ha.1 x.2).trans_lt hb
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.infConvergenceClass [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] : InfConvergenceClass α :=
   show InfConvergenceClass αᵒᵈᵒᵈ from OrderDual.infConvergenceClass

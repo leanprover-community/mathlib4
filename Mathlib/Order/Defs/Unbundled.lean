@@ -368,7 +368,7 @@ protected theorem IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
 protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
   ⟨fun a => or_self_iff.1 <| total_of r a a⟩
 

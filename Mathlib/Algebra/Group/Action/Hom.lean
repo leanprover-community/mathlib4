@@ -39,7 +39,7 @@ variable (α)
 /-- A multiplicative action of `M` on `α` and a monoid homomorphism `N → M` induce
 a multiplicative action of `N` on `α`.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 @[to_additive]
 abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
   smul := SMul.comp.smul g
@@ -49,7 +49,7 @@ abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
 /-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
 an additive action of `N` on `α`.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 add_decl_doc AddAction.compHom
 
 @[to_additive]

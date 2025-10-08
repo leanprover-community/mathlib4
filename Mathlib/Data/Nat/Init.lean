@@ -28,7 +28,7 @@ This file contains:
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
 upstreamed to Batteries or the Lean standard library easily.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 -/
 
 library_note2 foundationalAlgebraOrderTheory /--

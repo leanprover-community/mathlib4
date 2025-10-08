@@ -16,7 +16,7 @@ This file contains lemmas on the units of `ℤ`.
 
 * `Int.units_eq_one_or`: the invertible integers are 1 and -1.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 -/
 
 assert_not_exists DenselyOrdered Set.Subsingleton

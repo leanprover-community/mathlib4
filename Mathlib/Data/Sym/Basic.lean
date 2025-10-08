@@ -50,7 +50,7 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
-See note [reducibleNonInstances].
+See note [reducible non-instances].
 -/
 abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val

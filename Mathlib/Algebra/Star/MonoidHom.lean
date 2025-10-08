@@ -56,7 +56,7 @@ instance : MonoidHomClass (A →⋆* B) A B where
 instance : StarHomClass (A →⋆* B) A B where
   map_star f := f.map_star'
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.coe (f : A →⋆* B) : A → B := f
 
 initialize_simps_projections StarMonoidHom (toFun → coe)
@@ -221,10 +221,10 @@ nonrec def symm (e : A ≃⋆* B) : B ≃⋆* A :=
       simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using
         congr_arg (EquivLike.inv e) (map_star e (EquivLike.inv e b)).symm }
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply (e : A ≃⋆* B) : A → B := e
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : A ≃⋆* B) : B → A :=
   e.symm
 

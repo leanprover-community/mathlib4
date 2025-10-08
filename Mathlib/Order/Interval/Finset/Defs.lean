@@ -220,7 +220,7 @@ def LocallyFiniteOrderBot.ofIic (α : Type*) [PartialOrder α] [DecidableEq α]
 
 variable {α β : Type*}
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
@@ -234,7 +234,7 @@ protected abbrev IsEmpty.toLocallyFiniteOrder [Preorder α] [IsEmpty α] : Local
   finset_mem_Ioc := isEmptyElim
   finset_mem_Ioo := isEmptyElim
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
@@ -245,7 +245,7 @@ protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] :
   finset_mem_Ici := isEmptyElim
   finset_mem_Ioi := isEmptyElim
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
@@ -1030,7 +1030,7 @@ variable [Preorder α] [Preorder β]
 /-! #### Transfer locally finite orders across order isomorphisms -/
 
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrder` across an `OrderIso`. -/
 abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
   finsetIcc a b := (Icc (f a) (f b)).map f.symm.toEquiv.toEmbedding
@@ -1042,7 +1042,7 @@ abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFini
   finset_mem_Ioc := by simp
   finset_mem_Ioo := by simp
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderTop` across an `OrderIso`. -/
 abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
   finsetIci a := (Ici (f a)).map f.symm.toEquiv.toEmbedding
@@ -1050,7 +1050,7 @@ abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : Local
   finset_mem_Ici := by simp
   finset_mem_Ioi := by simp
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderBot` across an `OrderIso`. -/
 abbrev locallyFiniteOrderBot [LocallyFiniteOrderBot β] (f : α ≃o β) : LocallyFiniteOrderBot α where
   finsetIic a := (Iic (f a)).map f.symm.toEquiv.toEmbedding
@@ -1324,7 +1324,7 @@ end LocallyFiniteOrderBot
 end Set
 
 /-- A `LocallyFiniteOrder` can be transferred across an order isomorphism. -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 abbrev LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N]
     [EquivLike F M N] [OrderIsoClass F M N] (f : F) [LocallyFiniteOrder N] :
     LocallyFiniteOrder M where

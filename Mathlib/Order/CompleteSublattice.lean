@@ -191,7 +191,7 @@ namespace CompleteLatticeHom
 
 /-- The range of a `CompleteLatticeHom` is a `CompleteSublattice`.
 
-See note [rangeCopyPattern]. -/
+See Note [range copy pattern]. -/
 protected def range : CompleteSublattice β :=
   (CompleteSublattice.map f ⊤).copy (range f) image_univ.symm
 

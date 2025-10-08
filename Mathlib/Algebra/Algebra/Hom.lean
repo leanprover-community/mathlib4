@@ -61,7 +61,7 @@ namespace AlgHomClass
 variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [FunLike F A B]
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
     map_smulₛₗ := fun f r x => by
@@ -107,7 +107,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
     (f : F) : (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 

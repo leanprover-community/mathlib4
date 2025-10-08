@@ -98,7 +98,7 @@ instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
 instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B where
   map_star f := f.map_star'
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply (f : A →⋆ₙ+* B) : A → B := f
 
 initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
@@ -255,13 +255,13 @@ class StarRingEquivClass (F : Type*) (A B : outParam Type*)
 
 namespace StarRingEquivClass
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 50) {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [hF : StarRingEquivClass F A B] :
     StarHomClass F A B :=
   { hF with }
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A]
     [NonUnitalNonAssocSemiring B] [Star B] [EquivLike F A B] [RingEquivClass F A B]
     [StarRingEquivClass F A B] : NonUnitalStarRingHomClass F A B :=
@@ -340,10 +340,10 @@ nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
       simpa only [apply_inv_apply, inv_apply_apply] using
         congr_arg (inv e) (map_star e (inv e b)).symm }
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply (e : A ≃⋆+* B) : A → B := e
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : A ≃⋆+* B) : B → A :=
   e.symm
 

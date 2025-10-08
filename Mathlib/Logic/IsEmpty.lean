@@ -43,7 +43,7 @@ protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
 theorem Function.Surjective.isEmpty [IsEmpty α] {f : α → β} (hf : f.Surjective) : IsEmpty β :=
   ⟨fun y ↦ let ⟨x, _⟩ := hf y; IsEmpty.false x⟩
 
--- See note [instanceArgumentOrder]
+-- See note [instance argument order]
 instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [h : Nonempty α] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
 
@@ -124,7 +124,7 @@ theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ True :=
 theorem exists_iff {p : α → Prop} : (∃ a, p a) ↔ False :=
   iff_false_intro fun ⟨x, _⟩ ↦ IsEmpty.false x
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) : Subsingleton α :=
   ⟨isEmptyElim⟩
 

@@ -344,7 +344,7 @@ theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α
   borelize α
   exact .of_discrete
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Space α] :
     MeasurableSingletonClass α :=
   ⟨fun _ => isClosed_singleton.measurableSet⟩

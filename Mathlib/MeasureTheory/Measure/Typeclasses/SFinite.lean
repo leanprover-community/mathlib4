@@ -650,7 +650,7 @@ instance (priority := 100) SigmaFinite.of_isFiniteMeasureOnCompacts [Topological
         finite := fun n => (isCompact_compactCovering α n).measure_lt_top
         spanning := iUnion_compactCovering α }⟩⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
     [SecondCountableTopology α] [IsLocallyFiniteMeasure μ] : SigmaFinite μ := by
   choose s hsx hsμ using μ.finiteAt_nhds

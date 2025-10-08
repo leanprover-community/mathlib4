@@ -14,7 +14,7 @@ import Mathlib.Order.BooleanAlgebra.Set
 
 This file contains the commutative linear orderded semiring instance on the natural numbers.
 
-See note [foundationalAlgebraOrderTheory].
+See note [foundational algebra order theory].
 -/
 
 namespace Nat

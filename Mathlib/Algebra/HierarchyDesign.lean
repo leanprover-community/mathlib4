@@ -82,7 +82,7 @@ when applicable:
 * Definitions for transferring the proof fields of instances along
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
-  We make these definitions `abbrev`, see note [reducibleNonInstances].
+  We make these definitions `abbrev`, see note [reducible non-instances].
   See `Mathlib/Algebra/Group/InjSurj.lean` for more examples.
   ```
   abbrev Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)

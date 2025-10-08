@@ -66,7 +66,7 @@ theorem exists_isClopen_upper_or_lower_of_ne (h : x ≠ y) :
   · obtain ⟨U, hU, hU', hy, hx⟩ := exists_isClopen_lower_of_not_le h
     exact ⟨U, hU, Or.inr hU', hx, hy⟩
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) PriestleySpace.toTotallySeparatedSpace : TotallySeparatedSpace α where
   isTotallySeparated_univ _ _ _ _ h :=
     (exists_isClopen_upper_or_lower_of_ne h).elim fun U ⟨hU, _, hx, hy⟩ =>

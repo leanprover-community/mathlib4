@@ -1362,7 +1362,7 @@ lemma sSup_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonemp
     sSup (s ×ˢ t) = (sSup s, sSup t) :=
 congr_arg₂ Prod.mk (congr_arg sSup <| fst_image_prod _ ht) (congr_arg sSup <| snd_image_prod hs _)
 
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
 protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)

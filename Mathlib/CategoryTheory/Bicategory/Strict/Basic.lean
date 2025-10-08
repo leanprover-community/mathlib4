@@ -50,7 +50,7 @@ class Bicategory.Strict : Prop where
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), α_ f g h = eqToIso (assoc f g h) := by
     cat_disch
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- Category structure on a strict bicategory -/
 instance (priority := 100) StrictBicategory.category [Bicategory.Strict B] : Category B where
   id_comp := Bicategory.Strict.id_comp

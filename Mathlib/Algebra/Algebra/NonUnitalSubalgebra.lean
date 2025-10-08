@@ -1179,7 +1179,7 @@ variable (R) in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
 semiring.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     NonUnitalCommSemiring (adjoin R s) :=
   { (adjoin R s).toNonUnitalSemiring with
@@ -1190,7 +1190,7 @@ abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
 ring.
 
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (adjoin R s) :=

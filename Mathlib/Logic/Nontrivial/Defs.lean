@@ -33,7 +33,7 @@ theorem nontrivial_iff : Nontrivial α ↔ ∃ x y : α, x ≠ y :=
 theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
   Nontrivial.exists_pair_ne
 
--- See note [decidableNamespace]
+-- See Note [decidable namespace]
 protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) : ∃ y, y ≠ x := by
   rcases exists_pair_ne α with ⟨y, y', h⟩
   by_cases hx : x = y
@@ -54,7 +54,7 @@ theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
 instance : Nontrivial Prop :=
   ⟨⟨True, False, true_ne_false⟩⟩
 
-/-- See note [lowerInstancePriority]
+/-- See Note [lower instance priority]
 
 Note that since this and `instNonemptyOfInhabited` are the most "obvious" way to find a nonempty
 instance if no direct instance can be found, we give this a higher priority than the usual `100`.

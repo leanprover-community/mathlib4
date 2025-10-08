@@ -105,7 +105,7 @@ is designed for the situation that there is a canonical valuation on the ring.
 TODO: show that there always exists an equivalent valuation taking values in a type belonging to
 the same universe as the ring.
 
-See note [forgetfulInheritance] for why we extend `UniformSpace`, `IsUniformAddGroup`. -/
+See Note [forgetful inheritance] for why we extend `UniformSpace`, `IsUniformAddGroup`. -/
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀

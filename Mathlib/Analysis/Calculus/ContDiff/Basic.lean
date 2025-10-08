@@ -1112,7 +1112,7 @@ end ClmApplyConst
 
 Warning: if you think you need this lemma, it is likely that you can simplify your proof by
 reformulating the lemma that you're applying next using the tips in
-note [continuityLemmaStatement]
+Note [continuity lemma statement]
 -/
 theorem contDiff_prodAssoc {n : WithTop ℕ∞} : ContDiff 𝕜 n <| Equiv.prodAssoc E F G :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).contDiff

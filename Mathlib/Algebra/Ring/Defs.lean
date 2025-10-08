@@ -74,11 +74,11 @@ class RightDistribClass (R : Type*) [Mul R] [Add R] : Prop where
   /-- Multiplication is right distributive over addition -/
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) Distrib.leftDistribClass (R : Type*) [Distrib R] : LeftDistribClass R :=
   ⟨Distrib.left_distrib⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) Distrib.rightDistribClass (R : Type*) [Distrib R] :
     RightDistribClass R :=
   ⟨Distrib.right_distrib⟩
@@ -211,12 +211,12 @@ class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemi
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
     NonUnitalCommSemiring α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
     CommMonoidWithZero α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
@@ -347,12 +347,12 @@ section Ring
 variable [Ring α]
 
 -- A (unital, associative) ring is a not-necessarily-unital ring
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
   { ‹Ring α› with }
 
 -- A (unital, associative) ring is a not-necessarily-associative ring
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
   { ‹Ring α› with }
 
@@ -366,7 +366,7 @@ class NonUnitalNonAssocCommRing (α : Type u)
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
 class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
     NonUnitalCommSemiring α :=
   { s with }
@@ -377,11 +377,11 @@ class CommRing (α : Type u) extends Ring α, CommMonoid α
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
   { s with }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }

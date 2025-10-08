@@ -56,7 +56,7 @@ variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
 The following facts are true more generally in a (linearly) ordered commutative monoid.
 -/
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
-See note [reducibleNonInstances]. -/
+See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
     [Mul β] [Pow β ℕ] [LE β] [LT β] [Max β] [Min β] [Ord β]
     [DecidableEq β] [DecidableLE β] [DecidableLT β]
@@ -113,36 +113,36 @@ end LinearOrderedCommMonoidWithZero
 section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
   elim _a _b _c hbc := mul_le_mul_right' hbc _
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
   elim _a _b _c hbc := mul_le_mul_left' hbc _
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLE :
     PosMulReflectLE α where
   elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left' hbc a⁻¹
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
     MulPosReflectLE α where
   elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_right' hbc a⁻¹
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
     PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
 
 #adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
     PosMulStrictMono α where
   elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_right₀ a.2).1 h
 
 #adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
   elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_left₀ a.2).1 h
@@ -486,7 +486,7 @@ Mathematicians might be more likely to use the order-dual version, where all
 elements are ≤ 1 and then 1 is the top element.
 -/
 /-- If `0` is the least element in `α`, then `WithZero α` is an ordered `AddMonoid`. -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 protected lemma isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (zero_le : ∀ a : α, 0 ≤ a) :
     IsOrderedAddMonoid (WithZero α) where

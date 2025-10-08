@@ -51,7 +51,7 @@ noncomputable section
 
 open scoped Manifold ContDiff
 
--- See note [designChoicesSmoothAlgebraicStructures]
+-- See note [Design choices about smooth algebraic structures]
 /-- An additive Lie group is a group and a `C^n` manifold at the same time in which
 the addition and negation operations are `C^n`. -/
 class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
@@ -61,7 +61,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
   /-- Negation is smooth in an additive Lie group. -/
   contMDiff_neg : ContMDiff I I n fun a : G => -a
 
--- See note [designChoicesSmoothAlgebraicStructures]
+-- See note [Design choices about smooth algebraic structures]
 /-- A (multiplicative) Lie group is a group and a `C^n` manifold at the same time in which
 the multiplication and inverse operations are `C^n`. -/
 @[to_additive]
@@ -123,9 +123,9 @@ theorem contMDiff_inv : ContMDiff I I n fun x : G => x⁻¹ :=
 
 include I n in
 /-- A Lie group is a topological group. This is not an instance for technical reasons,
-see note [designChoicesSmoothAlgebraicStructures]. -/
+see note [Design choices about smooth algebraic structures]. -/
 @[to_additive /-- An additive Lie group is an additive topological group. This is not an instance
-for technical reasons, see note [designChoicesSmoothAlgebraicStructures]. -/]
+for technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 
@@ -200,7 +200,7 @@ points. (This includes multiplicative Lie groups, but also complete normed semif
 Point-wise inversion is `C^n` when the function/denominator is non-zero. -/
 section ContMDiffInv₀
 
--- See note [designChoicesSmoothAlgebraicStructures]
+-- See note [Design choices about smooth algebraic structures]
 /-- A `C^n` manifold with `0` and `Inv` such that `fun x ↦ x⁻¹` is `C^n` at all nonzero points.
 Any complete normed (semi)field has this property. -/
 class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
@@ -256,7 +256,7 @@ theorem contMDiffAt_inv₀ {x : G} (hx : x ≠ 0) : ContMDiffAt I I n (fun y ↦
 include I n in
 /-- In a manifold with `C^n` inverse away from `0`, the inverse is continuous away from `0`.
 This is not an instance for technical reasons, see
-note [designChoicesSmoothAlgebraicStructures]. -/
+note [Design choices about smooth algebraic structures]. -/
 theorem continuousInv₀_of_contMDiffInv₀ : ContinuousInv₀ G :=
   { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
 

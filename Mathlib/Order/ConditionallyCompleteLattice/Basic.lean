@@ -130,10 +130,10 @@ instance ConditionallyCompleteLinearOrder.toLinearOrder [ConditionallyCompleteLi
         · simp [h₁]
         · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂] }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 /-- A complete lattice is a conditionally complete lattice, as there are no restrictions
 on the properties of sInf and sSup in a complete lattice. -/
 instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [CompleteLattice α] :
@@ -144,7 +144,7 @@ instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [Compl
     csInf_le := by intros; apply sInf_le; assumption
     le_csInf := by intros; apply le_sInf; assumption }
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrderBot {α : Type*}
     [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrderBot α :=
   { CompleteLattice.toConditionallyCompleteLattice, h with

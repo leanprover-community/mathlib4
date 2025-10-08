@@ -300,10 +300,10 @@ instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 def Simps.apply (proj : Z → B) (e : Trivialization F proj) : Z → B × F := e
 
-/-- See note [customSimpsProjection] -/
+/-- See Note [custom simps projection] -/
 noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) : B × F → Z :=
   e.toOpenPartialHomeomorph.symm
 

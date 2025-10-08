@@ -604,13 +604,13 @@ theorem toOrderIso_eq_coe (f : α ≃*o β) : f.toOrderIso = f :=
 def symm (f : α ≃*o β) : β ≃*o α :=
   ⟨f.toMulEquiv.symm, f.toOrderIso.symm.map_rel_iff⟩
 
-/-- See note [customSimpsProjection]. -/
-@[to_additive /-- See note [customSimpsProjection]. -/]
+/-- See Note [custom simps projection]. -/
+@[to_additive /-- See Note [custom simps projection]. -/]
 def Simps.apply (h : α ≃*o β) : α → β :=
   h
 
-/-- See note [customSimpsProjection] -/
-@[to_additive /-- See note [customSimpsProjection]. -/]
+/-- See Note [custom simps projection] -/
+@[to_additive /-- See Note [custom simps projection]. -/]
 def Simps.symm_apply (h : α ≃*o β) : β → α :=
   h.symm
 

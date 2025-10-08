@@ -36,7 +36,7 @@ class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
 export ExistsMulOfLE (exists_mul_of_le)
 export ExistsAddOfLE (exists_add_of_le)
 
--- See note [lowerInstancePriority]
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) Group.existsMulOfLE (α : Type u) [Group α] [LE α] : ExistsMulOfLE α :=
   ⟨fun {a b} _ => ⟨a⁻¹ * b, (mul_inv_cancel_left _ _).symm⟩⟩

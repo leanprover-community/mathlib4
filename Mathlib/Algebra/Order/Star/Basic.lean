@@ -106,7 +106,7 @@ lemma of_le_iff (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) 
 
 variable [StarOrderedRing R] {x y : R}
 
--- see note [lowerInstancePriority]
+-- see note [lower instance priority]
 instance (priority := 100) toIsOrderedAddMonoid : IsOrderedAddMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
@@ -114,7 +114,7 @@ instance (priority := 100) toIsOrderedAddMonoid : IsOrderedAddMonoid R where
     rw [hs.2, add_assoc]
     exact ⟨hs.1, rfl⟩
 
--- see note [lowerInstancePriority]
+-- see note [lower instance priority]
 instance (priority := 100) toExistsAddOfLE : ExistsAddOfLE R where
   exists_add_of_le h :=
     match (le_iff _ _).mp h with

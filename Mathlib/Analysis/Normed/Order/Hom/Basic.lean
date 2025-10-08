@@ -19,7 +19,7 @@ groups.
 variable {F α : Type*} [FunLike F α ℝ]
 
 /-- Constructs a `SeminormedGroup` structure from a `GroupSeminormClass` on a `Group`. -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 @[to_additive /-- Constructs a `SeminormedAddGroup` structure from an `AddGroupSeminormClass` on an
 `AddGroup`. -/]
 abbrev GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α ℝ]
@@ -36,7 +36,7 @@ lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClas
     (f : F) (x : α) : @norm _ (GroupSeminormClass.toSeminormedGroup f).toNorm x = f x := rfl
 
 /-- Constructs a `SeminormedCommGroup` structure from a `GroupSeminormClass` on a `CommGroup`. -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 @[to_additive /-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass`
 on an `AddCommGroup`. -/]
 abbrev GroupSeminormClass.toSeminormedCommGroup [CommGroup α] [GroupSeminormClass F α ℝ]
@@ -49,7 +49,7 @@ lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [CommGroup α] [GroupSemi
     (f : F) (x : α) : @norm _ (GroupSeminormClass.toSeminormedCommGroup f).toNorm x = f x := rfl
 
 /-- Constructs a `NormedGroup` structure from a `GroupNormClass` on a `Group`. -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 @[to_additive /-- Constructs a `NormedAddGroup` structure from an `AddGroupNormClass` on an
 `AddGroup`. -/]
 abbrev GroupNormClass.toNormedGroup [Group α] [GroupNormClass F α ℝ]
@@ -62,7 +62,7 @@ lemma GroupNormClass.toNormedGroup_norm_eq [Group α] [GroupNormClass F α ℝ]
     (f : F) (x : α) : @norm _ (GroupNormClass.toNormedGroup f).toNorm x = f x := rfl
 
 /-- Constructs a `NormedCommGroup` structure from a `GroupNormClass` on a `CommGroup`. -/
--- See note [reducibleNonInstances]
+-- See note [reducible non-instances]
 @[to_additive /-- Constructs a `NormedAddCommGroup` structure from an `AddGroupNormClass` on an
 `AddCommGroup`. -/]
 abbrev GroupNormClass.toNormedCommGroup [CommGroup α] [GroupNormClass F α ℝ]

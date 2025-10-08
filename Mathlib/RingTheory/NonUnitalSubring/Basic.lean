@@ -200,7 +200,7 @@ variable {R : Type u} {S : Type v} {T : Type*}
 /-! ## range -/
 
 /-- The range of a ring homomorphism, as a `NonUnitalSubring` of the target.
-See note [rangeCopyPattern]. -/
+See Note [range copy pattern]. -/
 def range {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
     (f : R →ₙ+* S) : NonUnitalSubring S :=
   ((⊤ : NonUnitalSubring R).map f).copy (Set.range f) Set.image_univ.symm

@@ -76,12 +76,12 @@ section Fintype
 
 open Finset
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
     IsCoatomic α :=
   IsStronglyCoatomic.toIsCoatomic α
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [Finite α] :
     IsAtomic α :=
   isCoatomic_dual_iff_isAtomic.mp Finite.to_isCoatomic

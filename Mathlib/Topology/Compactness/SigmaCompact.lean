@@ -171,7 +171,7 @@ lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set X} :
     IsSigmaCompact s ↔ SigmaCompactSpace s :=
   isSigmaCompact_iff_isSigmaCompact_univ.trans isSigmaCompact_univ_iff
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 200) CompactSpace.sigmaCompact [CompactSpace X] : SigmaCompactSpace X :=
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
 
@@ -179,7 +179,7 @@ theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
     (Hcomp : ∀ s ∈ S, IsCompact s) (HU : ⋃₀ S = univ) : SigmaCompactSpace X :=
   ⟨(exists_seq_cover_iff_countable ⟨_, isCompact_empty⟩).2 ⟨S, Hc, Hcomp, HU⟩⟩
 
--- see note [lowerInstancePriority]
+-- see Note [lower instance priority]
 instance (priority := 100) sigmaCompactSpace_of_locallyCompact_secondCountable
     [LocallyCompactSpace X] [SecondCountableTopology X] : SigmaCompactSpace X := by
   choose K hKc hxK using fun x : X => exists_compact_mem_nhds x
