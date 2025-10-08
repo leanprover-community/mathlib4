@@ -59,7 +59,7 @@ lemma neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
 lemma succ_neg_natCast_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 
 @[norm_cast] lemma natCast_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
-  cases n; cases h; simp [natCast_succ]
+  grind
 
 lemma lt_succ_self (a : ℤ) : a < succ a := by unfold succ; cutsat
 
