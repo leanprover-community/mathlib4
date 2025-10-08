@@ -168,9 +168,9 @@ theorem Monoid.fg_iff :
   ⟨fun _ => (Submonoid.fg_iff ⊤).1 FG.fg_top, fun h => ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
 
 /-- A monoid is finitely generated iff there exists a surjective homomorphism from a `FreeMonoid`
-on finite generators. -/
+on finitely many generators. -/
 @[to_additive /-- A additive monoid is finitely generated iff there exists a surjective homomorphism
-from a `FreeAddMonoid` on finite generators.-/]
+from a `FreeAddMonoid` on finitely many generators.-/]
 theorem Monoid.fg_iff_exists_freeMonoid_hom_surjective :
     Monoid.FG M ↔ ∃ (S : Set M) (_ : S.Finite) (φ : FreeMonoid S →* M), Function.Surjective φ := by
   refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeMonoid.lift Subtype.val, ?_⟩, ?_⟩
@@ -398,9 +398,9 @@ theorem Group.fg_iff' :
   Group.fg_def.trans ⟨fun ⟨S, hS⟩ => ⟨S.card, S, rfl, hS⟩, fun ⟨_n, S, _hn, hS⟩ => ⟨S, hS⟩⟩
 
 /-- A group is finitely generated iff there exists a surjective homomorphism from a `FreeGroup`
-on finite generators. -/
+on finitely many generators. -/
 @[to_additive /-- An additive group is finitely generated iff there exists a surjective homomorphism
-from a `FreeAddGroup` on finite generators. -/]
+from a `FreeAddGroup` on finitely many generators. -/]
 theorem Group.fg_iff_exists_freeGroup_hom_surjective :
     Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite) (φ : FreeGroup S →* G), Function.Surjective φ := by
   refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeGroup.lift Subtype.val, ?_⟩, ?_⟩
