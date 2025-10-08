@@ -113,40 +113,28 @@ section
 variable {T : Eᵒᵖ ⥤ RingCat.{u}} {G : D ⥤ E} (ψ : R ⟶ G.op ⋙ T)
 
 noncomputable def pushforwardComp :
-  pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ≅
-    pushforward.{v} ψ ⋙ pushforward.{v} φ :=
+    pushforward.{v} ψ ⋙ pushforward.{v} φ ≅
+      pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) :=
   Iso.refl _
 
 variable {T' : E'ᵒᵖ ⥤ RingCat.{u}} {G' : E ⥤ E'} (ψ' : T ⟶ G'.op ⋙ T')
 
 lemma pushforward_assoc :
-    pushforwardComp.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ' ≪≫
-      isoWhiskerLeft _ (pushforwardComp.{v} φ ψ) =
-    pushforwardComp.{v} (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ') ≪≫
-      isoWhiskerRight (pushforwardComp.{v} ψ ψ') _ ≪≫ associator _ _ _ := by ext; rfl
-
-lemma pushforward_hom_app_assoc (M : PresheafOfModules.{v} T') :
-    (pushforwardComp (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ').hom.app M ≫
-      (pushforwardComp φ ψ).hom.app _ =
-      (pushforwardComp (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ')).hom.app M ≫
-      (pushforward φ).map ((pushforwardComp ψ ψ').hom.app _) := by
-  rfl
-
-lemma pushforward_inv_app_assoc (M : PresheafOfModules.{v} T') :
-    (pushforwardComp φ ψ).inv.app _ ≫
-      (pushforwardComp (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ').inv.app M =
-    (pushforward φ).map ((pushforwardComp ψ ψ').inv.app _) ≫
-      (pushforwardComp (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ')).inv.app M := rfl
+    (pushforward ψ').isoWhiskerLeft (pushforwardComp φ ψ) ≪≫
+      pushforwardComp (F := F ⋙ G) (φ ≫ F.op.whiskerLeft ψ) ψ' =
+    ((pushforward ψ').associator (pushforward ψ) (pushforward φ)).symm ≪≫
+      isoWhiskerRight (pushforwardComp ψ ψ') (pushforward φ) ≪≫
+        pushforwardComp (G := G ⋙ G') φ (ψ ≫ G.op.whiskerLeft ψ') := by ext; rfl
 
 end
 
-lemma pushforward_id_comp :
-    pushforwardComp.{v} (F := 𝟭 C) (𝟙 S) φ = (rightUnitor _).symm ≪≫
-      isoWhiskerLeft (pushforward.{v} φ) (pushforwardId S).symm := by ext; rfl
-
 lemma pushforward_comp_id :
-    pushforwardComp.{v} (G := 𝟭 _) φ (𝟙 R) = (leftUnitor _).symm ≪≫
-      isoWhiskerRight (pushforwardId R).symm (pushforward.{v} φ) := by ext; rfl
+    pushforwardComp.{v} (F := 𝟭 C) (𝟙 S) φ =
+      isoWhiskerLeft (pushforward.{v} φ) (pushforwardId S) ≪≫ rightUnitor _ := by ext; rfl
+
+lemma pushforward_id_comp :
+    pushforwardComp.{v} (G := 𝟭 _) φ (𝟙 R) =
+      isoWhiskerRight (pushforwardId R) (pushforward.{v} φ) ≪≫ leftUnitor _ := by ext; rfl
 
 end
 
