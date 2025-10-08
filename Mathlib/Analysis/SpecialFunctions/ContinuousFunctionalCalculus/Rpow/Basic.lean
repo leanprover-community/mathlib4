@@ -614,11 +614,9 @@ lemma sqrt_eq_one_iff (a : A) (ha : 0 ≤ a := by cfc_tac) :
 
 lemma sqrt_eq_one_iff' [Nontrivial A] (a : A) :
     sqrt a = 1 ↔ a = 1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ sqrt_one⟩
-  have : 0 ≤ a := by
-    rw [sqrt, cfcₙ] at h
-    split_ifs at h <;> simp_all
-  exact (sqrt_eq_one_iff a).mp h
+  refine ⟨fun h ↦ sqrt_eq_one_iff a ?_ |>.mp h, fun h ↦ h ▸ sqrt_one⟩
+  rw [sqrt, cfcₙ] at h
+  cfc_tac
 
 -- TODO: relate to a strict positivity condition
 lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
