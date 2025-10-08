@@ -74,6 +74,9 @@ lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R
 lemma X_smul_of (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
   rw [← of_aeval_smul, aeval_X]
 
+lemma X_pow_smul_of (m : M) (n : ℕ) : (X ^ n : R[X]) • (of R M a m) = of R M a (a ^ n • m) := by
+  rw [← of_aeval_smul, aeval_X_pow]
+
 lemma of_symm_X_smul (m : AEval R M a) :
     (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
   rw [of_symm_smul, aeval_X]
@@ -189,9 +192,15 @@ The canonical linear equivalence between `M` and `Module.AEval' φ` as an `R`-mo
 where `φ : M →ₗ[R] M`.
 -/
 abbrev AEval'.of : M ≃ₗ[R] AEval' φ := AEval.of R M φ
+
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
+
 lemma AEval'.X_smul_of (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (φ m) :=
   AEval.X_smul_of _ _
+
+lemma AEval'.X_pow_smul_of (m : M) (n : ℕ) : (X ^ n : R[X]) • AEval'.of φ m = .of φ (φ ^ n • m) :=
+  AEval.X_pow_smul_of ..
+
 lemma AEval'.of_symm_X_smul (m : AEval' φ) :
     (AEval'.of φ).symm ((X : R[X]) • m) = φ ((AEval'.of φ).symm m) := AEval.of_symm_X_smul _ _
 

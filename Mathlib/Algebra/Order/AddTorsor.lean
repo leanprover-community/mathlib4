@@ -57,8 +57,8 @@ class IsOrderedVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop where
   protected vadd_le_vadd_right : ∀ c d : G, c ≤ d → ∀ a : P, c +ᵥ a ≤ d +ᵥ a
 
 /-- An ordered scalar multiplication is a bi-monotone scalar multiplication. Note that this is
-different from `OrderedSMul`, which uses strict inequality, requires `G` to be a semiring, and the
-defining conditions are restricted to positive elements of `G`. -/
+different from `IsOrderedModule` whose defining conditions are restricted to nonnegative elements.
+-/
 @[to_additive]
 class IsOrderedSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop where
   protected smul_le_smul_left : ∀ a b : P, a ≤ b → ∀ c : G, c • a ≤ c • b
@@ -102,9 +102,9 @@ class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop
 @[to_additive]
 instance [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] :
     IsCancelSMul G P where
-  left_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
+  left_cancel' a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
     (IsOrderedCancelSMul.le_of_smul_le_smul_left a c b h.ge)
-  right_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
+  right_cancel' a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
     (IsOrderedCancelSMul.le_of_smul_le_smul_right b a c h.ge)
 
 @[to_additive]
