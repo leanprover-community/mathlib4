@@ -20,7 +20,7 @@ lemma eq_quadratic_of_degree_le_two [Semiring R] {p : R[X]} (hp : p.degree ≤ 2
   rw [p.as_sum_range_C_mul_X_pow'
     (Nat.lt_of_le_of_lt (natDegree_le_iff_degree_le.mpr hp) (Nat.lt_add_one 2))]
   simp [Finset.sum_range_succ]
-  abel_nf
+  abel
 
 /-- **Vieta's formula** for quadratics. -/
 lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}
