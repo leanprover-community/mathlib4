@@ -404,7 +404,8 @@ instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S).base := by
   change topologically @IsOpenMap _
   wlog hS : ∃ R, S = Spec R
-  · refine (IsLocalAtTarget.iff_of_openCover (P := topologically @IsOpenMap) S.affineCover).mpr ?_
+  · refine (IsZariskiLocalAtTarget.iff_of_openCover
+      (P := topologically @IsOpenMap) S.affineCover).mpr ?_
     intro i
     have := this (n := n) (S.affineCover.X i) ⟨_, rfl⟩
     rwa [← (isPullback_map (n := n)  (S.affineCover.f i)).isoPullback_hom_snd,
