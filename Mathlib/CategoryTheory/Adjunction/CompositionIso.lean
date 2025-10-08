@@ -5,6 +5,11 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Mates
 
+/-!
+# Compatibilities for left adjoints from compatibilities satisfied by right adjoints
+
+-/
+
 namespace CategoryTheory
 
 variable {C₀ C₁ C₂ C₃ : Type*} [Category C₀] [Category C₁] [Category C₂] [Category C₃]
