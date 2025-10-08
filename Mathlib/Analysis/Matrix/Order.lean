@@ -222,8 +222,7 @@ attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPo
 theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
   classical
-  rw [IsStrictlyPositive.commute_iff hA.isStrictlyPositive hB.isStrictlyPositive,
-    isStrictlyPositive_iff_posDef]
+  rw [hA.isStrictlyPositive.commute_iff hB.isStrictlyPositive, isStrictlyPositive_iff_posDef]
 
 @[deprecated IsStrictlyPositive.sqrt (since := "2025-09-26")]
 lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
@@ -235,8 +234,7 @@ A matrix is positive definite if and only if it has the form `Bᴴ * B` for some
 @[deprecated CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self (since := "2025-09-28")]
 lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
     PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B :=
-  isStrictlyPositive_iff_posDef (x := A) |>.eq ▸
-    CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
+  isStrictlyPositive_iff_posDef.symm.trans CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
 
 @[deprecated (since := "07-08-2025")] alias PosDef.posDef_iff_eq_conjTranspose_mul_self :=
   CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
