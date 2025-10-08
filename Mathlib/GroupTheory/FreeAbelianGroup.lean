@@ -135,7 +135,7 @@ theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f 
 
 @[deprecated (since := "2025-07-23")] protected alias lift.unique := lift_unique
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem lift_ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H

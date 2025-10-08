@@ -707,7 +707,7 @@ instance : OrderIsoClass (α ≃o β) α β where
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
   rfl
 
--- See note [partiallyAppliedExtLemmas]
+-- See note [partially-applied ext lemmas]
 @[ext]
 theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g :=
   DFunLike.coe_injective h

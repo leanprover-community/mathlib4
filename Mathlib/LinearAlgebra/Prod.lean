@@ -272,7 +272,7 @@ theorem prod_ext_iff {f g : M × M₂ →ₗ[R] M₃} :
 Split equality of linear maps from a product into linear maps over each component, to allow `ext`
 to apply lemmas specific to `M →ₗ M₃` and `M₂ →ₗ M₃`.
 
-See note [partiallyAppliedExtLemmas]. -/
+See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem prod_ext {f g : M × M₂ →ₗ[R] M₃} (hl : f.comp (inl _ _ _) = g.comp (inl _ _ _))
     (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g :=

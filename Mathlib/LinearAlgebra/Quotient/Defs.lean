@@ -227,7 +227,7 @@ variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] 
 /-- Two `LinearMap`s from a quotient module are equal if their compositions with
 `submodule.mkQ` are equal.
 
-See note [partiallyAppliedExtLemmas]. -/
+See note [partially-applied ext lemmas]. -/
 @[ext high] -- Increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
   LinearMap.ext fun x => Submodule.Quotient.induction_on _ x <| (LinearMap.congr_fun h :)

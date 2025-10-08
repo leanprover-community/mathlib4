@@ -428,7 +428,7 @@ theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
     (w : (f : FreeAlgebra R X → A) ∘ ι R = (g : FreeAlgebra R X → A) ∘ ι R) : f = g := by

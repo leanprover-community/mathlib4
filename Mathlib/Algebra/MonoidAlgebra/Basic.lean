@@ -45,7 +45,7 @@ theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra 
   NonUnitalAlgHom.to_distribMulActionHom_injective <|
     Finsupp.distribMulActionHom_ext' fun a => DistribMulActionHom.ext_ring (h a)
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : φ₁.toMulHom.comp (ofMagma k G) = φ₂.toMulHom.comp (ofMagma k G)) : φ₁ = φ₂ :=
@@ -177,7 +177,7 @@ theorem algHom_ext ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
   AlgHom.toLinearMap_injective <| Finsupp.lhom_ext' fun a => LinearMap.ext_ring (h a)
 
 -- The priority must be `high`.
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem algHom_ext' ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
     (h :
@@ -425,7 +425,7 @@ section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Add G] [NonUnitalNonAssocSemiring A]
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : k[G] →ₙₐ[k] A}
     (h : φ₁.toMulHom.comp (ofMagma k G) = φ₂.toMulHom.comp (ofMagma k G)) : φ₁ = φ₂ :=
@@ -460,7 +460,7 @@ def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀
 @[simp] lemma coe_liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm) :
     ⇑(liftNCAlgHom f g h_comm) = liftNC f g := rfl
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem algHom_ext' ⦃φ₁ φ₂ : k[G] →ₐ[k] A⦄
     (h : (φ₁ : k[G] →* A).comp (of k G) = (φ₂ : k[G] →* A).comp (of k G)) :

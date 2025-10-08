@@ -137,7 +137,17 @@ in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`.
 macro "library_note2 " name:ident ppSpace dc:docComment : command =>
   `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
 
-library_note2 partiallyAppliedExtLemmas
+open Lean Elab Command in
+/-- Support the old `library_note "foo"` syntax, with a deprecation warning. -/
+elab "library_note2 " name:str ppSpace dc:docComment : command => do
+  logWarningAt name <|
+    "deprecation warning: library_note2 now takes an identifier instead of a string.\n" ++
+    "Hint: replace the double quotes with «french quotes»."
+  let name := Name.mkSimple name.getString
+  let stx ← `(library_note2 $(mkIdent name):ident $dc:docComment)
+  elabCommandTopLevel stx
+
+library_note2 «partially-applied ext lemmas»
 /--
 When possible, `ext` lemmas are stated without a full set of arguments. As an example, for bundled
 homs `f`, `g`, and `of`, `f.comp of = g.comp of → f = g` is a better `ext` lemma than

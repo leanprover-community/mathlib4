@@ -127,7 +127,7 @@ variable {ψ} {ψ' : (⨁ i, M i) →ₗ[R] N}
 
 /-- Two `LinearMap`s out of a direct sum are equal if they agree on the generators.
 
-See note [partiallyAppliedExtLemmas]. -/
+See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
     (H : ∀ i, ψ.comp (lof R ι M i) = ψ'.comp (lof R ι M i)) : ψ = ψ' :=

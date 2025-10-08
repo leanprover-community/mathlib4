@@ -447,7 +447,7 @@ theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     apply MonoidHom.ext_mnat
     exact hX _
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem ringHom_ext' {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : f.comp C = g.comp C) (hX : ∀ i, f (X i) = g (X i)) : f = g :=

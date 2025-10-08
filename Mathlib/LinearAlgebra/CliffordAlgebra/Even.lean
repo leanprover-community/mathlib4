@@ -99,7 +99,7 @@ variable (f : EvenHom Q A)
 
 /-- Two algebra morphisms from the even subalgebra are equal if they agree on pairs of generators.
 
-See note [partiallyAppliedExtLemmas]. -/
+See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂ f = (even.ι Q).compr₂ g) :
     f = g := by

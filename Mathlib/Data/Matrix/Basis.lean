@@ -170,7 +170,7 @@ section ext
 
 /-- Additive maps from finite matrices are equal if they agree on the standard basis.
 
-See note [partiallyAppliedExtLemmas]. -/
+See note [partially-applied ext lemmas]. -/
 @[local ext]
 theorem ext_addMonoidHom
     [Finite m] [Finite n] [AddCommMonoid α] [AddCommMonoid β] ⦃f g : Matrix m n α →+ β⦄
@@ -186,7 +186,7 @@ theorem ext_addMonoidHom
 
 /-- Linear maps from finite matrices are equal if they agree on the standard basis.
 
-See note [partiallyAppliedExtLemmas]. -/
+See note [partially-applied ext lemmas]. -/
 @[local ext]
 theorem ext_linearMap
     [Finite m] [Finite n] [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]

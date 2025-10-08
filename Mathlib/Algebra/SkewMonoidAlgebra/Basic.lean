@@ -1102,7 +1102,7 @@ theorem of_injective [Nontrivial k] :
 /-- If two ring homomorphisms from `SkewMonoidAlgebra k G` are equal on all `single a 1`
 and `single 1 b`, then they are equal.
 
-See note [partiallyAppliedExtLemmas]. -/
+See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem ringHom_ext' {f g : SkewMonoidAlgebra k G →+* k}
     (h₁ : f.comp singleOneRingHom = g.comp singleOneRingHom)
@@ -1158,7 +1158,7 @@ theorem distribMulActionHom_ext [DistribMulAction R M] [DistribMulAction R N] {�
     (h : ∀ (a : α) (m : M), f (single a m) = g (single a m)) : f = g :=
   DistribMulActionHom.toAddMonoidHom_injective <| addHom_ext h
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem distribMulActionHom_ext' [DistribMulAction R M] [DistribMulAction R N] {α : Type*}
     {f g : SkewMonoidAlgebra M α →+[R] N}
@@ -1195,7 +1195,7 @@ theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlge
   ext
   simp [singleAddHom_apply, h]
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlgebra k G →ₙₐ[k] A}
     (h : φ₁.toMulHom.comp (of k G).toMulHom = φ₂.toMulHom.comp (of k G).toMulHom) : φ₁ = φ₂ :=

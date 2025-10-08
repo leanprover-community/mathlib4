@@ -123,7 +123,7 @@ theorem lift_comp_ι (g : ExteriorAlgebra R M →ₐ[R] A) :
     lift R ⟨g.toLinearMap.comp (ι R), comp_ι_sq_zero _⟩ = g :=
   CliffordAlgebra.lift_comp_ι g
 
-/-- See note [partiallyAppliedExtLemmas]. -/
+/-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
     (h : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g :=
