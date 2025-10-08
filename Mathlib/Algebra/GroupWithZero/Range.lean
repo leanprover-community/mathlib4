@@ -131,9 +131,7 @@ def valueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
     <| WithZero.map' (valueGroup f).subtype
 
 variable (f) in
-/-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. It cannot land
-in `valueMonoid₀ f` because in general `f a` needs not be a unit, so it will not be in
-`valueMonoid₀ f`. -/
+/-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. -/
 @[simps!]
 def restrict₀ : A →*₀ ValueGroup₀ f where
   toFun a :=
