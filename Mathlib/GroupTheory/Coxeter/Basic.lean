@@ -19,7 +19,7 @@ This file defines Coxeter groups and Coxeter systems.
 Let `B` be a (possibly infinite) type, and let $M = (M_{i,i'})_{i, i' \in B}$ be a matrix
 of natural numbers. Further assume that $M$ is a *Coxeter matrix* (`CoxeterMatrix`); that is, $M$ is
 symmetric and $M_{i,i'} = 1$ if and only if $i = i'$. The *Coxeter group* associated to $M$
-(`CoxeterMatrix.group`) has the presentation
+(`CoxeterMatrix.Group`) has the presentation
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$
 The elements $s_i$ are called the *simple reflections* (`CoxeterMatrix.simple`) of the Coxeter
 group. Note that every simple reflection is an involution.
@@ -108,7 +108,7 @@ protected def Group : Type _ := PresentedGroup M.relationsSet
 
 instance : Group M.Group := QuotientGroup.Quotient.group _
 
-/-- The simple reflection of the Coxeter group `M.group` at the index `i`. -/
+/-- The simple reflection of the Coxeter group `M.Group` at the index `i`. -/
 def simple (i : B) : M.Group := PresentedGroup.of i
 
 theorem reindex_relationsSet :
