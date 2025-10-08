@@ -14,7 +14,8 @@ induced functor `pushforward₀ : PresheafOfModules.{v} R ⥤ PresheafOfModules.
 on presheaves of modules.
 
 In case we have a morphism of presheaves of rings `S ⟶ F.op ⋙ R`, we also construct
-a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`.
+a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`, and
+we show that they interact with the composition of morphisms similarly as pseudofunctors.
 
 -/
 
@@ -104,6 +105,8 @@ lemma pushforward_map_app_apply' {M N : PresheafOfModules.{v} R} (α : M ⟶ N) 
 section
 
 variable (R) in
+/-- The pushforward functor by the identity morphism identifies to
+the identify functor of the category of presheaves of modules. -/
 noncomputable def pushforwardId :
     pushforward.{v} (S := R) (F := 𝟭 _) (𝟙 R) ≅ 𝟭 _ :=
   Iso.refl _
@@ -112,6 +115,8 @@ section
 
 variable {T : Eᵒᵖ ⥤ RingCat.{u}} {G : D ⥤ E} (ψ : R ⟶ G.op ⋙ T)
 
+/-- The composition of two pushforward functors on categories of presheaves of modules
+identify to the pushforward for the composition. -/
 noncomputable def pushforwardComp :
     pushforward.{v} ψ ⋙ pushforward.{v} φ ≅
       pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) :=

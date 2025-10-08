@@ -17,6 +17,9 @@ we introduce the pullback functor `pullback : PresheafOfModules S ⥤ PresheafOf
 as the left adjoint of `pushforward : PresheafOfModules R ⥤ PresheafOfModules S`.
 The existence of this left adjoint functor is obtained under suitable universe assumptions.
 
+From the compatibility of `pushforward` with respect to composition, we deduce
+similar pseudofunctor-like properties of the `pullback` functors.
+
 -/
 
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
@@ -108,13 +111,10 @@ instance : (pushforward.{v} (F := 𝟭 C) (𝟙 S)).IsRightAdjoint :=
   isRightAdjoint_of_iso (pushforwardId.{v} S).symm
 
 variable (S) in
+/-- The pullback by the identity morphism identifies to the identity functor of the
+category of presheaves of modules. -/
 noncomputable def pullbackId : pullback.{v} (F := 𝟭 C) (𝟙 S) ≅ 𝟭 _ :=
   ((pullbackPushforwardAdjunction.{v} (F := 𝟭 C) (𝟙 S))).leftAdjointIdIso (pushforwardId S)
-
-lemma pullbackId_inv_app (M : PresheafOfModules.{v} S) :
-    (pullbackId S).inv.app M =
-      (pullbackPushforwardAdjunction (F := 𝟭 C) (𝟙 S)).unit.app M ≫
-        (pushforwardId S).hom.app ((pullback (F := 𝟭 C) (𝟙 S)).obj M) := rfl
 
 variable [(pushforward.{v} φ).IsRightAdjoint]
 
@@ -125,6 +125,8 @@ variable [(pushforward.{v} ψ).IsRightAdjoint]
 instance : (pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ)).IsRightAdjoint :=
   isRightAdjoint_of_iso (pushforwardComp.{v} φ ψ)
 
+/-- The composition of two pullback functors on presheaves of modules identifies
+to the pullback for the composition. -/
 noncomputable def pullbackComp :
     pullback.{v} φ ⋙ pullback.{v} ψ ≅
       pullback.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) :=
