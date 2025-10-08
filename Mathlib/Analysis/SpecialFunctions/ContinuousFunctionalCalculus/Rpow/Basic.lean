@@ -515,10 +515,6 @@ lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_t
   · rw [cfc_apply_of_not_continuousOn a hf] at h
     exact False.elim <| not_isUnit_zero h
 
-lemma sqrt_eq_one_iff [IsTopologicalRing A] [T2Space A] (a : A) (ha : 0 ≤ a := by cfc_tac) :
-    sqrt a = 1 ↔ a = 1 := by
-  rw [sqrt_eq_iff a _, mul_one, eq_comm]
-
 section prod
 
 variable [IsTopologicalRing A] [T2Space A]
@@ -611,6 +607,16 @@ lemma sqrt_algebraMap {r : ℝ≥0} : sqrt (algebraMap ℝ≥0 A r) = algebraMap
 
 @[simp]
 lemma sqrt_one : sqrt (1 : A) = 1 := by simp [sqrt_eq_cfc]
+
+lemma sqrt_eq_one_iff (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    sqrt a = 1 ↔ a = 1 := by
+  rw [sqrt_eq_iff a _, mul_one, eq_comm]
+
+lemma sqrt_eq_one_iff' [Nontrivial A] (a : A) :
+    sqrt a = 1 ↔ a = 1 := by
+  refine ⟨fun h ↦ sqrt_eq_one_iff a ?_ |>.mp h, fun h ↦ h ▸ sqrt_one⟩
+  rw [sqrt, cfcₙ] at h
+  cfc_tac
 
 -- TODO: relate to a strict positivity condition
 lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
