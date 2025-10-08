@@ -62,10 +62,10 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 #guard_msgs in
 #check T% X
 
+variable {x : M}
+
 -- Testing precedence.
 section precedence
-
-variable {x : M}
 
 /-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
 #guard_msgs in
@@ -78,7 +78,32 @@ variable {x : M}
 #guard_msgs in
 #check T% (σ x)
 
-end
+-- Testing precedence when applied to a family of section.
+variable {ι j : Type*}
+
+-- Partially applied.
+/--
+info: fun a ↦ TotalSpace.mk' ((x : M) → V x) a (s a) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x))
+-/
+#guard_msgs in
+variable {s : ι → (x : M) → V x} in
+#check T% s
+
+/--
+info: (fun a ↦ TotalSpace.mk' (ι → (x : M) → V x) a (s a)) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x))
+-/
+#guard_msgs in
+variable {s : ι → ι → (x : M) → V x} {i : ι} in
+#check T% s i
+
+variable {X : ι → Π x : M, TangentSpace I x} {i : ι}
+
+-- Error message is okay, but not great.
+/-- error: Could not find models with corners for ι -/
+#guard_msgs in
+#check MDiffAt (T% X) x
+
+end precedence
 
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
@@ -784,7 +809,8 @@ end coercions
 section dependent
 
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
-variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+variable {ι : Type*} {i : ι} (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+  (X' : ι → (m : M) → TangentSpace I m)
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
@@ -848,6 +874,19 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 -/
 #guard_msgs in
 #check CMDiffAt[s] 0 σ'
+
+/--
+error: Term X' i is a dependent function, of type (m : M) → TangentSpace I m
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiffAt ((X' i)) x
+
+-- This error message is not great: this is missing *both* a T% elaborator
+-- and an argument i.
+/-- error: Could not find models with corners for ι -/
+#guard_msgs in
+#check MDiffAt X' x
 
 end dependent
 
