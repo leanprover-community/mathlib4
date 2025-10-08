@@ -407,8 +407,8 @@ trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
 
@@ -427,8 +427,8 @@ trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
 
@@ -436,8 +436,8 @@ scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : te
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
-  let e ← ensureIsFunction <|← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let e ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
 
