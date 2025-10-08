@@ -50,11 +50,20 @@ noncomputable
 def MeasurableEquiv.withTopEquiv [Nonempty ι] : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
   (WithTop.neTopHomeomorph ι).toMeasurableEquiv
 
+instance [h : IsEmpty ι] : Subsingleton (WithTop ι) where
+  allEq a b := by
+    cases a with
+    | coe a => exfalso; exact h.elim a
+    | top =>
+      cases b with
+      | coe b => exfalso; exact h.elim b
+      | top => rfl
+
 lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
     {f : WithTop ι → α} (h : Measurable fun p : ι ↦ f p) :
     Measurable f := by
   rcases isEmpty_or_nonempty ι with hι | hι
-  · sorry
+  · exact Subsingleton.measurable
   · exact measurable_of_measurable_on_compl_singleton ⊤
       (MeasurableEquiv.withTopEquiv.symm.measurable_comp_iff.1 h)
 
