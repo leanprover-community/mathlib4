@@ -2672,6 +2672,7 @@ import Mathlib.CategoryTheory.ObjectProperty.Extensions
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+import Mathlib.CategoryTheory.ObjectProperty.Opposite
 import Mathlib.CategoryTheory.ObjectProperty.Retract
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.ObjectProperty.Small
@@ -5299,6 +5300,7 @@ import Mathlib.Probability.Distributions.Pareto
 import Mathlib.Probability.Distributions.Poisson
 import Mathlib.Probability.Distributions.Uniform
 import Mathlib.Probability.HasLaw
+import Mathlib.Probability.HasLawExists
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.CharacteristicFunction
