@@ -401,6 +401,9 @@ scoped elab:max "MDiff" ppSpace t:term:arg : term => do
   let (srcI, tgtI) ← findModels e none
   mkAppM ``MDifferentiable #[srcI, tgtI, e]
 
+-- We ensure the type of `n` before checking `f` is a function to provide better error messages
+-- in case e.g. just `n` was forgotten.
+
 /-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).

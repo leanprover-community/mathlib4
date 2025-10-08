@@ -581,10 +581,28 @@ of type
 to be a function, or to be coercible to a function
 -/
 #guard_msgs in
-#check CMDiffAt[s] f m
+#check CMDiff[s] f m
 
--- yields a parse error, "unexpected toekn '/--'; expected term"
+-- yields a parse error, "unexpected token '/--'; expected term"
 -- #check CMDiffAt f
+
+/--
+error: Type mismatch
+  f
+has type
+  M → M'
+of sort `Type (max u_10 u_4)` but is expected to have type
+  WithTop ℕ∞
+of sort `Type`
+---
+error: Expected
+  n
+of type
+  Option ℕ∞
+to be a function, or to be coercible to a function
+-/
+#guard_msgs in
+#check CMDiff f n
 
 end error
 
