@@ -150,6 +150,9 @@ instance : SubmonoidClass (Submonoid M) M where
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
+@[to_additive (attr := simp)]
+theorem coe_toSubsemigroup {s : Submonoid M} : (s.toSubsemigroup : Set M) = s := rfl
+
 @[to_additive]
 theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -164,6 +167,10 @@ theorem coe_set_mk {s : Subsemigroup M} (h_one) : (mk s h_one : Set M) = s :=
 
 @[to_additive (attr := simp)]
 theorem mk_le_mk {s t : Subsemigroup M} (h_one) (h_one') : mk s h_one ≤ mk t h_one' ↔ s ≤ t :=
+  Iff.rfl
+
+@[to_additive (attr := simp)]
+theorem toSubsemigroup_le {s t : Submonoid M} : s.toSubsemigroup ≤ t.toSubsemigroup ↔ s ≤ t :=
   Iff.rfl
 
 /-- Two submonoids are equal if they have the same elements. -/
