@@ -278,10 +278,12 @@ It is the subshift whose underlying set is the set of all configurations
 `G → A`.
 -/
 @[to_additive SymbolicDynamics.FullShift.fullShift]
-def mulFullShift (A G) [TopologicalSpace A] [Monoid G] : mulSubshift A G :=
-  { carrier := Set.univ,
-    isClosed := isClosed_univ,
-    shiftInvariant := by intro _ _ _; simp }
+def mulFullShift (A G) [TopologicalSpace A] [Monoid G] : mulSubshift A G where
+  carrier := Set.univ
+  isClosed := isClosed_univ
+  shiftInvariant := by
+    intro _ _ _
+    simp
 
 attribute [inherit_doc SymbolicDynamics.FullShift.mulFullShift] SymbolicDynamics.FullShift.fullShift
 
@@ -323,11 +325,9 @@ In symbolic dynamics, dominos (two-cell patterns) are the simplest nontrivial
 building blocks: they describe local adjacency conditions between two sites
 of a configuration. -/
 @[to_additive domino]
-def mulDomino {A : Type*}
-    (i j : G) (ai aj : A) : mulPattern A G := by
-  refine
-  { support := ({i, j} : Finset G)
-  , data := fun ⟨z, hz⟩ => if z = i then ai else aj }
+def mulDomino {A : Type*} (i j : G) (ai aj : A) : mulPattern A G where
+  support := ({i, j} : Finset G)
+  data := fun ⟨z, _hz⟩ => if z = i then ai else aj
 
 attribute [inherit_doc SymbolicDynamics.FullShift.mulDomino] SymbolicDynamics.FullShift.domino
 
@@ -458,9 +458,9 @@ Formally: the support is `U`, and for each `i ∈ U` the pattern records the val
 This is the inverse construction to `patternToOriginConfig` (which extends a
 finite pattern to a configuration by filling with `default`). -/
 @[to_additive patternFromConfig]
-def mulPatternFromConfig (x : G → A) (U : Finset G) : mulPattern A G :=
-  { support := U,
-    data := fun i => x i.1 }
+def mulPatternFromConfig (x : G → A) (U : Finset G) : mulPattern A G where
+  support := U
+  data := fun i => x i.1
 
 attribute [inherit_doc SymbolicDynamics.FullShift.mulPatternFromConfig]
   SymbolicDynamics.FullShift.patternFromConfig
@@ -474,7 +474,7 @@ the configuration `patternToConfig p v` takes the value prescribed by `p` at `w`
 This statement uses `[IsRightCancelMul G]` to identify the preimage of `w * v`
 under right-multiplication by `v`. -/
 @[to_additive patternToConfig_apply_of_mem
-  /-- Additive version: on the translated support, `addPatternToConfig` agrees with the pattern. -/]
+  /-- Additive version: on the translated support, `patternToConfig` agrees with the pattern. -/]
 lemma mulPatternToConfig_apply_of_mem
     (p : mulPattern A G) (v w : G) (hw : w ∈ p.support) :
     mulPatternToConfig (A := A) (G := G) p v (w * v) = p.data ⟨w, hw⟩ := by
@@ -604,10 +604,10 @@ Formally:
 * it is closed because each occurrence set is open, and
 * it is shift-invariant since avoidance is preserved by shifts. -/
 @[to_additive subshift_from_forbidden]
-def mulSubshift_from_forbidden (F : Set (mulPattern A G)) : mulSubshift A G :=
-{ carrier := mulForbids F,
-  isClosed := mulForbids_closed F,
-  shiftInvariant := mulForbids_shift_invariant F }
+def mulSubshift_from_forbidden (F : Set (mulPattern A G)) : mulSubshift A G where
+  carrier := mulForbids F
+  isClosed := mulForbids_closed F
+  shiftInvariant := mulForbids_shift_invariant F
 
 attribute [inherit_doc SymbolicDynamics.FullShift.mulSubshift_from_forbidden]
   SymbolicDynamics.FullShift.subshift_from_forbidden
