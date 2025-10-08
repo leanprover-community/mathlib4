@@ -1241,19 +1241,33 @@ lemma card_le_card_pow (hn : n ≠ 0) : #s ≤ #(s ^ n) := by
 
 end CancelMonoid
 
-section Group
-variable [Group α] [DecidableEq α] {s t : Finset α}
+section DivisionMonoid
 
-@[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : #t ≤ #(s / t) :=
-  have ⟨_, ha⟩ := hs; card_le_card_image₂_left _ ha div_right_injective
+section LeftCancel
+variable [DivisionMonoid α] [IsLeftCancelMul α] [DecidableEq α] {s t : Finset α}
 
-@[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : #s ≤ #(s / t) :=
-  have ⟨_, ha⟩ := ht; card_le_card_image₂_right _ ha div_left_injective
+@[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : #t ≤ #(s / t) := by
+  obtain ⟨a, ha⟩ := hs
+  exact card_le_card_image₂_left _ ha (div_right_injective (b := a))
+
+end LeftCancel
+
+section RightCancel
+variable [DivisionMonoid α] [IsRightCancelMul α] [DecidableEq α] {s t : Finset α}
+
+@[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : #s ≤ #(s / t) := by
+  obtain ⟨b, hb⟩ := ht
+  exact card_le_card_image₂_right _ hb (div_left_injective (b := b))
+
+end RightCancel
+
+variable [DivisionMonoid α] [IsLeftCancelMul α] [DecidableEq α]
+    {s t : Finset α}
 
 @[to_additive] lemma card_le_card_div_self : #s ≤ #(s / s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]
 
-end Group
+end DivisionMonoid
 
 end Finset
 

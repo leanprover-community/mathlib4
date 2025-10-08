@@ -628,12 +628,52 @@ lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
 
 end DivisionCommMonoid
 
+section RightCancelDivInvMonoid
+
+variable [DivInvMonoid G] [IsRightCancelMul G] {a b c : G}
+
+@[to_additive (attr := simp)]
+theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by
+  rw [div_eq_mul_inv, mul_eq_right]
+
+@[to_additive]
+theorem div_left_injective : Function.Injective fun a : G ↦ a / b := by
+  intro a₁ a₂ h
+  have h' : a₁ * b⁻¹ = a₂ * b⁻¹ := by simpa [div_eq_mul_inv] using h
+  simpa using (mul_right_cancel (a := a₁) (b := b⁻¹) (c := a₂) h')
+
+@[to_additive (attr := simp)]
+theorem div_left_inj : b / a = c / a ↔ b = c := by
+  constructor
+  · intro h
+    have h' : b * a⁻¹ = c * a⁻¹ := by simpa [div_eq_mul_inv] using h
+    simpa using (mul_right_cancel (a := b) (b := a⁻¹) (c := c) h')
+  · rintro rfl; rfl
+
+end RightCancelDivInvMonoid
+
+section LeftCancelDivisionMonoid
+
+variable [DivisionMonoid G] [IsLeftCancelMul G] {a b c : G}
+
+@[to_additive (attr := simp)]
+theorem div_eq_self : a / b = a ↔ b = 1 := by
+  rw [div_eq_mul_inv, mul_eq_left, inv_eq_one]
+
+@[to_additive]
+theorem div_right_injective : Function.Injective fun x : G ↦ b / x := by
+  simp only [div_eq_mul_inv]
+  exact fun a a' h ↦ inv_injective (mul_right_injective b h)
+
+@[to_additive (attr := simp)]
+theorem div_right_inj : a / b = a / c ↔ b = c :=
+  (div_right_injective (G := G) (b := a)).eq_iff
+
+end LeftCancelDivisionMonoid
+
 section Group
 
 variable [Group G] {a b c d : G} {n : ℤ}
-
-@[to_additive (attr := simp)]
-theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_eq_right]
 
 @[to_additive]
 theorem mul_left_surjective (a : G) : Surjective (a * ·) :=
@@ -719,18 +759,6 @@ theorem inv_mul_eq_one : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_in
 theorem conj_eq_one_iff : a * b * a⁻¹ = 1 ↔ b = 1 := by
   rw [mul_inv_eq_one, mul_eq_left]
 
-@[to_additive]
-theorem div_left_injective : Function.Injective fun a ↦ a / b := by
-  -- FIXME this could be by `simpa`, but it fails. This is probably a bug in `simpa`.
-  simp only [div_eq_mul_inv]
-  exact fun a a' h ↦ mul_left_injective b⁻¹ h
-
-@[to_additive]
-theorem div_right_injective : Function.Injective fun a ↦ b / a := by
-  -- FIXME see above
-  simp only [div_eq_mul_inv]
-  exact fun a a' h ↦ inv_injective (mul_right_injective b h)
-
 @[to_additive (attr := simp)]
 lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_cancel_right]
 
@@ -751,15 +779,6 @@ theorem eq_mul_of_div_eq (h : a / c = b) : a = b * c := by simp [← h]
 theorem mul_eq_of_eq_div (h : a = c / b) : a * b = c := by simp [h]
 
 @[to_additive (attr := simp)]
-theorem div_right_inj : a / b = a / c ↔ b = c :=
-  div_right_injective.eq_iff
-
-@[to_additive (attr := simp)]
-theorem div_left_inj : b / a = c / a ↔ b = c := by
-  rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_left_inj _
-
-@[to_additive (attr := simp)]
 theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel]
 
@@ -778,9 +797,6 @@ alias ⟨_, sub_eq_zero_of_eq⟩ := sub_eq_zero
 @[to_additive]
 theorem div_ne_one : a / b ≠ 1 ↔ a ≠ b :=
   not_congr div_eq_one
-
-@[to_additive (attr := simp)]
-theorem div_eq_self : a / b = a ↔ b = 1 := by rw [div_eq_mul_inv, mul_eq_left, inv_eq_one]
 
 @[to_additive eq_sub_iff_add_eq]
 theorem eq_div_iff_mul_eq' : a = b / c ↔ a * c = b := by rw [div_eq_mul_inv, eq_mul_inv_iff_mul_eq]
