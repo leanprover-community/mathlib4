@@ -47,6 +47,8 @@ def binaryCofanIsColimit : IsColimit (binaryCofan A B) :=
 def isInitialSelf : IsInitial (of R R) :=
   .ofUniqueHom (fun A ↦ ofHom (Algebra.ofId R A)) fun _ _ ↦ hom_ext (Algebra.ext_id _ _ _)
 
+set_option maxHeartbeats 400000 in
+-- Aesop got slower in aesop#255
 attribute [local simp] one_def in
 instance : MonoidalCategory (CommAlgCat.{u} R) where
   tensorObj S T := of R (S ⊗[R] T)
