@@ -301,7 +301,9 @@ section BoundedContinuousFunction
 
 variable (E)
 
-@[simps]
+/-- Inclusion of `𝓓^{n}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
+as a `𝕜`-linear map. -/
+@[simps!]
 noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}(E, F) →ₗ[𝕜] E →ᵇ F  where
   toFun f := f
   map_add' _ _ := rfl
@@ -311,6 +313,8 @@ lemma to_bcf_comp_eq (K : Compacts E) :
   (toBoundedContinuousFunctionₗ 𝕜 E F n) ∘ (ContDiffMapSupportedIn.toTestFunction 𝕜 F n K)  =
     ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ 𝕜 := by rfl
 
+/-- The inclusion of the space `𝓓^{n}(E, F)` into the space `E →ᵇ F` of bounded continuous
+functions as a continuous `𝕜`-linear map. -/
 @[simps!]
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}(E, F) →L[𝕜] E →ᵇ F  :=
   { toLinearMap := toBoundedContinuousFunctionₗ 𝕜 E F n
