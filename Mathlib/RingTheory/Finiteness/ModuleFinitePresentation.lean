@@ -60,7 +60,7 @@ lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
 
 /-- If `S` is finitely presented as a module over `R`, it is finitely
 presented as an algebra over `R`. -/
-instance (priority := 900) Algebra.FinitePresentation.of_finitePresentation
+lemma Algebra.FinitePresentation.of_finitePresentation
     [Module.FinitePresentation R S] : Algebra.FinitePresentation R S := by
   obtain ⟨S', _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
   refine .of_surjective hf ?_
@@ -70,7 +70,7 @@ instance (priority := 900) Algebra.FinitePresentation.of_finitePresentation
 /-- If `S` is finite as a module over `R` and finitely presented as an algebra over `R`, then
 it is finitely presented as a module over `R`. -/
 @[stacks 0564 "The case M = S"]
-instance (priority := 900) Module.FinitePresentation.of_finite_of_finitePresentation
+lemma Module.FinitePresentation.of_finite_of_finitePresentation
     [Module.Finite R S] [Algebra.FinitePresentation R S] :
     Module.FinitePresentation R S := by
   classical
@@ -88,4 +88,4 @@ instance (priority := 900) Module.FinitePresentation.of_finite_of_finitePresenta
 is equivalent. -/
 lemma Module.FinitePresentation.iff_finitePresentation_of_finite [Module.Finite R S] :
     Module.FinitePresentation R S ↔ Algebra.FinitePresentation R S :=
-  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+  ⟨fun _ ↦ .of_finitePresentation R S, fun _ ↦ .of_finite_of_finitePresentation R S⟩
