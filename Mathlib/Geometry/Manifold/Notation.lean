@@ -67,7 +67,7 @@ variable {s : E → E'} in
 These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
 
 **Warning.** These elaborators are a proof of concept; the implementation should be considered a
-prototype. Don't rewrite all of mathlib to use it just yet. Notable bugs and limitations include
+prototype. Don't rewrite all of mathlib to use it just yet. Notable limitations include
 the following.
 
 ## TODO
@@ -76,10 +76,8 @@ the following.
   is correct 90% of the time).
   For products of vector spaces `E × F`, this could print a warning about making a choice between
   the model in `E × F` and the product of the models on `E` and `F`.
-- extend the elaborators to support `OpenPartialHomeomorph`s and `PartialEquiv`s
-- better error messages (as needed)
-- further testing and fixing of edge cases
-- add tests for all of the above
+- better error messages (as needed), with tests
+- further testing and fixing of edge cases (with tests)
 - add delaborators for these elaborators
 
 -/
