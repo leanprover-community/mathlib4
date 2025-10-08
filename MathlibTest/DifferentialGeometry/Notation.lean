@@ -43,19 +43,6 @@ variable {σ : Π x : M, V x}
 #guard_msgs in
 #check T% σ
 
--- Testing precedence.
-variable {x : M}
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
-#guard_msgs in
-#check (T% σ) x
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
-#guard_msgs in
-#check T% σ x
--- Nothing happening, as expected.
-/-- info: σ x : V x -/
-#guard_msgs in
-#check T% (σ x)
-
 -- Note how the name of the bound variable `x` resp. `y` is preserved.
 /-- info: fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
@@ -74,6 +61,24 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 /-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% X
+
+-- Testing precedence.
+section precedence
+
+variable {x : M}
+
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+#guard_msgs in
+#check (T% σ) x
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+#guard_msgs in
+#check T% σ x
+-- Nothing happening, as expected.
+/-- info: σ x : V x -/
+#guard_msgs in
+#check T% (σ x)
+
+end
 
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
