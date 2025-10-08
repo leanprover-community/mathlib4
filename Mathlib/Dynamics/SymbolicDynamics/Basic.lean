@@ -208,24 +208,12 @@ variable [TopologicalSpace A] [DiscreteTopology A]
 /-- Cylinders are open when `A` is discrete. -/
 lemma isOpen_cylinder (U : Finset G) (x : G → A) :
     IsOpen (cylinder U x) := by
-  have hopen : ∀ i ∈ (↑U : Set G), IsOpen ({x i} : Set A) := by
-    intro i _; simp
-  have hpi :
-      IsOpen (Set.pi (s := (↑U : Set G))
-                     (t := fun i => ({x i} : Set A))) :=
-    isOpen_set_pi (U.finite_toSet) hopen
-  simpa [cylinder_eq_set_pi (A := A) (G := G) U x] using hpi
+  simpa [cylinder_eq_set_pi U x] using isOpen_set_pi (U.finite_toSet) (by simp)
 
 /-- Cylinders are closed when `A` is discrete. -/
 lemma isClosed_cylinder (U : Finset G) (x : G → A) :
     IsClosed (cylinder U x) := by
-  have hclosed : ∀ i ∈ (↑U : Set G), IsClosed ({x i} : Set A) := by
-    intro i _; simp
-  have hpi :
-      IsClosed (Set.pi (s := (↑U : Set G))
-                       (t := fun i => ({x i} : Set A))) :=
-    isClosed_set_pi hclosed
-  simpa [cylinder_eq_set_pi (A := A) (G := G) U x] using hpi
+  simpa [cylinder_eq_set_pi U x] using isClosed_set_pi (by simp)
 
 end Cylinders
 
@@ -612,7 +600,7 @@ variable {A G : Type*} [Monoid G] [IsRightCancelMul G] [TopologicalSpace A] [Dis
 @[to_additive occursAt_open]
 lemma mulOccursAt_open (p : mulPattern A G) (g : G) :
     IsOpen { x | p.occursIn x g } := by
-  rw [mulOccursAt_eq_cylinder]; exact isOpen_cylinder _ _
+  simpa [mulOccursAt_eq_cylinder] using isOpen_cylinder _ _
 
 /-- Avoiding a fixed family of patterns is a closed condition (in the product topology on `G → A`).
 
@@ -637,7 +625,7 @@ lemma mulForbids_closed (F : Set (mulPattern A G)) :
 @[to_additive occursAt_closed]
 lemma mulOccursAt_closed (p : mulPattern A G) (g : G) :
     IsClosed { x | p.occursIn x g } := by
-  rw [mulOccursAt_eq_cylinder]; exact isClosed_cylinder _ _
+  simpa [mulOccursAt_eq_cylinder] using isClosed_cylinder _ _
 
 /-- The subshift defined by a family of forbidden patterns `F`.
 
