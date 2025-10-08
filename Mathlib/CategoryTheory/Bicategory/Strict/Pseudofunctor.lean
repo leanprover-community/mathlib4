@@ -82,7 +82,7 @@ variable {b₀ b₁ b₂ b₃ : B} (f₀₁ : b₀ ⟶ b₁)
 
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁₃ = f) :
-    (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom =
+    (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃).hom =
     (F.mapComp' f₀₂ f₂₃ f).hom ≫
       (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ ≫ (α_ _ _ _).hom := by
   subst h₀₂ h₁₃ hf
