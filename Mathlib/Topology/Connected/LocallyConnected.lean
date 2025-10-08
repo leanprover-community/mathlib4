@@ -3,7 +3,9 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
+import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Locally connected topological spaces
@@ -132,5 +134,14 @@ lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] 
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=
   hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace
+
+/-- A locally connected compact space has finitely many connected components. -/
+instance [LocallyConnectedSpace α] [CompactSpace α] : Finite <| ConnectedComponents α := by
+  have ⟨s, hsU⟩ := IsCompact.elim_finite_subcover isCompact_univ connectedComponent
+    (fun (_ : α) ↦ isOpen_connectedComponent)
+    fun x _ ↦ ⟨connectedComponent x, ⟨⟨x, rfl⟩, mem_connectedComponent⟩⟩
+  refine Finite.of_surjective (fun (i : s) ↦ i) <| Quotient.ind fun x ↦ ?_
+  have ⟨i, hi, h⟩ := mem_iUnion₂.mp <| hsU (a := x) trivial
+  exact ⟨⟨i, hi⟩, Quotient.sound <| connectedComponent_eq h⟩
 
 end LocallyConnectedSpace
