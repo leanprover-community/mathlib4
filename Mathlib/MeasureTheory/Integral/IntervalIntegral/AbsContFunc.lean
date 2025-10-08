@@ -42,18 +42,16 @@ open scoped Topology ENNReal Interval NNReal
 
 /-- If `f` is interval integrable on `a..b` and `c ∈ uIcc a b`, then `fun x ↦ ∫ v in c..x, f v` is
 absolute continuous on `uIcc a b`. -/
-theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → ℝ} {a b : ℝ}
-    (h : IntervalIntegrable f volume a b) (c : ℝ) (hc : c ∈ uIcc a b) :
+theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → ℝ} {a b c : ℝ}
+    (h : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
   wlog hab : a ≤ b generalizing a b
   · exact @this b a h.symm (uIcc_comm a b ▸ hc) (by linarith) |>.symm
   have subinterval_integrable {x y : ℝ} (_ : a ≤ x) (_ : x ≤ b) (_ : a ≤ y) (_ : y ≤ b) :
-      IntervalIntegrable f volume x y := by
-    apply IntervalIntegrable.mono_set' (a := a) (b := b) (by assumption)
-    simp only [uIoc, hab, inf_of_le_left, sup_of_le_right]
-    grind
-  have hf := h.1.hasFiniteIntegral
-  unfold HasFiniteIntegral at hf
+      IntervalIntegrable f volume x y :=
+    IntervalIntegrable.mono_set' (a := a) (b := b) (by assumption) (by grind [uIoc])
+  have hf := intervalIntegrable_iff_integrableOn_Ioc_of_le hab |>.mp h |>.hasFiniteIntegral
+  -- unfold HasFiniteIntegral at hf
   replace hf := ne_of_lt hf
   rw [absolutelyContinuousOnInterval_iff]
   simp only [AbsolutelyContinuousOnInterval.disjWithin, mem_setOf_eq]
@@ -109,9 +107,8 @@ theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → 
     dsimp only [IntegrableOn] at h ⊢
     fun_prop
   _ = ∫ (v : ℝ) in s, ‖f v‖ := by rfl
-  _ = (∫⁻ (v : ℝ) in s, ‖f v‖ₑ).toReal := by
-    apply MeasureTheory.integral_norm_eq_lintegral_enorm
-    exact AEStronglyMeasurable.mono_set hs h.1.left
+  _ = (∫⁻ (v : ℝ) in s, ‖f v‖ₑ).toReal :=
+    MeasureTheory.integral_norm_eq_lintegral_enorm <| AEStronglyMeasurable.mono_set hs h.1.left
   _ = (∫⁻ (x : ℝ) in s, ‖f x‖ₑ ∂volume.restrict (Ioc a b)).toReal := by
     congr 2
     rw [MeasureTheory.Measure.restrict_restrict₀]
@@ -121,7 +118,7 @@ theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → 
       measurability
   _ < ε := by
     convert ENNReal.toReal_strict_mono (by simp) (hδ'2 s this)
-    symm; exact ENNReal.toReal_ofReal (by linarith)
+    exact ENNReal.toReal_ofReal (by linarith) |>.symm
 
 /-- If `f` has derivative 0 a.e. on `[d, b]`, then there is a coultable Vitali cover of `[d, b]`
 a.e., consisting of closed intervals, where each has small variations wrt `f`. -/
@@ -172,7 +169,7 @@ lemma ae_deriv_zero_ctb_cover {f : ℝ → ℝ} {d b η : ℝ}
         norm_mul, norm_inv, abs_abs] at hδ2
       specialize hδ2 (show |x + δ' - x| < δ by simp [h3])
       simp only [add_sub_cancel_left] at hδ2
-      rw [abs_eq_self.mpr h2, ← mul_lt_mul_left h1] at hδ2
+      rw [abs_eq_self.mpr h2, ← mul_lt_mul_iff_right₀ h1] at hδ2
       repeat' constructor
       · exact hx.left.left
       · have : δ' ≤ (b - x) / 2 := by simp [δ']
@@ -420,7 +417,7 @@ theorem AbsolutelyContinuousOnInterval.ae_deriv_zero_const {f : ℝ → ℝ} {a 
     simp only [Nat.ofNat_pos, div_pos_iff_of_pos_right, abs_pos, ne_eq]
     rwa [sub_eq_zero]
   obtain ⟨δ, hδ1, hδ2⟩ := hf (|f d - f b| / 2) hfdb
-  simp only [AbsolutelyContinuousOnInterval.DisjEnds, mem_setOf_eq] at hδ2
+  simp only [AbsolutelyContinuousOnInterval.disjWithin, mem_setOf_eq] at hδ2
   simp_rw [uIcc_of_le hab] at hf1 hδ2 ⊢
   replace hf1 : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x := by
     filter_upwards [hf1] with x hx1 hx2
@@ -566,40 +563,32 @@ continuous on `uIcc a b`, then `∫ (x : ℝ) in a..b, deriv f x = f b - f a`. -
 theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) :
     ∫ (x : ℝ) in a..b, deriv f x = f b - f a := by
-  have f_deriv := hf.ae_hasDerivAt
-  have f_deriv_integrable := hf.deriv_intervalIntegrable
   have f_deriv_integral_ac := hf.deriv_intervalIntegrable.integral_absolutelyContinuousOnInterval
-  have f_deriv_integral_deriv := f_deriv_integrable.ae_eq_deriv_integral (c := a) (hc := by simp)
+    (c := a) (by simp)
   let g (x : ℝ) := f x - ∫ (t : ℝ) in a..x, deriv f t
-  have g_ac : AbsolutelyContinuousOnInterval g a b := hf.sub (f_deriv_integral_ac a (by simp))
+  have g_ac : AbsolutelyContinuousOnInterval g a b := hf.sub (f_deriv_integral_ac)
   have g_ae_deriv_zero : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt g 0 x := by
-    filter_upwards [f_deriv, f_deriv_integral_deriv] with x hx1 hx2 hx3
-    convert (hx1 hx3).sub (hx2 hx3)
+    filter_upwards [hf.ae_hasDerivAt, hf.deriv_intervalIntegrable.ae_hasDerivAt_integral]
+      with x hx1 hx2 hx3
+    convert (hx1 hx3).sub (hx2 hx3 a (by simp))
     abel
   obtain ⟨C, hC⟩ := g_ac.ae_deriv_zero_const g_ae_deriv_zero
-  have C_val : C = f a := by
-    convert hC a (by simp) |>.symm using 1
-    simp [g]
-  specialize hC b (by simp)
-  simp only [C_val, g] at hC
-  rw [← hC]; abel
+  have : f a = g a := by simp [g]
+  have := hC a (by simp)
+  have := hC b (by simp)
+  grind
 
 /-- The integral of the derivative of a product of two absolutely continuous functions. -/
 theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
     {f g : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     ∫ x in a..b, deriv f x * g x + f x * deriv g x = f b * g b - f a * g a := by
-  have fg_ac := hf.mul hg
-  have fg_ac_FTC := fg_ac.integral_deriv_eq_sub
-  simp only at fg_ac_FTC
-  rw [← fg_ac_FTC]
+  rw [← (hf.mul hg).integral_deriv_eq_sub]
   apply intervalIntegral.integral_congr_ae
-  have f_deriv := hf.ae_hasDerivAt
-  have g_deriv := hg.ae_hasDerivAt
-  filter_upwards [f_deriv, g_deriv] with x hx1 hx2 hx3
-  have hx4 : x ∈ uIcc a b := by rw [uIcc]; rw [uIoc] at hx3; exact Ioc_subset_Icc_self hx3
-  have hx5 := (hx1 hx4).mul (hx2 hx4)
-  exact hx5.deriv.symm
+  filter_upwards [hf.ae_hasDerivAt, hg.ae_hasDerivAt] with x hx₁ hx₂ hx₃
+  have hx₄ : x ∈ uIcc a b := by grind [uIcc, uIoc]
+  have hx₅ := (hx₁ hx₄).mul (hx₂ hx₄)
+  exact hx₅.deriv.symm
 
 /-- *Integration by parts* for absolutely continuous functions. -/
 theorem AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul
