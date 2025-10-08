@@ -523,7 +523,8 @@ lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (Fractio
   simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe]
   convert (prod_galRestrict_eq_norm A (FractionRing A) (FractionRing B) B x).symm
 
-theorem Algebra.dvd_algebraMap_intNorm_self  (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
+theorem Algebra.dvd_algebraMap_intNorm_self [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+    (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
   classical
   by_cases hx : x = 0
   · exact ⟨1, by simp [hx]⟩
