@@ -125,7 +125,7 @@ lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
 /-- If `x ↦ exp (C * ‖x‖ ^ 2)` is integrable with respect to the centered Gaussian
 `μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))`, then for all `C' < C`, `x ↦ exp (C' * ‖x‖ ^ 2)`
 is integrable with respect to `μ`. -/
-lemma integrable_exp_sq_of_conv_neg [CompleteSpace E] (μ : Measure E) [IsGaussian μ] {C C' : ℝ}
+lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ}
     (h_centered : Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2))
       (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))))
     (hC'_pos : 0 < C') (hC'_lt : C' < C) :
