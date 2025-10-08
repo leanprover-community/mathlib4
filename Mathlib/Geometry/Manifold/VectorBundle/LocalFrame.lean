@@ -621,27 +621,6 @@ lemma mdifferentiableAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜
   ⟨fun h i ↦ mdifferentiableAt_localFrame_repr hx b h i, fun hi ↦
     (b.localFrame_isLocalFrameOn_baseSet I 1 e).mdifferentiableAt_of_repr_aux hi e.open_baseSet hx⟩
 
-omit [IsManifold I 0 M] in
-/-- A section `s` of `V` is differentiable on `t ⊆ e.baseSet` iff each of its
-coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma mdifferentiableOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
-    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {t : Set M}
-    (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
-    MDiff[t] (T% s) ↔ ∀ i, MDiff[t] (b.localFrame_repr I e i s) := by
-  refine ⟨fun h i ↦ mdifferentiableOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
-  apply ((b.localFrame_isLocalFrameOn_baseSet I 1 e).mono ht').mdifferentiableOn_of_repr (t := s)
-  convert hi
-  sorry -- should be easy/already done above.
-  -- This doesn’t seem to be used except in the next lemma that is not used anywhere.
-
-omit [IsManifold I 0 M] in
-/-- A section `s` of `V` is differentiable on a trivialisation domain `e.baseSet` iff each of its
-coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma mdifferentiableOn_baseSet_iff_localFrame_repr
-    [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F) {s : Π x : M,  V x} :
-    MDiff[e.baseSet] (T% s) ↔ ∀ i, MDiff[e.baseSet] (b.localFrame_repr I e i s) := by
-  rw [mdifferentiableOn_iff_localFrame_repr b e.open_baseSet (subset_refl _)]
-
 end MDifferentiable
 
 end
