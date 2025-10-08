@@ -8,8 +8,9 @@ import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
 /-! # Decomposition of tensor product
 
-In this file we show that if `𝒜` is a graded `R`-algebra, and `S` is any `R`-algebra, then
-`S ⊗[R] 𝒜` is a graded `S`-algebra with the same grading.
+In this file we show that if `ℳ` is a graded `R`-module, and `S` is any `R`-algebra, then
+`S ⊗[R] ℳ` (which is actually `fun i ↦ (ℳ i).baseChange S`) is a graded `S`-module with the same
+grading.
 -/
 
 open TensorProduct LinearMap
