@@ -544,7 +544,7 @@ variable [IsManifold I 1 M] [IsManifold I' 1 M']
 -- TODO: can there be better error messages when forgetting the smoothness exponent?
 section error
 
--- yields a parse error, "unexpected toekn '/--'; expected term"
+-- yields a parse error, "unexpected token '/--'; expected term"
 -- #check CMDiffAt[s] f
 
 /--
