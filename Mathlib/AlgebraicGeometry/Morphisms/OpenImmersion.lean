@@ -94,14 +94,14 @@ theorem isOpenImmersion_eq_inf :
   exact isOpenImmersion_iff_stalk.trans
     (and_congr Iff.rfl (forall_congr' fun x ↦ ConcreteCategory.isIso_iff_bijective _))
 
-instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
-  apply stalkwiseIsLocalAtTarget_of_respectsIso
+instance : IsZariskiLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
+  apply stalkwiseIsZariskiLocalAtTarget_of_respectsIso
   rw [RingHom.toMorphismProperty_respectsIso_iff]
   convert (inferInstanceAs (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
   ext
   exact (ConcreteCategory.isIso_iff_bijective _).symm
 
-instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion :=
+instance isOpenImmersion_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
 
 end AlgebraicGeometry
