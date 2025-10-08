@@ -23,18 +23,6 @@ lemma eq_quadratic_of_degree_le_two [Semiring R] {p : R[X]} (hp : p.degree ≤ 2
   abel
 
 /-- **Vieta's formula** for quadratics. -/
-lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}
-    (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
-    b = -a * (x1 + x2) := by
-  let p : R[X] := C a * X ^ 2 + C b * X + C c
-  have hp_natDegree : p.natDegree = 2 := le_antisymm natDegree_quadratic_le
-    (by convert p.card_roots'; rw [hroots, Multiset.card_pair])
-  have hp_roots_card : p.roots.card = p.natDegree := by
-    rw [hp_natDegree, hroots, Multiset.card_pair]
-  simpa [leadingCoeff, hp_natDegree, p, hroots, mul_assoc, add_comm x1] using
-    coeff_eq_esymm_roots_of_card hp_roots_card (k := 1) (by simp [hp_natDegree])
-
-/-- **Vieta's formula** for quadratics. -/
 lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
     (hp : p.degree ≤ 2) (hroots : p.roots = {x1, x2}) : p.coeff 1 = -p.coeff 2 * (x1 + x2) := by
   have hn : p ≠ 0 := by
@@ -103,7 +91,7 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : 
       have h1 : C a * (X - C x1) ≠ 0 := mul_ne_zero (by simpa) (Polynomial.X_sub_C_ne_zero _)
       have h2 : C a * (X - C x1) * (X - C x2) ≠ 0 := mul_ne_zero h1 (Polynomial.X_sub_C_ne_zero _)
       simp [this, Polynomial.roots_mul h2, Polynomial.roots_mul h1]
-    have ep : p = C a * X ^ 2 + C b * X + C c := eq_quadratic_of_degree_le_two hp
+    have ep : p = C a * X ^ 2 + C b * X + C c := eq_quadratic_of_degree_le_two (le_of_eq hp)
     simpa [ep, hvieta.1, hvieta.2] using by ring_nf
   ⟨fun h => ⟨eq_neg_mul_add_of_roots_quadratic_eq_pair (le_of_eq hp) h,
     eq_mul_mul_of_roots_quadratic_eq_pair (le_of_eq hp) h⟩, roots_of_ne_zero_of_vieta⟩
