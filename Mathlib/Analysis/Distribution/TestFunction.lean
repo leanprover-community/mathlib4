@@ -25,6 +25,15 @@ distributions, or "weak solutions" to PDEs.
 - `TestFunction E F n`: the type of bundled `n`-times continuously differentiable
   functions `E → F` with compact support.
 
+## Main statements
+
+- `TestFunction.continuous_iff_continuous_comp` a linear map from `𝓓^{n}(E, F)`
+  to a locally convex space is continuous iff. its restriction to `𝓓^{n}_{K}(E, F)` is
+  continuous for each compact set `K`.
+- `TestFunction.continuous_from_bounded` a linear map from `𝓓^{n}(E, F)` to a locally convex normed
+  space is continuous if it's restriction to `𝓓^{n}_{K}(E, F)` is bounded by finitely many
+  of the seminorms `ContDiffMapSupportedIn.seminorm` for each compact set `K`.
+
 ## Notation
 
 - `𝓓^{n}(E, F)`: the space of bundled `n`-times continuously differentiable functions `E → F`
