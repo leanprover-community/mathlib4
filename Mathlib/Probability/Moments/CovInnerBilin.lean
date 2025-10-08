@@ -8,8 +8,24 @@ import Mathlib.MeasureTheory.SpecificCodomains.WithLp
 import Mathlib.Probability.Moments.CovarianceBilin
 
 /-!
-# Covariance matrix
+# Covariance in Hilbert spaces
 
+Given a measure `μ` defined over a Banach space `E`, one can consider the associated covariance
+bilinear form which maps `L₁ L₂ : StrongDual ℝ E` to `cov[L₁, L₂; μ]`. This is called
+`CovarianceBilin μ` and is defined in the `CovarianceBilin` file.
+
+In the special case where `E` is a Hilbert space, each `L : StrongDual ℝ E` can be represented
+as the scalar product against some element of `E`. This motivates the definition of `covInnerBilin`,
+which is bilinear form mapping `x y : E` to `cov[⟪x, ·⟫, ⟪y, ·⟫; μ]`.
+
+## Main definition
+
+* `covInnerBilin μ`: the continuous bilinear form over `E` representing the covariance of a
+  measure over `E`.
+
+## Tags
+
+covariance, Hilbert space, bilinear form
 -/
 
 open MeasureTheory InnerProductSpace NormedSpace WithLp EuclideanSpace
