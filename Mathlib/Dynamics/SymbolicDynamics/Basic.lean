@@ -163,10 +163,11 @@ def mulShift (g : G) (x : G → A) : G → A :=
 variable [TopologicalSpace A]
 
 /-- The right-translation shift is continuous. -/
-@[to_additive] lemma continuous_mulShift (g : G) :
-    Continuous (mulShift (A := A) (G := G) g) := by
+@[to_additive (attr := fun_prop)] lemma continuous_mulShift (g : G) :
+    Continuous (mulShift (A := A) g) := by
   -- coordinate projections are continuous; composition preserves continuity
-  continuity
+  unfold mulShift
+  fun_prop
 
 end ShiftDefinition
 
