@@ -173,7 +173,7 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
           hfh.filter_mono nhdsWithin_le_nhds] with z hz hf' hf''
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
-        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
+        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by cutsat), ← hf']
 
 @[deprecated (since := "2025-05-03")] alias natCast_le_order_iff := natCast_le_analyticOrderAt
 
