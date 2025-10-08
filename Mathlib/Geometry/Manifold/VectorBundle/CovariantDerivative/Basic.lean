@@ -470,9 +470,6 @@ lemma zeroσ [VectorBundle 𝕜 F V] (hf : IsCovariantDerivativeOn F f s)
 
 lemma sum_X (hf : IsCovariantDerivativeOn F f s)
     {ι : Type*} {u : Finset ι} {X : ι → Π x : M, TangentSpace I x} {σ : Π x : M, V x}
-    -- TODO: writing `(hX : MDifferentiableAt (T% X) x)` here yields an error
-    -- `Could not find universe of (x : M) → TangentSpace I x`, which is legitimate
-    -- (should use `X i` instead), but the error message is horrible...
     {x} (hx : x ∈ s) (hX : ∀ i, MDiffAt (T% (X i)) x) (hσ : MDiffAt (T% σ) x) :
     f (∑ i ∈ u, X i) σ x = ∑ i ∈ u, f (X i) σ x := by
   classical
