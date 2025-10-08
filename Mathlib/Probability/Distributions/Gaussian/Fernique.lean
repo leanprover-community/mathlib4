@@ -66,9 +66,6 @@ lemma map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
   ext L
   simp_rw [charFunDual_map, charFunDual_prod, charFunDual_eq_of_forall_strongDual_eq_zero hμ,
     ← Complex.exp_add]
-    charFunDual_eq_of_forall_strongDual_eq_zero hμ, ← Complex.exp_add, charFunDual_prod,
-    charFunDual_eq_of_forall_strongDual_eq_zero hμ,
-    charFunDual_eq_of_forall_strongDual_eq_zero hμ, ← Complex.exp_add]
   rw [← add_div, ← add_div, ← neg_add, ← neg_add]
   congr 3
   norm_cast
