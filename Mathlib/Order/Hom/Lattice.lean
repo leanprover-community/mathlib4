@@ -98,12 +98,16 @@ export InfHomClass (map_inf)
 
 attribute [simp] map_sup map_inf
 
-/-- Left sup by an element of a (semi)lattice is a `SupHom` -/
+/-- Left sup by an element of a (semi)lattice is a `SupHom`
+c.f. `AddMonoidHom.mulLeft`
+-/
 def supLeft [SemilatticeSup α] (a : α) : SupHom α α where
   toFun := (a ⊔ ·)
   map_sup' := sup_sup_distrib_left a
 
-/-- Right sup by an element of a (semi)lattice is a `SupHom` -/
+/-- Right sup by an element of a (semi)lattice is a `SupHom`
+c.f. `AddMonoidHom.mulRight`
+-/
 def supRight [SemilatticeSup α] (a : α) : SupHom α α where
   toFun x := x ⊔ a
   map_sup' _ _ := sup_sup_distrib_right _ _ a
