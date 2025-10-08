@@ -744,6 +744,14 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     ring
   · exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
 
+@[simp]
+lemma lipschitzWith_zero_iff {E F : Type*} [PseudoEMetricSpace E] [EMetricSpace F] (f : E → F) :
+    LipschitzWith (0 : ℝ≥0) f ↔ ∀ x y, f x = f y := by
+  simp [LipschitzWith]
+
+/-- Let `f, f'` be two sequences of measurable functions such that `f n` converges in distribution
+to `g`, and `f' n - f n` converges in probability to `0`.
+Then `f' n` converges in distribution to `g`. -/
 lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
     (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ)
     (hg : AEMeasurable g μ) (hff' : TendstoInMeasure μ (fun n ↦ f' n - f n) l 0)
@@ -757,17 +765,17 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
   · simp only [Subsingleton.elim _ (0 : Measure E)]
     exact tendsto_const_nhds
   let x₀ : E := hE.some
+  -- we show convergence in distribution by verifying the convergence of integrals of any bounded
+  -- Lipschitz function `F`
   suffices ∀ (F : E → ℝ) (hF_bounded : ∃ (C : ℝ), ∀ x y, dist (F x) (F y) ≤ C)
       (hF_lip : ∃ L, LipschitzWith L F),
       Tendsto (fun n ↦ ∫ ω, F ω ∂(μ.map (f' n))) l (𝓝 (∫ ω, F ω ∂(μ.map g))) by
     rwa [tendsto_iff_forall_lipschitz_integral_tendsto]
   rintro F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
   have hF_cont : Continuous F := hF_lip.continuous
+  -- if `F` is 0-Lipschitz, then it is constant, and all integrals are equal to that constant
   by_cases hL : L = 0
-  · simp only [hL] at hF_lip
-    -- missing lemma `lipschitzWith_zero_iff`
-    simp only [LipschitzWith, ENNReal.coe_zero, zero_mul, nonpos_iff_eq_zero,
-      edist_eq_zero] at hF_lip
+  · simp only [hL, lipschitzWith_zero_iff] at hF_lip
     specialize hF_lip x₀
     simp_rw [eq_comm (a := F x₀)] at hF_lip
     simp only [hF_lip, integral_const, smul_eq_mul]
@@ -775,6 +783,7 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
     have : IsProbabilityMeasure (μ.map g) := Measure.isProbabilityMeasure_map hg
     simp only [measureReal_univ_eq_one, one_mul]
     exact tendsto_const_nhds
+  -- now `F` is `L`-Lipschitz with `L > 0`
   replace hL : 0 < L := lt_of_le_of_ne L.2 (Ne.symm hL)
   rw [Metric.tendsto_nhds]
   simp_rw [Real.dist_eq]
