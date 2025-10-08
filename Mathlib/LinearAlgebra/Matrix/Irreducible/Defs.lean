@@ -5,15 +5,15 @@ Authors: Matteo Cipollina
 -/
 
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Combinatorics.Quiver.Path.StronglyConnected
+import Mathlib.Combinatorics.Quiver.ConnectedComponent
+import Mathlib.Combinatorics.Quiver.Path.Vertices
 import Mathlib.Data.Matrix.Basic
-import Mathlib.Combinatorics.Quiver.Path.Decomposition
 
 /-!
 # Irreducibility and primitivity of nonnegative real matrices via quivers
 
 This file develops a graph-theoretic interface for studying nonnegative square matrices over `ℝ`
-through the quiver formed by their strictly positive entries. The key theme is the equivalence
+through the quiver formed by their strictly positive entries. It shows the equivalence
 between positivity of suitable matrix powers and existence of directed paths in this quiver.
 
 ## Implementation notes
@@ -21,7 +21,7 @@ between positivity of suitable matrix powers and existence of directed paths in 
 * The quiver uses strict positivity `0 < A i j` to define edges, while nonnegativity
   `0 ≤ A i j` is assumed globally when relating paths to positive entries in powers.
 
-* Strong connectivity is expressed via `IsStronglyConnected n` in the quiver. This provides actual
+* Strong connectivity is expressed via `IsSStronglyConnected n` in the quiver. This provides actual
   directed paths between any pair of vertices, which are then converted into positive entries of
   powers (and conversely) via the previous lemma.
 
@@ -43,12 +43,12 @@ namespace Matrix
 
 open scoped BigOperators
 
-open Finset Quiver
+open Finset Quiver Quiver.Path
 
 variable {n : Type*} [Fintype n]
 
 @[simp]
-private lemma pow_nonneg [DecidableEq n] {A : Matrix n n ℝ}
+lemma pow_nonneg [DecidableEq n] {A : Matrix n n ℝ}
     (hA : ∀ i j, 0 ≤ A i j) (k : ℕ) : ∀ i j, 0 ≤ (A ^ k) i j := by
   induction k with
   | zero => intro i j; simp [one_apply]; by_cases h : i = j <;> simp [h]
@@ -64,7 +64,7 @@ def toQuiver (A : Matrix n n ℝ) : Quiver n :=
 /-- A matrix `A` is irreducible if it is entrywise nonnegative and
 its quiver of positive entries (`toQuiver A`) is strongly connected. -/
 def Irreducible (A : Matrix n n ℝ) : Prop :=
-  (∀ i j, 0 ≤ A i j) ∧ (letI : Quiver n := toQuiver A; IsStronglyConnectedPos n)
+  (∀ i j, 0 ≤ A i j) ∧ (letI : Quiver n := toQuiver A; IsSStronglyConnected n)
 
 /-- A matrix `A` is primitive if it is entrywise nonnegative
 and some positive power has all entries strictly positive. -/
@@ -81,23 +81,26 @@ lemma irreducible_no_zero_row
   have no_out : ∀ j : n, IsEmpty (i ⟶ j) :=
     fun j => ⟨fun e => h_row ⟨j, e⟩⟩
   obtain ⟨j, hij⟩ := Fintype.exists_ne_of_one_lt_card h_dim i
-  obtain ⟨⟨p, _hp_pos⟩⟩ := h_irr.2 i j
-  classical
-  let S : Set n := {x | x ≠ i}
-  have hi_not_in_S : i ∉ S := by simp [S]
-  have hj_in_S : j ∈ S := by simp [S, hij]
-  obtain ⟨u, hu_not_S, v, hv_S, e, _p₁, _p₂, _hp⟩ :=
-    Path.exists_notMem_mem_hom_path_path_of_notMem_mem p S hi_not_in_S hj_in_S
-  have hu_eq_i : u = i := by simpa [S] using hu_not_S
-  subst hu_eq_i
-  exact (no_out v).false e
+  obtain ⟨p, hp_pos⟩ := h_irr.2 i j
+  have h_le : 1 ≤ p.length := Nat.succ_le_of_lt hp_pos
+  have ⟨v, p₁, p₂, _hp_eq, hp₁_len⟩ := p.exists_eq_comp_of_le_length (n := 1) h_le
+  have hlen_ne : p₁.length ≠ 0 := by simp [hp₁_len]
+  obtain ⟨c, p', e, rfl⟩ :=
+    (Quiver.Path.length_ne_zero_iff_eq_cons (p := p₁)).1 hlen_ne
+  have hp'_succ : p'.length + 1 = 1 := by
+    simpa [Quiver.Path.length_cons] using hp₁_len
+  have hp'0 : p'.length = 0 := by
+    exact Nat.succ.inj hp'_succ
+  have hi_c : i = c := Quiver.Path.eq_of_length_zero p' hp'0
+  subst hi_c
+  exact (no_out _).false e
 
 variable {A : Matrix n n ℝ}
 
-open Classical in
-private lemma sum_pos_of_mem {α : Type*} {s : Finset α} {f : α → ℝ}
+lemma sum_pos_of_mem {α : Type*} {s : Finset α} {f : α → ℝ}
     (h_nonneg : ∀ a ∈ s, 0 ≤ f a) (a : α) (ha_mem : a ∈ s) (ha_pos : 0 < f a) :
     0 < ∑ x ∈ s, f x := by
+  classical
   rw [Eq.symm (add_sum_erase s f ha_mem),  ]
   have h_erase_nonneg : 0 ≤ ∑ x ∈ s.erase a, f x :=
     Finset.sum_nonneg (fun x hx => h_nonneg x (Finset.mem_of_mem_erase hx))
@@ -105,7 +108,7 @@ private lemma sum_pos_of_mem {α : Type*} {s : Finset α} {f : α → ℝ}
   exact Filter.frequently_principal.mp fun a_1 ↦ a_1 ha_mem ha_pos
 
 -- Existence of positive element in positive sum
-private lemma exists_mem_of_sum_pos {α : Type*} {s : Finset α} {f : α → ℝ}
+lemma exists_mem_of_sum_pos {α : Type*} {s : Finset α} {f : α → ℝ}
     (h_pos : 0 < ∑ a ∈ s, f a) (h_nonneg : ∀ a ∈ s, 0 ≤ f a) :
     ∃ a ∈ s, 0 < f a := by
   by_contra h; push_neg at h
@@ -113,7 +116,7 @@ private lemma exists_mem_of_sum_pos {α : Type*} {s : Finset α} {f : α → ℝ
   have h_sum_zero : ∑ a ∈ s, f a = 0 := by rw [sum_eq_zero_iff_of_nonneg h_nonneg]; exact h_zero
   linarith
 
-private lemma mul_pos_iff_of_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+lemma mul_pos_iff_of_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     0 < a * b ↔ 0 < a ∧ 0 < b := by
   constructor
   · intro h_mul_pos
@@ -172,18 +175,21 @@ theorem irreducible_iff_exists_pow_pos [DecidableEq n] (hA : ∀ i j, 0 ≤ A i 
     Irreducible A ↔ ∀ i j, ∃ k, 0 < k ∧ 0 < (A ^ k) i j := by
   constructor
   · intro h_irr i j
-    rcases h_irr.2 i j with ⟨⟨p, hp_len⟩⟩
-    letI := toQuiver A;
-    use p.length, hp_len, by
-      rw [pow_entry_pos_iff_exists_path hA]
-      exact ⟨p, rfl⟩
+    letI : Quiver n := toQuiver A
+    obtain ⟨p, hp_len⟩ := h_irr.2 i j
+    refine ⟨p.length, hp_len, ?_⟩
+    have : Nonempty {q : Path i j // q.length = p.length} := ⟨⟨p, rfl⟩⟩
+    have hpos :=
+      (pow_entry_pos_iff_exists_path (A := A) hA p.length i j).2 this
+    simpa using hpos
   · intro h_exists
     constructor
     · exact hA
     · intro i j
       obtain ⟨k, hk_pos, hk_entry⟩ := h_exists i j
-      letI := toQuiver A
-      obtain ⟨⟨p, hp_len⟩⟩ := (pow_entry_pos_iff_exists_path hA k i j).mp hk_entry
+      letI : Quiver n := toQuiver A
+      obtain ⟨⟨p, hp_len⟩⟩ :=
+        (pow_entry_pos_iff_exists_path (A := A) hA k i j).mp hk_entry
       subst hp_len
       exact ⟨p, hk_pos⟩
 
