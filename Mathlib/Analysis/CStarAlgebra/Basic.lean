@@ -266,7 +266,7 @@ theorem IsSelfAdjoint.nnnorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ
     rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnnorm_mul_self, hk, pow_mul']
 
 @[deprecated (since := "2025-10-07")]
-alias selfAdjoint.nnnorm_pow_two_pow :=IsSelfAdjoint.nnnorm_pow_two_pow
+alias selfAdjoint.nnnorm_pow_two_pow := IsSelfAdjoint.nnnorm_pow_two_pow
 
 theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖ = ‖x‖ ^ 2 ^ n :=
