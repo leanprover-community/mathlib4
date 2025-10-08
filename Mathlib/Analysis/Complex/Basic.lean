@@ -636,10 +636,8 @@ lemma subset_slitPlane_iff_of_subset_sphere {r : ℝ} {s : Set ℂ} (hs : s ⊆ 
   push ¬ _
   refine ⟨?_, fun hr ↦ ⟨_, hr, by simpa using hs hr⟩⟩
   rintro ⟨z, hzs, hz⟩
-  have := eq_coe_norm_of_nonneg (neg_nonneg.mpr hz)
-  rw [norm_neg, neg_eq_iff_eq_neg] at this
-  convert this ▸ hzs
-  simpa [eq_comm] using hs hzs
+  have : ‖z‖ = r := by simpa using hs hzs
+  simpa [← this, ← norm_neg z ▸ eq_coe_norm_of_nonneg (neg_nonneg.mpr hz)]
 
 end slitPlane
 

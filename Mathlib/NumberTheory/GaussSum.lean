@@ -228,7 +228,7 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
   have : gaussSum χ ψ ≠ 0 := by
     intro hf
     rw [hf, zero_pow two_ne_zero, eq_comm, mul_eq_zero] at hg
-    exact not_isUnit_prime_of_dvd_card p
+    exact not_isUnit_prime_of_dvd_card
         ((CharP.cast_eq_zero_iff R' p _).mp <| hg.resolve_left (isUnit_one.neg.map χ).ne_zero) hp
   rw [← hg]
   apply mul_right_cancel₀ this
