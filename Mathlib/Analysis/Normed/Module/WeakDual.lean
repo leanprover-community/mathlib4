@@ -54,10 +54,6 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 * Add the sequential Banach-Alaoglu theorem: the dual unit ball of a separable normed space `E`
   is sequentially compact in the weak-star topology. This would follow from the metrizability above.
 
-## Notations
-
-No new notation is introduced.
-
 ## Implementation notes
 
 Weak-* topology is defined generally in the file `Topology.Algebra.Module.WeakDual`.

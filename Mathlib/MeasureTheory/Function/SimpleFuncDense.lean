@@ -26,7 +26,7 @@ by a sequence of simple functions.
   approximations `MeasureTheory.SimpleFunc.approxOn f hf s y₀ h₀ n`, evaluated at `x`,
   tends to `f x` as `n` tends to `∞`.
 
-## Notations
+## Notation
 
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 -/

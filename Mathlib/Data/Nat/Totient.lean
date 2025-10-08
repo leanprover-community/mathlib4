@@ -141,7 +141,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
   rw [Nat.mul_div_cancel_left x hd0]
   apply Finset.card_bij fun k _ => d * k
   · simp only [mem_filter, mem_range, and_imp, Coprime]
-    refine fun a ha1 ha2 => ⟨(mul_lt_mul_left hd0).2 ha1, ?_⟩
+    refine fun a ha1 ha2 => ⟨by gcongr, ?_⟩
     rw [gcd_mul_left, ha2, mul_one]
   · simp [hd0.ne']
   · simp only [mem_filter, mem_range, exists_prop, and_imp]
@@ -150,7 +150,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
       rw [← hb2]
       apply gcd_dvd_right
     rcases this with ⟨q, rfl⟩
-    refine ⟨q, ⟨⟨(mul_lt_mul_left hd0).1 hb1, ?_⟩, rfl⟩⟩
+    refine ⟨q, ⟨⟨(mul_lt_mul_iff_right₀ hd0).1 hb1, ?_⟩, rfl⟩⟩
     rwa [gcd_mul_left, mul_eq_left hd0.ne'] at hb2
 
 theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
@@ -194,8 +194,8 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         simp only [mem_image, mem_range, exists_imp]
         rintro b ⟨h, rfl⟩
         rw [Nat.pow_succ]
-        exact (mul_lt_mul_right hp.pos).2 h
-      rw [card_sdiff h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
+        exact (mul_lt_mul_iff_left₀ hp.pos).2 h
+      rw [card_sdiff_of_subset h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
 
 /-- When `p` is prime, then the totient of `p ^ n` is `p ^ (n - 1) * (p - 1)` -/
@@ -220,7 +220,7 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
     ← Nat.card_Ico 1 p] at h
   refine
     p.prime_of_coprime hp fun n hn hnz => Finset.filter_card_eq h n <| Finset.mem_Ico.mpr ⟨?_, hn⟩
-  omega
+  cutsat
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by

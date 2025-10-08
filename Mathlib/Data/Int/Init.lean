@@ -59,11 +59,11 @@ lemma neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
 lemma succ_neg_natCast_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 
 @[norm_cast] lemma natCast_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
-  cases n; cases h; simp [natCast_succ]
+  grind
 
-lemma lt_succ_self (a : ℤ) : a < succ a := by unfold succ; omega
+lemma lt_succ_self (a : ℤ) : a < succ a := by unfold succ; cutsat
 
-lemma pred_self_lt (a : ℤ) : pred a < a := by unfold pred; omega
+lemma pred_self_lt (a : ℤ) : pred a < a := by unfold pred; cutsat
 
 /--
 Induction on integers: prove a proposition `p i` by proving the base case `p 0`,
@@ -107,8 +107,8 @@ where
   neg : ∀ n : ℕ, motive (b + -[n+1])
   | 0 => pred _ Int.le_rfl zero
   | n + 1 => by
-    refine cast (by rw [Int.add_sub_assoc]; rfl) (pred _ (Int.le_of_lt ?_) (neg n))
-    omega
+    refine cast (by cutsat) (pred _ (Int.le_of_lt ?_) (neg n))
+    cutsat
 
 variable {z b zero succ pred}
 
@@ -118,7 +118,7 @@ lemma inductionOn'_self : b.inductionOn' b zero succ pred = zero :=
 lemma inductionOn'_sub_one (hz : z ≤ b) :
     (z - 1).inductionOn' b zero succ pred = pred z hz (z.inductionOn' b zero succ pred) := by
   apply cast_eq_iff_heq.mpr
-  obtain ⟨n, hn⟩ := Int.eq_negSucc_of_lt_zero (show z - 1 - b < 0 by omega)
+  obtain ⟨n, hn⟩ := Int.eq_negSucc_of_lt_zero (show z - 1 - b < 0 by cutsat)
   rw [hn]
   obtain _ | n := n
   · change _ = -1 at hn
@@ -129,7 +129,7 @@ lemma inductionOn'_sub_one (hz : z ≤ b) :
     refine (cast_heq _ _).trans ?_
     congr
     symm
-    rw [Int.inductionOn', cast_eq_iff_heq, show b + -[n+1] - b = -[n+1] by omega]
+    rw [Int.inductionOn', cast_eq_iff_heq, show b + -[n+1] - b = -[n+1] by cutsat]
 
 end inductionOn'
 
@@ -143,19 +143,13 @@ end inductionOn'
 @[elab_as_elim]
 protected lemma le_induction {m : ℤ} {motive : ∀ n, m ≤ n → Prop} (base : motive m m.le_refl)
     (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn := by
-  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_
-  · intro
-    exact base
-  · intro k hle hi _
-    exact succ k hle (hi hle)
-  · intro k hle _ hle'
-    omega
+  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_ <;> grind
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 @[elab_as_elim]
 protected lemma le_induction_down {m : ℤ} {motive : ∀ n, n ≤ m → Prop} (base : motive m m.le_refl)
-    (pred : ∀ n hmn, motive n hmn → motive (n - 1) (by omega)) : ∀ n hmn, motive n hmn := fun n ↦
-  Int.inductionOn' n m (fun _ ↦ base) (fun k hle _ hle' ↦ by omega)
+    (pred : ∀ n hmn, motive n hmn → motive (n - 1) (by cutsat)) : ∀ n hmn, motive n hmn := fun n ↦
+  Int.inductionOn' n m (fun _ ↦ base) (fun k hle _ hle' ↦ by cutsat)
     fun k hle hi _ ↦ pred k hle (hi hle)
 
 section strongRec
@@ -166,7 +160,7 @@ variable {motive : ℤ → Sort*} (lt : ∀ n < m, motive n)
 /-- A strong recursor for `Int` that specifies explicit values for integers below a threshold,
 and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
 @[elab_as_elim] protected def strongRec (n : ℤ) : motive n := by
-  refine if hnm : n < m then lt n hnm else ge n (by omega) (n.inductionOn' m lt ?_ ?_)
+  refine if hnm : n < m then lt n hnm else ge n (by cutsat) (n.inductionOn' m lt ?_ ?_)
   · intro _n _ ih l _
     exact if hlm : l < m then lt l hlm else ge l (by omega) fun k _ ↦ ih k (by omega)
   · exact fun n _ hn l _ ↦ hn l (by omega)
@@ -323,7 +317,7 @@ Therefore we mark this lemma as `@[simp high]`.
 lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp only [lt_toNat, Int.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
-lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by omega
+lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by cutsat
 
 @[deprecated (since := "2025-05-24")]
 alias toNat_lt'' := toNat_lt_of_ne_zero
@@ -332,7 +326,7 @@ alias toNat_lt'' := toNat_lt_of_ne_zero
 def natMod (m n : ℤ) : ℕ := (m % n).toNat
 
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
-  (toNat_lt_of_ne_zero hn).2 <| emod_lt_of_pos _ <| by omega
+  (toNat_lt_of_ne_zero hn).2 <| emod_lt_of_pos _ <| by cutsat
 
 /-- For use in `Mathlib/Tactic/NormNum/Pow.lean` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl

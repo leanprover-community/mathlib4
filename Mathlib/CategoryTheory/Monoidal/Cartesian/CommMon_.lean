@@ -6,7 +6,7 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 
 /-!
-# Yoneda embedding of `CommMon_ C`
+# Yoneda embedding of `CommMon C`
 -/
 
 assert_not_exists MonoidWithZero
