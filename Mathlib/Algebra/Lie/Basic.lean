@@ -547,6 +547,14 @@ instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ where
   right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by cases f; cases g; simp at h₁ h₂; simp [*]
 
+instance : LinearEquivClass (L₁ ≃ₗ⁅R⁆ L₂) R L₁ L₂ where
+  map_add f a b := by
+    rw [show f (a + b) = f.toLieHom (a + b) by rfl, show f a = f.toLieHom a by rfl,
+      show f b = f.toLieHom b by rfl, LieHom.map_add]
+  map_smulₛₗ f r a := by
+    rw [show f (r • a) = f.toLieHom (r • a) by rfl, show f a = f.toLieHom a by rfl,
+      LieHom.map_smul, RingHom.id_apply]
+
 theorem coe_toLieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ L₂) = e :=
   rfl
 
