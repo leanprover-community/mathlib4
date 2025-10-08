@@ -122,14 +122,14 @@ variable {A G : Type*} [Monoid G]
 We call *configuration* an element of `G → A`.
 
 Given a configuration `x : G → A` and an element `g : G` of the group, the shifted configuration
-`shift g x` is defined by `(shift g x) h = x (h + g)`.
+`mulShift g x` is defined by `(mulShift g x) h = x (h * g)`.
 
 Intuitively, this moves the whole configuration "in the direction of `g`": the value
 at position `h` in the shifted configuration is the value that was at position
-`h + g` in the original one.
+`h * g` in the original one.
 
 For example, if `G = ℤ` (with addition) and `A = {0,1}`, then
-`shift 1 x` is the sequence obtained from `x` by shifting every symbol one
+`mulShift 1 x` is the sequence obtained from `x` by shifting every symbol one
 step to the left. -/
 @[to_additive shift
 /-- The **right-translation shift** on configurations, in additive notation.
@@ -137,14 +137,14 @@ step to the left. -/
 We call *configuration* an element of `G → A`.
 
 Given a configuration `x : G → A` and an element `g : G` of the multiplicative group,
-the shifted configuration `mulShift g x` is defined by `(mulShift g x) h = x (h * g)`.
+the shifted configuration `shift g x` is defined by `(shift g x) h = x (h + g)`.
 
 Intuitively, this moves the whole configuration "in the direction of `g`": the value
 at position `h` in the shifted configuration is the value that was at position
 `h + g` in the original one.
 
 For example, if `G = ℤ` and `A = {0,1}`, then
-`mulShift 1 x` is the sequence obtained from `x` by shifting every symbol one
+`shift 1 x` is the sequence obtained from `x` by shifting every symbol one
 step to the left. -/]
 def mulShift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
@@ -272,20 +272,23 @@ attribute [to_additive existing SymbolicDynamics.FullShift.subshift]
   SymbolicDynamics.FullShift.mulSubshift
 
 
-/-- Example: the **full shift** on alphabet `A` over the (multiplicative) monoid `G`.
+/-- Example: the **full shift** on alphabet `A` over the multiplicative monoid `G`.
 
 It is the subshift whose underlying set is the set of all configurations
 `G → A`.
 -/
-@[to_additive SymbolicDynamics.FullShift.fullShift]
+@[to_additive SymbolicDynamics.FullShift.fullShift
+/-- Example: the **full shift** on alphabet `A` over the additive monoid `G`.
+
+It is the subshift whose underlying set is the set of all configurations
+`G → A`.
+-/]
 def mulFullShift (A G) [TopologicalSpace A] [Monoid G] : mulSubshift A G where
   carrier := Set.univ
   isClosed := isClosed_univ
   shiftInvariant := by
     intro _ _ _
     simp
-
-attribute [inherit_doc SymbolicDynamics.FullShift.mulFullShift] SymbolicDynamics.FullShift.fullShift
 
 /-- A *pattern* is a finite configuration in the full shift `A^G`.
 
@@ -343,17 +346,23 @@ variable [Monoid G]
 at position `g`.
 
 Formally: for every position `h` in the support of `p`, the value of the configuration
+at `h * g` coincides with the value specified by `p` at `h`.
+
+Intuitively, if you shift the configuration `x` by `g` (using `mulShift g`),
+then on the support of `p` you exactly recover the pattern `p`. This is the basic
+notion of "pattern occurrence" used to define subshifts via forbidden patterns. -/
+@[to_additive
+/-- `p.occursIn x g` means that the finite pattern `p` appears in the configuration `x`
+at position `g`.
+
+Formally: for every position `h` in the support of `p`, the value of the configuration
 at `h + g` coincides with the value specified by `p` at `h`.
 
 Intuitively, if you shift the configuration `x` by `g` (using `shift g`),
 then on the support of `p` you exactly recover the pattern `p`. This is the basic
-notion of "pattern occurrence" used to define subshifts via forbidden patterns. -/
-@[to_additive]
+notion of "pattern occurrence" used to define subshifts via forbidden patterns. -/]
 def mulPattern.occursIn (p : mulPattern A G) (x : G → A) (g : G) : Prop :=
   ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
-
-attribute [inherit_doc SymbolicDynamics.FullShift.mulPattern.occursIn]
-  SymbolicDynamics.FullShift.pattern.occursIn
 
 /-- `forbids F` is the set of configurations that avoid every pattern in `F`.
 
@@ -371,10 +380,15 @@ attribute [inherit_doc SymbolicDynamics.FullShift.mulForbids] SymbolicDynamics.F
 
 /-- Shifting a configuration commutes with occurrences of a pattern.
 
-Formally: a pattern `p` occurs in the shifted configuration `shift h x` at
+Formally: a pattern `p` occurs in the shifted configuration `mulShift h x` at
 position `g` if and only if it occurs in the original configuration `x` at
 position `g + h`. -/
-@[to_additive occurs_shift]
+@[to_additive occurs_shift
+/-- Shifting a configuration commutes with occurrences of a pattern.
+
+Formally: a pattern `p` occurs in the shifted configuration `shift h x` at
+position `g` if and only if it occurs in the original configuration `x` at
+position `g + h`. -/]
 lemma mulOccurs_mulShift (p : mulPattern A G) (x : G → A) (g h : G) :
     p.occursIn (mulShift h x) g ↔ p.occursIn x (g * h) := by
   constructor <;> intro H u hu <;> simpa [mulShift, mul_assoc] using H u hu
@@ -382,9 +396,12 @@ lemma mulOccurs_mulShift (p : mulPattern A G) (x : G → A) (g h : G) :
 /-- Configurations that avoid a family `F` of patterns are stable under the shift.
 
 Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
-the shifted configuration `shift h x` also avoids every `p ∈ F` at every position. -/
+the shifted configuration `mulShift h x` also avoids every `p ∈ F` at every position. -/
 @[to_additive forbids_shift_invariant
-  /-- Additive version: configurations avoiding `F` are stable under all additive shifts. -/]
+  /-- Configurations that avoid a family `F` of patterns are stable under the shift.
+
+Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
+the shifted configuration `shift h x` also avoids every `p ∈ F` at every position. -/]
 lemma mulForbids_shift_invariant (F : Set (mulPattern A G)) :
     ∀ h : G, ∀ x ∈ mulForbids (A := A) (G := G) F, mulShift h x ∈ mulForbids F := by
   intro h x hx p hp g
@@ -399,7 +416,7 @@ section OccursAt
 
 variable {A : Type*} [Inhabited A]
 variable {G : Type*}
--- We assume right-cancellation throughout this section for uniqueness of preimages under (_ * v).
+-- We assume right-cancellation throughout this section for uniqueness of preimages under (_ + v).
 variable [Monoid G] [IsRightCancelMul G] [DecidableEq G]
 
 /-- Turn a finite pattern into a configuration, by extending it with
@@ -428,10 +445,22 @@ On input `h : G`, we proceed as follows:
 * otherwise return `default`.
 
 This definition does not assume right-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `patternToConfig p v (w * v) = p.data ⟨w, _⟩`)
+Uniqueness (and the usual equations such as `mulPatternToConfig p v (w * v) = p.data ⟨w, _⟩`)
 require a right-cancellation hypothesis and are proved in separate lemmas.
 -/
-@[to_additive patternToConfig]
+@[to_additive patternToConfig
+/-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
+a configuration.
+
+On input `h : G`, we proceed as follows:
+* if `h` lies in the right-translate of the support, i.e. `h ∈ p.support.image (· + v)`,
+  choose (noncomputably) `w ∈ p.support` with `w + v = h` and return `p.data ⟨w, _⟩`;
+* otherwise return `default`.
+
+This definition does not assume right-cancellation; it only *chooses* a preimage.
+Uniqueness (and the usual equations such as `patternToConfig p v (w + v) = p.data ⟨w, _⟩`)
+require a right-cancellation hypothesis and are proved in separate lemmas.
+-/]
 noncomputable def mulPatternToConfig (p : mulPattern A G) (v : G) : G → A :=
   fun h =>
     if hmem : h ∈ p.support.image (· * v) then
@@ -445,9 +474,16 @@ noncomputable def mulPatternToConfig (p : mulPattern A G) (v : G) : G → A :=
     else
       default
 
-attribute [inherit_doc SymbolicDynamics.FullShift.mulPatternToConfig]
-  SymbolicDynamics.FullShift.patternToConfig
+/-- Extract the finite pattern given by restricting a configuration `x : G → A`
+to a finite subset `U : Finset G`.
 
+Formally: the support is `U`, and for each `i ∈ U` the pattern records the value
+`x i`. In other words, `mulPatternFromConfig x U` is the partial configuration of
+`x` visible on the coordinates in `U`.
+
+This is the inverse construction to `mulPatternToOriginConfig` (which extends a
+finite pattern to a configuration by filling with `default`). -/
+@[to_additive patternFromConfig
 /-- Extract the finite pattern given by restricting a configuration `x : G → A`
 to a finite subset `U : Finset G`.
 
@@ -456,25 +492,26 @@ Formally: the support is `U`, and for each `i ∈ U` the pattern records the val
 `x` visible on the coordinates in `U`.
 
 This is the inverse construction to `patternToOriginConfig` (which extends a
-finite pattern to a configuration by filling with `default`). -/
-@[to_additive patternFromConfig]
+finite pattern to a configuration by filling with `default`). -/]
 def mulPatternFromConfig (x : G → A) (U : Finset G) : mulPattern A G where
   support := U
   data := fun i => x i.1
 
-attribute [inherit_doc SymbolicDynamics.FullShift.mulPatternFromConfig]
-  SymbolicDynamics.FullShift.patternFromConfig
-
-
-/-- On the translated support, `patternToConfig p v` agrees with `p` at the preimage.
+/-- On the translated support, `mulPatternToConfig p v` agrees with `p` at the preimage.
 
 More precisely, if `w ∈ p.support`, then at the translated site `w * v`,
-the configuration `patternToConfig p v` takes the value prescribed by `p` at `w`.
+the configuration `mulPatternToConfig p v` takes the value prescribed by `p` at `w`.
 
 This statement uses `[IsRightCancelMul G]` to identify the preimage of `w * v`
 under right-multiplication by `v`. -/
 @[to_additive patternToConfig_apply_of_mem
-  /-- Additive version: on the translated support, `patternToConfig` agrees with the pattern. -/]
+  /-- On the translated support, `patternToConfig p v` agrees with `p` at the preimage.
+
+More precisely, if `w ∈ p.support`, then at the translated site `w + v`,
+the configuration `patternToConfig p v` takes the value prescribed by `p` at `w`.
+
+This statement uses `[IsRightCancelMul G]` to identify the preimage of `w + v`
+under right-multiplication by `v`. -/]
 lemma mulPatternToConfig_apply_of_mem
     (p : mulPattern A G) (v w : G) (hw : w ∈ p.support) :
     mulPatternToConfig (A := A) (G := G) p v (w * v) = p.data ⟨w, hw⟩ := by
@@ -529,12 +566,21 @@ in which a pattern `p` occurs at position `g`.
 This proves that it is exactly the cylinder corresponding to the
 pattern obtained by translating `p` by `g`.
 
-Equivalently, `p.occursIn x g` iff on every translated site `w * g` (with `w ∈ p.support`)
-the configuration `x` agrees with the translated pattern `patternToConfig p g`.
+Equivalently, `p.OccursIn x g` iff on every translated site `w * g` (with `w ∈ p.support`)
+the configuration `x` agrees with the translated pattern `mulpatternToConfig p g`.
 
 (This uses `[IsRightCancelMul G]` to identify the preimage along right-multiplication by `g`.) -/
 @[to_additive occursAt_eq_cylinder
-  /-- Additive version: occurrences at `g` coincide with the corresponding cylinder. -/]
+  /-- We call *occurrence set* for pattern `p` and position `g` the set of configurations
+in which a pattern `p` occurs at position `g`.
+
+This proves that it is exactly the cylinder corresponding to the
+pattern obtained by translating `p` by `g`.
+
+Equivalently, `p.occursIn x g` iff on every translated site `w + g` (with `w ∈ p.support`)
+the configuration `x` agrees with the translated pattern `patternToConfig p g`.
+
+(This uses `[IsRightCancelMul G]` to identify the preimage along right-multiplication by `g`.) -/]
 lemma mulOccursAt_eq_cylinder
     (p : mulPattern A G) (g : G) :
     { x | p.occursIn x g } = cylinder (p.support.image (· * g)) (mulPatternToConfig p g) := by
