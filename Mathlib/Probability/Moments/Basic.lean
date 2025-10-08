@@ -50,6 +50,9 @@ variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ
 def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
   μ[X ^ p]
 
+lemma moment_def (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) :
+    moment X p μ = μ[X ^ p] := rfl
+
 /-- Central moment of a real random variable, `μ[(X - μ[X]) ^ p]`. -/
 def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
   μ[(X - fun (_ : Ω) => μ[X]) ^ p]
@@ -66,6 +69,9 @@ lemma moment_zero_measure : moment X p (0 : Measure Ω) = 0 := by simp [moment]
 theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
   simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
     mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne, not_false_iff]
+
+lemma moment_one (X : Ω → ℝ) (μ : Measure Ω) :
+    moment X 1 μ = μ[X] := by simp [moment]
 
 @[simp]
 lemma centralMoment_zero_measure : centralMoment X p (0 : Measure Ω) = 0 := by

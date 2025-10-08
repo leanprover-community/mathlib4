@@ -77,7 +77,7 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
   induction n generalizing r with
   | zero => exact Subalgebra.algebraMap_mem _ _
   | succ n hn =>
-  · rw [pow_succ'] at hr
+    rw [pow_succ'] at hr
     refine Submodule.smul_induction_on hr ?_ ?_
     · intro r hr s hs
       rw [add_comm n 1, smul_eq_mul, ← monomial_mul_monomial]

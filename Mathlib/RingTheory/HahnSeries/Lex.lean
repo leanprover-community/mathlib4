@@ -54,7 +54,7 @@ instance : LinearOrder (Lex (HahnSeries Γ R)) where
         intro i h
         rw [Set.mem_union, Set.mem_setOf_eq, Set.mem_setOf_eq]
         contrapose! h
-        rw [Set.notMem_setOf_iff, Mathlib.Tactic.PushNeg.not_ne_eq, h.1, h.2]
+        rw [Set.notMem_setOf_iff, not_not, h.1, h.2]
       have hv : v.IsWF :=
         ((ofLex a).isPWO_support'.isWF.union (ofLex b).isPWO_support'.isWF).subset hvu
       let i := hv.min hab
@@ -283,7 +283,7 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     obtain h | ⟨rfl, hle⟩ := Prod.Lex.le_iff.mp h
     · induction ac using FiniteArchimedeanClass.ind with | mk a ha
       induction bc using FiniteArchimedeanClass.ind with | mk b hb
-      simp [ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
+      simp only [ne_eq, ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
       exact .inl (by simpa [ha, hb] using h)
     · exact OrderHom.monotone _ hle
