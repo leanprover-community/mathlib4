@@ -116,22 +116,17 @@ lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
     rw [integral_map (by fun_prop) (by fun_prop)]
     simp [integral_neg]
 
-/-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
-`x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
-theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
-    ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
-  -- Since `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` is a centered Gaussian measure, it is invariant
-  -- under rotation. We can thus apply a version of Fernique's theorem to it.
-  obtain ⟨C, hC_pos, hC⟩ : ∃ C, 0 < C
-      ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) (μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)) :=
-    exists_integrable_exp_sq_of_map_rotation_eq_self
-      (map_rotation_eq_self (integral_dual_conv_map_neg_eq_zero (μ := μ)) _)
-  -- We must now prove that the integrability with respect to
-  -- `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` implies integrability with respect to `μ` for
-  -- another constant `C' < C`.
+/-- If `x ↦ exp (C * ‖x‖ ^ 2)` is integrable with respect to the centered Gaussian
+`μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))`, then for all `C' < C`, `x ↦ exp (C' * ‖x‖ ^ 2)`
+is integrable with respect to `μ`. -/
+lemma integrable_exp_sq_of_conv_neg [CompleteSpace E] (μ : Measure E) [IsGaussian μ] {C C' : ℝ}
+    (h_centered : Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2))
+      (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))))
+    (hC'_pos : 0 < C') (hC'_lt : C' < C) :
+    Integrable (fun x ↦ rexp (C' * ‖x‖ ^ 2)) μ := by
   have h_int : ∀ᵐ y ∂μ, Integrable (fun x ↦ rexp (C * ‖x - y‖^2)) μ := by
-    rw [integrable_conv_iff (by fun_prop)] at hC
-    replace hC := hC.1
+    rw [integrable_conv_iff (by fun_prop)] at h_centered
+    replace hC := h_centered.1
     simp only [ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
     rw [integrable_map_measure (by fun_prop) (by fun_prop)] at hy
@@ -141,8 +136,6 @@ theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian 
     left
     simp_rw [← sub_eq_add_neg, norm_sub_rev]
   obtain ⟨y, hy⟩ : ∃ y, Integrable (fun x ↦ rexp (C * ‖x - y‖ ^ 2)) μ := h_int.exists
-  obtain ⟨C', hC'_pos, hC'_lt⟩ : ∃ C', 0 < C' ∧ C' < C := ⟨C / 2, by positivity, by simp [hC_pos]⟩
-  refine ⟨C', hC'_pos, ?_⟩
   let ε := (C - C') / C'
   have hε : 0 < ε := div_pos (by rwa [sub_pos]) (by positivity)
   suffices ∀ x, rexp (C' * ‖x‖ ^ 2) ≤ rexp (C/ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2) by
@@ -177,6 +170,22 @@ theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian 
     · rw [one_add_div (by positivity)]
       simp only [add_sub_cancel]
       rw [mul_div_cancel₀ _ (by positivity)]
+
+/-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
+`x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
+theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
+    ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
+  -- Since `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` is a centered Gaussian measure, it is invariant
+  -- under rotation. We can thus apply a version of Fernique's theorem to it.
+  obtain ⟨C, hC_pos, hC⟩ : ∃ C, 0 < C
+      ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) (μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)) :=
+    exists_integrable_exp_sq_of_map_rotation_eq_self
+      (map_rotation_eq_self (integral_dual_conv_map_neg_eq_zero (μ := μ)) _)
+  -- We must now prove that the integrability with respect to
+  -- `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` implies integrability with respect to `μ` for
+  -- another constant `C' < C`.
+  refine ⟨C / 2, by positivity, ?_⟩
+  exact integrable_exp_sq_of_conv_neg μ hC (by positivity) (by simp [hC_pos])
 
 end Fernique
 
