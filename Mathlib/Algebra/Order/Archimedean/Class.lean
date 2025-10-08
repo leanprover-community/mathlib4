@@ -744,9 +744,8 @@ theorem withTopOrderIso_apply_coe (A : FiniteMulArchimedeanClass M) :
 
 @[to_additive]
 theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
-    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h := by
-  unfold mk withTopOrderIso
-  convert WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
+    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h :=
+  WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
 
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 
