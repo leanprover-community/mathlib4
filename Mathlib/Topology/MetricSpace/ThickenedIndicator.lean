@@ -103,6 +103,16 @@ theorem thickenedIndicatorAux_subset (δ : ℝ) {E₁ E₂ : Set α} (subset : E
     thickenedIndicatorAux δ E₁ ≤ thickenedIndicatorAux δ E₂ :=
   fun _ => tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div (infEdist_anti subset) rfl.le)
 
+lemma thickenedIndicatorAux_mono_infEdist (δ : ℝ) {E : Set α} {x y : α}
+    (h : infEdist x E ≤ infEdist y E) :
+    thickenedIndicatorAux δ E y ≤ thickenedIndicatorAux δ E x := by
+  simp only [thickenedIndicatorAux]
+  rcases le_total (infEdist x E / ENNReal.ofReal δ) 1 with hle | hle
+  · rw [ENNReal.sub_le_sub_iff_left hle (by simp)]
+    gcongr
+  · rw [tsub_eq_zero_of_le hle, tsub_eq_zero_of_le]
+    exact hle.trans (by gcongr)
+
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise (i.e., w.r.t. the product topology on `α → ℝ≥0∞`) to the indicator function of the
 closure of E.
@@ -229,16 +239,6 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   refine Tendsto.comp (tendsto_toNNReal ?_) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]
 
-lemma thickenedIndicatorAux_mono_infEdist {δ : ℝ} {E : Set α} {x y : α}
-    (h : infEdist x E ≤ infEdist y E) :
-    thickenedIndicatorAux δ E y ≤ thickenedIndicatorAux δ E x := by
-  simp only [thickenedIndicatorAux]
-  rcases le_total (infEdist x E / ENNReal.ofReal δ) 1 with hle | hle
-  · rw [ENNReal.sub_le_sub_iff_left hle (by simp)]
-    gcongr
-  · rw [tsub_eq_zero_of_le hle, tsub_eq_zero_of_le]
-    exact hle.trans (by gcongr)
-
 lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
     LipschitzWith δ.toNNReal⁻¹ (thickenedIndicator δ_pos E) := by
   intro x y
@@ -248,7 +248,7 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
   simp_rw [edist_dist, NNReal.dist_eq, thickenedIndicator_apply, coe_toNNReal_eq_toReal]
   rw [← ENNReal.toReal_sub_of_le]
   rotate_left
-  · exact thickenedIndicatorAux_mono_infEdist h
+  · exact thickenedIndicatorAux_mono_infEdist _ h
   · exact thickenedIndicatorAux_lt_top.ne
   simp only [thickenedIndicatorAux, abs_toReal, ne_eq, sub_eq_top_iff, one_ne_top, false_and,
     not_false_eq_true, and_true, ofReal_toReal]
