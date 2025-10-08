@@ -1004,8 +1004,7 @@ theorem span_flip_eq_top_iff_linearIndependent {ι α F} [Finite ι] [Field F] {
   congr!
   rw [SetLike.ext'_iff, map_span, Submodule.coe_dualCoannihilator_span, ← Set.range_comp]
   ext
-  simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply]
-  rfl
+  simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply, flip]
 
 namespace TensorProduct
 
