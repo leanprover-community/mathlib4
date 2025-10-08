@@ -120,40 +120,67 @@ variable {f : M → M'} {s : Set M} {m : M}
 #guard_msgs in
 #check MDiff[s] f
 
--- A partial homeomorphism or partial equivalence.
+/-! A partial homeomorphism or partial equivalence. More generally, this works for any type
+with a coercion to (possibly dependent) functions. -/
+section coercion
+
 variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 
-#check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
-#check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ s
-
-
-/--
-error: Application type mismatch: The argument
-  φ
-has type
-  OpenPartialHomeomorph M E
-but is expected to have type
-  ?M → ?M'
-in the application
-  MDifferentiableWithinAt I 𝓘(𝕜, E) φ
--/
+/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑φ) s : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] φ
 
-/--
-error: Application type mismatch: The argument
-  ψ
-has type
-  PartialEquiv M E
-but is expected to have type
-  ?M → ?M'
-in the application
-  MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
--/
+/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑ψ) s : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] ψ
 
-#exit
+/-- info: MDifferentiableAt I 𝓘(𝕜, E) ↑φ : M → Prop -/
+#guard_msgs in
+#check MDiffAt φ
+
+/-- info: MDifferentiableAt I 𝓘(𝕜, E) ↑ψ : M → Prop -/
+#guard_msgs in
+#check MDiffAt ψ
+
+/-- info: MDifferentiableOn I 𝓘(𝕜, E) (↑φ) s : Prop -/
+#guard_msgs in
+#check MDiff[s] φ
+
+/-- info: MDifferentiableOn I 𝓘(𝕜, E) (↑ψ) s : Prop -/
+#guard_msgs in
+#check MDiff[s] ψ
+
+/-- info: MDifferentiable I 𝓘(𝕜, E) ↑φ : Prop -/
+#guard_msgs in
+#check MDiff φ
+
+/-- info: ContMDiffWithinAt I 𝓘(𝕜, E) 2 (↑ψ) s : M → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 2 ψ
+
+/-- info: ContMDiffOn I 𝓘(𝕜, E) 2 (↑φ) s : Prop -/
+#guard_msgs in
+#check CMDiff[s] 2 φ
+
+/-- info: ContMDiffAt I 𝓘(𝕜, E) 2 ↑φ : M → Prop -/
+#guard_msgs in
+#check CMDiffAt 2 φ
+
+/-- info: ContMDiff I 𝓘(𝕜, E) 2 ↑ψ : Prop -/
+#guard_msgs in
+#check CMDiff 2 ψ
+
+/-- info: mfderiv I 𝓘(𝕜, E) ↑φ : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑φ x) -/
+#guard_msgs in
+#check mfderiv% φ
+
+/--
+info: mfderivWithin I 𝓘(𝕜, E) (↑ψ) s : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑ψ x)
+-/
+#guard_msgs in
+#check mfderiv[s] ψ
+
+end coercion
 
 -- Testing an error message.
 section

@@ -312,6 +312,13 @@ where
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
 
+/-- Ensures that `e` is a function. Attempts to coerce `e` to a function if necessary. -/
+def ensureIsFunction (e : Expr) : MetaM Expr := do
+  let ty ← whnf <|← instantiateMVars <|← inferType e
+  if ty.isForall then return e else (← coerceToFunction? e).getDM <|
+    throwError "Expected{indentD e}\nof type{indentD ty}\nto be a function, or to be coercible to \
+      a function"
+
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
 
@@ -337,43 +344,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
           the set {es} : {estype}"
     let tgtI ← findModel tgt (src, srcI)
     return (srcI, tgtI)
-  | _ =>
-    match_expr etype with
-    | OpenPartialHomeomorph src tgt _ _ =>
-      trace[Elab.DiffGeo.MDiff] m!"found a partial homeomorphism from {src} to {tgt}"
-      if tgt.hasLooseBVars then
-        -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
-        throwError "Term {e} is a dependent function, of type {etype}\nHint: you can use the `T%` \
-          elaborator to convert a dependent function to a non-dependent one"
-      let srcI ← findModel src
-      if let some es := es then
-        let estype ← inferType es
-        /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
-        `estype` are acceptable.
-        TODO: consider attempting to coerce `es` to a `Set`. -/
-        if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
-          throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
-            the set {es} : {estype}"
-      let tgtI ← findModel tgt (src, srcI)
-      return (srcI, tgtI)
-    | PartialEquiv src tgt =>
-      trace[Elab.DiffGeo.MDiff] m!"found a partial equivalence from {src} to {tgt}"
-      if tgt.hasLooseBVars then
-        -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
-        throwError "Term {e} is a dependent function, of type {etype}\nHint: you can use the `T%` \
-          elaborator to convert a dependent function to a non-dependent one"
-      let srcI ← findModel src
-      if let some es := es then
-        let estype ← inferType es
-        /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
-        `estype` are acceptable.
-        TODO: consider attempting to coerce `es` to a `Set`. -/
-        if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
-          throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
-            the set {es} : {estype}"
-      let tgtI ← findModel tgt (src, srcI)
-      return (srcI, tgtI)
-    | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
+  | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
 end Elab
 
@@ -384,7 +355,7 @@ trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← Term.elabTerm f none
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
 
@@ -392,7 +363,7 @@ scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
 trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
 
@@ -419,14 +390,14 @@ scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
-  let et ← Term.elabTerm t none
+  let et ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels et es
   mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
 
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "MDiff" ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``MDifferentiable #[srcI, tgtI, e]
 
@@ -436,7 +407,7 @@ trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← Term.elabTerm f none
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
@@ -446,7 +417,7 @@ trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
 The argument `x` can be omitted. -/
 scoped elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
@@ -456,7 +427,7 @@ trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← Term.elabTerm f none
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
@@ -465,7 +436,7 @@ scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : te
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
-  let e ← Term.elabTerm f none
+  let e ← ensureIsFunction <|← Term.elabTerm f none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
@@ -474,14 +445,14 @@ scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "mfderiv[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e es
   mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
 
 /-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
-  let e ← Term.elabTerm t none
+  let e ← ensureIsFunction <|← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``mfderiv #[srcI, tgtI, e]
 
