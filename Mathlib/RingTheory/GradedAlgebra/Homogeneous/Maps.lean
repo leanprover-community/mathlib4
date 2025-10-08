@@ -19,12 +19,13 @@ variable {A B C σ τ ω ι F G : Type*}
   [DecidableEq ι] [AddMonoid ι]
   {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ω}
   [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
-  [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
-  [FunLike G B C] [GradedRingHomClass G ℬ 𝒞]
+  [GradedRingHomClass F 𝒜 ℬ] [GradedRingHomClass G ℬ 𝒞]
   (f : F) (g : G)
 
 namespace HomogeneousIdeal
 
+/-- Map a homogeneous ideal along a graded ring homomorphism. The underlying ideal is
+(definitionally) equal to `Ideal.map`. -/
 def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
   __ := I.toIdeal.map f
   is_homogeneous' i b hb := by
@@ -40,6 +41,9 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
       classical rw [smul_eq_mul, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
       exact sum_mem fun ij hij ↦ Ideal.mul_mem_left _ _ <| ih _
 
+/-- Map a homogeneous ideal along a graded ring homomorphism in the other direction.
+The underlying ideal is (definitionally) equal to `Ideal.comap`, whose underlying set is
+definitionally equal to the preimage. -/
 def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
   __ := I.toIdeal.comap f
   is_homogeneous' n a ha := by
@@ -73,17 +77,17 @@ instance isPrime_comap [J.toIdeal.IsPrime] : (J.comap f).toIdeal.IsPrime :=
 @[simp] lemma map_id : I.map (GradedRingHom.id 𝒜) = I :=
   ext <| Ideal.map_id _
 
-lemma map_map (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) : (I.map f).map g = I.map (g.comp _ _ _ f) :=
+lemma map_map (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) : (I.map f).map g = I.map (g.comp f) :=
   ext <| Ideal.map_map _ _
 
-lemma map_comp (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) : I.map (g.comp _ _ _ f) = (I.map f).map g :=
+lemma map_comp (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) : I.map (g.comp f) = (I.map f).map g :=
   (map_map f g).symm
 
 @[simp] lemma comap_id : I.comap (GradedRingHom.id 𝒜) = I :=
   rfl
 
 lemma comap_comap (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) :
-    (K.comap g).comap f = K.comap (g.comp _ _ _ f) :=
+    (K.comap g).comap f = K.comap (g.comp f) :=
   rfl
 
 end HomogeneousIdeal

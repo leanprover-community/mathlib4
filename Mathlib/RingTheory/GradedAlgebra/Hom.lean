@@ -36,23 +36,31 @@ and `GRingHom` for other identifiers, and `𝒜 →+*ᵍ ℬ` for the notation. 
 structure GradedRingHom (𝒜 : ι → σ) (ℬ : ι → τ) extends A →+* B where
   map_mem' {i : ι} {x : A} : x ∈ 𝒜 i → toRingHom x ∈ ℬ i
 
-variable (𝒜 : ι → σ) (ℬ : ι → τ) (𝒞 : ι → ψ) (𝒟 : ι → ω)
+variable {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ψ} {𝒟 : ι → ω}
 
 @[inherit_doc]
 notation:25 𝒜 " →+*ᵍ " ℬ => GradedRingHom 𝒜 ℬ
 
+-- While logically this can be broken down into `GradedHomClass`, we need to also bear in mind
+-- that any one extra definition is 300 more lines of burden, and we should not build more classes
+-- until we actually need them.
 /-- `GradedRingHomClass F 𝒜 ℬ` states that `F` is a type of graded (semi)ring homomorphisms.
-You should extend this class when you extend `GradedRingHom`. -/
+You should extend this class when you extend `GradedRingHom`.
+
+Unlike the other hom classes, this class **extends** `FunLike`, so it is **not necessary** to repeat
+it in the assumptions. -/
 class GradedRingHomClass (F : Type*) {ι A B σ τ : outParam Type*}
     [Semiring A] [Semiring B] [SetLike σ A] [SetLike τ B]
-    (𝒜 : outParam (ι → σ)) (ℬ : outParam (ι → τ))
-    [FunLike F A B] : Prop
-  extends RingHomClass F A B where
+    (𝒜 : outParam (ι → σ)) (ℬ : outParam (ι → τ)) : Type _
+    extends FunLike F A B, RingHomClass F A B where
   map_mem (f : F) {i : ι} {x : A} : x ∈ 𝒜 i → f x ∈ ℬ i
 
 section GradedRingHomClass
 
-variable {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
+variable {F : Type*} [GradedRingHomClass F 𝒜 ℬ]
+
+-- instance [i : GradedRingHomClass F 𝒜 ℬ] : CoeFun F (fun _ ↦ A → B) :=
+--   inferInstance
 
 /-- Turn an element of a type `F` satisfying `GradedRingHomClass F 𝒜 ℬ` into an actual
 `GradedRingHom`. This is declared as the default coercion from `F` to `𝒜 →+*ᵍ ℬ`. -/
@@ -64,7 +72,7 @@ def GradedRingHomClass.toGRingHom (f : F) : 𝒜 →+*ᵍ ℬ where
 /-- Any type satisfying `GradedRingHomClass` can be cast into `GradedRingHom` via
 `GradedRingHomClass.toGRingHom`. -/
 instance : CoeTC F (𝒜 →+*ᵍ ℬ) :=
-  ⟨GradedRingHomClass.toGRingHom 𝒜 ℬ⟩
+  ⟨GradedRingHomClass.toGRingHom⟩
 
 theorem map_mem (f : F) {i : ι} {x : A} : x ∈ 𝒜 i → f x ∈ ℬ i :=
   GradedRingHomClass.map_mem f
@@ -101,7 +109,7 @@ theorem coe_mk (f : A →+* B) (h) : ((⟨f, h⟩ : 𝒜 →+*ᵍ ℬ) : A → B
   rfl
 
 @[simp]
-theorem coe_coe {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ] (f : F) :
+theorem coe_coe {F : Type*} [GradedRingHomClass F 𝒜 ℬ] (f : F) :
     ((f : 𝒜 →+*ᵍ ℬ) : A → B) = f :=
   rfl
 
@@ -133,10 +141,10 @@ def copy (f : 𝒜 →+*ᵍ ℬ) (f' : A → B) (h : f' = f) : 𝒜 →+*ᵍ ℬ
   map_mem' hx := congr($h _ ∈ ℬ _).to_iff.mpr <| f.map_mem' hx
 
 @[simp]
-theorem coe_copy (f : 𝒜 →+*ᵍ ℬ) (f' : A → B) (h : f' = f) : ⇑(f.copy _ _ f' h) = f' :=
+theorem coe_copy (f : 𝒜 →+*ᵍ ℬ) (f' : A → B) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 
-theorem copy_eq (f : 𝒜 →+*ᵍ ℬ) (f' : A → B) (h : f' = f) : f.copy _ _ f' h = f :=
+theorem copy_eq (f : 𝒜 →+*ᵍ ℬ) (f' : A → B) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
 end coe
@@ -160,10 +168,10 @@ theorem ext ⦃f g : 𝒜 →+*ᵍ ℬ⦄ : (∀ x, f x = g x) → f = g :=
 
 @[simp]
 theorem mk_coe (f : 𝒜 →+*ᵍ ℬ) (h₁ h₂ h₃ h₄ h₅) : .mk ⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ h₅ = f :=
-  ext _ _ fun _ => rfl
+  ext fun _ => rfl
 
 theorem coe_ringHom_injective : (fun f : 𝒜 →+*ᵍ ℬ => (f : A →+* B)).Injective := fun _ _ h =>
-  ext _ _ <| DFunLike.congr_fun (F := A →+* B) h
+  ext <| DFunLike.congr_fun (F := A →+* B) h
 
 /-- Graded ring homomorphisms map zero to zero. -/
 protected theorem map_zero (f : 𝒜 →+*ᵍ ℬ) : f 0 = 0 :=
@@ -183,7 +191,7 @@ protected theorem map_mul (f : 𝒜 →+*ᵍ ℬ) : ∀ a b, f (a * b) = f a * f
 
 /-- Graded ring homomorphisms preserve the grading. -/
 protected theorem map_mem (f : 𝒜 →+*ᵍ ℬ) : ∀ {i a}, a ∈ 𝒜 i → f a ∈ ℬ i :=
-  map_mem _ _ f
+  map_mem f
 
 end
 
@@ -203,6 +211,7 @@ protected theorem map_sub (f : 𝒜 →+*ᵍ ℬ) (x y : A) :
 
 end Ring
 
+variable (𝒜) in
 /-- The identity graded ring homomorphism from a graded ring to itself. -/
 def id : 𝒜 →+*ᵍ 𝒜 where
   __ := RingHom.id _
@@ -222,58 +231,58 @@ theorem coe_ringHom_id : (id 𝒜 : A →+* A) = RingHom.id A :=
 /-- Composition of graded ring homomorphisms is a graded ring homomorphism. -/
 def comp (g : ℬ →+*ᵍ 𝒞) (f : 𝒜 →+*ᵍ ℬ) : 𝒜 →+*ᵍ 𝒞 where
   __ := g.toRingHom.comp f
-  map_mem' := g.map_mem _ _ ∘ f.map_mem _ _
+  map_mem' := g.map_mem ∘ f.map_mem
 
 /-- Composition of graded ring homomorphisms is associative. -/
 theorem comp_assoc (h : 𝒞 →+*ᵍ 𝒟) (g : ℬ →+*ᵍ 𝒞) (f : 𝒜 →+*ᵍ ℬ) :
-    (h.comp _ _ _ g).comp _ _ _ f = h.comp _ _ _ (g.comp _ _ _ f) :=
+    (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 
 @[simp]
-theorem coe_comp (hnp : ℬ →+*ᵍ 𝒞) (hmn : 𝒜 →+*ᵍ ℬ) : (hnp.comp _ _ _ hmn : A → C) = hnp ∘ hmn :=
+theorem coe_comp (hnp : ℬ →+*ᵍ 𝒞) (hmn : 𝒜 →+*ᵍ ℬ) : (hnp.comp hmn : A → C) = hnp ∘ hmn :=
   rfl
 
 theorem comp_apply (hnp : ℬ →+*ᵍ 𝒞) (hmn : 𝒜 →+*ᵍ ℬ) (x : A) :
-    (hnp.comp _ _ _ hmn : A → C) x = hnp (hmn x) :=
+    (hnp.comp hmn : A → C) x = hnp (hmn x) :=
   rfl
 
 @[simp]
-theorem comp_id (f : 𝒜 →+*ᵍ ℬ) : f.comp _ _ _ (id 𝒜) = f :=
-  ext _ _ fun _ => rfl
+theorem comp_id (f : 𝒜 →+*ᵍ ℬ) : f.comp (id 𝒜) = f :=
+  ext fun _ => rfl
 
 @[simp]
-theorem id_comp (f : 𝒜 →+*ᵍ ℬ) : (id ℬ).comp _ _ _ f = f :=
-  ext _ _ fun _ => rfl
+theorem id_comp (f : 𝒜 →+*ᵍ ℬ) : (id ℬ).comp f = f :=
+  ext fun _ => rfl
 
 instance instOne : One (𝒜 →+*ᵍ 𝒜) where one := id _
-instance instMul : Mul (𝒜 →+*ᵍ 𝒜) where mul := comp _ _ _
+instance instMul : Mul (𝒜 →+*ᵍ 𝒜) where mul := comp
 
 lemma one_def : (1 : 𝒜 →+*ᵍ 𝒜) = id 𝒜 := rfl
 
-lemma mul_def (f g : 𝒜 →+*ᵍ 𝒜) : f * g = f.comp _ _ _ g := rfl
+lemma mul_def (f g : 𝒜 →+*ᵍ 𝒜) : f * g = f.comp g := rfl
 
 @[simp, norm_cast] lemma coe_one : ⇑(1 : 𝒜 →+*ᵍ 𝒜) = _root_.id := rfl
 
 @[simp, norm_cast] lemma coe_mul (f g : 𝒜 →+*ᵍ 𝒜) : ⇑(f * g) = f ∘ g := rfl
 
 instance instMonoid : Monoid (𝒜 →+*ᵍ 𝒜) where
-  mul_one := comp_id _ _
-  one_mul := id_comp _ _
-  mul_assoc _ _ _ := comp_assoc _ _ _ _ _ _ _
-  npow n f := (npowRec n f).copy _ _ f^[n] <| by induction n <;> simp [npowRec, *]
+  mul_one := comp_id
+  one_mul := id_comp
+  mul_assoc _ _ _ := comp_assoc _ _ _
+  npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *]
   npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : 𝒜 →+*ᵍ 𝒜) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
 @[simp]
 theorem cancel_right {g₁ g₂ : ℬ →+*ᵍ 𝒞} {f : 𝒜 →+*ᵍ ℬ} (hf : Function.Surjective f) :
-    g₁.comp _ _ _ f = g₂.comp _ _ _ f ↔ g₁ = g₂ :=
-  ⟨fun h => ext _ _ <| hf.forall.2 (GradedRingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
+  ⟨fun h => ext <| hf.forall.2 (GradedRingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : ℬ →+*ᵍ 𝒞} {f₁ f₂ : 𝒜 →+*ᵍ ℬ} (hg : Function.Injective g) :
-    g.comp _ _ _ f₁ = g.comp _ _ _ f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext _ _ fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
+    g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
+  ⟨fun h => ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
 
 end GradedRingHom
 
@@ -285,12 +294,12 @@ variable [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
 
 section
 variable (𝒜 : ι → σ) (ℬ : ι → τ)
-variable {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
+variable {F : Type*} [GradedRingHomClass F 𝒜 ℬ]
 
 -- Note: if `GradedAddHom` is added later, then the assumptions can be relaxed.
 /-- A graded ring homomorphism descends to an additive homomorphism on each indexed component. -/
 @[simps!] def gradedAddHom (f : F) (i : ι) : 𝒜 i →+ ℬ i where
-  toFun x := ⟨f x, map_mem _ _ f x.2⟩
+  toFun x := ⟨f x, map_mem f x.2⟩
   map_zero' := by ext; simp
   map_add' x y := by ext; simp
 
@@ -298,7 +307,7 @@ end
 
 section
 variable [AddMonoid ι] (𝒜 : ι → σ) (ℬ : ι → τ) [SetLike.GradedMonoid 𝒜] [SetLike.GradedMonoid ℬ]
-variable {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
+variable {F : Type*} [GradedRingHomClass F 𝒜 ℬ]
 
 /-- A graded ring homomorphism descends to a ring homomorphism on the zeroth component. -/
 @[simps!] def gradedZeroRingHom (f : F) : 𝒜 0 →+* ℬ 0 where
@@ -310,7 +319,7 @@ end
 
 section GradedRing
 variable [DecidableEq ι] [AddMonoid ι] (𝒜 : ι → σ) (ℬ : ι → τ) [GradedRing 𝒜] [GradedRing ℬ]
-variable {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
+variable {F : Type*} [GradedRingHomClass F 𝒜 ℬ]
 
 @[simp] lemma decompose_map (f : F) {x : A} :
     DirectSum.decompose ℬ (f x) = .map (gradedAddHom _ _ f) (.decompose 𝒜 x) := by
@@ -319,13 +328,13 @@ variable {F : Type*} [FunLike F A B] [GradedRingHomClass F 𝒜 ℬ]
     DirectSum.decompose_sum, map_sum]
   congr 1
   ext n : 1
-  rw [DirectSum.decompose_of_mem _ (map_mem _ _ f (Subtype.prop _)),
+  rw [DirectSum.decompose_of_mem _ (map_mem f (Subtype.prop _)),
     DirectSum.decompose_of_mem _ (Subtype.prop _), DirectSum.map_of]
   rfl
 
 lemma map_coe_decompose (f : F) {x : A} {i : ι} :
     f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i := by
-  simp [decompose_map 𝒜]
+  simp
 
 end GradedRing
 
