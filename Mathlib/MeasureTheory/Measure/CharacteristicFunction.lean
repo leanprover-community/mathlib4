@@ -6,7 +6,10 @@ Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.InnerProductSpace.ProdL2
+import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 import Mathlib.MeasureTheory.Group.IntegralConvolution
+import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
 /-!
@@ -47,6 +50,9 @@ and `L`.
 -/
 
 open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate NormedSpace
+  WithLp
+
+open scoped ENNReal
 
 namespace BoundedContinuousFunction
 
@@ -242,6 +248,65 @@ lemma charFun_conv [IsFiniteMeasure μ] [IsFiniteMeasure ν] (t : E) :
   · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
   · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
+variable {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
+    [InnerProductSpace ℝ E] [InnerProductSpace ℝ F] {mE : MeasurableSpace E}
+    {mF : MeasurableSpace F}
+
+/-- The characteristic function of a product of measures is a product of
+characteristic functions. This is the version for Hilbert spaces, see `charFunDual_prod`
+for the Banach space version. -/
+lemma charFun_prod {μ : Measure E} {ν : Measure F} [SFinite μ] [SFinite ν]
+    (t : WithLp 2 (E × F)) :
+    charFun ((μ.prod ν).map (toLp 2)) t =
+      charFun μ (ofLp t).1 * charFun ν (ofLp t).2 := by
+  simp_rw [charFun, prod_inner_apply, ← MeasurableEquiv.coe_toLp, ← integral_prod_mul,
+    integral_map_equiv]
+  simp [ofReal_add, add_mul, Complex.exp_add]
+
+variable [CompleteSpace E] [CompleteSpace F] [SecondCountableTopology E] [SecondCountableTopology F]
+    [BorelSpace E] [BorelSpace F]
+
+/-- The characteristic function of a measure is a product of
+characteristic functions if and only if it is a product measure.
+This is the version for Hilbert spaces, see `charFunDual_eq_prod_iff`
+for the Banach space version. -/
+lemma charFun_eq_prod_iff {μ : Measure E} {ν : Measure F} {ξ : Measure (E × F)}
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
+    (∀ t, charFun (ξ.map (toLp 2)) t = charFun μ (ofLp t).1 * charFun ν (ofLp t).2) ↔
+    ξ = μ.prod ν where
+  mp h := by
+    refine (MeasurableEquiv.toLp 2 (E × F)).map_measurableEquiv_injective
+      <| Measure.ext_of_charFun <| funext fun t ↦ ?_
+    rw [MeasurableEquiv.coe_toLp, h, charFun_prod]
+  mpr h := by rw [h]; exact charFun_prod
+
+variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace ℝ (E i)] {mE : ∀ i, MeasurableSpace (E i)}
+
+/-- The characteristic function of a product of measures is a product of
+characteristic functions. This is the version for Hilbert spaces, see `charFunDual_pi`
+for the Banach space version. -/
+lemma charFun_pi {μ : (i : ι) → Measure (E i)} [∀ i, SigmaFinite (μ i)] (t : PiLp 2 E) :
+    charFun ((Measure.pi μ).map (toLp 2)) t = ∏ i, charFun (μ i) (t i) := by
+  simp_rw [charFun, PiLp.inner_apply, ← MeasurableEquiv.coe_toLp, ← integral_fintype_prod_eq_prod,
+    integral_map_equiv]
+  simp [ofReal_sum, Finset.sum_mul, Complex.exp_sum]
+
+variable [∀ i, CompleteSpace (E i)] [∀ i, SecondCountableTopology (E i)] [∀ i, BorelSpace (E i)]
+
+/-- The characteristic function of a measure is a product of
+characteristic functions if and only if it is a product measure.
+This is the version for Hilbert spaces, see `charFunDual_eq_pi_iff`
+for the Banach space version. -/
+lemma charFun_eq_pi_iff {μ : (i : ι) → Measure (E i)} {ν : Measure (Π i, E i)}
+    [∀ i, IsFiniteMeasure (μ i)] [IsFiniteMeasure ν] :
+    (∀ t, charFun (ν.map (toLp 2)) t = ∏ i, charFun (μ i) (t i)) ↔ ν = Measure.pi μ where
+  mp h := by
+    refine (MeasurableEquiv.toLp 2 (Π i, E i)).map_measurableEquiv_injective
+      <| Measure.ext_of_charFun <| funext fun t ↦ ?_
+    rw [MeasurableEquiv.coe_toLp, h, charFun_pi]
+  mpr h := by rw [h]; exact charFun_pi
+
 end InnerProductSpace
 
 section NormedSpace
@@ -310,15 +375,56 @@ lemma charFunDual_map_const_add [BorelSpace E] (r : E) (L : StrongDual ℝ E) :
   exact charFunDual_map_add_const _ _
 
 /-- The characteristic function of a product of measures is a product of
-characteristic functions. -/
+characteristic functions. This is the version for Banach spaces, see `charFun_prod`
+for the Hilbert space version. -/
 lemma charFunDual_prod [SFinite μ] [SFinite ν] (L : StrongDual ℝ (E × F)) :
     charFunDual (μ.prod ν) L
       = charFunDual μ (L.comp (.inl ℝ E F)) * charFunDual ν (L.comp (.inr ℝ E F)) := by
-  let L₁ : StrongDual ℝ E := L.comp (.inl ℝ E F)
-  let L₂ : StrongDual ℝ F := L.comp (.inr ℝ E F)
   simp_rw [charFunDual_apply, ← L.comp_inl_add_comp_inr, ofReal_add, add_mul,
-    Complex.exp_add]
-  rw [integral_prod_mul (f := fun x ↦ cexp ((L₁ x * I))) (g := fun x ↦ cexp ((L₂ x * I)))]
+    Complex.exp_add, ← integral_prod_mul]
+
+/-- The characteristic function of a product of measures is a product of
+characteristic functions. This is `charFunDual_prod` for `WithLp`.
+See `charFun_prod` for the Hilbert space version. -/
+lemma charFunDual_prod' (p : ℝ≥0∞) [Fact (1 ≤ p)] [SFinite μ] [SFinite ν]
+    (L : StrongDual ℝ (WithLp p (E × F))) :
+    charFunDual ((μ.prod ν).map (toLp p)) L =
+      charFunDual μ (L.comp
+        ((prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
+          (.inl ℝ E F))) *
+      charFunDual ν (L.comp
+        ((prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
+          (.inr ℝ E F))) := by
+  simp_rw [charFunDual_apply, ← integral_prod_mul, ← Complex.exp_add, ← add_mul, ← ofReal_add,
+    L.comp_apply, ← map_add, ContinuousLinearMap.comp_inl_add_comp_inr]
+  rw [← MeasurableEquiv.coe_toLp, integral_map_equiv]
+  simp
+
+/-- The characteristic function of a product of measures is a product of
+characteristic functions. This is the version for Banach spaces, see `charFunDual_pi`
+for the Hilbert space version. -/
+lemma charFunDual_pi {ι : Type*} [Fintype ι] [DecidableEq ι] {E : ι → Type*}
+    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)] {mE : ∀ i, MeasurableSpace (E i)}
+    {μ : (i : ι) → Measure (E i)} [∀ i, SigmaFinite (μ i)] (L : StrongDual ℝ (Π i, E i)) :
+    charFunDual (Measure.pi μ) L =
+      ∏ i, charFunDual (μ i) (L.comp (.single ℝ E i)) := by
+  simp_rw [charFunDual_apply, ← L.sum_comp_single, ofReal_sum, Finset.sum_mul, Complex.exp_sum,
+    ← integral_fintype_prod_eq_prod]
+
+/-- The characteristic function of a product of measures is a product of
+characteristic functions. This is `charFunDual_pi` for `PiLp`.
+See `charFunDual_pi` for the Banach space version. -/
+lemma charFunDual_pi' (p : ℝ≥0∞) [Fact (1 ≤ p)] {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
+    {mE : ∀ i, MeasurableSpace (E i)} {μ : (i : ι) → Measure (E i)} [∀ i, SigmaFinite (μ i)]
+    (L : StrongDual ℝ (PiLp p E)) :
+    charFunDual ((Measure.pi μ).map (toLp p)) L =
+      ∏ i, charFunDual (μ i) (L.comp
+        ((PiLp.continuousLinearEquiv p ℝ E).symm.toContinuousLinearMap.comp (.single ℝ E i))) := by
+  simp_rw [charFunDual_apply, ← integral_fintype_prod_eq_prod, ← Complex.exp_sum, ← Finset.sum_mul,
+    ← ofReal_sum, L.comp_apply, ← map_sum, ContinuousLinearMap.sum_comp_single]
+  rw [← MeasurableEquiv.coe_toLp, integral_map_equiv]
+  simp
 
 variable [BorelSpace E] [SecondCountableTopology E]
 
@@ -336,6 +442,77 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     by_contra! h
     exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
   · exact isBoundedBilinearMap_apply.symm.continuous
+
+/-- The characteristic function of a measure is a product of
+characteristic functions if and only if it is a product measure.
+This is the version for Banach spaces, see `charFun_eq_prod_iff`
+for the Hilbert space version. -/
+lemma charFunDual_eq_prod_iff [BorelSpace F] [SecondCountableTopology F] [CompleteSpace E]
+    [CompleteSpace F] {ξ : Measure (E × F)} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    [IsFiniteMeasure ξ] :
+    (∀ L, charFunDual ξ L =
+      charFunDual μ (L.comp (.inl ℝ E F)) * charFunDual ν (L.comp (.inr ℝ E F))) ↔
+    ξ = μ.prod ν where
+  mp h := by
+    refine Measure.ext_of_charFunDual <| funext fun t ↦ ?_
+    rw [h, charFunDual_prod]
+  mpr h := by rw [h]; exact charFunDual_prod
+
+/-- The characteristic function of a measure is a product of
+characteristic functions if and only if it is a product measure.
+This is `charFunDual_eq_prod_iff` for `WithLp`.
+See `charFun_eq_prod_iff` for the Hilbert space version. -/
+lemma charFunDual_eq_prod_iff' (p : ℝ≥0∞) [Fact (1 ≤ p)] [BorelSpace F]
+    [SecondCountableTopology F] [CompleteSpace E] [CompleteSpace F] {ξ : Measure (E × F)}
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
+    (∀ L, charFunDual (ξ.map (toLp p)) L =
+      charFunDual μ (L.comp
+        ((WithLp.prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
+          (.inl ℝ E F))) *
+      charFunDual ν (L.comp
+        ((WithLp.prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
+          (.inr ℝ E F)))) ↔
+    ξ = μ.prod ν where
+  mp h := by
+    refine (MeasurableEquiv.toLp p (E × F)).map_measurableEquiv_injective
+      <| Measure.ext_of_charFunDual <| funext fun L ↦ ?_
+    rw [MeasurableEquiv.coe_toLp, h, charFunDual_prod']
+  mpr h := by rw [h]; exact charFunDual_prod' p
+
+/-- The characteristic function of a measure is a product of
+characteristic functions if and only if it is a product measure.
+This is the version for Banach spaces, see `charFun_eq_pi_iff`
+for the Hilbert space version. -/
+lemma charFunDual_eq_pi_iff {ι : Type*} [Fintype ι] [DecidableEq ι] {E : ι → Type*}
+    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)] {mE : ∀ i, MeasurableSpace (E i)}
+    [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)] [∀ i, CompleteSpace (E i)]
+    {μ : (i : ι) → Measure (E i)} {ν : Measure (Π i, E i)} [∀ i, IsFiniteMeasure (μ i)]
+    [IsFiniteMeasure ν] :
+    (∀ L, charFunDual ν L = ∏ i, charFunDual (μ i) (L.comp (.single ℝ E i))) ↔
+    ν = Measure.pi μ where
+  mp h := by
+    refine Measure.ext_of_charFunDual <| funext fun t ↦ ?_
+    rw [h, charFunDual_pi]
+  mpr h := by rw [h]; exact charFunDual_pi
+
+/-- The characteristic function of a measure is a product of
+characteristic functions if and only if it is a product measure.
+This is `charFunDual_eq_pi_iff` for `PiLp`.
+See `charFun_eq_pi_iff` for the Hilbert space version. -/
+lemma charFunDual_eq_pi_iff' (p : ℝ≥0∞) [Fact (1 ≤ p)] {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
+    {mE : ∀ i, MeasurableSpace (E i)} [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
+    [∀ i, CompleteSpace (E i)] {μ : (i : ι) → Measure (E i)} {ν : Measure (Π i, E i)}
+    [∀ i, IsFiniteMeasure (μ i)] [IsFiniteMeasure ν] :
+    (∀ L, charFunDual (ν.map (toLp p)) L =
+      ∏ i, charFunDual (μ i) (L.comp
+        ((PiLp.continuousLinearEquiv p ℝ E).symm.toContinuousLinearMap.comp (.single ℝ E i)))) ↔
+    ν = Measure.pi μ where
+  mp h := by
+    refine (MeasurableEquiv.toLp p (Π i, E i)).map_measurableEquiv_injective
+      <| Measure.ext_of_charFunDual <| funext fun L ↦ ?_
+    rw [MeasurableEquiv.coe_toLp, h, charFunDual_pi']
+  mpr h := by rw [h]; exact charFunDual_pi' p
 
 /-- The characteristic function of a convolution of measures
 is the product of the respective characteristic functions. -/

@@ -421,8 +421,8 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
      (alternatingWord i j p)[k+1]'(by simp [h]) =
-     (alternatingWord j i p)[k]'(by simp; omega) := by
-  rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
+     (alternatingWord j i p)[k]'(by simp; cutsat) := by
+  rw [getElem_alternatingWord i j p (k+1) (by cutsat), getElem_alternatingWord j i p k (by cutsat)]
   by_cases h_even : Even (p + k)
   · rw [if_pos h_even, ← add_assoc]
     simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
@@ -442,21 +442,21 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
       by_cases h_even : Even k
       · simp only [h_even, ↓reduceIte] at hk
         simp only [Nat.not_even_iff_odd.mpr (Even.add_one h_even), ↓reduceIte]
-        rw [← List.take_concat_get (by simp; omega), alternatingWord_succ, ← hk]
+        rw [← List.take_concat_get (by simp; cutsat), alternatingWord_succ, ← hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by omega)]
+        rw [getElem_alternatingWord i j (2*p) k (by cutsat)]
         simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
         simp only [(by simp at h_even; exact Odd.add_one h_even : Even (k + 1)), ↓reduceIte]
-        rw [← List.take_concat_get (by simp; omega), alternatingWord_succ, hk]
+        rw [← List.take_concat_get (by simp; cutsat), alternatingWord_succ, hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by omega)]
+        rw [getElem_alternatingWord i j (2*p) k (by cutsat)]
         simp [(by apply Nat.odd_add.mpr; simp [h_even] : Odd (2 * p + k))]
 
 lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
     List.take (k + 1) (alternatingWord i j (2 * p)) =
     i :: (List.take k (alternatingWord j i (2 * p))) := by
-  rw [listTake_alternatingWord j i p k (by omega), listTake_alternatingWord i j p (k+1) h]
+  rw [listTake_alternatingWord j i p k (by cutsat), listTake_alternatingWord i j p (k+1) h]
   by_cases h_even : Even k
   · simp [Nat.not_even_iff_odd.mpr (Even.add_one h_even), alternatingWord_succ', h_even]
   · simp [(by rw [Nat.not_even_iff_odd] at h_even; exact Odd.add_one h_even : Even (k + 1)),

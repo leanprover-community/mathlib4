@@ -185,6 +185,40 @@ lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStar
 
 end Monoid
 
+end unitary
+
+section Group
+
+variable {G : Type*} [Group G] [StarMul G]
+
+theorem unitary.inv_mem {g : G} (hg : g ∈ unitary G) : g⁻¹ ∈ unitary G := by
+  simp_rw [unitary.mem_iff, star_inv, ← mul_inv_rev, inv_eq_one] at *
+  exact hg.symm
+
+variable (G) in
+/-- `unitary` as a `Subgroup` of a group.
+
+Note the group structure on this type is not defeq to the one on `unitary`.
+This situation naturally arises when considering the unitary elements as a
+subgroup of the group of units of a star monoid. -/
+def unitarySubgroup : Subgroup G where
+  toSubmonoid := unitary G
+  inv_mem' := unitary.inv_mem
+
+@[simp]
+theorem unitarySubgroup_toSubmonoid : (unitarySubgroup G).toSubmonoid = unitary G := rfl
+
+@[simp]
+theorem mem_unitarySubgroup_iff {g : G} : g ∈ unitarySubgroup G ↔ g ∈ unitary G :=
+  Iff.rfl
+
+nonrec theorem unitary.inv_mem_iff {g : G} : g⁻¹ ∈ unitary G ↔ g ∈ unitary G :=
+  inv_mem_iff (H := unitarySubgroup G)
+
+end Group
+
+namespace unitary
+
 section SMul
 
 section
@@ -299,6 +333,16 @@ lemma mapEquiv_trans (f : R ≃⋆* S) (g : S ≃⋆* T) :
 lemma toMonoidHom_mapEquiv (f : R ≃⋆* S) :
     (mapEquiv f).toStarMonoidHom = map f.toStarMonoidHom :=
   rfl
+
+/-- The unitary subgroup of the units is equivalent to the unitary elements of the monoid. -/
+@[simps!]
+def _root_.unitarySubgroupUnitsEquiv {M : Type*} [Monoid M] [StarMul M] :
+    unitarySubgroup Mˣ ≃* unitary M where
+  toFun x := ⟨x.val, congr_arg Units.val x.prop.1, congr_arg Units.val x.prop.2⟩
+  invFun x := ⟨⟨x, star x, x.prop.2, x.prop.1⟩, Units.ext x.prop.1, Units.ext x.prop.2⟩
+  map_mul' _ _ := rfl
+  left_inv _ := Subtype.ext <| Units.ext rfl
+  right_inv _ := rfl
 
 end Map
 

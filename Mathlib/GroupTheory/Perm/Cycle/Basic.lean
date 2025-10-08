@@ -220,7 +220,7 @@ section IsCycle
 
 variable {f g : Perm α} {x y : α}
 
-/-- A cycle is a non identity permutation where any two nonfixed points of the permutation are
+/-- A cycle is a non-identity permutation where any two nonfixed points of the permutation are
 related by repeated application of the permutation. -/
 def IsCycle (f : Perm α) : Prop :=
   ∃ x, f x ≠ x ∧ ∀ ⦃y⦄, f y ≠ y → SameCycle f x y
@@ -1081,7 +1081,7 @@ theorem cycle_zpow_mem_support_iff {g : Perm α}
     rw [← Int.ediv_emod_unique _]
     · exact ⟨rfl, rfl⟩
     simp only [Int.natCast_pos]
-    apply lt_of_lt_of_le _ (IsCycle.two_le_card_support hg); norm_num
+    apply lt_of_lt_of_le _ (IsCycle.two_le_card_support hg); simp
   simp only [← hg.orderOf] at div_euc
   obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le div_euc.2.1
   simp only [hm, Nat.cast_nonneg, Nat.cast_lt, true_and] at div_euc

@@ -63,7 +63,8 @@ If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`
 -/
 noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
     Spec (X.presheaf.stalk x) ⟶ X :=
-  (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
+  (isAffineOpen_opensRange (X.affineCover.f (X.affineCover.idx x))).fromSpecStalk
+    (X.affineCover.covers x)
 
 @[simps over] noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).Over X := ⟨X.fromSpecStalk x⟩
@@ -270,7 +271,7 @@ instance isLocalHom_stalkClosedPointTo :
 Useful for use in combination with `CommRingCat.of K` for a field `K`.
 -/
 instance isLocalHom_stalkClosedPointTo' {R : Type u} [CommRing R] [IsLocalRing R]
-    (f : Spec(R) ⟶ X) :
+    (f : Spec (.of R) ⟶ X) :
     IsLocalHom (stalkClosedPointTo f).hom :=
   isLocalHom_stalkClosedPointTo f
 

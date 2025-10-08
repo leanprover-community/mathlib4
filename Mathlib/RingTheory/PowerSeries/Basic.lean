@@ -62,10 +62,6 @@ variable {R : Type*}
 
 section
 
--- Porting note: not available in Lean 4
--- local reducible PowerSeries
-
-
 /--
 `R⟦X⟧` is notation for `PowerSeries R`,
 the semiring of formal power series in one variable over a semiring `R`.
@@ -630,10 +626,10 @@ section CommSemiring
 
 open Finset.HasAntidiagonal Finset
 
-variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+variable {R : Type*} [CommSemiring R] {ι : Type*}
 
 /-- Coefficients of a product of power series -/
-theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
+theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff (l i) (f i) := by
   simp only [coeff]
   rw [MvPowerSeries.coeff_prod, ← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq,
@@ -669,7 +665,7 @@ lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff 1 (φ * ψ) =
   have : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
   rw [coeff_mul, this, Finset.sum_insert, Finset.sum_singleton, coeff_zero_eq_constantCoeff,
     mul_comm, add_comm]
-  norm_num
+  simp
 
 /-- First coefficient of the `n`-th power of a power series. -/
 lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
@@ -677,7 +673,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   rcases Nat.eq_zero_or_pos n with (rfl | hn)
   · simp
   induction n with
-  | zero => omega
+  | zero => cutsat
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
@@ -697,9 +693,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
             conv => enter [1, 2, 1, 1, 2]; rw [← pow_one (a := constantCoeff φ)]
             rw [← pow_add (a := constantCoeff φ)]
             conv => enter [1, 2, 1, 1]; rw [Nat.sub_add_cancel h']
-            conv => enter [1, 2, 1]; rw [mul_comm]
-            rw [mul_assoc, ← one_add_mul, add_comm, mul_assoc]
-            conv => enter [1, 2]; rw [mul_comm]
+            ring
           exact h'
       · decide
 

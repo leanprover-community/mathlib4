@@ -37,14 +37,14 @@ set `X` is the complement of `X.degenerate n`. -/
 def nonDegenerate (n : ℕ) : Set (X _⦋n⦌) := (X.degenerate n)ᶜ
 
 @[simp]
-lemma degenerate_zero : X.degenerate 0 = ⊥ := by
+lemma degenerate_zero : X.degenerate 0 = ∅ := by
   ext x
-  simp only [Set.bot_eq_empty, Set.mem_empty_iff_false, iff_false]
+  simp only [Set.mem_empty_iff_false, iff_false]
   rintro ⟨m, hm, _⟩
   simp at hm
 
 @[simp]
-lemma nondegenerate_zero : X.nonDegenerate 0 = ⊤ := by
+lemma nondegenerate_zero : X.nonDegenerate 0 = Set.univ := by
   simp [nonDegenerate]
 
 variable {n : ℕ}
@@ -64,7 +64,7 @@ alias mem_degenerate_iff_not_mem_nonDegenerate := mem_degenerate_iff_notMem_nonD
 
 lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
-  ⟨n, by omega, SimplexCategory.σ i, Set.mem_range_self x⟩
+  ⟨n, by cutsat, SimplexCategory.σ i, Set.mem_range_self x⟩
 
 lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
@@ -73,7 +73,7 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
   · rintro ⟨m, hm, f, y, hy⟩
     rw [← image.fac f, op_comp] at hy
     have : _ ≤ m := SimplexCategory.len_le_of_mono (image.ι f)
-    exact ⟨(image f).len, by omega, factorThruImage f, inferInstance, by aesop⟩
+    exact ⟨(image f).len, by cutsat, factorThruImage f, inferInstance, by aesop⟩
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
 
@@ -87,7 +87,7 @@ lemma degenerate_eq_iUnion_range_σ :
     obtain ⟨i, θ, rfl⟩ := SimplexCategory.eq_σ_comp_of_not_injective f (fun hf ↦ by
       rw [← SimplexCategory.mono_iff_injective] at hf
       have := SimplexCategory.le_of_mono f
-      omega)
+      cutsat)
     aesop
   · intro hx
     simp only [Set.mem_iUnion, Set.mem_range] at hx
@@ -114,7 +114,7 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
     (y : X.obj (op m)) (hy : X.map f.op y = x) :
     IsIso f := by
   obtain ⟨x, hx⟩ := x
-  induction' m using SimplexCategory.rec with m
+  induction m using SimplexCategory.rec with | _ m
   rw [mem_nonDegenerate_iff_notMem_degenerate] at hx
   by_contra!
   refine hx ⟨_, not_le.1 (fun h ↦ this ?_), f, y, hy⟩
@@ -225,7 +225,7 @@ lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
   have hα₂ : Monotone α := by
     rintro y₁ y₂ h
     by_contra! h'
-    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by omega] at h'
+    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by cutsat] at h'
     simpa only [hα₁] using f₁.toOrderHom.monotone h'.le
   exact ⟨{ section_ := SimplexCategory.Hom.mk ⟨α, hα₂⟩, id := by ext : 3; apply hα₁ },
     by simp [α]⟩

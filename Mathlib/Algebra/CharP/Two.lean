@@ -49,6 +49,14 @@ theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_
 @[scoped simp]
 protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_smul, add_self_eq_zero]
 
+@[scoped simp]
+protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
+  rw [← add_assoc, add_self_eq_zero, zero_add]
+
+@[scoped simp]
+protected theorem add_cancel_right (a b : R) : a + b + b = a := by
+  rw [add_assoc, add_self_eq_zero, add_zero]
+
 end Semiring
 
 section Ring
@@ -74,6 +82,9 @@ theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
 @[scoped simp]
 protected theorem two_zsmul (x : R) : (2 : ℤ) • x = 0 := by
   rw [two_zsmul, add_self_eq_zero]
+
+protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
+  rw [← CharTwo.sub_eq_add, sub_eq_iff_eq_add, zero_add]
 
 end Ring
 
@@ -106,6 +117,20 @@ theorem sum_mul_self (s : Finset ι) (f : ι → R) :
     ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i := by simp_rw [← pow_two, sum_sq]
 
 end CommSemiring
+
+namespace CommRing
+
+variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
+
+theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
+  intro x y h
+  rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff two_ne_zero, CharTwo.add_eq_zero] at h
+
+@[scoped simp]
+theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
+  sq_injective.eq_iff
+
+end CommRing
 
 end CharTwo
 

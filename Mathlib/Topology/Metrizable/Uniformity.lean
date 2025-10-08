@@ -135,10 +135,10 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       intro hLm
       rw [mem_setOf_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
-          ← chain_append_singleton_iff_forall₂]
+          ← isChain_cons_append_singleton_iff_forall₂]
           at hm <;>
         [skip; simp]
-      exact hd₀ (hm.rel (mem_append.2 <| Or.inr <| mem_singleton_self _))
+      exact hd₀ (hm.rel_cons (mem_append.2 <| Or.inr <| mem_singleton_self _))
     have hs_bdd : BddAbove s := ⟨length l, hs_ub⟩
     exact ⟨sSup s, csSup_le hsne hs_ub, ⟨Nat.sSup_mem hsne hs_bdd, fun k => le_csSup hs_bdd⟩⟩
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]

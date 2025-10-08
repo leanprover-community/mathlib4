@@ -305,14 +305,14 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
 theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
   · ring
-  · norm_num
+  · simp
   · simp only [differentiableAt_fun_neg_iff, differentiableAt_cos, implies_true]
   · exact continuousOn_sin
 
 @[simp]
 theorem integral_cos : ∫ x in a..b, cos x = sin b - sin a := by
   rw [integral_deriv_eq_sub']
-  · norm_num
+  · simp
   · simp only [differentiableAt_sin, implies_true]
   · exact continuousOn_cos
 

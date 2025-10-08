@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Congr
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 import Mathlib.Topology.Algebra.Module.Determinant
@@ -1003,7 +1003,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       have I : |(f' x).det| ≤ |(A n).det| + ε :=
         calc
           |(f' x).det| = |(A n).det + ((f' x).det - (A n).det)| := by congr 1; abel
-          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add _ _
+          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add_le _ _
           _ ≤ |(A n).det| + ε := add_le_add le_rfl ((hδ (A n)).2.1 _ hx)
       calc
         ENNReal.ofReal |(f' x).det| ≤ ENNReal.ofReal (|(A n).det| + ε) :=
@@ -1227,7 +1227,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
   congr with x
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]
 
-theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E E}
+theorem integral_target_eq_integral_abs_det_fderiv_smul {f : OpenPartialHomeomorph E E}
     (hf' : ∀ x ∈ f.source, HasFDerivAt f (f' x) x) (g : E → F) :
     ∫ x in f.target, g x ∂μ = ∫ x in f.source, |(f' x).det| • g (f x) ∂μ := by
   have : f '' f.source = f.target := PartialEquiv.image_source_eq_target f.toPartialEquiv

@@ -11,7 +11,7 @@ import Mathlib.RingTheory.FreeCommRing
 # Constructing Ring terms from MvPolynomial
 
 This file provides tools for constructing ring terms that can be evaluated to particular
-`MvPolynomial`s. The main motivation is in model theory. It can be used to construct first order
+`MvPolynomial`s. The main motivation is in model theory. It can be used to construct first-order
 formulas whose realization is a property of an `MvPolynomial`
 
 ## Main definitions

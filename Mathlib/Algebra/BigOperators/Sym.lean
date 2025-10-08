@@ -28,4 +28,3 @@ theorem sum_count_of_mem_sym {α} [DecidableEq α] {m : ℕ} {k : Sym α m} {s :
   simp_all
 
 end Finset
-

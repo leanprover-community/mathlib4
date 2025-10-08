@@ -23,18 +23,18 @@ variable {α β ι : Type*} {X : ι → Type*} [Bornology α] [Bornology β]
   [∀ i, Bornology (X i)]
 
 instance Prod.instBornology : Bornology (α × β) where
-  cobounded' := (cobounded α).coprod (cobounded β)
-  le_cofinite' :=
+  cobounded := (cobounded α).coprod (cobounded β)
+  le_cofinite :=
     @coprod_cofinite α β ▸ coprod_mono ‹Bornology α›.le_cofinite ‹Bornology β›.le_cofinite
 
 instance Pi.instBornology : Bornology (∀ i, X i) where
-  cobounded' := Filter.coprodᵢ fun i => cobounded (X i)
-  le_cofinite' := iSup_le fun _ ↦ (comap_mono (Bornology.le_cofinite _)).trans (comap_cofinite_le _)
+  cobounded := Filter.coprodᵢ fun i => cobounded (X i)
+  le_cofinite := iSup_le fun _ ↦ (comap_mono (Bornology.le_cofinite _)).trans (comap_cofinite_le _)
 
 /-- Inverse image of a bornology. -/
 abbrev Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α where
-  cobounded' := comap f (cobounded β)
-  le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
+  cobounded := comap f (cobounded β)
+  le_cofinite := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 
 instance {p : α → Prop} : Bornology (Subtype p) :=
   Bornology.induced (Subtype.val : Subtype p → α)

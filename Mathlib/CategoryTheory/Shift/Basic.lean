@@ -520,7 +520,7 @@ lemma shiftFunctorCompIsoId_add'_inv_app :
       (by rw [← add_left_inj n, hn, add_assoc, h, hp]) h (by rw [add_assoc, h, hp]),
     ← Functor.map_comp_assoc, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
     Category.assoc, Category.assoc,
-    shiftFunctorAdd'_assoc_inv_app n' m' m p' 0 n' _ _
+    shiftFunctorAdd'_assoc_inv_app n' m' m p' 0 n' _ hm
       (by rw [add_assoc, hm, add_zero]), Iso.hom_inv_id_app_assoc,
     ← shiftFunctorAdd'_add_zero_hom_app, Iso.hom_inv_id_app,
     Functor.map_id, Category.id_comp, Iso.hom_inv_id_app]

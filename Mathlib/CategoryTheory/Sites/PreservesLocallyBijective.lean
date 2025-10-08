@@ -10,8 +10,8 @@ import Mathlib.CategoryTheory.Sites.LocallySurjective
 # Preserving and reflecting local injectivity and surjectivity
 
 This file proves that precomposition with a cocontinuous functor preserves local injectivity and
-surjectivity of morphisms of presheaves, and that precomposition with a cover preserving and cover
-dense functor reflects the same properties.
+surjectivity of morphisms of presheaves, and that precomposition with a cover-preserving and
+cover-dense functor reflects the same properties.
 -/
 
 open CategoryTheory Functor

@@ -104,6 +104,9 @@ def maximalRealSubfield : Subfield K where
   neg_mem' := by simp
   inv_mem' := by simp
 
+theorem mem_maximalRealSubfield_iff (x : K) :
+    x ∈ maximalRealSubfield K ↔ ∀ φ : K →+* ℂ, star (φ x) = φ x := .rfl
+
 instance isTotallyReal_maximalRealSubfield :
     IsTotallyReal (maximalRealSubfield K) where
   isReal w := by

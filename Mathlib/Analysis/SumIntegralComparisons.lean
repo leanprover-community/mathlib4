@@ -206,7 +206,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
       omega
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
-      exact ⟨by norm_cast; omega, I0⟩
+      exact ⟨by norm_cast; cutsat, I0⟩
     have I2 : x ∈ Icc (a : ℝ) b := by
       refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
       norm_cast
@@ -221,7 +221,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
       · simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
         refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
         norm_cast
-        omega
+        cutsat
       · exact I1
       · simpa [sub_le_iff_le_add] using hx.2.le
     · apply gpos.trans
@@ -252,7 +252,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
       omega
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
-      exact ⟨by norm_cast; omega, I0⟩
+      exact ⟨by norm_cast; cutsat, I0⟩
     have I2 : x ∈ Icc (a : ℝ) b := by
       refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
       norm_cast
@@ -267,7 +267,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
       · simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
         refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
         norm_cast
-        omega
+        cutsat
       · exact I1
       · simpa [sub_le_iff_le_add] using hx.2.le
     · apply gpos.trans

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Heather Macbeth
 -/
 import Mathlib.LinearAlgebra.Matrix.Defs
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-!
 # Uniform space structure on matrices

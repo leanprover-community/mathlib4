@@ -129,10 +129,9 @@ theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
 
 /-- The `PowerBasis` given by `η - 1`. -/
 @[simps!]
-noncomputable def subOnePowerBasis : PowerBasis K L :=
-  (hζ.powerBasis K).ofGenMemAdjoin
-    (((integral {n} K L).isIntegral ζ).sub isIntegral_one)
-    (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
+noncomputable def subOnePowerBasis : PowerBasis K L := by
+  apply PowerBasis.ofAdjoinEqTop (((integral {n} K L).isIntegral ζ).sub isIntegral_one)
+  exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin  (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
 
 variable {K} (C)
 
@@ -390,7 +389,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ p ^ s - 1) = (p : K) ^ p ^ s := by
   have hirr₁ : Irreducible (cyclotomic (p ^ (k - s + 1)) K) :=
-    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by omega) hirr
+    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by cutsat) hirr
   set η := ζ ^ p ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by

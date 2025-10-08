@@ -15,7 +15,7 @@ import Mathlib.Tactic.TryThis
 
 Defines a category, as a type class parametrised by the type of objects.
 
-## Notations
+## Notation
 
 Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),

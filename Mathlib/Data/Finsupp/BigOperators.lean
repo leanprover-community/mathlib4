@@ -36,11 +36,11 @@ variable {ι M : Type*} [DecidableEq ι]
 
 theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :
     l.sum.support ⊆ l.foldr (Finsupp.support · ⊔ ·) ∅ := by
-  induction' l with hd tl IH
-  · simp
-  · simp only [List.sum_cons]
-    refine Finsupp.support_add.trans (Finset.union_subset_union ?_ IH)
-    rfl
+  induction l with
+  | nil => simp
+  | cons hd tl IH =>
+    simp only [List.sum_cons]
+    exact Finsupp.support_add.trans (Finset.union_subset_union Finset.Subset.rfl IH)
 
 theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M)) :
     s.sum.support ⊆ (s.map Finsupp.support).sup := by
@@ -55,9 +55,10 @@ theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
     x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ f ∈ l, x ∈ f.support := by
   simp only [Finset.sup_eq_union, Finsupp.mem_support_iff]
-  induction' l with hd tl IH
-  · simp
-  · simp only [foldr, Finset.mem_union, Finsupp.mem_support_iff, ne_eq, IH,
+  induction l with
+  | nil => simp
+  | cons hd tl IH =>
+    simp only [foldr, Finset.mem_union, Finsupp.mem_support_iff, ne_eq, IH,
       mem_cons, exists_eq_or_imp]
 
 theorem Multiset.mem_sup_map_support_iff [Zero M] {s : Multiset (ι →₀ M)} {x : ι} :
@@ -75,9 +76,10 @@ open scoped Function -- required for scoped `on` notation
 theorem List.support_sum_eq [AddZeroClass M] (l : List (ι →₀ M))
     (hl : l.Pairwise (_root_.Disjoint on Finsupp.support)) :
     l.sum.support = l.foldr (Finsupp.support · ⊔ ·) ∅ := by
-  induction' l with hd tl IH
-  · simp
-  · simp only [List.pairwise_cons] at hl
+  induction l with
+  | nil => simp
+  | cons hd tl IH =>
+    simp only [List.pairwise_cons] at hl
     simp only [List.sum_cons, List.foldr_cons]
     rw [Finsupp.support_add_eq, IH hl.right, Finset.sup_eq_union]
     suffices _root_.Disjoint hd.support (tl.foldr (fun x y ↦ (Finsupp.support x ⊔ y)) ∅) by
@@ -92,7 +94,7 @@ theorem List.support_sum_eq [AddZeroClass M] (l : List (ι →₀ M))
 theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
     (hs : s.Pairwise (_root_.Disjoint on Finsupp.support)) :
     s.sum.support = (s.map Finsupp.support).sup := by
-  induction' s using Quot.inductionOn with a
+  induction s using Quot.inductionOn with | _ a
   obtain ⟨l, hl, hd⟩ := hs
   suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
     convert List.support_sum_eq a this

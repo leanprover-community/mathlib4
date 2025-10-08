@@ -48,7 +48,7 @@ variable {R M N : Type*} [CommRing R] [PartialOrder R] [TopologicalSpace R] [Clo
 
 lemma isClosed_dual (hp : ∀ x, Continuous (p x)) : IsClosed (dual p s : Set N) := by
   rw [← s.biUnion_of_singleton]
-  simp_rw [dual_iUnion, Submodule.iInf_coe, dual_singleton]
+  simp_rw [dual_iUnion, Submodule.coe_iInf, dual_singleton]
   exact isClosed_biInter fun x hx ↦ isClosed_Ici.preimage <| hp _
 
 end PointedCone

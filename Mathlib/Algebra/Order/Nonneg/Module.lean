@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Module.RingHom
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Nonneg.Basic
 
 /-!
@@ -61,15 +61,21 @@ instance instSMulWithZero : SMulWithZero R≥0 S where
 
 end SMulWithZero
 
-section OrderedSMul
+section IsOrderedModule
 
 variable [IsOrderedRing R] [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
-  [SMulWithZero R M] [hE : OrderedSMul R M]
+  [SMulWithZero R M]
 
-instance instOrderedSMul : OrderedSMul R≥0 M :=
-  ⟨hE.1, hE.2⟩
+instance instIsOrderedModule [hM : IsOrderedModule R M] : IsOrderedModule R≥0 M where
+  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := hM.smul_le_smul_of_nonneg_left hb ha
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := hM.smul_le_smul_of_nonneg_right hb ha
 
-end OrderedSMul
+instance instIsStrictOrderedModule [hM : IsStrictOrderedModule R M] :
+    IsStrictOrderedModule R≥0 M where
+  smul_lt_smul_of_pos_left _b hb _a₁ _a₂ ha := hM.smul_lt_smul_of_pos_left hb ha
+  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := hM.smul_lt_smul_of_pos_right hb ha
+
+end IsOrderedModule
 
 section Module
 

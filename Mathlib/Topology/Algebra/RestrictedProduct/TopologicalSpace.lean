@@ -478,7 +478,7 @@ theorem continuous_dom_prod {R' : ι → Type*} {A' : (i : ι) → Set (R' i)}
   exact (H U hU).comp ((continuous_inclusion hSU).prodMap (continuous_inclusion hTU))
 
 /-- A finitary (instead of binary) version of `continuous_dom_prod`. -/
-theorem continuous_dom_pi {n : Type*} [Fintype n] {X : Type*}
+theorem continuous_dom_pi {n : Type*} [Finite n] {X : Type*}
     [TopologicalSpace X] {A : n → ι → Type*}
     [∀ j i, TopologicalSpace (A j i)]
     {C : (j : n) → (i : ι) → Set (A j i)}

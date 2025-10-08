@@ -6,6 +6,7 @@ Authors: Jon Eugster, David Renshaw, Heather Macbeth, Michael Rothgang
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Real.Basic
 
 /-!
 # Tests for the `field_simp` tactic
@@ -272,6 +273,16 @@ example (hx : x ≠ 0) (hy : y ≠ 0) : P ((x * y) * (y * x)⁻¹) := by test_fi
 #guard_msgs in
 example (hy : y ≠ 0) : P (x ^ 1 * y * x ^ 2 * y⁻¹) := by test_field_simp
 
+/-- info: P (x / (1 - y + y)) -/
+#guard_msgs in
+example (hy : 1 - y ≠ 0): P (x / (1 - y) / (1 + y / (1 - y))) := by test_field_simp
+
+-- test `conv` tactic
+example (hy : 1 - y ≠ 0) : P (x / (1 - y) / (1 + y / (1 - y))) := by
+  conv => enter [1]; field_simp
+  guard_target = P (x / (1 - y + y))
+  exact test_sorry
+
 /-! ### Three atoms -/
 
 /-- info: P (x * y * z) -/
@@ -371,17 +382,23 @@ example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by field
 example {a b : ℚ} (h : b ≠ 0) : a / b + 2 * a / b + (-a) / b + (- (2 * a)) / b = 0 := by field
 example {x y : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by field
 
+example {x : ℚ} : x ^ 2 / (x ^ 2 + 1) + 1 / (x ^ 2 + 1) = 1 := by field
+
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 = 1 := by
   field
 
--- example from the `field_simp` docstring
 example {K : Type*} [Field K] (a b c d x y : K) (hx : x ≠ 0) (hy : y ≠ 0) :
     a + b / x + c / x ^ 2 + d / x ^ 3 = a + x⁻¹ * (y * b / y + (d / x + c) / x) := by
   field
 
 example {a b : ℚ} (ha : a ≠ 0) : a / (a * b) - 1 / b = 0 := by field
 example {x : ℚ} : x ^ 2 * x⁻¹ = x := by field
+
+-- testing that mdata is cleared before parsing goal
+example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
+  have : 1 = 1 := rfl
+  field
 
 /-! ### Mid-proof use -/
 
@@ -428,6 +445,67 @@ example {x y z : ℚ} (h : x * y = x * z) : True := by
   guard_hyp h : x * y = x * z
   exact trivial
 
+example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
+    (a * x + b * y)⁻¹ ≤ a * x⁻¹ + b * y⁻¹ := by
+  field_simp
+  guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+-- vary `<` vs `≤`, `≥` vs `≤`
+example {x y a b : ℚ} (hx : x > 0) (hy : 0 < y) (ha : 0 ≤ a) (hb : 0 < b) :
+    a * x⁻¹ + b * y⁻¹ ≥ (a * x + b * y)⁻¹ := by
+  field_simp
+  guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
+    (a * x + b * y)⁻¹ < a * x⁻¹ + b * y⁻¹ := by
+  field_simp
+  guard_target = x * y < (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 ≤ 1 := by
+  field_simp
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 ≤ (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 ≤ 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 ≤ (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
+  field_simp
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+-- used in `field_simp` docstring
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  field_simp
+  guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+  calc
+    (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+    _ = x ^ 2 := by simp [hx]
+
+-- used in `field` simproc-set docstring
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+  calc
+    (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+    _ = x ^ 2 := by simp [hx]
+
 section
 
 -- TODO (new implementation): do we want `field_simp` to reduce this to `⊢ x * y = z * y ^ 2`?
@@ -448,6 +526,39 @@ example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
   obtain rfl | hy := eq_or_ne y 0
   · simp
   ring_nf
+
+end
+
+/-! Sometimes it takes iterated alternation betweeen `ring_nf` and `field_simp` in order to
+normalize properly.
+
+It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
+eventually. Nor is it clear whether, if so, there are any bounds on how many iterations are needed.
+-/
+section
+
+-- modified from 2021 American Mathematics Competition 12B, problem 9
+example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
+    P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  guard_target = P 2
+  exact test_sorry
+
+example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
+    P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
+  field_simp
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  guard_target = P 2
+  exact test_sorry
 
 end
 
@@ -498,6 +609,12 @@ example {x y z : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (y * x / (y ^ 2 / z)) / f (z / (y / x)) = 1 := by
   field_simp [hf]
 
+open Finset in
+example (n : ℕ) : ∏ i ∈ range n, (1 - (i + 2 : ℚ)⁻¹) < 1 := by
+  field_simp
+  guard_target = ∏ x ∈ range n, ((x:ℚ) + 2 - 1) / (x + 2) < 1
+  exact test_sorry
+
 /-! ## Performance -/
 
 -- from `InnerProductGeometry.cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle`
@@ -545,7 +662,7 @@ example {K : Type*} [Field K] (n : ℕ) (w : K) (h0 : w ≠ 0) : w ^ n ≠ 0 := 
 
 example {K : Type*} [Field K] (n : ℕ) (w : K) (h0 : w ≠ 0) : w ^ n / w ^ n = n := by
   field_simp
-  guard_target = (1:K) = n
+  guard_target = (1 : K) = n
   exact test_sorry
 
 section
@@ -585,6 +702,19 @@ example (hK : ∀ ξ : K, 0 < ξ + 1) (x : K) : 1 / (x + 1) = 5 := by
   field_simp
   guard_target = 1 = (x + 1) * 5
   exact test_sorry
+
+/-- Test that the discharger can handle some casting -/
+example (n : ℕ) (h : n ≠ 0) : 1 / (n : K) * n = 1 := by
+  field_simp
+
+/-- Test that the discharger can handle some casting -/
+example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
+  field_simp
+
+-- Minimised from Fourier/AddCircle.lean
+example (n : ℕ) (T : ℝ) {hT : T ≠ 0} (hn : n ≠ 0) {a : ℝ} :
+    (2 * a / T * (n * (T / 2 / n))) = a := by
+  field_simp
 
 end
 

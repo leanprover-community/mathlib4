@@ -73,8 +73,6 @@ lemma isLocalization_leftAdjoint
     rw [NatTrans.isIso_iff_isIso_app]
     intro X
     exact Localization.inverts W.Q W _ (hW' X)
-  have : Localization.Lifting W.Q W (G ⋙ F ⋙ W.Q) (Φ ⋙ F ⋙ W.Q) :=
-    ⟨(Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight e _⟩
   exact Functor.IsLocalization.of_equivalence_target W.Q W _
     (Equivalence.mk Φ (F ⋙ W.Q)
       (Localization.liftNatIso W.Q W W.Q (G ⋙ F ⋙ W.Q) _ _

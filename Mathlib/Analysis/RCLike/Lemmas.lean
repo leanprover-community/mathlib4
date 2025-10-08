@@ -5,12 +5,19 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
 
 open scoped Finset
 
 variable {K E : Type*} [RCLike K]
+
+open ComplexOrder RCLike in
+lemma convex_RCLike_iff_convex_real [AddCommMonoid E] [Module K E] [Module ℝ E]
+    [IsScalarTower ℝ K E] {s : Set E} : Convex K s ↔ Convex ℝ s :=
+  ⟨Convex.lift ℝ,
+  fun hs => convex_of_nonneg_surjective_algebraMap _ (fun _ => nonneg_iff_exists_ofReal.mp) hs⟩
 
 namespace Polynomial
 
@@ -55,7 +62,7 @@ instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_on
 variable (K E)
 variable [NormedAddCommGroup E] [NormedSpace K E]
 
-/-- A finite dimensional vector space over an `RCLike` is a proper metric space.
+/-- A finite-dimensional vector space over an `RCLike` is a proper metric space.
 
 This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
 `RCLike ?x`. -/

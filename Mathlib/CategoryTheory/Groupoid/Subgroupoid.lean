@@ -493,7 +493,7 @@ theorem mem_im_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
 theorem obj_surjective_of_im_eq_top (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) :
     Function.Surjective φ.obj := by
   rintro d
-  rw [← mem_im_objs_iff, hφ']
+  rw [← mem_im_objs_iff _ hφ, hφ']
   apply mem_top_objs
 
 theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) (Sn : S.IsNormal) :

@@ -78,7 +78,7 @@ theorem IsPartition.of_orbits :
   · intro x
     exact ⟨_, ⟨x, rfl⟩, mem_orbit_self x⟩
   · rintro ⟨a, ha : orbit G a = ∅⟩
-    exact (MulAction.orbit_nonempty a).ne_empty ha
+    exact (MulAction.nonempty_orbit a).ne_empty ha
 
 end orbits
 
@@ -669,11 +669,13 @@ namespace IsBlock
 variable [IsPretransitive G X] {B : Set X}
 
 @[to_additive]
-theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
-    B.ncard = (stabilizer G x).relindex (stabilizer G B) := by
+theorem ncard_block_eq_relIndex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
+    B.ncard = (stabilizer G x).relIndex (stabilizer G B) := by
   have key : (stabilizer G x).subgroupOf (stabilizer G B) = stabilizer (stabilizer G B) x := by
     ext; rfl
-  rw [Subgroup.relindex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
+  rw [Subgroup.relIndex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
+
+@[deprecated (since := "2025-08-12")] alias ncard_block_eq_relindex := ncard_block_eq_relIndex
 
 /-- The cardinality of the ambient space is the product of the cardinality of a block
   by the cardinality of the set of translates of that block -/
@@ -683,8 +685,8 @@ theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
 theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
   obtain ⟨x, hx⟩ := hB_ne
-  rw [ncard_block_eq_relindex hB hx, ← index_stabilizer,
-      Subgroup.relindex_mul_index (hB.stabilizer_le hx), index_stabilizer_of_transitive]
+  rw [ncard_block_eq_relIndex hB hx, ← index_stabilizer,
+      Subgroup.relIndex_mul_index (hB.stabilizer_le hx), index_stabilizer_of_transitive]
 
 /-- The cardinality of a block divides the cardinality of the ambient type -/
 @[to_additive /-- The cardinality of a block divides the cardinality of the ambient type -/]
@@ -718,7 +720,7 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     | inr h =>
       obtain ⟨a, ha⟩ := h; rw [ha]; exact Set.subsingleton_singleton
   cases Set.eq_empty_or_nonempty B with
-  | inl h => rw [h, Set.ncard_empty]; norm_num
+  | inl h => rw [h, Set.ncard_empty]; simp
   | inr h =>
     rw [← hB.ncard_block_mul_ncard_orbit_eq h, lt_iff_not_ge] at hB'
     rw [← not_le]

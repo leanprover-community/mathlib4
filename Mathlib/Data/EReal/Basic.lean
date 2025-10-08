@@ -352,15 +352,15 @@ lemma toReal_eq_toReal {x y : EReal} (hx_top : x ≠ ⊤) (hx_bot : x ≠ ⊥)
 
 lemma toReal_nonneg {x : EReal} (hx : 0 ≤ x) : 0 ≤ x.toReal := by
   cases x
-  · norm_num
+  · simp
   · exact toReal_coe _ ▸ EReal.coe_nonneg.mp hx
-  · norm_num
+  · simp
 
 lemma toReal_nonpos {x : EReal} (hx : x ≤ 0) : x.toReal ≤ 0 := by
   cases x
-  · norm_num
+  · simp
   · exact toReal_coe _ ▸ EReal.coe_nonpos.mp hx
-  · norm_num
+  · simp
 
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by

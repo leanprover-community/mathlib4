@@ -98,6 +98,6 @@ theorem length_mem_splitLengths {α : Type*} (l : List α) (sz : List ℕ) (b : 
   intro i hi
   have := length_splitLengths_getElem_le l sz (hi := hi)
   have := h (sz[i]'(by simpa using hi)) (getElem_mem ..)
-  omega
+  cutsat
 
 end List

@@ -80,7 +80,7 @@ within `s`. However, this does not imply continuity or differentiability within 
 at `x` when `x` does not belong to `s`. Therefore, we require such existence and good behavior on
 a neighborhood of `x` within `s ∪ {x}` (which appears as `insert x s` in this file).
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.

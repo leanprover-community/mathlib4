@@ -276,6 +276,18 @@ theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
 
 end Discrete
 
+@[simp]
+lemma Discrete.forall {α : Type*} {p : Discrete α → Prop} :
+    (∀ (a : Discrete α), p a) ↔ ∀ (a' : α), p ⟨a'⟩ := by
+  rw [iff_iff_eq, discreteEquiv.forall_congr_left]
+  simp [discreteEquiv]
+
+@[simp]
+lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
+    (∃ (a : Discrete α), p a) ↔ ∃ (a' : α), p ⟨a'⟩ := by
+  rw [iff_iff_eq, discreteEquiv.exists_congr_left]
+  simp [discreteEquiv]
+
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]
 def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :

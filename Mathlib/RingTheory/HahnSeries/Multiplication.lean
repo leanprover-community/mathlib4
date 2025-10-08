@@ -699,11 +699,11 @@ theorem order_mul {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMo
 theorem order_pow {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Semiring R] [NoZeroDivisors R]
     (x : HahnSeries Γ R) (n : ℕ) : (x ^ n).order = n • x.order := by
-  induction' n with h IH
-  · simp
-  rcases eq_or_ne x 0 with (rfl | hx)
-  · simp
-  rw [pow_succ, order_mul (pow_ne_zero _ hx) hx, succ_nsmul, IH]
+  induction n with
+  | zero => simp
+  | succ h IH =>
+    rcases eq_or_ne x 0 with (rfl | hx); · simp
+    rw [pow_succ, order_mul (pow_ne_zero _ hx) hx, succ_nsmul, IH]
 
 section NonUnitalNonAssocSemiring
 
@@ -730,9 +730,9 @@ variable [Semiring R]
 
 @[simp]
 theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
-  induction' n with n IH
-  · ext; simp only [pow_zero, coeff_one, zero_smul, coeff_single]
-  · rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
+  induction n with
+  | zero => ext; simp only [pow_zero, coeff_one, zero_smul, coeff_single]
+  | succ n IH => rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
 
 end Semiring
 
@@ -768,10 +768,8 @@ theorem C_injective : Function.Injective (C : R → HahnSeries Γ R) := by
   have h := rs 0
   rwa [C_apply, coeff_single_same, C_apply, coeff_single_same] at h
 
-theorem C_ne_zero {r : R} (h : r ≠ 0) : (C r : HahnSeries Γ R) ≠ 0 := by
-  contrapose! h
-  rw [← C_zero] at h
-  exact C_injective h
+theorem C_ne_zero {r : R} (h : r ≠ 0) : (C r : HahnSeries Γ R) ≠ 0 :=
+  C_injective.ne_iff' C_zero |>.mpr h
 
 theorem order_C {r : R} : order (C r : HahnSeries Γ R) = 0 := by
   by_cases h : r = 0
