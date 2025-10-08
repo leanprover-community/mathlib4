@@ -229,4 +229,13 @@ instance AlexandrovDiscrete.locPathConnectedSpace [AlexandrovDiscrete X] :
   symm
   apply hy.joinedIn <;> rewrite [mem_nhdsKer_singleton] <;> [assumption; rfl]
 
+/-- A locally path-connected compact space has finitely many path components. -/
+instance [CompactSpace X] : Finite <| ZerothHomotopy X := by
+  have ⟨s, hsU⟩ := IsCompact.elim_finite_subcover isCompact_univ pathComponent
+    (fun (_ : X) ↦ IsOpen.pathComponent _)
+    fun x _ ↦ ⟨pathComponent x, ⟨⟨x, rfl⟩, mem_pathComponent_self x⟩⟩
+  refine Finite.of_surjective (fun (i : s) ↦ Quotient.mk'' i) <| Quotient.ind fun x ↦ ?_
+  have ⟨i, hi, h⟩ := mem_iUnion₂.mp <| hsU (a := x) trivial
+  exact ⟨⟨i, hi⟩, Quotient.sound <| mem_pathComponent_iff.mp h⟩
+
 end LocPathConnectedSpace
