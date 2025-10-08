@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Emily Riehl
+Authors: Bhavik Mehta, Emily Riehl, Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Functor.TwoSquare
 import Mathlib.CategoryTheory.HomCongr
-
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -507,6 +506,18 @@ lemma conjugateEquiv_associator_hom
     Functor.comp_map, Category.assoc, ← map_comp, associator_hom_app, map_id,
     Adjunction.comp_counit_app, Category.id_comp]
   simp
+
+lemma conjugateEquiv_leftUnitor_hom
+    {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
+    conjugateEquiv adj (id.comp adj) (leftUnitor L).hom =
+      (rightUnitor R).inv := by
+  cat_disch
+
+lemma conjugateEquiv_rightUnitor_hom
+    {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
+    conjugateEquiv adj (adj.comp id) (rightUnitor L).hom =
+      (leftUnitor R).inv := by
+  cat_disch
 
 lemma conjugateEquiv_whiskerLeft
     {L₁ L₂ : B ⥤ C} {R₁ R₂ : C ⥤ B} {L : A ⥤ B} {R : B ⥤ A}

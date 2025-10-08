@@ -8,10 +8,11 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 /-!
 # Compatibilities for left adjoints from compatibilities satisfied by right adjoints
 
-In this file, given isomorphisms between composition of right adjoint functors,
-we obtain isomorphisms between the corresponding composition of the left adjoint functors,
-and show that the left adjoint functors satisfies properties similar to left/right unitality
-and associativity if the right adjoint functors satisfies the corresponding properties.
+In this file, given isomorphisms between compositions of right adjoint functors,
+we obtain isomorphisms between the corresponding compositions of the left adjoint functors,
+and show that the left adjoint functors satisfies properties similar to the left/right
+unitality and the associativity of pseudofunctors if the right adjoint functors
+satisfies the corresponding properties.
 
 This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
 the behaviour with respect to composition of the pullback functors on presheaves
@@ -103,7 +104,7 @@ section
 variable (τ₀₁₂ : G₂₀ ⟶ G₂₁ ⋙ G₁₀) (τ₁₂₃ : G₃₁ ⟶ G₃₂ ⋙ G₂₁)
   (τ₀₁₃ : G₃₀ ⟶ G₃₁ ⋙ G₁₀) (τ₀₂₃ : G₃₀ ⟶ G₃₂ ⋙ G₂₀)
 
-lemma leftAdjointCompNatTrans₀₁₃_eq_conjugateIsoEquiv_symm :
+lemma leftAdjointCompNatTrans₀₁₃_eq_conjugateEquiv_symm :
     whiskerLeft _ (leftAdjointCompNatTrans adj₁₂ adj₂₃ adj₁₃ τ₁₂₃) ≫
       leftAdjointCompNatTrans adj₀₁ adj₁₃ adj₀₃ τ₀₁₃ =
     (conjugateEquiv adj₀₃ (adj₀₁.comp (adj₁₂.comp adj₂₃))).symm
@@ -113,7 +114,7 @@ lemma leftAdjointCompNatTrans₀₁₃_eq_conjugateIsoEquiv_symm :
   apply (conjugateEquiv adj₀₃ (adj₀₁.comp (adj₁₂.comp adj₂₃))).injective
   simp [leftAdjointCompNatTrans, ← conjugateEquiv_whiskerLeft _ _ adj₀₁]
 
-lemma leftAdjointCompNatTrans₀₂₃_eq_conjugateIsoEquiv_symm :
+lemma leftAdjointCompNatTrans₀₂₃_eq_conjugateEquiv_symm :
     (associator _ _ _).inv ≫
       whiskerRight (leftAdjointCompNatTrans adj₀₁ adj₁₂ adj₀₂ τ₀₁₂) F₂₃ ≫
           leftAdjointCompNatTrans adj₀₂ adj₂₃ adj₀₃ τ₀₂₃ =
@@ -136,8 +137,8 @@ lemma leftAdjointCompNatTrans_assoc
       (associator _ _ _).inv ≫
         whiskerRight (leftAdjointCompNatTrans adj₀₁ adj₁₂ adj₀₂ τ₀₁₂) F₂₃ ≫
           leftAdjointCompNatTrans adj₀₂ adj₂₃ adj₀₃ τ₀₂₃ := by
-  simp [leftAdjointCompNatTrans₀₁₃_eq_conjugateIsoEquiv_symm,
-    leftAdjointCompNatTrans₀₂₃_eq_conjugateIsoEquiv_symm, reassoc_of% h]
+  simp [leftAdjointCompNatTrans₀₁₃_eq_conjugateEquiv_symm,
+    leftAdjointCompNatTrans₀₂₃_eq_conjugateEquiv_symm, reassoc_of% h]
 
 end
 
