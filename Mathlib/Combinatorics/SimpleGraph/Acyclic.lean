@@ -72,6 +72,11 @@ lemma IsAcyclic.embedding (f : G ↪g G') (h : G'.IsAcyclic) : G.IsAcyclic :=
 lemma Iso.isAcyclic_iff (f : G ≃g G') : G.IsAcyclic ↔ G'.IsAcyclic :=
   ⟨fun h ↦ h.embedding f.symm, fun h ↦ h.embedding f⟩
 
+/-- Isomorphic graphs are trees together. -/
+lemma Iso.isTree_iff (f : G ≃g G') : G.IsTree ↔ G'.IsTree :=
+  ⟨fun ⟨hc, ha⟩ ↦ ⟨f.connected_iff.mp hc, f.isAcyclic_iff.mp ha⟩,
+   fun ⟨hc, ha⟩ ↦ ⟨f.connected_iff.mpr hc, f.isAcyclic_iff.mpr ha⟩⟩
+
 lemma IsAcyclic.of_map (f : V ↪ V') (h : G.map f |>.IsAcyclic) : G.IsAcyclic :=
   h.embedding <| SimpleGraph.Embedding.map ..
 
