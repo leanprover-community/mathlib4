@@ -372,6 +372,24 @@ info: mfderivWithin I 𝓘(𝕜, E) (↑ψ) s : (x : M) → TangentSpace I x →
 #guard_msgs in
 #check mfderiv[s] ψ
 
+/--
+info: mfderivWithin I 𝓘(𝕜, E) (↑ψ) s : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑ψ x)
+-/
+#guard_msgs in
+variable {f : ContMDiffSection I F n V} in
+#check mfderiv[s] ψ
+
+/-- info: mfderiv I I' ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
+#guard_msgs in
+variable {g : ContMDiffMap I I' M M' n} in
+#check mfderiv% g
+
+-- An example of "any type" which coerces to functions.
+/-- info: mfderiv I I' ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
+#guard_msgs in
+variable {g : Equiv M M'} in
+#check mfderiv% g
+
 end coercion
 
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
