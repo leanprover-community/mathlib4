@@ -345,6 +345,8 @@ variable (μ : Measure E)
 
 variable {F}
 
+/-- `TestFunction.Measure.testAgainst` wraps the integral with respect to a measure `μ`
+as a map on test functions. -/
 noncomputable def testAgainst : 𝓓^{n}(E, F) → F := (∫ x, · x ∂μ)
 
 @[simp]
@@ -363,6 +365,8 @@ lemma map_integrable' (f : 𝓓^{n}_{K}(E, F)) : Integrable f μ  := by
 
 variable [SecondCountableTopology E] [SecondCountableTopology F] [MeasurableSpace F] [BorelSpace F]
 
+/-- `TestFunction.Measure.testAgainstₗ` wraps the integral with respect to a measure `μ`
+as a `𝕜`-linear map on test functions. -/
 @[simps!]
 noncomputable def testAgainstₗ : 𝓓^{n}(E, F) →ₗ[𝕜] F :=
   { toFun := testAgainst n μ
@@ -371,6 +375,8 @@ noncomputable def testAgainstₗ : 𝓓^{n}(E, F) →ₗ[𝕜] F :=
 
 variable [CompleteSpace F]
 
+/-- `TestFunction.Measure.testAgainstCLM` wraps the integral with respect to a measure `μ`
+as a continuous `𝕜`-linear map on test functions. -/
 @[simps!]
 noncomputable def testAgainstCLM : 𝓓^{n}(E, F) →L[𝕜] F where
   toLinearMap := (testAgainstₗ 𝕜 n μ : 𝓓^{n}(E, F) →ₗ[𝕜] F)
