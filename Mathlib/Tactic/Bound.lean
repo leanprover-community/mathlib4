@@ -249,9 +249,3 @@ macro_rules
   | `(tactic| bound%$tk [$[$ts],*]) => do
     let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| have := $t)
     `(tactic| ($haves;*; bound%$tk))
-
-/-!
-We register `bound` with the `hint` tactic.
--/
-
-register_hint bound
