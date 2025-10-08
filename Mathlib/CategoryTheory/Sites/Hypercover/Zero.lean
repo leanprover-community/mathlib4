@@ -453,6 +453,19 @@ lemma Small.mem₀ (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] :
     (E.restrictIndex <| Small.restrictFun E).presieve₀ ∈ J S :=
   (Small.exists_restrictIndex_mem E).choose_spec.choose_spec
 
+instance (E : ZeroHypercover.{w} J S) : ZeroHypercover.Small.{max u v} E where
+  exists_restrictIndex_mem := by
+    obtain ⟨ι, Y, f, h⟩ := E.presieve₀.exists_eq_ofArrows
+    have (Z : C) (g : Z ⟶ S) (hg : Presieve.ofArrows Y f g) :
+        ∃ (j : E.I₀) (h : Z = E.X j), g = eqToHom h ≫ E.f j := by
+      obtain ⟨j⟩ : E.presieve₀ g := by rwa [h]
+      use j, rfl
+      simp
+    choose j h₁ h₂ using this
+    refine ⟨ι, fun i ↦ j _ _ (.mk i), ?_⟩
+    convert E.mem₀
+    exact le_antisymm (fun Z g ⟨i⟩ ↦ ⟨_⟩) (h ▸ fun Z g ⟨i⟩ ↦ .mk' i (h₁ _ _ _) (h₂ _ _ _))
+
 /-- Restrict a `w'`-small `0`-hypercover to a `w'`-`0`-hypercover. -/
 @[simps toPreZeroHypercover]
 noncomputable
@@ -477,11 +490,18 @@ lemma mem_iff_exists_zeroHypercover {X : C} {R : Presieve X} :
   obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   use ⟨⟨ι, Y, f⟩, hR⟩
 
-/-- A precoverage is `w'`-`w`-small, if every `w`-`0`-hypercover is `w'`-small. -/
+/-- A precoverage is `w`-small, if every `0`-hypercover is `w`-small. -/
 class Small (J : Precoverage C) : Prop where
-  zeroHypercoverSmall : ∀ {S : C} (E : ZeroHypercover.{w} J S), ZeroHypercover.Small.{w'} E
+  zeroHypercoverSmall : ∀ {S : C} (E : ZeroHypercover.{max u v} J S), ZeroHypercover.Small.{w'} E
 
-attribute [instance] Small.zeroHypercoverSmall
+instance (J : Precoverage C) [Small.{w} J] {S : C} (E : ZeroHypercover.{w'} J S) :
+    ZeroHypercover.Small.{w} E := by
+  have : ZeroHypercover.Small.{w} (ZeroHypercover.restrictIndexOfSmall.{max u v} E) :=
+    Small.zeroHypercoverSmall _
+  let E' := ZeroHypercover.restrictIndexOfSmall.{w}
+    (ZeroHypercover.restrictIndexOfSmall.{max u v} E)
+  use E'.I₀, ZeroHypercover.Small.restrictFun _ ∘ ZeroHypercover.Small.restrictFun _
+  exact E'.mem₀
 
 end Precoverage
 

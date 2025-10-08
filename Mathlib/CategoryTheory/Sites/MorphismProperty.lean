@@ -20,6 +20,8 @@ this construction by intersecting with the pretopology of surjective families.
 
 -/
 
+universe w
+
 namespace CategoryTheory
 
 open Limits
@@ -53,7 +55,7 @@ instance [P.IsStableUnderComposition] : P.precoverage.IsStableUnderComposition w
     intro ⟨i⟩
     exact P.comp_mem _ _ (hg _ ⟨i.2⟩) (hf ⟨i.1⟩)
 
-instance : Precoverage.Small P.precoverage where
+instance : Precoverage.Small.{w} P.precoverage where
   zeroHypercoverSmall E := by
     constructor
     use PEmpty, PEmpty.elim
