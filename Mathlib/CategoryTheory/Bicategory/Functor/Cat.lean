@@ -62,14 +62,14 @@ lemma mapComp'_inv_naturality :
 lemma mapComp'_naturality_1 :
     (F.mapComp' f g fg hfg).inv.app X ≫
       (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
-      (F.map g).map ((F.map f).map a) :=
+    (F.map g).map ((F.map f).map a) :=
   NatIso.naturality_1 (F.mapComp' f g fg hfg) a
 
 @[reassoc]
 lemma mapComp'_naturality_2 :
     (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) ≫
       (F.mapComp' f g fg hfg).inv.app Y =
-      (F.map fg).map a :=
+    (F.map fg).map a :=
   NatIso.naturality_2 (F.mapComp' f g fg hfg) a
 
 end
