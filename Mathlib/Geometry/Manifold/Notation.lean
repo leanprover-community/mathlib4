@@ -310,13 +310,6 @@ where
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
 
-/-- Ensures that `e` is a function. Attempts to coerce `e` to a function if necessary. -/
-def ensureIsFunction (e : Expr) : MetaM Expr := do
-  let ty ← whnf <|← instantiateMVars <|← inferType e
-  if ty.isForall then return e else (← coerceToFunction? e).getDM <|
-    throwError "Expected{indentD e}\nof type{indentD ty}\nto be a function, or to be coercible to \
-      a function"
-
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
 
@@ -346,7 +339,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
 
 end Elab
 
-open Elab
+open Elab Lean.Meta
 
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
