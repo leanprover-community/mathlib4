@@ -74,8 +74,6 @@ instance [IsTotallyReal K] (F : IntermediateField ℚ K) : IsTotallyReal F :=
 instance [IsTotallyReal K] (F : Subfield K) : IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
 
-
-
 variable (K)
 
 @[simp]

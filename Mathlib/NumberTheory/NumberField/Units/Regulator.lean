@@ -300,9 +300,8 @@ theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (ra
 
 open scoped Classical in
 /--
-The degree of `K` times the regulator of the family `u` is equal to the absolute value of the
-determinant of the matrix whose columns are
-`(mult w * log w (fundSystem K i))_i, w` and the column `(mult w)_w`.
+The degree of `K` times the regulator of `K` is equal to the absolute value of the determinant of
+the matrix whose columns are `(mult w * log w (fundSystem K i))_i, w` and the column `(mult w)_w`.
 -/
 theorem finrank_mul_regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (rank K)) :
     finrank ℚ K * regulator K =

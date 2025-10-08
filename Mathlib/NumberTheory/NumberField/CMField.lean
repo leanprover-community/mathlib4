@@ -400,26 +400,28 @@ theorem closure_realFundSystem_sup_torsion :
   simp [realFundSystem, Equiv.exists_congr_left (finCongr (units_rank_eq_units_rank K).symm)]
 
 open dirichletUnitTheorem in
+theorem regOfFamily_realFunSystem :
+    regOfFamily (realFundSystem K) = 2 ^ rank K * regulator K⁺ := by
+  classical
+  let W₀ := (equivInfinitePlace K).symm w₀
+  let f : {w : InfinitePlace K // w ≠ W₀} ≃ {w : InfinitePlace K⁺ // w ≠ w₀} :=
+    (equivInfinitePlace K).subtypeEquiv fun w ↦ by rw [not_iff_not, Equiv.eq_symm_apply]
+  let g := ((finCongr (units_rank_eq_units_rank K).symm).trans (equivFinRank K⁺)).trans f.symm
+  rw [show (2 : ℝ) ^ rank K = |∏ w : {w : InfinitePlace K⁺ // w ≠ w₀}, 2| by
+    rw [Finset.prod_const, abs_pow, abs_of_pos zero_lt_two, ← units_rank_eq_units_rank K, rank]
+    simp]
+  rw [regulator_eq_regOfFamily_fundSystem, regOfFamily_eq_det _ W₀ g.symm, regOfFamily_eq_det',
+    ← abs_mul, ← Matrix.det_mul_column, ← Matrix.det_reindex_self f, Matrix.reindex_apply]
+  congr; ext i w
+  rw [Matrix.submatrix_apply, Matrix.of_apply, Matrix.of_apply,
+    show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
+    show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
+  simp [f, g]
+
 theorem regulator_div_regulator_eq_two_pow_mul_indexRealUnits_inv :
     regulator K / regulator K⁺ = 2 ^ rank K * (indexRealUnits K : ℝ)⁻¹ := by
-  classical
-  have : regOfFamily (realFundSystem K) = 2 ^ rank K * regulator K⁺ := by
-    let W₀ := (equivInfinitePlace K).symm w₀
-    let f : {w : InfinitePlace K // w ≠ W₀} ≃ {w : InfinitePlace K⁺ // w ≠ w₀} :=
-      (equivInfinitePlace K).subtypeEquiv fun w ↦ by rw [not_iff_not, Equiv.eq_symm_apply]
-    let g := ((finCongr (units_rank_eq_units_rank K).symm).trans (equivFinRank K⁺)).trans f.symm
-    rw [show (2 : ℝ) ^ rank K = |∏ w : {w : InfinitePlace K⁺ // w ≠ w₀}, 2| by
-      rw [Finset.prod_const, abs_pow, abs_of_pos zero_lt_two, ← units_rank_eq_units_rank K, rank]
-      simp]
-    rw [regulator_eq_regOfFamily_fundSystem, regOfFamily_eq_det _ W₀ g.symm, regOfFamily_eq_det',
-      ← abs_mul, ← Matrix.det_mul_column, ← Matrix.det_reindex_self f, Matrix.reindex_apply]
-    congr; ext i w
-    rw [Matrix.submatrix_apply, Matrix.of_apply, Matrix.of_apply,
-      show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
-      show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
-    simp [f, g]
   rw [indexRealUnits, ← closure_realFundSystem_sup_torsion, ← regOfFamily_div_regulator
-    (realFundSystem K), this, inv_div, ← mul_div_assoc, mul_div_mul_comm,
+    (realFundSystem K), regOfFamily_realFunSystem, inv_div, ← mul_div_assoc, mul_div_mul_comm,
     div_self (by positivity), one_mul]
 
 end units
