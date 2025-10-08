@@ -97,7 +97,7 @@ omit [IsManifold I 0 M] [VectorBundle 𝕜 F V]
 variable {ι : Type*} {s s' : ι → (x : M) → V x} {u u' : Set M} {x : M} {n : WithTop ℕ∞}
 
 variable (I F n) in
-/-
+/--
 A family of sections `s i` of `V → M` is called a **C^k local frame** on a set `U ⊆ M` iff
 - the section values `s i x` form a basis for each `x ∈ U`,
 - each section `s i` is `C^k` on `U`.
@@ -131,8 +131,6 @@ lemma mono (hs : IsLocalFrameOn I F n s u) (hu'u : u' ⊆ u) : IsLocalFrameOn I 
     exact hs.generating (hu'u hx)
   contMDiffOn i := (hs.contMDiffOn i).mono hu'u
 
--- TODO think: is this bracketing behaviour desired!
--- in any case, add a test and a nicer error message!
 lemma contMDiffAt (hs : IsLocalFrameOn I F n s u) (hu : IsOpen u) (hx : x ∈ u) (i : ι) :
     CMDiffAt n (T% (s i)) x :=
   (hs.contMDiffOn i).contMDiffAt <| hu.mem_nhds hx
