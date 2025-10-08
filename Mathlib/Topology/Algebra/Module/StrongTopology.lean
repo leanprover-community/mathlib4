@@ -502,7 +502,7 @@ variable {𝕜 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₂]
   [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
   {σ₁₃ : 𝕜 →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-/-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
+/-- Send a continuous sesquilinear map to an abstract sesquilinear map (forgetting continuity). -/
 def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
   (coeLMₛₗ σ₂₃).comp L.toLinearMap
 
@@ -512,6 +512,12 @@ def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[
     L.toLinearMap₁₂ v w = L v w := rfl
 
 @[deprecated (since := "2025-07-28")] alias toLinearMap₂_apply := toLinearMap₁₂_apply
+
+/-- Send a continuous bilinear form to an abstract bilinear form (forgetting continuity). -/
+def toBilinForm (L : E →L[𝕜] E →L[𝕜] 𝕜) : LinearMap.BilinForm 𝕜 E := L.toLinearMap₁₂
+
+@[simp] lemma toBilinForm_apply (L : E →L[𝕜] E →L[𝕜] 𝕜) (v : E) (w : E) :
+    L.toBilinForm v w = L v w := rfl
 
 end BilinearMaps
 
