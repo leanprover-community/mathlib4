@@ -64,14 +64,9 @@ lemma leftAdjointCompIso_assoc
 
 end
 
-section
-
-variable {F₀₁ : C₀ ⥤ C₀} {G₁₀ : C₀ ⥤ C₀} (adj : F₀₁ ⊣ G₁₀) (e₁₀ : G₁₀ ≅ 𝟭 C₀)
-
 @[simps! -isSimp]
-def leftAdjointIdIso : F₀₁ ≅ 𝟭 C₀ := (conjugateIsoEquiv .id adj).symm e₁₀.symm
-
-end
+def leftAdjointIdIso {F₀₁ : C₀ ⥤ C₀} {G₁₀ : C₀ ⥤ C₀} (adj : F₀₁ ⊣ G₁₀) (e₁₀ : G₁₀ ≅ 𝟭 C₀) :
+    F₀₁ ≅ 𝟭 C₀ := (conjugateIsoEquiv .id adj).symm e₁₀.symm
 
 lemma leftAdjointCompIso_comp_id
     {F₀₁ : C₀ ⥤ C₁} {F₁₂ : C₁ ⥤ C₁} {G₁₀ : C₁ ⥤ C₀} {G₂₁ : C₁ ⥤ C₁}
