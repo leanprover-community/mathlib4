@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.LinearAlgebra.Finsupp.Pi
 
@@ -120,6 +121,41 @@ theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
 theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
     IsTopologicalRing (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instIsTopologicalRing Unit R
+
+section Sum
+variable [Semiring R] {ι : Type*} {f : ι → R⟦X⟧}
+
+theorem hasSum_iff_hasSum_coeff {g : R⟦X⟧} :
+    HasSum f g ↔ ∀ d, HasSum (fun i ↦ coeff d (f i)) (coeff d g) := by
+  simp_rw [HasSum, ← map_sum]
+  apply tendsto_iff_coeff_tendsto
+
+theorem summable_iff_summable_coeff :
+    Summable f ↔ ∀ d : ℕ, Summable (fun i ↦ coeff d (f i)) := by
+  simp_rw [Summable, hasSum_iff_hasSum_coeff]
+  constructor
+  · rintro ⟨a, h⟩ n
+    exact ⟨coeff n a, h n⟩
+  · intro h
+    choose a h using h
+    exact ⟨mk a, by simpa using h⟩
+
+/-- A family of `PowerSeries` is summable if their order tends to infinity. -/
+theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFiniteOrderBot ι]
+    (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable f := by
+  rcases isEmpty_or_nonempty ι with hempty | hempty
+  · apply summable_empty
+  rw [summable_iff_summable_coeff]
+  intro n
+  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h
+  obtain ⟨i, hi⟩ := h n
+  refine summable_of_finite_support <| (Set.finite_Iic i).subset ?_
+  simp_rw [Function.support_subset_iff, Set.mem_Iic]
+  intro k hk
+  contrapose! hk
+  exact coeff_of_lt_order _ <| by simpa using (hi k hk.le)
+
+end Sum
 
 end WithPiTopology
 

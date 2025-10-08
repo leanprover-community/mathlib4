@@ -359,13 +359,10 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → WithTop ℕ} (hτ : Is
   · rw [not_le] at hij
     convert @MeasurableSet.empty _ (f.1 j)
     ext ω
-    simp only [Set.mem_empty_iff_false, iff_false, Set.mem_setOf, ENat.some_eq_coe]
+    simp only [Set.mem_empty_iff_false, iff_false, Set.mem_setOf]
     cases τ ω with
     | top => simp
-    | coe a =>
-      simp only [ENat.some_eq_coe]
-      norm_cast
-      omega
+    | coe a => simp only [ENat.some_eq_coe]; norm_cast; cutsat
 
 -- generalize to certain countable type?
 theorem add {f : Filtration ℕ m} {τ π : Ω → WithTop ℕ}
@@ -1333,7 +1330,7 @@ theorem condExp_stopping_time_ae_eq_restrict_eq [FirstCountableTopology ι]
     (hτ.measurableSet_eq' i) fun t => ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 
-theorem condExp_min_stopping_time_ae_eq_restrict_le  [SecondCountableTopology ι]
+theorem condExp_min_stopping_time_ae_eq_restrict_le [SecondCountableTopology ι]
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ)
     [SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
     μ[f|(hτ.min hσ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}] μ[f|hτ.measurableSpace] := by

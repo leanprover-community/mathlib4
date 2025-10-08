@@ -16,7 +16,7 @@ import Mathlib.Algebra.Notation.Prod
 In this file we define an extension of `Equiv` called `RingEquiv`, which is a datatype representing
 an isomorphism of `Semiring`s, `Ring`s, `DivisionRing`s, or `Field`s.
 
-## Notations
+## Notation
 
 * ``infixl ` ≃+* `:25 := RingEquiv``
 

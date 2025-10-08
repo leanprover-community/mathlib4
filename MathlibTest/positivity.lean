@@ -7,6 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
@@ -107,6 +108,11 @@ example : (1/4 - 2/3 : ℚ) ≠ 0 := by positivity
 example : (1/4 - 2/3 : α) ≠ 0 := by positivity
 
 end
+
+/- ### `ArithmeticFunction.sigma` and `ArithmeticFunction.zeta` -/
+
+example (a b : ℕ) (hb : 0 < b) : 0 < ArithmeticFunction.sigma a b := by positivity
+example (a : ℕ) (ha : 0 < a) : 0 < ArithmeticFunction.zeta a := by positivity
 
 /-
 ## Test for meta-variable instantiation
@@ -319,9 +325,13 @@ example [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
 
 example {a b : ℝ} (ha : 0 ≤ a) : 0 ≤ a ^ b := by positivity
 example {a b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
-example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < (a : ℝ) ^ b := by positivity
--- example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a ^ b := by positivity
--- example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b := by positivity
+example {a : ℝ≥0} {b : ℝ} : 0 ≤ a ^ b := by positivity
+example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
+example {a : ℝ≥0∞} {b : ℝ} : 0 ≤ a ^ b := by positivity
+example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a ^ b := by positivity
+example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b := by positivity
+example {a : ℝ≥0∞} : 0 < a ^ 0 := by positivity
+example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity
 example {a : ℝ} : 0 < a ^ 0 := by positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
