@@ -99,22 +99,11 @@ lemma measurable_betaPDFReal (α β : ℝ) : Measurable (betaPDFReal α β) :=
 lemma stronglyMeasurable_betaPDFReal (α β : ℝ) :
     StronglyMeasurable (betaPDFReal α β) := (measurable_betaPDFReal α β).stronglyMeasurable
 
-/-- The beta integrand is non-negative on `(0,1)`. -/
-lemma beta_integrand_nonneg
-    {α β x : ℝ} (hα : 0 < α) (hβ : 0 < β) (hx : x ∈ Ioo (0 : ℝ) 1) :
-    0 ≤ (1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1) := by
-  apply mul_nonneg
-  · apply mul_nonneg
-    · exact (one_div_pos.mpr (beta_pos hα hβ)).le
-    · exact Real.rpow_nonneg hx.1.le (α - 1)
-  · exact Real.rpow_nonneg (sub_nonneg.mpr hx.2.le) (β - 1)
-
 /-- The pdf of the beta distribution integrates to 1. -/
 @[simp]
 lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
     ∫⁻ x, betaPDF α β x = 1 := by
-  rw [lintegral_betaPDF, ← ENNReal.toReal_eq_one_iff,
-    ← integral_eq_lintegral_of_nonneg_ae]
+  rw [lintegral_betaPDF, ← ENNReal.toReal_eq_one_iff, ← integral_eq_lintegral_of_nonneg_ae]
   · simp_rw [mul_assoc, integral_const_mul]
     field_simp
     rw [div_eq_one_iff_eq (ne_of_gt (beta_pos hα hβ)), beta_eq_betaIntegralReal α β hα hβ,
@@ -128,7 +117,8 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
     convert betaIntegral_convergent (u := α) (v := β) (by simpa) (by simpa)
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by simp), IntegrableOn]
   · refine ae_restrict_of_forall_mem measurableSet_Ioo (fun x hx ↦ ?_)
-    simpa using beta_integrand_nonneg (α := α) (β := β) hα hβ hx
+    convert betaPDFReal_pos hx.1 hx.2 hα hβ |>.le using 1
+    rw [betaPDFReal, if_pos ⟨hx.1, hx.2⟩]
   · exact Measurable.aestronglyMeasurable (by fun_prop)
 
 end BetaPDF
@@ -140,7 +130,6 @@ def betaMeasure (α β : ℝ) : Measure ℝ :=
 
 lemma isProbabilityMeasureBeta {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
     IsProbabilityMeasure (betaMeasure α β) where
-  measure_univ := by simp only [betaMeasure, MeasurableSet.univ,
-    withDensity_apply, Measure.restrict_univ, lintegral_betaPDF_eq_one hα hβ]
+  measure_univ := by simp [betaMeasure, lintegral_betaPDF_eq_one hα hβ]
 
 end ProbabilityTheory
