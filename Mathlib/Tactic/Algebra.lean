@@ -626,10 +626,12 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
   let _sR' ← synthInstanceQ q(CommSemiring $R')
   let _algR'R ← synthInstanceQ q(Algebra $R' $R)
   let _ist ← synthInstanceQ q(IsScalarTower $R' $R $A)
+  -- TODO: Determine if I should be synthing this instance.
+  let _mod ← synthInstanceQ q(Module $R' $A)
   assumeInstancesCommute
   let r_cast : Q($R) := q(algebraMap $R' $R $r')
   have : Q($r_cast = algebraMap $R' $R $r') := q(rfl)
-  return ⟨r_cast, q(sorry)⟩
+  return ⟨r_cast, q(algebraMap_smul $R $r' $a)⟩
 
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
     {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Algebra.Cache q($sR))
@@ -740,7 +742,6 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
     let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
       (simpTheorems := #[thms])
       (congrTheorems := ← getSimpCongrTheorems)
-
     pure <| ←
       r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
@@ -767,17 +768,7 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
 
   let g' ← mkFreshExprMVarQ q($a = $b)
   goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
-  -- if ← isDefEq a b then
-    -- have : $a =Q $b := ⟨⟩
-    -- g'.mvarId!.assign (q(rfl : $a = $b) : Expr)
   return g'.mvarId!
-  -- else throwError "algebra failed to normalize expression."
-  -- let l ← ExSum.eq_exSum g'.mvarId! a b exa exb
-  -- Tactic.pushGoals l
-  -- for g in l do
-  --   let l ← evalTacticAt (← `(tactic| norm_num)) g
-  --   Tactic.pushGoals l
-    -- NormNum.normNumAt g (← getSimpContext)
 
 /-- Collect all scalar rings from scalar multiplications in the expression. -/
 partial def collectScalarRings (e : Expr) : MetaM (List (Σ u : Lean.Level, Q(Type u))) := do
@@ -833,12 +824,10 @@ def inferBase (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
   let rings ← collectScalarRings e
   let res ← match rings with
   | [] =>
-    IO.println "Did not find ring to infer from. Assuming ℕ"
     /- TODO: If we can synthesize Algebra ℚ A or Algebra ℤ A, instead return ℚ or ℤ respectively.
       Note this function does not currently know A. -/
     return ⟨0, q(ℕ)⟩
   | r :: rs => rs.foldlM pickLargerRing r
-  IO.println s!"Inferred ring {← ppExpr res.2}"
   return res
 
 def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)) : AtomM (Option (Option (Result (ExSum sAlg) e))) := do
@@ -1021,10 +1010,6 @@ def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) 
         | some id => id :: ids
       ⟩
 
-#check simpTarget
-
-#check Simp.Simproc
-
 def runSimp (f : Simp.Result → MetaM Simp.Result) (g : MVarId) : MetaM MVarId := do
   let e ← g.getType
   let r ← f {expr := e, proof? := none}
@@ -1174,8 +1159,6 @@ example : 2 = 1 := by
   match_scalars_alg with ℕ
   exact sorryAlgebraTest
 
-
-
 -- #lint
 
 example (x y : ℚ) (m n : ℕ) : (x + 2) ^ (2 * n+1) = ((x+2)^n)^2 * (x+2) := by
@@ -1185,7 +1168,7 @@ example (x y : ℚ) (m n : ℕ) : (x^n + 1)^2 = 0 := by
   algebra_nf
   exact sorryAlgebraTest
 
---TODO: this is broken; should cast
+--TODO: this is broken; should cast the natural smul into integer smul.
 example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   match_scalars_alg with ℤ
   exact sorryAlgebraTest
