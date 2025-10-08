@@ -113,13 +113,13 @@ lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
 `μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))`, then for all `C' < C`, `x ↦ exp (C' * ‖x‖ ^ 2)`
 is integrable with respect to `μ`. -/
 lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ}
-    (h_centered : Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2))
+    (hint : Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2))
       (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))))
     (hC'_pos : 0 < C') (hC'_lt : C' < C) :
     Integrable (fun x ↦ rexp (C' * ‖x‖ ^ 2)) μ := by
   have h_int : ∀ᵐ y ∂μ, Integrable (fun x ↦ rexp (C * ‖x - y‖^2)) μ := by
-    rw [integrable_conv_iff (by fun_prop)] at h_centered
-    replace hC := h_centered.1
+    rw [integrable_conv_iff (by fun_prop)] at hint
+    replace hC := hint.1
     simp only [ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
     rw [integrable_map_measure (by fun_prop) (by fun_prop)] at hy
@@ -143,7 +143,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
   have h_le : ‖x‖ ^ 2 ≤ (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by
     calc ‖x‖ ^ 2
     _ = ‖x - y + y‖ ^ 2 := by simp
-    _ ≤ (‖x - y‖  + ‖y‖) ^ 2 := by gcongr; exact norm_add_le (x - y) y
+    _ ≤ (‖x - y‖  + ‖y‖) ^ 2 := by grw [norm_add_le (x - y) y]
     _ = ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + 2 * ‖x - y‖ * ‖y‖ := by ring
     _ ≤ ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + ε * ‖x - y‖ ^ 2 + ε⁻¹ * ‖y‖ ^ 2 := by
       simp_rw [add_assoc]
@@ -200,7 +200,7 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative
     refine integrable_of_le_of_le (g₁ := 0) (g₂ := 1) (by fun_prop)
       (ae_of_all _ fun _ ↦ by positivity) ?_ (integrable_const _) (integrable_const _)
-    refine ae_of_all _ fun x ↦ ?_
+    filter_upwards with x
     simp only [neg_mul, Pi.one_apply, Real.exp_le_one_iff, Left.neg_nonpos_iff]
     positivity
   have h_subset : Set.Ioo (-C) C ⊆ interior (integrableExpSet (fun x ↦ ‖x‖ ^ 2) μ) := by
