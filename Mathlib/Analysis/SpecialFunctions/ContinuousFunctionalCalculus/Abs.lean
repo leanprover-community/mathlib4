@@ -6,6 +6,8 @@ Authors: Jon Bannon, Jireh Loreaux
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
+
 
 /-!
 # Absolute value defined via the continuous functional calculus
@@ -22,6 +24,7 @@ and provides basic API.
 variable {𝕜 A : Type*}
 
 open scoped NNReal
+open CFC
 
 namespace CFC
 
@@ -55,6 +58,47 @@ variable [IsTopologicalRing A] [T2Space A]
 
 lemma abs_mul_abs (a : A) : abs a * abs a = star a * a :=
   sqrt_mul_sqrt_self _ <| star_mul_self_nonneg _
+
+/- The hypotheses could be weakened to `Commute (star a * a) b`, but
+in that case one should simply use `Commute.cfcₙ_nnreal` directly.
+
+The point of this theorem is to have simpler hypotheses. -/
+lemma Commute.abs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+    Commute (abs a) b :=
+  .cfcₙ_nnreal (by simp_all [star_star b ▸ h₂.star_star]) _
+
+/- The hypotheses could be weakened to `Commute (star a * a) b`, but
+in that case one should simply use `Commute.cfcₙ_nnreal` directly.
+
+The point of this theorem is to have simpler hypotheses. -/
+lemma Commute.abs_right {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+    Commute b (abs a) :=
+  h₁.abs_left h₂ |>.symm
+
+/- The hypotheses could be weakened to `Commute (star a * a) (star b * b)`, but
+in that case one should simply use `Commute.cfcₙ_nnreal` (twice) directly.
+
+The point of this theorem is to have simpler hypotheses. -/
+lemma Commute.abs_abs {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+    Commute (abs a) (abs b) :=
+  have h₃ := star_star b ▸ h₂.star_star
+  Commute.cfcₙ_nnreal (by simp_all) _ |>.symm.cfcₙ_nnreal _ |>.symm
+
+/-- Normal elements commute with their absolute value. -/
+lemma commute_abs_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
+    Commute (abs a) a :=
+  .abs_left (.refl a) ha.star_comm_self.symm
+
+lemma Commute.abs_mul_eq {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+    abs (a * b) = abs a * abs b := by
+  have hab := h₁.abs_abs h₂
+  rw [abs, CFC.sqrt_eq_iff _ _ (star_mul_self_nonneg _)
+    (hab.mul_nonneg (abs_nonneg a) (abs_nonneg b)), hab.eq, hab.mul_mul_mul_comm,
+    abs_mul_abs, abs_mul_abs, star_mul, (commute_star_comm.mpr h₂).symm.mul_mul_mul_comm, h₁.eq]
+
+lemma abs_mul_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
+    abs (a * a) = star a * a := by
+  rw [Commute.abs_mul_eq (.refl a) ha.star_comm_self.symm, abs_mul_abs]
 
 lemma abs_nnrpow_two (a : A) : abs a ^ (2 : ℝ≥0) = star a * a := by
   simp only [abs_nonneg, nnrpow_two]
