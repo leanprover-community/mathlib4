@@ -8,7 +8,6 @@ import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 import Mathlib.MeasureTheory.Integral.CircleAverage
-import Mathlib.Tactic.Cases
 
 /-!
 # Mahler measure of complex polynomials
