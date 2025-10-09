@@ -224,6 +224,9 @@ theorem isOpen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x 
   exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
+@[deprecated (since := "2025-10-09")]
+alias isOpen_closedball := isOpen_closedBall
+
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
