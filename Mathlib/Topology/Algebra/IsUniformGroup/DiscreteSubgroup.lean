@@ -70,7 +70,7 @@ lemma Subgroup.Commensurable.discreteTopology_iff
     {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]
     {H K : Subgroup G} (h : Commensurable H K) :
     DiscreteTopology H ↔ DiscreteTopology K :=
-  calc DiscreteTopology H  ↔ DiscreteTopology ↑(H ⊓ K) :=
+  calc DiscreteTopology H ↔ DiscreteTopology ↑(H ⊓ K) :=
     haveI : IsFiniteRelIndex (H ⊓ K) H := ⟨Subgroup.inf_relIndex_left H K ▸ h.2⟩
     (Subgroup.discreteTopology_iff_of_isFiniteRelIndex inf_le_left).symm
   _ ↔ DiscreteTopology K :=
