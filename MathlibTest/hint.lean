@@ -10,14 +10,17 @@ import Mathlib.Tactic.TautoSet
 
 /--
 info: Try these:
-  • 🎉 linarith
+  • 🎉 trivial
+  • norm_num
+    Remaining subgoals:
+    ⊢ False
 -/
 #guard_msgs in
 example (h : 1 < 0) : False := by hint
 
 /--
 info: Try these:
-  • 🎉 exact f p
+  • 🎉 simp_all only [forall_const]
   • norm_num
     Remaining subgoals:
     ⊢ Q
@@ -37,7 +40,16 @@ example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
-  • 🎉 linarith
+  • 🎉 exact Std.not_gt_of_lt h
+  • norm_num
+    Remaining subgoals:
+    ⊢ a ≤ b
+  • intro
+    Remaining subgoals:
+    ⊢ False
+  • simp_all only [not_lt]
+    Remaining subgoals:
+    ⊢ a ≤ b
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
@@ -55,16 +67,13 @@ info: Try these:
   • ring_nf
     Remaining subgoals:
     ⊢ Nat.Prime 37
-  • norm_num
-    Remaining subgoals:
-    ⊢ Nat.Prime 37
 -/
 #guard_msgs in
 example : Nat.Prime 37 := by hint
 
 /--
 info: Try these:
-  • 🎉 aesop
+  • 🎉 grind
   • ring_nf
     Remaining subgoals:
     ⊢ ∃ x, P x ∧ 0 ≤ x
@@ -89,7 +98,7 @@ local elab tk:"long_trivial" : tactic => do
   Lean.Meta.Tactic.TryThis.addSuggestion tk { suggestion := .tsyntax actual}
   Lean.Elab.Tactic.evalTactic actual
 
-register_hint long_trivial
+register_hint 1000 long_trivial
 
 /--
 info: Try these:
@@ -113,7 +122,7 @@ end finiteness
 
 section tauto_set
 
-register_hint tauto_set
+register_hint 1000 tauto_set
 
 /--
 info: Try these:

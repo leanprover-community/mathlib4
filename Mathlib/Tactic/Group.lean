@@ -92,4 +92,4 @@ end Mathlib.Tactic.Group
 We register `group` with the `hint` tactic.
 -/
 
-register_hint group
+register_hint 900 group
