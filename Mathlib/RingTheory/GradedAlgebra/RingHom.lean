@@ -60,7 +60,7 @@ def ofClass (f : F) : 𝒜 →+*ᵍ ℬ where
 /-- Any type satisfying `GradedRingHomClass` can be cast into `GradedRingHom` via
 `GradedRingHomClass.toGRingHom`. -/
 instance instCoeOfClass : CoeTC F (𝒜 →+*ᵍ ℬ) :=
-  ⟨GradedRingHom.ofClass⟩
+  ⟨ofClass⟩
 
 end ofClass
 
