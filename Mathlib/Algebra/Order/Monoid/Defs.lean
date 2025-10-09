@@ -89,6 +89,17 @@ instance (priority := 100) IsOrderedCancelMonoid.toIsCancelMul : IsCancelMul α 
   mul_right_cancel _ _ _ h :=
     (le_of_mul_le_mul_right' h.le).antisymm <| le_of_mul_le_mul_right' h.ge
 
+@[to_additive]
+theorem IsOrderedCancelMonoid.of_mul_lt_mul_left {α : Type*} [CommMonoid α] [LinearOrder α]
+    (hmul : ∀ a b c : α, b < c → a * b < a * c) : IsOrderedCancelMonoid α where
+  mul_le_mul_left a b h c := by
+    obtain rfl | h := eq_or_lt_of_le h
+    · simp
+    exact (hmul _ _ _ h).le
+  le_of_mul_le_mul_left a b c h := by
+    contrapose! h
+    exact hmul _ _ _ h
+
 end IsOrderedCancelMonoid
 
 /-- An ordered (additive) commutative monoid is a commutative monoid with a partial order such that
