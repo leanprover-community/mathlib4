@@ -127,7 +127,7 @@ end coeq
 end IsCardinalFiltered
 
 open IsCardinalFiltered in
-lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
+lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     IsFiltered J := by
   rw [IsFiltered.iff_cocone_nonempty.{w}]
@@ -138,13 +138,16 @@ lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
     infer_instance
   exact ⟨cocone F hA⟩
 
+@[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
+  isFiltered_of_isCardinalFiltered
+
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     IsCardinalFiltered J Cardinal.aleph0.{w} ↔ IsFiltered J := by
   constructor
   · intro
-    exact isFiltered_of_isCardinalDirected J Cardinal.aleph0
+    exact isFiltered_of_isCardinalFiltered J Cardinal.aleph0
   · intro
     constructor
     intro A _ F hA
@@ -180,7 +183,7 @@ instance isCardinalFiltered_under
     (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J κ] (j₀ : J) : IsCardinalFiltered (Under j₀) κ where
   nonempty_cocone {A _} F hA := ⟨by
-    have := isFiltered_of_isCardinalDirected J κ
+    have := isFiltered_of_isCardinalFiltered J κ
     let c := cocone (F ⋙ Under.forget j₀) hA
     let x (a : A) : j₀ ⟶ IsFiltered.max j₀ c.pt := (F.obj a).hom ≫ c.ι.app a ≫
       IsFiltered.rightToMax j₀ c.pt
