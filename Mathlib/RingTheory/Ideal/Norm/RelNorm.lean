@@ -429,7 +429,7 @@ theorem foo (K L E T : Type*)
     [IsScalarTower R S T] [Algebra R E] [Algebra K E] [IsScalarTower R K L] [IsScalarTower R K E]
     [IsScalarTower K L E] [IsScalarTower R S L] [IsScalarTower S T E] [FiniteDimensional K E]
     [FaithfulSMul S T] [IsDomain T] [IsFractionRing T E] [IsGalois K E]
-    [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
+    [P.IsMaximal] [p.IsMaximal] :
     relNorm R P = p ^ p.inertiaDeg P := by
   have : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
   have : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
