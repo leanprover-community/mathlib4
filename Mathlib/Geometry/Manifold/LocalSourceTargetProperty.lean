@@ -40,12 +40,12 @@ open Function Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
-  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {H : Type*} [TopologicalSpace H] {G : Type*} [TopologicalSpace G]
+  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 F G}
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {n : WithTop ℕ∞}
+  {N : Type*} [TopologicalSpace N] [ChartedSpace G N] {n : WithTop ℕ∞}
 
 namespace Manifold
 
@@ -55,28 +55,28 @@ restriction of the domain chart, and local in the target.
 
 Motivating examples are immersions and submersions of smooth manifolds. -/
 structure IsLocalSourceTargetProperty
-    (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) : Prop where
-  mono_source : ∀ {f : M → M'}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph M' H'},
+    (P : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop) : Prop where
+  mono_source : ∀ {f : M → N}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph N G},
     ∀ {s : Set M}, IsOpen s → P f φ ψ → P f (φ.restr s) ψ
   -- Note: the analogous `mono_target` statement is true for both immersions and submersions.
   -- If and when a future lemma requires it, add this here.
-  congr : ∀ {f g : M → M'}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph M' H'},
+  congr : ∀ {f g : M → N}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph N G},
     ∀ {s : Set M}, EqOn f g s → IsOpen s → φ.source ⊆ s → P f φ ψ → P g φ ψ
 
 variable (I I' n) in
 /-- Data witnessing the fact that `f` has local property `P` at `x` -/
-structure LocalPresentationAt (f : M → M') (x : M)
-    (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) where
+structure LocalPresentationAt (f : M → N) (x : M)
+    (P : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop) where
   /-- A choice of chart on the domain `M` of the local property `P` of `f` at `x`:
   w.r.t. this chart and `codChart`, `f` has the local property `P` at `x`. -/
   domChart : PartialHomeomorph M H
-  /-- A choice of chart on the target `M'` of the local property `P` of `f` at `x`:
+  /-- A choice of chart on the target `N` of the local property `P` of `f` at `x`:
   w.r.t. this chart and `domChart`, `f` has the local property `P` at `x`. -/
-  codChart : PartialHomeomorph M' H'
+  codChart : PartialHomeomorph N G
   mem_domChart_source : x ∈ domChart.source
   mem_codChart_source : f x ∈ codChart.source
   domChart_mem_maximalAtlas : domChart ∈ IsManifold.maximalAtlas I n M
-  codChart_mem_maximalAtlas : codChart ∈ IsManifold.maximalAtlas I' n M'
+  codChart_mem_maximalAtlas : codChart ∈ IsManifold.maximalAtlas I' n N
   source_subset_preimage_source : domChart.source ⊆ f ⁻¹' codChart.source
   property : P f domChart codChart
 
@@ -89,14 +89,14 @@ The motivating example are smooth immersions and submersions: the corresponding 
 `f` look like the inclusion `u ↦ (u, 0)` (resp. a projection `(u, v) ↦ u`)
 in the charts `φ` and `ψ`.
 -/
-def LiftSourceTargetPropertyAt (f : M → M') (x : M)
-    (P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) : Prop :=
+def LiftSourceTargetPropertyAt (f : M → N) (x : M)
+    (P : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop) : Prop :=
   Nonempty (LocalPresentationAt I I' n f x P)
 
 namespace LiftSourceTargetPropertyAt
 
-variable {f g : M → M'} {x : M}
-  {P : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop}
+variable {f g : M → N} {x : M}
+  {P : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop}
 
 /-- A choice of charts witnessing the local property `P` of `f` at `x`. -/
 noncomputable def localPresentationAt (h : LiftSourceTargetPropertyAt I I' n f x P) :
@@ -114,7 +114,7 @@ noncomputable def domChart (h : LiftSourceTargetPropertyAt I I' n f x P) :
 w.r.t. this chart and `h.domChart`, `f` has the local property `P` at `x`
 The particular chart is arbitrary, but this choice matches the witness given by `h.domChart`. -/
 noncomputable def codChart (h : LiftSourceTargetPropertyAt I I' n f x P) :
-    PartialHomeomorph M' H' :=
+    PartialHomeomorph N G :=
   h.localPresentationAt.codChart
 
 lemma mem_domChart_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
@@ -130,7 +130,7 @@ lemma domChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I I' n f x P) :
   h.localPresentationAt.domChart_mem_maximalAtlas
 
 lemma codChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I I' n f x P) :
-    h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
+    h.codChart ∈ IsManifold.maximalAtlas I' n N :=
   h.localPresentationAt.codChart_mem_maximalAtlas
 
 lemma source_subset_preimage_source
@@ -141,9 +141,9 @@ lemma source_subset_preimage_source
 lemma property (h : LiftSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.codChart :=
   h.localPresentationAt.property
 
-omit [ChartedSpace H M] [ChartedSpace H' M'] in
+omit [ChartedSpace H M] [ChartedSpace G N] in
 lemma congr_iff (hP : IsLocalSourceTargetProperty P)
-    {f g : M → M'} {φ : PartialHomeomorph M H} {ψ : PartialHomeomorph M' H'} {s : Set M}
+    {f g : M → N} {φ : PartialHomeomorph M H} {ψ : PartialHomeomorph N G} {s : Set M}
     (hs : IsOpen s) (hφ : φ.source ⊆ s) (hfg : EqOn f g s) :
     P f φ ψ ↔ P g φ ψ :=
   ⟨hP.congr hfg hs hφ, hP.congr hfg.symm hs hφ⟩
@@ -154,10 +154,10 @@ if `f` is continuous at `x`, to prove `LiftSourceTargetPropertyAt I I' n f x P`
 we need not check the condition `f '' domChart.source ⊆ codChart.source`. -/
 lemma mk_of_continuousAt (hf : ContinuousAt f x)
     (hP : IsLocalSourceTargetProperty P)
-    (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph M' H')
+    (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
-    (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
+    (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n N)
     (hfP : P f domChart codChart) : LiftSourceTargetPropertyAt I I' n f x P := by
   obtain ⟨s, hs, hsopen, hxs⟩ := mem_nhds_iff.mp <|
     hf.preimage_mem_nhds (codChart.open_source.mem_nhds hfx)
