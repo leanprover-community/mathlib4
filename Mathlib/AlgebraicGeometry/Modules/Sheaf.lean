@@ -86,6 +86,13 @@ variable (X) in
 noncomputable def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pullbackId _
 
+variable (X) in
+@[simp]
+lemma conjugateEquiv_pullbackId_hom :
+    conjugateEquiv .id (pullbackPushforwardAdjunction (𝟙 X)) (pullbackId X).hom =
+      (pushforwardId X).inv :=
+  SheafOfModules.conjugateEquiv_pullbackId_hom _
+
 noncomputable def pushforwardComp :
     pushforward f ⋙ pushforward g ≅ pushforward (f ≫ g) :=
   SheafOfModules.pushforwardComp _ _
@@ -93,6 +100,13 @@ noncomputable def pushforwardComp :
 noncomputable def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
+
+@[simp]
+lemma conjugateEquiv_pullbackComp_inv :
+    conjugateEquiv ((pullbackPushforwardAdjunction g).comp (pullbackPushforwardAdjunction f))
+      (pullbackPushforwardAdjunction (f ≫ g)) (pullbackComp f g).inv =
+    (pushforwardComp f g).hom :=
+  SheafOfModules.conjugateEquiv_pullbackComp_inv _ _
 
 @[reassoc]
 lemma pseudofunctor_associativity :
@@ -143,10 +157,13 @@ noncomputable def pseudofunctor :
     (fun {Y X} f ↦ .mk (pullbackPushforwardAdjunction f.unop).toCat)
     (fun X ↦ Adj.iso₂Mk (pullbackId _) (pushforwardId _).symm (by
       dsimp
-      sorry))
+      rw [Bicategory.conjugateEquiv_eq_categoryTheoryConjugateEquiv]
+      apply conjugateEquiv_pullbackId_hom))
     (fun {Z Y X} f g ↦ Adj.iso₂Mk (pullbackComp _ _).symm (pushforwardComp _ _) (by
       dsimp
-      sorry))
+      rw [Bicategory.conjugateEquiv_eq_categoryTheoryConjugateEquiv,
+        Adjunction.toCat_comp_toCat]
+      apply conjugateEquiv_pullbackComp_inv))
     (fun _ _ _ ↦ by ext : 1; apply pseudofunctor_associativity _ _ _)
     (fun _ ↦ by ext : 1; apply pseudofunctor_left_unitality)
     (fun _ ↦ by ext : 1; apply pseudofunctor_right_unitality)
