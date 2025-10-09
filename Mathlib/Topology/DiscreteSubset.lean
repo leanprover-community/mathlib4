@@ -104,32 +104,6 @@ theorem isClosed_and_discrete_iff {S : Set X} :
   · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
     simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
 
-/-- The union of two discrete closed subsets is discrete. -/
-theorem discreteTopology_union {S T : Set X} (hs : DiscreteTopology S) (ht : DiscreteTopology T)
-    (hs' : IsClosed S) (ht' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
-  refine (isClosed_and_discrete_iff.mpr fun x ↦ ?_).2
-  exact Filter.sup_principal ▸ (isClosed_and_discrete_iff.mp ⟨hs', hs⟩ x).sup_right
-    (isClosed_and_discrete_iff.mp ⟨ht', ht⟩ x)
-
-/-- The union of finitely many discrete closed subsets is discrete. -/
-theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X}
-    (hs : ∀ i ∈ I, DiscreteTopology (s i)) (hs' : ∀ i ∈ I, IsClosed (s i)) :
-    DiscreteTopology (⋃ i ∈ I, s i) := by
-  classical
-  induction I using Finset.induction_on with
-  | empty => rw [biUnion_empty_finset]; infer_instance
-  | insert a I _ IH =>
-    rw [Finset.forall_mem_insert] at hs hs'
-    rw [Finset.set_biUnion_insert]
-    exact discreteTopology_union hs.1 (IH hs.2 hs'.2) hs'.1 (isClosed_biUnion_finset hs'.2)
-
-/-- The union of finitely many discrete closed subsets is discrete. -/
-theorem discreteTopology_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
-    (hs : ∀ i, DiscreteTopology (s i)) (hs' : ∀ i, IsClosed (s i)) :
-    DiscreteTopology (⋃ i, s i) := by
-  convert discreteTopology_biUnion_finset (I := .univ) (fun i _ ↦ hs i) (fun i _ ↦ hs' i) <;>
-    simp
-
 /-- The filter of sets with no accumulation points inside a set `S : Set X`, implemented
 as the supremum over all punctured neighborhoods within `S`. -/
 def Filter.codiscreteWithin (S : Set X) : Filter X := ⨆ x ∈ S, 𝓝[S \ {x}] x
@@ -272,3 +246,33 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
       continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
 
 end codiscrete_filter
+
+section discrete_union
+
+lemma compl_mem_codiscrete_iff {S : Set X} :
+    Sᶜ ∈ codiscrete X ↔ IsClosed S ∧ DiscreteTopology ↑S := by
+  rw [mem_codiscrete, compl_compl, isClosed_and_discrete_iff]
+
+/-- The union of two discrete closed subsets is discrete. -/
+theorem discreteTopology_union {S T : Set X} (hs : DiscreteTopology S) (ht : DiscreteTopology T)
+    (hs' : IsClosed S) (ht' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
+  suffices (S ∪ T)ᶜ ∈ codiscrete X from compl_mem_codiscrete_iff.mp this |>.2
+  have hS : Sᶜ ∈ codiscrete X := by simpa [compl_mem_codiscrete_iff] using ⟨hs', hs⟩
+  have hT : Tᶜ ∈ codiscrete X := by simpa [compl_mem_codiscrete_iff] using ⟨ht', ht⟩
+  simpa using inter_mem hS hT
+
+/-- The union of finitely many discrete closed subsets is discrete. -/
+theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X}
+    (hs : ∀ i ∈ I, DiscreteTopology (s i)) (hs' : ∀ i ∈ I, IsClosed (s i)) :
+    DiscreteTopology (⋃ i ∈ I, s i) := by
+  suffices (⋃ i ∈ I, s i)ᶜ ∈ codiscrete X from (compl_mem_codiscrete_iff.mp this).2
+  simpa [biInter_finset_mem I] using fun i hi ↦ compl_mem_codiscrete_iff.mpr ⟨hs' i hi, hs i hi⟩
+
+/-- The union of finitely many discrete closed subsets is discrete. -/
+theorem discreteTopology_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
+    (hs : ∀ i, DiscreteTopology (s i)) (hs' : ∀ i, IsClosed (s i)) :
+    DiscreteTopology (⋃ i, s i) := by
+  convert discreteTopology_biUnion_finset (I := .univ) (fun i _ ↦ hs i) (fun i _ ↦ hs' i) <;>
+    simp
+
+end discrete_union
