@@ -216,7 +216,7 @@ theorem isClopen_ball (r : Γ₀) : IsClopen (X := R) {x | v x < r} :=
   ⟨isClosed_ball _ _, isOpen_ball _ _⟩
 
 /-- A closed ball centred at the origin in a valued ring is open. -/
-theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
+theorem isOpen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
   rw [mem_nhds]
@@ -235,7 +235,7 @@ theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := b
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x ≤ r} :=
-  ⟨isClosed_closedBall _ _, isOpen_closedball _ hr⟩
+  ⟨isClosed_closedBall _ _, isOpen_closedBall _ hr⟩
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
 theorem isClopen_sphere {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x = r} := by
@@ -257,7 +257,7 @@ theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
 
 /-- The closed unit ball in a valued ring is open. -/
 theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
-  isOpen_closedball _ one_ne_zero
+  isOpen_closedBall _ one_ne_zero
 
 @[deprecated (since := "2025-04-25")]
 alias integer_isOpen := isOpen_integer
