@@ -269,7 +269,7 @@ Version where the basepoint belongs to `(extChartAt I x).target`. -/
 lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
     {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv I 𝓘(𝕜, E) (extChartAt I x) ((extChartAt I x).symm y)) ∘L
-      (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) y) = ContinuousLinearMap.id _ _ := by
+      (mfderiv[range I] (extChartAt I x).symm y) = ContinuousLinearMap.id _ _ := by
   have U : UniqueMDiffWithinAt 𝓘(𝕜, E) (range ↑I) y := by
     apply I.uniqueMDiffOn
     exact extChartAt_target_subset_range x hy
@@ -291,8 +291,7 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
 lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm' {x : M}
     {y : M} (hy : y ∈ (extChartAt I x).source) :
-    (mfderiv I 𝓘(𝕜, E) (extChartAt I x) y) ∘L
-      (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x y))
+    (mfderiv% (extChartAt I x) y) ∘L (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y))
     = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
   convert mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm ((extChartAt I x).map_source hy)
@@ -302,17 +301,16 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm' {x : M}
 Version where the basepoint belongs to `(extChartAt I x).target`. -/
 lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
     {y : E} (hy : y ∈ (extChartAt I x).target) :
-    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) y) ∘L
-      (mfderiv I 𝓘(𝕜, E) (extChartAt I x) ((extChartAt I x).symm y))
+    (mfderiv[range I] (extChartAt I x).symm y) ∘L
+      (mfderiv% (extChartAt I x) ((extChartAt I x).symm y))
       = ContinuousLinearMap.id _ _ := by
   have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy
   have h''y : (extChartAt I x).symm y ∈ (chartAt H x).source := by
     rwa [← extChartAt_source (I := I)]
   have U' : UniqueMDiffWithinAt I (extChartAt I x).source ((extChartAt I x).symm y) :=
     (isOpen_extChartAt_source x).uniqueMDiffWithinAt h'y
-  have : mfderiv I 𝓘(𝕜, E) (extChartAt I x) ((extChartAt I x).symm y)
-      = mfderivWithin I 𝓘(𝕜, E) (extChartAt I x) (extChartAt I x).source
-      ((extChartAt I x).symm y) := by
+  have : mfderiv% (extChartAt I x) ((extChartAt I x).symm y)
+      = mfderiv[(extChartAt I x).source] (extChartAt I x) ((extChartAt I x).symm y) := by
     rw [mfderivWithin_eq_mfderiv U']
     exact mdifferentiableAt_extChartAt h''y
   rw [this, ← mfderivWithin_comp_of_eq]; rotate_left
@@ -334,20 +332,19 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
 lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
     {y : M} (hy : y ∈ (extChartAt I x).source) :
-    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) (extChartAt I x y)) ∘L
-      (mfderiv I 𝓘(𝕜, E) (extChartAt I x) y)
+    (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)) ∘L (mfderiv% (extChartAt I x) y)
       = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
   convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
 
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
-    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) y).IsInvertible :=
+    (mfderiv[range I] (extChartAt I x).symm y).IsInvertible :=
   ContinuousLinearMap.IsInvertible.of_inverse
     (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt hy)
     (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm hy)
 
 lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).source) :
-    (mfderiv I 𝓘(𝕜, E) (extChartAt I x) y).IsInvertible := by
+    (mfderiv% (extChartAt I x) y).IsInvertible := by
   have h'y : extChartAt I x y ∈ (extChartAt I x).target := (extChartAt I x).map_source hy
   have Z := ContinuousLinearMap.IsInvertible.of_inverse
     (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm h'y)
@@ -373,9 +370,8 @@ Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y
 theorem TangentBundle.symmL_trivializationAt
     {x₀ x : M} (hx : x ∈ (chartAt H x₀).source) :
     (trivializationAt E (TangentSpace I) x₀).symmL 𝕜 x =
-      mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x) := by
-  have : MDifferentiableWithinAt 𝓘(𝕜, E) I ((chartAt H x₀).symm ∘ I.symm) (range I)
-      (I (chartAt H x₀ x)) := by
+      mfderiv[range I] (extChartAt I x₀).symm (extChartAt I x₀ x) := by
+  have : MDiffAt[range I] ((chartAt H x₀).symm ∘ I.symm) (I (chartAt H x₀ x)) := by
     simpa using mdifferentiableWithinAt_extChartAt_symm (by simp [hx])
   simp [hx, mfderivWithin, this]
 
