@@ -261,9 +261,12 @@ section CovariantLTSwap
 
 variable [MulLeftStrictMono M] [MulRightStrictMono M]
 
+@[to_additive nsmul_le_nsmul_iff_right]
+theorem pow_le_pow_iff_left {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  (pow_left_strictMono hn).le_iff_le
+
 @[to_additive le_of_nsmul_le_nsmul_right]
-theorem le_of_pow_le_pow_left' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
-  (pow_left_strictMono hn).le_iff_le.1
+alias ⟨le_of_pow_le_pow_left', _⟩ := pow_le_pow_iff_left
 
 @[to_additive min_le_of_add_le_two_nsmul]
 theorem min_le_of_mul_le_sq {a b c : M} (h : a * b ≤ c ^ 2) : min a b ≤ c := by
