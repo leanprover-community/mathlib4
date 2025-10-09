@@ -74,6 +74,11 @@ lemma ofSimplex_le_iff {n : ℕ} (x : X _⦋n⦌) (A : X.Subcomplex) :
     ofSimplex x ≤ A ↔ x ∈ A.obj _ :=
   Subpresheaf.ofSection_le_iff _ _
 
+lemma mem_ofSimplex_obj_iff {n : ℕ} (x : X _⦋n⦌) {m : SimplexCategoryᵒᵖ} (y : X.obj m) :
+    y ∈ (ofSimplex x).obj m ↔ ∃ (f : m.unop ⟶ ⦋n⦌), X.map f.op x = y := by
+  dsimp [ofSimplex, Subpresheaf.ofSection]
+  aesop
+
 section
 
 variable (f : X ⟶ Y)
