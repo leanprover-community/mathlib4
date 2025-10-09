@@ -8,7 +8,7 @@ import Mathlib.RingTheory.DedekindDomain.Dvr
 /-!
 # Primes in an extension of localization at prime
 
-Let `R ⊆ S` be an extension of Dedekind rings and `p` be a prime ideal of `R`. Let `Rₚ` be the
+Let `R ⊆ S` be an extension of Dedekind domains and `p` be a prime ideal of `R`. Let `Rₚ` be the
 localization of `R` at the complement of `p` and `Sₚ` the localization of `S` at the (image)
 of the complement of `p`.
 
@@ -85,8 +85,9 @@ variable [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] [
   [NoZeroSMulDivisors R S]
 
 /--
-The bijection between the primes over `p` in `S` and the primes over the maximal ideal of `Rₚ` in
-`Sₚ`.
+For `R ⊆ S` an extension of Dedekind domains and `p` a prime ideal of `R`, the bijection
+between the primes of `S` over `p` and the primes over the maximal ideal of `Rₚ` in `Sₚ` where
+`Rₚ` and `Sₚ` are resp. the localizations of `R` and `S` at the complement of `p`.
 -/
 noncomputable def primesOverEquivPrimesOver (hp : p ≠ ⊥) :
     p.primesOver S ≃ (maximalIdeal Rₚ).primesOver Sₚ := {
