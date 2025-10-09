@@ -745,13 +745,6 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     ring
   · exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
 
-@[fun_prop, measurability]
-lemma AEMeasurable.dist {Ω E : Type*} {mΩ : MeasurableSpace Ω} {mE : MeasurableSpace E}
-    [PseudoMetricSpace E] [SecondCountableTopology E] [BorelSpace E]
-    {f g : Ω → E} {μ : Measure Ω} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun x ↦ dist (f x) (g x)) μ :=
-  continuous_dist.aemeasurable2 hf hg
-
 /-- Let `f, f'` be two sequences of measurable functions such that `f n` converges in distribution
 to `g`, and `f' n - f n` converges in probability to `0`.
 Then `f' n` converges in distribution to `g`. -/
