@@ -88,7 +88,7 @@ local elab tk:"long_trivial" : tactic => do
   Lean.Meta.Tactic.TryThis.addSuggestion tk { suggestion := .tsyntax actual}
   Lean.Elab.Tactic.evalTactic actual
 
-register_hint long_trivial
+register_hint 1000 long_trivial
 
 /--
 info: Try these:
@@ -112,7 +112,7 @@ end finiteness
 
 section tauto_set
 
-register_hint tauto_set
+register_hint 1000 tauto_set
 
 /--
 info: Try these:
