@@ -17,7 +17,7 @@ import Mathlib.Order.Filter.AtTopBot.Finset
 
 This file contains some lemmas about sums over symmetric integer intervals `Ixx -N N` used in the
 definition of the Eisenstein series `E2`. In particular we define `IccFilter`, `IcoFilter`,
-`IocFilter` and `IooFilter` as `SummationFilter`s on `Finset ℤ` corresponding to the intervals
+`IocFilter` and `IooFilter` as `SummationFilter`s on `ℤ` corresponding to the intervals
 `Icc -N N`, `Ico -N N`, `Ioc -N N` and `Ioo -N N` respectively.
 We also prove that these filters are all `NeBot` and `LeAtTop`.
 
@@ -25,6 +25,7 @@ We also prove that these filters are all `NeBot` and `LeAtTop`.
 
 open Finset Topology
 
+--Should this go elsewhere?
 lemma Finset.Icc_succ_succ (n : ℕ) : Finset.Icc (-(n + 1) : ℤ) (n + 1) = Finset.Icc (-n : ℤ) n ∪
   {(-(n + 1) : ℤ), (n + 1 : ℤ)} := by
   refine Finset.ext_iff.mpr ?_
