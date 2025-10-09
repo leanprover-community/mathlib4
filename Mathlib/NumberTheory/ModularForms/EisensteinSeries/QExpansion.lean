@@ -199,8 +199,8 @@ theorem summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
   simp [EisensteinSeries.eisSummand]
 
 lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    ∑' x, eisSummand k x z = 2 * riemannZeta k + 2 * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
-    ∑' (n : ℕ+), σ (k - 1) n * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
+    ∑' x, eisSummand k x z = 2 * riemannZeta k + 2 * ((-2 * π * I) ^ k / (k - 1)!) *
+    ∑' (n : ℕ+), σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℕ) := by
   rw [← (piFinTwoEquiv fun _ ↦ ℤ).symm.tsum_eq, Summable.tsum_prod
     (by apply summable_prod_eisSummand hk), tsum_int_eq_zero_add_two_mul_tsum_pnat]
   · have (b : ℕ+) := EisensteinSeries.qExpansion_identity_pnat (k := k - 1) (by omega)
@@ -212,7 +212,7 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
       mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false] at *
     conv =>
       rw [← tsum_mul_left]
-      enter [1,1, c]
+      enter [1, 1, c]
       rw [this c]
     simp_rw [tsum_mul_left, ← mul_assoc, ← tsum_prod_pow_eq_tsum_sigma (k - 1)
       (norm_exp_two_pi_I_lt_one z), ← tsum_mul_left]
@@ -272,8 +272,8 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
 
 /-- The q-Expansion of normalised Eisenstein series of level one with `riemannZeta` term. -/
 lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    E hk z = 1 + (1 / (riemannZeta (k))) * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
-    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * Complex.I * z) ^ (n : ℤ) := by
+    E hk z = 1 + (1 / (riemannZeta (k))) * ((-2 * π * I) ^ k / (k - 1)!) *
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
   have : (eisensteinSeries_MF (k := k) (by omega) 0) z =
     (eisensteinSeries_SIF (N := 1) 0 k) z := rfl
   rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeries_SIF_apply 0 k z,
@@ -298,7 +298,7 @@ theorem even_div_two_ne_zero {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) : k / 2 �
   refine (Int.two_le_iff_pos_of_even (m := k) (by simpa using hk2 )).mpr (by omega)
 
 lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) :
-  (1 / (riemannZeta (k))) * ((-2 * π * Complex.I) ^ k / (k - 1)!) = -((2 * k) / bernoulli k) := by
+  (1 / (riemannZeta (k))) * ((-2 * π * I) ^ k / (k - 1)!) = -((2 * k) / bernoulli k) := by
   have hk0 := even_div_two_ne_zero hk2 hkn0
   have hk1 : 2 * (k / 2) = k := Nat.two_mul_div_two_of_even hk2
   have hk11 : 2 * (((k / 2) : ℕ) : ℂ) = k := by norm_cast
@@ -307,7 +307,7 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
   have hkf : ((k - 1)! : ℂ) ≠ 0 := by
     norm_cast
     apply Nat.factorial_ne_zero
-  have h3 : (-2 * ↑π * Complex.I) ^ k = (-1) ^ k * 2 ^ k * π ^ k * (-1) ^ (k / 2) := by
+  have h3 : (-2 * ↑π * I) ^ k = (-1) ^ k * 2 ^ k * π ^ k * (-1) ^ (k / 2) := by
     simp_rw [mul_pow]
     nth_rw 3 [← hk1]
     rw [neg_pow, pow_mul, I_sq]
@@ -324,7 +324,7 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
 /-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     (E hk) z = 1 + -((2 * k) / bernoulli k) *
-    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * ↑π * Complex.I * z) ^ (n : ℤ) := by
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * ↑π * I * z) ^ (n : ℤ) := by
   have h2 := EisensteinSeries.q_expansion_riemannZeta hk hk2 z
   rw [eisensteinSeries_coeff_identity hk2 (by omega)] at h2
   apply h2
