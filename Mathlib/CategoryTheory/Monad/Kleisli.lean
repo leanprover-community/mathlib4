@@ -22,7 +22,7 @@ namespace CategoryTheory
 
 universe v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {C : Type u} [Category.{v} C]
 
 /-- The objects for the Kleisli category of the monad `T : Monad C`, which are the same

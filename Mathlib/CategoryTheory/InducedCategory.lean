@@ -31,7 +31,7 @@ form of `D`. This is used to set up several algebraic categories like
 namespace CategoryTheory
 
 universe v v₂ u₁ u₂
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 
 section Induced
 

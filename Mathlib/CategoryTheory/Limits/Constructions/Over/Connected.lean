@@ -20,7 +20,7 @@ From this we deduce the corresponding results for the over category.
 
 universe v' u' v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits
