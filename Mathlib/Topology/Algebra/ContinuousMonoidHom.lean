@@ -419,7 +419,7 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
   continuous_invFun := cme.continuous_toFun }
 
 /-- See Note [custom simps projection] -/
-@[to_additive]
+@[to_additive /-- See Note [custom simps projection] -/]
 def Simps.symm_apply [Mul G] [Mul H] (e : G ≃ₜ* H) : H → G :=
   e.symm
 
