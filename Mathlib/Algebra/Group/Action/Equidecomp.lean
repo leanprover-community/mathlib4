@@ -416,9 +416,14 @@ theorem target_part_eq_source_part (x : X) (h : x ∈ P.target) :
   have eq_iff := P.part_eq_source_part_iff_mem _ h_source t (target_part_mem_parts P x h)
   exact (eq_iff.mp (target_part_decomp P x h)).symm
 
-open scoped Classical in noncomputable def to_equidecomp : Equidecomp X G where
-  toFun x := if h : x ∉ P.source then x else (P.source_part x (not_notMem.mp h)).2.1 • x
-  invFun x := if h : x ∉ P.target then x else (P.target_part x (not_notMem.mp h)).2.1⁻¹ • x
+/--
+The Equidecomposition associated with an Equipartition.
+-/
+noncomputable def to_equidecomp : Equidecomp X G where
+  toFun x := by classical exact
+    if h : x ∉ P.source then x else (P.source_part x (not_notMem.mp h)).2.1 • x
+  invFun x := by classical exact
+    if h : x ∉ P.target then x else (P.target_part x (not_notMem.mp h)).2.1⁻¹ • x
   source := P.source
   target := P.target
   map_source' x hx := by simpa [hx] using (mem_of_subset_of_mem (P.subset_target
@@ -439,7 +444,7 @@ open scoped Classical in noncomputable def to_equidecomp : Equidecomp X G where
       exact P.subset_source _ (target_part_mem_parts P x hx)
     simp [← P.target_part_eq_source_part x hx, smul_inv_smul, h1, hx]
   isDecompOn' := by
-    use Finset.image (fun p ↦ p.2.1) P.parts
+    classical use Finset.image (fun p ↦ p.2.1) P.parts
     intro x hx
     use (P.source_part x hx).2.1
     constructor
@@ -480,14 +485,19 @@ theorem target_witness_spec (f : Equidecomp X G) {y : X} (h : y ∈ f.target) :
     rw [f.right_inv' h]
   grind
 
-open scoped Classical in noncomputable def minimal_witness (f : Equidecomp X G) : Finset G :=
+
+open scoped Classical in
+/-
+All witnesses that are actually used to send some element of the source to the target.
+-/
+noncomputable def minimal_witness (f : Equidecomp X G) : Finset G :=
   {w ∈ f.witness | ∃ a, ∃ h, @f.source_witness _ _ _ _ a h = w}
 
-/-
+/--
 Constructs an `Equipartition` from an `Equidecomp`.
 -/
-open Classical in noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G where
-  parts := Finset.image (fun g ↦
+noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G where
+  parts := by classical exact Finset.image (fun g ↦
     ({x : X | if h : x ∈ f.source then f.source_witness h = g else false},g,
      {y : X | if h : y ∈ f.target then f.target_witness h = g else false})) f.minimal_witness
   bot_notMem p h := by
@@ -495,7 +505,7 @@ open Classical in noncomputable def to_equipartition (f : Equidecomp X G) : Equi
     rcases h with ⟨g, ⟨hg, h⟩⟩
     subst h
     simp only [minimal_witness, Finset.mem_filter, ne_eq, eq_empty_iff_forall_notMem, mem_setOf_eq,
-      not_exists, not_forall, Decidable.not_not] at hg ⊢
+      not_exists, not_forall, not_not] at hg ⊢
     grind
   decomp p hp := by
     simp only [Bool.false_eq_true, dite_else_false, Finset.mem_image] at hp
@@ -529,7 +539,7 @@ open Classical in noncomputable def to_equipartition (f : Equidecomp X G) : Equi
     simp_all only [Bool.false_eq_true, dite_else_false, Finset.mem_image, Finset.sup_set_eq_biUnion,
       disjoint_iUnion_right, Prod.forall]
     intro h3 p_1 p_2 p_3 h4
-    rw [Finset.subset_image_iff] at h1
+    classical rw [Finset.subset_image_iff] at h1
     rcases h1 with ⟨s', ⟨h1, h5⟩⟩
     rcases h2 with ⟨g', ⟨hg, h2⟩⟩
     rw [← h5] at h4
