@@ -32,7 +32,7 @@ namespace ZMod
 
 theorem cast_descFactorial {n p : ℕ} (h : n ≤ p) :
     (descFactorial (p - 1) n : ZMod p) = (-1) ^ n * n ! := by
-  rw [descFactorial_eq_prod_range, ← prod_range_add_one_eq_factorial]
+  rw [descFactorial_eq_prod_range, factorial_eq_prod_range_add_one]
   simp only [cast_prod]
   nth_rw 2 [← card_range n]
   rw [pow_card_mul_prod]

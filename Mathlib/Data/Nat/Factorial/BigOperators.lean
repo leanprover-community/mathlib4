@@ -34,9 +34,13 @@ theorem prod_factorial_dvd_factorial_sum : (∏ i ∈ s, (f i)!) ∣ (∑ i ∈ 
     rw [prod_cons, Finset.sum_cons]
     exact (mul_dvd_mul_left _ ih).trans (Nat.factorial_mul_factorial_dvd_factorial_add _ _)
 
-theorem factorial_eq_prod_range : ∀ n, (n)! = ∏ i ∈ range n, (i + 1)
+theorem factorial_eq_prod_range_add_one : ∀ n, (n)! = ∏ i ∈ range n, (i + 1)
   | 0 => rfl
-  | n + 1 => by rw [factorial, prod_range_succ_comm, factorial_eq_prod_range n]
+  | n + 1 => by rw [factorial, prod_range_succ_comm, factorial_eq_prod_range_add_one n]
+
+@[simp]
+theorem _root_.Finset.prod_range_add_one_eq_factorial (n : ℕ) : ∏ i ∈ range n, (i + 1) = (n)! :=
+  factorial_eq_prod_range_add_one _ |>.symm
 
 theorem ascFactorial_eq_prod_range (n : ℕ) : ∀ k, n.ascFactorial k = ∏ i ∈ range k, (n + i)
   | 0 => rfl

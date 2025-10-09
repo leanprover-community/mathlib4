@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Results about big operators over intervals
@@ -168,10 +168,6 @@ theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n
   | n + 1 => by
     rw [prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n, Nat.factorial_succ,
       prod_Ico_id_eq_factorial n, Nat.succ_eq_add_one, mul_comm]
-
-@[simp]
-theorem prod_range_add_one_eq_factorial (n : ℕ) : (∏ x ∈ range n, (x + 1)) = (n)! :=
-  factorial_eq_prod_range n |>.symm
 
 section GaussSum
 
