@@ -811,23 +811,18 @@ lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
     -- `⊢ |∫ ω, F ω ∂(μ.map (f' n)) - ∫ ω, F ω ∂(μ.map (f n))|`
     -- `    ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}`
     have h_int_f' : Integrable (fun x ↦ F (f' n x)) μ := by
-      refine Integrable.of_bound ?_ (‖F x₀‖ + M) (ae_of_all _ fun a ↦ ?_)
-      · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf' n)
-      · specialize hF_bounded (f' n a) x₀
-        rw [← sub_le_iff_le_add']
-        exact (abs_sub_abs_le_abs_sub (F (f' n a)) (F x₀)).trans hF_bounded
+      refine Integrable.of_bound (by fun_prop) (‖F x₀‖ + M) (ae_of_all _ fun a ↦ ?_)
+      specialize hF_bounded (f' n a) x₀
+      rw [← sub_le_iff_le_add']
+      exact (abs_sub_abs_le_abs_sub (F (f' n a)) (F x₀)).trans hF_bounded
     have h_int_f : Integrable (fun x ↦ F (f n x)) μ := by
-      refine Integrable.of_bound ?_ (‖F x₀‖ + M) (ae_of_all _ fun a ↦ ?_)
-      · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf n)
-      · specialize hF_bounded (f n a) x₀
-        rw [← sub_le_iff_le_add']
-        exact (abs_sub_abs_le_abs_sub (F (f n a)) (F x₀)).trans hF_bounded
+      refine Integrable.of_bound (by fun_prop) (‖F x₀‖ + M) (ae_of_all _ fun a ↦ ?_)
+      specialize hF_bounded (f n a) x₀
+      rw [← sub_le_iff_le_add']
+      exact (abs_sub_abs_le_abs_sub (F (f n a)) (F x₀)).trans hF_bounded
     have h_int_sub : Integrable (fun a ↦ ‖F (f' n a) - F (f n a)‖) μ := by
-      rw [integrable_norm_iff]
-      · exact h_int_f'.sub h_int_f
-      · refine AEStronglyMeasurable.sub ?_ ?_
-        · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf' n)
-        · exact AEStronglyMeasurable.comp_aemeasurable (by fun_prop) (hf n)
+      rw [integrable_norm_iff (by fun_prop)]
+      exact h_int_f'.sub h_int_f
     rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop),
       ← integral_sub h_int_f' h_int_f]
     rw [← Real.norm_eq_abs]
