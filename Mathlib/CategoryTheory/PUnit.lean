@@ -17,7 +17,7 @@ and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 
 universe w v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]

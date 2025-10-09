@@ -33,7 +33,7 @@ We prove some basic facts about the category `Type`:
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v v' w u u'
 
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
