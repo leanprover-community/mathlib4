@@ -573,7 +573,7 @@ end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
 
-/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
+/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite-dimensional topological manifold
 `M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
 Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
 section `s_loc : M → V x` such that `s_loc` is $C^n$ smooth on `U_x₀` (when viewed as a map to
@@ -626,7 +626,7 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
   have h_x_in_Umap_j : x ∈ W j := interior_subset (hρU j h_x_in_tsupport_ρj)
   exact h_mem_t j x h_x_in_Umap_j
 
-/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
+/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite-dimensional topological manifold
 `M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
 Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
 section `s_loc : M → V x` such that `s_loc` is $C^∞$ smooth on `U_x₀` (when viewed as a map to
@@ -646,7 +646,7 @@ theorem exists_smooth_section_forall_mem_convex_of_local
     ∃ s : Cₛ^∞⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x :=
       exists_contMDiffOn_section_forall_mem_convex_of_local I V t ht_conv Hloc
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
+/-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is $C^n$ smooth on `U` and `g y ∈ t y` for all
 `y ∈ U`. Then there exists a $C^n$ smooth function `g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
