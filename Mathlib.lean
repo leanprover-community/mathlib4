@@ -926,6 +926,7 @@ import Mathlib.Algebra.Order.Monoid.Lex
 import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Monoid.PNat
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Monoid.ToMulBot
@@ -3173,6 +3174,7 @@ import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.BigOperators
 import Mathlib.Data.ENat.Defs
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.ENat.Pow
 import Mathlib.Data.EReal.Basic
 import Mathlib.Data.EReal.Inv
 import Mathlib.Data.EReal.Operations
@@ -3997,6 +3999,7 @@ import Mathlib.GroupTheory.Coxeter.Inversion
 import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.GroupTheory.Coxeter.Matrix
 import Mathlib.GroupTheory.Divisible
+import Mathlib.GroupTheory.DivisibleHull
 import Mathlib.GroupTheory.DoubleCoset
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.Exponent
@@ -4240,6 +4243,7 @@ import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Pi
@@ -5251,6 +5255,8 @@ import Mathlib.Order.RelIso.Set
 import Mathlib.Order.RelSeries
 import Mathlib.Order.Restriction
 import Mathlib.Order.ScottContinuity
+import Mathlib.Order.ScottContinuity.Complete
+import Mathlib.Order.ScottContinuity.Prod
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.Set
 import Mathlib.Order.SetIsMax
