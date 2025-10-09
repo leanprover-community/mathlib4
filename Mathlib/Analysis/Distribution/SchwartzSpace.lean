@@ -528,6 +528,14 @@ polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
   ContDiff ℝ ∞ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
 
+/-- A function has temperate growth if and only if it is smooth and its `n`-th iterated
+derivative is `O((1 + ‖x‖) ^ k)` for some `k : ℕ` (depending on `n`).
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+
+TODO: when `E` is finite dimensional, this is equivalent to the derivatives being `O(‖x‖ ^ k)`
+as `‖x‖ → ∞`.
+-/
 theorem _root_.Function.hasTemperateGrowth_iff_isBigO {f : E → F} :
     f.HasTemperateGrowth ↔ ContDiff ℝ ∞ f ∧
       ∀ n, ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k):= by
@@ -535,11 +543,21 @@ theorem _root_.Function.hasTemperateGrowth_iff_isBigO {f : E → F} :
   congrm ContDiff ℝ ∞ f ∧ (∀ n, ∃ k C, ∀ x, _ ≤ C * ?_)
   rw [norm_pow, Real.norm_of_nonneg (by positivity)]
 
+/-- If `f` as temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
+some `k : ℕ` (depending on `n`).
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+-/
 theorem _root_.Function.HasTemperateGrowth.isBigO {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) :=
   Function.hasTemperateGrowth_iff_isBigO.mp hf_temperate |>.2 n
 
+/-- If `f` as temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
+derivatives of `f` of order `≤ N` are `O((1 + ‖x‖) ^ k)`.
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+-/
 theorem _root_.Function.HasTemperateGrowth.isBigO_uniform {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (N : ℕ) :
     ∃ k, ∀ n ≤ N, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
