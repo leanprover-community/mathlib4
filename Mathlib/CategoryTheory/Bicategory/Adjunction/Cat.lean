@@ -30,10 +30,12 @@ attribute [local simp] bicategoricalComp Cat.associator_hom_app Cat.associator_i
 
 namespace Adjunction
 
+/-- The adjunction in the bicategorical sense attached to an adjunction between functors. -/
 abbrev toCat : Bicategory.Adjunction F.toCatHom G.toCatHom where
   unit := adj.unit
   counit := adj.counit
 
+/-- The adjunction of functors corresponding to an adjunction in the bicategory `Cat`. -/
 abbrev ofCat {C D : Cat} {F : C ⟶ D} {G : D ⟶ C}
     (adj : Bicategory.Adjunction F G) :
     Functor.ofCatHom F ⊣ Functor.ofCatHom G where

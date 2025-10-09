@@ -59,7 +59,7 @@ abbrev Modules := SheafOfModules.{u} X.ringCatSheaf
 example : HasSheafify (Opens.grothendieckTopology X) AddCommGrp.{u} :=
   inferInstance
 
-example : Abelian X.Modules := inferInstance
+instance : Abelian X.Modules := inferInstance
 
 /-- The morphism of sheaves of rings corresponding to a morphism of schemes. -/
 def Hom.toRingCatSheafHom (f : X ⟶ Y) :
