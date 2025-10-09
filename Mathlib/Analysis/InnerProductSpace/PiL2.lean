@@ -18,7 +18,7 @@ $$
 $$
 This is recorded in this file as an inner product space instance on `PiLp 2`.
 
-This file develops the notion of a finite dimensional Hilbert space over `𝕜 = ℂ, ℝ`, referred to as
+This file develops the notion of a finite-dimensional Hilbert space over `𝕜 = ℂ, ℝ`, referred to as
 `E`. We define an `OrthonormalBasis 𝕜 ι E` as a linear isometric equivalence
 between `E` and `EuclideanSpace 𝕜 ι`. Then `stdOrthonormalBasis` shows that such an equivalence
 always exists if `E` is finite dimensional. We provide language for converting between a basis
@@ -43,10 +43,10 @@ the last section, various properties of matrices are explored.
 - `Orthonormal.exists_orthonormalBasis_extension`: provides an existential result of an
   `OrthonormalBasis` extending a given orthonormal set
 
-- `exists_orthonormalBasis`: provides an orthonormal basis on a finite dimensional vector space
+- `exists_orthonormalBasis`: provides an orthonormal basis on a finite-dimensional vector space
 
-- `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given finite
-  dimensional inner product space
+- `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
+finite-dimensional inner product space
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
@@ -1200,5 +1200,12 @@ theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
+
+/-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` and `b₂`
+is equal to `vecMulVec (star b₂) (star (b.repr x))`. -/
+theorem toMatrix_innerSL_apply [Fintype n] [DecidableEq n] [Fintype m]
+    (b : OrthonormalBasis n 𝕜 E) (b₂ : OrthonormalBasis m 𝕜 𝕜) (x : E) :
+    (innerSL 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
+  ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
 
 end Matrix

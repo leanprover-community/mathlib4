@@ -552,29 +552,14 @@ theorem lowerBounds_singleton : lowerBounds {a} = Iic a :=
 -/
 
 
-theorem bddAbove_Icc : BddAbove (Icc a b) :=
-  ⟨b, fun _ => And.right⟩
-
-theorem bddBelow_Icc : BddBelow (Icc a b) :=
-  ⟨a, fun _ => And.left⟩
-
-theorem bddAbove_Ico : BddAbove (Ico a b) :=
-  bddAbove_Icc.mono Ico_subset_Icc_self
-
-theorem bddBelow_Ico : BddBelow (Ico a b) :=
-  bddBelow_Icc.mono Ico_subset_Icc_self
-
-theorem bddAbove_Ioc : BddAbove (Ioc a b) :=
-  bddAbove_Icc.mono Ioc_subset_Icc_self
-
-theorem bddBelow_Ioc : BddBelow (Ioc a b) :=
-  bddBelow_Icc.mono Ioc_subset_Icc_self
-
-theorem bddAbove_Ioo : BddAbove (Ioo a b) :=
-  bddAbove_Icc.mono Ioo_subset_Icc_self
-
-theorem bddBelow_Ioo : BddBelow (Ioo a b) :=
-  bddBelow_Icc.mono Ioo_subset_Icc_self
+@[simp] lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
+@[simp] lemma bddBelow_Icc : BddBelow (Icc a b) := ⟨a, fun _ => And.left⟩
+@[simp] lemma bddAbove_Ico : BddAbove (Ico a b) := bddAbove_Icc.mono Ico_subset_Icc_self
+@[simp] lemma bddBelow_Ico : BddBelow (Ico a b) := bddBelow_Icc.mono Ico_subset_Icc_self
+@[simp] lemma bddAbove_Ioc : BddAbove (Ioc a b) := bddAbove_Icc.mono Ioc_subset_Icc_self
+@[simp] lemma bddBelow_Ioc : BddBelow (Ioc a b) := bddBelow_Icc.mono Ioc_subset_Icc_self
+@[simp] lemma bddAbove_Ioo : BddAbove (Ioo a b) := bddAbove_Icc.mono Ioo_subset_Icc_self
+@[simp] lemma bddBelow_Ioo : BddBelow (Ioo a b) := bddBelow_Icc.mono Ioo_subset_Icc_self
 
 theorem isGreatest_Icc (h : a ≤ b) : IsGreatest (Icc a b) b :=
   ⟨right_mem_Icc.2 h, fun _ => And.right⟩

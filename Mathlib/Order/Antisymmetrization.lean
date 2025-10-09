@@ -139,6 +139,9 @@ noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
 instance [Inhabited α] : Inhabited (Antisymmetrization α r) := by
   unfold Antisymmetrization; infer_instance
 
+instance [Subsingleton α] : Subsingleton (Antisymmetrization α r) := by
+  unfold Antisymmetrization; infer_instance
+
 @[elab_as_elim]
 protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} :
     (∀ a, p <| toAntisymmetrization r a) → ∀ q, p q :=

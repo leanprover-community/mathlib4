@@ -14,8 +14,8 @@ We collect some results about the differentiability of infinite sums.
 
 -/
 
-lemma summableUniformlyOn_differentiableOn {ι E : Type*} [NormedAddCommGroup E]
-  [NormedSpace ℂ E] [CompleteSpace E] {f : ι → ℂ → E} {s : Set ℂ}
+lemma SummableLocallyUniformlyOn.differentiableOn {ι E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℂ E] [CompleteSpace E] {f : ι → ℂ → E} {s : Set ℂ}
     (hs : IsOpen s) (h : SummableLocallyUniformlyOn (fun n ↦ ((fun z ↦ f n z))) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt ℂ (f n) r) :
     DifferentiableOn ℂ (fun z ↦ ∑' n , f n z) s := by
@@ -24,4 +24,4 @@ lemma summableUniformlyOn_differentiableOn {ι E : Type*} [NormedAddCommGroup E]
   · apply hc.congr
     apply hg.tsum_eqOn
   · filter_upwards with t r hr using
-      DifferentiableWithinAt.fun_sum fun a ha => (hf2 a r hr).differentiableWithinAt
+      DifferentiableWithinAt.fun_sum fun a ha ↦ (hf2 a r hr).differentiableWithinAt

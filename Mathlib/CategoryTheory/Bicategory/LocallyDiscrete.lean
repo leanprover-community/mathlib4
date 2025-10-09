@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 
 /-!
 # Locally discrete bicategories
@@ -103,17 +102,6 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
   id_comp _ := Discrete.ext (Category.id_comp _)
   comp_id _ := Discrete.ext (Category.comp_id _)
   assoc _ _ _ := Discrete.ext (Category.assoc _ _ _)
-
-end
-
-section
-
-variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
-@[simp]
-lemma PrelaxFunctor.map₂_eqToHom (F : PrelaxFunctor B C) {a b : B} {f g : a ⟶ b} (h : f = g) :
-    F.map₂ (eqToHom h) = eqToHom (F.congr_map h) := by
-  subst h; simp only [eqToHom_refl, PrelaxFunctor.map₂_id]
 
 end
 

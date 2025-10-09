@@ -53,12 +53,6 @@ theorem Multipliable.tendsto_prod_tprod_nat {f : ℕ → M} (h : Multipliable f)
     Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 (∏' i, f i)) :=
   h.hasProd.tendsto_prod_nat
 
-@[deprecated (since := "2025-02-02")]
-alias HasProd.Multipliable.tendsto_prod_tprod_nat := Multipliable.tendsto_prod_tprod_nat
-
-@[deprecated (since := "2025-02-02")]
-alias HasSum.Multipliable.tendsto_sum_tsum_nat := Summable.tendsto_sum_tsum_nat
-
 namespace HasProd
 
 section ContinuousMul
@@ -67,9 +61,8 @@ variable [ContinuousMul M]
 
 @[to_additive]
 theorem prod_range_mul {f : ℕ → M} {k : ℕ} (h : HasProd (fun n ↦ f (n + k)) m) :
-    HasProd f ((∏ i ∈ range k, f i) * m) := by
-  refine ((range k).hasProd f).mul_compl ?_
-  rwa [← (notMemRangeEquiv k).symm.hasProd_iff]
+    HasProd f ((∏ i ∈ range k, f i) * m) :=
+  ((range k).hasProd f).mul_compl <| (notMemRangeEquiv k).symm.hasProd_iff.mp h
 
 @[to_additive]
 theorem zero_mul {f : ℕ → M} (h : HasProd (fun n ↦ f (n + 1)) m) :
@@ -448,7 +441,7 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image] at hx
         suffices x = 0 by simp only [this, if_true]
-        omega
+        cutsat
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by simp [u1, u2]
     _ = ∏ b ∈ v', (f b * f (-b)) := prod_mul_distrib.symm⟩
@@ -533,6 +526,20 @@ lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
 
+-- We're not really using the ring structure here:
+-- we only use multiplication by `-1`, so perhaps this can be generalised further.
+theorem Summable.alternating {α} [Ring α]
+    [UniformSpace α] [IsUniformAddGroup α] [CompleteSpace α] {f : ℕ → α} (hf : Summable f) :
+    Summable (fun n => (-1) ^ n * f n) := by
+  apply Summable.even_add_odd
+  · simp only [even_two, Even.mul_right, Even.neg_pow, one_pow, one_mul]
+    exact hf.comp_injective (mul_right_injective₀ (two_ne_zero' ℕ))
+  · simp only [pow_add, even_two, Even.mul_right, Even.neg_pow, one_pow, pow_one, mul_neg, mul_one,
+      neg_mul, one_mul]
+    apply Summable.neg
+    apply hf.comp_injective
+    exact (add_left_injective 1).comp (mul_right_injective₀ (two_ne_zero' ℕ))
+
 end IsUniformGroup
 
 theorem tsum_int_eq_tsum_neg {α : Type*} [AddCommMonoid α] [TopologicalSpace α] (f : ℤ → α) :
@@ -542,56 +549,40 @@ theorem tsum_int_eq_tsum_neg {α : Type*} [AddCommMonoid α] [TopologicalSpace �
 
 end Int
 
-section pnat
+section PNat
 
 variable {R : Type*} {α : Type*} [AddMonoidWithOne R] [TopologicalSpace α] [CommMonoid α]
 
 @[to_additive]
-theorem pnat_multipliable_iff_multipliable_succ
-    {f : ℕ → α} : Multipliable (fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) :=
+theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
+    Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x ↦ f (x + 1) :=
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
 
-@[to_additive]
-theorem tprod_pnat_eq_tprod_succ (f : ℕ → α) :
-    ∏' n : ℕ+, f n = ∏' n, f (n + 1) := (Equiv.pnatEquivNat.symm.tprod_eq _).symm
+@[deprecated (since := "2025-09-31")]
+alias pnat_multipliable_iff_multipliable_succ := multipliable_pnat_iff_multipliable_succ
 
 @[to_additive]
-lemma tprod_zero_pnat_eq_tprod_nat {α : Type*} [TopologicalSpace α] [CommGroup α]
-    [IsTopologicalGroup α] [T2Space α] (f : ℕ → α) (hf : Multipliable f) :
-    f 0 * ∏' (n : ℕ+), f ↑n = ∏' (n : ℕ), f n := by
-  simp [Multipliable.tprod_eq_zero_mul hf, tprod_pnat_eq_tprod_succ f]
+theorem tprod_pnat_eq_tprod_succ {f : ℕ → M} : ∏' n : ℕ+, f n = ∏' n, f (n + 1) :=
+  (Equiv.pnatEquivNat.symm.tprod_eq _).symm
 
-theorem pnat_multipliable_iff_multipliable_succ' {f : R → α} :
-    Multipliable (fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) := by
-  convert Equiv.pnatEquivNat.symm.multipliable_iff.symm
-  simp
+@[to_additive]
+lemma tprod_zero_pnat_eq_tprod_nat [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]
+    {f : ℕ → G} (hf : Multipliable f) :
+    f 0 * ∏' n : ℕ+, f ↑n = ∏' n, f n := by
+  simpa [hf.tprod_eq_zero_mul] using tprod_pnat_eq_tprod_succ
 
-theorem pnat_summable_iff_summable_succ' {α : Type*} [TopologicalSpace α] [AddCommMonoid α]
-    {f : R → α} : Summable (fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) := by
-  convert Equiv.pnatEquivNat.symm.summable_iff.symm
-  simp
+@[to_additive tsum_int_eq_zero_add_two_mul_tsum_pnat]
+theorem tprod_int_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
+    [T2Space G] {f : ℤ → G} (hf : ∀ n : ℤ, f (-n) = f n) (hf2 : Multipliable f) :
+    ∏' n, f n = f 0 * (∏' n : ℕ+, f n) ^ 2 := by
+  have hf3 : Multipliable fun n : ℕ ↦ f n :=
+    (multipliable_int_iff_multipliable_nat_and_neg.mp hf2).1
+  have hf4 : Multipliable fun n : ℕ+ ↦ f n := by
+    rwa [multipliable_pnat_iff_multipliable_succ (f := (f ·)),
+      multipliable_nat_add_iff 1 (f := (f ·))]
+  have := tprod_nat_mul_neg hf2
+  rw [← tprod_zero_pnat_eq_tprod_nat (by simpa [hf] using hf3.mul hf3), mul_comm _ (f 0)] at this
+  simp only [hf, Nat.cast_zero, mul_assoc, mul_right_inj] at this
+  rw [← this, mul_right_inj, hf4.tprod_mul hf4, sq]
 
-theorem tprod_pnat_eq_tprod_succ' (f : R → α) : ∏' n : ℕ+, f n = ∏' (n : ℕ), f (n + 1) := by
-  convert (Equiv.pnatEquivNat.symm.tprod_eq _).symm
-  simp
-
-theorem tsum_pnat_eq_tsum_succ' {α : Type*} [TopologicalSpace α] [AddCommMonoid α] (f : R → α) :
-    ∑' n : ℕ+, f n = ∑' (n : ℕ), f (n + 1) := by
-  convert (Equiv.pnatEquivNat.symm.tsum_eq _).symm
-  simp
-
-theorem tsum_nat_eq_zero_two_pnat {α : Type*} [UniformSpace α] [Ring α] [IsUniformAddGroup α]
-    [CompleteSpace α] [T2Space α] {f : ℤ → α} (hf : ∀ n : ℤ, f n = f (-n)) (hf2 : Summable f) :
-    ∑' n, f n = f 0 + 2 * ∑' n : ℕ+, f n := by
-  rw [tsum_of_add_one_of_neg_add_one]
-  · conv =>
-      enter [1,2,1]
-      ext n
-      rw [hf]
-    simp only [neg_add_rev, Int.reduceNeg, neg_neg, tsum_pnat_eq_tsum_succ', two_mul]
-    abel
-  · simpa using ((summable_nat_add_iff (k := 1)).mpr
-      (summable_int_iff_summable_nat_and_neg.mp hf2).1)
-  · exact (summable_nat_add_iff (k := 1)).mpr (summable_int_iff_summable_nat_and_neg.mp hf2).2
-
-end pnat
+end PNat
