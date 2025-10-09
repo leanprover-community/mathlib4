@@ -3,11 +3,13 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.NumberTheory.Padics.WithVal
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.NumberTheory.Padics.ProperSpace
 
 open IsDedekindDomain
 
 open scoped NumberField WithZero
 
+@[simps!]
 noncomputable def UniformSpace.Completion.mapEquiv {α β : Type*} [UniformSpace α] [UniformSpace β]
     (h : α ≃ᵤ β) : UniformSpace.Completion α ≃ᵤ UniformSpace.Completion β where
   toFun := .map h
@@ -23,6 +25,13 @@ noncomputable def UniformSpace.Completion.mapEquiv {α β : Type*} [UniformSpace
     apply ext (.comp continuous_map continuous_map) continuous_id fun a ↦ ?_
     simp [map_coe h.symm.uniformContinuous, map_coe h.uniformContinuous]
 
+@[simp]
+theorem UniformSpace.Completion.mapEquiv_cast_apply {α β : Type*} [UniformSpace α] [UniformSpace β]
+    (h : α ≃ᵤ β) (a : α) :
+    UniformSpace.Completion.mapEquiv h (↑a : UniformSpace.Completion α) = ↑(h a) := by
+  rw [mapEquiv_apply, map_coe h.uniformContinuous]
+
+/-
 def HeightOneSpectrum.mapEquiv {R S F : Type*} [CommRing R] [CommRing S] [EquivLike F R S]
     [RingEquivClass F R S] (f : F) : HeightOneSpectrum R ≃ HeightOneSpectrum S where
   toFun v := ⟨v.asIdeal.map f, Ideal.map_isPrime_of_equiv f,
@@ -41,100 +50,87 @@ def HeightOneSpectrum.mapEquiv {R S F : Type*} [CommRing R] [CommRing S] [EquivL
 noncomputable
 def Rat.ringOfIntegersSpectrumEquiv : HeightOneSpectrum (𝓞 ℚ) ≃ HeightOneSpectrum ℤ :=
     HeightOneSpectrum.mapEquiv ringOfIntegersEquiv
+-/
 
 noncomputable
-def IsDedekindDomain.HeightOneSpectrum.toNatGenerator {R : Type*} [CommRing R]
+def IsDedekindDomain.HeightOneSpectrum.natGenerator {R : Type*} [CommRing R]
     [h : Nonempty (R ≃+* ℤ)] (v : HeightOneSpectrum R) : ℕ :=
   Submodule.IsPrincipal.generator (v.asIdeal.map h.some) |>.natAbs
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
-theorem toNatGenerator_span {R : Type*} [CommRing R] [h : Nonempty (R ≃+* ℤ)]
-    (v : HeightOneSpectrum R) :
-    v.asIdeal.map h.some = Ideal.span {↑v.toNatGenerator} := by
-  simp [toNatGenerator]
+noncomputable instance {R : Type*} [CommRing R] [Nonempty (R ≃+* ℤ)] :
+    CoeOut (HeightOneSpectrum R) ℕ where
+  coe := natGenerator
 
-theorem toNatGenerator_dvd_iff {R : Type*} [CommRing R] [h : Nonempty (R ≃+* ℤ)]
+theorem span_natGenerator {R : Type*} [CommRing R] [h : Nonempty (R ≃+* ℤ)]
+    (v : HeightOneSpectrum R) :
+    Ideal.span {↑v} = v.asIdeal.map h.some := by
+  simp [natGenerator]
+
+theorem natGenerator_dvd_iff {R : Type*} [CommRing R] [h : Nonempty (R ≃+* ℤ)]
     (v : HeightOneSpectrum R) {n : ℕ} :
-    v.toNatGenerator ∣ n ↔ ↑n ∈ v.asIdeal.map h.some := by
-  rw [toNatGenerator_span, Ideal.mem_span_singleton]
+    ↑v ∣ n ↔ ↑n ∈ v.asIdeal.map h.some := by
+  rw [← span_natGenerator, Ideal.mem_span_singleton]
   exact Int.ofNat_dvd.symm
 
-instance {R : Type*} [CommRing R] [Nonempty (R ≃+* ℤ)]
-    (v : HeightOneSpectrum R) : Fact (v.toNatGenerator).Prime :=
-  let f := Classical.arbitrary (R ≃+* ℤ)
+instance {R : Type*} [CommRing R] [h : Nonempty (R ≃+* ℤ)]
+    (v : HeightOneSpectrum R) : Fact (Nat.Prime v) :=
   ⟨Int.prime_iff_natAbs_prime.1 <| Submodule.IsPrincipal.prime_generator_of_isPrime _
-    ((Ideal.map_eq_bot_iff_of_injective f.injective).not.2 v.ne_bot)⟩
+    ((Ideal.map_eq_bot_iff_of_injective h.some.injective).not.2 v.ne_bot)⟩
 
-noncomputable def toRatpadicValuation {R : Type*} [CommRing R] [Nonempty (R ≃+* ℤ)]
-    (v : HeightOneSpectrum R) : Valuation ℚ ℤᵐ⁰ :=
-  Rat.padicValuation v.toNatGenerator
-
-theorem valuation_equiv_toRatpadicValuation {R : Type*} [CommRing R] [IsDedekindDomain R]
-    [Algebra R ℚ] [IsFractionRing R ℚ] [h : Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
-    (𝔭.valuation ℚ).IsEquiv (𝔭.toRatpadicValuation) := by
-  simp [Valuation.isEquiv_iff_val_le_one, Rat.padicValuation_le_one_iff,
-    Rat.valuation_le_one_iff_den, toNatGenerator_dvd_iff, toRatpadicValuation,
-    ← Ideal.apply_mem_of_equiv_iff (f := h.some)]
-
-noncomputable def withValEquiv {R : Type*} [CommRing R] [IsDedekindDomain R]
+theorem valuation_equiv_padicValuation {R : Type*} [CommRing R] [IsDedekindDomain R]
     [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
-    WithVal (𝔭.valuation ℚ) ≃ᵤ WithVal 𝔭.toRatpadicValuation :=
+    (𝔭.valuation ℚ).IsEquiv (Rat.padicValuation 𝔭) := by
+  simp [Valuation.isEquiv_iff_val_le_one, Rat.padicValuation_le_one_iff,
+    Rat.valuation_le_one_iff_den, natGenerator_dvd_iff,
+    ← Ideal.apply_mem_of_equiv_iff (f := Classical.arbitrary (R ≃+* ℤ))]
+
+noncomputable def valuationEquivPadicValuation {R : Type*} [CommRing R] [IsDedekindDomain R]
+    [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
+    WithVal (𝔭.valuation ℚ) ≃ᵤ WithVal (Rat.padicValuation 𝔭) :=
   Valuation.IsEquiv.uniformEquiv (𝔭.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
-    𝔭.valuation_equiv_toRatpadicValuation
+    𝔭.valuation_equiv_padicValuation
 
 noncomputable
-def _root_.Rat.adicCompletionEquivPadicCompletion {R : Type*} [CommRing R] [IsDedekindDomain R]
+def adicCompletionEquivPadic {R : Type*} [CommRing R] [IsDedekindDomain R]
     [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
-    𝔭.adicCompletion ℚ ≃ᵤ ℚ_[𝔭.toNatGenerator] := by
-  apply UniformSpace.Completion.mapEquiv 𝔭.withValEquiv |>.trans Padic.withValUniformEquiv
+    𝔭.adicCompletion ℚ ≃ᵤ ℚ_[𝔭] :=
+  (UniformSpace.Completion.mapEquiv 𝔭.valuationEquivPadicValuation).trans Padic.withValUniformEquiv
 
 open UniformSpace.Completion in
 theorem _root_.Valuation.IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} {Γ₀' : Type*}
     [LinearOrderedCommGroupWithZero Γ₀'] {v' : Valuation K Γ₀'} (h : v.IsEquiv v')
-    (hv : Function.Surjective v) (hv' : Function.Surjective v')
-    {x : v.Completion} :
+    (hv : Function.Surjective v) (hv' : Function.Surjective v') {x : v.Completion} :
     Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv hv hv') x) ≤ 1 := by
-  apply UniformSpace.Completion.induction_on
-    (p := fun x ↦ Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv hv hv') x) ≤ 1) x
-  · have : ⇑(mapEquiv (h.uniformEquiv hv hv')) =
-        ⇑(mapEquiv (h.uniformEquiv hv hv')).toHomeomorph := rfl
-    simp_rw [this]
-    apply Homeomorph.isClosed_setOf_iff (q := fun x ↦ Valued.v x ≤ 1)
-      (hs := Valued.isClopen_closedBall _ (by norm_num))
-      (ht := Valued.isClopen_closedBall _ (by norm_num))
-  · intro a
-    simp [← WithVal.apply_equiv, mapEquiv]
-    rw [UniformSpace.Completion.map_coe
-      (Valuation.IsEquiv.uniformEquiv hv hv' h).uniformContinuous]
-    simp [Valuation.IsEquiv.uniformEquiv, Equiv.toUniformEquivOfIsUniformInducing]
-    exact h.le_one_iff_le_one (x := WithVal.equiv v a)
+  induction x using induction_on with
+  | hp =>
+    exact (mapEquiv (h.uniformEquiv hv hv')).toHomeomorph.isClosed_setOf_iff
+      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
+  | ih a =>
+    rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, mapEquiv_cast_apply]
+    simpa using h.le_one_iff_le_one
 
-noncomputable
-def _root_.Rat.adicCompletionIntegersEquivPadicInt {R : Type*} [CommRing R] [IsDedekindDomain R]
+noncomputable def adicCompletionIntegersEquivPadicInt {R : Type*} [CommRing R] [IsDedekindDomain R]
     [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
-    𝔭.adicCompletionIntegers ℚ ≃ᵤ
-      (Valued.v : Valuation 𝔭.toRatpadicValuation.Completion _).valuationSubring := by
-  apply (UniformSpace.Completion.mapEquiv 𝔭.withValEquiv).subtype
-  intro
-  simpa using 𝔭.valuation_equiv_toRatpadicValuation.valuedCompletion_le_one_iff
-    (𝔭.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
-
-noncomputable
-def _root_.Rat.adicCompletionIntegersEquivPadicIntRingEquiv {R : Type*}
-    [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
-    [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
-    𝔭.adicCompletionIntegers ℚ ≃ᵤ ℤ_[𝔭.toNatGenerator] :=
-  (Rat.adicCompletionIntegersEquivPadicInt 𝔭).trans PadicInt.withValIntegersUniformEquiv
+    𝔭.adicCompletionIntegers ℚ ≃ᵤ ℤ_[𝔭] :=
+  let e : 𝔭.adicCompletionIntegers ℚ ≃ᵤ
+      (Valued.v.valuationSubring : ValuationSubring (Rat.padicValuation 𝔭).Completion) :=
+    (UniformSpace.Completion.mapEquiv 𝔭.valuationEquivPadicValuation).subtype fun _ ↦ by
+      simpa using 𝔭.valuation_equiv_padicValuation.valuedCompletion_le_one_iff
+        (𝔭.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
+  e.trans PadicInt.withValIntegersUniformEquiv
 
 instance : Nonempty (𝓞 ℚ ≃+* ℤ) := ⟨Rat.ringOfIntegersEquiv⟩
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation ℚ Γ₀} :
     Nonempty (𝓞 (WithVal v) ≃+* ℤ) := ⟨Rat.ringOfIntegersWithValEquiv v⟩
 
-noncomputable
-example (𝔭 : HeightOneSpectrum (𝓞 ℚ)) : 𝔭.adicCompletion ℚ ≃ᵤ ℚ_[𝔭.toNatGenerator] :=
-  Rat.adicCompletionEquivPadicCompletion 𝔭
+noncomputable example (𝔭 : HeightOneSpectrum (𝓞 ℚ)) : 𝔭.adicCompletion ℚ ≃ᵤ ℚ_[𝔭] :=
+  𝔭.adicCompletionEquivPadic
+
+noncomputable example (𝔭 : HeightOneSpectrum (𝓞 ℚ)) : CompactSpace (𝔭.adicCompletionIntegers ℚ) :=
+  𝔭.adicCompletionIntegersEquivPadicInt.toHomeomorph.symm.compactSpace
 
 end IsDedekindDomain.HeightOneSpectrum

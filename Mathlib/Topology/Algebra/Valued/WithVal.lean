@@ -201,6 +201,7 @@ theorem IsEquiv.isUniformInducing_equivWithVal [DivisionRing R] {v : Valuation R
 
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/
+@[simps!]
 def IsEquiv.uniformEquiv [DivisionRing R] {v : Valuation R Γ₀} {v' : Valuation R Γ₀'}
     (hv : Function.Surjective v) (hv' : Function.Surjective v') (h : v.IsEquiv v') :
     WithVal v ≃ᵤ WithVal v' :=
