@@ -15,7 +15,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 * `AlgHom R A B`: the type of `R`-algebra morphisms from `A` to `B`.
 * `Algebra.ofId R A : R →ₐ[R] A`: the canonical map from `R` to `A`, as an `AlgHom`.
 
-## Notations
+## Notation
 
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/

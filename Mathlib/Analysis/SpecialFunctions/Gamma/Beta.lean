@@ -83,7 +83,7 @@ theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     conv_lhs => rw [mul_comm]
     congr 2 <;> · push_cast; ring
   · norm_num
-  · norm_num
+  · simp
 
 theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := by
   simpa [betaIntegral, ← intervalIntegral.integral_symm, add_comm, mul_comm, sub_eq_add_neg]
@@ -517,6 +517,11 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
     specialize ihn (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
     exact differentiableAt_id.mul (ihn.comp s (f := fun s => s + 1) <|
       differentiableAt_id.add_const (1 : ℂ))
+
+lemma betaIntegral_eq_Gamma_mul_div (u v : ℂ) (hu : 0 < u.re) (hv : 0 < v.re) :
+    betaIntegral u v = Gamma u * Gamma v / Gamma (u + v) := by
+  rw [Gamma_mul_Gamma_eq_betaIntegral hu hv,
+      mul_div_cancel_left₀ _ (Gamma_ne_zero_of_re_pos (add_pos hu hv))]
 
 end Complex
 

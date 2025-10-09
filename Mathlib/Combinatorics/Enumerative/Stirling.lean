@@ -90,15 +90,17 @@ theorem stirlingFirst_self (n : ℕ) : stirlingFirst n n = 1 := by
     mul_zero]
 
 theorem stirlingFirst_succ_self_left (n : ℕ) : stirlingFirst (n + 1) n = (n + 1).choose 2 := by
-  induction' n with n ih
-  · simp only [zero_add, stirlingFirst_succ_zero, choose_succ_self]
-  · rw [stirlingFirst_succ_succ, ih, stirlingFirst_self, mul_one, Nat.choose_succ_succ (n + 1),
+  induction n with
+  | zero => simp only [zero_add, stirlingFirst_succ_zero, choose_succ_self]
+  | succ n ih =>
+    rw [stirlingFirst_succ_succ, ih, stirlingFirst_self, mul_one, Nat.choose_succ_succ (n + 1),
       Nat.choose_one_right]
 
 theorem stirlingFirst_one_right (n : ℕ) : stirlingFirst (n + 1) 1 = n.factorial := by
-  induction' n with n hn
-  · rfl
-  · rw [stirlingFirst_succ_succ, zero_add, hn, stirlingFirst_succ_zero]
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    rw [stirlingFirst_succ_succ, zero_add, hn, stirlingFirst_succ_zero]
     simp [Nat.factorial_succ]
 
 
@@ -152,15 +154,16 @@ theorem stirlingSecond_self (n : ℕ) : stirlingSecond n n = 1 := by
     mul_zero]
 
 theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n + 1) 1 = 1 := by
-  induction' n with n ih
-  · rfl
-  · rw [stirlingSecond, stirlingSecond_succ_zero, ih]
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [stirlingSecond, stirlingSecond_succ_zero, ih]
 
 theorem stirlingSecond_succ_self_left (n : ℕ) :
     stirlingSecond (n + 1) n = (n + 1).choose 2 := by
-  induction' n with n ih
-  · simp only [zero_add, stirlingSecond_succ_zero, choose_succ_self]
-  · rw [stirlingSecond_succ_succ, ih, stirlingSecond_self, mul_one,
+  induction n with
+  | zero => simp only [zero_add, stirlingSecond_succ_zero, choose_succ_self]
+  | succ n ih =>
+    rw [stirlingSecond_succ_succ, ih, stirlingSecond_self, mul_one,
       Nat.choose_succ_succ (n + 1), Nat.choose_one_right]
 
 end Nat
