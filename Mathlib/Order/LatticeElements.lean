@@ -83,9 +83,7 @@ lemma isDistrib_of_congruence {a : α}
   apply isDistrib_iff.mpr
   simp [supLeft,  Setoid.ker_def]
   intro w x y z h1 h2
-  rw [← h] at h1
-  rw [← h] at h2
-  rw [← h]
+  rw [← h] at *
   exact c.inf h1 h2
 
 instance {a : α} :
