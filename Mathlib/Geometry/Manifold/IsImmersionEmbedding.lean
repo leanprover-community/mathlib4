@@ -202,9 +202,12 @@ lemma property (h : IsImmersionAt F I I' n f x) :
   rwa [IsImmersionAt_def] at h
 
 /--
+If `f` is an immersion at `x`, it maps its domain chart's target to its codomain chart's target:
+`(h.domChart.extend I).target` to `(h.domChart.extend I').target`.
+
 Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
 between the targets of the local charts: using mathlib's formalisation conventions, that condition
-is *slightly* weaker than `map_source_subset_source`: the latter implies that
+is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend I' ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend I').target = (h.codChart.extend I) '' h.codChart.source`,
 but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
