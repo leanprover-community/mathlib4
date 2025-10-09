@@ -667,8 +667,9 @@ open IsDedekindDomain.HeightOneSpectrum
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R]
 
-theorem num_not_mem_ideal_of_den_mem (f : R ≃+* ℤ) {𝔭 : Ideal R} (hp : Prime 𝔭) (x : ℚ)
+theorem num_not_mem_ideal_of_den_mem [Nonempty (R ≃+* ℤ)] {𝔭 : Ideal R} (hp : Prime 𝔭) (x : ℚ)
     (hden : ↑x.den ∈ 𝔭) : ↑x.num ∉ 𝔭 := by
+  let f := Classical.arbitrary (R ≃+* ℤ)
   obtain ⟨p, h𝔭⟩ := IsPrincipalIdealRing.principal (Ideal.map f 𝔭) |>.map_ringHom f.symm
   rw [Ideal.map_symm, Ideal.comap_map_of_bijective _ f.bijective, Ideal.submodule_span_eq] at h𝔭
   simp_rw [h𝔭, Ideal.mem_span_singleton] at hden ⊢
@@ -681,11 +682,12 @@ theorem num_not_mem_ideal_of_den_mem (f : R ≃+* ℤ) {𝔭 : Ideal R} (hp : Pr
   · simpa [abs_eq_neg_self.2 (le_of_lt h₀)]
   · simpa [abs_eq_self.2 h₀]
 
-theorem valuation_le_one_iff_den [Algebra R ℚ] [IsFractionRing R ℚ] (f : R ≃+* ℤ)
+theorem valuation_le_one_iff_den [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)]
     (𝔭 : HeightOneSpectrum R) (x : ℚ) :
     𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
+  let f := Classical.arbitrary (R ≃+* ℤ)
   have : (x.den : R) ≠ 0 := fun h ↦ by simpa using congrArg f h
-  simp [← 𝔭.valuation_le_one_iff ℚ x.num this (x.num_not_mem_ideal_of_den_mem f 𝔭.prime),
+  simp [← 𝔭.valuation_le_one_iff ℚ x.num this (x.num_not_mem_ideal_of_den_mem 𝔭.prime),
     x.num_div_den]
 
 end Rat
