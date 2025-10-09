@@ -698,7 +698,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
         Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
   constructor
   · -- A bounded Lipschitz function is in particular a bounded continuous function, and we already
-    -- known that weak convergence implies convergence of their integrals
+    -- know that weak convergence implies convergence of their integrals
     intro h f hf_bounded hf_lip
     simp_rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at h
     let f' : BoundedContinuousFunction Ω ℝ :=
