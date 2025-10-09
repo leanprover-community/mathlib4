@@ -130,7 +130,6 @@ end Mathlib.Tactic
 /-- A mathlib library note: the note's content should be contained in its doc-string. -/
 def LibraryNote := Unit
 
-
 open Lean in
 /-- `library_note2 «my note» /-- documentation -/` creates a library note named `my note`
 in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`.
