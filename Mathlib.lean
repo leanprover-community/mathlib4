@@ -5551,6 +5551,7 @@ import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Frobenius
 import Mathlib.RingTheory.Generators
+import Mathlib.RingTheory.GradedAlgebra.AlgHom
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.FiniteType
 import Mathlib.RingTheory.GradedAlgebra.Hom
