@@ -3,7 +3,6 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.NumberTheory.Padics.WithVal
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Int.Basic
-import Mathlib
 
 open IsDedekindDomain
 
