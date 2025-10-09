@@ -236,7 +236,7 @@ attribute [local instance] normedSpaceTangentSpaceVectorSpace
 variable (I)
 
 lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
-    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ < C := by
+    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ < C := by
   rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
     with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
@@ -245,7 +245,7 @@ lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
   rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
 lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
-    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C := by
+    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ₑ < C := by
   rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
@@ -269,7 +269,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
 
 lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
-    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ < C := by
+    ‖mfderiv[range I] (extChartAt I x).symm y‖ < C := by
   rcases eventually_norm_mfderivWithin_symm_extChartAt_comp_lt I x with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
   have : 𝓝 x = 𝓝 ((extChartAt I x).symm (extChartAt I x x)) := by simp
@@ -328,7 +328,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
     apply Subset.trans _ hr
     exact ((convex_ball _ _).inter I.convex_range).segment_subset (by simp [r_pos]) hy
   simp only [preimage_inter, subset_inter_iff] at hη
-  have η_smooth : ContMDiffOn 𝓘(ℝ, ℝ) 𝓘(ℝ, E) 1 η (Icc 0 1) := by
+  have η_smooth : CMDiff[Icc 0 1] 1 η := by
     apply ContMDiff.contMDiffOn
     rw [contMDiff_iff_contDiff]
     exact ContinuousAffineMap.contDiff _
@@ -407,7 +407,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
-      ∧ u ⊆ {y | ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
+      ∧ u ⊆ {y | ‖mfderiv% (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
     have := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
     rcases exists_mem_nhds_isClosed_subset this with ⟨u, u_mem, u_closed, hu⟩
     simp only [subset_inter_iff] at hu
@@ -442,8 +442,8 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   suffices γ t₁ ∈ v from
     γ_smooth.continuous.continuousWithinAt <| mem_of_superset (v_open.mem_nhds this) hv
   let γ' := extChartAt I x ∘ γ
-  have hC : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, E) 1 γ' (Icc 0 t₁) :=
-    ContMDiffOn.comp (I' := I) (t := (chartAt H x).source) contMDiffOn_extChartAt
+  have hC : CMDiff[Icc 0 t₁] 1 γ' :=
+    contMDiffOn_extChartAt.comp (I' := I) (t := (chartAt H x).source)
       γ_smooth.contMDiffOn (fun t' ht' ↦ uc' <| t₁_mem ht')
   have : ‖γ' t₁ - γ' 0‖ₑ < r := by
     rcases ht₁0.eq_or_lt with rfl | h't'
@@ -459,8 +459,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     _ ≤ ∫⁻ t' in Icc 0 t₁, C * ‖mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t' 1‖ₑ := by
       apply setLIntegral_mono' measurableSet_Icc (fun t' ht' ↦ ?_)
       have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t₁) t' =
-          (mfderiv I 𝓘(ℝ, E) (extChartAt I x) (γ t')) ∘L
-          (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t') := by
+          (mfderiv% (extChartAt I x) (γ t')) ∘L (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t') := by
         apply mfderiv_comp_mfderivWithin
         · refine mdifferentiableAt_extChartAt (uc' ?_)
           apply t₁_mem ht'
@@ -468,8 +467,8 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
         · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
           exact uniqueDiffOn_Icc h't' _ ht'
       have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t₁) t' 1 =
-          (mfderiv I 𝓘(ℝ, E) (extChartAt I x) (γ t'))
-          (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t' 1) := congr($this 1)
+          (mfderiv% (extChartAt I x) (γ t')) (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t' 1) :=
+        congr($this 1)
       rw [this]
       apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
       gcongr
