@@ -745,11 +745,6 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     ring
   · exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
 
-@[simp]
-lemma lipschitzWith_zero_iff {E F : Type*} [PseudoEMetricSpace E] [EMetricSpace F] (f : E → F) :
-    LipschitzWith (0 : ℝ≥0) f ↔ ∀ x y, f x = f y := by
-  simp [LipschitzWith]
-
 @[fun_prop, measurability]
 lemma AEMeasurable.dist {Ω E : Type*} {mΩ : MeasurableSpace Ω} {mE : MeasurableSpace E}
     [PseudoMetricSpace E] [SecondCountableTopology E] [BorelSpace E]
@@ -773,7 +768,7 @@ lemma ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto [l.IsCountab
   · simp only [Subsingleton.elim _ (0 : Measure E)]
     exact tendsto_const_nhds
   let x₀ : E := hE.some
-  -- we show convergence in distribution by verifying the convergence of integrals of any bounded
+  -- We show convergence in distribution by verifying the convergence of integrals of any bounded
   -- Lipschitz function `F`
   suffices ∀ (F : E → ℝ) (hF_bounded : ∃ (C : ℝ), ∀ x y, dist (F x) (F y) ≤ C)
       (hF_lip : ∃ L, LipschitzWith L F),
@@ -781,9 +776,9 @@ lemma ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto [l.IsCountab
     rwa [tendsto_iff_forall_lipschitz_integral_tendsto]
   rintro F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
   have hF_cont : Continuous F := hF_lip.continuous
-  -- if `F` is 0-Lipschitz, then it is constant, and all integrals are equal to that constant
+  -- If `F` is 0-Lipschitz, then it is constant, and all integrals are equal to that constant
   by_cases hL : L = 0
-  · simp only [hL, lipschitzWith_zero_iff] at hF_lip
+  · simp only [hL, LipschitzWith.zero_iff] at hF_lip
     specialize hF_lip x₀
     simp_rw [eq_comm (a := F x₀)] at hF_lip
     simp only [hF_lip, integral_const, smul_eq_mul]
@@ -801,6 +796,7 @@ lemma ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto [l.IsCountab
     convert this
     field_simp
   intro ε hε
+  -- We cut the difference into three pieces, two of which are small by the convergence assumptions
   have h_le n : |∫ ω, F ω ∂(μ.map (f' n)) - ∫ ω, F ω ∂(μ.map g)|
       ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
         + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)| := by
@@ -811,6 +807,7 @@ lemma ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto [l.IsCountab
     rw [Real.dist_eq]
     -- `⊢ |∫ ω, F ω ∂(μ.map (f' n)) - ∫ ω, F ω ∂(μ.map (f n))|`
     -- `    ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}`
+    -- We prove integrability of the functions involved to be able to manipulate the integrals.
     have h_int_f' : Integrable (fun x ↦ F (f' n x)) μ := by
       refine Integrable.of_bound (by fun_prop) (‖F x₀‖ + M) (ae_of_all _ fun a ↦ ?_)
       specialize hF_bounded (f' n a) x₀
@@ -824,17 +821,21 @@ lemma ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto [l.IsCountab
     have h_int_sub : Integrable (fun a ↦ ‖F (f' n a) - F (f n a)‖) μ := by
       rw [integrable_norm_iff (by fun_prop)]
       exact h_int_f'.sub h_int_f
+    -- Now we prove the inequality
     rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop),
       ← integral_sub h_int_f' h_int_f]
     rw [← Real.norm_eq_abs]
     calc ‖∫ a, F (f' n a) - F (f n a) ∂μ‖
     _ ≤ ∫ a, ‖F (f' n a) - F (f n a)‖ ∂μ := norm_integral_le_integral_norm _
+    -- Either `‖f' n x - f n x‖` is smaller than `ε / 2`, or it is not
     _ = ∫ a in {x | ‖f' n x - f n x‖ < ε / 2}, ‖F (f' n a) - F (f n a)‖ ∂μ
         + ∫ a in {x | ε / 2 ≤ ‖f' n x - f n x‖}, ‖F (f' n a) - F (f n a)‖ ∂μ := by
       symm
       simp_rw [← not_lt]
       refine integral_add_compl₀ ?_ h_int_sub
       exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
+    -- If it is smaller, we use the Lipschitz property of `F`
+    -- If not, we use the boundedness of `F`.
     _ ≤ ∫ a in {x | ‖f' n x - f n x‖ < ε / 2}, L * (ε / 2) ∂μ
         + ∫ a in {x | ε / 2 ≤ ‖f' n x - f n x‖}, M ∂μ := by
       gcongr ?_ + ?_
@@ -847,6 +848,7 @@ lemma ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto [l.IsCountab
       · refine setIntegral_mono h_int_sub.integrableOn integrableOn_const fun a ↦ ?_
         rw [← dist_eq_norm]
         convert hF_bounded _ _
+    -- The goal is now a simple computation
     _ = L * (ε / 2) * μ.real {x | ‖f' n x - f n x‖ < ε / 2}
         + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖} := by
       simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply, Set.univ_inter,
@@ -858,6 +860,7 @@ lemma ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto [l.IsCountab
       conv_rhs => rw [← mul_one (ε / 2)]
       gcongr
       exact measureReal_le_one
+  -- We finally show that the right-hand side tends to `L * ε / 2`, which is smaller than `L * ε`
   have h_tendsto :
       Tendsto (fun n ↦ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖f' n ω - f n ω‖}
         + |∫ ω, F ω ∂(μ.map (f n)) - ∫ ω, F ω ∂(μ.map g)|) l (𝓝 (L * ε / 2)) := by
