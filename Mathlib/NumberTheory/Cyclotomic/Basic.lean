@@ -806,12 +806,12 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
 
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
-  map_units' := fun ⟨x, hx⟩ => by
+  map_units := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]
     apply map_ne_zero_of_mem_nonZeroDivisors
     · apply adjoin_algebra_injective
     · exact hx
-  surj' x := by
+  surj x := by
     have : NeZero (n : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine
       Algebra.adjoin_induction
@@ -852,11 +852,6 @@ end CyclotomicRing
 end CyclotomicRing
 
 end IsDomain
-
--- TODO: move to suitable place
-theorem Polynomial.separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
-    (cyclotomic n K).Separable :=
-  .of_dvd (separable_X_pow_sub_C 1 NeZero.out one_ne_zero) (cyclotomic.dvd_X_pow_sub_one n K)
 
 section IsSepClosed
 

@@ -216,6 +216,7 @@ theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
   | succ k ih =>
     simp only [Module.End.iterate_succ]
     rw [mapQ_comp, ih]
+    exact p.le_comap_pow_of_le_comap h k
 
 theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h) = (q.comap f).map (mkQ p) :=
   le_antisymm (by rintro ⟨x⟩ hx; exact ⟨_, hx, rfl⟩)

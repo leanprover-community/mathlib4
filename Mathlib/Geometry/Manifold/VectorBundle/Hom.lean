@@ -20,7 +20,7 @@ Indeed, semilinear maps are typically not smooth. For instance, complex conjugat
 
 noncomputable section
 
-open Bundle Set PartialHomeomorph ContinuousLinearMap Pretrivialization
+open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization
 
 open scoped Manifold Bundle Topology
 
@@ -61,8 +61,8 @@ variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E�
 theorem hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
-  rw [FiberBundle.chartedSpace_chartAt, trans_apply, PartialHomeomorph.prod_apply,
-    Trivialization.coe_coe, PartialHomeomorph.refl_apply, Function.id_def,
+  rw [FiberBundle.chartedSpace_chartAt, trans_apply, OpenPartialHomeomorph.prod_apply,
+    Trivialization.coe_coe, OpenPartialHomeomorph.refl_apply, Function.id_def,
     hom_trivializationAt_apply]
 
 theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :

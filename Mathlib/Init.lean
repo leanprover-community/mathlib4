@@ -64,6 +64,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.hashCommand
   linter.oldObtain
   linter.style.cases
+  linter.style.induction
   linter.style.refine
   linter.style.commandStart
   linter.style.cdot
@@ -82,6 +83,14 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.maxHeartbeats
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
+/-- Define a set of linters that are used in the `nightly-testing` branch
+to catch any regressions.
+-/
+register_linter_set linter.nightlyRegressionSet :=
+  linter.tacticAnalysis.regressions.linarithToGrind
+  linter.tacticAnalysis.regressions.omegaToCutsat
+  linter.tacticAnalysis.regressions.ringToGrind
+
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style
 
@@ -92,7 +101,9 @@ run_cmd liftTermElabM do
   let ls := linterSetsExt.getEntries env
   let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
     throwError m!"'linter.mathlibStandardSet' is not defined."
-  for mll in mlLinters do
+  let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |
+    throwError m!"'linter.nightlyRegressionSet is not defined."
+  for mll in mlLinters ∪ nrLinters do
     let [(mlRes, _)] ← realizeGlobalName mll |
       if !DefinedInScripts.contains mll then
         throwError "Unknown option '{mll}'!"

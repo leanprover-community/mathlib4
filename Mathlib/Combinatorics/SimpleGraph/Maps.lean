@@ -129,6 +129,11 @@ theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
   intro G G' h _ _ ha
   exact h ha
 
+@[simp] lemma comap_bot (f : V → W) : (emptyGraph W).comap f = emptyGraph V := rfl
+
+lemma comap_top {f : V → W} (hf : f.Injective) : (completeGraph W).comap f = completeGraph V := by
+  ext; simp [hf.eq_iff]
+
 @[simp]
 theorem comap_map_eq (f : V ↪ W) (G : SimpleGraph V) : (G.map f).comap f = G := by
   ext
@@ -193,6 +198,9 @@ There is also a notion of induced subgraphs (see `SimpleGraph.subgraph.induce`).
 outside the set. This is a wrapper around `SimpleGraph.comap`. -/
 abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
+
+@[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
+  comap_top Subtype.val_injective
 
 @[simp] lemma induce_singleton_eq_top (v : V) : G.induce {v} = ⊤ := by
   rw [eq_top_iff]; apply le_comap_of_subsingleton
