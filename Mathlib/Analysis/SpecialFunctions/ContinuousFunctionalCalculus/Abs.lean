@@ -294,7 +294,7 @@ variable [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
 
 open CFC
 
-@[simp]
+@[simp, grind =]
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
   rw [CFC.abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
 
