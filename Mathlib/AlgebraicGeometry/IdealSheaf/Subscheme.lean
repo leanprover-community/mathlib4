@@ -408,7 +408,8 @@ private lemma glueDataObjIso_hom_restrict (U : X.affineOpens) :
   rw [← cancel_mono U.1.ι]; simp
 
 private instance : IsPreimmersion I.gluedTo := by
-  rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsPreimmersion) _ (iSup_affineOpens_eq_top X)]
+  rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsPreimmersion)
+    _ (iSup_affineOpens_eq_top X)]
   intro U
   rw [← MorphismProperty.cancel_left_of_respectsIso @IsPreimmersion (I.glueDataObjIso U).hom,
     glueDataObjIso_hom_restrict]
