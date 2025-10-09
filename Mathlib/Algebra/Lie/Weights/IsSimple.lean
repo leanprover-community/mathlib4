@@ -176,11 +176,10 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
   rw [h_bracket_sum, h_pos_zero, h_neg_zero, h_bracket_zero]
   simp only [add_zero, zero_mem]
 
-private theorem invtSubmoduleToLieIdeal_aux (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-    (χ : Weight K H L) (x_χ : L) (hx_χ : x_χ ∈ genWeightSpace L χ)
-    (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
-    (m_α : L) (hm_α : m_α ∈ sl2SubmoduleOfRoot α.2.2) :
+end
+
+include hq hx_χ in
+private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot α.2.2) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   have hm_α_original : m_α ∈ sl2SubmoduleOfRoot α.2.2 := hm_α
   rw [sl2SubmoduleOfRoot_eq_sup] at hm_α
