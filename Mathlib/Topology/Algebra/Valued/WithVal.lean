@@ -3,6 +3,7 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.NumberTheory.NumberField.Basic
@@ -80,10 +81,17 @@ instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 end Instances
 
+section Ring
+
 variable [Ring R] (v : Valuation R Γ₀)
 
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
+
+/-- Canonical valuation on the `WithVal v` type synonym. -/
+def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
+
+@[simp] lemma valuation_equiv_symm (x : R) : valuation v ((equiv v).symm x) = v x := rfl
 
 /-- Canonical ring equivalence between `WithVal v` and `WithVal w`. -/
 def equivWithVal {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
@@ -92,7 +100,7 @@ def equivWithVal {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
   (WithVal.equiv v).trans (WithVal.equiv w).symm
 
 instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ :=
-  Valued.mk' (v.comap (WithVal.equiv v))
+  Valued.mk' (valuation v)
 
 theorem apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 
@@ -113,6 +121,17 @@ theorem equiv_equivWithVal_apply {Γ'₀ : Type*} [LinearOrderedCommGroupWithZer
 theorem equiv_equivWithVal_symm_apply {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
     (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : WithVal w) :
     equiv v ((equivWithVal v w).symm x) = equiv w x := rfl
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] (v : Valuation R Γ₀)
+
+instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
+instance : (valuation v).Compatible := .ofValuation (valuation v)
+
+end CommRing
 
 end WithVal
 
