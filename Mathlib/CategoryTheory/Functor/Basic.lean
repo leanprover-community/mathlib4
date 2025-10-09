@@ -22,7 +22,7 @@ set_option mathlib.tactic.category.grind true
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [CategoryTheory universes].
+-- declare the `v`'s first; see note [category theory universes].
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 section
