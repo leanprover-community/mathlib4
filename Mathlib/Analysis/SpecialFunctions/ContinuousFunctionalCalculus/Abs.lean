@@ -182,8 +182,8 @@ variable [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
 variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
 lemma abs_rclike_smul (r : 𝕜) (a : A) : abs (r • a) = ‖r‖ • abs a := by
   trans abs (‖r‖ • a)
-  · simp [abs, mul_smul_comm, smul_mul_assoc, star_smul, ← smul_assoc]
-    simp only [RCLike.real_smul_eq_coe_smul (K := 𝕜)]
+  · simp only [abs, mul_smul_comm, smul_mul_assoc, star_smul, ← smul_assoc,
+      RCLike.real_smul_eq_coe_smul (K := 𝕜)]
     simp [-algebraMap_smul, ← smul_mul_assoc, ← mul_comm (starRingEnd _ _), RCLike.conj_mul, sq]
   · simp [abs_smul]
 
