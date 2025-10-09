@@ -38,7 +38,7 @@ The definition could be extended to `ℝⁿ`, either by extending the definition
 using another construction here.
 -/
 
-open MeasureTheory Set Filter
+open MeasureTheory Measure Set Filter
 
 open scoped Topology
 
@@ -49,7 +49,7 @@ for probability measures. In that case, it satisfies `cdf μ x = μ.real (Iic x)
 `ProbabilityTheory.cdf_eq_real`). -/
 noncomputable
 def cdf (μ : Measure ℝ) : StieltjesFunction :=
-  condCDF ((Measure.dirac Unit.unit).prod μ) Unit.unit
+  condCDF ((dirac Unit.unit).prod μ) Unit.unit
 
 section ExplicitMeasureArg
 variable (μ : Measure ℝ)
@@ -70,9 +70,8 @@ lemma tendsto_cdf_atBot : Tendsto (cdf μ) atBot (𝓝 0) := tendsto_condCDF_atB
 lemma tendsto_cdf_atTop : Tendsto (cdf μ) atTop (𝓝 1) := tendsto_condCDF_atTop _ _
 
 lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x) = μ (Iic x) := by
-  have h := lintegral_condCDF ((Measure.dirac Unit.unit).prod μ) x
-  simpa only [MeasureTheory.Measure.fst_prod, Measure.prod_prod, measure_univ, one_mul,
-    lintegral_dirac] using h
+  have h := lintegral_condCDF ((dirac Unit.unit).prod μ) x
+  simpa only [fst_prod, prod_prod, measure_univ, one_mul, lintegral_dirac] using h
 
 lemma cdf_eq_real [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = μ.real (Iic x) := by
   rw [measureReal_def, ← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
@@ -86,7 +85,7 @@ instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := 
 
 /-- The measure associated to the cdf of a probability measure is the same probability measure. -/
 lemma measure_cdf [IsProbabilityMeasure μ] : (cdf μ).measure = μ := by
-  refine Measure.ext_of_Iic (cdf μ).measure μ (fun a ↦ ?_)
+  refine ext_of_Iic (cdf μ).measure μ (fun a ↦ ?_)
   rw [StieltjesFunction.measure_Iic _ (tendsto_cdf_atBot μ), sub_zero, ofReal_cdf]
 
 end ExplicitMeasureArg
@@ -118,4 +117,4 @@ lemma MeasureTheory.Measure.eq_of_cdf (μ ν : Measure ℝ) [IsProbabilityMeasur
 @[simp] lemma MeasureTheory.Measure.cdf_eq_iff (μ ν : Measure ℝ) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] :
     cdf μ = cdf ν ↔ μ = ν :=
-⟨MeasureTheory.Measure.eq_of_cdf μ ν, fun h ↦ by rw [h]⟩
+⟨eq_of_cdf μ ν, fun h ↦ by rw [h]⟩

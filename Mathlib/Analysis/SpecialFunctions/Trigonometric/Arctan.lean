@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 /-!
 # The `arctan` function.
 
-Inequalities, identities and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)`
+Inequalities, identities and `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)`
 and the whole line.
 
 The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add_pi` or
@@ -355,8 +355,8 @@ theorem continuous_arctan : Continuous arctan :=
 theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 
-/-- `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+/-- `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+def tanPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)

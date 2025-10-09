@@ -15,9 +15,11 @@ import Counterexamples.MonicNonRegular
 import Counterexamples.Motzkin
 import Counterexamples.OrderedCancelAddCommMonoidWithBounds
 import Counterexamples.Phillips
+import Counterexamples.PolynomialIsDomain
 import Counterexamples.Pseudoelement
 import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
+import Counterexamples.SeparableNotSecondCountable
 import Counterexamples.SorgenfreyLine
 import Counterexamples.TopologistsSineCurve
 import Counterexamples.ZeroDivisorsInAddMonoidAlgebras

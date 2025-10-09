@@ -708,7 +708,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
   rw [prod_congr rfl hs', prod_const]
   suffices m ≤ #s by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
-    rw [hm', pow_add, hf, MulZeroClass.zero_mul]
+    rw [hm', pow_add, hf, zero_mul]
   rw [← Nat.add_le_add_iff_right, add_comm #s,
     Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn

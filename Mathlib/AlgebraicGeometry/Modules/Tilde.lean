@@ -146,20 +146,20 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module (Spec(R).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
+    Module ((Spec <| .of R).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
   inferInstanceAs <| Module _ (Tilde.sectionsSubmodule M U)
 
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
-noncomputable def tilde : Spec(R).Modules where
+noncomputable def tilde : (Spec <| .of R).Modules where
   val :=
     { obj := fun U ↦ ModuleCat.of _ (M.tildeInType.val.obj U)
       map := fun {U V} i ↦ ofHom
         -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`
         -- This suggests `restrictScalars` needs to be redesigned.
-        (Y := (restrictScalars (Spec(R).ringCatSheaf.val.map i).hom).obj
-          (of (Spec(R).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
+        (Y := (restrictScalars ((Spec <| .of R).ringCatSheaf.val.map i).hom).obj
+          (of ((Spec <| .of R).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
         { toFun := M.tildeInType.val.map i
           map_smul' := by intros; rfl
           map_add' := by intros; rfl } }
