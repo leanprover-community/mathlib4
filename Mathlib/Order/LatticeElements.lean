@@ -62,16 +62,31 @@ Grätzer III.2, Theorem 2 2 → 3
 #check LatticeCon.ker
 -/
 
+lemma isDistrib_iff {a : α} : IsDistrib a ↔
+    ∀ ⦃w x y z : α⦄, supLeft a w = supLeft a x ∧ supLeft a y = supLeft a z →
+    supLeft a (w ⊓ y) = supLeft a (x ⊓ z) := by
+  constructor
+  · intro h w x y z ⟨h₁, h₂⟩
+    simp_all [supLeft]
+    rw [h, h, h₁, h₂]
+  · intro h x y
+    have e1 : a ⊔ x ⊓ y = a ⊔ ((a ⊔ x) ⊓ (a ⊔ y)) := by
+      apply h
+      constructor
+      · simp [supLeft]
+      · simp [supLeft]
+    simp [e1]
+
 /-- Grätzer III.2, Theorem 2 3 → 1 -/
 lemma isDistrib_of_congruence {a : α}
     {c : LatticeCon α} (h : ∀ ⦃x y : α⦄, c.r x y ↔ a ⊔ x = a ⊔ y) : IsDistrib a := by
-  intro x y
-  have e1 : a ⊔ x ⊓ y = a ⊔ ((a ⊔ x) ⊓ (a ⊔ y)) := by
-    rw [← h]
-    apply c.inf
-    simp_all only [le_sup_left, sup_of_le_right]
-    simp_all only [le_sup_left, sup_of_le_right]
-  simp [e1]
+  apply isDistrib_iff.mpr
+  simp [supLeft]
+  intro w x y z h1 h2
+  rw [← h] at h1
+  rw [← h] at h2
+  rw [← h]
+  exact c.inf h1 h2
 
 instance {a : α} :
     IsRefl α (fun x y => ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y) where
