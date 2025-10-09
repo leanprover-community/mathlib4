@@ -18,14 +18,14 @@ properties.
 ## Main definitions
 
 - `Polynomial.logMahlerMeasure p`: the logarithmic Mahler measure of a polynomial `p` defined as
-`(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖`.
+  `(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖`.
 - `Polynomial.mahlerMeasure p`: the (exponential) Mahler measure of a polynomial `p`, which is equal
-to `e ^ p.logMahlerMeasure` if `p` is nonzero, and `0` otherwise.
+  to `e ^ p.logMahlerMeasure` if `p` is nonzero, and `0` otherwise.
 
 ## Main results
 
 - `Polynomial.mahlerMeasure_mul`: the Mahler measure of the product of two polynomials is the
-product of their Mahler measures.
+  product of their Mahler measures.
 -/
 
 namespace Polynomial
