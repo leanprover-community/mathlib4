@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
 import Mathlib.Geometry.Manifold.ContMDiffMap
+import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
@@ -128,7 +129,7 @@ theorem ContMDiffOn.mul (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g
     ContMDiffOn I' I n (f * g) s := fun x hx => (hf x hx).mul (hg x hx)
 
 @[to_additive]
-theorem ContMDiff.mul (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
+theorem ContMDiff.mul (hf : CMDiff n f) (hg : ContMDiff I' I n g) :
     ContMDiff I' I n (f * g) := fun x => (hf x).mul (hg x)
 
 @[to_additive]

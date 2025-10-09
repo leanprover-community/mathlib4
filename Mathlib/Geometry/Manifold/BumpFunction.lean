@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
@@ -285,14 +286,14 @@ theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
 variable [IsManifold I ∞ M]
 
 /-- A smooth bump function is infinitely smooth. -/
-protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ∞ f := by
+protected theorem contMDiff : CMDiff ∞ f := by
   refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source := f.tsupport_subset_chartAt_source hx
   refine ContMDiffAt.congr_of_eventuallyEq ?_ <| f.eqOn_source.eventuallyEq_of_mem <|
     (chartAt H c).open_source.mem_nhds this
   exact f.contDiffAt.contMDiffAt.comp _ (contMDiffAt_extChartAt' this)
 
-protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ∞ f x :=
+protected theorem contMDiffAt {x} : CMDiffAt ∞ f x :=
   f.contMDiff.contMDiffAt
 
 protected theorem continuous : Continuous f :=
@@ -301,8 +302,7 @@ protected theorem continuous : Continuous f :=
 /-- If `f : SmoothBumpFunction I c` is a smooth bump function and `g : M → G` is a function smooth
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
 theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
-    (hg : ContMDiffOn I 𝓘(ℝ, G) ∞ g (chartAt H c).source) :
-    ContMDiff I 𝓘(ℝ, G) ∞ fun x => f x • g x := by
+    (hg : CMDiff[(chartAt H c).source] ∞ g) : CMDiff ∞ fun x => f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_
   -- Porting note: was a more readable `calc`
   -- calc
