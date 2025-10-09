@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
 import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.Topology.Algebra.Module.LinearSpan
 import Mathlib.Topology.Algebra.Module.StrongTopology
 
