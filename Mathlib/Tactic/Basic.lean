@@ -132,8 +132,10 @@ def LibraryNote := Unit
 
 
 open Lean in
-/-- `library_note2 myNote /-- documentation -/` creates a library note named `myNote`
-in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`. -/
+/-- `library_note2 «my note» /-- documentation -/` creates a library note named `my note`
+in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`.
+You can access this note using, for example, `#print Mathlib.LibraryNote.«my note»`.
+-/
 macro "library_note2 " name:ident ppSpace dc:docComment : command =>
   `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
 
