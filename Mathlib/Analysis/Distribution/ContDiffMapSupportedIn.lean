@@ -22,7 +22,7 @@ functions `f : E → F` (where `F` is a normed vector space) such that:
 
 The main reason this exists as a bundled type is to be endowed with its natural locally convex
 topology (namely, uniform convergence of `f` and its derivative up to order `n`).
-Taking the locally convex inductive limit of these as `K` yields the natural topology on test
+Taking the locally convex inductive limit of these as `K` varies yields the natural topology on test
 functions, used to define distributions. While most of distribution theory cares only about `C^∞`
 functions, we also want to endow the space of `C^n` test functions with its natural topology.
 Indeed, distributions of order less than `n` are precisely those which extend continuously to this
@@ -30,7 +30,7 @@ larger space of test functions.
 
 ## Main definitions
 
-- `ContDiffMapSupportedIn E F n K`: the type of `n`-times continuously differentiable
+- `ContDiffMapSupportedIn E F n K`: the type of bundled `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
 - `ContDiffMapSupportedIn.iteratedFDerivₗ'`: wrapper as a `𝕜`-linear maps for `iteratedFDeriv` on
   `ContDiffMapSupportedIn E F n K`, as a map into
@@ -38,6 +38,7 @@ larger space of test functions.
 
 ## Main statements
 
+TODO:
 - `ContDiffMapSupportedIn.instIsUniformAddGroup` and
   `ContDiffMapSupportedIn.instLocallyConvexSpace`: `ContDiffMapSupportedIn` is a locally convex
   topological vector space.
@@ -136,7 +137,7 @@ theorem toFun_eq_coe {f : 𝓓^{n}_{K}(E, F)} : f.toFun = (f : E → F) :=
   rfl
 
 /-- See note [custom simps projection]. -/
-def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E →F  := f
+def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E →F := f
 
 -- this must come after the coe_to_fun definition.
 initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
