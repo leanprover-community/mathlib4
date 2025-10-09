@@ -8,7 +8,7 @@ import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 
 /-! # Smooth immersions and embeddings
 
-In this file, we define `C^k` immersions and embeddings between `C^k` manifolds.
+In this file, we define `C^n` immersions and embeddings between `C^n` manifolds.
 The correct definition in the infinite-dimensional setting differs from the standard
 finite-dimensional definition (concerning the `mfderiv` being injective): future pull requests will
 prove that our definition implies the latter, and that both are equivalent for finite-dimensional
@@ -74,7 +74,10 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {n : WithTop ℕ∞}
 
 variable (F I I' M M') in
-/-- The local property of being an immersion at a point.
+/-- The local property of being an immersion at a point: `f : M → N` is an immersion at `x` if
+there exist charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively, such that in these
+charts, `f` looks like the inclusion `u ↦ (u, 0)`.
+
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`. -/
 def ImmersionAtProp : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop :=
@@ -96,7 +99,7 @@ lemma isLocalSourceTargetProperty_immersionAtProp :
     grind [→ PartialEquiv.map_target]
 
 variable (F I I' n) in
-/-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+/-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
@@ -128,7 +131,7 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorp
   use domChart, codChart
   use equiv
 
-/-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+/-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 This version does not assume that `f` maps `φ.source` to `ψ.source`,
 but that `f` is continuous at `x`. -/
@@ -230,7 +233,7 @@ lemma congr_iff {x : M} (hfg : f =ᶠ[𝓝 x] g) :
 end IsImmersionAt
 
 variable (F I I' n) in
-/-- `f : M → N` is a `C^k` immersion if around each point `x ∈ M`,
+/-- `f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `u ↦ (u, 0)`.
 

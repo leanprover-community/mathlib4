@@ -23,7 +23,7 @@ local property of this form.
 ## Main definitions and results
 
 * `Manifold.LocalSourceTargetPropertyAt` captures a local property of the above form:
-  for each `f: M → N`, and pair of charts `φ` of `M` and `ψ` of `N`, the local property is either
+  for each `f : M → N`, and pair of charts `φ` of `M` and `ψ` of `N`, the local property is either
   safisfied or not.
   We ask that the property be stable under congruence and under restriction of `φ`.
 * `Manifold.LiftSourceTargetPropertyAt f x P`, where `P` is a `LocalSourceTargetPropertyAt`,
