@@ -241,7 +241,6 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_neg_eq_map f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
--- Porting note: This is no longer `@[simp]` in Lean 4
 theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
 
 @[ext]
@@ -265,7 +264,7 @@ instance [DecidableEq R] : Inhabited (RingNorm R) :=
 end NonUnitalRing
 
 /-- The `NormedRing` structure on a ring `R` determined by a `RingNorm` -/
--- See note |reducible non instances]
+-- See note |reducible non-instances]
 abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
   __ := ‹Ring R›
   __ := f.toAddGroupNorm.toNormedAddCommGroup
@@ -345,7 +344,6 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_neg_eq_map f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
--- Porting note: This no longer in `@[simp]`-normal form in Lean 4
 theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
 
 @[ext]

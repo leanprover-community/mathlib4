@@ -21,7 +21,7 @@ A pairing for `A` consists in the data of a partition of the nondegenerate
 simplices of `X` not in `A` into type (I) simplices and type (II) simplices,
 and of a bijection between the types of type (I) and type (II) simplices.
 Indeed, the main observation is that when we attach a simplex along a horn
-inclusions, exactly two nondegenerate simplices are added: this simplex,
+inclusion, exactly two nondegenerate simplices are added: this simplex,
 and the unique face which is not in the image of the horn. The former shall be
 considered as of type (I) and the latter as type (II).
 

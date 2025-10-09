@@ -114,8 +114,8 @@ def Lean.Expr.getExprInputs : Expr → Array Expr
   | _ => #[]
 
 /-- `size e` returns the number of subexpressions of `e`. -/
-partial
-def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
+@[deprecated Lean.Expr.sizeWithoutSharing (since := "2025-09-04")]
+partial def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
 
 namespace Mathlib.MoveAdd
 
@@ -268,7 +268,7 @@ partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
 /-- `rankSums op tgt instructions` takes as input
 * the name `op` of a binary operation,
 * an `Expr`ession `tgt`,
-* a list `instructions` of pair `(expression, boolean)`.
+* a list `instructions` of pair `(expression, Boolean)`.
 
 It extracts the maximal subexpressions of `tgt` whose head symbol is `op`
 (i.e. the maximal subexpressions that consist only of applications of the binary operation `op`),
@@ -286,7 +286,7 @@ def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Ex
     let resummed := sumList (prepareOp sum) left_assoc? reord
     if (resummed != sum) then some (sum, resummed) else none
   return (candidates.toList.reduceOption.toArray.qsort
-    (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
+    (fun x y : Expr × Expr ↦ (y.1.sizeWithoutSharing  ≤ x.1.sizeWithoutSharing))).toList
 
 /-- `permuteExpr op tgt instructions` takes the same input as `rankSums` and returns the
 expression obtained from `tgt` by replacing all `old_sum`s by the corresponding `new_sum`.
