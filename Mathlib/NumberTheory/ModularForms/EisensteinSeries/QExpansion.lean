@@ -191,17 +191,6 @@ theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : 
   · apply (summable_pow_mul_cexp k 1 z).congr
     simp
 
-@[simp]
-lemma cexp_pow_aux (a b : ℕ) (z : ℍ) :
-    cexp (2 * ↑π * Complex.I * a * z) ^ b = Complex.exp (2 * ↑π * Complex.I * z) ^ (a * b) := by
-  simp [← Complex.exp_nsmul]
-  ring_nf
-
-theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
-    ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
-    ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
-  simpa using tsum_prod_pow_eq_tsum_sigma k (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
-
 theorem summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     Summable fun x : ℤ × ℤ ↦ eisSummand k ![x.1, x.2] z := by
   simp only [← (piFinTwoEquiv fun _ ↦ ℤ).summable_iff, piFinTwoEquiv_apply, Fin.isValue, ←
@@ -211,45 +200,49 @@ theorem summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
 
 lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     ∑' x, eisSummand k x z = 2 * riemannZeta k + 2 * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
-    ∑' (n : ℕ+), (σ (k - 1) n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
+    ∑' (n : ℕ+), σ (k - 1) n * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
   rw [← (piFinTwoEquiv fun _ ↦ ℤ).symm.tsum_eq, Summable.tsum_prod
     (by apply summable_prod_eisSummand hk), tsum_int_eq_zero_add_two_mul_tsum_pnat]
   · have (b : ℕ+) := EisensteinSeries.qExpansion_identity_pnat (k := k - 1) (by omega)
       ⟨b * z , by simpa using z.2⟩
-    simp [coe_mk_subtype, show k - 1 + 1 = k by omega, one_div, neg_mul, mul_assoc, eisSummand,
+    simp only [coe_mk_subtype, show k - 1 + 1 = k by omega, one_div, neg_mul, mul_assoc, eisSummand,
       Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Int.cast_zero, zero_mul, Fin.cons_one,
-      zero_add, zpow_neg, zpow_natCast, Int.cast_natCast,
+      zero_add, zpow_neg, zpow_natCast, Int.cast_natCast, nsmul_eq_mul, Nat.cast_ofNat,
       two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (by omega) hk2, add_right_inj,
       mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false] at *
     conv =>
       rw [← tsum_mul_left]
-      enter [1,1]
-      ext c
+      enter [1,1, c]
       rw [this c]
-    simp_rw [tsum_mul_left, ← mul_assoc, tsum_prod_pow_cexp_eq_tsum_sigma (k - 1) z]
+    simp_rw [tsum_mul_left, ← mul_assoc, ← tsum_prod_pow_eq_tsum_sigma (k - 1)
+      (norm_exp_two_pi_I_lt_one z), ← tsum_mul_left]
+    apply tsum_congr₂
+    intro c d
+    simp_rw [← exp_nsmul]
+    ring_nf
   · intro n
     nth_rw 1 [(tsum_comp_neg _).symm]
     congr
     ext y
-    simp [eisSummand, Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one,
-      zpow_neg, zpow_natCast, ← Even.neg_pow hk2 (n * (z : ℂ) + y), neg_add_rev, Int.cast_neg,
-      neg_mul, inv_inj]
+    simp only [eisSummand, Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Int.cast_neg,
+      neg_mul, Fin.cons_one, zpow_neg, zpow_natCast, ← Even.neg_pow hk2 (n * (z : ℂ) + y),
+      neg_add_rev, inv_inj]
     ring
   · simpa using Summable.prod (f := fun x : ℤ × ℤ ↦ eisSummand k ![x.1, x.2] z)
       (by apply summable_prod_eisSummand hk)
 
-lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) : eisSummand k v z =
-  ((n : ℂ) ^ k)⁻¹ * eisSummand k (divIntMap n v) z := by
+lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) :
+    eisSummand k v z = ((n : ℂ) ^ k)⁻¹ * eisSummand k (divIntMap n v) z := by
   have := gammaSet_eq_gcd_mul_divIntMap v.2
   simp_rw [eisSummand]
   nth_rw 1 2 [this]
-  simp only [Fin.isValue, Pi.smul_apply, nsmul_eq_mul, Int.cast_mul, Int.cast_natCast, zpow_neg, ←
-    mul_inv, ← mul_zpow, inv_inj]
+  simp only [Fin.isValue, Pi.smul_apply, nsmul_eq_mul, Int.cast_mul, Int.cast_natCast, zpow_neg,
+    ← mul_inv, ← mul_zpow, inv_inj]
   ring_nf
 
 lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     ∑' (x : Fin 2 → ℤ), eisSummand k x z =
-    (riemannZeta (k)) * (eisensteinSeries (N := 1) 0 k z) := by
+    (riemannZeta k) * (eisensteinSeries (N := 1) 0 k z) := by
   rw [← gammaSetDivGcdSigmaEquiv.symm.tsum_eq]
   have hk1 : 1 < k := by omega
   conv =>
@@ -279,8 +272,8 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
 
 /-- The q-Expansion of normalised Eisenstein series of level one with `riemannZeta` term. -/
 lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    (E hk) z = 1 + (1 / (riemannZeta (k))) * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
-    ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * π * Complex.I * z) ^ (n : ℤ) := by
+    E hk z = 1 + (1 / (riemannZeta (k))) * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * Complex.I * z) ^ (n : ℤ) := by
   have : (eisensteinSeries_MF (k := k) (by omega) 0) z =
     (eisensteinSeries_SIF (N := 1) 0 k) z := rfl
   rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeries_SIF_apply 0 k z,
@@ -327,9 +320,7 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
     norm_cast
     ring_nf
   rw [Even.neg_one_pow hk2, this, show k = 1 + (k - 1) by omega]
-  simp_rw  [pow_add, pow_one, add_tsub_cancel_left]
-  field_simp
-
+  grind
 /-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     (E hk) z = 1 + -((2 * k) / bernoulli k) *
