@@ -164,7 +164,7 @@ lemma splits_cons (x : α) (xs : List α) :
     ([], x :: xs) :: List.map (fun td ↦ (x :: td.1, td.2)) (List.splits xs) := by
   simp [List.splits, List.range_succ_eq_map]
 
-lemma splits_spec (x y l : List α) :
+lemma mem_splits_iff (x y l : List α) :
     (x, y) ∈ l.splits ↔ l = x ++ y := by
   simp [List.splits]
   constructor
@@ -178,9 +178,11 @@ lemma splits_spec (x y l : List α) :
       · rw [List.take_left]
       · rw [List.drop_left]
 
-lemma splits_non_empty (l : List α) : ∃ td, td ∈ l.splits := by
-  exists ([], l)
-  simp [List.splits_spec]
+lemma nil_self_mem_splits (l : List α) : ([], l) ∈ l.splits := by
+  simp [List.mem_splits_iff]
+
+lemma self_nil_mem_splits (l : List α) : (l, []) ∈ l.splits := by
+  simp [List.mem_splits_iff]
 
 /-- Left-associative triple splits of a list. -/
 def splits3_l : List α → List (List α × List α × List α) :=
@@ -193,7 +195,7 @@ def splits3_l : List α → List (List α × List α × List α) :=
 
 lemma splits3_l_spec (x y z l : List α) :
     (x, y, z) ∈ l.splits3_l ↔ l = x ++ y ++ z := by
-  simp [splits3_l, splits_spec]
+  simp [splits3_l, mem_splits_iff]
 
 /-- Right-associative triple splits of a list. -/
 def splits3_r : List α → List (List α × List α × List α) :=
@@ -206,7 +208,7 @@ def splits3_r : List α → List (List α × List α × List α) :=
 
 lemma splits3_r_spec (x y z l : List α) :
     (x, y, z) ∈ l.splits3_r ↔ l = x ++ y ++ z := by
-  simp [splits3_r, splits_spec]
+  simp [splits3_r, mem_splits_iff]
 
 end Splits
 
