@@ -42,7 +42,7 @@ variable {α : Type u} {α' : Type u'} {β : α → Type v} {β' : α' → Type 
 def keys : List (Sigma β) → List α :=
   map Sigma.fst
 
-@[simp]
+@[simp, grind =]
 theorem keys_nil : @keys α β [] = [] :=
   rfl
 
