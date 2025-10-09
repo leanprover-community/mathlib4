@@ -228,10 +228,10 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
     rw [sub_eq_add_neg]
     exact lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
   by_cases h_chi_in_q : ↑χ ∈ q
-  · exact chi_in_q_aux q χ h_chi_in_q x_χ m_α hx_χ α w_plus w_minus w_chi
-      m_pos m_neg m_h hm_h h_bracket_sum h_pos_containment h_neg_containment
-  · exact chi_not_in_q_aux q χ h_chi_in_q x_χ m_α α hq hx_χ
-      w_plus w_minus w_chi m_pos m_neg m_h hm_h h_bracket_sum h_pos_containment h_neg_containment
+  · exact chi_in_q_aux q χ x_χ m_α hx_χ α w_plus w_minus w_chi m_pos m_neg m_h hm_h h_bracket_sum
+      h_pos_containment h_neg_containment h_chi_in_q
+  · exact chi_not_in_q_aux q hq χ x_χ m_α hx_χ α w_plus w_minus w_chi m_pos m_neg m_h hm_h
+      h_bracket_sum h_pos_containment h_neg_containment h_chi_in_q
 
 /-- Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra.
 
