@@ -117,8 +117,7 @@ theorem coe_algHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R]
 /-- Restrict the base ring to a "smaller" ring. -/
 @[coe, simps!] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
     [Algebra R₀ S] [Algebra R₀ T] [Algebra R₀ A] [Algebra R₀ B]
-    [IsScalarTower R₀ R S] [IsScalarTower R₀ S A] [IsScalarTower R₀ R A]
-    [IsScalarTower R₀ R T] [IsScalarTower R₀ T B] [IsScalarTower R₀ R B]
+    [IsScalarTower R₀ S A] [IsScalarTower R₀ R A] [IsScalarTower R₀ T B] [IsScalarTower R₀ R B]
     (f : 𝒜 →ₐᵍ[R] ℬ) : 𝒜 →ₐᵍ[R₀] ℬ :=
   { f.toAlgHom.restrictScalars R₀, f with }
 
@@ -151,8 +150,7 @@ theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ
 section restrictScalars
 variable {R₀ : Type*} [CommSemiring R₀] [Algebra R₀ R]
   [Algebra R₀ S] [Algebra R₀ T] [Algebra R₀ A] [Algebra R₀ B]
-  [IsScalarTower R₀ R S] [IsScalarTower R₀ S A] [IsScalarTower R₀ R A]
-  [IsScalarTower R₀ R T] [IsScalarTower R₀ T B] [IsScalarTower R₀ R B]
+  [IsScalarTower R₀ S A] [IsScalarTower R₀ R A] [IsScalarTower R₀ T B] [IsScalarTower R₀ R B]
 
 lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
 
