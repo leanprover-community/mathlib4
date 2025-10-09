@@ -4244,6 +4244,7 @@ import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Pi
