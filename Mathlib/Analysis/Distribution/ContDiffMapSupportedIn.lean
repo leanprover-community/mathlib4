@@ -9,16 +9,16 @@ import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.Sets.Compacts
 
 /-!
-# Continuously differentiable functions supported in a given compact
+# Continuously differentiable functions supported in a given compact set
 
 This file develops the basic theory of bundled `n`-times continuously differentiable functions
-with support contained in a given compact.
+with support contained in a given compact set.
 
 Given `n : ℕ∞` and a compact subset `K` of a normed space `E`, we consider the type of bundled
 functions `f : E → F` (where `F` is a normed vector space) such that:
 
 - `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
-- `f` vanishes outside of a compact: `EqOn f 0 Kᶜ`.
+- `f` vanishes outside of a compact set: `EqOn f 0 Kᶜ`.
 
 The main reason this exists as a bundled type is to be endowed with its natural locally convex
 topology (namely, uniform convergence of `f` and its derivative up to order `n`).
@@ -68,7 +68,7 @@ variable [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCo
 variable {n : ℕ∞} {K : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
-compact `K`. -/
+compact set `K`. -/
 structure ContDiffMapSupportedIn (n : ℕ∞) (K : Compacts E) : Type _ where
   /-- The underlying function. Use coercion instead. -/
   protected toFun : E → F
@@ -76,19 +76,19 @@ structure ContDiffMapSupportedIn (n : ℕ∞) (K : Compacts E) : Type _ where
   protected zero_on_compl' : EqOn toFun 0 Kᶜ
 
 /-- Notation for the space of bundled `n`-times continuously differentiable
-functions with support in a compact `K`. -/
+functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓^{" n "}_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
 /-- Notation for the space of bundled smooth (inifinitely differentiable)
-functions with support in a compact `K`. -/
+functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
 
 open Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
-continously differentiable functions with support in the compact `K`. -/
+continously differentiable functions with support in the compact set `K`. -/
 class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
