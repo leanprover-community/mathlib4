@@ -6,10 +6,8 @@ Authors: Etienne Marion
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.MeasureTheory.Function.FactorsThrough
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
-import Mathlib.Probability.Kernel.Composition.Lemmas
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 import Mathlib.Probability.Kernel.SetIntegral
@@ -54,6 +52,8 @@ expectation.
 * `traj_comp_partialTraj`: Given the distribution up to time `a`, `partialTraj κ a b`
   gives the distribution of the trajectory up to time `b`, and composing this with
   `traj κ b` gives the distribution of the whole trajectory.
+* `traj_map_eq_kernel`: the pushforward of `traj κ a` along the the point at time `a + 1` is the
+  kernel `κ a`.
 * `condDistrib_trajMeasure_ae_eq_kernel`: a regular conditional probability distribution of the
   point at time `a + 1` given the trajectory up to time `a` corresponds to the kernel `κ a`.
 * `condExp_traj`: If `a ≤ b`, the conditional expectation of `f` with respect to `traj κ a`
@@ -772,7 +772,7 @@ def MeasurableEquiv.piIicZero (X : ℕ → Type*) [∀ n, MeasurableSpace (X n)]
     ((i : Iic 0) → X i) ≃ᵐ X 0 :=
   (MeasurableEquiv.piUnique _).trans (coe_default_Iic_zero.symm ▸ MeasurableEquiv.refl _)
 
-/-- Distribution of the trajectory given by starting with `μ₀` and iterating the kernels `κ`. -/
+/-- Distribution of the trajectory obtained by starting with `μ₀` and iterating the kernels `κ`. -/
 noncomputable
 def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1)))
     [∀ n, IsMarkovKernel (κ n)] :
