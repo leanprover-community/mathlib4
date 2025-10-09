@@ -76,19 +76,19 @@ lemma Finset.tendsto_Ioo_atTop_atTop : Tendsto (fun N : ℕ ↦ Finset.Ioo (-N :
   exact fun x ↦ ⟨x.natAbs + 1, by simpa using ⟨by apply le_trans _ (add_abs_nonneg x); omega,
     (Int.lt_add_one_iff.mpr (le_abs_self x))⟩⟩
 
-/-- The SummationFilter on `Finset ℤ` corresponding to the intervals `Icc (-N) N` -/
+/-- The SummationFilter on `ℤ` corresponding to the intervals `Icc (-N) N` -/
 abbrev IccFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N)
 
-/-- The SummationFilter on `Finset ℤ` corresponding to the intervals `Ico (-N) N` -/
+/-- The SummationFilter on `ℤ` corresponding to the intervals `Ico (-N) N` -/
 abbrev IcoFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Ico (-(N : ℤ)) N)
 
-/-- The SummationFilter on `Finset ℤ` corresponding to the intervals `Ioc (-N) N` -/
+/-- The SummationFilter on `ℤ` corresponding to the intervals `Ioc (-N) N` -/
 abbrev IocFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Ioc (-(N : ℤ)) N)
 
-/-- The SummationFilter on `Finset ℤ` corresponding to the intervals `Ioo (-N) N` -/
+/-- The SummationFilter on `ℤ` corresponding to the intervals `Ioo (-N) N` -/
 abbrev IooFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Ioo (-(N : ℤ)) N)
 
