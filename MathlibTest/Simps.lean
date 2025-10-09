@@ -1269,7 +1269,7 @@ end UnderScoreDigit
 
 namespace Grind
 
-@[simps (attr := grind) -isSimp]
+@[simps (attr := grind =) -isSimp]
 def foo := (2, 3)
 
 example : foo.1 = 2 := by grind

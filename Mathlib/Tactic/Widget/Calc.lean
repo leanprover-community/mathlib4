@@ -59,7 +59,7 @@ structure CalcParams extends SelectInsertParams where
 
 /-- Return the link text and inserted text above and below of the calc widget. -/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
-    MetaM (String × String × Option (String.Pos × String.Pos)) := do
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
   let subexprPos := getGoalLocations pos
   let some (rel, lhs, rhs) ← Lean.Elab.Term.getCalcRelation? goalType |
       throwError "invalid 'calc' step, relation expected{indentExpr goalType}"
@@ -108,7 +108,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   | true, true => "Create two new steps"
   | true, false | false, true => "Create a new step"
   | false, false => "This should not happen"
-  let pos : String.Pos := insertedCode.find (fun c => c == '?')
+  let pos : String.Pos.Raw := insertedCode.find (fun c => c == '?')
   return (stepInfo, insertedCode, some (pos, ⟨pos.byteIdx + 2⟩) )
 
 /-- Rpc function for the calc widget. -/
