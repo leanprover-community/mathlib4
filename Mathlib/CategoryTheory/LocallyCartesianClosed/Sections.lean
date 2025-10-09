@@ -34,7 +34,7 @@ variable (I : C) [Exponentiable I]
 
 /-- The first leg of a cospan to define `sectionsObj` as a pullback in `C`. -/
 abbrev curryId : 𝟙_ C ⟶ (I ⟹ I) :=
-  curry <| (ρ_ _).hom
+  curry <| (ρ_ I).hom
 
 theorem toUnit_comp_curryId {A : C} : toUnit A ≫ curryId I = curry (fst I A) := by
   apply uncurry_injective
