@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
+import Mathlib.Data.Finite.Sigma
 
 /-!
 # Existence of a rank function to natural numbers
