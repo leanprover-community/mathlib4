@@ -197,10 +197,6 @@ lemma cexp_pow_aux (a b : ℕ) (z : ℍ) :
   simp [← Complex.exp_nsmul]
   ring_nf
 
-theorem summable_prod_aux (k : ℕ) (z : ℍ) : Summable fun c : ℕ+ × ℕ+ ↦
-    (c.1 ^ k : ℂ) * Complex.exp (2 * ↑π * Complex.I * c.2 * z) ^ (c.1 : ℕ) := by
-  simpa using summable_prod_mul_pow k (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z)
-
 theorem tsum_prod_pow_cexp_eq_tsum_sigma (k : ℕ) (z : ℍ) :
     ∑' d : ℕ+, ∑' (c : ℕ+), (c ^ k : ℂ) * cexp (2 * ↑π * Complex.I * d * z) ^ (c : ℕ) =
     ∑' e : ℕ+, sigma k e * cexp (2 * ↑π * Complex.I * z) ^ (e : ℕ) := by
