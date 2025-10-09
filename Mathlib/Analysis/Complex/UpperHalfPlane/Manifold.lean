@@ -70,7 +70,7 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f ↔ DifferentiableOn ℂ (f ∘ ofComplex) {z | 0 < z.im} :=
   ⟨fun h z hz ↦ (mdifferentiableAt_iff.mp (h ⟨z, hz⟩)).differentiableWithinAt,
     fun h ⟨z, hz⟩ ↦ mdifferentiableAt_iff.mpr <| (h z hz).differentiableAt
-      <| (Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds hz⟩
+     <| isOpen_upperHalfPlaneSet.mem_nhds hz⟩
 
 lemma contMDiff_num (g : GL (Fin 2) ℝ) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ num g τ) :=
   (contMDiff_const.smul contMDiff_coe).add contMDiff_const

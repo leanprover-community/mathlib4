@@ -46,7 +46,7 @@ non-pointwise multiplication.
 * `Finsupp.embDomain`: Maps the domain of a `Finsupp` by an embedding.
 * `Finsupp.zipWith`: Postcomposition of two `Finsupp`s with a function `f` such that `f 0 0 = 0`.
 
-## Notations
+## Notation
 
 This file adds `α →₀ M` as a global notation for `Finsupp α M`.
 
@@ -335,7 +335,7 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
   · intro h
     classical
     choose f h using h
-    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by aesop)
+    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by simp_all)
     ext i
     simp only [mapRange_apply, onFinset_apply]
     split_ifs <;> simp_all

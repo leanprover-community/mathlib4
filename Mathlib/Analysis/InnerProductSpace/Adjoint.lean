@@ -17,7 +17,7 @@ We then use this to put a C⋆-algebra structure on `E →L[𝕜] E` with the ad
 operation.
 
 This construction is used to define an adjoint for linear maps (i.e. not continuous) between
-finite dimensional spaces.
+finite-dimensional spaces.
 
 ## Main definitions
 
@@ -249,8 +249,12 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
 
 theorem adjoint_innerSL_apply (x : E) :
-    adjoint (innerSL 𝕜 x) = (lsmul 𝕜 𝕜).flip x :=
+    adjoint (innerSL 𝕜 x) = toSpanSingleton 𝕜 x :=
   ext_ring <| ext_inner_left 𝕜 <| fun _ => by simp [adjoint_inner_right]
+
+theorem adjoint_toSpanSingleton (x : E) :
+    adjoint (toSpanSingleton 𝕜 x) = innerSL 𝕜 x := by
+  simp [← adjoint_innerSL_apply]
 
 theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
     innerSL 𝕜 x ∘L f = innerSL 𝕜 (adjoint f x) := by
@@ -340,8 +344,26 @@ theorem isStarNormal_iff_norm_eq_adjoint :
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
   norm_cast
 
+lemma IsStarNormal.adjoint_apply_eq_zero_iff (hT : IsStarNormal T) (x : E) :
+    adjoint T x = 0 ↔ T x = 0 := by
+  simp_rw [← norm_eq_zero (E := E), ← isStarNormal_iff_norm_eq_adjoint.mp hT]
+
+open ContinuousLinearMap
+
+theorem IsStarNormal.ker_adjoint_eq_ker (hT : IsStarNormal T) :
+    LinearMap.ker (adjoint T) = LinearMap.ker T :=
+  Submodule.ext hT.adjoint_apply_eq_zero_iff
+
+/-- The range of a normal operator is pairwise orthogonal to its kernel.
+
+This is a weaker version of `LinearMap.IsSymmetric.orthogonal_range`
+but with stronger type class assumptions (i.e., `CompleteSpace`). -/
+theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) :
+    (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  T.orthogonal_range ▸ hT.ker_adjoint_eq_ker
+
 /- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
-see (Analysis/CStarAlgebra/Projection), we will want to simplify the proof
+(see `Mathlib/Analysis/CStarAlgebra/Projection.lean`), we will want to simplify the proof
 by using the complexification of an inner product space over `𝕜`. -/
 /-- An idempotent operator is self-adjoint iff it is normal. -/
 theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T) :
@@ -372,7 +394,6 @@ theorem isStarProjection_iff_isSymmetricProjection :
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
-open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
@@ -428,9 +449,6 @@ end LinearMap
 namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
-
-/- Porting note: Lean can't use `FiniteDimensional.complete` since it was generalized to topological
-vector spaces. Use local instances instead. -/
 
 /-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
 finite-dimensional inner product space `F`. -/
