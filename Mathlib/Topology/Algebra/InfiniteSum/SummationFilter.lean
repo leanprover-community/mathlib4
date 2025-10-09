@@ -153,10 +153,6 @@ instance (L : SummationFilter β) [LeAtTop L] (f : γ ↪ β) : LeAtTop (L.comap
 
 end map_comap
 
-end SummationFilter
-
-open SummationFilter
-
 section examples
 /-!
 ## Examples of summation filters
@@ -177,7 +173,7 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
   atTop.isCountablyGenerated
 
 /-- The unconditional filter is preserved by comaps. -/
-@[simp] lemma SummationFilter.comap_unconditional {β} (f : γ ↪ β) :
+@[simp] lemma comap_unconditional {β} (f : γ ↪ β) :
     (unconditional β).comap f = unconditional γ := by
   classical
   simp only [unconditional, comap]
@@ -190,7 +186,7 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
 
 /-- If `β` is finite, then `unconditional β` is the only summation filter `L` on `β` satisfying
 `L.LeAtTop` and `L.NeBot`. -/
-lemma SummationFilter.eq_unconditional_of_finite {β} [Finite β]
+lemma eq_unconditional_of_finite {β} [Finite β]
     (L : SummationFilter β) [L.LeAtTop] [L.NeBot] : L = unconditional β := by
   classical
   haveI := Fintype.ofFinite β
@@ -256,3 +252,5 @@ lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Fin
 end conditionalTop
 
 end examples
+
+end SummationFilter

@@ -17,6 +17,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 
+
 /-!
 # Finite-dimensional normed spaces over complete fields
 
@@ -676,7 +677,10 @@ theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSp
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO_nat hg.norm h.norm_right
 
+
 open Nat Asymptotics in
+/-- This is a version of `summable_norm_mul_geometric_of_norm_lt_one` for more general codomains. We
+keep the original one due to import restrictions. -/
 theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
     [NormOneClass F] [NormMulClass F] {k : ℕ} {r : F} (hr : ‖r‖ < 1) {u : ℕ → F}
     (hu : u =O[atTop] fun n ↦ ((n ^ k : ℕ) : F)) : Summable fun n : ℕ ↦ ‖u n * r ^ n‖ := by

@@ -21,7 +21,7 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 noncomputable section
 
-open Filter Finset Function Topology
+open Filter Finset Function Topology SummationFilter
 
 variable {α β γ : Type*}
 
@@ -225,6 +225,37 @@ theorem Multipliable.map_tprod [L.NeBot] [CommMonoid γ] [TopologicalSpace γ] [
   (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
 
 @[to_additive]
+lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
+    [CommMonoid α] [CommMonoid α'] [TopologicalSpace α] [TopologicalSpace α'] [T2Space α']
+    (f : ι → α) {L : SummationFilter ι} {g : G} [FunLike G α α'] [MonoidHomClass G α α']
+    (hge : Topology.IsClosedEmbedding g) :
+    g (∏'[L] i, f i) = ∏'[L] i, g (f i) := by
+  by_cases hL : L.NeBot
+  · by_cases h : Multipliable f L
+    · exact h.map_tprod g hge.continuous
+    · rw [tprod_eq_one_of_not_multipliable h, tprod_eq_one_of_not_multipliable, map_one]
+      contrapose! h
+      -- need to show `g ∘ f` multipliable implies `g` multipliable
+      simp only [Multipliable, HasProd] at h ⊢
+      obtain ⟨b, hb⟩ := h
+      obtain ⟨a, ha⟩ : b ∈ Set.range g :=
+        hge.isClosed_range.mem_of_tendsto hb (.of_forall <| by simp [← map_prod])
+      use a
+      simp [hge.tendsto_nhds_iff, Function.comp_def, ha, hb]
+  · simpa [tprod_bot hL] using
+      (MonoidHomClass.toMonoidHom g).map_finprod_of_injective hge.injective _
+
+/-- Special case of `Topology.IsClosedEmbedding.map_tprod`, logically weaker but possibly easier
+to apply in practice. -/
+@[to_additive /-- Special case of `Topology.IsClosedEmbedding.map_tsum`, logically weaker but
+possibly easier to apply in practice. -/]
+lemma Function.LeftInverse.map_tprod {G : Type*} (f : β → α) [CommMonoid γ] [TopologicalSpace γ]
+    [T2Space γ] {g : G} [FunLike G α γ] [MonoidHomClass G α γ] (hg : Continuous g)
+    {g' : γ → α} (hg' : Continuous g') (hgg' : LeftInverse g' g) :
+    g (∏'[L] b, f b) = ∏'[L] b, g (f b) :=
+  (hgg'.isClosedEmbedding hg' hg).map_tprod _
+
+@[to_additive]
 lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [L.NeBot]
     [CommMonoid γ] [TopologicalSpace γ]
     [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) :
@@ -233,8 +264,11 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [L.NeBot]
   · intro hf
     constructor
     · exact hf.map g hg.continuous
-    · use ∏'[L] i, f i
-      exact hf.map_tprod g hg.continuous
+    · by_cases hL : L.NeBot
+      · exact ⟨_, hf.map_tprod g hg.continuous⟩
+      · by_cases hfs : (mulSupport fun x ↦ g (f x)).Finite
+        · simp [tprod_bot hL, finprod_eq_prod, hfs, ← map_prod]
+        · exact ⟨1, by simp [tprod_bot hL, finprod_of_infinite_mulSupport hfs]⟩
   · rintro ⟨hgf, a, ha⟩
     use a
     have := hgf.hasProd

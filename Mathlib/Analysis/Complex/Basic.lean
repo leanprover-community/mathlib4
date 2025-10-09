@@ -472,17 +472,8 @@ theorem summable_ofReal {f : α → ℝ} : Summable (fun x => (f x : 𝕜)) L �
     ofRealCLM.summable⟩
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) := by
-  by_cases hL : L.NeBot
-  · by_cases h : Summable f L
-    · exact ContinuousLinearMap.map_tsum ofRealCLM h
-    · rw [tsum_eq_zero_of_not_summable h,
-        tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
-  · simp only [tsum_bot hL]
-    by_cases hf : f.support.Finite
-    · exact ofRealCLM.toAddMonoidHom.map_finsum hf
-    · rw [finsum_of_infinite_support hf, finsum_of_infinite_support, ofReal_zero]
-      rwa [← Function.comp_def, Function.support_comp_eq _ (by simp)]
+theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) :=
+  Function.LeftInverse.map_tsum f ofRealCLM.continuous continuous_re (fun _ ↦ by simp)
 
 theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x L) : HasSum (fun x => re (f x)) (re x) L :=
   reCLM.hasSum h
@@ -635,6 +626,18 @@ lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
 lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=
   ball_one_subset_slitPlane <| by simpa
+
+open Metric in
+/-- A subset of the circle centered at the origin in `ℂ` of radius `r` is a subset of
+the `slitPlane` if it does not contain `-r`. -/
+lemma subset_slitPlane_iff_of_subset_sphere {r : ℝ} {s : Set ℂ} (hs : s ⊆ sphere 0 r) :
+    s ⊆ slitPlane ↔ (-r : ℂ) ∉ s := by
+  simp_rw +singlePass [← not_iff_not, Set.subset_def, mem_slitPlane_iff_not_le_zero]
+  push ¬ _
+  refine ⟨?_, fun hr ↦ ⟨_, hr, by simpa using hs hr⟩⟩
+  rintro ⟨z, hzs, hz⟩
+  have : ‖z‖ = r := by simpa using hs hzs
+  simpa [← this, ← norm_neg z ▸ eq_coe_norm_of_nonneg (neg_nonneg.mpr hz)]
 
 end slitPlane
 

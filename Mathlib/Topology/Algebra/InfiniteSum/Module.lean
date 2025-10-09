@@ -36,26 +36,10 @@ protected theorem Summable.tsum_const_smul [T2Space α] [L.NeBot] (b : γ) (hf :
   not requiring any summability hypothesis. -/
 lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) :
-    ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
-  by_cases hf : Summable f L
-  · by_cases hL : L.NeBot
-    · exact hf.tsum_const_smul g
-    · simp only [tsum_bot hL]
-      -- sadly there is no precisely matching `Finsum` lemma
-      by_cases hf : f.support.Finite
-      · exact ((AddMonoidHom.smulLeft g).map_finsum hf).symm
-      · rw [finsum_of_infinite_support hf, finsum_of_infinite_support, smul_zero]
-        convert hf using 2
-        ext x
-        simp only [mem_support, ne_eq, (Group.isUnit g).smul_eq_zero]
-  rw [tsum_eq_zero_of_not_summable hf]
-  simp only [smul_zero]
-  let mul_g : α ≃+ α := DistribMulAction.toAddEquiv α g
-  apply tsum_eq_zero_of_not_summable
-  change ¬ Summable (mul_g ∘ f) L
-  rwa [Summable.map_iff_of_equiv mul_g]
-  · apply continuous_const_smul
-  · apply continuous_const_smul
+    ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i :=
+  ((Homeomorph.smul g).isClosedEmbedding.map_tsum f (g := show α ≃+ α from
+    { AddMonoidHom.smulLeft g with
+      invFun := AddMonoidHom.smulLeft g⁻¹, left_inv a := by simp, right_inv a := by simp })).symm
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionSemiring`; no summability hypothesis. This could be made to work for a

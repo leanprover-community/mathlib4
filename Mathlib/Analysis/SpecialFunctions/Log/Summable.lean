@@ -17,7 +17,7 @@ to relate summability of `f` to multipliability of `1 + f`.
 
 variable {ι : Type*}
 
-open Filter Topology NNReal
+open Filter Topology NNReal SummationFilter
 
 namespace Complex
 variable {f : ι → ℂ} {a : ℂ}
@@ -104,7 +104,7 @@ lemma Multipliable.eventually_bounded_finset_prod {v : ι → ℝ} (hv : Multipl
   rw [max_lt_iff] at hr₁
   have := hv.hasProd.eventually_le_const hr₁.2
   rw [unconditional, eventually_atTop] at this
-  exact ⟨r₁, hr₁.1, this⟩
+  refine ⟨r₁, hr₁.1, this⟩
 
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
 

@@ -57,7 +57,7 @@ specific file. -/
 
 noncomputable section
 
-open Filter Function
+open Filter Function SummationFilter
 
 open scoped Topology
 
@@ -131,8 +131,8 @@ More generally, if `L` is a `SummationFilter`, `∑'[L] i, f i` is the sum of `f
 `L` if it exists, and `1` otherwise.
 
 (Note that even if the unconditional sum exists, it might not be unique if the topology is not
-separated. When the support of `f` is finite, we make the most reasonable choice, to use the product
-over the support. Otherwise, we choose arbitrarily an `a` satisfying `HasProd f a`. Similar remarks
+separated. When the support of `f` is finite, we make the most reasonable choice, to use the sum
+over the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. Similar remarks
 apply to more general summation filters.)
 -/]
 noncomputable irreducible_def tprod (f : β → α) (L := unconditional β) :=
@@ -149,7 +149,7 @@ notation3 "∏'[" L "]" (...)", "r:67:(scoped f => tprod f L) => r
 @[inherit_doc tsum]
 notation3 "∑'[" L "]" (...)", "r:67:(scoped f => tsum f L) => r
 
--- see Note [operator precedence of big operators]
+-- see note [operator precedence of big operators]
 @[inherit_doc tprod]
 notation3 "∏' "(...)", "r:67:(scoped f => tprod f (unconditional _)) => r
 @[inherit_doc tsum]
@@ -167,7 +167,16 @@ lemma multipliable_bot (hL : ¬L.NeBot) (f : β → α) :
     Multipliable f L :=
   ⟨1, hasProd_bot hL ..⟩
 
-@[to_additive]
+/-- If the summation filter is the trivial filter `⊥`, then the topological product is equal to the
+finite product (which is taken to be 1 if the multiplicative support of `f` is infinite).
+
+Note that in this case `HasProd f a` is satisfied for *every* element `a` of the target, so the
+value assigned to the `tprod` is a question of conventions. -/
+@[to_additive /-- If the summation filter is the trivial filter `⊥`, then the topological sum is
+equal to the finite sum (which is taken to be 1 if the support of `f` is infinite).
+
+Note that in this case `HasSum f a` is satisfied for *every* element `a` of the target, so the
+value assigned to the `tsum` is a question of conventions. -/]
 lemma tprod_bot (hL : ¬L.NeBot) (f : β → α) : ∏'[L] b, f b = ∏ᶠ b, f b := by
   simp only [tprod_def, dif_pos (multipliable_bot hL f)]
   haveI : L.LeAtTop := L.leAtTop_of_not_NeBot hL

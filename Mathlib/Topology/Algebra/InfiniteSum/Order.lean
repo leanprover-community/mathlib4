@@ -175,12 +175,15 @@ protected theorem Multipliable.tprod_le_of_prod_le [L.NeBot] (hf : Multipliable 
 
 omit [IsOrderedMonoid α] in
 @[to_additive]
-theorem tprod_le_of_prod_le' [L.NeBot] (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) :
+theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) :
     ∏'[L] i, f i ≤ a₂ := by
-  by_cases hf : Multipliable f L
-  · exact hf.tprod_le_of_prod_le h
-  · rw [tprod_eq_one_of_not_multipliable hf]
-    exact ha₂
+  by_cases hL : L.NeBot
+  · by_cases hf : Multipliable f L
+    · exact hf.tprod_le_of_prod_le h
+    · rwa [tprod_eq_one_of_not_multipliable hf]
+  · by_cases hf : f.mulSupport.Finite
+    · simpa [tprod_bot hL, finprod_eq_prod _ hf] using h _
+    · rwa [tprod_bot hL, finprod_of_infinite_mulSupport hf]
 
 @[to_additive]
 theorem HasProd.one_le [L.NeBot] (h : ∀ i, 1 ≤ g i) (ha : HasProd g a L) : 1 ≤ a :=
