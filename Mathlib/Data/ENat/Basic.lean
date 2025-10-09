@@ -3,6 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.WithTop
@@ -43,7 +44,8 @@ deriving instance Zero, CommSemiring, Nontrivial,
   IsOrderedRing, CanonicallyOrderedAdd,
   OrderBot, OrderTop, OrderedSub, SuccOrder,
   WellFoundedLT,
-  CharZero
+  CharZero,
+  NoZeroDivisors
   for ENat
 
 -- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
@@ -405,6 +407,21 @@ lemma self_le_mul_left (a : ℕ∞) (hc : c ≠ 0) : a ≤ c * a := by
   rw [mul_comm]
   exact ENat.self_le_mul_right a hc
 
+instance : Unique ℕ∞ˣ where
+  uniq x := by
+    have := x.val_inv
+    have x_top : x.val ≠ ⊤ := by
+      intro h
+      simp [h] at this
+    have x_inv_top : x.inv ≠ ⊤ := by
+      intro h
+      simp only [h, ne_eq, x.ne_zero, not_false_eq_true, mul_top, top_ne_one] at this
+    obtain ⟨y, x_y⟩ := ne_top_iff_exists.1 x_top
+    obtain ⟨z, x_z⟩ := ne_top_iff_exists.1 x_inv_top
+    replace x_y := x_y.symm
+    rw [x_y, ← x_z, ← coe_mul, ← coe_one, coe_inj, _root_.mul_eq_one] at this
+    rwa [this.1, Nat.cast_one, Units.val_eq_one] at x_y
+
 section withTop_enat
 
 lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
@@ -551,8 +568,6 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
-
-instance : NoZeroDivisors ℕ∞ := inferInstanceAs (NoZeroDivisors (WithTop ℕ))
 
 end ENat
 
