@@ -912,9 +912,8 @@ theorem ContinuousWithinAt.congr_mono
   (h.mono h₁).congr h' hx
 
 theorem ContinuousAt.congr_of_eventuallyEq (h : ContinuousAt f x) (hg : g =ᶠ[𝓝 x] f) :
-    ContinuousAt g x := by
-  simp only [← continuousWithinAt_univ] at h ⊢
-  exact h.congr_of_eventuallyEq_of_mem (by rwa [nhdsWithin_univ]) (mem_univ x)
+    ContinuousAt g x :=
+  congr h (EventuallyEq.symm hg)
 
 /-!
 ### Composition

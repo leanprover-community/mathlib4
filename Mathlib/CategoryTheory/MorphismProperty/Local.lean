@@ -62,6 +62,13 @@ namespace IsLocalAtTarget
 
 variable {P : MorphismProperty C} {K L : Precoverage C} [K.HasPullbacks]
 
+lemma mk_of_iff [P.RespectsIso]
+    (H : ∀ {X Y : C} (f : X ⟶ Y) (𝒰 : Precoverage.ZeroHypercover.{v} K Y),
+      P f ↔ ∀ i, P (pullback.snd f (𝒰.f i))) :
+    P.IsLocalAtTarget K where
+  pullbackSnd 𝒰 i h := (H _ 𝒰).mp h i
+  of_zeroHypercover 𝒰 h := (H _ 𝒰).mpr h
+
 lemma mk_of_isStableUnderBaseChange [P.IsStableUnderBaseChange]
     (H : ∀ {X Y : C} (f : X ⟶ Y) (𝒰 : Precoverage.ZeroHypercover.{v} K Y),
       (∀ i, P (pullback.snd f (𝒰.f i))) → P f) :
@@ -117,6 +124,13 @@ class IsLocalAtSource (P : MorphismProperty C) (K : Precoverage C) extends Respe
 namespace IsLocalAtSource
 
 variable {P : MorphismProperty C} {K L : Precoverage C}
+
+lemma mk_of_iff [P.RespectsIso]
+    (H : ∀ {X Y : C} (f : X ⟶ Y) (𝒰 : Precoverage.ZeroHypercover.{v} K X),
+      P f ↔ ∀ i, P (𝒰.f i ≫ f)) :
+    P.IsLocalAtSource K where
+  comp 𝒰 i h := (H _ 𝒰).mp h i
+  of_zeroHypercover 𝒰 h := (H _ 𝒰).mpr h
 
 lemma of_le [IsLocalAtSource P L] (hle : K ≤ L) : IsLocalAtSource P K where
   comp 𝒰 i hf := comp (𝒰.weaken hle) i hf

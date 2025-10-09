@@ -64,14 +64,14 @@ In particular, monomorphisms (e.g. immersions) are formally unramified.
 The converse is true if `f` is locally of finite type. -/
 instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnramified f := by
   wlog hY : ∃ R, Y = Spec R
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @FormallyUnramified) Y.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @FormallyUnramified) Y.affineCover]
     intro i
     have inst : IsOpenImmersion (pullback.diagonal (pullback.snd f (Y.affineCover.f i))) :=
       MorphismProperty.pullback_snd (P := .diagonal @IsOpenImmersion) _ _ ‹_›
     exact this (pullback.snd _ _) ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S generalizing X
-  · rw [IsLocalAtSource.iff_of_openCover (P := @FormallyUnramified) X.affineCover]
+  · rw [IsZariskiLocalAtSource.iff_of_openCover (P := @FormallyUnramified) X.affineCover]
     intro i
     have inst : IsOpenImmersion (pullback.diagonal (X.affineCover.f i ≫ f)) :=
       MorphismProperty.comp_mem (.diagonal @IsOpenImmersion) _ _
@@ -114,7 +114,7 @@ instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f]
   · let 𝒰Y := Y.affineCover
     let 𝒰X (j : (Y.affineCover.pullback₁ f).I₀) :
         ((Y.affineCover.pullback₁ f).X j).OpenCover := Scheme.affineCover _
-    apply IsLocalAtTarget.of_range_subset_iSup _
+    apply IsZariskiLocalAtTarget.of_range_subset_iSup _
       (Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange f 𝒰Y 𝒰X)
     intro ⟨i, j⟩
     rw [arrow_mk_iso_iff (P := @IsOpenImmersion)

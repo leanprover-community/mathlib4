@@ -291,7 +291,7 @@ lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
     ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
   apply (ContMDiffWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
-  rw [← tsum_eq_finsum]
+  rw [← tsum_eq_finsum (L := SummationFilter.unconditional ι)]
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
     intro x hx

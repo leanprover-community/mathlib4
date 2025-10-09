@@ -688,16 +688,6 @@ jobs:
           lint-bib-file: true
           ref: ${{ github.sha }}
 
-  build_and_lint:
-    name: CI Success
-    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
-    needs: [style_lint, post_steps]
-    runs-on: ubuntu-latest
-    steps:
-      - name: succeed
-        run: |
-          echo "Success: Required build and lint checks completed!"
-
   final:
     name: Post-CI job
     if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'

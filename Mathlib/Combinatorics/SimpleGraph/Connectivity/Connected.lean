@@ -313,7 +313,7 @@ instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
 
 instance isEmpty [IsEmpty V] : IsEmpty (ConnectedComponent G) := by
   by_contra! hc
-  obtain ⟨v, _⟩ := (Classical.inhabited_of_nonempty hc).default.exists_rep
+  obtain ⟨v, _⟩ := hc.some.exists_rep
   exact IsEmpty.false v
 
 @[elab_as_elim]
