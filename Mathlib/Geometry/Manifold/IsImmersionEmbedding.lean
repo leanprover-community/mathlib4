@@ -122,7 +122,7 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorp
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
-    (hsource : f '' domChart.source ⊆ codChart.source)
+    (hsource : domChart.source ⊆ f ⁻¹' codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
   use domChart, codChart
@@ -172,9 +172,9 @@ lemma codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
     h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
   LiftSourceTargetPropertyAt.codChart_mem_maximalAtlas h
 
-lemma map_source_subset_source (h : IsImmersionAt F I I' n f x) :
-    f '' h.domChart.source ⊆ h.codChart.source :=
-  LiftSourceTargetPropertyAt.map_source_subset_source h
+lemma source_subset_preimage_source (h : IsImmersionAt F I I' n f x) :
+    h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
+  LiftSourceTargetPropertyAt.source_subset_preimage_source h
 
 /-- A linear equivalence `E × F ≃L[𝕜] E'` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
@@ -210,7 +210,9 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
   rw [← h.writtenInCharts.image_eq, Set.image_comp, Set.image_comp,
     PartialEquiv.symm_image_target_eq_source, PartialHomeomorph.extend_source,
     ← PartialEquiv.image_source_eq_target]
-  grw [h.map_source_subset_source, PartialHomeomorph.extend_source]
+  have : f '' h.domChart.source ⊆ h.codChart.source := by
+    simp [h.source_subset_preimage_source]
+  grw [this, PartialHomeomorph.extend_source]
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/

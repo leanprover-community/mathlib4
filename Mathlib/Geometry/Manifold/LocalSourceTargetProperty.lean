@@ -77,7 +77,7 @@ structure LocalPresentationAt (f : M → M') (x : M)
   mem_codChart_source : f x ∈ codChart.source
   domChart_mem_maximalAtlas : domChart ∈ IsManifold.maximalAtlas I n M
   codChart_mem_maximalAtlas : codChart ∈ IsManifold.maximalAtlas I' n M'
-  map_source_subset_source: f '' domChart.source ⊆ codChart.source
+  source_subset_preimage_source : domChart.source ⊆ f ⁻¹' codChart.source
   property : P f domChart codChart
 
 variable (I I' n) in
@@ -133,9 +133,10 @@ lemma codChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I I' n f x P) :
     h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
   h.localPresentationAt.codChart_mem_maximalAtlas
 
-lemma map_source_subset_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
-    f '' h.domChart.source ⊆ h.codChart.source :=
-  h.localPresentationAt.map_source_subset_source
+lemma source_subset_preimage_source
+ (h : LiftSourceTargetPropertyAt I I' n f x P) :
+    h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
+  h.localPresentationAt.source_subset_preimage_source
 
 lemma property (h : LiftSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.codChart :=
   h.localPresentationAt.property
@@ -176,11 +177,11 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
   · simpa using ⟨mem_domChart_source hf, by rwa [interior_eq_iff_isOpen.mpr hs]⟩
   · exact hfg (mem_of_mem_nhds hxs') ▸ mem_codChart_source hf
   · exact restr_mem_maximalAtlas _ hf.domChart_mem_maximalAtlas hs
-  · trans f '' (hf.domChart.restr s).source
-    · have : (hf.domChart.restr s).source ⊆ s' :=
-        Subset.trans (by simp [interior_eq_iff_isOpen.mpr hs]) hss'
-      exact (hfg.mono this).image_eq.symm.le
-    · exact Subset.trans (image_mono (by simp)) hf.map_source_subset_source
+  · trans s' ∩ f ⁻¹' hf.codChart.source
+    · apply subset_inter
+      · exact Subset.trans (by simp [interior_eq_iff_isOpen.mpr hs]) hss'
+      · exact Subset.trans (by simp) hf.source_subset_preimage_source
+    · rw [hfg.inter_preimage_eq]; exact inter_subset_right
   · apply hP.congr (hfg.mono hss') hs
     · grind [PartialHomeomorph.restr_source']
     exact hP.mono_source hs hf.property
