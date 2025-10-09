@@ -243,9 +243,9 @@ local instance : Ord (Nat × Expr) where
   compare x y := compare x.1 y.1
 
 /-- Core of the `order` tactic. -/
-def orderCore (only? : Bool) (hyps : Array Expr) (g : MVarId) : MetaM Unit := do
+def orderCore (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) : MetaM Unit := do
   g.withContext do
-    let TypeToAtoms ← collectFacts only? hyps
+    let TypeToAtoms ← collectFacts only? hyps negGoal
     for (type, (idxToAtom, facts)) in TypeToAtoms do
       let some orderType ← findBestOrderInstance type | continue
       let facts : Array AtomicFact ← match orderType with
@@ -276,21 +276,22 @@ def orderCore (only? : Bool) (hyps : Array Expr) (g : MVarId) : MetaM Unit := do
 /-- Args for the `order` tactic. -/
 syntax orderArgs := (&" only")? (" [" term,* "]")?
 
-/-- `order_core` is the part of the `order` tactic that works after negation. -/
-syntax (name := order_core) "order_core" orderArgs : tactic
+/-- `order_core` is the part of the `order` tactic that tries to find a contradiction. -/
+syntax (name := order_core) "order_core" orderArgs ident : tactic
 
 open Syntax in
 elab_rules : tactic
-  | `(tactic| order_core $[only%$o]? $[[$args,*]]?) => withMainContext do
+  | `(tactic| order_core $[only%$o]? $[[$args,*]]? $order_neg_goal) => withMainContext do
+    let negGoal ← elabTerm order_neg_goal none
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `order)
-    commitIfNoEx do liftMetaFinishingTactic <| orderCore o.isSome args
+    commitIfNoEx do liftMetaFinishingTactic <| orderCore o.isSome args negGoal
 
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 macro "order" args:orderArgs : tactic => `(tactic|
   · intros
-    by_contra! _order_goal
-    order_core $args
+    by_contra! _order_neg_goal
+    order_core $args _order_neg_goal
 )
 
 end Mathlib.Tactic.Order

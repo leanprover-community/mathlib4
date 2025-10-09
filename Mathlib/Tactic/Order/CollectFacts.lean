@@ -88,20 +88,20 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
 
 set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-partial def collectFactsImp (only? : Bool) (hyps : Array Expr) : CollectFactsM Unit := do
+partial def collectFactsImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
+    CollectFactsM Unit := do
   let ctx ← getLCtx
   for expr in hyps do
     processExpr expr
-  let goalDecl := Option.get! <| ctx.findDecl? fun ldecl =>
-    if ldecl.userName.getRoot == `_order_goal then
-      .some ldecl
-    else .none
-  processExpr goalDecl.toExpr
+  processExpr negGoal
   if !only? then
     for ldecl in ctx do
-      if ldecl.isImplementationDetail || ldecl.fvarId == goalDecl.fvarId then
+      if ldecl.isImplementationDetail then
         continue
-      processExpr ldecl.toExpr
+      let e := ldecl.toExpr
+      if e == negGoal then
+        continue
+      processExpr e
 where
   /-- Extracts facts and atoms from the expression. -/
   processExpr (expr : Expr) : CollectFactsM Unit := do
@@ -147,12 +147,16 @@ where
       processExpr q(Exists.choose_spec $expr)
     | _ => return
 
-/-- Collects facts from the local context. For each occurring type `α`, the returned map contains
-a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
-atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
-def collectFacts (only? : Bool) (hyps : Array Expr) :
+/-- Collects facts from the local context. `negGoal` is the negated goal, `hyps` is the expressions
+passed to the tactic using square brackets. If `only?` is true, we collect facts only from `hyps`
+and `negGoal`, otherwise we also use the local context.
+
+For each occurring type `α`, the returned map contains a pair `(idxToAtom, facts)`,
+where the map `idxToAtom` converts indices to found atomic expressions of type `α`,
+and `facts` contains all collected `AtomicFact`s about them. -/
+def collectFacts (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
     MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := do
-  let res := (← (collectFactsImp only? hyps).run ∅).snd
+  let res := (← (collectFactsImp only? hyps negGoal).run ∅).snd
   return res.map fun _ (atomToIdx, facts) =>
     let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := ∅) fun acc _ value =>
       acc.insert value.fst value.snd
