@@ -175,9 +175,9 @@ end Neg
 section Const
 
 /-- The class of constant Lp functions. Has only `p = ∞` and `μ.IsFiniteMeasure` instances. -/
-class MemLp.Const {α : Type u_1} (ε : Type u_2) {m0 : MeasurableSpace α} [ENorm ε] (p : ℝ≥0∞)
+class MemLp.Const {α : Type u_1} {m0 : MeasurableSpace α} (p : ℝ≥0∞)
   (μ : Measure α) where
-  eLpNorm_const_lt_top' (c : ε) (hc : ‖c‖ₑ ≠ ∞) : eLpNorm (fun _ ↦ c) p μ < ∞
+  eLpNorm_const_lt_top' (c : ε) : eLpNorm (fun _ ↦ c) p μ < ∞
 
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
   [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
@@ -216,7 +216,7 @@ theorem eLpNorm_const (c : ε) (h0 : p ≠ 0) (hμ : μ ≠ 0) :
   · simp [h_top, eLpNormEssSup_const c hμ]
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
 
-instance [IsFiniteMeasure μ] : MemLp.Const ε p μ where
+instance [IsFiniteMeasure μ] : MemLp.Const p μ where
   eLpNorm_const_lt_top' c hc := by
     by_cases h0 : p = 0 ∨ μ = 0
     · aesop
