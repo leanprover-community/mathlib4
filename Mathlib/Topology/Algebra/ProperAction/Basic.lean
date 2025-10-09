@@ -3,8 +3,7 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.Topology.Algebra.Group.Defs
+import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Maps.OpenQuotient
@@ -108,7 +107,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
 
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/]
-theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
+instance t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal]
   set R := MulAction.orbitRel G X
@@ -201,7 +200,13 @@ instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
 example [IsTopologicalGroup G] {H : Subgroup G} [IsClosed (H : Set G)] : ProperSMul H G :=
   inferInstance
 
+@[to_additive]
 instance [IsTopologicalGroup G] {H : Subgroup G} [H_closed : IsClosed (H : Set G)] :
     ProperSMul H.op G :=
   have : IsClosed (H.op : Set Gᵐᵒᵖ) := H_closed.preimage MulOpposite.continuous_unop
   inferInstance
+
+@[to_additive]
+instance QuotientGroup.instT2Space [IsTopologicalGroup G] {H : Subgroup G} [IsClosed (H : Set G)] :
+    T2Space (G ⧸ H) :=
+  t2Space_quotient_mulAction_of_properSMul
