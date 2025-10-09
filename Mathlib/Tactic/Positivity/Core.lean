@@ -498,10 +498,16 @@ example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
 example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
+
+example {a b c d : ℤ} (ha : c < a) (hb : d < b) : 0 < (a - c) * (b - d) := by
+  positivity [sub_pos_of_lt ha, sub_pos_of_lt hb]
 ```
 -/
 elab (name := positivity) "positivity" : tactic => do
   liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+
+macro "positivity" "[" h:term,* "]" : tactic =>
+  `(tactic| · $[let := $h];* ; positivity)
 
 end Positivity
 

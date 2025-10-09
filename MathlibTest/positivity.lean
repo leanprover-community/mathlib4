@@ -100,6 +100,9 @@ example {a b : ℤ} (h : 0 ≤ a + b) : 0 ≤ a + b := by positivity
 
 example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
 
+example {a b c d : ℤ} (ha : c < a) (hb : d < b) : 0 < (a - c) * (b - d) := by
+  positivity [sub_pos_of_lt ha, sub_pos_of_lt hb]
+
 section
 
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
