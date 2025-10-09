@@ -184,7 +184,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   ext a b c
   -- clean up
   simp only [e, LinearMap.compMultilinearMap_apply, lhs_eq, rhs_eq, tprod_mul_tprod, cast_tprod]
-  congr with j
+  congr 1 with j
   rw [Fin.append_assoc]
   refine congr_arg (Fin.append a (Fin.append b c)) (Fin.ext ?_)
   rw [Fin.coe_cast, Fin.coe_cast]

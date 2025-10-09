@@ -16,14 +16,6 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
-## Notation
-
-`Spec R` typechecks only for `R : CommRingCat`. It happens quite often that we want to take Spec of
-an unbundled ring, and this can be spelled `Spec (CommRingCat.of R)`, or `Spec (.of R)` using
-anonymous dot notation. This is such a common situation that we have dedicated notation: `Spec(R)`
-
-Note that one can write `Spec(R)` for `R : CommRingCat`, but one shouldn't: This is `Spec (.of ↑R)`
-under the hood, which simplifies to `Spec R`.
 -/
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
@@ -131,6 +123,15 @@ We give schemes the specialization preorder by default.
 instance {X : Scheme.{u}} : Preorder X := specializationPreorder X
 
 lemma le_iff_specializes {X : Scheme.{u}} {a b : X} : a ≤ b ↔ b ⤳ a := by rfl
+
+open Order in
+lemma height_of_isClosed {X : Scheme} {x : X} (hx : IsClosed {x}) : height x = 0 := by
+  simp only [height_eq_zero]
+  intro b _
+  obtain rfl | h := eq_or_ne b x
+  · assumption
+  · have := IsClosed.not_specializes hx rfl h
+    contradiction
 
 namespace Hom
 
@@ -277,11 +278,9 @@ noncomputable def Hom.homeomorph {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := S
 lemma Hom.homeomorph_apply {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f] (x) :
     f.homeomorph x = f.base x := rfl
 
--- Porting note: Lean seems not able to find this coercion any more
 instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
--- Porting note: added this unification hint just in case
 /-- forgetful functor to `TopCat` is the same as coercion -/
 unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
@@ -369,8 +368,6 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Y.Opens} (e : U = V) :
 theorem eqToHom_c_app {X Y : Scheme} (e : X = Y) (U) :
     (eqToHom e).app U = eqToHom (by subst e; rfl) := by subst e; rfl
 
--- Porting note: in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
--- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
 lemma presheaf_map_eqToHom_op (X : Scheme) (U V : X.Opens) (i : U = V) :
     X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
   rw [eqToHom_op, eqToHom_map]
@@ -380,11 +377,6 @@ instance isIso_toLRSHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHo
 
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
-
--- Porting note: need an extra instance here.
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.c.app U) :=
-  haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
-  NatIso.isIso_app_of_isIso f.c _
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
@@ -427,10 +419,12 @@ def Spec (R : CommRingCat) : Scheme where
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 
 /-- The spectrum of an unbundled ring as a scheme.
+WARNING: This is potentially confusing as `Spec (R)` and `Spec(R)` have different meanings.
+Hence we avoid using it in mathlib but leave it as a scoped instance for downstream projects.
 
 WARNING: If `R` is already an element of `CommRingCat`, you should use `Spec R` instead of
 `Spec(R)`, which is secretly `Spec(↑R)`. -/
-scoped notation3 "Spec("R")" => Spec <| .of R
+scoped[SpecOfNotation] notation3 "Spec("R")" => AlgebraicGeometry.Spec <| .of R
 
 theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
@@ -574,11 +568,11 @@ lemma toOpen_eq (U) :
     (by exact StructureSheaf.toOpen R U) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
-instance {K} [Field K] : Unique Spec(K) :=
+instance {K} [Field K] : Unique <| Spec <| .of K :=
   inferInstanceAs <| Unique (PrimeSpectrum K)
 
 @[simp]
-lemma default_asIdeal {K} [Field K] : (default : Spec(K)).asIdeal = ⊥ := rfl
+lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl
 
 section BasicOpen
 
@@ -793,7 +787,7 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U
 
 lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
     (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.2 f = 0 := by
-  rw [Scheme.mem_basicOpen] at hx
+  rw [Scheme.mem_basicOpen X s x x.2] at hx
   have hu : IsUnit (X.presheaf.germ _ x x.2 (s ^ n)) := by
     rw [map_pow]
     exact IsUnit.pow n hx

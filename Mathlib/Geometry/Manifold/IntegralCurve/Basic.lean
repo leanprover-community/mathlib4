@@ -165,7 +165,7 @@ lemma IsMIntegralCurveOn.isMIntegralCurveAt (h : IsMIntegralCurveOn γ v s) (hs 
 /-- If `γ` is an integral curve at each `t ∈ s`, it is an integral curve on `s`. -/
 lemma IsMIntegralCurveAt.isMIntegralCurveOn (h : ∀ t ∈ s, IsMIntegralCurveAt γ v t) :
     IsMIntegralCurveOn γ v s := by
-  intros t ht
+  intro t ht
   apply HasMFDerivAt.hasMFDerivWithinAt
   obtain ⟨s', hs', h⟩ := Filter.eventually_iff_exists_mem.mp (h t ht)
   exact h _ (mem_of_mem_nhds hs')

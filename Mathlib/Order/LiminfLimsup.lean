@@ -22,8 +22,8 @@ For instance, in ℕ along a function `u`, this is `inf_n (sup_{k ≥ n} u k)` (
 decreases with `n`, so this is in fact a limit.). There is however a difficulty: it is well possible
 that `u` is not bounded on the whole space, only eventually (think of `limsup (fun x ↦ 1/x)` on ℝ.
 Then there is no guarantee that the quantity above really decreases (the value of the `sup`
-beforehand is not really well defined, as one can not use ∞), so that the Inf could be anything.
-So one can not use this `inf sup ...` definition in conditionally complete lattices, and one has
+beforehand is not really well defined, as one cannot use ∞), so that the Inf could be anything.
+So one cannot use this `inf sup ...` definition in conditionally complete lattices, and one has
 to use a less tractable definition.
 
 In conditionally complete lattices, the definition is only useful for filters which are eventually
@@ -45,33 +45,33 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s : Set α} {u : β → α}
 
-/-- The `limsSup` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
-holds `x ≤ a`. -/
+/-- The `limsSup` of a filter `f` is the infimum of the `a` such that the inequality
+`x ≤ a` eventually holds for `f`. -/
 def limsSup (f : Filter α) : α :=
   sInf { a | ∀ᶠ n in f, n ≤ a }
 
-/-- The `limsInf` of a filter `f` is the supremum of the `a` such that, eventually for `f`,
-holds `x ≥ a`. -/
+/-- The `limsInf` of a filter `f` is the supremum of the `a` such that the inequality
+`x ≥ a` eventually holds for `f`. -/
 def limsInf (f : Filter α) : α :=
   sSup { a | ∀ᶠ n in f, a ≤ n }
 
-/-- The `limsup` of a function `u` along a filter `f` is the infimum of the `a` such that,
-eventually for `f`, holds `u x ≤ a`. -/
+/-- The `limsup` of a function `u` along a filter `f` is the infimum of the `a` such that
+the inequality `u x ≤ a` eventually holds for `f`. -/
 def limsup (u : β → α) (f : Filter β) : α :=
   limsSup (map u f)
 
-/-- The `liminf` of a function `u` along a filter `f` is the supremum of the `a` such that,
-eventually for `f`, holds `u x ≥ a`. -/
+/-- The `liminf` of a function `u` along a filter `f` is the supremum of the `a` such that
+the inequality `u x ≥ a` eventually holds for `f`. -/
 def liminf (u : β → α) (f : Filter β) : α :=
   limsInf (map u f)
 
 /-- The `blimsup` of a function `u` along a filter `f`, bounded by a predicate `p`, is the infimum
-of the `a` such that, eventually for `f`, `u x ≤ a` whenever `p x` holds. -/
+of the `a` such that the inequality `u x ≤ a` eventually holds for `f`, whenever `p x` holds. -/
 def blimsup (u : β → α) (f : Filter β) (p : β → Prop) :=
   sInf { a | ∀ᶠ x in f, p x → u x ≤ a }
 
 /-- The `bliminf` of a function `u` along a filter `f`, bounded by a predicate `p`, is the supremum
-of the `a` such that, eventually for `f`, `a ≤ u x` whenever `p x` holds. -/
+of the `a` such that the inequality `a ≤ u x` eventually holds for `f` whenever `p x` holds. -/
 def bliminf (u : β → α) (f : Filter β) (p : β → Prop) :=
   sSup { a | ∀ᶠ x in f, p x → a ≤ u x }
 
@@ -275,7 +275,7 @@ theorem HasBasis.liminf_eq_sSup_iUnion_iInter {ι ι' : Type*} {f : ι → α} {
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) :
     liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
   simp_rw [liminf_eq, hv.eventually_iff]
-  congr
+  congr 1
   ext x
   simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
     exists_prop]

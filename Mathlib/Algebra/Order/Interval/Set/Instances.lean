@@ -323,9 +323,7 @@ instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsStri
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
-  rw [mem_Ioo] at *
-  refine ⟨sub_pos.2 ht.2, ?_⟩
-  exact lt_of_le_of_ne ((sub_le_self_iff 1).2 ht.1.le) (mt sub_eq_self.mp ht.1.ne')
+  simp_all only [mem_Ioo, sub_pos, sub_lt_self_iff, and_self]
 
 theorem mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 : β) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩

@@ -40,8 +40,6 @@ def center : Subsemigroup M where
   carrier := Set.center M
   mul_mem' := Set.mul_mem_center
 
--- Porting note: `coe_center` is now redundant
-
 variable {M}
 
 /-- The center of a magma is commutative and associative. -/

@@ -303,11 +303,8 @@ theorem adjoin_eq_range_algebraMap_adjoin :
 theorem adjoin.algebraMap_mem (x : F) : algebraMap F E x ∈ adjoin F S :=
   IntermediateField.algebraMap_mem (adjoin F S) x
 
-theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F S := by
-  intro x hx
-  obtain ⟨f, hf⟩ := hx
-  rw [← hf]
-  exact adjoin.algebraMap_mem F S f
+theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F S :=
+  set_range_subset (adjoin F S)
 
 instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
   coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
@@ -484,9 +481,6 @@ theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S 
   subst hS; exact adjoin_algHom_ext F h
 
 end
-
-/- Porting note (kmill): this notation is replacing the typeclass-based one I had previously
-written, and it gives true `{x₁, x₂, ..., xₙ}` sets in the `adjoin` term. -/
 
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/

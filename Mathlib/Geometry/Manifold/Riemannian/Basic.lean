@@ -43,8 +43,8 @@ tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 a
 automatic instances for these cases). One can require whatever regularity one wants in the
 `IsContMDiffRiemannianBundle` instance above, for example
 `[IsContMDiffRiemannianBundle I n E (fun (x : M) ↦ TangentSpace I x)]`, and one should also add
-`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean can not infer
-the latter from the former as it can not guess `n`).
+`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean cannot infer
+the latter from the former as it cannot guess `n`).
 -/
 
 open Bundle Bornology Set MeasureTheory Manifold Filter
@@ -70,7 +70,7 @@ the space is already endowed with an extended distance. We say that this is a Ri
 if the distance is given by the infimum of the lengths of `C^1` paths, measured using the norm in
 the tangent spaces.
 
-This is a `Prop` valued typeclass, on top of existing data.
+This is a `Prop`-valued typeclass, on top of existing data.
 
 If you need to *construct* a distance using a Riemannian structure,
 see `EmetricSpace.ofRiemannianMetric`. -/
@@ -93,7 +93,7 @@ two points is the infimum of the length of paths between these points.
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 variable (F) in
-/-- The standard riemannian metric on a vector space with an inner product, given by this inner
+/-- The standard Riemannian metric on a vector space with an inner product, given by this inner
 product on each tangent space. -/
 noncomputable def riemannianMetricVectorSpace :
     ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) where
@@ -188,8 +188,8 @@ Moreover, we show that in this case the resulting emetric space satisfies the pr
 `IsRiemannianManifold I M`.
 
 Showing that the distance topology coincides with the pre-existing topology is not trivial. The
-two inclusions are proved respectively in `eventually_riemmanianEDist_lt` and
-`setOf_riemmanianEDist_lt_subset_nhds`.
+two inclusions are proved respectively in `eventually_riemannianEDist_lt` and
+`setOf_riemannianEDist_lt_subset_nhds`.
 
 For the first one, we have to show that points which are close for the topology are at small
 distance. For this, we use the path between the two points which is the pullback of the segment
@@ -274,7 +274,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
   filter_upwards [nhdsWithin_le_nhds (this.preimage_mem_nhds hC),
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
-  simp [-extChartAt] at hy
+  simp only [preimage_setOf_eq, mem_setOf_eq] at hy
   convert hy
 
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
@@ -360,7 +360,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
     exact le_of_eq rfl
 
 /-- If points are close for the topology, then their Riemannian distance is small. -/
-lemma eventually_riemmanianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
+lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
     ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
   rcases eventually_riemannianEDist_le_edist_extChartAt I x with ⟨C, C_pos, hC⟩
   have : (extChartAt I x) ⁻¹' (EMetric.ball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
@@ -374,9 +374,12 @@ lemma eventually_riemmanianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
 
+@[deprecated (since := "2025-09-18")]
+alias eventually_riemmanianEDist_lt := eventually_riemannianEDist_lt
+
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
-lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
+lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
     ∃ c > (0 : ℝ≥0), {y | riemannianEDist I x y < c} ⊆ s := by
   /- Consider a closed neighborhood `u` of `x` on which the derivative of the extended chart is
   bounded by some `C`, contained in `s`, then an open neighborhood `v` of `x` inside `u`,
@@ -386,7 +389,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   We claim that points at Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
   inside `s`). To prove this, consider a path of length at most `r / C` starting from `x`. While
   it stays inside `u`, then by the derivative control its image in the extended chart has length
-  at most `r`, so it can not exit the ball of radius `r`, which means that in the manifold it is
+  at most `r`, so it cannot exit the ball of radius `r`, which means that in the manifold it is
   inside `v` (which is strictly inside `u`). This means that the path will stay inside `u` for
   a little bit longer, by openness of `v`. Iterating this argument, it follows that the path will
   remain inside `u` for the whole time interval `[0, 1]`. In particular, its right endpoint is
@@ -487,12 +490,18 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
 
+@[deprecated (since := "2025-09-18")]
+alias setOf_riemmanianEDist_lt_subset_nhds := setOf_riemannianEDist_lt_subset_nhds
+
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0∞` version. -/
-lemma setOf_riemmanianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
+lemma setOf_riemannianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
     ∃ c > 0, {y | riemannianEDist I x y < c} ⊆ s := by
-  rcases setOf_riemmanianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
+  rcases setOf_riemannianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
   exact ⟨c, mod_cast c_pos, hc⟩
+
+@[deprecated (since := "2025-09-18")]
+alias setOf_riemmanianEDist_lt_subset_nhds' := setOf_riemannianEDist_lt_subset_nhds'
 
 variable (M) in
 /-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
@@ -507,8 +516,8 @@ additionally the predicate `IsRiemannianManifold I M`. -/
     (fun _ _ ↦ riemannianEDist_comm)
     (fun _ _ _ ↦ riemannianEDist_triangle)
     (fun x ↦ (basis_sets (𝓝 x)).to_hasBasis'
-      (fun _ hs ↦ setOf_riemmanianEDist_lt_subset_nhds' I hs)
-      (fun _ hc ↦ eventually_riemmanianEDist_lt I x hc))
+      (fun _ hs ↦ setOf_riemannianEDist_lt_subset_nhds' I hs)
+      (fun _ hc ↦ eventually_riemannianEDist_lt I x hc))
 
 /-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
 by definition the distance is the infimum of the length of paths between the points, i.e., the
