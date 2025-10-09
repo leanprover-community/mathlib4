@@ -339,7 +339,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
 
 end Elab
 
-open Elab Lean.Meta
+open Elab
 
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
