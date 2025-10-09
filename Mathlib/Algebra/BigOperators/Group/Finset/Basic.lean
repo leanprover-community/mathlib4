@@ -571,10 +571,7 @@ theorem prod_list_map_count [DecidableEq ι] (l : List ι) (f : ι → M) :
     refine prod_congr rfl fun x hx => ?_
     rw [count_cons_of_ne (ne_of_mem_erase hx).symm]
   rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_toFinset.2 has), pow_one]
-  #adaptation_note /-- nightly-2025-09-09
-  disabled `ac` due to https://github.com/leanprover/lean4/issues/10317
-  -/
-  grind -ac [Finset.prod_congr]
+  grind [Finset.prod_congr]
 
 @[to_additive]
 theorem prod_list_count [DecidableEq M] (s : List M) :

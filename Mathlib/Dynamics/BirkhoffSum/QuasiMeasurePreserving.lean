@@ -7,7 +7,7 @@ import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
-# Birkhoff sum and average for quasi measure preserving maps
+# Birkhoff sum and average for quasi-measure-preserving maps
 
 Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreserving f μ μ` we prove:
 
