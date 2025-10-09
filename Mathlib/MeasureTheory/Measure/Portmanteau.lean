@@ -915,9 +915,25 @@ lemma ProbabilityMeasure.todo' [l.IsCountablyGenerated]
     suffices TendstoInMeasure μ (fun n ω ↦ ((0 : E), f' n ω - c)) l 0 by
       convert this with n ω
       simp
-    sorry
+    simpa [tendstoInMeasure_iff_norm] using hff'
   · simp only [f₀, g₀]
-    sorry
+    rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hfg ⊢
+    intro F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
+    simp only [coe_mk]
+    have hFc_lip : LipschitzWith L (fun x ↦ F (x, c)) := by
+      intro x y
+      specialize hF_lip (x, c) (y, c)
+      refine hF_lip.trans ?_
+      simp [edist_eq_enorm_sub, enorm_eq_nnnorm]
+    have h_eq (f : α → E) (hf : AEMeasurable f μ) :
+        ∫ ω, F ω ∂μ.map (fun ω ↦ (f ω, c)) = ∫ ω, (fun x ↦ F (x, c)) ω ∂(μ.map f) := by
+      rw [integral_map (by fun_prop), integral_map (by fun_prop)]
+      · exact hFc_lip.continuous.stronglyMeasurable.aestronglyMeasurable
+      · exact hF_lip.continuous.stronglyMeasurable.aestronglyMeasurable
+    simp_rw [h_eq (f _) (hf _), h_eq g hg]
+    specialize hfg (fun x ↦ F (x, c)) ⟨M, ?_⟩ ⟨L, hFc_lip⟩
+    · exact fun x y ↦ hF_bounded (x, c) (y, c)
+    · simpa
 
 end Lipschitz
 
