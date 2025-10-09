@@ -3,6 +3,8 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
+import Mathlib.Algebra.Group.Subgroup.MulOpposite
+import Mathlib.Topology.Algebra.Group.Defs
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Maps.OpenQuotient
@@ -166,3 +168,40 @@ theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [T
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on `X`, then so does `H`. -/]
 instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
   properSMul_of_isClosedEmbedding H.subtype H_closed.isClosedEmbedding_subtypeVal fun _ _ ↦ rfl
+
+/-- The action `G ↷ G` by left translations is proper. -/
+@[to_additive
+/-- The action `G ↷ G` by left translations is proper. -/]
+instance [IsTopologicalGroup G] : ProperSMul G G where
+  isProperMap_smul_pair := by
+    let Φ : G × G ≃ₜ G × G :=
+    { toFun := fun gh ↦ (gh.1 * gh.2, gh.2)
+      invFun := fun gh ↦ (gh.1 * gh.2⁻¹, gh.2)
+      left_inv := fun _ ↦ by simp
+      right_inv := fun _ ↦ by simp
+      continuous_toFun := by fun_prop
+      continuous_invFun := by fun_prop }
+    exact Φ.isProperMap
+
+open MulOpposite in
+/-- The action `Gᵐᵒᵖ ↷ G` by right translations is proper. -/
+@[to_additive
+/-- The action `Gᵐᵒᵖ ↷ G` by right translations is proper. -/]
+instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
+  isProperMap_smul_pair := by
+    let Φ : Gᵐᵒᵖ × G ≃ₜ G × G :=
+    { toFun := fun gh ↦ (gh.2 * (unop gh.1), gh.2)
+      invFun := fun gh ↦ (op (gh.2⁻¹ * gh.1), gh.2)
+      left_inv := fun _ ↦ by simp
+      right_inv := fun _ ↦ by simp
+      continuous_toFun := by fun_prop
+      continuous_invFun := by fun_prop }
+    exact Φ.isProperMap
+
+example [IsTopologicalGroup G] {H : Subgroup G} [IsClosed (H : Set G)] : ProperSMul H G :=
+  inferInstance
+
+instance [IsTopologicalGroup G] {H : Subgroup G} [H_closed : IsClosed (H : Set G)] :
+    ProperSMul H.op G :=
+  have : IsClosed (H.op : Set Gᵐᵒᵖ) := H_closed.preimage MulOpposite.continuous_unop
+  inferInstance
