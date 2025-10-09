@@ -40,6 +40,7 @@ namespace AlgebraicGeometry.LocallyRingedSpace
 
 variable {X Y : LocallyRingedSpace} (f : X.Hom Y)
 
+/-- The morphism of sheaves corresponding to a morphism of locally ringed spaces. -/
 abbrev Hom.toSheafHom :
     Y.sheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
       _ _ _).obj X.sheaf where
@@ -60,6 +61,7 @@ example : HasSheafify (Opens.grothendieckTopology X) AddCommGrp.{u} :=
 
 example : Abelian X.Modules := inferInstance
 
+/-- The morphism of sheaves of rings corresponding to a morphism of schemes. -/
 def Hom.toRingCatSheafHom (f : X ⟶ Y) :
     Y.ringCatSheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
       _ _ _).obj X.ringCatSheaf :=
@@ -69,20 +71,28 @@ namespace Modules
 
 variable (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ T)
 
+/-- The pushforward functor for categories of sheaves of modules over schemes. -/
 noncomputable def pushforward : X.Modules ⥤ Y.Modules :=
   SheafOfModules.pushforward f.toRingCatSheafHom
 
+/-- The pullback functor for categories of sheaves of modules over schemes. -/
 noncomputable def pullback : Y.Modules ⥤ X.Modules :=
   SheafOfModules.pullback f.toRingCatSheafHom
 
+/-- The pullback functor for categories of sheaves of modules over schemes
+is left adjoint to the pushforward functor. -/
 noncomputable def pullbackPushforwardAdjunction : pullback f ⊣ pushforward f :=
   SheafOfModules.pullbackPushforwardAdjunction _
 
 variable (X) in
+/-- The pushforward of sheaves of modules by the identity morphism identifies
+to the identity functor. -/
 noncomputable def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pushforwardId _
 
 variable (X) in
+/-- The pullback of sheaves of modules by the identity morphism identifies
+to the identity functor. -/
 noncomputable def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pullbackId _
 
@@ -93,10 +103,14 @@ lemma conjugateEquiv_pullbackId_hom :
       (pushforwardId X).inv :=
   SheafOfModules.conjugateEquiv_pullbackId_hom _
 
+/-- The composition of two pushforward functors for sheaves of modules on schemes
+identify to the pushforward for the composition. -/
 noncomputable def pushforwardComp :
     pushforward f ⋙ pushforward g ≅ pushforward (f ≫ g) :=
   SheafOfModules.pushforwardComp _ _
 
+/-- The composition of two pullback functors for sheaves of modules on schemes
+identify to the pullback for the composition. -/
 noncomputable def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
@@ -150,6 +164,10 @@ lemma pseudofunctor_right_unitality :
     congr_arg Iso.hom (SheafOfModules.pullback_comp_id.{u} f.toRingCatSheafHom)
   simp [← this]
 
+/-- The pseudofunctor from `Schemeᵒᵖ` to the bicategory of adjunctions which sends
+a scheme `X` to the category `X.Modules` of sheaves of modules over `X`.
+(This contains both the covariant and the contravariant functorialities of
+these categories.) -/
 noncomputable def pseudofunctor :
     Pseudofunctor (LocallyDiscrete Scheme.{u}ᵒᵖ) (Adj Cat) :=
   LocallyDiscrete.mkPseudofunctor
