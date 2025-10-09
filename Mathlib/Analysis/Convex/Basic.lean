@@ -164,9 +164,16 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · match_scalars <;> noncomm_ring
 
+/- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
+  ring, instead of just a semi-ring. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
   exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+
+/- See `Convex.semilinear_range` for a version for semilinar maps, but requiring that `𝕜` be a
+  ring, instead of just a semi-ring. -/
+theorem Convex.linear_range (f : E →ₗ[𝕜] F) : Convex 𝕜 (Set.range f) :=
+    image_univ ▸ convex_univ.linear_image f
 
 theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
     Convex 𝕜 (f '' s) :=
@@ -433,6 +440,25 @@ section OrderedRing
 
 variable [Ring 𝕜] [PartialOrder 𝕜]
 
+section SemilinearMap
+
+variable {𝕜' F' : Type*} [Ring 𝕜'] [LinearOrder 𝕜'] [AddCommMonoid F] [Module 𝕜 F]
+variable {σ : 𝕜' →+* 𝕜} [RingHomSurjective σ]
+variable {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F']
+
+theorem Convex.semilinear_image {s : Set F'} (hs : Convex 𝕜' s) (hσ : StrictMono σ)
+    (f : F' →ₛₗ[σ] F) : Convex 𝕜 (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
+  obtain ⟨r, rfl⟩ : ∃ r : 𝕜', σ r = a := RingHomSurjective.is_surjective ..
+  let t := 1 - r
+  have ht : b = σ t := by grind [map_sub, map_one]
+  exact ⟨r • x + t • y, hs hx hy (by simpa [← hσ.le_iff_le]) (by simpa [← hσ.le_iff_le, ← ht])
+    (by grind), by simp [ht]⟩
+
+theorem Convex.semilinear_range (hσ : StrictMono σ) (f : F' →ₛₗ[σ] F) : Convex 𝕜 (Set.range f) :=
+  image_univ ▸ convex_univ.semilinear_image hσ f
+
+end SemilinearMap
 section AddCommGroup
 
 variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {s t : Set E}

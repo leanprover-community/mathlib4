@@ -30,9 +30,10 @@ For a module over a normed ring:
 * `Balanced`: A set `s` is balanced if `a • s ⊆ s` for all `a` of norm less than `1`.
 
 ## Main Results
-* `Absorbent.submodule_eq_top` shows that when the base field is nontrivially normed, an absorbent submodule
-  is actually the whole space. As an application, we show in `Absorbent.subset_image_iff_surjective`
-  that a linear function is surjective if and only if its image contains an absorbent set.
+* `Absorbent.submodule_eq_top` shows that when the base field is nontrivially normed, an absorbent
+  submodule is actually the whole space. As an application, we show in
+  `Absorbent.subset_image_iff_surjective` that a linear function is surjective if and only if its
+  image contains an absorbent set.
 
 ## References
 
@@ -303,7 +304,7 @@ theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (
 theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : ℱ} {s : Set E}
     (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective := /- by -/
   ⟨fun hs_sub ↦ range_eq_univ.mp (by
-    simp [← LinearMap.coe_range, (hs_abs.mono hs_sub).module_univ]), fun h a _ ↦ h a⟩
+    simp [← LinearMap.coe_range, (hs_abs.mono hs_sub).submodule_eq_top]), fun h a _ ↦ h a⟩
 
 end NontriviallyNormedField
 
