@@ -33,7 +33,7 @@ lemma IsTransitiveRel.cauchyFilter_gen {s : Set (X × X)} (hs : IsTransitiveRel 
     IsTransitiveRel (CauchyFilter.gen s) := by
   simp only [IsTransitiveRel, CauchyFilter.gen, mem_setOf_eq]
   intro f g h hfg hgh
-  exact hs.mem_filter_prod_comm hfg hgh
+  exact hs.mem_filter_prod_trans hfg hgh
 
 instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :
     IsUltraUniformity (CauchyFilter X) := by
