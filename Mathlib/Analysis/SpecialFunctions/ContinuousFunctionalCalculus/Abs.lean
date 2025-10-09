@@ -298,7 +298,7 @@ open CFC
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
   rw [CFC.abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
 
-@[simp]
+@[simp, grind =]
 lemma norm_abs {a : A} : ‖abs a‖ = ‖a‖ := by
   rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), sq, sq, ← CStarRing.norm_star_mul_self,
     (abs_nonneg _).star_eq, CFC.abs_mul_abs, CStarRing.norm_star_mul_self]
