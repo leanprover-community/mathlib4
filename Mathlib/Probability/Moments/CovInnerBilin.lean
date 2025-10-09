@@ -16,7 +16,7 @@ bilinear form which maps `L₁ L₂ : StrongDual ℝ E` to `cov[L₁, L₂; μ]`
 
 In the special case where `E` is a Hilbert space, each `L : StrongDual ℝ E` can be represented
 as the scalar product against some element of `E`. This motivates the definition of `covInnerBilin`,
-which is bilinear form mapping `x y : E` to `cov[⟪x, ·⟫, ⟪y, ·⟫; μ]`.
+which is a continuous bilinear form mapping `x y : E` to `cov[⟪x, ·⟫, ⟪y, ·⟫; μ]`.
 
 ## Main definition
 
