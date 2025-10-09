@@ -235,17 +235,6 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
 
-theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algebra.IsSeparable K L]
-    [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
-  have hx' : IsIntegral K x := hx.tower_top
-  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
-  · refine (IsIntegral.multiset_prod fun y hy => ?_).pow _
-    rw [mem_roots_map (minpoly.ne_zero hx')] at hy
-    use minpoly R x, minpoly.monic hx
-    rw [← aeval_def] at hy ⊢
-    exact minpoly.aeval_of_isScalarTower R x y hy
-  · apply IsAlgClosed.splits_codomain
-
 lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
     Algebra.norm R (e x) = Algebra.norm R x := by
   simp_rw [Algebra.norm_apply, ← LinearMap.det_conj _ e.toLinearEquiv]; congr; ext; simp
