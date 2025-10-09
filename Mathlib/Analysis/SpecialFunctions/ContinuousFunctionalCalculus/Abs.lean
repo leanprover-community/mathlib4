@@ -44,7 +44,7 @@ noncomputable def abs (a : A) := sqrt (star a * a)
 lemma abs_neg (a : A) : abs (-a) = abs a := by
   simp [abs]
 
-@[simp]
+@[simp, grind ←]
 lemma abs_nonneg (a : A) : 0 ≤ abs a := sqrt_nonneg _
 
 lemma abs_star (a : A) (ha : IsStarNormal a := by cfc_tac) : abs (star a) = abs a := by
