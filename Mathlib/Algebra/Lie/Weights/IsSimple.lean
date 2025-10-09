@@ -90,15 +90,9 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
     genWeightSpace_le_I _ h_chi_in_q (fun h_eq => (w_chi h_eq).elim)
   exact sup_le (sup_le h_plus_contain h_minus_contain) h_chi_contain h_bracket_decomp
 
-private theorem chi_not_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L)
-    (h_chi_not_in_q : ↑χ ∉ q) (x_χ m_α : L) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-    (hx_χ : x_χ ∈ genWeightSpace L χ) (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
-    (w_minus : χ.toLinear - α.1.toLinear ≠ 0) (w_chi : χ.toLinear ≠ 0) (m_pos m_neg m_h : L)
-    (hm_h : ∃ y : H, y ∈ corootSpace α.1 ∧ (y : L) = m_h)
-    (h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆)
-    (h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear))
-    (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)) :
+include hq
+
+private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   let S := rootSystem H
   have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = ↑γ :=
