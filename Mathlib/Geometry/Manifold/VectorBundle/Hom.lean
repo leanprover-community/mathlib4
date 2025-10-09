@@ -67,15 +67,14 @@ theorem hom_chart (y₀ y : LE₁E₂) :
 
 theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f s x₀ ↔
-      ContMDiffWithinAt IM IB n (fun x ↦ (f x).1) s x₀ ∧
+      CMDiffAt[s] n (fun x ↦ (f x).1) x₀ ∧
         ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
   contMDiffWithinAt_totalSpace
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
-      ContMDiffAt IM IB n (fun x ↦ (f x).1) x₀ ∧
-        ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
+      CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffAt_totalSpace
 
@@ -98,14 +97,14 @@ variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E�
 
 theorem mdifferentiableWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) f s x₀ ↔
-      MDifferentiableWithinAt IM IB (fun x ↦ (f x).1) s x₀ ∧
+      MDiffAt[s] (fun x ↦ (f x).1) x₀ ∧
         MDifferentiableWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
   mdifferentiableWithinAt_totalSpace IB ..
 
 theorem mdifferentiableAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     MDifferentiableAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) f x₀ ↔
-      MDifferentiableAt IM IB (fun x ↦ (f x).1) x₀ ∧
+      MDiffAt (fun x ↦ (f x).1) x₀ ∧
         MDifferentiableAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   mdifferentiableAt_totalSpace ..
