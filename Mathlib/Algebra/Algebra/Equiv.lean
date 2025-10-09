@@ -818,8 +818,11 @@ def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
   __ := ULift.ringEquiv
   commutes' _ := rfl
 
-/-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then it is in fact isomorphic to `R`
-as `R`-algebra (but via a different map). -/
+/-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
+equivalence of `R`-algebras.
+
+Note that if `e : R ≃ₗ[R] A` is the linear equivalence, then this is not the same as the equivalence
+of algebras provided here unless `e 1 = 1`. -/
 @[simps] def LinearEquiv.algEquivOfRing
     {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (e : R ≃ₗ[R] A) : R ≃ₐ[R] A where
