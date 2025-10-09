@@ -32,15 +32,27 @@ theorem get_isNonZero (w : Weight K H L) (h : w.toLinear ≠ 0) : w.IsNonZero :=
 
 -- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsKilling K L] [IsTriangularizable K H L]
+variable (q : Submodule K (Dual K H))
+  (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+  (χ : Weight K H L)
+  (x_χ m_α : L) (hx_χ : x_χ ∈ genWeightSpace L χ)
+  (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
 
-private theorem chi_in_q_aux (q : Submodule K (Dual K H)) (χ : Weight K H L) (h_chi_in_q : ↑χ ∈ q)
-    (x_χ m_α : L) (hx_χ : x_χ ∈ genWeightSpace L χ) (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
-    (w_plus : χ.toLinear + α.1.toLinear ≠ 0) (w_minus : χ.toLinear - α.1.toLinear ≠ 0)
-    (w_chi : χ.toLinear ≠ 0) (m_pos m_neg m_h : L)
-    (hm_h : ∃ y : H, y ∈ corootSpace α.1 ∧ (y : L) = m_h)
-    (h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆)
-    (h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear))
-    (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear - α.1.toLinear)) :
+section
+
+variable
+  (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
+  (w_minus : χ.toLinear - α.1.toLinear ≠ 0)
+  (w_chi : χ.toLinear ≠ 0)
+  (m_pos m_neg m_h : L)
+  (hm_h : ∃ y : H, y ∈ corootSpace α.1 ∧ (y : L) = m_h)
+  (h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆)
+  (h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (⇑χ + ⇑α.1))
+  (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (⇑χ - ⇑α.1))
+
+include hx_χ w_plus w_minus w_chi hm_h h_bracket_sum h_pos_containment h_neg_containment
+
+private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   have h_h_containment : ⁅x_χ, m_h⁆ ∈ genWeightSpace L χ := by
     obtain ⟨y, hy, rfl⟩ := hm_h
