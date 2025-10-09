@@ -58,7 +58,7 @@ abbrev coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ := yoneda.flip
 /-- Variant of the Coyoneda embedding which allows a raise in the universe level
 for the category of types. -/
 @[pp_with_univ]
-abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.flip
+abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.{w}.flip
 
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftCoyoneda.{w} (C := C) ≅ coyoneda`. -/
@@ -729,8 +729,8 @@ lemma hom_ext_uliftYoneda {P Q : Cᵒᵖ ⥤ Type max w v₁} {f g : P ⟶ Q}
   simpa [uliftYonedaEquiv] using congr_arg uliftYonedaEquiv.{w} (h _ (uliftYonedaEquiv.symm x))
 
 /-- A variant of the curried version of the Yoneda lemma with a raise in the universe level. -/
-def largeCurriedUliftYonedaLemma {C : Type u₁} [Category.{v₁} C] :
-    uliftYoneda.op ⋙ coyoneda ≅
+def uliftYonedaOpCompCoyoneda {C : Type u₁} [Category.{v₁} C] :
+    uliftYoneda.{w}.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type max v₁ w) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
@@ -958,8 +958,8 @@ lemma hom_ext_uliftCoyoneda {P Q : C ⥤ Type max w v₁} {f g : P ⟶ Q}
     using congr_arg uliftCoyonedaEquiv.{w} (h _ (uliftCoyonedaEquiv.symm x))
 
 /-- A variant of the curried version of the Coyoneda lemma with a raise in the universe level. -/
-def largeCurriedUliftCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
-    uliftCoyoneda.rightOp ⋙ coyoneda ≅
+def uliftCoyonedaRightOpCompCoyoneda {C : Type u₁} [Category.{v₁} C] :
+    uliftCoyoneda.{w}.rightOp ⋙ coyoneda ≅
       evaluation C (Type max v₁ w) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
   NatIso.ofComponents
     (fun X => NatIso.ofComponents
