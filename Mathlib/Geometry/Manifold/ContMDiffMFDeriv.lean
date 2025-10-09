@@ -231,7 +231,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     (hf : ContMDiffAt (J.prod I) I' n (Function.uncurry f) (x₀, g x₀)) (hg : CMDiffAt m g x₀)
     (hmn : m + 1 ≤ n) :
     ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m
-      (inTangentCoordinates I I' g (fun x ↦ f x (g x)) (fun x ↦ mfderiv I I' (f x) (g x)) x₀)
+      (inTangentCoordinates I I' g (fun x ↦ f x (g x)) (fun x ↦ mfderiv% (f x) (g x)) x₀)
       x₀ := by
   rw [← contMDiffWithinAt_univ] at hf hg ⊢
   rw [← univ_prod_univ] at hf
@@ -247,7 +247,7 @@ This is a special case of `ContMDiffAt.mfderiv` where `f` does not contain any p
 -/
 theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : CMDiffAt n f x₀)
     (hmn : m + 1 ≤ n) :
-    ContMDiffAt I 𝓘(𝕜, E →L[𝕜] E') m (inTangentCoordinates I I' id f (mfderiv I I' f) x₀) x₀ :=
+    ContMDiffAt I 𝓘(𝕜, E →L[𝕜] E') m (inTangentCoordinates I I' id f (mfderiv% f) x₀) x₀ :=
   haveI : ContMDiffAt (I.prod I) I' n (fun x : M × M => f x.2) (x₀, x₀) :=
     ContMDiffAt.comp (x₀, x₀) hf contMDiffAt_snd
   this.mfderiv (fun _ => f) id contMDiffAt_id hmn
@@ -265,7 +265,7 @@ theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M)
     (hg : CMDiffAt m g (g₁ x₀)) (hg₁ : CMDiffAt m g₁ x₀) (hg₂ : CMDiffAt m g₂ x₀)
     (hmn : m + 1 ≤ n) :
     CMDiffAt m (fun x => inTangentCoordinates I I' g (fun x => f x (g x))
-      (fun x => mfderiv I I' (f x) (g x)) (g₁ x₀) (g₁ x) (g₂ x)) x₀ :=
+      (fun x => mfderiv% (f x) (g x)) (g₁ x₀) (g₁ x) (g₂ x)) x₀ :=
   ((hf.mfderiv f g hg hmn).comp_of_eq hg₁ rfl).clm_apply hg₂
 
 end mfderiv
@@ -358,8 +358,8 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     apply IsOpen.mem_nhds
     · apply (OpenPartialHomeomorph.open_target _).preimage I.continuous_invFun
     · simp only [mfld_simps]
-  have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
-    haveI : ContMDiff I (I.prod 𝓘(𝕜, E)) 1 (zeroSection E (TangentSpace I : M → Type _)) :=
+  have A : MDiffAt (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
+    haveI : CMDiff 1 (zeroSection E (TangentSpace I : M → Type _)) :=
       Bundle.contMDiff_zeroSection 𝕜 (TangentSpace I : M → Type _)
     this.mdifferentiableAt one_ne_zero
   have B : fderivWithin 𝕜 (fun x' : E ↦ (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v
@@ -391,13 +391,13 @@ namespace ContMDiffMap
 -- They could be moved to another file (perhaps a new file) if desired.
 open scoped Manifold ContDiff
 
-protected theorem mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : n ≠ 0) : MDifferentiable I I' f :=
+protected theorem mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : n ≠ 0) : MDiff f :=
   f.contMDiff.mdifferentiable hn
 
-protected theorem mdifferentiable (f : C^∞⟮I, M; I', M'⟯) : MDifferentiable I I' f :=
+protected theorem mdifferentiable (f : C^∞⟮I, M; I', M'⟯) : MDiff f :=
   f.mdifferentiable' (by simp)
 
-protected theorem mdifferentiableAt (f : C^∞⟮I, M; I', M'⟯) {x} : MDifferentiableAt I I' f x :=
+protected theorem mdifferentiableAt (f : C^∞⟮I, M; I', M'⟯) {x} : MDiffAt f x :=
   f.mdifferentiable x
 
 end ContMDiffMap
@@ -456,8 +456,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
   simp only [equivTangentBundleProd, TangentBundle.trivializationAt_apply, mfld_simps,
     Equiv.coe_fn_symm_mk]
   refine ⟨?_, (contMDiffAt_prod_module_iff _).2 ⟨?_, ?_⟩⟩
-  · exact ContMDiffAt.prodMap (contMDiffAt_proj (TangentSpace I))
-      (contMDiffAt_proj (TangentSpace I'))
+  · exact (contMDiffAt_proj (TangentSpace I)).prodMap (contMDiffAt_proj (TangentSpace I'))
   · /- check that the composition with the first projection in the target chart is smooth.
     For this, we check that it coincides locally with the projection `pM : TM × TM' → TM` read in
     the target chart, which is obviously smooth. -/

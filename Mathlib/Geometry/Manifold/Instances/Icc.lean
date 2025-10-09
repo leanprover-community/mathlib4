@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 public import Mathlib.Geometry.Manifold.Instances.Real
+import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-! # Manifold structure on real intervals
@@ -141,15 +142,14 @@ lemma contMDiffOn_projIcc :
     simp [hw.1, h.out.le]
 
 lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
-    ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
+    CMDiff[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) ↔ ContMDiff (𝓡∂ 1) I n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
   convert hf.comp_contMDiff (contMDiff_subtype_coe_Icc (x := x) (y := y)) (fun z ↦ z.2)
   ext z
   simp
 
 lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
-    ContMDiffWithinAt 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
-      ContMDiffAt (𝓡∂ 1) I n f w := by
+    CMDiffAt[Icc x y] n (f ∘ (Set.projIcc x y h.out.le)) w ↔ ContMDiffAt (𝓡∂ 1) I n f w := by
   refine ⟨fun hf ↦ ?_,
     fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.2) (by simp)⟩
   have A := contMDiff_subtype_coe_Icc (x := x) (y := y) (n := n) w
@@ -159,8 +159,7 @@ lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
   simp
 
 lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
-    MDifferentiableWithinAt 𝓘(ℝ) I (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
-      MDifferentiableAt (𝓡∂ 1) I f w := by
+    MDiffAt[Icc x y] (f ∘ (Set.projIcc x y h.out.le)) w ↔ MDifferentiableAt (𝓡∂ 1) I f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
   · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) w).mdifferentiableAt one_ne_zero
     rw [← mdifferentiableWithinAt_univ] at A ⊢
@@ -178,7 +177,7 @@ lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
   simp [projIcc_of_mem h.out.le hz]
 
 lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
-    mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc x y) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
+    mfderiv[Icc x y] (f ∘ (projIcc x y h.out.le)) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
   by_cases hw : MDifferentiableAt (𝓡∂ 1) I f w; swap
   · rw [mfderiv_zero_of_not_mdifferentiableAt hw, mfderivWithin_zero_of_not_mdifferentiableWithinAt]
     · rfl
