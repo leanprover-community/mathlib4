@@ -23,6 +23,15 @@ is a pointwise left Kan extension at `B.obj X₃` iff
 the composition `T ⋙ F'` is a pointwise left Kan extension at `X₃`
 of `B ⋙ F'`.
 
+When suitable (pointwise) left Kan extensions exist, we also show that
+the natural transformation of functors `(C₂ ⥤ D) ⥤ C₃ ⥤ D`
+`(whiskeringLeft C₁ C₂ D).obj T ⋙ L.lan ⟶ R.lan ⋙ (whiskeringLeft C₃ C₄ D).obj B`
+induced by a Guitart exact square `w` is an isomorphism.
+
+## References
+
+* https://ncatlab.org/nlab/show/exact+square
+
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
@@ -165,19 +174,23 @@ noncomputable def lanBaseChange :
 lemma isIso_lanBaseChange_app_iff (F : C₂ ⥤ D) :
     IsIso (w.lanBaseChange.app F) ↔
       IsLeftKanExtension _ ((LeftExtension.mk _ (R.lanUnit.app F)).compTwoSquare w).hom := by
-  rw [lanBaseChange_app]
-  sorry
+  rw [lanBaseChange_app, isIso_lanAdjunction_homEquiv_symm_iff]
+  simp
+
+instance isIso_lanBaseChange_app (F : C₂ ⥤ D)
+    [R.HasPointwiseLeftKanExtension F] [w.GuitartExact] :
+    IsIso (w.lanBaseChange.app F) := by
+  rw [isIso_lanBaseChange_app_iff]
+  let hF := isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (R.lanUnit.app F)
+  exact (hF.compTwoSquare w).isLeftKanExtension
 
 end
 
 instance [∀ (F : C₁ ⥤ D), L.HasLeftKanExtension F]
-    [∀ (F : C₂ ⥤ D), R.HasPointwiseLeftKanExtension F]
-    [w.GuitartExact] : IsIso (w.lanBaseChange (D := D)) := by
+    [∀ (F : C₂ ⥤ D), R.HasPointwiseLeftKanExtension F] [w.GuitartExact] :
+    IsIso (w.lanBaseChange (D := D)) := by
   rw [NatTrans.isIso_iff_isIso_app]
-  intro F
-  rw [isIso_lanBaseChange_app_iff]
-  exact ((isPointwiseLeftKanExtensionOfIsLeftKanExtension
-    _ _).compTwoSquare w).isLeftKanExtension
+  infer_instance
 
 end
 
