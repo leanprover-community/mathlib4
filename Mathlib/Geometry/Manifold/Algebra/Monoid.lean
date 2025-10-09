@@ -18,7 +18,7 @@ semigroups.
 
 open scoped Manifold ContDiff
 
-library_note "Design choices about smooth algebraic structures"/--
+library_note2 «Design choices about smooth algebraic structures» /--
 1. All `C^n` algebraic structures on `G` are `Prop`-valued classes that extend
 `IsManifold I n G`. This way we save users from adding both
 `[IsManifold I n G]` and `[ContMDiffMul I n G]` to the assumptions. While many API
