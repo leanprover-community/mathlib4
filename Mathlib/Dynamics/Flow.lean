@@ -84,7 +84,6 @@ structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd 
   map_add' : ∀ t₁ t₂ x, toFun (t₁ + t₂) x = toFun t₁ (toFun t₂ x)
   map_zero' : ∀ x, toFun 0 x = x
 
-attribute [fun_prop] Flow.cont'
 
 namespace Flow
 
