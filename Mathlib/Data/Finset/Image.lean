@@ -9,6 +9,7 @@ import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
+import Mathlib.Data.Finset.Lattice.Lemmas
 import Mathlib.Data.Finset.SDiff
 import Mathlib.Data.Fintype.Defs
 
@@ -294,9 +295,7 @@ theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
 
 -- Not `@[simp]` since `mem_image` already gets most of the way there.
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
-  rw [mem_image]
-  simp only [const_apply, exists_and_right]
-  rfl
+  grind
 
 theorem mem_image_const_self : b ∈ s.image (const α b) ↔ s.Nonempty :=
   mem_image_const.trans <| and_iff_left rfl
