@@ -111,6 +111,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β]
 
+/-- The join operation is Scott continuous -/
 lemma ScottContinuous.sup₂ :
     ScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
   simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
