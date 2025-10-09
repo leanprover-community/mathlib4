@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 public import Mathlib.Topology.VectorBundle.Constructions
 
@@ -231,7 +232,7 @@ theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
-theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := by
+theorem contMDiff_zeroSection : CMDiff n (zeroSection F E) := by
   intro x
   unfold zeroSection
   rw [contMDiffAt_section]
@@ -372,9 +373,9 @@ protected theorem ContMDiffOn.coordChange (hf : ContMDiffOn IM IB n f s)
     ContMDiffOn IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) s := fun x hx ↦
   (hf x hx).coordChange (hg x hx) (he hx) (he' hx)
 
-protected theorem ContMDiff.coordChange (hf : ContMDiff IM IB n f)
-    (hg : ContMDiff IM 𝓘(𝕜, F) n g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
-    ContMDiff IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
+protected theorem ContMDiff.coordChange (hf : CMDiff n f)
+    (hg : CMDiff n g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
+    CMDiff n (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
 
 variable (e e')
@@ -483,8 +484,7 @@ theorem Trivialization.contMDiffOn_iff {f : M → TotalSpace F E} {s : Set M}
 
 theorem Trivialization.contMDiff_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ e.source) :
     ContMDiff IM (IB.prod 𝓘(𝕜, F)) n f ↔
-      ContMDiff IM IB n (fun x => (f x).proj) ∧
-      ContMDiff IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) :=
+      CMDiff n (fun x => (f x).proj) ∧ CMDiff n (fun x ↦ (e (f x)).2) :=
   (forall_congr' fun x ↦ e.contMDiffAt_iff (he x)).trans forall_and
 
 theorem Trivialization.contMDiffOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
