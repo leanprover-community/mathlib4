@@ -893,6 +893,32 @@ lemma ProbabilityMeasure.tendsto_map_of_tendstoInMeasure [l.IsCountablyGenerated
   refine ProbabilityMeasure.todo hf (fun _ ↦ hg) hg ?_ tendsto_const_nhds
   simpa [tendstoInMeasure_iff_norm] using h
 
+/-- **Slutsky's theorem**: if `f n` converges in distribution to `g`, and `f' n` converges in
+probability to a constant `c`, then the pair `(f n, f' n)` converges in distribution to `(g, c)`. -/
+lemma ProbabilityMeasure.todo' [l.IsCountablyGenerated]
+    (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ) {c : E}
+    (hg : AEMeasurable g μ) (hff' : TendstoInMeasure μ (fun n ↦ f' n) l (fun _ ↦ c))
+    (hfg : Tendsto (β := ProbabilityMeasure E)
+      (fun n ↦ ⟨μ.map (f n), Measure.isProbabilityMeasure_map (hf n)⟩) l
+      (𝓝 ⟨μ.map g, Measure.isProbabilityMeasure_map hg⟩)) :
+    Tendsto (β := ProbabilityMeasure (E × E))
+      (fun n ↦ ⟨μ.map (fun ω ↦ (f n ω, f' n ω)),
+        Measure.isProbabilityMeasure_map ((hf n).prodMk (hf' n))⟩) l
+      (𝓝 ⟨μ.map (fun ω ↦ (g ω, c)),
+        Measure.isProbabilityMeasure_map (hg.prodMk (by fun_prop))⟩) := by
+  let f₀ : ι → α → E × E := fun n ω ↦ (f n ω, c)
+  let f₀' : ι → α → E × E := fun n ω ↦ (f n ω, f' n ω)
+  let g₀ : α → E × E := fun ω ↦ (g ω, c)
+  refine ProbabilityMeasure.todo (f := f₀) (f' := f₀') (g := g₀) (μ := μ) (l := l)
+    (by fun_prop) (by fun_prop) (by fun_prop) ?_ ?_
+  · simp only [f₀', f₀]
+    suffices TendstoInMeasure μ (fun n ω ↦ ((0 : E), f' n ω - c)) l 0 by
+      convert this with n ω
+      simp
+    sorry
+  · simp only [f₀, g₀]
+    sorry
+
 end Lipschitz
 
 section convergenceCriterion
