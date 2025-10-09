@@ -127,4 +127,6 @@ example (a b c : ℤ) : (X 0 * C a + X 1 * X 37 * C (b*(c-1)))^2 * (X 0 - 1) = 0
     C (-b ^ 2 + (b ^ 2 * c * 2 - b ^ 2 * c ^ 2)) * (X 1 ^ 2 * X 37 ^ 2) = 0
   apply sorryPolynomialTest
 
+
+
 end mvpoly
