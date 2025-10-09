@@ -40,7 +40,7 @@ variable [NonUnitalRing A] [StarRing A] [TopologicalSpace A]
 /-- The absolute value defined via the non-unital continuous functional calculus. -/
 noncomputable def abs (a : A) := sqrt (star a * a)
 
-@[simp]
+@[simp, grind =]
 lemma abs_neg (a : A) : abs (-a) = abs a := by
   simp [abs]
 
