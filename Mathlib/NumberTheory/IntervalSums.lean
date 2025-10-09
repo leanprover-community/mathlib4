@@ -93,9 +93,32 @@ abbrev IcoFilter : SummationFilter ℤ where
 abbrev IocFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Ioc (-(N : ℤ)) N)
 
-/-- The SummationFilter on `ℤ` corresponding to the intervals `Ioo (-N) N` -/
+/-- The SummationFilter on `ℤ` corresponding to the intervals `Ioo (-N) N`. This is the same as
+the `IccFilter` so it is recommended to use that. -/
 abbrev IooFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Ioo (-(N : ℤ)) N)
+
+@[simp]
+lemma IooFilter_eq_IccFilter : IooFilter = IccFilter := by
+  unfold IccFilter IooFilter
+  congr 1
+  ext s
+  constructor
+  · simp only [Filter.mem_map, Filter.mem_atTop_sets, Set.mem_preimage]
+    intro ⟨a, ha⟩
+    refine ⟨a - 1, fun b hb ↦ ?_⟩
+    convert ha (b + 1) (by grind) using 1
+    ext x
+    simp only [mem_Icc, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, mem_Ioo,
+      add_neg_lt_iff_lt_add]
+    grind
+  · simp only [Filter.mem_map, Filter.mem_atTop_sets, Set.mem_preimage]
+    intro ⟨a, ha⟩
+    refine ⟨a + 1, fun b hb ↦ ?_⟩
+    convert ha (b - 1) (by grind) using 1
+    ext x
+    simp only [mem_Ioo, mem_Icc]
+    grind
 
 instance IccFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N)) := by
   simp [Filter.NeBot.map]
@@ -104,9 +127,6 @@ instance IcoFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ico (-(N : �
   simp [Filter.NeBot.map]
 
 instance IocFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ioc (-(N : ℤ)) N)) := by
-  simp [Filter.NeBot.map]
-
-instance IooFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ioo (-(N : ℤ)) N)) := by
   simp [Filter.NeBot.map]
 
 lemma IccFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N) ≤ atTop := by
@@ -121,17 +141,11 @@ lemma IocFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Ioc (-(N : ℤ)) N)
   rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
   exact Finset.tendsto_Ioc_atTop_atTop
 
-lemma IooFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Ioo (-(N : ℤ)) N) ≤ atTop := by
-  rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
-  exact Finset.tendsto_Ioo_atTop_atTop
-
 instance : (IccFilter).NeBot := ⟨IccFilter_neBot⟩
 
 instance : (IcoFilter).NeBot := ⟨IcoFilter_neBot⟩
 
 instance : (IocFilter).NeBot := ⟨IocFilter_neBot⟩
-
-instance : (IooFilter).NeBot := ⟨IooFilter_neBot⟩
 
 instance : (IccFilter).LeAtTop where
   le_atTop := IccFilter_le_atTop
@@ -141,9 +155,6 @@ instance : (IcoFilter).LeAtTop where
 
 instance : (IocFilter).LeAtTop where
   le_atTop := IocFilter_le_atTop
-
-instance : (IooFilter).LeAtTop where
-  le_atTop := IooFilter_le_atTop
 
 variable {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α] [ContinuousMul α]
 
@@ -198,13 +209,6 @@ lemma tprod_IocFilter_eq_tprod {f : ℤ → α} (hf : Multipliable f) :
      ∏'[IocFilter] b, f b = ∏' b, f b  := by
   apply HasProd.tprod_eq
   apply ((hf.hasProd).comp Finset.tendsto_Ioc_atTop_atTop).congr
-  simp
-
-@[to_additive]
-lemma tprod_IooFilter_eq_tprod {f : ℤ → α} (hf : Multipliable f) :
-     ∏'[IooFilter] b, f b = ∏' b, f b  := by
-  apply HasProd.tprod_eq
-  apply ((hf.hasProd).comp Finset.tendsto_Ioo_atTop_atTop).congr
   simp
 
 end tprod
