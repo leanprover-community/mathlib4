@@ -7,7 +7,14 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Tactic.Algebra.Lemmas
 import Mathlib.Tactic.Module
 
-set_option linter.all false
+/-!
+A suite of tactics for solving equations in commutative algebras over commutative (semi)rings,
+where the exponents can also contain variables.
+Based largely on the implementation of `ring`.
+
+This tactic is used internally to implement the `polynomial` tactic.
+
+-/
 
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic List Mathlib.Tactic.Module
@@ -20,12 +27,11 @@ attribute [local instance] monadLiftOptionMetaM
 
 /-
 TODOs:
-* Handle division, inversion, algebraMap.
-* Handle `algebraMap` in some way. Either with a preprocessing step or as a special case in `eval`
+* Handle division, inversion.
 * Handle expressions specific to `Polynomial`: Simplify Polynomial.map (note it sends X ↦ X),
   and handle the Algebra (Polynomial _) (Polynomial _) instance gracefully.
-* The new normal form puts the coefficients an the end as `x * y * 1 • r` and `X^n * C a`. We really
-  ought to put it in front.
+* The new normal form naturally puts the coefficients an the end as `x * y * 1 • r` and
+  `X^n * C a`. We fix this in post but we really ought to put it in front.
 * Fill in all the sorries - there are typeclass problems with all of the theorems involving negation
 -/
 
@@ -157,7 +163,8 @@ partial def ExProd.cmpShape
     {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a b : Q($A)} :
     ExProd sAlg a → ExProd sAlg b → Ordering
   | .smul _, .smul _ => .eq
-  | .mul vx₁ ve₁ vb₁, .mul vx₂ ve₂ vb₂ => (vx₁.cmp vx₂).then (ve₁.cmp ve₂) |>.then (vb₁.cmpShape vb₂)
+  | .mul vx₁ ve₁ vb₁, .mul vx₂ ve₂ vb₂ =>
+    (vx₁.cmp vx₂).then (ve₁.cmp ve₂) |>.then (vb₁.cmpShape vb₂)
   | .smul .., .mul .. => .lt
   | .mul .., .smul .. => .gt
 
@@ -211,23 +218,9 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
 def _root_.Mathlib.Tactic.Ring.ExSum.one : Ring.ExSum q($sA) q(Nat.rawCast (nat_lit 1) + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast (nat_lit 1) : $A)) 1 none) .zero
 
-/-- WARNING : n should be a natural literal. -/
+/-- WARNING: n should be a natural literal. -/
 def mkNat (n : Q(ℕ)) : Ring.ExSum q($sA) q(Nat.rawCast $n + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast ($n) : $A)) n.natLit! none) .zero
-
--- omit sA in
--- def mkInt (rA : Q(Ring $A)) (n : Q(ℤ)) (n' : ℤ) : Ring.ExSum q(inferInstance) q(Int.rawCast $n + 0 : $A) :=
---   .add (α := q($A)) (sα := q(inferInstance)) (.const (e := q(Int.rawCast $n)) n' none) .zero
-
--- def _root_.Mathlib.Tactic.Ring.ExProd.one : Ring.ExProd q($sA) q((nat_lit 1).rawCast : $A) :=
---   .const 1 none
-
--- def ExSMul.ofExProd (va : Ring.ExProd q($sA) q($a)) : ExSMul q($sAlg) q(((Nat.rawCast (nat_lit 1)) + 0:$R) • $a) :=
---   .smul one va
-
--- def ExSMul.toExSum (va : ExSMul q($sAlg) q($a)) : ExSum q($sAlg) q($a + 0) :=
---   .add va .zero
-
 section
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
@@ -344,7 +337,7 @@ partial def evalSMulExProd {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
   ExProd sAlg a →
   MetaM (Result (ExProd q($sAlg)) q($r • $a))
   | .smul vs => do
-    let ⟨t, vt, pt⟩ ← Ring.evalMul sR vr vs
+    let ⟨_, vt, pt⟩ ← Ring.evalMul sR vr vs
     return ⟨_, .smul vt, q(smul_smul_one $pt)⟩
   | .mul (x := x) (e := e) (b := b) vx ve vb => do
     let ⟨_, vc, pc⟩ ← evalSMulExProd vr vb
@@ -357,8 +350,8 @@ partial def evalSMul {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
   | .zero .. =>
     pure ⟨_, .zero, q(smul_zero $r)⟩
   | .add vsmul vt => do
-    let ⟨a, va, pa⟩ ← evalSMulExProd q($sAlg) vr vsmul
-    let ⟨t, vt, pt⟩ ← evalSMul vr vt
+    let ⟨_, va, pa⟩ ← evalSMulExProd q($sAlg) vr vsmul
+    let ⟨_, vt, pt⟩ ← evalSMul vr vt
     return ⟨_, .add va vt, q(smul_add $pa $pt)⟩
 
 partial def evalMul₂ {a b : Q($A)} (va : ExProd sAlg a) (vb : ExProd sAlg b) :
@@ -412,8 +405,8 @@ def evalMul {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
   match va with
   | .zero => return ⟨_, .zero, q(zero_mul $b)⟩
   | .add va₁ va₂ =>
-    let ⟨c₁, vc₁, pc₁⟩ ← evalMul₁ sAlg va₁ vb
-    let ⟨c₂, vc₂, pc₂⟩ ← evalMul va₂ vb
+    let ⟨_, vc₁, pc₁⟩ ← evalMul₁ sAlg va₁ vb
+    let ⟨_, vc₂, pc₂⟩ ← evalMul va₂ vb
     let ⟨_, vd, pd⟩ ← evalAdd sAlg vc₁ vc₂
     return ⟨_, vd, q(add_mul_of_add $pc₁ $pc₂ $pd)⟩
 
@@ -422,7 +415,7 @@ def evalNegProd {a : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A)) (va : Ex
   match va with
   | .smul (r := r) vr =>
     assumeInstancesCommute
-    let ⟨s, vs, (pb : Q(-$r = $s))⟩ ← Ring.evalNeg sR (q(inferInstance)) vr
+    let ⟨_s, vs, (pb : Q(-$r = $_s))⟩ ← Ring.evalNeg sR (q(inferInstance)) vr
     return ⟨_, .smul vs, (q(neg_smul_one (R := $R) (A := $A) $pb))⟩
   | .mul (x := x) (e := e) vx ve vb =>
     assumeInstancesCommute
@@ -445,7 +438,7 @@ def evalSub {a b : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A))
     (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     MetaM <| Result (ExSum sAlg) q($a - $b) := do
   let ⟨_c, vc, pc⟩ ← evalNeg sAlg rR rA vb
-  let ⟨d, vd, (pd : Q($a + $_c = $d))⟩ ← evalAdd sAlg va vc
+  let ⟨_d, vd, (pd : Q($a + $_c = $_d))⟩ ← evalAdd sAlg va vc
   assumeInstancesCommute
   return ⟨_, vd, (q(Ring.sub_pf $pc $pd) : Expr)⟩
 
@@ -511,7 +504,7 @@ def evalPowProd {a : Q($A)} {b : Q(ℕ)} (va : ExProd sAlg a) (vb : Ring.ExProd 
   let res : OptionT MetaM (Result (ExProd sAlg) q($a ^ $b)) := do
     match va, vb with
     | .smul (r := r) vr, vb =>
-      let ⟨r', vr', pr'⟩ ← Ring.evalPow q($sR) vr (Ring.ExSum.add vb .zero)
+      let ⟨_r', vr', pr'⟩ ← Ring.evalPow q($sR) vr (Ring.ExSum.add vb .zero)
       return ⟨_, .smul vr', q(smul_one_pow $pr')⟩
     | .mul vxa₁ vea₁ va₂, vb =>
       let ⟨_, vc₁, pc₁⟩ ← Ring.evalMulProd Ring.sℕ vea₁ vb
@@ -608,27 +601,28 @@ def evalAtom :
   | some (p : Q($a = $e')) => (q(atom_eq_pow_one_mul_smul_one_add_zero' $p))
   ⟩
 
--- def postprocess (mvarId : MVarId) : MetaM MVarId := do
---   -- collect the available `push_cast` lemmas
---   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
---   let simps : Array Name := #[``Polynomial.smul_eq_C_mul, ``MvPolynomial.smul_eq_C_mul,  ``Polynomial.map_add,
---     ``Polynomial.map_smul, ]
---   for thm in simps do
---     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
---     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
---   -- now run `simp` with these lemmas, and (importantly) *no* simprocs
---   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
---   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
---     throwError "internal error in polynomial tactic: postprocessing should not close goals"
---   return r
 
+lemma algebraMap_eq_natCast {A : Type*} [CommSemiring A] (n : ℕ) : algebraMap ℕ A n = n := by
+  simp only [eq_natCast]
 
---TODO: This is broken.
+/-- Push `algebraMap`s into sums and products and convert `algebraMap`s from `ℕ`, `ℤ` and `ℚ` into
+casts -/
+def pushCast (e : Expr) : MetaM Simp.Result := do
+  -- collect the available `push_cast` lemmas
+  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let simps : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
+  for thm in simps do
+    let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
+    thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
+  -- now run `simp` with these lemmas, and (importantly) *no* simprocs
+  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
+  let (r, _) ← simp e ctx (simprocs := #[])
+  return r
+
 /-- Handle scalar multiplication when the scalar ring R' doesn't match the base ring R.
 Assumes R is an R'-algebra (i.e., R' is smaller), and casts the scalar using algebraMap. -/
 def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(Type v)}
     {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
-    (cacheR : Ring.Cache q($sR)) (cacheA : Ring.Cache q($sA))
     (smul : Q(HSMul $R' $A $A)) (r' : Q($R')) (a : Q($A)) :
     MetaM <| Σ r : Q($R), Q($r • $a = $r' • $a) := do
   if (← isDefEq R R') then
@@ -644,9 +638,10 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
   let _ist ← synthInstanceQ q(IsScalarTower $R' $R $A)
   assumeInstancesCommute
   let r_cast : Q($R) := q(algebraMap $R' $R $r')
-  return ⟨r_cast, q(
-    algebraMap_smul $R $r' $a
-    )⟩
+  let res ← pushCast r_cast
+  have r₀ : Q($R) := res.expr
+  let pf : Q($r₀ = $r_cast) ← res.getProof
+  return ⟨r₀, q($pf ▸ algebraMap_smul $R $r' $a)⟩
 
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
     {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Algebra.Cache q($sR))
@@ -666,10 +661,10 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       have a : Q($A) := a'
       have : $a =Q $a' := ⟨⟩
       try
-        let ⟨r, (pf_smul : Q($r • $a = $r' • $a))⟩ ←
-          evalSMulCast q($sAlg) cacheR.toCache cacheA.toCache q(inferInstance) r' a
-        let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR.toCache q($r)
-        let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
+        let ⟨r, (pf_smul : Q(($r : $R) • $a = $r' • $a))⟩ ←
+          evalSMulCast q($sAlg) q(inferInstance) r' a
+        let ⟨_r'', vr, pr⟩ ← Ring.eval q($sR) cacheR.toCache q($r)
+        let ⟨_a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
         let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
         assumeInstancesCommute
         have pe : Q($e = $r' • $a) := q(rfl)
@@ -681,9 +676,9 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
     | ~q(DFunLike.coe (@algebraMap $R' _ $inst₁ $inst₂ $inst₃) $r') =>
       -- try
         let ⟨r, pf_smul⟩ ←
-          evalSMulCast q($sAlg) cacheR.toCache cacheA.toCache q(inferInstance) q($r') q(1)
-        let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR.toCache q($r)
-        let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q(1)
+          evalSMulCast q($sAlg) q(inferInstance) q($r') q(1)
+        let ⟨_r'', vr, pr⟩ ← Ring.eval q($sR) cacheR.toCache q($r)
+        let ⟨_a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q(1)
         let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
         have pe : Q($e = $r' • 1) := q(Algebra.algebraMap_eq_smul_one $r')
         assumeInstancesCommute
@@ -697,7 +692,7 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       let ⟨_, vab, pab⟩ ← evalAdd q($sAlg) va vb
       return ⟨_, vab, q(eval_add $pa $pb $pab)⟩
     | _ => els
-  | ``Neg.neg, some rA, _ => match e with
+  | ``Neg.neg, some _, _ => match e with
     | ~q(-$a) =>
       let some crR := cacheR.crA | els
       let some crA := cacheA.crA | els
@@ -705,7 +700,7 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       let ⟨b, vb, p⟩ ← evalNeg sAlg crR crA va
       assumeInstancesCommute
       pure ⟨b, vb, q(eval_neg $pa $p)⟩
-  | ``HSub.hSub, some rA, _ | ``Sub.sub, some rA, _ => match e with
+  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _ => match e with
     | ~q($a - $b) =>
       let some crR := cacheR.crA | els
       let some crA := cacheA.crA | els
@@ -779,8 +774,8 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   have e₂ : Q($A) := e₂
   let cr ← Algebra.mkCache sR
   let ca ← Algebra.mkCache sA
-  let (⟨a, exa, pa⟩ : Result (ExSum sAlg) e₁) ← eval sAlg cr ca e₁
-  let (⟨b, exb, pb⟩ : Result (ExSum sAlg) e₂) ← eval sAlg cr ca e₂
+  let (⟨a, _exa, pa⟩ : Result (ExSum sAlg) e₁) ← eval sAlg cr ca e₁
+  let (⟨b, _exb, pb⟩ : Result (ExSum sAlg) e₂) ← eval sAlg cr ca e₂
 
   let g' ← mkFreshExprMVarQ q($a = $b)
   goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
@@ -788,11 +783,10 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
 
 /-- Collect all scalar rings from scalar multiplications in the expression. -/
 partial def collectScalarRings (e : Expr) : MetaM (List (Σ u : Lean.Level, Q(Type u))) := do
-  let .const n _ := (← withReducible <| whnf e).getAppFn | return []
   match_expr e with
   | SMul.smul R _ _ _ a =>
     return [←inferLevelQ R] ++ (← collectScalarRings a)
-  | DFunLike.coe RtoA R _A inst φ r =>
+  | DFunLike.coe _ _R _A _inst φ _ =>
       match_expr φ with
       | algebraMap R _ _ _ _ => return [← inferLevelQ R]
       | _ => return []
@@ -846,7 +840,8 @@ def inferBase (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
   | r :: rs => rs.foldlM pickLargerRing r
   return res
 
-def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)) : AtomM (Option (Option (Result (ExSum sAlg) e))) := do
+def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)) :
+    AtomM (Option (Option (Result (ExSum sAlg) e))) := do
   let els := try
       pure <| some (evalCast sAlg cr ca (← derive e))
     catch _ => pure (some none)
@@ -897,7 +892,7 @@ elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic => do
 elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  : tactic => do
   -- let mut cfg ← elabConfig cfg
   let mut cfg := {}
-  let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
+  let ⟨_u, R⟩ ← inferLevelQ (← elabTerm R none)
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
@@ -982,7 +977,7 @@ def ExProd.equateScalarsProd {a b : Q($A)} (va : ExProd q($sAlg) a) (vb : ExProd
     else
       let pab ← mkFreshExprMVarQ q($r = $s)
       return ⟨q(smul_one_eq_smul_one' $pab), some pab.mvarId!⟩
-  | .mul (x := xa) (e := ea) vxa vea va', .mul (x := xb) (e := eb) vxb veb vb' =>
+  | .mul (x := xa) (e := ea) _vxa _vea va', .mul (x := xb) (e := eb) _vxb veb vb' =>
     -- For x^e * a' = x^e * b', we need a' = b' (bases and exponents already match)
     let ⟨pf, mvOpt⟩ ← va'.equateScalarsProd vb'
     have : $xa =Q $xb := ⟨⟩
@@ -1031,7 +1026,8 @@ def runSimp (f : Simp.Result → MetaM Simp.Result) (g : MVarId) : MetaM MVarId 
   let r ← f {expr := e, proof? := none}
   applySimpResultToTarget g e r
 
-def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : MetaM (List MVarId) :=
+def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) :
+    MetaM (List MVarId) :=
   do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "algebra failed: not an equality"
@@ -1043,8 +1039,8 @@ def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) 
       | none => do
         pure (← inferBase (← g.getType))
   have A : Q(Type v) := α
-  let sA ← synthInstanceQ q(CommSemiring $A)
-  let sR ← synthInstanceQ q(CommSemiring $R)
+  let _sA ← synthInstanceQ q(CommSemiring $A)
+  let _sR ← synthInstanceQ q(CommSemiring $R)
   let sAlg ← synthInstanceQ q(Algebra $R $A)
   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
   let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) q($e₁) q($e₂)
@@ -1061,8 +1057,8 @@ where
     let cr ← Algebra.mkCache sR
     let ca ← Algebra.mkCache sA
     profileitM Exception "algebra" (← getOptions) do
-      let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
-      let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂
+      let ⟨_a, va, pa⟩ ← eval sAlg cr ca e₁
+      let ⟨_b, vb, pb⟩ ← eval sAlg cr ca e₂
       let ⟨pab, mvars⟩ ← equateScalarsSum sAlg va vb
       return ⟨q(eq_trans_trans $pa $pb $pab), mvars⟩
 
@@ -1073,11 +1069,12 @@ elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic =
 elab (name := matchScalarsAlg) "match_scalars_alg" :tactic =>
   Tactic.liftMetaTactic (matchScalarsAux .none)
 
+end Mathlib.Tactic.Algebra
+
+axiom sorryAlgebraTest {P : Prop} : P
 
 example {x : ℚ} {y : ℤ} : y • x + (1:ℤ) • x = (1 + y) • x := by
   algebra
-
-axiom sorryAlgebraTest {P : Prop} : P
 
 -- why doesn't match_expr match on the HSMul.hSmul expression?????
 example (x : ℚ) :  x + x = (2 : ℤ) • x := by
@@ -1156,10 +1153,9 @@ example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = - b • x + a • (x + y
 
 
 example {a b : ℤ} (x y : ℚ) (ha : a = 2) : (a + b) • (x + y) = b • x + (2:ℤ) • (x + y) + b • y := by
-  -- ring does nothing
   match_scalars_alg with ℤ
-  exact sorryAlgebraTest
-  exact sorryAlgebraTest
+  · grind
+  · grind
 
 example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = 0 := by
   algebra_nf
@@ -1177,23 +1173,22 @@ example : 2 = 1 := by
 
 -- #lint
 
-example (x y : ℚ) (m n : ℕ) : (x + 2) ^ (2 * n+1) = ((x+2)^n)^2 * (x+2) := by
+example (x : ℚ) (n : ℕ) : (x + 2) ^ (2 * n+1) = ((x+2)^n)^2 * (x+2) := by
   algebra
 
-example (x y : ℚ) (m n : ℕ) : (x^n + 1)^2 = 0 := by
+example (x : ℚ) (n : ℕ) : (x^n + 1)^2 = 0 := by
   algebra_nf
   exact sorryAlgebraTest
 
 --TODO: this is broken; should cast the natural smul into integer smul.
-example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
+example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   match_scalars_alg with ℤ
-  exact sorryAlgebraTest
 
-example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
+example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   algebra
 
 -- weird behaviour
-example (x y : ℚ) (m n : ℕ) : n • x + x = (n: ℤ) • x + x := by
+example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   algebra_nf
   exact sorryAlgebraTest
 
