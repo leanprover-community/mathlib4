@@ -599,7 +599,7 @@ variable [Module S F] [SMulCommClass 𝕜 S F] [ContinuousConstSMul S F]
 
 /-- `ContinuousLinearMap.prod` as a `ContinuousLinearEquiv`. -/
 @[simps! apply]
-def prodEquivL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G) where
+def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G) where
   __ := prodₗ S
   continuous_toFun := by
     change Continuous fun x => id 𝕜 _ ∘L prodₗ S x
