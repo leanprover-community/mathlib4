@@ -208,6 +208,7 @@ theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f :
   fin_cases i <;> simp
 
 /-- For a function on `ℝ`, the Laplacian is the second derivative. -/
+@[simp]
 theorem laplacian_eq_iteratedDeriv_real {e : ℝ} (f : ℝ → F) :
     Δ f e = iteratedDeriv 2 f e := by
   rw [← laplacianWithin_univ, laplacianWithin_eq_iteratedDerivWithin_real _ (by simp) (by simp),
