@@ -138,7 +138,7 @@ lemma abs_add_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a + a = 2 
   simpa [two_smul] using
     congr($(CFC.posPart_add_negPart a) + $(CFC.posPart_sub_negPart a)).symm
 
-@[simp]
+@[simp, grind =]
 lemma abs_abs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
