@@ -38,6 +38,7 @@ variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
 section SemiNormed
 
 open Metric ContinuousLinearMap
+open ContinuousLinearMap (id)
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
   [SeminormedAddCommGroup G]
