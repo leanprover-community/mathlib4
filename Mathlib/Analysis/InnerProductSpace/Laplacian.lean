@@ -202,8 +202,7 @@ theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f :
   simp only [laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he
         (OrthonormalBasis.singleton (Fin 1) ℝ),
     Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, OrthonormalBasis.singleton_apply,
-    Finset.sum_const, Finset.card_singleton, one_smul]
-  rw [iteratedDerivWithin_eq_iteratedFDerivWithin]
+    Finset.sum_const, Finset.card_singleton, one_smul, iteratedDerivWithin_eq_iteratedFDerivWithin]
   congr with i
   fin_cases i <;> simp
 
