@@ -36,7 +36,7 @@ and finally for absolutely continuous functions, proved in
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
 
-open MeasureTheory Set Filter Function
+open MeasureTheory Set Filter Function AbsolutelyContinuousOnInterval
 
 open scoped Topology ENNReal Interval NNReal
 
@@ -47,78 +47,63 @@ theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → 
     AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
   wlog hab : a ≤ b generalizing a b
   · exact @this b a h.symm (uIcc_comm a b ▸ hc) (by linarith) |>.symm
-  have subinterval_integrable {x y : ℝ} (_ : a ≤ x) (_ : x ≤ b) (_ : a ≤ y) (_ : y ≤ b) :
-      IntervalIntegrable f volume x y :=
-    IntervalIntegrable.mono_set' (a := a) (b := b) (by assumption) (by grind [uIoc])
-  have hf := intervalIntegrable_iff_integrableOn_Ioc_of_le hab |>.mp h |>.hasFiniteIntegral
-  -- unfold HasFiniteIntegral at hf
-  replace hf := ne_of_lt hf
-  rw [absolutelyContinuousOnInterval_iff]
-  simp only [AbsolutelyContinuousOnInterval.disjWithin, mem_setOf_eq]
-  simp_rw [uIcc_of_le hab, mem_Icc] at hc ⊢
-  intro ε hε
-  have hε' := ne_of_gt ((ENNReal.ofReal_pos).mpr hε)
-  obtain ⟨δ', hδ'1, hδ'2⟩ := exists_pos_setLIntegral_lt_of_measure_lt hf hε'
-  let δ'' := min 1 δ'
-  have hδ''1 : δ'' ≠ 0 := by positivity
-  have hδ''2 : δ'' ≠ ∞ := by simp [δ'']
-  use δ''.toReal
-  have hδ : δ''.toReal > 0 := by apply ENNReal.toReal_pos <;> assumption
-  refine ⟨hδ, fun (n, I) ⟨hI1, hI2⟩ hI3 ↦ ?_⟩
-  let s := ⋃ i ∈ Finset.range n, uIoc (I i).1 (I i).2
-  have hs0 {i : ℕ} (hi : i ∈ Finset.range n) : uIoc (I i).1 (I i).2 ⊆ Ioc a b := by
-    specialize hI1 i hi
-    rw [uIoc]; gcongr
-    · simp only [le_inf_iff]; tauto
-    · simp only [sup_le_iff]; tauto
-  have hs : s ⊆ Ioc a b := by simp_all [s]
-  have : volume.restrict (Ioc a b) s < δ' := by
-    rw [Measure.restrict_apply (by measurability), inter_eq_left.mpr hs]
-    dsimp only [s]
-    rw [MeasureTheory.measure_biUnion_finset hI2 (by simp [uIoc])]
-    calc
-    _ = ∑ i ∈ Finset.range n, ENNReal.ofReal ((dist (I i).1 (I i).2)) := by
-      apply Finset.sum_congr rfl
-      simp [uIoc, Real.dist_eq, max_sub_min_eq_abs']
-    _ = ENNReal.ofReal (∑ i ∈ Finset.range n, (dist (I i).1 (I i).2)) := by
-      rw [ENNReal.ofReal_sum_of_nonneg]; simp
-    _ < ENNReal.ofReal δ''.toReal := by rw [ENNReal.ofReal_lt_ofReal_iff] <;> assumption
-    _ = δ'' := by simp [hδ''2]
-    _ ≤ δ' := by simp [δ'']
-  simp only [Real.dist_eq]
-  calc
-  _ = ∑ i ∈ Finset.range n, |(∫ (v : ℝ) in uIoc (I i).1 (I i).2, f v)| := by
-    apply Finset.sum_congr rfl
-    intro i hi
-    trans |(∫ (v : ℝ) in (I i).2..(I i).1, f v)|
-    · congr 1
-      rw [intervalIntegral.integral_interval_sub_left]
-      all_goals apply subinterval_integrable <;> linarith [hI1 i hi]
-    · rw [intervalIntegral.abs_integral_eq_abs_integral_uIoc, uIoc_comm]
-  _ ≤ ∑ i ∈ Finset.range n, (∫ (v : ℝ) in uIoc (I i).1 (I i).2, |f v|) := by
-    gcongr with i hi
+  let s := fun E : ℕ × (ℕ → ℝ × ℝ) ↦ ⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2
+  have : Tendsto (⇑(volume.restrict (uIoc a b)) ∘ s) (totalLengthFilter ⊓ 𝓟 (disjWithin a b))
+      (𝓝 0) := by
+    rw [(hasBasis_totalLengthFilter.inf_principal _).tendsto_iff ENNReal.nhds_zero_basis_Iic]
+    intro ε hε
+    by_cases hε_top : ε = ⊤
+    · exact ⟨1, by simp, by simp[hε_top]⟩
+    replace hε := ENNReal.toReal_pos (hε.ne.symm) hε_top
+    refine ⟨ε.toReal, hε, fun (n, I) hnI ↦ ?_⟩
+    rw [mem_inter_iff] at hnI
+    simp only [comp_apply, mem_Iic, s]
+    rw [Measure.restrict_eq_self (h := union_subset_of_disjWithin hnI.right)]
+    simp only [disjWithin, mem_setOf_eq] at hnI
+    obtain ⟨hnI1, hnI2, hnI3⟩ := hnI
+    rw [MeasureTheory.measure_biUnion_finset hnI3 (by simp [uIoc])]
+    calc ∑ i ∈ Finset.range n, volume (uIoc (I i).1 (I i).2)
+      _ = ∑ i ∈ Finset.range n, ENNReal.ofReal ((dist (I i).1 (I i).2)) := by
+        apply Finset.sum_congr rfl
+        simp [uIoc, Real.dist_eq, max_sub_min_eq_abs']
+      _ = ENNReal.ofReal (∑ i ∈ Finset.range n, (dist (I i).1 (I i).2)) := by
+        simp [ENNReal.ofReal_sum_of_nonneg]
+      _ ≤ ENNReal.ofReal ε.toReal :=
+        ENNReal.ofReal_lt_ofReal_iff hε |>.mpr hnI1 |>.le
+      _ ≤ ε := ENNReal.ofReal_toReal_le
+  have := MeasureTheory.tendsto_setLIntegral_zero
+    (ne_of_lt <| intervalIntegrable_iff.mp h |>.hasFiniteIntegral)
+    (s := s)
+    (l := totalLengthFilter ⊓ 𝓟 (disjWithin a b))
+    this
+  have := ENNReal.toReal_zero ▸ (ENNReal.continuousAt_toReal (by simp)).tendsto.comp this
+  refine squeeze_zero' ?_ ?_ this
+  · filter_upwards with (n, I)
+    exact Finset.sum_nonneg (fun _ _ ↦ dist_nonneg)
+  simp only [comp_apply, s]
+  have : ∀ᶠ (E : ℕ × (ℕ → ℝ × ℝ)) in totalLengthFilter ⊓ 𝓟 (disjWithin a b),
+      E ∈ disjWithin a b :=
+    eventually_inf_principal.mpr (by simp)
+  filter_upwards [this] with (n, I) hnI
+  obtain ⟨hnI1, hnI2⟩ := mem_setOf_eq ▸ hnI
+  simp only
+  rw [← MeasureTheory.integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_uIoc.restrict),
+      MeasureTheory.integral_biUnion_finset _ (by simp +contextual [uIoc]) hnI2]
+  · refine Finset.sum_le_sum (fun i hi ↦ ?_)
+    rw [Real.dist_eq,
+        intervalIntegral.integral_interval_sub_left
+          (by apply IntervalIntegrable.mono_set' h; grind [uIoc, uIcc])
+          (by apply IntervalIntegrable.mono_set' h; grind [uIoc, uIcc]),
+        MeasureTheory.Measure.restrict_restrict_of_subset
+          (subset_of_disjWithin hnI (Finset.mem_range.mp hi)),
+        intervalIntegral.integral_symm, abs_neg,
+        intervalIntegral.abs_intervalIntegral_eq]
     exact abs_integral_le_integral_abs
-  _ = ∫ (v : ℝ) in s, |f v| := by
-    dsimp [s]
-    symm
-    apply MeasureTheory.integral_biUnion_finset (hs := by simp [uIoc]) (h's := hI2)
-    intro i hi
-    replace h := IntegrableOn.mono_set h.1 (hs0 hi)
-    dsimp only [IntegrableOn] at h ⊢
-    fun_prop
-  _ = ∫ (v : ℝ) in s, ‖f v‖ := by rfl
-  _ = (∫⁻ (v : ℝ) in s, ‖f v‖ₑ).toReal :=
-    MeasureTheory.integral_norm_eq_lintegral_enorm <| AEStronglyMeasurable.mono_set hs h.1.left
-  _ = (∫⁻ (x : ℝ) in s, ‖f x‖ₑ ∂volume.restrict (Ioc a b)).toReal := by
-    congr 2
-    rw [MeasureTheory.Measure.restrict_restrict₀]
-    · congr 1; simp [hs]
-    · apply MeasurableSet.nullMeasurableSet
-      dsimp only [s]
-      measurability
-  _ < ε := by
-    convert ENNReal.toReal_strict_mono (by simp) (hδ'2 s this)
-    exact ENNReal.toReal_ofReal (by linarith) |>.symm
+  · intro i hi
+    unfold IntegrableOn
+    have h_subset := subset_of_disjWithin hnI (Finset.mem_range.mp hi)
+    rw [MeasureTheory.Measure.restrict_restrict_of_subset h_subset]
+    exact MeasureTheory.IntegrableOn.mono_set h.def'.norm h_subset |>.integrable
 
 /-- If `f` has derivative 0 a.e. on `[d, b]`, then there is a coultable Vitali cover of `[d, b]`
 a.e., consisting of closed intervals, where each has small variations wrt `f`. -/
