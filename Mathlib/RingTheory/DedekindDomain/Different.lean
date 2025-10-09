@@ -144,11 +144,8 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
   swap
-  · apply IsLocalization.ringHom_ext (M := A⁰); ext
-    simp only [AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
-      RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
-    rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
-      ← IsScalarTower.algebraMap_apply]
+  · ext
+    exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
   simp only [AlgEquiv.toRingEquiv_eq_coe, map_mul, AlgEquiv.coe_ringEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, AlgEquiv.algebraMap_eq_apply]
 
@@ -506,7 +503,8 @@ lemma traceForm_dualSubmodule_adjoin
   let pb := (Algebra.adjoin.powerBasis' hKx).map
     ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
   have pbgen : pb.gen = x := by simp [pb]
-  have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
+  have hnondeg : (traceForm K L).Nondegenerate := traceForm_nondegenerate K L
+  have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) hnondeg pb.basis) = _ :=
     _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
       Submodule.span A (Set.range pb.basis) := by
@@ -520,7 +518,7 @@ lemma traceForm_dualSubmodule_adjoin
     exact ⟨fun ⟨a, b, c⟩ ↦ ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ ↦ ⟨a, b, c⟩⟩
   clear_value pb
   conv_lhs => rw [this]
-  rw [← span_coeff_minpolyDiv hAx, LinearMap.BilinForm.dualSubmodule_span_of_basis,
+  rw [← span_coeff_minpolyDiv hAx, LinearMap.BilinForm.dualSubmodule_span_of_basis _ hnondeg,
     Submodule.smul_span, hpb]
   change _ = Submodule.span A (_ '' _)
   simp only [← Set.range_comp, smul_eq_mul, div_eq_inv_mul, pbgen,
@@ -851,7 +849,7 @@ theorem not_dvd_differentIdeal_iff
         apply Ideal.ramificationIdx_spec
         · simp [Ideal.map_le_iff_le_comap]
         · contrapose! H
-          rw [← pow_one P, show 1 = 2 - 1 by norm_num]
+          rw [← pow_one P, show 1 = 2 - 1 by simp]
           apply pow_sub_one_dvd_differentIdeal _ _ _ hp
           simpa [Ideal.dvd_iff_le] using H
   · intro H

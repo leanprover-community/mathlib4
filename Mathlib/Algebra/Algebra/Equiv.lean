@@ -15,7 +15,7 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 * `AlgEquiv R A B`: the type of `R`-algebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
