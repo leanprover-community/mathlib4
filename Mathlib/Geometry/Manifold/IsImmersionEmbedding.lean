@@ -24,7 +24,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   is an immersion at `x : M`: there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`,
   respectively, such that in these charts, `f` looks like `u ↦ (u, 0)`, w.r.t. some equivalence
   `E' ≃L[𝕜] E × F`. We do not demand that `f` be differentiable (this follows from this definition).
-* `IsImmersion F I I' n f` means `f: M → M'` is an immersion at every point `x : M`.
+* `IsImmersion F I I' n f` means `f : M → M'` is an immersion at every point `x : M`.
 
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
@@ -37,13 +37,13 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
 * `IsImmersionAt.prodMap`: the product of two immersions is an immersion
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
-* If `f: M → M'` is a map between Banach manifolds, `mfderiv I I' f x` splitting implies `f` is an
+* If `f : M → M'` is a map between Banach manifolds, `mfderiv I I' f x` splitting implies `f` is an
   immersion at `x`. (This requires the inverse function theorem.)
-* `IsImmersionAt.comp`: if `f: M → M'` and `g: M' → N` are maps between Banach manifolds such that
+* `IsImmersionAt.comp`: if `f : M → M'` and `g: M' → N` are maps between Banach manifolds such that
   `f` is an immersion at `x : M` and `g` is an immersion at `f x`, then `g ∘ f` is an immersion
   at `x`.
 * `IsImmersion.comp`: the composition of immersions (between Banach manifolds) is an immersion
-* If `f: M → M'` is a map between finite-dimensional manifolds, `mfderiv I I' f x` being injective
+* If `f : M → M'` is a map between finite-dimensional manifolds, `mfderiv I I' f x` being injective
   implies `f` is an immersion at `x`.
 * define smooth embeddings, and deduce analogous results for these
 
@@ -126,7 +126,8 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorp
     (hsource : f '' domChart.source ⊆ codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
-  use domChart, codChart; use equiv
+  use domChart, codChart
+  use equiv
 
 /-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
@@ -214,14 +215,14 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
-lemma congr_of_eventuallyEq {x : M} (hf : IsImmersionAt F I I' n f x) (hfg : f =ᶠ[nhds x] g) :
+lemma congr_of_eventuallyEq {x : M} (hf : IsImmersionAt F I I' n f x) (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAt F I I' n g x :=
   LiftSourceTargetPropertyAt.congr_of_eventuallyEq
     isLocalSourceTargetProperty_immersionAtProp hf.property hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
 then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
-lemma congr_iff {x : M} (hfg : f =ᶠ[nhds x] g) :
+lemma congr_iff {x : M} (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAt F I I' n f x ↔ IsImmersionAt F I I' n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
