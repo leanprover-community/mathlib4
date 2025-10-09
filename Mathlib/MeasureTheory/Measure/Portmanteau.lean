@@ -906,18 +906,14 @@ lemma ProbabilityMeasure.todo' [l.IsCountablyGenerated]
         Measure.isProbabilityMeasure_map ((hf n).prodMk (hf' n))⟩) l
       (𝓝 ⟨μ.map (fun ω ↦ (g ω, c)),
         Measure.isProbabilityMeasure_map (hg.prodMk (by fun_prop))⟩) := by
-  let f₀ : ι → α → E × E := fun n ω ↦ (f n ω, c)
-  let f₀' : ι → α → E × E := fun n ω ↦ (f n ω, f' n ω)
-  let g₀ : α → E × E := fun ω ↦ (g ω, c)
-  refine ProbabilityMeasure.todo (f := f₀) (f' := f₀') (g := g₀) (μ := μ) (l := l)
+  refine ProbabilityMeasure.todo (f := fun n ω ↦ (f n ω, c)) (f' := fun n ω ↦ (f n ω, f' n ω))
+    (g := fun ω ↦ (g ω, c)) (μ := μ) (l := l)
     (by fun_prop) (by fun_prop) (by fun_prop) ?_ ?_
-  · simp only [f₀', f₀]
-    suffices TendstoInMeasure μ (fun n ω ↦ ((0 : E), f' n ω - c)) l 0 by
+  · suffices TendstoInMeasure μ (fun n ω ↦ ((0 : E), f' n ω - c)) l 0 by
       convert this with n ω
       simp
     simpa [tendstoInMeasure_iff_norm] using hff'
-  · simp only [f₀, g₀]
-    rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hfg ⊢
+  · rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hfg ⊢
     intro F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
     simp only [coe_mk]
     have hFc_lip : LipschitzWith L (fun x ↦ F (x, c)) := by
