@@ -77,8 +77,7 @@ variable (F I I' M M') in
 /-- The local property of being an immersion at a point.
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`. -/
-def ImmersionAtProp :
-    ((M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop) :=
+def ImmersionAtProp : (M → M') → PartialHomeomorph M H → PartialHomeomorph M' H' → Prop :=
   fun f domChart codChart ↦ ∃ equiv : (E × F) ≃L[𝕜] E',
     EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target
