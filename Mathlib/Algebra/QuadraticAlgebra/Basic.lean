@@ -277,6 +277,8 @@ theorem norm_eq_one_iff_mem_unitary {z : QuadraticAlgebra R a b} :
     z.norm = 1 ↔ z ∈ unitary (QuadraticAlgebra R a b) := by
   rw [unitary.mem_iff_self_mul_star, ← coe_norm_eq_mul_star, coe_eq_one_iff]
 
+alias ⟨mem_unitary, norm_eq_one⟩ := norm_eq_one_iff_mem_unitary
+
 /-- The kernel of the norm map on `QuadraticAlgebra R a b` equals
 the submonoid of unitary elements. -/
 theorem mker_norm_eq_unitary :
