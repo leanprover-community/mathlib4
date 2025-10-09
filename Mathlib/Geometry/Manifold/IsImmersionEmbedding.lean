@@ -109,14 +109,10 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`.
 -/
-def IsImmersionAt (f : M → M') (x : M) : Prop :=
+irreducible_def IsImmersionAt (f : M → M') (x : M) : Prop :=
   LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M')
 
 variable {f g : M → M'} {x : M}
-
-lemma IsImmersionAt.def :
-    IsImmersionAt F I I' n f x ↔
-      LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') := by rfl
 
 namespace IsImmersionAt
 
@@ -128,6 +124,7 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E') (domChart : PartialHomeomorp
     (hsource : domChart.source ⊆ f ⁻¹' codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
+  rw [IsImmersionAt_def]
   use domChart, codChart
   use equiv
 
@@ -141,8 +138,9 @@ lemma mk_of_continuousAt {f : M → M'} {x : M} (hf : ContinuousAt f x) (equiv :
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n M')
     (hwrittenInExtend : EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target) : IsImmersionAt F I I' n f x :=
-  LiftSourceTargetPropertyAt.mk_of_continuousAt hf isLocalSourceTargetProperty_immersionAtProp
+      (domChart.extend I).target) : IsImmersionAt F I I' n f x := by
+  rw [IsImmersionAt_def]
+  exact LiftSourceTargetPropertyAt.mk_of_continuousAt hf isLocalSourceTargetProperty_immersionAtProp
     _ _ hx hfx hdomChart hcodChart ⟨equiv, hwrittenInExtend⟩
 
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
@@ -150,49 +148,58 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
-noncomputable def domChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M H :=
-  LiftSourceTargetPropertyAt.domChart h
+noncomputable def domChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M H := by
+  rw [IsImmersionAt_def] at h
+  exact LiftSourceTargetPropertyAt.domChart h
 
 /-- A choice of chart on the co-domain `N` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
-noncomputable def codChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M' H' :=
-  LiftSourceTargetPropertyAt.codChart h
+noncomputable def codChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M' H' := by
+  rw [IsImmersionAt_def] at h
+  exact LiftSourceTargetPropertyAt.codChart h
 
-lemma mem_domChart_source (h : IsImmersionAt F I I' n f x) : x ∈ h.domChart.source :=
-  LiftSourceTargetPropertyAt.mem_domChart_source h
+lemma mem_domChart_source (h : IsImmersionAt F I I' n f x) : x ∈ h.domChart.source := by
+  rw [IsImmersionAt_def] at h
+  exact LiftSourceTargetPropertyAt.mem_domChart_source h
 
-lemma mem_codChart_source (h : IsImmersionAt F I I' n f x) : f x ∈ h.codChart.source :=
-  LiftSourceTargetPropertyAt.mem_codChart_source h
+lemma mem_codChart_source (h : IsImmersionAt F I I' n f x) : f x ∈ h.codChart.source := by
+  rw [IsImmersionAt_def] at h
+  exact LiftSourceTargetPropertyAt.mem_codChart_source h
 
 lemma domChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
-    h.domChart ∈ IsManifold.maximalAtlas I n M :=
-  LiftSourceTargetPropertyAt.domChart_mem_maximalAtlas h
+    h.domChart ∈ IsManifold.maximalAtlas I n M := by
+  rw [IsImmersionAt_def] at h
+  exact LiftSourceTargetPropertyAt.domChart_mem_maximalAtlas h
 
 lemma codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
-    h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
-  LiftSourceTargetPropertyAt.codChart_mem_maximalAtlas h
+    h.codChart ∈ IsManifold.maximalAtlas I' n M' := by
+  rw [IsImmersionAt_def] at h
+  exact LiftSourceTargetPropertyAt.codChart_mem_maximalAtlas h
 
 lemma source_subset_preimage_source (h : IsImmersionAt F I I' n f x) :
-    h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
-  LiftSourceTargetPropertyAt.source_subset_preimage_source h
+    h.domChart.source ⊆ f ⁻¹' h.codChart.source := by
+  rw [IsImmersionAt_def] at h
+  exact LiftSourceTargetPropertyAt.source_subset_preimage_source h
 
 /-- A linear equivalence `E × F ≃L[𝕜] E'` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-noncomputable def equiv (h : IsImmersionAt F I I' n f x) : (E × F) ≃L[𝕜] E' :=
-  Classical.choose <| LiftSourceTargetPropertyAt.property h
+noncomputable def equiv (h : IsImmersionAt F I I' n f x) : (E × F) ≃L[𝕜] E' := by
+  rw [IsImmersionAt_def] at h
+  exact Classical.choose <| LiftSourceTargetPropertyAt.property h
 
 lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
     EqOn ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
-      (h.domChart.extend I).target :=
-  Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
+      (h.domChart.extend I).target := by
+  rw [IsImmersionAt_def] at h
+  exact Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
 
 lemma property (h : IsImmersionAt F I I' n f x) :
-    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') :=
-  IsImmersionAt.def.1 h
+    LiftSourceTargetPropertyAt I I' n f x (ImmersionAtProp F I I' M M') := by
+  rwa [IsImmersionAt_def] at h
 
 /--
 Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
@@ -220,8 +227,9 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq {x : M} (hf : IsImmersionAt F I I' n f x) (hfg : f =ᶠ[𝓝 x] g) :
-    IsImmersionAt F I I' n g x :=
-  LiftSourceTargetPropertyAt.congr_of_eventuallyEq
+    IsImmersionAt F I I' n g x := by
+  rw [IsImmersionAt_def]
+  exact LiftSourceTargetPropertyAt.congr_of_eventuallyEq
     isLocalSourceTargetProperty_immersionAtProp hf.property hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
