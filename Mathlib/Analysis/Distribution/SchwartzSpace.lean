@@ -519,6 +519,8 @@ end Topology
 
 section TemperateGrowth
 
+open Asymptotics
+
 /-! ### Functions of temperate growth -/
 
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
@@ -526,23 +528,60 @@ polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
   ContDiff ℝ ∞ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
 
+/-- A function has temperate growth if and only if it is smooth and its `n`-th iterated
+derivative is `O((1 + ‖x‖) ^ k)` for some `k : ℕ` (depending on `n`).
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+
+TODO: when `E` is finite dimensional, this is equivalent to the derivatives being `O(‖x‖ ^ k)`
+as `‖x‖ → ∞`.
+-/
+theorem _root_.Function.hasTemperateGrowth_iff_isBigO {f : E → F} :
+    f.HasTemperateGrowth ↔ ContDiff ℝ ∞ f ∧
+      ∀ n, ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k):= by
+  simp_rw [Asymptotics.isBigO_top]
+  congrm ContDiff ℝ ∞ f ∧ (∀ n, ∃ k C, ∀ x, _ ≤ C * ?_)
+  rw [norm_pow, Real.norm_of_nonneg (by positivity)]
+
+/-- If `f` as temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
+some `k : ℕ` (depending on `n`).
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+-/
+theorem _root_.Function.HasTemperateGrowth.isBigO {f : E → F}
+    (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
+    ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) :=
+  Function.hasTemperateGrowth_iff_isBigO.mp hf_temperate |>.2 n
+
+/-- If `f` as temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
+derivatives of `f` of order `≤ N` are `O((1 + ‖x‖) ^ k)`.
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+-/
+theorem _root_.Function.HasTemperateGrowth.isBigO_uniform {f : E → F}
+    (hf_temperate : f.HasTemperateGrowth) (N : ℕ) :
+    ∃ k, ∀ n ≤ N, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
+  choose k hk using hf_temperate.isBigO
+  use (Finset.range (N + 1)).sup k
+  intro n hn
+  refine (hk n).trans (isBigO_of_le _ fun x ↦ ?_)
+  rw [Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity)]
+  gcongr
+  · simp
+  · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
+
 theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
-  choose k C f using hf_temperate.2
-  use (Finset.range (n + 1)).sup k
-  let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := le_max_left _ _
-  use C', hC'
-  intro N hN x
-  rw [← Finset.mem_range_succ_iff] at hN
-  grw [f]
-  gcongr
-  · simp only [C', Finset.le_sup'_iff, le_max_iff]
-    right
-    exact ⟨N, hN, le_rfl⟩
-  · simp
-  exact Finset.le_sup hN
+  rcases hf_temperate.isBigO_uniform n with ⟨k, hk⟩
+  set F := fun x (N : Fin (n+1)) ↦ iteratedFDeriv ℝ N f x
+  have : F =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
+    simp_rw [F, isBigO_pi, Fin.forall_iff, Nat.lt_succ]
+    exact hk
+  rcases this.exists_nonneg with ⟨C, C_nonneg, hC⟩
+  simp (discharger := positivity) only [isBigOWith_top, Real.norm_of_nonneg,
+    pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ] at hC
+  exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
 
 lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
