@@ -5,8 +5,12 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Data.Int.Star
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Topology.Algebra.Monoid.Defs
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Data.Int.Interval
+import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Sums over symmetric integer intervals
