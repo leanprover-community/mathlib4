@@ -427,7 +427,7 @@ theorem summable_matrix_blockDiagonal' [DecidableEq l] {f : X → ∀ i, Matrix 
     (blockDiag'AddMonoidHom m' n' R) continuous_id.matrix_blockDiagonal'
     continuous_id.matrix_blockDiag' fun A => blockDiag'_blockDiagonal' A
 
-theorem Matrix.blockDiagonal'_tsum [L.NeBot] [DecidableEq l] [T2Space R]
+theorem Matrix.blockDiagonal'_tsum [DecidableEq l] [T2Space R]
     {f : X → ∀ i, Matrix (m' i) (n' i) R} :
     blockDiagonal' (∑'[L] x, f x) = ∑'[L] x, blockDiagonal' (f x) :=
   Function.LeftInverse.map_tsum (g := blockDiagonal'AddMonoidHom m' n' R) f
