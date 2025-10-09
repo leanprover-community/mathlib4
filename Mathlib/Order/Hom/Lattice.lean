@@ -856,6 +856,19 @@ def sup [SemilatticeSup α] : SupHom α (SupHom α α) where
     ext
     simp [supLeft, sup_sup_distrib_right]
 
+lemma sup_injective [SemilatticeSup α] : Injective sup (α := α) := by
+  intro x y hxy
+  simp [sup] at hxy
+  have e1 : supLeft x y = y := by
+    rw [hxy]
+    simp [supLeft]
+  have e2 : supLeft y x = x := by
+    rw [← hxy]
+    simp [supLeft]
+  have e3 : supLeft x y = supLeft y x := by
+    simp [supLeft, sup_comm]
+  rw [← e2, ← e3, e1]
+
 /-- Right sup by an element of a (semi)lattice is a `SupHom`
 c.f. `AddMonoidHom.mulRight`
 -/
