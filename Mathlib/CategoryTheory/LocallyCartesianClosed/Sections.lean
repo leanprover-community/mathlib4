@@ -86,7 +86,8 @@ pullback diagram:
    |               |
    v               v
   ⊤_ C    ---->  I ⟹ I
-```-/
+```
+-/
 abbrev sectionsObj (X : Over I) : C :=
   Limits.pullback (curryId I) ((exp I).map X.hom)
 
