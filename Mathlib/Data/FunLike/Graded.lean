@@ -22,13 +22,19 @@ class GradedFunLike (F : Type*) {A B σ τ ι : outParam Type*}
     [SetLike σ A] [SetLike τ B] (𝒜 : outParam <| ι → σ) (ℬ : outParam <| ι → τ)
     extends FunLike F A B where
   map_mem (f : F) {i x} : x ∈ 𝒜 i → f x ∈ ℬ i
-export GradedFunLike (map_mem)
+
+section GradedFunLike
 
 attribute [instance 100] GradedFunLike.toDFunLike
 
 variable {F A B σ τ ι : Type*}
-  [SetLike σ A] [SetLike τ B] {𝒜 : ι → σ} {ℬ : ι → τ} [GradedFunLike F 𝒜 ℬ] (f : F)
+  [SetLike σ A] [SetLike τ B] {𝒜 : ι → σ} {ℬ : ι → τ} [GradedFunLike F 𝒜 ℬ]
+
+lemma map_mem (f : F) {i x} (h : x ∈ 𝒜 i) : f x ∈ ℬ i :=
+  GradedFunLike.map_mem f h
 
 /-- A graded map descends to a map on each component. -/
-def mapGraded (i : ι) (x : 𝒜 i) : ℬ i :=
+def mapGraded (f : F) (i : ι) (x : 𝒜 i) : ℬ i :=
   ⟨f x, map_mem f x.2⟩
+
+end GradedFunLike
