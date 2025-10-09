@@ -31,19 +31,6 @@ As a consequence, a Gaussian measure has finite moments of all orders.
 open MeasureTheory ProbabilityTheory Complex NormedSpace
 open scoped ENNReal NNReal Real Topology
 
-section Aux
-
-lemma two_mul_le_add_mul_sq {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {a b ε : R} (hε : 0 < ε) :
-    2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
-  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
-  calc 2 * a * b
-  _ = (2 * (ε * a) * b) / ε := by field_simp
-  _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
-  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by field_simp
-
-end Aux
-
 namespace ProbabilityTheory.IsGaussian
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
@@ -52,23 +39,26 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 section Rotation
 
 /-- Characteristic function of a centered Gaussian measure.
-The hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` can be simplified to `μ[id] = 0`,
-but at this point we don't know yet that `μ` has a first moment. -/
+For a Gaussian measure, the hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` is equivalent to the simpler
+`μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it.
+See `charFunDual_eq_of_integral_eq_zero` -/
 lemma charFunDual_eq_of_forall_strongDual_eq_zero (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0)
     (L : StrongDual ℝ E) :
     charFunDual μ L = exp (- Var[L; μ] / 2) := by
-  rw [charFunDual_eq L, integral_complex_ofReal, hμ L]
-  simp [neg_div]
+  simp [charFunDual_eq L, integral_complex_ofReal, hμ L, neg_div]
 
-lemma map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
+/-- For a centered Gaussian measure `μ`, the product measure `μ.prod μ` is invariant under rotation.
+The hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` is equivalent to the simpler
+`μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it.
+See `map_rotation_eq_self`. -/
+lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
+    [SecondCountableTopology E] [CompleteSpace E]
     (hμ : ∀ L : StrongDual ℝ E, μ[L] = 0) (θ : ℝ) :
     (μ.prod μ).map (ContinuousLinearMap.rotation θ) = μ.prod μ := by
   refine Measure.ext_of_charFunDual ?_
   ext L
-  rw [charFunDual_map, charFunDual_prod, charFunDual_eq_of_forall_strongDual_eq_zero hμ,
-    charFunDual_eq_of_forall_strongDual_eq_zero hμ, ← Complex.exp_add, charFunDual_prod,
-    charFunDual_eq_of_forall_strongDual_eq_zero hμ,
-    charFunDual_eq_of_forall_strongDual_eq_zero hμ, ← Complex.exp_add]
+  simp_rw [charFunDual_map, charFunDual_prod, charFunDual_eq_of_forall_strongDual_eq_zero hμ,
+    ← Complex.exp_add]
   rw [← add_div, ← add_div, ← neg_add, ← neg_add]
   congr 3
   norm_cast
@@ -102,7 +92,7 @@ section Fernique
 
 variable [SecondCountableTopology E]
 
-/-- the convolution of a Gaussian measure `μ` and its map by `x ↦ -x` is centered. -/
+/-- The convolution of a Gaussian measure `μ` and its map by `x ↦ -x` is centered. -/
 lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
     (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ)))[L] = 0 := by
   rw [integral_conv (by fun_prop)]
@@ -119,22 +109,17 @@ lemma integral_dual_conv_map_neg_eq_zero (L : StrongDual ℝ E) :
     rw [integral_map (by fun_prop) (by fun_prop)]
     simp [integral_neg]
 
-/-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
-`x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
-theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
-    ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
-  -- Since `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` is a centered Gaussian measure, it is invariant
-  -- under rotation. We can thus apply a version of Fernique's theorem to it.
-  obtain ⟨C, hC_pos, hC⟩ : ∃ C, 0 < C
-      ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) (μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)) :=
-    exists_integrable_exp_sq_of_map_rotation_eq_self
-      (map_rotation_eq_self (integral_dual_conv_map_neg_eq_zero (μ := μ)) _)
-  -- We must now prove that the integrability with respect to
-  -- `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` implies integrability with respect to `μ` for
-  -- another constant `C' < C`.
+/-- If `x ↦ exp (C * ‖x‖ ^ 2)` is integrable with respect to the centered Gaussian
+`μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))`, then for all `C' < C`, `x ↦ exp (C' * ‖x‖ ^ 2)`
+is integrable with respect to `μ`. -/
+lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ}
+    (hint : Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2))
+      (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))))
+    (hC'_pos : 0 < C') (hC'_lt : C' < C) :
+    Integrable (fun x ↦ rexp (C' * ‖x‖ ^ 2)) μ := by
   have h_int : ∀ᵐ y ∂μ, Integrable (fun x ↦ rexp (C * ‖x - y‖^2)) μ := by
-    rw [integrable_conv_iff (by fun_prop)] at hC
-    replace hC := hC.1
+    rw [integrable_conv_iff (by fun_prop)] at hint
+    replace hC := hint.1
     simp only [ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
     rw [integrable_map_measure (by fun_prop) (by fun_prop)] at hy
@@ -144,8 +129,6 @@ theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian 
     left
     simp_rw [← sub_eq_add_neg, norm_sub_rev]
   obtain ⟨y, hy⟩ : ∃ y, Integrable (fun x ↦ rexp (C * ‖x - y‖ ^ 2)) μ := h_int.exists
-  obtain ⟨C', hC'_pos, hC'_lt⟩ : ∃ C', 0 < C' ∧ C' < C := ⟨C / 2, by positivity, by simp [hC_pos]⟩
-  refine ⟨C', hC'_pos, ?_⟩
   let ε := (C - C') / C'
   have hε : 0 < ε := div_pos (by rwa [sub_pos]) (by positivity)
   suffices ∀ x, rexp (C' * ‖x‖ ^ 2) ≤ rexp (C/ε * ‖y‖ ^ 2) * rexp (C * ‖x - y‖ ^ 2) by
@@ -160,7 +143,7 @@ theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian 
   have h_le : ‖x‖ ^ 2 ≤ (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by
     calc ‖x‖ ^ 2
     _ = ‖x - y + y‖ ^ 2 := by simp
-    _ ≤ (‖x - y‖  + ‖y‖) ^ 2 := by gcongr; exact norm_add_le (x - y) y
+    _ ≤ (‖x - y‖  + ‖y‖) ^ 2 := by grw [norm_add_le (x - y) y]
     _ = ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + 2 * ‖x - y‖ * ‖y‖ := by ring
     _ ≤ ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + ε * ‖x - y‖ ^ 2 + ε⁻¹ * ‖y‖ ^ 2 := by
       simp_rw [add_assoc]
@@ -181,6 +164,23 @@ theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian 
       simp only [add_sub_cancel]
       rw [mul_div_cancel₀ _ (by positivity)]
 
+/-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
+`x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
+theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
+    ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
+  -- Since `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` is a centered Gaussian measure, it is invariant
+  -- under rotation. We can thus apply a version of Fernique's theorem to it.
+  obtain ⟨C, hC_pos, hC⟩ : ∃ C, 0 < C
+      ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) (μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)) :=
+    exists_integrable_exp_sq_of_map_rotation_eq_self
+      (map_rotation_eq_self_of_forall_strongDual_eq_zero
+        (integral_dual_conv_map_neg_eq_zero (μ := μ)) _)
+  -- We must now prove that the integrability with respect to
+  -- `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` implies integrability with respect to `μ` for
+  -- another constant `C' < C`.
+  refine ⟨C / 2, by positivity, ?_⟩
+  exact integrable_exp_sq_of_conv_neg μ hC (by positivity) (by simp [hC_pos])
+
 end Fernique
 
 section FiniteMoments
@@ -188,7 +188,7 @@ section FiniteMoments
 variable [CompleteSpace E] [SecondCountableTopology E]
 
 /-- A Gaussian measure has moments of all orders.
-That is, the identity is in Lp for all finite `p`. -/
+That is, the identity is in L^p for all finite `p`. -/
 lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞) : MemLp id p μ := by
   suffices MemLp (fun x ↦ ‖x‖ ^ 2) (p / 2) μ by
     rw [← memLp_norm_rpow_iff (q := 2) (by fun_prop) (by simp) (by simp)]
@@ -200,7 +200,7 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative
     refine integrable_of_le_of_le (g₁ := 0) (g₂ := 1) (by fun_prop)
       (ae_of_all _ fun _ ↦ by positivity) ?_ (integrable_const _) (integrable_const _)
-    refine ae_of_all _ fun x ↦ ?_
+    filter_upwards with x
     simp only [neg_mul, Pi.one_apply, Real.exp_le_one_iff, Left.neg_nonpos_iff]
     positivity
   have h_subset : Set.Ioo (-C) C ⊆ interior (integrableExpSet (fun x ↦ ‖x‖ ^ 2) μ) := by
@@ -244,6 +244,21 @@ lemma noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
     rw [Measure.map_apply (by fun_prop) (measurableSet_singleton _)] at hL_zero
     refine measure_mono_null ?_ hL_zero
     exact fun ⦃a⦄ ↦ congrArg ⇑L
+
+/-- Characteristic function of a centered Gaussian measure. -/
+lemma charFunDual_eq_of_integral_eq_zero (hμ : μ[id] = 0) (L : StrongDual ℝ E) :
+    charFunDual μ L = exp (- Var[L; μ] / 2) := by
+  refine charFunDual_eq_of_forall_strongDual_eq_zero (fun L ↦ ?_) L
+  simp only [id_eq] at hμ
+  simp [integral_dual, hμ]
+
+/-- For a centered Gaussian measure `μ`, the product measure `μ.prod μ` is invariant under
+rotation. -/
+lemma map_rotation_eq_self (hμ : μ[id] = 0) (θ : ℝ) :
+    (μ.prod μ).map (ContinuousLinearMap.rotation θ) = μ.prod μ := by
+  refine map_rotation_eq_self_of_forall_strongDual_eq_zero (fun L ↦ ?_) θ
+  simp only [id_eq] at hμ
+  simp [integral_dual, hμ]
 
 end FiniteMoments
 
