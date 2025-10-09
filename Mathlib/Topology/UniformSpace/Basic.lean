@@ -601,6 +601,11 @@ theorem UniformContinuous.subtype_mk {p : α → Prop} [UniformSpace α] [Unifor
     UniformContinuous (fun x => ⟨f x, h x⟩ : β → Subtype p) :=
   uniformContinuous_comap' hf
 
+theorem UniformContinuous.subtype_map [UniformSpace α] [UniformSpace β] {p : α → Prop}
+    {q : β → Prop} {f : α → β} (hf : UniformContinuous f) (h : ∀ x, p x → q (f x)) :
+    UniformContinuous (Subtype.map f h) :=
+  (hf.comp uniformContinuous_subtype_val).subtype_mk _
+
 theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔ UniformContinuous (s.restrict f) := by
   delta UniformContinuousOn UniformContinuous
