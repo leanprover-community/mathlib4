@@ -89,6 +89,11 @@ theorem volume_eq_smul_haarAddCircle :
     (volume : Measure (AddCircle T)) = ENNReal.ofReal T • (@haarAddCircle T _) :=
   rfl
 
+lemma integral_haarAddCircle {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : AddCircle T → E} : ∫ t, f t ∂haarAddCircle = T⁻¹ • ∫ t, f t := by
+  rw [volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
+    inv_smul_smul₀ hT.out.ne']
+
 end AddCircle
 
 open AddCircle
@@ -298,6 +303,10 @@ theorem fourierCoeff.const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
     fourierCoeff (fun x => c * f x) n = c * fourierCoeff f n :=
   fourierCoeff.const_smul f c n
 
+lemma fourierCoeff_congr_ae {f g : AddCircle T → E}
+    (h : f =ᵐ[haarAddCircle] g) : fourierCoeff f = fourierCoeff g :=
+  funext fun _ ↦ integral_congr_ae <| .smul (.refl _ _) h
+
 /-- For a function on `ℝ`, the Fourier coefficients of `f` on `[a, b]` are defined as the
 Fourier coefficients of the unique periodic function agreeing with `f` on `Ioc a b`. -/
 def fourierCoeffOn {a b : ℝ} (hab : a < b) (f : ℝ → E) (n : ℤ) : E :=
@@ -323,6 +332,17 @@ theorem fourierCoeffOn.const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ
 theorem fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab (fun x => c * f x) n = c * fourierCoeffOn hab f n :=
   fourierCoeffOn.const_smul _ _ _ _
+
+lemma fourierCoeffOn_congr_ae {a b : ℝ} (hab : a < b) {f g : ℝ → E}
+    (h : f =ᵐ[volume.restrict (Ioc a b)] g) :
+    fourierCoeffOn hab f = fourierCoeffOn hab g := by
+  ext n
+  rw [fourierCoeffOn_eq_integral, fourierCoeffOn_eq_integral]
+  congr! 1
+  apply intervalIntegral.integral_congr_ae_restrict
+  simp only [uIoc_of_le hab.le]
+  filter_upwards [h] with x hx
+  rw [hx]
 
 theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIoc T a f) n =
@@ -388,30 +408,14 @@ theorem hasSum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
   · simp only [← norm_sq_eq_re_inner] at H₃
-    rw [← H₃]
-    rw [H₂] at H₁
-    exact H₁
+    rwa [H₂, H₃] at H₁
   · exact L2.integrable_inner f f
 
 theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
   (hasSum_sq_fourierCoeff _).tsum_eq
 
-lemma integral_liftIoc_sq_eq {a : ℝ} {f : ℝ → ℂ} :
-    ∫ (t : AddCircle T), ‖liftIoc T a f t‖ ^ 2 ∂haarAddCircle = T⁻¹ • ∫ x in a..a + T, ‖f x‖ ^ 2
-    := by
-  have hab : a < a + T := (lt_add_iff_pos_right a).mpr hT.out
-  rw [eq_inv_smul_iff₀ (by linarith)]
-  conv in T =>
-    rw [←ENNReal.toReal_ofReal hT.out.le]
-  rw [←integral_smul_measure, ←volume_eq_smul_haarAddCircle, ←AddCircle.intervalIntegral_preimage]
-  apply intervalIntegral.integral_congr_ae
-  filter_upwards with _ hx
-  congr
-  rw [uIoc_of_le hab.le] at hx
-  exact liftIoc_coe_apply hx
-
-lemma measurePreserving_equivIoc {a : ℝ} :
+lemma AddCircle.measurePreserving_equivIoc {a : ℝ} :
     MeasurePreserving (equivIoc T a) volume (Measure.comap Subtype.val volume) := by
   have h := (measurableEquivIoc T a).measurable
   refine ⟨h, ?_⟩
@@ -426,23 +430,27 @@ lemma measurePreserving_equivIoc {a : ℝ} :
   congr! with hx
   rw [equivIoc_coe_eq hx]
 
-lemma memLp_liftIoc_of_memLp
-    {a : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞} (hLp : MemLp f p (volume.restrict (Ioc a (a + T)))) :
-    MemLp (liftIoc T a f) p := by
+namespace MeasureTheory
+
+lemma MemLp.memLp_liftIoc {a : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞}
+    (hLp : MemLp f p (volume.restrict (Ioc a (a + T)))) :
+      MemLp (liftIoc T a f) p := by
   simp only [liftIoc, Set.restrict_def, Function.comp_def]
   apply hLp.comp_measurePreserving
   refine .comp (measurePreserving_subtype_coe measurableSet_Ioc) ?_
   exact measurePreserving_equivIoc
 
+lemma memLp_haarAddCircle_iff {f : AddCircle T → ℂ} {p : ℝ≥0∞} :
+    MemLp f p haarAddCircle ↔ MemLp f p := by
+  rw [volume_eq_smul_haarAddCircle]
+  have hT' := hT.out
+  refine ⟨fun h ↦ h.smul_measure (by finiteness), fun h ↦ ?_⟩
+  have := h.smul_measure (c := (ENNReal.ofReal T)⁻¹) (by finiteness)
+  rwa [smul_smul, ENNReal.inv_mul_cancel (by positivity) (by finiteness), one_smul] at this
 
-lemma memLp_liftIoc_of_memLp'
-    {a : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞} (hLp : MemLp f p (volume.restrict (Ioc a (a + T)))) :
-    MemLp (liftIoc T a f) p haarAddCircle := by
-  have h := memLp_liftIoc_of_memLp hLp
-  rw [volume_eq_smul_haarAddCircle] at h
-  have h' := MemLp.smul_measure h (ENNReal.inv_ne_top.mpr (ENNReal.ofReal_ne_zero_iff.mpr hT.out))
-  simpa [smul_smul,
-    ENNReal.inv_mul_cancel (ENNReal.ofReal_ne_zero_iff.mpr hT.out) ENNReal.ofReal_ne_top] using h'
+alias ⟨MemLp.of_haarAddCircle, MemLp.haarAddCircle⟩ := memLp_haarAddCircle_iff
+
+end MeasureTheory
 
 /-- **Parseval's identity**: for a function `f` which is square integrable on (a,b],
 the sum of the squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
@@ -451,15 +459,15 @@ theorem hasSum_sq_fourierCoeffOn
     HasSum (fun i => ‖fourierCoeffOn hab f i‖ ^ 2) ((b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2) := by
   haveI := Fact.mk (by linarith : 0 < b - a)
   rw [←add_sub_cancel a b] at hL2
-  have h := (memLp_liftIoc_of_memLp' hL2).coeFn_toLp
-  conv in intervalIntegral _ _ _ => rw [←add_sub_cancel a b]
-  rw [←integral_liftIoc_sq_eq,
-      ←integral_congr_ae (h.mono (fun x hx => congrArg (fun x => ‖x‖^2) hx))]
-  conv in fourierCoeffOn _ _ _ =>
+  have h := hL2.memLp_liftIoc.haarAddCircle
+  convert hasSum_sq_fourierCoeff h.toLp using 1
+  · simp [fourierCoeff_congr_ae h.coeFn_toLp, fourierCoeff_liftIoc_eq]
+  · nth_rw 2 [← add_sub_cancel a b]
+    rw [← AddCircle.integral_liftIoc_eq_intervalIntegral, ← Function.comp_def (f := (‖·‖ ^ 2))]
+    simp only [liftIoc_comp_apply, ← AddCircle.integral_haarAddCircle]
     apply integral_congr_ae
-    apply Filter.EventuallyEq.smul (by rfl)
-    apply h.symm
-  exact hasSum_sq_fourierCoeff _
+    filter_upwards [h.coeFn_toLp] with x hx
+    simp [hx]
 
 theorem tsum_sq_fourierCoeffOn
     {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :

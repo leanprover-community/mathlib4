@@ -210,13 +210,17 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) :
     liftIco p a f ↑x = f x := by
-  rw [liftIco, comp_apply, equivIco_coe_eq hx]
-  rfl
+  simp [liftIco, equivIco_coe_eq hx]
 
 theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p)) :
     liftIoc p a f ↑x = f x := by
-  rw [liftIoc, comp_apply, equivIoc_coe_eq hx]
-  rfl
+  simp [liftIoc, equivIoc_coe_eq hx]
+
+lemma liftIco_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
+    liftIco p a (g ∘ f) x = g (liftIco p a f x) := rfl
+
+lemma liftIoc_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
+    liftIoc p a (g ∘ f) x = g (liftIoc p a f x) := rfl
 
 lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
   let b := QuotientAddGroup.equivIcoMod hp.out 0 a

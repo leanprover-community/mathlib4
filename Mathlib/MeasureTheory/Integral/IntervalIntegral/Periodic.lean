@@ -187,6 +187,14 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
   rw [integral_of_le, AddCircle.integral_preimage T t f]
   linarith [hT.out]
 
+lemma integral_liftIoc_eq_intervalIntegral {a : ℝ} {f : ℝ → E} :
+    ∫ t, liftIoc T a f t = ∫ x in a..a + T, f x := by
+  rw [← AddCircle.intervalIntegral_preimage T a]
+  apply intervalIntegral.integral_congr_ae
+  refine .of_forall fun x hx ↦ ?_
+  rw [uIoc_of_le (by linarith [hT.out])] at hx
+  rw [liftIoc_coe_apply hx]
+
 end AddCircle
 
 namespace UnitAddCircle
