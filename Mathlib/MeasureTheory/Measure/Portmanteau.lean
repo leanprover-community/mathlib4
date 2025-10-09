@@ -687,6 +687,9 @@ lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*}
     simp [fs]
   rwa [h_eq', ENNReal.tendsto_toReal_iff (by simp) (by finiteness)]
 
+/-- Weak convergence of probability measures is equivalent to the property that the integrals of
+every bounded Lipschitz function converge to the integral of the function against
+the limit measure. -/
 theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : MeasurableSpace Ω}
     [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {F : Filter γ} [F.IsCountablyGenerated]
     {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
@@ -694,13 +697,17 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
       ∀ f : Ω → ℝ, (∃ (C : ℝ), ∀ x y, dist (f x) (f y) ≤ C) → (∃ L, LipschitzWith L f) →
         Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
   constructor
-  · intro h f hf_bounded hf_lip
+  · -- A bounded Lipschitz function is in particular a bounded continuous function, and we already
+    -- known that weak convergence implies convergence of their integrals
+    intro h f hf_bounded hf_lip
     simp_rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at h
     let f' : BoundedContinuousFunction Ω ℝ :=
     { toFun := f
       continuous_toFun := hf_lip.choose_spec.continuous
       map_bounded' := hf_bounded }
     simpa using h f'
+  -- To prove the other direction, we prove convergence of the measure of closed sets.
+  -- We approximate the indicator function of a closed set by bounded Lipschitz functions.
   refine fun h ↦ tendsto_of_limsup_measure_closed_le' fun s hs ↦ ?_
   rcases F.eq_or_neBot with rfl | hne
   · simp only [limsup_bot, bot_le]
