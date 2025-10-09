@@ -77,7 +77,7 @@ lemma IsGreatest.norm_cfc [Nontrivial A] (f : 𝕜 → 𝕜) (a : A)
 lemma IsGreatest.nnnorm_cfc [Nontrivial A] (f : 𝕜 → 𝕜) (a : A)
     (hf : ContinuousOn f (σ 𝕜 a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     IsGreatest ((fun x ↦ ‖f x‖₊) '' σ 𝕜 a) ‖cfc f a‖₊ := by
-  convert Real.toNNReal_mono.map_isGreatest (.norm_cfc f a)
+  convert Real.toNNReal_monotone.map_isGreatest (.norm_cfc f a)
   all_goals simp [Set.image_image, norm_toNNReal]
 
 lemma norm_apply_le_norm_cfc (f : 𝕜 → 𝕜) (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σ 𝕜 a)
@@ -179,10 +179,6 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
   toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isUniformEmbedding h0 h
   isometric a ha := by
     obtain ⟨ha', haf⟩ := h a |>.mp ha
-    have _inst (a : A) : CompactSpace (σ R a) := by
-      rw [← isCompact_iff_compactSpace, ← spectrum.preimage_algebraMap S]
-      exact halg.isClosedEmbedding.isCompact_preimage <|
-        ContinuousFunctionalCalculus.isCompact_spectrum a
     have := SpectrumRestricts.cfc f halg.isUniformEmbedding h0 h
     rw [cfcHom_eq_restrict f halg.isUniformEmbedding ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
@@ -268,7 +264,7 @@ lemma IsGreatest.norm_cfcₙ (f : 𝕜 → 𝕜) (a : A)
 lemma IsGreatest.nnnorm_cfcₙ (f : 𝕜 → 𝕜) (a : A)
     (hf : ContinuousOn f (σₙ 𝕜 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : p a := by cfc_tac) : IsGreatest ((fun x ↦ ‖f x‖₊) '' σₙ 𝕜 a) ‖cfcₙ f a‖₊ := by
-  convert Real.toNNReal_mono.map_isGreatest (.norm_cfcₙ f a)
+  convert Real.toNNReal_monotone.map_isGreatest (.norm_cfcₙ f a)
   all_goals simp [Set.image_image, norm_toNNReal]
 
 lemma norm_apply_le_norm_cfcₙ (f : 𝕜 → 𝕜) (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a)
@@ -371,10 +367,6 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     halg.isUniformEmbedding h0 h
   isometric a ha := by
     obtain ⟨ha', haf⟩ := h a |>.mp ha
-    have _inst (a : A) : CompactSpace (σₙ R a) := by
-      rw [← isCompact_iff_compactSpace, ← quasispectrum.preimage_algebraMap S]
-      exact halg.isClosedEmbedding.isCompact_preimage <|
-        NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum a
     have := QuasispectrumRestricts.cfc f halg.isUniformEmbedding h0 h
     rw [cfcₙHom_eq_restrict f halg.isUniformEmbedding ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
@@ -413,7 +405,7 @@ open NNReal in
 instance Nonneg.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·) :=
   SpectrumRestricts.isometric_cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    isometry_subtype_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_spectrumRestricts)
+    isometry_subtype_coe le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 end Unital
 
@@ -449,8 +441,9 @@ variable [NonnegSpectrumClass ℝ A]
 lemma IsGreatest.nnnorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac) (ha : 0 ≤ a := by cfc_tac) :
     IsGreatest (f '' σ ℝ≥0 a) ‖cfc f a‖₊ := by
-  rw [cfc_nnreal_eq_real]
-  obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_spectrumRestricts.mp ha
+  rw [cfc_nnreal_eq_real ..]
+  obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
+  rw [← SpectrumRestricts] at ha'
   convert IsGreatest.nnnorm_cfc (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont
   case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
@@ -527,7 +520,7 @@ variable [NonnegSpectrumClass ℝ A]
 lemma IsGreatest.nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : IsGreatest (f '' σₙ ℝ≥0 a) ‖cfcₙ f a‖₊ := by
-  rw [cfcₙ_nnreal_eq_real]
+  rw [cfcₙ_nnreal_eq_real ..]
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   convert IsGreatest.nnnorm_cfcₙ (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont (by simpa)
   case hf_cont => exact continuous_subtype_val.comp_continuousOn <|

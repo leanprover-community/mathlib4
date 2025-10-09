@@ -74,7 +74,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
   have := minpoly.monic pb.isIntegral_gen
   rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, RingHom.map_mul,
     ← coeff_map,
-    prod_roots_eq_coeff_zero_of_monic_of_splits (this.map _) ((splits_id_iff_splits _).2 hf),
+    coeff_zero_eq_prod_roots_of_monic_of_splits (this.map _) ((splits_id_iff_splits _).2 hf),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
   simp only [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
 
@@ -233,18 +233,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
   · rw [← norm_eq_prod_embeddings _ _ x, ← IsScalarTower.algebraMap_apply]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
-      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
-
-theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algebra.IsSeparable K L]
-    [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
-  have hx' : IsIntegral K x := hx.tower_top
-  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
-  · refine (IsIntegral.multiset_prod fun y hy => ?_).pow _
-    rw [mem_roots_map (minpoly.ne_zero hx')] at hy
-    use minpoly R x, minpoly.monic hx
-    rw [← aeval_def] at hy ⊢
-    exact minpoly.aeval_of_isScalarTower R x y hy
-  · apply IsAlgClosed.splits_codomain
+      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
 
 lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
     Algebra.norm R (e x) = Algebra.norm R x := by
@@ -277,7 +266,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
   · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
     rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e']
     simp [e']
-  intros c x
+  intro c x
   apply e₂.symm.injective
   simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_mul,
     RingEquiv.symm_apply_apply, commutes]

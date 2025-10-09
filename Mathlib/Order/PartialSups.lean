@@ -36,11 +36,11 @@ One might dispute whether this sequence should start at `f 0` or `⊥`. We choos
 
 open Finset
 
-variable {α ι : Type*}
+variable {α β ι : Type*}
 
 section SemilatticeSup
 
-variable [SemilatticeSup α]
+variable [SemilatticeSup α] [SemilatticeSup β]
 
 section Preorder
 
@@ -125,6 +125,13 @@ protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, Se
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
 
+lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
+    partialSups (g ∘ f) = g ∘ partialSups f := by
+  funext _; simp [partialSups]
+
+lemma map_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : F) (g : ι → α) (i : ι) :
+    partialSups (fun j ↦ f (g j)) i = f (partialSups g i) := congr($(comp_partialSups ..) i)
+
 end Preorder
 
 @[simp]
@@ -156,7 +163,7 @@ theorem partialSups_zero (f : ℕ → α) : partialSups f 0 = f 0 :=
   partialSups_bot f
 
 theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
-    partialSups f n = (Finset.range (n + 1)).sup' nonempty_range_succ f :=
+    partialSups f n = (Finset.range (n + 1)).sup' nonempty_range_add_one f :=
   eq_of_forall_ge_iff fun _ ↦ by simp [Nat.lt_succ_iff]
 
 theorem partialSups_eq_sup_range [OrderBot α] (f : ℕ → α) (n : ℕ) :
@@ -268,10 +275,10 @@ section Set
 
 lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
-  ext; simp [partialSups_eq_biSup, Nat.lt_succ_iff]
+  simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
-  ext; simp [partialSups_eq_biSup, Nat.lt_succ]
+  simp [partialSups_eq_biSup, Nat.lt_succ]
 
 end Set

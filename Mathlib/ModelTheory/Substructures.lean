@@ -528,7 +528,7 @@ theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
 
 theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
   Eq.symm <|
-    closure_eq_of_le (Set.image_subset f subset_closure) <|
+    closure_eq_of_le (Set.image_mono subset_closure) <|
       map_le_iff_le_comap.2 <| closure_le.2 fun x hx => subset_closure ⟨x, hx, rfl⟩
 
 @[simp]
@@ -640,9 +640,6 @@ theorem subtype_injective (S : L.Substructure M) : Function.Injective (subtype S
 @[simp]
 theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
@@ -829,6 +826,9 @@ def eqLocus (f g : M →[L] N) : Substructure L M where
       repeat' rw [Function.comp_apply]
       apply hx
     simp [h]
+
+@[simp]
+theorem mem_eqLocus {f g : M →[L] N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 /-- If two `L.Hom`s are equal on a set, then they are equal on its substructure closure. -/
 theorem eqOn_closure {f g : M →[L] N} {s : Set M} (h : Set.EqOn f g s) :

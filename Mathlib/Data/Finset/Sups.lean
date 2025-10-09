@@ -23,7 +23,7 @@ This file defines a few binary operations on `Finset α` for use in set family c
 
 ## Notation
 
-We define the following notation in locale `FinsetFamily`:
+We define the following notation in scope `FinsetFamily`:
 * `s ⊻ t` for `Finset.sups`
 * `s ⊼ t` for `Finset.infs`
 * `s ○ t` for `Finset.disjSups s t`

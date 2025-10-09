@@ -158,9 +158,7 @@ section CancelCommMonoidWithZero
 theorem DvdNotUnit.ne [CancelCommMonoidWithZero M] {p q : M} (h : DvdNotUnit p q) : p ≠ q := by
   by_contra hcontra
   obtain ⟨hp, x, hx', hx''⟩ := h
-  conv_lhs at hx'' => rw [← hcontra, ← mul_one p]
-  rw [(mul_left_cancel₀ hp hx'').symm] at hx'
-  exact hx' isUnit_one
+  simp_all
 
 theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) : Function.Injective fun n : ℕ => q ^ n := by

@@ -6,8 +6,10 @@ Authors: Bhavik Mehta
 
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Extreme
+import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Data.Matrix.DoublyStochastic
+import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -120,7 +122,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     rw [← hd]
     refine card_lt_card ?_
     rw [ssubset_iff_of_subset (monotone_filter_right _ _)]
-    · simp only [ne_eq, mem_filter, mem_univ, true_and, Decidable.not_not, Prod.exists]
+    · simp_rw [mem_filter_univ, not_not, Prod.exists]
       refine ⟨i, σ i, hMi'.ne', ?_⟩
       simp [N, Equiv.toPEquiv_apply]
     · rintro ⟨i', j'⟩ hN' hM'
@@ -196,3 +198,12 @@ theorem extremePoints_doublyStochastic :
   aesop
 
 end LinearOrderedField
+
+open scoped Matrix.Norms.L2Operator
+
+theorem Matrix.l2_opNorm_le_one_of_mem_doublyStochastic {M : Matrix n n ℝ}
+    (hM : M ∈ doublyStochastic ℝ n) :
+    ‖M‖ ≤ 1 := by
+  rw [← SetLike.mem_coe, doublyStochastic_eq_convexHull_permMatrix] at hM
+  have ⟨_, ⟨σ, rfl⟩, hσ⟩ := convexOn_univ_norm.exists_ge_of_mem_convexHull (by simp) hM
+  exact hσ.trans (permMatrix_l2_opNorm_le _)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # A collection of specific asymptotic results
@@ -51,13 +51,13 @@ theorem tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
     Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop atTop := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_atTop
-  omega
+  cutsat
 
 theorem tendsto_pow_div_pow_atTop_zero [TopologicalSpace 𝕜] [OrderTopology 𝕜] {p q : ℕ}
     (hpq : p < q) : Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop (𝓝 0) := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_zero
-  omega
+  cutsat
 
 end LinearOrderedField
 
@@ -82,6 +82,19 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
 end NormedLinearOrderedField
 
 section Real
+
+theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filter α}
+    (hv : 0 ≤ v) (h : u ~[l] v) {r : ℝ} :
+    u ^ r ~[l] v ^ r := by
+  obtain ⟨φ, hφ, huφv⟩ := IsEquivalent.exists_eq_mul h
+  rw [isEquivalent_iff_exists_eq_mul]
+  have hφr : Tendsto ((fun x ↦ x ^ r) ∘ φ) l (𝓝 1) := by
+    rw [← Real.one_rpow r]
+    exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; norm_num)) hφ
+  use (· ^ r) ∘ φ, hφr
+  conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
+  filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
+  simp [← Real.mul_rpow (le_of_lt hφ_pos) (hv x), huv']
 
 open Finset
 

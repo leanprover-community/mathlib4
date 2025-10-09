@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.HeineCantor
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Tactic.Abel
@@ -36,13 +35,6 @@ open Filter Set
 variable {α : Type*} {β : Type*}
 
 variable [UniformSpace α] [Group α] [IsUniformGroup α]
-
-@[to_additive]
-instance Pi.instIsUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
-    [∀ i, Group (G i)] [∀ i, IsUniformGroup (G i)] : IsUniformGroup (∀ i, G i) where
-  uniformContinuous_div := uniformContinuous_pi.mpr fun i ↦
-    (uniformContinuous_proj G i).comp uniformContinuous_fst |>.div <|
-      (uniformContinuous_proj G i).comp uniformContinuous_snd
 
 @[to_additive]
 theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : α => x * a :=
@@ -81,31 +73,6 @@ lemma cauchy_map_iff_tendsto_swapped (𝓕 : Filter ι) (f : ι → G) :
 end IsUniformGroup
 
 end Cauchy
-
-section LatticeOps
-
-variable [Group β]
-
-@[to_additive]
-lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [IsUniformGroup γ]
-    [UniformSpace β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ]
-    (f : F) (hf : IsUniformInducing f) :
-    IsUniformGroup β where
-  uniformContinuous_div := by
-    simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
-    exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
-
-@[deprecated (since := "2025-03-30")]
-alias IsUniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
-@[to_additive existing, deprecated (since := "2025-03-30")]
-alias IsUniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
-
-@[to_additive]
-protected theorem IsUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [IsUniformGroup γ]
-    {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) : @IsUniformGroup β (u.comap f) _ :=
-  letI : UniformSpace β := u.comap f; IsUniformInducing.isUniformGroup f ⟨rfl⟩
-
-end LatticeOps
 
 namespace Subgroup
 
@@ -193,6 +160,12 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
 
 end UniformConvergence
 
+@[to_additive]
+instance IsUniformGroup.of_compactSpace [UniformSpace β] [Group β] [ContinuousDiv β]
+    [CompactSpace β] :
+    IsUniformGroup β where
+  uniformContinuous_div := CompactSpace.uniformContinuous_of_continuous continuous_div'
+
 end IsUniformGroup
 
 section IsTopologicalGroup
@@ -203,11 +176,9 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.toUniformSpace
 
-@[to_additive]
+@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
 theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  ⟨by
-    apply CompactSpace.uniformContinuous_of_continuous
-    exact continuous_div'⟩
+  inferInstance
 
 variable {G}
 
@@ -220,7 +191,7 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
   contrapose!
-  simp only [Set.mem_preimage, not_not]
+  simp only [Set.mem_preimage]
   rintro (hyp : h' / h ∈ V)
   have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
   exact (eq_of_div_eq_one this).symm
@@ -382,7 +353,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
     intro U h
     rcases mem_closure_iff_nhds.1 ((de.prodMap df).dense (x₀, y₀)) U h with ⟨x, x_in, ⟨z, z_x⟩⟩
     exists z
-    aesop
+    simp_all
   · suffices map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 -
       (fun p : β × δ => φ p.1 p.2) p.1)
         (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))
@@ -399,14 +370,8 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
     rw [mem_map, mem_comap, nhds_prod_eq]
     exists (U' ×ˢ V') ×ˢ U' ×ˢ V'
     rw [mem_prod_same_iff]
-    simp only
-    constructor
-    · have := prod_mem_prod U'_nhds V'_nhds
-      tauto
-    · intro p h'
-      simp only [Set.mem_preimage, Set.prodMk_mem_set_prod_eq] at h'
-      rcases p with ⟨⟨x, y⟩, ⟨x', y'⟩⟩
-      apply h <;> tauto
+    have := prod_mem_prod U'_nhds V'_nhds
+    grind
 
 end IsDenseInducing
 
@@ -423,14 +388,14 @@ is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bour
 Because a topological group is not equipped with a `UniformSpace` instance by default, we must
 explicitly provide it in order to consider completeness. See `QuotientGroup.completeSpace` for a
 version in which `G` is already equipped with a uniform structure. -/
-@[to_additive "The quotient `G ⧸ N` of a complete first countable topological additive group
+@[to_additive /-- The quotient `G ⧸ N` of a complete first countable topological additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Because an additive topological group is not equipped with a `UniformSpace` instance by default,
 we must explicitly provide it in order to consider completeness. See
 `QuotientAddGroup.completeSpace` for a version in which `G` is already equipped with a uniform
-structure."]
+structure. -/]
 instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
     [@CompleteSpace G (IsTopologicalGroup.toUniformSpace G)] :
@@ -519,7 +484,7 @@ Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` doe
 uniform structure, so it is still provided manually via `IsTopologicalGroup.toUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
 quotient obtained via other means. -/
-@[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
+@[to_additive /-- The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version
 `G` is already equipped with a uniform structure.
@@ -529,7 +494,7 @@ Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` doe
 uniform structure, so it is still provided manually via `IsTopologicalAddGroup.toUniformSpace`.
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
-(definitionally) with the uniform structure provided here."]
+(definitionally) with the uniform structure provided here. -/]
 instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [IsUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.toUniformSpace (G ⧸ N)) := by

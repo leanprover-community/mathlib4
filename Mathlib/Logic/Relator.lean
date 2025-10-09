@@ -15,7 +15,7 @@ universe u₁ u₂ v₁ v₂
 
 /- TODO(johoelzl):
 * should we introduce relators of datatypes as recursive function or as inductive
-predicate? For now we stick to the recursor approach.
+  predicate? For now we stick to the recursor approach.
 * relation lift for datatypes, Π, Σ, set, and subtype types
 * proof composition and identity laws
 * implement method to derive relators from datatype
@@ -27,7 +27,7 @@ variable {α : Sort u₁} {β : Sort u₂} {γ : Sort v₁} {δ : Sort v₂}
 variable (R : α → β → Prop) (S : γ → δ → Prop)
 
 /-- The binary relations `R : α → β → Prop` and `S : γ → δ → Prop` induce a binary
-    relation on functions `LiftFun : (α → γ) → (β → δ) → Prop`. -/
+relation on functions `LiftFun : (α → γ) → (β → δ) → Prop`. -/
 def LiftFun (f : α → γ) (g : β → δ) : Prop :=
   ∀ ⦃a b⦄, R a b → S (f a) (g b)
 
@@ -50,11 +50,11 @@ def LeftTotal : Prop := ∀ a, ∃ b, R a b
 def BiTotal : Prop := LeftTotal R ∧ RightTotal R
 
 /-- A relation is "left unique" if every element on the right is paired with at
-    most one element on the left. -/
+most one element on the left. -/
 def LeftUnique : Prop := ∀ ⦃a b c⦄, R a c → R b c → a = b
 
 /-- A relation is "right unique" if every element on the left is paired with at
-    most one element on the right. -/
+most one element on the right. -/
 def RightUnique : Prop := ∀ ⦃a b c⦄, R a b → R a c → b = c
 
 /-- A relation is "bi-unique" if it is both left unique and right unique. -/

@@ -29,10 +29,10 @@ This file defines `Finset.expect`, the average (aka expectation) of a function o
 
 ## Implementation notes
 
-This definition is a special case of the general convex comnination operator in a convex space.
+This definition is a special case of the general convex combination operator in a convex space.
 However:
 1. We don't yet have general convex spaces.
-2. The uniform weights case is a overwhelmingly useful special case which should have its own API.
+2. The uniform weights case is an overwhelmingly useful special case which should have its own API.
 
 When convex spaces are finally defined, we should redefine `Finset.expect` in terms of that convex
 combination operator.

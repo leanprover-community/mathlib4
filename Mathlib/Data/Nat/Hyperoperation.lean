@@ -75,15 +75,9 @@ theorem hyperoperation_two_two_eq_four (n : ℕ) : hyperoperation (n + 1) 2 2 = 
 
 @[grind =]
 theorem hyperoperation_ge_three_one (n k : ℕ) : hyperoperation (n + 3) 1 k = 1 := by
-  induction n generalizing k with
-  | zero => grind
-  | succ n ih =>
-    cases k
-    · grind
-    · #adaptation_note /-- This will work by `grind` after nightly-2025-07-02. -/
-      rw [hyperoperation_recursion, ih]
+  induction n generalizing k with grind [cases Nat]
 
 @[grind =]
 theorem hyperoperation_ge_four_zero (n k : ℕ) :
     hyperoperation (n + 4) 0 k = if Even k then 1 else 0 := by
-  induction k with grind [Nat.even_add_one]
+  induction k with grind

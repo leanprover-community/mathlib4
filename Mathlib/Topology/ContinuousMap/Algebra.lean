@@ -133,8 +133,8 @@ theorem pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : 
     (f ^ n) x = f x ^ n :=
   rfl
 
--- don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
--- redundant WRT `coe_smul`
+-- Don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
+-- redundant w.r.t. `coe_smul`
 attribute [simp] coe_pow pow_apply
 
 @[to_additive]
@@ -142,7 +142,7 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
     (f ^ n).comp g = f.comp g ^ n :=
   rfl
 
--- don't make `nsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
+-- Don't make `nsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] pow_comp
 
 /-! ### `inv` and `neg` -/
@@ -200,8 +200,8 @@ theorem zpow_apply [Group β] [IsTopologicalGroup β] (f : C(α, β)) (z : ℤ) 
     (f ^ z) x = f x ^ z :=
   rfl
 
--- don't make auto-generated `coe_zsmul` and `zsmul_apply` simp as the linter complains they're
--- redundant WRT `coe_smul`
+-- Don't make auto-generated `coe_zsmul` and `zsmul_apply` simp as the linter complains they're
+-- redundant w.r.t. `coe_smul`
 attribute [simp] coe_zpow zpow_apply
 
 @[to_additive]
@@ -209,7 +209,7 @@ theorem zpow_comp [Group γ] [IsTopologicalGroup γ] (f : C(β, γ)) (z : ℤ) (
     (f ^ z).comp g = f.comp g ^ z :=
   rfl
 
--- don't make `zsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
+-- Don't make `zsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] zpow_comp
 
 end ContinuousMap
@@ -227,7 +227,7 @@ the structure of a group.
 section Subtype
 
 /-- The `Submonoid` of continuous maps `α → β`. -/
-@[to_additive "The `AddSubmonoid` of continuous maps `α → β`. "]
+@[to_additive /-- The `AddSubmonoid` of continuous maps `α → β`. -/]
 def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     [MulOneClass β] [ContinuousMul β] : Submonoid (α → β) where
   carrier := { f : α → β | Continuous f }
@@ -235,7 +235,7 @@ def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [Topolog
   mul_mem' fc gc := fc.mul gc
 
 /-- The subgroup of continuous maps `α → β`. -/
-@[to_additive "The `AddSubgroup` of continuous maps `α → β`. "]
+@[to_additive /-- The `AddSubgroup` of continuous maps `α → β`. -/]
 def continuousSubgroup (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β] [Group β]
     [IsTopologicalGroup β] : Subgroup (α → β) :=
   { continuousSubmonoid α β with inv_mem' := fun fc => Continuous.inv fc }
@@ -290,7 +290,7 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps)
-  "Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`."]
+  /-- Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/]
 def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β where
   toFun f := f
   map_one' := coe_one
@@ -300,8 +300,8 @@ variable (α) in
 /-- Composition on the left by a (continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeft`. -/
 @[to_additive (attr := simps)
-"Composition on the left by a (continuous) homomorphism of topological `AddMonoid`s, as an
-`AddMonoidHom`. Similar to `AddMonoidHom.comp_left`."]
+/-- Composition on the left by a (continuous) homomorphism of topological `AddMonoid`s, as an
+`AddMonoidHom`. Similar to `AddMonoidHom.comp_left`. -/]
 protected def _root_.MonoidHom.compLeftContinuous {γ : Type*} [Monoid β] [ContinuousMul β]
     [TopologicalSpace γ] [Monoid γ] [ContinuousMul γ] (g : β →* γ) (hg : Continuous g) :
     C(α, β) →* C(α, γ) where
@@ -311,7 +311,7 @@ protected def _root_.MonoidHom.compLeftContinuous {γ : Type*} [Monoid β] [Cont
 
 /-- Composition on the right as a `MonoidHom`. Similar to `MonoidHom.compHom'`. -/
 @[to_additive (attr := simps)
-      "Composition on the right as an `AddMonoidHom`. Similar to `AddMonoidHom.compHom'`."]
+      /-- Composition on the right as an `AddMonoidHom`. Similar to `AddMonoidHom.compHom'`. -/]
 def compMonoidHom' {γ : Type*} [TopologicalSpace γ] [MulOneClass γ] [ContinuousMul γ]
     (g : C(α, β)) : C(β, γ) →* C(α, γ) where
   toFun f := f.comp g
@@ -360,23 +360,23 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
 /-- If an infinite product of functions in `C(α, β)` converges to `g`
 (for the compact-open topology), then the pointwise product converges to `g x` for all `x ∈ α`. -/
 @[to_additive
-  "If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
-then the pointwise sum converges to `g x` for all `x ∈ α`."]
+  /-- If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
+then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
 theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
-    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasProd f g) (x : α) :
-    HasProd (fun i : γ => f i x) (g x) := by
+    {f : γ → C(α, β)} {g : C(α, β)} {L : SummationFilter γ} (hf : HasProd f g L) (x : α) :
+    HasProd (fun i : γ => f i x) (g x) L := by
   let ev : C(α, β) →* β := (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
   exact hf.map ev (continuous_eval_const x)
 
 @[to_additive]
 theorem multipliable_apply [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) : Multipliable fun i : γ => f i x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) (x : α) : Multipliable (fun i : γ ↦ f i x) L :=
   (hasProd_apply hf.hasProd x).multipliable
 
 @[to_additive]
 theorem tprod_apply [T2Space β] [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) :
-    ∏' i : γ, f i x = (∏' i : γ, f i) x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) [L.NeBot] (x : α) :
+    ∏'[L] i : γ, f i x = (∏'[L] i : γ, f i) x :=
   (hasProd_apply hf.hasProd x).tprod_eq
 
 end ContinuousMap

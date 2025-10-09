@@ -1,4 +1,4 @@
-import Mathlib.Data.Matrix.Rank
+import Mathlib.LinearAlgebra.Matrix.Rank
 import Mathlib.Tactic.Order
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
@@ -105,7 +105,14 @@ error: No contradiction found.
 
 Additional diagnostic information may be available using the `set_option trace.order true` command.
 ---
-trace: [order] Working on type α (partial order)
+trace: [order] Working on type ℕ (linear order)
+[order] Collected atoms:
+    #0 := x
+    #1 := y
+[order] Collected facts:
+    #0 ≠ #1
+    #0 ≤ #1
+[order] Working on type α (partial order)
 [order] Collected atoms:
     #0 := a ⊓ (b ⊔ c)
     #1 := a

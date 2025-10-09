@@ -12,7 +12,7 @@ example (a : α) : ∃ b : α, b = a := by
   simp only [existsAndEq]
 
 /--
-error: simp made no progress
+error: `simp` made no progress
 -/
 #guard_msgs in
 example (f : α → α) : ∃ a : α, a = f a := by

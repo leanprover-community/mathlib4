@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
+import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 
 /-!
 # Continuous functors between sites.
@@ -85,7 +85,7 @@ class IsPreservedBy (F : C ⥤ D) (K : GrothendieckTopology D) : Prop where
       (E.toPreOneHypercover.map F).sieve₁ p₁ p₂ ∈ K W
 
 /-- Given a 1-hypercover `E : J.OneHypercover X` of an object of `C`, a functor `F : C ⥤ D`
-such that `E.IsPreversedBy F K` for a Grothendieck topology `K` on `D`, this is
+such that `E.IsPreservedBy F K` for a Grothendieck topology `K` on `D`, this is
 the image of `E` by `F`, as a 1-hypercover of `F.obj X` for `K`. -/
 @[simps! toPreOneHypercover]
 def map (F : C ⥤ D) (K : GrothendieckTopology D) [E.IsPreservedBy F K] :
@@ -120,8 +120,6 @@ class IsContinuous : Prop where
 lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Type t)) :
     Presieve.IsSheaf J (F.op ⋙ G.val) :=
   Functor.IsContinuous.op_comp_isSheaf_of_types _
-
-@[deprecated (since := "2024-11-26")] alias op_comp_isSheafOfTypes := op_comp_isSheaf_of_types
 
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=

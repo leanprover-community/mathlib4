@@ -8,11 +8,11 @@ import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
-# The Kaehler differential module of polynomial algebras
+# The Kähler differential module of polynomial algebras
 -/
 
+open Algebra Module
 open scoped TensorProduct
-open Algebra
 
 universe u v
 
@@ -54,7 +54,7 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
 /-- `{ dx | x ∈ σ }` forms a basis of the relative differential module
 of a polynomial algebra `R[σ]`. -/
 def KaehlerDifferential.mvPolynomialBasis (σ) :
-    Basis σ (MvPolynomial σ R) (Ω[MvPolynomial σ R⁄R]) :=
+    Basis σ (MvPolynomial σ R) Ω[MvPolynomial σ R⁄R] :=
   ⟨mvPolynomialEquiv R σ⟩
 
 lemma KaehlerDifferential.mvPolynomialBasis_repr_comp_D (σ) :
@@ -92,7 +92,7 @@ lemma KaehlerDifferential.mvPolynomialBasis_apply (σ) (i) :
     mvPolynomialBasis R σ i = D R (MvPolynomial σ R) (.X i) :=
   (mvPolynomialBasis_repr_symm_single R σ i 1).trans (one_smul _ _)
 
-instance (σ) : Module.Free (MvPolynomial σ R) (Ω[MvPolynomial σ R⁄R]) :=
+instance (σ) : Module.Free (MvPolynomial σ R) Ω[MvPolynomial σ R⁄R] :=
   .of_basis (KaehlerDifferential.mvPolynomialBasis R σ)
 
 end MvPolynomial

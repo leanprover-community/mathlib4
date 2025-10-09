@@ -117,7 +117,7 @@ theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
 
 lemma mem_roots_iff_aeval_eq_zero {x : R} (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
   rw [aeval_def, ← mem_roots_map_of_injective (FaithfulSMul.algebraMap_injective _ _) w,
-    Algebra.id.map_eq_id, map_id]
+    Algebra.algebraMap_self, map_id]
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
     #Z ≤ p.natDegree :=
@@ -306,7 +306,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
 
 @[simp]
 theorem nthRoots_two_eq_zero_iff {r : R} : nthRoots 2 r = 0 ↔ ¬IsSquare r := by
-  simp_rw [isSquare_iff_exists_sq, eq_zero_iff_forall_notMem, mem_nthRoots (by norm_num : 0 < 2),
+  simp_rw [isSquare_iff_exists_sq, eq_zero_iff_forall_notMem, mem_nthRoots (by simp : 0 < 2),
     ← not_exists, eq_comm]
 
 /-- The multiset `nthRoots ↑n a` as a Finset. Previously `nthRootsFinset n` was defined to be
@@ -581,6 +581,12 @@ theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
   classical
   exact Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
 
+@[simp]
+theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
+    nthRootsFinset n a = {r | r ^ n = a} := by
+  ext x
+  simp_all
+
 end Roots
 
 lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
@@ -754,9 +760,8 @@ theorem count_map_roots [IsDomain A] [DecidableEq B] {p : A[X]} {f : A →+* B} 
   refine
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
   convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
-  simp only [Polynomial.map_multiset_prod, Multiset.map_map]
-  congr; ext1
-  simp only [Function.comp_apply, Polynomial.map_sub, map_X, map_C]
+  simp only [Polynomial.map_multiset_prod, Multiset.map_map, Function.comp_apply,
+    Polynomial.map_sub, map_X, map_C]
 
 theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f : A →+* B}
     (hf : Function.Injective f) (b : B) :

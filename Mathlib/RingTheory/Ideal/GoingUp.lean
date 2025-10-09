@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
 import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.Integral
 
 /-!
@@ -236,8 +236,8 @@ theorem IsIntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : 
 
 theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
     I.comap (algebraMap R A) = ⊥ → I = ⊥ := by
-  -- Porting note: `imp_of_not_imp_not` seems not existing
-  contrapose; exact (IsIntegralClosure.comap_ne_bot S)
+  contrapose
+  exact IsIntegralClosure.comap_ne_bot S
 
 end IsIntegralClosure
 
@@ -319,6 +319,12 @@ theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Idea
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 
+instance nonempty_primesOver [Nontrivial S] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S]
+    (P : Ideal R) [P.IsPrime] :
+    Nonempty (primesOver P S) := by
+  obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by simp)
+  exact ⟨Q, ⟨hQ₁, (liesOver_iff _ _).mpr hQ₂.symm⟩⟩
+
 /-- `comap (algebraMap R S)` is a surjection from the max spec of `S` to max spec of `R`.
 `hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/
 theorem exists_ideal_over_maximal_of_isIntegral [Algebra.IsIntegral R S]
@@ -366,6 +372,10 @@ theorem IsMaximal.of_liesOver_isMaximal [hpm : p.IsMaximal] [P.IsPrime] : P.IsMa
 theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
   rw [P.over_def p]
   exact isMaximal_comap_of_isIntegral_of_isMaximal P
+
+theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ : Ideal A)] :
+    P = ⊥ :=
+  eq_bot_of_comap_eq_bot <| ((liesOver_iff _ _).mp h).symm
 
 /-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=

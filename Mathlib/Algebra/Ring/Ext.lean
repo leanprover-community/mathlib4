@@ -137,8 +137,8 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
-                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
-    congrArg (@MulOneClass.toOne R) <| by ext : 1; exact h_mul
+                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
+    congr 2; ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
@@ -253,7 +253,7 @@ namespace NonAssocRing
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂ | injection h₃
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -285,7 +285,7 @@ namespace Semiring
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂ | injection h₃
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by

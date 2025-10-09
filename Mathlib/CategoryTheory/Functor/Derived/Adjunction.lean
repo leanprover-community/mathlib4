@@ -47,9 +47,9 @@ open Functor
 def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
     (η : 𝟭 D₁ ⟶ G' ⋙ F') (ε : F' ⋙ G' ⟶ 𝟭 D₂)
     (hη : ∀ (X₁ : C₁), η.app (L₁.obj X₁) ≫ F'.map (α.app X₁) =
-      L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by aesop_cat)
+      L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by cat_disch)
     (hε : ∀ (X₂ : C₂), G'.map (β.app X₂) ≫ ε.app (L₂.obj X₂) =
-      α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by aesop_cat) : G' ⊣ F' where
+      α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by cat_disch) : G' ⊣ F' where
   unit := η
   counit := ε
   left_triangle_components := by
