@@ -386,10 +386,8 @@ theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ 
   eq_bot_of_comap_eq_bot <| ((liesOver_iff _ _).mp h).symm
 
 variable (A) {P} in
-theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ := by
-  contrapose! hP
-  rw [eq_comm, ← liesOver_iff] at hP
-  exact eq_bot_of_liesOver_bot A P
+theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=
+  fun h ↦ hP <| eq_bot_of_comap_eq_bot h
 
 /-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
