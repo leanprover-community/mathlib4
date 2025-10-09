@@ -25,11 +25,6 @@ variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [Fini
 open LieAlgebra LieModule Module
 variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
 
-theorem get_isNonZero (w : Weight K H L) (h : w.toLinear ≠ 0) : w.IsNonZero := by
-  intro h_zero
-  apply h
-  ext _; simp [Weight.IsZero.eq h_zero]
-
 -- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsKilling K L] [IsTriangularizable K H L]
 variable (q : Submodule K (Dual K H))
@@ -75,7 +70,7 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
     by_cases h_trivial : genWeightSpace L β_lin = ⊥
     · simp [h_trivial]
     · let β : Weight K H L := ⟨β_lin, h_trivial⟩
-      have hβ_nonzero : β.IsNonZero := get_isNonZero β hβ_ne_zero
+      have hβ_nonzero : β.IsNonZero := Weight.coe_toLinear_ne_zero_iff.mp hβ_ne_zero
       refine le_trans ?_ (le_iSup _ ⟨β, hβ_in_q, hβ_nonzero⟩)
       rw [sl2SubmoduleOfRoot_eq_sup]
       exact le_sup_of_le_left (le_sup_of_le_left le_rfl)
@@ -100,8 +95,8 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
   have h_plus_bot : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ := by
     by_contra h_plus_ne_bot
     let γ : Weight K H L := ⟨χ.toLinear + α.1.toLinear, h_plus_ne_bot⟩
-    have hγ_nonzero : γ.IsNonZero := get_isNonZero γ w_plus
-    obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
+    have hγ_nonzero : γ.IsNonZero := Weight.coe_toLinear_ne_zero_iff.mp w_plus
+    obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
     obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj]
@@ -113,8 +108,8 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
   have h_minus_bot : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥ := by
     by_contra h_minus_ne_bot
     let γ : Weight K H L := ⟨χ.toLinear - α.1.toLinear, h_minus_ne_bot⟩
-    have hγ_nonzero : γ.IsNonZero := get_isNonZero γ w_minus
-    obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
+    have hγ_nonzero : γ.IsNonZero := Weight.coe_toLinear_ne_zero_iff.mp w_minus
+    obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
     obtain ⟨j, hj⟩ := exists_root_index (-α.1) (Weight.IsNonZero.neg α.2.2)
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj, Weight.toLinear_neg, ← sub_eq_add_neg]
@@ -126,7 +121,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
       rw [hj, Weight.toLinear_neg]
       convert q.smul_mem (-1) α.2.1 using 1
       rw [neg_smul, one_smul]))
-  obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
+  obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
   have h_pairing_zero : S.pairing i j = 0 := by
     apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S.toRootPairing
