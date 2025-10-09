@@ -77,9 +77,12 @@ namespace ExponentiableMorphism
 
 variable [HasPullbacks C] {I J : C}
 
+/-- The pushforward functor along a morphism `f : I ⟶ J` as the right adjoint
+to the pullback functor. -/
 abbrev pushforward (f : I ⟶ J) [ExponentiableMorphism f] :=
   rightAdjoint (Over.pullback f)
 
+/-- The adjunction between the pullback and pushforward functors along a morphism `f : I ⟶ J`. -/
 def adj (f : I ⟶ J) [ExponentiableMorphism f] :=
   Adjunction.ofIsLeftAdjoint (Over.pullback f)
 
