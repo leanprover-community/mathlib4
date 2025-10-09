@@ -25,16 +25,22 @@ class GradedFunLike (F : Type*) {A B σ τ ι : outParam Type*}
     [SetLike σ A] [SetLike τ B] (𝒜 : outParam <| ι → σ) (ℬ : outParam <| ι → τ)
     extends FunLike F A B where
   map_mem (f : F) {i x} : x ∈ 𝒜 i → f x ∈ ℬ i
-export GradedFunLike (map_mem)
+
+section GradedFunLike
 
 attribute [instance 100] GradedFunLike.toDFunLike
 
 variable {F A B σ τ ι : Type*}
-  [SetLike σ A] [SetLike τ B] {𝒜 : ι → σ} {ℬ : ι → τ} [GradedFunLike F 𝒜 ℬ] (f : F)
+  [SetLike σ A] [SetLike τ B] {𝒜 : ι → σ} {ℬ : ι → τ} [GradedFunLike F 𝒜 ℬ]
+
+lemma map_mem (f : F) {i x} (h : x ∈ 𝒜 i) : f x ∈ ℬ i :=
+  GradedFunLike.map_mem f h
 
 /-- A graded map descends to a map on each component. -/
-def mapGraded (i : ι) (x : 𝒜 i) : ℬ i :=
+def mapGraded (f : F) (i : ι) (x : 𝒜 i) : ℬ i :=
   ⟨f x, map_mem f x.2⟩
+
+end GradedFunLike
 
 /-- The class `GradedEquivLike E 𝒜 ℬ` says that `E` is a type of grading-preserving isomorphisms
 between `𝒜` and `ℬ`. It is the combination of `GradedFunLike E 𝒜 ℬ` and `EquivLike E A B`. -/
@@ -42,17 +48,29 @@ class GradedEquivLike (E : Type*) {A B σ τ ι : outParam Type*}
     [SetLike σ A] [SetLike τ B] (𝒜 : outParam <| ι → σ) (ℬ : outParam <| ι → τ)
     extends EquivLike E A B where
   map_mem_iff (e : E) {i x} : e x ∈ ℬ i ↔ x ∈ 𝒜 i
-export GradedEquivLike (map_mem_iff)
 
-namespace GradedEquivLike
+section GradedEquivLike
 
 attribute [instance 100] GradedEquivLike.toEquivLike
 
 variable (E : Type*) {A B σ τ ι : Type*} [SetLike σ A] [SetLike τ B]
   (𝒜 : ι → σ) (ℬ : ι → τ) [GradedEquivLike E 𝒜 ℬ]
 
-instance (priority := 100) toGradedFunLike : GradedFunLike E 𝒜 ℬ where
+instance (priority := 100) GradedEquivLike.toGradedFunLike : GradedFunLike E 𝒜 ℬ where
   __ := inferInstanceAs (FunLike E A B)
   map_mem e {_ _} := (map_mem_iff e).mpr
+
+variable {E 𝒜 ℬ}
+
+lemma map_mem_iff (e : E) {i x} : e x ∈ ℬ i ↔ x ∈ 𝒜 i :=
+  GradedEquivLike.map_mem_iff e
+alias ⟨mem_of_map_mem, map_mem_of_mem⟩ := map_mem_iff
+
+@[simps] def equivGraded (e : E) (i : ι) : 𝒜 i ≃ ℬ i where
+  toFun := mapGraded e i
+  invFun y := ⟨EquivLike.inv e (y : B),
+    mem_of_map_mem e <| by rw [EquivLike.apply_inv_apply]; exact y.2⟩
+  left_inv _ := by ext; exact EquivLike.inv_apply_apply e _
+  right_inv _ := by ext; exact EquivLike.apply_inv_apply e _
 
 end GradedEquivLike
