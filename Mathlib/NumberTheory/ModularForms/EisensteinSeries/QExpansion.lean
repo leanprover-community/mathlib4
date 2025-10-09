@@ -202,7 +202,7 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
     ∑' x, eisSummand k x z = 2 * riemannZeta k + 2 * ((-2 * π * I) ^ k / (k - 1)!) *
     ∑' (n : ℕ+), σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℕ) := by
   rw [← (piFinTwoEquiv fun _ ↦ ℤ).symm.tsum_eq, Summable.tsum_prod
-    (by apply summable_prod_eisSummand hk), tsum_int_eq_zero_add_two_mul_tsum_pnat]
+    (by apply summable_prod_eisSummand hk z), tsum_int_eq_zero_add_two_mul_tsum_pnat]
   · have (b : ℕ+) := EisensteinSeries.qExpansion_identity_pnat (k := k - 1) (by omega)
       ⟨b * z , by simpa using z.2⟩
     simp only [coe_mk_subtype, show k - 1 + 1 = k by omega, one_div, neg_mul, mul_assoc, eisSummand,
@@ -229,13 +229,12 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
       neg_add_rev, inv_inj]
     ring
   · simpa using Summable.prod (f := fun x : ℤ × ℤ ↦ eisSummand k ![x.1, x.2] z)
-      (by apply summable_prod_eisSummand hk)
+      (summable_prod_eisSummand hk z)
 
-lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) :
+lemma gammaSet_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) :
     eisSummand k v z = ((n : ℂ) ^ k)⁻¹ * eisSummand k (divIntMap n v) z := by
-  have := gammaSet_eq_gcd_mul_divIntMap v.2
   simp_rw [eisSummand]
-  nth_rw 1 2 [this]
+  nth_rw 1 2 [gammaSet_eq_gcd_mul_divIntMap v.2]
   simp only [Fin.isValue, Pi.smul_apply, nsmul_eq_mul, Int.cast_mul, Int.cast_natCast, zpow_neg,
     ← mul_inv, ← mul_zpow, inv_inj]
   ring_nf
@@ -246,8 +245,7 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
   rw [← gammaSetDivGcdSigmaEquiv.symm.tsum_eq]
   have hk1 : 1 < k := by omega
   conv =>
-    enter [1,1]
-    ext c
+    enter [1, 1, c]
     rw [gammaSetDivGcdSigmaEquiv_symm_eq]
   rw [eisensteinSeries, Summable.tsum_sigma, zeta_nat_eq_tsum_of_gt_one hk1,
     tsum_mul_tsum_of_summable_norm (by simp [hk1])
@@ -257,9 +255,9 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
     · apply tsum_congr
       intro b
       by_cases hb : b = 0
-      · simp [hb, CharP.cast_eq_zero, gammaSetN_eisSummand k z, show ((0 : ℂ) ^ k)⁻¹ = 0 by aesop]
+      · simp [hb, CharP.cast_eq_zero, gammaSet_eisSummand k z, show ((0 : ℂ) ^ k)⁻¹ = 0 by aesop]
       · haveI : NeZero b := ⟨by simp [hb]⟩
-        simpa [gammaSetN_eisSummand k z, zpow_natCast, tsum_mul_left, hb]
+        simpa [gammaSet_eisSummand k z, zpow_natCast, tsum_mul_left, hb]
          using (gammaSetDivGcdEquiv b).tsum_eq (fun v ↦ eisSummand k v z)
     · apply summable_mul_of_summable_norm (f:= fun (n : ℕ) ↦ ((n : ℂ) ^ k)⁻¹)
         (g := fun (v : gammaSet 1 1 0) ↦ eisSummand k v z) (by simp [hk1])
