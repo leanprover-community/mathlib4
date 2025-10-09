@@ -257,30 +257,42 @@ lemma IsRamified.isMixed_conjugate_embedding {w : InfinitePlace K} (h : w.IsRami
   ⟨h.conjugate_embedding_comp ▸ isReal_iff.1 h.isReal,
     by simpa using isComplex_iff.1 <| h.isComplex⟩
 
-lemma _root_.NumberField.ComplexEmbedding.IsMixed.mk_isRamified {φ : K →+* ℂ} (h : IsMixed k φ) :
-    (mk φ).IsRamified k := by
-  rw [isRamified_iff, isComplex_iff, comap_mk, isReal_iff, embedding_mk_eq_of_isReal h.1]
-  exact ⟨by rcases embedding_mk_eq φ with (_ | _) <;> aesop, h.1⟩
+theorem isRamified_mk_iff_isMixed {φ : K →+* ℂ} :
+    (mk φ).IsRamified k ↔ IsMixed k φ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases embedding_mk_eq φ with (hl | hr)
+    · exact hl ▸ h.isMixed_embedding
+    · rw [← star_star φ]; simpa [← congrArg conjugate hr] using h.isMixed_conjugate_embedding
+  · rw [isRamified_iff, isComplex_iff, comap_mk, isReal_iff, embedding_mk_eq_of_isReal h.1]
+    exact ⟨by rcases embedding_mk_eq φ with (_ | _) <;> aesop, h.1⟩
+
+alias ⟨_, _root_.NumberField.ComplexEmbedding.IsMixed.mk_isRamified⟩ := isRamified_mk_iff_isMixed
 
 lemma IsUnramified.isUnmixed {w : InfinitePlace K} (h : w.IsUnramified k) :
     IsUnmixed k w.embedding := by
   intro hw
-  rw [← isReal_mk_iff, ← NumberField.InfinitePlace.comap_mk, mk_embedding] at hw
+  rw [← isReal_mk_iff, ← comap_mk, mk_embedding] at hw
   exact isReal_iff.1 <| (isUnramified_iff.1 h).resolve_right (not_isComplex_iff_isReal.2 hw)
 
 lemma IsUnramified.isUnmixed_conjugate {w : InfinitePlace K} (h : w.IsUnramified k) :
     IsUnmixed k (conjugate w.embedding) := by
   intro hw
-  simp [← isReal_mk_iff, ← comap_mk] at hw
+  simp_rw [conjugate_comp, IsSelfAdjoint.star_iff, ← isReal_mk_iff, ← comap_mk, mk_embedding] at hw
   simpa using isReal_iff.1 <| (isUnramified_iff.1 h).resolve_right (not_isComplex_iff_isReal.2 hw)
 
-lemma _root_.NumberField.ComplexEmbedding.IsUnmixed.mk_isUnramified {φ : K →+* ℂ}
-    (h : IsUnmixed k φ) :
-    (mk φ).IsUnramified k := by
-  rw [isUnramified_iff, isReal_iff]
-  by_cases hv : ComplexEmbedding.IsReal (φ.comp (algebraMap k K))
-  · exact .inl <| by simp [embedding_mk_eq_of_isReal, h hv]
-  · exact .inr <| by simpa using (isReal_mk_iff.not.2 hv)
+theorem isUnramified_mk_iff_isUnramified {φ : K →+* ℂ} :
+    (mk φ).IsUnramified k ↔ IsUnmixed k φ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases embedding_mk_eq φ with (hl | hr)
+    · exact hl ▸ h.isUnmixed
+    · rw [← star_star φ]; simpa [← congrArg conjugate hr] using h.isUnmixed_conjugate
+  · rw [isUnramified_iff, isReal_iff]
+    by_cases hv : ComplexEmbedding.IsReal (φ.comp (algebraMap k K))
+    · exact .inl <| by simp [embedding_mk_eq_of_isReal, h hv]
+    · exact .inr <| by simpa using (isReal_mk_iff.not.2 hv)
+
+alias ⟨_, _root_.NumberField.ComplexEmbedding.IsUnmixed.mk_isUnramified⟩ :=
+  isUnramified_mk_iff_isUnramified
 
 variable (k)
 
