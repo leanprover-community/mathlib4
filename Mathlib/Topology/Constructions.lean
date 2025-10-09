@@ -264,6 +264,8 @@ theorem isDiscrete_iff_nhds_ne :
 lemma isDiscrete_of_discreteTopology [DiscreteTopology X] : IsDiscrete s :=
   ⟨instDiscreteTopologySubtype⟩
 
+lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨inferInstance⟩
+
 @[deprecated (since := "2025-10-08")] alias discreteTopology_subtype_iff := isDiscrete_iff_nhds_ne
 
 end IsDiscrete
