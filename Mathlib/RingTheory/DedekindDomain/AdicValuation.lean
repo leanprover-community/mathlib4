@@ -685,8 +685,7 @@ theorem num_not_mem_ideal_of_den_mem [Nonempty (R ≃+* ℤ)] {𝔭 : Ideal R} (
 theorem valuation_le_one_iff_den [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)]
     (𝔭 : HeightOneSpectrum R) (x : ℚ) :
     𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
-  let f := Classical.arbitrary (R ≃+* ℤ)
-  have : (x.den : R) ≠ 0 := fun h ↦ by simpa using congrArg f h
+  have : (x.den : R) ≠ 0 := fun h ↦ by simpa using congrArg (Classical.arbitrary (R ≃+* ℤ)) h
   simp [← 𝔭.valuation_le_one_iff ℚ x.num this (x.num_not_mem_ideal_of_den_mem 𝔭.prime),
     x.num_div_den]
 
