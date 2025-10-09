@@ -5,10 +5,13 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.SetLike.Basic
 
-/-! # Class of grading-preserving functions
+/-! # Class of grading-preserving functions and isomorphisms
 
 We define `GradedFunLike F 𝒜 ℬ` where `𝒜` and `ℬ` represent some sort of grading. This class
 extends `FunLike A B` where `A` and `B` are the underlying types.
+
+We also define `GradedEquivLike E 𝒜 ℬ`, which is similar to `EquivLike`, where here `e : E` is
+required to satisfy `x ∈ 𝒜 i ↔ e x ∈ ℬ i`.
 -/
 
 /-- The class `GradedFunLike F 𝒜 ℬ` expresses that terms of type `F` have an injective coercion to
@@ -32,3 +35,24 @@ variable {F A B σ τ ι : Type*}
 /-- A graded map descends to a map on each component. -/
 def mapGraded (i : ι) (x : 𝒜 i) : ℬ i :=
   ⟨f x, map_mem f x.2⟩
+
+/-- The class `GradedEquivLike E 𝒜 ℬ` says that `E` is a type of grading-preserving isomorphisms
+between `𝒜` and `ℬ`. It is the combination of `GradedFunLike E 𝒜 ℬ` and `EquivLike E A B`. -/
+class GradedEquivLike (E : Type*) {A B σ τ ι : outParam Type*}
+    [SetLike σ A] [SetLike τ B] (𝒜 : outParam <| ι → σ) (ℬ : outParam <| ι → τ)
+    extends EquivLike E A B where
+  map_mem_iff (e : E) {i x} : e x ∈ ℬ i ↔ x ∈ 𝒜 i
+export GradedEquivLike (map_mem_iff)
+
+namespace GradedEquivLike
+
+attribute [instance 100] GradedEquivLike.toEquivLike
+
+variable (E : Type*) {A B σ τ ι : Type*} [SetLike σ A] [SetLike τ B]
+  (𝒜 : ι → σ) (ℬ : ι → τ) [GradedEquivLike E 𝒜 ℬ]
+
+instance (priority := 100) toGradedFunLike : GradedFunLike E 𝒜 ℬ where
+  __ := inferInstanceAs (FunLike E A B)
+  map_mem e {_ _} := (map_mem_iff e).mpr
+
+end GradedEquivLike
