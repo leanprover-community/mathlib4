@@ -11,7 +11,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.NumberTheory.IccSums
+import Mathlib.NumberTheory.IntervalSums
 
 /-!
 # Eisenstein Series E2
@@ -40,7 +40,7 @@ lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n ↦ eisSummand 2 
 @[simp]
 lemma e2Summand_zero_eq_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riemannZeta 2 := by
   simpa [e2Summand, eisSummand] using
-    (two_riemannZeta_eq_tsum_int_inv_even_pow (k := 2) (by grind) (by simp)).symm
+    (two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (k := 2) (by grind) (by simp)).symm
 
 theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z := by
   simp only [e2Summand, ← tsum_comp_neg (fun a ↦ eisSummand 2 ![-n, a] z)]
@@ -76,7 +76,7 @@ lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summ
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, mul_sum, Int.cast_zero,
     zero_mul, add_zero] at *
   congr
-  · simpa using (two_riemannZeta_eq_tsum_int_inv_even_pow (k := 2) (by grind) (by simp)).symm
+  · simpa using (two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (k := 2) (by grind) (by simp)).symm
   · ext a
     norm_cast at *
     simp_rw [this a, ← tsum_mul_left, ← tsum_neg,ofReal_mul, ofReal_ofNat, mul_pow, I_sq, neg_mul,
@@ -516,7 +516,7 @@ theorem extracted_2_δ (z : ℍ) (b : ℤ) : CauchySeq fun N : ℕ ↦ ∑ n ∈
     (G2Term z ![b,n] + δ ![b, n]) := by
   apply Filter.Tendsto.cauchySeq (x := ∑' (x : ℤ),
         (((b  : ℂ) * z + x + 1)⁻¹ * (((b : ℂ) * z + x) ^ 2)⁻¹  + δ ![b, x]))
-  simpa using (G2_prod_summable1_δ z b).hasSum.comp tendsto_Ico_atTop_atTop'
+  simpa using (G2_prod_summable1_δ z b).hasSum.comp tendsto_Ico_atTop_atTop
 
 theorem extracted_3 (z : ℍ) (b : ℤ) : CauchySeq fun N : ℕ ↦
   ∑ n ∈ Finset.Ico (-N : ℤ) N, (1 / ((b : ℂ) * z + n) - 1 / (b * z + n + 1)) := by
@@ -528,7 +528,7 @@ lemma extracted_4 (z : ℍ) (b : ℤ) :
     CauchySeq fun N : ℕ ↦ ∑ n ∈ Ico (-N : ℤ) N, (1 / ((b : ℂ) * z + n) ^ 2 ) := by
   apply Filter.Tendsto.cauchySeq (x := ∑' (x : ℤ), ((((b : ℂ) * z + x) ^ 2)⁻¹))
   simpa using ((linear_right_summable z b  (k := 2) (by norm_num)).hasSum).comp
-    tendsto_Ico_atTop_atTop'
+    tendsto_Ico_atTop_atTop
 
 lemma poly_id (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ * (((b : ℂ) * z + n) ^ 2)⁻¹ +
     (δ ![b, n]) + (((b : ℂ) * z + n)⁻¹ - ((b : ℂ) * z + n + 1)⁻¹) = (((b : ℂ) * z + n) ^ 2)⁻¹ := by
@@ -561,11 +561,10 @@ lemma poly_id (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ * (((b : ℂ)
 lemma G2_alt_eq (z : ℍ) : G2 z = ∑' m, ∑' n, (G2Term z ![m, n] + δ ![m, n]) := by
   set t :=  ∑' m, ∑' n,  (G2Term z ![m, n] + δ ![m, n])
   rw [G2, show t = t + 0 by ring, ←   tsum_tsumFilter_eq z, ← Summable.tsum_add]
-  · rw [tsum_eq_tsum_IccFilter]
+  · rw [← tsum_IccFilter_eq_tsum]
     · congr
       ext a
-      rw [e2Summand, ← tsum_eq_tsum_IcoFilter,
-        ← Summable.tsum_add]
+      rw [e2Summand, tsum_IcoFilter_eq_tsum, ← Summable.tsum_add]
       · congr
         ext b
         simp [eisSummand, G2Term, poly_id z a b]
@@ -600,7 +599,7 @@ def swap_equiv {α : Type*} : Equiv (Fin 2 → α) (Fin 2 → α) := Equiv.mk sw
 
 lemma G2_inde_lhs (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) - -2 * π * I / z =
     ∑' n : ℤ, ∑' m : ℤ, (G2Term z ![m, n] + δ ![m, n]) := by
-  rw [← tsumFilter_tsum_eq z, ← (G2_S_aa z), tsum_eq_tsum_IcoFilter, ← Summable.tsum_sub]
+  rw [← tsumFilter_tsum_eq z, ← (G2_S_aa z), ← tsum_IcoFilter_eq_tsum, ← Summable.tsum_sub]
   · congr
     ext N
     rw [← Summable.tsum_sub]

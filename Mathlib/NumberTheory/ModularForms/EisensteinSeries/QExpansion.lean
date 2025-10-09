@@ -120,7 +120,7 @@ lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) : iteratedDerivWithin 
 theorem contDiffOn_tsum_cexp (k : ℕ∞) :
     ContDiffOn ℂ k (fun z : ℂ ↦ ∑' n : ℕ, cexp (2 * ↑π * Complex.I * z) ^ n) ℍₒ :=
   contDiffOn_of_differentiableOn_deriv fun m _ z hz ↦
-  ((summableUniformlyOn_differentiableOn isOpen_upperHalfPlaneSet
+  ((SummableLocallyUniformlyOn.differentiableOn isOpen_upperHalfPlaneSet
   (summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' m)
   (fun n _ hz => differnetiableAt_iteratedDerivWithin_cexp n m
     isOpen_upperHalfPlaneSet hz)) z hz).congr (fun z hz ↦
@@ -231,8 +231,8 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
     simp [coe_mk_subtype, show k - 1 + 1 = k by omega, one_div, neg_mul, mul_assoc, eisSummand,
       Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Int.cast_zero, zero_mul, Fin.cons_one,
       zero_add, zpow_neg, zpow_natCast, Int.cast_natCast,
-      two_riemannZeta_eq_tsum_int_inv_even_pow (by omega) hk2, add_right_inj, mul_eq_mul_left_iff,
-      OfNat.ofNat_ne_zero, or_false] at *
+      two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (by omega) hk2, add_right_inj,
+      mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false] at *
     conv =>
       rw [← tsum_mul_left]
       enter [1,1]
