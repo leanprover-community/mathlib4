@@ -13,8 +13,8 @@ and `X.nonDegenerate n` of degenerate or non-degenerate simplices of dimension `
 
 Any simplex `x : X _⦋n⦌` can be written in a unique way as `X.map f.op y`
 for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y`
-(see lemmas `exists_nonDegenerate`, `unique_nonDegenerate₁`, `unique_nonDegenerate₂`
-and `unique_nonDegenerate₃`).
+(see lemmas `exists_nonDegenerate`, `unique_nonDegenerate_dim`,
+`unique_nonDegenerate_simplex` and `unique_nonDegenerate_map`).
 
 -/
 
@@ -37,14 +37,14 @@ set `X` is the complement of `X.degenerate n`. -/
 def nonDegenerate (n : ℕ) : Set (X _⦋n⦌) := (X.degenerate n)ᶜ
 
 @[simp]
-lemma degenerate_zero : X.degenerate 0 = ⊥ := by
+lemma degenerate_zero : X.degenerate 0 = ∅ := by
   ext x
-  simp only [Set.bot_eq_empty, Set.mem_empty_iff_false, iff_false]
+  simp only [Set.mem_empty_iff_false, iff_false]
   rintro ⟨m, hm, _⟩
   simp at hm
 
 @[simp]
-lemma nondegenerate_zero : X.nonDegenerate 0 = ⊤ := by
+lemma nondegenerate_zero : X.nonDegenerate 0 = Set.univ := by
   simp [nonDegenerate]
 
 variable {n : ℕ}
@@ -64,7 +64,7 @@ alias mem_degenerate_iff_not_mem_nonDegenerate := mem_degenerate_iff_notMem_nonD
 
 lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
-  ⟨n, by omega, SimplexCategory.σ i, Set.mem_range_self x⟩
+  ⟨n, by cutsat, SimplexCategory.σ i, Set.mem_range_self x⟩
 
 lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
@@ -73,7 +73,7 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
   · rintro ⟨m, hm, f, y, hy⟩
     rw [← image.fac f, op_comp] at hy
     have : _ ≤ m := SimplexCategory.len_le_of_mono (image.ι f)
-    exact ⟨(image f).len, by omega, factorThruImage f, inferInstance, by aesop⟩
+    exact ⟨(image f).len, by cutsat, factorThruImage f, inferInstance, by aesop⟩
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
 
@@ -87,7 +87,7 @@ lemma degenerate_eq_iUnion_range_σ :
     obtain ⟨i, θ, rfl⟩ := SimplexCategory.eq_σ_comp_of_not_injective f (fun hf ↦ by
       rw [← SimplexCategory.mono_iff_injective] at hf
       have := SimplexCategory.le_of_mono f
-      omega)
+      cutsat)
     aesop
   · intro hx
     simp only [Set.mem_iUnion, Set.mem_range] at hx
@@ -114,7 +114,7 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
     (y : X.obj (op m)) (hy : X.map f.op y = x) :
     IsIso f := by
   obtain ⟨x, hx⟩ := x
-  induction' m using SimplexCategory.rec with m
+  induction m using SimplexCategory.rec with | _ m
   rw [mem_nonDegenerate_iff_notMem_degenerate] at hx
   by_contra!
   refine hx ⟨_, not_le.1 (fun h ↦ this ?_), f, y, hy⟩
@@ -134,8 +134,8 @@ namespace unique_nonDegenerate
 
 /-!
 Auxiliary definitions and lemmas for the lemmas
-`unique_nonDegenerate₁`, `unique_nonDegenerate₂` and
-`unique_nonDegenerate₃` which assert the uniqueness of the
+`unique_nonDegenerate_dim`, `unique_nonDegenerate_simplex` and
+`unique_nonDegenerate_map` which assert the uniqueness of the
 decomposition obtained in the lemma `exists_nonDegenerate`.
 -/
 
@@ -170,9 +170,10 @@ private lemma mono_g : Mono (g hf₁ f₂) := by
   rw [← image.fac (g hf₁ f₂)]
   infer_instance
 
-private lemma le : m₁ ≤ m₂ := by
+private lemma le : m₁ ≤ m₂ :=
   have := isIso_factorThruImage_g hf₁ hy₁ hy₂
-  exact SimplexCategory.len_le_of_mono (factorThruImage (g hf₁ f₂) ≫ image.ι _)
+  SimplexCategory.len_le_of_mono
+    (factorThruImage (g hf₁ f₂) ≫ image.ι _)
 
 end
 
@@ -191,12 +192,12 @@ section
 open unique_nonDegenerate
 
 /-!
-The following lemmas `unique_nonDegenerate₁`, `unique_nonDegenerate₂` and
-`unique_nonDegenerate₃` assert the uniqueness of the decomposition
+The following lemmas `unique_nonDegenerate_dim`, `unique_nonDegenerate_simplex` and
+`unique_nonDegenerate_map` assert the uniqueness of the decomposition
 obtained in the lemma `exists_nonDegenerate`.
 -/
 
-lemma unique_nonDegenerate₁ (x : X _⦋n⦌) {m₁ m₂ : ℕ}
+lemma unique_nonDegenerate_dim (x : X _⦋n⦌) {m₁ m₂ : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m₁⦌) [Epi f₁] (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m₂⦌) [Epi f₂] (y₂ : X.nonDegenerate m₂) (hy₂ : x = X.map f₂.op y₂) :
     m₁ = m₂ := by
@@ -204,7 +205,7 @@ lemma unique_nonDegenerate₁ (x : X _⦋n⦌) {m₁ m₂ : ℕ}
   obtain ⟨⟨hf₂⟩⟩ := isSplitEpi_of_epi f₂
   exact le_antisymm (le hf₁ hy₁ hy₂) (le hf₂ hy₂ hy₁)
 
-lemma unique_nonDegenerate₂ (x : X _⦋n⦌) {m : ℕ}
+lemma unique_nonDegenerate_simplex (x : X _⦋n⦌) {m : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :
     y₁ = y₂ := by
@@ -212,7 +213,7 @@ lemma unique_nonDegenerate₂ (x : X _⦋n⦌) {m : ℕ}
   ext
   simpa [g_eq_id hy₁ hy₂ hf₁] using (map_g_op_y₂ hf₁ hy₁ hy₂).symm
 
-lemma unique_nonDegenerate₃ (x : X _⦋n⦌) {m : ℕ}
+lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :
     f₁ = f₂ := by
@@ -233,8 +234,8 @@ lemma unique_nonDegenerate₃ (x : X _⦋n⦌) {m : ℕ}
   have hα₂ : Monotone α := by
     rintro y₁ y₂ h
     by_contra! h'
-    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by omega] at h'
-    simpa only [hα₁, hα₁] using f₁.toOrderHom.monotone h'.le
+    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by cutsat] at h'
+    simpa only [hα₁] using f₁.toOrderHom.monotone h'.le
   exact ⟨{ section_ := SimplexCategory.Hom.mk ⟨α, hα₂⟩, id := by ext : 3; apply hα₁ },
     by simp [α]⟩
 

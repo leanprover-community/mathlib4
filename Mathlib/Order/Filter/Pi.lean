@@ -249,6 +249,10 @@ theorem tendsto_piMap_pi {β : ι → Type*} {f : ∀ i, α i → β i} {l : ∀
     Tendsto (Pi.map f) (pi l) (pi l') :=
   tendsto_pi.2 fun i ↦ (h i).comp (tendsto_eval_pi _ _)
 
+theorem pi_comap {β : ι → Type*} {f : ∀ i, α i → β i} {l : ∀ i, Filter (β i)} :
+    pi (fun i ↦ comap (f i) (l i)) = comap (Pi.map f) (pi l) := by
+  simp [Filter.pi, Filter.comap_comap, Function.comp_def]
+
 end Pi
 
 /-! ### `n`-ary coproducts of filters -/

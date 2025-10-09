@@ -9,9 +9,9 @@ import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Sets.Closeds
 
 /-!
-# Clopen subsets in cartesian products
+# Clopen subsets in Cartesian products
 
-In general, a clopen subset in a cartesian product of topological spaces
+In general, a clopen subset in a Cartesian product of topological spaces
 cannot be written as a union of "clopen boxes",
 i.e. products of clopen subsets of the components (see [buzyakovaClopenBox] for counterexamples).
 
@@ -21,7 +21,7 @@ follows the one given in [buzyakovaClopenBox].
 
 We deduce that in a product of compact spaces, a clopen subset is a finite union of clopen boxes,
 and use that to prove that the property of having countably many clopens is preserved by taking
-cartesian products of compact spaces (this is relevant to the theory of light profinite sets).
+Cartesian products of compact spaces (this is relevant to the theory of light profinite sets).
 
 ## References
 

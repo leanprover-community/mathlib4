@@ -51,7 +51,7 @@ structure PairingCore where
 variable {A}
 
 /-- The `PairingCore` structure induced by a pairing. The opposite construction
-if `PairingCore.pairing`. -/
+is `PairingCore.pairing`. -/
 noncomputable def Pairing.pairingCore (P : A.Pairing) [P.IsProper] :
     A.PairingCore where
   ι := P.II

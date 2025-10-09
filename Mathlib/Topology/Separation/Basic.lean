@@ -192,7 +192,7 @@ theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin :
   · rcases ihs t hts htne hto with ⟨x, hxt, hxo⟩
     exact ⟨x, hts.1 hxt, hxo⟩
   · -- Porting note: was `rcases minimal_nonempty_open_eq_singleton ho hne _ with ⟨x, hx⟩`
-    --               https://github.com/leanprover/std4/issues/116
+    --               https://github.com/leanprover-community/batteries/issues/116
     rsuffices ⟨x, hx⟩ : ∃ x, s.toSet = {x}
     · exact ⟨x, hx.symm ▸ rfl, hx ▸ ho⟩
     refine minimal_nonempty_open_eq_singleton ho hne ?_
@@ -310,8 +310,8 @@ variable (X) in
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
 def Bornology.relativelyCompact : Bornology X where
-  cobounded' := Filter.coclosedCompact X
-  le_cofinite' := Filter.coclosedCompact_le_cofinite
+  cobounded := Filter.coclosedCompact X
+  le_cofinite := Filter.coclosedCompact_le_cofinite
 
 theorem Bornology.relativelyCompact.isBounded_iff {s : Set X} :
     @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) :=
@@ -705,17 +705,20 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
   exact continuousWithinAt_congr_set (eventuallyEq_insert h)
 
-theorem ContinousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
+theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
     (ht : ∀ y ∈ s, f y = c) : f x = c := by
   rw [← Set.mem_singleton_iff, ← closure_singleton]
   exact h.mem_closure hx ht
 
+@[deprecated (since := "2025-08-22")] alias ContinousWithinAt.eq_const_of_mem_closure :=
+  ContinuousWithinAt.eq_const_of_mem_closure
+
 theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)
     (ht : s.EqOn f (fun _ ↦ c)) : (closure s).EqOn f (fun _ ↦ c) := by
   intro x hx
-  apply ContinousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
+  apply ContinuousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
 
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
@@ -812,7 +815,7 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology 
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
-1. `U` is a punctured neighborhood of `x` (ie. `U ∪ {x}` is a neighbourhood of `x`),
+1. `U` is a punctured neighborhood of `x` (i.e. `U ∪ {x}` is a neighbourhood of `x`),
 2. `U` is disjoint from `s`.
 -/
 theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X} (hx : x ∈ s) :
@@ -830,6 +833,17 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   rw [update_image]
   apply isClosed_set_pi
   simp [forall_update_iff, hs]
+
+lemma nhdsNE_le_cofinite {α : Type*} [TopologicalSpace α] [T1Space α] (a : α) :
+    𝓝[≠] a ≤ cofinite := by
+  refine le_cofinite_iff_compl_singleton_mem.mpr fun x ↦ ?_
+  rcases eq_or_ne a x with rfl | hx
+  exacts [self_mem_nhdsWithin, eventually_ne_nhdsWithin hx]
+
+lemma Function.update_eventuallyEq_nhdsNE
+    {α β : Type*} [TopologicalSpace α] [T1Space α] [DecidableEq α] (f : α → β) (a a' : α) (b : β) :
+    Function.update f a b =ᶠ[𝓝[≠] a'] f :=
+  (Function.update_eventuallyEq_cofinite f a b).filter_mono (nhdsNE_le_cofinite a')
 
 /-! ### R₁ (preregular) spaces -/
 

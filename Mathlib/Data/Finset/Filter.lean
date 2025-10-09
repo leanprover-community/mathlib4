@@ -141,15 +141,21 @@ theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidableP
     [DecidablePred p] : @filter α p h s = s.filter p := by congr
 
 @[simp]
-theorem filter_True {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
+theorem filter_true {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
+
+@[deprecated (since := "2025-08-24")] alias filter_True := filter_true
 
 @[simp]
-theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
+theorem filter_false {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
+
+@[deprecated (since := "2025-08-24")] alias filter_False := filter_false
 
 variable {p q}
 
+@[simp]
 lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
 
+@[simp]
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]
 
 theorem filter_nonempty_iff : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
