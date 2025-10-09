@@ -713,10 +713,8 @@ lemma setIntegral_mono_on_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂�
   rw [setIntegral_congr_set hs.toMeasurable_ae_eq.symm,
     setIntegral_congr_set hs.toMeasurable_ae_eq.symm]
   refine setIntegral_mono_on_ae ?_ ?_ ?_ ?_
-  · rw [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
-    exact hf
-  · rw [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
-    exact hg
+  · rwa [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
+  · rwa [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
   · exact measurableSet_toMeasurable μ s
   · filter_upwards [hs.toMeasurable_ae_eq.mem_iff, h] with x hx h
     rwa [hx]
