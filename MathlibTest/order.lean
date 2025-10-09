@@ -105,13 +105,7 @@ error: No contradiction found.
 
 Additional diagnostic information may be available using the `set_option trace.order true` command.
 ---
-trace: [order] Working on type ℕ (linear order)
-[order] Collected atoms:
-    #0 := x
-    #1 := y
-[order] Collected facts:
-    #0 ≠ #1
-    #0 ≤ #1
+trace:
 [order] Working on type α (partial order)
 [order] Collected atoms:
     #0 := a ⊓ (b ⊔ c)
