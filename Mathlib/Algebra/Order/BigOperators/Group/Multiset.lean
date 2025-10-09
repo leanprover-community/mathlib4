@@ -5,10 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Multiset.Fold
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Big operators on a multiset in ordered groups
@@ -23,30 +22,31 @@ variable {ι α β : Type*}
 
 namespace Multiset
 section OrderedCommMonoid
-variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] {s t : Multiset α} {a : α}
+variable [CommMonoid α] [PartialOrder α] {s t : Multiset α} {a : α}
 
 @[to_additive sum_nonneg]
-lemma one_le_prod_of_one_le : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
+lemma one_le_prod_of_one_le [MulLeftMono α] : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
   Quotient.inductionOn s fun l hl => by simpa using List.one_le_prod_of_one_le hl
 
 @[to_additive]
-lemma single_le_prod : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.prod :=
+lemma single_le_prod [IsOrderedMonoid α] : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.prod :=
   Quotient.inductionOn s fun l hl x hx => by simpa using List.single_le_prod hl x hx
 
 @[to_additive sum_le_card_nsmul]
-lemma prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) : s.prod ≤ n ^ card s := by
+lemma prod_le_pow_card [MulLeftMono α] (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) :
+    s.prod ≤ n ^ card s := by
   induction s using Quotient.inductionOn
   simpa using List.prod_le_pow_card _ _ h
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
-lemma all_one_of_le_one_le_of_prod_eq_one :
+lemma all_one_of_le_one_le_of_prod_eq_one [IsOrderedMonoid α] :
     (∀ x ∈ s, (1 : α) ≤ x) → s.prod = 1 → ∀ x ∈ s, x = (1 : α) :=
   Quotient.inductionOn s (by
     simp only [quot_mk_to_coe, prod_coe, mem_coe]
     exact fun l => List.all_one_of_le_one_le_of_prod_eq_one)
 
 @[to_additive]
-lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
+lemma prod_le_prod_of_rel_le [MulLeftMono α] (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
   induction h with
   | zero => rfl
   | cons rh _ rt =>
@@ -54,20 +54,22 @@ lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
     exact mul_le_mul' rh rt
 
 @[to_additive]
-lemma prod_map_le_prod_map {s : Multiset ι} (f : ι → α) (g : ι → α) (h : ∀ i, i ∈ s → f i ≤ g i) :
-    (s.map f).prod ≤ (s.map g).prod :=
+lemma prod_map_le_prod_map [MulLeftMono α] {s : Multiset ι} (f : ι → α) (g : ι → α)
+    (h : ∀ i, i ∈ s → f i ≤ g i) : (s.map f).prod ≤ (s.map g).prod :=
   prod_le_prod_of_rel_le <| rel_map.2 <| rel_refl_of_refl_on h
 
 @[to_additive]
-lemma prod_map_le_prod (f : α → α) (h : ∀ x, x ∈ s → f x ≤ x) : (s.map f).prod ≤ s.prod :=
+lemma prod_map_le_prod [MulLeftMono α] (f : α → α) (h : ∀ x, x ∈ s → f x ≤ x) :
+    (s.map f).prod ≤ s.prod :=
   prod_le_prod_of_rel_le <| rel_map_left.2 <| rel_refl_of_refl_on h
 
 @[to_additive]
-lemma prod_le_prod_map (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) : s.prod ≤ (s.map f).prod :=
+lemma prod_le_prod_map [MulLeftMono α] (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) :
+    s.prod ≤ (s.map f).prod :=
   prod_map_le_prod (α := αᵒᵈ) f h
 
 @[to_additive card_nsmul_le_sum]
-lemma pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
+lemma pow_card_le_prod [MulLeftMono α] (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
   rw [← Multiset.prod_replicate, ← Multiset.map_const]
   exact prod_map_le_prod _ h
 
