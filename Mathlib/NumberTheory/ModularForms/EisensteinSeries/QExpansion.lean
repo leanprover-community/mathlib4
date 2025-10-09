@@ -296,7 +296,7 @@ theorem even_div_two_ne_zero {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) : k / 2 �
   refine (Int.two_le_iff_pos_of_even (m := k) (by simpa using hk2 )).mpr (by omega)
 
 lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) :
-  (1 / (riemannZeta (k))) * ((-2 * π * I) ^ k / (k - 1)!) = -((2 * k) / bernoulli k) := by
+  (1 / (riemannZeta k)) * ((-2 * π * I) ^ k / (k - 1)!) = -(2 * k / bernoulli k) := by
   have hk0 := even_div_two_ne_zero hk2 hkn0
   have hk1 : 2 * (k / 2) = k := Nat.two_mul_div_two_of_even hk2
   have hk11 : 2 * (((k / 2) : ℕ) : ℂ) = k := by norm_cast
@@ -321,8 +321,8 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
   grind
 /-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    (E hk) z = 1 + -((2 * k) / bernoulli k) *
-    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * ↑π * I * z) ^ (n : ℤ) := by
+    (E hk) z = 1 + -(2 * k / bernoulli k) *
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
   have h2 := EisensteinSeries.q_expansion_riemannZeta hk hk2 z
   rw [eisensteinSeries_coeff_identity hk2 (by omega)] at h2
   apply h2
