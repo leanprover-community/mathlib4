@@ -292,4 +292,26 @@ lemma mono_comp_iff_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
 
 end
 
+section Opposite
+
+variable {X Y : C} {f : X ⟶ Y}
+
+/-- The opposite of a split mono is a split epi. -/
+def SplitMono.op (h : SplitMono f) : SplitEpi f.op where
+  section_ := h.retraction.op
+  id := Quiver.Hom.unop_inj (by simp)
+
+/-- The opposite of a split epi is a split mono. -/
+def SplitEpi.op (h : SplitEpi f) : SplitMono f.op where
+  retraction := h.section_.op
+  id := Quiver.Hom.unop_inj (by simp)
+
+instance [IsSplitMono f] : IsSplitEpi f.op :=
+  .mk' IsSplitMono.exists_splitMono.some.op
+
+instance [IsSplitEpi f] : IsSplitMono f.op :=
+  .mk' IsSplitEpi.exists_splitEpi.some.op
+
+end Opposite
+
 end CategoryTheory
