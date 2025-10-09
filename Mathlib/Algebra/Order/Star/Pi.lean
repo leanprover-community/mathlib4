@@ -13,7 +13,7 @@ import Mathlib.Algebra.Star.Pi
 
 variable {ι : Type*} [Finite ι]
   {A : ι → Type*} [Π i, PartialOrder (A i)] [Π i, NonUnitalSemiring (A i)]
-  [Π i, StarRing (A i)] [Π i, StarOrderedRing (A i)]
+  [Π i, StarRing (A i)] [∀ i, StarOrderedRing (A i)]
 
 open AddSubmonoid in
 instance Pi.instStarOrderedRing : StarOrderedRing (Π i, A i) where
