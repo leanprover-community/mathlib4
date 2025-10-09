@@ -57,7 +57,10 @@ lemma Nodup.splits3_l_nodup (l : List α) : l.splits3_l.Nodup := by
         constructor
         · rintro rfl rfl
           apply List.Disjoint.of_map at hdisj_map
-          apply List.Disjoint_self _ (List.splits_non_empty _) at hdisj_map
+          have hnil : ∃ l, l ∈ y1.splits := by
+            exists ([], y1)
+            apply List.nil_self_mem_splits
+          apply List.Disjoint_self _ hnil at hdisj_map
           assumption
         · unfold Function.comp; simp
           simp [Disjoint] at *
