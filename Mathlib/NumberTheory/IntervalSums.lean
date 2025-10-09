@@ -21,7 +21,7 @@ We also prove that these filters are all `NeBot` and `LeAtTop`.
 
 open Finset Topology
 
-lemma Icc_succ_succ (n : ℕ) : Finset.Icc (-(n + 1) : ℤ) (n + 1) = Finset.Icc (-n : ℤ) n ∪
+lemma Finset.Icc_succ_succ (n : ℕ) : Finset.Icc (-(n + 1) : ℤ) (n + 1) = Finset.Icc (-n : ℤ) n ∪
   {(-(n + 1) : ℤ), (n + 1 : ℤ)} := by
   refine Finset.ext_iff.mpr ?_
   intro a
@@ -29,7 +29,7 @@ lemma Icc_succ_succ (n : ℕ) : Finset.Icc (-(n + 1) : ℤ) (n + 1) = Finset.Icc
     Finset.mem_insert, Finset.mem_union, Finset.mem_singleton]
   omega
 
-lemma sum_Icc_of_even_eq_range {α : Type*} [CommRing α] {f : ℤ → α} (hf : ∀ n, f n = f (-n))
+lemma Finset.sum_Icc_of_even_eq_range {α : Type*} [CommRing α] {f : ℤ → α} (hf : ∀ n, f n = f (-n))
     (N : ℕ) : ∑ m ∈  Finset.Icc (-N : ℤ) N, f m =  2 * ∑ m ∈ Finset.range (N + 1), f m - f 0 := by
   induction N with
   | zero => simp [two_mul]
@@ -41,12 +41,12 @@ lemma sum_Icc_of_even_eq_range {α : Type*} [CommRing α] {f : ℤ → α} (hf :
     grind
 
 @[to_additive]
-lemma prod_Icc_eq_prod_Ico_succ {α : Type*} [CommMonoid α] (f : ℤ → α) {l u : ℤ} (h : l ≤ u) :
-    ∏ m ∈ Icc l u, f m = (∏ m ∈ Finset.Ico l u, f m) * f u := by
+lemma Finset.prod_Icc_eq_prod_Ico_succ {α : Type*} [CommMonoid α] (f : ℤ → α) {l u : ℤ}
+    (h : l ≤ u) : ∏ m ∈ Icc l u, f m = (∏ m ∈ Finset.Ico l u, f m) * f u := by
   simp [Finset.Icc_eq_cons_Ico h,Finset.cons_eq_insert, Finset.mem_Ico, lt_self_iff_false, mul_comm]
 
-lemma sum_Icc_add_endpoints {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ} (hn : 1 ≤ N) :
-    ∑ m ∈ Icc (-N : ℤ) N, f m = f N + f (-N : ℤ)  + ∑ m ∈ Icc (-(N - 1) : ℤ) (N - 1), f m := by
+lemma Finset.sum_Icc_add_endpoints {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ} (hn : 1 ≤ N) :
+    ∑ m ∈ Icc (-N : ℤ) N, f m = f N + f (-N : ℤ) + ∑ m ∈ Icc (-(N - 1) : ℤ) (N - 1), f m := by
   induction N
   · grind
   · zify
