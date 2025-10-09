@@ -21,7 +21,7 @@ Furthermore, we show that
 * when `M` is linearly ordered and cancellative, so is `DivisibleHull M`, which is also an
   ordered `ℚ≥0`-module.
 * when `M` is a linearly ordered group, `DivisibleHull M` is an ordered `ℚ`-module, and
-  `ArchimedeanClass` are preserved.
+  `ArchimedeanClass` is preserved.
 
 Despite the name, this file doesn't implement a `DivisibleBy` instance on `DivisibleHull`. This
 should be implemented on `LocalizedModule` in a more general setting (TODO: implement this).
