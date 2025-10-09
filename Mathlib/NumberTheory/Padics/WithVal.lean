@@ -177,10 +177,17 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
     rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, withValUniformEquiv_cast_apply]
     exact (norm_rat_le_one_iff_padicValuation_le_one p)
 
-open scoped Valued in
+end Padic
+
+namespace PadicInt
+
+open Padic Valued
+
+variable {p : ℕ} [Fact p.Prime]
+
 /-- The `p`-adic integers are isomophic as uniform spaces to the integers of the uniform completion
 of the rationals at the `p`-adic valuation. -/
-noncomputable def IntegersUniformEquiv : 𝒪[(Rat.padicValuation p).Completion] ≃ᵤ ℤ_[p] :=
+noncomputable def withValIntegersUniformEquiv : 𝒪[(Rat.padicValuation p).Completion] ≃ᵤ ℤ_[p] :=
   Padic.withValUniformEquiv.subtype fun _ ↦ (withValUniformEquiv_norm_le_one_iff _).symm
 
-end Padic
+end PadicInt
