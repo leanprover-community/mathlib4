@@ -195,7 +195,7 @@ theorem laplacian_eq_iteratedFDeriv_stdOrthonormalBasis :
       ∑ i, iteratedFDeriv ℝ 2 f x ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] :=
   laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
 
-/-- For a function on `ℝ`, the Laplacian is the second derivative. -/
+/-- For a function on `ℝ`, the Laplacian is the second derivative: version within a set. -/
 theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f : ℝ → F)
     (hs : UniqueDiffOn ℝ s) (he : e ∈ s) :
     (Δ[s] f) e = iteratedDerivWithin 2 f s e := by
@@ -210,8 +210,8 @@ theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f :
 @[simp]
 theorem laplacian_eq_iteratedDeriv_real {e : ℝ} (f : ℝ → F) :
     Δ f e = iteratedDeriv 2 f e := by
-  rw [← laplacianWithin_univ, laplacianWithin_eq_iteratedDerivWithin_real _ (by simp) (by simp),
-    iteratedDerivWithin_univ]
+  rw [← laplacianWithin_univ, ← iteratedDerivWithin_univ,
+    laplacianWithin_eq_iteratedDerivWithin_real _ (by simp) (by simp)]
 
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
