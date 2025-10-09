@@ -253,11 +253,16 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
   apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm
     isPiSystem_prod _
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
-  intros _ u Hu v Hv Heq
+  intro _ u Hu v Hv Heq
   simp_rw [← Heq, Measure.prod_prod]
   apply Measurable.mul
   · exact (Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst)
   · exact (Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd)
+
+lemma apply_iUnion_le {μ : ProbabilityMeasure Ω} {f : ℕ → Set Ω}
+    (hf : Summable fun n ↦ μ (f n)) :
+    μ (⋃ n, f n) ≤ ∑' n, μ (f n) := by
+  simpa [← ENNReal.coe_le_coe, ENNReal.coe_tsum hf] using MeasureTheory.measure_iUnion_le f
 
 section convergence_in_distribution
 

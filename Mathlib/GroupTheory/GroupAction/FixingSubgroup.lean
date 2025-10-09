@@ -132,6 +132,10 @@ theorem fixingSubgroup_fixedPoints_gc :
       ((fun P : Subgroup M => fixedPoints P α) ∘ OrderDual.ofDual) :=
   fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
 
+@[to_additive (attr := simp)]
+lemma fixingSubgroup_empty : fixingSubgroup M (∅ : Set α) = ⊤ :=
+  GaloisConnection.l_bot (fixingSubgroup_fixedPoints_gc M α)
+
 @[to_additive]
 theorem fixingSubgroup_antitone : Antitone (fixingSubgroup M : Set α → Subgroup M) :=
   (fixingSubgroup_fixedPoints_gc M α).monotone_l
@@ -164,7 +168,7 @@ theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubgroup_fixedPoints_gc M α).u_iInf
 
-/-- The orbit of the fixing subgroup of `sᶜ` (ie. the moving subgroup of `s`) is a subset of `s` -/
+/-- The orbit of the fixing subgroup of `sᶜ` (i.e. the moving subgroup of `s`) is a subset of `s` -/
 @[to_additive]
 theorem orbit_fixingSubgroup_compl_subset {s : Set α} {a : α} (a_in_s : a ∈ s) :
     MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by

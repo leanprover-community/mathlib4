@@ -25,7 +25,7 @@ open Real Set MeasureTheory Filter Asymptotics
 
 open scoped Real Topology
 
-open Complex hiding exp abs_of_nonneg
+open Complex hiding exp
 
 theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p) :
     (fun x : ℝ => exp (- b * x ^ p)) =o[atTop] fun x : ℝ => exp (-x) := by
@@ -35,7 +35,7 @@ theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p)
     refine eventuallyEq_of_mem (Ioi_mem_atTop (0 : ℝ)) (fun x hx => ?_)
     rw [mem_Ioi] at hx
     rw [rpow_sub_one hx.ne']
-    field_simp [hx.ne']
+    field_simp
     ring
   apply tendsto_id.atTop_mul_atTop₀
   refine tendsto_atTop_add_const_right atTop (-1 : ℝ) ?_
@@ -173,7 +173,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     (x * cexp (-b * x ^ 2)) x := by
     intro x
     convert ((hasDerivAt_pow 2 x).const_mul (-b)).cexp.const_mul (-(2 * b)⁻¹) using 1
-    field_simp [hb']
+    field_simp
     ring
   have B : Tendsto (fun y : ℝ ↦ -(2 * b)⁻¹ * cexp (-b * (y : ℂ) ^ 2))
     atTop (𝓝 (-(2 * b)⁻¹ * 0)) := by
@@ -325,9 +325,11 @@ theorem integral_gaussian_Ioi (b : ℝ) :
   convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
   · simp
   · rw [sqrt_eq_rpow, ← ofReal_div, ofReal_div, ofReal_cpow]
-    · norm_num
+    · simp
     · exact (div_pos pi_pos hb).le
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
 theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
@@ -340,8 +342,8 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
       norm_num
       rw [rpow_neg (le_of_lt hx), rpow_one]
     rw [smul_eq_mul, this]
-    field_simp [(ne_of_lt (show 0 < x from hx)).symm]
-    norm_num; ring
+    simp [field, (ne_of_lt (show 0 < x from hx)).symm]
+    norm_num
   · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel_right₀ _ (two_ne_zero' ℝ)]
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/

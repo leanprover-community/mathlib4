@@ -348,7 +348,7 @@ variable {R}
 @[simps!] def centerCongr {S} [NonUnitalNonAssocRing S] (e : R ≃+* S) : center R ≃+* center S :=
   NonUnitalSubsemiring.centerCongr e
 
-/-- The center of a (not necessarily uintal or associative) ring
+/-- The center of a (not necessarily unital or associative) ring
 is isomorphic to the center of its opposite. -/
 @[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
   NonUnitalSubsemiring.centerToMulOpposite
@@ -471,20 +471,20 @@ theorem mem_closure_iff {s : Set R} {x} :
       clear _hx _hy
       induction hx, hy using AddSubgroup.closure_induction₂ with
       | mem _ _ hx hy => exact AddSubgroup.subset_closure (mul_mem hx hy)
-      | one_left => simp
-      | one_right => simp
-      | mul_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
-      | inv_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
-      | inv_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
+      | zero_left => simp
+      | zero_right => simp
+      | add_left _ _ _ _ _ _ h₁ h₂ => simpa [add_mul] using add_mem h₁ h₂
+      | add_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
+      | neg_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
+      | neg_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
   fun h => by
     induction h using AddSubgroup.closure_induction with
     | mem _ hx => induction hx using Subsemigroup.closure_induction with
       | mem _ h => exact subset_closure h
       | mul _ _ _ _ h₁ h₂ => exact mul_mem h₁ h₂
-    | one => exact zero_mem _
-    | mul _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
-    | inv _ _ h => exact neg_mem h⟩
+    | zero => exact zero_mem _
+    | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
+    | neg _ _ h => exact neg_mem h⟩
 
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
@@ -685,6 +685,9 @@ theorem range_eq_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective 
   the equalizer of f and g as a `NonUnitalSubring` of R -/
 def eqLocus (f g : R →ₙ+* S) : NonUnitalSubring R :=
   { (f : R →ₙ* S).eqLocus g, (f : R →+ S).eqLocus g with carrier := {x | f x = g x} }
+
+@[simp]
+theorem mem_eqLocus {f g : R →ₙ+* S} {x : R} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 @[simp]
 theorem eqLocus_same (f : R →ₙ+* S) : f.eqLocus f = ⊤ :=

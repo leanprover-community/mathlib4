@@ -459,7 +459,7 @@ theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
   rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure, VectorMeasure.coe_sub,
     Pi.sub_apply, Measure.toSignedMeasure_apply, Measure.toSignedMeasure_apply]
   by_cases hi : MeasurableSet i
-  · rw [if_pos hi, if_pos hi]; simp [hs.1, hs.2, measureReal_def]
+  · simp [hs.1, hs.2, measureReal_def]
   · simp [if_neg hi]
 
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :

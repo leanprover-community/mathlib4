@@ -9,7 +9,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 # Simplices that are uniquely codimensional one faces
 
 Let `X` be a simplicial set. If `x : X _⦋d⦌` and `y : X _⦋d + 1⦌`,
-we say that `x` is uniquely `1`-codimensional face of `y` if there
+we say that `x` is uniquely a `1`-codimensional face of `y` if there
 exists a unique `i : Fin (d + 2)` such that `X.δ i y = x`. In this file,
 we extend this to a predicate `IsUniquelyCodimOneFace` involving two terms
 in the type `X.S` of simplices of `X`. This is used in the
