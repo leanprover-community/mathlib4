@@ -66,6 +66,7 @@ lemma map_mem_iff (e : E) {i x} : e x ∈ ℬ i ↔ x ∈ 𝒜 i :=
   GradedEquivLike.map_mem_iff e
 alias ⟨mem_of_map_mem, map_mem_of_mem⟩ := map_mem_iff
 
+/-- A graded isomorphism descends to an isomorphism on each component. -/
 @[simps] def equivGraded (e : E) (i : ι) : 𝒜 i ≃ ℬ i where
   toFun := mapGraded e i
   invFun y := ⟨EquivLike.inv e (y : B),
