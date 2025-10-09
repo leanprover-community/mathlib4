@@ -107,8 +107,8 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
 
 @[continuity, fun_prop]
 protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
-    {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) := by
-  fun_prop
+    {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
+  ϕ.cont'.comp (ht.prodMk hf)
 
 alias _root_.Continuous.flow := Flow.continuous
 
