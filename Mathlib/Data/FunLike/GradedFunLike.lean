@@ -5,7 +5,11 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.SetLike.Basic
 
-set_option autoImplicit false
+/-! # Class of grading-preserving functions
+
+We define `GradedFunLike F 𝒜 ℬ` where `𝒜` and `ℬ` represent some sort of grading. This class
+extends `FunLike A B` where `A` and `B` are the underlying types.
+-/
 
 /-- The class `GradedFunLike F 𝒜 ℬ` expresses that terms of type `F` have an injective coercion to
 grading-preserving functions from `A` to `B`, where `𝒜` is a grading on `A` and `ℬ` is a grading on
