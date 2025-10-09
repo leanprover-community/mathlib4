@@ -667,6 +667,7 @@ lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*}
     Tendsto (fun n : ℕ ↦
       ∫ ω, (thickenedIndicator (δs_pos n) s ω : ℝ) ∂μ)
       atTop (𝓝 ((μ : Measure Ω).real s)) := by
+  -- we switch to the `lintegral` formulation and apply the corresponding lemma there
   let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δs_pos n) s ω
   have h_int n (ν : Measure Ω) [IsProbabilityMeasure ν] : Integrable (fs n) ν := by
     refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
@@ -690,7 +691,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {F : Filter γ} [F.IsCountablyGenerated]
     {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
-      ∀ (f : Ω → ℝ) (_ : ∃ (C : ℝ), ∀ x y, dist (f x) (f y) ≤ C) (_ : ∃ L, LipschitzWith L f),
+      ∀ f : Ω → ℝ, (∃ (C : ℝ), ∀ x y, dist (f x) (f y) ≤ C) → (∃ L, LipschitzWith L f) →
         Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫ ω, f ω ∂(μ : Measure Ω))) := by
   constructor
   · intro h f hf_bounded hf_lip
@@ -759,7 +760,7 @@ lemma AEMeasurable.dist {Ω E : Type*} {mΩ : MeasurableSpace Ω} {mE : Measurab
 /-- Let `f, f'` be two sequences of measurable functions such that `f n` converges in distribution
 to `g`, and `f' n - f n` converges in probability to `0`.
 Then `f' n` converges in distribution to `g`. -/
-lemma ProbabilityMeasure.todo [l.IsCountablyGenerated]
+lemma ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto [l.IsCountablyGenerated]
     (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ)
     (hg : AEMeasurable g μ) (hff' : TendstoInMeasure μ (fun n ↦ f' n - f n) l 0)
     (hfg : Tendsto (β := ProbabilityMeasure E)
@@ -885,14 +886,15 @@ lemma ProbabilityMeasure.tendsto_map_of_tendstoInMeasure [l.IsCountablyGenerated
     Tendsto (β := ProbabilityMeasure E)
       (fun n ↦ ⟨μ.map (f n), Measure.isProbabilityMeasure_map (hf n)⟩) l
       (𝓝 ⟨μ.map g, Measure.isProbabilityMeasure_map hg⟩) := by
-  refine ProbabilityMeasure.todo hf (fun _ ↦ hg) hg ?_ tendsto_const_nhds
+  refine ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto hf (fun _ ↦ hg) hg ?_
+    tendsto_const_nhds
   simpa [tendstoInMeasure_iff_norm] using h
 
 /-- **Slutsky's theorem**: if `f n` converges in distribution to `g`, and `f' n` converges in
 probability to a constant `c`, then the pair `(f n, f' n)` converges in distribution to `(g, c)`. -/
-lemma ProbabilityMeasure.todo' [l.IsCountablyGenerated]
-    (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ) {c : E}
-    (hg : AEMeasurable g μ) (hff' : TendstoInMeasure μ (fun n ↦ f' n) l (fun _ ↦ c))
+lemma ProbabilityMeasure.tendsto_prodMk_of_tendstoInMeasure_const_of_tendsto
+    [l.IsCountablyGenerated] (hf' : ∀ i, AEMeasurable (f' i) μ) (hf : ∀ i, AEMeasurable (f i) μ)
+    {c : E} (hg : AEMeasurable g μ) (hff' : TendstoInMeasure μ (fun n ↦ f' n) l (fun _ ↦ c))
     (hfg : Tendsto (β := ProbabilityMeasure E)
       (fun n ↦ ⟨μ.map (f n), Measure.isProbabilityMeasure_map (hf n)⟩) l
       (𝓝 ⟨μ.map g, Measure.isProbabilityMeasure_map hg⟩)) :
@@ -901,8 +903,8 @@ lemma ProbabilityMeasure.todo' [l.IsCountablyGenerated]
         Measure.isProbabilityMeasure_map ((hf n).prodMk (hf' n))⟩) l
       (𝓝 ⟨μ.map (fun ω ↦ (g ω, c)),
         Measure.isProbabilityMeasure_map (hg.prodMk (by fun_prop))⟩) := by
-  refine ProbabilityMeasure.todo (f := fun n ω ↦ (f n ω, c)) (f' := fun n ω ↦ (f n ω, f' n ω))
-    (g := fun ω ↦ (g ω, c)) (μ := μ) (l := l)
+  refine ProbabilityMeasure.tendsto_of_tendstoInMeasure_sub_of_tendsto (f := fun n ω ↦ (f n ω, c))
+    (f' := fun n ω ↦ (f n ω, f' n ω)) (g := fun ω ↦ (g ω, c)) (μ := μ) (l := l)
     (by fun_prop) (by fun_prop) (by fun_prop) ?_ ?_
   · suffices TendstoInMeasure μ (fun n ω ↦ ((0 : E), f' n ω - c)) l 0 by
       convert this with n ω
