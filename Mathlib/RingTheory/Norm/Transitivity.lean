@@ -7,6 +7,10 @@ import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -194,3 +198,18 @@ theorem Algebra.norm_norm {A} [Ring A] [Algebra R A] [Algebra S A]
     [IsScalarTower R S A] [Module.Free S A] {a : A} :
     norm R (norm S a) = norm R a := by
   rw [norm_apply S, norm_apply R a, ← LinearMap.det_restrictScalars]; rfl
+
+open IntermediateField AdjoinSimple in
+theorem Algebra.isIntegral_norm {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L]
+    [Algebra R L] [Algebra R K] [IsScalarTower R K L] [FiniteDimensional K L] {x : L}
+    (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
+  let F := K⟮x⟯
+  rw [← norm_norm (S := F), ← coe_gen K x, ← IntermediateField.algebraMap_apply,
+    norm_algebraMap_of_basis (Module.Free.chooseBasis F L) (gen K x), map_pow]
+  apply IsIntegral.pow
+  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure F)).injective,
+    norm_gen_eq_prod_roots _ (IsAlgClosed.splits_codomain _)]
+  refine IsIntegral.multiset_prod (fun y hy ↦ ⟨minpoly R x, minpoly.monic hx, ?_⟩)
+  suffices (aeval y) ((minpoly R x).map (algebraMap R K)) = 0 by simpa
+  obtain ⟨P, hP⟩ := minpoly.dvd K x (show aeval x ((minpoly R x).map (algebraMap R K)) = 0 by simp)
+  simp [hP, aeval_mul, (mem_aroots'.mp hy).2]
