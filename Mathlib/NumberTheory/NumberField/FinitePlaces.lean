@@ -12,6 +12,9 @@ import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.Topology.Algebra.Valued.NormedValued
+import Mathlib.Topology.Algebra.Valued.LocallyCompact
+import Mathlib.RingTheory.Valuation.Extension
+import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 
 /-!
 # Finite places of number fields
@@ -338,5 +341,57 @@ lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 (WithVal 
   norm_cast
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
   simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
+
+variable (v : HeightOneSpectrum (𝓞 K))
+
+#synth IsDiscreteValuationRing (v.adicCompletionIntegers K)
+
+instance : IsDiscreteValuationRing (Valued.integer (v.adicCompletion K)) :=
+  inferInstanceAs (IsDiscreteValuationRing (v.adicCompletionIntegers K))
+
+#synth IsDiscreteValuationRing (Valued.integer (v.adicCompletion K))
+
+instance {K : outParam (Type*)} {L : outParam (Type*)} {Γ₀ : outParam (Type*)}
+    {Γ₁ : outParam (Type*)} [Field K] [Field L] [Algebra K L] [LinearOrderedCommGroupWithZero Γ₀]
+    [LinearOrderedCommGroupWithZero Γ₁] {v : Valuation K Γ₀} {w : Valuation L Γ₁}
+    [v.HasExtension w] :
+    Algebra v.Completion w.Completion := sorry
+
+instance {K : outParam (Type*)} {L : outParam (Type*)} {Γ₀ : outParam (Type*)}
+    {Γ₁ : outParam (Type*)} [Field K] [Field L] [Algebra K L] [LinearOrderedCommGroupWithZero Γ₀]
+    [LinearOrderedCommGroupWithZero Γ₁] {v : Valuation K Γ₀} {w : Valuation L Γ₁}
+    [h : Valuation.HasExtension v w] :
+    Valuation.HasExtension (Valued.v : Valuation v.Completion Γ₀)
+      (Valued.v : Valuation w.Completion Γ₁) := sorry
+
+set_option synthInstance.maxHeartbeats 0 in
+open Valued in
+theorem compact_adicCompletionIntegers (𝔭 : HeightOneSpectrum ℚ)
+    [(𝔭.valuation ℚ).HasExtension (v.valuation K)] :
+    CompactSpace (v.adicCompletionIntegers K) := by
+  apply CompactSpace.mk
+  rw [isCompact_iff_totallyBounded_isComplete]
+  refine ⟨?_, ?_⟩
+  · rw [Valued.integer.totallyBounded_iff_finite_residueField]
+    have : Algebra (𝔭.adicCompletionIntegers ℚ) (v.adicCompletionIntegers K) :=
+      Valuation.HasExtension.instAlgebra_valuationSubring _ _
+    have : IsLocalHom (algebraMap (𝔭.adicCompletionIntegers ℚ) (v.adicCompletionIntegers K)) := by
+      sorry
+    have : Algebra (𝔭.adicCompletionIntegers ℚ) (v.adicCompletion K) :=
+      Algebra.compHom _ (algebraMap _ (v.adicCompletionIntegers K))
+    have : IsScalarTower (𝔭.adicCompletionIntegers ℚ) (𝔭.adicCompletion ℚ) (v.adicCompletion K) :=
+      sorry
+    have : IsScalarTower (𝔭.adicCompletionIntegers ℚ) (v.adicCompletionIntegers K)
+        (v.adicCompletion K) := sorry
+    have : FiniteDimensional (𝔭.adicCompletion ℚ) (v.adicCompletion K) := sorry
+    have : Algebra.IsSeparable (𝔭.adicCompletion ℚ) (v.adicCompletion K) := sorry
+    have : Module.Finite (𝔭.adicCompletionIntegers ℚ) (v.adicCompletionIntegers K) := by
+      have : IsIntegralClosure (v.adicCompletionIntegers K) (𝔭.adicCompletionIntegers ℚ) (v.adicCompletion K) := by
+        sorry
+      exact IsIntegralClosure.finite _ (𝔭.adicCompletion ℚ) (v.adicCompletion K) _
+    have : Finite (IsLocalRing.ResidueField (𝔭.adicCompletionIntegers ℚ)) := sorry
+    exact IsLocalRing.ResidueField.finite_of_finite this (S := v.adicCompletionIntegers K)
+  · rw [← completeSpace_iff_isComplete_univ]
+    exact Valued.isClosed_valuationSubring _ |>.completeSpace_coe
 
 end IsDedekindDomain.HeightOneSpectrum
