@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.GuitartExact.Basic
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 
 /-!
 # Guitart exact squares and Kan extensions
@@ -136,6 +136,50 @@ lemma hasLeftKanExtension [w.GuitartExact]
     L.HasLeftKanExtension (T ⋙ F) := by
   have := w.hasPointwiseLeftKanExtension F
   infer_instance
+
+section
+
+open Functor
+
+section
+
+variable [∀ (F : C₁ ⥤ D), L.HasLeftKanExtension F] [∀ (F : C₂ ⥤ D), R.HasLeftKanExtension F]
+
+/-- The base change natural transformation for left Kan extension associated to
+a 2-square. -/
+@[simps -isSimp]
+noncomputable def lanBaseChange :
+    (whiskeringLeft C₁ C₂ D).obj T ⋙ L.lan ⟶ R.lan ⋙ (whiskeringLeft C₃ C₄ D).obj B where
+  app F :=
+    ((L.lanAdjunction D).homEquiv _ _).symm
+      ((LeftExtension.mk _ (R.lanUnit.app F)).compTwoSquare w).hom
+  naturality {F₁ F₂} τ := by
+    dsimp
+    refine (Adjunction.homEquiv_naturality_left_symm ..).symm.trans
+      (Eq.trans ?_ (Adjunction.homEquiv_naturality_right_symm ..))
+    congr 1
+    ext X
+    have := R.lanUnit.naturality_app (T.obj X) τ
+    simp [reassoc_of% this]
+
+lemma isIso_lanBaseChange_app_iff (F : C₂ ⥤ D) :
+    IsIso (w.lanBaseChange.app F) ↔
+      IsLeftKanExtension _ ((LeftExtension.mk _ (R.lanUnit.app F)).compTwoSquare w).hom := by
+  rw [lanBaseChange_app]
+  sorry
+
+end
+
+instance [∀ (F : C₁ ⥤ D), L.HasLeftKanExtension F]
+    [∀ (F : C₂ ⥤ D), R.HasPointwiseLeftKanExtension F]
+    [w.GuitartExact] : IsIso (w.lanBaseChange (D := D)) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro F
+  rw [isIso_lanBaseChange_app_iff]
+  exact ((isPointwiseLeftKanExtensionOfIsLeftKanExtension
+    _ _).compTwoSquare w).isLeftKanExtension
+
+end
 
 end TwoSquare
 
