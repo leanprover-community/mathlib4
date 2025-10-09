@@ -194,7 +194,7 @@ morphism `X.hom`.
 Here the pushforward functor along a morphism `f : I ⟶ J` is defined using the section functor
 `Over (Over.mk f) ⥤ Over J`.
 -/
-def ofOverExponentiable [HasFiniteWidePullbacks C] {I : C} (X : Over I) [Exponentiable X] :
+theorem ofOverExponentiable [HasFiniteWidePullbacks C] {I : C} (X : Over I) [Exponentiable X] :
     ExponentiableMorphism X.hom :=
   ⟨X.iteratedSliceEquiv.inverse ⋙ sections X, ⟨by
     refine ofNatIsoLeft (Adjunction.comp ?_ ?_) (starIteratedSliceForwardIsoPullback X.hom)
