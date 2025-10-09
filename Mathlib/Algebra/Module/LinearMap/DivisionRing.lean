@@ -15,7 +15,7 @@ This file proves some results on linear functionals on division semirings.
 
 * `LinearMap.surjective_iff_ne_zero`: a linear functional `f` is surjective iff `f ≠ 0`.
 * `LinearMap.range_smulRight_apply`: for a nonzero linear functional `f` and element `x`,
-the range of `f.smulRight x` is the span of the set `{x}`.
+  the range of `f.smulRight x` is the span of the set `{x}`.
 -/
 
 namespace LinearMap

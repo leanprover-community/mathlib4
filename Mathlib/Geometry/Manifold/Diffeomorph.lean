@@ -329,13 +329,16 @@ theorem contMDiff_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' 
     ContMDiff I' J m (h ∘ f) ↔ ContMDiff I' I m f :=
   forall_congr' fun _ => h.contMDiffWithinAt_diffeomorph_comp_iff hm
 
-theorem toPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
-    h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
+theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
+    h.toHomeomorph.toOpenPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
+
+@[deprecated (since := "2025-08-29")] alias
+  toPartialHomeomorph_mdifferentiable := toOpenPartialHomeomorph_mdifferentiable
 
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
-  convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
+  convert hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
   simp [h.image_eq_preimage]
 
 @[simp]
