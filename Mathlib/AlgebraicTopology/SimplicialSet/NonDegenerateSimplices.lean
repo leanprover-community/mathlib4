@@ -28,19 +28,12 @@ namespace SSet
 variable (X : SSet.{u})
 
 /-- The type of non degenerate simplices of a simplicial set. -/
-structure N extends X.S where mk'' ::
+structure N extends X.S where mk' ::
   nonDegenerate : simplex ∈ X.nonDegenerate _
 
 namespace N
 
 variable {X}
-
-/-- Constructor in order to promote a simplex `s : X.S` into
-a term in `X.N`. -/
-@[simps toS]
-def mk' (s : X.S) (hs : s.simplex ∈ X.nonDegenerate _) : X.N where
-  toS := s
-  nonDegenerate := hs
 
 lemma mk'_surjective (s : X.N) :
     ∃ (t : X.S) (ht : t.simplex ∈ X.nonDegenerate _), s = mk' t ht :=
@@ -81,8 +74,7 @@ lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
 lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
   obtain h' | h' := (dim_le_of_le h.le).lt_or_eq
   · exact h'
-  · exfalso
-    obtain ⟨f, _, hf⟩ := le_iff_exists_mono.1 h.le
+  · obtain ⟨f, _, hf⟩ := le_iff_exists_mono.1 h.le
     obtain ⟨d, ⟨x, hx⟩, rfl⟩ := x.mk_surjective
     obtain ⟨d', ⟨y, hy⟩, rfl⟩ := y.mk_surjective
     obtain rfl : d = d' := h'

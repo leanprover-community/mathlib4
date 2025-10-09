@@ -63,8 +63,7 @@ restrict to finitely generated ideals `I`. -/
 theorem iff_rTensor_injective' :
     Flat R M ↔ ∀ I : Ideal R, Function.Injective (rTensor M I.subtype) := by
   simp_rw [iff_characterModule_baer, Baer, rTensor_injective_iff_lcomp_surjective,
-    Surjective, DFunLike.ext_iff, Subtype.forall]
-  rfl
+    Surjective, DFunLike.ext_iff, Subtype.forall, lcomp_apply, Submodule.subtype_apply]
 
 /-- The `lTensor`-variant of `iff_rTensor_injective'`. . -/
 theorem iff_lTensor_injective' :
