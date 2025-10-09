@@ -224,10 +224,15 @@ This definition is equivalent to the one given at `Equidecomp`, but it is more u
 constructing concrete Equidecompositions.
 -/
 structure Equipartition (X : Type*) (G : Type*) [SMul G X] where
+  /-- The parts of the Equipartition, consisting of source, group element, and target. -/
   parts : Finset (Set X × G × Set X)
+  /-- The supremum independent property of the sources of the parts. -/
   supIndepSource : Finset.SupIndep parts (fun p ↦ p.1)
+  /-- The supremum independent property of the targets of the parts. -/
   supIndepTarget : Finset.SupIndep parts (fun p ↦ p.2.2)
+  /-- The sources of the parts are not empty. -/
   bot_notMem : ∀ p ∈ parts, p.1 ≠ ∅
+  /-- Applying the group element of a part to its source gives the target. -/
   decomp : ∀ p ∈ parts, (fun x ↦ p.2.1 • x) '' p.1 = p.2.2
 
 namespace Equipartition
@@ -487,7 +492,7 @@ theorem target_witness_spec (f : Equidecomp X G) {y : X} (h : y ∈ f.target) :
 
 
 open scoped Classical in
-/-
+/--
 All witnesses that are actually used to send some element of the source to the target.
 -/
 noncomputable def minimal_witness (f : Equidecomp X G) : Finset G :=
