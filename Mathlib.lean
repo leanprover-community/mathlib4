@@ -4243,6 +4243,7 @@ import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Pi
@@ -5254,6 +5255,8 @@ import Mathlib.Order.RelIso.Set
 import Mathlib.Order.RelSeries
 import Mathlib.Order.Restriction
 import Mathlib.Order.ScottContinuity
+import Mathlib.Order.ScottContinuity.Complete
+import Mathlib.Order.ScottContinuity.Prod
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.Set
 import Mathlib.Order.SetIsMax
