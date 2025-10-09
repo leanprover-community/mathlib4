@@ -3074,6 +3074,9 @@ Q5443005:
 
 Q5445112:
   title: Fernique's theorem
+  decl: ProbabilityTheory.IsGaussian.exists_integrable_exp_sq
+  authors: Rémy Degenne
+  date: 2025
 
 Q5445311:
   title: Ferrero–Washington theorem
