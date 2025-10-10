@@ -96,6 +96,20 @@ lemma integral_haarAddCircle {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
 
 end AddCircle
 
+namespace MeasureTheory
+
+lemma memLp_haarAddCircle_iff [hT : Fact (0 < T)] {f : AddCircle T → ℂ} {p : ℝ≥0∞} :
+    MemLp f p AddCircle.haarAddCircle ↔ MemLp f p := by
+  rw [AddCircle.volume_eq_smul_haarAddCircle]
+  have hT' := hT.out
+  refine ⟨fun h ↦ h.smul_measure (by finiteness), fun h ↦ ?_⟩
+  have := h.smul_measure (c := (ENNReal.ofReal T)⁻¹) (by finiteness)
+  rwa [smul_smul, ENNReal.inv_mul_cancel (by positivity) (by finiteness), one_smul] at this
+
+alias ⟨MemLp.of_haarAddCircle, MemLp.haarAddCircle⟩ := memLp_haarAddCircle_iff
+
+end MeasureTheory
+
 open AddCircle
 
 section Monomials
@@ -414,20 +428,6 @@ theorem hasSum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
 theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
   (hasSum_sq_fourierCoeff _).tsum_eq
-
-namespace MeasureTheory
-
-lemma memLp_haarAddCircle_iff {f : AddCircle T → ℂ} {p : ℝ≥0∞} :
-    MemLp f p haarAddCircle ↔ MemLp f p := by
-  rw [volume_eq_smul_haarAddCircle]
-  have hT' := hT.out
-  refine ⟨fun h ↦ h.smul_measure (by finiteness), fun h ↦ ?_⟩
-  have := h.smul_measure (c := (ENNReal.ofReal T)⁻¹) (by finiteness)
-  rwa [smul_smul, ENNReal.inv_mul_cancel (by positivity) (by finiteness), one_smul] at this
-
-alias ⟨MemLp.of_haarAddCircle, MemLp.haarAddCircle⟩ := memLp_haarAddCircle_iff
-
-end MeasureTheory
 
 /-- **Parseval's identity**: for a function `f` which is square integrable on (a,b],
 the sum of the squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/

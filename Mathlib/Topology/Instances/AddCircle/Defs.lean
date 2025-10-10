@@ -315,6 +315,20 @@ entire space. -/
 theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
   eq_top_mono (image_mono Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
 
+/-- If functions on AddCircle agree on the image of the interval `[a, a + p)` then they are equal -/
+lemma Ico_ext {α : Type*} {f g : AddCircle p → α} (a : 𝕜)
+    (h : ∀ x ∈ Ico a (a + p), f x = g x) : f = g := by
+  rw [← Set.eqOn_univ, ← coe_image_Ico_eq p a]
+  rintro - ⟨x, hx, rfl⟩
+  exact h x hx
+
+/-- If functions on AddCircle agree on the image of the interval `(a, a + p]` then they are equal -/
+lemma Ioc_ext {α : Type*} {f g : AddCircle p → α} (a : 𝕜)
+    (h : ∀ x ∈ Ioc a (a + p), f x = g x) : f = g := by
+  rw [← Set.eqOn_univ, ← coe_image_Ioc_eq p a]
+  rintro - ⟨x, hx, rfl⟩
+  exact h x hx
+
 end LinearOrderedAddCommGroup
 
 section LinearOrderedField
