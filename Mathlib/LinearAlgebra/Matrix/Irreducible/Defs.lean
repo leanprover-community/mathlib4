@@ -98,7 +98,7 @@ lemma irreducible_no_zero_row
   subst hi_c
   exact (no_out _).false e
 
-variable {A : Matrix n n ℝ}
+variable {A : Matrix n n R}
 
 lemma sum_pos_of_mem [IsOrderedRing R] {α : Type*} {s : Finset α} {f : α → R}
     (h_nonneg : ∀ a ∈ s, 0 ≤ f a) (a : α) (ha_mem : a ∈ s) (ha_pos : 0 < f a) :
