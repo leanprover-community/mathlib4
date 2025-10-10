@@ -301,6 +301,8 @@ initialize registerBuiltinAttribute {
     -- Since there is only one possible arity at which the `gcongr` lemma will be accepted,
     -- we simply attempt to process the lemmas at the different possible arities.
     try
+      -- If the head constant is a monotonicity constant, we want it to be unfolded.
+      -- We achieve this by increasing the arity
       let arity' := match declTy.getForallBody.getAppFn.constName? with
         | `Monotone | `Antitone | `StrictMono | `StrictAnti => arity + 3
         | `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn => arity + 5
