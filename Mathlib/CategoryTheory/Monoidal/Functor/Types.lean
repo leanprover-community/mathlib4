@@ -8,7 +8,8 @@ import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Tactic.Simps.Basic
 
-/-! # Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`
+/-!
+# Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`
 
 This allows us to use Lean's `Type`-based applicative functors in category theory.
 
