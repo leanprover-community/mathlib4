@@ -78,7 +78,7 @@ jobs:
         run: |
           if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ]; then
             # Branch exists, compare the file
-            if git diff --quiet HEAD "origin/$BRANCH_NAME" -- lake-manifest.json; then
+            if git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
               echo "has_diff=false" >> "${GITHUB_OUTPUT}"
               echo "No differences in lake-manifest.json"
             else
