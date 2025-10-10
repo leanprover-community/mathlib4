@@ -160,19 +160,6 @@ lemma isProbabilityMeasure_withDensity_cameronMartin (x : cameronMartin μ) :
       ring_nf
       simp
 
-lemma todo_ae_eq (x : cameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
-    (L : cameronMartin μ) - t • x =ᵐ[μ] fun u ↦ L u - μ[L] - t * x u := by
-  simp only [cmOfDual_apply, AddSubgroupClass.coe_sub, SetLike.val_smul]
-  rw [IsGaussian.integral_dual L]
-  filter_upwards [centeredToLp_apply (μ := μ) memLp_two_id L,
-    AEEqFun.coeFn_sub (γ := ℝ) (StrongDual.centeredToLp μ 2 L) (t • x),
-    Lp.coeFn_smul (E := ℝ) t (x : Lp ℝ 2 μ)] with u h_toLp h_sub h_smul
-  simp only [SetLike.val_smul, Pi.sub_apply] at h_sub
-  simp only [Pi.smul_apply, smul_eq_mul] at h_smul
-  simp only [map_sub] at h_toLp
-  rw [← h_smul, ← h_toLp, ← h_sub]
-  rfl
-
 lemma some_equality_in_Real'' (x : cameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
     ∫ u, exp ((L u - t * x u) * I - ‖x‖ ^ 2 / 2) ∂μ
       = exp (- ‖x‖ ^ 2 / 2) * ∫ u, exp ((L - t • x) u * I + μ[L] * I) ∂μ := by
@@ -187,7 +174,18 @@ lemma some_equality_in_Real'' (x : cameronMartin μ) (L : StrongDual ℝ E) (t :
   _ = exp (- ‖x‖ ^ 2 / 2) * ∫ u, exp ((L - t • x) u * I + μ[L] * I) ∂μ := by
     congr 1
     refine integral_congr_ae ?_
-    filter_upwards [todo_ae_eq x L t] with u hu
+    have h_eq : (L : cameronMartin μ) - t • x =ᵐ[μ] fun u ↦ L u - μ[L] - t * x u := by
+      simp only [cmOfDual_apply, AddSubgroupClass.coe_sub, SetLike.val_smul]
+      rw [IsGaussian.integral_dual L]
+      filter_upwards [centeredToLp_apply (μ := μ) memLp_two_id L,
+        AEEqFun.coeFn_sub (γ := ℝ) (StrongDual.centeredToLp μ 2 L) (t • x),
+        Lp.coeFn_smul (E := ℝ) t (x : Lp ℝ 2 μ)] with u h_toLp h_sub h_smul
+      simp only [SetLike.val_smul, Pi.sub_apply] at h_sub
+      simp only [Pi.smul_apply, smul_eq_mul] at h_smul
+      simp only [map_sub] at h_toLp
+      rw [← h_smul, ← h_toLp, ← h_sub]
+      rfl
+    filter_upwards [h_eq] with u hu
     rw [hu, integral_complex_ofReal]
     simp
 
@@ -236,7 +234,7 @@ lemma some_equality_in_Real (x : cameronMartin μ) (L : StrongDual ℝ E) (t : �
       Complex.ofReal_add, Complex.ofReal_mul, Complex.ofReal_pow, Complex.ofReal_ofNat]
     ring_nf
 
-lemma todo_hasDerivAt (x : cameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
+lemma hasDerivAt_integral_exp_cameronMartin (x : cameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     HasDerivAt (fun z ↦ ∫ u, exp ((L u - z * x u) * I) ∂μ)
       (∫ u, - x u * I * exp ((L u - z * x u) * I) ∂μ) z := by
   refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
@@ -292,10 +290,10 @@ lemma todo_hasDerivAt (x : cameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
       congr 2
       ring
 
-lemma todo_analytic (x : cameronMartin μ) (L : StrongDual ℝ E) :
+lemma analyticOnNhd_integral_exp_cameronMartin (x : cameronMartin μ) (L : StrongDual ℝ E) :
     AnalyticOnNhd ℂ (fun z ↦ ∫ u, exp ((L u - z * x u) * I) ∂μ) Set.univ := by
   refine DifferentiableOn.analyticOnNhd (fun z hz ↦ ?_) isOpen_univ
-  have h := todo_hasDerivAt x L z
+  have h := hasDerivAt_integral_exp_cameronMartin x L z
   rw [hasDerivAt_iff_hasFDerivAt] at h
   exact h.hasFDerivWithinAt.differentiableWithinAt
 
@@ -310,7 +308,7 @@ lemma some_equality_in_Complex (x : cameronMartin μ) (L : StrongDual ℝ E) (z 
   · simp_rw [sub_eq_add_neg, exp_add, integral_mul_const]
     refine AnalyticOnNhd.mul ?_ analyticOnNhd_const
     simp_rw [← sub_eq_add_neg]
-    exact todo_analytic _ _
+    exact analyticOnNhd_integral_exp_cameronMartin _ _
   · simp_rw [sub_eq_add_neg, exp_add]
     refine AnalyticOnNhd.mul ?_ analyticOnNhd_const
     refine AnalyticOnNhd.mul ?_ analyticOnNhd_const
@@ -335,16 +333,7 @@ lemma some_equality_in_Complex (x : cameronMartin μ) (L : StrongDual ℝ E) (z 
   · simp only [AddSubgroupClass.coe_norm] at hx_eq
     simp [hx_eq]
 
-lemma cor_for_z_eq_I (x : cameronMartin μ) (L : StrongDual ℝ E) :
-    ∫ u, exp (L u * I + x u - ‖x‖ ^ 2 / 2) ∂μ = exp ((μ[L] + L (cmCoe x)) * I - Var[L; μ] / 2) := by
-  have h := some_equality_in_Complex x L I
-  simp only [I_sq, add_neg_cancel, zero_div, zero_mul, sub_zero] at h
-  convert h using 3
-  · congr
-    simp [mul_comm I, sub_mul, mul_assoc]
-  · ring
-
-lemma charFunDual_withDensity_cameronMartin (x : cameronMartin μ) (L : StrongDual ℝ E) :
+lemma charFunDual_withDensity_exp_cameronMartin (x : cameronMartin μ) (L : StrongDual ℝ E) :
     charFunDual (μ.withDensity fun y ↦ .ofReal (.exp (x y - ‖x‖ ^ 2 / 2))) L
       = exp ((μ[L] + L (cmCoe x)) * I - Var[L; μ] / 2) := by
   calc charFunDual (μ.withDensity fun y ↦ .ofReal (.exp (x y - ‖x‖ ^ 2 / 2))) L
@@ -355,7 +344,13 @@ lemma charFunDual_withDensity_cameronMartin (x : cameronMartin μ) (L : StrongDu
     rw [ENNReal.toReal_ofReal (Real.exp_nonneg _), add_sub_assoc, exp_add,
       mul_comm (exp _)]
     simp
-  _ = exp ((μ[L] + L (cmCoe x)) * I - Var[L; μ] / 2) := cor_for_z_eq_I x L
+  _ = exp ((μ[L] + L (cmCoe x)) * I - Var[L; μ] / 2) := by
+    have h := some_equality_in_Complex x L I
+    simp only [I_sq, add_neg_cancel, zero_div, zero_mul, sub_zero] at h
+    convert h using 3
+    · congr
+      simp [mul_comm I, sub_mul, mul_assoc]
+    · ring
 
 /-- Part of the **Cameron-Martin** theorem. The translation of a Gaussian measure `μ` by
 an element `x` of the Cameron-Martin space is absolutely continuous with respect to `μ`,
@@ -366,7 +361,7 @@ theorem map_add_cameronMartin_eq_withDensity (x : cameronMartin μ) :
   refine Measure.ext_of_charFunDual ?_
   ext L
   rw [charFunDual_map_add_const, IsGaussian.charFunDual_eq, ← exp_add,
-    charFunDual_withDensity_cameronMartin x L]
+    charFunDual_withDensity_exp_cameronMartin x L]
   congr
   ring
 
@@ -400,16 +395,6 @@ lemma one_sub_exp_le_tvDist_gaussianReal (μ₁ μ₂ : ℝ) :
 lemma tvDist_dirac_of_ne {x y : E} (hxy : x ≠ y) :
     tvDist (Measure.dirac x) (Measure.dirac y) = 1 := by
   sorry
-
-lemma gaussianReal_ext_iff {μ₁ μ₂ : ℝ} {v₁ v₂ : ℝ≥0} :
-    gaussianReal μ₁ v₁ = gaussianReal μ₂ v₂ ↔ μ₁ = μ₂ ∧ v₁ = v₂ := by
-  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
-  rw [← integral_id_gaussianReal (μ := μ₁) (v := v₁),
-    ← integral_id_gaussianReal (μ := μ₂) (v := v₂), h]
-  simp only [integral_id_gaussianReal, true_and]
-  suffices (v₁ : ℝ) = v₂ by simpa
-  rw [← variance_id_gaussianReal (μ := μ₁) (v := v₁),
-    ← variance_id_gaussianReal (μ := μ₂) (v := v₂), h]
 
 /-- Part of the **Cameron-Martin** theorem. The translation of a Gaussian measure `μ` by
 an element `y` which is not in the Cameron-Martin space is mutually singular with respect to `μ`. -/
