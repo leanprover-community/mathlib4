@@ -109,7 +109,7 @@ theorem exists_eq_interval_average
   exact ((mem_image f (uIcc c1 c2) ave).mp (h_image)).imp (fun c hc => ⟨h_interval hc.1, hc.2⟩)
 
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-then there exists `c ∈ uIcc a b` such that 
+then there exists `c ∈ uIcc a b` such that
 `f c = ⨍ x in (uIoc a b), f x ∂μ`. -/
 theorem exists_eq_interval_average_of_measure
     {f : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
@@ -169,7 +169,7 @@ theorem exists_eq_interval_average_of_measure
   grind
 
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-and `μ` has no atoms, then there exists `c ∈ uIoo a b` such that 
+and `μ` has no atoms, then there exists `c ∈ uIoo a b` such that
 `f c = ⨍ x in (uIoc a b), f x ∂μ`. -/
 theorem exists_eq_interval_average_of_NoAtoms
     {f : ℝ → ℝ} {a b : ℝ}
