@@ -166,6 +166,9 @@ def uncenteredcovarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] 
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
     (StrongDual.toLp μ 2) (StrongDual.toLp μ 2)
 
+@[deprecated (since := "2025-10-10")] alias uncenteredcovarianceBilin :=
+  uncenteredcovarianceBilinDual
+
 lemma uncenteredcovarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     uncenteredcovarianceBilinDual μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
   simp only [uncenteredcovarianceBilinDual, ContinuousLinearMap.bilinearComp_apply,
@@ -176,14 +179,23 @@ lemma uncenteredcovarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : Stron
   simp only [id_eq] at hxL₁ hxL₂
   rw [hxL₁, hxL₂, mul_comm]
 
+@[deprecated (since := "2025-10-10")] alias uncenteredcovarianceBilin_apply :=
+  uncenteredcovarianceBilinDual_apply
+
 lemma uncenteredcovarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     uncenteredcovarianceBilinDual μ L₁ L₂ = 0 := by
   simp [uncenteredcovarianceBilinDual, StrongDual.toLp_of_not_memLp h]
+
+@[deprecated (since := "2025-10-10")] alias uncenteredcovarianceBilin_of_not_memLp :=
+  uncenteredcovarianceBilinDual_of_not_memLp
 
 lemma uncenteredcovarianceBilinDual_zero : uncenteredcovarianceBilinDual (0 : Measure E) = 0 := by
   ext
   have : Subsingleton (Lp ℝ 2 (0 : Measure E)) := ⟨fun x y ↦ Lp.ext_iff.2 rfl⟩
   simp [uncenteredcovarianceBilinDual, Subsingleton.eq_zero (StrongDual.toLp 0 2)]
+
+@[deprecated (since := "2025-10-10")] alias uncenteredcovarianceBilin_zero :=
+  uncenteredcovarianceBilinDual_zero
 
 lemma norm_uncenteredcovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
     ‖uncenteredcovarianceBilinDual μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
@@ -211,6 +223,9 @@ lemma norm_uncenteredcovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
     rw [← integral_const_mul]
     congr with x
     ring
+
+@[deprecated (since := "2025-10-10")] alias norm_uncenteredcovarianceBilin_le :=
+  norm_uncenteredcovarianceBilinDual_le
 
 end Centered
 
