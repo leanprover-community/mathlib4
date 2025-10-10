@@ -73,12 +73,9 @@ Alternate definition of `map` not requiring the map to be closed, instead taking
 image.
 -/
 def map' (T : IrreducibleCloseds U) : {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅} where
-  val := {
-    carrier := closure (f '' T.1)
-    is_irreducible' := IsIrreducible.closure <|
-      IsIrreducible.image T.is_irreducible' f (Continuous.continuousOn h)
-    is_closed' := isClosed_closure
-  }
+  val.carrier := closure (f '' T.1)
+  val.is_irreducible' := T.is_irreducible'.image f (Continuous.continuousOn h) |>.closure
+  val.is_closed' := isClosed_closure
   property := nonempty_iff_ne_empty.mp
     (Nonempty.mono (closure_subset_preimage_closure_image h (s := T))
     (closure_nonempty_iff.mpr T.2.nonempty))
