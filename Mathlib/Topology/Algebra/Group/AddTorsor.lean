@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Attila Gáspár
 -/
 import Mathlib.Algebra.AddTorsor.Basic
-import Mathlib.Topology.Algebra.ProperAction.Basic
 import Mathlib.Topology.Algebra.Monoid
 
 /-!
@@ -84,18 +83,6 @@ def Homeomorph.vaddConst (p : P) : V ≃ₜ P where
   __ := Equiv.vaddConst p
   continuous_toFun := by fun_prop
   continuous_invFun := by fun_prop
-
-/-- If `P` is a topological torsor over `V`, the action of `V` on `P` is proper. -/
-instance : ProperVAdd V P where
-  isProperMap_vadd_pair := by
-    let Φ : V × P ≃ₜ P × P :=
-    { toFun vp := (vp.1 +ᵥ vp.2, vp.2)
-      invFun pq := (pq.1 -ᵥ pq.2, pq.2)
-      left_inv _ := by simp
-      right_inv _ := by simp
-      continuous_toFun := by fun_prop
-      continuous_invFun := by fun_prop }
-    exact Φ.isProperMap
 
 end AddTorsor
 
