@@ -521,8 +521,11 @@ section
 
 variable {φ : OpenPartialHomeomorph M H} {ψ : PartialEquiv M E}
 
--- TODO: implement this!
-/-- error: Could not find a model with corners for H -/
+/-- info: ContMDiff I I 37 ↑φ : Prop -/
+#guard_msgs in
+#check CMDiff 37 φ
+
+/-- info: MDifferentiable I I ↑φ : Prop -/
 #guard_msgs in
 #check MDiff φ
 
@@ -1186,8 +1189,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on Unit among local instances.
 [Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] found a `ChartedSpace` instance: `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on Unit among local instances.
+      Couldn't find a `ChartedSpace` structure on Unit among local instances,
+      and Unit is not the charted space of some type in the local context either.
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
