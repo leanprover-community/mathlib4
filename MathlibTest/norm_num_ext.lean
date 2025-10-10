@@ -27,6 +27,9 @@ import Mathlib.Tactic.Simproc.Factors
 Some tests of unported extensions are still commented out.
 -/
 
+-- The default is very low, and we want to test performance on large numbers.
+set_option exponentiation.threshold 2000
+
 -- set_option profiler true
 -- set_option trace.profiler true
 -- set_option trace.Tactic.norm_num true
