@@ -93,7 +93,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let tail := docTrim.length
     -- `endRange` creates an 0-wide range `n` characters from the end of `docStx`
     let endRange (n : Nat) : Syntax := .ofRange
-      {start := docStx.getTailPos?.get! - ⟨n⟩, stop := docStx.getTailPos?.get! - ⟨n⟩}
+      {start := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩, stop := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩}
     if docTrim.takeRight 1 == "," then
       Linter.logLintIf linter.style.docString (endRange (docString.length - tail + 3))
         s!"error: doc-strings should not end with a comma"
