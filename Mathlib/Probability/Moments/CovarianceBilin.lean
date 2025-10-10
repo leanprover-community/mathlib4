@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.MeasureTheory.SpecificCodomains.WithLp
-import Mathlib.Probability.Moments.CovarianceBilin
+import Mathlib.Probability.Moments.CovarianceBilinDual
 
 /-!
 # Covariance in Hilbert spaces
