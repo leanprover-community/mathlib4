@@ -105,8 +105,8 @@ def parseUpToHere (pos : String.Pos.Raw) (post : String := "") : CommandElabM Sy
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
 def toSyntax (s pattern : String) (offset : String.Pos.Raw := 0) : Syntax :=
-  let beg := ((s.splitOn pattern).getD 0 "").endPos + offset
-  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos + offset
+  let beg := ((s.splitOn pattern).getD 0 "").endPos.offsetBy offset
+  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos.offsetBy offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
 /-- Return if `line` looks like a correct authors line in a copyright header.
