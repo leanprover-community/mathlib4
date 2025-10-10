@@ -524,3 +524,105 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 end
 
 end mfderiv
+
+/-! Tests for the custom elaborators for `HasMFDeriv` and `HasMFDerivWithin` -/
+section HasMFDeriv
+
+variable {EM' : Type*} [NormedAddCommGroup EM']
+  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+variable {f : M → M'} {s : Set M} {m : M} {f' : TangentSpace I m →L[𝕜] TangentSpace I' (f m)}
+
+/-- info: HasMFDerivAt I I' f m f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% f m f'
+
+/-- info: HasMFDerivWithinAt I I' f s m f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt[s] f m f'
+
+variable {f : E → EM'} {s : Set E} {m : E}
+  -- #check mfderiv% f m tells us the type of f :-)
+  {f' : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m)}
+
+/-- info: HasMFDerivAt 𝓘(𝕜, E) 𝓘(𝕜, EM') f m f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% f m f'
+
+/-- info: HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, EM') f s m f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt[s] f m f'
+
+variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
+variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
+
+/--
+info: mfderiv I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m))
+  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))
+-/
+#guard_msgs in
+#check mfderiv% (T% X) x
+
+variable {dXm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))}
+
+/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) x dXm : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% (T% X) x dXm
+
+/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) t x dXm : Prop -/
+#guard_msgs in
+variable {t : Set M} in
+#check HasMFDerivAt[t] (T% X) x dXm
+
+/--
+info: mfderiv I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x))
+  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))
+-/
+#guard_msgs in
+#check mfderiv% (T% σ) x
+
+variable {dσm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))}
+
+/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x dσm : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% (T% σ) x dσm
+
+/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) t x dσm : Prop -/
+#guard_msgs in
+variable {t : Set M} in
+#check HasMFDerivAt[t] (T% σ) x dσm
+
+variable {t : Set E} {p : E}
+
+/--
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) t
+  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))
+-/
+#guard_msgs in
+#check mfderiv[t] (T% σ') p
+
+variable {dσ'p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))}
+
+/--
+info: HasMFDerivAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) p dσ'p : Prop
+-/
+#guard_msgs in
+#check HasMFDerivAt% (T% σ') p dσ'p
+
+/--
+info: HasMFDerivWithinAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) t p dσ'p : Prop
+-/
+#guard_msgs in
+#check HasMFDerivAt[t] (T% σ') p dσ'p
+
+/--
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x))
+  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' x (σ' x))
+-/
+#guard_msgs in
+#check mfderiv[t] (T% σ')
+
+-- TODO: skipped the test about error messages (analogous to mfderiv(Within))
+
+end HasMFDeriv

@@ -524,6 +524,27 @@ scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
   let (srcI, tgtI) ← findModels e none
   mkAppM ``mfderiv #[srcI, tgtI, e]
 
+/-- `HasMFDerivAt[s] f x f'` elaborates to `HasMFDerivWithinAt I J f s x f'`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "HasMFDerivAt[" s:term "]" ppSpace
+    f:term:arg ppSpace x:term:arg ppSpace f':term:arg : term => do
+  let es ← Term.elabTerm s none
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let ex ← Term.elabTerm x none
+  let ef' ← Term.elabTerm f' none
+  let (srcI, tgtI) ← findModels ef es
+  mkAppM ``HasMFDerivWithinAt #[srcI, tgtI, ef, es, ex, ef']
+
+/-- `HasMFDerivAt% f x f'` elaborates to `HasMFDerivAt I J f x f'`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "HasMFDerivAt%" ppSpace
+    f:term:arg ppSpace x:term:arg ppSpace f':term:arg : term => do
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let ex ← Term.elabTerm x none
+  let ef' ← Term.elabTerm f' none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``HasMFDerivAt #[srcI, tgtI, ef, ex, ef']
+
 end Manifold
 
 section trace
