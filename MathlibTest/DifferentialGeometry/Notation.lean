@@ -1154,7 +1154,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on Unit among local instances.
-[Elab.DiffGeo.MDiff] ❌️ ChartedSpace
+[Elab.DiffGeo.MDiff] ❌️ Manifold
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ChartedSpace` structure on Unit among local instances.
 [Elab.DiffGeo.MDiff] ❌️ NormedField
