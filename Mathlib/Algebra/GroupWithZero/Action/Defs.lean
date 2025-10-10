@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Opposite
+import Mathlib.Algebra.Notation.Pi.Basic
 
 /-!
 # Definitions of group actions
@@ -74,7 +74,6 @@ See note [reducible non-instances]. -/
 protected abbrev ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  -- Porting note: `simp` no longer works here.
   smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
 
 /-- Push forward the multiplication of `R` on `M` along a compatible surjective map `f : R → S`.
@@ -355,9 +354,7 @@ variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
--- Porting note: this probably is no longer relevant.
-/-! Since Lean 3 does not have definitional eta for structures, we have to make sure
-that the definition of `DistribMulAction.toDistribSMul` was done correctly,
+/-! We make sure that the definition of `DistribMulAction.toDistribSMul` was done correctly,
 and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/
 example :
     (DistribMulAction.toMulAction.toSMul : SMul M A) =

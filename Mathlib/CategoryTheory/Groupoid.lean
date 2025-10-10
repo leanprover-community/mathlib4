@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 universe v v₂ u u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 /-- A `Groupoid` is a category such that all morphisms are isomorphisms. -/
 class Groupoid (obj : Type u) : Type max u (v + 1) extends Category.{v} obj where
   /-- The inverse morphism -/
@@ -87,9 +87,7 @@ theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv 
   rfl
 
 instance functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse where
-  map_reverse' f := by
-    simp only [Quiver.reverse, Quiver.HasReverse.reverse', Groupoid.inv_eq_inv,
-      Functor.map_inv]
+  map_reverse' f := by simp
 
 variable (X Y)
 

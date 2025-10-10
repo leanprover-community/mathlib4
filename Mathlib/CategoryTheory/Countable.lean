@@ -87,6 +87,7 @@ instance countableCategoryOpposite {J : Type*} [Category J] [CountableCategory J
   countableObj := Countable.of_equiv _ equivToOpposite
   countableHom j j' := Countable.of_equiv _ (opEquiv j j').symm
 
+attribute [local instance] uliftCategory in
 /-- Applying `ULift` to morphisms and objects of a category preserves countability. -/
 instance countableCategoryUlift {J : Type v} [Category J] [CountableCategory J] :
     CountableCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where

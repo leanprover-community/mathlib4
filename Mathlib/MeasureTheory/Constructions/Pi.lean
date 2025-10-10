@@ -363,14 +363,14 @@ theorem quasiMeasurePreserving_eval (i : ι) :
 
 lemma pi_map_eval [DecidableEq ι] (i : ι) :
      (Measure.pi μ).map (Function.eval i) = (∏ j ∈ Finset.univ.erase i, μ j Set.univ) • (μ i) := by
-   ext s hs
-   classical
-   rw [Measure.map_apply (measurable_pi_apply i) hs, ← Set.univ_pi_update_univ, Measure.pi_pi,
-     Measure.smul_apply, smul_eq_mul, ← Finset.prod_erase_mul _ _ (a := i) (by simp)]
-   congrm ?_ * ?_
-   swap; · simp
-   refine Finset.prod_congr rfl fun j hj ↦ ?_
-   simp [Function.update, Finset.ne_of_mem_erase hj]
+  ext s hs
+  classical
+  rw [Measure.map_apply (measurable_pi_apply i) hs, ← Set.univ_pi_update_univ, Measure.pi_pi,
+    Measure.smul_apply, smul_eq_mul, ← Finset.prod_erase_mul _ _ (a := i) (by simp)]
+  congrm ?_ * ?_
+  swap; · simp
+  refine Finset.prod_congr rfl fun j hj ↦ ?_
+  simp [Function.update, Finset.ne_of_mem_erase hj]
 
 lemma pi_map_pi {X Y : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) → Measure (X i)}
     [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i} [hμ : ∀ i, SigmaFinite ((μ i).map (f i))]
@@ -663,9 +663,9 @@ open Measure
 
 /-- We intentionally restrict this only to the nondependent function space, since type-class
 inference cannot find an instance for `ι → ℝ` when this is stated for dependent function spaces. -/
-@[to_additive "We intentionally restrict this only to the nondependent function space, since
+@[to_additive /-- We intentionally restrict this only to the nondependent function space, since
 type-class inference cannot find an instance for `ι → ℝ` when this is stated for dependent function
-spaces."]
+spaces. -/]
 instance Pi.isMulLeftInvariant_volume {α} [Group α] [MeasureSpace α]
     [SigmaFinite (volume : Measure α)] [MeasurableMul α] [IsMulLeftInvariant (volume : Measure α)] :
     IsMulLeftInvariant (volume : Measure (ι → α)) :=
@@ -673,16 +673,16 @@ instance Pi.isMulLeftInvariant_volume {α} [Group α] [MeasureSpace α]
 
 /-- We intentionally restrict this only to the nondependent function space, since type-class
 inference cannot find an instance for `ι → ℝ` when this is stated for dependent function spaces. -/
-@[to_additive "We intentionally restrict this only to the nondependent function space, since
+@[to_additive /-- We intentionally restrict this only to the nondependent function space, since
 type-class inference cannot find an instance for `ι → ℝ` when this is stated for dependent function
-spaces."]
+spaces. -/]
 instance Pi.isInvInvariant_volume {α} [Group α] [MeasureSpace α] [SigmaFinite (volume : Measure α)]
     [MeasurableInv α] [IsInvInvariant (volume : Measure α)] :
     IsInvInvariant (volume : Measure (ι → α)) :=
   pi.isInvInvariant _
 
 /-!
-### Measure preserving equivalences
+### Measure-preserving equivalences
 
 In this section we prove that some measurable equivalences (e.g., between `Fin 1 → α` and `α` or
 between `Fin 2 → α` and `α × α`) preserve measure or volume. These lemmas can be used to prove that

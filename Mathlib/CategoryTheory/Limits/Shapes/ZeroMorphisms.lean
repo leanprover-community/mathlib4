@@ -3,7 +3,7 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Pi.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.IsomorphismClasses
@@ -325,7 +325,7 @@ open ZeroObject
 @[simp]
 theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶ 0) := by apply HasZeroObject.from_zero_ext
 
--- This can't be a `simp` lemma because the left hand side would be a metavariable.
+-- This can't be a `simp` lemma because the left-hand side would be a metavariable.
 /-- An arrow ending in the zero object is zero -/
 theorem zero_of_to_zero {X : C} (f : X ⟶ 0) : f = 0 := by ext
 

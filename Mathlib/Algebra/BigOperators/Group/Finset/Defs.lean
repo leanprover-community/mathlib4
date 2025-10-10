@@ -56,11 +56,11 @@ namespace Finset
 
 When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for
 `∏ x ∈ Finset.univ, f x`. -/
-@[to_additive "`∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements
+@[to_additive /-- `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements
 of the finite set `s`.
 
 When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for
-`∑ x ∈ Finset.univ, f x`."]
+`∑ x ∈ Finset.univ, f x`. -/]
 protected def prod [CommMonoid M] (s : Finset ι) (f : ι → M) : M :=
   (s.1.map f).prod
 
@@ -75,7 +75,7 @@ theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note "operator precedence of big operators"/--
+library_note2 «operator precedence of big operators» /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
@@ -111,9 +111,10 @@ syntax bigOpBinderCollection := bigOpBinderParenthesized+
 syntax bigOpBinders := bigOpBinderCollection <|> (ppSpace bigOpBinder)
 
 /-- Collects additional binder/Finset pairs for the given `bigOpBinder`.
+
 Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
-def processBigOpBinder (processed : (Array (Term × Term)))
-    (binder : TSyntax ``bigOpBinder) : MacroM (Array (Term × Term)) :=
+def processBigOpBinder (processed : (Array (Term × Term))) (binder : TSyntax ``bigOpBinder) :
+    MacroM (Array (Term × Term)) :=
   set_option hygiene false in
   withRef binder do
     match binder with
@@ -140,18 +141,16 @@ def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
   | `(bigOpBinders| $[($bs:bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
   | _ => Macro.throwUnsupported
 
-/-- Collect the binderIdents into a `⟨...⟩` expression. -/
-def bigOpBindersPattern (processed : (Array (Term × Term))) :
-    MacroM Term := do
+/-- Collects the binderIdents into a `⟨...⟩` expression. -/
+def bigOpBindersPattern (processed : Array (Term × Term)) : MacroM Term := do
   let ts := processed.map Prod.fst
   if h : ts.size = 1 then
     return ts[0]
   else
     `(⟨$ts,*⟩)
 
-/-- Collect the terms into a product of sets. -/
-def bigOpBindersProd (processed : (Array (Term × Term))) :
-    MacroM Term := do
+/-- Collects the terms into a product of sets. -/
+def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
   if h₀ : processed.size = 0 then
     `((Finset.univ : Finset Unit))
   else if h₁ : processed.size = 1 then
@@ -166,12 +165,14 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
 - `∑ x ∈ s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
 - `∑ x ∈ s with p x, f x` is notation for `Finset.sum (Finset.filter p s) f`.
+- `∑ x ∈ s with h : p x, f x h` is notation for `Finset.sum s fun x ↦ if h : p x then f x h else 0`.
 - `∑ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∑" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
+Notation: `"∑" bigOpBinders* (" with" (ident ":")? term)? "," term` -/
+syntax (name := bigsum)
+  "∑ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -179,61 +180,41 @@ syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 - `∏ x ∈ s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
 - `∏ x ∈ s with p x, f x` is notation for `Finset.prod (Finset.filter p s) f`.
+- `∏ x ∈ s with h : p x, f x h` is notation for
+  `Finset.prod s fun x ↦ if h : p x then f x h else 1`.
 - `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.prod (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigprod) "∏ " bigOpBinders (" with " term)? ", " term:67 : term
+Notation: `"∏" bigOpBinders* ("with" (ident ":")? term)? "," term` -/
+syntax (name := bigprod)
+  "∏ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 macro_rules (kind := bigsum)
-  | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∑ $bs:bigOpBinders $[with $[$hx??:binderIdent :]? $p?:term]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
-    match p? with
-    | some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
-    | none => `(Finset.sum $s (fun $x ↦ $v))
+    -- `a` is interpreted as the filtering proposition, unless `b` exists, in which case `a` is the
+    -- proof and `b` is the filtering proposition
+    match hx??, p? with
+    | some (some hx), some p =>
+      `(Finset.sum $s fun $x ↦ if $hx : $p then $v else 0)
+    | _, some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
+    | _, none => `(Finset.sum $s (fun $x ↦ $v))
 
 macro_rules (kind := bigprod)
-  | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∏ $bs:bigOpBinders $[with $[$hx??:binderIdent :]? $p?:term]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
-    match p? with
-    | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
-    | none => `(Finset.prod $s (fun $x ↦ $v))
-
-section deprecated -- since 2024-30-01
-open Elab Term Tactic TryThis
-
-/-- Deprecated, use `∑ x ∈ s, f x` instead. -/
-syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
-
-/-- Deprecated, use `∏ x ∈ s, f x` instead. -/
-syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
-
-elab_rules : term
-  | `(∑%$tk $x:ident in $s, $r) => do
-    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
-      "The '∑ x in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
-    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
-  | `(∑%$tk $x:ident : $_t in $s, $r) => do
-    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
-      "The '∑ x : t in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
-    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
-
-elab_rules : term
-  | `(∏%$tk $x:ident in $s, $r) => do
-    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
-      "The '∏ x in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
-    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
-  | `(∏%$tk $x:ident : $_t in $s, $r) => do
-    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
-      "The '∏ x : t in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
-    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
-
-end deprecated
+    -- `a` is interpreted as the filtering proposition, unless `b` exists, in which case `a` is the
+    -- proof and `b` is the filtering proposition
+    match hx??, p? with
+    | some (some hx), some p =>
+      `(Finset.prod $s fun $x ↦ if $hx : $p then $v else 1)
+    | _, some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
+    | _, none => `(Finset.prod $s (fun $x ↦ $v))
 
 open PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
@@ -447,13 +428,13 @@ rather than by an inverse function.
 
 The difference with `Finset.prod_nbij` is that the bijection is allowed to use membership of the
 domain of the product, rather than being a non-dependent function. -/
-@[to_additive "Reorder a sum.
+@[to_additive /-- Reorder a sum.
 
 The difference with `Finset.sum_bij'` is that the bijection is specified as a surjective injection,
 rather than by an inverse function.
 
 The difference with `Finset.sum_nbij` is that the bijection is allowed to use membership of the
-domain of the sum, rather than being a non-dependent function."]
+domain of the sum, rather than being a non-dependent function. -/]
 theorem prod_bij (i : ∀ a ∈ s, κ) (hi : ∀ a ha, i a ha ∈ t)
     (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) (h : ∀ a ha, f a = g (i a ha)) :
@@ -467,13 +448,13 @@ than as a surjective injection.
 
 The difference with `Finset.prod_nbij'` is that the bijection and its inverse are allowed to use
 membership of the domains of the products, rather than being non-dependent functions. -/
-@[to_additive "Reorder a sum.
+@[to_additive /-- Reorder a sum.
 
 The difference with `Finset.sum_bij` is that the bijection is specified with an inverse, rather than
 as a surjective injection.
 
 The difference with `Finset.sum_nbij'` is that the bijection and its inverse are allowed to use
-membership of the domains of the sums, rather than being non-dependent functions."]
+membership of the domains of the sums, rather than being non-dependent functions. -/]
 theorem prod_bij' (i : ∀ a ∈ s, κ) (j : ∀ a ∈ t, ι) (hi : ∀ a ha, i a ha ∈ t)
     (hj : ∀ a ha, j a ha ∈ s) (left_inv : ∀ a ha, j (i a ha) (hi a ha) = a)
     (right_inv : ∀ a ha, i (j a ha) (hj a ha) = a) (h : ∀ a ha, f a = g (i a ha)) :
@@ -489,13 +470,13 @@ injection, rather than by an inverse function.
 
 The difference with `Finset.prod_bij` is that the bijection is a non-dependent function, rather than
 being allowed to use membership of the domain of the product. -/
-@[to_additive "Reorder a sum.
+@[to_additive /-- Reorder a sum.
 
 The difference with `Finset.sum_nbij'` is that the bijection is specified as a surjective injection,
 rather than by an inverse function.
 
 The difference with `Finset.sum_bij` is that the bijection is a non-dependent function, rather than
-being allowed to use membership of the domain of the sum."]
+being allowed to use membership of the domain of the sum. -/]
 lemma prod_nbij (i : ι → κ) (hi : ∀ a ∈ s, i a ∈ t) (i_inj : (s : Set ι).InjOn i)
     (i_surj : (s : Set ι).SurjOn i t) (h : ∀ a ∈ s, f a = g (i a)) :
     ∏ x ∈ s, f x = ∏ x ∈ t, g x :=
@@ -512,7 +493,7 @@ functions, rather than being allowed to use membership of the domains of the pro
 The difference with `Finset.prod_equiv` is that bijectivity is only required to hold on the domains
 of the products, rather than on the entire types.
 -/
-@[to_additive "Reorder a sum.
+@[to_additive /-- Reorder a sum.
 
 The difference with `Finset.sum_nbij` is that the bijection is specified with an inverse, rather
 than as a surjective injection.
@@ -521,7 +502,7 @@ The difference with `Finset.sum_bij'` is that the bijection and its inverse are 
 functions, rather than being allowed to use membership of the domains of the sums.
 
 The difference with `Finset.sum_equiv` is that bijectivity is only required to hold on the domains
-of the sums, rather than on the entire types."]
+of the sums, rather than on the entire types. -/]
 lemma prod_nbij' (i : ι → κ) (j : κ → ι) (hi : ∀ a ∈ s, i a ∈ t) (hj : ∀ a ∈ t, j a ∈ s)
     (left_inv : ∀ a ∈ s, j (i a) = a) (right_inv : ∀ a ∈ t, i (j a) = a)
     (h : ∀ a ∈ s, f a = g (i a)) : ∏ x ∈ s, f x = ∏ x ∈ t, g x :=
@@ -530,18 +511,18 @@ lemma prod_nbij' (i : ι → κ) (j : κ → ι) (hi : ∀ a ∈ s, i a ∈ t) (
 /-- Specialization of `Finset.prod_nbij'` that automatically fills in most arguments.
 
 See `Fintype.prod_equiv` for the version where `s` and `t` are `univ`. -/
-@[to_additive "`Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
+@[to_additive /-- `Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
 
-See `Fintype.sum_equiv` for the version where `s` and `t` are `univ`."]
+See `Fintype.sum_equiv` for the version where `s` and `t` are `univ`. -/]
 lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
     ∏ i ∈ s, f i = ∏ i ∈ t, g i := by refine prod_nbij' e e.symm ?_ ?_ ?_ ?_ hfg <;> simp [hst]
 
 /-- Specialization of `Finset.prod_bij` that automatically fills in most arguments.
 
 See `Fintype.prod_bijective` for the version where `s` and `t` are `univ`. -/
-@[to_additive "`Specialization of `Finset.sum_bij` that automatically fills in most arguments.
+@[to_additive /-- `Specialization of `Finset.sum_bij` that automatically fills in most arguments.
 
-See `Fintype.sum_bijective` for the version where `s` and `t` are `univ`."]
+See `Fintype.sum_bijective` for the version where `s` and `t` are `univ`. -/]
 lemma prod_bijective (e : ι → κ) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t)
     (hfg : ∀ i ∈ s, f i = g (e i)) :
     ∏ i ∈ s, f i = ∏ i ∈ t, g i := prod_equiv (.ofBijective e he) hst hfg
@@ -613,8 +594,8 @@ theorem prod_mem_multiset [DecidableEq ι] (m : Multiset ι) (f : { x // x ∈ m
 
 /-- To prove a property of a product, it suffices to prove that
 the property is multiplicative and holds on factors. -/
-@[to_additive "To prove a property of a sum, it suffices to prove that
-the property is additive and holds on summands."]
+@[to_additive /-- To prove a property of a sum, it suffices to prove that
+the property is additive and holds on summands. -/]
 theorem prod_induction {M : Type*} [CommMonoid M] (f : ι → M) (p : M → Prop)
     (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ s, p <| f x) :
     p <| ∏ x ∈ s, f x :=
@@ -622,8 +603,8 @@ theorem prod_induction {M : Type*} [CommMonoid M] (f : ι → M) (p : M → Prop
 
 /-- To prove a property of a product, it suffices to prove that
 the property is multiplicative and holds on factors. -/
-@[to_additive "To prove a property of a sum, it suffices to prove that
-the property is additive and holds on summands."]
+@[to_additive /-- To prove a property of a sum, it suffices to prove that
+the property is additive and holds on summands. -/]
 theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : ι → M) (p : M → Prop)
     (hom : ∀ a b, p a → p b → p (a * b)) (nonempty : s.Nonempty) (base : ∀ x ∈ s, p <| f x) :
     p <| ∏ x ∈ s, f x :=
@@ -704,10 +685,10 @@ variable [CommMonoid M]
 /-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.Bijective`.
 
 See `Function.Bijective.prod_comp` for a version without `h`. -/
-@[to_additive "`Fintype.sum_bijective` is a variant of `Finset.sum_bij` that accepts
+@[to_additive /-- `Fintype.sum_bijective` is a variant of `Finset.sum_bij` that accepts
 `Function.Bijective`.
 
-See `Function.Bijective.sum_comp` for a version without `h`. "]
+See `Function.Bijective.sum_comp` for a version without `h`. -/]
 lemma prod_bijective (e : ι → κ) (he : e.Bijective) (f : ι → M) (g : κ → M)
     (h : ∀ x, f x = g (e x)) : ∏ x, f x = ∏ x, g x :=
   prod_equiv (.ofBijective e he) (by simp) (by simp [h])
@@ -719,10 +700,10 @@ automatically fills in most arguments.
 
 See `Equiv.prod_comp` for a version without `h`.
 -/
-@[to_additive "`Fintype.sum_equiv` is a specialization of `Finset.sum_bij` that
+@[to_additive /-- `Fintype.sum_equiv` is a specialization of `Finset.sum_bij` that
 automatically fills in most arguments.
 
-See `Equiv.sum_comp` for a version without `h`."]
+See `Equiv.sum_comp` for a version without `h`. -/]
 lemma prod_equiv (e : ι ≃ κ) (f : ι → M) (g : κ → M) (h : ∀ x, f x = g (e x)) :
     ∏ x, f x = ∏ x, g x := prod_bijective _ e.bijective _ _ h
 
@@ -768,7 +749,6 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
   | nil =>
     simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
   | cons b bs ih =>
-    simp_rw [List.sum_cons, disjoint_add_left, List.mem_cons, forall_eq_or_imp]
     simp [ih]
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :

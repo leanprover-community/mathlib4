@@ -5,11 +5,19 @@ Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
 import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Push
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}
+
+example : ¬ False := by
+  push_neg
+
+example (h : ¬ True) : False := by
+  push_neg at h
+  exact h
 
 example : (¬p ∧ ¬q) → ¬(p ∨ q) := by
   intro h
@@ -135,6 +143,26 @@ example (h : p ∧ q) : ¬¬(p ∧ q) := by
   push_neg
   guard_target =ₛ r
   exact h
+
+-- new error message as of https://github.com/leanprover-community/mathlib4/issues/27562
+/-- error: push made no progress anywhere -/
+#guard_msgs in
+example {P : Prop} (h : P) : P := by push_neg at *
+
+-- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
+-- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
+/-- error: push made no progress at h -/
+#guard_msgs in
+example {x y : ℕ} : True := by
+  have h : x ≤ y := test_sorry
+  push_neg at h
+
+-- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562 (previously the tactic succeeded as a no-op)
+/-- error: cannot run push at inductive_proof, it is an implementation detail -/
+#guard_msgs in
+def inductive_proof : True := by
+  push_neg at inductive_proof
+  trivial
 
 section use_distrib
 set_option push_neg.use_distrib true

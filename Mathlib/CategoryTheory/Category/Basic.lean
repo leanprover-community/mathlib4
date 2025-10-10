@@ -15,7 +15,7 @@ import Mathlib.Tactic.TryThis
 
 Defines a category, as a type class parametrised by the type of objects.
 
-## Notations
+## Notation
 
 Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
@@ -30,7 +30,7 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 -/
 
 
-library_note "CategoryTheory universes"
+library_note2 «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -55,7 +55,7 @@ for which objects live in `Type u` and morphisms live in `Type v`.
 
 Because the universe parameter `u` for the objects can be inferred from `C`
 when we write `Category C`, while the universe parameter `v` for the morphisms
-can not be automatically inferred, through the category theory library
+cannot be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```
@@ -356,6 +356,18 @@ theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Ep
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 
+/-- `f : X ⟶ Y` is a monomorphism iff for all `Z`, composition of morphisms `Z ⟶ X` with `f`
+is injective. -/
+lemma mono_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ ∀ Z, (fun g : Z ⟶ X ↦ g ≫ f).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_mono f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
+/-- `f : X ⟶ Y` is an epimorphism iff for all `Z`, composition of morphisms `Y ⟶ Z` with `f`
+is injective. -/
+lemma epi_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_epi f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
 section
 
 variable [Quiver.IsThin C] (f : X ⟶ Y)
@@ -377,11 +389,15 @@ variable [Category.{v} C]
 
 universe u'
 
-instance uliftCategory : Category.{v} (ULift.{u'} C) where
+/-- The category structure on `ULift C` that is induced from the category
+structure on `C`. This is not made a global instance because of a diamond
+when `C` is a preordered type. -/
+def uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
   comp f g := f ≫ g
 
+attribute [local instance] uliftCategory in
 -- We verify that this previous instance can lift small categories to large categories.
 example (D : Type u) [SmallCategory D] : LargeCategory (ULift.{u + 1} D) := by infer_instance
 

@@ -39,7 +39,7 @@ noncomputable section
 
 namespace CategoryTheory.Limits
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe w' w₂' w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
@@ -567,7 +567,7 @@ lemma reflectsLimit_of_reflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [G.Refle
     change IsIso ((Cones.forget _).map ((limit.isLimit F).liftConeMorphism c))
     suffices IsIso (IsLimit.liftConeMorphism (limit.isLimit F) c) from by
       apply (Cones.forget F).map_isIso _
-    suffices IsIso (Prefunctor.map (Cones.functoriality F G).toPrefunctor
+    suffices IsIso ((Cones.functoriality F G).map
       (IsLimit.liftConeMorphism (limit.isLimit F) c)) from by
         apply isIso_of_reflects_iso _ (Cones.functoriality F G)
     exact t.hom_isIso (isLimitOfPreserves G (limit.isLimit F)) _
@@ -670,7 +670,7 @@ lemma reflectsColimit_of_reflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [G.Ref
     change IsIso ((Cocones.forget _).map ((colimit.isColimit F).descCoconeMorphism c))
     suffices IsIso (IsColimit.descCoconeMorphism (colimit.isColimit F) c) from by
       apply (Cocones.forget F).map_isIso _
-    suffices IsIso (Prefunctor.map (Cocones.functoriality F G).toPrefunctor
+    suffices IsIso ((Cocones.functoriality F G).map
       (IsColimit.descCoconeMorphism (colimit.isColimit F) c)) from by
         apply isIso_of_reflects_iso _ (Cocones.functoriality F G)
     exact (isColimitOfPreserves G (colimit.isColimit F)).hom_isIso t _

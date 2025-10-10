@@ -39,7 +39,7 @@ multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped w
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
 `e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)` (for which we
-introduced the notation `𝐞` in the locale `FourierTransform`).
+introduced the notation `𝐞` in the scope `FourierTransform`).
 
 Another familiar case (which generalizes the previous one) is when `V = W` is an inner product space
 over `ℝ` and `L` is the scalar product. We introduce two notations `𝓕` for the Fourier transform in
@@ -108,12 +108,14 @@ end Defs
 
 section Continuous
 
-/-! In this section we assume 𝕜, `V`, `W` have topologies,
-  and `L`, `e` are continuous (but `f` needn't be).
-   This is used to ensure that `e (-L v w)` is (a.e. strongly) measurable. We could get away with
-   imposing only a measurable-space structure on 𝕜 (it doesn't have to be the Borel sigma-algebra of
-   a topology); but it seems hard to imagine cases where this extra generality would be useful, and
-   allowing it would complicate matters in the most important use cases.
+/-!
+In this section we assume 𝕜, `V`, `W` have topologies,
+and `L`, `e` are continuous (but `f` needn't be).
+
+This is used to ensure that `e (-L v w)` is (a.e. strongly) measurable. We could get away with
+imposing only a measurable-space structure on 𝕜 (it doesn't have to be the Borel sigma-algebra of
+a topology); but it seems hard to imagine cases where this extra generality would be useful, and
+allowing it would complicate matters in the most important use cases.
 -/
 variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
