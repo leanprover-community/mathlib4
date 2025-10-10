@@ -127,7 +127,7 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   constructor
   · rintro ⟨han, ⟨ha, han'⟩, rfl⟩
     simp [Nat.mul_div_eq_iff_dvd, han]
-    omega
+    cutsat
   · rintro ⟨rfl, hab⟩
     rw [mul_ne_zero_iff] at hab
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt

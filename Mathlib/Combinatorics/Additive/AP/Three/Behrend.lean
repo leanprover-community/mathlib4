@@ -16,7 +16,7 @@ This file proves Behrend's lower bound on Roth numbers. This says that we can fi
 `{1, ..., n}` of size `n / exp (O (sqrt (log n)))` which does not contain arithmetic progressions of
 length `3`.
 
-The idea is that the sphere (in the `n` dimensional Euclidean space) doesn't contain arithmetic
+The idea is that the sphere (in the `n`-dimensional Euclidean space) doesn't contain arithmetic
 progressions (literally) because the corresponding ball is strictly convex. Thus we can take
 integer points on that sphere and map them onto `ℕ` in a way that preserves arithmetic progressions
 (`Behrend.map`).
