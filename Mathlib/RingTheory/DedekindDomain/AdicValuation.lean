@@ -386,13 +386,24 @@ theorem mem_integers_of_valuation_le_one (x : K)
     Associates.factors_mk _ (ine hd0), Associates.count_some hv'] at h
   simpa using h
 
+variable {K}
+
+theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
+    (hpq : (valuation K p).IsEquiv (valuation K q)) : p = q := by
+  rw [Valuation.isEquiv_iff_val_lt_one] at hpq
+  rw [HeightOneSpectrum.ext_iff, ← Ring.DimensionLeOne.prime_le_prime_iff_eq p.ne_bot]
+  intro x hx
+  specialize hpq (x := algebraMap R K x)
+  rw [valuation_lt_one_iff_dvd p x, valuation_lt_one_iff_dvd q x, Ideal.dvd_span_singleton,
+    Ideal.dvd_span_singleton] at hpq
+  exact hpq.mp hx
+
 /-! ### Completions with respect to adic valuations
 
 Given a Dedekind domain `R` with field of fractions `K` and a maximal ideal `v` of `R`, we define
 the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCompletion`, and its
 ring of integers, denoted `v.adicCompletionIntegers`. -/
 
-variable {K}
 
 /-- `K` as a valued field with the `v`-adic valuation. -/
 def adicValued : Valued K ℤᵐ⁰ :=
