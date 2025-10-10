@@ -20,46 +20,14 @@ section
 
 variable (F : Type* → Type*) [Applicative F] [LawfulApplicative F]
 
+attribute [local simp] map_seq seq_map_assoc
+  LawfulApplicative.pure_seq LawfulApplicative.seq_assoc in
 /-- A lawful `Applicative` gives a category theory `LaxMonoidal` functor
 between categories of types. -/
-@[simps!]
+@[simps]
 instance : (ofTypeFunctor F).LaxMonoidal where
-  ε := by
-    intro
-    simp only [ofTypeFunctor_obj]
-    apply pure PUnit.unit
-  μ := by
-    intro _ _ ⟨x, y⟩
-    simp only [ofTypeFunctor_obj]
-    exact Prod.mk <$> x <*> y
-  μ_natural_left := by
-    repeat intro
-    funext x
-    cases x
-    simp [map_seq]
-    rfl
-  μ_natural_right := by
-    repeat intro
-    funext x
-    cases x
-    simp [map_seq, seq_map_assoc]
-    rfl
-  associativity := by
-    repeat intro
-    funext x
-    rcases x with ⟨⟨_, _⟩, _⟩
-    simp [map_seq, seq_map_assoc, LawfulApplicative.seq_assoc]
-    rfl
-  left_unitality := by
-    repeat intro
-    funext x
-    cases x
-    simp [LawfulApplicative.pure_seq]
-  right_unitality := by
-    repeat intro
-    funext x
-    cases x
-    simp
+  ε _ : F _ := pure PUnit.unit
+  μ _ _ p : F _ := Prod.mk <$> p.1 <*> p.2
 
 end
 
