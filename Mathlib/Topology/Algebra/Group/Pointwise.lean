@@ -62,7 +62,8 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
       (image_subset_iff.mpr fun ⟨⟨g, hg⟩, x⟩ hx ↦ smul_mem_smul hg hx)
   rw [this]
   have : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  exact (isProperMap_snd.comp Φ.isProperMap).isClosedMap _ (ht.preimage continuous_snd)
+  exact (isProperMap_snd_of_compactSpace.comp Φ.isProperMap).isClosedMap _
+    (ht.preimage continuous_snd)
 
 /-! One may expect a version of `IsClosed.smul_left_of_isCompact` where `t` is compact and `s` is
 closed, but such a lemma can't be true in this level of generality. For a counterexample, consider
