@@ -341,4 +341,4 @@ easier to use because it allows `Z` to live in any universe. -/
 theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap f) :
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
-  (h.prodMap isProperMap_id).isClosedMap*
+  (h.prodMap isProperMap_id).isClosedMap
