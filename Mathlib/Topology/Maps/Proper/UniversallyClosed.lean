@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Etienne Marion
 -/
 import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.Filter
+import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # A map is proper iff it is continuous and universally closed
