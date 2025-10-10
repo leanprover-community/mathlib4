@@ -436,12 +436,6 @@ instance addMonoidWithOne : AddMonoidWithOne ZNum :=
 
 private theorem mul_comm : ∀ (a b : ZNum), a * b = b * a := by transfer
 
-private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), c + a ≤ c + b := by
-  intro a b h c
-  revert h
-  transfer_rw
-  exact fun h => _root_.add_le_add_left h c
-
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
@@ -464,8 +458,8 @@ instance nontrivial : Nontrivial ZNum :=
 instance zeroLEOneClass : ZeroLEOneClass ZNum :=
   { zero_le_one := by decide }
 
-instance isOrderedAddMonoid : IsOrderedAddMonoid ZNum :=
-  { add_le_add_left := add_le_add_left }
+instance isOrderedAddMonoid : IsOrderedAddMonoid ZNum where
+  add_le_add_left a b h c := by revert h; transfer_rw; intro h; gcongr
 
 instance isStrictOrderedRing : IsStrictOrderedRing ZNum :=
   .of_mul_pos fun a b ↦ by
@@ -623,9 +617,8 @@ theorem gcd_to_nat_aux :
     rw [pow_succ, ← Nat.mod_add_div b (pos a)] at h
     refine lt_of_mul_lt_mul_right (lt_of_le_of_lt ?_ h) (Nat.zero_le 2)
     rw [mul_two, mul_add]
-    refine
-      add_le_add_left
-        (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) ?_)) _
+    gcongr
+    refine (Nat.mod_lt _ <| PosNum.cast_pos _).le.trans ?_
     suffices 1 ≤ _ by simpa using Nat.mul_le_mul_left (pos a) this
     rw [Nat.le_div_iff_mul_le a.cast_pos, one_mul]
     exact le_to_nat.2 ab
