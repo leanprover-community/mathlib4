@@ -167,8 +167,7 @@ error: failed to synthesize
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 ---
-trace: [Elab.DiffGeo.MDiff] HACK: disabling coercion in MDiff
-[Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
+trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
 [Elab.DiffGeo.MDiff] ✅️ TotalSpace
   [Elab.DiffGeo.MDiff] ❌️ From base info
     [Elab.DiffGeo.MDiff] Failed with error:
