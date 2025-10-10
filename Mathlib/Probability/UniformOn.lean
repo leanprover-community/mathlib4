@@ -3,8 +3,8 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Bhavik Mehta
 -/
+import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.Probability.ConditionalProbability
-import Mathlib.MeasureTheory.Measure.Count
 
 /-!
 # Classical probability
@@ -70,6 +70,16 @@ theorem uniformOn_empty {s : Set Ω} : uniformOn s ∅ = 0 := by simp
 `MeasurableSingletonClass Ω`. -/
 @[simp] lemma uniformOn_eq_zero [MeasurableSingletonClass Ω] :
     uniformOn s = 0 ↔ s.Infinite ∨ s = ∅ := by simp [uniformOn]
+
+variable {β : Type*} {f : Ω → β} [ConditionallyCompleteLattice β]
+
+@[simp] lemma essSup_uniformOn_eq_ciSup [Nonempty Ω] [Finite Ω] (hf : BddAbove (Set.range f)) :
+    essSup f (uniformOn Set.univ) = ⨆ a, f a :=
+  essSup_eq_ciSup (by simpa [uniformOn, cond_apply]) hf
+
+@[simp] lemma essInf_cond_count_eq_ciInf [Nonempty Ω] [Finite Ω] (hf : BddBelow (Set.range f)) :
+    essInf f (uniformOn Set.univ) = ⨅ a, f a :=
+  essInf_eq_ciInf (by simpa [uniformOn, cond_apply]) hf
 
 theorem finite_of_uniformOn_ne_zero {s t : Set Ω} (h : uniformOn s t ≠ 0) : s.Finite := by
   by_contra hs'
