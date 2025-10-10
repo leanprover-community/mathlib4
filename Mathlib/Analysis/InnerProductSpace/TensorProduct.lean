@@ -31,23 +31,6 @@ instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y =>
 theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
-@[simp] private protected theorem inner_add (x y z : E ⊗[𝕜] F) :
-    inner 𝕜 x (y + z) = inner 𝕜 x y + inner 𝕜 x z := by simp [inner]
-@[simp] private protected theorem add_inner (x y z : E ⊗[𝕜] F) :
-    inner 𝕜 (x + y) z = inner 𝕜 x z + inner 𝕜 y z := by simp [inner]
-@[simp] private protected theorem sum_inner {n : Type*} [Fintype n] (x : n → E ⊗[𝕜] F)
-    (y : E ⊗[𝕜] F) : inner 𝕜 (∑ i, x i) y = ∑ i, inner 𝕜 (x i) y := by simp [inner]
-@[simp] private protected theorem inner_sum {n : Type*} [Fintype n] (x : E ⊗[𝕜] F)
-    (y : n → E ⊗[𝕜] F) : inner 𝕜 x (∑ i, y i) = ∑ i, inner 𝕜 x (y i) := by simp [inner]
-@[simp] private protected theorem smul_inner (x y : E ⊗[𝕜] F) (c : 𝕜) :
-    inner 𝕜 (c • x) y = starRingEnd 𝕜 c * inner 𝕜 x y := by simp [inner]
-@[simp] private protected theorem inner_smul (x y : E ⊗[𝕜] F) (c : 𝕜) :
-    inner 𝕜 x (c • y) = c * inner 𝕜 x y := by simp [inner]
-
-private protected theorem conj_inner (x y : E ⊗[𝕜] F) : starRingEnd 𝕜 (inner 𝕜 x y) = inner 𝕜 y x :=
-  x.induction_on (by simp [inner]) (y.induction_on (by simp [inner]) (fun x y => by simp)
-    (fun x y hx hy a b => by simp_all)) (fun x y hx hy => by simp_all)
-
 section move
 
 lemma mem_finiteDimensional_range_mapIncl {K V V' : Type*} [Field K] [AddCommGroup V]
@@ -76,7 +59,7 @@ end move
 private lemma inner_coe_of_eq {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x y : E' ⊗[𝕜] F'} :
     inner 𝕜 x y = inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) :=
   x.induction_on (by simp [inner])
-  (y.induction_on (by simp [inner]) (by simp) (by simp_all)) (by simp_all)
+  (y.induction_on (by simp [inner]) (by simp) (by simp_all [inner])) (by simp_all [inner])
 
 private lemma inner_coe_of_eq' {x y : E ⊗[𝕜] F}
     {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x' y' : E' ⊗[𝕜] F'}
@@ -101,12 +84,17 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   have hy : y = hz.choose := rfl
   rw [← hy] at hx
   rw [y.basis_sum_repr e.toBasis f.toBasis] at hx
-  simp only [OrthonormalBasis.coe_toBasis, TensorProduct.inner_sum, TensorProduct.inner_smul,
-    TensorProduct.sum_inner, TensorProduct.smul_inner, inner_tmul] at hx
-  simp [OrthonormalBasis.inner_eq_ite] at hx
-  simp [RCLike.mul_conj, ← Finset.sum_product'] at hx
+  simp only [OrthonormalBasis.coe_toBasis] at hx
+  simp only [inner, map_smulₛₗ, map_sum, LinearMap.sum_apply, LinearMap.smul_apply,
+    Finset.smul_sum, RingHom.id_apply] at hx
+  simp only [LinearMap.coe_comp, Function.comp_apply, map_tmul, LinearMap.compr₂_apply,
+    lift.tmul, mapBilinear_apply, innerₛₗ_apply, OrthonormalBasis.inner_eq_ite,
+    LinearMap.mul'_apply, mul_ite, mul_one, mul_zero, smul_eq_mul, Finset.sum_ite_eq',
+    Finset.mem_univ, ↓reduceIte] at hx
+  simp only [RCLike.mul_conj, ← Finset.sum_product', Finset.univ_product_univ, Prod.mk.eta] at hx
   rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => by simp)] at hx
-  simp at hx
+  simp only [Finset.mem_univ, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
+    map_eq_zero, norm_eq_zero, forall_const, Prod.forall] at hx
   have : y = 0 := by
     rw [Basis.ext_elem_iff (e.toBasis.tensorProduct f.toBasis)]
     simp only [hx, map_zero, Finsupp.coe_zero, Pi.zero_apply, implies_true]
@@ -122,10 +110,12 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   have hy : y = hz.choose := rfl
   rw [← hy]
   rw [y.basis_sum_repr e.toBasis f.toBasis]
-  simp only [OrthonormalBasis.coe_toBasis, TensorProduct.inner_sum, TensorProduct.inner_smul,
-    TensorProduct.sum_inner, TensorProduct.smul_inner, inner_tmul]
+  simp only [OrthonormalBasis.coe_toBasis, inner, LinearMap.comp_apply,
+    map_sum, LinearMap.sum_apply, map_smulₛₗ, LinearMap.smul_apply]
+  simp only [RingHom.id_apply, map_tmul, LinearMap.compr₂_apply, lift.tmul, mapBilinear_apply,
+    innerₛₗ_apply, LinearMap.mul'_apply, smul_eq_mul]
   simp only [OrthonormalBasis.inner_eq_ite, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
-    Finset.mem_univ, ↓reduceIte, ← Finset.sum_product', RCLike.mul_conj, map_sum]
+    Finset.mem_univ, ↓reduceIte, ← Finset.sum_product', RCLike.mul_conj]
   apply Finset.sum_nonneg
   intro i hi
   rw [← RCLike.ofReal_pow, RCLike.ofReal_re]
@@ -133,9 +123,11 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
 
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
   letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
-  { conj_inner_symm := fun x y => TensorProduct.conj_inner y x
-    add_left := TensorProduct.add_inner
-    smul_left := TensorProduct.smul_inner
+  { conj_inner_symm x y :=
+      x.induction_on (by simp [inner]) (y.induction_on (by simp [inner]) (fun x y => by simp)
+        (fun x y hx hy a b => by simp_all [inner])) (fun x y hx hy => by simp_all [inner])
+    add_left _ _ _ := by simp [inner]
+    smul_left _ _ _ := by simp [inner]
     definite := TensorProduct.inner_definite
     re_inner_nonneg := TensorProduct.re_inner_self_nonneg }
   this.toNormedAddCommGroup
