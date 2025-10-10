@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
+import Mathlib.CategoryTheory.Limits.Final.Type
 
 /-!
 # Pullbacks of free sheaves of modules
@@ -32,8 +33,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
   [Functor.IsContinuous.{u} F J K]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
-  [K.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 /-- The canonical map from the (global) sections of a sheaf of modules
@@ -47,8 +46,11 @@ def pushforwardSections [Functor.IsContinuous.{v} F J K]
 
 variable (M) in
 lemma bijective_pushforwardSections [Functor.IsContinuous.{v} F J K] [F.Final] :
-    Function.Bijective (pushforwardSections φ (M := M)) := by
-  sorry
+    Function.Bijective (pushforwardSections φ (M := M)) :=
+  Functor.bijective_sectionsPrecomp _ _
+
+variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
+  [K.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
