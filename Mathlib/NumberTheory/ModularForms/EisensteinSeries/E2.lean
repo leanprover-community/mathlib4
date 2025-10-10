@@ -76,7 +76,7 @@ private lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, mul_sum, Int.cast_zero,
     zero_mul, add_zero] at *
   congr
-  · simpa using (two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (k := 2) (by grind) (by simp)).symm
+  · simpa using (two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (by grind) even_two).symm
   · ext a
     norm_cast at *
     simp_rw [this a, ← tsum_mul_left, ← tsum_neg,ofReal_mul, ofReal_ofNat, mul_pow, I_sq, neg_mul,
@@ -84,8 +84,8 @@ private lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N
       Nat.cast_mul]
     exact tsum_congr fun b ↦ by grind [exp_add]
 
-private lemma aux_tsum_identity (z : ℍ) : ∑' m : ℕ, (-8 * π ^ 2  *
-    ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n : ℕ)) =
+private lemma aux_tsum_identity (z : ℍ) :
+    ∑' m : ℕ, (-8 * π ^ 2  * ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n)) =
     -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ) := by
   have := tsum_prod_pow_eq_tsum_sigma 1 (norm_exp_two_pi_I_lt_one z)
   rw [tsum_pnat_eq_tsum_succ (f := fun d ↦
