@@ -24,7 +24,7 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
-abbrev inner_ :=
+private abbrev inner_ :=
   ((lift <| mapBilinear 𝕜 E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜))
 instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
 @[simp] private lemma inner_def_ (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
