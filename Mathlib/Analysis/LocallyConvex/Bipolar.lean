@@ -8,6 +8,7 @@ import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.LocallyConvex.WeakDual
 import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 
@@ -49,6 +50,22 @@ example (h : SeparatingLeft B) : B.polar_gc.closureOperator (∅ : Set E) = {0} 
 
 end
 
+section NormedField
+
+variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
+
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
+
+open scoped ComplexOrder
+theorem polar_absConvex : AbsConvex 𝕜 (B.polar s) :=
+  polar_eq_biInter_preimage B s ▸ AbsConvex.iInter₂ fun i _ =>
+    ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
+      (convex_RCLike_iff_convex_real.mpr (convex_closedBall _ _)).linear_preimage (B i)⟩
+
+end NormedField
+
+
 
 section RCLike
 
@@ -64,6 +81,7 @@ The Bipolar Theorem: The bipolar of a set coincides with its closed absolutely c
 [Conway, *A course in functional analysis*, Chapter V. 1.8][conway1990]
 -/
 open scoped ComplexConjugate
+open scoped ComplexOrder
 theorem flip_polar_polar_eq {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
   refine subset_antisymm ?_ <| closedAbsConvexHull_min (E := WeakBilin B)
