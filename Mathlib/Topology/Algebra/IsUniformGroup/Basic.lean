@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.HeineCantor
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Tactic.Abel
@@ -115,12 +114,6 @@ instance Pi.instIsLeftUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, Unifo
     [∀ i, Group (G i)] [∀ i, IsLeftUniformGroup (G i)] : IsLeftUniformGroup (∀ i, G i) := by
   rw [Pi.uniformSpace_eq]
   exact isLeftUniformGroup_iInf fun i ↦ .comap (Pi.evalMonoidHom G i)
-
-@[to_additive]
-instance Pi.instIsUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
-    [∀ i, Group (G i)] [∀ i, IsUniformGroup (G i)] : IsUniformGroup (∀ i, G i) := by
-  rw [Pi.uniformSpace_eq]
-  exact isUniformGroup_iInf fun i ↦ .comap (Pi.evalMonoidHom G i)
 
 @[to_additive]
 theorem isUniformEmbedding_translate_mul (a : α') : IsUniformEmbedding fun x : α' => x * a :=
