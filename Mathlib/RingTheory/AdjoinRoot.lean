@@ -740,8 +740,7 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
   right_inv x := by
     nontriviality S
     obtain ⟨f, _hf, rfl⟩ := pb.exists_eq_aeval x
-    rw [pb.lift_aeval, aeval_eq, liftAlgHom_mk]
-    rfl
+    rw [pb.lift_aeval, aeval_eq, liftAlgHom_mk, Polynomial.aeval_def, Algebra.toRingHom_ofId]
 
 -- This lemma should have the simp tag but this causes a lint issue.
 theorem equiv'_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
