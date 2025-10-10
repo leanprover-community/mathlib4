@@ -209,36 +209,10 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     s.restore true
     return none
 
-/-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
-using the local context to infer the appropriate instance. This supports the following cases:
-- the model with corners on the total space of a vector bundle
-- the model with corners on the tangent space of a manifold
-- a model with corners on a manifold, or on its underlying model space
-- a closed interval of real numbers
-- the complex upper half plane
-- the trivial model `𝓘(𝕜, E)` on a normed space
-- if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
-  and if successful, return `𝓘(𝕜)`.
-
-Further cases can be added as necessary.
-
-Return an expression describing the found model with corners.
-
-`baseInfo` is only used for the first case, a model with corners on the total space of the vector
-bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
-and the model with corners on the base: these are required to construct the right model with
-corners.
-
-Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
-`TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
-`findModel` on it.
-
-This implementation is not maximally robust yet.
--/
--- TODO: better error messages when all strategies fail
--- TODO: consider lowering monad to `MetaM`
-def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-  trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
+/-- Workhorse method for `findModel`: try all strategies, and return an `Option` whether it
+succeeded. -/
+def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+    TermElabM <| Option Expr := do
   if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return m
   if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return m
   if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return m
@@ -247,7 +221,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
   if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
   if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
-  throwError "Could not find a model with corners for {e}"
+  return none
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
@@ -373,6 +347,41 @@ where
     let eT : Term ← Term.exprToSyntax e
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
+
+
+/-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
+using the local context to infer the appropriate instance. This supports the following cases:
+- the model with corners on the total space of a vector bundle
+- the model with corners on the tangent space of a manifold
+- a model with corners on a manifold, or on its underlying model space
+- a closed interval of real numbers
+- the complex upper half plane
+- the trivial model `𝓘(𝕜, E)` on a normed space
+- if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
+  and if successful, return `𝓘(𝕜)`.
+
+Further cases can be added as necessary.
+
+Return an expression describing the found model with corners.
+
+`baseInfo` is only used for the first case, a model with corners on the total space of the vector
+bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
+and the model with corners on the base: these are required to construct the right model with
+corners.
+
+Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
+`TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
+`findModel` on it.
+
+This implementation is not maximally robust yet.
+-/
+-- TODO: better error messages when all strategies fail
+-- TODO: consider lowering monad to `MetaM`
+def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
+  trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
+  match ← findModelInner e baseInfo with
+  | some m => return m
+  | none => throwError "Could not find a model with corners for {e}"
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
