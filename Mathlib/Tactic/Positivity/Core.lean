@@ -504,8 +504,8 @@ example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
 
 example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
-    0 < a ^ c + 1 / (d - c) := by positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
-
+    0 < a ^ c + 1 / (d - c) := by
+  positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
 ```
 -/
 elab (name := positivity) "positivity" : tactic => do
