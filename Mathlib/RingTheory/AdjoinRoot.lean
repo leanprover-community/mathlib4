@@ -48,6 +48,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
+open Algebra (FiniteType FinitePresentation)
 open Ideal Module Polynomial
 
 variable {R S T K : Type*}
@@ -171,13 +172,13 @@ lemma algHom_ext' {f g : AdjoinRoot p →ₐ[S] T}
   · simpa using congr($(hAlg) x)
   · simpa
 
-instance finiteType [Algebra.FiniteType S R] : Algebra.FiniteType S (AdjoinRoot f) := by
+instance finiteType [FiniteType S R] : FiniteType S (AdjoinRoot f) := by
   unfold AdjoinRoot; infer_instance
 
-end Algebra
+instance finitePresentation {S : Type*} [CommRing S] [Algebra S R] [FinitePresentation S R] :
+    FinitePresentation S (AdjoinRoot f) := .quotient (Submodule.fg_span_singleton f)
 
-theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
-  (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
+end Algebra
 
 variable {f g}
 
@@ -285,7 +286,7 @@ theorem lift_of {x : R} : lift i a h x = i x := by rw [← mk_C x, lift_mk, eval
 theorem lift_comp_of : (lift i a h).comp (of f) = i :=
   RingHom.ext fun _ => @lift_of _ _ _ _ _ _ _ h _
 
-section new
+section
 variable [CommRing T] [Algebra S R] [Algebra S T] (p : R[X])
 
 /-- Produce an algebra homomorphism `AdjoinRoot f →ₐ[R] S` sending `root f` to
@@ -312,7 +313,7 @@ lemma liftAlgHom_mk (i : R →ₐ[S] T) (x : T) (h) (f : R[X]) :
 lemma liftAlgHom_root (i : R →ₐ[S] T) (x : T) (h) : liftAlgHom p i x h (root p) = x := by
   simp [liftAlgHom]
 
-end new
+end
 
 section deprecated
 variable (f) [Algebra R S]
