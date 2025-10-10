@@ -90,7 +90,7 @@ lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ
 
 instance : PathConnectedSpace ℂˣ :=
   have : PathConnectedSpace { z : ℂ // z ≠ 0 } :=
-    isPathConnected_iff_pathConnectedSpace (F := {0}ᶜ).mp (by
+    (isPathConnected_iff_pathConnectedSpace (F := {0}ᶜ)).mp (by
       convert (((convex_halfSpace_im_gt 0).isPathConnected ⟨.I, by simp⟩).union
         ((convex_halfSpace_re_gt 0).isPathConnected ⟨1, by simp⟩) ⟨1 + .I, by simp⟩).union
         (((convex_halfSpace_im_lt 0).isPathConnected ⟨-.I, by simp⟩).union
