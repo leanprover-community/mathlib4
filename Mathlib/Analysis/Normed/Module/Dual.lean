@@ -228,3 +228,24 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
 end PolarSets
 
 end NormedSpace
+
+namespace LinearMap
+
+section NormedField
+
+variable {𝕜 E F : Type*}
+variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
+
+open ComplexOrder in
+theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
+  rw [polar_eq_biInter_preimage]
+  exact AbsConvex.iInter₂ fun i hi =>
+    ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
+      (convex_RCLike_iff_convex_real.mpr (convex_closedBall 0 1)).linear_preimage _⟩
+
+end NormedField
+
+end LinearMap
