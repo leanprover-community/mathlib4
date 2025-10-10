@@ -315,7 +315,7 @@ lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {Z : U} (f : U ⟶ X)
   let g : {V : IrreducibleCloseds X | ⇑(ConcreteCategory.hom f.base) ⁻¹' ↑V ≠ ∅} ↪o
       IrreducibleCloseds X :=
     OrderEmbedding.subtype {V : IrreducibleCloseds X | ⇑(ConcreteCategory.hom f.base) ⁻¹' V ≠ ∅}
-  let a := (map'OrderIso f.base (Scheme.Hom.continuous f) k.base_open)
+  let a := (map'OrderIso f.base (Scheme.Hom.continuous f) f.isOpenEmbedding)
       (irreducibleSetEquivPoints.symm Z)
   have : ∀ p : LTSeries (IrreducibleCloseds X), p.head = g a →
          ∃ p' : LTSeries ({V : IrreducibleCloseds X | ⇑(ConcreteCategory.hom f.base) ⁻¹' ↑V ≠ ∅}),
