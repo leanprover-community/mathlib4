@@ -368,8 +368,7 @@ where
       if ← isDefEq α q(ℝ) then
         -- TODO: should I check if x < y is a fact in the local context,
         -- or leave that to Lean to complain about?
-        let iTerm : Term := ← `(modelWithCornersEuclideanHalfSpace 1)
-        Term.elabTerm iTerm none
+        mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
       else throwError "{e} is a closed interval of type {α}, which is not definitially equal to ℝ"
     | _ => throwError "{e} is not a closed real interval"
   /-- Attempt to find a model with corners on the upper half plane in complex space -/
