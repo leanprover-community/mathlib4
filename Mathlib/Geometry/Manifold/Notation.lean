@@ -5,7 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
-
+import Mathlib.Analysis.Complex.UpperHalfPlane.Basic -- no good, just for testing
 /-!
 # Elaborators for differential geometry
 
@@ -240,13 +240,14 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"    fromTotalSpace    then return m
-  if let some m ← tryStrategy m!"TangentBundle" fromTangentBundle then return m
-  if let some m ← tryStrategy m!"NormedSpace"   fromNormedSpace   then return m
-  if let some m ← tryStrategy m!"Manifold"      fromManifold      then return m
-  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM     then return m
-  if let some m ← tryStrategy m!"RealInterval"  fromRealInterval  then return m
-  if let some m ← tryStrategy m!"NormedField"   fromNormedField   then return m
+  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return m
+  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return m
+  if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return m
+  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return m
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return m
+  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
+  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
+  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
   throwError "Could not find a model with corners for `{e}`"
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -367,6 +368,13 @@ where
         Term.elabTerm iTerm none
       else throwError "{e} is a closed interval of type {α}, which is not definitially equal to ℝ"
     | _ => throwError "{e} is not a closed real interval"
+  /-- Attempt to find a model with corners on the upper half plane in complex space -/
+  fromUpperHalfPlane : TermElabM Expr := do
+    match_expr e with
+    | UpperHalfPlane =>
+      let iTerm : Term := ← `(𝓘(Complex))
+      Term.elabTerm iTerm none
+    | _ => throwError "{e} is not the complex upper half plane"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do

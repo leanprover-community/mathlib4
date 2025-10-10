@@ -863,6 +863,16 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ChartedSpace` structure on Unit among local instances, and Unit is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Unit is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] type is Unit
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Unit is not a closed real interval
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Unit is not the complex upper half plane
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
