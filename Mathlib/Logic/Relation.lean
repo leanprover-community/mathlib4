@@ -240,6 +240,21 @@ lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : �
     ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
+lemma map_onFun_le {r : β → β → Prop} (f : α → β) :
+    ∀ x y, Relation.Map (Function.onFun r f) f f x y → r x y := by
+  grind [Relation.Map]
+
+lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : Function.Surjective f) :
+    Relation.Map (Function.onFun r f) f f = r := by
+  ext x y
+  have _ := hsurj x
+  have _ := hsurj y
+  grind [Relation.Map]
+
+lemma map_onFun_iff {r : β → β → Prop} (f : α → β) (a₁ a₂ : α) :
+    Relation.Map (Function.onFun r f) f f (f a₁) (f a₂) ↔ r (f a₁) (f a₂) := by
+  grind [Relation.Map]
+
 end Map
 
 variable {r : α → α → Prop} {a b c : α}
