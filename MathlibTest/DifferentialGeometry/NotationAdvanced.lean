@@ -1,3 +1,4 @@
+import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
@@ -295,6 +296,32 @@ variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check MDiffAt k ⟨x, by linarith⟩
 
 end interval
+
+section UpperHalfPlane
+
+open scoped UpperHalfPlane
+
+-- Types match, but no fact x < y can be inferred: mostly testing error messages.
+variable {g : ℍ → M} {h : E → ℍ} {k : ℍ → ℝ} {k' : ℍ → ℂ}
+
+/-- error: Could not find a model with corners for ↑(Set.Icc 0 2) -/
+#guard_msgs in
+variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+#check CMDiff 2 g
+
+/-- error: Could not find a model with corners for ℍ -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/-- error: Could not find a model with corners for ℍ -/
+#guard_msgs in
+#check MDiffAt h
+
+/-- error: Could not find a model with corners for ℍ -/
+#guard_msgs in
+#check MDiffAt k ⟨x, by linarith⟩
+
+end UpperHalfPlane
 
 end differentiability
 
