@@ -908,6 +908,17 @@ lemma pushoutCocone_inr_injective_of_isColimit {c : PushoutCocone f g} (hc : IsC
   rw [← mono_iff_injective] at h₁ ⊢
   exact pushoutCocone_inr_mono_of_isColimit hc
 
+instance mono_inl [Mono g] : Mono (Pushout.inl f g) :=
+  pushoutCocone_inr_mono_of_isColimit
+    (PushoutCocone.flipIsColimit (Pushout.isColimitCocone f g))
+
+instance [Mono f] : Mono (pushout.inr f g) :=
+  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g):)
+
+instance [Mono g] : Mono (pushout.inl f g) :=
+  pushoutCocone_inr_mono_of_isColimit
+    (PushoutCocone.flipIsColimit (pushoutIsPushout f g))
+
 end Pushout
 
 end Types
