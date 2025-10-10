@@ -45,8 +45,6 @@ absolute continuous on `uIcc a b`. -/
 theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → ℝ} {a b c : ℝ}
     (h : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
-  wlog hab : a ≤ b generalizing a b
-  · exact @this b a h.symm (uIcc_comm a b ▸ hc) (by linarith) |>.symm
   let s := fun E : ℕ × (ℕ → ℝ × ℝ) ↦ ⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2
   have : Tendsto (⇑(volume.restrict (uIoc a b)) ∘ s) (totalLengthFilter ⊓ 𝓟 (disjWithin a b))
       (𝓝 0) := by
@@ -60,8 +58,8 @@ theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → 
     simp only [comp_apply, mem_Iic, s]
     rw [Measure.restrict_eq_self (h := union_subset_of_disjWithin hnI.right)]
     simp only [disjWithin, mem_setOf_eq] at hnI
-    obtain ⟨hnI1, hnI2, hnI3⟩ := hnI
-    rw [MeasureTheory.measure_biUnion_finset hnI3 (by simp [uIoc])]
+    obtain ⟨hnI₁, hnI₂, hnI₃⟩ := hnI
+    rw [MeasureTheory.measure_biUnion_finset hnI₃ (by simp [uIoc])]
     calc ∑ i ∈ Finset.range n, volume (uIoc (I i).1 (I i).2)
       _ = ∑ i ∈ Finset.range n, ENNReal.ofReal ((dist (I i).1 (I i).2)) := by
         apply Finset.sum_congr rfl
@@ -69,7 +67,7 @@ theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → 
       _ = ENNReal.ofReal (∑ i ∈ Finset.range n, (dist (I i).1 (I i).2)) := by
         simp [ENNReal.ofReal_sum_of_nonneg]
       _ ≤ ENNReal.ofReal ε.toReal :=
-        ENNReal.ofReal_lt_ofReal_iff hε |>.mpr hnI1 |>.le
+        ENNReal.ofReal_lt_ofReal_iff hε |>.mpr hnI₁ |>.le
       _ ≤ ε := ENNReal.ofReal_toReal_le
   have := MeasureTheory.tendsto_setLIntegral_zero
     (ne_of_lt <| intervalIntegrable_iff.mp h |>.hasFiniteIntegral)
@@ -117,61 +115,47 @@ lemma ae_deriv_zero_ctb_cover {f : ℝ → ℝ} {d b η : ℝ}
     filter_upwards [hf] with x hx1 hx2
     exact hx1 (Ioo_subset_Icc_self hx2)
   let s := {x : ℝ | x ∈ Ioo d b ∧ HasDerivAt f 0 x}
-  have hs0: NullMeasurableSet s := by
-    have : s = Ioo d b \ {x : ℝ | x ∈ Ioo d b ∧ ¬HasDerivAt f 0 x} := by
-      simp only [s]; ext x; constructor
-        <;> simp only [mem_setOf_eq, mem_diff, mem_Ioo, not_and, not_not, and_imp]
-        <;> tauto
-    have : NullMeasurableSet (Ioo d b) := by measurability
-    have : NullMeasurableSet {x : ℝ | x ∈ Ioo d b ∧ ¬HasDerivAt f 0 x} := by
-      rw [ae_iff] at hf
-      push_neg at hf
-      exact NullMeasurableSet.of_null hf
-    measurability
   have : ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ volume (s \ ⋃ a ∈ u, B a) = 0 := by
-    apply Vitali.exists_disjoint_covering_ae volume s t 6 (Prod.snd) (Prod.fst) B
+    apply Vitali.exists_disjoint_covering_ae' volume s t 6 (Prod.snd) (Prod.fst) B
     · simp only [Icc, Metric.closedBall, Real.dist_eq, abs_le', tsub_le_iff_right, neg_sub,
       setOf_subset_setOf, and_imp, Prod.forall, B]
       intros; constructor <;> linarith
     · intro A hA
       simp only [Real.volume_closedBall, ENNReal.coe_ofNat, Real.volume_Icc, add_sub_cancel_left, B]
-      rw [show 6 = ENNReal.ofReal 6 by norm_num, ← ENNReal.ofReal_mul]
-      · rw [ENNReal.ofReal_le_ofReal_iff (by simp only [mem_setOf_eq, t] at hA; linarith)]
-        linarith
-      · norm_num
+      rw [show 6 = ENNReal.ofReal 6 by norm_num, ← ENNReal.ofReal_mul (by norm_num),
+          ENNReal.ofReal_le_ofReal_iff (by simp only [mem_setOf_eq, t] at hA; linarith)]
+      linarith
     · simp +contextual [B, t]
     · simp [B, isClosed_Icc]
-    · intro x hx ε hε
-      simp only [mem_Ioo, mem_setOf_eq, s] at hx
-      obtain ⟨δ, hδ1, hδ2⟩ := (Metric.tendsto_nhds_nhds).mp (hasDerivAt_iff_tendsto.mp hx.2) η hη
-      set δ' := min (min (δ / 2) ε) ((b - x) / 2)
-      use (x, δ')
-      have h1 : δ' > 0 := by simp [δ', hε, hδ1, hx.left.right]
-      have h2 : δ' ≥ 0 := le_of_lt h1
-      have h3 : |δ'| < δ := by rw [abs_eq_self.mpr h2]; simp [δ', hδ1]
-      simp only [mem_setOf_eq, h1, true_and, and_true, t]
-      simp only [Real.dist_eq, Real.norm_eq_abs, smul_eq_mul, mul_zero, sub_zero, dist_zero_right,
-        norm_mul, norm_inv, abs_abs] at hδ2
-      specialize hδ2 (show |x + δ' - x| < δ by simp [h3])
-      simp only [add_sub_cancel_left] at hδ2
-      rw [abs_eq_self.mpr h2, ← mul_lt_mul_iff_right₀ h1] at hδ2
+    · intro x hx
+      apply Filter.Eventually.frequently
+      have := hasDerivAt_iff_tendsto.mp hx.right
+      simp only [Real.norm_eq_abs, smul_eq_mul, mul_zero, sub_zero] at this
+      obtain ⟨δ, hδ₁, hδ₂⟩ := (Metric.tendsto_nhds_nhds).mp (hasDerivAt_iff_tendsto.mp hx.2) η hη
+      have evn_bound {α : ℝ} (hα : 0 < α) : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, ε < α := by
+        rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
+        refine ⟨Ioo (-α) α, by grind, isOpen_Ioo, by grind⟩
+      have evn_pos : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, 0 < ε :=
+        eventually_mem_of_tendsto_nhdsWithin (fun _ a ↦ a)
+      filter_upwards [evn_pos, evn_bound hη, evn_bound hδ₁,
+                      @evn_bound ((b - x) / 2) (by simp [hx.left.right])]
+        with ε hε₁ hε₂ hε₃ hε₄
+      use (x, ε)
       repeat' constructor
       · exact hx.left.left
-      · have : δ' ≤ (b - x) / 2 := by simp [δ']
-        linarith
-      · convert hδ2 using 1; field_simp
-      · simp [δ']
-  obtain ⟨u, hu⟩ := this
-  use u
-  simp only [hu, true_and]
-  have hv : Ioo d b \ ⋃ a ∈ u, B a ⊆ (Ioo d b \ s) ∪ (s \ ⋃ a ∈ u, B a) := by tauto_set
-  suffices volume ((Ioo d b \ s) ∪ (s \ ⋃ a ∈ u, B a)) = 0 from Measure.mono_null hv this
-  simp only [measure_union_null_iff]; constructor
-  · convert ae_iff.mp hf using 2
-    ext x
-    simp only [mem_Ioo, mem_diff, mem_setOf_eq, s]
-    tauto
-  · tauto
+      · exact hε₁
+      · linarith
+      · specialize @hδ₂ (x := x + ε) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
+        simp only [add_sub_cancel_left, Real.norm_eq_abs, smul_eq_mul, mul_zero, sub_zero,
+          dist_zero_right, norm_mul, norm_inv, abs_abs] at hδ₂
+        rw [abs_eq_self.mpr hε₁.le, ← mul_lt_mul_iff_right₀ hε₁] at hδ₂
+        convert hδ₂ using 1
+        field_simp
+  obtain ⟨u, ⟨hu₁, hu₂, hu₃, hu₄⟩⟩ := this
+  refine ⟨u, ⟨hu₁, hu₂, hu₃, ?_⟩⟩
+  rw [MeasureTheory.measure_eq_zero_iff_ae_notMem] at hu₄ ⊢
+  filter_upwards [hf, hu₄] with x hx₁ hx₂
+  grind
 
 /-- If `f` has derivative 0 a.e. on `[d, b]`, then there is a finite Vitali cover of `[d, b]`
 except for measure at most `δ`, consisting of closed intervals, where each has small variations
