@@ -66,8 +66,6 @@ open Prod (fst snd)
 variable {X Y Z W ι : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   [TopologicalSpace W] {f : X → Y} {g : Y → Z}
 
-universe u v
-
 /-- A map `f : X → Y` between two topological spaces is said to be **proper** if it is continuous
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point
 of `ℱ`. -/

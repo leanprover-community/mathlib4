@@ -3,7 +3,6 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.Filter
 
@@ -58,7 +57,6 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
     rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOf_mem.mem_nhds hUc)) with
       ⟨⟨z, 𝒢⟩, ⟨⟨hz : z ∈ U, hz' : Uᶜ ∈ 𝒢⟩, rfl : 𝒢 = pure z⟩⟩
     exact hz' hz
-
 
 /-- A map `f : X → Y` is proper if and only if it is continuous and the map
 `(Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X)` is closed. This is stronger than
