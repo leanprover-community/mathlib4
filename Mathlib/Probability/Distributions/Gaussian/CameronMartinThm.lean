@@ -31,9 +31,6 @@ import Mathlib.Probability.HasLaw
 
 * [F. Bar, *Quuxes*][bibkey]
 
-## Tags
-
-Foobars, barfoos
 -/
 
 open MeasureTheory Filter Complex
@@ -54,8 +51,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
   [CompleteSpace E] [SecondCountableTopology E]
   {μ : Measure E} [IsGaussian μ]
 
-lemma hasLaw_cameronMartin (x : cameronMartin μ) :
-    HasLaw x (gaussianReal 0 (‖x‖₊ ^ 2)) μ where
+/-- An element `x` of the Cameron-Martin space associated to a Gaussian measure has a centered
+Gaussian law with variance `‖x‖₊ ^ 2`. -/
+lemma hasLaw_cameronMartin (x : cameronMartin μ) : HasLaw x (gaussianReal 0 (‖x‖₊ ^ 2)) μ where
   map_eq := by
     by_cases hx0 : x = 0
     · simp only [hx0, ZeroMemClass.coe_zero, nnnorm_zero, ne_eq, OfNat.ofNat_ne_zero,
@@ -119,34 +117,32 @@ lemma hasLaw_cameronMartin (x : cameronMartin μ) :
     rw [Subtype.ext_iff] at h_eq
     exact h_eq
 
+/-- The variance of an element of the Cameron-Martin space is the square of its norm. -/
 lemma variance_cameronMartin (x : cameronMartin μ) :
     Var[x; μ] = ‖x‖₊ ^ 2 := by
   have : Var[fun y ↦ y; μ.map x] = ‖x‖₊ ^ 2 := by simp [(hasLaw_cameronMartin x).map_eq]
   rwa [variance_map aemeasurable_id' (by fun_prop)] at this
 
+/-- The covariance of two elements of the Cameron-Martin space is their inner product. -/
 lemma covariance_cameronMartin (x y : cameronMartin μ) :
     cov[x, y; μ] = ⟪x, y⟫_ℝ := by
   rw [covariance_eq_variance_add_sub_div_two (Lp.memLp x.1) (Lp.memLp y.1)]
   have : (x : E → ℝ) + (y : E → ℝ) =ᵐ[μ] (x + y : cameronMartin μ) := by
     simp only [Submodule.coe_add, AddSubgroup.coe_add]
     exact (AEEqFun.coeFn_add _ _).symm
-  rw [variance_congr this]
-  simp_rw [variance_cameronMartin]
-  rw [real_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two]
+  simp_rw [variance_congr this, variance_cameronMartin,
+    real_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two]
   simp [pow_two]
 
 lemma isProbabilityMeasure_withDensity_cameronMartin (x : cameronMartin μ) :
-    IsProbabilityMeasure (μ.withDensity fun y ↦
-      .ofReal (.exp (x y - ‖x‖ ^ 2 / 2))) where
+    IsProbabilityMeasure (μ.withDensity fun y ↦ .ofReal (.exp (x y - ‖x‖ ^ 2 / 2))) where
   measure_univ := by
     rw [withDensity_apply _ .univ, setLIntegral_univ]
     calc ∫⁻ a, .ofReal (.exp (x a - ‖x‖ ^ 2 / 2)) ∂μ
-    _ = .ofReal (.exp (- ‖x‖ ^ 2 / 2))
-        * ∫⁻ a, .ofReal (.exp (x a)) ∂μ := by
+    _ = .ofReal (.exp (- ‖x‖ ^ 2 / 2)) * ∫⁻ a, .ofReal (.exp (x a)) ∂μ := by
       simp_rw [sub_eq_add_neg, Real.exp_add, ENNReal.ofReal_mul (Real.exp_nonneg _)]
       rw [lintegral_mul_const _ (by fun_prop), mul_comm, neg_div]
-    _ = .ofReal (.exp (- ‖x‖ ^ 2 / 2))
-        * ∫⁻ a, .ofReal (.exp a) ∂(μ.map x) := by
+    _ = .ofReal (.exp (- ‖x‖ ^ 2 / 2)) * ∫⁻ a, .ofReal (.exp a) ∂(μ.map x) := by
       rw [lintegral_map (by fun_prop) (by fun_prop)]
     _ = .ofReal (.exp (- ‖x‖ ^ 2 / 2)) * ∫⁻ a, .ofReal (.exp a) ∂(gaussianReal 0 (‖x‖₊ ^ 2)) := by
       rw [(hasLaw_cameronMartin x).map_eq]
@@ -165,8 +161,7 @@ lemma isProbabilityMeasure_withDensity_cameronMartin (x : cameronMartin μ) :
       simp
 
 lemma todo_ae_eq (x : cameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
-    (L : cameronMartin μ) - t • x
-      =ᵐ[μ] fun u ↦ L u - μ[L] - t * x u := by
+    (L : cameronMartin μ) - t • x =ᵐ[μ] fun u ↦ L u - μ[L] - t * x u := by
   simp only [cmOfDual_apply, AddSubgroupClass.coe_sub, SetLike.val_smul]
   rw [IsGaussian.integral_dual L]
   filter_upwards [centeredToLp_apply (μ := μ) memLp_two_id L,
@@ -247,7 +242,8 @@ lemma todo_hasDerivAt (x : cameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
   refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (bound := fun ω ↦ |x ω| * Real.exp (z.im * x ω + |x ω|))
     (F := fun z ω ↦ cexp ((L ω - z * x ω) * I))
-    (F' := fun z ω ↦ - x ω * I * exp ((L ω - z * x ω) * I)) zero_lt_one ?_ ?_ ?_ ?_ ?_ ?_).2
+    (F' := fun z ω ↦ - x ω * I * exp ((L ω - z * x ω) * I)) zero_lt_one ?_ ?_ (by fun_prop)
+      ?_ ?_ ?_).2
   · exact .of_forall fun z ↦ by fun_prop
   · rw [← integrable_norm_iff (by fun_prop)]
     simp only [norm_exp, mul_re, sub_re, ofReal_re, ofReal_im, mul_zero, sub_zero, I_re, sub_im,
@@ -256,8 +252,7 @@ lemma todo_hasDerivAt (x : cameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     rw [← integrable_map_measure (f := x) (by fun_prop)
       (by fun_prop), (hasLaw_cameronMartin x).map_eq]
     exact integrable_exp_mul_gaussianReal (μ := 0) (v := ‖x‖₊ ^ 2) z.im
-  · fun_prop
-  · refine ae_of_all _ fun ω ε hε ↦ ?_
+  · filter_upwards with ω ε hε
     simp only [neg_mul, norm_neg, norm_mul, norm_real, Real.norm_eq_abs, norm_I, mul_one]
     rw [Complex.norm_exp]
     simp only [mul_re, sub_re, ofReal_re, ofReal_im, mul_zero, sub_zero, I_re, sub_im, mul_im,
@@ -281,8 +276,7 @@ lemma todo_hasDerivAt (x : cameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     · simpa only [id_eq, pow_one, one_mul] using h
     · exact integrable_exp_mul_gaussianReal (z.im + 2)
     · exact integrable_exp_mul_gaussianReal (z.im - 2)
-  · refine ae_of_all _ fun ω ε hε ↦ ?_
-    simp only
+  · filter_upwards with ω ε hε
     simp_rw [sub_mul, sub_eq_add_neg, exp_add, ← neg_mul, mul_comm (_ * I), mul_assoc]
     refine HasDerivAt.const_mul _ ?_
     simp_rw [neg_mul, mul_comm _ (_ * I), ← neg_mul]
@@ -347,8 +341,7 @@ lemma cor_for_z_eq_I (x : cameronMartin μ) (L : StrongDual ℝ E) :
   simp only [I_sq, add_neg_cancel, zero_div, zero_mul, sub_zero] at h
   convert h using 3
   · congr
-    rw [mul_comm I, sub_mul, mul_assoc]
-    simp
+    simp [mul_comm I, sub_mul, mul_assoc]
   · ring
 
 lemma charFunDual_withDensity_cameronMartin (x : cameronMartin μ) (L : StrongDual ℝ E) :
@@ -364,9 +357,11 @@ lemma charFunDual_withDensity_cameronMartin (x : cameronMartin μ) (L : StrongDu
     simp
   _ = exp ((μ[L] + L (cmCoe x)) * I - Var[L; μ] / 2) := cor_for_z_eq_I x L
 
+/-- Part of the **Cameron-Martin** theorem. The translation of a Gaussian measure `μ` by
+an element `x` of the Cameron-Martin space is absolutely continuous with respect to `μ`,
+with density `y ↦ exp (x y - ‖x‖ ^ 2 / 2)`. -/
 theorem map_add_cameronMartin_eq_withDensity (x : cameronMartin μ) :
-    μ.map (fun y ↦ y + cmCoe x)
-      = μ.withDensity (fun y ↦ .ofReal (.exp (x y - ‖x‖ ^ 2 / 2))) := by
+    μ.map (fun y ↦ y + cmCoe x) = μ.withDensity (fun y ↦ .ofReal (.exp (x y - ‖x‖ ^ 2 / 2))) := by
   have := isProbabilityMeasure_withDensity_cameronMartin x
   refine Measure.ext_of_charFunDual ?_
   ext L
@@ -375,6 +370,8 @@ theorem map_add_cameronMartin_eq_withDensity (x : cameronMartin μ) :
   congr
   ring
 
+/-- Part of the **Cameron-Martin** theorem. The translation of a Gaussian measure `μ` by
+an element `x` of the Cameron-Martin space is absolutely continuous with respect to `μ`. -/
 theorem absolutelyContinuous_map_add_cameronMartin (x : cameronMartin μ) :
     μ.map (fun y ↦ y + cmCoe x) ≪ μ := by
   rw [map_add_cameronMartin_eq_withDensity x]
@@ -414,6 +411,8 @@ lemma gaussianReal_ext_iff {μ₁ μ₂ : ℝ} {v₁ v₂ : ℝ≥0} :
   rw [← variance_id_gaussianReal (μ := μ₁) (v := v₁),
     ← variance_id_gaussianReal (μ := μ₂) (v := v₂), h]
 
+/-- Part of the **Cameron-Martin** theorem. The translation of a Gaussian measure `μ` by
+an element `y` which is not in the Cameron-Martin space is mutually singular with respect to `μ`. -/
 theorem mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
     (hy : y ∉ Set.range (cmCoe (μ := μ))) :
     μ.map (fun z ↦ z + y) ⟂ₘ μ := by

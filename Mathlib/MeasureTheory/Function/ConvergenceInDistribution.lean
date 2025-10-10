@@ -76,10 +76,20 @@ lemma tendstoInDistribution_of_not_aemeasurable_right (hg : ¬ AEMeasurable Z μ
 lemma tendstoInDistribution_const :
     TendstoInDistribution (fun _ ↦ Z) l Z μ := fun _ _ ↦ tendsto_const_nhds
 
+lemma tendstoInDistribution_unique {E : Type*} [TopologicalSpace E] [HasOuterApproxClosed E]
+    [MeasurableSpace E] [BorelSpace E] (X : ι → Ω → E) {Z W : Ω → E} [l.NeBot]
+    (hX : ∀ i, AEMeasurable (X i) μ) (hZ : AEMeasurable Z μ) (hW : AEMeasurable W μ)
+    (h1 : TendstoInDistribution X l Z μ) (h2 : TendstoInDistribution X l W μ) :
+    μ.map Z = μ.map W := by
+  rw [tendstoInDistribution_def hX (by fun_prop)] at h1 h2
+  have h_eq := tendsto_nhds_unique h1 h2
+  rw [Subtype.ext_iff] at h_eq
+  simpa using h_eq
+
 end TendstoInDistribution
 
 variable [SeminormedAddCommGroup E] [SecondCountableTopology E] [BorelSpace E]
-
+#synth T2Space (ProbabilityMeasure E)
 /-- Let `X, Y` be two sequences of measurable functions such that `X n` converges in distribution
 to `Z`, and `Y n - X n` converges in probability to `0`.
 Then `Y n` converges in distribution to `Z`. -/
