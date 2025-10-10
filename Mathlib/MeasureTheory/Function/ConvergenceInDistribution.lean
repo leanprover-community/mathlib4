@@ -89,7 +89,7 @@ lemma tendstoInDistribution_unique {E : Type*} [TopologicalSpace E] [HasOuterApp
 end TendstoInDistribution
 
 variable [SeminormedAddCommGroup E] [SecondCountableTopology E] [BorelSpace E]
-#synth T2Space (ProbabilityMeasure E)
+
 /-- Let `X, Y` be two sequences of measurable functions such that `X n` converges in distribution
 to `Z`, and `Y n - X n` converges in probability to `0`.
 Then `Y n` converges in distribution to `Z`. -/
