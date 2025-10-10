@@ -219,14 +219,13 @@ Hint: Additional diagnostic information may be available using the `set_option d
 end
 
 -- Inferring a model with corners on a space of linear maps between normed spaces
--- is currently not supported.
 variable {f : M → E →L[𝕜] E'} in
-/-- error: Could not find a model with corners for `E →L[𝕜] E'` -/
+/-- info: MDifferentiable I 𝓘(𝕜, E →L[𝕜] E') f : Prop -/
 #guard_msgs in
 #check MDiff f
 
 variable {f : M → E →L[𝕜] E'} in
-/-- error: Could not find a model with corners for `E →L[𝕜] E'` -/
+/-- info: ContMDiff I 𝓘(𝕜, E →L[𝕜] E') 2 f : Prop -/
 #guard_msgs in
 #check CMDiff 2 f
 

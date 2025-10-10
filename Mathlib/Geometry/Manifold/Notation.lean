@@ -243,6 +243,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"TangentBundle" fromTangentBundle then return m
   if let some m ← tryStrategy m!"NormedSpace"   fromNormedSpace   then return m
   if let some m ← tryStrategy m!"Manifold"      fromManifold      then return m
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM     then return m
   if let some m ← tryStrategy m!"NormedField"   fromNormedField   then return m
   throwError "Could not find a model with corners for `{e}`"
 where
@@ -329,6 +330,29 @@ where
         | _ => return none
       | throwError "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
     return m
+  /-- Attempt to find a model with corners on a space of continuous linear maps -/
+  -- TODO: should this also support continuous linear equivalences?
+  fromCLM : TermElabM Expr := do
+    match_expr e with
+    | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _  _ _ =>
+      if ← isDefEq k S then
+        -- TODO: check if σ is actually the identity!
+        let eK : Term ← Term.exprToSyntax k
+        let eT : Term ← Term.exprToSyntax e
+        let iTerm : Term := ← ``(𝓘($eK, $eT))
+        Term.elabTerm iTerm none
+      else
+        throwError "Coefficients {k} and {S} of {e} are not definitionally equal"
+    -- | ContinuousLinearEquiv k S _ _ _σ _σ' _ _ _E _ _ _F _ _ _ _ =>
+    --   if ← isDefEq k S then
+    --     -- TODO: check if σ is actually the identity!
+    --     let eK : Term ← Term.exprToSyntax k
+    --     let eT : Term ← Term.exprToSyntax e
+    --     let iTerm : Term := ← ``(𝓘($eK, $eT))
+    --     Term.elabTerm iTerm none
+    --   else
+    --     throwError "Coefficients {k} and {S} of {e} are not definitionally equal"
+    | _ => throwError "{e} is not a space of continuous linear maps"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do
