@@ -205,7 +205,15 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
       | some err => throw <| IO.userError s!"could not parse module name {mod}: {err}"
     pure result
 
-  -- Smoke test for accidentally disabling all the linters again:
+  -- Smoke tests for accidentally disabling all the linters again:
+  -- require a nonempty set of modules that get linted.
+  if originModules.isEmpty then
+    throw <| IO.userError
+      s!"lint-style: no modules to lint.\n\
+      \n\
+      Note: by default, we lint all the default `lake build` targets in the Lakefile.\n\
+      \n\
+      Hint: specify modules to lint as command line arguments to `lake exe lint-style`."
   -- ensure the header linter is active if we're linting Mathlib.
   if `Mathlib ∈ originModules then
     if !getLinterValue linter.checkInitImports opts then
