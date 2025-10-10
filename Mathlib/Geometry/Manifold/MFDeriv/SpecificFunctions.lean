@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Differentiability of specific functions
@@ -61,29 +62,28 @@ namespace ContinuousLinearMap
 
 variable (f : E →L[𝕜] E') {s : Set E} {x : E}
 
-protected theorem hasMFDerivWithinAt : HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x f :=
+protected theorem hasMFDerivWithinAt : HasMFDerivAt[s] f x f :=
   f.hasFDerivWithinAt.hasMFDerivWithinAt
 
-protected theorem hasMFDerivAt : HasMFDerivAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x f :=
+protected theorem hasMFDerivAt : HasMFDerivAt% f x f :=
   f.hasFDerivAt.hasMFDerivAt
 
-protected theorem mdifferentiableWithinAt : MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x :=
+protected theorem mdifferentiableWithinAt : MDiffAt[s] f x :=
   f.differentiableWithinAt.mdifferentiableWithinAt
 
-protected theorem mdifferentiableOn : MDifferentiableOn 𝓘(𝕜, E) 𝓘(𝕜, E') f s :=
+protected theorem mdifferentiableOn : MDiff[s] f :=
   f.differentiableOn.mdifferentiableOn
 
-protected theorem mdifferentiableAt : MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x :=
+protected theorem mdifferentiableAt : MDiffAt f x :=
   f.differentiableAt.mdifferentiableAt
 
-protected theorem mdifferentiable : MDifferentiable 𝓘(𝕜, E) 𝓘(𝕜, E') f :=
+protected theorem mdifferentiable : MDiff f :=
   f.differentiable.mdifferentiable
 
-theorem mfderiv_eq : mfderiv 𝓘(𝕜, E) 𝓘(𝕜, E') f x = f :=
+theorem mfderiv_eq : mfderiv% f x = f :=
   f.hasMFDerivAt.mfderiv
 
-theorem mfderivWithin_eq (hs : UniqueMDiffWithinAt 𝓘(𝕜, E) s x) :
-    mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, E') f s x = f :=
+theorem mfderivWithin_eq (hs : UniqueMDiffWithinAt 𝓘(𝕜, E) s x) : mfderiv[s] f x = f :=
   f.hasMFDerivWithinAt.mfderivWithin hs
 
 end ContinuousLinearMap
@@ -92,29 +92,29 @@ namespace ContinuousLinearEquiv
 
 variable (f : E ≃L[𝕜] E') {s : Set E} {x : E}
 
-protected theorem hasMFDerivWithinAt : HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x (f : E →L[𝕜] E') :=
+protected theorem hasMFDerivWithinAt : HasMFDerivAt[s] f x (f : E →L[𝕜] E') :=
   f.hasFDerivWithinAt.hasMFDerivWithinAt
 
-protected theorem hasMFDerivAt : HasMFDerivAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x (f : E →L[𝕜] E') :=
+protected theorem hasMFDerivAt : HasMFDerivAt% f x (f : E →L[𝕜] E') :=
   f.hasFDerivAt.hasMFDerivAt
 
-protected theorem mdifferentiableWithinAt : MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x :=
+protected theorem mdifferentiableWithinAt : MDiffAt[s] f x :=
   f.differentiableWithinAt.mdifferentiableWithinAt
 
-protected theorem mdifferentiableOn : MDifferentiableOn 𝓘(𝕜, E) 𝓘(𝕜, E') f s :=
+protected theorem mdifferentiableOn : MDiff[s] f :=
   f.differentiableOn.mdifferentiableOn
 
-protected theorem mdifferentiableAt : MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x :=
+protected theorem mdifferentiableAt : MDiffAt f x :=
   f.differentiableAt.mdifferentiableAt
 
-protected theorem mdifferentiable : MDifferentiable 𝓘(𝕜, E) 𝓘(𝕜, E') f :=
+protected theorem mdifferentiable : MDiff f :=
   f.differentiable.mdifferentiable
 
-theorem mfderiv_eq : mfderiv 𝓘(𝕜, E) 𝓘(𝕜, E') f x = (f : E →L[𝕜] E') :=
+theorem mfderiv_eq : mfderiv% f x = (f : E →L[𝕜] E') :=
   f.hasMFDerivAt.mfderiv
 
 theorem mfderivWithin_eq (hs : UniqueMDiffWithinAt 𝓘(𝕜, E) s x) :
-    mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, E') f s x = (f : E →L[𝕜] E') :=
+    mfderiv[s] f x = (f : E →L[𝕜] E') :=
   f.hasMFDerivWithinAt.mfderivWithin hs
 
 end ContinuousLinearEquiv
@@ -135,26 +135,26 @@ theorem hasMFDerivAt_id (x : M) :
   simp only [mfld_simps]
 
 theorem hasMFDerivWithinAt_id (s : Set M) (x : M) :
-    HasMFDerivWithinAt I I (@id M) s x (ContinuousLinearMap.id 𝕜 (TangentSpace I x)) :=
+    HasMFDerivAt[s] (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace I x)) :=
   (hasMFDerivAt_id x).hasMFDerivWithinAt
 
-theorem mdifferentiableAt_id : MDifferentiableAt I I (@id M) x :=
+theorem mdifferentiableAt_id : MDiffAt (@id M) x :=
   (hasMFDerivAt_id x).mdifferentiableAt
 
-theorem mdifferentiableWithinAt_id : MDifferentiableWithinAt I I (@id M) s x :=
+theorem mdifferentiableWithinAt_id : MDiffAt[s] (@id M) x :=
   mdifferentiableAt_id.mdifferentiableWithinAt
 
-theorem mdifferentiable_id : MDifferentiable I I (@id M) := fun _ => mdifferentiableAt_id
+theorem mdifferentiable_id : MDiff (@id M) := fun _ => mdifferentiableAt_id
 
-theorem mdifferentiableOn_id : MDifferentiableOn I I (@id M) s :=
+theorem mdifferentiableOn_id : MDiff[s] (@id M) :=
   mdifferentiable_id.mdifferentiableOn
 
 @[simp, mfld_simps]
-theorem mfderiv_id : mfderiv I I (@id M) x = ContinuousLinearMap.id 𝕜 (TangentSpace I x) :=
+theorem mfderiv_id : mfderiv% (@id M) x = ContinuousLinearMap.id 𝕜 (TangentSpace I x) :=
   HasMFDerivAt.mfderiv (hasMFDerivAt_id x)
 
 theorem mfderivWithin_id (hxs : UniqueMDiffWithinAt I s x) :
-    mfderivWithin I I (@id M) s x = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := by
+    mfderiv[s] (@id M) x = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := by
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_id hxs]
   exact mfderiv_id
 
