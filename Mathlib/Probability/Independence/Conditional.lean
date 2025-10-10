@@ -145,6 +145,13 @@ end
 
 end Definitions
 
+notation X:50 " ⟂ᵢ[" Z ", " hZ " ; " μ "] " Y:50 =>
+  ProbabilityTheory.CondIndepFun (MeasurableSpace.comap Z inferInstance) (Measurable.comap_le hZ)
+  X Y μ
+notation X:50 " ⟂ᵢ[" Z ", " hZ "] " Y:50 =>
+  ProbabilityTheory.CondIndepFun (MeasurableSpace.comap Z inferInstance) (Measurable.comap_le hZ)
+  X Y volume
+
 section DefinitionLemmas
 
 section
@@ -731,12 +738,12 @@ lemma condIndepFun_of_measurable_right {mβ : MeasurableSpace β} {mβ' : Measur
 
 lemma condIndepFun_self_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
-    CondIndepFun (mβ'.comap Z) hZ.comap_le Z X μ :=
+    Z ⟂ᵢ[Z, hZ ; μ] X :=
   condIndepFun_of_measurable_left (comap_measurable Z) hX
 
 lemma condIndepFun_self_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
-    CondIndepFun (mβ'.comap Z) hZ.comap_le X Z μ :=
+    X ⟂ᵢ[Z, hZ ; μ] Z :=
   condIndepFun_of_measurable_right hX (comap_measurable Z)
 
 /-- Two random variables are conditionally independent iff they satisfy the almost sure equality
@@ -797,7 +804,7 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
     (hf : Measurable f) (hg : Measurable g) {k : Ω → γ} (hk : Measurable k) :
-    CondIndepFun _ hk.comap_le f g μ ↔
+    f ⟂ᵢ[k, hk ; μ] g ↔
       μ.map (fun ω ↦ (k ω, f ω, g ω)) =
         (Kernel.id ×ₖ (condDistrib f k μ ×ₖ condDistrib g k μ)) ∘ₘ μ.map k := by
   rw [condIndepFun_iff_map_prod_eq_prod_comp_trim hf hg]
@@ -847,7 +854,7 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
     {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
     (hf : Measurable f) (hg : Measurable g) {k : Ω → γ} (hk : Measurable k) :
-    CondIndepFun (mγ.comap k) hk.comap_le g f μ ↔
+    g ⟂ᵢ[k, hk ; μ] f ↔
       condDistrib f (fun ω ↦ (k ω, g ω)) μ =ᵐ[μ.map (fun ω ↦ (k ω, g ω))]
         (condDistrib f k μ).prodMkRight _ := by
   rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) _ hf.aemeasurable,
