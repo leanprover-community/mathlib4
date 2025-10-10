@@ -160,6 +160,7 @@ lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
   contrapose! hL_zero
   exact hL_zero_of_L2 hL_zero
 
+/-- The closure of a set in a complete space as an abstract completion. -/
 def abstractCompletionClosure {α : Type*} [UniformSpace α] [T0Space α] [CompleteSpace α]
     (s : Set α) :
     AbstractCompletion s where
@@ -174,79 +175,7 @@ def abstractCompletionClosure {α : Type*} [UniformSpace α] [T0Space α] [Compl
     congr
   dense := by
     rw [DenseRange, Subtype.dense_iff]
-    refine closure_mono fun x hx ↦ ?_
-    simp [hx, subset_closure hx]
-
-@[simp]
-lemma Submodule.mem_topologicalClosure_iff {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) (x : M) :
-    x ∈ s.topologicalClosure ↔ x ∈ closure s := by
-  simp only [Submodule.topologicalClosure, AddSubmonoid.topologicalClosure,
-    Submodule.coe_toAddSubmonoid, Submodule.mem_mk, AddSubmonoid.mem_mk,
-    AddSubsemigroup.mem_mk]
-
-lemma Submodule.mem_closure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) (L : s) :
-    (L : M) ∈ s.topologicalClosure := by
-  rw [Submodule.mem_topologicalClosure_iff]
-  exact subset_closure L.2
-
-instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] (s : Submodule R M) :
-    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
-
-instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] (s : ClosedSubmodule R M) :
-    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
-
-instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousConstSMul R M] (s : Submodule R M) :
-    ContinuousConstSMul R s where
-  continuous_const_smul r :=
-    ((continuous_const_smul r).comp continuous_subtype_val).subtype_mk _
-
-instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [UniformSpace M] [UniformContinuousConstSMul R M] (s : Submodule R M) :
-    UniformContinuousConstSMul R s where
-  uniformContinuous_const_smul r :=
-    ((uniformContinuous_const_smul r).comp uniformContinuous_subtype_val).subtype_mk _
-
-@[coe] def coeClosure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} :
-    s → s.topologicalClosure := fun L ↦ ⟨L, Submodule.mem_closure s L⟩
-
-instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} :
-    Coe s s.topologicalClosure :=
-  ⟨coeClosure⟩
-
-@[simp, norm_cast]
-lemma coeClosure_add {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (x y : s) :
-    ((x + y : s) : s.topologicalClosure)
-      = (x : s.topologicalClosure) + (y : s.topologicalClosure) := by
-  simp [coeClosure]
-
-@[simp, norm_cast]
-lemma coeClosure_sub {M R : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (x y : s) :
-    ((x - y : s) : s.topologicalClosure)
-      = (x : s.topologicalClosure) - (y : s.topologicalClosure) := by
-  simp only [coeClosure, AddSubgroupClass.coe_sub]
-  norm_cast
-
-@[simp, norm_cast]
-lemma coeClosure_smul {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (r : R) (x : s) :
-    ((r • x : s) : s.topologicalClosure) = r • (x : s.topologicalClosure) := by
-  simp [coeClosure]
-
-@[fun_prop, continuity]
-lemma continuous_coeClosure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) :
-    Continuous (coeClosure : s → s.topologicalClosure) := by
-  unfold coeClosure
-  fun_prop
+    exact closure_mono fun x hx ↦ by simp [hx, subset_closure hx]
 
 def toClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
     [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) :
