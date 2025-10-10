@@ -324,13 +324,13 @@ theorem summable_prod_of_tendsto_order_atTop_nhds_top
 
 /-- A family of `MvPowerSeries` in the form `1 + f i` is multipliable if the weighted order of `f i`
 tends to infinity. -/
-theorem multipliable_one_add_oft_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
+theorem multipliable_one_add_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
     (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (nhds ⊤)) : Multipliable (1 + f ·) :=
   multipliable_one_add_of_summable_prod <| summable_prod_of_tendsto_weightedOrder_atTop_nhds_top h
 
 /-- A family of `MvPowerSeries` in the form `1 + f i` is multipliable if the order of `f i`
 tends to infinity. -/
-theorem multipliable_one_add_oft_tendsto_order_atTop_nhds_top
+theorem multipliable_one_add_of_tendsto_order_atTop_nhds_top
     (h : Tendsto (fun i ↦ (f i).order) atTop (nhds ⊤)) : Multipliable (1 + f ·) :=
   multipliable_one_add_of_summable_prod <| summable_prod_of_tendsto_order_atTop_nhds_top h
 
