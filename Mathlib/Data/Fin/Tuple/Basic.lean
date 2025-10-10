@@ -1068,21 +1068,23 @@ variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n
 /-- `find p` returns the first index `k` where `p k` is satisfied,
   given that it is satisfied somewhere. -/
 protected def find : {n : ℕ} → (p : Fin n → Prop) → [DecidablePred p] → (h : ∃ k, p k) → Fin n
-  | 0, _, _, h => isEmptyElim h.choose | _ + 1, p, _, h =>
-    if h0 : p 0 then 0 else Fin.succ <| Fin.find _ <| (exists_fin_succ.mp h).resolve_left h0
+  | 0, _, _, h => by simp at h | _ + 1, p, _, h =>
+    if h0 : p 0 then 0 else (Fin.find _ <| (exists_fin_succ.mp h).resolve_left h0).succ
+
+theorem find_succ {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) : Fin.find p h =
+    if h0 : p 0 then 0 else (Fin.find _ <| (exists_fin_succ.mp h).resolve_left h0).succ := rfl
 
 /-- If `find p = i`, then `p i` holds -/
+@[grind]
 theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := by
-  induction n with | zero => exact isEmptyElim h.choose | succ n ih => unfold Fin.find; grind
-
-grind_pattern Fin.find_spec => Fin.find p h
+  induction n with | zero => simp at h | succ n ih => grind [find_succ]
 
 /-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
 @[grind →]
 protected theorem find_min (h : ∃ k, p k) : {j : Fin n} → j < Fin.find p h → ¬ p j := by
-  induction n with | zero => exact isEmptyElim h.choose | succ n ih =>
-  simp_rw [Fin.find, forall_fin_succ, apply_dite, succ_lt_succ_iff, not_lt_zero]; grind
+  induction n with | zero => simp at h | succ n ih =>
+  simp_rw [find_succ, forall_fin_succ, apply_dite, succ_lt_succ_iff, not_lt_zero]; grind
 
 @[simp] theorem val_find (h : ∃ k, p k) : (Fin.find p h).val = Nat.find (Fin.exists_iff.mp h) :=
   ((Nat.find_eq_iff _).mpr ⟨⟨is_lt _, find_spec _⟩, fun _ hm ⟨_, hi⟩ => Fin.find_min h hm hi⟩).symm
@@ -1144,18 +1146,20 @@ lemma find_le (hi : p i) : Fin.find p ⟨i, hi⟩ ≤ i :=
   (Fin.find_le_iff _ _).2 ⟨i, le_refl _, hi⟩
 
 lemma find_of_not_zero {p : Fin (n + 1) → Prop} [DecidablePred p]
-    (h₁ : ∃ i, p i) (h₂ : ∃ i : Fin n, p i.succ) (h0 : ¬p 0) :
-    Fin.find p h₁ = (Fin.find (fun k => p k.succ) h₂).succ := by
-  refine (find_eq_iff _).2 ⟨Fin.find_spec h₂, fun i hi ↦ ?_⟩
-  cases i using cases with | zero => _ | succ i => _
-  exacts [h0, Fin.find_min h₂ (succ_lt_succ_iff.1 hi)]
+    (h : ∃ i, p i) (h0 : ¬p 0) :
+    Fin.find p h =
+    (Fin.find (fun k => p k.succ) <| (exists_fin_succ.mp h).resolve_left h0).succ := by
+  simp_rw [find_succ, h0, dite_false]
 
 lemma find_pos {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ i, p i) :
     0 < Fin.find p h ↔ ¬p 0 := Fin.pos_iff_ne_zero.trans (Fin.find_eq_zero _).not
 
 lemma find_of_find_le {p : Fin (m + n) → Prop} [DecidablePred p]
-    {hⱼ : ∃ j : Fin n, p (j.natAdd m)} {hᵢ : ∃ i, p i} (hm : m ≤ Fin.find p hᵢ) :
-    Fin.find p hᵢ = (Fin.find _ hⱼ).natAdd m := by
+    {hᵢ : ∃ i, p i} (hm : m ≤ Fin.find p hᵢ) :
+    Fin.find p hᵢ = (Fin.find (fun j => p (j.natAdd m))
+    ⟨(Fin.cast (Nat.add_comm _ _) (Fin.find p hᵢ)).subNat _ hm, by simp [find_spec]⟩).natAdd m := by
+  have hⱼ : ∃ j : Fin n, p (j.natAdd m) :=
+    ⟨(Fin.cast (Nat.add_comm _ _) (Fin.find p hᵢ)).subNat _ hm, by simp [find_spec]⟩
   refine (find_eq_iff _).2 ⟨Fin.find_spec hⱼ, fun i hi ↦ ?_⟩
   cases i using addCases with | left i => _ | right i => _
   · exact Fin.find_min hᵢ (Fin.lt_iff_val_lt_val.mpr <| (Fin.castAdd_lt _ _).trans_le hm)
