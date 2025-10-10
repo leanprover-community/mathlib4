@@ -365,14 +365,9 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 -/
 theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) :
     meromorphicOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else (0 : WithTop ℤ) := by
-  by_cases he : e = 0
+  split_ifs with he
   · simp [he, meromorphicOrderAt_eq_top_iff]
-  simp [he]
-  rw [(by rfl : (0 : WithTop ℤ) = (0 : ℤ)),
-    meromorphicOrderAt_eq_int_iff (MeromorphicAt.const e z₀)]
-  use fun _ ↦ e
-  simp [he]
-  fun_prop
+  · exact (meromorphicOrderAt_eq_int_iff (.const e z₀)).2 ⟨fun _ ↦ e, by fun_prop, by simpa⟩
 
 open Classical in
 /--
