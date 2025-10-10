@@ -117,7 +117,7 @@ the norm of its manifold derivative) coincides with `pathELength` of the lift of
 line, between `a` and `b`. -/
 lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {a b : ℝ}
     [h : Fact (a < b)] {γ : Icc a b → M} :
-    ∫⁻ t, ‖mfderiv (𝓡∂ 1) I γ t 1‖ₑ = pathELength I (γ ∘ (projIcc a b h.out.le)) a b := by
+    ∫⁻ t, ‖mfderiv% γ t 1‖ₑ = pathELength I (γ ∘ (projIcc a b h.out.le)) a b := by
   rw [pathELength_eq_lintegral_mfderivWithin_Icc]
   simp_rw [← mfderivWithin_comp_projIcc_one]
   have : MeasurePreserving (Subtype.val : Icc a b → ℝ) volume
