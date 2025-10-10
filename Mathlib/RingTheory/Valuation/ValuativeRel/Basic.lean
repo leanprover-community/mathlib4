@@ -68,17 +68,17 @@ of valuations. -/
 @[ext]
 class ValuativeRel (R : Type*) [CommRing R] where
   /-- The relation operator arising from `ValuativeRel`. -/
-  rel : R → R → Prop
-  rel_total (x y) : rel x y ∨ rel y x
-  rel_trans {z y x} : rel x y → rel y z → rel x z
-  rel_add {x y z} : rel x z → rel y z → rel (x + y) z
-  rel_mul_right {x y} (z) : rel x y → rel (x * z) (y * z)
-  rel_mul_cancel {x y z} : ¬ rel z 0 → rel (x * z) (y * z) → rel x y
-  not_rel_one_zero : ¬ rel 1 0
+  Rel : R → R → Prop
+  rel_total (x y) : Rel x y ∨ Rel y x
+  rel_trans {z y x} : Rel x y → Rel y z → Rel x z
+  rel_add {x y z} : Rel x z → Rel y z → Rel (x + y) z
+  rel_mul_right {x y} (z) : Rel x y → Rel (x * z) (y * z)
+  rel_mul_cancel {x y z} : ¬ Rel z 0 → Rel (x * z) (y * z) → Rel x y
+  not_rel_one_zero : ¬ Rel 1 0
 
-@[inherit_doc] infix:50 " ≤ᵥ " => ValuativeRel.rel
+@[inherit_doc] infix:50 " ≤ᵥ " => ValuativeRel.Rel
 
-macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.rel $a $b)
+macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.Rel $a $b)
 
 namespace Valuation
 
@@ -102,11 +102,11 @@ namespace ValuativeRel
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 /-- The strict version of the valuative relation. -/
-def srel (x y : R) : Prop := ¬ y ≤ᵥ x
+def SRel (x y : R) : Prop := ¬ y ≤ᵥ x
 
-@[inherit_doc] infix:50 " <ᵥ " => ValuativeRel.srel
+@[inherit_doc] infix:50 " <ᵥ " => ValuativeRel.SRel
 
-macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.srel $a $b)
+macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.SRel $a $b)
 
 lemma srel_iff (x y : R) : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
 
@@ -120,9 +120,9 @@ lemma rel_refl (x : R) : x ≤ᵥ x := by
 lemma rel_rfl {x : R} : x ≤ᵥ x :=
   rel_refl x
 
-protected alias rel.refl := rel_refl
+protected alias Rel.refl := rel_refl
 
-protected alias rel.rfl := rel_rfl
+protected alias Rel.rfl := rel_rfl
 
 @[simp]
 theorem zero_rel (x : R) : 0 ≤ᵥ x := by
@@ -136,10 +136,10 @@ lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → (z * x) ≤ᵥ (z * y) := by
   rw [mul_comm z x, mul_comm z y]
   apply rel_mul_right
 
-instance : Trans (rel (R := R)) (rel (R := R)) (rel (R := R)) where
+instance : Trans (Rel (R := R)) (Rel (R := R)) (Rel (R := R)) where
   trans h1 h2 := rel_trans h1 h2
 
-protected alias rel.trans := rel_trans
+protected alias Rel.trans := rel_trans
 
 lemma rel_trans' {x y z : R} (h1 : y ≤ᵥ z) (h2 : x ≤ᵥ y) : x ≤ᵥ z :=
   h2.trans h1
@@ -539,7 +539,7 @@ def ofValuation
     {S Γ : Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) : ValuativeRel S where
-  rel x y := v x ≤ v y
+  Rel x y := v x ≤ v y
   rel_total x y := le_total (v x) (v y)
   rel_trans := le_trans
   rel_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
@@ -569,25 +569,37 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
 
-lemma _root_.Valuation.Compatible.srel_iff_lt {Γ₀ : Type*}
-    [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [v.Compatible] {x y : R} :
-    x <ᵥ y ↔ v x < v y := by
+section Valuation
+
+variable {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible]
+variable {x y : R}
+
+lemma _root_.Valuation.rel_iff_le : x ≤ᵥ y ↔ v x ≤ v y :=
+  Valuation.Compatible.rel_iff_le _ _
+
+lemma _root_.Valuation.srel_iff_lt : x <ᵥ y ↔ v x < v y := by
   simp [lt_iff_not_ge, ← Valuation.Compatible.rel_iff_le, srel_iff]
 
+@[deprecated (since := "2025-10-09")]
+alias _root_.Valuation.Compatible.srel_iff_lt := _root_.Valuation.srel_iff_lt
+
+lemma _root_.Valuation.rel_one_iff : x ≤ᵥ 1 ↔ v x ≤ 1 := by simp [v.rel_iff_le]
+lemma _root_.Valuation.srel_one_iff : x <ᵥ 1 ↔ v x < 1 := by simp [v.srel_iff_lt]
+lemma _root_.Valuation.one_rel_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.rel_iff_le]
+lemma _root_.Valuation.one_srel_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.srel_iff_lt]
+
 @[simp]
-lemma _root_.Valuation.apply_posSubmonoid_ne_zero {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
-    (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
-    v (x : R) ≠ 0 := by
+lemma _root_.Valuation.apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
   simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
 
 @[deprecated (since := "2025-08-06")]
 alias valuation_posSubmonoid_ne_zero_of_compatible := _root_.Valuation.apply_posSubmonoid_ne_zero
 
 @[simp]
-lemma _root_.Valuation.apply_posSubmonoid_pos {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
-    (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
-    0 < v x :=
+lemma _root_.Valuation.apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
   zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
+
+end Valuation
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
@@ -601,11 +613,13 @@ instance : Preorder (WithPreorder R) where
   le (x y : R) := x ≤ᵥ y
   le_refl _ := rel_refl _
   le_trans _ _ _ := rel_trans
+  lt (x y : R) := x <ᵥ y
+  lt_iff_le_not_ge (x y : R) := by have := rel_total x y; aesop
 
 /-- The valuative relation on `WithPreorder R` arising from the valuative relation on `R`.
 This is defined as the preorder itself. -/
 instance : ValuativeRel (WithPreorder R) where
-  rel := (· ≤ ·)
+  Rel := (· ≤ ·)
   rel_total := rel_total (R := R)
   rel_trans := rel_trans (R := R)
   rel_add := rel_add (R := R)
@@ -642,6 +656,120 @@ lemma supp_eq_valuation_supp : supp R = (valuation R).supp := by
 instance : (supp R).IsPrime := by
   rw [supp_eq_valuation_supp]
   infer_instance
+
+section CommRing
+
+variable {R : Type*} [CommRing R] [ValuativeRel R] {a b c d : R}
+
+lemma srel_of_srel_of_rel (hab : a <ᵥ b) (hbc : b ≤ᵥ c) : a <ᵥ c :=
+  lt_of_lt_of_le (α := WithPreorder R) hab hbc
+
+alias SRel.trans_rel := srel_of_srel_of_rel
+
+lemma srel_of_rel_of_srel (hab : a ≤ᵥ b) (hbc : b <ᵥ c) : a <ᵥ c :=
+  lt_of_le_of_lt (α := WithPreorder R) hab hbc
+
+alias Rel.trans_srel := srel_of_rel_of_srel
+
+lemma SRel.rel (hab : a <ᵥ b) : a ≤ᵥ b :=
+  le_of_lt (α := WithPreorder R) hab
+
+lemma SRel.trans (hab : a <ᵥ b) (hbc : b <ᵥ c) : a <ᵥ c :=
+  hab.trans_rel hbc.rel
+
+lemma rel_mul_right_iff (hc : 0 <ᵥ c) : a * c ≤ᵥ b * c ↔ a ≤ᵥ b :=
+  ⟨rel_mul_cancel hc, rel_mul_right _⟩
+
+lemma rel_mul_left_iff (hc : 0 <ᵥ c) : c * a ≤ᵥ c * b ↔ a ≤ᵥ b := by
+  simp only [mul_comm c, rel_mul_right_iff hc]
+
+lemma srel_mul_right_iff (hc : 0 <ᵥ c) : a * c <ᵥ b * c ↔ a <ᵥ b :=
+  (rel_mul_right_iff hc).not
+
+alias ⟨_, srel_mul_right⟩ := srel_mul_right_iff
+
+lemma srel_mul_left_iff (hc : 0 <ᵥ c) : c * a <ᵥ c * b ↔ a <ᵥ b :=
+  (rel_mul_left_iff hc).not
+
+alias ⟨_, srel_mul_left⟩ := srel_mul_left_iff
+
+lemma mul_rel_mul (hab : a ≤ᵥ b) (hcd : c ≤ᵥ d) : a * c ≤ᵥ b * d :=
+  (rel_mul_left a hcd).trans (rel_mul_right d hab)
+
+lemma mul_srel_mul_of_srel_rel (hab : a <ᵥ b) (hcd : c ≤ᵥ d) (hd : 0 <ᵥ d) :
+    a * c <ᵥ b * d :=
+  (rel_mul_left _ hcd).trans_srel (srel_mul_right hd hab)
+
+lemma mul_srel_mul_of_rel_srel (hab : a ≤ᵥ b) (hcd : c <ᵥ d) (ha : 0 <ᵥ a) :
+    a * c <ᵥ b * d :=
+  (srel_mul_left ha hcd).trans_rel (rel_mul_right _ hab)
+
+lemma mul_srel_mul (hab : a <ᵥ b) (hcd : c <ᵥ d) : a * c <ᵥ b * d :=
+  (rel_mul_left _ hcd.rel).trans_srel (srel_mul_right ((zero_rel c).trans_srel hcd) hab)
+
+lemma pow_rel_pow (ha : a ≤ᵥ b) (n : ℕ) : a ^ n ≤ᵥ b ^ n := by
+  induction n
+  · simp
+  · rw [pow_succ, pow_succ]
+    exact mul_rel_mul ‹_› ‹_›
+
+lemma pow_srel_pow (ha : a <ᵥ b) (n : ℕ) (hn : n ≠ 0) : a ^ n <ᵥ b ^ n := by
+  obtain (rfl | n) := n
+  · aesop
+  clear hn
+  induction n with
+  | zero => aesop
+  | succ n IH =>
+    rw [pow_succ a, pow_succ b]
+    exact mul_srel_mul ‹_› ‹_›
+
+lemma pow_rel_pow_of_rel_one (ha : a ≤ᵥ 1) {n m : ℕ} (hnm : n ≤ m) : a ^ m ≤ᵥ a ^ n := by
+  obtain ⟨m, rfl⟩ := exists_add_of_le hnm
+  simpa [pow_add] using rel_mul_left (a ^ n) (pow_rel_pow ha m)
+
+lemma pow_rel_pow_of_one_rel (ha : 1 ≤ᵥ a) {n m : ℕ} (hnm : n ≤ m) : a ^ n ≤ᵥ a ^ m := by
+  obtain ⟨m, rfl⟩ := exists_add_of_le hnm
+  simpa [pow_add] using rel_mul_left (a ^ n) (pow_rel_pow ha m)
+
+end CommRing
+
+section Field
+
+variable {K : Type*} [Field K] [ValuativeRel K] {a b c x : K}
+
+@[simp]
+lemma rel_zero_iff : a ≤ᵥ 0 ↔ a = 0 := by
+  rw [← supp_def, Ideal.eq_bot_of_prime (supp K), Ideal.mem_bot]
+
+@[simp]
+lemma zero_srel_iff : 0 <ᵥ a ↔ a ≠ 0 := by
+  simp [SRel]
+
+lemma rel_div_iff (hc : c ≠ 0) : a ≤ᵥ b / c ↔ a * c ≤ᵥ b := by
+  rw [← rel_mul_right_iff (c := c) (by simpa), div_mul_cancel₀ _ (by aesop)]
+
+lemma div_rel_iff (hc : c ≠ 0) : a / c ≤ᵥ b ↔ a ≤ᵥ b * c := by
+  rw [← rel_mul_right_iff (c := c) (by simpa), div_mul_cancel₀ _ (by aesop)]
+
+lemma one_rel_div_iff (hb : b ≠ 0) : 1 ≤ᵥ a / b ↔ b ≤ᵥ a := by
+  simp [rel_div_iff hb]
+
+lemma div_rel_one_iff (hb : b ≠ 0) : a / b ≤ᵥ 1 ↔ a ≤ᵥ b := by
+  simp [div_rel_iff hb]
+
+lemma one_rel_inv (hx : x ≠ 0) : 1 ≤ᵥ x⁻¹ ↔ x ≤ᵥ 1 := by
+  simpa using one_rel_div_iff (a := 1) hx
+
+lemma inv_rel_one (hx : x ≠ 0) : x⁻¹ ≤ᵥ 1 ↔ 1 ≤ᵥ x := by
+  simpa using div_rel_one_iff (a := 1) hx
+
+lemma inv_srel_one (hx : x ≠ 0) : x⁻¹ <ᵥ 1 ↔ 1 <ᵥ x :=
+  (one_rel_inv hx).not
+
+lemma one_srel_inv (hx : x ≠ 0) : x⁻¹ <ᵥ 1 ↔ 1 <ᵥ x :=
+  (one_rel_inv hx).not
+
+end Field
 
 open NNReal in variable (R) in
 /-- An auxiliary structure used to define `IsRankLeOne`. -/
@@ -842,6 +970,14 @@ lemma mapValueGroupWithZero_mk (r : A) (s : posSubmonoid A) :
 lemma mapValueGroupWithZero_valuation (a : A) :
     mapValueGroupWithZero A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
   simp [valuation]
+
+lemma mapValueGroupWithZero_strictMono : StrictMono (mapValueGroupWithZero A B) :=
+  ValueGroupWithZero.embed_strictMono _
+
+variable (B) in
+lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : IsRankLeOne A := by
+    obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
+    refine ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
 
 end ValuativeExtension
 
