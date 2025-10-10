@@ -8,9 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Tactic.Simps.Basic
 
-/-!
-
-# Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`
+/-! # Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`
 
 This allows us to use Lean's `Type`-based applicative functors in category theory.
 
@@ -20,9 +18,7 @@ namespace CategoryTheory
 
 section
 
-universe u v
-
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
+variable (F : Type* → Type*) [Applicative F] [LawfulApplicative F]
 
 /-- A lawful `Applicative` gives a category theory `LaxMonoidal` functor
 between categories of types. -/
