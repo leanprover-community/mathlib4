@@ -294,7 +294,7 @@ lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
 @[to_additive]
 lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
     DiscreteTopology (G ⧸ U) := by
-  refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
+  refine discreteTopology_iff_isOpen_singleton.mpr (fun g ↦ ?_)
   induction g using Quotient.inductionOn with | h g =>
   change IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
   convert_to IsOpen ((g * ·) '' U)
