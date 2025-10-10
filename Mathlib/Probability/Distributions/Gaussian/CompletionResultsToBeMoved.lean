@@ -72,54 +72,6 @@ lemma InnerProductSpace.norm_eq_ciSup_inner {E : Type*} [NormedAddCommGroup E]
     · exact le_ciSup_of_le h_bdd 0 (by simp)
     · exact le_ciSup_of_le h_bdd y (by simp [hy])
 
-namespace UniformSpace.Completion
-
-variable {R E F : Type*} [Semiring R]
-    [UniformSpace E] [AddCommGroup E] [IsUniformAddGroup E]
-    [Module R E] [UniformContinuousConstSMul R E]
-    [UniformSpace F] [AddCommGroup F] [IsUniformAddGroup F]
-    [Module R F] [UniformContinuousConstSMul R F] [T2Space F] [CompleteSpace F]
-
-variable (R) in
-/-- Extension of a continuous linear map `E →L[R] F` into a complete space to the completion of `E`,
-giving a continuous linear map `Completion E →L[R] F`. -/
-noncomputable
-def continuousLinearMapExtension (f : E →L[R] F) : Completion E →L[R] F where
-  toFun x := Completion.extension f x
-  map_add' x₁ x₂ := by
-    refine Completion.induction_on₂ x₁ x₂ ?_ fun x₁' x₂' ↦ ?_
-    · have : Continuous (Completion.extension f) := continuous_extension
-      exact isClosed_eq (by fun_prop) (by fun_prop)
-    · rw [extension_coe, extension_coe, ← map_add, ← extension_coe (f := f)]
-      · congr
-        norm_cast
-      all_goals exact ContinuousLinearMap.uniformContinuous _
-  map_smul' r x := by
-    simp only [RingHom.id_apply]
-    induction x using Completion.induction_on with
-    | hp =>
-      have h_cont : Continuous (Completion.extension f) := continuous_extension
-      refine isClosed_eq ?_ (by fun_prop)
-      -- fun_prop fails here (it also fails in the `have` below)
-      have : Continuous fun (a : Completion E) ↦ r • a := continuous_const_smul _
-      exact h_cont.comp this
-    | ih x =>
-      rw [extension_coe, ← map_smul, ← extension_coe (f := f)]
-      · congr
-        norm_cast
-      all_goals exact ContinuousLinearMap.uniformContinuous _
-
-lemma continuousLinearMapExtension_apply (f : E →L[R] F) (x : Completion E) :
-    Completion.continuousLinearMapExtension R f x = Completion.extension f x := by
-  simp [continuousLinearMapExtension]
-
-@[simp]
-lemma continuousLinearMapExtension_coe (f : E →L[R] F) (x : E) :
-    Completion.continuousLinearMapExtension R f x = f x := by
-  simp [continuousLinearMapExtension, extension_coe f.uniformContinuous]
-
-end UniformSpace.Completion
-
 lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup G] [Module ℝ G] [NormSMulClass ℝ G]
     (f : StrongDual ℝ E →ₗ[ℝ] G) {y : E} (hy : ∃ M, ∀ L, ‖f L‖ ≤ 1 → L y ≤ M) (L : StrongDual ℝ E) :
@@ -160,23 +112,6 @@ lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
   contrapose! hL_zero
   exact hL_zero_of_L2 hL_zero
 
-/-- The closure of a set in a complete space as an abstract completion. -/
-def abstractCompletionClosure {α : Type*} [UniformSpace α] [T0Space α] [CompleteSpace α]
-    (s : Set α) :
-    AbstractCompletion s where
-  space := closure s
-  coe x := ⟨x, subset_closure x.2⟩
-  uniformStruct := inferInstance
-  complete := isClosed_closure.isComplete.completeSpace_coe
-  separation := inferInstance
-  isUniformInducing := by
-    constructor
-    simp only [uniformity_subtype, Filter.comap_comap]
-    congr
-  dense := by
-    rw [DenseRange, Subtype.dense_iff]
-    exact closure_mono fun x hx ↦ by simp [hx, subset_closure hx]
-
 def toClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
     [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) :
     s →L[R] s.topologicalClosure where
@@ -190,59 +125,6 @@ variable {M R F : Type*} [Ring R] [NormedAddCommGroup M] [Module R M]
     [CompleteSpace M] [UniformContinuousConstSMul R M]
     [UniformSpace F] [AddCommGroup F] [Module R F] [T2Space F] [CompleteSpace F]
     {s : Submodule R M}
-
-noncomputable
-def closureExtension (s : Submodule R M) (f : s → F) : s.topologicalClosure → F :=
-  AbstractCompletion.extend (abstractCompletionClosure s.carrier) f
-
-omit [AddCommGroup F] [Module R F] [CompleteSpace F] in
-@[simp]
-lemma closureExtension_coe {f : s → F} (hf : UniformContinuous f) (a : s) :
-  closureExtension s f a = f a := (abstractCompletionClosure s.carrier).extend_coe hf a
-
-omit [AddCommGroup F] [Module R F] [T2Space F] in
-@[fun_prop, continuity]
-lemma continuous_closureExtension (s : Submodule R M) (f : s → F) :
-    Continuous (closureExtension s f) := AbstractCompletion.continuous_extend _
-
-attribute [local instance]
-  AbstractCompletion.uniformStruct AbstractCompletion.complete AbstractCompletion.separation
-
-theorem AbstractCompletion.denseRange_coe₂ {α β : Type*} [UniformSpace α] [UniformSpace β]
-    (pkgα : AbstractCompletion α) (pkgβ : AbstractCompletion β) :
-    DenseRange fun x : α × β => (pkgα.coe x.1, pkgβ.coe x.2) :=
-  pkgα.dense.prodMap pkgβ.dense
-
-@[elab_as_elim]
-theorem AbstractCompletion.induction_on₂ {α β : Type*} [UniformSpace α] [UniformSpace β]
-    (pkgα : AbstractCompletion α) (pkgβ : AbstractCompletion β)
-    {p : pkgα.space → pkgβ.space → Prop} (a : pkgα.space) (b : pkgβ.space)
-    (hp : IsClosed { x : pkgα.space × pkgβ.space | p x.1 x.2 })
-    (ih : ∀ (a : α) (b : β), p (pkgα.coe a) (pkgβ.coe b)) :
-    p a b :=
-  have : ∀ x : pkgα.space × pkgβ.space, p x.1 x.2 :=
-    isClosed_property (denseRange_coe₂ pkgα pkgβ) hp fun ⟨a, b⟩ => ih a b
-  this (a, b)
-
-@[elab_as_elim]
-theorem induction_topologicalClosure {p : s.topologicalClosure → Prop} (a : s.topologicalClosure)
-    (hp : IsClosed { a | p a }) (ih : ∀ a : s, p a) :
-    p a :=
-  AbstractCompletion.induction_on (abstractCompletionClosure s.carrier) a hp ih
-
-@[elab_as_elim]
-lemma induction_topologicalClosure₂
-    {p : s.topologicalClosure → s.topologicalClosure → Prop} (a b : s.topologicalClosure)
-    (hp : IsClosed { x : s.topologicalClosure × s.topologicalClosure | p x.1 x.2 })
-    (ih : ∀ (a b : s), p a b) :
-    p a b :=
-  AbstractCompletion.induction_on₂ (abstractCompletionClosure s.carrier)
-    (abstractCompletionClosure s.carrier) a b hp ih
-
-omit [AddCommGroup F] [Module R F] [CompleteSpace F] in
-lemma funext_topologicalClosure {f g : s.topologicalClosure → F} (hf : Continuous f)
-    (hg : Continuous g) (h : ∀ a : s, f a = g a) : f = g :=
-  funext fun a => induction_topologicalClosure a (isClosed_eq hf hg) h
 
 variable [IsUniformAddGroup F] [UniformContinuousConstSMul R F]
 

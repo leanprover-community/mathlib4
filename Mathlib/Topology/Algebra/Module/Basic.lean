@@ -257,6 +257,66 @@ lemma continuous_coeClosure (s : Submodule R M) :
 
 end closure
 
+section Completion
+
+-- todo: move elsewhere
+/-- The closure of a set in a complete space as an abstract completion. -/
+def abstractCompletionClosure {α : Type*} [UniformSpace α] [T0Space α] [CompleteSpace α]
+    (s : Set α) :
+    AbstractCompletion s where
+  space := closure s
+  coe x := ⟨x, subset_closure x.2⟩
+  uniformStruct := inferInstance
+  complete := isClosed_closure.isComplete.completeSpace_coe
+  separation := inferInstance
+  isUniformInducing := by
+    constructor
+    simp only [uniformity_subtype, Filter.comap_comap]
+    congr
+  dense := by
+    rw [DenseRange, Subtype.dense_iff]
+    exact closure_mono fun x hx ↦ by simp [hx, subset_closure hx]
+
+variable {M R F : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [UniformSpace M] [T0Space M] [ContinuousAdd M] [UniformContinuousConstSMul R M]
+    [CompleteSpace M]
+    [UniformSpace F] [T0Space F]
+    {s : Submodule R M}
+
+@[elab_as_elim]
+theorem induction_topologicalClosure {p : s.topologicalClosure → Prop} (a : s.topologicalClosure)
+    (hp : IsClosed { a | p a }) (ih : ∀ a : s, p a) :
+    p a :=
+  AbstractCompletion.induction_on (abstractCompletionClosure s.carrier) a hp ih
+
+@[elab_as_elim]
+lemma induction_topologicalClosure₂
+    {p : s.topologicalClosure → s.topologicalClosure → Prop} (a b : s.topologicalClosure)
+    (hp : IsClosed { x : s.topologicalClosure × s.topologicalClosure | p x.1 x.2 })
+    (ih : ∀ (a b : s), p a b) :
+    p a b :=
+  AbstractCompletion.induction_on₂ (abstractCompletionClosure s.carrier)
+    (abstractCompletionClosure s.carrier) a b hp ih
+
+lemma funext_topologicalClosure {f g : s.topologicalClosure → F} (hf : Continuous f)
+    (hg : Continuous g) (h : ∀ a : s, f a = g a) : f = g :=
+  funext fun a ↦ induction_topologicalClosure a (isClosed_eq hf hg) h
+
+noncomputable
+def closureExtension (s : Submodule R M) (f : s → F) : s.topologicalClosure → F :=
+  AbstractCompletion.extend (abstractCompletionClosure s.carrier) f
+
+@[simp]
+lemma closureExtension_coe {f : s → F} (hf : UniformContinuous f) (a : s) :
+  closureExtension s f a = f a := (abstractCompletionClosure s.carrier).extend_coe hf a
+
+omit [T0Space F] in
+@[fun_prop, continuity]
+lemma continuous_closureExtension [CompleteSpace F] (s : Submodule R M) (f : s → F) :
+    Continuous (closureExtension s f) := AbstractCompletion.continuous_extend _
+
+end Completion
+
 namespace Submodule
 
 variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
