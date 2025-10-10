@@ -96,8 +96,8 @@ abbrev SummationFilter.IcoFilter : SummationFilter ℤ where
 abbrev SummationFilter.IocFilter : SummationFilter ℤ where
   filter := atTop.map (fun N : ℕ ↦ Ioc (-(N : ℤ)) N)
 
-lemma SymmetricConditional_eq_Ioo : SymmetricConditional.filter =
-    (atTop.map (fun N : ℕ ↦ Finset.Ioo (-(N : ℤ)) N))   := by
+lemma SymmetricConditional_eq_Ioo :
+    SymmetricConditional.filter = (atTop.map (fun N : ℕ ↦ Finset.Ioo (-(N : ℤ)) N)) := by
   ext s
   constructor
   · simp only [Filter.mem_map, Filter.mem_atTop_sets, Set.mem_preimage]
@@ -116,7 +116,7 @@ lemma SymmetricConditional_eq_Ioo : SymmetricConditional.filter =
       add_neg_lt_iff_lt_add]
     grind
 
-instance IccFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N)) := by
+instance SymmetricConditional_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N)) := by
   simp [Filter.NeBot.map]
 
 instance IcoFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ico (-(N : ℤ)) N)) := by
@@ -125,10 +125,7 @@ instance IcoFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ico (-(N : �
 instance IocFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ioc (-(N : ℤ)) N)) := by
   simp [Filter.NeBot.map]
 
-instance IooFilter_neBot : NeBot (atTop.map (fun N : ℕ ↦ Finset.Ioo (-(N : ℤ)) N)) := by
-  simp [Filter.NeBot.map]
-
-lemma IccFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N) ≤ atTop := by
+lemma SymmetricConditional_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Icc (-(N : ℤ)) N) ≤ atTop := by
   rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
   exact Finset.tendsto_Icc_atTop_atTop
 
@@ -140,18 +137,14 @@ lemma IocFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Ioc (-(N : ℤ)) N)
   rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
   exact Finset.tendsto_Ioc_atTop_atTop
 
-lemma IooFilter_le_atTop : atTop.map (fun N : ℕ ↦ Finset.Ioo (-(N : ℤ)) N) ≤ atTop := by
-  rw [@map_le_iff_le_comap, ← @tendsto_iff_comap]
-  exact Finset.tendsto_Ioo_atTop_atTop
-
-instance : (SymmetricConditional).NeBot := ⟨IccFilter_neBot⟩
+instance : (SymmetricConditional).NeBot := ⟨SymmetricConditional_neBot⟩
 
 instance : (IcoFilter).NeBot := ⟨IcoFilter_neBot⟩
 
 instance : (IocFilter).NeBot := ⟨IocFilter_neBot⟩
 
 instance : (SymmetricConditional).LeAtTop where
-  le_atTop := IccFilter_le_atTop
+  le_atTop := SymmetricConditional_le_atTop
 
 instance : (IcoFilter).LeAtTop where
   le_atTop := IcoFilter_le_atTop
@@ -162,8 +155,9 @@ instance : (IocFilter).LeAtTop where
 variable {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α] [ContinuousMul α]
 
 @[to_additive]
-lemma multipliable_IcoFilter_of_multiplible_IccFilter (hf : Multipliable f SymmetricConditional)
-    (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) : Multipliable f IcoFilter := by
+lemma multipliable_IcoFilter_of_multiplible_SymmetricConditional
+    (hf : Multipliable f SymmetricConditional) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
+    Multipliable f IcoFilter := by
   have := (hf.hasProd)
   apply HasProd.multipliable (a := ∏'[SymmetricConditional] (b : ℤ), f b)
   simp only [HasProd, tendsto_map'_iff] at *
@@ -175,8 +169,8 @@ lemma multipliable_IcoFilter_of_multiplible_IccFilter (hf : Multipliable f Symme
   simpa using hf2
 
 @[to_additive]
-lemma tprod_IccFilter_eq_tprod_IcoFilter [T2Space α] (hf : Multipliable f SymmetricConditional)
-    (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
+lemma tprod_SymmetricConditional_eq_tprod_IcoFilter [T2Space α]
+    (hf : Multipliable f SymmetricConditional) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     ∏'[SymmetricConditional] b, f b  = ∏'[IcoFilter] b, f b := by
   have := (hf.hasProd)
   apply symm
