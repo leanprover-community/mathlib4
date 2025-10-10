@@ -216,6 +216,7 @@ using the local context to infer the appropriate instance. This supports the fol
 - the model with corners on the tangent space of a manifold
 - a model with corners on a manifold, or on its underlying model space
 - a closed interval of real numbers
+- the complex upper half plane
 - the trivial model `𝓘(𝕜, E)` on a normed space
 - if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
   and if successful, return `𝓘(𝕜)`.
@@ -362,8 +363,8 @@ where
     match e with
     | mkApp4 (.const `Set.Icc _) α _ _x _y =>
       if ← isDefEq α q(ℝ) then
-        -- TODO: should I check if x < y is a fact in the local context,
-        -- or leave that to Lean to complain about?
+        -- We need not check if `x < y` is a fact in the local context: Lean will verify this
+        -- itself when trying to synthesize a ChartedSpace instance.
         mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
       else throwError "{e} is a closed interval of type {α}, which is not definitially equal to ℝ"
     | _ => throwError "{e} is not a closed real interval"
