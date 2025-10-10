@@ -204,7 +204,7 @@ end FiniteDimensional
 
 end TensorProduct
 
-section OrthonormalBasis
+section onb
 variable {ι₁ ι₂ : Type*} [DecidableEq ι₁] [DecidableEq ι₂]
 
 open Module
@@ -214,38 +214,41 @@ theorem Basis.tensorProduct_orthonormal
     Orthonormal 𝕜 (b₁.tensorProduct b₂) := orthonormal_iff_ite.mpr fun ⟨i₁, i₂⟩ ⟨j₁, j₂⟩ => by
   simp [orthonormal_iff_ite.mp, hb₁, hb₂, ← ite_and, and_comm]
 
+namespace OrthonormalBasis
 variable [Fintype ι₁] [Fintype ι₂]
 
 /-- The orthonormal basis of the tensor product of two orthonormal bases. -/
-noncomputable def OrthonormalBasis.tensorProduct
+protected noncomputable def tensorProduct
     (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
     OrthonormalBasis (ι₁ × ι₂) 𝕜 (E ⊗[𝕜] F) :=
   (b₁.toBasis.tensorProduct b₂.toBasis).toOrthonormalBasis
     (Basis.tensorProduct_orthonormal b₁.orthonormal b₂.orthonormal)
 
 @[simp]
-lemma OrthonormalBasis.tensorProduct_apply
+lemma tensorProduct_apply
     (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) (i : ι₁) (j : ι₂) :
-    b₁.tensorProduct b₂ (i, j) = b₁ i ⊗ₜ[𝕜] b₂ j := by simp [tensorProduct]
+    b₁.tensorProduct b₂ (i, j) = b₁ i ⊗ₜ[𝕜] b₂ j := by simp [OrthonormalBasis.tensorProduct]
 
-lemma OrthonormalBasis.tensorProduct_apply'
+lemma tensorProduct_apply'
     (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) (i : ι₁ × ι₂) :
     b₁.tensorProduct b₂ i = b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 := tensorProduct_apply _ _ _ _
 
 @[simp]
-lemma OrthonormalBasis.tensorProduct_repr_tmul_apply
+lemma tensorProduct_repr_tmul_apply
     (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F)
     (x : E) (y : F) (i : ι₁) (j : ι₂) :
     ((b₁.tensorProduct b₂).repr (x ⊗ₜ[𝕜] y)) (i, j) = (b₂.repr y j) * (b₁.repr x i) := by
-  simp [tensorProduct]
+  simp [OrthonormalBasis.tensorProduct]
 
-lemma OrthonormalBasis.tensorProduct_repr_tmul_apply'
+lemma tensorProduct_repr_tmul_apply'
     (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) (x : E) (y : F) (i : ι₁ × ι₂) :
     ((b₁.tensorProduct b₂).repr (x ⊗ₜ[𝕜] y)) i = (b₂.repr y i.2) * (b₁.repr x i.1) :=
   tensorProduct_repr_tmul_apply _ _ _ _ _ _
 
-lemma OrthonormalBasis.tensorProduct_toBasis
+lemma tensorProduct_toBasis
     (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
-    (b₁.tensorProduct b₂).toBasis = b₁.toBasis.tensorProduct b₂.toBasis := by simp [tensorProduct]
+    (b₁.tensorProduct b₂).toBasis = b₁.toBasis.tensorProduct b₂.toBasis := by
+  simp [OrthonormalBasis.tensorProduct]
 
 end OrthonormalBasis
+end onb
