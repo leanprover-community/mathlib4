@@ -30,11 +30,11 @@ sums.
 
 ## Prerequisites and scope
 
-* Throughout we work over a general scalar type `R` with `[Ring R] [LinearOrder R] 
-[IsOrderedRing R]`. This suffices to speak about entrywise nonnegativity/positivity 
-and to use `sum_nonneg`, `add_pos_of_pos_of_nonneg`, and `mul_nonneg`, as well as 
+* Throughout we work over a general scalar type `R` with `[Ring R] [LinearOrder R]
+[IsOrderedRing R]`. This suffices to speak about entrywise nonnegativity/positivity
+and to use `sum_nonneg`, `add_pos_of_pos_of_nonneg`, and `mul_nonneg`, as well as
 to deduce positivity of factors from a positive product under nonnegativity.
-* Some statements expand matrix powers and thus require `[DecidableEq n]` 
+* Some statements expand matrix powers and thus require `[DecidableEq n]`
 to reason about finite sums.
 
 ## Tags
@@ -72,7 +72,7 @@ and some positive power has all entries strictly positive. -/
 def IsPrimitive [DecidableEq n] (A : Matrix n n R) : Prop :=
   (∀ i j, 0 ≤ A i j) ∧ ∃ k, 0 < k ∧ ∀ i j, 0 < (A ^ k) i j
 
-variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R] 
+variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R]
 
 /-- If `A` is irreducible and `n>1` then every row has a positive entry. -/
 lemma irreducible_no_zero_row
