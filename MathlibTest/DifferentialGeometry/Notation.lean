@@ -398,7 +398,7 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 /-! These elaborators can be combined with the total space elaborator. -/
 section interaction
 
--- XXX: these tests might be incomplete; extend as needed!
+-- Note: these tests might be incomplete; extend as needed!
 
 /-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) fun m ↦ TotalSpace.mk' E m (X m) : M → Prop -/
 #guard_msgs in
