@@ -446,6 +446,7 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 
 end interaction
 
+-- Total space over the tangent space and tangent bundle.
 section
 
 variable [IsManifold I 2 M]
@@ -514,6 +515,35 @@ Hint: Additional diagnostic information may be available using the `set_option d
 #check MDiff h'
 
 end
+
+/-! (Extended) charts -/
+section
+
+variable {φ : OpenPartialHomeomorph M H} {ψ : PartialEquiv M E}
+
+-- TODO: implement this!
+/-- error: Could not find a model with corners for H -/
+#guard_msgs in
+#check MDiff φ
+
+/-- info: MDifferentiable I 𝓘(𝕜, E) ↑ψ : Prop -/
+#guard_msgs in
+#check MDiff ψ
+
+end
+
+-- Inferring a model with corners on a space of linear maps between normed spaces
+-- is currently not supported.
+variable {f : M → E →L[𝕜] E'} in
+/-- error: Could not find a model with corners for E →L[𝕜] E' -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : M → E →L[𝕜] E'} in
+/-- error: Could not find a model with corners for E →L[𝕜] E' -/
+-- expected output is `/-- info: ContMDiff I 𝓘(𝕜, E →L[𝕜] E') 2 f : Prop -/`
+#guard_msgs in
+#check CMDiff 2 f
 
 /-! Error messages in case of a forgotten `T%`. -/
 section
