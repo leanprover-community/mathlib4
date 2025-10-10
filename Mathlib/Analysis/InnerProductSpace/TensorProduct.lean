@@ -25,14 +25,13 @@ open scoped TensorProduct
 namespace TensorProduct
 
 private abbrev inner_ :=
-  ((lift <| mapBilinear 𝕜 E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜))
+  (lift <| mapBilinear 𝕜 E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
 
 instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
 
 @[simp] private lemma inner_def_ (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
 
-@[simp]
-theorem inner_tmul (x x' : E) (y y' : F) :
+@[simp] theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
 section move
@@ -64,9 +63,8 @@ private lemma inner_coe_of_eq {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x
     inner 𝕜 x y = inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) :=
   x.induction_on (by simp) (y.induction_on (by simp) (by simp) (by simp_all)) (by simp_all)
 
-private lemma inner_coe_of_eq' {x y : E ⊗[𝕜] F}
-    {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x' y' : E' ⊗[𝕜] F'}
-    (hx : x = mapIncl E' F' x') (hy : y = mapIncl E' F' y') :
+private lemma inner_coe_of_eq' {x y : E ⊗[𝕜] F} {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F}
+    {x' y' : E' ⊗[𝕜] F'} (hx : x = mapIncl E' F' x') (hy : y = mapIncl E' F' y') :
     inner 𝕜 x' y' = inner 𝕜 x y :=
   hx ▸ hy ▸ inner_coe_of_eq
 
