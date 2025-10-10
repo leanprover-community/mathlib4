@@ -50,8 +50,8 @@ end Module
 **Hahn embedding theorem**
 
 For a linearly ordered additive group `M`, there exists an injective `OrderAddMonoidHom` from `M` to
-`Lex (HahnSeries (FiniteArchimedeanClass M) ℝ)` that transfers the Archimedean class of each element
-to `HahnSeries.orderTop`.
+`Lex (HahnSeries (FiniteArchimedeanClass M) ℝ)` that sends each `a : M` to an element of the
+`a`-Archimedean class of the Hahn series.
 -/
 theorem hahnEmbedding_isOrderedAddMonoid :
     ∃ f : M →+o Lex (HahnSeries (FiniteArchimedeanClass M) ℝ), Function.Injective f ∧
