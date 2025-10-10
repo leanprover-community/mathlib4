@@ -569,15 +569,6 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
   convert obs
   simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
-theorem tendsto_of_forall_isOpen_le_liminf' {ι : Type*} {μ : ProbabilityMeasure Ω}
-    {μs : ι → ProbabilityMeasure Ω} {L : Filter ι} [L.IsCountablyGenerated]
-    (h_opens : ∀ G, IsOpen G → (μ : Measure Ω) G ≤ L.liminf (fun i ↦ (μs i : Measure Ω) G)) :
-    L.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
-  apply Filter.tendsto_of_seq_tendsto (fun u hu ↦ ?_)
-  apply tendsto_of_forall_isOpen_le_liminf_nat' (fun G hG ↦ ?_)
-  apply (h_opens G hG).trans
-  exact liminf_le_liminf_of_le hu
-
 /-- One implication of the portmanteau theorem:
 If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
 μsₙ converge weakly to the measure μ. Formulated here for countably generated filters.
