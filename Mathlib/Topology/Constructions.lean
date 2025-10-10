@@ -1060,7 +1060,7 @@ variable [Finite ι] [∀ i, DiscreteTopology (A i)]
 
 /-- A finite product of discrete spaces is discrete. -/
 instance Pi.discreteTopology : DiscreteTopology (∀ i, A i) :=
-  singletons_open_iff_discrete.mp fun x => by
+  discreteTopology_iff_isOpen_singleton.mpr fun x => by
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
 

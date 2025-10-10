@@ -115,7 +115,7 @@ theorem proj_continuous : Continuous S.proj :=
   S.proj_isQuotientMap.continuous
 
 instance : DiscreteTopology S :=
-  singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
+  discreteTopology_iff_isOpen_singleton.2 <| S.proj_surjective.forall.2 fun x => by
     rw [← S.proj_isQuotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
 
