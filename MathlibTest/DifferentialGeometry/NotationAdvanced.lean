@@ -304,20 +304,65 @@ open scoped UpperHalfPlane
 -- Types match, but no fact x < y can be inferred: mostly testing error messages.
 variable {g : ℍ → M} {h : E → ℍ} {k : ℍ → ℝ} {k' : ℍ → ℂ}
 
-/-- error: Could not find a model with corners for ↑(Set.Icc 0 2) -/
+--set_option trace.Elab.DiffGeo.MDiff true
+
+/--
+error: Application type mismatch: The argument
+  I
+has type
+  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
+but is expected to have type
+  ModelWithCorners.{0, ?u.237221, ?u.237222} ℂ ?E' ?H'
+in the application
+  @ContMDiff ℂ DenselyNormedField.toNontriviallyNormedField ℂ Complex.instNormedAddCommGroup
+    RCLike.innerProductSpace.toNormedSpace ℂ PseudoMetricSpace.toUniformSpace.toTopologicalSpace 𝓘(ℂ, ℂ) ?M ?inst✝
+    ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ I
+-/
 #guard_msgs in
-variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+variable {g : ℍ → M} in
 #check CMDiff 2 g
 
-/-- error: Could not find a model with corners for ℍ -/
+/--
+error: Application type mismatch: The argument
+  I
+has type
+  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
+but is expected to have type
+  ModelWithCorners.{0, ?u.241114, ?u.241115} ℂ ?E' ?H'
+in the application
+  @ContMDiff ℂ DenselyNormedField.toNontriviallyNormedField ℂ Complex.instNormedAddCommGroup
+    RCLike.innerProductSpace.toNormedSpace ℂ PseudoMetricSpace.toUniformSpace.toTopologicalSpace 𝓘(ℂ, ℂ) ?M ?inst✝
+    ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ I
+-/
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- error: Could not find a model with corners for ℍ -/
+/--
+error: Application type mismatch: The argument
+  𝓘(ℂ, ℂ)
+has type
+  ModelWithCorners.{0, 0, 0} ℂ ℂ ℂ
+but is expected to have type
+  ModelWithCorners.{u_1, 0, 0} 𝕜 ?E' ?H'
+in the application
+  @MDifferentiableAt 𝕜 inst✝²³ E inst✝²² inst✝²¹ E PseudoMetricSpace.toUniformSpace.toTopologicalSpace 𝓘(𝕜, E) ?M ?inst✝
+    ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ 𝓘(ℂ, ℂ)
+-/
 #guard_msgs in
 #check MDiffAt h
 
-/-- error: Could not find a model with corners for ℍ -/
+/--
+error: Application type mismatch: The argument
+  𝓘(ℝ, ℝ)
+has type
+  ModelWithCorners ℝ ℝ ℝ
+but is expected to have type
+  ModelWithCorners ℂ ?E' ?H'
+in the application
+  @MDifferentiableAt ℂ DenselyNormedField.toNontriviallyNormedField ℂ Complex.instNormedAddCommGroup
+    RCLike.innerProductSpace.toNormedSpace ℂ PseudoMetricSpace.toUniformSpace.toTopologicalSpace 𝓘(ℂ, ℂ) ?M ?inst✝
+    ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ 𝓘(ℝ, ℝ)
+-/
 #guard_msgs in
 #check MDiffAt k ⟨x, by linarith⟩
 
