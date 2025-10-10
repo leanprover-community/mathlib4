@@ -287,8 +287,7 @@ variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 -- Now, with a fact about x < y: these should behave well.
 variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → M} {h : E → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
-set_option trace.Elab.DiffGeo true
-
+set_option trace.Elab.DiffGeo true in
 -- TODO: find out why these tests are failing. perhaps, I am applying too much coercions?
 /--
 error: Could not find a model with corners for ↑(Set.Icc 0 2)
@@ -335,8 +334,6 @@ variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check MDiff g
 
 -- sanity check: #check MDifferentiable (𝓡∂ 1) I' g
-
-#exit
 
 /-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
 #guard_msgs in
