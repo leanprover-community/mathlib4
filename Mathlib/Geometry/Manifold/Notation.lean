@@ -357,6 +357,8 @@ where
     | _ => throwError "{e} is not a space of continuous linear maps"
   /-- Attempt to find a model with corners on a closed interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
+    let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
+      | throwError "{e} is not a coercion of a set to a type"
     trace[Elab.DiffGeo.MDiff] "expr is {e}" -- for debugging only
     let norm := (← instantiateMVars e).cleanupAnnotations
     trace[Elab.DiffGeo.MDiff] "normalised expr is {norm}" -- for debugging only
