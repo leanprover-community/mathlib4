@@ -62,6 +62,7 @@ theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
     thickenedIndicatorAux δ E x ≤ 1 := by
   apply tsub_le_self (α := ℝ≥0∞)
 
+@[aesop safe (rule_sets := [finiteness])]
 theorem thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
     thickenedIndicatorAux δ E x < ∞ :=
   lt_of_le_of_lt (thickenedIndicatorAux_le_one _ _ _) one_lt_top
@@ -177,7 +178,7 @@ theorem thickenedIndicator.coeFn_eq_comp {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
 theorem thickenedIndicator_le_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) (x : α) :
     thickenedIndicator δ_pos E x ≤ 1 := by
   rw [thickenedIndicator.coeFn_eq_comp]
-  simpa using (toNNReal_le_toNNReal thickenedIndicatorAux_lt_top.ne one_ne_top).mpr
+  simpa using (toNNReal_le_toNNReal (by finiteness) one_ne_top).mpr
     (thickenedIndicatorAux_le_one δ E x)
 
 theorem thickenedIndicator_one_of_mem_closure {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α}
@@ -212,13 +213,22 @@ theorem indicator_le_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α
 theorem thickenedIndicator_mono {δ₁ δ₂ : ℝ} (δ₁_pos : 0 < δ₁) (δ₂_pos : 0 < δ₂) (hle : δ₁ ≤ δ₂)
     (E : Set α) : ⇑(thickenedIndicator δ₁_pos E) ≤ thickenedIndicator δ₂_pos E := by
   intro x
-  apply (toNNReal_le_toNNReal thickenedIndicatorAux_lt_top.ne thickenedIndicatorAux_lt_top.ne).mpr
+  apply (toNNReal_le_toNNReal (by finiteness) (by finiteness)).mpr
   apply thickenedIndicatorAux_mono hle
 
 theorem thickenedIndicator_subset {δ : ℝ} (δ_pos : 0 < δ) {E₁ E₂ : Set α} (subset : E₁ ⊆ E₂) :
     ⇑(thickenedIndicator δ_pos E₁) ≤ thickenedIndicator δ_pos E₂ := fun x =>
-  (toNNReal_le_toNNReal thickenedIndicatorAux_lt_top.ne thickenedIndicatorAux_lt_top.ne).mpr
+  (toNNReal_le_toNNReal (by finiteness) (by finiteness)).mpr
     (thickenedIndicatorAux_subset δ subset x)
+
+@[gcongr]
+lemma thickenedIndicator_mono_infEdist {δ : ℝ} (δ_pos : 0 < δ) {E : Set α} {x y : α}
+    (h : infEdist x E ≤ infEdist y E) :
+    thickenedIndicator δ_pos E y ≤ thickenedIndicator δ_pos E x := by
+  simp only [thickenedIndicator_apply]
+  gcongr
+  · finiteness
+  · exact thickenedIndicatorAux_mono_infEdist δ h
 
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise to the indicator function of the closure of E.
@@ -246,10 +256,7 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
   · specialize this y x (le_of_not_ge h)
     rwa [edist_comm, edist_comm x]
   simp_rw [edist_dist, NNReal.dist_eq, thickenedIndicator_apply, coe_toNNReal_eq_toReal]
-  rw [← ENNReal.toReal_sub_of_le]
-  rotate_left
-  · exact thickenedIndicatorAux_mono_infEdist _ h
-  · exact thickenedIndicatorAux_lt_top.ne
+  rw [← ENNReal.toReal_sub_of_le (thickenedIndicatorAux_mono_infEdist _ h) (by finiteness)]
   simp only [thickenedIndicatorAux, abs_toReal, ne_eq, sub_eq_top_iff, one_ne_top, false_and,
     not_false_eq_true, and_true, ofReal_toReal]
   rw [ENNReal.coe_inv (by simp [δ_pos]), ENNReal.ofReal, div_eq_mul_inv, div_eq_mul_inv]
