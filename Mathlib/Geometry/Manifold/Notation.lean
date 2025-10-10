@@ -358,9 +358,12 @@ where
     | _ => throwError "{e} is not a space of continuous linear maps"
   /-- Attempt to find a model with corners on a closed interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
-    trace[Elab.DiffGeo.MDiff] "type is {e}" -- for debugging only
-    match_expr e with
-    | Set.Icc α _ _x _y =>
+    trace[Elab.DiffGeo.MDiff] "expr is {e}" -- for debugging only
+    let norm := (← instantiateMVars e).cleanupAnnotations
+    trace[Elab.DiffGeo.MDiff] "normalised expr is {norm}" -- for debugging only
+    match (← instantiateMVars e).cleanupAnnotations with
+    --match_expr e with
+    | mkApp4 (.const `Set.Icc _) α _ _x _y =>--Set.Icc α _ _x _y =>
       if ← isDefEq α q(ℝ) then
         -- TODO: should I check if x < y is a fact in the local context,
         -- or leave that to Lean to complain about?
@@ -396,6 +399,11 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
       throwError "Term `{e}` is a dependent function, of type `{etype}`\nHint: you can use \
         the `T%` elaborator to convert a dependent function to a non-dependent one"
+    trace[Elab.DiffGeo.MDiff] "findModels: src is {src}" -- for debugging only
+    if let mkApp4 (.const `Set.Icc _) α _ _x _y := src then
+      trace[Elab.DiffGeo.MDiff] "src is a Set.Icc"
+    else
+      trace[Elab.DiffGeo.MDiff] "src is not a Set.Icc"
     let srcI ← findModel src
     if let some es := es then
       let estype ← inferType es
@@ -460,7 +468,9 @@ scoped elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "MDiff" ppSpace t:term:arg : term => do
-  let e ← ensureIsFunction <| ← Term.elabTerm t none
+  let e ← /-ensureIsFunction <| ←-/ Term.elabTerm t none
+  -- BAD, temporary hack!
+  trace[Elab.DiffGeo.MDiff] "HACK: disabling coercion in MDiff"
   let (srcI, tgtI) ← findModels e none
   mkAppM ``MDifferentiable #[srcI, tgtI, e]
 
