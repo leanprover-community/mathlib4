@@ -649,84 +649,10 @@ end AdjoinIntegralElement
 
 end IntermediateField
 
-section Minpoly
-
-open AlgEquiv
-
-variable {K L : Type _} [Field K] [Field L] [Algebra K L]
-namespace AdjoinRoot
-
-/-- The canonical algebraic homomorphism from `AdjoinRoot p` to `AdjoinRoot q`, where
-  the polynomial `q : K[X]` divides `p`. -/
-noncomputable def algHomOfDvd {p q : K[X]} (hpq : q ∣ p) :
-    AdjoinRoot p →ₐ[K] AdjoinRoot q :=
-  liftAlgHom p (Algebra.ofId _ _) (root q) <| (aeval_eq _).trans <| by simp [mk_eq_zero, hpq]
-
-theorem coe_algHomOfDvd {p q : K[X]} (hpq : q ∣ p) :
-    ⇑(algHomOfDvd hpq) =
-      liftAlgHom p (Algebra.ofId _ _) (root q) ((aeval_eq _).trans <| by simp [mk_eq_zero, hpq]) :=
-  rfl
-
-/-- `algHomOfDvd` sends `AdjoinRoot.root p` to `AdjoinRoot.root q`. -/
-theorem algHomOfDvd_root {p q : K[X]} (hpq : q ∣ p) :
-    algHomOfDvd hpq (root p) = root q := by
-  rw [algHomOfDvd, liftAlgHom_root]
-
-@[deprecated (since := "2025-09-19")]
-alias algEquivOfEq_apply_root := algEquivOfEq_root
-
-/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`,
-where the two polynomials `p q : K[X]` are associated. -/
-noncomputable def algEquivOfAssociated {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
-    AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
-  .ofAlgHom (algHomOfDvd hpq.symm.dvd) (algHomOfDvd hpq.dvd)
-    ( PowerBasis.algHom_ext (powerBasis (hpq.ne_zero_iff.mp hp))
-        (by rw [powerBasis_gen (hpq.ne_zero_iff.mp hp), AlgHom.coe_comp, Function.comp_apply,
-          algHomOfDvd_root, algHomOfDvd_root, AlgHom.coe_id, id_eq]))
-    (PowerBasis.algHom_ext (powerBasis hp)
-      (by rw [powerBasis_gen hp, AlgHom.coe_comp, Function.comp_apply, algHomOfDvd_root,
-          algHomOfDvd_root, AlgHom.coe_id, id_eq]))
-
-theorem coe_algEquivOfAssociated {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
-    ⇑(algEquivOfAssociated hp hpq) = algHomOfDvd hpq.symm.dvd := rfl
-
-theorem algEquivOfAssociated_toAlgHom {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
-    (algEquivOfAssociated hp hpq).toAlgHom = algHomOfDvd hpq.symm.dvd := rfl
-
-/-- `algEquivOfAssociated` sends `AdjoinRoot.root p` to `AdjoinRoot.root q`. -/
-theorem algEquivOfAssociated_root {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
-    algEquivOfAssociated hp hpq (root p) = root q := by
-  rw [coe_algEquivOfAssociated, algHomOfDvd_root]
-
-/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`, where
-  the two polynomials `p q : K[X]` are equal. -/
-noncomputable def algEquivOfEq {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
-    AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
-  algEquivOfAssociated hp (by rw [h_eq])
-
-theorem coe_algEquivOfEq {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
-    ⇑(algEquivOfEq hp h_eq) = algHomOfDvd h_eq.symm.dvd :=
-  rfl
-
-theorem algEquivOfEq_toAlgHom {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
-    (algEquivOfEq hp h_eq).toAlgHom = algHomOfDvd h_eq.symm.dvd :=
-  rfl
-
-/-- `algEquivOfEq` sends `AdjoinRoot.root p` to `AdjoinRoot.root q`. -/
-theorem algEquivOfEq_root {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
-    algEquivOfEq hp h_eq (root p) = root q := by
-  rw [coe_algEquivOfEq, algHomOfDvd_root]
-
-@[deprecated (since := "2025-08-30")] alias algHomOfDvd_apply_root := algHomOfDvd_root
-@[deprecated (since := "2025-08-30")] alias algEquivOfEq_apply_root := algEquivOfEq_root
-@[deprecated (since := "2025-08-30")]
-alias algEquivOfAssociated_apply_root := algEquivOfAssociated_root
-
-end AdjoinRoot
-
 namespace minpoly
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
-open IntermediateField
+open AlgEquiv IntermediateField
 
 /-- If `y : L` is a root of `minpoly K x`, then `minpoly K y = minpoly K x`. -/
 theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
@@ -751,8 +677,6 @@ theorem algEquiv_apply {x y : L} (hx : IsAlgebraic K x) (h_mp : minpoly K x = mi
     adjoinRootEquivAdjoin_apply_root K hy.isIntegral]
 
 end minpoly
-
-end Minpoly
 
 namespace PowerBasis
 
