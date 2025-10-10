@@ -1,4 +1,4 @@
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
@@ -347,78 +347,36 @@ variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #guard_msgs in
 #check MDiffAt k ⟨x, by linarith⟩
 
-#exit
-
 end interval
 
 section UpperHalfPlane
 
 open scoped UpperHalfPlane
 
--- Types match, but no fact x < y can be inferred: mostly testing error messages.
-variable {g : ℍ → M} {h : E → ℍ} {k : ℍ → ℝ} {k' : ℍ → ℂ}
+-- Make a new complex manifold N with model J.
+-- TODO(future): conduct the same test, but modifying M instead (and seeing if everything still
+-- works in the presence of two instances).
+variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℂ E''] {J : ModelWithCorners ℂ E'' H}
+  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 
---set_option trace.Elab.DiffGeo.MDiff true
+variable {g : ℍ → N} {h : E'' → ℍ} {k : ℍ → ℂ} {y : ℍ}
 
-/--
-error: Application type mismatch: The argument
-  I
-has type
-  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
-but is expected to have type
-  ModelWithCorners.{0, ?u.237221, ?u.237222} ℂ ?E' ?H'
-in the application
-  @ContMDiff ℂ DenselyNormedField.toNontriviallyNormedField ℂ Complex.instNormedAddCommGroup
-    RCLike.innerProductSpace.toNormedSpace ℂ PseudoMetricSpace.toUniformSpace.toTopologicalSpace 𝓘(ℂ, ℂ) ?M ?inst✝
-    ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ I
--/
+/-- info: ContMDiff 𝓘(ℂ, ℂ) J 2 g : Prop -/
 #guard_msgs in
 variable {g : ℍ → M} in
 #check CMDiff 2 g
 
-/--
-error: Application type mismatch: The argument
-  I
-has type
-  ModelWithCorners.{u_1, u_2, u_3} 𝕜 E H
-but is expected to have type
-  ModelWithCorners.{0, ?u.241114, ?u.241115} ℂ ?E' ?H'
-in the application
-  @ContMDiff ℂ DenselyNormedField.toNontriviallyNormedField ℂ Complex.instNormedAddCommGroup
-    RCLike.innerProductSpace.toNormedSpace ℂ PseudoMetricSpace.toUniformSpace.toTopologicalSpace 𝓘(ℂ, ℂ) ?M ?inst✝
-    ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ I
--/
+/-- info: ContMDiff 𝓘(ℂ, ℂ) J 2 g : Prop -/
 #guard_msgs in
 #check CMDiff 2 g
 
-/--
-error: Application type mismatch: The argument
-  𝓘(ℂ, ℂ)
-has type
-  ModelWithCorners.{0, 0, 0} ℂ ℂ ℂ
-but is expected to have type
-  ModelWithCorners.{u_1, 0, 0} 𝕜 ?E' ?H'
-in the application
-  @MDifferentiableAt 𝕜 inst✝²³ E inst✝²² inst✝²¹ E PseudoMetricSpace.toUniformSpace.toTopologicalSpace 𝓘(𝕜, E) ?M ?inst✝
-    ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ 𝓘(ℂ, ℂ)
--/
+/-- info: MDifferentiableAt 𝓘(ℂ, E'') 𝓘(ℂ, ℂ) h : E'' → Prop -/
 #guard_msgs in
 #check MDiffAt h
 
-/--
-error: Application type mismatch: The argument
-  𝓘(ℝ, ℝ)
-has type
-  ModelWithCorners ℝ ℝ ℝ
-but is expected to have type
-  ModelWithCorners ℂ ?E' ?H'
-in the application
-  @MDifferentiableAt ℂ DenselyNormedField.toNontriviallyNormedField ℂ Complex.instNormedAddCommGroup
-    RCLike.innerProductSpace.toNormedSpace ℂ PseudoMetricSpace.toUniformSpace.toTopologicalSpace 𝓘(ℂ, ℂ) ?M ?inst✝
-    ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ 𝓘(ℝ, ℝ)
--/
+/-- info: MDifferentiableAt 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ) k y : Prop -/
 #guard_msgs in
-#check MDiffAt k ⟨x, by linarith⟩
+#check MDiffAt k y
 
 end UpperHalfPlane
 
