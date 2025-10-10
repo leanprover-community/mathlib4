@@ -152,11 +152,6 @@ lemma abs_smul_nonneg {R : Type*} [Semiring R] [SMulWithZero R ℝ≥0] [SMul R 
   rw [abs, sqrt_eq_iff _ _ (star_mul_self_nonneg _) (smul_nonneg (by positivity) (abs_nonneg _))]
   simp [mul_smul_comm, smul_mul_assoc, abs_mul_abs]
 
-@[simp]
-lemma abs_smul (r : ℝ) (a : A) : abs (r • a) = |r| • abs a := by
-  cases r using Real.nnreal_induction_on
-  all_goals simp [← NNReal.smul_def]
-
 end Real
 
 section RCLike
@@ -180,12 +175,14 @@ variable [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
-lemma abs_rclike_smul (r : 𝕜) (a : A) : abs (r • a) = ‖r‖ • abs a := by
+@[simp]
+lemma abs_smul (r : 𝕜) (a : A) : abs (r • a) = ‖r‖ • abs a := by
   trans abs (‖r‖ • a)
   · simp only [abs, mul_smul_comm, smul_mul_assoc, star_smul, ← smul_assoc,
       RCLike.real_smul_eq_coe_smul (K := 𝕜)]
     simp [-algebraMap_smul, ← smul_mul_assoc, ← mul_comm (starRingEnd _ _), RCLike.conj_mul, sq]
-  · simp [abs_smul]
+  · lift ‖r‖ to ℝ≥0 using norm_nonneg _ with r
+    simp [← NNReal.smul_def]
 
 variable (𝕜) in
 lemma abs_eq_cfcₙ_coe_norm (a : A) (ha : p a := by cfc_tac) :
@@ -265,7 +262,7 @@ variable {p : A → Prop} [RCLike 𝕜]
 
 variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
 lemma abs_algebraMap_rclike (c : 𝕜) : abs (algebraMap 𝕜 A c) = algebraMap ℝ A ‖c‖ := by
-  simp [Algebra.algebraMap_eq_smul_one, abs_rclike_smul c, abs_one]
+  simp [Algebra.algebraMap_eq_smul_one]
 
 lemma cfc_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((fun z ↦ (‖z‖ : 𝕜)) '' spectrum 𝕜 a) := by cfc_cont_tac) :
