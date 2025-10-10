@@ -34,8 +34,6 @@ sums.
   to speak about entrywise nonnegativity/positivity and to use `sum_nonneg`, `add_pos_of_pos_of_nonneg`,
   and `mul_nonneg`, as well as to deduce positivity of factors from a positive product under
   nonnegativity.
-* No topological or completeness assumptions are used; the arguments are purely algebraic/order‑theoretic.
-* The results therefore apply beyond `ℝ`, e.g. to `ℕ`, `ℤ`, `ℚ`, `ℝ≥0`, and any linear ordered semiring.
 * Some statements expand matrix powers and thus require `[DecidableEq n]` to reason about finite sums.
 
 ## Tags
