@@ -163,8 +163,8 @@ def homEquivFunctor {a b : SimplexCategory} :
 
 /-- Homs in `SimplexCategory` are equivalent to functors between finite linear orders, with
 codomain lifted to a higher universe. -/
-def homEquivFunctorULiftRight {a b : SimplexCategory} :
-    (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ ULiftFin.{0, v} (b.len + 1)) :=
+def homEquivFunctorULiftRight.{u, w} {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ ULiftFin.{u, w} (b.len + 1)) :=
   SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
     |>.trans ULiftHomULiftCategory.equivCongrLeft
 
