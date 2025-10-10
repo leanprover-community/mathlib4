@@ -24,6 +24,7 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
+/-- Bilinear map for the inner product on tensor products. -/
 private abbrev inner_ :=
   (lift <| mapBilinear 𝕜 E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
 
