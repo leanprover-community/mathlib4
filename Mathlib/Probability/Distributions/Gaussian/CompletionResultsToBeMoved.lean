@@ -187,8 +187,7 @@ def completionClosureLinearIsometry {M R : Type*} [Ring R] [NormedAddCommGroup M
     refine Completion.induction_on₂ x y ?_ fun x' y' ↦ ?_
     · have : Continuous (completionClosureEquiv s) := UniformEquiv.continuous _
       exact isClosed_eq (by fun_prop) (by fun_prop)
-    · rw [← Completion.coe_add]
-      simp
+    · simp [← Completion.coe_add]
   map_smul' r x := by
     simp only [RingHom.id_apply]
     induction x using Completion.induction_on with
