@@ -134,7 +134,7 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
 
 @[to_additive]
 theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
-  ⟨fun h => discreteTopology_iff_isOpen_singleton.mp h {1}, discreteTopology_of_isOpen_singleton_one⟩
+  ⟨fun _ => isOpen_discrete {1}, discreteTopology_of_isOpen_singleton_one⟩
 
 end ContinuousMulGroup
 
