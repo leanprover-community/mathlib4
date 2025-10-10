@@ -241,7 +241,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"TotalSpace"    fromTotalSpace    then return m
   if let some m ← tryStrategy m!"TangentBundle" fromTangentBundle then return m
   if let some m ← tryStrategy m!"NormedSpace"   fromNormedSpace   then return m
-  if let some m ← tryStrategy m!"ChartedSpace"  fromChartedSpace  then return m
+  if let some m ← tryStrategy m!"Manifold"      fromManifold      then return m
   if let some m ← tryStrategy m!"NormedField"   fromNormedField   then return m
   throwError "Could not find a model with corners for {e}"
 where
@@ -303,7 +303,7 @@ where
     trace[Elab.DiffGeo.MDiff] "Field is: {K}"
     mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
   /-- Attempt to find a model with corners on a manifold. -/
-  fromChartedSpace : TermElabM Expr := do
+  fromManifold : TermElabM Expr := do
     let some H ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
         match_expr type with
         | ChartedSpace H _ M _ =>
