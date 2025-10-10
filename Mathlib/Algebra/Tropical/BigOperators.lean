@@ -36,9 +36,9 @@ variable {R S : Type*}
 open Tropical Finset
 
 theorem List.trop_sum [AddMonoid R] (l : List R) : trop l.sum = List.prod (l.map trop) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [← IH]
 
 theorem Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
     trop s.sum = Multiset.prod (s.map trop) :=
@@ -52,9 +52,9 @@ theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
 
 theorem List.untrop_prod [AddMonoid R] (l : List (Tropical R)) :
     untrop l.prod = List.sum (l.map untrop) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [← IH]
 
 theorem Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (Tropical R)) :
     untrop s.prod = Multiset.sum (s.map untrop) :=
@@ -68,15 +68,15 @@ theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
 
 theorem List.trop_minimum [LinearOrder R] (l : List R) :
     trop l.minimum = List.sum (l.map (trop ∘ WithTop.some)) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [List.minimum_cons, ← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [List.minimum_cons, ← IH]
 
 theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
     trop s.inf = Multiset.sum (s.map trop) := by
-  induction' s using Multiset.induction with s x IH
-  · simp
-  · simp [← IH]
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons s x IH => simp [← IH]
 
 theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R) :
     trop (s.inf f) = ∑ i ∈ s, trop (f i) := by
@@ -96,9 +96,9 @@ theorem trop_iInf [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Wi
 
 theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical R)) :
     untrop s.sum = Multiset.inf (s.map untrop) := by
-  induction' s using Multiset.induction with s x IH
-  · simp
-  · simp only [sum_cons, untrop_add, map_cons, inf_cons, ← IH]
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons s x IH => simp only [sum_cons, untrop_add, map_cons, inf_cons, ← IH]
 
 theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i ∈ s, f i) = s.inf (untrop ∘ f) := by

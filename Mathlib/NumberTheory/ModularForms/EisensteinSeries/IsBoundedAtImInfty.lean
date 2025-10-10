@@ -50,8 +50,6 @@ lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k
     (Summable.tsum_subtype_le (fun (x : Fin 2 → ℤ) ↦ ‖(eisSummand k x z)‖) _ (fun _ ↦ norm_nonneg _)
       (summable_norm_eisSummand hk z))
 
-@[deprecated (since := "2025-02-17")] alias abs_le_tsum_abs := norm_le_tsum_norm
-
 /-- Eisenstein series are bounded at infinity. -/
 theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ} [NeZero N] (a : Fin 2 → ZMod N) {k : ℤ}
     (hk : 3 ≤ k) (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[k] A) := by
