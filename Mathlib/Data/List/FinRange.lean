@@ -72,6 +72,7 @@ theorem finRange_map_getElem (l : List α) : (finRange l.length).map (l[·.1]) =
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
   apply List.ext_getElem <;> simp
 
+@[deprecated finRange_succ (since := "2025-10-10")]
 theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ :=
   finRange_succ
 
