@@ -36,8 +36,8 @@ lemma Nodup.splits_nodup (l : List α) : l.splits.Nodup := by
 lemma Disjoint_self (l : List α) :
     (∃ a, a ∈ l) → ¬ l.Disjoint l := by simp [Disjoint]
 
-lemma Nodup.splits3_l_nodup (l : List α) : l.splits3_l.Nodup := by
-  simp [List.splits3_l, List.nodup_flatMap]
+lemma Nodup.splits₃_left_nodup (l : List α) : l.splits₃_left.Nodup := by
+  simp [List.splits₃_left, List.nodup_flatMap]
   constructor
   · intros t d htd_splits
     apply List.Nodup.map_on
@@ -49,7 +49,10 @@ lemma Nodup.splits3_l_nodup (l : List α) : l.splits3_l.Nodup := by
       constructor
       · clear ihl
         rintro b c x1 x2 hx1x2_l_splits rfl rfl
-        simp [Function.onFun]
+        simp only [Function.onFun, splits_nil, map_cons, map_nil, splits_cons, map_map,
+                   singleton_disjoint, mem_cons, Prod.mk.injEq, nil_eq, reduceCtorEq, false_and,
+                   and_false, mem_map, Function.comp_apply, exists_const, or_self,
+                   not_false_eq_true]
       · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
         rintro ⟨x1, x2⟩ ⟨y1, y2⟩
         simp [Function.onFun]
@@ -68,8 +71,8 @@ lemma Nodup.splits3_l_nodup (l : List α) : l.splits3_l.Nodup := by
           specialize hdisj_map _ _ _ _ _ hx1_splits rfl rfl rfl _ _ hy1_splits rfl rfl rfl
           assumption
 
-lemma Nodup.splits3_r_nodup (l : List α) : l.splits3_r.Nodup := by
-  simp [List.splits3_r, List.nodup_flatMap]
+lemma Nodup.splits₃_right_nodup (l : List α) : l.splits₃_right.Nodup := by
+  simp [List.splits₃_right, List.nodup_flatMap]
   constructor
   · intros t d htd_l_splits
     apply List.Nodup.map_on
@@ -98,12 +101,12 @@ lemma Nodup.splits3_r_nodup (l : List α) : l.splits3_r.Nodup := by
         specialize hdisj_map hx2_splits hy2_splits
         contradiction
 
-lemma Perm.splits3_l_r_perm (l : List α) : l.splits3_l ~ l.splits3_r := by
+lemma Perm.splits₃_left_right_perm (l : List α) : l.splits₃_left ~ l.splits₃_right := by
   rw [List.perm_ext_iff_of_nodup]
   · rintro ⟨x, y, z⟩
-    simp only [List.splits3_l_spec, List.splits3_r_spec]
-  · apply Nodup.splits3_l_nodup
-  · apply Nodup.splits3_r_nodup
+    simp only [List.mem_splits₃_left_iff, List.mem_splits₃_right_iff]
+  · apply Nodup.splits₃_left_nodup
+  · apply Nodup.splits₃_right_nodup
 
 variable [DecidableEq α]
 
