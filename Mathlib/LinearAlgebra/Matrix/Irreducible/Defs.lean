@@ -73,7 +73,7 @@ and some positive power has all entries strictly positive. -/
 def IsPrimitive [DecidableEq n] (A : Matrix n n R) : Prop :=
   (∀ i j, 0 ≤ A i j) ∧ ∃ k, 0 < k ∧ ∀ i j, 0 < (A ^ k) i j
 
-variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R] 
+variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R]
 
 /-- If `A` is irreducible and `n>1` then every row has a positive entry. -/
 lemma irreducible_no_zero_row
