@@ -37,7 +37,7 @@ instance instCommMonoidWithZero : CommMonoidWithZero ℕ where
   __ := instMonoidWithZero
 
 instance instIsLeftCancelMulZero : IsLeftCancelMulZero ℕ where
-  mul_left_cancel_of_ne_zero h := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)
+  mul_left_cancel_of_ne_zero h _ _ := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)
 
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ where
   __ := instCommMonoidWithZero

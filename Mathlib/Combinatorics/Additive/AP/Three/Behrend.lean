@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Data.Complex.ExponentialBounds
 
 /-!
 # Behrend's bound on Roth numbers
@@ -16,7 +16,7 @@ This file proves Behrend's lower bound on Roth numbers. This says that we can fi
 `{1, ..., n}` of size `n / exp (O (sqrt (log n)))` which does not contain arithmetic progressions of
 length `3`.
 
-The idea is that the sphere (in the `n` dimensional Euclidean space) doesn't contain arithmetic
+The idea is that the sphere (in the `n`-dimensional Euclidean space) doesn't contain arithmetic
 progressions (literally) because the corresponding ball is strictly convex. Thus we can take
 integer points on that sphere and map them onto `ℕ` in a way that preserves arithmetic progressions
 (`Behrend.map`).
@@ -58,7 +58,7 @@ lemma threeAPFree_frontier {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsS
     ThreeAPFree (frontier s) := by
   intro a ha b hb c hc habc
   obtain rfl : (1 / 2 : 𝕜) • a + (1 / 2 : 𝕜) • c = b := by
-    rwa [← smul_add, one_div, inv_smul_eq_iff₀ (show (2 : 𝕜) ≠ 0 by norm_num), two_smul]
+    rwa [← smul_add, one_div, inv_smul_eq_iff₀ (show (2 : 𝕜) ≠ 0 by simp), two_smul]
   have :=
     hs₁.eq (hs₀.frontier_subset ha) (hs₀.frontier_subset hc) one_half_pos one_half_pos
       (add_halves _) hb.2
@@ -114,13 +114,13 @@ theorem sphere_subset_box : sphere n d k ⊆ box n d :=
   filter_subset _ _
 
 theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
-    ‖(WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)‖ = √↑k := by
+    ‖WithLp.toLp 2 ((↑) ∘ x : Fin n → ℝ)‖ = √↑k := by
   rw [EuclideanSpace.norm_eq]
   dsimp
   simp_rw [abs_cast, ← cast_pow, ← cast_sum, (mem_filter.1 hx).2]
 
 theorem sphere_subset_preimage_metric_sphere : (sphere n d k : Set (Fin n → ℕ)) ⊆
-    (fun x : Fin n → ℕ => (WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
+    (fun x : Fin n → ℕ => WithLp.toLp 2 ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
       Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (√↑k) :=
   fun x hx => by rw [Set.mem_preimage, mem_sphere_zero_iff_norm, norm_of_mem_sphere hx]
 
@@ -194,7 +194,7 @@ theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n
   rw [mem_box] at hx
   have : ∀ i, x i ^ 2 ≤ (d - 1) ^ 2 := fun i =>
     Nat.pow_le_pow_left (Nat.le_sub_one_of_lt (hx i)) _
-  exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [card_fin, smul_eq_mul])
+  exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [Finset.card_fin, smul_eq_mul])
 
 theorem sum_eq : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) = ((2 * d + 1) ^ n - 1) / 2 := by
   refine (Nat.div_eq_of_eq_mul_left zero_lt_two ?_).symm
@@ -211,8 +211,8 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   cases d
   · simp
   apply threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
-  · simp only [subset_iff, mem_image, and_imp, forall_exists_index, mem_range,
-      forall_apply_eq_imp_iff₂, sphere, mem_filter]
+  · simp only [mem_image, and_imp, forall_exists_index,
+      sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
   apply map_injOn.mono fun x => ?_
@@ -231,11 +231,10 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
     (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ #(sphere n d k) := by
-  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
+  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_add_one ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
-  · rw [card_range, _root_.nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀,
-      card_box]
+  · rw [card_range, nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀, card_box]
     exact (cast_add_one_pos _).ne'
 
 theorem exists_large_sphere (n d : ℕ) :
@@ -274,14 +273,11 @@ open Real
 section NumericalBounds
 
 theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ √(log 8) := by
-  have : (8 : ℝ) = 2 ^ ((3 : ℕ) : ℝ) := by rw [rpow_natCast]; norm_num
-  rw [this, log_rpow zero_lt_two (3 : ℕ)]
+  rw [show (8 : ℝ) = 2 ^ 3 by norm_num1, Real.log_pow, Nat.cast_ofNat]
   apply le_sqrt_of_sq_le
   rw [mul_pow, sq (log 2), mul_assoc, mul_comm]
-  refine mul_le_mul_of_nonneg_right ?_ (log_nonneg one_le_two)
-  rw [← le_div_iff₀]
-  on_goal 1 => apply log_two_lt_d9.le.trans
-  all_goals norm_num1
+  gcongr
+  linarith only [log_two_lt_d9.le]
 
 theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   rw [div_le_iff₀, mul_sub, mul_one, mul_div_assoc', le_sub_comm, div_le_iff₀ (exp_pos _)]
@@ -289,24 +285,20 @@ theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   rw [sub_pos, div_lt_one] <;> exact exp_one_gt_d9.trans' (by norm_num)
 
 theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ √(log ↑N) := by
-  have : (12 : ℕ) * log 2 ≤ log N := by
-    rw [← log_rpow zero_lt_two, rpow_natCast]
-    exact log_le_log (by positivity) (mod_cast hN)
-  refine (mul_le_mul_of_nonneg_right (log_le_log ?_ two_div_one_sub_two_div_e_le_eight) <| by
-    norm_num1).trans ?_
-  · refine div_pos zero_lt_two ?_
-    rw [sub_pos, div_lt_one (exp_pos _)]
-    exact exp_one_gt_d9.trans_le' (by norm_num1)
-  have l8 : log 8 = (3 : ℕ) * log 2 := by
-    rw [← log_rpow zero_lt_two, rpow_natCast]
-    norm_num
-  rw [l8]
-  apply le_sqrt_of_sq_le (le_trans _ this)
-  rw [mul_right_comm, mul_pow, sq (log 2), ← mul_assoc]
-  apply mul_le_mul_of_nonneg_right _ (log_nonneg one_le_two)
-  rw [← le_div_iff₀']
-  · exact log_two_lt_d9.le.trans (by norm_num1)
-  exact sq_pos_of_ne_zero (by norm_num1)
+  calc
+    _ ≤ log (2 ^ 3) * (69 / 50) := by
+      gcongr
+      · field_simp
+        simp (disch := positivity) [show 2 < Real.exp 1 from lt_trans (by norm_num1) exp_one_gt_d9]
+      · norm_num1
+        exact two_div_one_sub_two_div_e_le_eight
+    _ ≤ √(log (2 ^ 12)) := by
+      simp only [Real.log_pow, Nat.cast_ofNat]
+      apply le_sqrt_of_sq_le
+      nlinarith [log_two_lt_d9, log_two_gt_d9]
+    _ ≤ √(log ↑N) := by
+      gcongr
+      exact mod_cast hN
 
 theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x⌉₊) / ⌈x⌉₊ := by
   have h₁ := ceil_lt_add_one hx.le
@@ -374,9 +366,9 @@ theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
     rw [← mul_assoc, ← le_div_iff₀ (Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 _), div_sqrt]
     · apply log_two_mul_two_le_sqrt_log_eight.trans
       apply Real.sqrt_le_sqrt
-      exact log_le_log (by norm_num) (mod_cast hN₃)
-    exact hN₃.trans_lt' (by norm_num)
-  · exact cast_pos.2 (nValue_pos <| hN₃.trans' <| by norm_num)
+      exact log_le_log (by simp) (mod_cast hN₃)
+    exact hN₃.trans_lt' (by simp)
+  · exact cast_pos.2 (nValue_pos <| hN₃.trans' <| by simp)
   · exact (rpow_pos_of_pos hN₀ _).ne'
   · exact div_pos (rpow_pos_of_pos hN₀ _) zero_lt_two
 
@@ -397,14 +389,11 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
 
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
-  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
-  · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
+  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv, nValue]
+  · grw [ceil_lt_mul]
     · rw [mul_comm, ← div_div, div_sqrt, le_div_iff₀]
-      · norm_num; exact le_sqrt_log hN
+      · norm_num [le_sqrt_log hN]
       · norm_num1
-    · apply log_nonneg
-      rw [one_le_cast]
-      exact hN.trans' (by norm_num1)
     · rw [cast_pos, lt_ceil, cast_zero, Real.sqrt_pos]
       refine log_pos ?_
       rw [one_lt_cast]
@@ -440,31 +429,32 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
   rw [← rpow_natCast, div_rpow (rpow_nonneg hN₀.le _) (exp_pos _).le, ← rpow_mul hN₀.le,
     inv_mul_eq_div, cast_sub hn₂.le, cast_two, same_sub_div hn.ne', exp_one_rpow,
     div_div, rpow_sub hN₀, rpow_one, div_div, div_eq_mul_inv]
-  refine mul_le_mul_of_nonneg_left ?_ (cast_nonneg _)
+  gcongr _ * ?_
   rw [mul_inv, mul_inv, ← exp_neg, ← rpow_neg (cast_nonneg _), neg_sub, ← div_eq_mul_inv]
   have : exp (-4 * √(log N)) = exp (-2 * √(log N)) * exp (-2 * √(log N)) := by
     rw [← exp_add, ← add_mul]
     norm_num
   rw [this]
-  refine mul_le_mul ?_ (exp_neg_two_mul_le <| Real.sqrt_pos.2 <| log_pos ?_).le (exp_pos _).le <|
-      rpow_nonneg (cast_nonneg _) _
+  gcongr
   · rw [← le_log_iff_exp_le (rpow_pos_of_pos hN₀ _), log_rpow hN₀, ← le_div_iff₀, mul_div_assoc,
       div_sqrt, neg_mul, neg_le_neg_iff, div_mul_eq_mul_div, div_le_iff₀ hn]
-    · exact mul_le_mul_of_nonneg_left (le_ceil _) zero_le_two
+    · gcongr
+      apply le_ceil
     refine Real.sqrt_pos.2 (log_pos ?_)
     rw [one_lt_cast]
     exact hN.trans_lt' (by norm_num1)
-  · rw [one_lt_cast]
+  · refine (exp_neg_two_mul_le <| Real.sqrt_pos.2 <| log_pos ?_).le
+    rw [one_lt_cast]
     exact hN.trans_lt' (by norm_num1)
 
 theorem exp_four_lt : exp 4 < 64 := by
   rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_natCast]; norm_num1,
     ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff₀']
   · exact log_two_gt_d9.trans_le' (by norm_num1)
-  · norm_num
+  · simp
 
 theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
-  rw [← log_lt_iff_lt_exp (show (0 : ℝ) < 4096 by norm_num), show (4096 : ℝ) = 2 ^ 12 by norm_cast,
+  rw [← log_lt_iff_lt_exp (show (0 : ℝ) < 4096 by simp), show (4096 : ℝ) = 2 ^ 12 by norm_cast,
     ← rpow_natCast, log_rpow zero_lt_two, cast_ofNat]
   linarith [log_two_lt_d9]
 
@@ -482,13 +472,13 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
 theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
     (N : ℝ) * exp (-4 * √(log N)) ≤ 1 := by
   obtain rfl | hN := hN.eq_or_lt
-  · norm_num
+  · simp
   · exact lower_bound_le_one' hN hN'
 
 theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N := by
   obtain rfl | hN := Nat.eq_zero_or_pos N
-  · norm_num
-  obtain h₁ | h₁ := le_or_lt 4096 N
+  · simp
+  obtain h₁ | h₁ := le_or_gt 4096 N
   · exact (roth_lower_bound_explicit h₁).le
   · apply (lower_bound_le_one hN h₁.le).trans
     simpa using rothNumberNat.monotone hN

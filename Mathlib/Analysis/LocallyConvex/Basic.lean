@@ -5,7 +5,8 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Topology.Bornology.Absorbs
 
 /-!
@@ -169,7 +170,7 @@ theorem absorbent_iff_eventually_nhdsNE_zero :
 @[deprecated (since := "2025-03-03")]
 alias absorbent_iff_eventually_nhdsWithin_zero := absorbent_iff_eventually_nhdsNE_zero
 
-alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
+alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
 @[deprecated (since := "2025-03-03")]
 alias Absorbent.eventually_nhdsWithin_zero := Absorbent.eventually_nhdsNE_zero
@@ -185,7 +186,7 @@ theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
     ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
   (absorbs_iff_eventually_nhds_zero h₀).1 h
 
-variable [NormedRing 𝕝] [Module 𝕜 𝕝] [IsBoundedSMul 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
+variable [NormedRing 𝕝] [Module 𝕜 𝕝] [NormSMulClass 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
   {a b : 𝕜} {x : E}
 
 /-- Scalar multiplication (by possibly different types) of a balanced set is monotone. -/

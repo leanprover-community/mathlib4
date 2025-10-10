@@ -22,8 +22,8 @@ variable {α : Type u}
 open Function
 
 /-- A weak sequence is *productive* if it never stalls forever - there are
- always a finite number of `think`s between `cons` constructors.
- The sequence itself is allowed to be infinite though. -/
+always a finite number of `think`s between `cons` constructors.
+The sequence itself is allowed to be infinite though. -/
 class Productive (s : WSeq α) : Prop where
   get?_terminates : ∀ n, (get? s n).Terminates
 
@@ -58,7 +58,7 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
     cases e : Computation.get (get? s (n + 1))
     · assumption
     have := Computation.mem_of_get_eq _ e
-    simp? [get?] at this h says simp only [get?] at this h
+    simp only [get?] at this h
     obtain ⟨a', h'⟩ := head_some_of_head_tail_some this
     have := mem_unique h' (@Computation.mem_of_get_eq _ _ _ _ h)
     contradiction⟩

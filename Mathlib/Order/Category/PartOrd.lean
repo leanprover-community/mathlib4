@@ -109,12 +109,11 @@ lemma hom_ext {X Y : PartOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
-lemma ofHom_hom {X Y : PartOrd} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
+lemma ofHom_hom {X Y : PartOrd} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [PartialOrder X] : ofHom OrderHom.id = 𝟙 (of X) := rfl
@@ -187,8 +186,7 @@ def preordToPartOrdForgetAdjunction :
           invFun f := PartOrd.ofHom
             ⟨fun a => Quotient.liftOn' a f (fun _ _ h => (AntisymmRel.image h f.hom.mono).eq),
               fun a b => Quotient.inductionOn₂' a b fun _ _ h => f.hom.mono h⟩
-          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl
-          right_inv _ := Preord.ext fun _ => rfl }
+          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
       homEquiv_naturality_left_symm _ _ :=
         PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
 
@@ -204,10 +202,10 @@ def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
 -- `simp`-normal form for `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe`
 @[simp]
 lemma preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe' (X)
-  (a : preordToPartOrd.obj (Preord.dual.obj X)) :
-  (PartOrd.Hom.hom
-      (X := preordToPartOrd.obj (Preord.dual.obj X))
-      (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
-      (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
-    (OrderIso.dualAntisymmetrization ↑X).symm a :=
+    (a : preordToPartOrd.obj (Preord.dual.obj X)) :
+    (PartOrd.Hom.hom
+        (X := preordToPartOrd.obj (Preord.dual.obj X))
+        (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
+        (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
+      (OrderIso.dualAntisymmetrization ↑X).symm a :=
   rfl

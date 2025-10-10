@@ -44,9 +44,6 @@ protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding 
     simp [nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod, Function.comp_def,
       Filter.comap_id']
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_toPullbackDiag := IsEmbedding.toPullbackDiag
-
 lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     [TopologicalSpace X₁] [TopologicalSpace X₂] [TopologicalSpace Z₁] [TopologicalSpace Z₂]
     {f₁ : X₁ → Y₁} {g₁ : Z₁ → Y₁} {f₂ : X₂ → Y₂} {g₂ : Z₂ → Y₂}
@@ -73,7 +70,7 @@ lemma Function.Injective.isSeparatedMap {f : X → Y} (inj : f.Injective) : IsSe
 lemma isSeparatedMap_iff_disjoint_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → Disjoint (𝓝 x₁) (𝓝 x₂) :=
   forall₃_congr fun x x' _ ↦ by simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens x'),
-    exists_prop, ← exists_and_left, and_assoc, and_comm, and_left_comm]
+    ← exists_and_left, and_assoc, and_comm, and_left_comm]
 
 lemma isSeparatedMap_iff_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → ∃ s₁ ∈ 𝓝 x₁, ∃ s₂ ∈ 𝓝 x₂, Disjoint s₁ s₂ := by
@@ -94,9 +91,6 @@ theorem isSeparatedMap_iff_isClosedEmbedding {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedEmbedding (toPullbackDiag f) := by
   rw [isSeparatedMap_iff_isClosed_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
-
-@[deprecated (since := "2024-10-20")]
-alias isSeparatedMap_iff_closedEmbedding := isSeparatedMap_iff_isClosedEmbedding
 
 theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedMap (toPullbackDiag f) :=
@@ -152,9 +146,6 @@ theorem IsLocallyInjective_iff_isOpenEmbedding {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenEmbedding (toPullbackDiag f) := by
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
-
-@[deprecated (since := "2024-10-18")]
-alias IsLocallyInjective_iff_openEmbedding := IsLocallyInjective_iff_isOpenEmbedding
 
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=

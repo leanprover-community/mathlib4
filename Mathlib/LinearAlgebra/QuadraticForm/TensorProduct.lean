@@ -40,8 +40,7 @@ variable (R A) in
 
 Note this is heterobasic; the quadratic map on the left can take values in a module over a larger
 ring than the one on the right. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-noncomputable def tensorDistrib :
+def tensorDistrib :
     QuadraticMap A M₁ N₁ ⊗[R] QuadraticMap R M₂ N₂ →ₗ[A] QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
@@ -61,8 +60,7 @@ theorem tensorDistrib_tmul (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMa
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic maps, a shorthand for dot notation. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-protected noncomputable abbrev tmul (Q₁ : QuadraticMap A M₁ N₁)
+protected abbrev tmul (Q₁ : QuadraticMap A M₁ N₁)
     (Q₂ : QuadraticMap R M₂ N₂) : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
@@ -84,8 +82,7 @@ variable (R A) in
 
 Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
 the one on the right. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-noncomputable def tensorDistrib :
+def tensorDistrib :
     QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   (AlgebraTensorModule.rid R A A).congrQuadraticMap.toLinearMap ∘ₗ QuadraticMap.tensorDistrib R A
 
@@ -99,8 +96,7 @@ theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+protected abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
@@ -119,8 +115,7 @@ theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
 
 variable (A) in
 /-- The base change of a quadratic form. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-protected noncomputable def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
+protected def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
   QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticMap.sq (R := A)) Q
 
 @[simp]

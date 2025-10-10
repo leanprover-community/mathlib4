@@ -48,7 +48,7 @@ theorem Preadditive.isCoseparator_iff (G : C) :
 theorem isSeparator_iff_faithful_preadditiveCoyoneda (G : C) :
     IsSeparator G ↔ (preadditiveCoyoneda.obj (op G)).Faithful := by
   rw [isSeparator_iff_faithful_coyoneda_obj, ← whiskering_preadditiveCoyoneda, Functor.comp_obj,
-    whiskeringRight_obj_obj]
+    Functor.whiskeringRight_obj_obj]
   exact ⟨fun h => Functor.Faithful.of_comp _ (forget AddCommGrp),
     fun h => Functor.Faithful.comp _ _⟩
 
@@ -61,7 +61,7 @@ theorem isSeparator_iff_faithful_preadditiveCoyonedaObj (G : C) :
 theorem isCoseparator_iff_faithful_preadditiveYoneda (G : C) :
     IsCoseparator G ↔ (preadditiveYoneda.obj G).Faithful := by
   rw [isCoseparator_iff_faithful_yoneda_obj, ← whiskering_preadditiveYoneda, Functor.comp_obj,
-    whiskeringRight_obj_obj]
+    Functor.whiskeringRight_obj_obj]
   exact ⟨fun h => Functor.Faithful.of_comp _ (forget AddCommGrp),
     fun h => Functor.Faithful.comp _ _⟩
 

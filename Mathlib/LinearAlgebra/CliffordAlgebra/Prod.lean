@@ -19,8 +19,8 @@ algebras, as `CliffordAlgebra.equivProd`.
 
 ## TODO
 
-Introduce morphisms and equivalences of graded algebas, and upgrade `CliffordAlgebra.equivProd` to a
-graded algebra equivalence.
+Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAlgebra.equivProd`
+to a graded algebra equivalence.
 
 -/
 
@@ -157,7 +157,7 @@ lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.i
       LinearMap.map_zero, zero_add]
 
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by
-  ext <;> (dsimp; simp)
+  ext <;> simp
 
 /-- The Clifford algebra over an orthogonal direct sum of quadratic vector spaces is isomorphic
 as an algebra to the graded tensor product of the Clifford algebras of each space.

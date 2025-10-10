@@ -18,7 +18,7 @@ respectively.
 ## Main statements
 
 * `lucas_theorem`: the binomial coefficient `n choose k` is congruent to the product of `n_i choose
-k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
+  k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
 
 open Finset hiding choose
@@ -35,7 +35,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
     simpa using add_pow_eq_mul_pow_add_pow_div_char (X : (ZMod p)[X]) 1 p _
-  simp only [← ZMod.intCast_eq_intCast_iff, Int.cast_mul, Int.cast_ofNat,
+  simp only [← ZMod.intCast_eq_intCast_iff,
     ← coeff_X_add_one_pow _ n k, ← eq_intCast (Int.castRingHom (ZMod p)), ← coeff_map,
     Polynomial.map_pow, Polynomial.map_add, Polynomial.map_one, map_X, decompose]
   simp only [add_pow, one_pow, mul_one, ← pow_mul, sum_mul_sum]

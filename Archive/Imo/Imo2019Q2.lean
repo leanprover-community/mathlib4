@@ -34,7 +34,7 @@ as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
 
-library_note "IMO geometry formalization conventions"/--
+library_note2 «IMO geometry formalization conventions» /--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed
 to take place in the plane unless that is clearly not intended, so it is not required to prove
 that the points are coplanar (whether or not that in fact follows from the other conditions).
@@ -216,7 +216,7 @@ theorem A₁_ne_C : cfg.A₁ ≠ cfg.C := by
 theorem B₁_ne_C : cfg.B₁ ≠ cfg.C :=
   cfg.symm.A₁_ne_C
 
-theorem Q_not_mem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
+theorem Q_notMem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
   intro hQ
   have hQA₁ : line[ℝ, cfg.Q, cfg.A₁] ≤ line[ℝ, cfg.C, cfg.B] :=
     affineSpan_pair_le_of_mem_of_mem hQ cfg.wbtw_B_A₁_C.symm.mem_affineSpan
@@ -233,14 +233,16 @@ theorem Q_not_mem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
     or_iff_right cfg.C_ne_Q₁, or_iff_right cfg.sbtw_Q_A₁_Q₁.left_ne_right, angle_comm] at hc
   exact cfg.not_collinear_ABC (hc.elim collinear_of_angle_eq_zero collinear_of_angle_eq_pi)
 
+@[deprecated (since := "2025-05-23")] alias Q_not_mem_CB := Q_notMem_CB
+
 theorem Q_ne_B : cfg.Q ≠ cfg.B := by
   intro h
-  have h' := cfg.Q_not_mem_CB
+  have h' := cfg.Q_notMem_CB
   rw [h] at h'
   exact h' (right_mem_affineSpan_pair _ _ _)
 
 theorem sOppSide_CB_Q_Q₁ : line[ℝ, cfg.C, cfg.B].SOppSide cfg.Q cfg.Q₁ :=
-  cfg.sbtw_Q_A₁_Q₁.sOppSide_of_not_mem_of_mem cfg.Q_not_mem_CB cfg.wbtw_B_A₁_C.symm.mem_affineSpan
+  cfg.sbtw_Q_A₁_Q₁.sOppSide_of_notMem_of_mem cfg.Q_notMem_CB cfg.wbtw_B_A₁_C.symm.mem_affineSpan
 
 /-! ### Relate the orientations of different angles in the configuration -/
 
@@ -347,7 +349,8 @@ theorem A₂_ne_C : cfg.A₂ ≠ cfg.C := by
   have hc : Collinear ℝ ({cfg.A, cfg.B, cfg.C, cfg.A₁} : Set Pt) :=
     collinear_insert_insert_of_mem_affineSpan_pair h₁.left_mem_affineSpan
       cfg.sbtw_B_A₁_C.left_mem_affineSpan
-  refine hc.subset (Set.insert_subset_insert (Set.insert_subset_insert ?_))
+  refine hc.subset ?_
+  gcongr
   rw [Set.singleton_subset_iff]
   exact Set.mem_insert _ _
 
@@ -481,11 +484,11 @@ theorem symm_ω : cfg.symm.ω = cfg.ω := by
   · simp only [trianglePQB₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_empty_eq]
     rw [Set.insert_comm]
-    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
+    gcongr
     simp
   · simp only [triangleQPA₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_empty_eq]
-    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
+    gcongr
     simp
 
 /-! ### The second angle chase in the solution -/

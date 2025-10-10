@@ -59,7 +59,7 @@ instance instSMulCommClass [ContinuousConstSMul N X] [SMulCommClass M N X] :
     SMulCommClass M N (SeparationQuotient X) :=
   surjective_mk.smulCommClass mk_smul mk_smul
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul M N] [ContinuousConstSMul N X] [IsScalarTower M N X] :
     IsScalarTower M N (SeparationQuotient X) where
   smul_assoc a b := surjective_mk.forall.2 fun x ↦ congr_arg mk <| smul_assoc a b x
@@ -115,7 +115,7 @@ instance instMulOneClass [MulOneClass M] [ContinuousMul M] :
   surjective_mk.mulOneClass mk mk_one mk_mul
 
 /-- `SeparationQuotient.mk` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `SeparationQuotient.mk` as an `AddMonoidHom`. -/]
 def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M where
   toFun := mk
   map_mul' := mk_mul

@@ -161,7 +161,7 @@ noncomputable abbrev toLocalized : M' →ₗ[R] M'.localized p :=
 
 instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
   map_units x := by
-    simp_rw [Module.End_isUnit_iff]
+    simp_rw [Module.End.isUnit_iff]
     constructor
     · exact fun _ _ e ↦ Subtype.ext
         (IsLocalizedModule.smul_injective f x (congr_arg Subtype.val e))
@@ -169,7 +169,7 @@ instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
       refine ⟨⟨IsLocalizedModule.mk' f m (s * x), ⟨_, hm, _, rfl⟩⟩, Subtype.ext ?_⟩
       rw [Module.algebraMap_end_apply, SetLike.val_smul_of_tower,
         ← IsLocalizedModule.mk'_smul, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel_right]
-  surj' := by
+  surj := by
     rintro ⟨y, x, hx, s, rfl⟩
     exact ⟨⟨⟨x, hx⟩, s⟩, by ext; simp⟩
   exists_of_eq e := by simpa [Subtype.ext_iff] using
@@ -224,13 +224,13 @@ open Submodule Submodule.Quotient IsLocalization in
 instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     IsLocalizedModule p (M'.toLocalizedQuotient' S p f) where
   map_units x := by
-    refine (Module.End_isUnit_iff _).mpr ⟨fun m n e ↦ ?_, fun m ↦ ⟨(IsLocalization.mk' S 1 x) • m,
+    refine (Module.End.isUnit_iff _).mpr ⟨fun m n e ↦ ?_, fun m ↦ ⟨(IsLocalization.mk' S 1 x) • m,
         by rw [Module.algebraMap_end_apply, ← smul_assoc, smul_mk'_one, mk'_self', one_smul]⟩⟩
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
     simp only [Module.algebraMap_end_apply, ← mk_smul, Submodule.Quotient.eq, ← smul_sub] at e
     replace e := Submodule.smul_mem _ (IsLocalization.mk' S 1 x) e
     rwa [smul_comm, ← smul_assoc, smul_mk'_one, mk'_self', one_smul, ← Submodule.Quotient.eq] at e
-  surj' y := by
+  surj y := by
     obtain ⟨y, rfl⟩ := mk_surjective _ y
     obtain ⟨⟨y, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f y
     exact ⟨⟨Submodule.Quotient.mk y, s⟩,

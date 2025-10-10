@@ -23,22 +23,11 @@ open Pointwise
 
 variable {α β : Type*}
 
--- The following instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
 /-- An alias for `Set α`, which has a semiring structure given by `∪` as "addition" and pointwise
   multiplication `*` as "multiplication". -/
 def SetSemiring (α : Type*) : Type _ :=
   Set α
-
-noncomputable instance (α : Type*) : Inhabited (SetSemiring α) :=
-  inferInstanceAs <| Inhabited (Set _)
-
-instance (α : Type*) : PartialOrder (SetSemiring α) :=
-  inferInstanceAs <| PartialOrder (Set _)
-
-instance (α : Type*) : OrderBot (SetSemiring α) :=
-  inferInstanceAs <| OrderBot (Set _)
+deriving Inhabited, PartialOrder, OrderBot
 
 /-- The identity function `Set α → SetSemiring α`. -/
 protected def Set.up : Set α ≃ SetSemiring α :=
@@ -195,10 +184,11 @@ noncomputable instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
+  le_add_self _ _ := subset_union_right
   le_self_add _ _ := subset_union_left
 
-noncomputable instance [CommMonoid α] : OrderedCommSemiring (SetSemiring α) :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
+noncomputable instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/

@@ -20,10 +20,9 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
   parametrization of `QuadraticForm.weightedSumSquares`.
 -/
 
+open Module QuadraticMap
 
 variable {ι R K M M₁ M₂ M₃ V N : Type*}
-
-open QuadraticMap
 
 namespace QuadraticMap
 
@@ -53,13 +52,12 @@ instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ where
   inv f := f.toLinearEquiv.symm
   left_inv f := f.toLinearEquiv.left_inv
   right_inv f := f.toLinearEquiv.right_inv
-  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+  coe_injective' f g := by cases f; cases g; simp +contextual
 
 instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
 
--- Porting note: was `Coe`
 instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) :=
   ⟨IsometryEquiv.toLinearEquiv⟩
 
@@ -121,7 +119,7 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticMap R M N) (f : M₁ ≃ₗ[R] 
     map_app' := by
       intro
       simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
-        LinearEquiv.apply_symm_apply, f.apply_symm_apply] }
+        f.apply_symm_apply] }
 
 variable [Finite ι]
 

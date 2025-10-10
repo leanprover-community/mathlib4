@@ -116,8 +116,9 @@ theorem cmp_to_nat_lemma {m n : PosNum} : (m : ℕ) < n → (bit1 m : ℕ) < bit
     intro h; rw [Nat.add_right_comm m m 1, add_assoc]; exact Nat.add_le_add h h
 
 theorem cmp_swap (m) : ∀ n, (cmp m n).swap = cmp n m := by
-  induction' m with m IH m IH <;> intro n <;> obtain - | n | n := n <;> unfold cmp <;>
-    try { rfl } <;> rw [← IH] <;> cases cmp m n <;> rfl
+  induction m with | one => ?_ | bit1 m IH => ?_ | bit0 m IH => ?_ <;>
+    intro n <;> obtain - | n | n := n <;> unfold cmp <;>
+      try { rfl } <;> rw [← IH] <;> cases cmp m n <;> rfl
 
 theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n) ((n : ℕ) < m) : Prop)
   | 1, 1 => rfl
@@ -160,8 +161,8 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
 theorem lt_to_nat {m n : PosNum} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
-    | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
+    | Ordering.lt, h => by simp [h]
+    | Ordering.eq, h => by simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -279,8 +280,8 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
 theorem lt_to_nat {m n : Num} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
-    | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
+    | Ordering.lt, h => by simp [h]
+    | Ordering.eq, h => by simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -365,25 +366,30 @@ instance commSemiring : CommSemiring Num where
   left_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, mul_add]
   right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
-  le := (· ≤ ·)
-  lt := (· < ·)
-  lt_iff_le_not_le a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_le]
+instance partialOrder : PartialOrder Num where
+  lt_iff_le_not_ge a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_ge]
   le_refl := by transfer
   le_trans a b c := by transfer_rw; apply le_trans
   le_antisymm a b := by transfer_rw; apply le_antisymm
-  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
-  le_of_add_le_add_left a b c :=
-    show a + b ≤ a + c → b ≤ c by transfer_rw; apply le_of_add_le_add_left
 
-instance linearOrderedSemiring : LinearOrderedSemiring Num :=
-  { Num.commSemiring,
-    Num.orderedCancelAddCommMonoid with
-    le_total := by
+instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
+  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
+  le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
+
+instance linearOrder : LinearOrder Num :=
+  { le_total := by
       intro a b
       transfer_rw
       apply le_total
-    zero_le_one := by decide
+    toDecidableLT := Num.decidableLT
+    toDecidableLE := Num.decidableLE
+    -- This is relying on an automatically generated instance name,
+    -- generated in a `deriving` handler.
+    -- See https://github.com/leanprover/lean4/issues/2343
+    toDecidableEq := instDecidableEqNum }
+
+instance isStrictOrderedRing : IsStrictOrderedRing Num :=
+  { zero_le_one := by decide
     mul_lt_mul_of_pos_left := by
       intro a b c
       transfer_rw
@@ -392,12 +398,6 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       intro a b c
       transfer_rw
       apply mul_lt_mul_of_pos_right
-    decidableLT := Num.decidableLT
-    decidableLE := Num.decidableLE
-    -- This is relying on an automatically generated instance name,
-    -- generated in a `deriving` handler.
-    -- See https://github.com/leanprover/lean4/issues/2343
-    decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 
 @[norm_cast]
@@ -481,14 +481,14 @@ theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
 theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | 1 => Nat.size_one.symm
   | bit0 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul]
-      erw [@Nat.size_bit false n]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, ← Nat.bit_false_apply,
+        Nat.size_bit]
       have := to_nat_pos n
-      dsimp [Nat.bit]; omega
+      dsimp [Nat.bit]; cutsat
   | bit1 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul]
-      erw [@Nat.size_bit true n]
-      dsimp [Nat.bit]; omega
+      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, ← Nat.bit_true_apply,
+        Nat.size_bit]
+      dsimp [Nat.bit]; cutsat
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
   | 1 => rfl
@@ -542,10 +542,10 @@ instance distrib : Distrib PosNum where
 
 instance linearOrder : LinearOrder PosNum where
   lt := (· < ·)
-  lt_iff_le_not_le := by
+  lt_iff_le_not_ge := by
     intro a b
     transfer_rw
-    apply lt_iff_le_not_le
+    apply lt_iff_le_not_ge
   le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
@@ -560,9 +560,9 @@ instance linearOrder : LinearOrder PosNum where
     intro a b
     transfer_rw
     apply le_total
-  decidableLT := by infer_instance
-  decidableLE := by infer_instance
-  decidableEq := by infer_instance
+  toDecidableLT := by infer_instance
+  toDecidableLE := by infer_instance
+  toDecidableEq := by infer_instance
 
 @[simp]
 theorem cast_to_num (n : PosNum) : ↑n = Num.pos n := by rw [← cast_to_nat, ← of_to_nat n]
@@ -583,11 +583,12 @@ theorem cast_inj [AddMonoidWithOne α] [CharZero α] {m n : PosNum} : (m : α) =
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_inj, to_nat_inj]
 
 @[simp]
-theorem one_le_cast [StrictOrderedSemiring α] (n : PosNum) : (1 : α) ≤ n := by
+theorem one_le_cast [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] (n : PosNum) :
+    (1 : α) ≤ n := by
   rw [← cast_to_nat, ← Nat.cast_one, Nat.cast_le (α := α)]; apply to_nat_pos
 
 @[simp]
-theorem cast_pos [StrictOrderedSemiring α] (n : PosNum) : 0 < (n : α) :=
+theorem cast_pos [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] (n : PosNum) : 0 < (n : α) :=
   lt_of_lt_of_le zero_lt_one (one_le_cast n)
 
 @[simp, norm_cast]
@@ -599,14 +600,16 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
   revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this;exact lt_irrefl _ this]
+    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
 
 @[simp, norm_cast]
-theorem cast_lt [StrictOrderedSemiring α] {m n : PosNum} : (m : α) < n ↔ m < n := by
+theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
+    (m : α) < n ↔ m < n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_lt (α := α), lt_to_nat]
 
 @[simp, norm_cast]
-theorem cast_le [LinearOrderedSemiring α] {m n : PosNum} : (m : α) ≤ n ↔ m ≤ n := by
+theorem cast_le [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
+    (m : α) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr cast_lt
 
 end PosNum
@@ -720,7 +723,7 @@ theorem pred_to_nat : ∀ n : Num, (pred n : ℕ) = Nat.pred n
 theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
   | 0 => rfl
   | pos p => by
-    rw [ppred, Option.map_some, Nat.ppred_eq_some.2]
+    rw [ppred, Option.map_eq_map, Option.map_some, Nat.ppred_eq_some.2]
     rw [PosNum.pred'_to_nat, Nat.succ_pred_eq_of_pos (PosNum.to_nat_pos _)]
     rfl
 
@@ -734,15 +737,18 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
     simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
 
 @[simp, norm_cast]
-theorem cast_lt [StrictOrderedSemiring α] {m n : Num} : (m : α) < n ↔ m < n := by
+theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : Num} :
+    (m : α) < n ↔ m < n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_lt (α := α), lt_to_nat]
 
 @[simp, norm_cast]
-theorem cast_le [LinearOrderedSemiring α] {m n : Num} : (m : α) ≤ n ↔ m ≤ n := by
+theorem cast_le [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : Num} :
+    (m : α) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr cast_lt
 
 @[simp, norm_cast]
-theorem cast_inj [StrictOrderedSemiring α] {m n : Num} : (m : α) = n ↔ m = n := by
+theorem cast_inj [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : Num} :
+    (m : α) = n ↔ m = n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_inj, to_nat_inj]
 
 theorem lt_iff_cmp {m n} : m < n ↔ cmp m n = Ordering.lt :=
@@ -761,7 +767,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
     (pb1 : ∀ a m, p (PosNum.bit a m) 1 = bit (g a true) (cond (g true false) (pos m) 0))
     (pbb : ∀ a b m n, p (PosNum.bit a m) (PosNum.bit b n) = bit (g a b) (p m n)) :
     ∀ m n : Num, (f m n : ℕ) = Nat.bitwise g m n := by
-  intros m n
+  intro m n
   obtain - | m := m <;> obtain - | n := n <;>
       try simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
   · rw [f00, Nat.bitwise_zero]; rfl
@@ -774,7 +780,8 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
       cases b <;> rfl
     have this' b (n : PosNum) : ↑ (pos (PosNum.bit b n)) = Nat.bit b ↑n := by
       cases b <;> simp
-    induction' m with m IH m IH generalizing n <;> obtain - | n | n := n
+    induction m generalizing n with | one => ?_ | bit1 m IH => ?_ | bit0 m IH => ?_ <;>
+    obtain - | n | n := n
     any_goals simp only [show one = 1 from rfl, show pos 1 = 1 from rfl,
       show PosNum.bit0 = PosNum.bit false from rfl, show PosNum.bit1 = PosNum.bit true from rfl,
       show ((1 : Num) : ℕ) = Nat.bit true 0 from rfl]
@@ -791,7 +798,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
 @[simp, norm_cast]
 theorem castNum_or : ∀ m n : Num, ↑(m ||| n) = (↑m ||| ↑n : ℕ) := by
   apply castNum_eq_bitwise fun x y => pos (PosNum.lor x y) <;>
-   (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
+    (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
 
 @[simp, norm_cast]
 theorem castNum_and : ∀ m n : Num, ↑(m &&& n) = (↑m &&& ↑n : ℕ) := by
@@ -811,18 +818,20 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
   · symm
     apply Nat.zero_shiftLeft
   simp only [cast_pos]
-  induction' n with n IH
-  · rfl
-  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, pow_succ, ← mul_assoc, mul_comm,
-        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl, mul_two]
+  induction n with
+  | zero => rfl
+  | succ n IH =>
+    simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, mul_comm,
+      -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, mul_two]
 
 @[simp, norm_cast]
 theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ) := by
   obtain - | m := m <;> dsimp only [← shiftr_eq_shiftRight, shiftr]
   · symm
     apply Nat.zero_shiftRight
-  induction' n with n IH generalizing m
-  · cases m <;> rfl
+  induction n generalizing m with
+  | zero => cases m <;> rfl
+  | succ n IH => ?_
   have hdiv2 : ∀ m, Nat.div2 (m + m) = m := by intro; rw [Nat.div2_val]; omega
   obtain - | m | m := m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]
@@ -838,7 +847,7 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
   · trans
     · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (m + m) (n + 1)
-    rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
     simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
 
@@ -849,14 +858,16 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     rw [show (Num.zero : Nat) = 0 from rfl, Nat.zero_testBit]
   | pos m =>
     rw [cast_pos]
-    induction' n with n IH generalizing m <;> obtain - | m | m := m
+    induction n generalizing m <;> obtain - | m | m := m
         <;> simp only [PosNum.testBit]
     · rfl
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
     · simp [Nat.testBit_add_one]
-    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
-    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
+    case succ.bit1 n IH =>
+      rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
+    case succ.bit0 n IH =>
+      rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
 
 end Num
 
