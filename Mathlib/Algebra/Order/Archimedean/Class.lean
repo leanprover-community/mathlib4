@@ -330,8 +330,8 @@ theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
 theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
   by_contra! h
   rw [lt_min_iff] at h
-  have h1 := (mk_lt_mk.mp h.1 2).trans_le (mabs_mul _ _)
-  have h2 := (mk_lt_mk.mp h.2 2).trans_le (mabs_mul _ _)
+  have h1 := (mk_lt_mk.mp h.1 2).trans_le (mabs_mul_le _ _)
+  have h2 := (mk_lt_mk.mp h.2 2).trans_le (mabs_mul_le _ _)
   simp only [mul_lt_mul_iff_left, mul_lt_mul_iff_right, pow_two] at h1 h2
   exact h1.not_gt h2
 
@@ -744,9 +744,8 @@ theorem withTopOrderIso_apply_coe (A : FiniteMulArchimedeanClass M) :
 
 @[to_additive]
 theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
-    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h := by
-  unfold mk withTopOrderIso
-  convert WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
+    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h :=
+  WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
 
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 

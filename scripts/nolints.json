@@ -60,7 +60,6 @@
  ["docBlame", "LinearPMap.toFun"],
  ["docBlame", "LinearPMap.toFun'"],
  ["docBlame", "MaximalSpectrum.asIdeal"],
- ["docBlame", "ModularForm.«term_∣[_;_]_»"],
  ["docBlame", "ModularForm.«term_∣[_]_»"],
  ["docBlame", "MonadCont.Label"],
  ["docBlame", "MonadCont.callCC"],

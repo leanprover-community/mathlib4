@@ -3,12 +3,13 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
-
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Adjunctions related to the over category
@@ -38,7 +39,7 @@ namespace CategoryTheory
 
 open Category Limits Comonad
 
-variable {C : Type u} [Category.{v} C] (X : C)
+variable {C : Type u} [Category.{v} C] (X Y : C)
 variable {D : Type u₂} [Category.{v₂} D]
 
 
@@ -46,10 +47,12 @@ namespace Over
 
 open Limits
 
+attribute [local instance] hasPullback_of_right_iso
+
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
 @[simps! +simpRhs obj_left obj_hom map_left]
-def pullback {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h f] :
+def pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd g.hom f)
   map := fun g {h} {k} =>
@@ -58,7 +61,7 @@ def pullback {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h f] :
 
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
-def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h f] :
+def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun x y =>
@@ -74,18 +77,30 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h
             · simp
             · simpa using (Over.w v).symm } }
 
+/-- The pullback along an epi that's preserved under pullbacks is faithful.
+
+This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
+```
+example [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
+```
+-/
+instance faithful_pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f]
+    [∀ Z (g : Z ⟶ Y), Epi (pullback.fst g f)] : (pullback f).Faithful := by
+  have (Z : Over Y) : Epi ((mapPullbackAdj f).counit.app Z) := by
+    simp only [Functor.comp_obj, Functor.id_obj, mapPullbackAdj_counit_app]; infer_instance
+  exact (mapPullbackAdj f).faithful_R_of_epi_counit_app
+
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
 def pullbackId {X : C} [∀ {Z} (g : Z ⟶ X), HasPullback g (𝟙 X)] : pullback (𝟙 X) ≅ 𝟭 _ :=
   conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
-def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [∀ {W} (h : W ⟶ Y), HasPullback h f] [∀ {W} (h : W ⟶ Z), HasPullback h g] :
+def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacksAlong f] [HasPullbacksAlong g] :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
 
-instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h f] :
+instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
@@ -140,10 +155,12 @@ end Over
 
 namespace Under
 
+attribute [local instance] hasPushout_of_right_iso
+
 /-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
 by pushing a morphism forward along `f`. -/
 @[simps]
-def pushout {X Y : C} (f : X ⟶ Y) [∀ {W} (h : X ⟶ W), HasPushout h f] :
+def pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     Under X ⥤ Under Y where
   obj x := Under.mk (pushout.inr x.hom f)
   map := fun x {x'} {u} =>
@@ -152,7 +169,7 @@ def pushout {X Y : C} (f : X ⟶ Y) [∀ {W} (h : X ⟶ W), HasPushout h f] :
 
 /-- `Under.pushout f` is left adjoint to `Under.map f`. -/
 @[simps! unit_app counit_app]
-def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [∀ {W} (h : X ⟶ W), HasPushout h f] :
+def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     pushout f ⊣ map f :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun x y => {
@@ -173,6 +190,18 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [∀ {W} (h : X ⟶ W), HasPushout h f
     }
   }
 
+/-- The pushout along a mono that's preserved under pushouts is faithful.
+
+This "preserved under pushouts" condition is automatically satisfied in abelian categories:
+```
+example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
+```
+-/
+instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
+    [∀ Z (g : X ⟶ Z), Mono (pushout.inl g f)] : (pushout f).Faithful := by
+  have (Z : Under X) : Mono ((mapPushoutAdj f).unit.app Z) := by simp; infer_instance
+  exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
+
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
 def pushoutId {X : C} [∀ {Z} (g : X ⟶ Z), HasPushout g (𝟙 X)] : pushout (𝟙 X) ≅ 𝟭 _ :=
   (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _)) ).symm
@@ -180,7 +209,7 @@ def pushoutId {X : C} [∀ {Z} (g : X ⟶ Z), HasPushout g (𝟙 X)] : pushout (
 
 /-- pushout commutes with composition (up to natural isomorphism). -/
 def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [∀ {W} (h : X ⟶ W), HasPushout h f] [∀ {W} (h : Y ⟶ W), HasPushout h g] :
+    [HasPushoutsAlong f] [HasPushoutsAlong g] :
     pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
   (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _) ).symm
     (mapComp f g).symm
@@ -188,7 +217,7 @@ def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 @[deprecated (since := "2025-04-15")]
 noncomputable alias pullbackComp := pushoutComp
 
-instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) [∀ {W} (h : X ⟶ W), HasPushout h f] :
+instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     (pushout f).IsLeftAdjoint :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 

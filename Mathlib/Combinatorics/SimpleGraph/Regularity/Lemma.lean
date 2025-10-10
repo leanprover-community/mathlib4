@@ -106,8 +106,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
         rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; simp
-      _ < ε ^ 5 / 4 * (⌊4 / ε ^ 5⌋₊ + 1) :=
-        ((mul_lt_mul_left <| by positivity).2 (Nat.lt_floor_add_one _))
+      _ < ε ^ 5 / 4 * (⌊4 / ε ^ 5⌋₊ + 1) := by gcongr; exact Nat.lt_floor_add_one _
       _ ≤ (P.energy G : ℝ) := by rwa [← Nat.cast_add_one]
       _ ≤ 1 := mod_cast P.energy_le_one G
   -- Let's do the actual induction.

@@ -44,12 +44,12 @@ noncomputable def functorObj : ℕ → C :=
 /-- The projection map from `functorObj M N n` to `M m`, when `m < n` -/
 noncomputable def functorObjProj_pos (n m : ℕ) (h : m < n) :
     functorObj M N n ⟶ M m :=
-  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_pos (by omega))
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_pos (by cutsat))
 
 /-- The projection map from `functorObj M N n` to `N m`, when `m ≥ n` -/
 noncomputable def functorObjProj_neg (n m : ℕ) (h : ¬(m < n)) :
     functorObj M N n ⟶ N m :=
-  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_neg (by omega))
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_neg (by cutsat))
 
 /-- The transition maps in the sequential limit of products -/
 noncomputable def functorMap : ∀ n,
@@ -57,38 +57,38 @@ noncomputable def functorMap : ∀ n,
   intro n
   refine Limits.Pi.map fun m ↦ if h : m < n then eqToHom ?_ else
     if h' : m < n + 1 then eqToHom ?_ ≫ f m ≫ eqToHom ?_ else eqToHom ?_
-  all_goals split_ifs; try rfl; try omega
+  all_goals split_ifs; try rfl; try cutsat
 
 lemma functorMap_commSq_succ (n : ℕ) :
-    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ n + 1)).op ≫ Pi.π _ n ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(n < n))) =
+    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by cutsat : n ≤ n + 1)).op ≫ Pi.π _ n ≫
+      eqToHom (functorObj_eq_neg (by cutsat : ¬(n < n))) =
         (Pi.π (fun i ↦ if _ : i < (n + 1) then M i else N i) n) ≫
-          eqToHom (functorObj_eq_pos (by omega)) ≫ f n := by
+          eqToHom (functorObj_eq_pos (by cutsat)) ≫ f n := by
   simp [functorMap]
 
 lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE h).op ≫ Pi.π _ k ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(k < n))) =
+      eqToHom (functorObj_eq_neg (by cutsat : ¬(k < n))) =
         (Pi.π (fun i ↦ if _ : i < m then M i else N i) k) ≫
           eqToHom (functorObj_eq_neg hh) := by
   induction h using Nat.leRec with
   | refl => simp
   | @le_succ_of_le m h ih =>
-    specialize ih (by omega)
-    have : homOfLE (by omega : n ≤ m + 1) =
-        homOfLE (by omega : n ≤ m) ≫ homOfLE (by omega : m ≤ m + 1) := by simp
+    specialize ih (by cutsat)
+    have : homOfLE (by cutsat : n ≤ m + 1) =
+        homOfLE (by cutsat : n ≤ m) ≫ homOfLE (by cutsat : m ≤ m + 1) := by simp
     rw [this, op_comp, Functor.map_comp]
     slice_lhs 2 4 => rw [ih]
     simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
       functorMap, dite_eq_ite, limMap_π_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app]
     split_ifs
-    simp [dif_neg (by omega : ¬(k < m))]
+    simp [dif_neg (by cutsat : ¬(k < m))]
 
 lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
-    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ m + 1)).op ≫ Pi.π _ m ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(m < n))) =
+    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by cutsat : n ≤ m + 1)).op ≫ Pi.π _ m ≫
+      eqToHom (functorObj_eq_neg (by cutsat : ¬(m < n))) =
         (Pi.π (fun i ↦ if _ : i < m + 1 then M i else N i) m) ≫
-          eqToHom (functorObj_eq_pos (by omega)) ≫ f m := by
+          eqToHom (functorObj_eq_pos (by cutsat)) ≫ f m := by
   cases m with
   | zero =>
       have : n = 0 := by omega
@@ -98,13 +98,13 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
       rw [← functorMap_commSq_succ f (m + 1)]
       simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, dite_eq_ite,
         Functor.ofOpSequence_map_homOfLE_succ]
-      have : homOfLE (by omega : n ≤ m + 1 + 1) =
-          homOfLE (by omega : n ≤ m + 1) ≫ homOfLE (by omega : m + 1 ≤ m + 1 + 1) := by simp
+      have : homOfLE (by cutsat : n ≤ m + 1 + 1) =
+          homOfLE (by cutsat : n ≤ m + 1) ≫ homOfLE (by cutsat : m + 1 ≤ m + 1 + 1) := by simp
       rw [this, op_comp, Functor.map_comp]
       simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
         Category.assoc]
       congr 1
-      exact functorMap_commSq_aux f (by omega) (by omega)
+      exact functorMap_commSq_aux f (by cutsat) (by cutsat)
 
 /--
 The cone over the tower
