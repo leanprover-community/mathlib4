@@ -271,7 +271,7 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace (hφ_cont : LowerSemicontinuou
             rw (config := {occs := .pos [1]}) [lem5 i]
             simp only [smul_eq_mul, ← ofReal_inv, ← ofReal_neg]
             rw [re_ofReal_mul, neg_mul, ← div_eq_inv_mul, ← neg_div]
-          _ = (- re (L i x) + c i) / re (T i 1) := by rw [div_add_div_same]
+          _ = (- re (L i x) + c i) / re (T i 1) := by rw [add_div]
           _ ≤ re (T i s) / re (T i 1) := by
             apply (div_le_div_iff_of_pos_right (lem4 i)).mpr; linarith
           _ = re s := by
