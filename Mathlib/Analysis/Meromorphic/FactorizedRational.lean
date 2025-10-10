@@ -291,8 +291,7 @@ zeros such that `f` is equivalent, modulo equality on codiscrete sets, to the pr
 factorized rational function associated with the divisor of `f`.
 -/
 theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicOn f U)
-    (h₂f : ∀ u : U, meromorphicOrderAt f u ≠ ⊤) (h₃f : (divisor f U).support.Finite)
-    [Decidable (((1 : ℕ) : 𝕜) = 0)] :
+    (h₂f : ∀ u : U, meromorphicOrderAt f u ≠ ⊤) (h₃f : (divisor f U).support.Finite) :
     ∃ g : 𝕜 → E, AnalyticOnNhd 𝕜 g U ∧ (∀ u : U, g u ≠ 0) ∧
       f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ divisor f U u) • g := by
   -- Take `g` as the inverse of the Laurent polynomial defined below, converted to a meromorphic
@@ -402,7 +401,7 @@ norm of the trailing coefficient of `f` in terms of `divisor f U` and `g x`.
 theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt_extract_zeros_poles
     {x : 𝕜} {f g : 𝕜 → E} {D : 𝕜 → ℤ} (hD : D.support.Finite) (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U))
     (hf : MeromorphicAt f x) (h₁g : AnalyticAt 𝕜 g x) (h₂g : g x ≠ 0)
-    (h : f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ D u) • g) [Decidable (((1 : ℕ) : 𝕜) = 0)] :
+    (h : f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ D u) • g) :
     log ‖meromorphicTrailingCoeffAt f x‖ = ∑ᶠ u, (D u) * log ‖x - u‖ + log ‖g x‖ := by
   rw [meromorphicTrailingCoeffAt_congr_nhdsNE
       (hf.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin
