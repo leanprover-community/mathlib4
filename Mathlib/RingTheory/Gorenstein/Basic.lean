@@ -296,7 +296,7 @@ universe w
 
 variable [Small.{v} R] [UnivLE.{v, w}]
 
-local instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
+instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 def quotSMulTop_linearEquiv (x : R) {M N : Type*} [AddCommGroup M] [Module R M]
@@ -491,6 +491,12 @@ section
 
 variable [Small.{v} R]
 
+section
+
+universe w
+
+variable [UnivLE.{v, w}]
+
 --need localization commute with localization
   --use `IsLocalizedModule` to state
   --for `i ≥ 2`, dimension shift
@@ -498,21 +504,36 @@ variable [Small.{v} R]
   --for `i = 1`, use exactness lemma for `IsLocalizedModule` to prove cokernel is localized module
   --can set up totally abstract lemmas
 
---lemma ext_succ_nontrivial_of_eq_of_le
+instance (S : Submonoid R) : Small.{v} (Localization S) :=
+  small_of_surjective Localization.mkHom_surjective
 
+instance (p : Ideal R) [p.IsPrime] : Small.{v} p.ResidueField :=
+  small_of_surjective Ideal.Quotient.mk_surjective
+
+lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M]
+    {p q : PrimeSpectrum R} (lt : p < q) (eq_of_le : ∀ r : PrimeSpectrum R, p < r → r ≤ q → r = q)
+    (i : ℕ) (ntr : Nontrivial (Ext.{w} (ModuleCat.of (Localization p.1.primeCompl)
+      (Shrink.{v} p.1.ResidueField)) (M.localizedModule p.1.primeCompl) i)) :
+    Nontrivial (Ext.{w} (ModuleCat.of (Localization q.1.primeCompl)
+      (Shrink.{v} q.1.ResidueField)) (M.localizedModule q.1.primeCompl) (i + 1)) := by
+  sorry
+
+end
+
+--set_option pp.universes true in
 lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
     supportDim R M ≤ injectiveDimension M := by
   --ENat.exists_eq_iSup_of_lt_top
   obtain ⟨q, hq⟩ : ∃ q : LTSeries (Module.support R M), q.length = supportDim R M := sorry
-  have eq_of_le (i : ℕ) (h : i < q.length) :
-    ∀ r : PrimeSpectrum R, q ⟨i, Nat.lt_add_right 1 h⟩ < r →
-      r ≤ q ⟨i + 1, Nat.add_lt_add_right h 1⟩ →
-      r = q ⟨i + 1, Nat.add_lt_add_right h 1⟩ := by
+  have eq_of_le (i : Fin q.length) :
+    ∀ r : PrimeSpectrum R, q i.castSucc < r → r ≤ q i.succ → r = q i.succ := by
     intro r ltr rle
     by_contra ne
     have := lt_of_le_of_ne rle ne
     --insert `r` into `q`
     sorry
+  have lem (i : Fin q.length) :=
+    ext_succ_nontrivial_of_eq_of_le.{v, u, v} M (q.step i) (eq_of_le i) i
 
   sorry
 
