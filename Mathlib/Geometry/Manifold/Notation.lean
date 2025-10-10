@@ -213,6 +213,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
+- the model with corners on the tangent space of a manifold
 - a model with corners on a manifold
 - the trivial model `𝓘(𝕜, E)` on a normed space
 - if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
@@ -226,6 +227,10 @@ Return an expression describing the found model with corners.
 bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
 and the model with corners on the base: these are required to construct the right model with
 corners.
+
+Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
+`TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
+`findModel` on it.
 
 This implementation is not maximally robust yet.
 -/
@@ -251,15 +256,6 @@ where
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
       throwError "Having a TotalSpace as source is not yet supported"
     | _ => throwError "{e} is not a `Bundle.TotalSpace`."
-  /-- Attempt to find a model on a `TangentBundle` -/
-  fromTangentBundle : TermElabM Expr := do
-    match_expr e with
-    | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
-      trace[Elab.DiffGeo.MDiff] "{e} is a TangentBundle over model {I} on {M}"
-      let srcIT : Term ← Term.exprToSyntax I
-      let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
-      Term.elabTerm resTerm none
-    | _ => throwError "{e} is not a `TangentBundle`"
   /-- Attempt to use the provided `baseInfo` to find a model. -/
   fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
     if let some (src, srcI) := baseInfo then
@@ -287,6 +283,15 @@ where
       let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
       Term.elabTerm resTerm none
     | _ => throwError "{V} is not a `TangentSpace`"
+  /-- Attempt to find a model on a `TangentBundle` -/
+  fromTangentBundle : TermElabM Expr := do
+    match_expr e with
+    | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
+      trace[Elab.DiffGeo.MDiff] "{e} is a TangentBundle over model {I} on {M}"
+      let srcIT : Term ← Term.exprToSyntax I
+      let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
+      Term.elabTerm resTerm none
+    | _ => throwError "{e} is not a `TangentBundle`"
   /-- Attempt to find the trivial model on a normed space. -/
   fromNormedSpace : TermElabM Expr := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
