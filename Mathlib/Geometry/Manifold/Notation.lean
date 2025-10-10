@@ -5,7 +5,6 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic -- no good, TODO remove this again!
 /-!
 # Elaborators for differential geometry
 
@@ -373,9 +372,10 @@ where
     | _ => throwError "{e} is not a closed real interval"
   /-- Attempt to find a model with corners on the upper half plane in complex space -/
   fromUpperHalfPlane : TermElabM Expr := do
-    match_expr e with
-    | UpperHalfPlane => Term.elabTerm (← `(𝓘(Complex))) none
-    | _ => throwError "{e} is not the complex upper half plane"
+    if (← instantiateMVars e).cleanupAnnotations.isConstOf `UpperHalfPlane then
+      let c ← Term.exprToSyntax (mkConst `Complex)
+      Term.elabTerm (← `(𝓘($c))) none
+    else throwError "{e} is not the complex upper half plane"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do
