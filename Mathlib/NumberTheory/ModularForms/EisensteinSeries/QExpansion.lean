@@ -15,10 +15,12 @@ import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 
 /-!
-# Einstein series Q-expansions
+# Eisenstein series q-expansions
 
-We give some identities for q-expansions of Eisenstein series that will be used in describing their
-Q-expansions.
+We give the q-expansion of Eisenstein series of weight `k` and level 1. In particular we show that
+for even `k` with `3 ≤ k` Eisenstein series can we written as
+`1 - (2k / bernoulli k) ∑' n, σ_{k-1}(n) q^n` where `q = exp(2πiz)` and `σ_{k-1}(n)` is the sum of
+the `(k-1)`-th powers of the divisors of `n`.
 
 -/
 
@@ -305,7 +307,7 @@ private lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k
 
 /-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
-    (E hk) z = 1 + -(2 * k / bernoulli k) *
+    E hk z = 1 + -(2 * k / bernoulli k) *
     ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
   have h := EisensteinSeries.q_expansion_riemannZeta hk hk2 z
   rw [eisensteinSeries_coeff_identity hk2 (by omega)] at h
