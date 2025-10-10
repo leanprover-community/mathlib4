@@ -44,6 +44,12 @@ as for a family, but without the starting `i`, for example `CondIndepFun` is the
   of sets, then the measurable space structures they generate are conditionally independent.
 * `ProbabilityTheory.condIndepSets.condIndep`: variant with two π-systems.
 
+## Notation
+
+* `X ⟂ᵢ[Z, hZ; μ] Y` for `CondIndepFun (MeasurableSpace.comap Z inferInstance) hZ.comap_le X Y μ`,
+  independence of `X` and `Y` given `Z`.
+* `X ⟂ᵢ[Z, hZ] Y` for the cases of `μ = volume`.
+
 ## Implementation notes
 
 The definitions of conditional independence in this file are a particular case of independence with
@@ -145,9 +151,12 @@ end
 
 end Definitions
 
+@[inherit_doc]
 notation X:50 " ⟂ᵢ[" Z ", " hZ "; " μ "] " Y:50 =>
   ProbabilityTheory.CondIndepFun (MeasurableSpace.comap Z inferInstance) (Measurable.comap_le hZ)
   X Y μ
+
+@[inherit_doc]
 notation X:50 " ⟂ᵢ[" Z ", " hZ "] " Y:50 =>
   ProbabilityTheory.CondIndepFun (MeasurableSpace.comap Z inferInstance) (Measurable.comap_le hZ)
   X Y volume

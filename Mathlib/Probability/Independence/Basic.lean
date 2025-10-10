@@ -31,6 +31,11 @@ import Mathlib.MeasureTheory.Group.Convolution
   measurable space structures they generate are independent.
 * `IndepSets.indep`: variant with two π-systems.
 
+## Notation
+
+* `X ⟂ᵢ[μ] Y` for `IndepFun X Y μ`, independence of two random variables.
+* `X ⟂ᵢ Y` for `IndepFun X Y volume`.
+
 ## Implementation notes
 
 The definitions of independence in this file are a particular case of independence with respect to a
@@ -135,7 +140,10 @@ def IndepFun {β γ} {_mΩ : MeasurableSpace Ω} [MeasurableSpace β] [Measurabl
 
 end Definitions
 
+@[inherit_doc]
 notation X:50 " ⟂ᵢ[" μ "] " Y:50 => ProbabilityTheory.IndepFun X Y μ
+
+@[inherit_doc]
 notation X:50 " ⟂ᵢ " Y:50 => ProbabilityTheory.IndepFun X Y volume
 
 section Definition_lemmas
