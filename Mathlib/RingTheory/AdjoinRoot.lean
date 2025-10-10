@@ -199,15 +199,19 @@ theorem mk_ne_zero_of_natDegree_lt (hf : Monic f) {g : R[X]} (h0 : g ≠ 0)
     (hd : natDegree g < natDegree f) : mk f g ≠ 0 :=
   mk_eq_zero.not.2 <| hf.not_dvd_of_natDegree_lt h0 hd
 
+theorem aeval_eq_of_algebra [CommRing S] [Algebra R S] (f : S[X]) (p : R[X]) :
+    aeval (root f) p = mk f (map (algebraMap R S) p) := by
+  induction p using Polynomial.induction_on with
+  | C a =>
+    simp only [Polynomial.aeval_C, Polynomial.map_C, mk_C]
+    rw [IsScalarTower.algebraMap_apply R S]
+    simp
+  | add p q _ _ => simp_all
+  | monomial n a _ => simp_all [pow_add, ← mul_assoc]
+
 @[simp]
-theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
-  Polynomial.induction_on p
-    (fun x => by
-      rw [aeval_C]
-      rfl)
-    (fun p q ihp ihq => by rw [map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
-    rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow, mk_X]
-    rfl
+theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p := by
+  rw [aeval_eq_of_algebra, Algebra.algebraMap_self, Polynomial.map_id]
 
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
@@ -334,6 +338,27 @@ theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f
 
 end Prime
 
+section
+
+/-- If `f = g`, `R` adjoin a root of `f` is isomorphic to `R` adjoin a root of `g`. -/
+def algEquivOfEq {f g : R[X]} (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
+  .ofAlgHom
+    (liftHom f (root g) (by simp [hfg]))
+    (liftHom g (root f) (by simp [hfg]))
+    (by ext; simp)
+    (by ext; simp)
+
+variable {f g : R[X]} (hfg : f = g)
+
+@[simp] lemma algEquivOfEq_root : algEquivOfEq hfg (root f) = root g := by
+  simp [algEquivOfEq]
+
+@[simp] lemma algEquivOfEq_symm : (algEquivOfEq hfg).symm = algEquivOfEq hfg.symm := by
+  ext
+  simp [algEquivOfEq]
+
+end
+
 end CommRing
 
 section Irreducible
@@ -376,7 +401,7 @@ variable (f)
 
 theorem mul_div_root_cancel [Fact (Irreducible f)] :
     (X - C (root f)) * ((f.map (of f)) / (X - C (root f))) = f.map (of f) :=
-  mul_div_eq_iff_isRoot.2 <| isRoot_root _
+  (isRoot_root _).mul_div_eq
 
 end Irreducible
 
