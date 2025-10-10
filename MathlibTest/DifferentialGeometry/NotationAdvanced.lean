@@ -76,10 +76,9 @@ variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 #guard_msgs in
 #check MDiff[s] ψ
 
--- TEMPORARILY disabled
--- /-- info: MDifferentiable I 𝓘(𝕜, E) ↑φ : Prop -/
--- #guard_msgs in
--- #check MDiff φ
+/-- info: MDifferentiable I 𝓘(𝕜, E) ↑φ : Prop -/
+#guard_msgs in
+#check MDiff φ
 
 /-- info: ContMDiffWithinAt I 𝓘(𝕜, E) 2 (↑ψ) s : M → Prop -/
 #guard_msgs in
@@ -167,10 +166,7 @@ error: failed to synthesize
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 ---
-trace: [Elab.DiffGeo.MDiff] HACK: disabling coercion in MDiff
-[Elab.DiffGeo.MDiff] findModels: src is TotalSpace F (TangentSpace I)
-[Elab.DiffGeo.MDiff] src is not a Set.Icc
-[Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
+trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
 [Elab.DiffGeo.MDiff] ✅️ TotalSpace
   [Elab.DiffGeo.MDiff] ❌️ From base info
     [Elab.DiffGeo.MDiff] Failed with error:
@@ -238,33 +234,59 @@ variable {f : M → E →L[𝕜] E'} in
 /-! Inferring a model with corners on a real interval -/
 section interval
 
--- Note: this is also testing finding of models in the presence of two instances.
-variable [NormedSpace ℝ E] {I' : ModelWithCorners ℝ E H}
--- Otherwise, make a new normed space.
--- variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {I'' : ModelWithCorners ℝ E'' H}
+-- Make a new real manifold N with model J.
+-- TODO: change this line to modify M and E instead (thus testing if everything
+-- still works in the presence of two instances over different fields).
+variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : ModelWithCorners ℝ E'' H}
+  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 
 -- Types match, but no fact x < y can be inferred: mostly testing error messages.
-variable {x y : ℝ} {g : Set.Icc x y → M} {h : E → Set.Icc x y} {k : Set.Icc x y → ℝ}
+variable {x y : ℝ} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
-/-- error: Could not find a model with corners for ↑(Set.Icc 0 2) -/
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc 0 2)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check CMDiff 2 g
 
-/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiffAt h
 
-/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiffAt k ⟨x, by linarith⟩
 
 -- A singleton interval: this also should not synthesize.
-/-- error: Could not find a model with corners for ↑(Set.Icc x x) -/
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x x)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 variable {k : Set.Icc x x → ℝ} in
 #check MDiff k
@@ -285,67 +307,45 @@ variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 #check CMDiff 2 k
 
 -- Now, with a fact about x < y: these should behave well.
-variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → M} {h : E → Set.Icc x y} {k : Set.Icc x y → ℝ}
+variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
-set_option trace.Elab.DiffGeo true in
--- TODO: find out why these tests are failing. perhaps, I am applying too much coercions?
+-- This test fails, but for reasons not specific to the elaborator.
 /--
-error: Could not find a model with corners for ↑(Set.Icc 0 2)
----
-trace: [Elab.DiffGeo.MDiff] HACK: disabling coercion in MDiff
-[Elab.DiffGeo.MDiff] findModels: src is ↑(Set.Icc 0 2)
-[Elab.DiffGeo.MDiff] src is not a Set.Icc
-[Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc 0 2)
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      ↑(Set.Icc 0 2) is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
-  [Elab.DiffGeo.MDiff] Failed with error:
-      ↑(Set.Icc 0 2) is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on ↑(Set.Icc 0 2) among local instances.
-[Elab.DiffGeo.MDiff] ❌️ Manifold
-  [Elab.DiffGeo.MDiff] found a `ChartedSpace` instance: `ChartedSpace H M`
-  [Elab.DiffGeo.MDiff] found a `ChartedSpace` instance: `ChartedSpace H' M'`
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on ↑(Set.Icc 0 2) among local instances,
-      and ↑(Set.Icc 0 2) is not the charted space of some type in the local context either.
-[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
-  [Elab.DiffGeo.MDiff] Failed with error:
-      ↑(Set.Icc 0 2) is not a space of continuous linear maps
-[Elab.DiffGeo.MDiff] ❌️ RealInterval
-  [Elab.DiffGeo.MDiff] expr is ↑(Set.Icc 0 2)
-  [Elab.DiffGeo.MDiff] normalised expr is ↑(Set.Icc 0 2)
-  [Elab.DiffGeo.MDiff] Failed with error:
-      ↑(Set.Icc 0 2) is not a closed real interval
-[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
-  [Elab.DiffGeo.MDiff] Failed with error:
-      ↑(Set.Icc 0 2) is not the complex upper half plane
-[Elab.DiffGeo.MDiff] ❌️ NormedField
-  [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize
-        NontriviallyNormedField ↑(Set.Icc 0 2)
-      ⏎
-      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc 0 2)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
-variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+variable [h: Fact ((0 : ℝ) ≤ (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check MDiff g
 
--- sanity check: #check MDifferentiable (𝓡∂ 1) I' g
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc 0 2)
 
-/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+variable [h: Fact ((0 : ℝ) ≤ (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+#check MDifferentiable (𝓡∂ 1) J g
+
+/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
+#guard_msgs in
+#check MDiff g
+
+/-- info: ContMDiff (𝓡∂ 1) J 2 g : Prop -/
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+/-- info: MDifferentiableAt 𝓘(ℝ, E'') (𝓡∂ 1) h : E'' → Prop -/
 #guard_msgs in
 #check MDiffAt h
 
-/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+variable (h : x ≤ y) in
+/-- info: MDifferentiableAt (𝓡∂ 1) 𝓘(ℝ, ℝ) k ⟨x, ⋯⟩ : Prop -/
 #guard_msgs in
-#check MDiffAt k ⟨x, by linarith⟩
+#check MDiffAt k ⟨x, by simp; linarith⟩
 
 end interval
 
@@ -354,8 +354,8 @@ section UpperHalfPlane
 open scoped UpperHalfPlane
 
 -- Make a new complex manifold N with model J.
--- TODO(future): conduct the same test, but modifying M instead (and seeing if everything still
--- works in the presence of two instances).
+-- TODO: change this line to modify M and E instead (thus testing if everything
+-- still works in the presence of two instances over different fields).
 variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℂ E''] {J : ModelWithCorners ℂ E'' H}
   {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 

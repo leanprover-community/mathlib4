@@ -867,9 +867,8 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
   [Elab.DiffGeo.MDiff] Failed with error:
       Unit is not a space of continuous linear maps
 [Elab.DiffGeo.MDiff] ❌️ RealInterval
-  [Elab.DiffGeo.MDiff] type is Unit
   [Elab.DiffGeo.MDiff] Failed with error:
-      Unit is not a closed real interval
+      Unit is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       Unit is not the complex upper half plane
