@@ -85,8 +85,8 @@ private lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N
     exact tsum_congr fun b ↦ by grind [exp_add]
 
 private lemma aux_tsum_identity (z : ℍ) :
-    ∑' m : ℕ, (-8 * π ^ 2  * ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n)) =
-    -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ) := by
+    -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ) =
+    ∑' m : ℕ, (-8 * π ^ 2  * ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n)) := by
   have := tsum_prod_pow_eq_tsum_sigma 1 (norm_exp_two_pi_I_lt_one z)
   rw [tsum_pnat_eq_tsum_succ (f := fun d ↦
     ∑' (c : ℕ+), (c ^ 1 : ℂ) * cexp (2 * π * I * z) ^ (d * c : ℕ))] at this
@@ -95,7 +95,7 @@ private lemma aux_tsum_identity (z : ℍ) :
 private lemma aux_G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ m ∈ range N, -8 * π ^ 2 *
     ∑' (n : ℕ+), n * cexp (2 * π * I * z) ^ ((m + 1) * n : ℕ)) atTop
     (𝓝 (-8 * π ^ 2 * ∑' (n : ℕ+), ((σ 1) n) * cexp (2 * π * I * z) ^ (n : ℕ))) := by
-  rw [← aux_tsum_identity]
+  rw [ aux_tsum_identity]
   have hf : Summable fun m : ℕ ↦ (-8 * π ^ 2 *
       ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n : ℕ)) := by
     apply Summable.mul_left
