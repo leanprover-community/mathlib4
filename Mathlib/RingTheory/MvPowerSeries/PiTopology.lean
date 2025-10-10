@@ -11,6 +11,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Instances.ENat
 import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
 import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
@@ -290,6 +291,48 @@ theorem summable_of_tendsto_order_atTop_nhds_top
   summable_of_tendsto_weightedOrder_atTop_nhds_top h
 
 end Sum
+
+section Prod
+variable {σ R : Type*} [TopologicalSpace R] [CommSemiring R]
+variable {ι : Type*} {f : ι → MvPowerSeries σ R} [LinearOrder ι] [LocallyFiniteOrderBot ι]
+
+/-- If the weighted order of a family of `MvPowerSeries` tends to infinity, the collection of all
+possible products over `Finset` is summable. -/
+theorem summable_prod_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
+    (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) := by
+  rcases isEmpty_or_nonempty ι with hempty | hempty
+  · apply Summable.of_finite
+  refine summable_iff_summable_coeff.mpr fun d ↦ summable_of_finite_support ?_
+  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
+  obtain ⟨i, hi⟩ := h (Finsupp.weight w d)
+  apply (Finset.Iio i).powerset.finite_toSet.subset
+  suffices ∀ s : Finset ι, coeff d (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
+  intro s hs
+  contrapose! hs
+  obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
+  rw [Set.mem_Iio, not_lt] at hxi
+  refine coeff_eq_zero_of_lt_weightedOrder w <| (hi x hxi).trans_le <| ?_
+  apply le_trans (Finset.single_le_sum (by simp) hxs) (le_weightedOrder_prod w _ _)
+
+/-- If the order of a family of `MvPowerSeries` tends to infinity, the collection of all
+possible products over `Finset` is summable. -/
+theorem summable_prod_of_tendsto_order_atTop_nhds_top
+    (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) :=
+  summable_prod_of_tendsto_weightedOrder_atTop_nhds_top h
+
+/-- A family of `MvPowerSeries` in the form `1 + f i` is multipliable if the weighted order of `f i`
+tends to infinity. -/
+theorem multipliable_one_add_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
+    (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (nhds ⊤)) : Multipliable (1 + f ·) :=
+  multipliable_one_add_of_summable_prod <| summable_prod_of_tendsto_weightedOrder_atTop_nhds_top h
+
+/-- A family of `MvPowerSeries` in the form `1 + f i` is multipliable if the order of `f i`
+tends to infinity. -/
+theorem multipliable_one_add_of_tendsto_order_atTop_nhds_top
+    (h : Tendsto (fun i ↦ (f i).order) atTop (nhds ⊤)) : Multipliable (1 + f ·) :=
+  multipliable_one_add_of_summable_prod <| summable_prod_of_tendsto_order_atTop_nhds_top h
+
+end Prod
 
 end Topology
 
