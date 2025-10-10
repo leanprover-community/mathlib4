@@ -187,7 +187,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
           source := e.baseSet ×ˢ ({⟨x, rfl⟩} : Set (f ⁻¹' {f x}))
           target := e.baseSet
           open_source :=
-            e.open_baseSet.prod (singletons_open_iff_discrete.2 (hf (f x) hx).1 ⟨x, rfl⟩)
+            e.open_baseSet.prod (discreteTopology_iff_isOpen_singleton.1 (hf (f x) hx).1 ⟨x, rfl⟩)
           open_target := e.open_baseSet
           map_source' := fun p => And.left
           map_target' := fun p hp => ⟨hp, rfl⟩
