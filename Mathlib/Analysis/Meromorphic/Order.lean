@@ -383,8 +383,7 @@ theorem meromorphicOrderAt_const_natCast (z₀ : 𝕜) (n : ℕ) [Decidable ((n 
   meromorphicOrderAt_const z₀ (n : 𝕜)
 
 /--
-Variant of `meromorphicOrderAt_const`, for constant functions defined by coercion from natural
-numbers.
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
 -/
 @[simp] theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
     meromorphicOrderAt (ofNat(n) : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) := by
