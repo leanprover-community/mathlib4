@@ -338,6 +338,6 @@ theorem Multipliable.hasProd_iff (h : Multipliable f L) :
 theorem tprod_eq_of_multipliable_atTop [L.LeAtTop] (hf : Multipliable f) :
      ∏'[L] b, f b = ∏' b, f b := by
   rw [← Multipliable.hasProd_iff (hf.mono_filter L.le_atTop)]
-  exact ((hf.hasProd).comp (L.le_atTop)).congr (by simp)
+  exact (hf.hasProd.comp L.le_atTop).congr (by simp)
 
 end HasProd
