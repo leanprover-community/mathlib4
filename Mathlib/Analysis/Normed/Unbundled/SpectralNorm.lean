@@ -914,27 +914,27 @@ lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra 
     (ha : a ∈ ((mapAlg K E) (minpoly K x)).roots) :
     (spectralMulAlgNorm K E) a = (spectralMulAlgNorm K E) ((algebraMap L E) x) := by
   simp only [spectralMulAlgNorm_def, spectralNorm]
-  rw [← minpoly.eq_of_root (Algebra.IsAlgebraic.isAlgebraic ((algebraMap L E) x))]
-  /- It remains to show `(aeval e) (minpoly K ((algebraMap L E) x)) = 0`, which is the last
-      required hypothesis for the above application of `minpoly.eq_of_root`. -/
-  simp only [mem_roots', ne_eq, IsRoot.def] at ha
-  rw [← ha.2, mapAlg_eq_map, minpoly.algebraMap_eq (algebraMap L E).injective, aeval_def,
-    eval_map]
+  have : (aeval a) (minpoly K ((algebraMap L E) x)) = 0 := by
+    simp only [mem_roots', IsRoot.def] at ha
+    rw [← ha.2, mapAlg_eq_map, minpoly.algebraMap_eq (algebraMap L E).injective, aeval_def,
+      eval_map]
+  rw [← minpoly.eq_of_root (Algebra.IsAlgebraic.isAlgebraic ((algebraMap L E) x)) this]
 
 omit [Algebra.IsAlgebraic K L]  in
 /-- Given an algebraic tower of fields `E/L/K` and an element `x : L` whose minimal polynomial `f`
-  over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`
-  is equal to the product of the spectral norm of the `E`-valued roots of `f`. -/
+  over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`,
+  considered as an element of `E`, is equal to the spectral norm of the product of the `E`-valued
+  roots of `f`. -/
 theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [Algebra K E]
     [Algebra L E] [IsScalarTower K L E] [IsSplittingField L E (mapAlg K L (minpoly K x))]
     [Algebra.IsAlgebraic K E] :
     (spectralMulAlgNorm K E) ((algebraMap L E) x) ^ (minpoly K x).natDegree =
       (spectralMulAlgNorm K E) ((mapAlg K E) (minpoly K x)).roots.prod := by
-  have h_deg : (minpoly K x).natDegree = Multiset.card ((mapAlg K E) (minpoly K x)).roots:= by
-    have h_deg' : (minpoly K x).natDegree = (mapAlg K E (minpoly K x)).natDegree := by
-      rw [mapAlg_eq_map, natDegree_map]
-    rw [h_deg', eq_comm, ← splits_iff_card_roots]
-    exact IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
+  have h_deg : (minpoly K x).natDegree = Multiset.card ((mapAlg K E) (minpoly K x)).roots := by
+    trans (mapAlg K E (minpoly K x)).natDegree
+    · rw [mapAlg_eq_map, natDegree_map]
+    · rw [eq_comm, ← splits_iff_card_roots]
+      exact IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   rw [map_multiset_prod, ← Multiset.prod_replicate]
   apply congr_arg
   ext r
