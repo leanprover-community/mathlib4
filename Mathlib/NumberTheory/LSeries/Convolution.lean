@@ -3,7 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LSeries.Convergence

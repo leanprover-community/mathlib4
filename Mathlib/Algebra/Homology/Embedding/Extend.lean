@@ -140,11 +140,7 @@ lemma isZero_extend_X' (i' : ι') (hi' : e.r i' = none) :
 
 lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     IsZero ((K.extend e).X i') :=
-  K.isZero_extend_X' e i' (by
-    obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
-    · exact hi'
-    · exfalso
-      exact hi' _ (e.f_eq_of_r_eq_some hi))
+  K.isZero_extend_X' e i' (ComplexShape.Embedding.r_eq_none e i' hi')
 
 instance : (K.extend e).IsStrictlySupported e where
   isZero i' hi' := K.isZero_extend_X e i' hi'

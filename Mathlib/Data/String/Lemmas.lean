@@ -29,9 +29,6 @@ lemma length_eq_list_length (l : List Char) : (String.mk l).length = l.length :=
     ∀ (s : String), (leftpad n c s).length = max n s.length
   | ⟨s⟩ => by simp only [leftpad, String.length, List.length_leftpad]
 
-@[deprecated (since := "2025-02-24")]
-alias leftpad_length := length_leftpad
-
 lemma leftpad_prefix (n : ℕ) (c : Char) : ∀ s, IsPrefix (replicate (n - length s) c) (leftpad n c s)
   | ⟨l⟩ => by simp only [IsPrefix, replicate, leftpad, String.length, List.leftpad_prefix]
 

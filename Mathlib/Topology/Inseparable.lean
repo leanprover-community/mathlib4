@@ -25,7 +25,7 @@ In this file we prove basic properties of the following notions defined elsewher
 
 We also prove various basic properties of the relation `Inseparable`.
 
-## Notations
+## Notation
 
 - `x ⤳ y`: notation for `Specializes x y`;
 - `x ~ᵢ y` is used as a local notation for `Inseparable x y`;

@@ -23,7 +23,7 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 
 ## Main declarations
 - `IsLiouville`: A field extension being Liouville
-- `isLiouville_of_finiteDimensional`: all finite dimensional field extensions
+- `isLiouville_of_finiteDimensional`: all finite-dimensional field extensions
   (of a field with characteristic 0) are Liouville.
 
 -/
@@ -77,7 +77,7 @@ The case of Liouville's theorem for algebraic extensions.
 variable {F K} [CharZero F]
 
 /--
-If `K` is a Liouville extension of `F` and `B` is a finite dimensional intermediate
+If `K` is a Liouville extension of `F` and `B` is a finite-dimensional intermediate
 field `K / B / F`, then it's also a Liouville extension of `F`.
 -/
 instance (B : IntermediateField F K)
@@ -113,8 +113,8 @@ lemma IsLiouville.equiv {K' : Type*} [Field K'] [Differential K'] [Algebra F K']
     simpa [AlgEquiv.commutes, map_add, map_sum, map_mul, logDeriv, algEquiv_deriv'] using h
 
 /--
-A finite dimensional Galois extension of `F` is a Liouville extension.
-This is private because it's generalized by all finite dimensional extensions being Liouville.
+A finite-dimensional Galois extension of `F` is a Liouville extension.
+This is private because it's generalized by all finite-dimensional extensions being Liouville.
 -/
 private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensional F K]
     [IsGalois F K] : IsLiouville F K where

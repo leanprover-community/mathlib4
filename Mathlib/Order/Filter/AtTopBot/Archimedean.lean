@@ -146,6 +146,15 @@ namespace Filter
 
 variable {l : Filter α} {f : α → R} {r : R}
 
+theorem map_add_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+    [IsDirected α (· ≤ ·)] (k : α) : map (fun a => a + k) atTop = atTop :=
+  map_atTop_eq_of_gc (fun a => a - k) 0 add_left_mono (by simp [le_sub_iff_add_le]) (by simp)
+
+theorem map_sub_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+    [IsDirected α (· ≤ ·)] (k : α) : map (fun a => a - k) atTop = atTop := by
+  simp_rw [sub_eq_add_neg]
+  apply map_add_atTop_eq
+
 section LinearOrderedSemiring
 
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R]

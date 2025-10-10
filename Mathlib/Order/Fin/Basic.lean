@@ -42,10 +42,23 @@ variable {m n : ℕ}
 
 /-! ### Instances -/
 
+instance : Max (Fin n) where max x y := ⟨max x y, max_rec' (· < n) x.2 y.2⟩
+instance : Min (Fin n) where min x y := ⟨min x y, min_rec' (· < n) x.2 y.2⟩
+
+@[simp, norm_cast]
+theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
+
+@[simp, norm_cast]
+theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
+
+theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
+
+@[deprecated (since := "2025-03-01")] alias coe_sup := coe_max
+@[deprecated (since := "2025-03-01")] alias coe_inf := coe_min
+
 instance instLinearOrder : LinearOrder (Fin n) :=
-  @LinearOrder.liftWithOrd (Fin n) _ _ ⟨fun x y => ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
-    ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Fin.val_injective.linearOrder _
+    Fin.le_iff_val_le_val Fin.lt_iff_val_lt_val coe_min coe_max compare_eq_compare_val
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
@@ -56,14 +69,6 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
 instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
   LinearOrder.toBiheytingAlgebra (Fin n)
 
-@[simp, norm_cast]
-theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
-
-@[deprecated (since := "2025-03-01")] alias coe_sup := coe_max
-@[deprecated (since := "2025-03-01")] alias coe_inf := coe_min
 
 /- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
 `[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would

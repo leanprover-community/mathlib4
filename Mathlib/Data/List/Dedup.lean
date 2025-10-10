@@ -37,6 +37,10 @@ theorem dedup_cons_of_notMem' {a : α} {l : List α} (h : a ∉ dedup l) :
     dedup (a :: l) = a :: dedup l :=
   pwFilter_cons_of_pos <| by simpa only [forall_mem_ne] using h
 
+theorem dedup_cons' (a : α) (l : List α) :
+    dedup (a :: l) = if a ∈ dedup l then dedup l else a :: dedup l := by
+  split <;> simp [dedup_cons_of_mem', dedup_cons_of_notMem', *]
+
 @[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem' := dedup_cons_of_notMem'
 
 @[simp]
@@ -55,6 +59,10 @@ theorem dedup_cons_of_notMem {a : α} {l : List α} (h : a ∉ l) : dedup (a :: 
   dedup_cons_of_notMem' <| mt mem_dedup.1 h
 
 @[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem := dedup_cons_of_notMem
+
+theorem dedup_cons (a : α) (l : List α) :
+    dedup (a :: l) = if a ∈ l then dedup l else a :: dedup l := by
+  simpa using dedup_cons' a l
 
 theorem dedup_sublist : ∀ l : List α, dedup l <+ l :=
   pwFilter_sublist
@@ -89,7 +97,7 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     have := count_pos_iff.2 ha
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
     rw [h, count_cons_self] at this
-    omega
+    cutsat
   · have := @List.cons_head!_tail α ⟨a⟩ _ (ne_nil_of_mem (mem_dedup.2 h.1))
     have hal : a ∈ l.dedup := mem_dedup.2 h.1
     rw [← this, mem_cons, or_iff_not_imp_right] at hal

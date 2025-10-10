@@ -222,6 +222,8 @@ variable {C}
 it is stable under pre- and postcomposition with isomorphisms. -/
 abbrev RespectsIso (P : MorphismProperty C) : Prop := P.Respects (isomorphisms C)
 
+instance inf (P Q : MorphismProperty C) [P.RespectsIso] [Q.RespectsIso] : (P ⊓ Q).RespectsIso where
+
 lemma RespectsIso.mk (P : MorphismProperty C)
     (hprecomp : ∀ {X Y Z : C} (e : X ≅ Y) (f : Y ⟶ Z) (_ : P f), P (e.hom ≫ f))
     (hpostcomp : ∀ {X Y Z : C} (e : Y ≅ Z) (f : X ⟶ Y) (_ : P f), P (f ≫ e.hom)) :
@@ -343,13 +345,7 @@ lemma map_isoClosure (P : MorphismProperty C) (F : C ⥤ D) :
   · exact monotone_map _ (le_isoClosure P)
 
 lemma map_id_eq_isoClosure (P : MorphismProperty C) :
-    P.map (𝟭 _) = P.isoClosure := by
-  apply le_antisymm
-  · rw [map_le_iff]
-    intro X Y f hf
-    exact P.le_isoClosure _ hf
-  · intro X Y f hf
-    exact hf
+    P.map (𝟭 _) = P.isoClosure := rfl
 
 lemma map_id (P : MorphismProperty C) [RespectsIso P] :
     P.map (𝟭 _) = P := by

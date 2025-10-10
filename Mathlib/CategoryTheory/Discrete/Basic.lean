@@ -34,7 +34,7 @@ discrete categories.
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 
 -- This is intentionally a structure rather than a type synonym
@@ -275,6 +275,18 @@ theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
   simp
 
 end Discrete
+
+@[simp]
+lemma Discrete.forall {α : Type*} {p : Discrete α → Prop} :
+    (∀ (a : Discrete α), p a) ↔ ∀ (a' : α), p ⟨a'⟩ := by
+  rw [iff_iff_eq, discreteEquiv.forall_congr_left]
+  simp [discreteEquiv]
+
+@[simp]
+lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
+    (∃ (a : Discrete α), p a) ↔ ∃ (a' : α), p ⟨a'⟩ := by
+  rw [iff_iff_eq, discreteEquiv.exists_congr_left]
+  simp [discreteEquiv]
 
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]

@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 A functor `F` reflects isomorphisms if whenever `F.map f` is an isomorphism, `f` was too.
 
-It is formalized as a `Prop` valued typeclass `ReflectsIsomorphisms F`.
+It is formalized as a `Prop`-valued typeclass `ReflectsIsomorphisms F`.
 
 Any fully faithful functor reflects isomorphisms.
 -/

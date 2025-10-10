@@ -5,7 +5,7 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
 /-!
@@ -273,8 +273,8 @@ theorem _root_.Submodule.IsCompl.projection_isSymmetric_iff
       ← Submodule.linearProjOfIsCompl_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
       ← h, comp_apply, linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
       map_zero, inner_zero_left]
-  · nth_rw 2 [← linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self hUV x]
-    nth_rw 1 [← linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self hUV y]
+  · nth_rw 2 [← hUV.projection_add_projection_eq_self x]
+    nth_rw 1 [← hUV.projection_add_projection_eq_self y]
     rw [isOrtho_iff_inner_eq] at h
     simp [inner_add_right, inner_add_left, h, inner_eq_zero_symm]
 

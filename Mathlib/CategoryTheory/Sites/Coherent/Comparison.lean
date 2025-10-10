@@ -78,7 +78,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
           Set.mem_setOf_eq]
         exact Or.inr ⟨_, Sigma.desc f, ⟨rfl, inferInstance⟩⟩
       · rintro R g ⟨W, ψ, σ, ⟨⟩, rfl⟩
-        change _ ∈ ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck _ R
+        change _ ∈ ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck R
         rw [Sieve.pullback_comp]
         apply pullback_stable
         have : generate (Presieve.ofArrows X fun (i : I) ↦ Sigma.ι X i) ≤

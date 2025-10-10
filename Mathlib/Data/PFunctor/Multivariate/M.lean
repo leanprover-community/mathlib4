@@ -257,7 +257,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
-  simp? at h₁ says simp only [heq_eq_eq] at h₁
+  simp only [heq_eq_eq] at h₁
   have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁

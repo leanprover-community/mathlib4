@@ -165,9 +165,9 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
       exact (dvd_pow_self q hn).mul_left _
     · exact ((dvd_pow_self q hn).mul_left _).mul_left _
 
-/-- If `f` is a non constant polynomial with coefficients in `R`, and `P` is a prime ideal in `R`,
+/-- If `f` is a nonconstant polynomial with coefficients in `R`, and `P` is a prime ideal in `R`,
 then if every coefficient in `R` except the leading coefficient is in `P`, and
-the trailing coefficient is not in `P^2` and no non units in `R` divide `f`, then `f` is
+the trailing coefficient is not in `P^2` and no nonunits in `R` divide `f`, then `f` is
 irreducible. -/
 theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsPrime)
     (hfl : f.leadingCoeff ∉ P)

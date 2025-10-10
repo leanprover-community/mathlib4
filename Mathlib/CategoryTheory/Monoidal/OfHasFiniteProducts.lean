@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 # The natural monoidal structure on any category with finite (co)products.
 
 A category with a monoidal structure provided in this way
-is sometimes called a (co)cartesian category,
+is sometimes called a (co-)Cartesian category,
 although this is also sometimes used to mean a finitely complete category.
 (See <https://ncatlab.org/nlab/show/cartesian+category>.)
 
@@ -301,7 +301,7 @@ variable [PreservesLimit (Functor.empty.{0} C) F]
 instance : IsIso (η F) := by dsimp [η_eq]; infer_instance
 instance (X Y : C) : IsIso (δ F X Y) := by dsimp [δ_eq]; infer_instance
 
-/-- Promote a finite products preserving functor to a monoidal functor between
+/-- Promote a functor that preserves finite products to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/
 instance : F.Monoidal := .ofOplaxMonoidal F
 

@@ -9,6 +9,8 @@ jobs:
   update-dependencies:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    env:
+      BRANCH_NAME: "update-dependencies-bot-use-only"
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -23,21 +25,28 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: false
 
-      - name: Get sha of branch
-        id: sha
+      - name: Get branch SHA if it exists
+        id: get-branch-sha
         run: |
-          SHA="$(git rev-parse --verify origin/update-dependencies-bot-use-only)"
-          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          # Check if the branch exists remotely
+          if git fetch origin "$BRANCH_NAME"; then
+            SHA=$(git rev-parse "origin/$BRANCH_NAME")
+            echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
+            echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
+          else
+            echo "Branch '$BRANCH_NAME' does not exist"
+            echo "sha=" >>" ${GITHUB_OUTPUT}"
+          fi
 
       - name: Get PR and labels
-        if: ${{ steps.sha.outputs.sha }}
+        if: ${{ steps.get-branch-sha.outputs.sha != '' }}
         id: PR # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
-        uses: 8BitJonny/gh-get-current-pr@08e737c57a3a4eb24cec6487664b243b77eb5e36 # 3.0.0
+        uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          sha: ${{ steps.sha.outputs.sha }}
+          sha: ${{ steps.get-branch-sha.outputs.sha }}
           # Only return if PR is still open
           filterOutClosed: true
 
@@ -48,15 +57,9 @@ jobs:
           prNumber: ${{ steps.PR.outputs.number }}
           prUrl: ${{ steps.PR.outputs.pr_url }}
 
-      - name: Configure Git User
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        run: |
-          git config user.name "leanprover-community-mathlib4-bot"
-          git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
-
       - name: Update dependencies
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        run: lake update
+        run: lake update -v
 
       - name: Check if lean-toolchain was modified
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
@@ -69,22 +72,44 @@ jobs:
             echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Generate PR title
+      - name: Check if lake-manifest.json was modified
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_toolchain.outputs.toolchain_modified != 'true' }}
+        id: check_manifest
+        run: |
+          if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ]; then
+            # Branch exists, compare the file
+            if git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
+              echo "has_diff=false" >> "${GITHUB_OUTPUT}"
+              echo "No differences in lake-manifest.json"
+            else
+              echo "has_diff=true" >> "${GITHUB_OUTPUT}"
+              echo "Differences found in lake-manifest.json"
+            fi
+          else
+            # Branch doesn't exist, consider it as different
+            echo "has_diff=true" >> "${GITHUB_OUTPUT}"
+            echo "Branch does not exist, treating as different"
+          fi
+
+      - name: Generate PR title
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_manifest.outputs.has_diff == 'true' }}
         run: |
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_toolchain.outputs.toolchain_modified != 'true' }}
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_manifest.outputs.has_diff == 'true' }}
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
           author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
           commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
           # this branch is referenced in update_dependencies_zulip.yml
-          branch: "update-dependencies-bot-use-only"
+          branch: ${{ env.BRANCH_NAME }}
           base: master
           title: "${{ env.pr_title }}"
-          body: "This PR updates the Mathlib dependencies."
+          body: |
+            This PR updates the Mathlib dependencies.
+
+            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"

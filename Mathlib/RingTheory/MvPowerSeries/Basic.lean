@@ -122,7 +122,7 @@ section Semiring
 variable [Semiring R]
 
 /-- The `n`th monomial as multivariate formal power series:
-  it is defined as the `R`-linear map from `R` to the semi-ring
+  it is defined as the `R`-linear map from `R` to the semiring
   of multivariate formal power series associating to each `a`
   the map sending `n : σ →₀ ℕ` to the value `a`
   and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
@@ -625,10 +625,10 @@ section CommSemiring
 
 open Finset.HasAntidiagonal Finset
 
-variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+variable {R : Type*} [CommSemiring R] {ι : Type*}
 
 /-- Coefficients of a product of power series -/
-theorem coeff_prod [DecidableEq σ]
+theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) =
       ∑ l ∈ finsuppAntidiag s d,
@@ -665,9 +665,9 @@ theorem coeff_prod [DecidableEq σ]
 
 theorem prod_monomial (f : ι → σ →₀ ℕ) (g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
-  induction s using Finset.induction with
+  induction s using Finset.cons_induction with
   | empty => simp
-  | insert a s ha h => simp [ha, h, monomial_mul_monomial]
+  | cons a s ha h => simp [h, monomial_mul_monomial]
 
 /-- The `d`th coefficient of a power of a multivariate power series
 is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients -/
@@ -708,7 +708,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
   rw [prod_congr rfl hs', prod_const]
   suffices m ≤ #s by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
-    rw [hm', pow_add, hf, MulZeroClass.zero_mul]
+    rw [hm', pow_add, hf, zero_mul]
   rw [← Nat.add_le_add_iff_right, add_comm #s,
     Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn
@@ -781,7 +781,6 @@ open Finsupp
 
 variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 @[coe]
 def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=

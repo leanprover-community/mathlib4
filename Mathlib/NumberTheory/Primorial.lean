@@ -16,7 +16,7 @@ import Mathlib.Data.Nat.Prime.Basic
 This file defines the primorial function (the product of primes less than or equal to some bound),
 and proves that `primorial n ≤ 4 ^ n`.
 
-## Notations
+## Notation
 
 We use the local notation `n#` for the primorial of `n`: that is, the product of the primes less
 than or equal to `n`.
@@ -38,7 +38,7 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
   refine prod_congr ?_ fun _ _ ↦ rfl
-  rw [range_succ, filter_insert, if_neg fun h ↦ not_even_iff_odd.2 hn _]
+  rw [range_add_one, filter_insert, if_neg fun h ↦ not_even_iff_odd.2 hn _]
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
 
 theorem primorial_add (m n : ℕ) :

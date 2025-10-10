@@ -84,17 +84,15 @@ variable [Preorder α] [Preorder β]
 
 theorem monotone_fst_ofLex : Monotone fun x : α ×ₗ β ↦ (ofLex x).1 := monotone_fst
 
+theorem _root_.WCovBy.fst_ofLex {a b : α ×ₗ β} (h : a ⩿ b) : (ofLex a).1 ⩿ (ofLex b).1 :=
+  ⟨monotone_fst _ _ h.1, fun c hac hcb ↦ h.2 (c := toLex (c, a.2)) (.left _ _ hac) (.left _ _ hcb)⟩
+
 theorem toLex_covBy_toLex_iff {a₁ a₂ : α} {b₁ b₂ : β} :
     toLex (a₁, b₁) ⋖ toLex (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ ⋖ b₂ ∨ a₁ ⋖ a₂ ∧ IsMax b₁ ∧ IsMin b₂ := by
   simp only [CovBy, toLex_lt_toLex, toLex.surjective.forall, Prod.forall, isMax_iff_forall_not_lt,
     isMin_iff_forall_not_lt]
   constructor
-  · rintro ⟨ha | ⟨rfl, hb⟩, h₂⟩
-    · refine .inr ⟨⟨ha, fun c hc₁ hc₂ ↦ ?_⟩, fun c hc ↦ ?_, fun c hc ↦ ?_⟩
-      · exact h₂ c b₁ (.inl hc₁) (.inl hc₂)
-      · exact h₂ a₁ c (.inr ⟨rfl, hc⟩) (.inl ha)
-      · exact h₂ a₂ c (.inl ha) (.inr ⟨rfl, hc⟩)
-    · exact .inl ⟨rfl, hb, fun c hc₁ hc₂ ↦ h₂ _ _ (.inr ⟨rfl, hc₁⟩) (.inr ⟨rfl, hc₂⟩)⟩
+  · grind
   · rintro (⟨rfl, hb, h⟩ | ⟨⟨ha, h⟩, hb₁, hb₂⟩)
     · refine ⟨.inr ⟨rfl, hb⟩, fun a b ↦ ?_⟩
       rintro (hlt₁ | ⟨rfl, hlt₁⟩) (hlt₂ | ⟨heq, hlt₂⟩)

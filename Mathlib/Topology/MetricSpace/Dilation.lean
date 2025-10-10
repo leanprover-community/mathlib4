@@ -459,7 +459,7 @@ theorem diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_ball (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.ball x r') (Metric.ball (f x) (ratio f * r')) :=
-  fun y hy => (dist_eq f y x).trans_lt <| (mul_lt_mul_left <| NNReal.coe_pos.2 <| ratio_pos f).2 hy
+  fun y hy => (dist_eq f y x).trans_lt <| by gcongr; exacts [ratio_pos _, hy]
 
 /-- A dilation maps spheres to spheres and scales the radius by `ratio f`. -/
 theorem mapsTo_sphere (x : α) (r' : ℝ) :

@@ -33,10 +33,6 @@ with the respective topology instances on it.
 * The instance `WeakSpace.instTopologicalSpace` is the weak topology on `E`, i.e., the
   coarsest topology such that all `v : dual 𝕜 E` remain continuous.
 
-## Notations
-
-No new notation is introduced.
-
 ## References
 
 * [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
@@ -55,16 +51,6 @@ open Filter
 open Topology
 
 variable {α 𝕜 𝕝 E F : Type*}
-
-/-- The canonical pairing of a vector space and its topological dual. -/
-def topDualPairing (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E]
-    [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜] : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
-  ContinuousLinearMap.coeLM 𝕜
-
-theorem topDualPairing_apply [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-    [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜] (v : E →L[𝕜] 𝕜)
-    (x : E) : topDualPairing 𝕜 E v x = v x :=
-  rfl
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
@@ -163,6 +149,9 @@ instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpac
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
   WeakBilin.instIsScalarTower (topDualPairing 𝕜 E).flip
+
+instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) :=
+  WeakBilin.instContinuousSMul _
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 

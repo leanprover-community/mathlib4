@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -22,40 +21,31 @@ variable {α : Type u} {β : Type*} [CommMonoid α] [PartialOrder α]
 
 /-- Pullback an `IsOrderedMonoid` under an injective map. -/
 @[to_additive /-- Pullback an `IsOrderedAddMonoid` under an injective map. -/]
-lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [One β] [Mul β]
-    [Pow β ℕ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    let _ : CommMonoid β := hf.commMonoid f one mul npow
-    let _ : PartialOrder β := PartialOrder.lift f hf
-    IsOrderedMonoid β :=
-  let _ : CommMonoid β := hf.commMonoid f one mul npow
-  let _ : PartialOrder β := PartialOrder.lift f hf
-  { mul_le_mul_left a b ab c := show f (c * a) ≤ f (c * b) by
-      rw [mul, mul]; apply mul_le_mul_left'; exact ab }
+lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β]
+    [PartialOrder β] (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
+    IsOrderedMonoid β where
+  mul_le_mul_left a b ab c := le.1 <| by
+      rw [mul, mul]; apply mul_le_mul_left'; exact le.2 ab
 
 /-- Pullback an `IsOrderedMonoid` under a strictly monotone map. -/
 @[to_additive /-- Pullback an `IsOrderedAddMonoid` under a strictly monotone map. -/]
 lemma StrictMono.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β] [LinearOrder β]
     (f : β → α) (hf : StrictMono f) (mul : ∀ x y, f (x * y) = f x * f y) :
-    IsOrderedMonoid β where
-  mul_le_mul_left _ _ h _ := by
-    simp_rw [← hf.le_iff_le, mul] at h ⊢
-    simpa using mul_le_mul_left' h _
+    IsOrderedMonoid β :=
+  Function.Injective.isOrderedMonoid f mul hf.le_iff_le
 
 /-- Pullback an `IsOrderedCancelMonoid` under an injective map. -/
 @[to_additive Function.Injective.isOrderedCancelAddMonoid
     /-- Pullback an `IsOrderedCancelAddMonoid` under an injective map. -/]
-lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [One β] [Mul β]
-    [Pow β ℕ] (f : β → α) (hf : Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    let _ : CommMonoid β := hf.commMonoid f one mul npow
-    let _ : PartialOrder β := PartialOrder.lift f hf
-    IsOrderedCancelMonoid β :=
-  let _ : CommMonoid β := hf.commMonoid f one mul npow
-  let _ : PartialOrder β := PartialOrder.lift f hf
-  { __ := hf.isOrderedMonoid f one mul npow
-    le_of_mul_le_mul_left a b c (bc : f (a * b) ≤ f (a * c)) :=
-      (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul]) }
+lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β]
+    [PartialOrder β]
+    (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
+    IsOrderedCancelMonoid β where
+  __ := Function.Injective.isOrderedMonoid f mul le
+  le_of_mul_le_mul_left a b c bc := le.1 <|
+      (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul, le])
 
 /-- Pullback an `IsOrderedCancelMonoid` under a strictly monotone map. -/
 @[to_additive /-- Pullback an `IsOrderedAddCancelMonoid` under a strictly monotone map. -/]

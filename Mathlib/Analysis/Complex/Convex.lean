@@ -62,12 +62,30 @@ theorem convex_halfSpace_im_gt : Convex ℝ { c : ℂ | r < c.im } :=
   convex_halfSpace_gt (.mk add_im smul_im) _
 theorem convex_halfSpace_im_ge : Convex ℝ { c : ℂ | r ≤ c.im } :=
   convex_halfSpace_ge (.mk add_im smul_im) _
-lemma Complex.isConnected_of_upperHalfPlane {r} {s : Set ℂ} (hs₁ : {z | r < z.im} ⊆ s)
+
+namespace Complex
+
+lemma isConnected_of_upperHalfPlane {r} {s : Set ℂ} (hs₁ : {z | r < z.im} ⊆ s)
     (hs₂ : s ⊆ {z | r ≤ z.im}) : IsConnected s := by
   refine .subset_closure ?_ hs₁ (by simpa only [closure_setOf_lt_im] using hs₂)
   exact (convex_halfSpace_im_gt r).isConnected ⟨(r + 1) * I, by simp⟩
 
-lemma Complex.isConnected_of_lowerHalfPlane {r} {s : Set ℂ} (hs₁ : {z | z.im < r} ⊆ s)
+lemma isConnected_of_lowerHalfPlane {r} {s : Set ℂ} (hs₁ : {z | z.im < r} ⊆ s)
     (hs₂ : s ⊆ {z | z.im ≤ r}) : IsConnected s := by
   refine .subset_closure ?_ hs₁ (by simpa only [closure_setOf_im_lt] using hs₂)
   exact (convex_halfSpace_im_lt r).isConnected ⟨(r - 1) * I, by simp⟩
+
+lemma rectangle_eq_convexHull (z w : ℂ) :
+    Rectangle z w = convexHull ℝ {z, z.re + w.im * I, w.re + z.im * I, w} := by
+  simp_rw [Rectangle, ← segment_eq_uIcc, ← convexHull_pair, ← convexHull_reProdIm,
+    ← preimage_equivRealProd_prod, insert_prod, singleton_prod, image_pair, insert_union,
+    ← insert_eq, preimage_equiv_eq_image_symm, image_insert_eq, image_singleton,
+    equivRealProd_symm_apply, re_add_im]
+
+/-- If opposite corners of a rectangle are contained in a convex set, the whole rectangle is. -/
+lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ} (hz : z ∈ U)
+    (hw : w ∈ U) (hzw : (z.re + w.im * I) ∈ U) (hwz : (w.re + z.im * I) ∈ U) :
+    Rectangle z w ⊆ U := by
+  simpa only [rectangle_eq_convexHull] using convexHull_min (by grind) U_convex
+
+end Complex

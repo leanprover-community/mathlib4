@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 
+import Mathlib.Lean.Elab.Tactic.Meta
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
@@ -76,5 +77,13 @@ def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId �
     let type ← goal.getType
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
     x goal.mvarId!
+
+/-- Run tactic code, given by a piece of syntax, in the context of an infotree node. -/
+def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax) :
+    CommandElabM (List MVarId) := do
+  let termCtx ← liftTermElabM read
+  let termState ← liftTermElabM get
+  ctx.runTactic i goal fun goal =>
+    Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
 
 end Lean.Elab.ContextInfo

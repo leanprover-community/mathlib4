@@ -204,7 +204,7 @@ linear map obtained by fixing all coordinates but `i` equal to those of `m`, and
   { f.toMultilinearMap.toLinearMap m i with
     cont := f.cont.comp (continuous_const.update i continuous_id) }
 
-/-- The cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
+/-- The Cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
     ContinuousMultilinearMap R M₁ (M₂ × M₃) :=
   { f.toMultilinearMap.prod g.toMultilinearMap with cont := f.cont.prodMk g.cont }

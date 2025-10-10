@@ -12,7 +12,7 @@ This file defines the notions of computable many-one reduction and one-one
 reduction between sets, and shows that the corresponding degrees form a
 semilattice.
 
-## Notations
+## Notation
 
 This file uses the local notation `⊕'` for `Sum.elim` to denote the disjoint union of two degrees.
 

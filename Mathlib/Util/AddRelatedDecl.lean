@@ -5,7 +5,6 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 import Mathlib.Init
 import Lean.Elab.DeclarationRange
-import Lean.Elab.Term
 
 /-!
 # `addRelatedDecl`

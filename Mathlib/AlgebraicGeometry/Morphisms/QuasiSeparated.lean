@@ -178,15 +178,15 @@ instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
 
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
-  let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _
-  have (i : _) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
+  let 𝒰 := (Z.affineCover.pullback₁ g).bind fun x => Scheme.affineCover _
+  have (i : _) : IsAffine (𝒰.X i) := by dsimp [𝒰]; infer_instance
   apply HasAffineProperty.of_openCover
-    ((Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _)
+    ((Z.affineCover.pullback₁ g).bind fun x => Scheme.affineCover _)
   rintro ⟨i, j⟩; dsimp at i j
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_
-    (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.map i)) ‹_›) ?_
+    (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.f i)) ‹_›) ?_
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
-      (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
+      (pullbackRightPullbackFstIso g (Z.affineCover.f i) f).hom
   · exact inferInstance
 
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
@@ -376,9 +376,9 @@ lemma exists_of_res_zero_of_qcqs_of_top {X : Scheme} [CompactSpace X] [QuasiSepa
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
-theorem isIso_ΓSpec_adjunction_unit_app_basicOpen {X : Scheme} [CompactSpace X]
-    [QuasiSeparatedSpace X] (f : X.presheaf.obj (op ⊤)) :
-    IsIso ((ΓSpec.adjunction.unit.app X).c.app (op (PrimeSpectrum.basicOpen f))) := by
+instance isIso_ΓSpec_adjunction_unit_app_basicOpen
+    [CompactSpace X] [QuasiSeparatedSpace X] (f : Γ(X, ⊤)) :
+    IsIso (X.toSpecΓ.app (PrimeSpectrum.basicOpen f)) := by
   refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ (X.presheaf.map
     (eqToHom (Scheme.toSpecΓ_preimage_basicOpen _ _).symm).op) _ ?_
   rw [ConcreteCategory.isIso_iff_bijective]
