@@ -8,13 +8,20 @@ import Mathlib.MeasureTheory.Measure.Portmanteau
 /-!
 # Implications between different notions of convergence of measures
 
-## Main definitions
-
-* `FooBar`
+This file contains results relating convergence in probability (`TendstoInMeasure`)
+and convergence in distribution (`Tendsto` in the `ProbabilityMeasure` type of the law of the
+random variable).
 
 ## Main statements
 
-* `fooBar_unique`
+* `tendsto_of_tendstoInMeasure_sub_of_tendsto`: the main technical tool for the next results.
+  Let `f, f'` be two sequences of measurable functions such that `f n` converges in distribution
+  to `g`, and `f' n - f n` converges in probability to `0`.
+  Then `f' n` converges in distribution to `g`.
+* `tendsto_map_of_tendstoInMeasure`: convergence in probability implies convergence in distribution.
+* `tendsto_prodMk_of_tendstoInMeasure_const_of_tendsto`: **Slutsky's theorem**.
+  If `f n` converges in distribution to `g`, and `f' n` converges in probability to a constant `c`,
+  then the pair `(f n, f' n)` converges in distribution to `(g, c)`.
 
 -/
 
