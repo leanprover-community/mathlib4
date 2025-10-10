@@ -37,7 +37,7 @@ and convergence in distribution.
 open Filter
 open scoped Topology
 
-namespace MeasureTheory.ProbabilityMeasure
+namespace MeasureTheory
 
 variable {Ω ι E : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ]
   [MeasurableSpace E] {X Y : ι → Ω → E} {Z : Ω → E} {l : Filter ι}
@@ -46,7 +46,9 @@ section TendstoInDistribution
 
 variable [TopologicalSpace E] [OpensMeasurableSpace E]
 
-/-- Convergence in distribution of random variables. -/
+/-- Convergence in distribution of random variables.
+This is the weak convergence of the laws of the random variables: `Tendsto` in the
+`ProbabilityMeasure` type. -/
 def TendstoInDistribution (X : ι → Ω → E) (l : Filter ι) (Z : Ω → E) (μ : Measure Ω)
     [IsProbabilityMeasure μ] : Prop :=
   (hX : ∀ i, AEMeasurable (X i) μ) → (hZ : AEMeasurable Z μ) →
@@ -250,11 +252,11 @@ lemma tendstoInDistribution_prodMk_of_tendstoInMeasure_const
       rw [integral_map (by fun_prop), integral_map (by fun_prop)]
       · exact hFc_lip.continuous.stronglyMeasurable.aestronglyMeasurable
       · exact hF_lip.continuous.stronglyMeasurable.aestronglyMeasurable
-    simp_rw [coe_mk, h_eq (X _) (hX _), h_eq Z hZ]
+    simp_rw [ProbabilityMeasure.coe_mk, h_eq (X _) (hX _), h_eq Z hZ]
     simpa using hXZ (fun x ↦ F (x, c)) ⟨M, fun x y ↦ hF_bounded (x, c) (y, c)⟩ ⟨L, hFc_lip⟩
   · suffices TendstoInMeasure μ (fun n ω ↦ ((0 : E), Y n ω - c)) l 0 by
       convert this with n ω
       simp
     simpa [tendstoInMeasure_iff_norm] using hY
 
-end MeasureTheory.ProbabilityMeasure
+end MeasureTheory
