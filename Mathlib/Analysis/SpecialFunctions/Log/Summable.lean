@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!
 # Summability of logarithms
@@ -16,7 +17,7 @@ to relate summability of `f` to multipliability of `1 + f`.
 
 variable {ι : Type*}
 
-open Filter Topology NNReal
+open Filter Topology NNReal SummationFilter
 
 namespace Complex
 variable {f : ι → ℂ} {a : ℂ}
@@ -38,7 +39,7 @@ lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (
 
 lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
     Summable (fun i ↦ log (1 + f i)) := by
-  apply (hf.norm.mul_left _).of_norm_bounded_eventually
+  apply (hf.norm.mul_left (3 / 2)).of_norm_bounded_eventually
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
     using norm_log_one_add_half_le_self hi
 
@@ -102,8 +103,8 @@ lemma Multipliable.eventually_bounded_finset_prod {v : ι → ℝ} (hv : Multipl
   obtain ⟨r₁, hr₁⟩ := exists_gt (max 0 <| ∏' i, v i)
   rw [max_lt_iff] at hr₁
   have := hv.hasProd.eventually_le_const hr₁.2
-  rw [eventually_atTop] at this
-  exact ⟨r₁, hr₁.1, this⟩
+  rw [unconditional, eventually_atTop] at this
+  refine ⟨r₁, hr₁.1, this⟩
 
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
 
@@ -152,7 +153,8 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   obtain ⟨r₁, hr₁, s₁, hs₁⟩ :=
     (multipliable_norm_one_add_of_summable_norm hf).eventually_bounded_finset_prod
   obtain ⟨s₂, hs₂⟩ := prod_vanishing_of_summable_norm hf (show 0 < ε / (2 * r₁) by positivity)
-  simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, le_eq_subset, Set.mem_preimage]
+  simp only [unconditional, Filter.mem_map, mem_atTop_sets, ge_iff_le, le_eq_subset,
+    Set.mem_preimage]
   let s := s₁ ∪ s₂
   -- The idea here is that if `s` is a large enough finset, then the product over `s` is bounded
   -- by some `r`, and the product over finsets disjoint from `s` is within `ε / (2 * r)` of 1.
