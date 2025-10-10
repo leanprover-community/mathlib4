@@ -14,8 +14,8 @@ This file proves the Bourbaki-Witt Theorem.
 
 ## Main definitions
 
-- class `ChainCompletePartialOrder` : A non-empty partial order is a chain complete partial order
-  such that every non-empty chain has a supremum
+- class `ChainCompletePartialOrder` : A nonempty partial order is a chain complete partial order
+  such that every nonempty chain has a supremum
 - structure `Inflationary` : Let $X$ be a partial order. A function $f : X → X$ is inflationary if,
   for all $x ∈ X$, $x ≤ f x$
 
@@ -31,21 +31,19 @@ The proof used can be found in [serge_lang_algebra]
 
 /-- The type of non-empty chains of an order -/
 @[ext]
-structure NonemptyChain (α : Type) [LE α] where
+structure NonemptyChain (α : Type*) [LE α] where
   /-- The underlying set of a non-empty chain -/
   carrier : Set α
-  /-- By definition, a non-empty chain is non-empty -/
   Nonempty' : carrier.Nonempty
-  /-- By definition, a non-empty chain is a chain -/
   isChain' : IsChain (· ≤ ·) carrier
 
 instance {α : Type} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
   coe_injective' _ _ := NonemptyChain.ext
 
-/-- A chain complete partial order is a non-empty partial order such that every chain has a supremum
-(which we call `cSup`) -/
-class ChainCompletePartialOrder (α : Type) [Nonempty α] extends PartialOrder α where
+/-- A chain complete partial order (CCPO) is a non-empty partial order such that every
+nonempty chain has a supremum (which we call `cSup`) -/
+class ChainCompletePartialOrder (α : Type) extends PartialOrder α where
   /-- The supremum of a non-empty chain -/
   cSup : NonemptyChain α → α
   /-- `cSup` is an upper bound of the non-empty chain -/
@@ -71,7 +69,7 @@ namespace BourbakiWitt
 
 variable {α : Type} [Nonempty α] [ChainCompletePartialOrder α] {x : α} {f : Inflationary α}
 
-/-- The definition of an admissible set with base point `x` and inflationary function `f` -/
+/-- An admissible set for given `x` and `f` has `x` as a least element and is closed under applying `f` and `cSup`. -/
 structure IsAdmissible (x : α) (f : Inflationary α) (s : Set α) : Prop where
   /-- The base point is the least element of an admissible set -/
   base_isLeast : IsLeast s x
@@ -117,15 +115,15 @@ lemma bot_isAdmissible : IsAdmissible x f (bot x f) where
     intro s hs
     exact hs.cSup_mem c (subset_trans hc (sInter_subset_of_mem hs))
 
-lemma sub_bot_eq_bot {s : Set α} (h : IsAdmissible x f s) (h' : s ⊆ bot x f) : s = bot x f :=
+lemma subset_bot_iff {s : Set α} (h : IsAdmissible x f s) : s ⊆ bot x f ↔ s = bot x f :=
   subset_antisymm h' (sInter_subset_of_mem h)
 
-/-- The definition of an extreme point used in [serge_lang_algebra] -/
+/-- `y` is an extreme point for `x : α` and `f : α → α` if it is in the bottom admissible set and `y` is larger than `f z` for any `z < y` in the bottom admissible set.
+
+This definition comes from [serge_lang_algebra] -/
 structure IsExtremePt (x : α) (f : Inflationary α) (y : α) : Prop where
-  /-- By defintion, an extreme point is a member of `bot` -/
   mem_bot : y ∈ bot x f
-  /-- By defintion, an extreme point `y` satisfies `f z ≤ y` for all `z < y` -/
-  map_le {z : α} (h : z ∈ bot x f) (h' : z < y) : f z ≤ y
+  map_le_of_mem_of_lt {z : α} (h : z ∈ bot x f) (h' : z < y) : f z ≤ y
 
 lemma map_mem_bot {y : α} (h : y ∈ bot x f) : f y ∈ bot x f := by
   apply bot_isAdmissible.image_self_sub_self
@@ -215,7 +213,7 @@ open BourbakiWitt Function
 
 /- **The Bourbaki-Witt Theorem**: If `α` is a chain complete partial order and `f : α → α` is
 inflationary, then `f` has a fixed point -/
-theorem bourbaki_witt {α : Type} [Nonempty α] [ChainCompletePartialOrder α]
+theorem nonempty_fixedPoints_of_inflationary {α : Type} [Nonempty α] [ChainCompletePartialOrder α]
     (f : Inflationary α) : (fixedPoints f).Nonempty := by
   let x : α := Classical.ofNonempty
   let y : α := cSup (NonemptyChain.mk (bot x f) ⟨x, bot_isAdmissible.base_isLeast.1⟩ (bot_isChain))
