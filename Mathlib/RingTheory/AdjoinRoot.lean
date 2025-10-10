@@ -401,7 +401,7 @@ variable (f)
 
 theorem mul_div_root_cancel [Fact (Irreducible f)] :
     (X - C (root f)) * ((f.map (of f)) / (X - C (root f))) = f.map (of f) :=
-  mul_div_eq_iff_isRoot.2 <| isRoot_root _
+  (isRoot_root _).mul_div_eq
 
 end Irreducible
 
