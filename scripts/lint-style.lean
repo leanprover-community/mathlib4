@@ -204,6 +204,23 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
       | none => result := result.append <| modParse.imports.map Lean.Import.module
       | some err => throw <| IO.userError s!"could not parse module name {mod}: {err}"
     pure result
+
+  -- Smoke test for accidentally disabling all the linters again:
+  -- ensure the header linter is active if we're linting Mathlib.
+  if `Mathlib ∈ originModules then
+    if !getLinterValue linter.checkInitImports opts then
+      throw <| IO.userError
+        s!"lint-style selftest failed: header linter is not enabled in Mathlib.\n\
+        \n\
+        Hint: in a project downstream of Mathlib, remove `Mathlib` as an argument to \
+        `lake exe style`, or remove `Mathlib` from the default `lake build` targets.\n\
+        \n\
+        Hint: in Mathlib, check that the `linter_sets%` elaborator still works.\n\
+        \n\
+        Note: we want to make sure that we do not accidentally turn off all the linters, \
+        since such a change would not be noticed in CI otherwise. The header linter is an \
+        arbitrarily chosen important Mathlib style linter."
+
   -- Get all the imports, but only those in the same package.
   let pkgs := originModules.map (·.components.head!)
   Lean.initSearchPath (← Lean.findSysroot)
