@@ -179,7 +179,7 @@ jobs:
 
           [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-    - name: Send Zulip message
+    - name: Send Zulip message (success)
       if: steps.pr.outcome == 'success'
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
@@ -192,3 +192,18 @@ jobs:
         content: |
           Please review #${{ steps.pr.outputs.pull-request-number }}, which removes deprecated declarations between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}.
           Pay special attention to whether there are stray comments that can also be deleted.
+
+    - name: Send Zulip message (failure)
+      if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mathlib `remove outdated deprecated declarations`'
+        content: |
+          [`remove outdated deprecated declarations` workflow run failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+          triggered by: `${{ github.event_name }}`
