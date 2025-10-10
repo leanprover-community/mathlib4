@@ -70,7 +70,6 @@ lemma exp_strictMono : StrictMono exp := by
 @[gcongr]
 lemma exp_monotone : Monotone exp := exp_strictMono.monotone
 
--- TODO: rename to `exp_lt_exp`
 @[simp] lemma exp_lt_exp_iff {a b : EReal} : exp a < exp b ↔ a < b := exp_strictMono.lt_iff_lt
 
 @[simp] lemma zero_lt_exp_iff {a : EReal} : 0 < exp a ↔ ⊥ < a := exp_bot ▸ @exp_lt_exp_iff ⊥ a
