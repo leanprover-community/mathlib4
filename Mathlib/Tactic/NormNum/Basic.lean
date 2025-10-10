@@ -137,7 +137,7 @@ theorem isintCast {R} [Ring R] (n m : ℤ) :
 
 /-! # Arithmetic -/
 
-library_note "norm_num lemma function equality"/--
+library_note2 «norm_num lemma function equality» /--
 Note: Many of the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
 below. The reason for this is that when this is applied, to prove e.g. `100 + 200 = 300`, the
 `+` here is `HAdd.hAdd` with an instance that may not be syntactically equal to the one supplied
@@ -312,7 +312,7 @@ theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d 
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of subtracting two norm_num results. -/
+/-- The result of negating a norm_num result. -/
 def Result.neg {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result q($a))
     (rα : Q(Ring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q(-$a)) := do

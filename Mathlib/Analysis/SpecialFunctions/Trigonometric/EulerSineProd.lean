@@ -97,7 +97,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
       congr 1
-      · rw [← pow_succ', Nat.sub_add_cancel (by omega : 1 ≤ n)]
+      · rw [← pow_succ', Nat.sub_add_cancel (by cutsat : 1 ≤ n)]
       · have : ((n - 1 : ℕ) : ℂ) = (n : ℂ) - 1 := by
           rw [Nat.cast_sub (one_le_two.trans hn), Nat.cast_one]
         rw [Nat.sub_sub, this]
@@ -160,7 +160,7 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n + 2)) =
       (2 * n + 1 : ℂ) / (2 * n + 2) *
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n) := by
-  convert integral_cos_mul_cos_pow (by omega : 2 ≤ 2 * n + 2) hz using 3
+  convert integral_cos_mul_cos_pow (by cutsat : 2 ≤ 2 * n + 2) hz using 3
   · simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_two]
     nth_rw 2 [← mul_one (2 : ℂ)]
     rw [← mul_add, mul_pow, ← div_div]
@@ -169,7 +169,7 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
   · push_cast; ring
 
 /-- Relate the integral `cos x ^ n` over `[0, π/2]` to the integral of `sin x ^ n` over `[0, π]`,
-which is studied in `Data.Real.Pi.Wallis` and other places. -/
+which is studied in `Mathlib/Analysis/Real/Pi/Wallis.lean` and other places. -/
 theorem integral_cos_pow_eq (n : ℕ) :
     (∫ x in (0 : ℝ)..π / 2, cos x ^ n) = 1 / 2 * ∫ x in (0 : ℝ)..π, sin x ^ n := by
   rw [mul_comm (1 / 2 : ℝ), ← div_eq_iff (one_div_ne_zero (two_ne_zero' ℝ)), ← div_mul, div_one,
@@ -201,14 +201,16 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
         (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n) : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | hz)
   · simp
-  induction' n with n hn
-  · simp_rw [mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
+  induction n with
+  | zero =>
+    simp_rw [mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,
       (by push_cast; field_simp : 2 * z * ↑(π / 2) = π * z)]
     simp [field]
-  · rw [hn, Finset.prod_range_succ]
+  | succ n hn =>
+    rw [hn, Finset.prod_range_succ]
     set A := ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)
     set B := ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)
     set C := ∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n)
@@ -231,9 +233,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
         π * z * A *
           (((1 : ℂ) - z ^ 2 / (n.succ : ℂ) ^ 2) *
             ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n.succ)) := by
-      nth_rw 2 [Nat.succ_eq_add_one]
-      rw [Nat.cast_add_one]
-      ring
+      grind
     rw [this]
     suffices
       (((1 : ℂ) - z ^ 2 / (n.succ : ℂ) ^ 2) *

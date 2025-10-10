@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
@@ -434,6 +435,64 @@ def equivComma : (WithTerminal C ⥤ D) ≌ Comma (𝟭 (C ⥤ D)) (Functor.cons
     ext <;> rfl
 
 end
+
+open CategoryTheory.Limits CategoryTheory.Limits.WidePullbackShape
+
+instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)) := fun _ _ => by
+  constructor
+  intro a b
+  casesm* WithTerminal _, (_ : WithTerminal _) ⟶ (_ : WithTerminal _)
+  · exact congr_arg (ULift.up ∘ PLift.up) rfl
+  · rfl
+  · rfl
+
+/-- Implementation detail for `widePullbackShapeEquiv`. -/
+@[simps apply]
+private def widePullbackShapeEquivObj {J : Type*} :
+    WidePullbackShape J ≃ WithTerminal (Discrete J) where
+  toFun
+  | .some x => .of <| .mk x
+  | .none => .star
+  invFun
+  | .of x => .some <| Discrete.as x
+  | .star => .none
+  left_inv  x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+/-- Implementation detail for `widePullbackShapeEquiv`. -/
+private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
+    (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where
+  toFun
+  | .term _ => PUnit.unit
+  | .id _ => 𝟙 _
+  invFun f := match x, y with
+  | some x, some y =>
+    cast (by
+        have eq : x = y := PLift.down (ULift.down (down f))
+        rw [eq]
+        rfl
+    ) (Hom.id (some y))
+  | none, some y => by cases f
+  | some x, none => .term x
+  | none, none => .id none
+  left_inv f := by apply Subsingleton.allEq
+  right_inv f := match x, y with
+  | some x, some y => Subsingleton.allEq _ _
+  | none, some y => by cases f
+  | some x, none
+  | none, none => rfl
+
+/-- In the case of a discrete category, `WithTerminal` is the same category as `WidePullbackShape`
+
+TODO: Should we simply replace `WidePullbackShape J` with `WithTerminal (Discrete J)` everywhere? -/
+@[simps! functor_obj inverse_obj]
+def widePullbackShapeEquiv {J : Type*} : WidePullbackShape J ≌ WithTerminal (Discrete J) where
+  functor.obj := widePullbackShapeEquivObj
+  functor.map := widePullbackShapeEquivMap _ _
+  inverse.obj := widePullbackShapeEquivObj.symm
+  inverse.map f := (widePullbackShapeEquivMap _ _).symm (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
+  unitIso := NatIso.ofComponents fun x ↦ eqToIso (by aesop)
+  counitIso := NatIso.ofComponents fun x ↦ eqToIso (by aesop)
 
 end WithTerminal
 

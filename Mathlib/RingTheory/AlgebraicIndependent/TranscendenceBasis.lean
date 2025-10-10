@@ -3,8 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Matroid.IndepAxioms
-import Mathlib.Data.Matroid.Rank.Cardinal
+import Mathlib.Combinatorics.Matroid.IndepAxioms
+import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
@@ -262,9 +262,9 @@ private def indepMatroid : IndepMatroid A where
     rw [← isTranscendenceBasis_iff_maximal] at B_base ⊢
     cases subsingleton_or_nontrivial R
     · rw [isTranscendenceBasis_iff_of_subsingleton] at B_base ⊢
-      contrapose! h
+      by_contra this
       have ⟨b, hb⟩ := B_base
-      exact ⟨b, ⟨hb, fun hbI ↦ h ⟨b, hbI⟩⟩, .of_subsingleton⟩
+      exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
     simp_rw [id_eq]

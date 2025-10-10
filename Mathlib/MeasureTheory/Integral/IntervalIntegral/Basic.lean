@@ -85,16 +85,26 @@ theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f 
 theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
 
-theorem IntervalIntegrable.congr {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
+theorem intervalIntegrable_congr_ae {g : ℝ → ε} (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
+  rw [intervalIntegrable_iff, integrableOn_congr_fun_ae h, intervalIntegrable_iff]
+
+theorem IntervalIntegrable.congr_ae {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
-  rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
+  rwa [← intervalIntegrable_congr_ae h]
+
+theorem intervalIntegrable_congr {g : ℝ → ε} (h : EqOn f g (Ι a b)) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
+  intervalIntegrable_congr_ae <| (ae_restrict_mem measurableSet_uIoc).mono h
+
+alias ⟨IntervalIntegrable.congr, _⟩ := intervalIntegrable_congr
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
 theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → ε} [NoAtoms μ]
     (h : f =ᶠ[codiscreteWithin (Ι a b)] g) (hf : IntervalIntegrable f μ a b) :
     IntervalIntegrable g μ a b :=
-  hf.congr (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
+  hf.congr_ae (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
 theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → ε} [NoAtoms μ]
@@ -150,6 +160,9 @@ theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ]
     {c : E} (hc : ‖c‖ₑ ≠ ⊤ := by finiteness) :
     IntervalIntegrable (fun _ => c) μ a b :=
   intervalIntegrable_const_iff hc |>.2 <| Or.inr measure_Ioc_lt_top
+
+protected theorem IntervalIntegrable.zero : IntervalIntegrable (0 : ℝ → E) μ a b :=
+  (intervalIntegrable_const_iff <| by finiteness).mpr <| .inl rfl
 
 end
 
@@ -372,7 +385,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
     ← IntegrableOn, MeasurableEmbedding.integrableOn_map_iff A]
   convert hf using 1
   · ext; simp only [comp_apply]; congr 1; field_simp
-  · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
+  · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp
 
 -- Note that `h'` is **not** implied by `h` if `c` is negative.
 -- TODO: generalise this lemma to enorms!
