@@ -48,7 +48,9 @@ variable [TopologicalSpace E] [OpensMeasurableSpace E]
 
 /-- Convergence in distribution of random variables.
 This is the weak convergence of the laws of the random variables: `Tendsto` in the
-`ProbabilityMeasure` type. -/
+`ProbabilityMeasure` type.
+In order to avoid carrying proofs of measurability in the definition, we declare the convergence
+to be true if any of the functions is not almost everywhere measurable. -/
 def TendstoInDistribution (X : ι → Ω → E) (l : Filter ι) (Z : Ω → E) (μ : Measure Ω)
     [IsProbabilityMeasure μ] : Prop :=
   (hX : ∀ i, AEMeasurable (X i) μ) → (hZ : AEMeasurable Z μ) →
