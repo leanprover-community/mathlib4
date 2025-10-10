@@ -34,7 +34,7 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
   haveI : ∀ i : α, SecondCountableTopology (↥({i} : Set α)) := fun i =>
     { is_open_generated_countable :=
         ⟨{univ}, countable_singleton _, by simp only [eq_iff_true_of_subsingleton]⟩ }
-  secondCountableTopology_of_countable_cover (singletons_open_iff_discrete.mpr hd)
+  secondCountableTopology_of_countable_cover (discreteTopology_iff_isOpen_singleton.mp hd)
     (iUnion_of_singleton α)
 
 theorem LinearOrder.bot_topologicalSpace_eq_generateFrom {α} [LinearOrder α] [PredOrder α]

@@ -231,7 +231,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
 
 open Subtype in
 instance (c : ℝₗ) : DiscreteTopology {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
-  forall_open_iff_discrete.1 fun U ↦ isClosed_compl_iff.1 <| isClosed_induced_iff.2
+  discreteTopology_iff_forall_isOpen.2 fun U ↦ isClosed_compl_iff.1 <| isClosed_induced_iff.2
     ⟨val '' Uᶜ, isClosed_of_subset_antidiagonal <| coe_image_subset _ Uᶜ,
       preimage_image_eq _ val_injective⟩
 
