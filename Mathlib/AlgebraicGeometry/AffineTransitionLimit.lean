@@ -241,7 +241,8 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
       Scheme.Opens.opensRange_ι]
     rintro x ⟨⟨y, h₁ : (D.map k.hom).base y ∈ U⟩, h₂, e⟩
     obtain rfl : y = (D.map f.left).base x := congr($e)
-    erw [← Scheme.comp_base_apply] at h₁
+    dsimp at h₁
+    rw [← Scheme.comp_base_apply] at h₁
     rwa [← D.map_comp, Over.w f] at h₁
 
 end Opens
@@ -664,7 +665,8 @@ lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D
     ((D.obj i).presheaf.map (homOfLE (show (D.map (𝟙 _) ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ U by simp)).op s) (by
       rw [← map_zero (c.pt.presheaf.map (homOfLE
         (show (c.π.app i ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ c.π.app i ⁻¹ᵁ U by simp)).op).hom, ← hs]
-      erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
+      dsimp [Scheme.Opens.toScheme_presheaf_obj]
+      rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
       congr! 2
       simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE])
   dsimp at hf
@@ -672,7 +674,8 @@ lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D
   have hf' : f.left = j.hom := by simpa using Over.w f
   convert congr((D.obj j.left).presheaf.map (homOfLE
     (show D.map f.left ⁻¹ᵁ U ≤ (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤ by simp [hf'])).op $hf)
-  · erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
+  · dsimp [Scheme.Opens.toScheme_presheaf_obj]
+    rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
     congr! 2
     simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
   · simp
@@ -800,11 +803,12 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
     rw [← Scheme.preimage_comp, Cone.w]
   convert congr(c.pt.presheaf.map (homOfLE H).op ((c.π.app k').app _ $(ht₀ ⟨_, hσiσ y⟩))).symm
   · refine (ht (σi y)).symm.trans ?_
-    rw [← ConcreteCategory.comp_apply]
-    erw [← ConcreteCategory.comp_apply]
+    dsimp [Scheme.Opens.toScheme_presheaf_obj]
+    rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
     congr 2
     simp [Scheme.Hom.app_eq_appLE, Scheme.appLE_comp_appLE, -Scheme.comp_appLE]
-  · erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
+  · dsimp [Scheme.Opens.toScheme_presheaf_obj]
+    rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
       ← ConcreteCategory.comp_apply]
     congr 2
     simp [Scheme.Hom.app_eq_appLE]
