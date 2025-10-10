@@ -348,15 +348,14 @@ open Order in
 @[stacks 02IZ]
 lemma stalk_dim_eq_coheight {X : Scheme} (Z : X) :
   ringKrullDim (X.presheaf.stalk Z) = Order.coheight Z := by
-  obtain ⟨R, f, hf⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset
-    (U := ⊤) (x := Z) (by aesop)
-  obtain ⟨y, hy⟩ := Set.mem_range.mp hf.2.1
-  have := hf.1
-  have := hy ▸ AlgebraicGeometry.coheight_eq_of_openImmersion f (Z := y)
-  rw [this]
-  suffices ringKrullDim ((Spec R).presheaf.stalk y) = coheight y from
-    this ▸ Order.krullDim_eq_of_orderIso
-    (hy ▸ PrimeSpectrum.comapEquiv (asIso (Scheme.Hom.stalkMap f y)).commRingCatIsoToRingEquiv)
+  wlog h : ∃ R, X = Spec R
+  · obtain ⟨R, f, hf, hsub⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset
+      (show Z ∈ ⊤ from trivial)
+    obtain ⟨y, rfl⟩ := Set.mem_range.mp hsub.1
+    rw [coheight_eq_of_openImmersion, ← this _ ⟨R, rfl⟩]
+    exact Order.krullDim_eq_of_orderIso
+      (PrimeSpectrum.comapEquiv (asIso (Scheme.Hom.stalkMap f y)).commRingCatIsoToRingEquiv)
+  obtain ⟨R, rfl⟩ := h
   let k : Algebra ↑R ↑((Spec R).presheaf.stalk y) := StructureSheaf.stalkAlgebra (↑R) y
   have : IsLocalization.AtPrime (↑((Spec R).presheaf.stalk y)) y.asIdeal :=
     StructureSheaf.IsLocalization.to_stalk R y
