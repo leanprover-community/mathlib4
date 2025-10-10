@@ -546,8 +546,6 @@ end Int
 
 section PNat
 
-variable {R : Type*} {α : Type*} [AddMonoidWithOne R] [TopologicalSpace α] [CommMonoid α]
-
 @[to_additive]
 theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
     Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x ↦ f (x + 1) :=
