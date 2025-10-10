@@ -321,6 +321,7 @@ variable {α : Type*}
 
 variable {G : Subgroup (Perm α)}
 
+-- TODO move?
 theorem subgroup_eq_top_of_nontrivial [Finite α] (hα : Nat.card α ≤ 2) (hG : Nontrivial G) :
     G = (⊤ : Subgroup (Perm α)) := by
   apply Subgroup.eq_top_of_le_card
