@@ -160,8 +160,9 @@ theorem meromorphicOrderAt_eq {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.support.F
 /--
 Factorized rational functions are nowhere locally constant zero.
 -/
-theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) [Decidable (((1 : ℕ) : 𝕜) = 0)] :
+theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
     meromorphicOrderAt (∏ᶠ u, (· - u) ^ d u) z ≠ ⊤ := by
+  classical
   by_cases hd : d.support.Finite
   · simp [meromorphicOrderAt_eq d hd]
   · rw [← mulSupport] at hd
