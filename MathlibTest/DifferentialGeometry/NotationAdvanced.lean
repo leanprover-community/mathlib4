@@ -229,6 +229,72 @@ variable {f : M → E →L[𝕜] E'} in
 #guard_msgs in
 #check CMDiff 2 f
 
+/-! Inferring a model with corners on a real interval -/
+section interval
+
+-- Types match, but no fact x < y can be inferred: mostly testing error messages.
+variable {x y : ℝ} {g : Set.Icc x y → M} {h : E → Set.Icc x y} {k : Set.Icc x y → ℝ}
+
+/-- error: Could not find a model with corners for ↑(Set.Icc 0 2) -/
+#guard_msgs in
+variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+#check CMDiff 2 g
+
+/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+#guard_msgs in
+#check MDiffAt h
+
+/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+#guard_msgs in
+#check MDiffAt k ⟨x, by linarith⟩
+
+-- A singleton interval: this also should not synthesize.
+/-- error: Could not find a model with corners for ↑(Set.Icc x x) -/
+#guard_msgs in
+variable {k : Set.Icc x x → ℝ} in
+#check MDiff k
+
+/--
+error: failed to synthesize
+  Preorder α
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+variable {α : Type*} {x' y' : α} {k : Set.Icc x' y' → ℝ} in
+#check MDiff k
+
+/-- error: Could not find a model with corners for ↑(Set.Icc x' y') -/
+#guard_msgs in
+variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
+#check CMDiff 2 k
+
+-- Now, with a fact about x < y: these should behave well.
+variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → M} {h : E → Set.Icc x y} {k : Set.Icc x y → ℝ}
+
+/-- error: Could not find a model with corners for ↑(Set.Icc 0 2) -/
+#guard_msgs in
+variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+#check CMDiff 2 g
+
+/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+#guard_msgs in
+#check MDiffAt h
+
+/-- error: Could not find a model with corners for ↑(Set.Icc x y) -/
+#guard_msgs in
+#check MDiffAt k ⟨x, by linarith⟩
+
+end interval
+
 end differentiability
 
 /-! Tests for the custom elaborators for `mfderiv` and `mfderivWithin` -/
