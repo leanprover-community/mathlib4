@@ -302,6 +302,30 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
 theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
   isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
+/-- A constant map to a T₁ space is proper if and only if its domain is compact. -/
+theorem isProperMap_const_iff [T1Space Y] (y : Y) :
+    IsProperMap (fun _ : X ↦ y) ↔ CompactSpace X := by
+  classical
+  rw [isProperMap_iff_isClosedMap_and_compact_fibers]
+  constructor
+  · rintro ⟨-, -, h⟩
+    exact ⟨by simpa using h y⟩
+  · intro H
+    refine ⟨continuous_const, isClosedMap_const, fun y' ↦ ?_⟩
+    simp [preimage_const, mem_singleton_iff, apply_ite, isCompact_univ]
+
+theorem isProperMap_const [h : CompactSpace X] [T1Space Y] (y : Y) :
+    IsProperMap (fun _ : X ↦ y) :=
+  isProperMap_const_iff y |>.mpr h
+
+theorem isProperMap_fst [CompactSpace Y] :
+    IsProperMap (Prod.fst : X × Y → X) :=
+  Homeomorph.prodPUnit X |>.isProperMap.comp (isProperMap_id.prodMap (isProperMap_const ()))
+
+theorem isProperMap_snd [CompactSpace X] :
+    IsProperMap (Prod.snd : X × Y → Y) :=
+  Homeomorph.punitProd Y |>.isProperMap.comp ((isProperMap_const ()).prodMap isProperMap_id)
+
 /-- A proper map `f : X → Y` is **universally closed**: for any topological space `Z`, the map
 `Prod.map f id : X × Z → Y × Z` is closed. We will prove in `isProperMap_iff_universally_closed`
 that proper maps are exactly continuous maps which have this property, but this result should be
