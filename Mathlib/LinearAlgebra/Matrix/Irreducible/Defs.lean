@@ -12,7 +12,7 @@ import Mathlib.Data.Matrix.Basic
 /-!
 # Irreducibility and primitivity of nonnegative real matrices via quivers
 
-This file develops a graph-theoretic interface for studying nonnegative square matrices over `ℝ`
+This file develops a graph-theoretic interface for studying nonnegative square matrices over `R`
 through the quiver formed by their strictly positive entries. It shows the equivalence
 between positivity of suitable matrix powers and existence of directed paths in this quiver.
 
@@ -30,9 +30,13 @@ sums.
 
 ## Prerequisites and scope
 
-* The development here is specialized to real matrices `Matrix n n ℝ`. Many statements would
-  generalize to linearly ordered semifields or ordered rings with compatible algebraic and order
-  structures; such generalizations are left as TODO.
+* Throughout we work over a general scalar type `R` with `[Ring R] [LinearOrder R] [IsOrderedRing R]`. This suffices
+  to speak about entrywise nonnegativity/positivity and to use `sum_nonneg`, `add_pos_of_pos_of_nonneg`,
+  and `mul_nonneg`, as well as to deduce positivity of factors from a positive product under
+  nonnegativity.
+* No topological or completeness assumptions are used; the arguments are purely algebraic/order‑theoretic.
+* The results therefore apply beyond `ℝ`, e.g. to `ℕ`, `ℤ`, `ℚ`, `ℝ≥0`, and any linear ordered semiring.
+* Some statements expand matrix powers and thus require `[DecidableEq n]` to reason about finite sums.
 
 ## Tags
 
@@ -41,14 +45,12 @@ matrix, nonnegative, positive, power, quiver, graph, irreducible, primitive, str
 
 namespace Matrix
 
-open scoped BigOperators
-
 open Finset Quiver Quiver.Path
 
-variable {n : Type*} [Fintype n]
+variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R] [IsOrderedRing R]
 
 @[simp]
-lemma pow_nonneg [DecidableEq n] {A : Matrix n n ℝ}
+lemma pow_nonneg [DecidableEq n] {A : Matrix n n R}
     (hA : ∀ i j, 0 ≤ A i j) (k : ℕ) : ∀ i j, 0 ≤ (A ^ k) i j := by
   induction k with
   | zero => intro i j; simp [one_apply]; by_cases h : i = j <;> simp [h]
@@ -58,22 +60,24 @@ lemma pow_nonneg [DecidableEq n] {A : Matrix n n ℝ}
 
 /-- The directed graph (quiver) associated with a matrix `A`,
 with an edge `i ⟶ j` iff `0 < A i j`. -/
-def toQuiver (A : Matrix n n ℝ) : Quiver n :=
+def toQuiver (A : Matrix n n R) : Quiver n :=
   ⟨fun i j => 0 < A i j⟩
 
 /-- A matrix `A` is irreducible if it is entrywise nonnegative and
 its quiver of positive entries (`toQuiver A`) is strongly connected. -/
-def Irreducible (A : Matrix n n ℝ) : Prop :=
+def Irreducible (A : Matrix n n R) : Prop :=
   (∀ i j, 0 ≤ A i j) ∧ (letI : Quiver n := toQuiver A; IsSStronglyConnected n)
 
 /-- A matrix `A` is primitive if it is entrywise nonnegative
 and some positive power has all entries strictly positive. -/
-def IsPrimitive [DecidableEq n] (A : Matrix n n ℝ) : Prop :=
+def IsPrimitive [DecidableEq n] (A : Matrix n n R) : Prop :=
   (∀ i j, 0 ≤ A i j) ∧ ∃ k, 0 < k ∧ ∀ i j, 0 < (A ^ k) i j
+
+variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R] 
 
 /-- If `A` is irreducible and `n>1` then every row has a positive entry. -/
 lemma irreducible_no_zero_row
-    (A : Matrix n n ℝ)
+    (A : Matrix n n R)
     (h_irr : Irreducible A) (h_dim : 1 < Fintype.card n) (i : n) :
     ∃ j, 0 < A i j := by
   letI : Quiver n := toQuiver A
@@ -97,7 +101,7 @@ lemma irreducible_no_zero_row
 
 variable {A : Matrix n n ℝ}
 
-lemma sum_pos_of_mem {α : Type*} {s : Finset α} {f : α → ℝ}
+lemma sum_pos_of_mem [IsOrderedRing R] {α : Type*} {s : Finset α} {f : α → R}
     (h_nonneg : ∀ a ∈ s, 0 ≤ f a) (a : α) (ha_mem : a ∈ s) (ha_pos : 0 < f a) :
     0 < ∑ x ∈ s, f x := by
   classical
@@ -108,22 +112,26 @@ lemma sum_pos_of_mem {α : Type*} {s : Finset α} {f : α → ℝ}
   exact Filter.frequently_principal.mp fun a_1 ↦ a_1 ha_mem ha_pos
 
 -- Existence of positive element in positive sum
-lemma exists_mem_of_sum_pos {α : Type*} {s : Finset α} {f : α → ℝ}
+lemma exists_mem_of_sum_pos [IsOrderedRing R] {α : Type*} {s : Finset α} {f : α → R}
     (h_pos : 0 < ∑ a ∈ s, f a) (h_nonneg : ∀ a ∈ s, 0 ≤ f a) :
     ∃ a ∈ s, 0 < f a := by
   by_contra h; push_neg at h
   have h_zero : ∀ a ∈ s, f a = 0 := fun a ha => le_antisymm (h a ha) (h_nonneg a ha)
   have h_sum_zero : ∑ a ∈ s, f a = 0 := by rw [sum_eq_zero_iff_of_nonneg h_nonneg]; exact h_zero
-  linarith
+  simp_all only [sum_const_zero, lt_self_iff_false]
 
-lemma mul_pos_iff_of_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+variable [PosMulStrictMono R]
+
+lemma mul_pos_iff_of_nonneg {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     0 < a * b ↔ 0 < a ∧ 0 < b := by
   constructor
   · intro h_mul_pos
     refine ⟨lt_of_le_of_ne ha ?_, lt_of_le_of_ne hb ?_⟩
     · rintro rfl; simp_all only [le_refl, zero_mul, lt_self_iff_false]
     · rintro rfl; simp_all only [le_refl, mul_zero, lt_self_iff_false]
-  · rintro ⟨ha_pos, hb_pos⟩; exact mul_pos ha_pos hb_pos
+  · rintro ⟨ha_pos, hb_pos⟩; simp_all only [mul_pos_iff_of_pos_left]
+
+variable [PosMulStrictMono R] [Nontrivial R]
 
 /--
 For a matrix `A` with nonnegative entries, the `(i, j)`-entry of the `k`-th power `A ^ k`
