@@ -350,6 +350,10 @@ theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
       rw [const_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg]
       exact Setoid.symm (equiv_lim f))
 
+theorem lim_sub (f g : CauSeq β abv) : lim f - lim g = lim (f - g) := by
+  rw [sub_eq_add_neg, sub_eq_add_neg]
+  rw [← CauSeq.lim_neg, CauSeq.lim_add f (-g)]
+
 theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
   ⟨fun h => by
     have hf := equiv_lim f
