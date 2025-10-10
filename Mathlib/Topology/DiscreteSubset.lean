@@ -55,7 +55,7 @@ variable [TopologicalSpace X]
 lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
     DiscreteTopology X := by
-  refine singletons_open_iff_discrete.mp (fun x ↦ ?_)
+  refine discreteTopology_iff_isOpen_singleton.mpr (fun x ↦ ?_)
   obtain ⟨K : Set Y, hK : IsCompact K, hK' : K ∈ 𝓝 (f x)⟩ := exists_compact_mem_nhds (f x)
   obtain ⟨U : Set Y, hU₁ : U ⊆ K, hU₂ : IsOpen U, hU₃ : f x ∈ U⟩ := mem_nhds_iff.mp hK'
   have hU₄ : Set.Finite (f⁻¹' U) :=
