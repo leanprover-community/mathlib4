@@ -214,7 +214,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
 - the model with corners on the tangent space of a manifold
-- a model with corners on a manifold
+- a model with corners on a manifold, or on its underlying model space
 - the trivial model `𝓘(𝕜, E)` on a normed space
 - if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
   and if successful, return `𝓘(𝕜)`.
@@ -302,15 +302,19 @@ where
       | throwError "Couldn't find a `NormedSpace` structure on {e} among local instances."
     trace[Elab.DiffGeo.MDiff] "Field is: {K}"
     mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
-  /-- Attempt to find a model with corners on a manifold. -/
+  /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
+    -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
+    -- or `e` is `H` itself.
     let some H ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
+        trace[Elab.DiffGeo.MDiff] "found a `ChartedSpace` instance: `{type}`"
         match_expr type with
         | ChartedSpace H _ M _ =>
-          if ← withReducible (pureIsDefEq M e) then return some H else return none
+          if ← withReducible (pureIsDefEq M e) then return some H else
+          if ← withReducible (pureIsDefEq H e) then return some H else return none
         | _ => return none
-      | throwError "Couldn't find a `ChartedSpace` structure on {e} among local instances."
-    trace[Elab.DiffGeo.MDiff] "H is: {H}"
+      | throwError "Couldn't find a `ChartedSpace` structure on {e} among local instances,\n\
+        and {e} is not the charted space of some type in the local context either."
     let some m ← findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
         | ModelWithCorners _ _ _ _ _ H' _ => do
