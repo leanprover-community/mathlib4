@@ -132,44 +132,41 @@ variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivi
 variable {IB}
 
 theorem mdifferentiableOn_coordChangeL :
-    MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
-      (e.baseSet ∩ e'.baseSet) :=
+    MDiff[e.baseSet ∩ e'.baseSet] (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))  :=
   (contMDiffOn_coordChangeL e e').mdifferentiableOn le_rfl
 
 theorem mdifferentiableOn_symm_coordChangeL :
-    MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
-      (e.baseSet ∩ e'.baseSet) :=
+    MDiff[e.baseSet ∩ e'.baseSet] (fun b : B ↦ ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F)) :=
   (contMDiffOn_symm_coordChangeL e e').mdifferentiableOn le_rfl
 
 variable {e e'}
 
 theorem mdifferentiableAt_coordChangeL {x : B}
     (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
-    MDifferentiableAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
+    MDiffAt (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   (contMDiffAt_coordChangeL h h').mdifferentiableAt le_rfl
 
 variable {s : Set M} {f : M → B} {g : M → F} {x : M}
 
 protected theorem MDifferentiableWithinAt.coordChangeL (hf : MDiffAt[s] f x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
-    MDifferentiableWithinAt IM 𝓘(𝕜, F →L[𝕜] F)
-      (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
+    MDiffAt[s] (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   (mdifferentiableAt_coordChangeL he he').comp_mdifferentiableWithinAt _ hf
 
 protected theorem MDifferentiableAt.coordChangeL
     (hf : MDiffAt f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
-    MDifferentiableAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
+    MDiffAt (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   MDifferentiableWithinAt.coordChangeL hf he he'
 
 protected theorem MDifferentiableOn.coordChangeL
-    (hf : MDifferentiableOn IM IB f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
-    MDifferentiableOn IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
+    (hf : MDiff[s] f) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
+    MDiff[s] (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) :=
   fun x hx ↦ (hf x hx).coordChangeL (he hx) (he' hx)
 
 protected theorem MDifferentiable.coordChangeL
     (hf : MDiff f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
-    MDifferentiable IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) := fun x ↦
-  (hf x).coordChangeL (he x) (he' x)
+    MDiff (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) :=
+  fun x ↦ (hf x).coordChangeL (he x) (he' x)
 
 protected theorem MDifferentiableWithinAt.coordChange
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
@@ -605,8 +602,7 @@ version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written 
 only makes sense around a point.
 -/
 lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
-    (hϕ : MDifferentiableWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
-      (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) s m₀)
+    (hϕ : MDiffAt[s] (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : MDifferentiableWithinAt IM (IB₁.prod 𝓘(𝕜, F₁)) (fun m ↦ (v m : TotalSpace F₁ E₁)) s m₀)
     (hb₂ : MDiffAt[s] b₂ m₀) :
     MDifferentiableWithinAt IM (IB₂.prod 𝓘(𝕜, F₂))
@@ -643,8 +639,7 @@ but no version for `MDifferentiableOn` or `MDifferentiable` as our assumption, w
 in coordinates, only makes sense around a point.
 -/
 lemma MDifferentiableAt.clm_apply_of_inCoordinates
-    (hϕ : MDifferentiableAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
-      (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
+    (hϕ : MDiffAt (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : MDifferentiableAt IM (IB₁.prod 𝓘(𝕜, F₁)) (fun m ↦ (v m : TotalSpace F₁ E₁)) m₀)
     (hb₂ : MDiffAt b₂ m₀) :
     MDifferentiableAt IM (IB₂.prod 𝓘(𝕜, F₂)) (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
