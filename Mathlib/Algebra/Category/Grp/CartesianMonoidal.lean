@@ -114,10 +114,13 @@ noncomputable def cartesianMonoidalCategory : CartesianMonoidalCategory AddCommG
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-@[deprecated (since := "2025-05-15")]
-alias chosenFiniteProductsAddCommGrp := cartesianMonoidalCategoryAddCommGrp
+@[deprecated (since := "2025-10-10")]
+alias cartesianMonoidalCategoryAddCommGrp := cartesianMonoidalCategory
 
-attribute [local instance] cartesianMonoidalCategoryAddCommGrp
+@[deprecated (since := "2025-05-15")]
+alias chosenFiniteProductsAddCommGrp := cartesianMonoidalCategory
+
+attribute [local instance] cartesianMonoidalCategory
 
 noncomputable instance : BraidedCategory AddCommGrpCat.{u} := .ofCartesianMonoidalCategory
 
