@@ -22,8 +22,8 @@ and that the universe lift functor on `Type` preserves all limits. Once we know
 that `GrpCat.uliftFunctor` preserves all limits and is fully faithful, it will
 automatically create all limits that exist, i.e. all small ones.
 
-We then switch to `AddCommGrpCat` and show that `AddCommGrpCat.uliftFunctor` preserves zero morphisms
-and is an additive functor, which again is pretty obvious.
+We then switch to `AddCommGrpCat` and show that `AddCommGrpCat.uliftFunctor` preserves zero
+morphisms and is an additive functor, which again is pretty obvious.
 
 The last result is a proof that `AddCommGrpCat.uliftFunctor` preserves all colimits
 (and hence creates small colimits). This is the only non-formal part of this file,

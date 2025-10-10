@@ -87,7 +87,7 @@ def binaryProductLimitCone (G H : CommGrpCat.{u}) : LimitCone (pair G H) where
 
 /-- We choose `CommGrpCat.of (G × H)` as the product of `G` and `H` and `CommGrpCat.of PUnit` as
 the terminal object. -/
-noncomputable instance cartesianMonoidalCategoryCommGrp : CartesianMonoidalCategory CommGrpCat.{u} :=
+noncomputable instance cartesianMonoidalCategory : CartesianMonoidalCategory CommGrpCat.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (CommGrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
@@ -108,9 +108,9 @@ end CommGrpCat
 
 namespace AddCommGrpCat
 
-/-- We choose `AddCommGrpCat.of (G × H)` as the product of `G` and `H` and `AddCommGrpCat.of PUnit` as
-the terminal object. -/
-noncomputable def cartesianMonoidalCategoryAddCommGrp : CartesianMonoidalCategory AddCommGrpCat.{u} :=
+/-- We choose `AddCommGrpCat.of (G × H)` as the product of `G` and `H` and
+`AddCommGrpCat.of PUnit` as the terminal object. -/
+noncomputable def cartesianMonoidalCategory : CartesianMonoidalCategory AddCommGrpCat.{u} :=
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 

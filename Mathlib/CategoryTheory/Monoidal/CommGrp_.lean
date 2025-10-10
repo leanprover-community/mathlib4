@@ -206,8 +206,8 @@ protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful wher
 protected instance Full.mapCommGrp [F.Full] [F.Faithful] : F.mapCommGrp.Full where
   map_surjective := F.mapMon.map_surjective
 
-/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `GrpCat(F) : GrpCat C ⥤ GrpCat D` is fully
-faithful too. -/
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
+`CommGrpCat(F) : CommGrpCat C ⥤ CommGrpCat D` is fully faithful too. -/
 @[simps]
 protected def FullyFaithful.mapCommGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
   preimage f := .mk <| hF.preimage f.hom

@@ -169,8 +169,8 @@ instance forget₂Mon_preservesLimits : PreservesLimits (forget₂ GrpCat.{u} Mo
   GrpCat.forget₂Mon_preservesLimitsOfSize.{u, u}
 
 /-- If `J` is `u`-small, the forgetful functor from `GrpCat.{u}` preserves limits of shape `J`. -/
-@[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddGrpCat.{u}` preserves limits of
-shape `J`. -/]
+@[to_additive /-- If `J` is `u`-small, the forgetful functor from `AddGrpCat.{u}` preserves limits
+of shape `J`. -/]
 instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget GrpCat.{u}) where
   preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
@@ -413,7 +413,7 @@ noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrpC
 @[to_additive]
 noncomputable instance forget_createsLimit :
     CreatesLimit F (forget CommGrpCat.{u}) := by
-  set e : forget₂ CommGrpCat.{u} GrpCat.{u} ⋙ forget GrpCat.{u} ≅ forget CommGrpCat.{u} := Iso.refl _
+  set e : forget₂ CommGrpCat.{u} GrpCat.{u} ⋙ forget GrpCat.{u} ≅ forget CommGrpCat.{u} := .refl _
   exact createsLimitOfNatIso e
 
 @[to_additive]

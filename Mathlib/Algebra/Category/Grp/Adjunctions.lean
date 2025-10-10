@@ -19,7 +19,7 @@ category of abelian groups.
   with generators `x : X`.
 * `GrpCat.free`: constructs the functor associating to a type `X` the free group with
   generators `x : X`.
-* `GrpCat.abelianize`: constructs the functor which associates to a group `G` its abelianization `Gᵃᵇ`.
+* `GrpCat.abelianize`: constructs the functor which sends a group `G` to its abelianization `Gᵃᵇ`.
 
 ## Main statements
 
