@@ -135,6 +135,14 @@ theorem lift_comp {H : Type u₂} [Groupoid.{v₂} H] (φ : C ⥤ G) (ψ : G ⥤
   apply lift_unique
   rw [← Functor.assoc, lift_spec]
 
+/-- The universal property of the free groupoid. -/
+def strictUniversalPropertyFixedTarget :
+    Localization.StrictUniversalPropertyFixedTarget (of C) ⊤ G where
+  inverts _ := inferInstance
+  lift F _ := lift F
+  fac _ _ := lift_spec ..
+  uniq F G h := by rw [lift_unique (of C ⋙ G) F h, ← lift_unique (of C ⋙ G) G rfl]
+
 instance : IsGroupoid (⊤ : MorphismProperty C).Localization where
   all_isIso {X Y} f := by
     have : MorphismProperty.isomorphisms (⊤ : MorphismProperty C).Localization = ⊤ := by
@@ -147,19 +155,14 @@ instance : IsGroupoid (⊤ : MorphismProperty C).Localization where
     rw [this]
     trivial
 
-instance : Groupoid (⊤ : MorphismProperty C).Localization :=
+/-- Localization of a category with respect to all morphisms results in a groupoid. -/
+def groupoidLocalizationTop : Groupoid (⊤ : MorphismProperty C).Localization :=
   Groupoid.ofIsGroupoid
 
+attribute [local instance] groupoidLocalizationTop
+
 instance : (of C).IsLocalization ⊤ :=
-  Functor.IsLocalization.mk' _ _
-  { inverts _ := inferInstance
-    lift F _ := lift F
-    fac _ _ := lift_spec ..
-    uniq F G h := by rw [lift_unique (of C ⋙ G) F h, ← lift_unique (of C ⋙ G) G rfl] }
-  { inverts _ := inferInstance
-    lift F _ := lift F
-    fac _ _ := lift_spec ..
-    uniq F G h := by rw [lift_unique (of C ⋙ G) F h, ← lift_unique (of C ⋙ G) G rfl] }
+  .mk' _ _ strictUniversalPropertyFixedTarget strictUniversalPropertyFixedTarget
 
 end UniversalProperty
 
