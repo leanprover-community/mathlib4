@@ -403,8 +403,8 @@ section
 /-- If `f = g`, `R` adjoin a root of `f` is isomorphic to `R` adjoin a root of `g`. -/
 def algEquivOfEq {f g : R[X]} (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
   .ofAlgHom
-    (liftAlgHom f (root g) (by simp [hfg]))
-    (liftAlgHom g (root f) (by simp [hfg]))
+    (liftAlgHom f (Algebra.ofId ..) (root g) (by simp [hfg]))
+    (liftAlgHom g (Algebra.ofId ..) (root f) (by simp [← hfg]))
     (by ext; simp)
     (by ext; simp)
 
