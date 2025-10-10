@@ -112,6 +112,7 @@ lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
   contrapose! hL_zero
   exact hL_zero_of_L2 hL_zero
 
+/-- Coercion from a submodule to its topological closure as a continuous linear map. -/
 def toClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
     [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) :
     s →L[R] s.topologicalClosure where
@@ -122,12 +123,14 @@ def toClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Topo
 section Extension
 
 variable {M R F : Type*} [Ring R] [NormedAddCommGroup M] [Module R M]
-    [CompleteSpace M] [UniformContinuousConstSMul R M]
-    [UniformSpace F] [AddCommGroup F] [Module R F] [T2Space F] [CompleteSpace F]
-    {s : Submodule R M}
+  [CompleteSpace M] [UniformContinuousConstSMul R M]
+  [UniformSpace F] [AddCommGroup F] [Module R F] [T2Space F] [CompleteSpace F]
+  {s : Submodule R M}
 
 variable [IsUniformAddGroup F] [UniformContinuousConstSMul R F]
 
+/-- Extension of a linear map `s →L[R] F` on a submodule to a linear map on the topological
+closure of the submodule. -/
 noncomputable
 def closureExtensionCLM (s : Submodule R M) (f : s →L[R] F) : s.topologicalClosure →L[R] F where
   toFun := closureExtension s f
@@ -146,8 +149,7 @@ def closureExtensionCLM (s : Submodule R M) (f : s →L[R] F) : s.topologicalClo
       · rfl
       all_goals exact ContinuousLinearMap.uniformContinuous _
 
-lemma closureExtensionCLM_apply (s : Submodule R M) (f : s →L[R] F)
-    (x : s.topologicalClosure) :
+lemma closureExtensionCLM_apply (s : Submodule R M) (f : s →L[R] F) (x : s.topologicalClosure) :
     closureExtensionCLM s f x = closureExtension s f x := by
   simp [closureExtensionCLM]
 
@@ -158,6 +160,8 @@ lemma closureExtensionCLM_coe (s : Submodule R M) (f : s →L[R] F) (x : s) :
 
 end Extension
 
+/-- Equivalence between the completion of a submodule and its topological closure, in a complete
+space. -/
 noncomputable
 def completionClosureEquiv {M R : Type*} [Ring R] [NormedAddCommGroup M] [CompleteSpace M]
     [Module R M] [UniformContinuousConstSMul R M] (s : Submodule R M) :
@@ -172,6 +176,8 @@ lemma completionClosureEquiv_coe {M R : Type*} [Ring R] [NormedAddCommGroup M] [
   simp [completionClosureEquiv, AbstractCompletion.compareEquiv]
   exact AbstractCompletion.compare_coe _ _ _
 
+/-- Linear isometry between the completion of a submodule and its topological closure, in a complete
+space. -/
 noncomputable
 def completionClosureLinearIsometry {M R : Type*} [Ring R] [NormedAddCommGroup M] [Module R M]
     [CompleteSpace M] [UniformContinuousConstSMul R M] (s : Submodule R M) :
