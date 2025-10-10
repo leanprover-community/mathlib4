@@ -41,6 +41,7 @@ The separate implications are:
 * `MeasureTheory.limsup_measure_closed_le_of_forall_tendsto_measure` is the implication (B) → (C).
 * `MeasureTheory.tendsto_of_forall_isOpen_le_liminf` gives the implication (O) → (T) for
     any sequence of Borel probability measures.
+* `MeasureTheory.tendsto_of_limsup_measure_closed_le` gives the implication (C) → (T).
 
 We also deduce a practical convergence criterion for probability measures, in
 `IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem`.
@@ -543,8 +544,7 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat' {μ : ProbabilityMeasure Ω}
     (h_opens : ∀ G, IsOpen G → (μ : Measure Ω) G ≤ liminf (fun i ↦ (μs i : Measure Ω) G) atTop) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
   refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
-  apply tendsto_integral_of_forall_integral_le_liminf_integral
-  intro f f_nn
+  refine tendsto_integral_of_forall_integral_le_liminf_integral fun f f_nn ↦ ?_
   exact integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure f_nn h_opens
 
 /-- One implication of the portmanteau theorem:
@@ -569,14 +569,19 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
   convert obs
   simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
+/-- One implication of the portmanteau theorem:
+If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
+μsₙ converge weakly to the measure μ. Formulated here for countably generated filters.
+
+This lemma uses a coercion from `ProbabilityMeasure` to `Measure` in the hypothesis.
+See `tendsto_of_forall_isOpen_le_liminf` for the version without coercion. -/
 theorem tendsto_of_forall_isOpen_le_liminf' {ι : Type*} {μ : ProbabilityMeasure Ω}
     {μs : ι → ProbabilityMeasure Ω} {L : Filter ι} [L.IsCountablyGenerated]
     (h_opens : ∀ G, IsOpen G → (μ : Measure Ω) G ≤ L.liminf (fun i ↦ (μs i : Measure Ω) G)) :
     L.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
-  apply Filter.tendsto_of_seq_tendsto (fun u hu ↦ ?_)
-  apply tendsto_of_forall_isOpen_le_liminf_nat' (fun G hG ↦ ?_)
-  apply (h_opens G hG).trans
-  exact liminf_le_liminf_of_le hu
+  apply Filter.tendsto_of_seq_tendsto fun u hu ↦ ?_
+  apply tendsto_of_forall_isOpen_le_liminf_nat' fun G hG ↦ ?_
+  exact (h_opens G hG).trans (liminf_le_liminf_of_le hu)
 
 /-- One implication of the portmanteau theorem:
 If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
@@ -585,15 +590,60 @@ theorem tendsto_of_forall_isOpen_le_liminf {ι : Type*} {μ : ProbabilityMeasure
     {μs : ι → ProbabilityMeasure Ω} {L : Filter ι} [L.IsCountablyGenerated]
     (h_opens : ∀ G, IsOpen G → μ G ≤ L.liminf (fun i ↦ μs i G)) :
     L.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
-  apply Filter.tendsto_of_seq_tendsto (fun u hu ↦ ?_)
-  apply tendsto_of_forall_isOpen_le_liminf_nat (fun G hG ↦ ?_)
-  apply (h_opens G hG).trans
+  apply Filter.tendsto_of_seq_tendsto fun u hu ↦ ?_
+  apply tendsto_of_forall_isOpen_le_liminf_nat fun G hG ↦ (h_opens G hG).trans ?_
   change _ ≤ atTop.liminf ((fun i ↦ μs i G) ∘ u)
   rw [liminf_comp]
   refine liminf_le_liminf_of_le hu (by isBoundedDefault) ?_
   exact isBoundedUnder_of ⟨1, by simp⟩ |>.isCoboundedUnder_ge
 
 end le_liminf_open_implies_convergence
+
+section Closed
+
+variable {Ω ι : Type*} {mΩ : MeasurableSpace Ω} [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    {L : Filter ι} [L.IsCountablyGenerated]
+
+/-- One implication of the portmanteau theorem:
+If for all closed sets `F` we have the limsup condition `limsup μsₙ(F) ≤ μ(F)`, then the measures
+`μsₙ` converge weakly to the measure `μ`. Formulated here for countably generated filters.
+
+This lemma uses a coercion from `ProbabilityMeasure` to `Measure` in the hypothesis.
+See `tendsto_of_limsup_measure_closed_le` for the version without coercion. -/
+lemma tendsto_of_limsup_measure_closed_le'
+    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ (μs i : Measure Ω) F) L ≤ (μ : Measure Ω) F) :
+    Tendsto μs L (𝓝 μ) := by
+  refine tendsto_of_forall_isOpen_le_liminf' ?_
+  rwa [← limsup_measure_closed_le_iff_liminf_measure_open_ge]
+
+lemma tendsto_of_limsup_measure_closed_le_nat {μs : ℕ → ProbabilityMeasure Ω}
+    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) atTop ≤ μ F) :
+    Tendsto μs atTop (𝓝 μ) := by
+  refine tendsto_of_limsup_measure_closed_le' fun F hF_closed ↦ ?_
+  specialize h F hF_closed
+  have aux : ENNReal.ofNNReal (limsup (fun i ↦ μs i F) atTop) =
+      limsup (ENNReal.ofNNReal ∘ fun i ↦ μs i F) atTop :=
+    Monotone.map_limsup_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · F) (by fun_prop)
+      ⟨1, by simp⟩ ⟨0, by simp⟩
+  have obs := ENNReal.coe_mono h
+  simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
+  convert obs
+  simp
+
+/-- One implication of the portmanteau theorem:
+If for all closed sets `F` we have the limsup condition `limsup μsₙ(F) ≤ μ(F)`, then the measures
+`μsₙ` converge weakly to the measure `μ`. Formulated here for countably generated filters. -/
+theorem tendsto_of_limsup_measure_closed_le
+    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) L ≤ μ F) :
+    Tendsto μs L (𝓝 μ) := by
+  apply Filter.tendsto_of_seq_tendsto fun u hu ↦ ?_
+  apply tendsto_of_limsup_measure_closed_le_nat fun F hF ↦ le_trans ?_ (h F hF)
+  change atTop.limsup ((fun i ↦ μs i F) ∘ u) ≤ _
+  rw [limsup_comp]
+  exact limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩
+
+end Closed
 
 section Lipschitz
 
@@ -618,47 +668,6 @@ lemma setIntegral_mono_on' {X : Type*} {mX : MeasurableSpace X}
   · filter_upwards [hs.toMeasurable_ae_eq.mem_iff] with x hx
     rw [hx]
     exact h x
-
-lemma tendsto_of_limsup_measure_closed_le' {Ω ι : Type*} [MeasurableSpace Ω]
-    [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
-    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
-    {L : Filter ι} [L.IsCountablyGenerated]
-    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ (μs i : Measure Ω) F) L ≤ (μ : Measure Ω) F) :
-    Tendsto μs L (𝓝 μ) := by
-  refine tendsto_of_forall_isOpen_le_liminf' ?_
-  rwa [← limsup_measure_closed_le_iff_liminf_measure_open_ge]
-
-lemma tendsto_of_limsup_measure_closed_le_nat {Ω : Type*} [MeasurableSpace Ω]
-    [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
-    {μ : ProbabilityMeasure Ω} {μs : ℕ → ProbabilityMeasure Ω}
-    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) atTop ≤ μ F) :
-    Tendsto μs atTop (𝓝 μ) := by
-  refine tendsto_of_limsup_measure_closed_le' fun F hF_closed ↦ ?_
-  specialize h F hF_closed
-  have aux : ENNReal.ofNNReal (limsup (fun i ↦ μs i F) atTop) =
-          limsup (ENNReal.ofNNReal ∘ fun i ↦ μs i F) atTop := by
-    refine Monotone.map_limsup_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · F) ?_ ?_ ?_
-    · exact ENNReal.continuous_coe.continuousAt
-    · exact ⟨1, by simp⟩
-    · exact ⟨0, by simp⟩
-  have obs := ENNReal.coe_mono h
-  simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
-  convert obs
-  simp
-
-lemma tendsto_of_limsup_measure_closed_le {Ω ι : Type*} [MeasurableSpace Ω]
-    [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
-    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
-    {L : Filter ι} [L.IsCountablyGenerated]
-    (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) L ≤ μ F) :
-    Tendsto μs L (𝓝 μ) := by
-  apply Filter.tendsto_of_seq_tendsto fun u hu ↦ ?_
-  apply tendsto_of_limsup_measure_closed_le_nat fun G hG ↦ ?_
-  apply le_trans ?_ (h G hG)
-  change atTop.limsup ((fun i ↦ μs i G) ∘ u) ≤ _
-  rw [limsup_comp]
-  exact limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩
-
 lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*}
     {mΩ : MeasurableSpace Ω} [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
     {μ : ProbabilityMeasure Ω}
