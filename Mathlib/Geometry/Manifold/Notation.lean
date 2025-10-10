@@ -379,9 +379,23 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  match ← findModelInner e baseInfo with
-  | some m => return m
-  | none => throwError "Could not find a model with corners for {e}"
+  -- At first, try finding a model on the space itself.
+  if let some m ← findModelInner e baseInfo then return m
+  match_expr e with
+  | Prod src tgt =>
+    trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
+    match  ← findModelInner src baseInfo with
+    | none => throwError "Found no mdel with corners on first factor {src}"
+    | some aI =>
+      match ← findModelInner tgt baseInfo with
+      | none => throwError "Found no model with corners on the second factor {tgt}"
+      | some bI =>
+        -- TODO: recurse into the factors!
+        let aT : Term ← Term.exprToSyntax aI
+        let bT : Term ← Term.exprToSyntax bI
+        let iTerm : Term ← ``(ModelWithCorners.prod $aT $bT)
+        Term.elabTerm iTerm none
+  | _ => throwError "Could not find a model with corners for {e}"
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.

@@ -824,34 +824,39 @@ section
 variable {EM' : Type*} [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {f g : M → M'} {g : M → ℝ} {h : E → M'} {k : M × E → M'}
+  {f g : M → M'} {h : M → 𝕜} {h' : E → M'} {k : M × E → M'}
 
 /-- info: MDifferentiable I I' f : Prop -/
 #guard_msgs in
 #check MDiff f
-/-- error: Could not find a model with corners for M × M -/
+
+/-- info: MDifferentiable (I.prod I) (I'.prod I') (Prod.map f g) : Prop -/
 #guard_msgs in
 #check MDiff (Prod.map f g)
 
-/-- error: Could not find a model with corners for M × E -/
+/-- info: MDifferentiable (I.prod I) (I'.prod 𝓘(𝕜, 𝕜)) (Prod.map f h) : Prop -/
 #guard_msgs in
 #check MDiff (Prod.map f h)
 
-/-- error: Could not find a model with corners for M × E × M -/
+/-- error: Found no model with corners on the second factor M × M -/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map h g))
 
-/-- error: Could not find a model with corners for (M × M) × E -/
+/-- error: Found no mdel with corners on first factor M × M -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f g) h)
 
-/-- error: Could not find a model with corners for M' × ℝ -/
+/-- info: MDifferentiable I (I'.prod I') fun x ↦ (f x, g x) : Prop -/
 #guard_msgs in
 #check MDiff (fun x ↦ (f x, g x))
 
-/-- error: Could not find a model with corners for M × E -/
+/-- info: MDifferentiable (I.prod 𝓘(𝕜, E)) I' k : Prop -/
 #guard_msgs in
 #check MDiff k
+
+-- TODO: add tests for a function on ModelProd H H'
+-- TODO: add tests for the product of two normed spaces (inferring 𝓘(𝕜, E × F))
+-- and expecting a warning message!
 
 end
 
