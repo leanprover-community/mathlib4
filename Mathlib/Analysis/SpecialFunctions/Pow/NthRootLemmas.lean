@@ -16,7 +16,7 @@ In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
 ## TODO
 
 Rewrite the proof of `Nat.nthRoot.lt_pow_go_succ_aux` to avoid dependencies on real numbers,
-so that we can move this file to Batteries.
+so that we can move this file to `Mathlib/Data/Nat/NthRoot`, then to Batteries.
 -/
 
 namespace Nat
