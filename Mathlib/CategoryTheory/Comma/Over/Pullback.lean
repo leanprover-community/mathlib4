@@ -91,7 +91,7 @@ instance faithful_pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f]
   exact (mapPullbackAdj f).faithful_R_of_epi_counit_app
 
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
-def pullbackId {X : C} [∀ {Z} (g : Z ⟶ X), HasPullback g (𝟙 X)] : pullback (𝟙 X) ≅ 𝟭 _ :=
+def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
   conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
@@ -203,7 +203,7 @@ instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
   exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
-def pushoutId {X : C} [∀ {Z} (g : X ⟶ Z), HasPushout g (𝟙 X)] : pushout (𝟙 X) ≅ 𝟭 _ :=
+def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
   (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _)) ).symm
     (Under.mapId X).symm
 
