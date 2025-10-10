@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Final.Type
 
 /-!
@@ -20,12 +21,14 @@ in the category `SheafOfModules S` which corresponds to `φ`, and
 show that the adjoint morphism
 `pullbackObjUnitToUnit φ : (pullback.{u} φ).obj (unit S) ⟶ unit R`
 is an isomorphism when `F` is a final functor.
-
+More generally, the functor `pullback φ` sends the free sheaf
+of modules `free I` to `free I`, see `pullbackObjFreeIso` and
+`freeFunctorCompPullbackIso`.
 -/
 
 universe v v₁ v₂ u₁ u₂ u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 namespace SheafOfModules
 
@@ -106,5 +109,33 @@ instance [F.Final] : IsIso (pullbackObjUnitToUnit φ) := by
   rw [pushforwardSections_unitHomEquiv, EmbeddingLike.apply_eq_iff_eq,
     Adjunction.homEquiv_naturality_right,
     pullbackPushforwardAdjunction_homEquiv_pullbackObjUnitToUnit]
+
+variable [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
+  [HasWeakSheafify K AddCommGrp.{u}] [K.WEqualsLocallyBijective AddCommGrp.{u}] [F.Final]
+
+/-- The pullback of a free sheaf of modules is a free sheaf of modules. -/
+noncomputable def pullbackObjFreeIso (I : Type u) :
+    (pullback φ).obj (free I) ≅ free I :=
+  (asIso (sigmaComparison _ _)).symm ≪≫
+    Sigma.mapIso (fun _ ↦ asIso (pullbackObjUnitToUnit φ))
+
+@[reassoc (attr := simp)]
+lemma pullback_map_ιFree_comp_pullbackObjFreeIso_hom {I : Type u} (i : I) :
+    (pullback φ).map (ιFree i) ≫ (pullbackObjFreeIso φ I).hom =
+      pullbackObjUnitToUnit φ ≫ ιFree i := by
+  simp [pullbackObjFreeIso, ιFree]
+
+@[reassoc (attr := simp)]
+lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
+    (pullback φ).map (freeMap f) ≫ (pullbackObjFreeIso φ J).hom =
+      (pullbackObjFreeIso φ I).hom ≫ freeMap f :=
+  Cofan.IsColimit.hom_ext (isColimitCofanMkObjOfIsColimit (pullback φ) _ _
+    (isColimitFreeCofan (R := S) I)) _ _ (fun i ↦ by simp [← Functor.map_comp_assoc])
+
+/-- The canonical isomorphism `freeFunctor ⋙ pullback φ ≅ freeFunctor` for a
+continuous map between ringed sites, when the underlying functor between the sites
+is final. -/
+noncomputable def freeFunctorCompPullbackIso : freeFunctor ⋙ pullback φ ≅ freeFunctor :=
+  NatIso.ofComponents (pullbackObjFreeIso φ)
 
 end SheafOfModules
