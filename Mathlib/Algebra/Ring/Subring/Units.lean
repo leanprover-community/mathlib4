@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.GroupTheory.Index
 
 /-!
 
@@ -26,11 +25,3 @@ def Units.posSubgroup (R : Type*) [Semiring R] [LinearOrder R] [IsStrictOrderedR
 theorem Units.mem_posSubgroup {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
     (u : Rˣ) : u ∈ Units.posSubgroup R ↔ (0 : R) < u :=
   Iff.rfl
-
-lemma Units.index_posSubgroup (R : Type*) [Ring R] [LinearOrder R] [IsStrictOrderedRing R] :
-    (posSubgroup R).index = 2 := by
-  rw [Subgroup.index_eq_two_iff]
-  refine ⟨-1, fun a ↦ ?_⟩
-  obtain h | h := lt_or_gt_of_ne a.ne_zero
-  · simp [h, h.le]
-  · simp [h, xor_comm, h.le]
