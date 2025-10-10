@@ -532,10 +532,18 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
     have := lt_of_le_of_ne rle ne
     --insert `r` into `q`
     sorry
+  have tail_eq : (q ⟨q.length,lt_add_one q.length⟩).1.1 = maximalIdeal R := by
+    sorry
   have lem (i : Fin q.length) :=
     ext_succ_nontrivial_of_eq_of_le.{v, u, v} M (q.step i) (eq_of_le i) i
-
-  sorry
+  have : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) M q.length) := by
+    --apply `lem` obtain a ntr for `Localization (maximalIdeal R).primeCompl`
+    --then consider it as localization
+    sorry
+  simp only [← hq, injectiveDimension_eq_sInf.{v, u, v} M, le_sInf_iff, Set.mem_setOf_eq]
+  intro b hb
+  by_contra! lt
+  exact (not_subsingleton_iff_nontrivial.mpr this) (hb q.length lt)
 
 lemma injectiveDimension_eq_depth
     (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
