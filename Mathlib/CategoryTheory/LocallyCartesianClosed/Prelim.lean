@@ -100,50 +100,54 @@ end Sigma
 
 /-- The reindexing of `Z : Over X` along `Y : Over X`, defined by pulling back `Z` along
 `Y.hom : Y.left ⟶ X`. -/
-abbrev Reindex [HasPullbacks C] {X : C} (Y : Over X) (Z : Over X) : Over Y.left :=
+abbrev Reindex {X : C} (Y : Over X) [HasPullbacksAlong Y.hom] (Z : Over X) : Over Y.left :=
   (Over.pullback Y.hom).obj Z
+
 
 namespace Reindex
 
 open Over Sigma
 
-variable [HasPullbacks C] {X : C}
+variable {X : C}
 
-lemma hom {Y : Over X} {Z : Over X} :
+lemma hom {Y : Over X} {Z : Over X} [HasPullbacksAlong Y.hom] :
     (Reindex Y Z).hom = pullback.snd Z.hom Y.hom := by
   rfl
 
 /-- `Reindex` is symmetric in its first and second arguments up to an isomorphism. -/
-def symmetryObjIso (Y Z : Over X) :
+def symmetryObjIso (Y Z : Over X) [HasPullbacksAlong Y.hom] [HasPullbacksAlong Z.hom] :
     (Reindex Y Z).left ≅ (Reindex Z Y).left := pullbackSymmetry _ _
 
 /-- The reindexed sum of `Z` along `Y` is isomorphic to the reindexed sum of `Y` along `Z` in the
 category `Over X`. -/
 @[simps!]
-def sigmaSymmetryIso (Y Z : Over X) :
+def sigmaSymmetryIso (Y Z : Over X) [HasPullbacksAlong Y.hom] [HasPullbacksAlong Z.hom] :
   Sigma Y (Reindex Y Z) ≅ Sigma Z (Reindex Z Y) := by
   apply Over.isoMk _ _
   · exact pullbackSymmetry ..
   · simp [pullback.condition]
 
-lemma symmetry_hom {Y Z : Over X} :
+lemma symmetry_hom {Y Z : Over X} [HasPullbacksAlong Y.hom] [HasPullbacksAlong Z.hom] :
     (pullback.snd Z.hom Y.hom) ≫ Y.hom =
     (pullbackSymmetry _ _).hom ≫ (pullback.snd Y.hom Z.hom) ≫ Z.hom  := by
   simp [← pullback.condition]
 
 /-- The first projection out of the reindexed sigma object. -/
-def fstProj (Y Z : Over X) : Sigma Y (Reindex Y Z) ⟶ Y :=
+def fstProj (Y Z : Over X) [HasPullbacksAlong Y.hom] :
+    Sigma Y (Reindex Y Z) ⟶ Y :=
   Over.homMk (pullback.snd Z.hom Y.hom) (by simp)
 
-lemma fstProj_sigma_fst (Y Z : Over X) : fstProj Y Z = Sigma.fst (Reindex Y Z) := by rfl
+lemma fstProj_sigma_fst (Y Z : Over X) [HasPullbacksAlong Y.hom] [HasPullbacksAlong Z.hom] :
+    fstProj Y Z = Sigma.fst (Reindex Y Z) := by
+  rfl
 
 /-- The second projection out of the reindexed sigma object. -/
-def sndProj (Y Z : Over X) : Sigma Y (Reindex Y Z) ⟶ Z :=
+def sndProj (Y Z : Over X) [HasPullbacksAlong Y.hom] :
+    Sigma Y (Reindex Y Z) ⟶ Z :=
   Over.homMk (pullback.fst Z.hom Y.hom) (by simp [pullback.condition])
 
 /-- The notation for the first projection of the reindexed sigma object.
 `π_` and `μ_` fit in the following pullback square:
-
 ```
                         μ_ Y Z
       Σ (Reindex Y Z) -----------> Z
@@ -173,17 +177,17 @@ scoped notation " π_ " => fstProj
 -/
 scoped notation " μ_ " => sndProj
 
-lemma counit_app_pullback_fst {Y Z : Over X} :
+lemma counit_app_pullback_fst {Y Z : Over X} [HasPullbacksAlong Y.hom] :
     μ_ Y Z = (mapPullbackAdj Y.hom).counit.app Z := by
   simp [mapPullbackAdj_counit_app]
   rfl
 
-lemma counit_app_pullback_snd {Y Z : Over X} :
+lemma counit_app_pullback_snd {Y Z : Over X} [HasPullbacksAlong Y.hom] [HasPullbacksAlong Z.hom] :
     π_ Y Z = (sigmaSymmetryIso Y Z).hom ≫ (mapPullbackAdj Z.hom).counit.app Y := by
   aesop
 
 @[simp]
-lemma counit_app_pullback_snd_eq_homMk {Y Z : Over X} :
+lemma counit_app_pullback_snd_eq_homMk {Y Z : Over X} [HasPullbacksAlong Y.hom] :
     π_ Y Z = (homMk (Reindex Y Z).hom : (Sigma Y (Reindex Y Z)) ⟶ Y) :=
   OverMorphism.ext (by aesop)
 
@@ -360,7 +364,7 @@ variable {C}
 
 /-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
-def starPullbackIsoStar [HasBinaryProducts C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+def starPullbackIsoStar [HasBinaryProducts C] {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     star Y ⋙ pullback f ≅ star X :=
   conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjStar Y)) (forgetAdjStar X) (mapForget f)
 
