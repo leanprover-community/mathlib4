@@ -381,6 +381,15 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   -- At first, try finding a model on the space itself.
   if let some m ← findModelInner e baseInfo then return m
+  -- TODO: recurse into further factors, as necessary
+  -- when having normed space, form the product all the way (not recursively)
+  -- i.e., E × E × E gets model 𝓘(𝕜, E × E × E) and similarly for M × E × E × E
+  -- also: (M × E) × E × E and (M × E) × (E × E); what are the correct answers here?
+
+  -- when we take the product of two normed spaces, warn about this/print an info line!
+
+  -- refactor the Inner method to return whether we have a normed space or not
+  -- and use an outparam to keep track.
   match_expr e with
   | Prod src tgt =>
     trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
