@@ -334,14 +334,6 @@ lemma rightAdjointObjIsDefined_limit {J : Type*} [Category J] (R : J ⥤ D)
     F.rightAdjointObjIsDefined (limit R) :=
   rightAdjointObjIsDefined_of_isLimit (limit.isLimit R) h
 
-@[simps]
-def PartialRightAdjointSource.lift {E : Type*} [Category E] (G : E ⥤ D)
-    (hG : ∀ X, F.rightAdjointObjIsDefined (G.obj X)) : E ⥤ PartialRightAdjointSource F where
-  obj X := {
-    obj := G.obj X
-    property := hG X }
-  map f := G.map f
-
 end partialRightAdjoint
 
 end Functor
