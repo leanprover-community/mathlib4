@@ -88,16 +88,18 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly R f).IsRoot �
 
 variable (f)
 
-lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
+lemma finite_setOf_hasEigenvalue : Set.Finite {μ | f.HasEigenvalue μ} := by
   have h : minpoly R f ≠ 0 := minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := R) f)
   convert (minpoly R f).rootSet_finite R
   ext μ
-  change f.HasEigenvalue μ ↔ _
-  rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
+  rw [Set.mem_setOf, hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
+
+@[deprecated (since := "2025-10-10")]
+alias finite_hasEigenvalue := finite_setOf_hasEigenvalue
 
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
 noncomputable instance : Fintype f.Eigenvalues :=
-  Set.Finite.fintype f.finite_hasEigenvalue
+  Set.Finite.fintype f.finite_setOf_hasEigenvalue
 
 end IsDomain
 
@@ -132,8 +134,8 @@ section FiniteSpectrum
 theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
     Set.Finite (spectrum K f) := by
-  convert f.finite_hasEigenvalue
-  ext f x
+  convert f.finite_setOf_hasEigenvalue
+  ext x
   exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
 
 variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]
