@@ -101,67 +101,6 @@ lemma _root_.ContinuousLinearMap.memLp_two {E : Type*}
     {μ : Measure E} [HasTwoMoments μ] (L : StrongDual ℝ E) :
     MemLp L 2 μ := L.comp_memLp' memLp_two_id
 
-section centeredToLp
-
-/-- The Bochner integral as a continuous linear map from the StrongDual to `ℝ`.
-This is well defined if the measure has a first moment. If not, it is uniformly zero (since
-`Dual.toLp` is zero in that case). -/
-noncomputable
-def integralDualCLM (μ : Measure E) : StrongDual ℝ E →L[ℝ] ℝ :=
-  L1.integralCLM.comp (StrongDual.toLp μ 1)
-
-/-- The function `L ↦ L (x - μ[id])` as a continuous linear map from the StrongDual to `Lp ℝ p μ`.
-This definition takes meaningful values only if the measure has a moment of order `p`
-(`MemLp id p μ`). -/
-noncomputable
-def StrongDual.centeredToLp (μ : Measure E) [IsFiniteMeasure μ] (p : ℝ≥0∞) [Fact (1 ≤ p)] :
-    StrongDual ℝ E →L[ℝ] Lp ℝ p μ :=
-  StrongDual.toLp μ p - (Lp.constL p μ ℝ).comp (integralDualCLM μ)
-
-lemma centeredToLp_apply [IsFiniteMeasure μ] (hμp : MemLp id p μ) (L : StrongDual ℝ E) :
-    StrongDual.centeredToLp μ p L =ᵐ[μ] fun x ↦ L (x - ∫ z, z ∂μ) := by
-  have hμ1 : MemLp id 1 μ := MemLp.mono_exponent hμp (Fact.out (p := 1 ≤ p))
-  by_cases hμ_zero : μ = 0
-  · simp only [hμ_zero, ae_zero, integral_zero_measure, sub_zero]
-    exact trivial
-  replace hμ_zero : NeZero μ := ⟨hμ_zero⟩
-  simp only [StrongDual.centeredToLp, ContinuousLinearMap.coe_sub', Pi.sub_apply,
-    AddSubgroupClass.coe_sub, map_sub]
-  filter_upwards [StrongDual.toLp_apply_ae hμp L,
-    Lp.coeFn_sub (StrongDual.toLp μ p L) ((Lp.constL p μ ℝ).comp (integralDualCLM μ) L)]
-    with x hx₁ hx₂
-  simp only [AddSubgroupClass.coe_sub, Pi.sub_apply] at hx₂
-  rw [← hx₁, hx₂]
-  congr
-  simp only [integralDualCLM, ContinuousLinearMap.coe_comp', Function.comp_apply,
-    Lp.constL_apply, Lp.const_val, AEEqFun.coeFn_const_eq]
-  have h_int_eq := L.integral_comp_comm (hμ1.integrable le_rfl)
-  simp only [id_eq] at h_int_eq
-  rw [← L1.integral_eq, L1.integral_eq_integral, ← h_int_eq]
-  refine integral_congr_ae ?_
-  exact StrongDual.toLp_apply_ae hμ1 L
-
-lemma centeredToLp_two_inner [HasTwoMoments μ] (L₁ L₂ : StrongDual ℝ E) :
-    ⟪StrongDual.centeredToLp μ 2 L₁, StrongDual.centeredToLp μ 2 L₂⟫_ℝ
-      = covarianceBilin μ L₁ L₂ := by
-  rw [real_inner_comm, L2.inner_def, covarianceBilin_apply' memLp_two_id]
-  refine integral_congr_ae ?_
-  filter_upwards [centeredToLp_apply memLp_two_id L₁, centeredToLp_apply memLp_two_id L₂]
-    with x hx₁ hx₂
-  simp [hx₁, hx₂]
-
-lemma norm_centeredToLp_two [HasTwoMoments μ] (L : StrongDual ℝ E) :
-    ‖StrongDual.centeredToLp μ 2 L‖ = √Var[L; μ] := by
-  rw [norm_eq_sqrt_real_inner, centeredToLp_two_inner,
-    covarianceBilin_self_eq_variance memLp_two_id]
-
-lemma sq_norm_centeredToLp_two [HasTwoMoments μ] (L : StrongDual ℝ E) :
-    ‖StrongDual.centeredToLp μ 2 L‖ ^ 2 = Var[L; μ] := by
-  rw [← real_inner_self_eq_norm_sq, centeredToLp_two_inner,
-    covarianceBilin_self_eq_variance memLp_two_id]
-
-end centeredToLp
-
 section CameronMartinSpace
 
 /-- The Cameron-Martin space of a Gaussian measure.
@@ -211,7 +150,7 @@ lemma cmOfDual_apply (L : StrongDual ℝ E) :
 lemma cmOfDual_inner (L₁ L₂ : StrongDual ℝ E) :
     ⟪cmOfDual μ L₁, cmOfDual μ L₂⟫_ℝ = covarianceBilin μ L₁ L₂ := by
   simp only [cmOfDual_apply]
-  exact centeredToLp_two_inner L₁ L₂
+  exact StrongDual.centeredToLp_two_inner memLp_two_id L₁ L₂
 
 lemma norm_cmOfDual (L : StrongDual ℝ E) : ‖cmOfDual μ L‖ = √Var[L; μ] := by
   rw [norm_eq_sqrt_real_inner, cmOfDual_inner, covarianceBilin_self_eq_variance memLp_two_id]
@@ -242,7 +181,7 @@ lemma norm_eval_le_norm_centeredToLp_mul (hy : ∃ M, ∀ L : StrongDual ℝ E, 
     (L : StrongDual ℝ E) :
     ‖L y‖ ≤ ‖StrongDual.centeredToLp μ 2 L‖
       * ⨆ (L' : StrongDual ℝ E) (_ : Var[L'; μ] ≤ 1), L' y := by
-  simp_rw [← sq_norm_centeredToLp_two,
+  simp_rw [← StrongDual.sq_norm_centeredToLp_two memLp_two_id,
     sq_le_one_iff_abs_le_one, abs_norm] at hy ⊢
   exact norm_eval_le_norm_mul_ciSup (StrongDual.centeredToLp μ 2).toLinearMap hy L
 
@@ -365,12 +304,12 @@ lemma toInit_eq (x : LinearMap.range (StrongDual.centeredToLp μ 2)) {L : Strong
     rw [toInit]
     conv_rhs => rw [← (LinearMap.mem_range.mp x.2).choose_spec]
     refine integral_congr_ae ?_
-    filter_upwards [centeredToLp_apply memLp_two_id (LinearMap.mem_range.mp x.2).choose] with y hy
-    rw [hy]
+    filter_upwards [StrongDual.centeredToLp_apply memLp_two_id (LinearMap.mem_range.mp x.2).choose]
+      with y hy using by rw [hy]
   _ = ∫ y, StrongDual.centeredToLp μ 2 L y • (y - ∫ z, z ∂μ) ∂μ := by rw [hL]
   _ = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ := by
     refine integral_congr_ae ?_
-    filter_upwards [centeredToLp_apply memLp_two_id L] with y hy using by rw [hy]
+    filter_upwards [StrongDual.centeredToLp_apply memLp_two_id L] with y hy using by rw [hy]
 
 lemma apply_toInit (x : LinearMap.range (StrongDual.centeredToLp μ 2)) (L : StrongDual ℝ E) :
     L (toInit μ x)
@@ -391,8 +330,8 @@ lemma apply_toInit_eq_inner (x : LinearMap.range (StrongDual.centeredToLp μ 2))
   rw [← (LinearMap.mem_range.mp x.2).choose_spec, L2.inner_def, apply_toInit]
   simp only [RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
-  filter_upwards [centeredToLp_apply memLp_two_id L,
-    centeredToLp_apply memLp_two_id (LinearMap.mem_range.mp x.2).choose]
+  filter_upwards [StrongDual.centeredToLp_apply memLp_two_id L,
+    StrongDual.centeredToLp_apply memLp_two_id (LinearMap.mem_range.mp x.2).choose]
     with y hy₁ hy₂
   rw [hy₁, hy₂]
 
