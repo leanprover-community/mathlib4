@@ -305,8 +305,8 @@ instance [IsIntegral X] : OrderTop X where
 
 open IrreducibleCloseds Set in
 @[stacks 02I4]
-lemma coheight_eq_of_openImmersion {U X : Scheme} {Z : U} (f : U ⟶ X)
-  [k : IsOpenImmersion f] : Order.coheight (f.base Z) = Order.coheight Z := by
+lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {Z : U} (f : U ⟶ X)
+    [k : IsOpenImmersion f] : Order.coheight (f.base Z) = Order.coheight Z := by
   rw [← Order.coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm (f.base Z),
       ← Order.coheight_orderIso (irreducibleSetEquivPoints (α := U)).symm Z,
       ← Order.coheight_orderIso
