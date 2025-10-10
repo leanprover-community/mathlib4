@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Louis (Yiyang) Liu
 -/
 module
 
@@ -18,6 +18,8 @@ formulas for this average:
 * `interval_average_eq`: `⨍ x in a..b, f x = (b - a)⁻¹ • ∫ x in a..b, f x`;
 * `interval_average_eq_div`: `⨍ x in a..b, f x = (∫ x in a..b, f x) / (b - a)`;
 * `exists_eq_interval_average`: `∃ c, f c = ⨍ (x : ℝ) in a..b, f x`.
+* `exists_eq_interval_average_of_measure`: `∃ c, f c = ⨍ x in (uIoc a b), f x ∂μ`.
+* `exists_eq_interval_average_of_NoAtoms`: `∃ c, f c = ⨍ x in (uIoc a b), f x ∂μ`.
 
 We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_average_symm`.
 
@@ -109,3 +111,136 @@ theorem exists_eq_interval_average
   have h_ave : ave ∈ Icc (f c1) (f c2) := ⟨hc1_le,hc2_ge⟩
   have h_image := intermediate_value_uIcc (hf.mono h_interval') (Icc_subset_uIcc h_ave)
   exact ((mem_image f (uIcc c1 c2) ave).mp (h_image)).imp (fun c hc => ⟨h_interval hc.1, hc.2⟩)
+
+/-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
+then there exists `c ∈ uIcc a b` such that 
+`f c = ⨍ x in (uIoc a b), f x ∂μ`. -/
+theorem exists_eq_interval_average_of_measure
+    {f : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
+    (hf : ContinuousOn f (uIcc a b))
+    (hμfin : μ (uIoc a b) ≠ ⊤)
+    (hμ0 : μ (uIoc a b) ≠ 0) :
+    ∃ c ∈ uIcc a b, f c = ⨍ x in (uIoc a b), f x ∂μ := by
+  wlog h : a ≤ b generalizing a b
+  · simp at h
+    specialize this
+      (a := b) (b := a) (by rwa [uIcc_comm])
+      (by rwa [uIoc_comm]) (by rwa [uIoc_comm])
+      (h.le)
+    rcases this with ⟨c, hc, hEq⟩
+    refine ⟨c, by rwa [uIcc_comm], by rwa [uIoc_comm]⟩
+  let ave := average (μ.restrict (uIoc a b)) f
+  let S₁ := {x | x ∈ uIoc a b ∧ f x ≤ ave}
+  let S₂ := {x | x ∈ uIoc a b ∧ ave ≤ f x}
+  have hint : IntegrableOn f (uIoc a b) μ := by
+    have hsubset : uIoc a b ⊆ uIcc a b := uIoc_subset_uIcc
+    have hcomp : IsCompact (uIcc a b) := isCompact_uIcc
+    obtain ⟨c, hc, hmax⟩ := hcomp.exists_isMaxOn nonempty_uIcc (hf.norm)
+    apply IntegrableOn.of_bound ?_ ?_ (|f c|) ?_
+    · rwa [lt_top_iff_ne_top]
+    · apply ContinuousOn.aestronglyMeasurable
+      · exact ContinuousOn.mono hf hsubset
+      · exact measurableSet_uIoc
+    · rw [ae_restrict_iff' measurableSet_uIoc]
+      apply ae_of_all
+      intro m hm
+      apply hmax
+      exact hsubset hm
+  have hS₁ : 0 < μ S₁ := measure_le_setAverage_pos hμ0 hμfin hint
+  have hS₂ : 0 < μ S₂ := measure_setAverage_le_pos hμ0 hμfin hint
+  have hS₁nonempty : S₁.Nonempty := nonempty_of_measure_ne_zero hS₁.ne'
+  have hS₂nonempty : S₂.Nonempty := nonempty_of_measure_ne_zero hS₂.ne'
+  rw [nonempty_def] at *
+  rcases hS₁nonempty with ⟨c₁, hc₁⟩
+  rcases hS₂nonempty with ⟨c₂, hc₂⟩
+  have hc₁Ioc : c₁ ∈ Ioc a b := by
+    simpa [h] using hc₁.1
+  have hc₂Ioc : c₂ ∈ Ioc a b := by
+    simpa [h] using hc₂.1
+  have h_subset : uIcc c₁ c₂ ⊆ Icc a b := by
+    intro x hx
+    rw [mem_uIcc] at hx
+    grind
+  have h_ivt : ∃ c ∈ uIcc c₁ c₂, f c = ave := by
+    apply intermediate_value_uIcc
+    · refine ContinuousOn.mono hf ?_
+      rwa [uIcc_of_le h]
+    · rw [mem_uIcc]
+      grind
+  rcases h_ivt with ⟨c, hc_mem, hfc⟩
+  refine ⟨c, ?_, hfc⟩
+  rw [mem_uIcc]
+  grind
+
+/-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
+and `μ` has no atoms, then there exists `c ∈ uIoo a b` such that 
+`f c = ⨍ x in (uIoc a b), f x ∂μ`. -/
+theorem exists_eq_interval_average_of_NoAtoms
+    {f : ℝ → ℝ} {a b : ℝ}
+    {μ : Measure ℝ} [NoAtoms μ]
+    (hf : ContinuousOn f (uIcc a b))
+    (hμfin : μ (uIoc a b) ≠ ⊤)
+    (hμ0 : μ (uIoc a b) ≠ 0) :
+    ∃ c ∈ uIoo a b, f c = ⨍ x in (uIoc a b), f x ∂μ := by
+  wlog h : a ≤ b generalizing a b
+  · simp at h
+    specialize this
+      (a := b) (b := a) (by rwa [uIcc_comm])
+      (by rwa [uIoc_comm]) (by rwa [uIoc_comm]) (h.le)
+    rcases this with ⟨c, hc, hEq⟩
+    refine ⟨c, ?_, ?_⟩
+    · simpa [uIoo_comm] using hc
+    · have hswap : Ι a b = Ι b a := uIoc_comm a b
+      rwa [hswap]
+  let ave := average (μ.restrict (uIoc a b)) f
+  let S₁ := {x | x ∈ uIoc a b ∧ f x ≤ ave}
+  let S₂ := {x | x ∈ uIoc a b ∧ ave ≤ f x}
+  have hint : IntegrableOn f (uIoc a b) μ := by
+    have hsubset : uIoc a b ⊆ uIcc a b := uIoc_subset_uIcc
+    have hcomp : IsCompact (uIcc a b) := isCompact_uIcc
+    obtain ⟨c, hc, hmax⟩ := hcomp.exists_isMaxOn nonempty_uIcc hf.norm
+    apply IntegrableOn.of_bound ?_ ?_ (|f c|) ?_
+    · rwa [lt_top_iff_ne_top]
+    · apply ContinuousOn.aestronglyMeasurable
+      · exact ContinuousOn.mono hf hsubset
+      · exact measurableSet_uIoc
+    · rw [ae_restrict_iff' measurableSet_uIoc]
+      apply ae_of_all
+      intro m hm
+      apply hmax
+      exact hsubset hm
+  have hS₁ : 0 < μ S₁ := measure_le_setAverage_pos hμ0 hμfin hint
+  have hS₂ : 0 < μ S₂ := measure_setAverage_le_pos hμ0 hμfin hint
+  have hb0 : μ {b} = 0 := measure_singleton b
+  have hS₁pos' : 0 < μ (S₁ \ {b}) := by
+    have hcap0 : μ (S₁ ∩ {b}) = 0 := measure_inter_null_of_null_right S₁ hb0
+    have : μ (S₁ \ {b}) = μ S₁ := AEDisjoint.measure_diff_left hcap0
+    grind
+  have hS₂pos' : 0 < μ (S₂ \ {b}) := by
+    have hcap0 : μ (S₂ ∩ {b}) = 0 := measure_inter_null_of_null_right S₂ hb0
+    have : μ (S₂ \ {b}) = μ S₂ := AEDisjoint.measure_diff_left hcap0
+    grind
+  have hS₁nonempty : (S₁ \ {b}).Nonempty := nonempty_of_measure_ne_zero hS₁pos'.ne'
+  have hS₂nonempty : (S₂ \ {b}).Nonempty := nonempty_of_measure_ne_zero hS₂pos'.ne'
+  rcases hS₁nonempty with ⟨c₁, hc₁⟩
+  rcases hS₂nonempty with ⟨c₂, hc₂⟩
+  have hc₁Ioc : c₁ ∈ Ioc a b := by
+    simpa [h] using (hc₁.1 : c₁ ∈ S₁).1
+  have hc₂Ioc : c₂ ∈ Ioc a b := by
+    simpa [h] using (hc₂.1 : c₂ ∈ S₂).1
+  have h_subset : uIcc c₁ c₂ ⊆ Icc a b := by
+    intro x hx
+    rw [mem_uIcc] at hx
+    grind
+  have h_ivt : ∃ c ∈ uIcc c₁ c₂, f c = ave := by
+    apply intermediate_value_uIcc
+    · refine ContinuousOn.mono hf ?_
+      rwa [uIcc_of_le h]
+    · rw [mem_uIcc]
+      grind
+  rcases h_ivt with ⟨c, hc_mem, hfc⟩
+  refine ⟨c, ?_, hfc⟩
+  rw [mem_uIcc] at hc_mem
+  apply mem_uIoo_of_lt
+  · grind
+  · grind
