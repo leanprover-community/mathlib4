@@ -1,4 +1,5 @@
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
@@ -237,6 +238,11 @@ variable {f : M → E →L[𝕜] E'} in
 /-! Inferring a model with corners on a real interval -/
 section interval
 
+-- Note: this is also testing finding of models in the presence of two instances.
+variable [NormedSpace ℝ E] {I' : ModelWithCorners ℝ E H}
+-- Otherwise, make a new normed space.
+-- variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {I'' : ModelWithCorners ℝ E'' H}
+
 -- Types match, but no fact x < y can be inferred: mostly testing error messages.
 variable {x y : ℝ} {g : Set.Icc x y → M} {h : E → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
@@ -327,6 +333,8 @@ trace: [Elab.DiffGeo.MDiff] HACK: disabling coercion in MDiff
 #guard_msgs in
 variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check MDiff g
+
+-- sanity check: #check MDifferentiable (𝓡∂ 1) I' g
 
 #exit
 
