@@ -2879,6 +2879,9 @@ Q5005965:
 
 Q5026435:
   title: Cameron–Martin theorem
+  decl : ProbabilityTheory.absolutelyContinuous_map_add_cameronMartin
+  authors: Rémy Degenne
+  date: 2025
 
 Q5037752:
   title: Carathéodory's existence theorem
