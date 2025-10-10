@@ -216,6 +216,7 @@ using the local context to infer the appropriate instance. This supports the fol
 - the model with corners on the total space of a vector bundle
 - the model with corners on the tangent space of a manifold
 - a model with corners on a manifold, or on its underlying model space
+- a closed interval of real numbers
 - the trivial model `𝓘(𝕜, E)` on a normed space
 - if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
   and if successful, return `𝓘(𝕜)`.
@@ -244,6 +245,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"NormedSpace"   fromNormedSpace   then return m
   if let some m ← tryStrategy m!"Manifold"      fromManifold      then return m
   if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM     then return m
+  if let some m ← tryStrategy m!"RealInterval"  fromRealInterval  then return m
   if let some m ← tryStrategy m!"NormedField"   fromNormedField   then return m
   throwError "Could not find a model with corners for `{e}`"
 where
@@ -353,6 +355,18 @@ where
     --   else
     --     throwError "Coefficients {k} and {S} of {e} are not definitionally equal"
     | _ => throwError "{e} is not a space of continuous linear maps"
+  /-- Attempt to find a model with corners on a closed interval of real numbers -/
+  fromRealInterval : TermElabM Expr := do
+    trace[Elab.DiffGeo.MDiff] "type is {e}" -- for debugging only
+    match_expr e with
+    | Set.Icc α _ _x _y =>
+      if ← isDefEq α q(ℝ) then
+        -- TODO: should I check if x < y is a fact in the local context,
+        -- or leave that to Lean to complain about?
+        let iTerm : Term := ← `(modelWithCornersEuclideanHalfSpace 1)
+        Term.elabTerm iTerm none
+      else throwError "{e} is a closed interval of type {α}, which is not definitially equal to ℝ"
+    | _ => throwError "{e} is not a closed real interval"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do
