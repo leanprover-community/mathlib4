@@ -818,6 +818,43 @@ variable {f : E → E'} {s : Set E} {x : E}
 
 end smoothness
 
+/-! Products of models with corners: TODO, add lots of further tests -/
+section
+
+variable {EM' : Type*} [NormedAddCommGroup EM']
+  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {f g : M → M'} {g : M → ℝ} {h : E → M'} {k : M × E → M'}
+
+/-- info: MDifferentiable I I' f : Prop -/
+#guard_msgs in
+#check MDiff f
+/-- error: Could not find a model with corners for M × M -/
+#guard_msgs in
+#check MDiff (Prod.map f g)
+
+/-- error: Could not find a model with corners for M × E -/
+#guard_msgs in
+#check MDiff (Prod.map f h)
+
+/-- error: Could not find a model with corners for M × E × M -/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map h g))
+
+/-- error: Could not find a model with corners for (M × M) × E -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f g) h)
+
+/-- error: Could not find a model with corners for M' × ℝ -/
+#guard_msgs in
+#check MDiff (fun x ↦ (f x, g x))
+
+/-- error: Could not find a model with corners for M × E -/
+#guard_msgs in
+#check MDiff k
+
+end
+
 section trace
 
 /- Test that basic tracing works. -/
