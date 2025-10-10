@@ -176,10 +176,10 @@ For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be e
 `inCoordinates`, see `ContMDiffWithinAt.clm_bundle_apply`.
 -/
 lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
-    (hϕ : ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
-      (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) s m₀)
+    (hϕ : CMDiffAt[s] n
+      (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : ContMDiffWithinAt IM (IB₁.prod 𝓘(𝕜, F₁)) n (fun m ↦ (v m : TotalSpace F₁ E₁)) s m₀)
-    (hb₂ : ContMDiffWithinAt IM IB₂ n b₂ s m₀) :
+    (hb₂ : CMDiffAt[s] n b₂ m₀) :
     ContMDiffWithinAt IM (IB₂.prod 𝓘(𝕜, F₂)) n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) s m₀ := by
   rw [← contMDiffWithinAt_insert_self] at hϕ hv hb₂ ⊢
   rw [contMDiffWithinAt_totalSpace] at hv ⊢

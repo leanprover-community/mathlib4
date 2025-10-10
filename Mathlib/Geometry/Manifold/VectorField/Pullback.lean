@@ -394,25 +394,23 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     exact MapsTo.mono_left (mapsTo_preimage _ _) inter_subset_right
   /- The only nontrivial fact, from which the conclusion follows, is
   that `ϕ` depends smoothly on `x`. -/
-  suffices hϕ : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) m
-      (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+  suffices hϕ : CMDiffAt[s] m (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E' (TangentSpace I' (M := M')) E (TangentSpace I (M := M))
-        (b₁ x₀) (b₁ x) (b₂ x₀) (b₂ x) (ϕ x)) s x₀ from
+        (b₁ x₀) (b₁ x) (b₂ x₀) (b₂ x) (ϕ x)) x₀ from
     ContMDiffWithinAt.clm_apply_of_inCoordinates (hϕ.mono inter_subset_left) hv contMDiffWithinAt_id
   /- To prove that `ϕ` depends smoothly on `x`, we use that the derivative depends smoothly on `x`
   (this is `ContMDiffWithinAt.mfderivWithin_const`), and that taking the inverse is a smooth
   operation at an invertible map. -/
   -- the derivative in coordinates depends smoothly on the point
-  have : ContMDiffWithinAt I 𝓘(𝕜, E →L[𝕜] E') m
-      (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+  have : CMDiffAt[s] m (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
-        x₀ x (f x₀) (f x) (mfderiv[s] f x)) s x₀ :=
+        x₀ x (f x₀) (f x) (mfderiv[s] f x)) x₀ :=
     hf.mfderivWithin_const hmn hx₀ hs
   -- therefore, its inverse in coordinates also depends smoothly on the point
-  have : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) m
+  have : CMDiffAt[s] m
       (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
-        x₀ x (f x₀) (f x) (mfderiv[s]f x))) s x₀ := by
+        x₀ x (f x₀) (f x) (mfderiv[s]f x))) x₀ := by
     apply ContMDiffAt.comp_contMDiffWithinAt _ _ this
     apply ContDiffAt.contMDiffAt
     apply IsInvertible.contDiffAt_map_inverse
