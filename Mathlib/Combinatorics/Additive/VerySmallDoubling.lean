@@ -625,7 +625,7 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hS : S
   -- We will show that an atomic subgroup `H ≤ G` with respect to `K` and `S` and the right coset
   -- representing finset of `S` acting on `H` are adequate choices for the theorem
   obtain ⟨H, _, hH⟩ := exists_subgroup_isAtom hK hS
-  obtain ⟨Z, hZS, hHZS, hZinj⟩ := exists_rightCosetRepresentingFinset H S
+  obtain ⟨Z, hZS, hHZS, hZinj⟩ := exists_subset_mul_eq_mul_injOn H S
   -- We only use the existence of `A` given by assumption to get a good bound on `ex H` solely
   -- in terms of `#S` and `ε`.
   obtain ⟨A, hA₁, hA₂⟩ := hA
@@ -656,14 +656,8 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hS : S
           (#Z : ℝ)
       _ = #(H : Set G).toFinset * #Z / #(H : Set G).toFinset          := by field_simp
       _ = #(Set.toFinset H * Z) / #(H : Set G).toFinset               := by
-        rw [card_mul_iff.2]
-        · simp
-        rintro ⟨h₁, z₁⟩ ⟨hh₁, hz₁⟩ ⟨h₂, z₂⟩ ⟨hh₂, hz₂⟩ h
-        simp only [Set.coe_toFinset, SetLike.mem_coe, mem_coe] at *
-        obtain rfl := hZinj hz₁ hz₂ <| (rightCoset_eq_iff _).2 <| by
-          simpa [eq_inv_mul_iff_mul_eq.2 h, mul_assoc] using mul_mem (inv_mem hh₂) hh₁
-        simp_all
-      _ = #(Set.toFinset H * S) / #(H : Set G).toFinset := by
+        simp [← card_mul_eq_mul_card_of_injOn_opSMul hZinj, Nat.cast_mul]
+      _ = #(Set.toFinset H * S) / #(H : Set G).toFinset               := by
         congr 3; simpa using congr(($hHZS).toFinset)
       _ ≤ (2 / ε - 1) * #(H : Set G).toFinset / #(H : Set G).toFinset := ?_
       _ = 2 / ε - 1                                                   := by field_simp
