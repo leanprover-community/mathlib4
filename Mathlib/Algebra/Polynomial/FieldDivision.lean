@@ -338,6 +338,8 @@ theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) 
 theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :=
   divByMonic_eq_div p (monic_X_sub_C a) ▸ mul_divByMonic_eq_iff_isRoot
 
+alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
+
 instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
     Polynomial.nontrivial with
