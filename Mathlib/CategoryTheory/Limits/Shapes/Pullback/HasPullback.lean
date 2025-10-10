@@ -508,6 +508,14 @@ theorem inr_comp_pushoutSymmetry_inv [HasPushout f g] :
 
 end PushoutSymmetry
 
+/-- `HasPullbacksAlong f` states that pullbacks of all morphisms into `Y`
+along `f : X ⟶ Y` exist. -/
+abbrev HasPullbacksAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : W ⟶ Y), HasPullback h f
+
+/-- `HasPushoutsAlong f` states that pushouts of all morphisms out of `X`
+along `f : X ⟶ Y` exist. -/
+abbrev HasPushoutsAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : X ⟶ W), HasPushout h f
+
 variable (C)
 
 /-- A category `HasPullbacks` if it has all limits of shape `WalkingCospan`, i.e. if it has a
