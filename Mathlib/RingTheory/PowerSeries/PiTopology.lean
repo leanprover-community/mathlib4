@@ -167,7 +167,7 @@ theorem summable_prod_of_tendsto_order_atTop_nhds_top
     (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) := by
   rcases isEmpty_or_nonempty ι with hempty | hempty
   · apply Summable.of_finite
-  refine (summable_iff_summable_coeff _).mpr fun n ↦ (summable_of_finite_support ?_)
+  refine (summable_iff_summable_coeff _).mpr fun n ↦ summable_of_finite_support ?_
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
   obtain ⟨i, hi⟩ := h n
   apply (Finset.Iio i).powerset.finite_toSet.subset

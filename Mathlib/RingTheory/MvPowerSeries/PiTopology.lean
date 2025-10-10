@@ -304,7 +304,7 @@ theorem summable_prod_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
     (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) := by
   rcases isEmpty_or_nonempty ι with hempty | hempty
   · apply Summable.of_finite
-  refine summable_iff_summable_coeff.mpr fun d ↦ (summable_of_finite_support ?_)
+  refine summable_iff_summable_coeff.mpr fun d ↦ summable_of_finite_support ?_
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
   obtain ⟨i, hi⟩ := h (Finsupp.weight w d)
   apply (Finset.Iio i).powerset.finite_toSet.subset
