@@ -304,7 +304,7 @@ def quotSMulTop_linearEquiv (x : R) {M N : Type*} [AddCommGroup M] [Module R M]
   sorry
 
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
-    [Module.Finite R M] (rs : List R) :
+    [Module.Finite R M] (rs : List R) (reg : IsRegular M rs) :
     (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M rs.length) ≃ₗ[R]
     M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := by
   generalize len : rs.length = n
@@ -491,20 +491,35 @@ section
 
 variable [Small.{v} R]
 
-lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) :
-    supportDim R M ≤ injectiveDimension M := by
-  --need localization commute with localization
+--need localization commute with localization
   --use `IsLocalizedModule` to state
   --for `i ≥ 2`, dimension shift
   --for `i = 0`, proven
   --for `i = 1`, use exactness lemma for `IsLocalizedModule` to prove cokernel is localized module
   --can set up totally abstract lemmas
+
+--lemma ext_succ_nontrivial_of_eq_of_le
+
+lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
+    supportDim R M ≤ injectiveDimension M := by
+  --ENat.exists_eq_iSup_of_lt_top
+  obtain ⟨q, hq⟩ : ∃ q : LTSeries (Module.support R M), q.length = supportDim R M := sorry
+  have eq_of_le (i : ℕ) (h : i < q.length) :
+    ∀ r : PrimeSpectrum R, q ⟨i, Nat.lt_add_right 1 h⟩ < r →
+      r ≤ q ⟨i + 1, Nat.add_lt_add_right h 1⟩ →
+      r = q ⟨i + 1, Nat.add_lt_add_right h 1⟩ := by
+    intro r ltr rle
+    by_contra ne
+    have := lt_of_le_of_ne rle ne
+    --insert `r` into `q`
+    sorry
+
   sorry
 
 lemma injectiveDimension_eq_depth
-    (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Nontrivial M] :
+    (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
     injectiveDimension M = IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
-
+  --ENat.sSup_mem_of_nonempty_of_lt_top
   sorry
 
 end
