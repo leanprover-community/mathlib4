@@ -22,13 +22,16 @@ and convergence in distribution.
 
 ## Main statements
 
+* `TendstoInDistribution.continuous_comp`: **Continuous mapping theorem**.
+  If `X n` tends to `Z` in distribution and `g` is continuous, then `g ∘ X n` tends to `g ∘ Z`
+  in distribution.
 * `tendstoInDistribution_of_tendstoInMeasure_sub`: the main technical tool for the next results.
   Let `X, Y` be two sequences of measurable functions such that `X n` converges in distribution
   to `Z`, and `Y n - X n` converges in probability to `0`.
   Then `Y n` converges in distribution to `Z`.
 * `TendstoInMeasure.tendstoInDistribution`: convergence in probability implies convergence in
   distribution.
-* `tendstoInDistribution_prodMk_of_tendstoInMeasure_const`: **Slutsky's theorem**.
+* `TendstoInDistribution.prodMk_of_tendstoInMeasure_const`: **Slutsky's theorem**.
   If `X n` converges in distribution to `Z`, and `Y n` converges in probability to a constant `c`,
   then the pair `(X n, Y n)` converges in distribution to `(Z, c)`.
 
@@ -75,6 +78,37 @@ lemma tendstoInDistribution_of_not_aemeasurable_right (hg : ¬ AEMeasurable Z μ
 
 lemma tendstoInDistribution_const :
     TendstoInDistribution (fun _ ↦ Z) l Z μ := fun _ _ ↦ tendsto_const_nhds
+
+lemma tendstoInDistribution_unique {E : Type*} [TopologicalSpace E] [HasOuterApproxClosed E]
+    [MeasurableSpace E] [BorelSpace E] (X : ι → Ω → E) {Z W : Ω → E} [l.NeBot]
+    (hX : ∀ i, AEMeasurable (X i) μ) (hZ : AEMeasurable Z μ) (hW : AEMeasurable W μ)
+    (h1 : TendstoInDistribution X l Z μ) (h2 : TendstoInDistribution X l W μ) :
+    μ.map Z = μ.map W := by
+  rw [tendstoInDistribution_def hX (by fun_prop)] at h1 h2
+  have h_eq := tendsto_nhds_unique h1 h2
+  rw [Subtype.ext_iff] at h_eq
+  simpa using h_eq
+
+/-- **Continuous mapping theorem**: if `X n` tends to `Z` in distribution and `g` is continuous,
+then `g ∘ X n` tends to `g ∘ Z` in distribution. -/
+theorem TendstoInDistribution.continuous_comp {F : Type*} [TopologicalSpace F]
+    [MeasurableSpace F] [BorelSpace F] {g : E → F} (hg : Continuous g)
+    (h : TendstoInDistribution X l Z μ) (hX : ∀ i, AEMeasurable (X i) μ) (hZ : AEMeasurable Z μ) :
+    TendstoInDistribution (fun n ↦ g ∘ X n) l (g ∘ Z) μ := by
+  intro hX' hZ'
+  specialize h hX hZ
+  rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at h ⊢
+  intro f
+  specialize h (f.compContinuous ⟨g, hg⟩)
+  simp only [ProbabilityMeasure.coe_mk, BoundedContinuousFunction.compContinuous_apply,
+    ContinuousMap.coe_mk] at h
+  simp only [ProbabilityMeasure.coe_mk]
+  rw [← AEMeasurable.map_map_of_aemeasurable (by fun_prop) hZ,
+    integral_map (by fun_prop) (by fun_prop)]
+  convert h with n
+  rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop)]
+  · simp
+  · exact Measurable.aestronglyMeasurable <| by fun_prop
 
 end TendstoInDistribution
 
@@ -222,9 +256,11 @@ lemma TendstoInMeasure.tendstoInDistribution [l.IsCountablyGenerated]
 
 /-- **Slutsky's theorem**: if `X n` converges in distribution to `Z`, and `Y n` converges in
 probability to a constant `c`, then the pair `(X n, Y n)` converges in distribution to `(Z, c)`. -/
-lemma tendstoInDistribution_prodMk_of_tendstoInMeasure_const
-    [l.IsCountablyGenerated] (X Y : ι → Ω → E) (Z : Ω → E)
-    {c : E} (hXZ : TendstoInDistribution X l Z μ)
+theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
+    {E' : Type*} {mE' : MeasurableSpace E'} [SeminormedAddCommGroup E'] [SecondCountableTopology E']
+    [BorelSpace E']
+    [l.IsCountablyGenerated] (X : ι → Ω → E) (Y : ι → Ω → E') (Z : Ω → E)
+    {c : E'} (hXZ : TendstoInDistribution X l Z μ)
     (hY : TendstoInMeasure μ (fun n ↦ Y n) l (fun _ ↦ c)) :
     TendstoInDistribution (fun n ω ↦ (X n ω, Y n ω)) l (fun ω ↦ (Z ω, c)) μ := by
   by_cases hX : ∀ i, AEMeasurable (X i) μ
@@ -260,5 +296,28 @@ lemma tendstoInDistribution_prodMk_of_tendstoInMeasure_const
       convert this with n ω
       simp
     simpa [tendstoInMeasure_iff_norm] using hY
+
+/-- **Slutsky's theorem** for a continuous function: if `X n` converges in distribution to `Z`,
+ `Y n` converges in probability to a constant `c`, and `g` is a continuous function, then
+ `g (X n, Y n)` converges in distribution to `g (Z, c)`. -/
+theorem TendstoInDistribution.continuous_comp_prodMk_of_tendstoInMeasure_const {E' F : Type*}
+    {mE' : MeasurableSpace E'} [SeminormedAddCommGroup E'] [SecondCountableTopology E']
+    [BorelSpace E']
+    [TopologicalSpace F] [MeasurableSpace F] [BorelSpace F] {g : E × E' → F} (hg : Continuous g)
+    [l.IsCountablyGenerated] {X : ι → Ω → E} {Y : ι → Ω → E'}
+    {c : E'} (hXZ : TendstoInDistribution X l Z μ)
+    (hY_tendsto : TendstoInMeasure μ (fun n ↦ Y n) l (fun _ ↦ c))
+    (hX : ∀ i, AEMeasurable (X i) μ) (hY : ∀ i, AEMeasurable (Y i) μ) (hZ : AEMeasurable Z μ) :
+    TendstoInDistribution (fun n ω ↦ g (X n ω, Y n ω)) l (fun ω ↦ g (Z ω, c)) μ := by
+  refine TendstoInDistribution.continuous_comp hg ?_ (by fun_prop) (by fun_prop)
+  exact hXZ.prodMk_of_tendstoInMeasure_const X Y Z hY_tendsto
+
+lemma TendstoInDistribution.add_of_tendstoInMeasure_const
+    [l.IsCountablyGenerated] {c : E} (hXZ : TendstoInDistribution X l Z μ)
+    (hY_tendsto : TendstoInMeasure μ (fun n ↦ Y n) l (fun _ ↦ c))
+    (hX : ∀ i, AEMeasurable (X i) μ) (hY : ∀ i, AEMeasurable (Y i) μ) (hZ : AEMeasurable Z μ) :
+    TendstoInDistribution (fun n ↦ X n + Y n) l (fun ω ↦ Z ω + c) μ :=
+  hXZ.continuous_comp_prodMk_of_tendstoInMeasure_const
+    (g := fun (x : E × E) ↦ x.1 + x.2) (by fun_prop) hY_tendsto hX hY hZ
 
 end MeasureTheory
