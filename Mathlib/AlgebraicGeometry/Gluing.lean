@@ -342,7 +342,7 @@ def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
 theorem ι_fromGlued (x : 𝒰.I₀) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = 𝒰.f x :=
   Multicoequalizer.π_desc _ _ _ _ _
 
-theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.base := by
+theorem fromGlued_injective : Function.Injective 𝒰.fromGlued := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
@@ -362,7 +362,7 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.base := by
       IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right]
     rfl
 
-instance fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
+instance (x : 𝒰.gluedCover.glued.carrier) :
     IsIso (𝒰.fromGlued.stalkMap x) := by
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   have := Hom.stalkMap_congr_hom _ _ (𝒰.ι_fromGlued i) x
@@ -370,7 +370,7 @@ instance fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
   rw [this]
   infer_instance
 
-theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
+theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
   intro U hU
   rw [isOpen_iff_forall_mem_open]
   intro x hx
@@ -387,8 +387,12 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
 
-theorem fromGlued_isOpenEmbedding : IsOpenEmbedding 𝒰.fromGlued.base :=
-  .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
+@[deprecated (since := "2025-10-07")] alias fromGlued_open_map := isOpenMap_fromGlued
+
+theorem isOpenEmbedding_fromGlued : IsOpenEmbedding 𝒰.fromGlued :=
+  .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.isOpenMap_fromGlued
+
+@[deprecated (since := "2025-10-07")] alias fromGlued_isOpenEmbedding := isOpenEmbedding_fromGlued
 
 instance : Epi 𝒰.fromGlued.base := by
   rw [TopCat.epi_iff_surjective]
@@ -399,8 +403,8 @@ instance : Epi 𝒰.fromGlued.base := by
   rw [← 𝒰.ι_fromGlued (𝒰.idx x)] at h
   exact h
 
-instance fromGlued_open_immersion : IsOpenImmersion 𝒰.fromGlued :=
-  IsOpenImmersion.of_isIso_stalkMap _ 𝒰.fromGlued_isOpenEmbedding
+instance : IsOpenImmersion 𝒰.fromGlued :=
+  IsOpenImmersion.of_isIso_stalkMap _ 𝒰.isOpenEmbedding_fromGlued
 
 instance : IsIso 𝒰.fromGlued :=
   let F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙
