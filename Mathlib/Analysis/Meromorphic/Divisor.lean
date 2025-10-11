@@ -123,6 +123,7 @@ theorem AnalyticOnNhd.divisor_nonneg {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f
 /--
 The divisor of a constant function is `0`.
 -/
+@[simp]
 theorem divisor_const (e : E) :
     divisor (fun _ ↦ e) U = 0 := by
   classical
@@ -136,12 +137,14 @@ theorem divisor_const (e : E) :
 /--
 The divisor a constant function is `0`.
 -/
+@[simp]
 theorem divisor_intCast (n : ℤ) :
     divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
 
 /--
 The divisor a constant function is `0`.
 -/
+@[simp]
 theorem divisor_natCast (n : ℕ) :
     divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
 
