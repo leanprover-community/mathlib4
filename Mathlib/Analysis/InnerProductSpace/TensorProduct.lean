@@ -35,31 +35,6 @@ instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
-section move
-
-lemma mem_finiteDimensional_range_mapIncl {K V V' : Type*} [Field K] [AddCommGroup V]
-    [AddCommGroup V'] [Module K V] [Module K V'] (z : V ⊗[K] V') :
-    ∃ (E' : Submodule K V) (F' : Submodule K V')
-    (_ : FiniteDimensional K E') (_ : FiniteDimensional K F'),
-    z ∈ LinearMap.range (mapIncl E' F') :=
-  z.induction_on
-  ⟨⊥, ⊥, finiteDimensional_bot K V, finiteDimensional_bot K V', Submodule.zero_mem _⟩
-  fun e f => by
-    rcases Module.mem_finiteDimensional_submodule K e with ⟨E', iE', he⟩
-    rcases Module.mem_finiteDimensional_submodule K f with ⟨F', iF', hf⟩
-    exact ⟨E', F', iE', iF', ⟨⟨e, he⟩ ⊗ₜ ⟨f, hf⟩, rfl⟩⟩
-  fun _ _ ih₁ ih₂ => by
-    rcases ih₁ with ⟨E1, F1, _, _, ⟨z1, rfl⟩⟩
-    rcases ih₂ with ⟨E2, F2, _, _, ⟨z2, rfl⟩⟩
-    exact ⟨E1 ⊔ E2, F1 ⊔ F2, E1.finiteDimensional_sup _, F1.finiteDimensional_sup _,
-      Submodule.add_mem _
-      ((range_mapIncl_mono le_sup_left (le_refl _)).trans
-        (range_mapIncl_mono (le_refl _) le_sup_left) ⟨z1, rfl⟩)
-      ((range_mapIncl_mono le_sup_right (le_refl _)).trans
-        (range_mapIncl_mono (le_refl _) le_sup_right) ⟨z2, rfl⟩)⟩
-
-end move
-
 private lemma inner_coe_of_eq {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x y : E' ⊗[𝕜] F'} :
     inner 𝕜 x y = inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) :=
   x.induction_on (by simp) (y.induction_on (by simp) (by simp) (by simp_all)) (by simp_all)
