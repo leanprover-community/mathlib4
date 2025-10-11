@@ -156,15 +156,13 @@ instance instAddCommMonoid [AddCommMonoid V] : AddCommMonoid (HahnModule Γ R V)
 instance instAddCommGroup [AddCommGroup V] : AddCommGroup (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommGroup (HahnSeries Γ V)
 
-instance instAddCommGroup {V} [AddCommGroup V] [SMul R V] : AddCommGroup (HahnModule Γ R V) :=
-  inferInstanceAs <| AddCommGroup (HahnSeries Γ V)
-
 instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
     SMul R (HahnModule Γ R V) :=
   inferInstanceAs <| SMul R (HahnSeries Γ V)
 
-@[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
-@[simp] theorem of_add (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y := rfl
+@[simp] theorem of_zero [Zero V] : of R (0 : HahnSeries Γ V) = 0 := rfl
+@[simp] theorem of_add [AddCommMonoid V] (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y :=
+  rfl
 @[simp] theorem of_sub {V} [AddCommGroup V] [SMul R V] (x y : HahnSeries Γ V) :
     of R (x - y) = of R x - of R y := rfl
 
@@ -174,30 +172,31 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 @[simp] theorem of_symm_sub {V} [AddCommGroup V] [SMul R V] (x y : HahnModule Γ R V) :
     (of R).symm (x - y) = (of R).symm x - (of R).symm y := rfl
 
-@[simp] theorem of_nsmul (n : ℕ) (x : HahnSeries Γ V) :
+@[simp] theorem of_nsmul [AddCommMonoid V] (n : ℕ) (x : HahnSeries Γ V) :
     (of R) (n • x) = n • (of R) x := rfl
-@[simp] theorem of_symm_nsmul (n : ℕ) (x : HahnModule Γ R V) :
+@[simp] theorem of_symm_nsmul [AddCommMonoid V] (n : ℕ) (x : HahnModule Γ R V) :
     (of R).symm (n • x) = n • (of R).symm x := rfl
 @[simp] theorem of_zsmul {V} [AddCommGroup V] [SMul R V] (n : ℤ) (x : HahnSeries Γ V) :
     (of R) (n • x) = n • (of R) x := rfl
 @[simp] theorem of_symm_zsmul {V} [AddCommGroup V] [SMul R V] (n : ℤ) (x : HahnModule Γ R V) :
     (of R).symm (n • x) = n • (of R).symm x := rfl
 
-instance instBaseSMulZeroClass [SMulZeroClass R V] :
+instance instBaseSMulZeroClass [Zero V] [SMulZeroClass R V] :
     SMulZeroClass R (HahnModule Γ R V) :=
   inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 
-@[simp] theorem of_smul [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
+@[simp] theorem of_smul [Zero V] [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
   (of R) (r • x) = r • (of R) x := rfl
-@[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
+@[simp] theorem of_symm_smul [Zero V] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
   (of R).symm (r • x) = r • (of R).symm x := rfl
 
-instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
+instance instBaseModule [Semiring R] [AddCommMonoid V] [Module R V] : Module R (HahnModule Γ R V) :=
   inferInstanceAs <| Module R (HahnSeries Γ V)
 
 /-- The isomorphism between HahnSeries and HahnModules, as a linear map. -/
 @[simps]
-def lof (R : Type*) [Semiring R] [Module R V] : HahnSeries Γ V ≃ₗ[R] HahnModule Γ R V where
+def lof (R : Type*) [Semiring R] [AddCommMonoid V] [Module R V] :
+    HahnSeries Γ V ≃ₗ[R] HahnModule Γ R V where
   toFun := of R
   map_add' := of_add
   map_smul' := of_smul
@@ -206,20 +205,20 @@ def lof (R : Type*) [Semiring R] [Module R V] : HahnSeries Γ V ≃ₗ[R] HahnMo
   right_inv := congrFun rfl
 
 /-- HahnModule coefficient-wise map as a HahnSeries-linear map. -/
-def map [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
+def map [Semiring R] [AddCommMonoid V] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
     HahnModule Γ R U →ₗ[R] HahnModule Γ R V where
   toFun x := (of R) (HahnSeries.map ((of R).symm x) f)
   map_add' x y := by ext; simp
   map_smul' s x := by ext; simp
 
 @[simp]
-protected lemma map_coeff [Semiring R] [Module R V] [AddCommMonoid U] [Module R U]
+protected lemma map_coeff [Semiring R] [AddCommMonoid V] [Module R V] [AddCommMonoid U] [Module R U]
     (x : HahnModule Γ R U) (f : U →ₗ[R] V) (g : Γ) :
     ((of R).symm (map f x)).coeff g = f (((of R).symm x).coeff g) := by
   simp [map]
 
 /-- The linear equivalence between Hahn modules induced by an order equivalence. -/
-def equivDomain [Semiring R] [Module R V] [PartialOrder Γ'] (f : Γ ≃o Γ') :
+def equivDomain [Semiring R] [AddCommMonoid V] [Module R V] [PartialOrder Γ'] (f : Γ ≃o Γ') :
     HahnModule Γ R V ≃ₗ[R] HahnModule Γ' R V where
   toFun x := (of R) (HahnSeries.equivDomain f ((of R).symm x))
   map_add' _ _ := by ext; simp
