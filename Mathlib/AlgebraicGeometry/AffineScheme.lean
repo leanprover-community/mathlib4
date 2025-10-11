@@ -339,6 +339,11 @@ lemma Scheme.Opens.toSpecΓ_appTop {X : Scheme.{u}} (U : X.Opens) :
     U.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
   simp [Scheme.Opens.toSpecΓ]
 
+@[reassoc]
+lemma Scheme.Opens.toSpecΓ_SpecMap_map_top {X : Scheme} (U : X.Opens) :
+    U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE le_top).op) = U.ι ≫ X.toSpecΓ := by
+  simp
+
 namespace IsAffineOpen
 
 variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))

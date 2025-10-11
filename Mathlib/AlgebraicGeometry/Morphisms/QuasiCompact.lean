@@ -180,6 +180,8 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.f
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+instance [CompactSpace X] : QuasiCompact X.toSpecΓ := (quasiCompact_over_affine_iff _).mpr ‹_›
+
 lemma compactSpace_iff_exists :
     CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f.base := by
   refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
