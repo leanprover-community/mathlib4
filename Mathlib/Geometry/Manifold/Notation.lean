@@ -209,18 +209,23 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     s.restore true
     return none
 
-/-- Workhorse method for `findModel`: try all strategies, and return an `Option` whether it
-succeeded. -/
+/-- Workhorse method for `findModel`: try all strategies, and return the first one which succeeded.
+This method tries all strategies for single spaces (i.e., does not recurse into products).
+
+On succcess, return `some (e × eN)`, where `e` is an `Expr` for the type it found, and `eN` is
+`some E` if `e` is a normed space `E` (and `none`) otherwise.
+This information is used to assign models to products of normed spaces currently. -/
 def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-    TermElabM <| Option Expr := do
-  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return m
-  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return m
-  if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return m
-  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return m
-  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return m
-  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
-  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
-  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
+    TermElabM <| Option (Expr × Option Expr) := do
+  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return some (m, none)
+  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return some (m, none)
+  -- TODO: make fromNormedSpace return the expression `E` also... then return it
+  if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return some (m, none)
+  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return some (m, none)
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return some (m, none)
+  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return some (m, none)
+  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return some (m, none)
+  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return some (m, none)
   return none
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -380,7 +385,7 @@ This implementation is not maximally robust yet.
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   -- At first, try finding a model on the space itself.
-  if let some m ← findModelInner e baseInfo then return m
+  if let some (m, _snd) ← findModelInner e baseInfo then return m
   -- TODO: recurse into further factors, as necessary
 
   -- refactor the Inner method to return whether we have a normed space or not
@@ -390,10 +395,10 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
     trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
     match  ← findModelInner src baseInfo with
     | none => throwError "Found no model with corners on first factor {src}"
-    | some aI =>
+    | some (aI, _) =>
       match ← findModelInner tgt baseInfo with
       | none => throwError "Found no model with corners on the second factor {tgt}"
-      | some bI =>
+      | some (bI, _) =>
         -- TODO: recurse into the factors!
         let aT : Term ← Term.exprToSyntax aI
         let bT : Term ← Term.exprToSyntax bI
