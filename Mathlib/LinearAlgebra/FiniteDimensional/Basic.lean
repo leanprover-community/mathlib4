@@ -604,7 +604,7 @@ end End
 end Module
 
 open TensorProduct in
-/-- Given an element `z : E ⊗ F'`, there exists finite subspaces `E'` and `F'`
+/-- Given an element `z : E ⊗ F`, there exists finite subspaces `E'` and `F'`
 such that `z ∈ range (mapIncl E' F')`. -/
 lemma TensorProduct.exists_finite_mem_range_mapIncl {R E F : Type*} [CommRing R]
     [AddCommGroup E] [AddCommGroup F] [Module R E] [Module R F] (z : E ⊗[R] F) :
