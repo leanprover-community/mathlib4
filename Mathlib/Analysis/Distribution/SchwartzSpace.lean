@@ -572,8 +572,6 @@ variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for bilinear maps. -/
-/-- The product of two functions of temperate growth is again of temperate growth.
-Version for bilinear maps. -/
 theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜 E]
     (B : E →L[𝕜] F →L[𝕜] G) {f : D → E} {g : D → F} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (fun x ↦ B (f x) (g x)).HasTemperateGrowth := by
