@@ -405,7 +405,7 @@ nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) {f : ℕ → α} (hf :
 theorem isPWO_univ_iff : (univ : Set α).IsPWO ↔ WellQuasiOrderedLE α :=
   partiallyWellOrderedOn_univ_iff.trans (wellQuasiOrderedLE_def _).symm
 
-theorem isPWO_of_WellQuasiOrderedLE [h : WellQuasiOrderedLE α] (s : Set α) : s.IsPWO :=
+theorem isPWO_of_wellQuasiOrderedLE [h : WellQuasiOrderedLE α] (s : Set α) : s.IsPWO :=
   partiallyWellOrderedOn_of_wellQuasiOrdered h.wqo s
 
 theorem isPWO_iff_exists_monotone_subseq :
