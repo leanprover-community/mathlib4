@@ -175,18 +175,10 @@ theorem exists_finite_submodule_right_of_finite' (s : Set (M₁ ⊗[R] N₁)) (h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
 /-- Every element of a tensor product lies in the tensor product of some finite submodules. -/
-lemma exists_finite_mem_map₂ {R E F : Type*} [CommRing R]
-    [AddCommGroup E] [AddCommGroup F] [Module R E] [Module R F] (z : E ⊗[R] F) :
-    ∃ (E' : Submodule R E) (F' : Submodule R F) (_ : Module.Finite R E') (_ : Module.Finite R F'),
-      z ∈ Submodule.map₂ (mk R E F) E' F' :=
-  z.induction_on
-  ⟨⊥, ⊥, .bot R E, .bot R F, zero_mem _⟩
-  (fun e f => ⟨span R {e}, span R {f}, .span_singleton R e, .span_singleton R f,
-    apply_mem_map₂ _ (mem_span_singleton_self e) (mem_span_singleton_self f)⟩)
-  (fun _ _ ⟨E1, F1, _, _, hz1⟩ ⟨E2, F2, _, _, hz2⟩ =>
-    ⟨E1 ⊔ E2, F1 ⊔ F2, E1.finite_sup _, F1.finite_sup _,
-      (Submodule.add_mem _
-        (map₂_le_map₂ le_sup_left le_sup_left hz1))
-        (map₂_le_map₂ le_sup_right le_sup_right hz2)⟩)
+lemma exists_finite_mem_map₂ (z : M ⊗[R] N) :
+    ∃ (E' : Submodule R M) (F' : Submodule R N) (_ : Module.Finite R E') (_ : Module.Finite R F'),
+      z ∈ Submodule.map₂ (mk R M N) E' F' := by
+  obtain ⟨E', F', hE', hF', h⟩ := exists_finite_submodule_of_finite {z} (Set.finite_singleton z)
+  exact ⟨E', F', hE', hF', range_mapIncl E' F' ▸ Set.singleton_subset_iff.mp h⟩
 
 end TensorProduct
