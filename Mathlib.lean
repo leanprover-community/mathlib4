@@ -2919,6 +2919,7 @@ import Mathlib.Combinatorics.Configuration
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
+import Mathlib.Combinatorics.DiHypergraph.Basic
 import Mathlib.Combinatorics.Digraph.Basic
 import Mathlib.Combinatorics.Digraph.Orientation
 import Mathlib.Combinatorics.Enumerative.Bell
