@@ -113,6 +113,16 @@ theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_eq).uniformContinuous x]
     exact mixedEmbedding.mixedEmbedding_apply_isComplex _ _ _
 
+/--
+*Weak approximation for the infinite adele ring*
+
+The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
+-/
+theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K (InfiniteAdeleRing K) :=
+  (DenseRange.piMap fun _ => UniformSpace.Completion.denseRange_coe).comp
+    (InfinitePlace.denseRange_algebraMap_pi K)
+      (.piMap fun _ => UniformSpace.Completion.continuous_coe _)
+
 end InfiniteAdeleRing
 
 /-! ## The adele ring  -/
