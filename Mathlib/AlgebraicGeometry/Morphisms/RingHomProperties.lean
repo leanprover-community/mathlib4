@@ -111,7 +111,7 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
     have : IsIso (e.hom.appLE (e.hom ''ᵁ U) U.1 (e.hom.preimage_image_eq _).ge) :=
       inferInstanceAs (IsIso (e.hom.app _ ≫
         X.presheaf.map (eqToHom (e.hom.preimage_image_eq _).symm).op))
-    rw [← Scheme.appLE_comp_appLE _ _ ⊤ (e.hom ''ᵁ U) U.1 le_top (e.hom.preimage_image_eq _).ge,
+    rw [← Scheme.Hom.appLE_comp_appLE _ _ ⊤ (e.hom ''ᵁ U) U.1 le_top (e.hom.preimage_image_eq _).ge,
       CommRingCat.hom_comp, h₁.cancel_right_isIso]
     exact H ⟨_, U.prop.image_of_isOpenImmersion e.hom⟩
   · introv H U
@@ -290,7 +290,7 @@ theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
   have : IsIso (f.appLE (f ''ᵁ V) V.1 (f.preimage_image_eq _).ge) :=
     inferInstanceAs (IsIso (f.app _ ≫
       X.presheaf.map (eqToHom (f.preimage_image_eq _).symm).op))
-  rw [← Scheme.appLE_comp_appLE _ _ _ (f ''ᵁ V) V.1
+  rw [← Scheme.Hom.appLE_comp_appLE _ _ _ (f ''ᵁ V) V.1
     (Set.image_subset_iff.mpr e) (f.preimage_image_eq _).ge,
     CommRingCat.hom_comp,
     (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso]
@@ -370,7 +370,7 @@ lemma containsIdentities (hP : RingHom.ContainsIdentities Q) : P.ContainsIdentit
     rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
     have : IsAffine (𝟙 X ⁻¹ᵁ U.1) := U.2
-    rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.id_appTop]
+    rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.Hom.id_appTop]
     apply hP
 
 variable (P) in
@@ -473,7 +473,7 @@ theorem of_comp
     {X Y Z : Scheme.{u}} {f : X ⟶ Y} {g : Y ⟶ Z} (h : P (f ≫ g)) : P f := by
   wlog hZ : IsAffine Z generalizing X Y Z
   · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _
-      (g.preimage_iSup_eq_top (iSup_affineOpens_eq_top Z))]
+      (g.iSup_preimage_eq_top (iSup_affineOpens_eq_top Z))]
     intro U
     have H := IsZariskiLocalAtTarget.restrict h U.1
     rw [morphismRestrict_comp] at H
@@ -543,7 +543,7 @@ private lemma respects_isOpenImmersion_aux
       · rwa [P.cancel_right_of_respectsIso]
       · obtain ⟨a, ha⟩ := hUs s.2
         use a, ha.symm
-    · apply f.preimage_iSup_eq_top
+    · apply f.iSup_preimage_eq_top
       apply U.ι.image_injective
       simp only [U.ι.image_iSup, U.ι.image_preimage_eq_opensRange_inf, Scheme.Opens.opensRange_ι]
       conv_rhs => rw [Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι, heq]
@@ -653,13 +653,13 @@ lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom)
     intro U
     refine this ?_ U.2
     intro x
-    rw [Scheme.stalkMap_comp, CommRingCat.hom_comp, hQi.cancel_right_isIso]
+    rw [Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp, hQi.cancel_right_isIso]
     exact H x.val
   wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
   · rw [← P.cancel_right_of_respectsIso (g := Y.isoSpec.hom)]
     rw [← P.cancel_left_of_respectsIso (f := X.isoSpec.inv)]
     refine this inferInstance (fun x ↦ ?_) inferInstance ?_
-    · rw [Scheme.stalkMap_comp, Scheme.stalkMap_comp, CommRingCat.hom_comp,
+    · rw [Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp,
         hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso]
       apply H
     · use Γ(Y, ⊤), Γ(X, ⊤)
@@ -691,11 +691,10 @@ lemma stalkMap
       refine this ?_ (X.isoSpec.hom.base x) inferInstance inferInstance ?_
       · rwa [P.cancel_left_of_respectsIso, P.cancel_right_of_respectsIso]
       · use Γ(Y, ⊤), Γ(X, ⊤)
-    rw [Scheme.stalkMap_comp, Scheme.stalkMap_comp, CommRingCat.hom_comp,
+    rw [Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp,
       hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso] at this
     have heq : (X.isoSpec.inv.base (X.isoSpec.hom.base x)) = x := by simp
-    rwa [hQi.arrow_mk_iso_iff
-      (Scheme.arrowStalkMapIsoOfEq f heq)] at this
+    rwa [hQi.arrow_mk_iso_iff (f.arrowStalkMapIsoOfEq heq)] at this
   obtain ⟨R, S, rfl, rfl⟩ := hXY
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   rw [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)]

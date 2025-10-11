@@ -47,11 +47,7 @@ lemma IsAffineOpen.preimage {X Y : Scheme} {U : Y.Opens} (hU : IsAffineOpen U)
     IsAffineOpen (f ⁻¹ᵁ U) :=
   IsAffineHom.isAffine_preimage _ hU
 
-/-- The preimage of an affine open as an `Scheme.affine_opens`. -/
-@[simps]
-def affinePreimage {X Y : Scheme} (f : X ⟶ Y) [IsAffineHom f] (U : Y.affineOpens) :
-    X.affineOpens :=
-  ⟨f ⁻¹ᵁ U.1, IsAffineHom.isAffine_preimage _ U.prop⟩
+@[deprecated (since := "2025-10-07")] alias affinePreimage := IsAffineOpen.preimage
 
 instance (priority := 900) [IsIso f] : IsAffineHom f :=
   ⟨fun _ hU ↦ hU.preimage_of_isIso f⟩
@@ -123,8 +119,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
   · simp only [Opens.map_top, morphismRestrict_app]
     refine IsIso.comp_isIso' ?_ inferInstance
     convert isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
-    refine congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(?_)))
-    rw [Opens.isOpenEmbedding_obj_top]
+    exact congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(by simp)))
 
 /--
 If `s` is a spanning set of `Γ(X, U)`, such that each `X.basicOpen i` is affine, then `U` is also

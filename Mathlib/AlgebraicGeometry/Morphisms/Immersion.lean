@@ -72,13 +72,13 @@ lemma Scheme.Hom.liftCoborder_ι (f : X.Hom Y) [IsImmersion f] :
 lemma Scheme.Hom.liftCoborder_preimage [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
     f.liftCoborder ⁻¹ᵁ U = f ⁻¹ᵁ f.coborderRange.ι ''ᵁ U := by
   conv_rhs => enter [1]; rw [← f.liftCoborder_ι]
-  rw [Scheme.preimage_comp, Scheme.Hom.preimage_image_eq]
+  rw [Scheme.Hom.comp_preimage, Scheme.Hom.preimage_image_eq]
 
 lemma liftCoborder_app [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
     f.liftCoborder.app U = f.app (f.coborderRange.ι ''ᵁ U) ≫
       X.presheaf.map (eqToHom <| f.liftCoborder_preimage U).op := by
-  rw [Scheme.congr_app (f.liftCoborder_ι).symm (f.coborderRange.ι ''ᵁ U)]
-  simp [Scheme.app_eq f.liftCoborder (f.coborderRange.ι.preimage_image_eq U),
+  rw [Scheme.Hom.congr_app (f.liftCoborder_ι).symm (f.coborderRange.ι ''ᵁ U)]
+  simp [Scheme.Hom.app_eq f.liftCoborder (f.coborderRange.ι.preimage_image_eq U),
     ← Functor.map_comp_assoc, - Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
 
 instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
@@ -213,9 +213,10 @@ lemma isPullback_toImage_liftCoborder [IsImmersion f] [QuasiCompact f] :
   rw [Hom.imageι, IdealSheafData.ker_subschemeι]
   ext U : 2
   simp only [IdealSheafData.ideal_comap_of_isOpenImmersion, Opens.ι_appIso, Iso.refl_inv,
-    Hom.ker_apply, RingHom.comap_ker, ← CommRingCat.hom_comp, Opens.toScheme,
-    restrict_presheaf_obj, Category.id_comp]
-  rw [liftCoborder_app, CommRingCat.hom_comp, RingHom.ker_comp_of_injective]
+    Hom.ker_apply, RingHom.comap_ker, ← CommRingCat.hom_comp]
+  dsimp [Opens.toScheme_presheaf_obj]
+  rw [RingHomCompTriple.comp_eq, liftCoborder_app,
+    CommRingCat.hom_comp, RingHom.ker_comp_of_injective]
   rw [← ConcreteCategory.mono_iff_injective_of_preservesPullback]
   infer_instance
 

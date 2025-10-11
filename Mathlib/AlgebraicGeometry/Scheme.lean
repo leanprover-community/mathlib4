@@ -90,7 +90,7 @@ instance : Category Scheme where
   comp f g := Hom.mk (f.toLRSHom ≫ g.toLRSHom)
 
 /-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`, the preimage of an open set `U` under `f`.
-The prefered name in lemmas is `preimage` and it shouldn't be treated as a infix. -/
+The prefered name in lemmas is `preimage` and it should be treated as a infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
   @Functor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
     (Opens.map (f : Scheme.Hom _ _).base) U
@@ -235,12 +235,15 @@ lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
 @[deprecated (since := "2025-10-07")] alias preimage_le_preimage_of_le := preimage_mono
 
 @[simp]
-lemma preimage_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+lemma id_preimage (U : X.Opens) : (𝟙 X) ⁻¹ᵁ U = U := rfl
+
+@[simp]
+lemma comp_preimage {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g) ⁻¹ᵁ U = f ⁻¹ᵁ g ⁻¹ᵁ U := rfl
 
 end Hom
 
-@[deprecated (since := "2025-10-07")] alias preimage_comp := Hom.preimage_comp
+@[deprecated (since := "2025-10-07")] alias preimage_comp := Hom.comp_preimage
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
@@ -653,9 +656,13 @@ theorem preimage_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (r : �
     f ⁻¹ᵁ Y.basicOpen r = X.basicOpen (f.app U r) :=
   LocallyRingedSpace.preimage_basicOpen f.toLRSHom r
 
+alias Hom.preimage_basicOpen := preimage_basicOpen
+
 theorem preimage_basicOpen_top {X Y : Scheme.{u}} (f : X ⟶ Y) (r : Γ(Y, ⊤)) :
     f ⁻¹ᵁ Y.basicOpen r = X.basicOpen (f.appTop r) :=
   preimage_basicOpen ..
+
+alias Hom.preimage_basicOpen_top := preimage_basicOpen_top
 
 lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by

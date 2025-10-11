@@ -137,7 +137,7 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
     exact h.isClosedMap _ hZ
   surj_on_stalks x := by
     have h := (f ≫ g).stalkMap_surjective x
-    simp_rw [Scheme.stalkMap_comp] at h
+    simp_rw [Scheme.Hom.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
 instance Spec_map_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.residue x)) :=
@@ -262,7 +262,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   let res (i : 𝒰.I₀) : Γ(X, ⊤) ⟶ Γ(𝒰.X i, ⊤) := (𝒰.f i).appTop
   refine stalkMap_injective_of_isAffine _ _ (fun (g : Γ(Y, ⊤)) h ↦ ?_)
-  rw [TopCat.Presheaf.Γgerm, Scheme.stalkMap_germ_apply] at h
+  rw [TopCat.Presheaf.Γgerm, Scheme.Hom.germ_stalkMap_apply] at h
   obtain ⟨U, w, (hx : x ∈ U), hg⟩ :=
     X.toRingedSpace.exists_res_eq_zero_of_germ_eq_zero ⊤ (φ g) ⟨x, trivial⟩ h
   obtain ⟨_, ⟨s, rfl⟩, hyv, bsle⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen Y)
@@ -271,8 +271,8 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   have hwle (i : 𝒰.I₀) : W i ≤ (𝒰.f i)⁻¹ᵁ U := by
     change (𝒰.X i).basicOpen ((𝒰.f i ≫ f).appTop s) ≤ _
     rw [← Scheme.preimage_basicOpen_top, Scheme.Hom.comp_base, Opens.map_comp_obj]
-    refine Scheme.Hom.preimage_le_preimage_of_le _
-      (le_trans (f.preimage_le_preimage_of_le bsle) (le_of_eq ?_))
+    refine Scheme.Hom.preimage_mono _
+      (le_trans (f.preimage_mono bsle) (le_of_eq ?_))
     simp [Set.preimage_image_eq _ hfinj₁]
   have h0 (i : 𝒰.I₀) : (𝒰.f i).appLE _ (W i) (by simp) (φ g) = 0 := by
     rw [← Scheme.Hom.appLE_map _ ((Opens.map _).map w).le (homOfLE <| hwle i).op,

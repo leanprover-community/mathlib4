@@ -95,7 +95,7 @@ instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u+1}) :=
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X] : IsOpenImmersion f := by
-  apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
+  apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_isIso_stalkMap
   · exact .of_isEmpty (X := X) _
   · intro (i : X); exact isEmptyElim i
 
@@ -105,7 +105,7 @@ instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpt
   have : Epi f.base := by
     rw [TopCat.epi_iff_surjective]; rintro (x : Y)
     exact isEmptyElim x
-  apply IsOpenImmersion.to_iso
+  apply IsOpenImmersion.isIso
 
 /-- A scheme is initial if its underlying space is empty . -/
 noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
@@ -210,7 +210,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
     {X : Scheme.{u}} (α : ∀ i, f i ⟶ X) [∀ i, IsOpenImmersion (α i)]
     (hα : Pairwise (Disjoint on (Set.range <| α · |>.base))) :
     IsOpenImmersion (Sigma.desc α) := by
-  rw [IsOpenImmersion.iff_stalk_iso]
+  rw [IsOpenImmersion.iff_isIso_stalkMap]
   constructor
   · suffices Topology.IsOpenEmbedding ((Sigma.desc α).base ∘ sigmaMk f) by
       convert this.comp (sigmaMk f).symm.isOpenEmbedding; ext; simp
@@ -233,7 +233,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
       (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
     · simp [← Scheme.Hom.comp_apply]
-    · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
+    · simp [← Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
 
 open scoped Function in
 lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
@@ -401,15 +401,17 @@ lemma coprodSpec_apply (x) :
 lemma isIso_stalkMap_coprodSpec (x) :
     IsIso ((coprodSpec R S).stalkMap x) := by
   obtain ⟨x | x, rfl⟩ := (coprodMk _ _).surjective x
-  · have := Scheme.stalkMap_comp coprod.inl (coprodSpec R S) x
-    rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inl R S)] at this
+  · have := Scheme.Hom.stalkMap_comp coprod.inl (coprodSpec R S) x
+    rw [← IsIso.comp_inv_eq,
+      Scheme.Hom.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inl R S)] at this
     rw [coprodMk_inl, ← this]
     letI := (RingHom.fst R S).toAlgebra
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) :=
       IsOpenImmersion.of_isLocalization (1, 0)
     infer_instance
-  · have := Scheme.stalkMap_comp coprod.inr (coprodSpec R S) x
-    rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inr R S)] at this
+  · have := Scheme.Hom.stalkMap_comp coprod.inr (coprodSpec R S) x
+    rw [← IsIso.comp_inv_eq,
+      Scheme.Hom.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inr R S)] at this
     rw [coprodMk_inr, ← this]
     letI := (RingHom.snd R S).toAlgebra
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) :=
@@ -417,7 +419,7 @@ lemma isIso_stalkMap_coprodSpec (x) :
     infer_instance
 
 instance : IsIso (coprodSpec R S) := by
-  rw [isIso_iff_stalk_iso]
+  rw [isIso_iff_isIso_stalkMap]
   refine ⟨?_, isIso_stalkMap_coprodSpec R S⟩
   convert_to IsIso (TopCat.isoOfHomeo (X := Spec (.of <| R × S)) <|
     PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk (Spec <| .of R) (Spec <| .of S))).inv

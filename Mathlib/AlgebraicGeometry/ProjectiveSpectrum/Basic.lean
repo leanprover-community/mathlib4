@@ -307,7 +307,7 @@ lemma awayι_preimage_basicOpen :
     rw [Set.range_eq_univ.mpr (by exact
       (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' rfl).inv.homeomorph.surjective),
       ← opensRange_awayι _ _ g_deg hm']
-    simp [IsOpenImmersion.range_pullback_fst_of_right]
+    simp [IsOpenImmersion.range_pullbackFst]
   · letI := (awayMap (f := f) 𝒜 g_deg rfl).toAlgebra
     letI := HomogeneousLocalization.Away.isLocalization_mul f_deg g_deg rfl hm.ne'
     exact PrimeSpectrum.localization_away_comap_range _ _

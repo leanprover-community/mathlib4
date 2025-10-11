@@ -46,7 +46,7 @@ instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
   id_mem _ := inferInstance
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨fun x ↦ ?_⟩
-    rw [Scheme.stalkMap_comp]
+    rw [Scheme.Hom.stalkMap_comp]
     exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.base x))
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [SurjectiveOnStalks f]
@@ -79,7 +79,7 @@ lemma iff_of_isAffine [IsAffine X] [IsAffine Y] :
 theorem of_comp [SurjectiveOnStalks (f ≫ g)] : SurjectiveOnStalks f := by
   refine ⟨fun x ↦ ?_⟩
   have := (f ≫ g).stalkMap_surjective x
-  rw [Scheme.stalkMap_comp] at this
+  rw [Scheme.Hom.stalkMap_comp] at this
   exact Function.Surjective.of_comp this
 
 instance stableUnderBaseChange :

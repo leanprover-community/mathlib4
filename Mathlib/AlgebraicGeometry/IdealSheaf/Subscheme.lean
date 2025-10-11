@@ -126,7 +126,8 @@ lemma opensRange_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
   have := I.isLocalization_away (X.affineBasicOpen_le f) f rfl
   ext1
   refine (localization_away_comap_range _ f').trans ?_
-  rw [← comap_basicOpen, ← V.2.fromSpec_preimage_basicOpen, ← Scheme.preimage_comp, glueDataObjι_ι]
+  rw [← comap_basicOpen, ← V.2.fromSpec_preimage_basicOpen,
+    ← Scheme.Hom.comp_preimage, glueDataObjι_ι]
   rfl
 
 @[reassoc (attr := simp)]
@@ -155,13 +156,13 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   simp only [map_zero, ← RingHom.comp_apply,
     ← CommRingCat.hom_comp, Category.assoc]
   simp only [Scheme.Hom.app_eq_appLE, homOfLE_leOfHom, Scheme.Hom.map_appLE,
-    Scheme.appLE_comp_appLE, Category.assoc, glueDataObjMap_glueDataObjι_assoc]
+    Scheme.Hom.appLE_comp_appLE, Category.assoc, glueDataObjMap_glueDataObjι_assoc]
   rw [Scheme.Hom.appLE]
   have H : (X.homOfLE (X.basicOpen_le f) ≫ U.1.ι) ⁻¹ᵁ V.1 = ⊤ := by
     simp only [Scheme.homOfLE_ι, ← top_le_iff]
     exact fun x _ ↦ (hfg.trans_le (X.basicOpen_le g)) x.2
-  simp only [Scheme.Hom.comp_app, Scheme.Opens.ι_app, Scheme.homOfLE_app, ← Functor.map_comp,
-    Scheme.app_eq _ H, Scheme.Opens.toScheme_presheaf_map, ← Functor.map_comp_assoc, Category.assoc]
+  simp only [Scheme.Hom.comp_app, Scheme.Opens.ι_app, Scheme.homOfLE_app, ← Functor.map_comp_assoc,
+    Scheme.Hom.app_eq _ H, Scheme.Opens.toScheme_presheaf_map, ← Functor.map_comp, Category.assoc]
   simp only [CommRingCat.hom_comp, RingHom.comp_apply]
   convert RingHom.map_zero _ using 2
   rw [← RingHom.mem_ker, ker_glueDataObjι_appTop, ← Ideal.mem_comap, Ideal.comap_comap,
@@ -185,14 +186,14 @@ def glueDataT (U V : X.affineOpens) :
   refine pullback.lift ((F ≫ X.homOfLE inf_le_right ≫
     V.2.isoSpec.hom).liftQuotient _ ?_) (F ≫ X.homOfLE (by simp)) ?_
   · intro x hx
-    simp only [comp_app, Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
+    simp only [Hom.comp_app, Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
       TopologicalSpace.Opens.map_top, homOfLE_app, homOfLE_leOfHom, Category.assoc, RingHom.mem_ker]
     convert_to (U.1.ι.app V.1 ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.1.ι ⁻¹ᵁ V.1) ⊤
-      (by rw [← Scheme.preimage_comp, Category.assoc, X.homOfLE_ι]
+      (by rw [← Scheme.Hom.comp_preimage, Category.assoc, X.homOfLE_ι]
           exact fun x _ ↦ by simpa using (F.base x).2.2)).hom x = 0 using 3
-    · simp only [homOfLE_leOfHom, Opens.ι_app, comp_appLE, homOfLE_app]
+    · simp only [homOfLE_leOfHom, Opens.ι_app, Hom.comp_appLE, homOfLE_app]
       have H : ⊤ ≤ X.homOfLE (inf_le_left (b := V.1)) ⁻¹ᵁ U.1.ι ⁻¹ᵁ V.1 := by
-        rw [← Scheme.preimage_comp, X.homOfLE_ι]; exact fun x _ ↦ by simpa using x.2.2
+        rw [← Scheme.Hom.comp_preimage, X.homOfLE_ι]; exact fun x _ ↦ by simpa using x.2.2
       rw [← F.map_appLE (show ⊤ ≤ F ⁻¹ᵁ ⊤ from le_rfl) (homOfLE H).op]
       simp only [homOfLE_leOfHom, Opens.toScheme_presheaf_map, Quiver.Hom.unop_op,
         Hom.opensFunctor_map_homOfLE, ← Functor.map_comp_assoc, IsAffineOpen.isoSpec_hom_appTop,
@@ -437,7 +438,7 @@ def subschemeIso : I.subscheme ≅ I.glueData.glued :=
   letI F := I.glueData.glued.ofRestrict (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
     I.gluedHomeo.symm.isOpenEmbedding
   have : Epi F.base := ConcreteCategory.epi_of_surjective _ I.gluedHomeo.symm.surjective
-  letI := IsOpenImmersion.to_iso F
+  letI := IsOpenImmersion.isIso F
   asIso F
 
 /-- The inclusion from the subscheme associated to an ideal sheaf. -/
@@ -507,8 +508,8 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
     (I.subschemeObjIso U).inv := by
   have := I.subschemeCover_map_subschemeι U
   simp only [glueDataObjι, Category.assoc, IsAffineOpen.isoSpec_inv_ι] at this
-  replace this := Scheme.congr_app this U
-  simp only [Hom.comp_base, TopologicalSpace.Opens.map_comp_obj, comp_app,
+  replace this := Scheme.Hom.congr_app this U
+  simp only [Hom.comp_base, TopologicalSpace.Opens.map_comp_obj, Hom.comp_app,
     IsAffineOpen.fromSpec_app_self, eqToHom_op, Category.assoc, Hom.naturality_assoc,
     TopologicalSpace.Opens.map_top, ← ΓSpecIso_inv_naturality_assoc] at this
   simp_rw [← Category.assoc, ← IsIso.comp_inv_eq] at this
@@ -624,15 +625,15 @@ lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
     f.ker.ideal U ≤ RingHom.ker ((ΓSpecIso Γ(Y, ↑U)).inv ≫
       (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).appTop).hom := by
   let e : Γ(X, f ⁻¹ᵁ ↑U) ≅ Γ(Limits.pullback (C := Scheme) f U.1.ι, ⊤) :=
-    X.presheaf.mapIso (eqToIso (by simp [IsOpenImmersion.opensRange_pullback_fst_of_right])).op
+    X.presheaf.mapIso (eqToIso (by simp [Scheme.Hom.opensRange_pullbackFst])).op
       ≪≫ (Limits.pullback.fst (C := Scheme) f U.1.ι).appIso ⊤
   have he : f.app U ≫ e.hom =
       (ΓSpecIso Γ(Y, ↑U)).inv ≫ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).appTop := by
     rw [← (Iso.inv_comp_eq _).mpr U.2.isoSpec_inv_appTop, Category.assoc, Iso.eq_inv_comp]
     simp only [Opens.topIso_hom, eqToHom_op, Hom.app_eq_appLE, Iso.trans_hom, Functor.mapIso_hom,
-      Iso.op_hom, eqToIso.hom, Hom.appIso_hom, Hom.appLE_map, Hom.map_appLE, appLE_comp_appLE,
+      Iso.op_hom, eqToIso.hom, Hom.appIso_hom, Hom.appLE_map, Hom.map_appLE, Hom.appLE_comp_appLE,
       Opens.map_top, e, pullback.condition, IsAffineOpen.toSpecΓ_isoSpec_inv, Category.assoc]
-    rw [comp_appLE, Opens.ι_app]
+    rw [Hom.comp_appLE, Opens.ι_app]
     exact Hom.map_appLE _ _ (homOfLE le_top).op
   rw [← he]
   refine (IdealSheafData.ideal_ofIdeals_le _ _).trans_eq
@@ -684,7 +685,7 @@ lemma Hom.toImage_app :
         (Ideal.Quotient.lift _ (f.app U.1).hom (IdealSheafData.ideal_ofIdeals_le _ _)) := by
   have := ConcreteCategory.epi_of_surjective _ (f.ker.subschemeι_app_surjective U)
   rw [← cancel_epi (f.ker.subschemeι.app U), ← Scheme.Hom.comp_app,
-    Scheme.congr_app f.toImage_imageι, f.ker.subschemeι_app,
+    Scheme.Hom.congr_app f.toImage_imageι, f.ker.subschemeι_app,
     ← IsIso.eq_comp_inv, ← Functor.map_inv]
   simp only [Hom.comp_base, Opens.map_comp_obj, Category.assoc,
     Iso.inv_hom_id_assoc, eqToHom_op, inv_eqToHom]

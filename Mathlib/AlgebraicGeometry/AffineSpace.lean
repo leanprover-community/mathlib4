@@ -82,23 +82,13 @@ def toSpecMvPolyIntEquiv : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
     apply (ΓSpec.adjunction.homEquiv _ _).symm.injective
     apply Quiver.Hom.unop_inj
     rw [Adjunction.homEquiv_symm_apply, Adjunction.homEquiv_symm_apply]
-    simp only [Functor.rightOp_obj, Scheme.Γ_obj, Scheme.Spec_obj, algebraMap_int_eq,
-      RingEquiv.toRingHom_eq_coe, TopologicalSpace.Opens.map_top, Functor.rightOp_map, op_comp,
-      Scheme.Γ_map, unop_comp, Quiver.Hom.unop_op, Scheme.Hom.comp_app, Scheme.toSpecΓ_appTop,
-      Scheme.ΓSpecIso_naturality, ΓSpec.adjunction_counit_app, Category.assoc,
-      Iso.cancel_iso_inv_left, ← Iso.eq_inv_comp]
+    dsimp
+    simp only [Scheme.toSpecΓ_appTop, Scheme.ΓSpecIso_naturality, Iso.inv_hom_id_assoc]
     apply of_mvPolynomial_int_ext
     intro i
     rw [ConcreteCategory.hom_ofHom, coe_eval₂Hom, eval₂_X]
     rfl
-  right_inv v := by
-    ext i
-    simp only [algebraMap_int_eq, RingEquiv.toRingHom_eq_coe, TopologicalSpace.Opens.map_top,
-      Scheme.Hom.comp_app, Scheme.toSpecΓ_appTop, Scheme.ΓSpecIso_naturality, CommRingCat.comp_apply,
-      CommRingCat.coe_of]
-    -- TODO: why does `simp` not apply this lemma?
-    rw [CommRingCat.hom_inv_apply]
-    simp
+  right_inv v := by ext; simp
 
 lemma toSpecMvPolyIntEquiv_comp {X Y : Scheme} (f : X ⟶ Y) (g : Y ⟶ Spec ℤ[n]) (i) :
     toSpecMvPolyIntEquiv n (f ≫ g) i = f.appTop (toSpecMvPolyIntEquiv n g i) := rfl
@@ -185,19 +175,12 @@ def isoOfIsAffine [IsAffine S] :
           rw [← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp, eval₂Hom_comp_C,
             CommRingCat.ofHom_hom, ← Scheme.toSpecΓ_naturality_assoc]
           simp [Scheme.isoSpec]
-        · simp only [Category.assoc, Scheme.Hom.comp_app, Scheme.Hom.comp_base,
-            TopologicalSpace.Opens.map_comp_obj, TopologicalSpace.Opens.map_top,
-            Scheme.toSpecΓ_appTop, Scheme.ΓSpecIso_naturality, CommRingCat.comp_apply,
-            homOfVector_appTop_coord, Function.comp_apply, CommRingCat.coe_of, Scheme.id_app,
-            CommRingCat.id_apply]
-          -- TODO: why does `simp` not apply this?
-          rw [CommRingCat.hom_inv_apply]
-          exact eval₂_X _ _ _
+        · simp
       inv_hom_id := by
         apply ext_of_isAffine
         simp only [Scheme.Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
           TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, Scheme.toSpecΓ_appTop,
-          Scheme.ΓSpecIso_naturality, Category.assoc, Scheme.id_app, ← Iso.eq_inv_comp,
+          Scheme.ΓSpecIso_naturality, Category.assoc, Scheme.Hom.id_app, ← Iso.eq_inv_comp,
           Category.comp_id]
         ext : 1
         apply ringHom_ext'

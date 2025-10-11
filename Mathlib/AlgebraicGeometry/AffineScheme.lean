@@ -1043,7 +1043,7 @@ lemma Opens.toSpecΓ_preimage_basicOpen {X : Scheme.{u}} (U : X.Opens) (r : Γ(X
     U.toSpecΓ ⁻¹ᵁ PrimeSpectrum.basicOpen r = U.ι ⁻¹ᵁ X.basicOpen r := by
   dsimp [toSpecΓ]
   simp only [Scheme.toSpecΓ_preimage_basicOpen, preimage_basicOpen, ι_app, homOfLE_leOfHom]
-  rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.preimage_ι_self.symm).op,
+  rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.ι_preimage_self.symm).op,
     ← ConcreteCategory.comp_apply]
   congr 3
   simp [← Functor.map_comp]

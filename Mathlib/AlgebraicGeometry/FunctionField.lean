@@ -147,8 +147,8 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
     IsFractionRing Γ(X, U) X.functionField := by
   haveI : IsAffine _ := hU
   haveI : IsIntegral U :=
-    @isIntegral_of_isAffine_of_isDomain _ _ _
-      (by rw [Scheme.Opens.toScheme_presheaf_obj, Opens.isOpenEmbedding_obj_top]; infer_instance)
+    @isIntegral_of_isAffine_of_isDomain _ _ _ (by rw [Scheme.Opens.toScheme_presheaf_obj,
+      U.ι.image_top_eq_opensRange, U.opensRange_ι]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X,
     (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1

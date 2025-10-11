@@ -38,10 +38,17 @@ of quasi-compact open sets are quasi-compact.
 @[mk_iff]
 class QuasiCompact (f : X ⟶ Y) : Prop where
   /-- Preimage of compact open set under a quasi-compact morphism between schemes is compact. -/
-  isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f.base ⁻¹' U)
+  isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f ⁻¹' U)
 
-theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.base :=
+variable {f} in
+theorem quasiCompact_iff_isSpectralMap : QuasiCompact f ↔ IsSpectralMap f :=
   ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
+
+theorem Scheme.Hom.isSpectralMap [QuasiCompact f] : IsSpectralMap f := by
+  rwa [← quasiCompact_iff_isSpectralMap]
+
+@[deprecated (since := "2025-10-07")]
+alias quasiCompact_iff_spectral := quasiCompact_iff_isSpectralMap
 
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
@@ -69,6 +76,12 @@ theorem isCompactOpen_iff_eq_finset_affine_union {X : Scheme} (U : Set X) :
   · rw [Subtype.range_coe]; exact isBasis_affine_open X
   · exact fun i => i.2.isCompact
 
+theorem isCompact_iff_eq_finset_affine_union {X : Scheme} (U : X.Opens) :
+    IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
+  convert isCompactOpen_iff_eq_finset_affine_union (U : Set X) using 4 with s
+  · simp [U.isOpen]
+  · convert SetLike.coe_injective.eq_iff.symm; simp
+
 theorem isCompactOpen_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set X) :
     IsCompact U ∧ IsOpen U ↔
       ∃ s : Set Γ(X, ⊤), s.Finite ∧ U = ⋃ i ∈ s, X.basicOpen i :=
@@ -89,32 +102,15 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
   classical
   refine ((isCompactOpen_iff_eq_finset_affine_union _).mpr ?_).1
-  obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_finset_affine_union _).mp ⟨hU, U.isOpen⟩
-  let g : s → X.affineOpens := by
-    intro V
-    use V.1 ⊓ X.basicOpen f
-    have : V.1.1 ⟶ U := by
-      apply homOfLE; change _ ⊆ (U : Set X); rw [e]
-      convert Set.subset_iUnion₂ (s := fun (U : X.affineOpens) (_ : U ∈ s) => (U : Set X))
-        V V.prop using 1
-    erw [← X.toLocallyRingedSpace.toRingedSpace.basicOpen_res this.op]
-    exact IsAffineOpen.basicOpen V.1.prop _
+  obtain ⟨s, hs, e⟩ := (isCompact_iff_eq_finset_affine_union _).mp hU
+  let g : s → X.affineOpens := fun V ↦ ⟨V.1 ⊓ X.basicOpen f, by
+    rw [← X.basicOpen_res _ (homOfLE ((le_iSup₂ V.1 V.2).trans_eq e.symm)).op]
+    exact V.1.2.basicOpen _⟩
   haveI : Finite s := hs.to_subtype
   refine ⟨Set.range g, Set.finite_range g, ?_⟩
-  refine (Set.inter_eq_right.mpr
-            (SetLike.coe_subset_coe.2 <| RingedSpace.basicOpen_le _ _)).symm.trans ?_
-  rw [e, Set.iUnion₂_inter]
-  apply le_antisymm <;> apply Set.iUnion₂_subset
-  · intro i hi
-    -- Porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
-    exact Set.Subset.trans (Set.Subset.rfl : _ ≤ g ⟨i, hi⟩)
-      (@Set.subset_iUnion₂ _ _ _
-        (fun (i : X.affineOpens) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace)) _
-        (Set.mem_range_self ⟨i, hi⟩))
-  · rintro ⟨i, hi⟩ ⟨⟨j, hj⟩, hj'⟩
-    rw [← hj']
-    refine Set.Subset.trans ?_ (Set.subset_iUnion₂ j hj)
-    exact Set.Subset.rfl
+  rw [Set.biUnion_range]
+  simp only [Opens.coe_inf, Set.iUnion_coe_set s, g, ← Set.iUnion₂_inter, Set.right_eq_inter]
+  exact subset_trans (X.basicOpen_le _) (by simpa using e.le)
 
 instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) where
   eq_targetAffineLocally' := by
@@ -127,21 +123,13 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
     · apply AffineTargetMorphismProperty.respectsIso_mk <;> rintro X Y Z e _ _ H
       exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.base)), H]
     · introv _ H
-      change CompactSpace ((Opens.map f.base).obj (Y.basicOpen r))
       rw [Scheme.preimage_basicOpen f r]
-      erw [← isCompact_iff_compactSpace]
-      rw [← isCompact_univ_iff] at H
-      apply isCompact_basicOpen
-      exact H
+      exact (isCompact_iff_compactSpace.mp (isCompact_basicOpen _ isCompact_univ _))
     · rintro X Y H f S hS hS'
-      rw [← IsAffineOpen.basicOpen_union_eq_self_iff] at hS
-      · rw [← isCompact_univ_iff]
-        change IsCompact ((Opens.map f.base).obj ⊤).1
-        rw [← hS]
-        dsimp [Opens.map]
-        simp only [Opens.iSup_mk, Opens.coe_mk, Set.preimage_iUnion]
-        exact isCompact_iUnion fun i => isCompact_iff_compactSpace.mpr (hS' i)
-      · exact isAffineOpen_top _
+      rw [← (isAffineOpen_top _).basicOpen_union_eq_self_iff] at hS
+      rw [← isCompact_univ_iff, ← Opens.coe_top, ← f.preimage_top, ← hS, Scheme.Hom.preimage_iSup,
+        Opens.iSup_mk, Opens.coe_mk]
+      exact isCompact_iUnion fun i => isCompact_iff_compactSpace.mpr (hS' i)
 
 theorem quasiCompact_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     QuasiCompact f ↔ CompactSpace X := by
@@ -154,7 +142,7 @@ theorem compactSpace_iff_quasiCompact (X : Scheme) :
 lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y) [QuasiCompact f]
     [CompactSpace Y] : CompactSpace X := by
   constructor
-  rw [← Set.preimage_univ (f := f.base)]
+  rw [← Set.preimage_univ (f := f)]
   exact QuasiCompact.isCompact_preimage _ isOpen_univ CompactSpace.isCompact_univ
 
 instance quasiCompact_isStableUnderComposition :
@@ -181,28 +169,28 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.s
   MorphismProperty.pullback_snd f g inferInstance
 
 lemma compactSpace_iff_exists :
-    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f.base := by
+    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f := by
   refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   refine ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, ?_⟩
-  refine Function.Surjective.comp (g := (Sigma.desc 𝒰.f).base)
+  refine Function.Surjective.comp (g := Sigma.desc 𝒰.f)
     (fun x ↦ ?_) (∐ 𝒰.X).isoSpec.inv.surjective
   obtain ⟨y, hy⟩ := 𝒰.covers x
-  exact ⟨(Sigma.ι 𝒰.X (𝒰.idx x)).base y, by rw [← Scheme.Hom.comp_apply, Sigma.ι_desc, hy]⟩
+  exact ⟨Sigma.ι 𝒰.X (𝒰.idx x) y, by rw [← Scheme.Hom.comp_apply, Sigma.ι_desc, hy]⟩
 
 lemma isCompact_iff_exists {U : X.Opens} :
-    IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f.base = U := by
+    IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f = U := by
   refine isCompact_iff_compactSpace.trans ((compactSpace_iff_exists (X := U)).trans ?_)
   refine ⟨fun ⟨R, f, hf⟩ ↦ ⟨R, f ≫ U.ι, by simp [hf.range_comp]⟩, fun ⟨R, f, hf⟩ ↦ ?_⟩
   refine ⟨R, IsOpenImmersion.lift U.ι f (by simp [hf]), ?_⟩
   rw [← Set.range_eq_univ]
-  apply show Function.Injective (U.ι.base '' ·) from Set.image_val_injective
+  apply show Function.Injective (U.ι '' ·) from Set.image_val_injective
   simp only [Set.image_univ, Scheme.Opens.range_ι]
   rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsOpenImmersion.lift_fac]
 
 @[stacks 01K9]
 lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
-    IsClosedMap f.base ↔ SpecializingMap f.base := by
+    IsClosedMap f ↔ SpecializingMap f := by
   refine ⟨fun h ↦ h.specializingMap, fun H ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
   · change topologically @IsClosedMap f
@@ -221,7 +209,7 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
   · obtain ⟨R, g, hg⟩ :=
       compactSpace_iff_exists.mp ((quasiCompact_over_affine_iff f).mp inferInstance)
     have inst : QuasiCompact (g ≫ f) := HasAffineProperty.iff_of_isAffine.mpr (by infer_instance)
-    have := this _ (g ≫ f) (g.base ⁻¹' Z) (hZ.preimage g.continuous)
+    have := this _ (g ≫ f) (g ⁻¹' Z) (hZ.preimage g.continuous)
     simp_rw [Scheme.Hom.comp_base, TopCat.comp_app, ← Set.image_image,
       Set.image_preimage_eq _ hg] at this
     exact this H ⟨_, rfl⟩

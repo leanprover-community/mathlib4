@@ -156,9 +156,9 @@ lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
   simp only [← Category.assoc, ← Spec.map_comp]
   congr 3
   rw [Iso.eq_inv_comp, ← Category.assoc, IsIso.comp_inv_eq, IsIso.eq_inv_comp,
-    stalkMap_congr_hom _ _ (X.homOfLE_ι hU').symm]
+    Hom.stalkMap_congr_hom _ _ (X.homOfLE_ι hU').symm]
   simp only [TopCat.Presheaf.stalkCongr_hom]
-  rw [← stalkSpecializes_stalkMap_assoc, stalkMap_comp]
+  rw [← Hom.stalkSpecializes_stalkMap_assoc, Hom.stalkMap_comp]
 
 lemma fromFunctionField_restrict (f : X.PartialMap Y) [IrreducibleSpace X]
     {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :

@@ -166,7 +166,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     specialize H (f.app _ s) _ x ⟨x, rfl⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]
     · have H : (X.presheaf.germ _ x _).hom _ = 0 := H
-      rw [← Scheme.stalkMap_germ_apply f ⟨_, _⟩ x] at H
+      rw [← Scheme.Hom.germ_stalkMap_apply f ⟨_, _⟩ x] at H
       apply_fun inv <| f.stalkMap x at H
       rw [← CommRingCat.comp_apply, CategoryTheory.IsIso.hom_inv_id, map_zero] at H
       exact H

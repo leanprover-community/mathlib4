@@ -215,8 +215,8 @@ lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
   rintro U V rfl rfl
   have := ConcreteCategory.mono_of_injective _ HU
   rw [← cancel_mono (X.presheaf.germ U x hxU)]
-  simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.stalkMap_germ, H]
-  simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ]
+  simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.Hom.germ_stalkMap, H]
+  simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.Hom.germ_stalkMap]
 
 /--
 A variant of `spread_out_unique_of_isGermInjective`
@@ -336,7 +336,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
   have : sY.appLE U V iVU ≫ Y.presheaf.germ V y hyV ≫ φ =
       sX.app U ≫ X.presheaf.germ (sX ⁻¹ᵁ U) x hxU := by
     rw [Scheme.Hom.appLE, Category.assoc, Y.presheaf.germ_res_assoc,
-      ← Scheme.stalkMap_germ_assoc, h]
+      ← Scheme.Hom.germ_stalkMap_assoc, h]
     simp
   obtain ⟨W, hxW, φ', i, hW, h₁, h₂⟩ :=
     exists_lift_of_germInjective (R := Γ(S, U)) (A := Γ(Y, V)) (U := sX ⁻¹ᵁ U) (x := x) hxU

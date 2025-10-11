@@ -65,7 +65,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
     rwa [← g.isEmbedding.of_comp_iff]
   surj_on_stalks x := by
     have h := (f ≫ g).stalkMap_surjective x
-    rw [Scheme.stalkMap_comp] at h
+    rw [Scheme.Hom.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
 theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g] :

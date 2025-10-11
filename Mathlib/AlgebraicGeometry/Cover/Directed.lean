@@ -101,8 +101,8 @@ instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected w
     simp only [Functor.comp_obj, Cover.functorOfLocallyDirected_obj, forget_obj, Functor.comp_map,
       Cover.functorOfLocallyDirected_map, forget_map] at hxij
     have : (𝒰.f i).base xi = (𝒰.f j).base xj := by
-      rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, comp_base, comp_base, ConcreteCategory.comp_apply,
-        hxij, ConcreteCategory.comp_apply]
+      rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, Hom.comp_base, Hom.comp_base,
+        ConcreteCategory.comp_apply, hxij, ConcreteCategory.comp_apply]
     obtain ⟨z, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback xi xj this
     obtain ⟨l, gi, gj, y, rfl⟩ := 𝒰.exists_lift_trans_eq z
     refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.Hom.comp_apply]
@@ -146,8 +146,8 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
     refine ⟨k, hki, hkj, show x ∈ Set.range _ from ?_⟩
     rw [this, Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, Pullback.range_map]
     use iso.hom.base x
-    simp only [id.base, TopCat.hom_id, ContinuousMap.coe_id, Set.range_id, Set.preimage_univ,
-      Set.univ_inter, Set.mem_preimage, Set.mem_range, iso_hom_base_inv_base_apply, and_true]
+    simp only [Hom.id_base, TopCat.hom_id, ContinuousMap.coe_id, Set.range_id, Set.preimage_univ,
+      Set.univ_inter, Set.mem_preimage, Set.mem_range, Hom.hom_inv_apply, and_true]
     exact ⟨yk, hyk⟩
   property_trans {i j} hij := by
     let iso : pullback f (𝒰.f i) ≅ pullback (pullback.snd f (𝒰.f j)) (𝒰.trans hij) :=
