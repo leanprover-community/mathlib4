@@ -3,8 +3,12 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -24,8 +28,8 @@ For any `I : Ideal A`:
 
 * `HomogeneousIdeal.completeLattice`: `Ideal.IsHomogeneous` is preserved by `⊥`, `⊤`, `⊔`, `⊓`,
   `⨆`, `⨅`, and so the subtype of homogeneous ideals inherits a complete lattice structure.
-* `Ideal.homogeneousCore.gi`: `Ideal.homogeneousCore` forms a galois insertion with coercion.
-* `Ideal.homogeneousHull.gi`: `Ideal.homogeneousHull` forms a galois insertion with coercion.
+* `Ideal.homogeneousCore.gi`: `Ideal.homogeneousCore` forms a Galois insertion with coercion.
+* `Ideal.homogeneousHull.gi`: `Ideal.homogeneousHull` forms a Galois insertion with coercion.
 
 ## Implementation notes
 
@@ -65,29 +69,27 @@ abbrev HomogeneousIdeal := HomogeneousSubmodule 𝒜 𝒜
 variable {𝒜}
 
 /-- Converting a homogeneous ideal to an ideal. -/
-def HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A := I.toSubmodule
+abbrev HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
+  I.toSubmodule
 
-theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) : I.toIdeal.IsHomogeneous 𝒜 :=
-  I.is_homogeneous'
+theorem HomogeneousIdeal.isHomogeneous (I : HomogeneousIdeal 𝒜) :
+    I.toIdeal.IsHomogeneous 𝒜 := I.is_homogeneous'
 
 theorem HomogeneousIdeal.toIdeal_injective :
     Function.Injective (HomogeneousIdeal.toIdeal : HomogeneousIdeal 𝒜 → Ideal A) :=
-  HomogeneousSubmodule.toSubmodule_injective _ _
+  HomogeneousSubmodule.toSubmodule_injective 𝒜 𝒜
 
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
-  HomogeneousSubmodule.setLike _ _
+  HomogeneousSubmodule.setLike 𝒜 𝒜
 
 @[ext]
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
   HomogeneousIdeal.toIdeal_injective h
 
-/--
-The set-theoretic extensionality of `HomogeneousIdeal`.
--/
 theorem HomogeneousIdeal.ext' {I J : HomogeneousIdeal 𝒜} (h : ∀ i, ∀ x ∈ 𝒜 i, x ∈ I ↔ x ∈ J) :
-    I = J := HomogeneousSubmodule.ext' _ _ h
+    I = J := HomogeneousSubmodule.ext' 𝒜 𝒜 h
 
-@[simp]
+@[simp high]
 theorem HomogeneousIdeal.mem_iff {I : HomogeneousIdeal 𝒜} {x : A} : x ∈ I.toIdeal ↔ x ∈ I :=
   Iff.rfl
 
@@ -101,13 +103,14 @@ variable (I : Ideal A)
 
 /-- For any `I : Ideal A`, not necessarily homogeneous, `I.homogeneousCore' 𝒜`
 is the largest homogeneous ideal of `A` contained in `I`, as an ideal. -/
-def Ideal.homogeneousCore' (I : Ideal A) : Ideal A := Submodule.homogeneousCore' A 𝒜 I
+def Ideal.homogeneousCore' (I : Ideal A) : Ideal A :=
+  Ideal.span ((↑) '' (((↑) : Subtype (SetLike.IsHomogeneousElem 𝒜) → A) ⁻¹' I))
 
 theorem Ideal.homogeneousCore'_mono : Monotone (Ideal.homogeneousCore' 𝒜) :=
-  Submodule.homogeneousCore'_mono _
+  fun _ _ I_le_J => Ideal.span_mono <| Set.image_mono fun _ => @I_le_J _
 
 theorem Ideal.homogeneousCore'_le : I.homogeneousCore' 𝒜 ≤ I :=
-  Submodule.homogeneousCore'_le _ _
+  Ideal.span_le.2 <| image_preimage_subset _ _
 
 end HomogeneousCore
 
@@ -120,7 +123,7 @@ variable (I : Ideal A)
 
 theorem Ideal.isHomogeneous_iff_forall_subset :
     I.IsHomogeneous 𝒜 ↔ ∀ i, (I : Set A) ⊆ GradedRing.proj 𝒜 i ⁻¹' I :=
-  Submodule.isHomogeneous_iff_forall_subset _ _
+  Iff.rfl
 
 theorem Ideal.isHomogeneous_iff_subset_iInter :
     I.IsHomogeneous 𝒜 ↔ (I : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' ↑I :=
