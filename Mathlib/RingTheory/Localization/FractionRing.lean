@@ -592,7 +592,7 @@ section IsScalarTower
 
 attribute [local instance] liftAlgebra
 
-instance isScalarTower (B K : Type*) [CommRing B] [IsDomain B] [Field K] [Algebra A B]
+instance (B K : Type*) [CommRing B] [IsDomain B] [Field K] [Algebra A B]
     [Algebra A K] [Algebra B K] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A K]
     [NoZeroSMulDivisors B K] [IsScalarTower A B K] :
     IsScalarTower (FractionRing A) (FractionRing B) K where
