@@ -311,9 +311,9 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsImmersionAt F I J n f x) (hg : IsImmersionAt F' I' J' n g x') :
     IsImmersionAt (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
-  set P := ImmersionAtProp F I J M N
-  set Q := ImmersionAtProp F' I' J' M' N'
-  set R := ImmersionAtProp (F × F') (I.prod I') (J.prod J') (M × M') (N × N')
+  let P := ImmersionAtProp F I J M N
+  let Q := ImmersionAtProp F' I' J' M' N'
+  let R := ImmersionAtProp (F × F') (I.prod I') (J.prod J') (M × M') (N × N')
   -- This is the key proof: immersions are stable under products.
   have key : ∀ {f : M → N}, ∀ {φ₁ : OpenPartialHomeomorph M H}, ∀ {ψ₁ : OpenPartialHomeomorph N G},
       ∀ {g : M' → N'}, ∀ {φ₂ : OpenPartialHomeomorph M' H'}, ∀ {ψ₂ : OpenPartialHomeomorph N' G'},
@@ -331,35 +331,8 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     have hΦ: Φ = Prod.map (equiv₁ ∘ (·, 0)) (equiv₂ ∘ (·, 0)) := by ext x <;> simp [Φ]
     rw [hC, hΦ]
     exact hfprop.prodMap hgprop
-  -- Now, this step should be a straightforward application... not sure why this fails!
-  sorry
-  -- convert LiftSourceTargetPropertyAt.prodMap hprop hf hg
-  -- apply LiftSourceTargetPropertyAt.prodMap hprop hf.property hg.property
-  -- don't understand yet why this fails!
-  -- old proof, unabstracted
-  /- use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (h.equiv.prodCongr h'.equiv)
-  use h.domChart.prod h'.domChart, h.codChart.prod h'.codChart
-  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
-  · simp [h.mem_domChart_source, h'.mem_domChart_source]
-  · simp [mem_codChart_source h, mem_codChart_source h']
-  · exact IsManifold.mem_maximalAtlas_prod
-      (domChart_mem_maximalAtlas h) (domChart_mem_maximalAtlas h')
-  · apply IsManifold.mem_maximalAtlas_prod
-      (codChart_mem_maximalAtlas h) (codChart_mem_maximalAtlas h')
-  · rw [PartialHomeomorph.prod_toPartialEquiv, PartialEquiv.prod_source, prodMap_image_prod]
-    exact prod_mono (map_source_subset_source h) (map_source_subset_source h')
-  · rw [h.domChart.extend_prod h'.domChart, h.codChart.extend_prod, PartialEquiv.prod_target]
-    set C := ((h.codChart.extend J).prod (h'.codChart.extend J')) ∘
-      Prod.map f g ∘ ((h.domChart.extend I).prod (h'.domChart.extend I')).symm
-    have hC : C = Prod.map ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm)
-        ((h'.codChart.extend J') ∘ g ∘ (h'.domChart.extend I').symm) := by
-      ext x <;> simp [C]
-    set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
-      (h.equiv.prodCongr h'.equiv)) ∘ (·, 0))
-    have hΦ: Φ = Prod.map (h.equiv ∘ (·, 0)) (h'.equiv ∘ (·, 0)) := by ext x <;> simp [Φ]
-    rw [hC, hΦ]
-    exact aux2 (writtenInCharts h) (writtenInCharts h')
-    exact (writtenInCharts h).prodMap (writtenInCharts h') -/
+  rw [IsImmersionAt_def]
+  exact LiftSourceTargetPropertyAt.prodMap key hf.property hg.property
 
 end IsImmersionAt
 
