@@ -603,7 +603,7 @@ namespace Subgraph
 
 protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (hconn : G''.Connected) :
-    G''.coeSubgraph.Connected := by
+    (Subgraph.coeSubgraph G'').Connected := by
   obtain ⟨hpreconn, _⟩ := Subgraph.connected_iff.mp hconn
   have := hpreconn.coe.set_univ_walk_nonempty
   simp_all only [connected_iff_forall_exists_walk_subgraph, Subtype.forall, true_and, map_verts,
