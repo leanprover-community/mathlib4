@@ -601,35 +601,4 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 
 end End
 
-lemma mem_finiteDimensional_submodule (K : Type*) {V : Type*}
-    [DivisionRing K] [AddCommGroup V] [Module K V] (e : V) :
-    ∃ (E' : Submodule K V) (_ : FiniteDimensional K E'), e ∈ E' := by
-  classical
-  let b := Basis.ofVectorSpace K V
-  refine ⟨Submodule.span K (Finset.image b (b.repr e).support),
-    FiniteDimensional.span_finset _ _, ?_⟩
-  simp [Basis.mem_span_repr_support]
-
 end Module
-
-open TensorProduct in
-lemma TensorProduct.mem_finiteDimensional_range_mapIncl {K V V' : Type*} [Field K] [AddCommGroup V]
-    [AddCommGroup V'] [Module K V] [Module K V'] (z : V ⊗[K] V') :
-    ∃ (E' : Submodule K V) (F' : Submodule K V')
-    (_ : FiniteDimensional K E') (_ : FiniteDimensional K F'),
-    z ∈ LinearMap.range (mapIncl E' F') :=
-  z.induction_on
-  ⟨⊥, ⊥, finiteDimensional_bot K V, finiteDimensional_bot K V', Submodule.zero_mem _⟩
-  fun e f => by
-    rcases Module.mem_finiteDimensional_submodule K e with ⟨E', iE', he⟩
-    rcases Module.mem_finiteDimensional_submodule K f with ⟨F', iF', hf⟩
-    exact ⟨E', F', iE', iF', ⟨⟨e, he⟩ ⊗ₜ ⟨f, hf⟩, rfl⟩⟩
-  fun _ _ ih₁ ih₂ => by
-    rcases ih₁ with ⟨E1, F1, _, _, ⟨z1, rfl⟩⟩
-    rcases ih₂ with ⟨E2, F2, _, _, ⟨z2, rfl⟩⟩
-    exact ⟨E1 ⊔ E2, F1 ⊔ F2, E1.finiteDimensional_sup _, F1.finiteDimensional_sup _,
-      Submodule.add_mem _
-      ((range_mapIncl_mono le_sup_left (le_refl _)).trans
-        (range_mapIncl_mono (le_refl _) le_sup_left) ⟨z1, rfl⟩)
-      ((range_mapIncl_mono le_sup_right (le_refl _)).trans
-        (range_mapIncl_mono (le_refl _) le_sup_right) ⟨z2, rfl⟩)⟩
