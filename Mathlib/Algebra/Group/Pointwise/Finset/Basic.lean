@@ -799,6 +799,12 @@ theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   | zero => rw [npowRec, pow_zero, coe_one]
   | succ n ih => rw [npowRec, pow_succ, coe_mul, ih]
 
+#adaptation_note /-- nightly-2025-04-07
+This now needs to be marked as noncomputable because of its dependence on `Set.monoid`.
+We should either find a way to rewrite this definition to avoid this,
+or request via @kim-em and @zwarich that changes in https://github.com/leanprover/lean4/pull/7824
+be revisited to avoid needing as many `noncomputable`s.
+-/
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive /-- `Finset α` is an `AddMonoid` under pointwise operations if `α` is. -/]
 protected def monoid : Monoid (Finset α) :=
