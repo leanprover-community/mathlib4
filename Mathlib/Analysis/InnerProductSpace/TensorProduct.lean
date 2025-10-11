@@ -170,9 +170,6 @@ theorem norm_comm_apply (x : E ⊗[𝕜] F) : ‖TensorProduct.comm 𝕜 E F x�
     mul_comm (inner 𝕜 (e _) (e _))]
   rfl
 
-theorem isometry_comm : Isometry (TensorProduct.comm 𝕜 E F) :=
-  AddMonoidHomClass.isometry_iff_norm _|>.mpr fun x => norm_comm_apply x
-
 /-- The linear isometry equivalence version of `TensorProduct.comm`. -/
 @[simps!]
 def commLinearIsometryEquiv : (E ⊗[𝕜] F) ≃ₗᵢ[𝕜] (F ⊗[𝕜] E) where
