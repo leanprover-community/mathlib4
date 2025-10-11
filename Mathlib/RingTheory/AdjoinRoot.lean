@@ -298,12 +298,12 @@ def liftAlgHom (i : R →ₐ[S] T) (x : T) (h : p.eval₂ i x = 0) : AdjoinRoot 
 @[simp] lemma toRingHom_liftAlgHom (i : R →ₐ[S] T) (x : T) (h) :
     (liftAlgHom p i x h : AdjoinRoot p →+* T) = lift i.toRingHom _ h := rfl
 
-@[simp] lemma coe_liftAlgHom (i : R →ₐ[S] T) (x : T) (h) :
-    ⇑(liftAlgHom p i x h) = lift i.toRingHom _ h := rfl
+lemma coe_liftAlgHom (i : R →ₐ[S] T) (x : T) (h) : ⇑(liftAlgHom p i x h) = lift i.toRingHom _ h :=
+  rfl
 
 @[simp]
 lemma liftAlgHom_of (i : R →ₐ[S] T) (x : T) (h) (r : R) : liftAlgHom p i x h (of p r) = i r := by
-  simp
+  simp [liftAlgHom]
 
 @[simp]
 lemma liftAlgHom_mk (i : R →ₐ[S] T) (x : T) (h) (f : R[X]) :
