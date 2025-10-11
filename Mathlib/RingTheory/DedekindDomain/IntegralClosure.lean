@@ -251,3 +251,17 @@ instance [Module.Finite A C] [NoZeroSMulDivisors A C] :
   .of_isLocalization A C A⁰
 
 end IsIntegralClosure
+
+section FractionRing
+
+attribute [local instance] FractionRing.liftAlgebra
+
+instance (B : Type*) [CommRing B] [IsDomain A] [Algebra A B] [NoZeroSMulDivisors A B]
+    [Module.Finite A B] [IsDedekindDomain B] :
+    FiniteDimensional (FractionRing A) (FractionRing B) := by
+  obtain ⟨_, s, hs⟩ := Module.Finite.exists_fin (R := A) (M := B)
+  exact Module.finite_def.mpr <|
+    (span_eq_top_localization_localization (FractionRing A) A⁰ (FractionRing B) hs) ▸
+      Submodule.fg_span (Set.toFinite _)
+
+end FractionRing
