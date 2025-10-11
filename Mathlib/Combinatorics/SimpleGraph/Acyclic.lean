@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Tactic.Linarith
 
 /-!
 
@@ -201,7 +200,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
 /-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
-  exact fun _ _ _↦ by_contra fun hbr ↦ h.not_prop_of_lt
+  exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt
     (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
     <| h.prop.connected_delete_edge_of_not_isBridge hbr
 
@@ -244,7 +243,8 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
       exact le_trans q (G.minDegree_le_degree _)
     rw [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
     cutsat
-  · linarith [h.isConnected.preconnected.minDegree_pos_of_nontrivial]
+  · have := h.isConnected.preconnected.minDegree_pos_of_nontrivial
+    cutsat
 
 /-- A nontrivial tree has a vertex of degree one. -/
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
