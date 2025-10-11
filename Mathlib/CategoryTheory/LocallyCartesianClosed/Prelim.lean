@@ -334,7 +334,6 @@ theorem unit_app {I : C} (X : Over I) :
 theorem counit_app {I : C} (X : C) : (Over.forgetAdjStar I).counit.app X = prod.snd := by
   simp [Over.forgetAdjStar, Adjunction.comp, Equivalence.symm]
 
-@[simp]
 theorem homEquiv {I : C} (X : Over I) (A : C) (f : X.left ⟶ A) :
     (Over.forgetAdjStar I).homEquiv X A f =
     Over.homMk (prod.lift X.hom f) := by
@@ -342,7 +341,6 @@ theorem homEquiv {I : C} (X : Over I) (A : C) (f : X.left ⟶ A) :
   ext
   simp
 
-@[simp]
 theorem homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (Over.star I).obj A) :
      ((Over.forgetAdjStar I).homEquiv X A).symm f = f.left ≫ prod.snd := by
    rw [Adjunction.homEquiv_counit, counit_app]
