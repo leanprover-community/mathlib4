@@ -6,7 +6,7 @@ Authors: Nailin Guan
 
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.Index
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
 # Closed subgroups of a topological group
@@ -103,28 +103,9 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
 @[to_additive]
 lemma isOpen_of_isClosed_of_finiteIndex (H : Subgroup G) [H.FiniteIndex]
     (h : IsClosed (H : Set G)) : IsOpen (H : Set G) := by
-  apply isClosed_compl_iff.mp
-  convert isClosed_iUnion_of_finite <| fun (x : {x : (G ⧸ H) // x ≠ QuotientGroup.mk 1})
-    ↦ IsClosed.smul h (Quotient.out x.1)
-  ext x
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : QuotientGroup.mk 1 ≠ QuotientGroup.mk (s := H) x := by
-      apply QuotientGroup.eq.not.mpr
-      simpa only [inv_one, one_mul, ne_eq]
-    simp only [ne_eq, Set.mem_iUnion]
-    use ⟨QuotientGroup.mk (s := H) x, this.symm⟩,
-      (Quotient.out (QuotientGroup.mk (s := H) x))⁻¹ * x
-    simp only [SetLike.mem_coe, smul_eq_mul, mul_inv_cancel_left, and_true]
-    exact QuotientGroup.eq.mp <| QuotientGroup.out_eq' (QuotientGroup.mk (s := H) x)
-  · rcases h with ⟨S,⟨y,hS⟩,mem⟩
-    simp only [← hS] at mem
-    rcases mem with ⟨h,hh,eq⟩
-    simp only [Set.mem_compl_iff, SetLike.mem_coe]
-    by_contra mH
-    simp only [← eq, ne_eq, smul_eq_mul] at mH
-    absurd y.2.symm
-    rw [← QuotientGroup.out_eq' y.1, QuotientGroup.eq]
-    simp only [inv_one, ne_eq, one_mul, (Subgroup.mul_mem_cancel_right H hh).mp mH]
+  rw [← QuotientGroup.t1Space_iff] at h
+  rw [← QuotientGroup.discreteTopology_iff]
+  infer_instance
 
 end Subgroup
 
