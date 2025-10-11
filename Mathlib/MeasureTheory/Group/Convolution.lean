@@ -156,7 +156,7 @@ theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
 instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : Measure M)
     [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (μ ∗ₘ ν) :=
-  isProbabilityMeasure_map (by fun_prop)
+  isProbabilityMeasure_map
 
 @[to_additive]
 theorem mconv_absolutelyContinuous [MeasurableMul₂ M] {μ ν ρ : Measure M}
