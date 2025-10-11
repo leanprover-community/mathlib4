@@ -572,34 +572,26 @@ variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for bilinear maps. -/
+/-- The product of two functions of temperate growth is again of temperate growth.
+Version for bilinear maps. -/
 theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜 E]
     (B : E →L[𝕜] F →L[𝕜] G) {f : D → E} {g : D → F} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (fun x ↦ B (f x) (g x)).HasTemperateGrowth := by
+  rw [Function.hasTemperateGrowth_iff_isBigO]
   constructor
   · apply (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp (hf.1.prodMk hg.1)
   intro n
-  rcases hf.norm_iteratedFDeriv_le_uniform_aux n with ⟨k1, C1, hC1, h1⟩
-  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨k2, C2, hC2, h2⟩
+  rcases hf.isBigO_uniform n with ⟨k1, h1⟩
+  rcases hg.isBigO_uniform n with ⟨k2, h2⟩
   use k1 + k2
-  use ‖B‖ * ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C1 * C2)
-  intro x
-  apply le_trans ((B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x
-    (right_eq_inf.mp rfl))
-  rw [ContinuousLinearMap.norm_bilinearRestrictScalars]
-  move_mul [← ‖B‖]
-  simp_rw [mul_assoc ‖B‖]
-  gcongr _ * ?_
-  have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
-  simp_rw [mul_assoc ((n : ℝ) + 1), ← this, Finset.sum_mul]
-  refine Finset.sum_le_sum fun i hi => ?_
-  rw [one_mul]
-  move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n / 2) : ℝ)]
-  gcongr ?_ * ?_
-  swap
-  · norm_cast
-    exact i.choose_le_middle n
-  simp only [Finset.mem_range] at hi
-  grw [h1 i (Nat.le_of_lt_succ hi) x, h2 (n - i) (by simp only [tsub_le_self]) x]
+  have estimate (x : D) : ‖iteratedFDeriv ℝ n (fun x ↦ B (f x) (g x)) x‖ ≤
+      ‖B‖ * ∑ i ∈ Finset.range (n+1), (n.choose i) *
+        ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n-i) g x‖ := by
+    refine (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x ?_
+    exact WithTop.coe_le_coe.mpr le_top
+  refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.sum fun i hi ↦ ?_) _)
+  simp_rw [mul_assoc, pow_add]
+  refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n-i) ?_).norm_left) _ <;>
   grind
 
 /-- The product of two functions of temperate growth is again of temperate growth.
