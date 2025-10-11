@@ -103,18 +103,17 @@ instance : IsDiscreteValuationRing 𝒪[K] :=
 /-- The value group of a local field is (uniquely) isomorphic to `ℤᵐ⁰`. -/
 noncomputable
 def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
-  apply Nonempty.some
   letI := IsTopologicalAddGroup.toUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
-    (isCompact_iff_compactSpace.mpr (inferInstanceAs (CompactSpace 𝒪[K])))
+  letI := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
+    (isCompact_iff_compactSpace.mpr (inferInstanceAs (CompactSpace 𝒪[K]))) |>.some
   let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=
     ⟨.ofBijective (MonoidHom.mrange (valuation K)).subtype ⟨Subtype.val_injective, fun x ↦
       ⟨⟨x, ValuativeRel.valuation_surjective x⟩, rfl⟩⟩, .rfl⟩
   have : Nontrivial (ValueGroupWithZero K)ˣ := isNontrivial_iff_nontrivial_units.mp inferInstance
   have : Nontrivial (↥(MonoidHom.mrange (valuation K)))ˣ :=
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
-  exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
+  exact e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)
 
 instance : ValuativeRel.IsDiscrete K :=
   (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
