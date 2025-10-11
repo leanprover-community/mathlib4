@@ -80,11 +80,8 @@ theorem nodup_iff_injective_getElem {l : List α} :
       · exact (h j i hj hi hji hg.symm).elim,
       fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
 
-theorem nodup_iff_injective_get {l : List α} :
-    Nodup l ↔ Function.Injective l.get := by
-  rw [nodup_iff_injective_getElem]
-  change _ ↔ Injective (fun i => l.get i)
-  simp
+theorem nodup_iff_injective_get {l : List α} : Nodup l ↔ Function.Injective l.get :=
+  nodup_iff_injective_getElem
 
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=
