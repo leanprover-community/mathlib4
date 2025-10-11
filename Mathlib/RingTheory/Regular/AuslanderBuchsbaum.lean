@@ -57,8 +57,8 @@ lemma ModuleCat.free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat
     [Module.Finite R M] [Projective M] : Module.Free R M :=
   Module.free_of_flat_of_isLocalRing
 
-local instance : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
+local instance : CategoryTheory.HasExt.{v} (ModuleCat.{v} R) :=
+  CategoryTheory.hasExt_of_enoughProjectives.{v} (ModuleCat.{v} R)
 
 omit [Small.{v, u} R] in
 lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module R M]
@@ -72,7 +72,7 @@ lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module 
 
 namespace AddCommGrp
 
-variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrp.{max u v})
+variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrp.{v})
 
 open DirectSum
 
@@ -109,8 +109,8 @@ lemma subsingleton_of_pi {α β : Type*} [Nonempty α] (h : Subsingleton (α →
   exact not_subsingleton_iff_nontrivial.mpr Function.nontrivial
 
 lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
-    [Nontrivial M] (i : ℕ) : Subsingleton (Ext.{max u v} N M i) ↔
-    Subsingleton (Ext.{max u v} N (ModuleCat.of R (Shrink.{v} R)) i) := by
+    [Nontrivial M] (i : ℕ) : Subsingleton (Ext.{v} N M i) ↔
+    Subsingleton (Ext.{v} N (ModuleCat.of R (Shrink.{v} R)) i) := by
   classical
   have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
   rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
@@ -122,7 +122,7 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   change Subsingleton ((extFunctorObj N i).obj M) ↔ _
   let e := B.repr ≪≫ₗ Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R).symm ≪≫ₗ
     finsuppLEquivDirectSum R (Shrink.{v, u} R) ↑S |>.toModuleIso
-  rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
+  rw [((extFunctorObj.{v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
   exact h.subsingleton_congr.trans ⟨subsingleton_of_pi, fun _ ↦ Pi.instSubsingleton⟩
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
