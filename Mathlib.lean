@@ -2279,6 +2279,7 @@ import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Functor.CurryingThree
+import Mathlib.CategoryTheory.Functor.Dense
 import Mathlib.CategoryTheory.Functor.Derived.Adjunction
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
@@ -2316,6 +2317,7 @@ import Mathlib.CategoryTheory.Generator.Indization
 import Mathlib.CategoryTheory.Generator.Preadditive
 import Mathlib.CategoryTheory.Generator.Presheaf
 import Mathlib.CategoryTheory.Generator.Sheaf
+import Mathlib.CategoryTheory.Generator.StrongGenerator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
 import Mathlib.CategoryTheory.GradedObject.Associator
@@ -2358,6 +2360,7 @@ import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.LiftingProperties.Limits
 import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 import Mathlib.CategoryTheory.Limits.Bicones
+import Mathlib.CategoryTheory.Limits.Canonical
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
