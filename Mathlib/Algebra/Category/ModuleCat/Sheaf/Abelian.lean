@@ -33,7 +33,7 @@ namespace SheafOfModules
 variable (R : Sheaf J RingCat.{u}) [HasSheafify J AddCommGrp.{v}]
   [J.WEqualsLocallyBijective AddCommGrp.{v}]
 
-noncomputable instance : Abelian (SheafOfModules.{v} R) := by
+instance : Abelian (SheafOfModules.{v} R) := by
   let adj := PresheafOfModules.sheafificationAdjunction (𝟙 R.val)
   exact abelianOfAdjunction _ _ (asIso (adj.counit)) adj
 
