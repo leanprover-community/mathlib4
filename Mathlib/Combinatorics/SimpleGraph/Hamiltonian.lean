@@ -69,6 +69,14 @@ lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card �
     rw [← length_support, ← List.sum_toFinset_count_eq_length, Finset.sum_congr rfl fun _ _ ↦ hp _,
       ← card_eq_sum_ones, hp.support_toFinset, card_univ]
 
+/-- The length of the support of a Hamiltonian path equals the number of vertices of the graph. -/
+lemma IsHamiltonian.support_length_eq (hp : p.IsHamiltonian) :
+    p.support.length = Fintype.card α := by
+  convert hp.length_eq ▸ p.length_support
+  have : Inhabited α := ⟨a⟩
+  have := Fintype.card_ne_zero (α := α)
+  cutsat
+
 end
 
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
