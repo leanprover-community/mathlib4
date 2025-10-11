@@ -35,7 +35,7 @@ def gram (𝕜 : Type*) [Inner 𝕜 E] (v : n → E) : Matrix n n 𝕜 := of fun
 
 @[simp]
 lemma gram_apply [Inner 𝕜 E] (v : n → E) (i j : n) :
-    (gram _ v) i j = ⟪v i, v j⟫_𝕜 := rfl
+    (gram 𝕜 v) i j = ⟪v i, v j⟫_𝕜 := rfl
 
 variable [RCLike 𝕜]
 
