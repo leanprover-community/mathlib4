@@ -69,7 +69,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
   obtain ⟨s, hs, -, hs'⟩ := LocallyCompactSpace.local_compact_nhds (0 : K) .univ Filter.univ_mem
   obtain ⟨r, hr, hr1, H⟩ :
       ∃ r', r' ≠ 0 ∧ valuation K r' < 1 ∧ { x | valuation K x ≤ valuation K r' } ⊆ s := by
-    obtain ⟨r, hr, hrs⟩ := (IsValuativeTopology.hasBasis_nhds_zero' K).mem_iff.mp hs
+    obtain ⟨r, hr, hrs⟩ := (IsValuativeTopology.hasBasis_nhds_zero_ne_zero K).mem_iff.mp hs
     obtain ⟨r', hr', hr⟩ := Valuation.IsNontrivial.exists_lt_one (v := valuation K)
     simp only [ne_eq, map_eq_zero] at hr'
     obtain hr1 | hr1 := lt_or_ge r 1
