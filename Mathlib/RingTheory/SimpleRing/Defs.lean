@@ -21,7 +21,7 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 /--
 A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `⊤`.
 -/
-@[mk_iff] class IsSimpleRing (R : Type*) [NonUnitalNonAssocRing R] : Prop where
-  simple : IsSimpleOrder (TwoSidedIdeal R)
+@[mk_iff] class IsSimpleRing (R : Type*) [NonUnitalNonAssocSemiring R] : Prop where
+  simple : IsSimpleOrder (RingCon R)
 
 attribute [instance] IsSimpleRing.simple
