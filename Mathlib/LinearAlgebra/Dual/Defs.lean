@@ -32,7 +32,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 * Annihilators:
   * `Module.dualAnnihilator_gc R M` is the antitone Galois correspondence between
-    `Submodule.dualAnnihilator` and `Submodule.dualConnihilator`.
+    `Submodule.dualAnnihilator` and `Submodule.dualCoannihilator`.
 * Finite-dimensional vector spaces:
   * `Module.evalEquiv` is the equivalence `V ≃ₗ[K] Dual K (Dual K V)`
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
@@ -288,7 +288,7 @@ lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
     have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
       ext m f
       exact DFunLike.congr_arg f (e.apply_symm_apply m).symm
-    simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+    simp only [this,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
@@ -471,7 +471,7 @@ lemma coe_dualAnnihilator_span (s : Set M) :
 lemma coe_dualCoannihilator_span (s : Set (Module.Dual R M)) :
     ((span R s).dualCoannihilator : Set M) = {x | ∀ f ∈ s, f x = 0} := by
   ext x
-  have (φ) : x ∈ LinearMap.ker φ ↔ φ ∈ LinearMap.ker (Module.Dual.eval R M x) := by simp
+  have (φ : _) : x ∈ LinearMap.ker φ ↔ φ ∈ LinearMap.ker (Module.Dual.eval R M x) := by simp
   simp only [SetLike.mem_coe, mem_dualCoannihilator, Set.mem_setOf_eq, ← LinearMap.mem_ker, this]
   exact span_le
 
@@ -489,7 +489,7 @@ theorem ker_dualMap_eq_dualAnnihilator_range :
     LinearMap.ker f.dualMap = (range f).dualAnnihilator := by
   ext
   simp_rw [mem_ker, LinearMap.ext_iff, Submodule.mem_dualAnnihilator,
-    ← SetLike.mem_coe, range_coe, Set.forall_mem_range]
+    ← SetLike.mem_coe, coe_range, Set.forall_mem_range]
   rfl
 
 theorem range_dualMap_le_dualAnnihilator_ker :

@@ -26,7 +26,7 @@ is that when `C = Type`, filtered colimits commute with finite limits.
 
 universe v₁ v₂ v u₁ u₂ u
 
-open CategoryTheory
+open CategoryTheory Functor
 
 namespace CategoryTheory.Limits
 
@@ -34,14 +34,14 @@ variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 variable {C : Type u} [Category.{v} C]
 variable (F : J × K ⥤ C)
 
-open CategoryTheory.prod
+open CategoryTheory.prod Prod
 
 theorem map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
-    F.map ((𝟙 j, f) : (j, k) ⟶ (j, k')) = ((curry.obj F).obj j).map f :=
+    F.map (𝟙 j ×ₘ f) = ((curry.obj F).obj j).map f :=
   rfl
 
 theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
-    F.map ((f, 𝟙 k) : (j, k) ⟶ (j', k)) = ((curry.obj (Prod.swap K J ⋙ F)).obj k).map f :=
+    F.map (f ×ₘ 𝟙 k) = ((curry.obj (Prod.swap K J ⋙ F)).obj k).map f :=
   rfl
 
 variable [HasLimitsOfShape J C]

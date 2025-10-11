@@ -57,8 +57,9 @@ variable [IsSemiprimaryRing R]
     have := (h.semilinearMap.isSemisimpleModule_iff_of_bijective Function.bijective_id).2
       inferInstance
     exact h0 _ h
-  induction' n with n ih generalizing M
-  · rw [Jac.pow_zero, Ideal.one_eq_top] at hn; exact this (le_top.trans hn)
+  induction n generalizing M with
+  | zero => rw [Jac.pow_zero, Ideal.one_eq_top] at hn; exact this (le_top.trans hn)
+  | succ n ih => ?_
   obtain _ | n := n
   · rw [Jac.pow_one] at hn; exact this hn
   refine h1 _ (ih _ ?_) (ih _ ?_)

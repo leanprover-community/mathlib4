@@ -435,8 +435,8 @@ variable {C : Type v} [Category.{v} C] {D : Type u₁} [Category.{v} D] (F : C �
 
 namespace Final
 
-theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X, d ⟶ F.obj X}
-    (t : Relation.EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
+theorem zigzag_of_eqvGen_colimitTypeRel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X, d ⟶ F.obj X}
+    (t : Relation.EqvGen (Functor.ColimitTypeRel (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
   induction t with
   | rel x y r =>
@@ -454,6 +454,9 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X, d ⟶
     apply Relation.ReflTransGen.trans
     · exact ih₁
     · exact ih₂
+
+@[deprecated (since := "2025-06-22")] alias zigzag_of_eqvGen_quot_rel :=
+  zigzag_of_eqvGen_colimitTypeRel
 
 end Final
 
@@ -475,11 +478,11 @@ theorem final_of_colimit_comp_coyoneda_iso_pUnit
       ext
     have t := Types.colimit_eq.{v, v} e
     clear e y₁ y₂
-    exact Final.zigzag_of_eqvGen_quot_rel t⟩
+    exact Final.zigzag_of_eqvGen_colimitTypeRel t⟩
 
 /-- A variant of `final_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
-    about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
-    the presheaf `colimit (F ⋙ yoneda)`. -/
+about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
+the presheaf `colimit (F ⋙ yoneda)`. -/
 theorem final_of_isTerminal_colimit_comp_yoneda
     (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
   refine final_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
@@ -594,9 +597,9 @@ lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X �
   apply induction (k₀ := f) (z := rfl) F fun Z g =>
     c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
   · intro _ _ _ _ _ h₁ h₂
-    simp [← h₂, ← h₁, ← Functor.comp_map, c.π.naturality]
+    simp [← h₂, ← h₁, ← Functor.comp_map]
   · intro _ _ _ _ _ h₁ h₂
-    simp [← h₁, ← Functor.comp_map, c.π.naturality, h₂]
+    simp [← h₁, ← Functor.comp_map, h₂]
 
 @[simp]
 theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
@@ -895,14 +898,14 @@ lemma final_fromPUnit_of_isTerminal (hc : Limits.IsTerminal c) : (fromPUnit c).F
   out c' := by
     letI : Inhabited (StructuredArrow c' (fromPUnit c)) := ⟨.mk (Y := default) (hc.from c')⟩
     letI : Subsingleton (StructuredArrow c' (fromPUnit c)) :=
-      ⟨fun i j ↦ StructuredArrow.obj_ext _ _ (by aesop_cat) (hc.hom_ext _ _)⟩
+      ⟨fun i j ↦ StructuredArrow.obj_ext _ _ (by cat_disch) (hc.hom_ext _ _)⟩
     infer_instance
 
 lemma initial_fromPUnit_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).Initial where
   out c' := by
     letI : Inhabited (CostructuredArrow (fromPUnit c) c') := ⟨.mk (Y := default) (hc.to c')⟩
     letI : Subsingleton (CostructuredArrow (fromPUnit c) c') :=
-      ⟨fun i j ↦ CostructuredArrow.obj_ext _ _ (by aesop_cat) (hc.hom_ext _ _)⟩
+      ⟨fun i j ↦ CostructuredArrow.obj_ext _ _ (by cat_disch) (hc.hom_ext _ _)⟩
     infer_instance
 
 end
@@ -1006,7 +1009,6 @@ variable (F : D ⥤ Cat) (G : C ⥤ D)
 
 open Functor
 
-set_option backward.dsimp.proofs true in
 /-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
@@ -1016,8 +1018,10 @@ def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
   map := fun g => StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
       (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
-    (by simp only [StructuredArrow.mk_right]
-        apply Grothendieck.ext <;> simp)
+    (by
+      simp only [StructuredArrow.mk_right]
+      generalize_proofs
+      apply Grothendieck.ext <;> simp)
 
 instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final := by
   constructor
@@ -1108,5 +1112,22 @@ instance [F.Final] [G.Final] : (F.prod G).Final where
   out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
 
 end Prod
+
+namespace ObjectProperty
+
+/-- For the full subcategory induced by an object property `P` on `C`, to show initiality of
+the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
+theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
+    (h : ∀ d, ¬ P d → IsConnected (CostructuredArrow P.ι d)) :
+    P.ι.Initial := .mk <| fun d => by
+  by_cases hd : P d
+  · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
+    refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ =>
+      Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
+    · apply CostructuredArrow.homMk g₁
+    · apply CostructuredArrow.homMk g₂
+  · exact h d hd
+
+end ObjectProperty
 
 end CategoryTheory

@@ -5,6 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Tactic.Algebraize
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -15,16 +17,14 @@ import Mathlib.RingTheory.IsTensorProduct
 
 In this file we provide the explicit (co)cones for various (co)limits in `CommRingCat`, including
 * tensor product is the pushout
-* tensor product over `Z` is the binary coproduct
-* `Z` is the initial object
+* tensor product over `ℤ` is the binary coproduct
+* `ℤ` is the initial object
 * `0` is the strict terminal object
-* cartesian product is the product
+* Cartesian product is the product
 * arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
 
 -/
-
-suppress_compilation
 
 universe u u'
 
@@ -92,7 +92,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
         commutes' := fun r => by
           change h (algebraMap R A r ⊗ₜ[R] 1) = s.inl (algebraMap R A r)
           rw [← eq1]
-          simp only [pushoutCocone_pt, coe_of, AlgHom.toRingHom_eq_coe]
+          simp only [pushoutCocone_pt, coe_of]
           rfl }
     suffices h' = Algebra.TensorProduct.productMap f' g' by
       ext x
@@ -125,6 +125,45 @@ lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
     (Algebra.IsPushout.equiv R S A B).toCommRingCatIso (by simp) (by simp)
     (by ext; simp [Algebra.IsPushout.equiv_tmul]) (by ext; simp [Algebra.IsPushout.equiv_tmul])
 
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+    {R' S' : Type u} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
+    [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] :
+    IsPushout (ofHom <| algebraMap R R') (ofHom <| algebraMap R S)
+      (ofHom <| algebraMap R' S') (ofHom <| algebraMap S S') ↔ Algebra.IsPushout R R' S S' := by
+  refine ⟨fun h ↦ ?_, fun h ↦ isPushout_of_isPushout ..⟩
+  let e : R' ⊗[R] S ≃+* S' := ((CommRingCat.isPushout_tensorProduct R R' S).isoPushout ≪≫
+      h.isoPushout.symm).commRingCatIsoToRingEquiv
+  have h2 (r : R') : (CommRingCat.isPushout_tensorProduct R R' S).isoPushout.hom
+      (r ⊗ₜ 1) = (pushout.inl (ofHom _) (ofHom _)) r :=
+    congr($((CommRingCat.isPushout_tensorProduct R R' S).inl_isoPushout_hom).hom r)
+  have h3 (x : R') := congr($(h.inl_isoPushout_inv) x)
+  dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h3
+  let e' : R' ⊗[R] S ≃ₐ[R'] S' := {
+    __ := e
+    commutes' r := by simp [Iso.commRingCatIsoToRingEquiv, h2, e, h3] }
+  refine Algebra.IsPushout.of_equiv e' ?_
+  ext s
+  have h1 : (CommRingCat.isPushout_tensorProduct R R' S).isoPushout.hom
+      (algebraMap S (R' ⊗[R] S) s) = (pushout.inr (ofHom _) (ofHom _)) s :=
+    congr($((CommRingCat.isPushout_tensorProduct R R' S).inr_isoPushout_hom).hom s)
+  have h4 (x : S) := congr($(h.inr_isoPushout_inv) x)
+  dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h4
+  simp [Iso.commRingCatIsoToRingEquiv, h1, e', e, h4]
+
+lemma closure_range_union_range_eq_top_of_isPushout
+    {R A B X : CommRingCat.{u}} {f : R ⟶ A} {g : R ⟶ B} {a : A ⟶ X} {b : B ⟶ X}
+    (H : IsPushout f g a b) :
+    Subring.closure (Set.range a ∪ Set.range b) = ⊤ := by
+  algebraize [f.hom, g.hom]
+  let e := ((isPushout_tensorProduct R A B).isoIsPushout _ _ H).commRingCatIsoToRingEquiv
+  rw [← Subring.comap_map_eq_self_of_injective e.symm.injective (.closure _), RingHom.map_closure,
+    ← top_le_iff, ← Subring.map_le_iff_le_comap, Set.image_union]
+  simp only [AlgHom.toRingHom_eq_coe, ← Set.range_comp, ← RingHom.coe_comp]
+  rw [← hom_comp, ← hom_comp, IsPushout.inl_isoIsPushout_inv, IsPushout.inr_isoIsPushout_inv,
+    hom_ofHom, hom_ofHom]
+  exact le_top.trans (Algebra.TensorProduct.closure_range_union_range_eq_top R A B).ge
+
 end Pushout
 
 section BinaryCoproduct
@@ -139,12 +178,12 @@ def coproductCocone : BinaryCofan A B :=
     (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
 
 @[simp]
-theorem coproductCocone_inl : (coproductCocone A B).inl =
-  ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
+theorem coproductCocone_inl :
+    (coproductCocone A B).inl = ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
 
 @[simp]
-theorem coproductCocone_inr : (coproductCocone A B).inr =
-  ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
+theorem coproductCocone_inr :
+    (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]
@@ -164,7 +203,7 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
     · ext a
       simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
     · ext b
-      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.right)]
+      simp [map_one, ←hm (Discrete.mk WalkingPair.right)]
 
 /-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
 def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
@@ -218,20 +257,18 @@ section Product
 
 variable (A B : CommRingCat.{u})
 
-/-- The product in `CommRingCat` is the cartesian product. This is the binary fan. -/
+/-- The product in `CommRingCat` is the Cartesian product. This is the binary fan. -/
 @[simps! pt]
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
-/-- The product in `CommRingCat` is the cartesian product. -/
+/-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
   lift c := ofHom <| RingHom.prod (c.π.app ⟨WalkingPair.left⟩).hom (c.π.app ⟨WalkingPair.right⟩).hom
   fac c j := by
     ext
     rcases j with ⟨⟨⟩⟩ <;>
-    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right,
-      FunctorToTypes.map_comp_apply, forget_map, coe_of, RingHom.prod_apply] <;>
-    rfl
+    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right] <;> rfl
   uniq s m h := by
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
@@ -249,14 +286,14 @@ section Pi
 variable {ι : Type u} (R : ι → CommRingCat.{u})
 
 /--
-The categorical product of rings is the cartesian product of rings. This is its `Fan`.
+The categorical product of rings is the Cartesian product of rings. This is its `Fan`.
 -/
 @[simps! pt]
 def piFan : Fan R :=
   Fan.mk (CommRingCat.of ((i : ι) → R i)) (fun i ↦ ofHom <| Pi.evalRingHom _ i)
 
 /--
-The categorical product of rings is the cartesian product of rings.
+The categorical product of rings is the Cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
   lift s := ofHom <| Pi.ringHom fun i ↦ (s.π.1 ⟨i⟩).hom
@@ -265,15 +302,15 @@ def piFanIsLimit : IsLimit (piFan R) where
     DFunLike.congr_fun (congrArg Hom.hom <| h ⟨i⟩) x
 
 /--
-The categorical product and the usual product agrees
+The categorical product and the usual product agree
 -/
-def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
+noncomputable def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 /--
-The categorical product and the usual product agrees
+The categorical product and the usual product agree
 -/
-def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+noncomputable def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
     (∏ᶜ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
   (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 

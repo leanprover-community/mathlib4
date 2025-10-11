@@ -47,7 +47,7 @@ to work.
 
 It is possible to circumvent the introduction of the `compat` condition using Zorn's lemma;
 if there is a chain of natural families (i.e. for any two families in the chain, one is an
-extension of the other) over lowersets (which are all of the form `Iic`, `Iio`, or `univ`),
+extension of the other) over lower sets (which are all of the form `Iic`, `Iio`, or `univ`),
 we can clearly take the union to get a natural family that extends them all. If a maximal
 natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how to extend it
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
@@ -283,7 +283,6 @@ then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
 @[simps apply] noncomputable def piLTLim : piLT X i ≃ limit (piLTProj (X := X)) i where
   toFun f := ⟨fun j ↦ piLTProj j.2.le f, fun _ _ _ ↦ rfl⟩
   invFun f l := let k := hi.mid l.2; f.1 ⟨k, k.2.2⟩ ⟨l, k.2.1⟩
-  left_inv f := rfl
   right_inv f := by
     ext j l
     set k := hi.mid (l.2.trans j.2)
@@ -308,10 +307,7 @@ def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.2.lt_of_ne h⟩
   invFun f := (fun j ↦ f ⟨j, j.2.le⟩, f ⟨i, le_rfl⟩)
   left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
-  right_inv f := by
-    ext j; dsimp only; split_ifs with h
-    · cases (Subtype.ext h : j = ⟨i, le_rfl⟩); rfl
-    · rfl
+  right_inv f := by grind
 
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
@@ -365,7 +361,7 @@ induces a bijection at the limit ordinal. -/
 @[simps] def invLimEquiv : limit f i ≃ limit (piLTProj (X := X)) i where
   toFun t := ⟨fun l ↦ equiv l (t.1 l), fun _ _ h ↦ Eq.symm <| by simp_rw [← t.2 h]; apply nat⟩
   invFun t := ⟨fun l ↦ (equiv l).symm (t.1 l),
-    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h]; simp⟩
+    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h] <;> simp⟩
   left_inv t := by ext; apply Equiv.left_inv
   right_inv t := by ext1; ext1; apply Equiv.right_inv
 

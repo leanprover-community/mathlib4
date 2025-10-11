@@ -14,7 +14,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Ordered
 We prove the first-derivative test from calculus, in the strong form given on [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#First-derivative_test).
 
 The test is proved over the real numbers ℝ
-using `monotoneOn_of_deriv_nonneg` from [Mathlib.Analysis.Calculus.MeanValue].
+using `monotoneOn_of_deriv_nonneg` from `Mathlib/Analysis/Calculus/Deriv/MeanValue.lean`.
 
 # The Second-Derivative Test
 
@@ -150,7 +150,7 @@ lemma eventually_nhdsWithin_sign_eq_of_deriv_neg (hf : deriv f x₀ < 0) (hx : f
     ∀ᶠ x in 𝓝 x₀, sign (f x) = sign (x₀ - x) := by
   simpa [Left.sign_neg, -neg_sub, ← neg_sub x₀] using
     eventually_nhdsWithin_sign_eq_of_deriv_pos
-        (f := (-f ·)) (x₀ := x₀) (by simpa [deriv.neg]) (by simpa)
+      (f := (-f ·)) (x₀ := x₀) (by simpa [deriv.neg]) (by simpa)
 
 lemma deriv_neg_left_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ}
     (h₀ : ∀ᶠ (x : ℝ) in 𝓝[≠] x₀, sign (deriv f x) = sign (x - x₀)) :

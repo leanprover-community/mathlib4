@@ -154,8 +154,6 @@ def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
   invFun := fun ⟨i, h⟩ ↦ ⟨⟨i, n - i⟩, by
     rw [mem_antidiagonal, add_comm, Nat.sub_add_cancel]
     exact Nat.le_of_lt_succ h⟩
-  left_inv := by rintro ⟨⟨i, j⟩, h⟩; ext; rfl
-  right_inv _ := rfl
 
 end Nat
 

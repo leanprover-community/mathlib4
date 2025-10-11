@@ -59,8 +59,8 @@ theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ 
     · calc
         A⁻¹ ^ (m + 1) * A ^ (n + 1) = A⁻¹ ^ m * (A⁻¹ * A) * A ^ n := by
           simp only [pow_succ A⁻¹, pow_succ' A, Matrix.mul_assoc]
-        _ = A ^ n * A⁻¹ ^ m := by simp only [h, Matrix.mul_one, Matrix.one_mul, IH m]
-        _ = A ^ n * (A * A⁻¹) * A⁻¹ ^ m := by simp only [h', Matrix.mul_one, Matrix.one_mul]
+        _ = A ^ n * A⁻¹ ^ m := by simp only [h, Matrix.mul_one, IH m]
+        _ = A ^ n * (A * A⁻¹) * A⁻¹ ^ m := by simp only [h', Matrix.mul_one]
         _ = A ^ (n + 1) * A⁻¹ ^ (m + 1) := by
           simp only [pow_succ A, pow_succ' A⁻¹, Matrix.mul_assoc]
     · simp [h]
@@ -215,7 +215,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
   | -((n : ℕ) + 2), _ => by
     rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
     · apply zpow_add_one (isUnit_det_of_left_inverse h)
-    · show A ^ (-((n + 1 : ℕ) : ℤ)) = A ^ (-((n + 2 : ℕ) : ℤ)) * A
+    · change A ^ (-((n + 1 : ℕ) : ℤ)) = A ^ (-((n + 2 : ℕ) : ℤ)) * A
       simp_rw [zpow_neg_natCast, ← inv_pow', h, zero_pow <| Nat.succ_ne_zero _, zero_mul]
 
 theorem zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ m) ^ n

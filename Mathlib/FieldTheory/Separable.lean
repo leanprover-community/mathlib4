@@ -405,8 +405,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
     simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_ge hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
-  have hf0 : f ≠ 0 := hf.ne_zero
-  intros g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
+  intro g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
   rw [le_iff_exists_add] at hn
   rcases hn with ⟨k, rfl⟩
   rw [← hgf₁, pow_add, expand_mul, expand_inj (pow_pos hp n₁)] at hgf₂
@@ -514,12 +513,7 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
     f.Separable := by
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
-  rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
-  refine fun hf1 => hf.not_isUnit ?_
-  rw [hf1, isUnit_C, isUnit_iff_ne_zero]
-  intro hf2
-  rw [hf2, C_0] at hf1
-  exact absurd hf1 hf.ne_zero
+  exact Irreducible.natDegree_pos hf
 
 end Field
 

@@ -19,10 +19,10 @@ such that `a \ b ≤ c ↔ a ≤ b ⊔ c` and `￢a = ⊤ \ a`.
 
 Bi-Heyting algebras are Heyting algebras that are also co-Heyting algebras.
 
-From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas boolean
+From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas Boolean
 algebras model classical logic.
 
-Heyting algebras are the order theoretic equivalent of cartesian-closed categories.
+Heyting algebras are the order-theoretic equivalent of Cartesian-closed categories.
 
 ## Main declarations
 
@@ -30,7 +30,7 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 * `GeneralizedCoheytingAlgebra`: Co-Heyting algebra without a bottom element (nor complement).
 * `HeytingAlgebra`: Heyting algebra.
 * `CoheytingAlgebra`: Co-Heyting algebra.
-* `BiheytingAlgebra`: bi-Heyting algebra.
+* `BiheytingAlgebra`: Bi-Heyting algebra.
 
 ## References
 
@@ -503,11 +503,9 @@ theorem sup_sdiff_right_self : (a ⊔ b) \ b = a \ b := by rw [sup_sdiff, sdiff_
 @[simp]
 theorem sup_sdiff_left_self : (a ⊔ b) \ a = b \ a := by rw [sup_comm, sup_sdiff_right_self]
 
-@[gcongr]
 theorem sdiff_le_sdiff_right (h : a ≤ b) : a \ c ≤ b \ c :=
   sdiff_le_iff.2 <| h.trans <| le_sup_sdiff
 
-@[gcongr]
 theorem sdiff_le_sdiff_left (h : a ≤ b) : c \ b ≤ c \ a :=
   sdiff_le_iff.2 <| le_sup_sdiff.trans <| sup_le_sup_right h _
 
@@ -946,6 +944,7 @@ theorem himp_iff_imp (p q : Prop) : p ⇨ q ↔ p → q :=
 theorem compl_iff_not (p : Prop) : pᶜ ↔ ¬p :=
   Iff.rfl
 
+variable (α) in
 -- See note [reducible non-instances]
 /-- A bounded linear order is a bi-Heyting algebra by setting
 * `a ⇨ b = ⊤` if `a ≤ b` and `a ⇨ b = b` otherwise.

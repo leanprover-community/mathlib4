@@ -15,8 +15,8 @@ variable {α : Type*}
 
 /-- The units of an ordered commutative monoid form an ordered commutative group. -/
 @[to_additive
-      "The units of an ordered commutative additive monoid form an ordered commutative
-      additive group."]
+      /-- The units of an ordered commutative additive monoid form an ordered commutative
+      additive group. -/]
 instance Units.isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     IsOrderedMonoid αˣ :=
   { mul_le_mul_left := fun _ _ h _ => (mul_le_mul_left' (α := α) h _) }

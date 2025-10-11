@@ -15,15 +15,17 @@ is equivalent to the category of "native" bundled commutative groups.
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
 
+assert_not_exists Field
+
 universe v u
 
-open CategoryTheory Mon_Class
+open CategoryTheory MonObj
 
 namespace CommGrpTypeEquivalenceCommGrp
 
-instance commGrpCommGroup (A : Type u) [Grp_Class A] [IsCommMon A] : CommGroup A :=
+instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A :=
   { GrpTypeEquivalenceGrp.grpGroup A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
+    mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp_ (Type u) ⥤ CommGrp.{u} where
@@ -35,7 +37,7 @@ noncomputable def inverse : CommGrp.{u} ⥤ CommGrp_ (Type u) where
   obj A :=
     { grpTypeEquivalenceGrp.inverse.obj ((forget₂ CommGrp Grp).obj A) with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
   map f := GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrp Grp).map f)
@@ -59,7 +61,7 @@ noncomputable def commGrpTypeEquivalenceCommGrp : CommGrp_ (Type u) ≌ CommGrp.
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
     (fun A => MulEquiv.toCommGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The equivalences `Grp_ (Type u) ≌ Grp.{u}` and `CommGrp_ (Type u) ≌ CommGrp.{u}`
 are naturally compatible with the forgetful functors to `Grp` and `Grp_ (Type u)`.
@@ -69,10 +71,10 @@ noncomputable def commGrpTypeEquivalenceCommGrpForgetGrp :
       CommGrp_.forget₂Grp_ (Type u) ⋙ GrpTypeEquivalenceGrp.functor :=
   Iso.refl _
 
-/-- The equivalences `CommMon_ (Type u) ≌ CommMonCat.{u}` and `CommGrp_ (Type u) ≌ CommGrp.{u}`
+/-- The equivalences `CommMon (Type u) ≌ CommMonCat.{u}` and `CommGrp_ (Type u) ≌ CommGrp.{u}`
 are naturally compatible with the forgetful functors to `Grp` and `Grp_ (Type u)`.
 -/
 noncomputable def commGrpTypeEquivalenceCommGrpForgetCommMon :
     CommGrpTypeEquivalenceCommGrp.functor ⋙ forget₂ CommGrp CommMonCat ≅
-      CommGrp_.forget₂CommMon_ (Type u) ⋙ CommMonTypeEquivalenceCommMon.functor :=
+      CommGrp_.forget₂CommMon (Type u) ⋙ CommMonTypeEquivalenceCommMon.functor :=
   Iso.refl _

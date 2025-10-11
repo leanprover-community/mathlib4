@@ -71,7 +71,7 @@ lemma odd_iff_of_even [NeZero n] (hn : Even n) : Odd k ↔ Odd k.val := by
   rcases hn with ⟨n, rfl⟩
   refine ⟨?_, odd_of_val⟩
   rintro ⟨l, rfl⟩
-  rw [val_add, val_mul, val_one', show Fin.val 2 = 2 % _ from rfl]
+  rw [val_add, val_mul, coe_ofNat_eq_mod, coe_ofNat_eq_mod]
   simp only [Nat.mod_mul_mod, Nat.add_mod_mod, Nat.mod_add_mod, Nat.odd_iff]
   rw [Nat.mod_mod_of_dvd _ ⟨n, (two_mul n).symm⟩, ← Nat.odd_iff, Nat.odd_add_one,
     Nat.not_odd_iff_even]

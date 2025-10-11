@@ -59,7 +59,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
   let f (n : ℕ) : α → ℝ≥0∞ := (↑(n + 1) : ℝ≥0∞)⁻¹ • ∑ k ∈ Finset.range (n + 1), (s k).indicator 1
   -- We gather a few simple properties of `f`.
   have hfapp : ∀ n a, f n a = (↑(n + 1))⁻¹ * ∑ k ∈ Finset.range (n + 1), (s k).indicator 1 a := by
-    simp only [f, Pi.natCast_def, Pi.smul_apply, Pi.inv_apply, Finset.sum_apply, eq_self_iff_true,
+    simp only [f, Pi.smul_apply, Finset.sum_apply,
     forall_const, imp_true_iff, smul_eq_mul]
   have hf n : Measurable (f n) := by fun_prop (disch := exact hs _)
   have hf₁ n : f n ≤ 1 := by
@@ -72,7 +72,8 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
   -- By assumption, `f n` has integral at least `r`.
   have hrf n : r ≤ ∫⁻ a, f n a ∂μ := by
     simp_rw [hfapp]
-    rw [lintegral_const_mul _ (Finset.measurable_sum _ fun _ _ ↦ measurable_one.indicator <| hs _),
+    rw [lintegral_const_mul _ <| Finset.measurable_fun_sum _
+        fun _ _ ↦ measurable_one.indicator <| hs _,
       lintegral_finset_sum _ fun _ _ ↦ measurable_one.indicator (hs _)]
     simp only [lintegral_indicator_one (hs _)]
     rw [← ENNReal.div_eq_inv_mul, ENNReal.le_div_iff_mul_le (by simp) (by simp), ← nsmul_eq_mul']

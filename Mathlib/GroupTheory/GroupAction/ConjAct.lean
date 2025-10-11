@@ -67,8 +67,6 @@ instance : Inhabited (ConjAct G) :=
 def ofConjAct : ConjAct G ≃* G where
   toFun := id
   invFun := id
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
   map_mul' := fun _ _ => rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/
@@ -215,7 +213,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
   ext k
 -- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
 -- with the equality in the other direction
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
   rw [eq_comm]
   exact Iff.symm mul_inv_eq_iff_eq_mul
 
@@ -287,8 +285,6 @@ def unitsCentralizerEquiv (x : Mˣ) :
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
       exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
-    left_inv := fun _ ↦ by ext; rfl
-    right_inv := fun _ ↦ by ext; rfl
     map_mul' := map_mul _ }
 
 end Units

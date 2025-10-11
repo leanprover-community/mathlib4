@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.OpenCover
+import Mathlib.Algebra.HierarchyDesign
 
 /-!
 # Sober spaces
@@ -167,7 +168,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
   map_rel_iff' := by
     rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
-    simp [hs'.closure_eq, ht'.closure_eq]
+    simp
     rfl
 
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
@@ -218,7 +219,7 @@ lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι �
       H.isGenericPoint_genericPoint_closure.def]
     refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
       (closure_mono ?_)
-    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using Set.image_subset _ subset_closure
+    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using Set.image_mono subset_closure
 
 lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=
@@ -230,11 +231,19 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
   TopologicalSpace.IsOpenCover.quasiSober (U := fun s : S ↦ ⟨s, hS s⟩) <| by
     simpa [TopologicalSpace.IsOpenCover, ← SetLike.coe_set_eq, sUnion_eq_iUnion] using hS'
 
-/-- Any Hausdorff space is a quasi-sober space because any irreducible set is a singleton. -/
-instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α where
-  sober h _ := by
-    obtain ⟨x, rfl⟩ := isIrreducible_iff_singleton.mp h
-    exact ⟨x, closure_singleton⟩
+/--
+Any R1 space is a quasi-sober space because any irreducible set is
+contained in the closure of a singleton.
+-/
+-- see note [lower instance priority]
+instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
+  sober h hs := by
+    obtain ⟨x, hx⟩ := h.nonempty
+    use x
+    apply subset_antisymm
+    · rw [← hs.closure_eq]
+      exact closure_mono (singleton_subset_iff.mpr hx)
+    · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
 
 end Sober
 

@@ -38,7 +38,7 @@ namespace IsFinite
 
 instance : HasAffineProperty @IsFinite
     (fun X _ f _ ↦ IsAffine X ∧ RingHom.Finite (f.appTop).hom) := by
-  show HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
+  change HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
   rw [HasAffineProperty.affineAnd_iff _ RingHom.finite_respectsIso
     RingHom.finite_localizationPreserves.away RingHom.finite_ofLocalizationSpan]
   simp [isFinite_iff]
@@ -72,9 +72,9 @@ instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsFinite f] [IsFinite g] : IsFinite (f 
 lemma iff_isIntegralHom_and_locallyOfFiniteType :
     IsFinite f ↔ IsIntegralHom f ∧ LocallyOfFiniteType f := by
   wlog hY : IsAffine Y
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
     simp_rw [this, forall_and]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite),
     HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom),
@@ -95,10 +95,10 @@ instance (priority := 900) [hf : IsFinite f] : LocallyOfFiniteType f :=
 lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     IsClosedImmersion f ↔ IsFinite f ∧ Mono f := by
   wlog hY : IsAffine Y
-  · show _ ↔ _ ∧ monomorphisms _ f
-    rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
+  · change _ ↔ _ ∧ monomorphisms _ f
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
     simp_rw [this, forall_and, monomorphisms]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsClosedImmersion),
     HasAffineProperty.iff_of_isAffine (P := @IsFinite),
@@ -118,18 +118,18 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
 
 end IsFinite
 
-/-- If `X` is a jacobson scheme and `k` is a field,
+/-- If `X` is a Jacobson scheme and `k` is a field,
 `Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
 (The statement is more general to allow the empty scheme as well) -/
 lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
     {X Y : Scheme.{u}} {f : X ⟶ Y} [Subsingleton X] [IsReduced X] [JacobsonSpace Y] :
     IsFinite f ↔ LocallyOfFiniteType f := by
   wlog hY : ∃ S, Y = Spec S generalizing X Y
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
-    have inst (i) := ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.injective.subsingleton
-    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullbackCover f).map i)
-    have inst (i) := JacobsonSpace.of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
+    have inst (i) := ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding.injective.subsingleton
+    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullback₁ f).f i)
+    have inst (i) := JacobsonSpace.of_isOpenEmbedding (Y.affineCover.f i).isOpenEmbedding
     exact forall_congr' fun i ↦ this ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hY
   wlog hX : ∃ R, X = Spec R generalizing X
@@ -148,7 +148,7 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
   letI := this.toField
   letI := φ.hom.toAlgebra
   have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
-  show Module.Finite _ _ ↔ Algebra.FiniteType _ _
+  change Module.Finite _ _ ↔ Algebra.FiniteType _ _
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ finite_of_finite_type_of_isJacobsonRing _ _⟩
 
 @[stacks 01TB "(1) => (3)"]

@@ -309,9 +309,9 @@ instance : LieRing (LieDerivation R L L) where
   lie_add d e f := by
     ext a; simp only [commutator_apply, add_apply, map_add]; abel
   lie_self d := by
-    ext a; simp only [commutator_apply, add_apply, map_add, zero_apply]; abel
+    ext a; simp only [commutator_apply, zero_apply]; abel
   leibniz_lie d e f := by
-    ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; abel
+    ext a; simp only [commutator_apply, add_apply, map_sub]; abel
 
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
