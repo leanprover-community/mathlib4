@@ -61,38 +61,41 @@ open Limits
 /-- `Over.Sigma Y U` a shorthand for `(Over.map Y.hom).obj U`. This is the categoy-theoretic
 analogue of `Sigma` for types.
 -/
-abbrev Sigma {X : C} (Y : Over X) (U : Over (Y.left)) : Over X :=
+abbrev Sigma {X : C} (Y : Over X) (U : Over Y.left) : Over X :=
   (map Y.hom).obj U
 
 namespace Sigma
 
 variable {X : C}
 
-lemma hom {Y : Over X} (Z : Over (Y.left)) : (Sigma Y Z).hom = Z.hom ≫ Y.hom := map_obj_hom
+@[simp]
+lemma hom {Y : Over X} (Z : Over Y.left) : (Sigma Y Z).hom = Z.hom ≫ Y.hom := map_obj_hom
 
 /-- `Σ_ ` is functorial in the second argument. -/
-def map {Y : Over X} {Z Z' : Over (Y.left)} (g : Z ⟶ Z') : (Sigma Y Z) ⟶ (Sigma Y Z') :=
+def map {Y : Over X} {Z Z' : Over Y.left} (g : Z ⟶ Z') : Sigma Y Z ⟶ Sigma Y Z' :=
   (Over.map Y.hom).map g
 
-lemma map_left {Y : Over X} {Z Z' : Over (Y.left)} {g : Z ⟶ Z'} :
+@[simp]
+lemma map_left {Y : Over X} {Z Z' : Over Y.left} {g : Z ⟶ Z'} :
     ((Over.map Y.hom).map g).left = g.left := Over.map_map_left
 
-lemma map_homMk_left {Y : Over X} {Z Z' : Over (Y.left)} {g : Z ⟶ Z'} :
+lemma map_homMk_left {Y : Over X} {Z Z' : Over Y.left} {g : Z ⟶ Z'} :
     map g = (Over.homMk g.left : Sigma Y Z ⟶ Sigma Y Z') := by
   rfl
 
 /-- The first projection of the sigma object. -/
 @[simps!]
-def fst {Y : Over X} (Z : Over (Y.left)) : (Sigma Y Z) ⟶ Y := Over.homMk Z.hom
+def fst {Y : Over X} (Z : Over Y.left) : Sigma Y Z ⟶ Y := Over.homMk Z.hom
 
-lemma map_comp_fst {Y : Over X} {Z Z' : Over (Y.left)} (g : Z ⟶ Z') :
+@[reassoc (attr := simp)]
+lemma map_comp_fst {Y : Over X} {Z Z' : Over Y.left} (g : Z ⟶ Z') :
     (Over.map Y.hom).map g ≫ fst Z' = fst Z := by
   ext
   simp [Sigma.fst, Over.w]
 
 /-- Promoting a morphism `g : Σ_Y Z ⟶ Σ_Y Z'` in `Over X` with `g ≫ fst Z' = fst Z`
-to a morphism `Z ⟶ Z'` in `Over (Y.left)`. -/
-def overHomMk {Y : Over X} {Z Z' : Over (Y.left)} (g : Sigma Y Z ⟶ Sigma Y Z')
+to a morphism `Z ⟶ Z'` in `Over Y.left`. -/
+def overHomMk {Y : Over X} {Z Z' : Over Y.left} (g : Sigma Y Z ⟶ Sigma Y Z')
     (w : g ≫ fst Z' = fst Z := by aesop_cat) : Z ⟶ Z' :=
   Over.homMk g.left (congr_arg CommaMorphism.left w)
 
@@ -110,6 +113,7 @@ open Over Sigma
 
 variable {X : C}
 
+@[simp]
 lemma hom {Y : Over X} {Z : Over X} [HasPullbacksAlong Y.hom] :
     (Reindex Y Z).hom = pullback.snd Z.hom Y.hom := by
   rfl
@@ -128,8 +132,8 @@ def sigmaSymmetryIso (Y Z : Over X) [HasPullbacksAlong Y.hom] [HasPullbacksAlong
   · simp [pullback.condition]
 
 lemma symmetry_hom {Y Z : Over X} [HasPullbacksAlong Y.hom] [HasPullbacksAlong Z.hom] :
-    (pullback.snd Z.hom Y.hom) ≫ Y.hom =
-    (pullbackSymmetry _ _).hom ≫ (pullback.snd Y.hom Z.hom) ≫ Z.hom  := by
+    pullback.snd Z.hom Y.hom ≫ Y.hom =
+    (pullbackSymmetry _ _).hom ≫ pullback.snd Y.hom Z.hom ≫ Z.hom  := by
   simp [← pullback.condition]
 
 /-- The first projection out of the reindexed sigma object. -/
@@ -177,18 +181,20 @@ scoped notation " π_ " => fstProj
 -/
 scoped notation " μ_ " => sndProj
 
+@[simp]
 lemma counit_app_pullback_fst {Y Z : Over X} [HasPullbacksAlong Y.hom] :
     μ_ Y Z = (mapPullbackAdj Y.hom).counit.app Z := by
   simp [mapPullbackAdj_counit_app]
   rfl
 
+@[simp]
 lemma counit_app_pullback_snd {Y Z : Over X} [HasPullbacksAlong Y.hom] [HasPullbacksAlong Z.hom] :
     π_ Y Z = (sigmaSymmetryIso Y Z).hom ≫ (mapPullbackAdj Z.hom).counit.app Y := by
   aesop
 
 @[simp]
 lemma counit_app_pullback_snd_eq_homMk {Y Z : Over X} [HasPullbacksAlong Y.hom] :
-    π_ Y Z = (homMk (Reindex Y Z).hom : (Sigma Y (Reindex Y Z)) ⟶ Y) :=
+    π_ Y Z = (homMk (Reindex Y Z).hom : Sigma Y (Reindex Y Z) ⟶ Y) :=
   OverMorphism.ext (by aesop)
 
 end Reindex
@@ -201,7 +207,7 @@ variable [HasFiniteWidePullbacks C] {X : C}
 
 /-- The binary fan provided by `μ_` and `π_` is a binary product in `Over X`. -/
 def isBinaryProductSigmaReindex (Y Z : Over X) :
-    IsLimit <| BinaryFan.mk (P:= Sigma Y (Reindex Y Z)) (π_ Y Z) (μ_ Y Z) := by
+    IsLimit <| BinaryFan.mk (P := Sigma Y (Reindex Y Z)) (π_ Y Z) (μ_ Y Z) := by
   refine IsLimit.mk (?lift) ?fac ?uniq
   · intro s
     fapply Over.homMk
@@ -219,26 +225,28 @@ attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
 instance (X : C) : CartesianMonoidalCategory (Over X) := by
   infer_instance
 
-/-- The object `(Sigma Y) (Reindex Y Z)` is isomorphic to the binary product `Y ⊗ Z`
+/-- The object `Sigma Y (Reindex Y Z)` is isomorphic to the binary product `Y ⊗ Z`
 in `Over X`. -/
 @[simps!]
 def sigmaReindexIsoProd (Y Z : Over X) :
-    (Sigma Y) (Reindex Y Z) ≅ Y ⊗ Z := by
+    Sigma Y (Reindex Y Z) ≅ Y ⊗ Z := by
   apply IsLimit.conePointUniqueUpToIso (isBinaryProductSigmaReindex Y Z) (prodIsProd Y Z)
 
 /-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the object
-`(map f).obj ((pullback f).obj Y)` is isomorphic to the binary product of `(Over.mk f)` and `Y`. -/
+`(map f).obj ((pullback f).obj Y)` is isomorphic to the binary product of `Over.mk f` and `Y`. -/
 def sigmaReindexIsoProdMk {Y : C} (f : Y ⟶ X) (Z : Over X) :
     (map f).obj ((pullback f).obj Z) ≅ Over.mk f ⊗ Z :=
   sigmaReindexIsoProd (Over.mk f) _
 
+@[reassoc (attr := simp)]
 lemma sigmaReindexIsoProd_hom_comp_fst {Y Z : Over X} :
-    (sigmaReindexIsoProd Y Z).hom ≫ (fst Y Z) = (π_ Y Z) :=
+    (sigmaReindexIsoProd Y Z).hom ≫ fst Y Z = π_ Y Z :=
   IsLimit.conePointUniqueUpToIso_hom_comp
     (isBinaryProductSigmaReindex Y Z) (Limits.prodIsProd Y Z) ⟨.left⟩
 
+@[reassoc (attr := simp)]
 lemma sigmaReindexIsoProd_hom_comp_snd {Y Z : Over X} :
-    (sigmaReindexIsoProd Y Z).hom ≫ (snd Y Z) = (μ_ Y Z) :=
+    (sigmaReindexIsoProd Y Z).hom ≫ snd Y Z = μ_ Y Z :=
   IsLimit.conePointUniqueUpToIso_hom_comp
     (isBinaryProductSigmaReindex Y Z) (Limits.prodIsProd Y Z) ⟨.right⟩
 
@@ -254,10 +262,10 @@ attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
 
 variable [HasFiniteWidePullbacks C] {X : C}
 
-/-- The pull-push composition `(Over.pullback Y.hom) ⋙ (Over.map Y.hom)` is naturally isomorphic
+/-- The pull-push composition `pullback Y.hom ⋙ map Y.hom` is naturally isomorphic
 to the left tensor product functor `Y ⊗ _` in `Over X`. -/
 def Over.sigmaReindexNatIsoTensorLeft (Y : Over X) :
-    (pullback Y.hom) ⋙ (map Y.hom) ≅ tensorLeft Y := by
+    pullback Y.hom ⋙ map Y.hom ≅ tensorLeft Y := by
   fapply NatIso.ofComponents
   · intro Z
     simp only [const_obj_obj, Functor.id_obj, comp_obj, Over.pullback]
@@ -274,8 +282,8 @@ def Over.sigmaReindexNatIsoTensorLeft (Y : Over X) :
       ext
       simp [Reindex.sndProj]
 
-lemma Over.sigmaReindexNatIsoTensorLeft_hom_app
-    {Y : Over X} (Z : Over X) :
+@[simp]
+lemma Over.sigmaReindexNatIsoTensorLeft_hom_app {Y : Over X} (Z : Over X) :
     (Over.sigmaReindexNatIsoTensorLeft Y).hom.app Z = (sigmaReindexIsoProd Y Z).hom := by
   aesop
 
@@ -292,13 +300,14 @@ def Functor.toOverTerminal [HasTerminal C] : C ⥤ Over (⊤_ C) where
 /-- The slice category over the terminal object is equivalent to the original category. -/
 def equivOverTerminal [HasTerminal C] : Over (⊤_ C) ≌ C :=
   CategoryTheory.Equivalence.mk (Over.forget _) (Functor.toOverTerminal C)
-    (NatIso.ofComponents (fun X => Over.isoMk (Iso.refl _)))
-    (NatIso.ofComponents (fun X => Iso.refl _))
+    (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
+    (NatIso.ofComponents fun X => Iso.refl _)
 
 namespace Over
 
 variable {C}
 
+@[simp]
 lemma star_map [HasBinaryProducts C] {X : C} {Y Z : C} (f : Y ⟶ Z) :
     (star X).map f = Over.homMk (prod.map (𝟙 X) f) (by aesop) := by
   simp [star]
@@ -315,22 +324,25 @@ namespace forgetAdjStar
 
 variable [HasBinaryProducts C]
 
-theorem unit_app {I : C} (X : Over I) : (Over.forgetAdjStar I).unit.app X =
-    Over.homMk (prod.lift X.hom (𝟙 X.left)) := by
+@[simp]
+theorem unit_app {I : C} (X : Over I) :
+    (Over.forgetAdjStar I).unit.app X = Over.homMk (prod.lift X.hom (𝟙 X.left)) := by
   ext
   simp [Over.forgetAdjStar, Adjunction.comp, Equivalence.symm]
 
-theorem counit_app {I : C} (X : C) :
-    ((Over.forgetAdjStar I).counit.app X) = prod.snd := by
+@[simp]
+theorem counit_app {I : C} (X : C) : (Over.forgetAdjStar I).counit.app X = prod.snd := by
   simp [Over.forgetAdjStar, Adjunction.comp, Equivalence.symm]
 
+@[simp]
 theorem homEquiv {I : C} (X : Over I) (A : C) (f : X.left ⟶ A) :
-    ((Over.forgetAdjStar I).homEquiv X A) f =
+    (Over.forgetAdjStar I).homEquiv X A f =
     Over.homMk (prod.lift X.hom f) := by
   rw [Adjunction.homEquiv_unit, unit_app]
   ext
   simp
 
+@[simp]
 theorem homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (Over.star I).obj A) :
      ((Over.forgetAdjStar I).homEquiv X A).symm f = f.left ≫ prod.snd := by
    rw [Adjunction.homEquiv_counit, counit_app]
