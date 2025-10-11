@@ -480,6 +480,10 @@ theorem isRoot_of_aeval_algebraMap_eq_zero [Algebra R S] {p : R[X]}
     p.IsRoot r :=
   isRoot_of_eval₂_map_eq_zero inj hr
 
+theorem isRoot_of_aeval_algebraMap_eq_zero' [Algebra R S] [FaithfulSMul R S] {p : R[X]} {r : R}
+    (hr : aeval (algebraMap R S r) p = 0) : p.IsRoot r :=
+  isRoot_of_aeval_algebraMap_eq_zero (FaithfulSMul.algebraMap_injective _ _) hr
+
 end Semiring
 
 section CommSemiring
