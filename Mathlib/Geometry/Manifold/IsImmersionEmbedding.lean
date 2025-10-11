@@ -31,7 +31,6 @@ This shortens the overall argument, as the definition of submersions has the sam
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
 
 ## TODO
-* The set where `LiftSourceTargetPropertyAt` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
 * `IsImmersionAt.prodMap`: the product of two immersions is an immersion
@@ -253,6 +252,21 @@ lemma trans_F (h : IsImmersionAt F I J n f x) (e : F ≃L[𝕜] F') : IsImmersio
 /-- Being an immersion at `x` is stable under replacing `F` by an isomorphism copy. -/
 lemma congr_F (e : F ≃L[𝕜] F') : IsImmersionAt F I J n f x ↔ IsImmersionAt F' I J n f x :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
+
+/- The set of points where `IsImmersionAt` holds is open. -/
+lemma isOpen_isImmersionAt : IsOpen {x | IsImmersionAt F I J n f x} := by
+  rw [isOpen_iff_forall_mem_open]
+  intro x hx
+  -- Suppose `f` is an immersion at `x`: choose slice charts φ near x and ψ near f x s.t.
+  -- `f` looks like `u ↦ (u, 0)` in these charts. Then the same charts witness that `f` is an
+  -- immersion at any `y ∈ φ.source`.
+  simp only [mem_setOf_eq, IsImmersionAt_def] at hx
+  refine ⟨hx.domChart.source, ?_, hx.domChart.open_source, hx.mem_domChart_source⟩
+  intro x' hx'
+  rw [mem_setOf_eq, IsImmersionAt_def]
+  exact ⟨hx.domChart, hx.codChart, hx', hx.source_subset_preimage_source hx',
+    hx.domChart_mem_maximalAtlas, hx.codChart_mem_maximalAtlas, hx.source_subset_preimage_source,
+    hx.property⟩
 
 end IsImmersionAt
 
