@@ -300,10 +300,8 @@ variable (x y : P.Cotangent) (w z : P.ker.Cotangent)
 end Cotangent
 
 lemma Cotangent.smul_eq_zero_of_mem (p : P.Ring) (hp : p ∈ P.ker) (m : P.ker.Cotangent) :
-    p • m = 0 := by
-  obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ m
-  rw [← map_smul, Ideal.toCotangent_eq_zero, Submodule.coe_smul, smul_eq_mul, pow_two]
-  exact Ideal.mul_mem_mul hp x.2
+    p • m = 0 :=
+  Ideal.Cotangent.smul_eq_zero_of_mem hp m
 
 attribute [local simp] RingHom.mem_ker
 
