@@ -208,11 +208,7 @@ variable {n}
 lemma autAdjoinRootXPowSubC_root (η) :
     autAdjoinRootXPowSubC n a η (root _) = ((η : Kˣ) : K) • root _ := by
   dsimp [autAdjoinRootXPowSubC, autAdjoinRootXPowSubCHom, AlgEquiv.algHomUnitsEquiv]
-  refine liftAlgHom_root _ (Algebra.ofId _ _) _ ?_
-  change aeval _ _ = _
-  rw [map_sub, map_pow, aeval_C, aeval_X, Algebra.smul_def, mul_pow, root_X_pow_sub_C_pow,
-    AdjoinRoot.algebraMap_eq, ← map_pow, (mem_rootsOfUnity' _ _).mp η.prop]
-  simp
+  exact liftAlgHom_root _ (Algebra.ofId _ _) ..
 
 variable {a}
 
