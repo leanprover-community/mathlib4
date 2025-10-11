@@ -259,6 +259,7 @@ section IsSimple
 
 variable [IsSimple K L]
 
+-- TODO Golf the below proof using `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal` above
 open Weight in
 lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
