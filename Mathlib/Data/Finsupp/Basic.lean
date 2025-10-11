@@ -665,6 +665,15 @@ theorem comapDomain_single (f : α → β) (a : α) (m : M)
     rw [support_single_ne_zero _ hm, coe_singleton] at hif
     exact ⟨fun x hx => hif hx rfl hx, rfl⟩
 
+lemma comapDomain_surjective [Finite β] {f : α → β} (hf : Function.Injective f) :
+    Function.Surjective fun l : β →₀ M ↦ Finsupp.comapDomain f l hf.injOn := by
+  classical
+  intro x
+  cases isEmpty_or_nonempty α
+  · exact ⟨0, Finsupp.ext <| fun a ↦ IsEmpty.elim ‹_› a⟩
+  obtain ⟨g, hg⟩ := hf.hasLeftInverse
+  exact ⟨Finsupp.equivFunOnFinite.symm (x ∘ g), Finsupp.ext <| fun a ↦ by simp [hg a]⟩
+
 end Zero
 
 section AddZeroClass
