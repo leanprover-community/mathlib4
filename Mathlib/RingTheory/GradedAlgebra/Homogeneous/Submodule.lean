@@ -217,15 +217,15 @@ theorem Submodule.le_homogeneousCore_of_homogeneous_of_le {q : Submodule A M}
     (hq : q.IsHomogeneous ℳ) (hqp : q ≤ p) : q ≤ (p.homogeneousCore 𝒜 ℳ).toSubmodule :=
   fun _ hx i ↦ hqp <| hq i hx
 
-theorem Submodule.le_homogeneousCore_iff_of_homogeneous {q : Submodule A M}
-    (hq : q.IsHomogeneous ℳ) : q ≤ (p.homogeneousCore 𝒜 ℳ).toSubmodule ↔ q ≤ p :=
-  ⟨(·.trans <| p.toSubmodule_homogeneousCore_le 𝒜 ℳ),
-  p.le_homogeneousCore_of_homogeneous_of_le 𝒜 ℳ hq⟩
+theorem Submodule.IsHomogeneous.le_toSubmodule_homogeneousCore_iff {p q : Submodule A M}
+    (hp : p.IsHomogeneous ℳ) : p ≤ (q.homogeneousCore 𝒜 ℳ).toSubmodule ↔ p ≤ q :=
+  ⟨(·.trans <| q.toSubmodule_homogeneousCore_le 𝒜 ℳ),
+  q.le_homogeneousCore_of_homogeneous_of_le 𝒜 ℳ hp⟩
 
 variable {p} in
 theorem HomogeneousSubmodule.le_homogeneousCore_iff (q : HomogeneousSubmodule 𝒜 ℳ) :
     q ≤ p.homogeneousCore 𝒜 ℳ ↔ q.toSubmodule ≤ p :=
-  p.le_homogeneousCore_iff_of_homogeneous _ _ q.2
+  q.2.le_toSubmodule_homogeneousCore_iff 𝒜 ℳ
 
 theorem Submodule.IsHomogeneous.toSubmodule_homogeneousCore_eq_self (h : p.IsHomogeneous ℳ) :
     (p.homogeneousCore 𝒜 ℳ).toSubmodule = p :=
@@ -444,7 +444,7 @@ variable (p : Submodule A M)
 
 theorem Submodule.homogeneousCore.gc :
     GaloisConnection toSubmodule (Submodule.homogeneousCore 𝒜 ℳ) := fun p _ ↦
-  (le_homogeneousCore_iff_of_homogeneous 𝒜 ℳ _ p.2).symm
+  (p.le_homogeneousCore_iff 𝒜 ℳ).symm
 
 /-- `toSubmodule : HomogeneousSubmodule A ℳ → Submodule A M` and `Submodule.homogeneousCore 𝒜 ℳ`
 forms a galois coinsertion. -/

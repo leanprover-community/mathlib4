@@ -158,6 +158,10 @@ theorem Ideal.toIdeal_homogeneousCore_le : (I.homogeneousCore 𝒜).toIdeal ≤ 
 
 variable {𝒜 I}
 
+theorem Ideal.IsHomogeneous.le_toIdeal_homogeneousCore_iff {J : Ideal A} (hI : I.IsHomogeneous 𝒜) :
+    I ≤ (J.homogeneousCore 𝒜).toIdeal ↔ I ≤ J :=
+  Submodule.IsHomogeneous.le_toSubmodule_homogeneousCore_iff 𝒜 𝒜 hI
+
 theorem HomogeneousIdeal.le_homogeneousCore_iff {I : HomogeneousIdeal 𝒜} {J : Ideal A} :
     I ≤ J.homogeneousCore 𝒜 ↔ I.toIdeal ≤ J :=
   HomogeneousSubmodule.le_homogeneousCore_iff 𝒜 𝒜 I
