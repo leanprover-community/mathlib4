@@ -198,17 +198,10 @@ theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
     divisor (f ^ n) U = n • divisor f U := by
   ext z
   by_cases hn : n = 0
-  · simp only [hn, pow_zero, divisor_def, zero_nsmul, Function.locallyFinsuppWithin.coe_zero,
-      Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
-    intro _ _
-    have := meromorphicOrderAt_const_natCast z 1
-    simp_all
-  by_cases hz : ¬z ∈ U
+  · simp [hn, divisor_def]
+  by_cases hz : z ∈ U
+  · simp [hf.pow, divisor_apply, meromorphicOrderAt_pow (hf z hz), hf, hz]
   · simp [hz]
-  simp_all only [Decidable.not_not, hf.pow n, divisor_apply,
-    Function.locallyFinsuppWithin.coe_nsmul, Pi.smul_apply, Int.nsmul_eq_mul]
-  rw [meromorphicOrderAt_pow (hf z hz)]
-  aesop
 
 /--
 If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
@@ -224,17 +217,10 @@ theorem divisor_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
     divisor (f ^ n) U = n • divisor f U := by
   ext z
   by_cases hn : n = 0
-  · simp only [hn, zpow_zero, divisor_def, zero_smul, Function.locallyFinsuppWithin.coe_zero,
-      Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
-    intro _ _
-    have := meromorphicOrderAt_const_natCast z 1
-    simp_all
-  by_cases hz : ¬z ∈ U
+  · simp [hn, divisor_def]
+  by_cases hz : z ∈ U
+  · simp [hf.zpow, divisor_apply, meromorphicOrderAt_zpow (hf z hz), hf, hz]
   · simp [hz]
-  simp_all only [Decidable.not_not, hf.zpow n, divisor_apply,
-    Function.locallyFinsuppWithin.coe_zsmul, Pi.smul_apply, Int.zsmul_eq_mul]
-  rw [meromorphicOrderAt_zpow (hf z hz)]
-  aesop
 
 /--
 If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
