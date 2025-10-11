@@ -108,7 +108,7 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] 
   this.toNormedAddCommGroup
 
 instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) :=
-  InnerProductSpace.ofCore _
+  .ofCore _
 
 @[simp]
 theorem norm_tmul (x : E) (y : F) :
