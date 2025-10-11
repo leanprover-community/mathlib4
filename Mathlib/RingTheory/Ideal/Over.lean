@@ -176,6 +176,27 @@ theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
 theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
   over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
 
+/--
+Let `A ⊆ B ⊆ C ⊆ D` an extension of rings. Let `p` and `P` be ideals of `A` and `B` resp. such
+that `p` is under `P`. Assume that `p·C` is maximal and that `P·D` is nontrivial, then `p·C` is
+under `P·D`.
+-/
+theorem under_map_eq_map {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C] [Algebra C D]
+    [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] (h₀ : p = under A P)
+    (h₁ : (map (algebraMap A C) p).IsMaximal) (h₂ : map (algebraMap B D) P ≠ ⊤) :
+    under C (map (algebraMap B D) P) = map (algebraMap A C) p := by
+  rw [← IsCoatom.le_iff_eq (isMaximal_def.mp h₁) (comap_ne_top (algebraMap C D) h₂), h₀]
+  apply le_comap_of_map_le
+  rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
+    IsScalarTower.algebraMap_eq A B D, ← comap_comap]
+  exact comap_mono <| le_comap_map
+
+theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
+  Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
+  rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
+  simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
+    using Set.subset_compl_comm.mp (by simp)
+
 variable (B)
 
 instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (𝔓.under B).LiesOver p :=
