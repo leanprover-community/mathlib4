@@ -74,7 +74,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         contrapose! hx
         simp_rw [proj_apply] at hx
         rw [← sum_support_decompose 𝒜 x]
-        exact Ideal.sum_mem _ hx
+        exact sum_mem hx
       set max₁ := set₁.max' (nonempty x rid₁)
       set max₂ := set₂.max' (nonempty y rid₂)
       have mem_max₁ : max₁ ∈ set₁ := max'_mem set₁ (nonempty x rid₁)
@@ -96,7 +96,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
                   ∑ ij ∈ antidiag.erase (max₁, max₂), proj 𝒜 ij.1 x * proj 𝒜 ij.2 y :=
               (add_sum_erase _ _ mem_antidiag).symm
         rw [eq_sub_of_add_eq eq_add_sum.symm]
-        refine Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => ?_)
+        refine Ideal.sub_mem _ hxy (sum_mem fun z H => ?_)
         rcases z with ⟨i, j⟩
         simp only [antidiag, mem_erase, Prod.mk_inj, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
