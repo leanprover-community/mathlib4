@@ -272,6 +272,22 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 
+theorem degree_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
+    (hp : IsUnit p.leadingCoeff) : (p.map f).degree = p.degree :=
+  degree_map_eq_of_leadingCoeff_ne_zero _ <| f.isUnit_map hp |>.ne_zero
+
+theorem natDegree_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
+    (hp : IsUnit p.leadingCoeff) : (p.map f).natDegree = p.natDegree :=
+  natDegree_eq_natDegree <| degree_map_eq_of_isUnit_leadingCoeff _ hp
+
+theorem leadingCoeff_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
+    (hp : IsUnit p.leadingCoeff) : (p.map f).leadingCoeff = f p.leadingCoeff :=
+  leadingCoeff_map_of_leadingCoeff_ne_zero _ <| f.isUnit_map hp |>.ne_zero
+
+theorem nextCoeff_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
+    (hp : IsUnit p.leadingCoeff) : (p.map f).nextCoeff = f p.nextCoeff :=
+  nextCoeff_map_of_leadingCoeff_ne_zero _ <| f.isUnit_map hp |>.ne_zero
+
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
   grind [nextCoeff]
 
