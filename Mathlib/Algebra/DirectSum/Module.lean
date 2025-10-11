@@ -170,6 +170,14 @@ protected def lid (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Module R
     (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 
+@[simp] lemma lid_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Module R M] [Unique ι]
+    (x : ⨁ _ : ι, M) : DirectSum.lid R M ι x = x default :=
+  DirectSum.id_apply x
+
+@[simp] lemma lid_symm_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Module R M] [Unique ι]
+    (x : M) : (DirectSum.lid R M ι).symm x = lof R _ _ default x :=
+  DirectSum.id_symm_apply x
+
 /-- The projection map onto one component, as a linear map. -/
 def component (i : ι) : (⨁ i, M i) →ₗ[R] M i :=
   DFinsupp.lapply i
@@ -306,6 +314,27 @@ theorem lequivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, M i) (k : κ) :
     lequivCongrLeft R h f k = f (h.symm k) :=
   equivCongrLeft_apply _ _ _
 
+-- We need to try very hard to avoid dependent type "issues".
+lemma lequivCongrLeft_lof [DecidableEq ι] [DecidableEq κ] {e : ι ≃ κ}
+    {i : ι} {k : κ} (hik : i = e.symm k)
+    (x : M i) (y : M (e.symm k)) (hxy : cast congr(M $hik) x = y) :
+    lequivCongrLeft R e (lof R ι M i x) = lof R _ _ k y := by
+  subst hik hxy
+  ext j
+  simp_rw [lequivCongrLeft_apply, lof_eq_of, of_apply]
+  by_cases eq : k = j
+  · subst eq
+    rw [dif_pos rfl, dif_pos rfl]
+    rfl
+  · rw [dif_neg (by aesop), dif_neg eq]
+
+lemma lequivCongrLeft_symm_lof [DecidableEq ι] [DecidableEq κ] {h : ι ≃ κ}
+    {k : κ} {x : M (h.symm k)} :
+    (lequivCongrLeft R h).symm (lof R κ (fun k => M (h.symm k)) k x) = lof R ι M (h.symm k) x := by
+  rw [LinearEquiv.symm_apply_eq]
+  symm
+  exact lequivCongrLeft_lof _ rfl _ _ rfl
+
 end CongrLeft
 
 section Sigma
@@ -375,10 +404,13 @@ theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A
 @[deprecated (since := "2025-04-06")]
 alias coeLinearMap_eq_dfinsupp_sum := coeLinearMap_eq_dfinsuppSum
 
-@[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)
   toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
+
+@[simp] lemma coeLinearMap_lof (i : ι) (x : A i) :
+    DirectSum.coeLinearMap A (lof R ι (fun i ↦ A i) i x) = x :=
+  coeLinearMap_of A i x
 
 variable {A}
 
