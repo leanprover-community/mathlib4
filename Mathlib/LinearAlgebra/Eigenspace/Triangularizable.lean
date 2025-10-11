@@ -194,7 +194,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
       apply (f.genEigenspace μ').mono
       obtain _ | k := k
       · exact le_top
-      · exact Nat.cast_le.2 <| Finset.sup_le fun i _ ↦ hlk i
+      · exact Nat.cast_le.2 <| Finset.sup_le fun i _ ↦ Nat.cast_le.1 <| hlk i
     rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker, ← Finset.sup_eq_iSup]
     · have := Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
       apply this.mono_right
