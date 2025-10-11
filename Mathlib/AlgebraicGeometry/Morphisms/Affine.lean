@@ -202,9 +202,9 @@ lemma isAffineHom_of_isInducing
   by_cases hy : y ∈ Set.range f.base
   · obtain ⟨x, rfl⟩ := hy
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-      (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
+      Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
     obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
-      (isBasis_affine_open X).exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
+      X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
     obtain ⟨U', hU'U, rfl⟩ : ∃ U' : Y.Opens, U' ≤ U ∧ f ⁻¹ᵁ U' = V := by
       obtain ⟨U', hU', e⟩ := hf₁.isOpen_iff.mp V.2
       exact ⟨⟨U', hU'⟩ ⊓ U, inf_le_right, Opens.ext (by simpa [e] using hVU)⟩
@@ -214,7 +214,7 @@ lemma isAffineHom_of_isInducing
     simp only [Scheme.preimage_basicOpen, ← CommRingCat.comp_apply, f.naturality]
     simpa using ((Opens.map f.base).map (homOfLE hrU')).le
   · obtain ⟨_, ⟨U, hU, rfl⟩, hyU, hU'⟩ :=
-      (isBasis_affine_open Y).exists_subset_of_mem_open hy hf₂.isOpen_compl
+      Y.isBasis_affineOpens.exists_subset_of_mem_open hy hf₂.isOpen_compl
     rw [Set.subset_compl_iff_disjoint_right, ← Set.preimage_eq_empty_iff] at hU'
     refine ⟨U, hyU, hU, ?_⟩
     convert isAffineOpen_bot _

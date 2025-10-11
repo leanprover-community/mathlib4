@@ -257,8 +257,6 @@ instance isOpenImmersion_SpecMap_localizationAway {R : CommRingCat.{u}} (f : R) 
 @[deprecated (since := "2025-10-07")]
   alias basic_open_isOpenImmersion := isOpenImmersion_SpecMap_localizationAway
 
-
-
 instance {R} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
   isOpenImmersion_SpecMap_localizationAway (R := .of R) f

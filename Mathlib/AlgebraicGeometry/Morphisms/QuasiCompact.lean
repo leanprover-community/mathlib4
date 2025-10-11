@@ -73,7 +73,7 @@ theorem isCompactOpen_iff_eq_finset_affine_union {X : Scheme} (U : Set X) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⋃ i ∈ s, i := by
   apply Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
     (fun (U : X.affineOpens) => (U : X.Opens))
-  · rw [Subtype.range_coe]; exact isBasis_affine_open X
+  · rw [Subtype.range_coe]; exact X.isBasis_affineOpens
   · exact fun i => i.2.isCompact
 
 theorem isCompact_iff_eq_finset_affine_union {X : Scheme} (U : X.Opens) :
