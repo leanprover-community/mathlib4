@@ -354,6 +354,10 @@ theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ⇑(f : L₁ →ₗ[R] L
 theorem toFun_eq_coe (f : L₁ →ₗ⁅R⁆ L₂) : f.toFun = ⇑f :=
   rfl
 
+instance : LinearMapClass (L₁ →ₗ⁅R⁆ L₂) R L₁ L₂ where
+  map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
+  map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
+
 @[simp]
 theorem map_smul (f : L₁ →ₗ⁅R⁆ L₂) (c : R) (x : L₁) : f (c • x) = c • f x :=
   LinearMap.map_smul (f : L₁ →ₗ[R] L₂) c x
@@ -572,6 +576,12 @@ theorem toLinearEquiv_injective : Injective ((↑) : (L₁ ≃ₗ⁅R⁆ L₂) �
 theorem coe_injective : @Injective (L₁ ≃ₗ⁅R⁆ L₂) (L₁ → L₂) (↑) :=
   LinearEquiv.coe_injective.comp toLinearEquiv_injective
 
+instance : LinearEquivClass (L₁ ≃ₗ⁅R⁆ L₂) R L₁ L₂ where
+  map_add _ _ _ := by
+    rw [← @coe_toLinearEquiv, map_add]
+  map_smulₛₗ _ _ _ := by
+    rw [← @coe_toLinearEquiv, map_smul, RingHom.id_apply]
+
 @[ext]
 theorem ext {f g : L₁ ≃ₗ⁅R⁆ L₂} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h
@@ -698,6 +708,10 @@ initialize_simps_projections LieModuleHom (toFun → apply)
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
   rfl
+
+instance : LinearMapClass (M →ₗ⁅R, L⁆ N) R M N where
+  map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
+  map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
 
 @[simp]
 theorem map_smul (f : M →ₗ⁅R,L⁆ N) (c : R) (x : M) : f (c • x) = c • f x :=
@@ -958,6 +972,12 @@ theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₗ⁅R,L⁆ N) 
 @[ext]
 theorem ext (e₁ e₂ : M ≃ₗ⁅R,L⁆ N) (h : ∀ m, e₁ m = e₂ m) : e₁ = e₂ :=
   toEquiv_injective (Equiv.ext h)
+
+instance : LinearEquivClass (M ≃ₗ⁅R,L⁆ N) R M N where
+  map_add _ _ _ := by
+    rw [← coe_toLinearEquiv, map_add]
+  map_smulₛₗ _ _ _ := by
+    rw [← coe_toLinearEquiv, map_smul, RingHom.id_apply]
 
 instance : One (M ≃ₗ⁅R,L⁆ M) :=
   ⟨{ (1 : M ≃ₗ[R] M) with map_lie' := rfl }⟩
