@@ -135,7 +135,7 @@ If every nonconstant polynomial over `k` has a root, then `k` is algebraically c
 @[stacks 09GR "(3) ⟹ (4)"]
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
-  refine ⟨fun p ↦ Or.inr ?_⟩
+  refine ⟨fun p ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq _
   have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
     classical
