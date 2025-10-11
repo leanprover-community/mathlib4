@@ -31,7 +31,7 @@ variable (q : Submodule K (Dual K H))
   (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
   (χ : Weight K H L)
   (x_χ m_α : L) (hx_χ : x_χ ∈ genWeightSpace L χ)
-  (α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero})
+  (α : Weight K H L) (hαq : ↑α ∈ q) (hα₀ : α.IsNonZero)
 
 section
 
