@@ -263,23 +263,21 @@ variable [HasFiniteWidePullbacks C] {X : C}
 
 /-- The pull-push composition `pullback Y.hom ⋙ map Y.hom` is naturally isomorphic
 to the left tensor product functor `Y ⊗ _` in `Over X`. -/
-def Over.sigmaReindexNatIsoTensorLeft (Y : Over X) :
-    pullback Y.hom ⋙ map Y.hom ≅ tensorLeft Y := by
-  fapply NatIso.ofComponents
-  · intro Z
-    simp only [const_obj_obj, Functor.id_obj, comp_obj, Over.pullback]
-    exact sigmaReindexIsoProd Y Z
-  · intro Z Z' f
-    simp
-    ext1 <;> simp_rw [assoc]
-    · simp_rw [whiskerLeft_fst]
-      iterate rw [sigmaReindexIsoProd_hom_comp_fst]
-      ext
+def Over.sigmaReindexNatIsoTensorLeft (Y : Over X) : pullback Y.hom ⋙ map Y.hom ≅ tensorLeft Y :=
+  NatIso.ofComponents
+    (fun Z => sigmaReindexIsoProd Y Z)
+    (by
+      intro Z Z' f
       simp
-    · simp_rw [whiskerLeft_snd]
-      iterate rw [sigmaReindexIsoProd_hom_comp_snd, ← assoc, sigmaReindexIsoProd_hom_comp_snd]
-      ext
-      simp [Reindex.sndProj]
+      ext1 <;> simp_rw [assoc]
+      · simp_rw [whiskerLeft_fst]
+        iterate rw [sigmaReindexIsoProd_hom_comp_fst]
+        ext
+        simp
+      · simp_rw [whiskerLeft_snd]
+        iterate rw [sigmaReindexIsoProd_hom_comp_snd, ← assoc, sigmaReindexIsoProd_hom_comp_snd]
+        ext
+        simp [Reindex.sndProj])
 
 @[simp]
 lemma Over.sigmaReindexNatIsoTensorLeft_hom_app {Y : Over X} (Z : Over X) :
