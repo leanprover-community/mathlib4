@@ -145,7 +145,6 @@ The divisor a constant function is `0`.
 theorem divisor_const_natCast (n : ℕ) :
     divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
 
-
 /--
 The divisor a constant function is `0`.
 -/
