@@ -354,6 +354,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       F is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      F is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ✅️ NormedSpace
   [Elab.DiffGeo.MDiff] Field is: 𝕜
   [Elab.DiffGeo.MDiff] Found model: 𝓘(𝕜, F)
@@ -386,8 +389,7 @@ Hint: Additional diagnostic information may be available using the `set_option d
 #guard_msgs in
 #check MDifferentiable (I.prod (𝓘(𝕜, E))) 𝓘(𝕜, F) h'
 
--- TODO: implement special handling for the tangent bundle
-/-- error: Could not find models with corners for TangentBundle I M -/
+/-- info: MDifferentiable I.tangent 𝓘(𝕜, F) h' : Prop -/
 #guard_msgs in
 #check MDiff h'
 
@@ -498,7 +500,7 @@ error: Expected
   m
 of type
   M
-to be a function
+to be a function, or to be coercible to a function
 -/
 #guard_msgs in
 #check CMDiffAt[s] f m
@@ -516,7 +518,7 @@ error: Expected
   m
 of type
   M
-to be a function
+to be a function, or to be coercible to a function
 -/
 #guard_msgs in
 #check CMDiffAt[s] f m
@@ -994,6 +996,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Unit is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Unit is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ❌️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on Unit among local instances.
