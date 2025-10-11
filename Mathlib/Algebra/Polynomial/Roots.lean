@@ -556,11 +556,15 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
         exact id congr_fun hxy ⟨i, Nat.lt_succ_of_le hi⟩)
     fun _ _ => Finset.finite_toSet _
 
+/-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
+instead of requiring it to be non-zero and `NoZeroSMulDivisors`. -/
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical
   rw [rootSet_def, Finset.mem_coe, mem_toFinset, mem_aroots']
 
+/-- A version of `mem_rootSet'` that requires `NoZeroSMulDivisors` and for the polynomial to be
+non-zero instead of requiring it to be non-zero after mapping. -/
 theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : S} : a ∈ p.rootSet S ↔ p ≠ 0 ∧ aeval a p = 0 := by
   rw [mem_rootSet', Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective T S)]
@@ -850,13 +854,13 @@ theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p
     {f : A →+* B} (hf : Function.Injective f) (hroots : Multiset.card p.roots = p.natDegree) :
     p.roots.map f = (p.map f).roots := by
   apply Multiset.eq_of_le_of_card_le (map_roots_le_of_injective p hf)
-  simpa only [Multiset.card_map, hroots] using (card_roots' _).trans natDegree_map_le
+  simpa only [Multiset.card_map, hroots] using card_roots_map_le_natDegree p
 
 theorem roots_map_of_map_ne_zero_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}
     (f : A →+* B) (h : p.map f ≠ 0) (hroots : p.roots.card = p.natDegree) :
     p.roots.map f = (p.map f).roots :=
   eq_of_le_of_card_le (map_roots_le h) <| by
-    simpa only [Multiset.card_map, hroots] using (p.map f).card_roots'.trans natDegree_map_le
+    simpa only [Multiset.card_map, hroots] using card_roots_map_le_natDegree p
 
 theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]} (hm : p.Monic)
     (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f = (p.map f).roots :=
