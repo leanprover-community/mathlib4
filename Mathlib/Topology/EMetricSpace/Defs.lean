@@ -74,16 +74,16 @@ to the original one. -/
     ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
       (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩) basis
 
-/-- A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
+/-- A pseudo-extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
 satisfying reflexivity `edist x x = 0`, commutativity `edist x y = edist y x`, and the triangle
 inequality `edist x z ≤ edist x y + edist y z`.
 
 Note that we do not require `edist x y = 0 → x = y`. See extended metric spaces (`EMetricSpace`) for
 the similar class with that stronger assumption.
 
-Any pseudo extended metric space is a topological space and a uniform space (see `TopologicalSpace`,
+Any pseudo-extended metric space is a topological space and a uniform space (see `TopologicalSpace`,
 `UniformSpace`), where the topology and uniformity come from the metric.
-Note that a T1 pseudo extended metric space is just an extended metric space.
+Note that a T1 pseudo-extended metric space is just an extended metric space.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric. This e.g.
 ensures that we do not get a diamond when doing
@@ -102,7 +102,7 @@ attribute [instance] PseudoEMetricSpace.toUniformSpace
 /- Pseudoemetric spaces are less common than metric spaces. Therefore, we work in a dedicated
 namespace, while notions associated to metric spaces are mostly in the root namespace. -/
 
-/-- Two pseudo emetric space structures with the same edistance function coincide. -/
+/-- Two pseudo-emetric space structures with the same edistance function coincide. -/
 @[ext]
 protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
     (h : m.toEDist = m'.toEDist) : m = m' := by
@@ -536,7 +536,7 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
 section Compact
 
 -- TODO: generalize to a uniform space with metrizable uniformity
-/-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
+/-- For a set `s` in a pseudo-emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε) :
@@ -574,7 +574,7 @@ end EMetric
 `edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality
 `edist x z ≤ edist x y + edist y z`.
 
-See pseudo extended metric spaces (`PseudoEMetricSpace`) for the similar class with the
+See pseudo-extended metric spaces (`PseudoEMetricSpace`) for the similar class with the
 `edist x y = 0 ↔ x = y` assumption weakened to `edist x x = 0`.
 
 Any extended metric space is a T1 topological space and a uniform space (see `TopologicalSpace`,

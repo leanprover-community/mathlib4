@@ -10,7 +10,7 @@ import Mathlib.Topology.ContinuousMap.Bounded.Basic
 /-!
 # Thickened indicators
 
-This file is about thickened indicators of sets in (pseudo e)metric spaces. For a decreasing
+This file is about thickened indicators of sets in (pseudo-e)metric spaces. For a decreasing
 sequence of thickening radii tending to 0, the thickened indicators of a closed set form a
 decreasing pointwise converging approximation of the indicator function of the set, where the
 members of the approximating sequence are nonnegative bounded continuous functions.
