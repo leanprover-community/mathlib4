@@ -677,18 +677,24 @@ lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
 
-lemma isPullback_Spec_map_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g : A ⟶ C)
+lemma isPullback_SpecMap_of_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g : A ⟶ C)
     (inl : B ⟶ P) (inr : C ⟶ P) (h : IsPushout f g inl inr) :
     IsPullback (Spec.map inl) (Spec.map inr) (Spec.map f) (Spec.map g) :=
   IsPullback.map Scheme.Spec h.op.flip
 
-lemma isPullback_Spec_map_pushout {A B C : CommRingCat} (f : A ⟶ B) (g : A ⟶ C) :
+@[deprecated (since := "2025-10-07")]
+alias isPullback_Spec_map_isPushout := isPullback_SpecMap_of_isPushout
+
+lemma isPullback_SpecMap_pushout {A B C : CommRingCat} (f : A ⟶ B) (g : A ⟶ C) :
     IsPullback (Spec.map (pushout.inl f g))
       (Spec.map (pushout.inr f g)) (Spec.map f) (Spec.map g) := by
-  apply isPullback_Spec_map_isPushout
+  apply isPullback_SpecMap_of_isPushout
   exact IsPushout.of_hasPushout f g
 
-lemma diagonal_Spec_map :
+@[deprecated (since := "2025-10-07")]
+alias isPullback_Spec_map_pushout := isPullback_SpecMap_pushout
+
+lemma diagonal_SpecMap :
     pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))) =
       Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).toRingHom) ≫
         (pullbackSpecIso R S S).inv := by
@@ -696,6 +702,8 @@ lemma diagonal_Spec_map :
     AlgHom.toRingHom_eq_coe, Category.assoc, pullbackSpecIso_inv_fst, pullbackSpecIso_inv_snd]
   · congr 1; ext x; change x = Algebra.TensorProduct.lmul' R (S := S) (x ⊗ₜ[R] 1); simp
   · congr 1; ext x; change x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
+
+@[deprecated (since := "2025-10-07")] alias diagonal_Spec_map := diagonal_SpecMap
 
 end Spec
 

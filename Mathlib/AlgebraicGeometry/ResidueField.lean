@@ -50,18 +50,20 @@ instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs (Unique (
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
   CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
 
-/-- See `AlgebraicGeometry.IsClosedImmersion.Spec_map_residue` for the stronger result that
+/-- See `AlgebraicGeometry.IsClosedImmersion.SpecMap_residue` for the stronger result that
 `Spec.map (X.residue x)` is a closed immersion. -/
 instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
-  IsPreimmersion.mk_Spec_map
+  IsPreimmersion.mk_SpecMap
     (PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _
       Ideal.Quotient.mk_surjective).isEmbedding
     (RingHom.surjectiveOnStalks_of_surjective (Ideal.Quotient.mk_surjective))
 
 @[simp]
-lemma Spec_map_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
-    (Spec.map (X.residue x)).base s = closedPoint (X.presheaf.stalk x) :=
+lemma SpecMap_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
+    Spec.map (X.residue x) s = closedPoint (X.presheaf.stalk x) :=
   IsLocalRing.PrimeSpectrum.comap_residue _ s
+
+@[deprecated (since := "2025-10-07")] alias Spec_map_residue_apply := SpecMap_residue_apply
 
 lemma residue_surjective (X : Scheme.{u}) (x) : Function.Surjective (X.residue x) :=
   Ideal.Quotient.mk_surjective
@@ -238,13 +240,20 @@ lemma residueFieldCongr_fromSpecResidueField {x y : X} (h : x = y) :
 instance {x y : X} (h : x = y) : (Spec.map (X.residueFieldCongr h).hom).IsOver X where
 
 @[reassoc (attr := simp)]
-lemma Hom.Spec_map_residueFieldMap_fromSpecResidueField (x : X) :
+lemma Hom.SpecMap_residueFieldMap_fromSpecResidueField (x : X) :
     Spec.map (f.residueFieldMap x) ≫ Y.fromSpecResidueField _ =
       X.fromSpecResidueField x ≫ f := by
   dsimp only [fromSpecResidueField]
-  rw [Category.assoc, ← Spec_map_stalkMap_fromSpecStalk, ← Spec.map_comp_assoc,
+  rw [Category.assoc, ← SpecMap_stalkMap_fromSpecStalk, ← Spec.map_comp_assoc,
     ← Spec.map_comp_assoc]
   rfl
+
+@[deprecated (since := "2025-10-07")]
+alias Hom.Spec_map_residueFieldMap_fromSpecResidueField :=
+  Hom.SpecMap_residueFieldMap_fromSpecResidueField
+@[deprecated (since := "2025-10-07")]
+alias Hom.Spec_map_residueFieldMap_fromSpecResidueField_assoc :=
+  Hom.SpecMap_residueFieldMap_fromSpecResidueField_assoc
 
 instance [X.Over Y] (x : X) : Spec.map ((X ↘ Y).residueFieldMap x) |>.IsOver Y where
 

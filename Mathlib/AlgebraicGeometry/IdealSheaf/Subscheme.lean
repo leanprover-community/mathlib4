@@ -47,7 +47,7 @@ def glueDataObjι (U : X.affineOpens) : I.glueDataObj U ⟶ U.1 :=
 
 instance (U : X.affineOpens) : IsPreimmersion (I.glueDataObjι U) :=
   have : IsPreimmersion (Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U)))) :=
-    .mk_Spec_map
+    .mk_SpecMap
       (isClosedEmbedding_comap_of_surjective _ _ Ideal.Quotient.mk_surjective).isEmbedding
       (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective)
   .comp _ _

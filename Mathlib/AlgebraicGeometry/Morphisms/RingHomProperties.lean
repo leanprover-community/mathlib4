@@ -442,7 +442,7 @@ lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
   have := stalkwise_isZariskiLocalAtSource_of_respectsIso hP
   convert of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget
     (P := AlgebraicGeometry.stalkwise P) with R S _ _ φ
-  exact (stalkwise_Spec_map_iff hP (CommRingCat.ofHom φ)).symm
+  exact (stalkwise_SpecMap_iff hP (CommRingCat.ofHom φ)).symm
 
 lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where

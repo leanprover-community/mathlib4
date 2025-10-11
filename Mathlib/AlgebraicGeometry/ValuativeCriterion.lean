@@ -118,8 +118,8 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
   have w : X.fromSpecResidueField x' ≫ f =
       Spec.map (CommRingCat.ofHom (algebraMap A (X.residueField x'))) ≫
         Spec.map stalk_y_to_A ≫ Y.fromSpecStalk y := by
-    rw [Scheme.fromSpecResidueField, Category.assoc, ← Scheme.Spec_map_stalkMap_fromSpecStalk,
-      ← Scheme.Spec_map_stalkSpecializes_fromSpecStalk h]
+    rw [Scheme.fromSpecResidueField, Category.assoc, ← Scheme.SpecMap_stalkMap_fromSpecStalk,
+      ← Scheme.SpecMap_stalkSpecializes_fromSpecStalk h]
     simp_rw [← Spec.map_comp_assoc]
     rfl
   obtain ⟨l, hl₁, hl₂⟩ := (H { R := A, K := X.residueField x', commSq := ⟨w⟩, .. }).exists_lift
@@ -177,16 +177,16 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
       ((RingEquiv.ofBijective _ hbij).apply_symm_apply (β.hom.rangeRestrict x)))
   refine ⟨⟨⟨Spec.map ((pullback.snd i₂ f).stalkMap x ≫ φ) ≫ X.fromSpecStalk _, ?_, ?_⟩⟩⟩
   · simp only [← Spec.map_comp_assoc, Category.assoc, hφβ]
-    simp only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,
-      Scheme.Spec_map_stalkSpecializes_fromSpecStalk_assoc, β]
+    simp only [Spec.map_comp, Category.assoc, Scheme.SpecMap_stalkMap_fromSpecStalk,
+      Scheme.SpecMap_stalkSpecializes_fromSpecStalk_assoc, β]
     -- This next line only fires as `rw`, not `simp`:
     rw [Scheme.Spec_stalkClosedPointTo_fromSpecStalk_assoc]
     simp [lft]
-  · simp only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,
+  · simp only [Spec.map_comp, Category.assoc, Scheme.SpecMap_stalkMap_fromSpecStalk,
       ← pullback.condition]
-    rw [← Scheme.Spec_map_stalkMap_fromSpecStalk_assoc, ← Spec.map_comp_assoc, hαφ']
+    rw [← Scheme.SpecMap_stalkMap_fromSpecStalk_assoc, ← Spec.map_comp_assoc, hαφ']
     simp only [Iso.trans_inv, TopCat.Presheaf.stalkCongr_inv, Iso.symm_inv, Spec.map_comp,
-      Category.assoc, Scheme.Spec_map_stalkSpecializes_fromSpecStalk_assoc, e]
+      Category.assoc, Scheme.SpecMap_stalkSpecializes_fromSpecStalk_assoc, e]
     rw [← Spec_stalkClosedPointIso, ← Spec.map_comp_assoc,
       Iso.inv_hom_id, Spec.map_id, Category.id_comp]
 

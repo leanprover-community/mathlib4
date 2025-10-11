@@ -72,7 +72,7 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
     IsPreimmersion (f ≫ g) ↔ IsPreimmersion f :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
-lemma Spec_map_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     IsPreimmersion (Spec.map f) ↔ IsEmbedding (PrimeSpectrum.comap f.hom) ∧
       f.hom.SurjectiveOnStalks := by
   haveI : (RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).RespectsIso := by
@@ -81,15 +81,19 @@ lemma Spec_map_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
   rw [← HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks), isPreimmersion_iff, and_comm]
   rfl
 
-lemma mk_Spec_map {R S : CommRingCat.{u}} {f : R ⟶ S}
+@[deprecated (since := "2025-10-07")] alias Spec_map_iff := SpecMap_iff
+
+lemma mk_SpecMap {R S : CommRingCat.{u}} {f : R ⟶ S}
     (h₁ : IsEmbedding (PrimeSpectrum.comap f.hom)) (h₂ : f.hom.SurjectiveOnStalks) :
     IsPreimmersion (Spec.map f) :=
-  (Spec_map_iff f).mpr ⟨h₁, h₂⟩
+  (SpecMap_iff f).mpr ⟨h₁, h₂⟩
+
+@[deprecated (since := "2025-10-07")] alias mk_Spec_map := mk_SpecMap
 
 lemma of_isLocalization {R S : Type u} [CommRing R] (M : Submonoid R) [CommRing S]
     [Algebra R S] [IsLocalization M S] :
     IsPreimmersion (Spec.map (CommRingCat.ofHom <| algebraMap R S)) :=
-  IsPreimmersion.mk_Spec_map
+  IsPreimmersion.mk_SpecMap
     (PrimeSpectrum.localization_comap_isEmbedding (R := R) S M)
     (RingHom.surjectiveOnStalks_of_isLocalization (M := M) S)
 

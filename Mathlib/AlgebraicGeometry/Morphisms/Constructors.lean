@@ -389,7 +389,7 @@ lemma stalkwise_isZariskiLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso 
 @[deprecated (since := "2025-10-07")]
 alias stalkwise_isLocalAtSource_of_respectsIso := stalkwise_isZariskiLocalAtSource_of_respectsIso
 
-lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
+lemma stalkwise_SpecMap_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
     stalkwise P (Spec.map φ) ↔ ∀ (p : Ideal S) (_ : p.IsPrime),
       P (Localization.localRingHom _ p φ.hom rfl) := by
   have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
@@ -398,6 +398,8 @@ lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (�
   · exact forall_congr' fun p ↦
       (RingHom.toMorphismProperty P).arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso _ _)
   · exact ⟨fun H p hp ↦ H ⟨p, hp⟩, fun H p ↦ H p.1 p.2⟩
+
+@[deprecated (since := "2025-10-07")] alias stalkwise_Spec_map_iff := stalkwise_SpecMap_iff
 
 end Stalkwise
 

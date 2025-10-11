@@ -230,7 +230,7 @@ lemma spread_out_unique_of_isGermInjective' {x : X} [X.IsGermInjectiveAt x]
   · simpa using congr(($e).base (IsLocalRing.closedPoint _))
   · apply Spec.map_injective
     rw [← cancel_mono (Y.fromSpecStalk _)]
-    simpa [Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
+    simpa [Scheme.SpecMap_stalkSpecializes_fromSpecStalk]
 
 lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
     (φ : A ⟶ X.presheaf.stalk x) (φRA : R ⟶ A) (φRX : R ⟶ Γ(X, U))
@@ -347,8 +347,8 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
       Spec.map_comp, Category.assoc, ← IsAffineOpen.fromSpecStalk,
       IsAffineOpen.fromSpecStalk_eq_fromSpecStalk]
   · simp only [Category.assoc]
-    rw [← IsAffineOpen.Spec_map_appLE_fromSpec sY hU hV iVU, ← Spec.map_comp_assoc, ← h₂,
-      ← Scheme.Hom.appLE, ← hW.isoSpec_hom, IsAffineOpen.Spec_map_appLE_fromSpec sX hU hW i,
+    rw [← IsAffineOpen.SpecMap_appLE_fromSpec sY hU hV iVU, ← Spec.map_comp_assoc, ← h₂,
+      ← Scheme.Hom.appLE, ← hW.isoSpec_hom, IsAffineOpen.SpecMap_appLE_fromSpec sX hU hW i,
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]
 
 /--
@@ -369,8 +369,8 @@ lemma spread_out_of_isGermInjective' [LocallyOfFiniteType sY] {x : X} [X.IsGermI
   · rw [← Scheme.Hom.comp_apply, h, Scheme.Hom.comp_apply, Scheme.fromSpecStalk_closedPoint]
   · apply Spec.map_injective
     rw [← cancel_mono (S.fromSpecStalk _)]
-    simpa only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,
+    simpa only [Spec.map_comp, Category.assoc, Scheme.SpecMap_stalkMap_fromSpecStalk,
       Scheme.Spec_stalkClosedPointTo_fromSpecStalk_assoc,
-      Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
+      Scheme.SpecMap_stalkSpecializes_fromSpecStalk]
 
 end AlgebraicGeometry

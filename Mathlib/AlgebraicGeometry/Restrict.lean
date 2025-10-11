@@ -109,7 +109,7 @@ lemma ι_preimage_self : U.ι ⁻¹ᵁ U = ⊤ :=
   Opens.inclusion'_map_eq_top _
 
 @[simp]
-lemma mem_image_ι_iff {x : U} {V : Opens U} : (x : X) ∈ U.ι ''ᵁ V ↔ x ∈ V :=
+lemma mem_ι_image_iff {x : U} {V : Opens U} : (x : X) ∈ U.ι ''ᵁ V ↔ x ∈ V :=
   U.ι.apply_mem_image_iff
 
 instance : IsIso (U.ι.appLE U ⊤ U.ι_preimage_self.ge) := by
@@ -194,7 +194,7 @@ instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
   U.ι.appTop.hom.toAlgebra
 
 /-- A variant where `r` is first mapped into `Γ(X, U)` before taking the basic open. -/
-lemma Scheme.Opens.image_ι_basicOpen' (r : Γ(U, ⊤)) :
+lemma Scheme.Opens.ι_image_basicOpen' (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen
       (X.presheaf.map (eqToHom U.ι_image_top.symm).op r) := by
   refine (Scheme.image_basicOpen (X.ofRestrict U.isOpenEmbedding) r).trans ?_
@@ -205,22 +205,19 @@ lemma Scheme.Opens.image_ι_basicOpen' (r : Γ(U, ⊤)) :
   exact (PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _).trans
     (CategoryTheory.Functor.map_id _ _).symm
 
-@[deprecated (since := "2025-10-07")] alias Scheme.map_basicOpen := Scheme.Opens.image_ι_basicOpen'
+@[deprecated (since := "2025-10-07")] alias Scheme.map_basicOpen := Scheme.Opens.ι_image_basicOpen'
 
-lemma Scheme.Opens.image_ι_basicOpen (r : Γ(U, ⊤)) :
+lemma Scheme.Opens.ι_image_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen r := by
-  rw [Scheme.Opens.image_ι_basicOpen', Scheme.basicOpen_res_eq]
+  rw [Scheme.Opens.ι_image_basicOpen', Scheme.basicOpen_res_eq]
 
-@[deprecated (since := "2025-10-07")]
-alias Scheme.Opens.ι_image_basicOpen := Scheme.Opens.image_ι_basicOpen
-
-lemma Scheme.Opens.image_ι_basicOpen_topIso_inv (r : Γ(X, U)) :
+lemma Scheme.Opens.ι_image_basicOpen_topIso_inv (r : Γ(X, U)) :
     U.ι ''ᵁ U.toScheme.basicOpen (U.topIso.inv r) = X.basicOpen r := by
   simp only [Scheme.Opens.toScheme_presheaf_obj]
-  rw [image_ι_basicOpen', basicOpen_res_eq, topIso_inv, basicOpen_res_eq X]
+  rw [ι_image_basicOpen', basicOpen_res_eq, topIso_inv, basicOpen_res_eq X]
 
 @[deprecated (since := "2025-10-07")]
-alias Scheme.map_basicOpen_map := Scheme.Opens.image_ι_basicOpen_topIso_inv
+alias Scheme.map_basicOpen_map := Scheme.Opens.ι_image_basicOpen_topIso_inv
 
 /-- If `U ≤ V`, then `U` is also a subscheme of `V`. -/
 protected noncomputable

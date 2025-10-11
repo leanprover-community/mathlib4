@@ -78,11 +78,13 @@ def tensorInl (T : Triplet f g) : X.residueField T.x ⟶ T.tensor := pushout.inl
 canonical map `κ(y) ⟶ κ(x) ⊗[κ(s)] κ(y)`. -/
 def tensorInr (T : Triplet f g) : Y.residueField T.y ⟶ T.tensor := pushout.inr _ _
 
-lemma Spec_map_tensor_isPullback (T : Triplet f g) : CategoryTheory.IsPullback
+lemma isPullback_SpecMap_tensor (T : Triplet f g) : CategoryTheory.IsPullback
     (Spec.map T.tensorInl) (Spec.map T.tensorInr)
         (Spec.map ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x))
           (Spec.map ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)) :=
-  isPullback_Spec_map_pushout _ _
+  isPullback_SpecMap_pushout _ _
+
+@[deprecated (since := "2025-10-07")] alias Spec_map_tensor_isPullback := isPullback_SpecMap_tensor
 
 section Congr
 
@@ -122,21 +124,24 @@ end Congr
 
 variable (T : Triplet f g)
 
-lemma Spec_map_tensorInl_fromSpecResidueField :
+lemma SpecMap_tensorInl_fromSpecResidueField :
     (Spec.map T.tensorInl ≫ X.fromSpecResidueField T.x) ≫ f =
       (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y) ≫ g := by
   simp only [residueFieldCongr_inv, Category.assoc, tensorInl, tensorInr,
-    ← Hom.Spec_map_residueFieldMap_fromSpecResidueField]
+    ← Hom.SpecMap_residueFieldMap_fromSpecResidueField]
   rw [← residueFieldCongr_fromSpecResidueField T.hx.symm,
     ← residueFieldCongr_fromSpecResidueField T.hy.symm]
   simp only [← Category.assoc, ← Spec.map_comp, pushout.condition]
+
+@[deprecated (since := "2025-10-07")]
+alias Spec_map_tensorInl_fromSpecResidueField := SpecMap_tensorInl_fromSpecResidueField
 
 /-- Given `x : X`, `y : Y` and `s : S` such that `f x = s = g y`,
 this is `Spec (κ(x) ⊗[κ(s)] κ(y)) ⟶ X ×ₛ Y`. -/
 def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
   pullback.lift (Spec.map T.tensorInl ≫ X.fromSpecResidueField T.x)
     (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y)
-    (Spec_map_tensorInl_fromSpecResidueField _)
+    (SpecMap_tensorInl_fromSpecResidueField _)
 
 @[simp]
 lemma specTensorTo_base_fst (p : Spec T.tensor) :
@@ -196,11 +201,11 @@ lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
     Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo =
       (pullback f g).fromSpecResidueField t := by
   apply pullback.hom_ext
-  · rw [← Scheme.Hom.Spec_map_residueFieldMap_fromSpecResidueField]
+  · rw [← Scheme.Hom.SpecMap_residueFieldMap_fromSpecResidueField]
     simp only [Category.assoc, Triplet.specTensorTo_fst, Triplet.ofPoint_x]
     rw [← pushout.inl_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
-  · rw [← Scheme.Hom.Spec_map_residueFieldMap_fromSpecResidueField]
+  · rw [← Scheme.Hom.SpecMap_residueFieldMap_fromSpecResidueField]
     simp only [Category.assoc, Triplet.specTensorTo_snd, Triplet.ofPoint_y]
     rw [← pushout.inr_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
@@ -226,13 +231,13 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
       Spec.map (ofPointTensor (T.SpecTensorTo.base p)) ≫
       Spec.map (tensorCongr (T.ofPoint_SpecTensorTo p).symm).hom =
     (Spec T.tensor).fromSpecResidueField p := by
-  apply T.Spec_map_tensor_isPullback.hom_ext
+  apply T.isPullback_SpecMap_tensor.hom_ext
   · rw [← cancel_mono <| X.fromSpecResidueField T.x]
     simp_rw [Category.assoc, ← T.specTensorTo_fst, tensorCongr_SpecTensorTo_assoc]
-    rw [← Hom.Spec_map_residueFieldMap_fromSpecResidueField_assoc, ofPointTensor_SpecTensorTo_assoc]
+    rw [← Hom.SpecMap_residueFieldMap_fromSpecResidueField_assoc, ofPointTensor_SpecTensorTo_assoc]
   · rw [← cancel_mono <| Y.fromSpecResidueField T.y]
     simp_rw [Category.assoc, ← T.specTensorTo_snd, tensorCongr_SpecTensorTo_assoc]
-    rw [← Hom.Spec_map_residueFieldMap_fromSpecResidueField_assoc, ofPointTensor_SpecTensorTo_assoc]
+    rw [← Hom.SpecMap_residueFieldMap_fromSpecResidueField_assoc, ofPointTensor_SpecTensorTo_assoc]
 
 /-- A helper lemma to work with `AlgebraicGeometry.Scheme.Pullback.carrierEquiv`. -/
 lemma carrierEquiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :

@@ -150,8 +150,8 @@ lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
   have e : ⟨x, hU' hx⟩ = (X.homOfLE hU').base ⟨x, hx⟩ := by
     rw [Scheme.homOfLE_base]
     rfl
-  rw [Category.assoc, ← Spec_map_stalkMap_fromSpecStalk_assoc,
-    ← Spec_map_stalkSpecializes_fromSpecStalk (Inseparable.of_eq e).specializes,
+  rw [Category.assoc, ← SpecMap_stalkMap_fromSpecStalk_assoc,
+    ← SpecMap_stalkSpecializes_fromSpecStalk (Inseparable.of_eq e).specializes,
     ← TopCat.Presheaf.stalkCongr_inv _ (Inseparable.of_eq e)]
   simp only [← Category.assoc, ← Spec.map_comp]
   congr 3
