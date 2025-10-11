@@ -6,7 +6,6 @@ Authors: Jujian Zhang, Eric Wieser
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
