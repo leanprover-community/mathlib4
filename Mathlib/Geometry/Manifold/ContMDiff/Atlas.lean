@@ -300,7 +300,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   {n : WithTop ℕ∞}
   [IsManifold I n M] [IsManifold J n N] {f : M → N} {s : Set M}
-  {φ : PartialHomeomorph M H} {ψ : PartialHomeomorph N G}
+  {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}
 
 -- there is no definition `writtenInExtend` but we already use some made-up names in this file
 
@@ -321,13 +321,13 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
       rw [this, Function.comp_apply]
       congr
       simp only [comp_apply]
-      apply PartialHomeomorph.extend_left_inv φ (hs hx)
+      apply φ.extend_left_inv (hs hx)
     have : ContMDiffOn I 𝓘(𝕜, F) n (f' ∘ (φ.extend I)) s := by
       apply h.comp ((contMDiffOn_extend hφ).mono hs)
       exact subset_preimage_image (↑(φ.extend I)) s
     have : ContMDiffOn I J n ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := by
       apply ContMDiffOn.comp (t := (ψ.extend J).target) ?_ this ?_
-      · rw [PartialHomeomorph.extend_target']
+      · rw [ψ.extend_target']
         exact contMDiffOn_extend_symm hψ
       · refine image_subset_iff.mp ?_
         rintro x ⟨x', hx's, rfl⟩
@@ -344,7 +344,7 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
       rw [φ.extend_coe, ← φ.image_source_eq_target, image_comp]; gcongr
     have aux : (φ.extend I) '' s ⊆ (φ.extend I).symm ⁻¹' s := by
       rintro x ⟨x', hx', rfl⟩
-      rwa [mem_preimage, PartialHomeomorph.extend_left_inv φ (hs hx')]
+      rwa [mem_preimage, φ.extend_left_inv (hs hx')]
     have := ((contMDiffOn_extend hψ).comp h hmaps).comp ((contMDiffOn_extend_symm hφ).mono this) aux
     apply this.mono le_rfl
 
