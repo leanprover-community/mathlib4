@@ -278,6 +278,10 @@ protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
 
 protected alias _root_.Finset.eventually_all := eventually_all_finset
 
+lemma eventually_subset_of_finite {ι : Type*} {f : Filter ι} {s : ι → Set α} {t : Set α}
+    (ht : t.Finite) (hs : ∀ a ∈ t, ∀ᶠ i in f, a ∈ s i) : ∀ᶠ i in f, t ⊆ s i := by
+  simpa [Set.subset_def, eventually_all_finite ht] using hs
+
 /-!
 ### Relation “eventually equal”
 -/
