@@ -94,7 +94,7 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
-  ext; simp [mem_support]; tauto
+  ext; simp [mem_support]
 
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
