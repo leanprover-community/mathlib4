@@ -416,9 +416,10 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
 
 end ΓSpec
 
-theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
-    (Scheme.toSpecΓ X).base x =
-      (Spec.map (X.presheaf.germ ⊤ x trivial)).base (IsLocalRing.closedPoint _) := rfl
+theorem Scheme.toSpecΓ_apply (X : Scheme.{u}) (x) :
+    Scheme.toSpecΓ X x = Spec.map (X.presheaf.germ ⊤ x trivial) (IsLocalRing.closedPoint _) := rfl
+
+@[deprecated (since := "2025-10-17")] alias Scheme.toSpecΓ_base := Scheme.toSpecΓ_apply
 
 @[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
@@ -442,7 +443,7 @@ theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
   rwa [← IsIso.eq_comp_inv, Category.id_comp, ← Spec.map_inv, IsIso.Iso.inv_inv, eq_comm] at this
 
 lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
-    X.toSpecΓ ⁻¹ᵁ (PrimeSpectrum.basicOpen r) = X.basicOpen r := by
+    X.toSpecΓ ⁻¹ᵁ PrimeSpectrum.basicOpen r = X.basicOpen r := by
   rw [← basicOpen_eq_of_affine, Scheme.preimage_basicOpen, ← Scheme.Hom.appTop]
   congr
   rw [Scheme.toSpecΓ_appTop]
@@ -463,7 +464,7 @@ theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
 
 lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
     (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = φ := by
-  simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.comp_app]
+  simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.Hom.comp_app]
   simp
 
 lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :

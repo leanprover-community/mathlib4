@@ -91,7 +91,7 @@ instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
 instance : (toOpensFunctor X).IsCoverDense (Opens.grothendieckTopology X) where
   is_cover := by
     intro U x hx
-    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open hx U.2
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open hx U.2
     exact ⟨V, homOfLE hVU, ⟨⟨V, hV⟩, 𝟙 _, homOfLE hVU, rfl⟩, hxV⟩
 
 variable (X) in

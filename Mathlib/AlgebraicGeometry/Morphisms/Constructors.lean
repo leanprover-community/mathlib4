@@ -236,7 +236,7 @@ lemma topologically_isStableUnderComposition
       (f : α → β) (g : β → γ) (_ : P f) (_ : P g), P (g ∘ f)) :
     (topologically P).IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
-    simp only [topologically, Scheme.comp_coeBase, TopCat.coe_comp]
+    simp only [topologically, Scheme.Hom.comp_base, TopCat.coe_comp]
     exact hP _ _ hf hg
 
 /-- If a property of maps of topological spaces is satisfied by all homeomorphisms,
@@ -343,14 +343,14 @@ variable {P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop
 lemma stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
     (stalkwise P).RespectsIso where
   precomp {X Y Z} e (he : IsIso e) f hf := by
-    simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
+    simp only [stalkwise, Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply]
     intro x
-    rw [Scheme.stalkMap_comp]
+    rw [Scheme.Hom.stalkMap_comp]
     exact (RingHom.RespectsIso.cancel_right_isIso hP _ _).mpr <| hf (e.base x)
   postcomp {X Y Z} e (he : IsIso _) f hf := by
-    simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
+    simp only [stalkwise, Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply]
     intro x
-    rw [Scheme.stalkMap_comp]
+    rw [Scheme.Hom.stalkMap_comp]
     exact (RingHom.RespectsIso.cancel_left_isIso hP _ _).mpr <| hf x
 
 /-- If `P` respects isos, then `stalkwise P` is local at the target. -/
@@ -378,18 +378,18 @@ lemma stalkwise_isZariskiLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso 
   letI := stalkwise_respectsIso hP
   apply IsZariskiLocalAtSource.mk'
   · intro X Y f U hf x
-    rw [Scheme.stalkMap_comp, CommRingCat.hom_comp, hP.cancel_right_isIso]
+    rw [Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp, hP.cancel_right_isIso]
     exact hf _
   · intro X Y f ι U hU hf x
     have hy : x ∈ iSup U := by rw [hU]; trivial
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp hy
     rw [← hP.cancel_right_isIso _ ((U i).ι.stalkMap ⟨x, hi⟩)]
-    simpa [Scheme.stalkMap_comp] using hf i ⟨x, hi⟩
+    simpa [Scheme.Hom.stalkMap_comp] using hf i ⟨x, hi⟩
 
 @[deprecated (since := "2025-10-07")]
 alias stalkwise_isLocalAtSource_of_respectsIso := stalkwise_isZariskiLocalAtSource_of_respectsIso
 
-lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
+lemma stalkwise_SpecMap_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
     stalkwise P (Spec.map φ) ↔ ∀ (p : Ideal S) (_ : p.IsPrime),
       P (Localization.localRingHom _ p φ.hom rfl) := by
   have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
@@ -398,6 +398,8 @@ lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (�
   · exact forall_congr' fun p ↦
       (RingHom.toMorphismProperty P).arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso _ _)
   · exact ⟨fun H p hp ↦ H ⟨p, hp⟩, fun H p ↦ H p.1 p.2⟩
+
+@[deprecated (since := "2025-10-07")] alias stalkwise_Spec_map_iff := stalkwise_SpecMap_iff
 
 end Stalkwise
 
