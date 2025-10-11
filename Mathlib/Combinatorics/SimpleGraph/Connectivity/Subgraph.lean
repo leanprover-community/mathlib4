@@ -121,6 +121,23 @@ lemma Connected.exists_verts_eq_connectedComponentSupp {H : Subgraph G}
 
 end Subgraph
 
+namespace ConnectedComponent
+
+variable (C : G.ConnectedComponent)
+
+/-- The induced subgraph of a connected component. -/
+def toSubgraph : G.Subgraph :=
+  Subgraph.induce ⊤ C.supp
+
+lemma toSubgraph_coe_eq_toSimpleGraph :
+    C.toSubgraph.coe = C.toSimpleGraph :=
+  induce_eq_coe_induce_top C.supp |>.symm
+
+lemma toSubgraph_connected : C.toSubgraph.Connected :=
+  ⟨C.toSubgraph_coe_eq_toSimpleGraph ▸ C.connected_toSimpleGraph⟩
+
+end ConnectedComponent
+
 /-! ### Walks as subgraphs -/
 
 namespace Walk
