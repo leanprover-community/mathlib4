@@ -11,27 +11,27 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.Tactic.Ring.RingNF
 
 /-!
-# Irreducibility and primitivity of nonnegative real matrices via quivers
+# Irreducibility and primitivity of nonnegative matrices via quivers
 
-This file develops a graph-theoretic interface for studying nonnegative square matrices over `R`
-through the quiver formed by their strictly positive entries. It shows the equivalence
-between positivity of suitable matrix powers and existence of directed paths in this quiver.
+This file develops a graph-theoretic interface for studying nonnegative square matrices over a
+`LinearOrderedRing` `R` through the quiver formed by their strictly positive entries.
+It shows the equivalence between positivity of suitable matrix powers and existence of directed
+paths in this quiver.
 
 ## Implementation notes
 
-* The quiver uses strict positivity `0 < A i j` to define edges, while nonnegativity
-  `0 ≤ A i j` is assumed globally when relating paths to positive entries in powers.
-
-* Strong connectivity is expressed via `IsSStronglyConnected n` in the quiver. This provides actual
-  directed paths between any pair of vertices, which are then converted into positive entries of
-  powers (and conversely) via the previous lemma.
+* The quiver `toQuiver A` has an edge `i ⟶ j` iff `0 < A i j`.
+* A matrix `A` is `Irreducible` if it is entrywise nonnegative and `toQuiver A` is strongly
+  connected (`IsSStronglyConnected`).
+* A matrix `A` is `IsPrimitive` if it is entrywise nonnegative and some power `A ^ k` is
+  entrywise positive.
 
 ## Prerequisites and scope
 
-* Throughout we work over a general scalar type `R` with `[Ring R]` `[LinearOrder R]`
-`[IsOrderedRing R]`.
+* Throughout we work over a `LinearOrderedRing R`. Some results require stronger assumptions,
+  like `PosMulStrictMono R` or `Nontrivial R`.
 * Some statements expand matrix powers and thus require `[DecidableEq n]`
-to reason about finite sums.
+  to reason about finite sums.
 
 ## Tags
 
@@ -42,10 +42,10 @@ namespace Matrix
 
 open Finset Quiver Quiver.Path
 
-variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R] [IsOrderedRing R]
+variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R]
 
 @[simp]
-lemma pow_nonneg [DecidableEq n] {A : Matrix n n R}
+lemma pow_nonneg [IsOrderedRing R] [DecidableEq n] {A : Matrix n n R}
     (hA : ∀ i j, 0 ≤ A i j) (k : ℕ) : ∀ i j, 0 ≤ (A ^ k) i j := by
   induction k with
   | zero => intro i j; simp [one_apply]; by_cases h : i = j <;> simp [h]
@@ -73,7 +73,7 @@ variable {n R : Type*} [Fintype n] [Ring R] [LinearOrder R]
 variable {A : Matrix n n R}
 
 /-- If `A` is irreducible and `n>1` then every row has a positive entry. -/
-lemma irreducible_no_zero_row
+lemma Irreducible.no_zero_row
     (h_irr : Irreducible A) (h_dim : 1 < Fintype.card n) (i : n) :
     ∃ j, 0 < A i j := by
   letI : Quiver n := toQuiver A
@@ -163,10 +163,7 @@ theorem pow_entry_pos_iff_exists_path
         let h_A_pos := e
         have h_prod : 0 < (A ^ m) i b * A b j := mul_pos h_Am_pos h_A_pos
         exact sum_pos_of_mem
-          (fun x _ => mul_nonneg (pow_nonneg hA m i x) (hA x j))
-          b
-          (Finset.mem_univ b)
-          h_prod
+          (fun x _ => mul_nonneg (pow_nonneg hA m i x) (hA x j)) b (Finset.mem_univ b) h_prod
 
 /-- Irreducibility of a nonnegative matrix `A` is equivalent to entrywise positivity of some
 power: between any two indices `i, j` there exists a positive integer `k` such that the
@@ -211,6 +208,8 @@ theorem IsPrimitive.to_Irreducible
       exact h_entry
     exact ⟨p, hp ▸ hk_pos⟩
 
+/-! ## Transposition -/
+
 /-- Reverse a path in `toQuiver A` to a path in `toQuiver Aᵀ`, swapping endpoints. -/
 def transposeRev
     {n R : Type*} [Ring R] [LinearOrder R] {A : Matrix n n R} :
@@ -225,12 +224,11 @@ def transposeRev
     have eT : @Quiver.Hom n (toQuiver Aᵀ) c b := by
       change 0 < (Aᵀ) c b
       simpa [Matrix.transpose_apply] using e
-    exact
-      (@Quiver.Path.comp n (toQuiver Aᵀ) c b i
-        (@Quiver.Hom.toPath n (toQuiver Aᵀ) c b eT) ih)
+    exact (@Quiver.Path.comp n (toQuiver Aᵀ) c b i (@Quiver.Hom.toPath n (toQuiver Aᵀ) c b eT) ih)
 
 /-- The reversal along transpose preserves the length of the path. -/
-@[simp] lemma transposeRev_length
+@[simp]
+lemma transposeRev_length
     {n R : Type*} [Ring R] [LinearOrder R] {A : Matrix n n R} {i j : n}
     (p : @Quiver.Path n (toQuiver A) i j) :
     (@Quiver.Path.length n (toQuiver Aᵀ) _ _ (transposeRev p)) =
@@ -259,14 +257,11 @@ lemma exists_pow_pos_transpose_of_exists_pow_pos
   obtain ⟨⟨p, hp_len⟩⟩ :=
     (pow_entry_pos_iff_exists_path (A := A) hA_nonneg k j i).mp hk_pos_entry
   let q := transposeRev (A := A) p
+  letI : Quiver n := toQuiver Aᵀ
   have hq_len :
-      (by
-        letI : Quiver n := toQuiver Aᵀ
-        exact q.length) = k := by
+      (by exact q.length) = k := by
     have h := transposeRev_length (A := A) (i := j) (j := i) p
-    calc
-      (by letI : Quiver n := toQuiver Aᵀ; exact q.length)
-          = (by letI : Quiver n := toQuiver A; exact p.length) := h
+    calc (by exact q.length) = (by letI : Quiver n := toQuiver A; exact p.length) := h
       _ = k := hp_len
   have hT_nonneg : ∀ x y, 0 ≤ (Aᵀ) x y := fun x y => by
     simpa [Matrix.transpose_apply] using hA_nonneg y x
