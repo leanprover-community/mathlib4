@@ -433,6 +433,7 @@
   ["Mathlib.Algebra.Order.Group.Nat",
    "Mathlib.Data.Char",
    "Mathlib.Data.List.Lex"],
+  "Mathlib.Data.Set.Subset": ["Mathlib.Tactic.HigherOrder"],
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
