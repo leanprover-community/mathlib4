@@ -152,34 +152,58 @@ theorem inner_ext_threefold'_iff {G : Type*} [NormedAddCommGroup G]
   exact z.induction_on (by simp) (by simp [h]) (fun c d hc hd => by
     simp [add_tmul, inner_add_right, hc, hd])
 
-section FiniteDimensional
-variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
+section isometry
 
-@[simp] theorem adjoint_comm :
-    LinearMap.adjoint (TensorProduct.comm 𝕜 E F).toLinearMap =
-      (TensorProduct.comm 𝕜 E F).symm.toLinearMap := TensorProduct.ext' fun x y => by
-  simp [inner_ext_iff, LinearMap.adjoint_inner_left, mul_comm]
+theorem norm_comm_apply (x : E ⊗[𝕜] F) : ‖TensorProduct.comm 𝕜 E F x‖ = ‖x‖ := by
+  simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜)]
+  obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_finite {x} (Set.finite_singleton x)
+  rw [Set.singleton_subset_iff] at hz
+  let y := hz.choose
+  obtain e := stdOrthonormalBasis 𝕜 E'
+  obtain f := stdOrthonormalBasis 𝕜 F'
+  have hy : y = hz.choose := rfl
+  rw [← hz.choose_spec, ← hy, y.basis_sum_repr e.toBasis f.toBasis]
+  simp only [OrthonormalBasis.coe_toBasis, inner_def, map_sum, LinearMap.sum_apply, map_smulₛₗ,
+    mapIncl, map_sum, map_tmul, Submodule.subtype_apply, comm_tmul, LinearMap.coe_comp,
+    Function.comp_apply, LinearMap.smul_apply, LinearMap.compr₂_apply, lift.tmul, mapBilinear_apply,
+    innerₛₗ_apply, LinearMap.mul'_apply, smul_eq_mul, ← Submodule.coe_inner,
+    mul_comm (inner 𝕜 (e _) (e _))]
+  rfl
 
-@[simp] theorem adjoint_map {A B : Type*} [NormedAddCommGroup A] [NormedAddCommGroup B]
-    [InnerProductSpace 𝕜 A] [InnerProductSpace 𝕜 B]
-    [FiniteDimensional 𝕜 A] [FiniteDimensional 𝕜 B] (f : A →ₗ[𝕜] B) (g : E →ₗ[𝕜] F) :
-    LinearMap.adjoint (TensorProduct.map f g)
-      = TensorProduct.map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
-  TensorProduct.ext' fun x y => by simp [inner_ext_iff, LinearMap.adjoint_inner_left]
+theorem isometry_comm : Isometry (TensorProduct.comm 𝕜 E F) :=
+  AddMonoidHomClass.isometry_iff_norm _|>.mpr fun x => norm_comm_apply x
 
-@[simp] theorem adjoint_lid :
-    LinearMap.adjoint (TensorProduct.lid 𝕜 E).toLinearMap
-      = (TensorProduct.lid 𝕜 E).symm.toLinearMap := by
-  simp [LinearMap.ext_iff, inner_ext_iff, LinearMap.adjoint_inner_left, inner_smul_right]
+/-- The linear isometry equivalence version of `TensorProduct.comm`. -/
+@[simps!]
+def commLinearIsometryEquiv : (E ⊗[𝕜] F) ≃ₗᵢ[𝕜] (F ⊗[𝕜] E) where
+  toLinearEquiv := TensorProduct.comm 𝕜 E F
+  norm_map' := norm_comm_apply
 
-@[simp] theorem adjoint_assoc {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-    [FiniteDimensional 𝕜 G] :
+-- TODO: upgrade `assoc` and `lid` to linear isometric equivalences too
+
+variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G] [FiniteDimensional 𝕜 G]
+  [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] in
+@[simp] theorem adjoint_assoc :
     LinearMap.adjoint (TensorProduct.assoc 𝕜 E F G).toLinearMap
       = (TensorProduct.assoc 𝕜 E F G).symm.toLinearMap := by
   apply TensorProduct.ext_threefold'
   simp [TensorProduct.inner_ext_threefold'_iff, LinearMap.adjoint_inner_left, mul_assoc]
 
-end FiniteDimensional
+@[simp] theorem adjoint_lid [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] :
+    LinearMap.adjoint (TensorProduct.lid 𝕜 E).toLinearMap
+      = (TensorProduct.lid 𝕜 E).symm.toLinearMap := by
+  simp [LinearMap.ext_iff, inner_ext_iff, LinearMap.adjoint_inner_left, inner_smul_right]
+
+end isometry
+
+-- TODO: upgrade `map` to a `ContinuousLinearMap`
+@[simp] theorem adjoint_map {A B : Type*} [NormedAddCommGroup A] [NormedAddCommGroup B]
+    [InnerProductSpace 𝕜 A] [InnerProductSpace 𝕜 B]
+    [FiniteDimensional 𝕜 A] [FiniteDimensional 𝕜 B] [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
+    (f : A →ₗ[𝕜] B) (g : E →ₗ[𝕜] F) :
+    LinearMap.adjoint (TensorProduct.map f g)
+      = TensorProduct.map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
+  TensorProduct.ext' fun x y => by simp [inner_ext_iff, LinearMap.adjoint_inner_left]
 
 end TensorProduct
 
