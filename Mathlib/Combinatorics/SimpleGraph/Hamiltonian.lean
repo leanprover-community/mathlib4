@@ -72,10 +72,8 @@ lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card �
 /-- The length of the support of a Hamiltonian path equals the number of vertices of the graph. -/
 lemma IsHamiltonian.support_length_eq (hp : p.IsHamiltonian) :
     p.support.length = Fintype.card α := by
-  convert hp.length_eq ▸ p.length_support
   have : Inhabited α := ⟨a⟩
-  have := Fintype.card_ne_zero (α := α)
-  cutsat
+  grind [Fintype.card_ne_zero, length_support, length_eq]
 
 end
 
