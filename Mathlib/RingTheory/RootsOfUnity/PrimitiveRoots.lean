@@ -78,6 +78,7 @@ def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
 
 variable [CommRing R] [IsDomain R]
 
+-- TODO n ≠ 0
 -- TODO?: replace `(h0 : 0 < k)` by `[NeZero k]`
 @[simp]
 theorem mem_primitiveRoots {ζ : R} (h0 : 0 < k) : ζ ∈ primitiveRoots k R ↔ IsPrimitiveRoot ζ k := by
