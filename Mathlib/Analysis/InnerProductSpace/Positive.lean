@@ -207,7 +207,35 @@ theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSym
 @[deprecated (since := "19-08-2025")]
 alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
 
+theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
+    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
+  refine ⟨fun ⟨h1, h2⟩ a ha => ?_, fun hpq ↦
+    IsPositive.of_isSymmetricProjection <| hp.sub_of_comp_eq_right hq <|
+    hq.isIdempotentElem.comp_eq_right_iff _|>.mpr hpq⟩
+  specialize h2 a
+  have hh {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) : RCLike.re ⟪T a, a⟫_𝕜 = ‖T a‖ ^ 2 := by
+    conv_lhs => rw [← hT.isIdempotentElem]
+    rw [Module.End.mul_apply, hT.isSymmetric]
+    exact inner_self_eq_norm_sq _
+  simp_rw [sub_apply, inner_sub_left, map_sub, hh hq, hh hp,
+    hp.isIdempotentElem.mem_range_iff.mp ha, sub_nonneg, sq_le_sq, abs_norm] at h2
+  obtain ⟨U, _, rfl⟩ := isSymmetricProjection_iff_eq_coe_starProjection.mp hq
+  simpa [Submodule.starProjection_coe_eq_isCompl_projection] using
+    U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
+
 end LinearMap
+
+theorem Submodule.coe_starProjection_le_coe_starProjection_iff {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection.toLinearMap ≤ V.starProjection ↔ U ≤ V := by
+  simp_rw [isSymmetricProjection_starProjection _ |>.le_iff_range_le_range <|
+      isSymmetricProjection_starProjection _, starProjection_coe_eq_isCompl_projection,
+    IsCompl.projection_range]
+
+theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection = V.starProjection ↔ U = V := by
+  simp only [le_antisymm_iff, ← Submodule.coe_starProjection_le_coe_starProjection_iff, ← coe_inj]
 
 namespace ContinuousLinearMap
 
@@ -440,5 +468,11 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
   tfae_have 3 ↔ 1 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
     (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
+
+/-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
+theorem _root_.Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection ≤ V.starProjection ↔ U ≤ V :=
+  coe_le_coe_iff (𝕜 := 𝕜) (E := E) _ _ |>.eq ▸ U.coe_starProjection_le_coe_starProjection_iff
 
 end ContinuousLinearMap
