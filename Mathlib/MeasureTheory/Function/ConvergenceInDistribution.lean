@@ -28,7 +28,7 @@ and convergence in distribution.
   Then `Y n` converges in distribution to `Z`.
 * `TendstoInMeasure.tendstoInDistribution`: convergence in probability implies convergence in
   distribution.
-* `tendstoInDistribution_prodMk_of_tendstoInMeasure_const`: **Slutsky's theorem**.
+* `TendstoInDistribution.prodMk_of_tendstoInMeasure_const`: **Slutsky's theorem**.
   If `X n` converges in distribution to `Z`, and `Y n` converges in probability to a constant `c`,
   then the pair `(X n, Y n)` converges in distribution to `(Z, c)`.
 
