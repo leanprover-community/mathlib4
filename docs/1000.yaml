@@ -2958,7 +2958,7 @@ Q5163116:
 
 Q5165492:
   title: Continuous mapping theorem
-  decl: ProbabilityTheory.TendstoInDistribution.continuous_comp
+  decl: MeasureTheory.TendstoInDistribution.continuous_comp
   authors: Rémy Degenne
   date: 2025
 
