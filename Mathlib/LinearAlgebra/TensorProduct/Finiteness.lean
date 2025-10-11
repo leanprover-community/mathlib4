@@ -180,18 +180,15 @@ whose tensor product contains `z`. -/
 lemma exists_finite_mem_map₂ {R E F : Type*} [CommRing R]
     [AddCommGroup E] [AddCommGroup F] [Module R E] [Module R F] (z : E ⊗[R] F) :
     ∃ (E' : Submodule R E) (F' : Submodule R F) (_ : Module.Finite R E') (_ : Module.Finite R F'),
-    z ∈ Submodule.map₂ (mk R E F) E' F' := by
-  simp_rw [← range_mapIncl]
-  exact z.induction_on
-    ⟨⊥, ⊥, .bot R E, .bot R F, Submodule.zero_mem _⟩
-    (fun e f => ⟨span R {e}, span R {f}, Finite.span_singleton R e, Finite.span_singleton R f,
-      ⟨e, mem_span_singleton_self e⟩ ⊗ₜ ⟨f, mem_span_singleton_self f⟩, rfl⟩)
-    (fun _ _ ⟨E1, F1, _, _, ⟨z1, hz1⟩⟩ ⟨E2, F2, _, _, ⟨z2, hz2⟩⟩ =>
-      ⟨E1 ⊔ E2, F1 ⊔ F2, E1.finite_sup _, F1.finite_sup _,
-        Submodule.add_mem _
-        ((range_mapIncl_mono le_sup_left (le_refl _)).trans
-          (range_mapIncl_mono (le_refl _) le_sup_left) ⟨z1, hz1⟩)
-        ((range_mapIncl_mono le_sup_right (le_refl _)).trans
-          (range_mapIncl_mono (le_refl _) le_sup_right) ⟨z2, hz2⟩)⟩)
+    z ∈ Submodule.map₂ (mk R E F) E' F' :=
+  z.induction_on
+  ⟨⊥, ⊥, .bot R E, .bot R F, Submodule.zero_mem _⟩
+  (fun e f => ⟨span R {e}, span R {f}, .span_singleton R e, .span_singleton R f,
+    apply_mem_map₂ _ (mem_span_singleton_self e) (mem_span_singleton_self f)⟩)
+  (fun _ _ ⟨E1, F1, _, _, hz1⟩ ⟨E2, F2, _, _, hz2⟩ =>
+    ⟨E1 ⊔ E2, F1 ⊔ F2, E1.finite_sup _, F1.finite_sup _,
+      (Submodule.add_mem _
+        (map₂_le_map₂ le_sup_left le_sup_left hz1))
+        (map₂_le_map₂ le_sup_right le_sup_right hz2)⟩)
 
 end TensorProduct
