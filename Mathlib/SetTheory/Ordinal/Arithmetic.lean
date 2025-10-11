@@ -101,7 +101,7 @@ instance instAddLeftReflectLT : AddLeftReflectLT Ordinal.{u} :=
   ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).1⟩
 
 instance instAddRightReflectLT : AddRightReflectLT Ordinal.{u} :=
-  ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
+  ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_left h _⟩
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
   | 0 => by simp
@@ -456,7 +456,7 @@ theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) := by
   · simpa [sub_eq_zero_of_lt h] using h.le
 
 theorem sub_le {a b c : Ordinal} : a - b ≤ c ↔ a ≤ b + c := by
-  refine ⟨fun h ↦ (le_add_sub a b).trans (add_le_add_left h _), fun h ↦ ?_⟩
+  refine ⟨fun h ↦ (le_add_sub a b).trans (by gcongr), fun h ↦ ?_⟩
   obtain h' | h' := le_or_gt b a
   · rwa [← add_le_add_iff_left b, Ordinal.add_sub_cancel_of_le h']
   · simp [sub_eq_zero_of_lt h']
@@ -511,7 +511,7 @@ theorem sub_lt_of_lt_add {a b c : Ordinal} (h : a < b + c) (hc : 0 < c) : a - b 
 theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a ≤ b + d := by
   use fun h ↦ ⟨_, sub_lt_of_lt_add h hc.bot_lt, le_add_sub a b⟩
   rintro ⟨d, hd, ha⟩
-  exact ha.trans_lt (add_lt_add_left hd b)
+  exact ha.trans_lt (by gcongr)
 
 theorem add_le_iff {a b c : Ordinal} (hb : b ≠ 0) : a + b ≤ c ↔ ∀ d < b, a + d < c := by
   simpa using (lt_add_iff hb).not
@@ -787,7 +787,7 @@ private theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsSucc
     ((mul_le_iff_of_isSuccLimit l).2 fun c' h => by
       apply (mul_le_mul_right (le_succ c') _).trans
       rw [IH _ h]
-      apply (add_le_add_left _ _).trans
+      apply (add_le_add_right _ _).trans
       · rw [← mul_succ]
         exact mul_le_mul_right (succ_le_of_lt <| l.succ_lt h) _
       · rw [← ba]
@@ -899,9 +899,9 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
   · have H := mul_ne_zero ha hd
     apply le_antisymm
     · rw [← lt_succ_iff, div_lt H, mul_assoc]
-      · apply (add_lt_add_left hc _).trans_le
+      · apply (add_lt_add_right hc _).trans_le
         rw [← mul_succ]
-        apply mul_le_mul_right
+        gcongr
         rw [succ_le_iff]
         exact lt_mul_succ_div b hd
     · rw [le_div H, mul_assoc]
@@ -1188,9 +1188,8 @@ theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧
       add_le_iff_of_isSuccLimit isSuccLimit_omega0]
     intro b hb
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
-    exact
-      (add_le_add_right (mul_div_le _ _) _).trans
-        (lt_sub.1 <| natCast_lt_of_isSuccLimit (isSuccLimit_sub l hx) _).le
+    grw [mul_div_le]
+    exact (lt_sub.1 <| natCast_lt_of_isSuccLimit (isSuccLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
     refine isSuccLimit_mul_left isSuccLimit_omega0 (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
