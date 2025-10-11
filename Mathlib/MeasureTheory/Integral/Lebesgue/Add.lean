@@ -211,6 +211,16 @@ theorem lintegral_liminf_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Mea
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a, f n a ∂μ) atTop :=
   lintegral_liminf_le' fun n => (h_meas n).aemeasurable
 
+/-- **Fatou's lemma**, version with `AEMeasurable` functions on a set. -/
+theorem lintegral_liminf_le₀' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) (s : Set α) :
+    ∫⁻ a in s, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a in s, f n a ∂μ) atTop :=
+  lintegral_liminf_le' (fun n ↦ h_meas n |>.restrict)
+
+/-- **Fatou's lemma**, version with `Measurable` functions on a set. -/
+theorem lintegral_liminf_le₀ {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n)) (s : Set α) :
+    ∫⁻ a in s, liminf (fun n => f n a) atTop ∂μ ≤ liminf (fun n => ∫⁻ a in s, f n a ∂μ) atTop :=
+  lintegral_liminf_le₀' (fun n => (h_meas n).aemeasurable) s
+
 end MonotoneConvergence
 
 section Add
