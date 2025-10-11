@@ -61,7 +61,7 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Iterator) :
     rw [ltb, Iterator.hasNext_cons_addChar, Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
     · simp [Iterator.next, String.next, get_cons_addChar]
-      congr 2 <;> apply Pos.addChar_right_comm
+      congr 2 <;> apply Pos.Raw.addChar_right_comm
     · simpa [Iterator.curr, get_cons_addChar] using h
   | case2 s₁ s₂ h₁ h₂ h =>
     rw [ltb, Iterator.hasNext_cons_addChar, Iterator.hasNext_cons_addChar,
@@ -74,7 +74,7 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Iterator) :
   | case4 s₁ s₂ h₁ =>
     rw [ltb, Iterator.hasNext_cons_addChar, if_neg (by simpa using h₁)]
 
-theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) :
+theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.Raw) :
     ltb ⟨mk (c :: cs₁), i₁ + c⟩ ⟨mk (c :: cs₂), i₂ + c⟩ = ltb ⟨mk cs₁, i₁⟩ ⟨mk cs₂, i₂⟩ := by
   rw [eq_comm, ← ltb_cons_addChar' c]
   simp
@@ -96,13 +96,13 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         simp [Iterator.hasNext]
       · apply not_lt_of_gt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
-      simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos_asString, utf8Len_cons, add_pos_iff,
+      simp only [Iterator.hasNext, Pos.Raw.byteIdx_zero, endPos_asString, utf8Len_cons, add_pos_iff,
         Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Iterator.curr, get, List.data_asString,
         utf8GetAux, Iterator.next, next, Bool.ite_eq_true_distrib, decide_eq_true_eq]
       simp only [← String.mk_eq_asString]
       split_ifs with h
       · subst c₂
-        suffices ltb ⟨mk (c₁ :: cs₁), (0 : Pos) + c₁⟩ ⟨mk (c₁ :: cs₂), (0 : Pos) + c₁⟩ =
+        suffices ltb ⟨mk (c₁ :: cs₁), (0 : Pos.Raw) + c₁⟩ ⟨mk (c₁ :: cs₂), (0 : Pos.Raw) + c₁⟩ =
           ltb ⟨mk cs₁, 0⟩ ⟨mk cs₂, 0⟩ by rw [this]; exact (ih cs₂).trans List.lex_cons_iff.symm
         apply ltb_cons_addChar
       · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
