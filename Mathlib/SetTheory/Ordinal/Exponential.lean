@@ -452,7 +452,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w
   · constructor
     · rw [opow_add]
       exact (mul_le_mul_right (opow_log_le_self b hv) _).trans (le_add_right _ w)
-    · apply (add_lt_add_left hw _).trans_le
+    · apply (add_lt_add_right hw _).trans_le
       rw [← mul_succ, ← add_succ, opow_add]
       apply mul_le_mul_right
       rw [succ_le_iff]

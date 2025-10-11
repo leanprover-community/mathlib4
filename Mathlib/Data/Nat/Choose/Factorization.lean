@@ -213,15 +213,15 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
     exact
       lt_of_le_of_lt
         (add_le_add
-          (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk)) (k % p))
-          (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
+          (add_le_add_left (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk)) (k % p))
+          (add_le_add_left (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
             ((n - k) % p)))
         (by rwa [div_add_mod, div_add_mod, add_tsub_cancel_of_le hkn])
   · replace hn : n < p ^ i := by
       have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
       calc
         n < 3 * p := hn
-        _ ≤ p * p := mul_le_mul_left this p
+        _ ≤ p * p := by gcongr
         _ = p ^ 2 := (sq p).symm
         _ ≤ p ^ i := pow_right_mono₀ hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
