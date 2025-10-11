@@ -824,7 +824,8 @@ section
 variable {EM' : Type*} [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {f g : M → M'} {h : M → 𝕜} {h' : E → M'} {k : M × E → M'}
+  {f g : M → M'} {h : M → 𝕜} {h' : E → M'} {k : M × E → M'} {φ : OpenPartialHomeomorph M H}
+  {f' : E → M} {g' : EM' → M'} {h' k' : F → M'}
 
 /-- info: MDifferentiable I I' f : Prop -/
 #guard_msgs in
@@ -838,13 +839,9 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 #guard_msgs in
 #check MDiff (Prod.map f h)
 
-/-- error: Found no model with corners on the second factor M × M -/
+/-- info: MDifferentiable (I.prod I) (I'.prod I) (Prod.map f ↑φ) : Prop -/
 #guard_msgs in
-#check MDiff (Prod.map f (Prod.map h g))
-
-/-- error: Found no model with corners on first factor M × M -/
-#guard_msgs in
-#check MDiff (Prod.map (Prod.map f g) h)
+#check MDiff (Prod.map f φ)
 
 /-- info: MDifferentiable I (I'.prod I') fun x ↦ (f x, g x) : Prop -/
 #guard_msgs in
@@ -854,10 +851,58 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 #guard_msgs in
 #check MDiff k
 
--- TODO: add tests for a function on ModelProd H H'
--- TODO: add tests for the product of two normed spaces (inferring 𝓘(𝕜, E × F))
--- and expecting a warning message!
+/-- info: ContMDiff 𝓘(𝕜, E) I 2 f' : Prop -/
+#guard_msgs in
+#check CMDiff 2 f'
 
+-- Several factors
+/-- error: Found no model with corners on the second factor M × M -/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map h g))
+
+/-- error: Found no model with corners on first factor M × M -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f g) h)
+
+/-- error: Found no model with corners on first factor M × M -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f g) (Prod.map h k))
+
+/-- error: Found no model with corners on first factor (M × M) × M -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map (Prod.map f g) h) k)
+
+/-- error: Found no model with corners on the second factor M × M × M × E -/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map g (Prod.map h k)))
+
+-- Products of normed spaces: TODO this should infer 𝓘(E × F) instead!
+-- and perhaps emit a warning about this!
+/-- info: ContMDiff (𝓘(𝕜, E).prod 𝓘(𝕜, EM')) (I.prod I') 2 (Prod.map f' g') : Prop -/
+#guard_msgs in
+#check CMDiff 2 (Prod.map f' g')
+
+/-- error: Found no model with corners on the second factor EM' × F -/
+#guard_msgs in
+#check CMDiff 2 (Prod.map f' (Prod.map g' h'))
+
+/-- error: Found no model with corners on first factor E × EM' -/
+#guard_msgs in
+#check CMDiff 2 (Prod.map (Prod.map f' g') h')
+
+/-- error: Found no model with corners on first factor (E × EM') × F -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map (Prod.map f' g') h') k')
+
+/-- error: Found no model with corners on first factor E × EM' -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f' g') (Prod.map h' k'))
+
+/-- error: Found no model with corners on the second factor EM' × F × F -/
+#guard_msgs in
+#check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
+
+-- TODO: add tests for a function on ModelProd H H'
 end
 
 section trace
