@@ -96,6 +96,28 @@ theorem conjCLE_norm : ‖(@conjCLE K _ : K →L[ℝ] K)‖ = 1 :=
 theorem ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
   LinearIsometry.norm_toContinuousLinearMap _
 
+lemma mem_balanced_of_norm_le {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : Balanced 𝕜 K)
+    {x : 𝕜} (hx : x ∈ K) (z : 𝕜) (t : ‖z‖ ≤ ‖x‖) : z ∈ K := by
+  by_cases ch: x = 0
+  · simp_all
+  · have : ‖z / x‖ ≤ 1 := by calc
+      _ = ‖z‖ / ‖x‖ := by rw [norm_div]
+      _ ≤ _ := (div_le_one₀ (by simpa)).mpr t
+    simpa [ch] using balanced_iff_smul_mem.mp Balanced_K this hx
+
+theorem closed_balanced_sep {𝕜 : Type*} [RCLike 𝕜] {r : ℝ} {K : Set 𝕜} (compact_K : IsCompact K)
+    (zero_in : 0 ∈ K) (norm_lt_r : ∀ x ∈ K, ‖x‖ < r) :
+    ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
+  set g : 𝕜 → ℝ := fun x ↦ ‖x‖ with hg
+  obtain ⟨x, xin, eq⟩ : sSup (g '' K) ∈ g '' K :=
+    IsCompact.sSup_mem (IsCompact.image compact_K continuous_norm) ⟨0, 0, zero_in, norm_zero⟩
+  have g_le : ∀ z ∈ K, g z ≤ g x := fun z hz ↦ by
+    rw [eq]
+    refine le_csSup ?_ (Set.mem_image_of_mem g hz)
+    exact ⟨r, fun y ⟨x, hx, _⟩ ↦ by linarith [norm_lt_r x hx]⟩
+  obtain ⟨s, hs₁, hs₂⟩ : ∃ s, g x < s ∧ s < r := exists_between (by simp only [norm_lt_r x xin, g])
+  exact ⟨s, by linarith [norm_nonneg x], hs₂, fun z hz ↦ by linarith [norm_lt_r x xin, g_le z hz]⟩
+
 end RCLike
 
 namespace Polynomial
