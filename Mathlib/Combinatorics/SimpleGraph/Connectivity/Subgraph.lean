@@ -698,7 +698,7 @@ lemma Connected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [Dec
   · aesop
   · have : Nontrivial (toSubgraph T T_le_H).verts := by simp_all
     have := Fintype.ofFinite ((toSubgraph T T_le_H).neighborSet v)
-    apply Connected_coeSubgraph
+    apply Connected.coeSubgraph
     apply connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial (T_conn.toSubgraph T_le_H)
     simp [← hv]
 
