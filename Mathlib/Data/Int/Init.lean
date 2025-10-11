@@ -152,6 +152,15 @@ protected lemma le_induction_down {m : ℤ} {motive : ∀ n, n ≤ m → Prop} (
   Int.inductionOn' n m (fun _ ↦ base) (fun k hle _ hle' ↦ by cutsat)
     fun k hle hi _ ↦ pred k hle (hi hle)
 
+/-- An equivalent formulation of the induction step. -/
+lemma le_induction_step_iff {P : ℤ → Prop} : (∀ n, P n → P (n + 1)) ↔ (∀ n m, n ≤ m → P n → P m) :=
+  ⟨fun h _ m hnm hn ↦ Int.le_induction hn (fun m _ ↦ h m) m hnm, fun h _ ↦ h _ _ <| by cutsat⟩
+
+/-- An equivalent formulation of the downward induction step. -/
+lemma le_induction_step_down_iff {P : ℤ → Prop} :
+    (∀ n, P n → P (n - 1)) ↔ (∀ n m, n ≤ m → P m → P n) :=
+  ⟨fun h n m hnm hm ↦ Int.le_induction_down hm (fun n _ ↦ h n) n hnm, fun h _ ↦ h _ _ <| by cutsat⟩
+
 section strongRec
 
 variable {motive : ℤ → Sort*} (lt : ∀ n < m, motive n)
