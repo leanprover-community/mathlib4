@@ -172,9 +172,9 @@ lemma essentiallySmall_op_iff (P : ObjectProperty C) :
       ObjectProperty.EssentiallySmall.{w} P := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
   · obtain ⟨Q, h₁, _, h₂⟩ := EssentiallySmall.exists_small_le P.op
-    exact ⟨Q.unop, inferInstance, by rwa [← unop_isoClosure, ← op_le_op_iff, op_unop]⟩
+    exact ⟨Q.unop, inferInstance, by rwa [← unop_isoClosure, ← op_monotone_iff, op_unop]⟩
   · obtain ⟨Q, h₁, _, h₂⟩ := EssentiallySmall.exists_small_le P
-    exact ⟨Q.op, inferInstance, by rwa [← op_isoClosure, op_le_op_iff]⟩
+    exact ⟨Q.op, inferInstance, by rwa [← op_isoClosure, op_monotone_iff]⟩
 
 @[simp]
 lemma essentiallySmall_unop_iff (P : ObjectProperty Cᵒᵖ) :

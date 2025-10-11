@@ -74,11 +74,11 @@ lemma colimitsClosure_eq_unop_limitsClosure :
     P.colimitsClosure J = (P.op.limitsClosure (fun a ↦ (J a)ᵒᵖ)).unop := by
   refine le_antisymm ?_ ?_
   · apply colimitsClosure_le
-    rw [← op_le_op_iff, op_unop]
+    rw [← op_monotone_iff, op_unop]
     apply le_limitsClosure
-  · rw [← op_le_op_iff, op_unop]
+  · rw [← op_monotone_iff, op_unop]
     apply limitsClosure_le
-    rw [op_le_op_iff]
+    rw [op_monotone_iff]
     apply le_colimitsClosure
 
 instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] [Small.{w} α]
