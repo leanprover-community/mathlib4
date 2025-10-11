@@ -65,7 +65,7 @@ theorem lower_raise : ∀ l n, lower (raise l n) n = l
   | [], _ => rfl
   | m :: l, n => by rw [raise, lower, Nat.add_sub_cancel_right, lower_raise l]
 
-theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
+theorem raise_lower : ∀ {l n}, List.SortedLE (n :: l) → raise (lower l n) n = l
   | [], _, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ List.mem_cons_self
@@ -83,7 +83,7 @@ theorem isChain_cons_raise (l n) : List.IsChain (· ≤ ·) (n :: raise l n) :=
 alias raise_chain := isChain_cons_raise
 
 /-- `raise l n` is a non-decreasing sequence. -/
-theorem raise_sorted (l n) : List.Sorted (· ≤ ·) (raise l n) := (isChain_raise _ _).pairwise
+theorem raise_sorted (l n) : List.SortedLE (raise l n) := (isChain_raise _ _).pairwise
 
 /-- If `α` is denumerable, then so is `Multiset α`. Warning: this is *not* the same encoding as used
 in `Multiset.encodable`. -/

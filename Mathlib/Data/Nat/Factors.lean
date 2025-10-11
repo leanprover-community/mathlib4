@@ -112,7 +112,7 @@ alias primeFactorsList_chain_2 := isChain_two_cons_primeFactorsList
 @[deprecated (since := "2025-09-24")]
 alias primeFactorsList_chain' := isChain_primeFactorsList
 
-theorem primeFactorsList_sorted (n : ℕ) : List.Sorted (· ≤ ·) (primeFactorsList n) :=
+theorem primeFactorsList_sorted (n : ℕ) : List.SortedLE (primeFactorsList n) :=
   (isChain_primeFactorsList _).pairwise
 
 /-- `primeFactorsList` can be constructed inductively by extracting `minFac`, for sufficiently

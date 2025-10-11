@@ -46,7 +46,7 @@ variable (m : ℕ)
 `i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`.
 -/
 def IsAdmissible (L : List ℕ) : Prop :=
-  List.Sorted (· < ·) L ∧
+  List.SortedLT L ∧
   ∀ (k : ℕ), (h : k < L.length) → L[k] ≤ m + k
 
 namespace IsAdmissible
@@ -55,7 +55,7 @@ lemma nil : IsAdmissible m [] := by simp [IsAdmissible]
 
 variable {m}
 
-lemma sorted {L : List ℕ} (hL : IsAdmissible m L) : L.Sorted (· < ·) := hL.1
+lemma sorted {L : List ℕ} (hL : IsAdmissible m L) : L.SortedLT := hL.1
 
 lemma le {L : List ℕ} (hL : IsAdmissible m L) : ∀ (k : ℕ), (h : k < L.length) → L[k] ≤ m + k := hL.2
 

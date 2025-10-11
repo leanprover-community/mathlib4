@@ -164,7 +164,7 @@ theorem snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
 alias _root_.Ordinal.CNF_snd_lt := snd_lt
 
 /-- The exponents of the Cantor normal form are decreasing. -/
-protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
+protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).SortedGT := by
   refine CNF.rec b ?_ (fun o ho IH ↦ ?_) o
   · rw [zero_right]
     exact sorted_nil
