@@ -200,6 +200,11 @@ theorem roots_C_mul (p : R[X]) (ha : a ≠ 0) : (C a * p).roots = p.roots := by
     simp only [roots_mul, *, Ne, mul_eq_zero, C_eq_zero, or_self_iff, not_false_iff, roots_C,
       zero_add, mul_zero]
 
+theorem roots_congr {p q : R[X]} (h : Associated p q) : p.roots = q.roots := by
+  obtain ⟨u, rfl⟩ := h
+  rw [eq_C_of_degree_eq_zero <| degree_coe_units u, mul_comm,
+    roots_C_mul _ <| coeff_coe_units_zero_ne_zero u]
+
 @[simp]
 theorem roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots := by
   rw [smul_eq_C_mul, roots_C_mul _ ha]
