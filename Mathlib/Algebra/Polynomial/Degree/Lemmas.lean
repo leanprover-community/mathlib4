@@ -358,6 +358,14 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
     leadingCoeff (p.comp q) = leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [← coeff_comp_degree_mul_degree hq, ← natDegree_comp, coeff_natDegree]
 
+@[simp]
+theorem nextCoeff_C_mul : (C a * p).nextCoeff = a * p.nextCoeff := by
+  by_cases h₀ : a = 0 <;> simp [h₀, nextCoeff, natDegree_C_mul]
+
+@[simp]
+theorem nextCoeff_mul_C : (p * C a).nextCoeff = p.nextCoeff * a := by
+  by_cases h₀ : a = 0 <;> simp [h₀, nextCoeff, natDegree_mul_C]
+
 end NoZeroDivisors
 
 @[simp] lemma comp_neg_X_leadingCoeff_eq [Ring R] (p : R[X]) :
