@@ -123,6 +123,12 @@ def chains₁ToCoinvariantsKer :
   ModuleCat.ofHom <| (d₁₀ A).hom.codRestrict _ <|
     range_d₁₀_eq_coinvariantsKer A ▸ LinearMap.mem_range_self _
 
+lemma chains₁ToCoinvariantsKer_surjective :
+    Function.Surjective (chains₁ToCoinvariantsKer A) := by
+  rintro ⟨x, hx⟩
+  rcases range_d₁₀_eq_coinvariantsKer A ▸ hx with ⟨y, hy⟩
+  use y, Subtype.ext hy
+
 @[simp]
 theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
   ext
