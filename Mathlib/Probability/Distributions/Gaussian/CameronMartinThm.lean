@@ -83,7 +83,7 @@ lemma hasLaw_cameronMartin (x : cameronMartin μ) : HasLaw x (gaussianReal 0 (�
     have hy_map (n : ℕ) (hn : L n ≠ 0) : μ.map (y n) = gaussianReal (μ[y n]) (‖x‖₊ ^ 2) := by
       rw [IsGaussian.map_eq_gaussianReal]
       congr
-      rw [← sq_norm_centeredToLp_two, hy n]
+      rw [← StrongDual.sq_norm_centeredToLp_two IsGaussian.memLp_two_id, hy n]
       unfold L'
       simp only [AddSubgroupClass.coe_norm, norm_smul, norm_div, norm_norm]
       rw [div_mul_cancel₀]
@@ -93,7 +93,7 @@ lemma hasLaw_cameronMartin (x : cameronMartin μ) : HasLaw x (gaussianReal 0 (�
     have hL'_map n (hn : L n ≠ 0) : μ.map (L' n) = gaussianReal 0 (‖x‖₊ ^ 2) := by
       have h_eq : L' n =ᵐ[μ] fun x ↦ y n x - μ[y n] := by
         rw [← hy]
-        filter_upwards [centeredToLp_apply (μ := μ) memLp_two_id (y n)] with z hz
+        filter_upwards [StrongDual.centeredToLp_apply (μ := μ) memLp_two_id (y n)] with z hz
         simp only [hz, map_sub, sub_right_inj]
         rw [IsGaussian.integral_dual]
       rw [Measure.map_congr h_eq]
@@ -177,7 +177,7 @@ lemma some_equality_in_Real'' (x : cameronMartin μ) (L : StrongDual ℝ E) (t :
     have h_eq : (L : cameronMartin μ) - t • x =ᵐ[μ] fun u ↦ L u - μ[L] - t * x u := by
       simp only [cmOfDual_apply, AddSubgroupClass.coe_sub, SetLike.val_smul]
       rw [IsGaussian.integral_dual L]
-      filter_upwards [centeredToLp_apply (μ := μ) memLp_two_id L,
+      filter_upwards [StrongDual.centeredToLp_apply (μ := μ) memLp_two_id L,
         AEEqFun.coeFn_sub (γ := ℝ) (StrongDual.centeredToLp μ 2 L) (t • x),
         Lp.coeFn_smul (E := ℝ) t (x : Lp ℝ 2 μ)] with u h_toLp h_sub h_smul
       simp only [SetLike.val_smul, Pi.sub_apply] at h_sub
