@@ -14,7 +14,7 @@ import Mathlib.Tactic.Ring.RingNF
 # Irreducibility and primitivity of nonnegative matrices
 
 This file develops a graph-theoretic interface for studying the properties of nonnegative square
-matrices, which are fundamental to the Perron-Frobenius theorem.
+matrices.
 
 The idea is to associate a directed graph (quiver) with a matrix `A`, where an edge `i ⟶ j`
 exists if and only if the entry `A i j` is strictly positive. This allows translating algebraic
