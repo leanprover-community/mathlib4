@@ -101,8 +101,8 @@ base. -/
 def bind (E : PreZeroHypercover.{w} T) (F : ∀ i, PreZeroHypercover.{w'} (E.X i)) :
     PreZeroHypercover.{max w w'} T where
   I₀ := Σ (i : E.I₀), (F i).I₀
-  X := fun ⟨i, j⟩ ↦ (F i).X j
-  f := fun ⟨i, j⟩ ↦ (F i).f j ≫ E.f i
+  X ij := (F ij.1).X ij.2
+  f ij := (F ij.1).f ij.2 ≫ E.f ij.1
 
 /-- Replace the indexing type of a pre-`0`-hypercover. -/
 @[simps]
@@ -369,6 +369,26 @@ def add (E : ZeroHypercover.{w} J S) {T : C} (f : T ⟶ S)
     ZeroHypercover.{w} J S where
   __ := E.toPreZeroHypercover.add f
   mem₀ := by rwa [PreZeroHypercover.presieve₀_add]
+
+/-- If `L` is a finer precoverage than `K`, any `0`-hypercover wrt. `K` is in particular
+a `0`-hypercover wrt. to `L`. -/
+@[simps toPreZeroHypercover]
+def weaken {K L : Precoverage C} {X : C} (E : Precoverage.ZeroHypercover K X) (h : K ≤ L) :
+    Precoverage.ZeroHypercover L X where
+  __ := E
+  mem₀ := h _ E.mem₀
+
+instance (K : Precoverage C) [K.HasPullbacks] {X Y : C} (E : K.ZeroHypercover X) (f : Y ⟶ X) :
+    E.presieve₀.HasPullbacks f :=
+  K.hasPullbacks_of_mem _ E.mem₀
+
+instance {X Y : C} (E : PreZeroHypercover X) (f : Y ⟶ X) [E.presieve₀.HasPullbacks f]
+    (i : E.I₀) : HasPullback (E.f i) f :=
+  E.presieve₀.hasPullback f ⟨i⟩
+
+instance {X Y : C} (E : PreZeroHypercover X) (f : Y ⟶ X) [E.presieve₀.HasPullbacks f]
+    (i : E.I₀) : HasPullback f (E.f i) :=
+  hasPullback_symmetry (E.f i) f
 
 variable (J) in
 /-- A morphism of `0`-hypercovers is a morphism of the underlying pre-`0`-hypercovers. -/
