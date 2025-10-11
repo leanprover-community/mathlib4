@@ -111,6 +111,17 @@ theorem ne_zero_of_mem_roots (h : a ∈ p.roots) : p ≠ 0 :=
 theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 
+theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ eq_zero_of_forall_notMem fun x hx ↦ h ▸ mem_roots hp0 |>.mp hx⟩
+  ext a
+  simp only [Pi.bot_apply, Prop.bot_eq_false, mem_roots hp0 |>.not.mp <| by simp [h]]
+
+theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
+  by_cases hp0 : p = 0
+  · exact ⟨fun _ ↦ Or.inl hp0, fun _ ↦ hp0 ▸ roots_zero⟩
+  refine ⟨fun h ↦ Or.inr <| roots_eq_zero_iff_isRoot_eq_bot hp0 |>.mp h, fun h ↦ Or.elim h ?_ ?_⟩
+  exacts [fun h ↦ False.elim <| hp0 h, fun h ↦ roots_eq_zero_iff_isRoot_eq_bot hp0 |>.mpr h]
+
 theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
     (hf : Function.Injective f) {x : R} (hp : p ≠ 0) : x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by
   rw [mem_roots ((Polynomial.map_ne_zero_iff hf).mpr hp), IsRoot, eval_map]
