@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
 
-import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path.Vertices
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Mul
+import Mathlib.Order.Filter.Basic
+import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # Irreducibility and primitivity of nonnegative real matrices via quivers
@@ -25,15 +26,10 @@ between positivity of suitable matrix powers and existence of directed paths in 
   directed paths between any pair of vertices, which are then converted into positive entries of
   powers (and conversely) via the previous lemma.
 
-* Some statements require `[DecidableEq n]` to expand matrix power entries and reason about finite
-sums.
-
 ## Prerequisites and scope
 
-* Throughout we work over a general scalar type `R` with `[Ring R] [LinearOrder R]
-[IsOrderedRing R]`. This suffices to speak about entrywise nonnegativity/positivity
-and to use `sum_nonneg`, `add_pos_of_pos_of_nonneg`, and `mul_nonneg`, as well as
-to deduce positivity of factors from a positive product under nonnegativity.
+* Throughout we work over a general scalar type `R` with `[Ring R]` `[LinearOrder R]`
+`[IsOrderedRing R]`.
 * Some statements expand matrix powers and thus require `[DecidableEq n]`
 to reason about finite sums.
 
