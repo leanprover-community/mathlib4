@@ -259,10 +259,11 @@ theorem inner_indicatorConstLp_one (hs : MeasurableSet s) (hμs : μ s ≠ ∞) 
 /-- The inner product in `L2` of two `indicatorConstLp`s, i.e. functions which are constant `a : E`
 and `b : E` on measurable `s t : Set α` with finite measure, respectively, is `⟪a, b⟫` times the
 measure of `s ∩ t`. -/
-lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E] [NormedSpace ℝ E]
+lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E]
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞ := by finiteness)
     (hμt : μ t ≠ ∞ := by finiteness) (a b : E) :
     ⟪indicatorConstLp 2 hs hμs a, indicatorConstLp 2 ht hμt b⟫ = μ.real (s ∩ t) • ⟪a, b⟫ := by
+  let : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   rw [inner_indicatorConstLp_eq_inner_setIntegral, setIntegral_indicatorConstLp hs,
     inner_smul_right_eq_smul, Set.inter_comm]
 
