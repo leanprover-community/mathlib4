@@ -602,8 +602,8 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 end End
 
 lemma mem_finiteDimensional_submodule (K : Type*) {V : Type*}
-    [DivisionRing K] [AddCommGroup V] [Module K V]
-    (e : V) : ∃ (E' : Submodule K V) (_ : FiniteDimensional K E'), e ∈ E' := by
+    [DivisionRing K] [AddCommGroup V] [Module K V] (e : V) :
+    ∃ (E' : Submodule K V) (_ : FiniteDimensional K E'), e ∈ E' := by
   classical
   let b := Basis.ofVectorSpace K V
   refine ⟨Submodule.span K (Finset.image b (b.repr e).support),
