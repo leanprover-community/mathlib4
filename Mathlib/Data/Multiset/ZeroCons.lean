@@ -165,7 +165,7 @@ end Rec
 
 section Mem
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_cons {a b : α} {s : Multiset α} : a ∈ b ::ₘ s ↔ a = b ∨ a ∈ s :=
   Quot.inductionOn s fun _ => List.mem_cons
 
@@ -258,7 +258,7 @@ theorem cons_zero (a : α) : a ::ₘ 0 = {a} :=
 theorem coe_singleton (a : α) : ([a] : Multiset α) = {a} :=
   rfl
 
-@[simp]
+@[simp, push]
 theorem mem_singleton {a b : α} : b ∈ ({a} : Multiset α) ↔ b = a := by
   simp only [← cons_zero, mem_cons, iff_self, or_false, notMem_zero]
 
