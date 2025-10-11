@@ -177,9 +177,7 @@ instance [IsTopologicalGroup G] : ProperSMul G G where
     { toFun := fun gh ↦ (gh.1 * gh.2, gh.2)
       invFun := fun gh ↦ (gh.1 * gh.2⁻¹, gh.2)
       left_inv := fun _ ↦ by simp
-      right_inv := fun _ ↦ by simp
-      continuous_toFun := by fun_prop
-      continuous_invFun := by fun_prop }
+      right_inv := fun _ ↦ by simp }
     exact Φ.isProperMap
 
 open MulOpposite in
@@ -192,9 +190,7 @@ instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
     { toFun := fun gh ↦ (gh.2 * (unop gh.1), gh.2)
       invFun := fun gh ↦ (op (gh.2⁻¹ * gh.1), gh.2)
       left_inv := fun _ ↦ by simp
-      right_inv := fun _ ↦ by simp
-      continuous_toFun := by fun_prop
-      continuous_invFun := by fun_prop }
+      right_inv := fun _ ↦ by simp }
     exact Φ.isProperMap
 
 example [IsTopologicalGroup G] {H : Subgroup G} [IsClosed (H : Set G)] : ProperSMul H G :=
