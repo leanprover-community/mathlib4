@@ -27,6 +27,9 @@ variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
 
 -- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsKilling K L] [IsTriangularizable K H L]
+
+section aux
+
 variable (q : Submodule K (Dual K H))
   (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
   (χ : Weight K H L)
@@ -223,6 +226,8 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
       h_pos_containment h_neg_containment h_chi_in_q
   · exact chi_not_in_q_aux q hq χ x_χ m_α hx_χ α hαq hα₀ w_plus w_minus w_chi m_pos m_neg y hy
       h_bracket_sum h_pos_containment h_neg_containment h_chi_in_q
+
+end aux
 
 /-- Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra.
 
