@@ -69,8 +69,8 @@ For a **pivot** `p : Fin (n + 1)`,
 
 ### Miscellaneous
 
-* `Fin.find p` : returns the first index `n` where `p n` is satisfied, and `none` if it is never
-  satisfied.
+* `Fin.find p` : returns the first index `n` where `p n` is satisfied given the hypothesis that
+  `∃ i, p i`.
 * `Fin.append a b` : append two tuples.
 * `Fin.repeat n a` : repeat a tuple `n` times.
 
@@ -1063,109 +1063,147 @@ end InsertNth
 
 section Find
 
-/-- `find p` returns the first index `n` where `p n` is satisfied, and `none` if it is never
-satisfied. -/
-def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
-  | 0, _p, _ => none
-  | n + 1, p, _ => by
-    exact
-      Option.casesOn (@find n (fun i ↦ p (i.castLT (Nat.lt_succ_of_lt i.2))) _)
-        (if _ : p (Fin.last n) then some (Fin.last n) else none) fun i ↦
-        some (i.castLT (Nat.lt_succ_of_lt i.2))
+variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
-/-- If `find p = some i`, then `p i` holds -/
-theorem find_spec :
-    ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p] {i : Fin n} (_ : i ∈ Fin.find p), p i
-  | 0, _, _, _, hi => Option.noConfusion hi
-  | n + 1, p, I, i, hi => by
-    rw [find] at hi
-    rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | j
-    · rw [h] at hi
-      dsimp at hi
-      split_ifs at hi with hl
-      · simp only [Option.mem_def, Option.some.injEq] at hi
-        exact hi ▸ hl
-      · exact (Option.not_mem_none _ hi).elim
-    · rw [h] at hi
-      dsimp at hi
-      rw [← Option.some_inj.1 hi]
-      exact @find_spec n (fun i ↦ p (i.castLT (Nat.lt_succ_of_lt i.2))) _ _ h
+/-- `find p` returns the first index `k` where `p k` is satisfied,
+  given that it is satisfied somewhere. -/
+protected def find : {n : ℕ} → (p : Fin n → Prop) → [DecidablePred p] → (h : ∃ k, p k) → Fin n
+  | 0, _, _, h => by simp at h | _ + 1, p, _, h =>
+    if h0 : p 0 then 0 else (Fin.find _ <| (exists_fin_succ.mp h).resolve_left h0).succ
 
-/-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
-theorem isSome_find_iff :
-    ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p], (find p).isSome ↔ ∃ i, p i
-  | 0, _, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0 i
-  | n + 1, p, _ =>
-    ⟨fun h ↦ by
-      rw [Option.isSome_iff_exists] at h
-      obtain ⟨i, hi⟩ := h
-      exact ⟨i, find_spec _ hi⟩, fun ⟨⟨i, hin⟩, hi⟩ ↦ by
-      dsimp [find]
-      rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | j
-      · split_ifs with hl
-        · exact Option.isSome_some
-        · have := (@isSome_find_iff n (fun x ↦ p (x.castLT (Nat.lt_succ_of_lt x.2))) _).2
-              ⟨⟨i, lt_of_le_of_ne (Nat.le_of_lt_succ hin) fun h ↦ by cases h; exact hl hi⟩, hi⟩
-          rw [h] at this
-          exact this
-      · simp⟩
+theorem find_succ {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) : Fin.find p h =
+    if h0 : p 0 then 0 else (Fin.find _ <| (exists_fin_succ.mp h).resolve_left h0).succ := rfl
 
-/-- `find p` returns `none` if and only if `p i` never holds. -/
-theorem find_eq_none_iff {n : ℕ} {p : Fin n → Prop} [DecidablePred p] :
-    find p = none ↔ ∀ i, ¬p i := by rw [← not_exists, ← isSome_find_iff]; cases find p <;> simp
+/-- If `find p = i`, then `p i` holds -/
+@[grind]
+theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := by
+  induction n with | zero => simp at h | succ n ih => grind [find_succ]
 
-/-- If `find p` returns `some i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
+/-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
-theorem find_min :
-    ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p] {i : Fin n} (_ : i ∈ Fin.find p) {j : Fin n}
-      (_ : j < i), ¬p j
-  | 0, _, _, _, hi, _, _, _ => Option.noConfusion hi
-  | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj => by
-    rw [find] at hi
-    rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | k
-    · simp only [h] at hi
-      split_ifs at hi with hl
-      · cases hi
-        rw [find_eq_none_iff] at h
-        exact h ⟨j, hj⟩ hpj
-      · exact Option.not_mem_none _ hi
-    · rw [h] at hi
-      dsimp at hi
-      obtain rfl := Option.some_inj.1 hi
-      exact find_min h (show (⟨j, lt_trans hj k.2⟩ : Fin n) < k from hj) hpj
+@[grind →]
+protected theorem find_min (h : ∃ k, p k) : {j : Fin n} → j < Fin.find p h → ¬ p j := by
+  induction n with | zero => simp at h | succ n ih =>
+  simp_rw [find_succ, forall_fin_succ, apply_dite, succ_lt_succ_iff, not_lt_zero]; grind
 
-theorem find_min' {p : Fin n → Prop} [DecidablePred p] {i : Fin n} (h : i ∈ Fin.find p) {j : Fin n}
-    (hj : p j) : i ≤ j := Fin.not_lt.1 fun hij ↦ find_min h hij hj
+@[simp] theorem val_find (h : ∃ k, p k) : (Fin.find p h).val = Nat.find (Fin.exists_iff.mp h) :=
+  ((Nat.find_eq_iff _).mpr ⟨⟨is_lt _, find_spec _⟩, fun _ hm ⟨_, hi⟩ => Fin.find_min h hm hi⟩).symm
 
-theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
-    (h : ∃ i, ∃ hin : i < n, p ⟨i, hin⟩) :
-    (⟨Nat.find h, (Nat.find_spec h).fst⟩ : Fin n) ∈ find p := by
-  let ⟨i, hin, hi⟩ := h
-  rcases hf : find p with - | f
-  · rw [find_eq_none_iff] at hf
-    exact (hf ⟨i, hin⟩ hi).elim
-  · refine Option.some_inj.2 (Fin.le_antisymm ?_ ?_)
-    · exact find_min' hf (Nat.find_spec h).snd
-    · exact Nat.find_min' _ ⟨f.2, by convert find_spec p hf⟩
+/-- If `find p = i`, then `p j` holds only for `i ≤ j`, i.e., `i` is minimal among
+the indices where `p` holds. -/
+protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :
+    p j → Fin.find p h ≤ j := (Fin.find_min _ <| lt_of_not_ge ·).mtr
 
-theorem mem_find_iff {p : Fin n → Prop} [DecidablePred p] {i : Fin n} :
-    i ∈ Fin.find p ↔ p i ∧ ∀ j, p j → i ≤ j :=
-  ⟨fun hi ↦ ⟨find_spec _ hi, fun _ ↦ find_min' hi⟩, by
-    rintro ⟨hpi, hj⟩
-    cases hfp : Fin.find p
-    · rw [find_eq_none_iff] at hfp
-      exact (hfp _ hpi).elim
-    · exact Option.some_inj.2 (Fin.le_antisymm (find_min' hfp hpi) (hj _ (find_spec _ hfp)))⟩
+@[simp] lemma find_lt_iff (h : ∃ k, p k) (i : Fin n) : Fin.find p h < i ↔ ∃ m < i, p m :=
+  ⟨(⟨_, ·, find_spec _⟩), fun ⟨_, hmn, hm⟩ => (Fin.find_le_of_pos h hm).trans_lt hmn⟩
 
-theorem find_eq_some_iff {p : Fin n → Prop} [DecidablePred p] {i : Fin n} :
-    Fin.find p = some i ↔ p i ∧ ∀ j, p j → i ≤ j :=
-  mem_find_iff
+@[simp] lemma find_le_iff (h : ∃ k, p k) (i : Fin n) : Fin.find p h ≤ i ↔ ∃ m ≤ i, p m :=
+  ⟨(⟨_, ·, find_spec _⟩), fun ⟨_, hxi, hx⟩ => (Fin.find_le_of_pos h hx).trans hxi⟩
 
-theorem mem_find_of_unique {p : Fin n → Prop} [DecidablePred p] (h : ∀ i j, p i → p j → i = j)
-    {i : Fin n} (hi : p i) : i ∈ Fin.find p :=
-  mem_find_iff.2 ⟨hi, fun j hj ↦ Fin.le_of_eq <| h i j hi hj⟩
+@[simp] lemma lt_find_iff (h : ∃ k, p k) (i : Fin n) : i < Fin.find p h ↔ ∀ m ≤ i, ¬p m := by
+  simp_rw [← not_le, find_le_iff, not_exists, not_and]
+
+@[simp] lemma le_find_iff (h : ∃ k, p k) (i : Fin n) : i ≤ Fin.find p h ↔ ∀ m < i, ¬p m := by
+  simp_rw [← not_lt, find_lt_iff, not_exists, not_and]
+
+theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find p h = i ↔ p i ∧ ∀ j < i, ¬ p j := by
+  rw [le_antisymm_iff, find_le_iff, le_find_iff]; grind
+
+@[simp] lemma find_eq_zero {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) :
+  Fin.find p h = 0 ↔ p 0 := by simp [find_eq_iff]
+
+/-- If a predicate `q` holds at some `x` and implies `p` up to that `x`, then
+the earliest `xq` such that `q xq` is at least the smallest `xp` where `p xp`.
+The stronger version of `Fin.find_mono`, since this one needs
+implication only up to `Fin.find _` while the other requires `q` implying `p` everywhere. -/
+lemma find_mono_of_le (hi : q i) (hpq : ∀ j ≤ i, q j → p j) :
+    Fin.find p ⟨i, hpq _ le_rfl hi⟩ ≤ Fin.find q ⟨i, hi⟩ :=
+  Fin.find_le_of_pos _ (hpq _ (Fin.find_le_of_pos _ hi) (Fin.find_spec ⟨i, hi⟩))
+
+/-- A weak version of `Fin.find_mono_of_le`, requiring `q` implies `p` everywhere.
+-/
+lemma find_mono (h : ∀ i, q i → p i) {hp : ∃ i, p i} {hq : ∃ i, q i} :
+    Fin.find p hp ≤ Fin.find q hq :=
+  let ⟨_, hq⟩ := hq; find_mono_of_le hq fun _ _ ↦ h _
+
+/-- If a predicate `p` holds at some `x` and agrees with `q` up to that `x`, then
+their `Fin.find` agree. The stronger version of `Fin.find_congr'`, since this one needs
+agreement only up to `Fin.find _` while the other requires `p = q`.
+Usage of this lemma will likely be via `obtain ⟨x, hx⟩ := hp; apply Fin.find_congr hx` to unify `q`,
+or provide it explicitly with `rw [Fin.find_congr (q := q) hx]`.
+-/
+lemma find_congr (hi : p i) (hpq : ∀ j ≤ i, p j ↔ q j) :
+    Fin.find p ⟨i, hi⟩ = Fin.find q ⟨i, hpq _ le_rfl |>.1 hi⟩ :=
+  le_antisymm (find_mono_of_le (hpq _ le_rfl |>.1 hi) fun _ h ↦ (hpq _ h).mpr)
+    (find_mono_of_le hi fun _ h ↦ (hpq _ h).mp)
+
+/-- A weak version of `Fin.find_congr`, requiring `p = q` everywhere. -/
+lemma find_congr' {hp : ∃ i, p i} {hq : ∃ i, q i} (hpq : ∀ {i}, p i ↔ q i) :
+   Fin.find p hp = Fin.find q hq :=
+  let ⟨_, hp⟩ := hp; find_congr hp fun _ _ ↦ hpq
+
+lemma find_le (hi : p i) : Fin.find p ⟨i, hi⟩ ≤ i :=
+  (Fin.find_le_iff _ _).2 ⟨i, le_refl _, hi⟩
+
+lemma find_of_not_zero {p : Fin (n + 1) → Prop} [DecidablePred p]
+    (h : ∃ i, p i) (h0 : ¬p 0) :
+    Fin.find p h =
+    (Fin.find (fun k => p k.succ) <| (exists_fin_succ.mp h).resolve_left h0).succ := by
+  simp_rw [find_succ, h0, dite_false]
+
+lemma find_pos {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ i, p i) :
+    0 < Fin.find p h ↔ ¬p 0 := Fin.pos_iff_ne_zero.trans (Fin.find_eq_zero _).not
+
+lemma find_of_find_le {p : Fin (m + n) → Prop} [DecidablePred p]
+    {hᵢ : ∃ i, p i} (hm : m ≤ Fin.find p hᵢ) :
+    Fin.find p hᵢ = (Fin.find (fun j => p (j.natAdd m))
+    ⟨(Fin.cast (Nat.add_comm _ _) (Fin.find p hᵢ)).subNat _ hm, by simp [find_spec]⟩).natAdd m := by
+  have hⱼ : ∃ j : Fin n, p (j.natAdd m) :=
+    ⟨(Fin.cast (Nat.add_comm _ _) (Fin.find p hᵢ)).subNat _ hm, by simp [find_spec]⟩
+  refine (find_eq_iff _).2 ⟨Fin.find_spec hⱼ, fun i hi ↦ ?_⟩
+  cases i using addCases with | left i => _ | right i => _
+  · exact Fin.find_min hᵢ (Fin.lt_iff_val_lt_val.mpr <| (Fin.castAdd_lt _ _).trans_le hm)
+  · rw [Fin.natAdd_lt_natAdd_iff] at hi
+    exact Fin.find_min hⱼ hi
+
+theorem find?_eq_dite {p : Fin n → Bool} :
+    find? p = if h : ∃ i, p i then some (Fin.find (p ·) h) else none := by
+  split_ifs with h
+  · simp_rw [find?_eq_some_iff, Fin.find_spec h, lt_find_iff]
+    grind
+  · simpa [find?_eq_none_iff] using h
+
+theorem find?_decide_eq_dite :
+    find? (p ·) = if h : ∃ i, p i then some (Fin.find p h) else none := by
+  simp_rw [find?_eq_dite, decide_eq_true_eq]
+
+theorem get_find?_eq_find_of_eq_true {p : Fin n → Bool} (h : p i) :
+    (find? p).get (isSome_find?_of_eq_true h) = Fin.find (p ·) ⟨i, h⟩ := by
+  simp_rw [find?_eq_dite, Option.get_dite]
+
+theorem find?_decide_get_eq_find (h : ∃ i, p i) :
+    (find? (p ·)).get (isSome_find?_of_eq_true (i := h.choose)
+    (by simp only [h.choose_spec, decide_true])) = Fin.find p h := by
+  simp_rw [find?_decide_eq_dite, Option.get_dite]
+
+theorem find_mem_find?_decide (h : ∃ i, p i) :
+    Fin.find p h ∈ find? p := by grind [find?_eq_dite]
 
 end Find
+
+section Find?
+
+theorem mem_find?_iff {p : Fin n → Bool} {i : Fin n} :
+    i ∈ find? p ↔ p i ∧ ∀ j, j < i → ¬ p j := by simp
+
+theorem find?_eq_some_find_of_exists {p : Fin n → Bool} (h : ∃ i, p i) :
+    find? p = some (Fin.find (p ·) h) := by simp_rw [find?_eq_dite, h, dite_true]
+
+theorem find?_eq_some_find_of_isSome {p : Fin n → Bool} (h : (find? p).isSome) :
+    find? p = some (Fin.find (p ·) (exists_eq_true_of_isSome_find? h)) := by
+  simp_rw [find?_eq_dite, exists_eq_true_of_isSome_find? h, dite_true]
+
+end Find?
 
 section ContractNth
 
