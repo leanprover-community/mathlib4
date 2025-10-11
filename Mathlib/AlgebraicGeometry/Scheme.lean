@@ -234,7 +234,7 @@ lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
 
 @[deprecated (since := "2025-10-07")] alias preimage_le_preimage_of_le := preimage_mono
 
-@[simp]
+@[simp 1100] -- this should fire before `id_base`
 lemma id_preimage (U : X.Opens) : (𝟙 X) ⁻¹ᵁ U = U := rfl
 
 @[simp]
