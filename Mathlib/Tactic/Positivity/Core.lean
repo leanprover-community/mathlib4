@@ -513,7 +513,7 @@ elab (name := positivity) "positivity" : tactic => do
 
 @[tactic_alt positivity]
 macro "positivity" "[" h:term,* "]" : tactic =>
-  `(tactic| · $[let := $h];* ; positivity)
+  `(tactic| · $[have := $h];* ; positivity)
 
 end Positivity
 
