@@ -2933,6 +2933,7 @@ import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Combinatorics.Enumerative.Stirling
 import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
 import Mathlib.Combinatorics.Graph.Basic
+import Mathlib.Combinatorics.Graph.Subgraph
 import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
