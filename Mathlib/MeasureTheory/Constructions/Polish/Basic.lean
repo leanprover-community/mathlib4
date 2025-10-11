@@ -726,7 +726,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     choose s hs hxs using C1
     have C2 : ∀ n, (s n).1.Nonempty := by
       intro n
-      rw [nonempty_iff_ne_empty]
+      by_contra!
       grind
     -- choose a point `y n ∈ s n`.
     choose y hy using C2

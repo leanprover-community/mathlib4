@@ -102,7 +102,7 @@ theorem union_val_nd (s t : Finset α) : (s ∪ t).1 = ndunion s.1 t.1 :=
 theorem union_val (s t : Finset α) : (s ∪ t).1 = s.1 ∪ t.1 :=
   ndunion_eq_union s.2
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
   mem_ndunion
 
@@ -198,7 +198,7 @@ theorem inter_val_nd (s₁ s₂ : Finset α) : (s₁ ∩ s₂).1 = ndinter s₁.
 theorem inter_val (s₁ s₂ : Finset α) : (s₁ ∩ s₂).1 = s₁.1 ∩ s₂.1 :=
   ndinter_eq_inter s₁.2
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_inter {a : α} {s₁ s₂ : Finset α} : a ∈ s₁ ∩ s₂ ↔ a ∈ s₁ ∧ a ∈ s₂ :=
   mem_ndinter
 

@@ -283,8 +283,8 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
     · refine MeasurableSet.biUnion hc fun a ha => MeasurableSet.biUnion hc fun b hb => ?_
       refine MeasurableSet.iUnion fun hab => MeasurableSet.iUnion fun _ => ?_
       exact .basic _ ⟨a, hts ha, b, hts hb, hab, mem_singleton _⟩
-  · simp only [not_forall, not_nonempty_iff_eq_empty] at ha
-    replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.fst ha.choose_spec.snd
+  · push_neg at ha
+    replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.1 ha.choose_spec.2
     convert_to MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
     · symm
       simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right, subset_def, mem_iUnion,

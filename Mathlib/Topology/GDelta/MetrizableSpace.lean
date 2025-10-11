@@ -27,7 +27,7 @@ instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X where
     let _ := pseudoMetrizableSpacePseudoMetric X
     by_cases hee : s = ∅ ∨ t = ∅
     · obtain rfl | rfl := hee <;> simp
-    simp only [not_or, ← ne_eq, ← nonempty_iff_ne_empty] at hee
+    push_neg at hee
     obtain ⟨hse, hte⟩ := hee
     let g (p : X) := infDist p t - infDist p s
     have hg : Continuous g := by fun_prop

@@ -234,8 +234,7 @@ theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTop
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
   refine ⟨D, ⟨Dperf, ?_⟩⟩
   constructor
-  · rw [nonempty_iff_ne_empty]
-    by_contra h
+  · by_contra! h
     rw [h, union_empty] at VD
     rw [VD] at hunc
     contradiction

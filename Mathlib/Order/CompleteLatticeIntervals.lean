@@ -178,7 +178,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} [Fact (a ≤ b)] : CompleteLattice (Set.Icc a b) where
   __ := (inferInstance : BoundedOrder ↑(Icc a b))
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, Fact.out⟩ else ⟨sSup ((↑) '' S), by
-    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
+    push_neg at hS
     refine ⟨?_, csSup_le (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
     obtain ⟨c, hc⟩ := hS
     exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
@@ -192,7 +192,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     · exact csSup_le ((Set.nonempty_iff_ne_empty.mpr hS).image Subtype.val)
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
   sInf S := if hS : S = ∅ then ⟨b, Fact.out, le_rfl⟩ else ⟨sInf ((↑) '' S), by
-    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
+    push_neg at hS
     refine ⟨le_csInf (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), ?_⟩
     obtain ⟨c, hc⟩ := hS
     exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
@@ -203,8 +203,8 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   le_sInf S c hc := by
     by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
     · exact c.2.2
-    · exact le_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image Subtype.val)
-        (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
+    · push_neg at hS
+      exact le_csInf (hS.image Subtype.val) (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
 
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable instance [ConditionallyCompleteLinearOrder α] {a b : α} [Fact (a ≤ b)] :

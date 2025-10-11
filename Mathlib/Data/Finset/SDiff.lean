@@ -50,7 +50,7 @@ instance instSDiff : SDiff (Finset α) :=
 theorem sdiff_val (s₁ s₂ : Finset α) : (s₁ \ s₂).val = s₁.val - s₂.val :=
   rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_sdiff : a ∈ s \ t ↔ a ∈ s ∧ a ∉ t :=
   mem_sub_of_nodup s.2
 
