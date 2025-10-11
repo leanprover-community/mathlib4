@@ -145,7 +145,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
       rw [← h_minus_bot]
       exact h_neg_containment
     rwa [LieSubmodule.mem_bot] at h_in_bot
-  have h_bracket_zero : ⁅x_χ, m_h⁆ = 0 := by
+  have h_bracket_zero : ⁅x_χ, (y : L)⁆ = 0 := by
     have h_chi_coroot_zero : χ (coroot α.1) = 0 := by
       have h_pairing_eq : S.pairing i j = i.1 (coroot j.1) := by
         rw [rootSystem_pairing_apply]
