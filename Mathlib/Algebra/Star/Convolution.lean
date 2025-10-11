@@ -16,7 +16,7 @@ is star-preserving.
 ## Implementation notes
 
 **Note** that in the case of when `E = F` for a finite-dimensional Hilbert space, this `star`
-conflicts with the global instance on `E →ₗ[𝕜] E` where `star := LinearMap.adjoint`.
+is mathematically distinct from the global instance on `E →ₗ[𝕜] E` where `star := LinearMap.adjoint`.
 For that reason, the convolution star operation is scoped to `ConvolutionStar`.
 -/
 
