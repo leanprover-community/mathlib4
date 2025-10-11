@@ -66,6 +66,10 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
+@[simp] lemma Additive.mem_toAddSubgroup (S : Subgroup G) (g : Additive G) :
+    g ∈ S.toAddSubgroup ↔ Additive.toMul g ∈ S :=
+  Iff.rfl
+
 /-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
@@ -84,6 +88,10 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
 -/
 abbrev Subgroup.toAddSubgroup' : Subgroup (Multiplicative A) ≃o AddSubgroup A :=
   AddSubgroup.toSubgroup.symm
+
+@[simp] lemma Multiplicative.mem_toSubgroup (S : AddSubgroup A) (a : Multiplicative A) :
+    a ∈ S.toSubgroup ↔ Multiplicative.toAdd a ∈ S :=
+  Iff.rfl
 
 end mul_add
 

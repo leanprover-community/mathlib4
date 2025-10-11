@@ -21,9 +21,9 @@ variable {R : Type*} [CommRing R] [Nontrivial R] (m : Matrix (Fin 2) (Fin 2) R) 
 /-- A `2 × 2` matrix is *parabolic* if it is non-scalar and its discriminant is 0. -/
 def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.disc = 0
 
-section conjugation
-
 variable {m}
+
+section conjugation
 
 @[simp] lemma disc_conj : (g.val * m * g.val⁻¹).disc = m.disc := by
   simp only [disc_fin_two, ← Matrix.coe_units_inv, trace_units_conj, det_units_conj]
@@ -40,6 +40,24 @@ variable {m}
   simpa using isParabolic_conj_iff g⁻¹
 
 end conjugation
+
+lemma isParabolic_iff_of_upperTriangular [IsReduced R] (hm : m 1 0 = 0) :
+    m.IsParabolic ↔ m 0 0 = m 1 1 ∧ m 0 1 ≠ 0 := by
+  rw [IsParabolic]
+  have aux : m.disc = 0 ↔ m 0 0 = m 1 1 := by
+    suffices m.disc = (m 0 0 - m 1 1) ^ 2 by
+      rw [this, IsReduced.pow_eq_zero_iff two_ne_zero, sub_eq_zero]
+    simp only [disc_fin_two, trace_fin_two, det_fin_two, hm]
+    ring
+  have (h : m 0 0 = m 1 1) : m ∈ Set.range (scalar _) ↔ m 0 1 = 0 := by
+    constructor
+    · rintro ⟨a, rfl⟩
+      simp
+    · intro h'
+      use m 1 1
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [h, h', hm]
+  tauto
 
 end CommRing
 
@@ -188,6 +206,10 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     rw [ha, map_zero, zero_add] at hg
     rw [← hg] at hmsq
     rw [Units.val_pow_eq_pow_val, hmsq, det_zero ⟨0⟩]
+
+lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
+    g.IsParabolic ↔ g 0 0 = g 1 1 ∧ g 0 1 ≠ 0 :=
+  Matrix.isParabolic_iff_of_upperTriangular hg
 
 end GeneralLinearGroup
 
