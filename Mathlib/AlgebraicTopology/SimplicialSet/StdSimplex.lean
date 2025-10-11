@@ -3,6 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
+import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 import Mathlib.CategoryTheory.Limits.Types.Shapes
@@ -313,6 +314,15 @@ def nonDegenerateEquiv {n d : ℕ} :
   left_inv _ := by aesop
 
 end stdSimplex
+
+/-- The n-simplex is isomorphic to the nerve of the ordinal category `Fin (n + 1)`. -/
+def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := NatIso.ofComponents <| fun n ↦
+    Equiv.toIso <| stdSimplex.objEquiv.trans SimplexCategory.homEquivFunctor
+
+/-- The n-simplex is isomorphic to the nerve of the ordinal category `ULiftFin (n + 1)`. -/
+def simplexIsNerveULiftFin.{v} (n : ℕ) : Δ[n] ≅ nerve (ULiftFin.{v, u} (n + 1)) :=
+  NatIso.ofComponents
+    (fun i ↦ Equiv.toIso <| stdSimplex.objEquiv.trans SimplexCategory.homEquivFunctorULiftRight)
 
 section Examples
 
