@@ -43,19 +43,6 @@ variable {σ : Π x : M, V x}
 #guard_msgs in
 #check T% σ
 
--- Testing precedence.
-variable {x : M}
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
-#guard_msgs in
-#check (T% σ) x
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
-#guard_msgs in
-#check T% σ x
--- Nothing happening, as expected.
-/-- info: σ x : V x -/
-#guard_msgs in
-#check T% (σ x)
-
 -- Note how the name of the bound variable `x` resp. `y` is preserved.
 /-- info: fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
@@ -75,6 +62,49 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 #guard_msgs in
 #check T% X
 
+variable {x : M}
+
+-- Testing precedence.
+section precedence
+
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+#guard_msgs in
+#check (T% σ) x
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+#guard_msgs in
+#check T% σ x
+-- Nothing happening, as expected.
+/-- info: σ x : V x -/
+#guard_msgs in
+#check T% (σ x)
+
+-- Testing precedence when applied to a family of section.
+variable {ι j : Type*}
+
+-- Partially applied.
+/--
+info: fun a ↦ TotalSpace.mk' ((x : M) → V x) a (s a) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x))
+-/
+#guard_msgs in
+variable {s : ι → (x : M) → V x} in
+#check T% s
+
+/--
+info: (fun a ↦ TotalSpace.mk' (ι → (x : M) → V x) a (s a)) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x))
+-/
+#guard_msgs in
+variable {s : ι → ι → (x : M) → V x} {i : ι} in
+#check T% s i
+
+variable {X : ι → Π x : M, TangentSpace I x} {i : ι}
+
+-- Error message is okay, but not great.
+/-- error: Could not find a model with corners for ι -/
+#guard_msgs in
+#check MDiffAt (T% X) x
+
+end precedence
+
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
 -- Applying a section to an argument. TODO: beta-reduce instead!
@@ -92,10 +122,12 @@ end TotalSpace
 /-! Tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 
--- Start with some basic tests: a simple function, both in applied and unapplied form.
 variable {EM' : Type*} [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+/-! Some basic tests: a simple function, both in applied and unapplied form -/
+section basic
 
 -- General case: a function between two manifolds.
 variable {f : M → M'} {s : Set M} {m : M}
@@ -306,11 +338,97 @@ variable {f : 𝕜 → 𝕜} {u : Set 𝕜} {a : 𝕜}
 #guard_msgs in
 #check MDiff[u] f
 
--- This elaborator can be combined with the total space elaborator.
--- XXX: these tests might be incomplete; extend as needed!
+end basic
+
+/-! A partial homeomorphism or partial equivalence. More generally, this works for any type
+with a coercion to (possibly dependent) functions. -/
+section coercion
+
+variable {s : Set M} {m : M}
+
+variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
+
+/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑φ) s : M → Prop -/
+#guard_msgs in
+#check MDiffAt[s] φ
+
+/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑ψ) s : M → Prop -/
+#guard_msgs in
+#check MDiffAt[s] ψ
+
+/-- info: MDifferentiableAt I 𝓘(𝕜, E) ↑φ : M → Prop -/
+#guard_msgs in
+#check MDiffAt φ
+
+/-- info: MDifferentiableAt I 𝓘(𝕜, E) ↑ψ : M → Prop -/
+#guard_msgs in
+#check MDiffAt ψ
+
+/-- info: MDifferentiableOn I 𝓘(𝕜, E) (↑φ) s : Prop -/
+#guard_msgs in
+#check MDiff[s] φ
+
+/-- info: MDifferentiableOn I 𝓘(𝕜, E) (↑ψ) s : Prop -/
+#guard_msgs in
+#check MDiff[s] ψ
+
+/-- info: MDifferentiable I 𝓘(𝕜, E) ↑φ : Prop -/
+#guard_msgs in
+#check MDiff φ
+
+/-- info: ContMDiffWithinAt I 𝓘(𝕜, E) 2 (↑ψ) s : M → Prop -/
+#guard_msgs in
+#check CMDiffAt[s] 2 ψ
+
+/-- info: ContMDiffOn I 𝓘(𝕜, E) 2 (↑φ) s : Prop -/
+#guard_msgs in
+#check CMDiff[s] 2 φ
+
+/-- info: ContMDiffAt I 𝓘(𝕜, E) 2 ↑φ : M → Prop -/
+#guard_msgs in
+#check CMDiffAt 2 φ
+
+/-- info: ContMDiff I 𝓘(𝕜, E) 2 ↑ψ : Prop -/
+#guard_msgs in
+#check CMDiff 2 ψ
+
+/-- info: mfderiv I 𝓘(𝕜, E) ↑φ : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑φ x) -/
+#guard_msgs in
+#check mfderiv% φ
+
+/--
+info: mfderivWithin I 𝓘(𝕜, E) (↑ψ) s : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑ψ x)
+-/
+#guard_msgs in
+#check mfderiv[s] ψ
+
+/--
+info: mfderivWithin I 𝓘(𝕜, E) (↑ψ) s : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑ψ x)
+-/
+#guard_msgs in
+variable {f : ContMDiffSection I F n V} in
+#check mfderiv[s] ψ
+
+/-- info: mfderiv I I' ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
+#guard_msgs in
+variable {g : ContMDiffMap I I' M M' n} in
+#check mfderiv% g
+
+-- An example of "any type" which coerces to functions.
+/-- info: mfderiv I I' ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
+#guard_msgs in
+variable {g : Equiv M M'} in
+#check mfderiv% g
+
+end coercion
 
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+
+/-! These elaborators can be combined with the total space elaborator. -/
+section interaction
+
+-- XXX: these tests might be incomplete; extend as needed!
 
 /-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) fun m ↦ TotalSpace.mk' E m (X m) : M → Prop -/
 #guard_msgs in
@@ -326,6 +444,9 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 #guard_msgs in
 #check MDiffAt (T% σ')
 
+end interaction
+
+-- Total space over the tangent space and tangent bundle.
 section
 
 variable [IsManifold I 2 M]
@@ -354,6 +475,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       F is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      F is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ✅️ NormedSpace
   [Elab.DiffGeo.MDiff] Field is: 𝕜
   [Elab.DiffGeo.MDiff] Found model: 𝓘(𝕜, F)
@@ -386,12 +510,43 @@ Hint: Additional diagnostic information may be available using the `set_option d
 #guard_msgs in
 #check MDifferentiable (I.prod (𝓘(𝕜, E))) 𝓘(𝕜, F) h'
 
--- TODO: implement special handling for the tangent bundle
-/-- error: Could not find models with corners for TangentBundle I M -/
+/-- info: MDifferentiable I.tangent 𝓘(𝕜, F) h' : Prop -/
 #guard_msgs in
 #check MDiff h'
 
 end
+
+/-! (Extended) charts -/
+section
+
+variable {φ : OpenPartialHomeomorph M H} {ψ : PartialEquiv M E}
+
+/-- info: ContMDiff I I 37 ↑φ : Prop -/
+#guard_msgs in
+#check CMDiff 37 φ
+
+/-- info: MDifferentiable I I ↑φ : Prop -/
+#guard_msgs in
+#check MDiff φ
+
+/-- info: MDifferentiable I 𝓘(𝕜, E) ↑ψ : Prop -/
+#guard_msgs in
+#check MDiff ψ
+
+end
+
+-- Inferring a model with corners on a space of linear maps between normed spaces
+-- is currently not supported.
+variable {f : M → E →L[𝕜] E'} in
+/-- error: Could not find a model with corners for E →L[𝕜] E' -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : M → E →L[𝕜] E'} in
+/-- error: Could not find a model with corners for E →L[𝕜] E' -/
+-- expected output is `/-- info: ContMDiff I 𝓘(𝕜, E →L[𝕜] E') 2 f : Prop -/`
+#guard_msgs in
+#check CMDiff 2 f
 
 /-! Error messages in case of a forgotten `T%`. -/
 section
@@ -479,10 +634,10 @@ variable {f : M → M'} {s : Set M} {m : M}
 
 variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
--- TODO: can there be better error messages when forgetting the smoothness exponent?
+-- Testing error messages when forgetting the smoothness exponent or swapping arguments.
 section error
 
--- yields a parse error, "unexpected toekn '/--'; expected term"
+-- yields a parse error, "unexpected token '/--'; expected term"
 -- #check CMDiffAt[s] f
 
 /--
@@ -498,7 +653,7 @@ error: Expected
   m
 of type
   M
-to be a function
+to be a function, or to be coercible to a function
 -/
 #guard_msgs in
 #check CMDiffAt[s] f m
@@ -516,13 +671,31 @@ error: Expected
   m
 of type
   M
-to be a function
+to be a function, or to be coercible to a function
 -/
 #guard_msgs in
-#check CMDiffAt[s] f m
+#check CMDiff[s] f m
 
--- yields a parse error, "unexpected toekn '/--'; expected term"
+-- yields a parse error, "unexpected token '/--'; expected term"
 -- #check CMDiffAt f
+
+/--
+error: Type mismatch
+  f
+has type
+  M → M'
+of sort `Type (max u_10 u_4)` but is expected to have type
+  WithTop ℕ∞
+of sort `Type`
+---
+error: Expected
+  n
+of type
+  Option ℕ∞
+to be a function, or to be coercible to a function
+-/
+#guard_msgs in
+#check CMDiff f n
 
 end error
 
@@ -671,7 +844,8 @@ end coercions
 section dependent
 
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
-variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+variable {ι : Type*} {i : ι} (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+  (X' : ι → (m : M) → TangentSpace I m)
 
 /--
 error: Term X is a dependent function, of type (m : M) → TangentSpace I m
@@ -735,6 +909,19 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 -/
 #guard_msgs in
 #check CMDiffAt[s] 0 σ'
+
+/--
+error: Term X' i is a dependent function, of type (m : M) → TangentSpace I m
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiffAt ((X' i)) x
+
+-- This error message is not great: this is missing *both* a T% elaborator
+-- and an argument i.
+/-- error: Could not find a model with corners for ι -/
+#guard_msgs in
+#check MDiffAt X' x
 
 end dependent
 
@@ -988,18 +1175,23 @@ set_option trace.Elab.DiffGeo true
 variable {f : Unit → Unit}
 
 /--
-error: Could not find models with corners for Unit
+error: Could not find a model with corners for Unit
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Unit is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Unit is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ❌️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on Unit among local instances.
-[Elab.DiffGeo.MDiff] ❌️ ChartedSpace
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] found a `ChartedSpace` instance: `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on Unit among local instances.
+      Couldn't find a `ChartedSpace` structure on Unit among local instances,
+      and Unit is not the charted space of some type in the local context either.
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
