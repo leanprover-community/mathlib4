@@ -145,37 +145,6 @@ lemma Set.EqOn.prodMap {α β γ δ : Type*}
 
 end
 
-section
-
--- Can grind prove the next two lemmas, after sufficient future tagging?
--- Which of these two proofs is better?
-lemma aux1 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
-    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : Set.Nonempty t) :
-    EqOn f f' s := by
-  choose x0 hx0 using ht
-  have a : f = (Prod.fst) ∘ (Prod.map f g) ∘ (·, x0) := by ext x; simp
-  have b : f' = Prod.fst ∘ (Prod.map f' g') ∘ (·, x0) := by ext x; simp
-  rw [a, b]
-  exact (eqOn_comp_right_iff.mpr <| h.mono (image_prodMk_subset_prod_left hx0)).comp_left
-
-lemma aux2 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
-    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) :
-    EqOn g g' t := by
-  choose xs hxs using hs
-  intro x hx
-  have h' := h <| mk_mem_prod hxs hx
-  simp at h'
-  exact h'.2
-
--- TODO: move to Data.Set.Operations
-lemma Set.EqOn.prodMap {α β γ δ : Type*}
-    {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
-    (hf : EqOn f f' s) (hg : EqOn g g' t) : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) := by
-  rintro ⟨x, x'⟩ ⟨hx, hx'⟩
-  simp [hf hx, hg hx']
-
-end
-
 namespace IsImmersionAt
 
 lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHomeomorph M H)
@@ -346,8 +315,8 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   set Q := ImmersionAtProp F' I' J' M' N'
   set R := ImmersionAtProp (F × F') (I.prod I') (J.prod J') (M × M') (N × N')
   -- This is the key proof: immersions are stable under products.
-  have key : ∀ {f : M → N}, ∀ {φ₁ : PartialHomeomorph M H}, ∀ {ψ₁ : PartialHomeomorph N G},
-      ∀ {g : M' → N'}, ∀ {φ₂ : PartialHomeomorph M' H'}, ∀ {ψ₂ : PartialHomeomorph N' G'},
+  have key : ∀ {f : M → N}, ∀ {φ₁ : OpenPartialHomeomorph M H}, ∀ {ψ₁ : OpenPartialHomeomorph N G},
+      ∀ {g : M' → N'}, ∀ {φ₂ : OpenPartialHomeomorph M' H'}, ∀ {ψ₂ : OpenPartialHomeomorph N' G'},
       P f φ₁ ψ₁ → Q g φ₂ ψ₂ → R (Prod.map f g) (φ₁.prod φ₂) (ψ₁.prod ψ₂) := by
     rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
     use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (equiv₁.prodCongr equiv₂)
