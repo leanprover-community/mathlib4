@@ -49,7 +49,7 @@ include hx_χ w_plus w_minus w_chi h_bracket_sum h_pos_containment h_neg_contain
 
 private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
-  have h_h_containment : ⁅x_χ, m_h⁆ ∈ genWeightSpace L χ := by
+  have h_h_containment : ⁅x_χ, (y : L)⁆ ∈ genWeightSpace L χ := by
     obtain ⟨y, hy, rfl⟩ := hm_h
     have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) := by
       apply toLieSubmodule_le_rootSpace_zero
