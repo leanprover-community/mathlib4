@@ -809,6 +809,16 @@ theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A �
   · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero, le_rfl]
   exact map_roots_le ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 
+theorem card_roots_map_le_degree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
+    {f : A →+* B} (p : A[X]) (hp0 : p ≠ 0) : (p.map f).roots.card ≤ p.degree := by
+  by_cases hpm0 : p.map f = 0
+  · simp [hp0, hpm0, zero_le_degree_iff]
+  exact card_roots hpm0 |>.trans degree_map_le
+
+theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
+    {f : A →+* B} (p : A[X]) : (p.map f).roots.card ≤ p.natDegree :=
+  card_roots' _ |>.trans natDegree_map_le
+
 theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
     Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
   rw [← p.roots.card_map f]
