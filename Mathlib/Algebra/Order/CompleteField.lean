@@ -102,7 +102,6 @@ theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α)
   Rat.cast_injective.mem_set_image
 
 theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ → α) := by
-  ext
   grind [mem_cutMap_iff]
 
 end DivisionRing
@@ -151,7 +150,7 @@ section InducedMap
 variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
   [ConditionallyCompleteLinearOrderedField β] [ConditionallyCompleteLinearOrderedField γ]
 
-/-- The induced order preserving function from a linear ordered field to a conditionally complete
+/-- The induced order-preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the
 input. -/
 def inducedMap (x : α) : β :=

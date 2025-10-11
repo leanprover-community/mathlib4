@@ -42,8 +42,7 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
     refine Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) ?_
     rintro ⟨y, z⟩ ⟨hy, hz⟩
     simp only [mem_setOf_eq] at hy hz
-    -- hy : y ≠ 0, hz : z ≠ 0
-    field_simp [hx, hy, hz]
+    simp [field]
     ring
   refine (isBigO_refl (fun p : 𝕜 × 𝕜 => p.1 - p.2) _).mul_isLittleO ((isLittleO_one_iff 𝕜).2 ?_)
   rw [← sub_self (x * x)⁻¹]
@@ -147,7 +146,7 @@ theorem HasDerivWithinAt.fun_div (hc : HasDerivWithinAt c c' s x) (hd : HasDeriv
     HasDerivWithinAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) s x := by
   convert hc.fun_mul ((hasDerivAt_inv hx).comp_hasDerivWithinAt x hd) using 1
   · simp only [div_eq_mul_inv, (· ∘ ·)]
-  · field_simp
+  · simp [field]
     ring
 
 theorem HasDerivWithinAt.div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x)
@@ -159,7 +158,7 @@ theorem HasStrictDerivAt.fun_div (hc : HasStrictDerivAt c c' x) (hd : HasStrictD
     (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   convert hc.fun_mul ((hasStrictDerivAt_inv hx).comp x hd) using 1
   · simp only [div_eq_mul_inv, (· ∘ ·)]
-  · field_simp
+  · simp [field]
     ring
 
 theorem HasStrictDerivAt.div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)

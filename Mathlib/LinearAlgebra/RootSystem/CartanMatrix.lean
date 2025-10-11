@@ -3,6 +3,8 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
@@ -19,6 +21,7 @@ This file contains definitions and basic results about Cartan matrices of root p
 * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
 * `RootPairing.Base.induction_on_cartanMatrix`: an induction principle expressing the connectedness
   of the Dynkin diagram of an irreducible root pairing.
+* `RootPairing.Base.equivOfCartanMatrixEq`: a root system is determined by its Cartan matrix.
 
 -/
 
@@ -109,7 +112,6 @@ variable [IsDomain R]
 lemma cartanMatrix_apply_eq_zero_iff_symm {i j : b.support} :
     b.cartanMatrix i j = 0 ↔ b.cartanMatrix j i = 0 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   simp only [cartanMatrix_apply_eq_zero_iff_pairing, P.pairing_eq_zero_iff]
 
 variable [Finite ι]
@@ -128,7 +130,7 @@ lemma cartanMatrix_mem_of_ne {i j : b.support} (hij : i ≠ j) :
   have h₂ : P.pairingIn ℤ i j ≤ 0 := b.cartanMatrix_le_zero_of_ne i j hij
   suffices P.pairingIn ℤ i j ≠ -4 by aesop
   by_contra contra
-  replace contra : P.pairingIn ℤ j i = -1 ∧ P.pairingIn ℤ i j = -4 := ⟨by aesop, contra⟩
+  replace contra : P.pairingIn ℤ j i = -1 ∧ P.pairingIn ℤ i j = -4 := ⟨by simp_all, contra⟩
   rw [pairingIn_neg_one_neg_four_iff] at contra
   refine (not_linearIndependent_iff.mpr ?_) b.linearIndepOn_root
   refine ⟨⟨{i, j}, by simpa⟩, Finsupp.single i (1 : R) + Finsupp.single j (2 : R), ?_⟩
@@ -167,7 +169,6 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     (p : b.support → Prop) {i j : b.support} (hi : p i)
     (hp : ∀ i j, p i → b.cartanMatrix j i ≠ 0 → p j) :
     p j := by
-  have _i : Nontrivial M := ⟨P.root i, 0, P.ne_zero i⟩
   let q : Submodule R M := span R (P.root ∘ (↑) '' {i | p i})
   have hq₀ : q ≠ ⊥ := q.ne_bot_iff.mpr ⟨P.root i, subset_span <| by simpa, P.ne_zero i⟩
   have hq_mem (k : b.support) : P.root k ∈ q ↔ p k := by
@@ -180,15 +181,15 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     rw [hq_mem]
     induction hx using Submodule.span_induction with
     | mem x hx =>
-      obtain ⟨l, hl, rfl⟩ : ∃ l : b.support, p l ∧ P.root l = x := by aesop
+      obtain ⟨l, hl, rfl⟩ : ∃ l : b.support, p l ∧ P.root l = x := by simp_all
       replace hk : b.cartanMatrix k l ≠ 0 := by
         rwa [ne_eq, cartanMatrix_apply_eq_zero_iff_symm, cartanMatrix_apply_eq_zero_iff_pairing]
       tauto
-    | zero => aesop
+    | zero => simp_all
     | add x y hx hy hx' hy' =>
-      replace hk : P.coroot' k x ≠ 0 ∨ P.coroot' k y ≠ 0 := by by_contra! contra; aesop
+      replace hk : P.coroot' k x ≠ 0 ∨ P.coroot' k y ≠ 0 := by by_contra! contra; simp_all
       tauto
-    | smul a x hx hx' => aesop
+    | smul a x hx hx' => simp_all
   have hq : ∀ k, q ∈ invtSubmodule (P.reflection k) := by
     rw [← b.forall_mem_support_invtSubmodule_iff]
     refine fun k hkb ↦ (mem_invtSubmodule _).mpr fun x hx ↦ ?_
@@ -233,6 +234,82 @@ lemma injective_pairingIn {P : RootSystem ι R M N} [P.IsCrystallographic] (b : 
   apply Matrix.linearIndependent_rows_of_det_ne_zero
   rw [← Matrix.nondegenerate_iff_det_ne_zero]
   exact b.cartanMatrix_nondegenerate
+
+lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
+    {K : Type*} [Field K] [CharZero K] [Module K M] [Module K N]
+    {P : RootSystem ι K M N} [P.IsCrystallographic] (b : P.Base) :
+    ∃ d ∈ span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K)),
+      (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) := by
+  set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
+  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim
+    LinearMap.proj (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.1.1 - LinearMap.proj x.1.2)
+  suffices ∃ d ∈ p, ∀ i, f i d ≠ 0 by
+    obtain ⟨d, hp, hf⟩ := this
+    refine ⟨d, hp, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_⟩
+    simpa [f, sub_eq_zero] using hf (Sum.inr ⟨⟨i, j⟩, h⟩)
+  apply Module.Dual.exists_forall_mem_ne_zero_of_forall_exists p f
+  rintro (i | ⟨⟨i, j⟩, h : i ≠ j⟩)
+  · obtain ⟨j, hj, hj₀⟩ := b.exists_mem_support_pos_pairingIn_ne_zero i
+    refine ⟨fun i ↦ P.pairingIn ℤ i j, subset_span ⟨⟨j, hj⟩, rfl⟩, ?_⟩
+    rw [ne_eq, P.pairingIn_eq_zero_iff] at hj₀
+    simpa [f, ne_eq, Int.cast_eq_zero]
+  · obtain ⟨k, hk, hk'⟩ : ∃ k ∈ b.support, P.pairingIn ℤ i k ≠ P.pairingIn ℤ j k := by
+      contrapose! h
+      apply b.injective_pairingIn
+      aesop
+    simpa [f, sub_eq_zero] using ⟨fun i ↦ P.pairingIn ℤ i k, subset_span ⟨⟨k, hk⟩, rfl⟩, by simpa⟩
+
+section Uniqueness
+
+variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+  {P : RootSystem ι R M N} [P.IsCrystallographic] [P.IsReduced] (b : P.Base)
+  {P₂ : RootSystem ι₂ R M₂ N₂} [P₂.IsCrystallographic] (b₂ : P₂.Base)
+  (e : b.support ≃ b₂.support)
+
+lemma apply_mem_range_root_of_cartanMatrixEq
+    (f : M ≃ₗ[R] M₂) (hf : ∀ i : b.support, f (P.root i) = P₂.root (e i))
+    (m : M) (hm : m ∈ range P.root)
+    (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :
+    f m ∈ range P₂.root := by
+  have (k : b.support) : (P.reflection k).trans f = f.trans (P₂.reflection (e k)) := by
+    suffices ∀ j : b.support,
+        (P.reflection k).trans f (P.root j) = f.trans (P₂.reflection (e k)) (P.root j) by
+      rw [← LinearEquiv.toLinearMap_inj]
+      exact b.toWeightBasis.ext fun j ↦ by simpa using this j
+    intro j
+    suffices P₂.pairing (e j) (e k) = P.pairing j k by simp [reflection_apply, hf, this]
+    simpa only [cartanMatrixIn_def, algebraMap_pairingIn] using congr_arg (algebraMap ℤ R) (he j k)
+  obtain ⟨i, rfl⟩ := hm
+  apply b.induction_reflect i
+  · exact fun j ⟨k, hk⟩ ↦ ⟨P₂.reflectionPerm k k, by simpa⟩
+  · exact fun j hj ↦ ⟨e ⟨j, hj⟩, (hf _).symm⟩
+  · intro j k ⟨l, hl⟩ hk
+    replace this : f (P.reflection k (P.root j)) = (P₂.reflection (e ⟨k, hk⟩)) (f (P.root j)) := by
+      simpa using LinearEquiv.congr_fun (this ⟨k, hk⟩) (P.root j)
+    rw [root_reflectionPerm, this, ← hl, ← root_reflectionPerm]
+    exact mem_range_self _
+
+/-- A root system is determined by its Cartan matrix. -/
+def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsReduced]
+    (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :
+    P.Equiv P₂.toRootPairing :=
+  let f : M ≃ₗ[R] M₂ := b.toWeightBasis.equiv b₂.toWeightBasis e
+  have hf : ∀ m, f m ∈ range P₂.root ↔ m ∈ range P.root := by
+    refine fun m ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · simpa using apply_mem_range_root_of_cartanMatrixEq _ b e.symm f.symm
+        (by simp [f, Module.Basis.equiv]) (f m) h (by simp [(he _ _).symm])
+    · exact apply_mem_range_root_of_cartanMatrixEq b b₂ e f (by simp [f, Module.Basis.equiv]) m h he
+  let : Fintype ι := Fintype.ofFinite _
+  let : Fintype ι₂ := Fintype.ofFinite _
+  have : DecidableEq M := Classical.typeDecidableEq M
+  have : DecidableEq M₂ := Classical.typeDecidableEq M₂
+  let e' : ι ≃ ι₂ := P.root.toEquivRange.trans <| (f.bijOn hf).equiv.trans P₂.root.toEquivRange.symm
+  have he' (i : ι) : f (P.root i) = P₂.root (e' i) := by
+    simp [f, e', BijOn.equiv, Embedding.toEquivRange]
+  have : Module.IsReflexive R M₂ := .of_isPerfPair P₂.toLinearMap
+  Equiv.mk' P P₂ (b.toWeightBasis.equiv b₂.toWeightBasis e) e' he'
+
+end Uniqueness
 
 end IsCrystallographic
 

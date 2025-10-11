@@ -493,7 +493,7 @@ theorem mem_im_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
 theorem obj_surjective_of_im_eq_top (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) :
     Function.Surjective φ.obj := by
   rintro d
-  rw [← mem_im_objs_iff, hφ']
+  rw [← mem_im_objs_iff _ hφ, hφ']
   apply mem_top_objs
 
 theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) (Sn : S.IsNormal) :
@@ -604,9 +604,8 @@ theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
   simp only [mem_full_iff]
   exact fun ⟨hc, hd⟩ => ⟨h hc, h hd⟩
 
--- Porting note: using `.1` instead of `↑`
 theorem full_arrow_eq_iff {c d : (full D).objs} {f g : c ⟶ d} :
-    f = g ↔ (f.1 : c.val ⟶ d.val) = g.1 :=
+    f = g ↔ f.1 = g.1 :=
   Subtype.ext_iff
 
 end Full

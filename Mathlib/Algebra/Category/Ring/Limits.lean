@@ -18,7 +18,7 @@ the underlying types are just the limits in the category of types.
 
 
 -- We use the following trick a lot of times in this file.
-library_note "change elaboration strategy with `by apply`"/--
+library_note2 «change elaboration strategy with `by apply`» /--
 Some definitions may be extremely slow to elaborate, when the target type to be constructed
 is complicated and when the type of the term given in the definition is also complicated and does
 not obviously match the target type. In this case, instead of just giving the term, prefixing it
@@ -205,7 +205,7 @@ and then reuse the existing limit.
 -/
 instance :
     CreatesLimit F (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
-  -- Porting note: Lean can not see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
+  -- Porting note: Lean cannot see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
   -- instance is added.
   let _ : (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}

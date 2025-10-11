@@ -168,7 +168,7 @@ section LinearOrder
 
 variable [LinearOrder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
--- we open this locale only here to avoid issues with list being treated as intervals above
+-- we open this scope only here to avoid issues with list being treated as intervals above
 open Interval
 
 @[simp, measurability]

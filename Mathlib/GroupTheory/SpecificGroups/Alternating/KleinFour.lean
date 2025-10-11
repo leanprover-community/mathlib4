@@ -93,18 +93,18 @@ theorem card_of_card_eq_four (hα4 : Nat.card α = 4) :
     Nat.card (alternatingGroup α) = 12 := by
   have : Nontrivial α := by
     rw [← Finite.one_lt_card_iff_nontrivial, hα4]
-    norm_num
+    simp
   rw [nat_card_alternatingGroup, hα4]
   decide
 
 theorem card_two_sylow_of_card_eq_four (hα4 : Nat.card α = 4) (S : Sylow 2 (alternatingGroup α)) :
     Nat.card S = 4 := by
   rw [Sylow.card_eq_multiplicity, card_of_card_eq_four hα4]
-  have : 12 = 2 ^ 2 * 3 := by norm_num
+  have : 12 = 2 ^ 2 * 3 := by simp
   rw [this, Nat.factorization_mul_apply_of_coprime (by decide), Nat.factorization_pow,
     Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, Nat.prime_two.factorization_self,
     Nat.factorization_eq_zero_of_not_dvd (by decide)]
-  norm_num
+  simp
 
 theorem coe_two_sylow_of_card_eq_four
     (hα4 : Nat.card α = 4) (S : Sylow 2 (alternatingGroup α)) :
@@ -174,7 +174,7 @@ theorem exponent_kleinFour_of_card_eq_four (hα4 : Nat.card α = 4) :
       simpa only [Set.mem_singleton_iff, Subgroup.mk_eq_one] using hg'
     · convert pow_orderOf_eq_one g
       rw [← Equiv.Perm.lcm_cycleType, hg']
-      norm_num
+      simp
   rw [Nat.dvd_prime Nat.prime_two] at this
   apply Or.resolve_left this
   rw [Monoid.exp_eq_one_iff, ← Finite.card_le_one_iff_subsingleton,
@@ -193,7 +193,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     rw [← Nat.mul_left_inj (a := Nat.card (kleinFour α))]
     · rw [← Subgroup.card_eq_card_quotient_mul_card_subgroup]
       rw [card_of_card_eq_four hα4, kleinFour_card_of_card_eq_four hα4]
-    rw [kleinFour_card_of_card_eq_four hα4]; norm_num
+    rw [kleinFour_card_of_card_eq_four hα4]; simp
   have comm_le : commutator (alternatingGroup α) ≤ kleinFour α := by
     rw [← Subgroup.Normal.quotient_commutative_iff_commutator_le]
     exact (isCyclic_of_prime_card this).commutative
@@ -203,7 +203,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     apply @bot_ne_top _ _ _ ?_
     rw [Subgroup.nontrivial_iff, ← Finite.one_lt_card_iff_nontrivial,
       card_of_card_eq_four hα4]
-    norm_num
+    simp
   obtain ⟨k, hk, hk'⟩ := Or.resolve_left (Subgroup.bot_or_exists_ne_one _) comm_ne_bot
   suffices hk22 : (k : Equiv.Perm α).cycleType = {2, 2} by
     refine le_antisymm ?_ comm_le
