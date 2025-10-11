@@ -76,6 +76,10 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
   · simp [hn, posLog]
   · simp [posLog_eq_log, Nat.one_le_iff_ne_zero.2 hn]
 
+/-- The function `log⁺` equals `log (max 1 _)` for non-negative real numbers. -/
+theorem posLog_eq_log_max_one {x : ℝ} (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
+  grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_def]
+
 /-- The function `log⁺` is monotone on the positive axis. -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
