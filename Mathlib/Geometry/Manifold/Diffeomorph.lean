@@ -637,9 +637,9 @@ end Product
 
 section disjointUnion
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
-  {N J : Type*} [TopologicalSpace N] [ChartedSpace H N] {J : ModelWithCorners 𝕜 E' H}
+variable {J : ModelWithCorners 𝕜 E' H}
+  {M' M'' N : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  [TopologicalSpace M''] [ChartedSpace H M''] [TopologicalSpace N] [ChartedSpace H N]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N']
 
 /-- The sum of two diffeomorphisms: this is `Sum.map` as a diffeomorphism. -/
