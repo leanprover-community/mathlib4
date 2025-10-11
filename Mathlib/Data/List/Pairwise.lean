@@ -6,18 +6,19 @@ Authors: Mario Carneiro
 import Batteries.Data.List.Pairwise
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Pairwise relations on a list
 
 This file provides basic results about `List.Pairwise` and `List.pwFilter` (definitions are in
 `Data.List.Defs`).
-`Pairwise r [a 0, ..., a (n - 1)]` means `∀ i j, i < j → r (a i) (a j)`. For example,
+`Pairwise R [a 0, ..., a (n - 1)]` means `∀ i j, i < j → R (a i) (a j)`. For example,
 `Pairwise (≠) l` means that all elements of `l` are distinct, and `Pairwise (<) l` means that `l`
 is strictly increasing.
-`pwFilter r l` is the list obtained by iteratively adding each element of `l` that doesn't break
+`pwFilter R l` is the list obtained by iteratively adding each element of `l` that doesn't break
 the pairwiseness of the list we have so far. It thus yields `l'` a maximal sublist of `l` such that
-`Pairwise r l'`.
+`Pairwise R l'`.
 
 ## Tags
 
@@ -98,4 +99,57 @@ protected alias ⟨Pairwise.of_reverse, Pairwise.reverse⟩ := pairwise_reverse
 
 protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 
+theorem pairwise_cons_cons_iff_of_trans [IsTrans α R] {l : List α} {a b : α} :
+    Pairwise R (a :: b :: l) ↔ R a b ∧ Pairwise R (b :: l) := by
+  simp_rw [← isChain_iff_pairwise, isChain_cons_cons]
+
+theorem Pairwise.cons_cons_of_trans [IsTrans α R] {l : List α} {a b : α} :
+    R a b → Pairwise R (b :: l) → Pairwise R (a :: b :: l) := by
+  simp_rw [pairwise_cons_cons_iff_of_trans]
+  exact And.intro
+
+theorem Pairwise.rel_get_of_lt {l : List α} (h : l.Pairwise R) {a b : Fin l.length} (hab : a < b) :
+    R (l.get a) (l.get b) :=
+  List.pairwise_iff_get.1 h _ _ hab
+
+theorem Pairwise.rel_get_of_le [IsRefl α R] {l : List α} (h : l.Pairwise R) {a b : Fin l.length}
+    (hab : a ≤ b) : R (l.get a) (l.get b) := by
+  obtain rfl | hlt := Fin.eq_or_lt_of_le hab; exacts [refl _, (pairwise_iff_get.1 h) _ _ hlt]
+
+theorem Pairwise.decide [DecidableRel R] (l : List α) (h : Pairwise R l) :
+    Pairwise (fun a b => decide (R a b) = true) l := by
+  refine h.imp fun {a b} h => by simpa using h
+
 end List
+
+namespace RelEmbedding
+
+open List
+
+variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
+
+@[simp]
+theorem pairwise_listMap (e : ra ↪r rb) {l : List α} : (l.map e).Pairwise rb ↔ l.Pairwise ra := by
+  simp [pairwise_map, e.map_rel_iff]
+
+@[simp]
+theorem pairwise_swap_listMap (e : ra ↪r rb) {l : List α} :
+    (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) := by
+  simp [pairwise_map, e.map_rel_iff]
+
+end RelEmbedding
+
+namespace RelIso
+
+variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
+
+@[simp]
+theorem pairwise_listMap (e : ra ≃r rb) {l : List α} : (l.map e).Pairwise rb ↔ l.Pairwise ra :=
+  e.toRelEmbedding.pairwise_listMap
+
+@[simp]
+theorem pairwise_swap_listMap (e : ra ≃r rb) {l : List α} :
+    (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) :=
+  e.toRelEmbedding.pairwise_swap_listMap
+
+end RelIso

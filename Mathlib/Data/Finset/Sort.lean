@@ -39,8 +39,11 @@ theorem sort_val (s : Finset α) : Multiset.sort r s.val = sort r s :=
 theorem sort_mk {s : Multiset α} (h : s.Nodup) : sort r ⟨s, h⟩ = s.sort r := rfl
 
 @[simp]
-theorem sort_sorted (s : Finset α) : List.Sorted r (sort r s) :=
-  Multiset.sort_sorted _ _
+theorem pairwise_sort (s : Finset α) : List.Pairwise r (sort r s) :=
+  Multiset.pairwise_sort _ _
+
+@[deprecated  (since := "2025-10-11")]
+alias sort_sorted := pairwise_sort
 
 @[simp]
 theorem sort_eq (s : Finset α) : ↑(sort r s) = s.1 :=
@@ -98,12 +101,12 @@ theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   simp only [coe_toList, sort_eq]
 
 theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
-    sort r l.toFinset = l ↔ l.Sorted r := by
-  refine ⟨?_, List.eq_of_perm_of_sorted ((sort_perm_toList r _).trans (List.toFinset_toList hl))
-    (sort_sorted r _)⟩
+    sort r l.toFinset = l ↔ l.Pairwise r := by
+  refine ⟨?_, List.Perm.eq_of_pairwise ((sort_perm_toList r _).trans (List.toFinset_toList hl))
+    (pairwise_sort r _)⟩
   intro h
   rw [← h]
-  exact sort_sorted r _
+  exact pairwise_sort r _
 
 end sort
 
@@ -111,11 +114,11 @@ section SortLinearOrder
 
 variable [LinearOrder α]
 
-theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort (· ≤ ·) s) :=
-  (sort_sorted _ _).lt_of_le (sort_nodup _ _)
+theorem sort_sorted_lt (s : Finset α) : (sort (· ≤ ·) s).SortedLT :=
+  (pairwise_sort _ _).sortedLE.sortedLT (sort_nodup _ _)
 
-theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort (· ≥ ·) s) :=
-  (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
+theorem sort_sorted_gt (s : Finset α) : (sort (· ≥ ·) s).SortedGT :=
+  (pairwise_sort _ _).sortedGE.sortedGT (sort_nodup _ _)
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
     (s.sort (· ≤ ·)).get ⟨0, h⟩ = s.min' H := by
@@ -124,7 +127,7 @@ theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).le
   · have : s.min' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.min'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.min' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
+    exact (s.pairwise_sort (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
   · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
     exact s.min'_le _ this
 
@@ -147,7 +150,7 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
   · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.le_sub_one_of_lt i.prop)
+    exact (s.pairwise_sort (· ≤ ·)).rel_get_of_le (Nat.le_sub_one_of_lt i.prop)
 
 theorem sorted_last_eq_max' {s : Finset α}
     {h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length} :
@@ -310,10 +313,10 @@ end Finset
 namespace Fin
 
 theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = List.finRange n :=
-  List.eq_of_perm_of_sorted
+  List.Perm.eq_of_pairwise
     (List.perm_of_nodup_nodup_toFinset_eq
       (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp))
-    (Finset.univ.sort_sorted LE.le)
+    (Finset.univ.pairwise_sort LE.le)
     (List.pairwise_le_finRange n)
 
 end Fin

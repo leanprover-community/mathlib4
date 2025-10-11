@@ -73,7 +73,7 @@ theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], _ => rfl
   | m :: l, n => by simp [raise', lower', lower_raise']
 
-theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
+theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.SortedLT l → raise' (lower' l n) n = l
   | [], _, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ List.mem_cons_self
@@ -96,7 +96,7 @@ theorem isChain_cons_raise'_of_lt (l) {m n} (h : m < n) :
 alias raise'_chain := isChain_cons_raise'_of_lt
 
 /-- `raise' l n` is a strictly increasing sequence. -/
-theorem raise'_sorted (l n) : List.Sorted (· < ·) (raise' l n) := (isChain_raise' _ _).pairwise
+theorem raise'_sorted (l n) : List.SortedLT (raise' l n) := (isChain_raise' _ _).pairwise
 
 /-- Makes `raise' l n` into a finset. Elements are distinct thanks to `raise'_sorted`. -/
 def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=

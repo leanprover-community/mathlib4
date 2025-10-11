@@ -157,7 +157,7 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
   rw [s.strictMono.le_iff_le, s.strictMono.le_iff_le]
   exact le_total i j
 
-theorem toList_sorted (s : CompositionSeries X) : s.toList.Sorted (· < ·) :=
+theorem toList_sorted (s : CompositionSeries X) : s.toList.SortedLT :=
   List.pairwise_iff_get.2 fun i j h => by
     dsimp only [RelSeries.toList]
     rw [List.get_ofFn, List.get_ofFn]

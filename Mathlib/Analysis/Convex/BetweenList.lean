@@ -175,7 +175,7 @@ variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
   [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
-lemma Sorted.wbtw {l : List R} (h : l.Sorted (· ≤ ·)) : l.Wbtw R := by
+lemma Sorted.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
   induction l with
   | nil => simp
   | cons head tail ih =>
@@ -191,16 +191,16 @@ lemma Sorted.wbtw {l : List R} (h : l.Sorted (· ≤ ·)) : l.Wbtw R := by
         exact fun a ha ↦ .of_le_of_le h.1 (h.2.1 a ha)
       · simp
 
-lemma Sorted.sbtw {l : List R} (h : l.Sorted (· < ·)) : l.Sbtw R :=
+lemma Sorted.sbtw {l : List R} (h : l.SortedLT) : l.Sbtw R :=
   ⟨Sorted.wbtw (h.imp LT.lt.le), h.imp LT.lt.ne⟩
 
 lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
-    (∃ l' : List R, l'.Sorted (· ≤ ·) ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l) ↔
+    (∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l) ↔
       l.Wbtw R := by
   refine ⟨fun ⟨l', hl's, hl'l⟩ ↦ ?_, fun h ↦ ?_⟩
   · rw [← hl'l]
     exact Wbtw.map hl's.wbtw _
-  · suffices ∃ l' : List R, (∀ a ∈ l', 0 ≤ a) ∧ l'.Sorted (· ≤ ·) ∧
+  · suffices ∃ l' : List R, (∀ a ∈ l', 0 ≤ a) ∧ l'.SortedLE ∧
         l'.map (lineMap (l.head hl) (l.getLast hl)) = l by
       rcases this with ⟨l', -, hl'⟩
       exact ⟨l', hl'⟩
@@ -245,7 +245,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
               simp
 
 lemma exists_map_eq_of_sorted_iff_wbtw {l : List P} :
-    (∃ p₁ p₂ : P, ∃ l' : List R, l'.Sorted (· ≤ ·) ∧ l'.map (lineMap p₁ p₂) = l) ↔ l.Wbtw R := by
+    (∃ p₁ p₂ : P, ∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap p₁ p₂) = l) ↔ l.Wbtw R := by
   refine ⟨fun ⟨p₁, p₂, l', hl's, hl'l⟩ ↦ ?_, fun h ↦ ?_⟩
   · subst hl'l
     exact Wbtw.map hl's.wbtw _
@@ -254,7 +254,7 @@ lemma exists_map_eq_of_sorted_iff_wbtw {l : List P} :
     · exact ⟨l.head hl, l.getLast hl, (exists_map_eq_of_sorted_nonempty_iff_wbtw hl).2 h⟩
 
 lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
-    (∃ l' : List R, l'.Sorted (· < ·) ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l ∧
+    (∃ l' : List R, l'.SortedLT ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l ∧
       (l.length = 1 ∨ l.head hl ≠ l.getLast hl)) ↔ l.Sbtw R := by
   refine ⟨fun ⟨l', hl's, hl'l, hla⟩ ↦
             ⟨(exists_map_eq_of_sorted_nonempty_iff_wbtw hl).1 ⟨l', (hl's.imp LT.lt.le), hl'l⟩, ?_⟩,
@@ -282,7 +282,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
           simp
 
 lemma exists_map_eq_of_sorted_iff_sbtw [Nontrivial P] {l : List P} :
-    (∃ p₁ p₂ : P, p₁ ≠ p₂ ∧ ∃ l' : List R, l'.Sorted (· < ·) ∧ l'.map (lineMap p₁ p₂) = l) ↔
+    (∃ p₁ p₂ : P, p₁ ≠ p₂ ∧ ∃ l' : List R, l'.SortedLT ∧ l'.map (lineMap p₁ p₂) = l) ↔
       l.Sbtw R := by
   refine ⟨fun ⟨p₁, p₂, hp₁p₂, l', hl's, hl'l⟩ ↦ ?_, fun h ↦ ?_⟩
   · subst hl'l

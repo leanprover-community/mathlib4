@@ -26,7 +26,7 @@ variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm
   (Uses merge sort algorithm.) -/
 def sort (s : Multiset α) : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
-    eq_of_perm_of_sorted ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
+    Perm.eq_of_pairwise ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
       (sorted_mergeSort IsTrans.trans
         (fun a b => by simpa using IsTotal.total a b) _)
       (sorted_mergeSort IsTrans.trans
@@ -37,8 +37,11 @@ theorem coe_sort (l : List α) : sort r l = mergeSort l (r · ·) :=
   rfl
 
 @[simp]
-theorem sort_sorted (s : Multiset α) : Sorted r (sort r s) :=
-  Quot.inductionOn s (sorted_mergeSort' _)
+theorem pairwise_sort (s : Multiset α) : (sort r s).Pairwise r :=
+  Quot.inductionOn s (pairwise_mergeSort _)
+
+@[deprecated  (since := "2025-10-11")]
+alias sort_sorted := pairwise_sort
 
 @[simp]
 theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
@@ -72,7 +75,7 @@ theorem sort_cons (a : α) (s : Multiset α) :
 
 @[simp]
 theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
-  List.mergeSort_eq_self _ (sorted_le_range n)
+  List.mergeSort_eq_self _ (sortedLE_range n).pairwise
 
 end sort
 
