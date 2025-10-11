@@ -386,26 +386,51 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   -- At first, try finding a model on the space itself.
   if let some (m, _) ← findModelInner e baseInfo then return m
-  -- TODO: recurse into further factors, as necessary
+  -- TODO: allow arbitrarily many factors by writing a proper recursive definition!
   match_expr e with
   | Prod src tgt =>
     trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
-    match ← findModelInner src baseInfo with
-    | none => throwError "Found no model with corners on first factor {src}"
-    | some (aI, isNormedSpaceA) =>
-      match ← findModelInner tgt baseInfo with
-      | none => throwError "Found no model with corners on the second factor {tgt}"
-      | some (bI, isNormedSpaceB) =>
-        -- TODO: recurse into the factors instead!
-        if isNormedSpaceA && isNormedSpaceB then
-          -- TODO: extract the respective expressions E and F (and their base fields),
-          -- ensure the base fields coincide, and return the model over E × F instead.
-          trace[Elab.DiffGeo.MDiff] "Product of normed spaces: computing the 'wrong' model!"
-        let aT : Term ← Term.exprToSyntax aI
-        let bT : Term ← Term.exprToSyntax bI
-        let iTerm : Term ← ``(ModelWithCorners.prod $aT $bT)
-        Term.elabTerm iTerm none
+    let some (srcI, normedSpacesOnlyI) := ← findModelInner src baseInfo
+      | match_expr src with
+        | Prod src1 src2 =>
+          trace[Elab.DiffGeo.MDiff] "Expression {src} is a product, recursing into each factor"
+          let some res1 := ← findModelInner src1 baseInfo
+            | throwError "Found no model with corners on {src1}"
+          let some res2 := ← findModelInner src1 baseInfo
+            | throwError "Found no model with corners on {src2}"
+          let r := ← combine res1 res2
+          return r.1
+        | _ => throwError "Found no model with corners on {src}"
+    let some (srcJ, normedSpacesOnlyJ) := ← findModelInner tgt baseInfo
+      | match_expr tgt with
+        | Prod tgt1 tgt2 =>
+          trace[Elab.DiffGeo.MDiff] "Expression {tgt} is a product, recursing into each factor"
+          let some res1 := ← findModelInner tgt1 baseInfo
+            | throwError "Found no model with corners on {tgt1}"
+          let some res2 := ← findModelInner tgt2 baseInfo
+            | throwError "Found no model with corners on {tgt2}"
+          let r := ← combine res1 res2
+          return r.1
+        | _ => throwError "Found no model with corners on {tgt}"
+
+    let r := combine (srcI, normedSpacesOnlyI) (srcJ, normedSpacesOnlyJ)
+    return (← r).1
   | _ => throwError "Could not find a model with corners for {e}"
+where
+  /- Form the product expression for two models with corners.
+  -- Emits the wrong choice for the product of normed spaces, but at least warns about this. -/
+  combine (eI eJ : Expr × Bool) : TermElabM (Expr × Bool) := do
+    let aT : Term ← Term.exprToSyntax eI.1
+    let bT : Term ← Term.exprToSyntax eJ.1
+    let iTerm : Term ← ``(ModelWithCorners.prod $aT $bT)
+    if eI.2 && eJ.2 then
+      -- TODO: extract the respective expressions E and F (and their base fields),
+      -- ensure the base fields coincide, and return the model over E × F instead.
+      trace[Elab.DiffGeo.MDiff] "Product of normed spaces: computing the 'wrong' model!"
+      return (← Term.elabTerm iTerm none, true)
+    else
+      return (← Term.elabTerm iTerm none, false)
+
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
