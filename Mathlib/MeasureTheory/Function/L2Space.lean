@@ -267,7 +267,6 @@ lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E]
   rw [inner_indicatorConstLp_eq_inner_setIntegral, setIntegral_indicatorConstLp hs,
     inner_smul_right_eq_smul, Set.inter_comm]
 
-
 /-- The inner product in `L2` of indicators of two sets with finite measure
 is the measure of the intersection. -/
 lemma inner_indicatorConstLp_one_indicatorConstLp_one
