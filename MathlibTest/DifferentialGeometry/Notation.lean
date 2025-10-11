@@ -856,49 +856,79 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 #check CMDiff 2 f'
 
 -- Several factors
-/-- error: Found no model with corners on the second factor M × M -/
+/--
+error: failed to synthesize
+  ChartedSpace (ModelProd H H) (M × M × M)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map h g))
 
-/-- error: Found no model with corners on first factor M × M -/
+/--
+error: failed to synthesize
+  ChartedSpace (ModelProd H H) ((M × M) × M)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f g) h)
 
-/-- error: Found no model with corners on first factor M × M -/
+/--
+error: failed to synthesize
+  ChartedSpace (ModelProd H H) ((M × M) × M × M × E)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f g) (Prod.map h k))
 
-/-- error: Found no model with corners on first factor (M × M) × M -/
+/-- error: Found no model with corners on M × M -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map (Prod.map f g) h) k)
 
-/-- error: Found no model with corners on the second factor M × M × M × E -/
+/-- error: Found no model with corners on M × M × E -/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map g (Prod.map h k)))
 
--- Products of normed spaces: TODO this should infer 𝓘(E × F) instead!
--- and perhaps emit a warning about this!
+-- Products of normed spaces
+-- TODO this should infer 𝓘(E × F) instead; this already warns accordingly
 /-- info: ContMDiff (𝓘(𝕜, E).prod 𝓘(𝕜, EM')) (I.prod I') 2 (Prod.map f' g') : Prop -/
 #guard_msgs in
 #check CMDiff 2 (Prod.map f' g')
 
-/-- error: Found no model with corners on the second factor EM' × F -/
+/--
+error: failed to synthesize
+  ChartedSpace (ModelProd EM' F) (E × EM' × F)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check CMDiff 2 (Prod.map f' (Prod.map g' h'))
 
-/-- error: Found no model with corners on first factor E × EM' -/
+/--
+error: failed to synthesize
+  ChartedSpace (ModelProd E E) ((E × EM') × F)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check CMDiff 2 (Prod.map (Prod.map f' g') h')
 
-/-- error: Found no model with corners on first factor (E × EM') × F -/
+/-- error: Found no model with corners on E × EM' -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map (Prod.map f' g') h') k')
 
-/-- error: Found no model with corners on first factor E × EM' -/
+/--
+error: failed to synthesize
+  ChartedSpace (ModelProd E E) ((E × EM') × F × F)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f' g') (Prod.map h' k'))
 
-/-- error: Found no model with corners on the second factor EM' × F × F -/
+/-- error: Found no model with corners on F × F -/
 #guard_msgs in
 #check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
 
