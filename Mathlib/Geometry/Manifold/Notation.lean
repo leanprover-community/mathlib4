@@ -394,7 +394,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   | Prod src tgt =>
     trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
     match  ← findModelInner src baseInfo with
-    | none => throwError "Found no mdel with corners on first factor {src}"
+    | none => throwError "Found no model with corners on first factor {src}"
     | some aI =>
       match ← findModelInner tgt baseInfo with
       | none => throwError "Found no model with corners on the second factor {tgt}"

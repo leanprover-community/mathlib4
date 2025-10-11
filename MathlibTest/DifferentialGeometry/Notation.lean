@@ -842,7 +842,7 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map h g))
 
-/-- error: Found no mdel with corners on first factor M × M -/
+/-- error: Found no model with corners on first factor M × M -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f g) h)
 
