@@ -182,7 +182,7 @@ lemma exists_finite_mem_range_mapIncl {R E F : Type*} [CommRing R]
     ∃ (E' : Submodule R E) (F' : Submodule R F) (_ : Module.Finite R E') (_ : Module.Finite R F'),
     z ∈ LinearMap.range (mapIncl E' F') :=
   z.induction_on
-  ⟨⊥, ⊥, Finite.bot R E, Finite.bot R F, Submodule.zero_mem _⟩
+  ⟨⊥, ⊥, .bot R E, .bot R F, Submodule.zero_mem _⟩
   fun e f => by
     exact ⟨span R {e}, span R {f}, Finite.span_singleton R e, Finite.span_singleton R f,
       ⟨e, mem_span_singleton_self e⟩ ⊗ₜ ⟨f, mem_span_singleton_self f⟩, rfl⟩
