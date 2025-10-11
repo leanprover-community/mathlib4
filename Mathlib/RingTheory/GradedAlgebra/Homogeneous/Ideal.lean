@@ -158,7 +158,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self (h : I.IsHomogeneous
     (I.homogeneousCore 𝒜).toIdeal = I :=
   Submodule.IsHomogeneous.toSubmodule_homogeneousCore_eq_self 𝒜 𝒜 I h
 
-@[simp]
+@[simp high]
 theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousCore 𝒜 = I :=
   HomogeneousSubmodule.toSubmodule_homogeneousCore_eq_self _ _ I
@@ -273,12 +273,12 @@ theorem toIdeal_sSup (ℐ : Set (HomogeneousIdeal 𝒜)) : (sSup ℐ).toIdeal = 
 theorem toIdeal_sInf (ℐ : Set (HomogeneousIdeal 𝒜)) : (sInf ℐ).toIdeal = ⨅ s ∈ ℐ, toIdeal s :=
   rfl
 
-@[simp]
+@[simp high]
 theorem toIdeal_iSup {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨆ i, s i).toIdeal = ⨆ i, (s i).toIdeal := by
   rw [iSup, toIdeal_sSup, iSup_range]
 
-@[simp]
+@[simp high]
 theorem toIdeal_iInf {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨅ i, s i).toIdeal = ⨅ i, (s i).toIdeal := by
   rw [iInf, toIdeal_sInf, iInf_range]
@@ -397,7 +397,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousHull_eq_self (h : I.IsHomogeneous
     (Ideal.homogeneousHull 𝒜 I).toIdeal = I :=
   Submodule.IsHomogeneous.toSubmodule_homogeneousHull_eq_self h
 
-@[simp]
+@[simp high]
 theorem HomogeneousIdeal.homogeneousHull_toIdeal_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousHull 𝒜 = I :=
   HomogeneousIdeal.toIdeal_injective <| I.isHomogeneous.toIdeal_homogeneousHull_eq_self
