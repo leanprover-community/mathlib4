@@ -319,7 +319,7 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 

@@ -52,7 +52,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
         exact tsub_le_self
 
 @[simp, norm_cast]
-theorem coe_energy {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] :
+theorem coe_energy {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] :
     (P.energy G : 𝕜) =
       (∑ uv ∈ P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (#P.parts : 𝕜) ^ 2 := by
   rw [energy]; norm_cast

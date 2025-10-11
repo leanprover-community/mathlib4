@@ -194,7 +194,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} {f : 𝕜 → β}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] {s : Set 𝕜} {f : 𝕜 → β}
 
 theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : QuasilinearOn 𝕜 s f) :
     MonotoneOn f s ∨ AntitoneOn f s := by

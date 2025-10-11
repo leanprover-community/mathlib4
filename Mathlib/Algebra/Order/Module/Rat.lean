@@ -45,7 +45,7 @@ instance LinearOrderedSemifield.toPosSMulStrictMono_rat : PosSMulStrictMono ℚ�
 end LinearOrderedSemifield
 
 section LinearOrderedField
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α]
 
 instance LinearOrderedField.toPosSMulStrictMono_rat : PosSMulStrictMono ℚ α where
   smul_lt_smul_of_pos_left q hq a b hab := by

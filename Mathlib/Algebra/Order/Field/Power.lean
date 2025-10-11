@@ -19,7 +19,7 @@ open Function Int
 
 section LinearOrderedField
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α} {n : ℤ}
+variable [Field α] [LinearOrder α] [IsOrderedRing α] {a b : α} {n : ℤ}
 
 protected theorem Even.zpow_nonneg (hn : Even n) (a : α) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [zpow_add' (by simp [em'])]; exact mul_self_nonneg _
@@ -57,7 +57,7 @@ alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 
 alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 
-omit [IsStrictOrderedRing α] in
+omit [IsOrderedRing α] in
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
   rcases abs_choice a with h | h <;> simp only [h, hp.neg_zpow _]
 

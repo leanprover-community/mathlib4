@@ -26,7 +26,7 @@ In this file we prove the following theorems:
 open Set
 
 /-- Rational numbers are dense in a linear ordered archimedean field. -/
-theorem Rat.denseRange_cast {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+theorem Rat.denseRange_cast {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜]
     [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
   dense_of_exists_between fun _ _ h => Set.exists_range_iff.2 <| exists_rat_btwn h

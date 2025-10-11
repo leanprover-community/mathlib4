@@ -79,7 +79,7 @@ lemma BddAbove.smul_of_nonpos (ha : a ≤ 0) (hs : BddAbove s) : BddBelow (a •
 end OrderedRing
 
 section LinearOrderedField
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α]
   [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
   [Module α β] [PosSMulMono α β] {s : Set β}
   {a : α}

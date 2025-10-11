@@ -369,7 +369,7 @@ section
 
 open Finset
 
-variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α]
 
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i ∈ Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by

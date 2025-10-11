@@ -27,7 +27,7 @@ open Int
 
 namespace Rat
 
-variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
 
 @[deprecated Rat.le_floor_iff (since := "2025-09-02")]
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r

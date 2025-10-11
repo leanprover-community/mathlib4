@@ -560,7 +560,7 @@ end LinearOrderedCommRing
 
 namespace SameRay
 
-variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -610,7 +610,7 @@ end SameRay
 
 section LinearOrderedField
 
-variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :

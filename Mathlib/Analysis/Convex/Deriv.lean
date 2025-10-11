@@ -357,7 +357,7 @@ convexity / strict monotonicity).
 
 section slope
 
-variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
   {s : Set 𝕜} {f : 𝕜 → 𝕜} {x : 𝕜}
 
 /-- If `f : 𝕜 → 𝕜` is convex on `s`, then for any point `x ∈ s` the slope of the secant line of `f`

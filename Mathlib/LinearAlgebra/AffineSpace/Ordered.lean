@@ -141,7 +141,7 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [Field k] [LinearOrder k] [IsStrictOrderedRing k]
+variable [Field k] [LinearOrder k] [IsOrderedRing k]
   [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
 variable [Module k E] [IsStrictOrderedModule k E] [PosSMulReflectLE k E]
 
@@ -216,7 +216,7 @@ variable {f : k → E} {a b r : k}
 local notation "c" => lineMap a b r
 
 section
-omit [IsStrictOrderedRing k]
+omit [IsOrderedRing k]
 
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f a b`. -/
@@ -310,22 +310,22 @@ theorem lineMap_lt_map_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
 end LinearOrderedField
 
 
-lemma slope_pos_iff {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+lemma slope_pos_iff {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : x₀ < b) :
     0 < slope f x₀ b ↔ f x₀ < f b := by
   simp [slope, hb]
 
-lemma slope_pos_iff_gt {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+lemma slope_pos_iff_gt {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : b < x₀) :
     0 < slope f x₀ b ↔ f b < f x₀ := by
   rw [slope_comm, slope_pos_iff hb]
 
-lemma pos_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+lemma pos_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
     (hb : x₀ < b) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : 0 < f b := by
   simp_all [slope]
 
-lemma neg_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+lemma neg_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
     (hb : b < x₀) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : f b < 0 := by
   rwa [slope_pos_iff_gt, hf] at hbf
