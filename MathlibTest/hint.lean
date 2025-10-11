@@ -10,56 +10,71 @@ import Mathlib.Tactic.TautoSet
 
 /--
 info: Try these:
-• linarith
+  • 🎉 linarith
 -/
 #guard_msgs in
 example (h : 1 < 0) : False := by hint
 
 /--
 info: Try these:
-• exact f p
-• norm_num
+  • 🎉 exact f p
+  • norm_num
+    Remaining subgoals:
+    ⊢ Q
 -/
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
 
 /--
 info: Try these:
-• simp_all only [and_self]
-• norm_num
+  • 🎉 simp_all only [and_self]
+  • norm_num
+    Remaining subgoals:
+    ⊢ Q ∧ P ∧ R
 -/
 #guard_msgs in
 example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
-• linarith
+  • 🎉 linarith
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-• ring
+  • 🎉 ring
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
 
 /--
 info: Try these:
-• decide
-• ring_nf
-• norm_num
+  • 🎉 decide
+  • ring_nf
+    Remaining subgoals:
+    ⊢ Nat.Prime 37
+  • norm_num
+    Remaining subgoals:
+    ⊢ Nat.Prime 37
 -/
 #guard_msgs in
 example : Nat.Prime 37 := by hint
 
 /--
 info: Try these:
-• aesop
-• ring_nf
-• norm_num
-• simp_all only [zero_le, and_true]
+  • 🎉 aesop
+  • ring_nf
+    Remaining subgoals:
+    ⊢ ∃ x, P x ∧ 0 ≤ x
+  • norm_num
+    Remaining subgoals:
+    ⊢ ∃ x, P x
+  • simp_all only [zero_le,
+      and_true]
+    Remaining subgoals:
+    ⊢ ∃ x, P x
 -/
 #guard_msgs in
 example {P : Nat → Prop} (h : { x // P x }) : ∃ x, P x ∧ 0 ≤ x := by hint
@@ -78,8 +93,7 @@ register_hint long_trivial
 
 /--
 info: Try these:
-• this_is_a_multiline_exact
-    trivial
+  • 🎉 long_trivial
 -/
 #guard_msgs in
 example : True := by
@@ -93,17 +107,25 @@ register_hint tauto_set
 
 /--
 info: Try these:
-• tauto_set
+  • 🎉 tauto_set
 -/
 #guard_msgs in
 example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by hint
 
 /--
 info: Try these:
-• aesop
-• ring_nf
-• norm_num
-• simp_all only [Nat.not_ofNat_le_one]
+  • aesop
+    Remaining subgoals:
+    ⊢ False
+  • ring_nf
+    Remaining subgoals:
+    ⊢ 2 ≤ 1
+  • norm_num
+    Remaining subgoals:
+    ⊢ False
+  • simp_all only [Nat.not_ofNat_le_one]
+    Remaining subgoals:
+    ⊢ False
 ---
 warning: declaration uses 'sorry'
 -/
@@ -115,7 +137,7 @@ end tauto_set
 section compute_degree
 /--
 info: Try these:
-• compute_degree
+  • 🎉 compute_degree
 -/
 #guard_msgs in
 open Polynomial in
@@ -123,12 +145,25 @@ example : natDegree ((X + 1) : Nat[X]) ≤ 1 := by hint
 end compute_degree
 
 section field_simp
+#adaptation_note
+/--
+As of nightly-2025-08-27,
+this test no longer reports `field_simp` amongst the successful tactics.
+-/
+
 /--
 info: Try these:
-• exact Units.divp_add_divp_same a b u₁
-• ring_nf
-• abel_nf
-• norm_num
+  • 🎉 exact
+      Units.divp_add_divp_same a b u₁
+  • ring_nf
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • abel_nf
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • norm_num
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
 #guard_msgs in
 example (R : Type) (a b : R) [CommRing R] (u₁ : Rˣ) : a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁ := by hint
@@ -137,7 +172,7 @@ end field_simp
 section finiteness
 /--
 info: Try these:
-• finiteness
+  • 🎉 finiteness
 -/
 #guard_msgs in
 open ENNReal in

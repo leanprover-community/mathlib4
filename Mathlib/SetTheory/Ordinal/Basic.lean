@@ -50,7 +50,7 @@ A conditionally complete linear order with bot structure is registered on ordina
 `0`, the ordinal corresponding to the empty type, and `Inf` is the minimum for nonempty sets and `0`
 for the empty set by convention.
 
-## Notations
+## Notation
 
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
@@ -505,7 +505,7 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  left_inv _ := Subtype.ext_val (typein_enum _ _)
+  left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
@@ -526,12 +526,6 @@ def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
 
-/-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
-@[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
-def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
-  bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' ho
-
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
       have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
@@ -551,7 +545,7 @@ instance wellFoundedLT : WellFoundedLT Ordinal :=
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
-/-- Reformulation of well founded induction on ordinals as a lemma that works with the
+/-- Reformulation of well-founded induction on ordinals as a lemma that works with the
 `induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
 theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
     p i :=
@@ -590,13 +584,12 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 /-! ### Lifting ordinals to a higher universe -/
 
--- Porting note: Needed to add universe hint .{u} below
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
   a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
   see `liftInitialSeg`. -/
 @[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
-  Quotient.liftOn o (fun w => type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
+  Quotient.liftOn o (fun w => type <| ULift.down ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
     Quot.sound
       ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩
 
@@ -858,7 +851,6 @@ theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
   zero_add 1
 
--- Porting note: Proof used to be rfl
 @[simp]
 theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
 
@@ -959,10 +951,8 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
       obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
       obtain ⟨f, a, hf⟩ := f
       exists a
-      revert hf
-      -- Porting note: apply inductionOn does not work, refine does
-      refine inductionOn a ?_
-      intro α r _ hf
+      induction a using inductionOn with
+      | H a r =>
       refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
@@ -1262,7 +1252,7 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
-/-- If a cardinal `c` is non zero, then `c.ord.toType` has a least element. -/
+/-- If a cardinal `c` is nonzero, then `c.ord.toType` has a least element. -/
 noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
     OrderBot c.ord.toType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))

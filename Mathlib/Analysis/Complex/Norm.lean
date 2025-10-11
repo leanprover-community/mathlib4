@@ -26,8 +26,6 @@ theorem norm_def (z : ℂ) : ‖z‖ = √(normSq z) := rfl
 theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 
-@[deprecated (since := "2025-02-16")] alias mul_self_abs := norm_mul_self_eq_normSq
-
 private theorem norm_nonneg (z : ℂ) : 0 ≤ ‖z‖ :=
   Real.sqrt_nonneg _
 
@@ -39,9 +37,6 @@ theorem abs_re_le_norm (z : ℂ) : |z.re| ≤ ‖z‖ := by
 
 theorem re_le_norm (z : ℂ) : z.re ≤ ‖z‖ :=
   (abs_le.1 (abs_re_le_norm _)).2
-
-@[deprecated (since := "2025-02-16")] alias abs_re_le_abs := abs_re_le_norm
-@[deprecated (since := "2025-02-16")] alias re_le_abs := re_le_norm
 
 private theorem norm_add_le' (z w : ℂ) :  ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
   (mul_self_le_mul_self_iff (norm_nonneg (z + w)) (add_nonneg (norm_nonneg z)
@@ -69,12 +64,6 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
     neg' := norm_neg'
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
 
-/-- The complex absolute value function, defined as the Complex norm. -/
-@[deprecated "use the norm instead" (since := "2025-02-16")]
-protected noncomputable abbrev abs (z : ℂ) : ℝ := ‖z‖
-
-@[deprecated (since := "2025-02-16")] alias abs_apply := norm_def
-
 @[simp 1100]
 protected theorem norm_mul (z w : ℂ) : ‖z * w‖ = ‖z‖ * ‖w‖ := by
   rw [norm_def, norm_def, norm_def, normSq_mul, Real.sqrt_mul (normSq_nonneg _)]
@@ -101,15 +90,7 @@ protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
 
 theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 
-@[deprecated (since := "2025-02-16")] protected alias abs_pow := Complex.norm_pow
-@[deprecated (since := "2025-02-16")] alias abs_zpow := Complex.norm_zpow
-@[deprecated (since := "2025-02-16")] alias abs_prod := Complex.norm_prod
-@[deprecated (since := "2025-02-16")] alias abs_conj := norm_conj
-@[deprecated (since := "2025-02-16")] protected alias abs_abs := abs_norm
-
 @[simp] lemma norm_I : ‖I‖ = 1 := by simp [norm]
-
-@[deprecated (since := "2025-02-16")] alias abs_I := norm_I
 
 @[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
 
@@ -120,13 +101,10 @@ lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := by
 protected theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : ℂ)‖ = r :=
   (norm_real _).trans (abs_of_nonneg h)
 
-@[deprecated (since := "2025-02-16")] alias abs_ofReal := norm_real
-@[deprecated (since := "2025-02-16")] protected alias abs_of_nonneg := Complex.norm_of_nonneg
-
 @[simp, norm_cast]
 lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
 
-@[simp 1100, norm_cast]
+@[norm_cast]
 lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := Complex.norm_of_nonneg n.cast_nonneg
 
 @[simp 1100]
@@ -136,15 +114,11 @@ lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
 protected lemma norm_two : ‖(2 : ℂ)‖ = 2 := norm_ofNat 2
 
 @[simp 1100, norm_cast]
-lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
+lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp [norm_natCast]
 
 @[simp 1100]
 lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
     ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
-
-@[deprecated (since := "2025-02-16")] alias abs_natCast := norm_natCast
-@[deprecated (since := "2025-02-16")] alias abs_ofNat := norm_ofNat
-@[deprecated (since := "2025-02-16")] protected alias abs_two := Complex.norm_two
 
 @[simp 1100, norm_cast]
 lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := by
@@ -165,8 +139,6 @@ lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnno
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]
 
-@[deprecated (since := "2025-02-16")] alias abs_intCast := norm_intCast
-
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   simp [norm_def, sq, Real.mul_self_sqrt (normSq_nonneg _)]
 
@@ -186,18 +158,9 @@ lemma norm_add_mul_I (x y : ℝ) : ‖x + y * I‖ = √(x ^ 2 + y ^ 2) := by
 lemma norm_eq_sqrt_sq_add_sq (z : ℂ) : ‖z‖ = √(z.re ^ 2 + z.im ^ 2) := by
   rw [norm_def, normSq_apply, sq, sq]
 
-@[deprecated (since := "2025-02-16")] alias normSq_eq_abs := normSq_eq_norm_sq
-@[deprecated (since := "2025-02-16")] protected alias sq_abs := Complex.sq_norm
-@[deprecated (since := "2025-02-16")] alias sq_abs_sub_sq_re := sq_norm_sub_sq_re
-@[deprecated (since := "2025-02-16")] alias sq_abs_sub_sq_im := sq_norm_sub_sq_im
-@[deprecated (since := "2025-02-16")] alias abs_add_mul_I := norm_add_mul_I
-@[deprecated (since := "2025-02-16")] alias abs_eq_sqrt_sq_add_sq := norm_eq_sqrt_sq_add_sq
-
 @[simp 1100]
 protected theorem range_norm : range (‖·‖ : ℂ → ℝ) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 norm_nonneg) fun x hx ↦ ⟨x, Complex.norm_of_nonneg hx⟩
-
-@[deprecated (since := "2025-02-16")] alias range_abs := Complex.range_norm
 
 @[simp]
 theorem range_normSq : range normSq = Ici 0 :=
@@ -233,14 +196,6 @@ lemma abs_re_eq_norm {z : ℂ} : |z.re| = ‖z‖ ↔ z.im = 0 :=
 lemma abs_im_eq_norm {z : ℂ} : |z.im| = ‖z‖ ↔ z.re = 0 :=
   not_iff_not.1 <| (abs_im_le_norm z).lt_iff_ne.symm.trans abs_im_lt_norm
 
-@[deprecated (since := "2025-02-16")] alias abs_le_abs_re_add_abs_im := norm_le_abs_re_add_abs_im
-@[deprecated (since := "2025-02-16")] alias abs_im_le_abs := abs_im_le_norm
-@[deprecated (since := "2025-02-16")] alias im_le_abs := im_le_norm
-@[deprecated (since := "2025-02-16")] alias abs_re_lt_abs := abs_re_lt_norm
-@[deprecated (since := "2025-02-16")] alias abs_im_lt_abs := abs_im_lt_norm
-@[deprecated (since := "2025-02-16")] alias abs_re_eq_abs := abs_re_eq_norm
-@[deprecated (since := "2025-02-16")] alias abs_im_eq_abs := abs_im_eq_norm
-
 theorem norm_le_sqrt_two_mul_max (z : ℂ) : ‖z‖ ≤ √2 * max |z.re| |z.im| := by
   obtain ⟨x, y⟩ := z
   simp only [norm_def, normSq_mk, norm_def, ← sq]
@@ -262,10 +217,6 @@ theorem abs_im_div_norm_le_one (z : ℂ) : |z.im / ‖z‖| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by
     simp_rw [_root_.abs_div, abs_norm, div_le_iff₀ (norm_pos_iff.mpr hz), one_mul, abs_im_le_norm]
-
-@[deprecated (since := "2025-02-16")] alias abs_le_sqrt_two_mul_max := norm_le_sqrt_two_mul_max
-@[deprecated (since := "2025-02-16")] alias abs_re_div_abs_le_one := abs_re_div_norm_le_one
-@[deprecated (since := "2025-02-16")] alias abs_im_div_abs_le_one := abs_im_div_norm_le_one
 
 theorem dist_eq (z w : ℂ) : dist z w = ‖z - w‖ := rfl
 
@@ -391,10 +342,6 @@ theorem lim_norm (f : CauSeq ℂ (‖·‖)) : lim (cauSeqNorm f) = ‖lim f‖ 
     let ⟨i, hi⟩ := equiv_lim f ε ε0
     ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
-@[deprecated (since := "2025-02-16")] alias isCauSeq_abs := isCauSeq_norm
-@[deprecated (since := "2025-02-16")] alias cauSeqAbs := cauSeqNorm
-@[deprecated (since := "2025-02-16")] alias  lim_abs := lim_norm
-
 lemma ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : s ≠ 0 :=
   fun h ↦ (zero_re ▸ h ▸ hs).false
 
@@ -406,5 +353,28 @@ lemma re_neg_ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : (-s).re ≠ 0 :=
 
 lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
   re_neg_ne_zero_of_re_pos <| zero_lt_one.trans hs
+
+lemma norm_sub_one_sq_eq_of_norm_one {z : ℂ} (hz : ‖z‖ = 1) :
+    ‖z - 1‖ ^ 2 = 2 * (1 - z.re) := by
+  have : z.im * z.im = 1 - z.re * z.re := by
+    replace hz := sq_eq_one_iff.mpr (.inl hz)
+    rw [Complex.sq_norm, normSq_apply] at hz
+    linarith
+  simp [Complex.sq_norm, normSq_apply, this]
+  ring
+
+lemma norm_sub_one_sq_eqOn_sphere :
+    (Metric.sphere (0 : ℂ) 1).EqOn (‖· - 1‖ ^ 2) (fun z ↦ 2 * (1 - z.re)) :=
+  fun z hz ↦ norm_sub_one_sq_eq_of_norm_one (by simpa using hz)
+
+lemma normSq_ofReal_add_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    normSq (x + I * √(1 - x ^ 2)) = 1 := by
+  simp [mul_comm I, normSq_add_mul_I,
+    Real.sq_sqrt (x := 1 - x ^ 2) (by nlinarith [abs_le.mp hx])]
+
+lemma normSq_ofReal_sub_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    normSq (x - I * √(1 - x ^ 2)) = 1 := by
+  rw [← normSq_neg, neg_sub', sub_neg_eq_add]
+  simpa using normSq_ofReal_add_I_mul_sqrt_one_sub (x := -x) (by simpa)
 
 end Complex
