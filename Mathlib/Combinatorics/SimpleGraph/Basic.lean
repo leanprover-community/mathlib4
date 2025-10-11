@@ -518,6 +518,10 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
 
+theorem exists_adj_of_ne_top (h : G ≠ ⊤) : ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  contrapose! h
+  exact eq_top_iff.mpr h
+
 variable (G G₁ G₂)
 
 theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) :
@@ -805,5 +809,29 @@ def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v 
     exact incidence_other_neighbor_edge _ hw
 
 end Incidence
+
+section Subsingleton
+
+theorem subsingleton_iff_subsingleton : Subsingleton V ↔ Subsingleton (SimpleGraph V) := by
+  refine ⟨fun _ ↦ Unique.instSubsingleton, fun h ↦ ?_⟩
+  contrapose! h
+  rw [not_subsingleton_iff_nontrivial] at h ⊢
+  exact instNontrivial
+
+theorem nontrivial_iff_nontrivial : Nontrivial V ↔ Nontrivial (SimpleGraph V) := by
+  refine ⟨fun _ ↦ instNontrivial, fun h ↦ ?_⟩
+  contrapose! h
+  rw [not_nontrivial_iff_subsingleton] at h ⊢
+  exact Unique.instSubsingleton
+
+theorem nontrivial_of_ne_bot {G : SimpleGraph V} (h : G ≠ ⊥) : Nontrivial V := by
+  contrapose! h
+  exact subsingleton_iff_subsingleton.mp (not_nontrivial_iff_subsingleton.mp h) |>.allEq _ _
+
+theorem nontrivial_of_ne_top {G : SimpleGraph V} (h : G ≠ ⊤) : Nontrivial V := by
+  contrapose! h
+  exact subsingleton_iff_subsingleton.mp (not_nontrivial_iff_subsingleton.mp h) |>.allEq _ _
+
+end Subsingleton
 
 end SimpleGraph
