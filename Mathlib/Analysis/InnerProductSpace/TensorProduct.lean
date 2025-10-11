@@ -154,21 +154,14 @@ theorem inner_ext_threefold'_iff {G : Type*} [NormedAddCommGroup G]
 
 section isometry
 
-theorem norm_comm_apply (x : E ⊗[𝕜] F) : ‖TensorProduct.comm 𝕜 E F x‖ = ‖x‖ := by
-  simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜)]
-  obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_finite {x} (Set.finite_singleton x)
-  rw [Set.singleton_subset_iff] at hz
-  let y := hz.choose
-  obtain e := stdOrthonormalBasis 𝕜 E'
-  obtain f := stdOrthonormalBasis 𝕜 F'
-  have hy : y = hz.choose := rfl
-  rw [← hz.choose_spec, ← hy, y.basis_sum_repr e.toBasis f.toBasis]
-  simp only [OrthonormalBasis.coe_toBasis, inner_def, map_sum, LinearMap.sum_apply, map_smulₛₗ,
-    mapIncl, map_sum, map_tmul, Submodule.subtype_apply, comm_tmul, LinearMap.coe_comp,
-    Function.comp_apply, LinearMap.smul_apply, LinearMap.compr₂_apply, lift.tmul, mapBilinear_apply,
-    innerₛₗ_apply, LinearMap.mul'_apply, smul_eq_mul, ← Submodule.coe_inner,
-    mul_comm (inner 𝕜 (e _) (e _))]
-  rfl
+private theorem inner_comm_comm (x y : E ⊗[𝕜] F) :
+    inner 𝕜 (TensorProduct.comm 𝕜 E F x) (TensorProduct.comm 𝕜 E F y) = inner 𝕜 x y :=
+  x.induction_on (by simp) (fun _ _ => y.induction_on (by simp) (by simp [mul_comm])
+    (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
+    (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
+
+@[simp] theorem norm_comm_apply (x : E ⊗[𝕜] F) : ‖TensorProduct.comm 𝕜 E F x‖ = ‖x‖ := by
+  simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_comm_comm]
 
 /-- The linear isometry equivalence version of `TensorProduct.comm`. -/
 @[simps!]
@@ -176,20 +169,43 @@ def commLinearIsometryEquiv : (E ⊗[𝕜] F) ≃ₗᵢ[𝕜] (F ⊗[𝕜] E) wh
   toLinearEquiv := TensorProduct.comm 𝕜 E F
   norm_map' := norm_comm_apply
 
--- TODO: upgrade `assoc` and `lid` to linear isometric equivalences too
+private theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
+    inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
+  x.induction_on (by simp) (fun _ _ => y.induction_on (by simp)
+    (by simp [inner_smul_left, inner_smul_right, mul_assoc])
+    (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
+    (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
 
-variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G] [FiniteDimensional 𝕜 G]
-  [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] in
-@[simp] theorem adjoint_assoc :
-    LinearMap.adjoint (TensorProduct.assoc 𝕜 E F G).toLinearMap
-      = (TensorProduct.assoc 𝕜 E F G).symm.toLinearMap := by
-  apply TensorProduct.ext_threefold'
-  simp [TensorProduct.inner_ext_threefold'_iff, LinearMap.adjoint_inner_left, mul_assoc]
+@[simp] theorem norm_lid_apply (x : 𝕜 ⊗[𝕜] E) : ‖TensorProduct.lid 𝕜 E x‖ = ‖x‖ := by
+  simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_lid_lid]
 
-@[simp] theorem adjoint_lid [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] :
-    LinearMap.adjoint (TensorProduct.lid 𝕜 E).toLinearMap
-      = (TensorProduct.lid 𝕜 E).symm.toLinearMap := by
-  simp [LinearMap.ext_iff, inner_ext_iff, LinearMap.adjoint_inner_left, inner_smul_right]
+/-- The linear isometry equivalence version of `TensorProduct.lid`. -/
+@[simps!]
+def lidLinearIsometryEquiv : (𝕜 ⊗[𝕜] E) ≃ₗᵢ[𝕜] E where
+  toLinearEquiv := TensorProduct.lid 𝕜 E
+  norm_map' := norm_lid_apply
+
+variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+
+private theorem inner_assoc_assoc (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
+    inner 𝕜 (TensorProduct.assoc 𝕜 E F G x) (TensorProduct.assoc 𝕜 E F G y) = inner 𝕜 x y :=
+  x.induction_on (by simp) (fun a b =>
+    y.induction_on (by simp) (fun c d =>
+      a.induction_on (by simp) (fun e f =>
+        c.induction_on (by simp) (by simp [mul_assoc])
+        (fun _ _ h1 h2 => by simp only [add_tmul, inner_add_right, map_add, h1, h2]))
+      (fun _ _ h1 h2 => by simp only [add_tmul, inner_add_left, map_add, h1, h2]))
+    (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
+    (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
+
+@[simp] theorem norm_assoc_apply (x : E ⊗[𝕜] F ⊗[𝕜] G) : ‖TensorProduct.assoc 𝕜 E F G x‖ = ‖x‖ := by
+  simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_assoc_assoc]
+
+/-- The linear isometry equivalence version of `TensorProduct.lid`. -/
+@[simps!]
+def assocLinearIsometryEquiv : (E ⊗[𝕜] F ⊗[𝕜] G) ≃ₗᵢ[𝕜] (E ⊗[𝕜] (F ⊗[𝕜] G)) where
+  toLinearEquiv := TensorProduct.assoc 𝕜 E F G
+  norm_map' := norm_assoc_apply
 
 end isometry
 
