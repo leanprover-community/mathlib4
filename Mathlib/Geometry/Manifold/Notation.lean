@@ -385,21 +385,24 @@ This implementation is not maximally robust yet.
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   -- At first, try finding a model on the space itself.
-  if let some (m, _snd) ← findModelInner e baseInfo then return m
+  if let some (m, _) ← findModelInner e baseInfo then return m
   -- TODO: recurse into further factors, as necessary
-
-  -- refactor the Inner method to return whether we have a normed space or not
-  -- and use an outparam to keep track.
   match_expr e with
   | Prod src tgt =>
     trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
-    match  ← findModelInner src baseInfo with
+    match ← findModelInner src baseInfo with
     | none => throwError "Found no model with corners on first factor {src}"
-    | some (aI, _) =>
+    | some (aI, E) =>
       match ← findModelInner tgt baseInfo with
       | none => throwError "Found no model with corners on the second factor {tgt}"
-      | some (bI, _) =>
-        -- TODO: recurse into the factors!
+      | some (bI, F) =>
+        -- TODO: recurse into the factors instead!
+        if E.isSome && F.isSome then
+          -- let E := E.get!
+          -- let F := F.get!
+          -- TODO: infer the common field of both, and make the model over E × F instead.
+          -- TODO: should we check fit these fields match? perhaps not necessary...
+          trace[Elab.DiffGeo.MDiff] "Product of normed spaces: computing the 'wrong' model!"
         let aT : Term ← Term.exprToSyntax aI
         let bT : Term ← Term.exprToSyntax bI
         let iTerm : Term ← ``(ModelWithCorners.prod $aT $bT)
