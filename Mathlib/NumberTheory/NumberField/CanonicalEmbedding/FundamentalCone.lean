@@ -391,7 +391,7 @@ def integerSetQuotEquivAssociates :
   Equiv.ofBijective
     (Quotient.lift (integerSetToAssociates K)
       fun _ _ h ↦ ((integerSetToAssociates_eq_iff _ _).mpr h).symm)
-    ⟨by convert Setoid.ker_lift_injective (integerSetToAssociates K)
+    ⟨by convert Setoid.injective_kerLift (integerSetToAssociates K)
         all_goals
         · ext a b
           rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
