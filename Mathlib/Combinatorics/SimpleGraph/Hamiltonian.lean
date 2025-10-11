@@ -71,6 +71,29 @@ lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card �
 
 end
 
+/-- If a path `p` is Hamiltonian, then `p.support.get` defines an equivalence between
+`Fin p.support.length` and `α`. -/
+def IsHamiltonian.supportGetEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α :=
+  p.support.getEquivOfForallCountEqOne hp
+
+/-- If a path `p` is Hamiltonian, then `p.getVert` defines an equivalence between
+`Fin p.support.length` and `α`. -/
+def IsHamiltonian.getVertEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α where
+  toFun i := p.getVert i
+  invFun := IsHamiltonian.supportGetEquiv hp |>.invFun
+  left_inv i := by
+    dsimp only
+    have := i.prop.trans_eq p.length_support
+    rw [getVert_eq_support_getElem _ <| by cutsat]
+    have := p.support.idxOf_getElem hp.isPath.support_nodup _ i.prop
+    simp [IsHamiltonian.supportGetEquiv, List.getEquivOfForallCountEqOne,
+      List.Nodup.getEquivOfForallMemList]
+    congr
+  right_inv a := by
+    have := hp.supportGetEquiv.symm a |>.prop
+    exact (getVert_eq_support_getElem _ <| Nat.le_of_lt_add_one <| this.trans_eq p.length_support)
+      |>.trans <| p.support.getElem_idxOf this
+
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
