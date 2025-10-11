@@ -101,6 +101,12 @@ lemma proj_incl (x : N) : E.proj (E.incl x) = 0 :=
 def sectLeft (E : Extension R N M) : E.incl.range ≃ₗ[R] N :=
   (LinearEquiv.ofInjective E.incl.toLinearMap E.incl_injective).symm
 
+@[simp]
+lemma incl_sectLeft (E : Extension R N M) (x : E.incl.range) :
+    E.incl (E.sectLeft x) = x.val := by
+  rw [sectLeft, ← LieHom.coe_toLinearMap, ← LinearEquiv.ofInjective_apply (h := E.incl_injective)]
+  exact Subtype.eq_iff.mp <| LinearEquiv.apply_symm_apply _ x
+
 /-- The equivalence between the kernel of projection and range of inclusion. -/
 def projInclEquiv : E.proj.ker ≃ₗ[R] E.incl.range :=
   LinearEquiv.ofEq (LieSubmodule.toSubmodule (LieHom.ker E.proj))

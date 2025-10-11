@@ -654,7 +654,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     intro k hk
     rw [Finset.mem_coe, Finset.mem_range, Nat.not_lt_eq, Order.add_one_le_iff] at hk
     have := (exists_binomialPow_smul_support_bound g₁ h n A v).choose_spec k hk
-    rw [HahnSeries.mem_support, Mathlib.Tactic.PushNeg.not_ne_eq] at this
+    rw [HahnSeries.mem_support, not_ne_iff] at this
     rw [this, smul_zero, smul_zero]
 
 omit [Module S W] [IsScalarTower S R W] in
