@@ -126,7 +126,7 @@ into an actual `OrderMonoidHom`. This is declared as the default coercion from `
   This is declared as the default coercion from `F` to `α →+o β`. -/]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
     α →*o β :=
-  { (f : α →* β) with monotone' := OrderHomClass.monotone f }
+  { (.ofClass f : α →* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
@@ -260,6 +260,8 @@ instance : OrderHomClass (α →*o β) α β where
 instance : MonoidHomClass (α →*o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
+
+@[to_additive] instance : Coe (α →*o β) (α →* β) := ⟨toMonoidHom⟩
 
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
@@ -439,10 +441,6 @@ section OrderedCommMonoid
 variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneClass β}
 
 @[to_additive (attr := simp)]
-theorem toMonoidHom_eq_coe (f : α →*o β) : f.toMonoidHom = f :=
-  rfl
-
-@[to_additive (attr := simp)]
 theorem toOrderHom_eq_coe (f : α →*o β) : f.toOrderHom = f :=
   rfl
 
@@ -505,6 +503,8 @@ theorem coe_mk (f : α ≃* β) (h) : (OrderMonoidIso.mk f h : α → β) = f :=
 @[to_additive (attr := simp)]
 theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f := rfl
 
+@[to_additive (attr := simp)] lemma coe_toMulEquiv (f : α ≃*o β) : ⇑f.toMulEquiv = f := rfl
+
 /-- Reinterpret an ordered monoid isomorphism as an order isomorphism. -/
 @[to_additive
 /-- Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism. -/]
@@ -558,12 +558,12 @@ theorem coe_trans (f : α ≃*o β) (g : β ≃*o γ) : (f.trans g : α → γ) 
 theorem trans_apply (f : α ≃*o β) (g : β ≃*o γ) (a : α) : (f.trans g) a = g (f a) :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_trans_mulEquiv (f : α ≃*o β) (g : β ≃*o γ) :
     (f.trans g : α ≃* γ) = (f : α ≃* β).trans g :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_trans_orderIso (f : α ≃*o β) (g : β ≃*o γ) :
     (f.trans g : α ≃o γ) = (f : α ≃o β).trans g :=
   rfl
@@ -620,15 +620,17 @@ initialize_simps_projections OrderMonoidIso (toFun → apply, invFun → symm_ap
 @[to_additive]
 theorem invFun_eq_symm {f : α ≃*o β} : f.invFun = f.symm := rfl
 
-/-- `simp`-normal form of `invFun_eq_symm`. -/
 @[to_additive (attr := simp)]
-theorem coe_toEquiv_symm (f : α ≃*o β) : ((f : α ≃ β).symm : β → α) = f.symm := rfl
+theorem symm_toEquiv (f : α ≃*o β) : f.toEquiv.symm = f.symm.toEquiv := rfl
+
+@[to_additive (attr := simp)]
+lemma symm_toOrderIso (f : α ≃*o β) : f.toOrderIso.symm = f.symm.toOrderIso := rfl
+
+@[to_additive (attr := simp)]
+lemma symm_toOrderIso (f : α ≃*o β) : f.toOrderIso.symm = f.symm.toOrderIso := rfl
 
 @[to_additive (attr := simp)]
 theorem equivLike_inv_eq_symm (f : α ≃*o β) : EquivLike.inv f = f.symm := rfl
-
-@[to_additive (attr := simp)]
-theorem toEquiv_symm (f : α ≃*o β) : (f.symm : β ≃ α) = (f : α ≃ β).symm := rfl
 
 @[to_additive (attr := simp)]
 theorem symm_symm (f : α ≃*o β) : f.symm.symm = f := rfl
