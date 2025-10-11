@@ -11,6 +11,7 @@ import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.RingTheory.Norm.Basic
+import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Transitivity of algebra norm
