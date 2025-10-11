@@ -211,6 +211,7 @@ lemma orderOf_zero (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀] : orde
   rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one]
   simp +contextual [ne_of_gt]
 
+-- TODO n ≠ 0
 @[to_additive]
 theorem orderOf_eq_iff {n} (h : 0 < n) :
     orderOf x = n ↔ x ^ n = 1 ∧ ∀ m, m < n → 0 < m → x ^ m ≠ 1 := by
