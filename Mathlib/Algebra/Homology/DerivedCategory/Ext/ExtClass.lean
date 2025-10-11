@@ -7,9 +7,9 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 
 /-!
-# The Ext class of a short exact sequence
+# The Ext class of a short-exact sequence
 
-In this file, given a short exact short complex `S : ShortComplex C`
+In this file, given a short-exact short complex `S : ShortComplex C`
 in an abelian category, we construct the associated class in
 `Ext S.X₃ S.X₁ 1`.
 
@@ -65,7 +65,7 @@ private lemma hasSmallLocalizedShiftedHom_K_S'_X₁ :
   rw [Localization.hasSmallLocalizedShiftedHom_iff_source.{w} W ℤ qis hqis (S').X₁]
   infer_instance
 
-/-- The class in `Ext S.X₃ S.X₁ 1` that is attached to a short exact
+/-- The class in `Ext S.X₃ S.X₁ 1` that is attached to a short-exact
 short complex `S` in an abelian category. -/
 noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by
   have := hS.hasSmallLocalizedHom_S'_X₃_K
