@@ -21,7 +21,7 @@ coincides with **both** the left and right uniform structures.
   endowed with the associated right uniform structure. This means that two points `x` and `y`
   are close precisely when `y * x⁻¹` is close to `1` / `y + (-x)` close to `0`.
 * `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and topological additive groups
-  endowed with the associated right uniform structure. This means that two points `x` and `y`
+  endowed with the associated left uniform structure. This means that two points `x` and `y`
   are close precisely when `x⁻¹ * y` is close to `1` / `(-x) + y` close to `0`.
 * `IsUniformGroup` and `IsUniformAddGroup`: Multiplicative and additive uniform groups,
   i.e., groups with uniformly continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`. This corresponds
