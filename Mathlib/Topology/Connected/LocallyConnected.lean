@@ -141,4 +141,8 @@ instance [LocallyConnectedSpace α] : DiscreteTopology <| ConnectedComponents α
   simp [← ConnectedComponents.isQuotientMap_coe.isOpen_preimage,
     connectedComponents_preimage_singleton, isOpen_connectedComponent]
 
+/-- A locally connected compact space has finitely many connected components. -/
+instance [LocallyConnectedSpace α] [CompactSpace α] : Finite <| ConnectedComponents α :=
+  finite_of_compact_of_discrete
+
 end LocallyConnectedSpace
