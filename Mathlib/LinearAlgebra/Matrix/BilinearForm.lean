@@ -194,22 +194,12 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₁ M₁) (i j : n) :
   LinearMap.toMatrix₂_apply _ _ B _ _
 
 theorem BilinForm.dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : n → R₁) :
-    x ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ y = B (b.equivFun.symm x) (b.equivFun.symm y) := by
-  simp only [dotProduct, mulVec_eq_sum, op_smul_eq_smul, Finset.sum_apply, Pi.smul_apply,
-    transpose_apply, toMatrix_apply, smul_eq_mul, mul_sum, Basis.equivFun_symm_apply, map_sum,
-    map_smul, coeFn_sum, LinearMap.smul_apply]
-  rw [Finset.sum_comm]
-  refine Finset.sum_congr rfl (fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_)
-  ring
+    x ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ y = B (b.equivFun.symm x) (b.equivFun.symm y) :=
+  dotProduct_toMatrix₂_mulVec b b B x y
 
 lemma BilinForm.apply_eq_dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : M₁) :
-    B x y = (b.repr x) ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ (b.repr y) := by
-  nth_rw 1 [← b.sum_repr x, ← b.sum_repr y]
-  suffices ∑ j, ∑ i, b.repr y j * b.repr x i * B (b i) (b j) =
-           ∑ i, ∑ j, b.repr x i * b.repr y j * B (b i) (b j) by
-    simpa [dotProduct, Matrix.mulVec_eq_sum, Finset.mul_sum, -Basis.sum_repr, ← mul_assoc]
-  simp_rw [mul_comm (b.repr y _)]
-  exact Finset.sum_comm
+    B x y = (b.repr x) ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ (b.repr y) :=
+  apply_eq_dotProduct_toMatrix₂_mulVec b b B x y
 
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
