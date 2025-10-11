@@ -38,13 +38,11 @@ acyclic graphs, trees
 -/
 
 
-universe u v
-
 namespace SimpleGraph
 
 open Walk
 
-variable {V : Type u} (G : SimpleGraph V)
+variable {V V' : Type*} (G : SimpleGraph V) (G' : SimpleGraph V')
 
 /-- A graph is *acyclic* (or a *forest*) if it has no cycles. -/
 def IsAcyclic : Prop := ∀ ⦃v : V⦄ (c : G.Walk v v), ¬c.IsCycle
@@ -57,9 +55,50 @@ structure IsTree : Prop where
   /-- Graph is acyclic. -/
   protected IsAcyclic : G.IsAcyclic
 
-variable {G}
+variable {G G'}
 
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
+
+/-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
+lemma IsAcyclic.comap (f : G →g G') (hinj : Function.Injective f) (h : G'.IsAcyclic) :
+    G.IsAcyclic :=
+  fun _ _ ↦ map_isCycle_iff_of_injective hinj |>.not.mp <| h _
+
+lemma IsAcyclic.embedding (f : G ↪g G') (h : G'.IsAcyclic) : G.IsAcyclic :=
+  h.comap f f.injective
+
+/-- Isomorphic graphs are acyclic together. -/
+lemma Iso.isAcyclic_iff (f : G ≃g G') : G.IsAcyclic ↔ G'.IsAcyclic :=
+  ⟨fun h ↦ h.embedding f.symm, fun h ↦ h.embedding f⟩
+
+/-- Isomorphic graphs are trees together. -/
+lemma Iso.isTree_iff (f : G ≃g G') : G.IsTree ↔ G'.IsTree :=
+  ⟨fun ⟨hc, ha⟩ ↦ ⟨f.connected_iff.mp hc, f.isAcyclic_iff.mp ha⟩,
+   fun ⟨hc, ha⟩ ↦ ⟨f.connected_iff.mpr hc, f.isAcyclic_iff.mpr ha⟩⟩
+
+lemma IsAcyclic.of_map (f : V ↪ V') (h : G.map f |>.IsAcyclic) : G.IsAcyclic :=
+  h.embedding <| SimpleGraph.Embedding.map ..
+
+lemma IsAcyclic.of_comap (f : V' ↪ V) (h : G.IsAcyclic) : G.comap f |>.IsAcyclic :=
+  h.embedding <| SimpleGraph.Embedding.comap ..
+
+/-- A graph induced from an acyclic graph is acyclic. -/
+lemma IsAcyclic.induce (h : G.IsAcyclic) (s : Set V) : G.induce s |>.IsAcyclic :=
+  h.of_comap _
+
+/-- A subgraph of an acyclic graph is acyclic. -/
+lemma IsAcyclic.subgraph (h : G.IsAcyclic) (H : G.Subgraph) : H.coe.IsAcyclic :=
+  h.comap _ H.hom_injective
+
+/-- A spanning subgraph of an acyclic graph is acyclic. -/
+lemma IsAcyclic.anti {G' : SimpleGraph V} (hsub : G ≤ G') (h : G'.IsAcyclic) : G.IsAcyclic :=
+  h.comap ⟨_, fun h ↦ hsub h⟩ Function.injective_id
+
+/-- A connected component of an acyclic graph is a tree. -/
+lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComponent) :
+    c.toSimpleGraph.IsTree where
+  isConnected := c.connected_toSimpleGraph
+  IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
@@ -203,6 +242,14 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt
     (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
     <| h.prop.connected_delete_edge_of_not_isBridge hbr
+
+lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
+  refine ⟨fun htree ↦ ⟨htree.isConnected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
+  have ⟨p, hp⟩ := h'.exists_isPath u v
+  have := congrArg Walk.edges <| congrArg Subtype.val <|
+    htree.IsAcyclic.path_unique ⟨p.mapLe hle, hp.mapLe hle⟩ <| Path.singleton hadj
+  simp only [edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at this
+  simp [this, p.adj_of_mem_edges]
 
 /-- Every connected graph has a spanning tree. -/
 lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
