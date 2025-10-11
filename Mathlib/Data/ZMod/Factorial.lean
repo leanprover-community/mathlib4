@@ -3,7 +3,6 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.ZMod.Basic
 
@@ -32,7 +31,7 @@ namespace ZMod
 
 theorem cast_descFactorial {n p : ℕ} (h : n ≤ p) :
     (descFactorial (p - 1) n : ZMod p) = (-1) ^ n * n ! := by
-  rw [descFactorial_eq_prod_range, ← prod_range_add_one_eq_factorial]
+  rw [descFactorial_eq_prod_range, factorial_eq_prod_range_add_one]
   simp only [cast_prod]
   nth_rw 2 [← card_range n]
   rw [pow_card_mul_prod]
