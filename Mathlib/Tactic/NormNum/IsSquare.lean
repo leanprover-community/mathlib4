@@ -57,8 +57,14 @@ theorem not_isSquare_of_isNegOfNat {x : ℤ} {nx : ℕ}
   rw [← Int.natAbs_mul_self] at hy
   cases hy
 
-theorem isSquare_rat_eq {x : ℚ} : IsSquare x = (IsSquare x.num ∧ IsSquare x.den) :=
-  propext Rat.isSquare_iff
+theorem isSquare_rat_of_num_den {x : ℚ} (hn : IsSquare x.num) (hd : IsSquare x.den) :
+    IsSquare x := Rat.isSquare_iff.2 ⟨hn, hd⟩
+
+theorem not_isSquare_rat_of_num {x : ℚ} (hn : ¬IsSquare x.num) :
+    ¬IsSquare x := fun h => hn (Rat.isSquare_iff.1 h).1
+
+theorem not_isSquare_rat_of_den {x : ℚ} (hd : ¬IsSquare x.den) :
+    ¬IsSquare x := fun h => hd (Rat.isSquare_iff.1 h).2
 
 end lemmas
 
@@ -115,8 +121,14 @@ def evalIsSquareRat : NormNumExt where eval {u α} e := do
   let 0 := u | failure
   let ~q(Prop) := α | failure
   let ~q(IsSquare ($x : ℚ)) := e | failure
-  let r ← derive q(IsSquare ($x).num ∧ IsSquare ($x).den)
-  return r.eqTrans q(isSquare_rat_eq)
+  let ⟨rn, pfn⟩ ← deriveBool q(IsSquare ($x).num)
+  match rn with
+  | true =>
+    let ⟨rd, pfd⟩ ← deriveBool q(IsSquare ($x).den)
+    match rd with
+    | true => return .isTrue q(isSquare_rat_of_num_den $pfn $pfd)
+    | false => return .isFalse q(not_isSquare_rat_of_den $pfd)
+  | false => return .isFalse q(not_isSquare_rat_of_num $pfn)
 
 end NormNum
 
