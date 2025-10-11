@@ -19,7 +19,7 @@ group naturally induces a uniform structure.
 
 ## Main results
 
-* `IsTopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
+* `IsTopologicalAddGroup.rightUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
   to construct a canonical uniformity for a topological additive group.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
@@ -396,7 +396,7 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
 additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
-def IsTopologicalGroup.toUniformSpace : UniformSpace G where
+def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
   symm :=
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
@@ -409,7 +409,12 @@ def IsTopologicalGroup.toUniformSpace : UniformSpace G where
     simpa using V_mul _ hz₂ _ hz₁
   nhds_eq_comap_uniformity _ := by simp only [comap_comap, Function.comp_def, nhds_translation_div]
 
-attribute [local instance] IsTopologicalGroup.toUniformSpace
+@[deprecated (since := "2025-09-26")]
+alias IsTopologicalAddGroup.toUniformSpace := IsTopologicalAddGroup.rightUniformSpace
+@[to_additive existing, deprecated (since := "2025-09-26")]
+alias IsTopologicalGroup.toUniformSpace := IsTopologicalGroup.rightUniformSpace
+
+attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G)) :=
@@ -427,7 +432,7 @@ variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 section
 
-attribute [local instance] IsTopologicalGroup.toUniformSpace
+attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 variable {G}
 
@@ -450,123 +455,14 @@ open Set
 end
 
 @[to_additive]
-theorem IsUniformGroup.toUniformSpace_eq {G : Type*} [u : UniformSpace G] [Group G]
-    [IsUniformGroup G] : IsTopologicalGroup.toUniformSpace G = u := by
+theorem IsUniformGroup.rightUniformSpace_eq {G : Type*} [u : UniformSpace G] [Group G]
+    [IsUniformGroup G] : IsTopologicalGroup.rightUniformSpace G = u := by
   ext : 1
   rw [uniformity_eq_comap_nhds_one' G, uniformity_eq_comap_nhds_one G]
 
+@[deprecated (since := "2025-09-26")]
+alias IsUniformAddGroup.toUniformSpace_eq := IsUniformAddGroup.rightUniformSpace_eq
+@[to_additive existing, deprecated (since := "2025-09-26")]
+alias IsUniformGroup.toUniformSpace_eq := IsUniformGroup.rightUniformSpace_eq
+
 end TopologicalCommGroup
-
-open Filter Set Function
-
-section
-
-variable {α : Type*} {β : Type*} {hom : Type*}
-variable [TopologicalSpace α] [Group α] [IsTopologicalGroup α]
-
--- β is a dense subgroup of α, inclusion is denoted by e
-variable [TopologicalSpace β] [Group β]
-variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
-
-@[to_additive]
-theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
-    Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
-      (𝓝 1) := by
-  have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
-      e ∘ fun t : β × β => t.2 / t.1 := by
-    ext t
-    simp
-  have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
-    simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
-  simpa using de.tendsto_comap_nhds_nhds lim comm
-
-end
-
-namespace IsDenseInducing
-
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
-variable {G : Type*}
-
--- β is a dense subgroup of α, inclusion is denoted by e
--- δ is a dense subgroup of γ, inclusion is denoted by f
-variable [TopologicalSpace α] [AddCommGroup α] [IsTopologicalAddGroup α]
-variable [TopologicalSpace β] [AddCommGroup β]
-variable [TopologicalSpace γ] [AddCommGroup γ] [IsTopologicalAddGroup γ]
-variable [TopologicalSpace δ] [AddCommGroup δ]
-variable [UniformSpace G] [AddCommGroup G]
-variable {e : β →+ α} (de : IsDenseInducing e)
-variable {f : δ →+ γ} (df : IsDenseInducing f)
-variable {φ : β →+ δ →+ G}
-variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
-variable {W' : Set G} (W'_nhds : W' ∈ 𝓝 (0 : G))
-include de hφ
-
-include W'_nhds in
-private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
-    (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
-  let Nx := 𝓝 x₀
-  let ee := fun u : β × β => (e u.1, e u.2)
-  have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
-      (comap e Nx ×ˢ comap e Nx) (𝓝 (0, y₁)) := by
-    have := (tendsto_sub_comap_self de x₀).prodMk
-      (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
-    rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
-    exact (this :)
-  have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by
-    simpa using hφ.tendsto (0, y₁)
-  have lim := lim2.comp lim1
-  rw [tendsto_prod_self_iff] at lim
-  simp_rw [forall_mem_comm]
-  exact lim W' W'_nhds
-
-variable [IsUniformAddGroup G]
-
-include df W'_nhds in
-private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
-    ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
-    (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
-  let ee := fun u : β × β => (e u.1, e u.2)
-  let ff := fun u : δ × δ => (f u.1, f u.2)
-  have lim_φ : Filter.Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, 0)) (𝓝 0) := by
-    simpa using hφ.tendsto (0, 0)
-  have lim_φ_sub_sub :
-    Tendsto (fun p : (β × β) × δ × δ => (fun p : β × δ => φ p.1 p.2) (p.1.2 - p.1.1, p.2.2 - p.2.1))
-      ((comap ee <| 𝓝 (x₀, x₀)) ×ˢ (comap ff <| 𝓝 (y₀, y₀))) (𝓝 0) := by
-    have lim_sub_sub :
-      Tendsto (fun p : (β × β) × δ × δ => (p.1.2 - p.1.1, p.2.2 - p.2.1))
-        (comap ee (𝓝 (x₀, x₀)) ×ˢ comap ff (𝓝 (y₀, y₀))) (𝓝 0 ×ˢ 𝓝 0) := by
-      have := Filter.prod_mono (tendsto_sub_comap_self de x₀) (tendsto_sub_comap_self df y₀)
-      rwa [prod_map_map_eq] at this
-    rw [← nhds_prod_eq] at lim_sub_sub
-    exact Tendsto.comp lim_φ lim_sub_sub
-  rcases exists_nhds_zero_quarter W'_nhds with ⟨W, W_nhds, W4⟩
-  have :
-    ∃ U₁ ∈ comap e (𝓝 x₀), ∃ V₁ ∈ comap f (𝓝 y₀), ∀ (x) (_ : x ∈ U₁) (x') (_ : x' ∈ U₁),
-      ∀ (y) (_ : y ∈ V₁) (y') (_ : y' ∈ V₁), (fun p : β × δ => φ p.1 p.2) (x' - x, y' - y) ∈ W := by
-    rcases tendsto_prod_iff.1 lim_φ_sub_sub W W_nhds with ⟨U, U_in, V, V_in, H⟩
-    rw [nhds_prod_eq, ← prod_comap_comap_eq, mem_prod_same_iff] at U_in V_in
-    rcases U_in with ⟨U₁, U₁_in, HU₁⟩
-    rcases V_in with ⟨V₁, V₁_in, HV₁⟩
-    exists U₁, U₁_in, V₁, V₁_in
-    intro x x_in x' x'_in y y_in y' y'_in
-    exact H _ _ (HU₁ (mk_mem_prod x_in x'_in)) (HV₁ (mk_mem_prod y_in y'_in))
-  rcases this with ⟨U₁, U₁_nhds, V₁, V₁_nhds, H⟩
-  obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhds
-  obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhds
-  have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 := by
-    change Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
-    exact hφ.comp continuous_swap
-  rcases extend_Z_bilin_aux de hφ W_nhds x₀ y₁ with ⟨U₂, U₂_nhds, HU⟩
-  rcases extend_Z_bilin_aux df cont_flip W_nhds y₀ x₁ with ⟨V₂, V₂_nhds, HV⟩
-  exists U₁ ∩ U₂, inter_mem U₁_nhds U₂_nhds, V₁ ∩ V₂, inter_mem V₁_nhds V₂_nhds
-  rintro x ⟨xU₁, xU₂⟩ x' ⟨x'U₁, x'U₂⟩ y ⟨yV₁, yV₂⟩ y' ⟨y'V₁, y'V₂⟩
-  have key_formula : φ x' y' - φ x y
-    = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) := by simp; abel
-  rw [key_formula]
-  have h₁ := HU x xU₂ x' x'U₂
-  have h₂ := H x xU₁ x' x'U₁ y₁ y₁_in y' y'V₁
-  have h₃ := HV y yV₂ y' y'V₂
-  have h₄ := H x₁ x₁_in x xU₁ y yV₁ y' y'V₁
-  exact W4 h₁ h₂ h₃ h₄
-
-end IsDenseInducing
