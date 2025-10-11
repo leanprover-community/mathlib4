@@ -969,6 +969,11 @@ theorem congr_mul (f : M ≃ₗ[R] M) (g : N ≃ₗ[R] N) (f' : M ≃ₗ[R] M) (
   | ofNat n => exact congr_pow _ _ _
   | negSucc n => simp_rw [zpow_negSucc, congr_pow]; exact congr_symm _ _
 
+lemma map_bijective {f : M →ₗ[R] N} {g : P →ₗ[R] Q}
+    (hf : Function.Bijective f) (hg : Function.Bijective g) :
+    Function.Bijective (map f g) :=
+  (TensorProduct.congr (.ofBijective f hf) (.ofBijective g hg)).bijective
+
 end TensorProduct
 
 open scoped TensorProduct
