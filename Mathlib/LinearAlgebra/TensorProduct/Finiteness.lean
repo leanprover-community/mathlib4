@@ -183,15 +183,14 @@ lemma exists_finite_mem_range_mapIncl {R E F : Type*} [CommRing R]
     z ∈ LinearMap.range (mapIncl E' F') :=
   z.induction_on
   ⟨⊥, ⊥, .bot R E, .bot R F, Submodule.zero_mem _⟩
-  fun e f => by
-    exact ⟨span R {e}, span R {f}, Finite.span_singleton R e, Finite.span_singleton R f,
-      ⟨e, mem_span_singleton_self e⟩ ⊗ₜ ⟨f, mem_span_singleton_self f⟩, rfl⟩
-  fun _ _ ⟨E1, F1, _, _, ⟨z1, hz1⟩⟩ ⟨E2, F2, _, _, ⟨z2, hz2⟩⟩ =>
+  (fun e f => ⟨span R {e}, span R {f}, Finite.span_singleton R e, Finite.span_singleton R f,
+    ⟨e, mem_span_singleton_self e⟩ ⊗ₜ ⟨f, mem_span_singleton_self f⟩, rfl⟩)
+  (fun _ _ ⟨E1, F1, _, _, ⟨z1, hz1⟩⟩ ⟨E2, F2, _, _, ⟨z2, hz2⟩⟩ =>
     ⟨E1 ⊔ E2, F1 ⊔ F2, E1.finite_sup _, F1.finite_sup _,
       Submodule.add_mem _
       ((range_mapIncl_mono le_sup_left (le_refl _)).trans
         (range_mapIncl_mono (le_refl _) le_sup_left) ⟨z1, hz1⟩)
       ((range_mapIncl_mono le_sup_right (le_refl _)).trans
-        (range_mapIncl_mono (le_refl _) le_sup_right) ⟨z2, hz2⟩)⟩
+        (range_mapIncl_mono (le_refl _) le_sup_right) ⟨z2, hz2⟩)⟩)
 
 end TensorProduct
