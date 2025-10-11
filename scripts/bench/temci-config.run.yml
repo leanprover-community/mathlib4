@@ -26,6 +26,22 @@
       env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
     runs: 1
 - attributes:
+    description: lean4checker
+  build_config:
+    cmd: |
+      set -e
+      git clone https://github.com/leanprover/lean4checker
+      cd lean4checker
+      git checkout 13087b3  # benchmarks should be reproducible
+      lake build
+  run_config:
+    runner: perf_stat
+    perf_stat:
+      properties: ['wall-clock', 'task-clock', 'instructions']
+    rusage_properties: ['maxrss']
+    cmd: |
+      lake env lean4checker/build/bin/lean4checker
+- attributes:
     description: open Mathlib
   run_config:
     runner: perf_stat
