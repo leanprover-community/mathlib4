@@ -304,7 +304,7 @@ def quotSMulTop_linearEquiv (x : R) {M N : Type*} [AddCommGroup M] [Module R M]
   sorry
 
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
-    [Module.Finite R M] (rs : List R) (reg : IsRegular M rs) :
+    [Module.Finite R M] (rs : List R) (reg : IsRegular R rs) :
     (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M rs.length) ≃ₗ[R]
     M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := by
   generalize len : rs.length = n
@@ -548,7 +548,15 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
 lemma injectiveDimension_eq_depth
     (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
     injectiveDimension M = IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
-  --ENat.sSup_mem_of_nonempty_of_lt_top
+  let := Module.Finite.equiv (Shrink.linearEquiv R R).symm
+  have lttop := depth_ne_top (ModuleCat.of R (Shrink.{v} R))
+  rw [IsLocalRing.depth_eq_sSup_length_regular (ModuleCat.of R (Shrink.{v} R))] at lttop ⊢
+  obtain ⟨rs, reg', mem, len⟩ := @ENat.sSup_mem_of_nonempty_of_lt_top _ (by
+    use 0, []
+    simpa using IsRegular.nil _ _) lttop.symm.lt_top'
+  rw [← len]
+  have reg : IsRegular R rs := ((Shrink.linearEquiv.{v} R R).isRegular_congr rs).mp reg'
+
   sorry
 
 end
