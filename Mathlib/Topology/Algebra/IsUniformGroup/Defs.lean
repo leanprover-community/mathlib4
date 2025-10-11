@@ -78,7 +78,7 @@ class IsRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
     𝓤 G = comap (fun x : G × G ↦ x.2 * x.1⁻¹) (𝓝 1)
 
 /-- A **left-uniform additive group** is a topological additive group endowed with the associated
-right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
+left uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
 `(x, y) ↦ (-x) + y`.
 
 In other words, we declare that two points `x` and `y` are infinitely close
@@ -89,7 +89,7 @@ class IsLeftUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
     𝓤 G = comap (fun x : G × G ↦ (-x.1) + x.2) (𝓝 0)
 
 /-- A **left-uniform group** is a topological group endowed with the associated
-right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
+left uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
 `(x, y) ↦ x⁻¹ * y`.
 
 In other words, we declare that two points `x` and `y` are infinitely close
