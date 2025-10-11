@@ -121,7 +121,7 @@ theorem AnalyticOnNhd.divisor_nonneg {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f
   simp [hx]
 
 /--
-The divisor a constant function is `0`.
+The divisor of a constant function is `0`.
 -/
 theorem divisor_const (e : E) :
     divisor (fun _ ↦ e) U = 0 := by
