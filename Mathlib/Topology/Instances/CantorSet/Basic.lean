@@ -3,7 +3,7 @@ Copyright (c) 2024 Jana Göken. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle Dubois,
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
-Filippo A. E. Nuccio
+Filippo A. E. Nuccio, Francesco Vercellesi
 -/
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Real
@@ -108,6 +108,38 @@ theorem cantorSet_eq_union_halves :
     Function.comp_def, ← preCantorSet_succ]
   exact (preCantorSet_antitone.iInter_nat_add _).symm
 
+/-- If `x` is in the ternary Cantor set then either `3 * x` or `3 * x - 2` also is. -/
+theorem cantorSet_scaled_mem {x : ℝ} (h : x ∈ cantorSet) :
+    x * 3 ∈ cantorSet ∨ x * 3 - 2 ∈ cantorSet := by
+  rw [cantorSet_eq_union_halves, Set.mem_union, Set.mem_image] at h
+  apply h.elim
+  · intro ⟨x', ⟨hx'₀, hx'₁⟩⟩
+    apply Or.inl
+    rwa [(by linarith : x' = x * 3)] at hx'₀
+  · intro ⟨x', ⟨hx'₀, hx'₁⟩⟩
+    apply Or.inr
+    rwa [(by linarith : x' = x * 3 - 2)] at hx'₀
+
+/-- If `x` is in the ternary Cantor set then so is `x / 3` -/
+theorem third_in_cantorSet {x : ℝ} (h : x ∈ cantorSet) :
+    x * (1 / 3) ∈ cantorSet := by
+  rw [(by field_simp : x * (1 / 3) = x / 3)]
+  have mem_left_half := Set.mem_image_of_mem (· / 3) h
+  have left_half_subset : (· / 3) '' cantorSet ⊆ cantorSet := by
+    conv_rhs => rw [cantorSet_eq_union_halves]
+    simp
+  exact left_half_subset mem_left_half
+
+/-- If `x` is in the ternary Cantor set then so is `2 / 3 + x / 3` -/
+theorem third_plus_two_thirds_in_cantorSet {x : ℝ} (h : x ∈ cantorSet) :
+    2 / 3 + x * (1 / 3) ∈ cantorSet := by
+  rw [(by field_simp : 2 / 3 + x * (1 / 3) = (2 + x) / 3)]
+  have mem_right_half := Set.mem_image_of_mem (fun x => (2 + x) / 3) h
+  have right_half_subset : ((2 + ·) / 3) '' cantorSet ⊆ cantorSet := by
+    conv_rhs => rw [cantorSet_eq_union_halves]
+    simp
+  exact right_half_subset mem_right_half
+
 /-- The preCantor sets are closed. -/
 lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
   let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by simp)
@@ -126,3 +158,7 @@ lemma isClosed_cantorSet : IsClosed cantorSet :=
 /-- The ternary Cantor set is compact. -/
 lemma isCompact_cantorSet : IsCompact cantorSet :=
   isCompact_Icc.of_isClosed_subset isClosed_cantorSet cantorSet_subset_unitInterval
+
+/-- The ternary Cantor set is complete -/
+lemma isComplete_cantorSet : IsComplete cantorSet :=
+  isClosed_cantorSet.isComplete
