@@ -324,6 +324,21 @@ theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
   rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
     mul_inv_cancel₀ (pow_ne_zero _ π.ne_zero), one_mul]
 
+theorem exists_zpow_Uniformizer {r : K} (hr : r ≠ 0) (x : Uniformizer v) :
+    ∃ n : ℤ, ∃ u : (v.valuationSubring)ˣ, r = (x.1 ^ n) * u.1 := by
+  obtain ⟨num, den, hd, rfl⟩ := IsFractionRing.div_surjective (A := v.valuationSubring) r
+  have hnum : num ≠ 0 := fun h ↦ by simp [h] at hr
+  have hden : den ≠ 0 := fun h ↦ by simp [h] at hr
+  obtain ⟨n1, u1, h1⟩ := exists_pow_Uniformizer hnum x
+  obtain ⟨n2, u2, h2⟩ := exists_pow_Uniformizer hden x
+  have hu2 : ((u2 : v.valuationSubring) : K)⁻¹ = u2⁻¹ :=
+    inv_eq_of_mul_eq_one_left (by norm_cast; simp)
+  use ((n1 : ℤ) - n2), u1 * u2⁻¹
+  simp only [ValuationSubring.algebraMap_apply, h1, SubmonoidClass.coe_pow, h2, div_eq_mul_inv,
+    mul_inv_rev, hu2, zpow_sub₀ (Uniformizer.ne_zero x), zpow_natCast, Units.val_mul,
+    MulMemClass.coe_mul]
+  ring
+
 theorem Uniformizer.is_generator (π : Uniformizer v) :
     maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
   apply (maximalIdeal.isMaximal _).eq_of_le
