@@ -108,6 +108,13 @@ theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
 
+theorem roots_eq_zero_iff_natDegree_eq_zero [IsAlgClosed k] {p : k[X]} :
+    p.roots = 0 ↔ p.natDegree = 0 :=
+  roots_eq_zero_iff.trans eq_C_coeff_zero_iff_natDegree_eq_zero
+
+theorem roots_eq_zero_iff_degree_nonpos [IsAlgClosed k] {p : k[X]} : p.roots = 0 ↔ p.degree ≤ 0 :=
+  roots_eq_zero_iff_natDegree_eq_zero.trans natDegree_eq_zero_iff_degree_le_zero
+
 theorem dvd_iff_roots_le_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
     p ∣ q ↔ p.roots ≤ q.roots :=
   Splits.dvd_iff_roots_le_roots (splits _) hp hq
