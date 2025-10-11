@@ -72,6 +72,7 @@ import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.ModEq
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Option
