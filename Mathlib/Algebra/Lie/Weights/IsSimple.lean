@@ -39,9 +39,9 @@ variable
   (w_plus : χ.toLinear + α.1.toLinear ≠ 0)
   (w_minus : χ.toLinear - α.1.toLinear ≠ 0)
   (w_chi : χ.toLinear ≠ 0)
-  (m_pos m_neg m_h : L)
-  (hm_h : ∃ y : H, y ∈ corootSpace α.1 ∧ (y : L) = m_h)
-  (h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, m_h⁆)
+  (m_pos m_neg : L)
+  (y : H) (hy : y ∈ corootSpace α.1)
+  (h_bracket_sum : ⁅x_χ, m_α⁆ = ⁅x_χ, m_pos⁆ + ⁅x_χ, m_neg⁆ + ⁅x_χ, (y : L)⁆)
   (h_pos_containment : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (⇑χ + ⇑α.1))
   (h_neg_containment : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (⇑χ - ⇑α.1))
 
