@@ -160,11 +160,15 @@ private theorem inner_comm_comm (x y : E ⊗[𝕜] F) :
     (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
     (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
 
+variable (𝕜 E F) in
 /-- The linear isometry equivalence version of `TensorProduct.comm`. -/
 @[simps!]
 def commLinearIsometryEquiv : (E ⊗[𝕜] F) ≃ₗᵢ[𝕜] (F ⊗[𝕜] E) where
   toLinearEquiv := TensorProduct.comm 𝕜 E F
   norm_map' _ := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_comm_comm]
+
+@[simp] lemma toLinearEquiv_commLinearIsometryEquiv :
+    (commLinearIsometryEquiv 𝕜 E F).toLinearEquiv = TensorProduct.comm 𝕜 E F := rfl
 
 private theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
     inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
@@ -173,11 +177,15 @@ private theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
     (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
     (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
 
+variable (𝕜 E) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
 @[simps!]
 def lidLinearIsometryEquiv : (𝕜 ⊗[𝕜] E) ≃ₗᵢ[𝕜] E where
   toLinearEquiv := TensorProduct.lid 𝕜 E
   norm_map' _ := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_lid_lid]
+
+@[simp] lemma toLinearEquiv_lidLinearIsometryEquiv :
+    (lidLinearIsometryEquiv 𝕜 E).toLinearEquiv = TensorProduct.lid 𝕜 E := rfl
 
 variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
 
@@ -192,11 +200,15 @@ private theorem inner_assoc_assoc (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
     (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
 
+variable (𝕜 E F G) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
 @[simps!]
 def assocLinearIsometryEquiv : (E ⊗[𝕜] F ⊗[𝕜] G) ≃ₗᵢ[𝕜] (E ⊗[𝕜] (F ⊗[𝕜] G)) where
   toLinearEquiv := TensorProduct.assoc 𝕜 E F G
   norm_map' _ := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_assoc_assoc]
+
+@[simp] lemma toLinearEquiv_assocLinearIsometryEquiv :
+    (assocLinearIsometryEquiv 𝕜 E F G).toLinearEquiv = TensorProduct.assoc 𝕜 E F G := rfl
 
 end isometry
 
