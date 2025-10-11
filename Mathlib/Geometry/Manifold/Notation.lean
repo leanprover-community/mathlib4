@@ -412,7 +412,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   match_expr e with
   | Prod src tgt =>
     trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
-    let some (srcI, normedSpacesOnlyI) := ← findModelInner src baseInfo
+    let some detailsSrc := ← findModelInner src baseInfo
       | match_expr src with
         | Prod src1 src2 =>
           trace[Elab.DiffGeo.MDiff] "Expression {src} is a product, recursing into each factor"
@@ -423,7 +423,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
           let r := ← combine res1 res2
           return r.1
         | _ => throwError "Found no model with corners on {src}"
-    let some (srcJ, normedSpacesOnlyJ) := ← findModelInner tgt baseInfo
+    let some detailsTgt := ← findModelInner tgt baseInfo
       | match_expr tgt with
         | Prod tgt1 tgt2 =>
           trace[Elab.DiffGeo.MDiff] "Expression {tgt} is a product, recursing into each factor"
@@ -434,9 +434,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
           let r := ← combine res1 res2
           return r.1
         | _ => throwError "Found no model with corners on {tgt}"
-
-    let r := combine (srcI, normedSpacesOnlyI) (srcJ, normedSpacesOnlyJ)
-    return (← r).1
+    return (← combine detailsSrc detailsTgt).1
   | _ => throwError "Could not find a model with corners for {e}"
 where
   /- Form the product expression for two models with corners.
