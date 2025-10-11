@@ -597,10 +597,35 @@ theorem mem_biUnion {s : Set α} {t : α → Set β} {x : α} {y : β} (xs : x �
     y ∈ ⋃ x ∈ s, t x :=
   mem_iUnion₂_of_mem xs ytx
 
+/-- `biUnion` is equivalent to an existential statement using a `Subtype`. -/
+theorem mem_biUnion' {α ι : Type*} {x : α} {I : Set ι} {s : ι → Set α} :
+    x ∈ ⋃ i ∈ I, s i ↔ ∃ (i : I), x ∈ s i := by
+  refine ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, h⟩ ↦ mem_iUnion₂.mpr ⟨a, b, h⟩⟩
+  have ⟨a, b, h⟩ := mem_iUnion₂.mp h
+  use ⟨a, b⟩
+
+/-- `biUnion` is equivalent to an existential statement using membership. -/
+theorem mem_biUnion'' {α ι : Type*} {x : α} {I : Set ι} {s : ι → Set α} :
+    x ∈ ⋃ i ∈ I, s i ↔ ∃ i ∈ I, x ∈ s i := by
+  refine ⟨fun h ↦ ?_, fun ⟨a, b, h⟩ ↦ mem_iUnion₂.mpr ⟨a, b, h⟩⟩
+  have ⟨a, b, h⟩ := mem_iUnion₂.mp h
+  use a
+
 /-- A specialization of `mem_iInter₂`. -/
 theorem mem_biInter {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, y ∈ t x) :
     y ∈ ⋂ x ∈ s, t x :=
   mem_iInter₂_of_mem h
+
+/-- `biInter` is equivalent to a universal statement using a `Subtype`. -/
+theorem mem_biInter' {α ι : Type*} {x : α} {I : Set ι} {s : ι → Set α} :
+    x ∈ ⋂ i ∈ I, s i ↔ ∀ (i : I), x ∈ s i :=
+  ⟨fun h ⟨a, b⟩ ↦ mem_iInter₂.mp h a b, fun h ↦ mem_iInter₂.mpr fun a b ↦ h ⟨a, b⟩⟩
+
+/-- `biInter` is equivalent to a universal statement using membership,
+a specialization of `mem_iInter₂`. -/
+theorem mem_biInter'' {α ι : Type*} {x : α} {I : Set ι} {s : ι → Set α} :
+    x ∈ ⋂ i ∈ I, s i ↔ ∀ i ∈ I, x ∈ s i :=
+  mem_iInter₂
 
 /-- A specialization of `subset_iUnion₂`. -/
 theorem subset_biUnion_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : x ∈ s) :
