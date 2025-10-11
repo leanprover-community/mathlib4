@@ -5,6 +5,7 @@ Authors: Stefan Kebekus
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
@@ -193,6 +194,24 @@ theorem laplacian_eq_iteratedFDeriv_stdOrthonormalBasis :
     Δ f = fun x ↦
       ∑ i, iteratedFDeriv ℝ 2 f x ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] :=
   laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
+
+/-- For a function on `ℝ`, the Laplacian is the second derivative: version within a set. -/
+theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f : ℝ → F)
+    (hs : UniqueDiffOn ℝ s) (he : e ∈ s) :
+    (Δ[s] f) e = iteratedDerivWithin 2 f s e := by
+  simp only [laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he
+        (OrthonormalBasis.singleton (Fin 1) ℝ),
+    Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, OrthonormalBasis.singleton_apply,
+    Finset.sum_const, Finset.card_singleton, one_smul, iteratedDerivWithin_eq_iteratedFDerivWithin]
+  congr with i
+  fin_cases i <;> simp
+
+/-- For a function on `ℝ`, the Laplacian is the second derivative. -/
+@[simp]
+theorem laplacian_eq_iteratedDeriv_real {e : ℝ} (f : ℝ → F) :
+    Δ f e = iteratedDeriv 2 f e := by
+  rw [← laplacianWithin_univ, ← iteratedDerivWithin_univ,
+    laplacianWithin_eq_iteratedDerivWithin_real _ (by simp) (by simp)]
 
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
