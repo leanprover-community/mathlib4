@@ -22,7 +22,7 @@ over `K` if they have the same minimal polynomial over `K`.
 
 * `isConjRoot_iff_exists_algEquiv`: Let `L / K` be a normal field extension. For any two elements
   `x` and `y` in `L`, `IsConjRoot K x y` is equivalent to the existence of an algebra equivalence
-  `σ : L ≃ₐ[K] L` such that `y = σ x`.
+  `σ : Gal(L/K)` such that `y = σ x`.
 * `notMem_iff_exists_ne_and_isConjRoot`: Let `L / K` be a field extension. If `x` is a separable
   element over `K` and the minimal polynomial of `x` splits in `L`, then `x` is not in the `K` iff
   there exists a different conjugate root of `x` in `L` over `K`.
@@ -173,22 +173,22 @@ theorem isConjRoot_of_algEquiv₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRo
 
 /--
 Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`, if `y` is a
-conjugate root of `x`, then there exists a `K`-automorphism `σ : L ≃ₐ[K] L` such
+conjugate root of `x`, then there exists a `K`-automorphism `σ : Gal(L/K)` such
 that `σ y = x`.
 -/
 theorem IsConjRoot.exists_algEquiv [Normal K L] {x y : L} (h : IsConjRoot K x y) :
-    ∃ σ : L ≃ₐ[K] L, σ y = x := by
+    ∃ σ : Gal(L/K), σ y = x := by
   obtain ⟨σ, hσ⟩ :=
     exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x)
   exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ⟩
 
 /--
 Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`, `y` is a
-conjugate root of `x` if and only if there exists a `K`-automorphism `σ : L ≃ₐ[K] L` such
+conjugate root of `x` if and only if there exists a `K`-automorphism `σ : Gal(L/K)` such
 that `σ y = x`.
 -/
 theorem isConjRoot_iff_exists_algEquiv [Normal K L] {x y : L} :
-    IsConjRoot K x y ↔ ∃ σ : L ≃ₐ[K] L, σ y = x :=
+    IsConjRoot K x y ↔ ∃ σ : Gal(L/K), σ y = x :=
   ⟨exists_algEquiv, fun ⟨_, h⟩ => h ▸ (isConjRoot_of_algEquiv _ _).symm⟩
 
 /--
@@ -197,7 +197,7 @@ conjugate root of `x` if and only if `x` and `y` falls in the same orbit of the 
 group.
 -/
 theorem isConjRoot_iff_orbitRel [Normal K L] {x y : L} :
-    IsConjRoot K x y ↔ MulAction.orbitRel (L ≃ₐ[K] L) L x y:=
+    IsConjRoot K x y ↔ MulAction.orbitRel Gal(L/K) L x y:=
   (isConjRoot_iff_exists_algEquiv)
 
 variable [IsDomain S]
@@ -231,7 +231,7 @@ theorem isConjRoot_iff_mem_minpoly_rootSet {x y : S}
 
 namespace IsConjRoot
 
-instance decidable [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (x y : L) :
+instance decidable [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (x y : L) :
     Decidable (IsConjRoot K x y) :=
   decidable_of_iff _ isConjRoot_iff_exists_algEquiv.symm
 

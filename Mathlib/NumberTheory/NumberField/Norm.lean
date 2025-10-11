@@ -67,12 +67,12 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
   refine ⟨fun hx => ?_, IsUnit.map _⟩
   replace hx : IsUnit (algebraMap (𝓞 K) (𝓞 L) <| norm K x) := hx.map (algebraMap (𝓞 K) <| 𝓞 L)
   refine @isUnit_of_mul_isUnit_right (𝓞 L) _
-    ⟨(univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x,
+    ⟨(univ \ {AlgEquiv.refl}).prod fun σ : Gal(L/K) => σ x,
       prod_mem fun σ _ => x.2.map (σ : L →+* L).toIntAlgHom⟩ _ ?_
   convert hx using 1
   ext
-  convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x) *
-    ∏ σ ∈ {(AlgEquiv.refl : L ≃ₐ[K] L)}, σ x = _
+  convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : Gal(L/K) => σ x) *
+    ∏ σ ∈ {(AlgEquiv.refl : Gal(L/K))}, σ x = _
   · rw [prod_singleton, AlgEquiv.coe_refl, _root_.id, RingOfIntegers.coe_eq_algebraMap, map_mul,
       RingOfIntegers.map_mk]
   · rw [prod_sdiff <| subset_univ _, ← norm_eq_prod_automorphisms, coe_algebraMap_norm]
@@ -82,7 +82,7 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
 theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x) := by
   classical
   have hint :
-    IsIntegral ℤ (∏ σ ∈ univ.erase (AlgEquiv.refl : L ≃ₐ[K] L), σ x) :=
+    IsIntegral ℤ (∏ σ ∈ univ.erase (AlgEquiv.refl : Gal(L/K)), σ x) :=
     IsIntegral.prod _ (fun σ _ =>
       ((RingOfIntegers.isIntegral_coe x).map σ))
   refine ⟨⟨_, hint⟩, ?_⟩

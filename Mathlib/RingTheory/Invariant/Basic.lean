@@ -47,17 +47,17 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
 
 /-- In the AKLB setup, the Galois group of `L/K` acts on `B`. -/
 noncomputable def IsIntegralClosure.MulSemiringAction [Algebra.IsAlgebraic K L] :
-    MulSemiringAction (L ≃ₐ[K] L) B :=
+    MulSemiringAction Gal(L/K) B :=
   MulSemiringAction.compHom B (galRestrict A K L B).toMonoidHom
 
 /-- In the AKLB setup, every fixed point of `B` lies in the image of `A`. -/
 theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
     letI := IsIntegralClosure.MulSemiringAction A K L B
-    Algebra.IsInvariant A B (L ≃ₐ[K] L) := by
+    Algebra.IsInvariant A B Gal(L/K) := by
   replace h := ((IsGalois.tfae (F := K) (E := L)).out 0 1).mp h
   letI := IsIntegralClosure.MulSemiringAction A K L B
   refine ⟨fun b hb ↦ ?_⟩
-  replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup (L ≃ₐ[K] L)) := by
+  replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup Gal(L/K)) := by
     rintro ⟨g, -⟩
     exact (algebraMap_galRestrict_apply A g b).symm.trans (congrArg (algebraMap B L) (hb g))
   rw [h, IntermediateField.mem_bot] at hb
@@ -298,7 +298,7 @@ private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p :
   exact hf.symm
 
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
-private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : L ≃ₐ[K] L) (b : B ⧸ Q)
+private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
   classical
@@ -335,11 +335,11 @@ private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : L ≃ₐ[K
 variable [IsFractionRing (A ⧸ P) K] [IsFractionRing (B ⧸ Q) L]
 
 /-- If `Q` lies over `P`, then the stabilizer of `Q` acts on `Frac(B/Q)/Frac(A/P)`. -/
-noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
+noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* Gal(L/K) :=
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
 
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
-private theorem fixed_of_fixed2 (f : L ≃ₐ[K] L) (x : L)
+private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
     (hx : ∀ g : MulAction.stabilizer G Q, IsFractionRing.stabilizerHom G P Q K L g x = x) :
     f x = x := by
   obtain ⟨_⟩ := nonempty_fintype G
