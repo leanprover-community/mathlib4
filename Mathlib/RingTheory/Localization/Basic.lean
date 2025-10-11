@@ -580,3 +580,26 @@ theorem Localization.mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
 
 end CommRing
+
+section Algebra
+
+-- This is not tagged with `@[ext]` because `A` and `W` cannot be inferred.
+theorem IsLocalization.algHom_ext {R A L B : Type*}
+    [CommSemiring R] [CommSemiring A] [CommSemiring L] [Semiring B]
+    (W : Submonoid A) [Algebra A L] [IsLocalization W L]
+    [Algebra R A] [Algebra R L] [IsScalarTower R A L] [Algebra R B]
+    {f g : L →ₐ[R] B} (h : f.comp (Algebra.algHom R A L) = g.comp (Algebra.algHom R A L)) :
+    f = g :=
+  AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext W <| RingHom.ext <| AlgHom.ext_iff.mp h
+
+-- This is a more specific case where the domain is `Localization W`, so this is tagged
+-- `@[ext high]` so that it will be automatically applied before the default extensionality lemmas
+-- which compare every element.
+@[ext high] theorem Localization.algHom_ext {R A B : Type*}
+    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B] (W : Submonoid A)
+    {f g : Localization W →ₐ[R] B}
+    (h : f.comp (Algebra.algHom R A _) = g.comp (Algebra.algHom R A _)) :
+    f = g :=
+  IsLocalization.algHom_ext W h
+
+end Algebra
