@@ -416,8 +416,10 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
 
 end ΓSpec
 
-theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
+theorem Scheme.toSpecΓ_apply (X : Scheme.{u}) (x) :
     Scheme.toSpecΓ X x = Spec.map (X.presheaf.germ ⊤ x trivial) (IsLocalRing.closedPoint _) := rfl
+
+@[deprecated (since := "2025-10-17")] alias Scheme.toSpecΓ_base := Scheme.toSpecΓ_apply
 
 @[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
