@@ -5363,6 +5363,7 @@ import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.IonescuTulcea.Maps
 import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 import Mathlib.Probability.Kernel.IonescuTulcea.Traj
+import Mathlib.Probability.Kernel.Irreducible
 import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.MeasurableLIntegral
 import Mathlib.Probability.Kernel.Posterior
