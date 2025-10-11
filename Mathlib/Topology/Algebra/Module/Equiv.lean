@@ -1028,6 +1028,8 @@ end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
+open ContinuousLinearMap (id)
+
 variable {R : Type*} {M M₂ M₃ : Type*}
   [TopologicalSpace M] [TopologicalSpace M₂] [TopologicalSpace M₃]
 
