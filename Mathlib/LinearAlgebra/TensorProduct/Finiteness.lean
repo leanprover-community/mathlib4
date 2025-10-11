@@ -176,9 +176,9 @@ theorem exists_finite_submodule_right_of_finite' (s : Set (M₁ ⊗[R] N₁)) (h
 
 /-- Every element of a tensor product lies in the tensor product of some finite submodules. -/
 lemma exists_finite_mem_map₂ (z : M ⊗[R] N) :
-    ∃ (E' : Submodule R M) (F' : Submodule R N) (_ : Module.Finite R E') (_ : Module.Finite R F'),
-      z ∈ Submodule.map₂ (mk R M N) E' F' := by
-  obtain ⟨E', F', hE', hF', h⟩ := exists_finite_submodule_of_finite {z} (Set.finite_singleton z)
-  exact ⟨E', F', hE', hF', range_mapIncl E' F' ▸ Set.singleton_subset_iff.mp h⟩
+    ∃ (M' : Submodule R M) (N' : Submodule R N) (_ : Module.Finite R M') (_ : Module.Finite R N'),
+      z ∈ Submodule.map₂ (mk R M N) M' N' := by
+  obtain ⟨M', N', hM', hN', h⟩ := exists_finite_submodule_of_finite {z} (Set.finite_singleton z)
+  exact ⟨M', N', hM', hN', range_mapIncl M' N' ▸ Set.singleton_subset_iff.mp h⟩
 
 end TensorProduct
