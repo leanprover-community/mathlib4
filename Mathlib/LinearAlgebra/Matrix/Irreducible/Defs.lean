@@ -35,8 +35,7 @@ existence of paths).
 
 ## Main results
 
-*   `pow_entry_pos_iff_exists_path`: Establishes the key link between matrix powers and graph
-    theory:
+*   `pow_entry_pos_iff_exists_path`: Establishes the link between matrix powers and graph theory:
     `(A ^ k) i j > 0` if and only if there is a path of length `k` from `i` to `j` in `toQuiver A`.
 *   `irreducible_iff_exists_pow_pos`: Shows the equivalence between the graph-theoretic definition
     of irreducibility (strong connectivity) and the algebraic one (existence of a positive entry
