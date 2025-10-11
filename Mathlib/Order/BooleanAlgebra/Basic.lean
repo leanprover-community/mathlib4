@@ -220,11 +220,11 @@ theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
 
 theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x := sdiff_eq_left.trans disjoint_comm
 
-theorem sdiff_eq_self_iff_disjoint' : x \ y = x ↔ Disjoint x y := sdiff_eq_left
+@[deprecated (since := "2025-10-12")] alias sdiff_eq_self_iff_disjoint' := sdiff_eq_left
 
 theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   refine sdiff_le.lt_of_ne fun h => hy ?_
-  rw [sdiff_eq_self_iff_disjoint', disjoint_iff] at h
+  rw [sdiff_eq_left, disjoint_iff] at h
   rw [← h, inf_eq_right.mpr hx]
 
 theorem sdiff_lt_left : x \ y < x ↔ ¬ Disjoint y x := by
