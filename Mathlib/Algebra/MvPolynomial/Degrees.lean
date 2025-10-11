@@ -435,7 +435,7 @@ theorem totalDegree_list_prod :
   | [] => by rw [List.prod_nil, totalDegree_one, List.map_nil, List.sum_nil]
   | p::ps => by
     rw [List.prod_cons, List.map, List.sum_cons]
-    exact le_trans (totalDegree_mul _ _) (add_le_add_left (totalDegree_list_prod ps) _)
+    exact le_trans (totalDegree_mul _ _) (by gcongr; exact totalDegree_list_prod ps)
 
 theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
     s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum := by

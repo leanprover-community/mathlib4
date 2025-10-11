@@ -30,7 +30,7 @@ assert_not_exists Ring
 -- this makes `mul_lt_mul_iff_right₀`, `mul_pos` etc. work on `ℤᵐ⁰`
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     PosMulStrictMono (WithZero α) where
-  elim
+  elim := @fun
     | ⟨(x : α), hx⟩, 0, (b : α), _ => by
         simpa only [mul_zero] using WithZero.zero_lt_coe _
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
@@ -41,7 +41,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
 open Function in
 instance {α : Type*} [Mul α] [Preorder α] [MulRightStrictMono α] :
     MulPosStrictMono (WithZero α) where
-  elim
+  elim := @fun
     | ⟨(x : α), hx⟩, 0, (b : α), _ => by
         simpa only [mul_zero] using WithZero.zero_lt_coe _
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
