@@ -174,8 +174,7 @@ theorem exists_finite_submodule_right_of_finite' (s : Set (M₁ ⊗[R] N₁)) (h
   rw [← LinearMap.lTensor_comp_rTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
-/-- Given an element `z : E ⊗ F`, there exists finite subspaces `E'` and `F'`
-whose tensor product contains `z`. -/
+/-- Every element of a tensor product lies in the tensor product of some finite submodules. -/
 lemma exists_finite_mem_map₂ {R E F : Type*} [CommRing R]
     [AddCommGroup E] [AddCommGroup F] [Module R E] [Module R F] (z : E ⊗[R] F) :
     ∃ (E' : Submodule R E) (F' : Submodule R F) (_ : Module.Finite R E') (_ : Module.Finite R F'),
