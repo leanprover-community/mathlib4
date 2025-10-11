@@ -50,6 +50,8 @@ as for a family, but without the starting `i`, for example `CondIndepFun` is the
   independence of `X` and `Y` given `Z`.
 * `X ⟂ᵢ[Z, hZ] Y` for the cases of `μ = volume`.
 
+These notations are scoped in the `ProbabilityTheory` namespace.
+
 ## Implementation notes
 
 The definitions of conditional independence in this file are a particular case of independence with
@@ -152,12 +154,12 @@ end
 end Definitions
 
 @[inherit_doc ProbabilityTheory.CondIndepFun]
-scoped [ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" Z ", " hZ "; " μ "] " Y:50 =>
+scoped[ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" Z ", " hZ "; " μ "] " Y:50 =>
   ProbabilityTheory.CondIndepFun (MeasurableSpace.comap Z inferInstance) (Measurable.comap_le hZ)
   X Y μ
 
 @[inherit_doc ProbabilityTheory.CondIndepFun]
-scoped [ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" Z ", " hZ "] " Y:50 =>
+scoped[ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" Z ", " hZ "] " Y:50 =>
   ProbabilityTheory.CondIndepFun (MeasurableSpace.comap Z inferInstance) (Measurable.comap_le hZ)
   X Y volume
 
