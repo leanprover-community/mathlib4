@@ -180,7 +180,7 @@ lemma exists_finite_mem_map₂ {R E F : Type*} [CommRing R]
     ∃ (E' : Submodule R E) (F' : Submodule R F) (_ : Module.Finite R E') (_ : Module.Finite R F'),
       z ∈ Submodule.map₂ (mk R E F) E' F' :=
   z.induction_on
-  ⟨⊥, ⊥, .bot R E, .bot R F, Submodule.zero_mem _⟩
+  ⟨⊥, ⊥, .bot R E, .bot R F, zero_mem _⟩
   (fun e f => ⟨span R {e}, span R {f}, .span_singleton R e, .span_singleton R f,
     apply_mem_map₂ _ (mem_span_singleton_self e) (mem_span_singleton_self f)⟩)
   (fun _ _ ⟨E1, F1, _, _, hz1⟩ ⟨E2, F2, _, _, hz2⟩ =>
