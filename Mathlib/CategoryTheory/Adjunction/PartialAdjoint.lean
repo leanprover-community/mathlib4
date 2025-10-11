@@ -244,6 +244,18 @@ lemma partialRightAdjointHomEquiv_map_comp {X : C} {Y Y' : F.PartialRightAdjoint
   rw [partialRightAdjointHomEquiv_comp, partialRightAdjointHomEquiv_map,
     ← assoc, ← partialRightAdjointHomEquiv_comp, comp_id]
 
+lemma partialRightAdjointHomEquiv_comp_symm {X X' : C} {Y : F.PartialRightAdjointSource}
+    (f : F.obj X' ⟶ Y.obj) (g : X ⟶ X') :
+    g ≫ F.partialRightAdjointHomEquiv.symm f =
+      F.partialRightAdjointHomEquiv.symm (F.map g ≫ f) :=
+  RepresentableBy.comp_homEquiv_symm ..
+
+lemma partialRightAdjointHomEquiv_symm_comp {X : C} {Y Y' : F.PartialRightAdjointSource}
+    (f : F.obj X ⟶ Y.obj) (g : Y ⟶ Y') :
+    F.partialRightAdjointHomEquiv.symm f ≫ F.partialRightAdjointMap g =
+      F.partialRightAdjointHomEquiv.symm (f ≫ g) := by
+  simp [Equiv.eq_symm_apply, partialRightAdjointHomEquiv_map_comp]
+
 /-- Given `F : C ⥤ D`, this is the partial adjoint functor `F.PartialLeftAdjointSource ⥤ C`. -/
 @[simps]
 noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
