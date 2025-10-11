@@ -53,9 +53,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
   { toFun := fun gx ↦ (gx.1, (gx.1 : α) • gx.2)
     invFun := fun gx ↦ (gx.1, (gx.1 : α)⁻¹ • gx.2)
     left_inv := fun _ ↦ by simp
-    right_inv := fun _ ↦ by simp
-    continuous_toFun := by fun_prop
-    continuous_invFun := by fun_prop }
+    right_inv := fun _ ↦ by simp }
   have : s • t = (snd ∘ Φ) '' (snd ⁻¹' t) :=
     subset_antisymm
       (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (snd ∘ Φ) (x := ⟨⟨g, hg⟩, x⟩) hx)
