@@ -259,6 +259,18 @@ theorem exists_ne_zero_dotProduct_eq_zero (a : m → α) : ∃ b ≠ 0, b ⬝ᵥ
   · refine ⟨Function.ne_iff.mpr ⟨i, by simp [h2]⟩, ?_⟩
     simp [dotProduct, Finset.sum_ite, Finset.sum_eq_ite i, hij.symm, mul_comm (a i)]
 
+lemma not_injective_dotProduct_left (a : m → α) :
+    ¬ Function.Injective (dotProduct a) := by
+  intro h
+  obtain ⟨b, hb, hba⟩ := exists_ne_zero_dotProduct_eq_zero a
+  simpa [dotProduct_comm a b, hba, hb] using @h b 0
+
+lemma not_injective_dotProduct_right (a : m → α) :
+    ¬ Function.Injective (dotProduct · a) := by
+  intro h
+  obtain ⟨b, hb, hba⟩ := exists_ne_zero_dotProduct_eq_zero a
+  simpa [hba, hb] using @h b 0
+
 end CommRing
 
 end DotProduct
