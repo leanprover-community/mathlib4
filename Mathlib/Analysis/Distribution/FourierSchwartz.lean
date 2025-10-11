@@ -122,6 +122,7 @@ theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
+/-- Plancherel's theorem for Schwartz functions. -/
 theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
     ∫ ξ, inner ℂ (𝓕 f ξ) (𝓕 g ξ) = ∫ x, inner ℂ (f x) (g x) :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
