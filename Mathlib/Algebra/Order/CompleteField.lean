@@ -15,18 +15,18 @@ preserving these properties to the reals. This is `LinearOrderedField.inducedOrd
 Moreover this isomorphism is unique.
 
 We introduce definitions of conditionally complete linear ordered fields, and show all such are
-archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
+Archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
 
 ## Main definitions
 
 * `ConditionallyCompleteLinearOrderedField`: A field satisfying the standard axiomatization of
   the real numbers, being a Dedekind complete and linear ordered field.
-* `LinearOrderedField.inducedMap`: A (unique) map from any archimedean linear ordered field to a
+* `LinearOrderedField.inducedMap`: A (unique) map from any Archimedean linear ordered field to a
   conditionally complete linear ordered field. Various bundlings are available.
 
 ## Main results
 
-* `LinearOrderedField.uniqueOrderRingHom` : Uniqueness of `OrderRingHom`s from an archimedean
+* `LinearOrderedField.uniqueOrderRingHom` : Uniqueness of `OrderRingHom`s from an Archimedean
   linear ordered field to a conditionally complete linear ordered field.
 * `LinearOrderedField.uniqueOrderRingIso` : Uniqueness of `OrderRingIso`s between two
   conditionally complete linearly ordered fields.
@@ -55,7 +55,7 @@ class ConditionallyCompleteLinearOrderedField (α : Type*) extends
     Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
 
 -- see Note [lower instance priority]
-/-- Any conditionally complete linearly ordered field is archimedean. -/
+/-- Any conditionally complete linearly ordered field is Archimedean. -/
 instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
   archimedean_iff_nat_lt.2
@@ -296,7 +296,7 @@ theorem inducedOrderRingIso_self : inducedOrderRingIso β β = OrderRingIso.refl
 
 open OrderRingIso
 
-/-- There is a unique ordered ring homomorphism from an archimedean linear ordered field to a
+/-- There is a unique ordered ring homomorphism from an Archimedean linear ordered field to a
 conditionally complete linear ordered field. -/
 instance uniqueOrderRingHom : Unique (α →+*o β) :=
   uniqueOfSubsingleton <| inducedOrderRingHom α β

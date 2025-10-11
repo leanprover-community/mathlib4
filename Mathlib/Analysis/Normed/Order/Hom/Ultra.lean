@@ -7,10 +7,10 @@ import Mathlib.Analysis.Normed.Order.Hom.Basic
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
-# Constructing nonarchimedean (ultrametric) normed groups from nonarchimedean normed homs
+# Constructing non-Archimedean (ultrametric) normed groups from non-Archimedean normed homs
 
 This file defines constructions that upgrade `Add(Comm)Group` to `(Semi)NormedAdd(Comm)Group`
-using an `AddGroup(Semi)normClass` when the codomain is the reals and the hom is nonarchimedean.
+using an `AddGroup(Semi)normClass` when the codomain is the reals and the hom is non-Archimedean.
 
 ## Implementation details
 
