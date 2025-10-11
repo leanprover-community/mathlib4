@@ -238,17 +238,16 @@ On succcess, return `some (e × eN)`, where `e` is an `Expr` for the type it fou
 `some E` if `e` is a normed space `E` (and `none`) otherwise.
 This information is used to assign models to products of normed spaces currently. -/
 def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-    TermElabM <| Option (Expr × Bool) := do
-  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return some (m, false)
-  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return some (m, false)
-  -- TODO: make fromNormedSpace return the expression `E` also... then return it
-  if let some (m, eK) ← tryStrategy' (Expr × Expr) m!"NormedSpace"
-    fromNormedSpace  then return some (m, true)
-  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return some (m, false)
-  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return some (m, false)
-  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return some (m, false)
-  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return some (m, false)
-  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return some (m, false)
+    TermElabM <| Option (Expr × Option (Expr × Expr)) := do
+  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return some (m, none)
+  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return some (m, none)
+  if let some (m, eK) ← tryStrategy' (Expr × Expr) m!"NormedSpace" fromNormedSpace then
+    return some (m, some eK)
+  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return some (m, none)
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return some (m, none)
+  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return some (m, none)
+  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return some (m, none)
+  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return some (m, none)
   return none
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -408,7 +407,7 @@ This implementation is not maximally robust yet.
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   -- At first, try finding a model on the space itself.
-  if let some (m, _) ← findModelInner e baseInfo then return m
+  if let some (m, _eK) ← findModelInner e baseInfo then return m
   -- TODO: allow arbitrarily many factors by writing a proper recursive definition!
   match_expr e with
   | Prod src tgt =>
@@ -442,18 +441,17 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
 where
   /- Form the product expression for two models with corners.
   -- Emits the wrong choice for the product of normed spaces, but at least warns about this. -/
-  combine (eI eJ : Expr × Bool) : TermElabM (Expr × Bool) := do
+  combine (eI eJ : Expr × Option (Expr × Expr)) : TermElabM (Expr × Option (Expr × Expr)) := do
     let aT : Term ← Term.exprToSyntax eI.1
     let bT : Term ← Term.exprToSyntax eJ.1
     let iTerm : Term ← ``(ModelWithCorners.prod $aT $bT)
-    if eI.2 && eJ.2 then
+    if eI.2.isSome && eJ.2.isSome then
       -- TODO: extract the respective expressions E and F (and their base fields),
       -- ensure the base fields coincide, and return the model over E × F instead.
       trace[Elab.DiffGeo.MDiff] "Product of normed spaces: computing the 'wrong' model!"
-      return (← Term.elabTerm iTerm none, true)
+      return (← Term.elabTerm iTerm none, eI.2 /- TODO: placeholder!!! -/)
     else
-      return (← Term.elabTerm iTerm none, false)
-
+      return (← Term.elabTerm iTerm none, none)
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
