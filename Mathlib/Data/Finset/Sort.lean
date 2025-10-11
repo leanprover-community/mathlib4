@@ -115,10 +115,10 @@ section SortLinearOrder
 variable [LinearOrder α]
 
 theorem sort_sorted_lt (s : Finset α) : (sort (· ≤ ·) s).SortedLT :=
-  (pairwise_sort _ _).sortedLE.sortedLT (sort_nodup _ _)
+  (pairwise_sort _ _).isChain.sortedLE.sortedLT (sort_nodup _ _)
 
 theorem sort_sorted_gt (s : Finset α) : (sort (· ≥ ·) s).SortedGT :=
-  (pairwise_sort _ _).sortedGE.sortedGT (sort_nodup _ _)
+  (pairwise_sort _ _).isChain.sortedGE.sortedGT (sort_nodup _ _)
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
     (s.sort (· ≤ ·)).get ⟨0, h⟩ = s.min' H := by

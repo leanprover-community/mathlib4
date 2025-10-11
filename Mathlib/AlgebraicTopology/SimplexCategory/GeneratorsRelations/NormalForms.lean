@@ -51,7 +51,7 @@ def IsAdmissible (L : List ℕ) : Prop :=
 
 namespace IsAdmissible
 
-lemma nil : IsAdmissible m [] := by simp [IsAdmissible]
+lemma nil : IsAdmissible m [] := by simp [IsAdmissible, List.sortedLT_iff_pairwise]
 
 variable {m}
 
@@ -61,25 +61,23 @@ lemma le {L : List ℕ} (hL : IsAdmissible m L) : ∀ (k : ℕ), (h : k < L.leng
 
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
 lemma head_lt (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) :
-    ∀ a' ∈ L, a < a' := fun i hi ↦ (List.sorted_cons.mp hl.sorted).left i hi
+    ∀ a' ∈ L, a < a' := fun i hi ↦ (List.pairwise_cons.mp hl.sorted.pairwise).left i hi
 
 /-- If `L` is a `(m + 1)`-admissible list, and `a` is natural number such that a ≤ m and a < L[0],
 then `a::L` is `m`-admissible -/
 lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by
   cases L with
-  | nil => constructor <;> simp [ha]
+  | nil => constructor <;> simp [ha, List.sortedLT_iff_isChain]
   | cons head tail =>
     simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff,
       Nat.lt_one_iff, pos_of_gt, or_true, List.getElem_cons_zero,
       forall_const] at ha'
-    simp only [IsAdmissible, List.sorted_cons, List.mem_cons, forall_eq_or_imp]
+    simp only [IsAdmissible, List.sortedLT_iff_isChain, List.isChain_cons_cons]
     constructor <;> repeat constructor
     · exact ha'
-    · rw [← List.forall_getElem]
-      intro i hi
-      exact ha'.trans <| (List.sorted_cons.mp hL.sorted).left tail[i] <| List.getElem_mem hi
-    · exact List.sorted_cons.mp hL.sorted
+    · rw [← List.sortedLT_iff_isChain]
+      exact hL.1
     · rintro ⟨_ | _⟩ hi
       · simp [ha]
       · haveI := hL.le _ <| Nat.lt_of_succ_lt_succ hi
@@ -89,7 +87,7 @@ lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
 lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
     IsAdmissible (m + 1) l := by
-  refine ⟨(List.sorted_cons.mp h.sorted).right, ?_⟩
+  refine ⟨(List.pairwise_cons.mp h.sorted.pairwise).right.isChain.sortedLT, ?_⟩
   intro k _
   simpa [Nat.add_assoc, Nat.add_comm 1] using h.le (k + 1) (by simpa)
 
@@ -132,7 +130,8 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) 
     (hj : j < m + 1) :
     IsAdmissible m <| simplicialInsert j L := by
   induction L generalizing j m with
-  | nil => constructor <;> simp [simplicialInsert, j.le_of_lt_add_one hj]
+  | nil => constructor <;> simp [simplicialInsert,
+    j.le_of_lt_add_one hj, List.sortedLT_iff_pairwise]
   | cons a L h_rec =>
     dsimp only [simplicialInsert]
     split_ifs with ha
@@ -147,7 +146,7 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) 
           dsimp only [simplicialInsert]
           split_ifs
           · exact ha
-          · exact (List.sorted_cons_cons.mp hL.sorted).1
+          · exact (List.pairwise_cons_cons.mp hL.sorted.pairwise).1
 
 end AdmissibleLists
 
@@ -278,7 +277,8 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
   | of f hf =>
     cases hf with | @σ m k =>
     use [k.val], m, 1 , rfl, rfl, rfl
-    constructor <;> simp [IsAdmissible, Nat.le_of_lt_add_one k.prop, standardσ]
+    constructor <;> simp [IsAdmissible, Nat.le_of_lt_add_one k.prop,
+      standardσ, List.sortedLT_iff_pairwise]
   | @comp_of _ j x' g g' hg hg' h_rec =>
     cases hg' with | @σ m k =>
     obtain ⟨L₁, m₁, b₁, h₁', rfl, h', hL₁, e₁⟩ := h_rec
@@ -308,9 +308,10 @@ lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
       simplicialEvalσ L j = simplicialEvalσ L (j + 1) - 1 →
       simplicialEvalσ L j = simplicialEvalσ L (j + 1) by grind
     intro h₁ h₂ hj₂
-    simp only [IsAdmissible, List.sorted_cons, List.length_cons] at hL
+    simp only [IsAdmissible, List.sortedLT_iff_pairwise, List.pairwise_cons, List.length_cons] at hL
     obtain h | rfl | h := Nat.lt_trichotomy j a
-    · grind [simplicialEvalσ_monotone, Monotone, simplicialEvalσ_of_lt_mem]
+    · grind [simplicialEvalσ_monotone, Monotone,
+        simplicialEvalσ_of_lt_mem, List.sortedLT_iff_pairwise]
     · grind
     · have := simplicialEvalσ_of_lt_mem L (a + 1) <| fun x h ↦ hL.1.1 x h
       grind [simplicialEvalσ_monotone, Monotone]
@@ -323,7 +324,8 @@ lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j
     constructor
     · grind [List.mem_iff_getElem, IsAdmissible, List.sorted_cons]
     · obtain rfl | h := List.mem_cons.mp hj
-      · grind [simplicialEvalσ_of_lt_mem, simplicialEvalσ, IsAdmissible, List.sorted_cons]
+      · grind [simplicialEvalσ_of_lt_mem, simplicialEvalσ, IsAdmissible,
+          List.sorted_cons, List.sortedLT_iff_pairwise]
       · have := h_rec hL.tail h
         grind [simplicialEvalσ]
 

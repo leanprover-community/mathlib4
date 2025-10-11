@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Batteries.Data.List.Pairwise
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
-import Mathlib.Order.Hom.Basic
+import Mathlib.Data.List.Basic
 
 /-!
 # Pairwise relations on a list
@@ -95,6 +95,17 @@ theorem Pairwise.rel_getLast [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) 
 
 protected alias ⟨Pairwise.of_reverse, Pairwise.reverse⟩ := pairwise_reverse
 
+theorem Pairwise.head!_le [Inhabited α] [IsRefl α R] (h : l.Pairwise R)
+    (ha : a ∈ l) : R l.head! a := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  rw [pairwise_cons] at h
+  cases ha
+  · exact refl_of ..
+  · exact h.1 _ (by assumption)
+
+theorem pairwise_replicate_of_refl {n} [IsRefl α R] : (replicate n a).Pairwise R :=
+  pairwise_replicate.mpr  (Or.inr <| refl_of ..)
+
 /-! ### Pairwise filtering -/
 
 protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
@@ -121,35 +132,3 @@ theorem Pairwise.decide [DecidableRel R] (l : List α) (h : Pairwise R l) :
   refine h.imp fun {a b} h => by simpa using h
 
 end List
-
-namespace RelEmbedding
-
-open List
-
-variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
-
-@[simp]
-theorem pairwise_listMap (e : ra ↪r rb) {l : List α} : (l.map e).Pairwise rb ↔ l.Pairwise ra := by
-  simp [pairwise_map, e.map_rel_iff]
-
-@[simp]
-theorem pairwise_swap_listMap (e : ra ↪r rb) {l : List α} :
-    (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) := by
-  simp [pairwise_map, e.map_rel_iff]
-
-end RelEmbedding
-
-namespace RelIso
-
-variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
-
-@[simp]
-theorem pairwise_listMap (e : ra ≃r rb) {l : List α} : (l.map e).Pairwise rb ↔ l.Pairwise ra :=
-  e.toRelEmbedding.pairwise_listMap
-
-@[simp]
-theorem pairwise_swap_listMap (e : ra ≃r rb) {l : List α} :
-    (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) :=
-  e.toRelEmbedding.pairwise_swap_listMap
-
-end RelIso

@@ -75,7 +75,7 @@ theorem sort_cons (a : α) (s : Multiset α) :
 
 @[simp]
 theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
-  List.mergeSort_eq_self _ (sortedLE_range n).pairwise
+  List.mergeSort_eq_self _ (sortedLT_range n).sortedLE.pairwise
 
 end sort
 

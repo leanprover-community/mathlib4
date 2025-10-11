@@ -223,14 +223,14 @@ theorem admissible_of_one_lt_sumInv_aux :
     ∀ {pqr : List ℕ+} (_ : pqr.SortedLE) (_ : pqr.length = 3) (_ : 1 < sumInv pqr),
       Admissible pqr
   | [p, q, r], hs, _, H => by
-    obtain ⟨⟨hpq, -⟩, hqr⟩ : (p ≤ q ∧ p ≤ r) ∧ q ≤ r := by simpa using hs
+    obtain ⟨⟨hpq, -⟩, hqr⟩ : (p ≤ q ∧ p ≤ r) ∧ q ≤ r := by simpa using hs.pairwise
     exact admissible_of_one_lt_sumInv_aux' hpq hqr H
 
 theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
     Admissible {p, q, r} := by
   simp only [Admissible]
   let S := sort ((· ≤ ·) : ℕ+ → ℕ+ → Prop) {p, q, r}
-  have hS : S.SortedLE := sort_sorted _ _
+  have hS : S.SortedLE := (pairwise_sort _ _).isChain.sortedLE
   have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq LE.le {p, q, r}).symm
   rw [hpqr]
   rw [hpqr] at H

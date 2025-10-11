@@ -374,7 +374,7 @@ theorem length_rowLens {μ : YoungDiagram} : μ.rowLens.length = μ.colLen 0 := 
   simp only [rowLens, List.length_map, List.length_range]
 
 theorem rowLens_sorted (μ : YoungDiagram) : μ.rowLens.SortedGE :=
-  List.pairwise_le_range.map _ μ.rowLen_anti
+  (List.pairwise_le_range.map _ μ.rowLen_anti).isChain.sortedGE
 
 theorem pos_of_mem_rowLens (μ : YoungDiagram) (x : ℕ) (hx : x ∈ μ.rowLens) : 0 < x := by
   rw [rowLens, List.mem_map] at hx
@@ -425,7 +425,7 @@ def ofRowLens (w : List ℕ) (hw : w.SortedGE) : YoungDiagram where
       _ ≤ w[i1] := by
         obtain rfl | h := eq_or_lt_of_le hi
         · rfl
-        · exact List.pairwise_iff_get.mp hw _ _ h
+        · exact List.sortedGE_iff_get.mp hw _ _ h
 
 theorem mem_ofRowLens {w : List ℕ} {hw : w.SortedGE} {c : ℕ × ℕ} :
     c ∈ ofRowLens w hw ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] :=

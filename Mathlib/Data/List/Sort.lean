@@ -24,6 +24,81 @@ universe u v
 
 namespace List
 
+/-!
+### The predicate `List.Sorted` (now deprecated).
+-/
+
+section Sorted
+
+variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
+
+/-- `Sorted r l` is the same as `List.Pairwise r l` and has been deprecated -/
+@[deprecated (since := "2025-10-11")]
+alias Sorted := Pairwise
+
+@[deprecated (since := "2025-10-11")]
+alias decidableSorted := List.instDecidablePairwise
+
+@[deprecated Pairwise.nil (since := "2025-10-11")]
+theorem sorted_nil : Pairwise r [] := Pairwise.nil
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.of_cons := Pairwise.of_cons
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.tail := Pairwise.tail
+
+@[deprecated (since := "2025-10-11")]
+alias rel_of_sorted_cons := rel_of_pairwise_cons
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.cons := Pairwise.cons_cons_of_trans
+
+@[deprecated (since := "2025-10-11")]
+alias sorted_cons_cons := pairwise_cons_cons_iff_of_trans
+
+@[deprecated (since := "2025-10-11")]
+alias sorted_cons := pairwise_cons
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.nodup := Pairwise.nodup
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.filter := Pairwise.filter
+
+@[deprecated (since := "2025-10-11")]
+alias sorted_singleton := pairwise_singleton
+
+@[deprecated  (since := "2025-10-11")]
+alias Sorted.head!_le := Pairwise.head!_le
+
+@[deprecated  (since := "2025-10-11")]
+alias Sorted.le_head! := Pairwise.head!_le
+
+@[deprecated (since := "2025-10-11")]
+alias sorted_replicate := pairwise_replicate_of_refl
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.rel_get_of_lt := Pairwise.rel_get_of_lt
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.rel_get_of_le := Pairwise.rel_get_of_le
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.rel_of_mem_take_of_mem_drop := Pairwise.rel_of_mem_take_of_mem_drop
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.decide := Pairwise.decide
+
+@[deprecated Pairwise.filterMap (since := "2025-10-11")]
+lemma Sorted.filterMap {α β : Type*} {p : α → Option β} {l : List α}
+    {r : α → α → Prop} {r' : β → β → Prop} (hl : l.Pairwise r)
+    (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
+    (l.filterMap p).Pairwise r' := by
+  exact Pairwise.filterMap _ (fun _ _ hr _ hp₁ _ hp₂ => hp _ _ _ _ hp₁ hp₂ hr) hl
+
+end Sorted
+
 section sort
 
 variable {α β : Type v} (r : α → α → Prop) (s : β → β → Prop)
@@ -357,7 +432,7 @@ theorem Perm.eq_of_pairwise {l₁ l₂ : List α} (hp : l₁ ~ l₂)
   hp.eq_of_sorted (fun _ _ _ _ => antisymm) hs₁ hs₂
 
 @[deprecated (since := "2025-10-11")]
-alias Perm.eq_of_sorted' := Perm.eq_of_pairwise
+alias eq_of_perm_of_sorted := Perm.eq_of_pairwise
 
 theorem Pairwise.eq_of_mem_iff [IsIrrefl α r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
@@ -427,92 +502,92 @@ section Preorder
 variable [Preorder α]
 
 /-- `SortedLE l` means that the list is monotonic. -/
-def SortedLE : List α → Prop := IsChain (· ≤ ·)
+@[irreducible] def SortedLE (l : List α) := Monotone l.get
 /-- `SortedGE l` means that the list is antitonic. -/
-def SortedGE : List α → Prop := IsChain (· ≥ ·)
+@[irreducible] def SortedGE (l : List α) := Antitone l.get
 /-- `SortedLT l` means that the list is strictly monotonic. -/
-def SortedLT : List α → Prop := IsChain (· < ·)
-/-- `SortedGE l` means that the list is strictly antitonic. -/
-def SortedGT : List α → Prop := IsChain (· > ·)
+@[irreducible] def SortedLT (l : List α) := StrictMono l.get
+/-- `SortedGT l` means that the list is strictly antitonic. -/
+@[irreducible] def SortedGT (l : List α) := StrictAnti l.get
 
-theorem sortedLT_iff_isChain : SortedLT l ↔ IsChain (· < ·) l := Iff.rfl
-theorem sortedLE_iff_isChain : SortedLE l ↔ IsChain (· ≤ ·) l := Iff.rfl
-theorem sortedGT_iff_isChain : SortedGT l ↔ IsChain (· > ·) l := Iff.rfl
-theorem sortedGE_iff_isChain : SortedGE l ↔ IsChain (· ≥ ·) l := Iff.rfl
+unseal SortedLE in theorem sortedLE_iff_monotone : l.SortedLE ↔ Monotone l.get := Iff.rfl
+alias ⟨SortedLE.get_mono, _⟩ := sortedLE_iff_monotone
+unseal SortedGE in theorem sortedGE_iff_antitone : l.SortedGE ↔ Antitone l.get := Iff.rfl
+alias ⟨SortedGE.get_anti, _⟩ := sortedGE_iff_antitone
+unseal SortedLT in theorem sortedLT_iff_strictMono : l.SortedLT ↔ StrictMono l.get := Iff.rfl
+alias ⟨SortedLT.get_strictMono, _⟩ := sortedLT_iff_strictMono
+unseal SortedGT in theorem sortedGT_iff_strictAnti : l.SortedGT ↔ StrictAnti l.get := Iff.rfl
+alias ⟨SortedGT.get_strictAnti, _⟩ := sortedGT_iff_strictAnti
 
-alias ⟨SortedLT.isChain, IsChain.sortedLT⟩ := sortedLT_iff_isChain
-alias ⟨SortedLE.isChain, IsChain.sortedLE⟩ := sortedLE_iff_isChain
-alias ⟨SortedGT.isChain, IsChain.sortedGT⟩ := sortedGT_iff_isChain
-alias ⟨SortedGE.isChain, IsChain.sortedGE⟩ := sortedGE_iff_isChain
+theorem sortedLE_iff_get : l.SortedLE ↔ ∀ (i j : Fin l.length), i < j → (l.get i) ≤ (l.get j) :=
+  sortedLE_iff_monotone.trans monotone_iff_forall_lt
+theorem sortedGE_iff_get : l.SortedGE ↔ ∀ (i j : Fin l.length), i < j → (l.get j) ≤ (l.get i) :=
+  sortedGE_iff_antitone.trans antitone_iff_forall_lt
+theorem sortedLT_iff_get : l.SortedLT ↔ ∀ (i j : Fin l.length), i < j → (l.get i) < (l.get j) :=
+  sortedLT_iff_strictMono
+theorem sortedGT_iff_get : l.SortedGT ↔ ∀ (i j : Fin l.length), i < j → (l.get j) < (l.get i) :=
+  sortedGT_iff_strictAnti
 
-theorem sortedLT_iff_pairwise : SortedLT l ↔ Pairwise (· < ·) l :=
-  sortedLT_iff_isChain.trans isChain_iff_pairwise
+theorem sortedLE_iff_getElem : l.SortedLE ↔
+    ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] ≤ l[j] := by
+  simp_rw [sortedLE_iff_get, Fin.forall_iff]; grind
+theorem sortedGE_iff_getElem : l.SortedGE ↔
+    ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] ≤ l[i] := by
+  simp_rw [sortedGE_iff_get, Fin.forall_iff]; grind
+theorem sortedLT_iff_getElem : l.SortedLT ↔
+    ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] < l[j] := by
+  simp_rw [sortedLT_iff_get, Fin.forall_iff]; grind
+theorem sortedGT_iff_getElem : l.SortedGT ↔
+    ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] < l[i] := by
+  simp_rw [sortedGT_iff_get, Fin.forall_iff]; grind
+
+@[grind]
 theorem sortedLE_iff_pairwise : SortedLE l ↔ Pairwise (· ≤ ·) l :=
-  sortedLE_iff_isChain.trans isChain_iff_pairwise
-theorem sortedGT_iff_pairwise : SortedGT l ↔ Pairwise (· > ·) l :=
-  sortedGT_iff_isChain.trans isChain_iff_pairwise
+  sortedLE_iff_get.trans (Iff.symm pairwise_iff_get)
+alias ⟨SortedLE.pairwise, _⟩ := sortedLE_iff_pairwise
+@[grind]
 theorem sortedGE_iff_pairwise : SortedGE l ↔ Pairwise (· ≥ ·) l :=
-  sortedGE_iff_isChain.trans isChain_iff_pairwise
+  sortedGE_iff_get.trans (Iff.symm pairwise_iff_get)
+alias ⟨SortedGE.pairwise, _⟩ := sortedGE_iff_pairwise
+@[grind]
+theorem sortedLT_iff_pairwise : SortedLT l ↔ Pairwise (· < ·) l :=
+  sortedLT_iff_get.trans (Iff.symm pairwise_iff_get)
+alias ⟨SortedLT.pairwise, _⟩ := sortedLT_iff_pairwise
+@[grind]
+theorem sortedGT_iff_pairwise : SortedGT l ↔ Pairwise (· > ·) l :=
+  sortedGT_iff_get.trans (Iff.symm pairwise_iff_get)
+alias ⟨SortedGT.pairwise, _⟩ := sortedGT_iff_pairwise
 
-alias ⟨SortedLT.pairwise, Pairwise.sortedLT⟩ := sortedLT_iff_pairwise
-alias ⟨SortedLE.pairwise, Pairwise.sortedLE⟩ := sortedLE_iff_pairwise
-alias ⟨SortedGT.pairwise, Pairwise.sortedGT⟩ := sortedGT_iff_pairwise
-alias ⟨SortedGE.pairwise, Pairwise.sortedGE⟩ := sortedGE_iff_pairwise
+theorem sortedLE_iff_isChain : SortedLE l ↔ IsChain (· ≤ ·) l :=
+  sortedLE_iff_pairwise.trans isChain_iff_pairwise.symm
+alias ⟨_, IsChain.sortedLE⟩ := sortedLE_iff_isChain
+theorem sortedGE_iff_isChain : SortedGE l ↔ IsChain (· ≥ ·) l :=
+  sortedGE_iff_pairwise.trans isChain_iff_pairwise.symm
+alias ⟨_, IsChain.sortedGE⟩ := sortedGE_iff_isChain
+theorem sortedLT_iff_isChain : SortedLT l ↔ IsChain (· < ·) l :=
+  sortedLT_iff_pairwise.trans isChain_iff_pairwise.symm
+alias ⟨_, IsChain.sortedLT⟩ := sortedLT_iff_isChain
+theorem sortedGT_iff_isChain : SortedGT l ↔ IsChain (· > ·) l :=
+  sortedGT_iff_pairwise.trans isChain_iff_pairwise.symm
+alias ⟨_, IsChain.sortedGT⟩ := sortedGT_iff_isChain
 
-section DecidableLE
-
-variable [DecidableLE α]
-
-instance decidableSortedLE : Decidable (l.SortedLE) := List.instDecidableIsChain _
-instance decidableSortedGE : Decidable (l.SortedGE) := List.instDecidableIsChain _
-
-end DecidableLE
-
-section DecidableLT
-
-variable [DecidableLT α]
-
-instance decidableSortedLT : Decidable (l.SortedLT) := List.instDecidableIsChain _
-instance decidableSortedGT : Decidable (l.SortedGT) := List.instDecidableIsChain _
-
-end DecidableLT
+instance decidableSortedLE [DecidableLE α] : Decidable (l.SortedLE) :=
+  decidable_of_iff' _ sortedLE_iff_isChain
+instance decidableSortedGE [DecidableLE α] : Decidable (l.SortedGE) :=
+  decidable_of_iff' _ sortedGE_iff_isChain
+instance decidableSortedLT [DecidableLT α] : Decidable (l.SortedLT) :=
+  decidable_of_iff' _ sortedLT_iff_isChain
+instance decidableSortedGT [DecidableLT α] : Decidable (l.SortedGT) :=
+  decidable_of_iff' _ sortedGT_iff_isChain
 
 protected theorem SortedLT.sortedLE {l : List α} (h : l.SortedLT) :
-    l.SortedLE := h.imp (fun _ _ => le_of_lt)
+    l.SortedLE := (h.pairwise.imp le_of_lt).isChain.sortedLE
 
 protected theorem SortedGT.sortedGE {l : List α} (h : l.SortedGT) :
-    l.SortedGE := h.imp (fun _ _ => le_of_lt)
+    l.SortedGE := (h.pairwise.imp le_of_lt).isChain.sortedGE
 
-@[simp] theorem sortedLE_nil : ([] : List α).SortedLE := IsChain.nil
-@[simp] theorem sortedGE_nil : ([] : List α).SortedGE := IsChain.nil
-@[simp] theorem sortedLT_nil : ([] : List α).SortedLT := IsChain.nil
-@[simp] theorem sortedGT_nil : ([] : List α).SortedGT := IsChain.nil
-
-@[simp] theorem sortedLE_singleton : [a].SortedLE := IsChain.singleton _
-@[simp] theorem sortedGE_singleton : [a].SortedGE := IsChain.singleton _
-@[simp] theorem sortedLT_singleton : [a].SortedLT := IsChain.singleton _
-@[simp] theorem sortedGT_singleton : [a].SortedGT := IsChain.singleton _
-
-@[simp] theorem sortedLE_cons_cons :
-  (a :: b :: l).SortedLE ↔ a ≤ b ∧ (b :: l).SortedLE := isChain_cons_cons
-alias ⟨SortedLE.cons_cons, _⟩ := sortedLE_cons_cons
-@[simp] theorem sortedGE_cons_cons :
-  (a :: b :: l).SortedGE ↔ b ≤ a ∧ (b :: l).SortedGE := isChain_cons_cons
-alias ⟨SortedGE.cons_cons, _⟩ := sortedGE_cons_cons
-@[simp] theorem sortedLT_cons_cons :
-  (a :: b :: l).SortedLT ↔ a < b ∧ (b :: l).SortedLT := isChain_cons_cons
-alias ⟨SortedLT.cons_cons, _⟩ := sortedLT_cons_cons
-@[simp] theorem sortedGT_cons_cons :
-  (a :: b :: l).SortedGT ↔ b < a ∧ (b :: l).SortedGT := isChain_cons_cons
-
-theorem sortedLE_cons : (a :: l).SortedLE ↔ (∀ a', a' ∈ l → a ≤ a') ∧ l.SortedLE := by
-  simp_rw [sortedLE_iff_pairwise, pairwise_cons]
-theorem sortedGE_cons : (a :: l).SortedGE ↔ (∀ a', a' ∈ l → a' ≤ a) ∧ l.SortedGE := by
-  simp_rw [sortedGE_iff_pairwise, pairwise_cons]
-theorem sortedLT_cons : (a :: l).SortedLT ↔ (∀ a', a' ∈ l → a < a') ∧ l.SortedLT := by
-  simp_rw [sortedLT_iff_pairwise, pairwise_cons]
-theorem sortedGT_cons : (a :: l).SortedGT ↔ (∀ a', a' ∈ l → a' < a) ∧ l.SortedGT := by
-  simp_rw [sortedGT_iff_pairwise, pairwise_cons]
+theorem SortedLT.nodup (h : l.SortedLT) : l.Nodup := h.pairwise.imp (fun {_ _} ↦ ne_of_lt)
+theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.pairwise.imp (fun {_ _} ↦ ne_of_gt)
 
 @[simp] theorem sortedLE_reverse : l.reverse.SortedLE ↔ l.SortedGE := by
   simp_rw [sortedGE_iff_pairwise, sortedLE_iff_pairwise, pairwise_reverse]
@@ -527,83 +602,55 @@ alias ⟨_, SortedGT.reverse⟩ := sortedLT_reverse
   simp_rw [sortedGT_iff_pairwise, sortedLT_iff_pairwise, pairwise_reverse]
 alias ⟨_, SortedLT.reverse⟩ := sortedGT_reverse
 
-theorem sortedLE_iff_get : l.SortedLE ↔ ∀ (i j : Fin l.length), i < j → (l.get i) ≤ (l.get j) :=
-  sortedLE_iff_pairwise.trans pairwise_iff_get
-theorem sortedGE_iff_get : l.SortedGE ↔ ∀ (i j : Fin l.length), i < j → (l.get j) ≤ (l.get i) :=
-  sortedGE_iff_pairwise.trans pairwise_iff_get
-theorem sortedLT_iff_get : l.SortedLT ↔ ∀ (i j : Fin l.length), i < j → (l.get i) < (l.get j) :=
-  sortedLT_iff_pairwise.trans pairwise_iff_get
-theorem sortedGT_iff_get : l.SortedGT ↔ ∀ (i j : Fin l.length), i < j → (l.get j) < (l.get i) :=
-  sortedGT_iff_pairwise.trans pairwise_iff_get
+@[simp] theorem sortedLE_map_ofDual {l : List αᵒᵈ} :
+    (l.map OrderDual.ofDual).SortedLE ↔ l.SortedGE := by
+  simp_rw [sortedLE_iff_pairwise, sortedGE_iff_pairwise, pairwise_map, OrderDual.ofDual_le_ofDual]
 
-theorem sortedLE_iff_getElem : l.SortedLE ↔
-    ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] ≤ l[j] :=
-  sortedLE_iff_pairwise.trans pairwise_iff_getElem
-theorem sortedGE_iff_getElem : l.SortedGE ↔
-    ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] ≤ l[i] :=
-  sortedGE_iff_pairwise.trans pairwise_iff_getElem
-theorem sortedLT_iff_getElem : l.SortedLT ↔
-    ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] < l[j] :=
-  sortedLT_iff_pairwise.trans pairwise_iff_getElem
-theorem sortedGT_iff_getElem : l.SortedGT ↔
-    ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] < l[i] :=
-  sortedGT_iff_pairwise.trans pairwise_iff_getElem
+@[simp] theorem sortedLE_map_toDual :
+    (l.map OrderDual.toDual).SortedLE ↔ l.SortedGE := by
+  simp_rw [sortedLE_iff_pairwise, sortedGE_iff_pairwise, pairwise_map, OrderDual.toDual_le_toDual]
 
-theorem SortedLT.nodup (h : l.SortedLT) : l.Nodup := h.pairwise.imp (fun {_ _} ↦ ne_of_lt)
-theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.pairwise.imp (fun {_ _} ↦ ne_of_gt)
+@[simp] theorem sortedGE_map_ofDual {l : List αᵒᵈ} :
+    (l.map OrderDual.ofDual).SortedGE ↔ l.SortedLE := by
+  simp_rw [sortedLE_iff_pairwise, sortedGE_iff_pairwise, pairwise_map, OrderDual.ofDual_le_ofDual]
 
-theorem SortedLT.head!_le [Inhabited α] {a : α} {l : List α} (h : l.SortedLT)
-    (ha : a ∈ l) : l.head! ≤ a := by
-  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
-  rw [sortedLT_cons] at h
-  cases ha
-  · exact le_rfl
-  · exact le_of_lt (h.1 _ (by assumption))
+@[simp] theorem sortedGE_map_toDual :
+    (l.map OrderDual.toDual).SortedGE ↔ l.SortedLE := by
+  simp_rw [sortedLE_iff_pairwise, sortedGE_iff_pairwise, pairwise_map, OrderDual.toDual_le_toDual]
 
-theorem SortedGT.le_head! [Inhabited α] {a : α} {l : List α} (h : l.SortedGT)
-    (ha : a ∈ l) : a ≤ l.head! := by
-  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
-  rw [sortedGT_cons] at h
-  cases ha
-  · exact le_rfl
-  · exact le_of_lt (h.1 _ (by assumption))
+@[simp] theorem sortedLT_map_ofDual {l : List αᵒᵈ} :
+    (l.map OrderDual.ofDual).SortedLT ↔ l.SortedGT := by
+  simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.ofDual_lt_ofDual]
 
-theorem sortedLE_replicate (n : ℕ) (a : α) : (replicate n a).SortedLE :=
-  (pairwise_replicate.mpr <| Or.inr (by rfl)).sortedLE
+@[simp] theorem sortedLT_map_toDual :
+    (l.map OrderDual.toDual).SortedLT ↔ l.SortedGT := by
+  simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.toDual_lt_toDual]
 
-theorem sortedGE_replicate (n : ℕ) (a : α) : (replicate n a).SortedGE :=
-  (pairwise_replicate.mpr <| Or.inr (by rfl)).sortedGE
+@[simp] theorem sortedGT_map_ofDual {l : List αᵒᵈ} :
+    (l.map OrderDual.ofDual).SortedGT ↔ l.SortedLT := by
+  simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.ofDual_lt_ofDual]
+
+@[simp] theorem sortedGT_map_toDual :
+    (l.map OrderDual.toDual).SortedGT ↔ l.SortedLT := by
+  simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.toDual_lt_toDual]
 
 theorem sortedLT_range (n : ℕ) : (range n).SortedLT := by
   rw [sortedLT_iff_getElem]
   simp
 
-theorem sortedLE_range (n : ℕ) : (range n).SortedLE := (sortedLT_range n).sortedLE
-
 lemma sortedLT_range' (a b) {s} (hs : s ≠ 0) :
     (range' a b s).SortedLT := by
-  rw [sortedLT_iff_getElem]
-  simp [Nat.pos_of_ne_zero hs]
+  simp [sortedLT_iff_getElem, Nat.pos_of_ne_zero hs]
 
 lemma sorted_le_range' (a b s) :
     (range' a b s).SortedLE := by
   by_cases hs : s ≠ 0
   · exact (sortedLT_range' a b hs).sortedLE
   · rw [ne_eq, Decidable.not_not] at hs
-    simpa [hs] using sortedLE_replicate b a
+    rw [hs, range'_0]
+    exact pairwise_replicate_of_refl.isChain.sortedLE
 
-section Monotone
-
-theorem sortedLE_iff_monotone : l.SortedLE ↔ Monotone l.get :=
-  sortedLE_iff_get.trans monotone_iff_forall_lt.symm
-alias ⟨SortedLE.get_mono, _⟩ := sortedLE_iff_monotone
-theorem sortedGE_iff_antitone : l.SortedGE ↔ Antitone l.get :=
-  sortedGE_iff_get.trans antitone_iff_forall_lt.symm
-alias ⟨SortedGE.get_anti, _⟩ := sortedGE_iff_antitone
-theorem sortedLT_iff_strictMono : l.SortedLT ↔ StrictMono l.get := sortedLT_iff_get
-alias ⟨SortedLT.get_strictMono, _⟩ := sortedLT_iff_strictMono
-theorem sortedGT_iff_strictAnti : l.SortedGT ↔ StrictAnti l.get := sortedGT_iff_get
-alias ⟨SortedGT.get_strictAnti, _⟩ := sortedGT_iff_strictAnti
+section OfFn
 
 variable {n : ℕ} {f : Fin n → α}
 
@@ -634,7 +681,7 @@ alias ⟨_, _root_StrictMono.ofFn_sortedLT⟩ := sortedLT_ofFn_iff
 /-- The list obtained from an antitone tuple is sorted. -/
 alias ⟨_, _root_.StrictAnti.ofFn_sortedGT⟩ := sortedGT_ofFn_iff
 
-end Monotone
+end OfFn
 
 end Preorder
 
@@ -644,11 +691,11 @@ variable [PartialOrder α]
 
 protected theorem SortedLE.sortedLT {l : List α} (h₁ : l.SortedLE)
     (h₂ : l.Nodup) : l.SortedLT :=
-  (h₁.pairwise.imp₂ (fun _ _ => lt_of_le_of_ne) h₂).sortedLT
+  (h₁.pairwise.imp₂ (fun _ _ => lt_of_le_of_ne) h₂).isChain.sortedLT
 
 protected theorem SortedGE.sortedGT {l : List α} (h₁ : l.SortedGE)
     (h₂ : l.Nodup) : l.SortedGT :=
-  (h₁.pairwise.imp₂ (fun _ _ => lt_of_le_of_ne) <| h₂.imp Ne.symm).sortedGT
+  (h₁.pairwise.imp₂ (fun _ _ => lt_of_le_of_ne) <| h₂.imp Ne.symm).isChain.sortedGT
 
 theorem sortedLT_iff_nodup_and_sortedLE : l.SortedLT ↔ l.Nodup ∧ l.SortedLE :=
   ⟨fun h => ⟨h.nodup, h.sortedLE⟩, fun h => h.2.sortedLT h.1⟩
@@ -736,6 +783,38 @@ end Sorted
 
 end List
 
+namespace RelEmbedding
+
+open List
+
+variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
+
+@[simp]
+theorem pairwise_listMap (e : ra ↪r rb) {l : List α} : (l.map e).Pairwise rb ↔ l.Pairwise ra := by
+  simp [pairwise_map, e.map_rel_iff]
+
+@[simp]
+theorem pairwise_swap_listMap (e : ra ↪r rb) {l : List α} :
+    (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) := by
+  simp [pairwise_map, e.map_rel_iff]
+
+end RelEmbedding
+
+namespace RelIso
+
+variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
+
+@[simp]
+theorem pairwise_listMap (e : ra ≃r rb) {l : List α} : (l.map e).Pairwise rb ↔ l.Pairwise ra :=
+  e.toRelEmbedding.pairwise_listMap
+
+@[simp]
+theorem pairwise_swap_listMap (e : ra ≃r rb) {l : List α} :
+    (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) :=
+  e.toRelEmbedding.pairwise_swap_listMap
+
+end RelIso
+
 namespace OrderEmbedding
 
 open List
@@ -785,19 +864,19 @@ namespace StrictMono
 
 variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
 
-theorem sorted_le_listMap (hf : StrictMono f) :
+theorem sortedLE_listMap (hf : StrictMono f) :
     (l.map f).SortedLE ↔ l.SortedLE :=
   (OrderEmbedding.ofStrictMono f hf).sortedLE_listMap
 
-theorem sorted_ge_listMap (hf : StrictMono f) :
+theorem sortedGE_listMap (hf : StrictMono f) :
     (l.map f).SortedGE ↔ l.SortedGE :=
   (OrderEmbedding.ofStrictMono f hf).sortedGE_listMap
 
-theorem sorted_lt_listMap (hf : StrictMono f) :
+theorem sortedLT_listMap (hf : StrictMono f) :
     (l.map f).SortedLT ↔ l.SortedLT :=
   (OrderEmbedding.ofStrictMono f hf).sortedLT_listMap
 
-theorem sorted_gt_listMap (hf : StrictMono f) :
+theorem sortedGT_listMap (hf : StrictMono f) :
     (l.map f).SortedGT ↔ l.SortedGT :=
   (OrderEmbedding.ofStrictMono f hf).sortedGT_listMap
 
@@ -808,95 +887,19 @@ namespace StrictAnti
 variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
 
 theorem sorted_le_listMap (hf : StrictAnti f) :
-    (l.map f).SortedLE ↔ l.SortedGE :=
-  hf.dual_right.sorted_ge_listMap
+    (l.map f).SortedLE ↔ l.SortedGE := by
+  simp_rw [← List.sortedGE_map_toDual, List.map_map, hf.dual_right.sortedGE_listMap]
 
 theorem sorted_ge_listMap (hf : StrictAnti f) :
-    (l.map f).SortedGE ↔ l.SortedLE :=
-  hf.dual_right.sorted_le_listMap
+    (l.map f).SortedGE ↔ l.SortedLE := by
+  simp_rw [← List.sortedLE_map_toDual, List.map_map, hf.dual_right.sortedLE_listMap]
 
 theorem sorted_lt_listMap (hf : StrictAnti f) :
-    (l.map f).SortedLT ↔ l.SortedGT :=
-  hf.dual_right.sorted_gt_listMap
+    (l.map f).SortedLT ↔ l.SortedGT := by
+  simp_rw [← List.sortedGT_map_toDual, List.map_map, hf.dual_right.sortedGT_listMap]
 
 theorem sorted_gt_listMap (hf : StrictAnti f) :
-    (l.map f).SortedGT ↔ l.SortedLT :=
-  hf.dual_right.sorted_lt_listMap
+    (l.map f).SortedGT ↔ l.SortedLT := by
+  simp_rw [← List.sortedLT_map_toDual, List.map_map, hf.dual_right.sortedLT_listMap]
 
 end StrictAnti
-
-namespace List
-
-/-!
-### The predicate `List.Sorted` (now deprecated).
--/
-
-section Sorted
-
-variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
-
-/-- `Sorted r l` is the same as `List.Pairwise r l` and has been deprecated -/
-@[deprecated (since := "2025-10-11")]
-alias Sorted := Pairwise
-
-@[deprecated (since := "2025-10-11")]
-alias decidableSorted := List.instDecidablePairwise
-
-@[deprecated Pairwise.nil (since := "2025-10-11")]
-theorem sorted_nil : Pairwise r [] := Pairwise.nil
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.of_cons := Pairwise.of_cons
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.tail := Pairwise.tail
-
-@[deprecated (since := "2025-10-11")]
-alias rel_of_sorted_cons := rel_of_pairwise_cons
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.cons := Pairwise.cons_cons_of_trans
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_cons_cons := pairwise_cons_cons_iff_of_trans
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_cons := pairwise_cons
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.nodup := Pairwise.nodup
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.filter := Pairwise.filter
-
-@[deprecated (since := "2025-10-11")]
-alias eq_of_perm_of_sorted := Perm.eq_of_pairwise
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_singleton := pairwise_singleton
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_replicate := pairwise_replicate
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.rel_get_of_lt := Pairwise.rel_get_of_lt
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.rel_get_of_le := Pairwise.rel_get_of_le
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.rel_of_mem_take_of_mem_drop := Pairwise.rel_of_mem_take_of_mem_drop
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.decide := Pairwise.decide
-
-@[deprecated Pairwise.filterMap (since := "2025-10-11")]
-lemma Sorted.filterMap {α β : Type*} {p : α → Option β} {l : List α}
-    {r : α → α → Prop} {r' : β → β → Prop} (hl : l.Pairwise r)
-    (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
-    (l.filterMap p).Pairwise r' := by
-  exact Pairwise.filterMap _ (fun _ _ hr _ hp₁ _ hp₂ => hp _ _ _ _ hp₁ hp₂ hr) hl
-
-end Sorted
-
-end List
