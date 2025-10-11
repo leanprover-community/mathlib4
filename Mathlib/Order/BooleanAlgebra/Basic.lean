@@ -231,14 +231,9 @@ theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
     (by rw [sup_inf_sdiff, h, sup_inf_sdiff]),
     fun h => by rw [← sdiff_inf_self_right, ← sdiff_inf_self_right z y, inf_comm, h, inf_comm]⟩
 
-theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x :=
-  calc
-    x \ y = x ↔ x \ y = x \ ⊥ := by rw [sdiff_bot]
-    _ ↔ x ⊓ y = x ⊓ ⊥ := sdiff_eq_sdiff_iff_inf_eq_inf
-    _ ↔ Disjoint y x := by rw [inf_bot_eq, inf_comm, disjoint_iff]
+theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x := sdiff_eq_left.trans disjoint_comm
 
-theorem sdiff_eq_self_iff_disjoint' : x \ y = x ↔ Disjoint x y := by
-  rw [sdiff_eq_self_iff_disjoint, disjoint_comm]
+theorem sdiff_eq_self_iff_disjoint' : x \ y = x ↔ Disjoint x y := sdiff_eq_left
 
 theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   refine sdiff_le.lt_of_ne fun h => hy ?_
