@@ -513,18 +513,19 @@ section
 include M
 
 /-- See note [partially-applied ext lemmas] -/
-theorem monoidHom_ext ⦃j k : S →* P⦄
+theorem monoidHom_ext {P : Type*} [Monoid P] ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
-  Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) <| DFunLike.congr_fun h
+  (toLocalizationMap M S).epic_of_localizationMap h
 
 /-- See note [partially-applied ext lemmas] -/
-theorem ringHom_ext ⦃j k : S →+* P⦄ (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
+theorem ringHom_ext {P : Type*} [Semiring P] ⦃j k : S →+* P⦄
+    (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
     j = k :=
   RingHom.coe_monoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
 
 /-- To show `j` and `k` agree on the whole localization, it suffices to show they agree
 on the image of the base ring, if they preserve `1` and `*`. -/
-protected theorem ext (j k : S → P) (hj1 : j 1 = 1) (hk1 : k 1 = 1)
+protected theorem ext {P : Type*} [Monoid P] (j k : S → P) (hj1 : j 1 = 1) (hk1 : k 1 = 1)
     (hjm : ∀ a b, j (a * b) = j a * j b) (hkm : ∀ a b, k (a * b) = k a * k b)
     (h : ∀ a, j (algebraMap R S a) = k (algebraMap R S a)) : j = k :=
   let j' : MonoidHom S P :=
