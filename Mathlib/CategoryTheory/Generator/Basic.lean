@@ -105,7 +105,7 @@ lemma IsSeparating.of_equivalence
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.toAdjunction.homEquiv _ _).surjective h
     simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
-      H _ (P.prop_strictMap_obj _ hZ) h']))
+      H _ (P.strictMap_obj _ hZ) h']))
 
 lemma IsCoseparating.of_equivalence
     (h : IsCoseparating P) {D : Type*} [Category D] (α : C ≌ D) :
@@ -114,7 +114,7 @@ lemma IsCoseparating.of_equivalence
     obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h
     simp only [Equivalence.symm_inverse, Equivalence.symm_functor,
       Adjunction.homEquiv_counit, ← Functor.map_comp_assoc,
-      H _ (P.prop_strictMap_obj _ hZ) h']))
+      H _ (P.strictMap_obj _ hZ) h']))
 
 end Equivalence
 
@@ -565,7 +565,7 @@ theorem isSeparator_def (G : C) :
     IsSeparator G ↔ ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : G ⟶ X, h ≫ f = h ≫ g) → f = g :=
   ⟨fun hG X Y f g hfg =>
     hG _ _ fun H hH h => by
-      obtain rfl := (ObjectProperty.prop_singleton_iff _ _).1 hH
+      obtain rfl := (ObjectProperty.singleton_iff _ _).1 hH
       exact hfg h,
     fun hG _ _ _ _ hfg => hG _ _ fun _ => hfg _ (by simp) _⟩
 
@@ -577,7 +577,7 @@ theorem isCoseparator_def (G : C) :
     IsCoseparator G ↔ ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ h : Y ⟶ G, f ≫ h = g ≫ h) → f = g :=
   ⟨fun hG X Y f g hfg =>
     hG _ _ fun H hH h => by
-      obtain rfl := (ObjectProperty.prop_singleton_iff _ _).1 hH
+      obtain rfl := (ObjectProperty.singleton_iff _ _).1 hH
       exact hfg h,
     fun hG _ _ _ _ hfg => hG _ _ fun _ => hfg _ (by simp) _⟩
 
@@ -589,7 +589,7 @@ theorem isDetector_def (G : C) :
     IsDetector G ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : G ⟶ Y, ∃! h', h' ≫ f = h) → IsIso f :=
   ⟨fun hG X Y f hf =>
     hG _ fun H hH h => by
-      obtain rfl := (ObjectProperty.prop_singleton_iff _ _).1 hH
+      obtain rfl := (ObjectProperty.singleton_iff _ _).1 hH
       exact hf h,
     fun hG _ _ _ hf => hG _ fun _ => hf _ (by simp) _⟩
 
@@ -601,7 +601,7 @@ theorem isCodetector_def (G : C) :
     IsCodetector G ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
   ⟨fun hG X Y f hf =>
     hG _ fun H hH h => by
-      obtain rfl := (ObjectProperty.prop_singleton_iff _ _).1 hH
+      obtain rfl := (ObjectProperty.singleton_iff _ _).1 hH
       exact hf h,
     fun hG _ _ _ hf => hG _ fun _ => hf _ (by simp) _⟩
 
@@ -665,7 +665,7 @@ theorem isSeparator_coprod (G H : C) [HasBinaryCoproduct G H] :
   refine (isSeparator_iff_of_isColimit_cofan (coprodIsCoprod G H)).trans ?_
   convert Iff.rfl
   ext X
-  simp only [ObjectProperty.prop_pair_iff, ObjectProperty.prop_ofObj_iff]
+  simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor
   · rintro (rfl | rfl); exacts [⟨.left, rfl⟩, ⟨.right, rfl⟩]
   · rintro ⟨⟨_ | _⟩, rfl⟩ <;> tauto
@@ -711,7 +711,7 @@ theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
   refine (isCoseparator_iff_of_isLimit_fan (prodIsProd G H)).trans ?_
   convert Iff.rfl
   ext X
-  simp only [ObjectProperty.prop_pair_iff, ObjectProperty.prop_ofObj_iff]
+  simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor
   · rintro (rfl | rfl); exacts [⟨.left, rfl⟩, ⟨.right, rfl⟩]
   · rintro ⟨⟨_ | _⟩, rfl⟩ <;> tauto

@@ -48,7 +48,7 @@ lemma isSeparating_separatingFamily :
   have H := evalCompCoyonedaCorepresentable c (X a) j
   apply H.homEquiv.symm.injective
   simpa only [H.homEquiv_symm_comp] using h _
-    (ObjectProperty.prop_ofObj _ ⟨a, j⟩) (H.homEquiv.symm p)
+    (ObjectProperty.ofObj_apply _ ⟨a, j⟩) (H.homEquiv.symm p)
 
 end
 
