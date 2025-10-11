@@ -217,10 +217,13 @@ end IndicatorConstLp
 
 section const
 
-variable (μ p)
-variable [IsFiniteMeasure μ] (c : E)
+variable (μ p) (c : E)
 
-/-- Constant function as an element of `MeasureTheory.Lp` for a finite measure. -/
+section MemLp.Const
+
+variable [MemLp.Const E p μ]
+
+/-- Constant function as an element of `MeasureTheory.Lp`. -/
 protected def Lp.const : E →+ Lp E p μ where
   toFun c := ⟨AEEqFun.const α c, const_mem_Lp α μ c⟩
   map_zero' := rfl
@@ -234,12 +237,6 @@ lemma Lp.coeFn_const : Lp.const p μ c =ᵐ[μ] Function.const α c :=
 @[simp]
 lemma MemLp.toLp_const : MemLp.toLp _ (memLp_const c) = Lp.const p μ c := rfl
 
-@[simp]
-lemma indicatorConstLp_univ :
-    indicatorConstLp p .univ (measure_ne_top μ _) c = Lp.const p μ c := by
-  rw [← MemLp.toLp_const, indicatorConstLp]
-  simp only [Set.indicator_univ]
-
 theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   have := NeZero.ne μ
@@ -251,10 +248,6 @@ theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
   rw [← MemLp.toLp_const, Lp.norm_toLp, eLpNorm_const'] <;> try assumption
   rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
 
-theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
-  rw [← indicatorConstLp_univ]
-  exact norm_indicatorConstLp_le
-
 /-- `MeasureTheory.Lp.const` as a `LinearMap`. -/
 @[simps] protected def Lp.constₗ (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
     E →ₗ[𝕜] Lp E p μ where
@@ -262,17 +255,34 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ 
   map_add' := map_add _
   map_smul' _ _ := rfl
 
+end MemLp.Const
+section IsFiniteMeasure
+
+variable [IsFiniteMeasure μ]
+
+@[simp]
+lemma indicatorConstLp_univ :
+    indicatorConstLp p .univ (measure_ne_top μ _) c = Lp.const p μ c := by
+  rw [← MemLp.toLp_const, indicatorConstLp]
+  simp only [Set.indicator_univ]
+
+theorem Lp.norm_const_le :
+    ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
+  rw [← indicatorConstLp_univ]
+  exact norm_indicatorConstLp_le
+
 /-- `MeasureTheory.Lp.const` as a `ContinuousLinearMap`. -/
 @[simps! apply]
-protected def Lp.constL (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [Fact (1 ≤ p)] :
-    E →L[𝕜] Lp E p μ :=
+protected def Lp.constL (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [Fact (1 ≤ p)]
+     : E →L[𝕜] Lp E p μ :=
   (Lp.constₗ p μ 𝕜).mkContinuous (μ.real Set.univ ^ (1 / p.toReal)) fun _ ↦
     (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
 
 theorem Lp.norm_constL_le (𝕜 : Type*) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
-    [Fact (1 ≤ p)] :
-    ‖(Lp.constL p μ 𝕜 : E →L[𝕜] Lp E p μ)‖ ≤ μ.real Set.univ ^ (1 / p.toReal) :=
+    [Fact (1 ≤ p)] : ‖(Lp.constL p μ 𝕜 : E →L[𝕜] Lp E p μ)‖ ≤ μ.real Set.univ ^ (1 / p.toReal) :=
   LinearMap.mkContinuous_norm_le _ (by positivity) _
+
+end IsFiniteMeasure
 
 end const
 
