@@ -53,6 +53,11 @@ theorem tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N) (m :
     (tensorProduct b c).repr (m ⊗ₜ n) (i, j) = c.repr n j • b.repr m i := by
   simp [tensorProduct]
 
+@[simp]
+lemma coe_tensorProduct (b : Basis ι R M) (c : Basis κ R N) :
+    ⇑(b.tensorProduct c) = fun i : ι × κ ↦ b i.1 ⊗ₜ c i.2 := by
+  ext; rw [tensorProduct_apply']
+
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 /-- The lift of an `R`-basis of `M` to an `S`-basis of the base change `S ⊗[R] M`. -/

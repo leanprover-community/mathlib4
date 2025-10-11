@@ -236,9 +236,7 @@ theorem Orthonormal.tensorProduct
 
 theorem Orthonormal.basisTensorProduct
     {b₁ : Basis ι₁ 𝕜 E} {b₂ : Basis ι₂ 𝕜 F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
-    Orthonormal 𝕜 (b₁.tensorProduct b₂) := by
-  have := hb₁.tensorProduct hb₂
-  rwa [(by ext; simp [Basis.tensorProduct] : ⇑(b₁.tensorProduct b₂) = fun i ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2)]
+    Orthonormal 𝕜 (b₁.tensorProduct b₂) := b₁.coe_tensorProduct b₂ ▸ hb₁.tensorProduct hb₂
 
 namespace OrthonormalBasis
 variable [Fintype ι₁] [Fintype ι₂]
