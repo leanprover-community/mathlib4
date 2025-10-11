@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Connected.Clopen
-import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Totally disconnected and totally separated topological spaces
