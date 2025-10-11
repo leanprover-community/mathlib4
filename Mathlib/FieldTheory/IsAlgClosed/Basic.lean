@@ -115,6 +115,10 @@ theorem roots_eq_zero_iff_natDegree_eq_zero [IsAlgClosed k] {p : k[X]} :
 theorem roots_eq_zero_iff_degree_nonpos [IsAlgClosed k] {p : k[X]} : p.roots = 0 ↔ p.degree ≤ 0 :=
   roots_eq_zero_iff_natDegree_eq_zero.trans natDegree_eq_zero_iff_degree_le_zero
 
+theorem card_roots_eq_natDegree [IsAlgClosed k] {p : k[X]} : p.roots.card = p.natDegree := by
+  have ⟨_, _, hdeg, hroots⟩ := exists_prod_multiset_X_sub_C_mul p
+  simp [← hdeg, roots_eq_zero_iff_natDegree_eq_zero.mp hroots]
+
 theorem dvd_iff_roots_le_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
     p ∣ q ↔ p.roots ≤ q.roots :=
   Splits.dvd_iff_roots_le_roots (splits _) hp hq
