@@ -5489,6 +5489,7 @@ import Mathlib.RingTheory.Conductor
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Congruence.BigOperators
 import Mathlib.RingTheory.Congruence.Defs
+import Mathlib.RingTheory.Congruence.Hom
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
