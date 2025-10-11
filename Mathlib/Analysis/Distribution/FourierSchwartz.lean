@@ -22,7 +22,9 @@ namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
+  {W : Type*} [NormedAddCommGroup W] [NormedSpace ℂ W] [NormedSpace 𝕜 W]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
   {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
@@ -79,6 +81,75 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
     fourierTransformCLM 𝕜 f = 𝓕 f := rfl
 
 variable [CompleteSpace E]
+
+@[simp]
+theorem fourier_inversion (f : 𝓢(V, E)) (x : V) : 𝓕⁻ (𝓕 f) x = f x :=
+  Integrable.fourier_inversion f.integrable (fourierTransformCLM ℂ f).integrable
+    f.continuous.continuousAt
+
+@[simp]
+theorem fourier_inversion_inv (f : 𝓢(V, E)) (x : V) : 𝓕 (𝓕⁻ f) x = f x :=
+  Integrable.fourier_inversion_inv f.integrable (fourierTransformCLM ℂ f).integrable
+    f.continuous.continuousAt
+
+variable
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G]
+
+variable [CompleteSpace F]
+
+/-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_bilin_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
+  have := VectorFourier.integral_bilin_fourierIntegral_eq_flip M (μ := volume) (ν := volume)
+    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
+  rwa [flip_innerₗ] at this
+
+theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
+  have := VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M (μ := volume) (ν := volume)
+    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
+  rwa [flip_innerₗ] at this
+
+/-- Plancherel's theorem for Schwartz functions.
+
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (𝓕 g ξ) = ∫ x, M (f x) (g x) := by
+  simpa only [fourierTransformCLM_apply, fourier_inversion]
+    using integral_sesq_fourierIntegral_eq f (fourierTransformCLM ℂ g) M
+
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-- Plancherel's theorem for Schwartz functions. -/
+theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
+    ∫ ξ, inner ℂ (𝓕 f ξ) (𝓕 g ξ) = ∫ x, inner ℂ (f x) (g x) :=
+  integral_sesq_fourier_fourier f g (innerSL ℂ)
+
+theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
+    ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
+  simp_rw [norm_sq_eq_re_inner (𝕜 := ℂ)]
+  have : ∀ (g : 𝓢(V, H)), Integrable (fun x ↦ inner ℂ (g x) (g x)) volume := by
+    intro g
+    rw [← Integrable.re_im_iff]
+    constructor
+    · simp_rw [← norm_sq_eq_re_inner (𝕜 := ℂ)]
+      rw [← MeasureTheory.memLp_two_iff_integrable_sq_norm (g.continuous.aestronglyMeasurable)]
+      exact memLp g 2 volume
+    · simp
+  rw [integral_re (this f), integral_re, integral_inner_fourier_fourier f f]
+  exact this (fourierTransformCLM ℂ f)
+
+theorem inner_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
+    inner ℂ ((fourierTransformCLM ℂ f).toLp 2) ((fourierTransformCLM ℂ f).toLp 2) =
+    inner ℂ (f.toLp 2) (f.toLp 2) := by
+  simp only [inner_toL2_toL2_eq]
+  exact integral_sesq_fourier_fourier f f (innerSL ℂ)
+
+theorem norm_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
+    ‖(fourierTransformCLM ℂ f).toLp 2‖ = ‖f.toLp 2‖ := by
+  simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourierTransformCLM_toL2_eq]
 
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
