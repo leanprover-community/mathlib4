@@ -229,4 +229,11 @@ instance AlexandrovDiscrete.locPathConnectedSpace [AlexandrovDiscrete X] :
   symm
   apply hy.joinedIn <;> rewrite [mem_nhdsKer_singleton] <;> [assumption; rfl]
 
+/-- If a space is locally path-connected, the topology of its path components is discrete. -/
+instance : DiscreteTopology <| ZerothHomotopy X := by
+  refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
+  obtain ⟨x, rfl⟩ := Quotient.mk_surjective c
+  rw [← isQuotientMap_quotient_mk'.isOpen_preimage]
+  grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]
+
 end LocPathConnectedSpace
