@@ -22,13 +22,13 @@ in the product space.
   continuous at `x`).
 
 * `HasFDerivWithinAt.partial_fst` , `HasFDerivWithinAt.partial_snd`: if `f` is differentiable
-   with derivative `f' x` at `x`, then the partial derivatives of `(f ∘ (x.1, ·))`
-   and `(f ∘ (·, x.2))` are respectively `(f' x) ∘L (.inl 𝕜 E₁ E₂)` and
-   `(f' x) ∘L (.inr 𝕜 E₁ E₂)`. If `f'` is continuous, then continuity can be obtained by
-   by combining `Continuous(|At|On|WithinAt).clm_comp` and `Continuous(|At|On|WithinAt)_const`.
+  with derivative `f' x` at `x`, then the partial derivatives of `(f ∘ (x.1, ·))`
+  and `(f ∘ (·, x.2))` are respectively `(f' x) ∘L (.inl 𝕜 E₁ E₂)` and
+  `(f' x) ∘L (.inr 𝕜 E₁ E₂)`. If `f'` is continuous, then continuity can be obtained by
+  by combining `Continuous(|At|On|WithinAt).clm_comp` and `Continuous(|At|On|WithinAt)_const`.
 
 * `hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open` : a weak sufficient condition
-  for differeniability of `f` at `x = (x₁,x₂)` is that, say, the first derivative (within set `s₁`)
+  for differentiability of `f` at `x = (x₁,x₂)` is that, say, the first derivative (within set `s₁`)
   `f₁x` exists at `x`, while the second partial derivative `f₂ x` exists and is jointly
   continuous at `x` in the product set `s₁ ×ˢ s₂` where `s₂` is open, with the derivative given by
   `f'x = f₁x.coprod (f₂ x)`. `hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open` has
@@ -71,7 +71,7 @@ variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCom
 `(x₁, x₂)` and if they are continuous at that point then the uncurried function `↿f` is strictly
 differentiable there with its derivative mapping `(h₁, h₂)` to `f₁ x₁ x₂ h₁ + f₂ x₁ x₂ h₂`. -/
 theorem hasStrictFDerivAt_uncurry_coprod
-    [IsRCLikeNormedField 𝕜] {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    [IsRCLikeNormedField 𝕜] {x₁ : E₁} {x₂ : E₂} {f : E₁ → E₂ → F}
     {f₁ : E₁ → E₂ → E₁ →L[𝕜] F} (cf₁ : ContinuousAt ↿f₁ (x₁, x₂))
     (df₁ : ∀ᶠ y in 𝓝 (x₁, x₂), HasFDerivAt (f · y.2) (f₁ y.1 y.2) y.1)
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (cf₂ : ContinuousAt ↿f₂ (x₁, x₂))
@@ -123,7 +123,7 @@ theorem hasStrictFDerivAt_uncurry_coprod
 neighbourhood of `(x₁, x₂)`, continuous there, then the uncurried function `↿f` is differentiable at
 `(x₁, x₂)` with its derivative mapping `(h₁, h₂)` to `f₁x h₁ + f₂ x₁ x₂ h₂`. -/
 theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
-    [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂] {f : E₁ → E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂] {x₁ : E₁} {x₂ : E₂} {f : E₁ → E₂ → F}
     {s₁ : Set E₁} {s₂ : Set E₂} (seg : ∀ᶠ v in 𝓝[s₂] x₂, [x₂ -[ℝ] v] ⊆ s₂)
     {f₁x : E₁ →L[𝕜] F} (df₁x : HasFDerivWithinAt (f · x₂) f₁x s₁ x₁)
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (cf₂ : ContinuousWithinAt ↿f₂ (s₁ ×ˢ s₂) (x₁, x₂))
@@ -163,9 +163,9 @@ theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
           _ =O[𝓝[s₁ ×ˢ s₂] (x₁, x₂)] fun y => (y.1 - x₁, y.2 - x₂) := by
             simp [isBigO_of_le]
 
-open Set Function Metric
-
 section PartialFDeriv
+
+open Set Function Metric
 
 /-- Differentiable implies also that the first partial derivative exists. -/
 theorem HasFDerivWithinAt.partial_fst
@@ -173,7 +173,7 @@ theorem HasFDerivWithinAt.partial_fst
     {s₁ : Set E₁} {s₂ : Set E₂}
     {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
     (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
-      HasFDerivWithinAt (f ∘ (·, x.2)) (f' x ∘L .inl ..) s₁ x.1 := by
+    HasFDerivWithinAt (f ∘ (·, x.2)) (f' x ∘L .inl ..) s₁ x.1 := by
   have hleft (u:E₁) := HasFDerivWithinAt.prodMk
     (hasFDerivWithinAt_id (𝕜 := 𝕜) u s₁)
     (hasFDerivWithinAt_const x.2 u s₁)
@@ -186,7 +186,7 @@ theorem HasFDerivWithinAt.partial_snd
     {s₁ : Set E₁} {s₂ : Set E₂}
     {x : E₁ × E₂} (hx : x ∈ s₁ ×ˢ s₂)
     (hf : HasFDerivWithinAt f (f' x) (s₁ ×ˢ s₂) x) :
-      HasFDerivWithinAt (f ∘ (x.1, ·)) (f' x ∘L .inr ..) s₂ x.2 := by
+    HasFDerivWithinAt (f ∘ (x.1, ·)) (f' x ∘L .inr ..) s₂ x.2 := by
   have hright (v:E₂) := HasFDerivWithinAt.prodMk
     (hasFDerivWithinAt_const x.1 v s₂)
     (hasFDerivWithinAt_id (𝕜 := 𝕜) v s₂)
@@ -208,7 +208,7 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
     (hf₂_cont : ContinuousWithinAt f₂ (s₁ ×ˢ s₂) x)
     (hf₁x : HasFDerivWithinAt (f ∘ (·, x.2)) f₁x s₁ x.1)
     (hf₂ : ∀ y ∈ s₁ ×ˢ s₂, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
-      HasFDerivWithinAt f (f₁x.coprod (f₂ x)) (s₁ ×ˢ s₂) x := by
+    HasFDerivWithinAt f (f₁x.coprod (f₂ x)) (s₁ ×ˢ s₂) x := by
   replace hx : _ ∧ _ := ⟨mem_prod.mp hx, hx⟩
   simp only at hx
   -- rewrite derivatives as limits using norms
@@ -337,7 +337,7 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
   simp only [add_mul, mul_assoc]
   apply add_lt_add (add_lt_add (add_lt_add _ _) _)
   all_goals
-    apply (mul_lt_mul_left hε).mpr
+    apply (mul_lt_mul_iff_right₀ hε).mpr
     refine LE.le.trans_lt ?_ (one_lt_two)
     rw [mul_comm]
     apply inv_mul_le_of_le_mul₀ (norm_nonneg _) zero_le_one
@@ -359,7 +359,7 @@ theorem hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open
     (hf₁_cont : ContinuousWithinAt f₁ (s₁ ×ˢ s₂) x)
     (hf₁ : ∀ y ∈ s₁ ×ˢ s₂, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
     (hf₂x : HasFDerivWithinAt (f ∘ (x.1, ·)) f₂x s₂ x.2) :
-      HasFDerivWithinAt f ((f₁ x).coprod f₂x) (s₁ ×ˢ s₂) x := by
+    HasFDerivWithinAt f ((f₁ x).coprod f₂x) (s₁ ×ˢ s₂) x := by
   have hmt_s₁s₂ := mapsTo_swap_prod s₁ s₂
   have hmt_s₂s₁ := mapsTo_swap_prod s₂ s₁
   have hf₁_swap_cont := (x.swap_swap ▸ hf₁_cont).comp
@@ -393,8 +393,8 @@ theorem hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
     (hf₁_cont : ContinuousWithinAt f₁ s x) (hf₂_cont : ContinuousWithinAt f₂ s x)
     (hf₁ : ∀ y ∈ s, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
     (hf₂ : ∀ y ∈ s, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
-      ContinuousWithinAt (fun y => (f₁ y).coprod (f₂ y)) s x
-      ∧ HasFDerivAt f ((f₁ x).coprod (f₂ x)) x := by
+    ContinuousWithinAt (fun y => (f₁ y).coprod (f₂ y)) s x
+    ∧ HasFDerivAt f ((f₁ x).coprod (f₂ x)) x := by
   refine ⟨?cont, ?diff⟩
   case cont =>
     -- combine continuity of partial to get continuity of total derivative
@@ -433,8 +433,8 @@ theorem hasFDerivWithinAt_continuousOn_of_partial_continuousOn_open
     (hf₁_cont : ContinuousOn f₁ s) (hf₂_cont : ContinuousOn f₂ s)
     (hf₁ : ∀ y ∈ s, HasFDerivAt (f ∘ (·, y.2)) (f₁ y) y.1)
     (hf₂ : ∀ y ∈ s, HasFDerivAt (f ∘ (y.1, ·)) (f₂ y) y.2) :
-      ContinuousOn (fun y => (f₁ y).coprod (f₂ y)) s
-      ∧ ∀ y ∈ s, HasFDerivAt f ((f₁ y).coprod (f₂ y)) y := by
+    ContinuousOn (fun y => (f₁ y).coprod (f₂ y)) s
+    ∧ ∀ y ∈ s, HasFDerivAt f ((f₁ y).coprod (f₂ y)) y := by
   simp only [ContinuousOn, ← forall₂_and]
   intro y hy
   apply hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open

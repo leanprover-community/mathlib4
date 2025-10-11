@@ -456,17 +456,17 @@ theorem ContinuousOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜]
 
 --@[continuity, fun_prop]  -- add this?
 theorem ContinuousWithinAt.clm_comp
-  {g : X → F →L[𝕜] G}
-  {f : X → E →L[𝕜] F} {s : Set X} {x : X}
-  (hg : ContinuousWithinAt g s x) (hf : ContinuousWithinAt f s x) :
+    {g : X → F →L[𝕜] G}
+    {f : X → E →L[𝕜] F} {s : Set X} {x : X}
+    (hg : ContinuousWithinAt g s x) (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y ↦ (g y).comp (f y)) s x :=
   (compL 𝕜 E F G).continuous₂.continuousAt.comp_continuousWithinAt (hg.prodMk hf)
 
 --@[continuity, fun_prop]  -- add this?
 theorem ContinuousAt.clm_comp
-  {g : X → F →L[𝕜] G}
-  {f : X → E →L[𝕜] F} {x : X}
-  (hg : ContinuousAt g x) (hf : ContinuousAt f x) :
+    {g : X → F →L[𝕜] G}
+    {f : X → E →L[𝕜] F} {x : X}
+    (hg : ContinuousAt g x) (hf : ContinuousAt f x) :
     ContinuousAt (fun y ↦ (g y).comp (f y)) x :=
   (hg.continuousWithinAt.clm_comp hf.continuousWithinAt).continuousAt Filter.univ_mem
 
