@@ -31,7 +31,7 @@ private abbrev inner_ :=
 
 instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
 
-@[simp] private lemma inner_def_ (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
+@[simp] private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
 
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
@@ -63,9 +63,9 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   have hy : y = hz.choose := rfl
   rw [← hy] at hx
   rw [y.basis_sum_repr e.toBasis f.toBasis] at hx
-  simp only [OrthonormalBasis.coe_toBasis, inner_def_] at hx
+  simp only [OrthonormalBasis.coe_toBasis, inner_def] at hx
   simp only [map_smulₛₗ, map_sum, LinearMap.sum_apply, LinearMap.smul_apply, RingHom.id_apply,
-    ← inner_def_, inner_tmul, smul_eq_mul, OrthonormalBasis.inner_eq_ite, mul_ite, mul_one,
+    ← inner_def, inner_tmul, smul_eq_mul, OrthonormalBasis.inner_eq_ite, mul_ite, mul_one,
     mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte] at hx
   simp only [RCLike.mul_conj, ← Finset.sum_product', Finset.univ_product_univ, Prod.mk.eta] at hx
   rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => by simp)] at hx
@@ -87,8 +87,8 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   have hy : y = hz.choose := rfl
   rw [← hy]
   rw [y.basis_sum_repr e.toBasis f.toBasis]
-  simp only [OrthonormalBasis.coe_toBasis, inner_def_, map_sum, LinearMap.sum_apply, map_smulₛₗ]
-  simp only [LinearMap.smul_apply, RingHom.id_apply, ← inner_def_, inner_tmul, smul_eq_mul,
+  simp only [OrthonormalBasis.coe_toBasis, inner_def, map_sum, LinearMap.sum_apply, map_smulₛₗ]
+  simp only [LinearMap.smul_apply, RingHom.id_apply, ← inner_def, inner_tmul, smul_eq_mul,
     OrthonormalBasis.inner_eq_ite, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
     Finset.mem_univ, ↓reduceIte, ← Finset.sum_product', RCLike.mul_conj]
   apply Finset.sum_nonneg
