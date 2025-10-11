@@ -125,6 +125,14 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
 
 attribute [pp_with_univ] ULift PUnit PEmpty
 
+/-- "Touch" the main goal, replacing it with a fresh metavariable,
+so that the unused tactics linter does not complain. -/
+def touchMainGoal : TacticM Unit := do
+  let g ← getMainGoal
+  let g' ← mkFreshExprMVar none
+  _ ← withAssignableSyntheticOpaque <| isDefEq (.mvar g) g'
+  replaceMainGoal [g'.mvarId!]
+
 end Mathlib.Tactic
 
 /-- A mathlib library note: the note's content should be contained in its doc-string. -/
