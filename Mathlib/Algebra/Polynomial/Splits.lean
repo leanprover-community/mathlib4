@@ -39,7 +39,8 @@ section CommRing
 variable [CommRing K] [Field L] [Field F]
 variable (i : K →+* L)
 
-/-- A polynomial `Splits` iff it is zero or all of its irreducible factors have `degree` 1. -/
+/-- A polynomial `Splits` iff it is zero or all of its irreducible factors have `degree` 1.
+This will eventually be replaced by `Polynomial.Factors`. -/
 def Splits (f : K[X]) : Prop :=
   f.map i = 0 ∨ ∀ {g : L[X]}, Irreducible g → g ∣ f.map i → degree g = 1
 
