@@ -902,6 +902,13 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 #guard_msgs in
 #check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
 
+  -- when having normed space, form the product all the way (not recursively)
+  -- i.e., E × E × E gets model 𝓘(𝕜, E × E × E) and similarly for M × E × E × E
+  -- also: (M × E) × E × E and (M × E) × (E × E); what are the correct answers here?
+
+  -- when we take the product of two normed spaces, warn about this/print an info line!
+
+
 -- TODO: add tests for a function on ModelProd H H'
 end
 
