@@ -364,7 +364,7 @@ lemma isoSpec_inv_toSpecΓ : hU.isoSpec.inv ≫ U.toSpecΓ = 𝟙 _ := hU.isoSpe
 open IsLocalRing in
 lemma isoSpec_hom_apply (x : U) :
     hU.isoSpec.hom x = Spec.map (X.presheaf.germ U x x.2) (closedPoint _) := by
-  dsimp [IsAffineOpen.isoSpec_hom, Scheme.isoSpec_hom, Scheme.toSpecΓ_base, Scheme.Opens.toSpecΓ]
+  dsimp [IsAffineOpen.isoSpec_hom, Scheme.isoSpec_hom, Scheme.toSpecΓ_apply, Scheme.Opens.toSpecΓ]
   rw [← Scheme.Hom.comp_apply, ← Spec.map_comp,
     (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom U (V := ⊤) x trivial),
     X.presheaf.germ_res_assoc, Spec.map_comp, Scheme.Hom.comp_apply]
