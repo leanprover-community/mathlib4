@@ -514,3 +514,52 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   · exact Finset.compl_univ
   simp only [Finset.mem_univ, forall_true_left]
   exact InfinitePlace.isUnramifiedIn K
+
+namespace NumberField.InfinitePlace
+
+open ComplexEmbedding
+
+variable {K : Type*} (L : Type*) [Field K] [Field L] [Algebra K L]
+
+/-- If `L / K` are fields and `v` is an infinite place of `K`, then we say an infinite place `w`
+of `L` _extends_ `v` if `v` is the restriction of `w` to `K`. -/
+protected abbrev Extension (v : InfinitePlace K) :=
+  { w : InfinitePlace L // w.comap (algebraMap K L) = v }
+
+namespace Extension
+
+variable {L} {v : InfinitePlace K} (w : v.Extension L)
+
+/-- If `w : v.Extension L` extends `v : InfinitePlace`, then `w.abs` is the absolute value
+in `AbsoluteValue L ℝ` associated to it. This is a shortcut to `w.1.1`. -/
+abbrev abs : AbsoluteValue L ℝ := w.1.1
+
+theorem comap_eq : w.1.comap (algebraMap K L) = v := w.2
+
+/-- If `w : v.Extension L` extends a complex place `v : InfinitePlace K`, then `w` is complex. -/
+theorem isComplex_of_isComplex (hv : v.IsComplex) : w.1.IsComplex := by
+  rw [← not_isReal_iff_isComplex] at hv ⊢
+  convert mt (IsReal.comap (algebraMap K L)) (w.comap_eq ▸ hv)
+
+/-- If `w : v.Extension L` is a real place extending `v : InfinitePlace K`, then `v` is real. -/
+theorem isReal (hw : w.1.IsReal) : v.IsReal :=
+  w.comap_eq ▸ hw.comap _
+
+theorem mk_embedding_comp_eq : mk (w.1.embedding.comp (algebraMap K L)) = v := by
+  rw [← comap_mk, w.1.mk_embedding, w.comap_eq]
+
+theorem _root_.NumberField.ComplexEmbedding.Extension.comap_mk_eq {v : InfinitePlace K}
+    (ψ : ComplexEmbedding.Extension L v.embedding) :
+    (mk ψ).comap (algebraMap K L) = v := by
+  rw [comap_mk, ψ.comp_eq, mk_embedding]
+
+/-- If `w : InfinitePlace L` extends `v : InfinitePlace K`, then either `w.embedding`
+extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
+theorem embedding_or_conjugate_comp_eq :
+    w.1.embedding.comp (algebraMap K L) = v.embedding ∨
+      (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding := by
+  cases embedding_mk_eq (w.1.embedding.comp (algebraMap K L)) with
+  | inl hl => exact .inl (w.mk_embedding_comp_eq ▸ hl).symm
+  | inr hr => exact .inr (w.mk_embedding_comp_eq ▸ hr).symm
+
+end NumberField.InfinitePlace.Extension
