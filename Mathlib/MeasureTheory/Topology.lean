@@ -21,6 +21,6 @@ theorem ae_restrict_le_codiscreteWithin
     {μ : Measure α} [NoAtoms μ] {U : Set α} (hU : MeasurableSet U) :
     ae (μ.restrict U) ≤ codiscreteWithin U := by
   intro s hs
-  have := discreteTopology_of_codiscreteWithin hs
+  have := isDiscrete_iff_discreteTopology.mp <| isDiscrete_of_codiscreteWithin hs
   rw [mem_ae_iff, Measure.restrict_apply' hU]
   apply Set.Countable.measure_zero (TopologicalSpace.separableSpace_iff_countable.1 inferInstance)
