@@ -434,6 +434,7 @@ lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
 end Walk
 
 namespace Subgraph
+
 lemma _root_.SimpleGraph.Walk.toSubgraph_connected {u v : V} (p : G.Walk u v) :
     p.toSubgraph.Connected := by
   induction p with
