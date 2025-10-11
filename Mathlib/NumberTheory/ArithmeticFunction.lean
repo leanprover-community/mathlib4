@@ -823,6 +823,10 @@ theorem pow_zero_eq_zeta : pow 0 = ζ := by
   ext n
   simp
 
+theorem pow_one_eq_id : pow 1 = id := by
+  ext n
+  simp
+
 /-- `σ k n` is the sum of the `k`th powers of the divisors of `n` -/
 def sigma (k : ℕ) : ArithmeticFunction ℕ :=
   ⟨fun n => ∑ d ∈ divisors n, d ^ k, by simp⟩
