@@ -384,15 +384,11 @@ theorem iteratedSliceBackward_forget {X : C} (f : Over X) :
 /-- The functor `Over.pullback f : Over Y ⥤ Over X` is naturally isomorphic to
 `Over.star : Over Y ⥤ Over (Over.mk f)` post-composed with the
 iterated slice equivlanece `Over (Over.mk f) ⥤ Over X`. -/
-def starIteratedSliceForwardIsoPullback [HasFiniteWidePullbacks C]
-    {X Y : C} (f : X ⟶ Y) : star (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
+def starIteratedSliceForwardIsoPullback [HasFiniteWidePullbacks C] {X Y : C} (f : X ⟶ Y) :
+    star (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
   conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjStar _))
   (mapPullbackAdj f) (eqToIso (iteratedSliceBackward_forget (Over.mk f)))
 
 end Over
-
-@[deprecated (since := "2024-05-18")] noncomputable alias star := Over.star
-
-@[deprecated (since := "2024-05-18")] noncomputable alias forgetAdjStar := Over.forgetAdjStar
 
 end CategoryTheory
