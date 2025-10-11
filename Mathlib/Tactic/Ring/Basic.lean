@@ -890,6 +890,11 @@ theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
+-- needed to lift from `OptionT CoreM` to `OptionT MetaM`
+private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
+    MonadLiftT (OptionT m) (OptionT m') where
+  monadLift x := OptionT.mk x.run
+
 /-- There are several special cases when exponentiating monomials:
 
 * `1 ^ n = 1`
