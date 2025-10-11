@@ -169,7 +169,7 @@ instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [IsOpenImmersion, ← D.ι_isoLocallyRingedSpace_inv]; infer_instance
 
 theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
-    ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).base y = x :=
+    ∃ (i : D.J) (y : (D.U i).carrier), D.ι i y = x :=
   𝖣.ι_jointly_surjective forget x
 
 /-- Promoted to higher priority to short circuit simplifier. -/
@@ -225,10 +225,10 @@ theorem ι_isoCarrier_inv (i : D.J) :
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣.ι i x = 𝖣.ι j y`.
 See `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff`. -/
 def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
-  ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).base x = b.2
+  ∃ x : (D.V (a.1, b.1)).carrier, D.f _ _ x = a.2 ∧ (D.t _ _ ≫ D.f _ _) x = b.2
 
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
-    (𝖣.ι i).base x = (𝖣.ι j).base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
+    𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   refine Iff.trans ?_
     (TopCat.GlueData.ι_eq_iff_rel
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
@@ -238,7 +238,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
   · infer_instance
 
-theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).base ⁻¹' U) := by
+theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen (D.ι i ⁻¹' U) := by
   rw [← (TopCat.homeoOfIso D.isoCarrier.symm).isOpen_preimage, TopCat.GlueData.isOpen_iff]
   apply forall_congr'
   intro i
@@ -375,11 +375,11 @@ theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
   rw [isOpen_iff_forall_mem_open]
   intro x hx
   rw [𝒰.gluedCover.isOpen_iff] at hU
-  use 𝒰.fromGlued.base '' U ∩ Set.range (𝒰.f (𝒰.idx x)).base
+  use 𝒰.fromGlued '' U ∩ Set.range (𝒰.f (𝒰.idx x))
   use Set.inter_subset_left
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
-    apply (show IsOpenImmersion (𝒰.f (𝒰.idx x)) from inferInstance).base_open.isOpenMap
+    apply (𝒰.f (𝒰.idx x)).isOpenEmbedding.isOpenMap
     convert hU (𝒰.idx x) using 1
     simp only [← ι_fromGlued, gluedCover_U, Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp,
       Set.preimage_comp]
@@ -398,7 +398,7 @@ instance : Epi 𝒰.fromGlued.base := by
   rw [TopCat.epi_iff_surjective]
   intro x
   obtain ⟨y, h⟩ := 𝒰.covers x
-  use (𝒰.gluedCover.ι (𝒰.idx x)).base y
+  use 𝒰.gluedCover.ι (𝒰.idx x) y
   rw [← ConcreteCategory.comp_apply]
   rw [← 𝒰.ι_fromGlued (𝒰.idx x)] at h
   exact h
@@ -508,12 +508,12 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
         (F.obj i).homOfLE (le_iSup_of_le ⟨l, _, fj⟩ le_rfl) ∧
       α ≫ pullback.snd _ _ = (F.map fi).isoOpensRange.hom ≫
         (F.obj i).homOfLE (le_iSup_of_le ⟨l, _, fk⟩ le_rfl) ∧
-      α.base z = x := by
-  obtain ⟨k₁, y₁, hy₁⟩ := mem_iSup.mp ((pullback.fst (C := Scheme) _ _).base x).2
-  obtain ⟨k₂, y₂, hy₂⟩ := mem_iSup.mp ((pullback.snd (C := Scheme) _ _).base x).2
+      α z = x := by
+  obtain ⟨k₁, y₁, hy₁⟩ := mem_iSup.mp ((pullback.fst (C := Scheme) _ _) x).2
+  obtain ⟨k₂, y₂, hy₂⟩ := mem_iSup.mp ((pullback.snd (C := Scheme) _ _) x).2
   obtain ⟨l, hli, hlk, z, rfl, rfl⟩ :=
     (F ⋙ forget).exists_map_eq_of_isLocallyDirected k₁.2.1 k₂.2.1 y₁ y₂
-      (by simpa [hy₁, hy₂] using congr($(pullback.condition (f := (V F i j).ι)).base x))
+      (by simpa [hy₁, hy₂] using congr($(pullback.condition (f := (V F i j).ι)) x))
   let α : F.obj l ⟶ pullback (V F i j).ι (V F i k).ι :=
     pullback.lift
       ((F.map (hli ≫ k₁.2.1)).isoOpensRange.hom ≫ Scheme.homOfLE _
@@ -526,7 +526,7 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
     · exact inferInstanceAs (IsOpenImmersion (pullback.fst _ _))
     · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, α]
       infer_instance
-  have : α.base z = x := by
+  have : α z = x := by
     apply (pullback.fst (C := Scheme) _ _).isOpenEmbedding.injective
     apply (V F i j).ι.isOpenEmbedding.injective
     rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.lift_fst_assoc]
@@ -545,8 +545,8 @@ lemma fst_inv_eq_snd_inv
   apply Scheme.hom_ext_of_forall
   intro x
   obtain ⟨l, hli, hlj, y, hy₁, hy₂⟩ := (F ⋙ forget).exists_map_eq_of_isLocallyDirected k₁.2.1 k₂.2.1
-    ((pullback.fst _ _ ≫ (F.map k₁.2.1).isoOpensRange.inv).base x)
-    ((pullback.snd _ _ ≫ (F.map k₂.2.1).isoOpensRange.inv).base x) (by
+    ((pullback.fst _ _ ≫ (F.map k₁.2.1).isoOpensRange.inv) x)
+    ((pullback.snd _ _ ≫ (F.map k₂.2.1).isoOpensRange.inv) x) (by
       simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map, ← Hom.comp_apply,
         Category.assoc, Hom.isoOpensRange_inv_comp]
       congr 5
@@ -562,7 +562,7 @@ lemma fst_inv_eq_snd_inv
     have : IsOpenImmersion (α ≫ pullback.fst _ _) := by
       simp only [pullback.lift_fst, α]; infer_instance
     exact .of_comp _ (pullback.fst _ _)
-  have : α.base y = x := by
+  have : α y = x := by
     simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map, Hom.comp_base,
       TopCat.hom_comp, ContinuousMap.comp_apply] at hy₁
     apply (pullback.fst ((F.obj i).homOfLE h₁) _).isOpenEmbedding.injective
@@ -770,8 +770,8 @@ instance (i) : IsOpenImmersion (colimit.ι F i) :=
   inferInstanceAs (IsOpenImmersion ((openCover F).f i))
 
 lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
-    (colimit.ι F i).base xi = (colimit.ι F j).base xj ↔
-      ∃ k fi fj, ∃ (x : F.obj k), (F.map fi).base x = xi ∧ (F.map fj).base x = xj := by
+    colimit.ι F i xi = colimit.ι F j xj ↔
+      ∃ k fi fj, ∃ (x : F.obj k), F.map fi x = xi ∧ F.map fj x = xj := by
   constructor; swap
   · rintro ⟨k, fi, fj, x, rfl, rfl⟩; simp only [← Scheme.Hom.comp_apply, colimit.w]
   obtain ⟨i, rfl⟩ := (equivShrink J).symm.surjective i
@@ -783,12 +783,12 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
   refine ?_ ∘ ((glueData F).ι_eq_iff _ _ _ _).mp
   dsimp only [GlueData.Rel]
   rintro ⟨x, rfl, rfl⟩
-  obtain ⟨⟨k, ki, kj⟩, y, hy : (F.map ki).base y = ((glueData F).f i j).base x⟩ := mem_iSup.mp x.2
+  obtain ⟨⟨k, ki, kj⟩, y, hy : F.map ki y = (glueData F).f i j x⟩ := mem_iSup.mp x.2
   refine ⟨k, ki, kj, y, hy, ?_⟩
   obtain ⟨k, rfl⟩ := (equivShrink J).symm.surjective k
   apply ((glueData F).ι _).isOpenEmbedding.injective
   simp only [← Scheme.Hom.comp_apply, Category.assoc, GlueData.glue_condition]
-  trans ((glueData F).ι k).base y
+  trans (glueData F).ι k y
   · simp [← glueDataι_naturality F kj]; rfl
   · simp [← glueDataι_naturality F ki, ← hy]; rfl
 

@@ -147,7 +147,7 @@ lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
     {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) {x} (hx : x ∈ U) :
     (f.restrict U hU hU').fromSpecStalkOfMem hx = f.fromSpecStalkOfMem (hU' hx) := by
   dsimp only [fromSpecStalkOfMem, restrict, Scheme.Opens.fromSpecStalkOfMem]
-  have e : ⟨x, hU' hx⟩ = (X.homOfLE hU').base ⟨x, hx⟩ := by
+  have e : ⟨x, hU' hx⟩ = X.homOfLE hU' ⟨x, hx⟩ := by
     rw [Scheme.homOfLE_base]
     rfl
   rw [Category.assoc, ← SpecMap_stalkMap_fromSpecStalk_assoc,

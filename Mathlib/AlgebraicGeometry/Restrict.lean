@@ -243,7 +243,7 @@ lemma Scheme.homOfLE_homOfLE (X : Scheme.{u}) {U V W : X.Opens} (e₁ : U ≤ V)
 theorem Scheme.homOfLE_base {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).base = (Opens.toTopCat _).map (homOfLE e) := by
   ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
-  exact congr($(X.homOfLE_ι e).base a)
+  exact congr($(X.homOfLE_ι e) a)
 
 @[simp]
 theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
@@ -411,7 +411,7 @@ noncomputable def Scheme.Hom.preimageIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso
   apply IsOpenImmersion.isoOfRangeEq (f := (f ⁻¹ᵁ U).ι ≫ f) U.ι _
   dsimp
   rw [Set.range_comp, Opens.range_ι, Opens.range_ι]
-  refine @Set.image_preimage_eq _ _ f.base U.1 f.homeomorph.surjective
+  refine @Set.image_preimage_eq _ _ f U.1 f.homeomorph.surjective
 
 @[reassoc (attr := simp)]
 lemma Scheme.Hom.preimageIso_hom_ι {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso (C := Scheme) f]
@@ -548,12 +548,12 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣
   delta morphismRestrict; infer_instance
 
 theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
-    @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U).base x) = f.base x.1 :=
+    @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U) x) = f x.1 :=
   congr_arg (fun f => (Scheme.Hom.toLRSHom f).base x)
     (morphismRestrict_ι f U)
 
 theorem morphismRestrict_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
-    ⇑(f ∣_ U).base = U.1.restrictPreimage f.base :=
+    ⇑(f ∣_ U) = U.1.restrictPreimage f :=
   funext fun x => Subtype.ext (morphismRestrict_base_coe f U x)
 
 theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : Opens U) :
@@ -561,14 +561,14 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
   ext1
   ext x
   constructor
-  · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).base _ ∈ V, rfl⟩
+  · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U) _ ∈ V, rfl⟩
     refine ⟨⟨_, hx⟩, ?_, rfl⟩
     convert hx'
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is not compiling
     refine Subtype.ext ?_
     exact (morphismRestrict_base_coe f U ⟨x, hx⟩).symm
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
-    refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).base ⟨x, hx⟩ ∈ V.1), rfl⟩
+    refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U) ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is not compiling
     refine Subtype.ext ?_
@@ -672,7 +672,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
 -/
 def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
     Arrow.mk ((f ∣_ U).stalkMap x) ≅ Arrow.mk (f.stalkMap x.1) := Arrow.isoMk' _ _
-  (U.stalkIso ((f ∣_ U).base x) ≪≫
+  (U.stalkIso ((f ∣_ U) x) ≪≫
     (TopCat.Presheaf.stalkCongr _ <| Inseparable.of_eq <| morphismRestrict_base_coe f U x))
   ((f ⁻¹ᵁ U).stalkIso x) <| TopCat.Presheaf.stalk_hom_ext _ fun V hxV ↦ by
     simp [Scheme.Hom.germ_stalkMap_assoc, Scheme.Hom.appLE]

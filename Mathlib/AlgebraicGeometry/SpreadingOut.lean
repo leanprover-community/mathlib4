@@ -84,7 +84,7 @@ lemma Scheme.exists_le_and_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInje
   exact ⟨X.basicOpen f, hxf, hU.basicOpen f, hf, injective_germ_basicOpen U hU x hx f hxf H⟩
 
 instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
-    Y.IsGermInjectiveAt (f.base x) := by
+    Y.IsGermInjectiveAt (f x) := by
   obtain ⟨U, hxU, hU, H⟩ := X.exists_germ_injective x
   refine ⟨⟨f ''ᵁ U, ⟨x, hxU, rfl⟩, hU.image_of_isOpenImmersion f, ?_⟩⟩
   refine ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
@@ -95,13 +95,13 @@ instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
 
 variable {f} in
 lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f] :
-    Y.IsGermInjectiveAt (f.base x) ↔ X.IsGermInjectiveAt x := by
+    Y.IsGermInjectiveAt (f x) ↔ X.IsGermInjectiveAt x := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
   obtain ⟨U, hxU, hU, hU', H⟩ :=
-    Y.exists_le_and_germ_injective (f.base x) (V := f.opensRange) ⟨x, rfl⟩
+    Y.exists_le_and_germ_injective (f x) (V := f.opensRange) ⟨x, rfl⟩
   obtain ⟨V, hV⟩ := (IsOpenImmersion.affineOpensEquiv f).surjective ⟨⟨U, hU⟩, hU'⟩
   obtain rfl : f ''ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
-  obtain ⟨y, hy, e : f.base y = f.base x⟩ := hxU
+  obtain ⟨y, hy, e : f y = f x⟩ := hxU
   obtain rfl := f.isOpenEmbedding.injective e
   refine ⟨V, hy, V.2, ?_⟩
   replace H := ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
@@ -191,13 +191,13 @@ TODO: The condition on `X` is unnecessary when `Y` is locally of finite type.
 -/
 @[stacks 0BX6]
 lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
-    (f g : X ⟶ Y) (e : f.base x = g.base x)
+    (f g : X ⟶ Y) (e : f x = g x)
     (H : f.stalkMap x =
       Y.presheaf.stalkSpecializes (Inseparable.of_eq e.symm).specializes ≫ g.stalkMap x) :
     ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
   obtain ⟨_, ⟨V : Y.Opens, hV, rfl⟩, hxV, -⟩ :=
-    Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
-  have hxV' : g.base x ∈ V := e ▸ hxV
+    Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
+  have hxV' : g x ∈ V := e ▸ hxV
   obtain ⟨U, hxU, _, hUV, HU⟩ := X.exists_le_and_germ_injective x (f ⁻¹ᵁ V ⊓ g ⁻¹ᵁ V) ⟨hxV, hxV'⟩
   refine ⟨U, hxU, ?_⟩
   rw [← Scheme.Hom.resLE_comp_ι _ (hUV.trans inf_le_left),
@@ -227,7 +227,7 @@ lemma spread_out_unique_of_isGermInjective' {x : X} [X.IsGermInjectiveAt x]
     (e : X.fromSpecStalk x ≫ f = X.fromSpecStalk x ≫ g) :
     ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
   fapply spread_out_unique_of_isGermInjective
-  · simpa using congr(($e).base (IsLocalRing.closedPoint _))
+  · simpa using congr($e (IsLocalRing.closedPoint _))
   · apply Spec.map_injective
     rw [← cancel_mono (Y.fromSpecStalk _)]
     simpa [Scheme.SpecMap_stalkSpecializes_fromSpecStalk]
@@ -322,15 +322,15 @@ TODO: The condition on `X` is unnecessary when `Y` is locally of finite presenta
 -/
 @[stacks 0BX6]
 lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermInjectiveAt x] {y : Y}
-    (e : sX.base x = sY.base y) (φ : Y.presheaf.stalk y ⟶ X.presheaf.stalk x)
+    (e : sX x = sY y) (φ : Y.presheaf.stalk y ⟶ X.presheaf.stalk x)
     (h : sY.stalkMap y ≫ φ =
       S.presheaf.stalkSpecializes (Inseparable.of_eq e).specializes ≫ sX.stalkMap x) :
     ∃ (U : X.Opens) (hxU : x ∈ U) (f : U.toScheme ⟶ Y),
       Spec.map φ ≫ Y.fromSpecStalk y = U.fromSpecStalkOfMem x hxU ≫ f ∧
       f ≫ sY = U.ι ≫ sX := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-    S.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (sX.base x)) isOpen_univ
-  have hyU : sY.base y ∈ U := e ▸ hxU
+    S.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (sX x)) isOpen_univ
+  have hyU : sY y ∈ U := e ▸ hxU
   obtain ⟨_, ⟨V : Y.Opens, hV, rfl⟩, hyV, iVU⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open hyU (sY ⁻¹ᵁ U).2
   have : sY.appLE U V iVU ≫ Y.presheaf.germ V y hyV ≫ φ =

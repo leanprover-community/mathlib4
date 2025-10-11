@@ -600,13 +600,13 @@ lemma image_preimage_eq_preimage_image_of_isPullback {X Y U V : Scheme.{u}}
     {f : X ⟶ Y} {f' : U ⟶ V} {iU : U ⟶ X} {iV : V ⟶ Y} [IsOpenImmersion iV] [IsOpenImmersion iU]
     (H : IsPullback f' iU iV f) (W : V.Opens) : iU ''ᵁ f' ⁻¹ᵁ W = f ⁻¹ᵁ iV ''ᵁ W := by
   ext x
-  by_cases hx : x ∈ Set.range iU.base
+  by_cases hx : x ∈ Set.range iU
   · obtain ⟨x, rfl⟩ := hx
     simp only [SetLike.mem_coe, Opens.map_coe, Set.mem_preimage, ← Scheme.Hom.comp_apply, ← H.w]
     simp
   · constructor
     · rintro ⟨x, hx, rfl⟩; cases hx ⟨x, rfl⟩
-    · rintro ⟨y, hy, e : iV.base y = f.base x⟩
+    · rintro ⟨y, hy, e : iV y = f x⟩
       obtain ⟨x, rfl⟩ := (IsOpenImmersion.range_pullbackSnd iV f).ge ⟨y, e⟩
       rw [← H.isoPullback_inv_snd] at hx
       cases hx ⟨_, rfl⟩
@@ -635,14 +635,14 @@ lemma comp_lift {Y' : Scheme} (g' : Y' ⟶ Y) (H : Set.range g ⊆ Set.range f) 
 
 theorem isPullback_lift_id
     {X U Y : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [IsOpenImmersion g]
-    (H : Set.range f.base ⊆ Set.range g.base) :
+    (H : Set.range f ⊆ Set.range g) :
     IsPullback (IsOpenImmersion.lift g f H) (𝟙 _) g f := by
   convert IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
   · exact (Category.comp_id _).symm
   · simp
 
 /-- Two open immersions with equal range are isomorphic. -/
-def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) : X ≅ Y where
+def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f = Set.range g) : X ≅ Y where
   hom := lift g f (le_of_eq e)
   inv := lift f g (le_of_eq e.symm)
   hom_inv_id := by rw [← cancel_mono f]; simp
@@ -650,13 +650,13 @@ def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
 
 @[reassoc (attr := simp)]
 lemma isoOfRangeEq_hom_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
+    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f = Set.range g) :
     (isoOfRangeEq f g e).hom ≫ g = f :=
   lift_fac _ _ (le_of_eq e)
 
 @[reassoc (attr := simp)]
 lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
+    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f = Set.range g) :
     (isoOfRangeEq f g e).inv ≫ f = g :=
   lift_fac _ _ (le_of_eq e.symm)
 
@@ -767,7 +767,7 @@ theorem image_basicOpen {U : X.Opens} (r : Γ(X, U)) :
   · exact (X.basicOpen_le r).trans (f.preimage_image_eq _).ge
 
 lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
-    f.base '' X.zeroLocus s = Y.zeroLocus ((f.appIso U).inv.hom '' s) ∩ Set.range f := by
+    f '' X.zeroLocus s = Y.zeroLocus ((f.appIso U).inv.hom '' s) ∩ Set.range f := by
   ext x
   by_cases hx : x ∈ Set.range f
   · obtain ⟨x, rfl⟩ := hx

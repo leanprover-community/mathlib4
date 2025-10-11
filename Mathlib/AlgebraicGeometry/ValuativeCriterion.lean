@@ -108,7 +108,7 @@ open IsLocalRing
 
 @[stacks 01KE]
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
-    SpecializingMap f.base := by
+    SpecializingMap f := by
   intro x' y h
   let stalk_y_to_residue_x' : Y.presheaf.stalk y ⟶ X.residueField x' :=
     Y.presheaf.stalkSpecializes h ≫ f.stalkMap x' ≫ X.residue x'
@@ -124,12 +124,12 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
     rfl
   obtain ⟨l, hl₁, hl₂⟩ := (H { R := A, K := X.residueField x', commSq := ⟨w⟩, .. }).exists_lift
   dsimp only at hl₁ hl₂
-  refine ⟨l.base (closedPoint A), ?_, ?_⟩
+  refine ⟨l (closedPoint A), ?_, ?_⟩
   · simp_rw [← Scheme.fromSpecResidueField_apply x' (closedPoint (X.residueField x')), ← hl₁]
-    exact (specializes_closedPoint _).map l.base.hom.2
+    exact (specializes_closedPoint _).map l.continuous
   · rw [← Scheme.Hom.comp_apply, hl₂]
     simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply]
-    have : (Spec.map stalk_y_to_A).base (closedPoint A) = closedPoint (Y.presheaf.stalk y) :=
+    have : Spec.map stalk_y_to_A (closedPoint A) = closedPoint (Y.presheaf.stalk y) :=
       comap_closedPoint (S := A) (stalk_y_to_residue_x'.hom.codRestrict A.toSubring hA)
     rw [this, Y.fromSpecStalk_closedPoint]
 
@@ -144,8 +144,8 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
   letI : Field (CommRingCat.of K) := ‹_›
   replace H := H (pullback.snd i₂ f) i₂ (pullback.fst i₂ f) (.of_hasPullback i₂ f)
   let lft := pullback.lift (Spec.map (CommRingCat.ofHom (algebraMap R K))) i₁ w.symm
-  obtain ⟨x, h₁, h₂⟩ := @H (lft.base (closedPoint _)) _ (specializes_closedPoint (R := R) _)
-  let e : CommRingCat.of R ≅ (Spec <| .of R).presheaf.stalk ((pullback.fst i₂ f).base x) :=
+  obtain ⟨x, h₁, h₂⟩ := @H (lft (closedPoint _)) _ (specializes_closedPoint (R := R) _)
+  let e : CommRingCat.of R ≅ (Spec <| .of R).presheaf.stalk (pullback.fst i₂ f x) :=
     (stalkClosedPointIso (.of R)).symm ≪≫
       (Spec <| .of R).presheaf.stalkCongr (.of_eq h₂.symm)
   let α := e.hom ≫ (pullback.fst i₂ f).stalkMap x

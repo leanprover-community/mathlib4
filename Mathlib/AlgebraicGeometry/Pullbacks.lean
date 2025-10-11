@@ -463,7 +463,7 @@ instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
 -- The converse is also true. See `Scheme.isEmpty_pullback_iff`.
 theorem _root_.AlgebraicGeometry.Scheme.isEmpty_pullback
     {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
-    (H : Disjoint (Set.range f.base) (Set.range g.base)) : IsEmpty ↑(Limits.pullback f g) :=
+    (H : Disjoint (Set.range f) (Set.range g)) : IsEmpty ↑(Limits.pullback f g) :=
   isEmpty_of_commSq (IsPullback.of_hasPullback f g).toCommSq H
 
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/

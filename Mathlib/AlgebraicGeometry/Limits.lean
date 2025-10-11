@@ -122,7 +122,7 @@ instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
 
 instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
-  ⟨fun x => ((initial.to Scheme.empty :).base x).elim⟩
+  ⟨fun x => ((initial.to Scheme.empty :) x).elim⟩
 
 theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
   @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
@@ -165,8 +165,7 @@ instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
   ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
 
 lemma sigmaι_eq_iff (i j : ι) (x y) :
-    (Sigma.ι f i).base x = (Sigma.ι f j).base y ↔
-      (Sigma.mk i x : Σ i, f i) = Sigma.mk j y := by
+    Sigma.ι f i x = Sigma.ι f j y ↔ (Sigma.mk i x : Σ i, f i) = Sigma.mk j y := by
   refine (Scheme.IsLocallyDirected.ι_eq_ι_iff _).trans ⟨?_, ?_⟩
   · rintro ⟨k, ⟨⟨⟨⟩⟩⟩, ⟨⟨⟨⟩⟩⟩, x, rfl, rfl⟩; simp
   · simp only [Discrete.functor_obj_eq_as, Sigma.mk.injEq]
@@ -197,7 +196,7 @@ def sigmaMk : (Σ i, f i) ≃ₜ (∐ f :) :=
 
 @[simp]
 lemma sigmaMk_mk (i) (x : f i) :
-    sigmaMk f (.mk i x) = (Sigma.ι f i).base x := by
+    sigmaMk f (.mk i x) = Sigma.ι f i x := by
   change ((TopCat.sigmaCofan (fun x ↦ (f x).toTopCat)).inj i ≫
     (colimit.isoColimitCocone ⟨_, TopCat.sigmaCofanIsColimit _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map (Sigma.ι f i) x
@@ -208,16 +207,16 @@ lemma sigmaMk_mk (i) (x : f i) :
 open scoped Function in
 private lemma isOpenImmersion_sigmaDesc_aux
     {X : Scheme.{u}} (α : ∀ i, f i ⟶ X) [∀ i, IsOpenImmersion (α i)]
-    (hα : Pairwise (Disjoint on (Set.range <| α · |>.base))) :
+    (hα : Pairwise (Disjoint on (Set.range <| α ·))) :
     IsOpenImmersion (Sigma.desc α) := by
   rw [IsOpenImmersion.iff_isIso_stalkMap]
   constructor
-  · suffices Topology.IsOpenEmbedding ((Sigma.desc α).base ∘ sigmaMk f) by
+  · suffices Topology.IsOpenEmbedding (Sigma.desc α ∘ sigmaMk f) by
       convert this.comp (sigmaMk f).symm.isOpenEmbedding; ext; simp
     refine .of_continuous_injective_isOpenMap ?_ ?_ ?_
     · fun_prop
     · rintro ⟨ix, x⟩ ⟨iy, y⟩ e
-      have : (α ix).base x = (α iy).base y := by
+      have : α ix x = α iy y := by
         simpa [← Scheme.Hom.comp_apply] using e
       obtain rfl : ix = iy := by
         by_contra h
@@ -238,7 +237,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
 open scoped Function in
 lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
     {X : Scheme.{u}} (α : ∀ i, g i ⟶ X) [∀ i, IsOpenImmersion (α i)]
-    (hα : Pairwise (Disjoint on (Set.range <| α · |>.base))) :
+    (hα : Pairwise (Disjoint on (Set.range <| α ·))) :
     IsOpenImmersion (Sigma.desc α) := by
   obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
   convert IsOpenImmersion.comp ((Sigma.reindex e.symm g).inv) (Sigma.desc fun i ↦ α _)
@@ -265,7 +264,7 @@ lemma nonempty_isColimit_cofanMk_of [Small.{u} σ]
   intro x hx
   have : x ∈ ⨆ i, (f i).opensRange := by rwa [hcov]
   obtain ⟨i, y, rfl⟩ := by simpa only [Opens.iSup_mk, Opens.mem_mk, Set.mem_iUnion] using this
-  use Sigma.ι X i |>.base y
+  use Sigma.ι X i y
   simp [← Scheme.Hom.comp_apply]
 
 variable (X Y : Scheme.{u})
@@ -289,8 +288,7 @@ instance : IsOpenImmersion (coprod.inr : Y ⟶ X ⨿ Y) := by
   rw [← ι_right_coprodIsoSigma_inv]; infer_instance
 
 lemma isCompl_range_inl_inr :
-    IsCompl (Set.range (coprod.inl : X ⟶ X ⨿ Y).base)
-      (Set.range (coprod.inr : Y ⟶ X ⨿ Y).base) :=
+    IsCompl (Set.range (coprod.inl : X ⟶ X ⨿ Y)) (Set.range (coprod.inr : Y ⟶ X ⨿ Y)) :=
   ((TopCat.binaryCofan_isColimit_iff _).mp
     ⟨mapIsColimitOfPreservesOfIsColimit Scheme.forgetToTop.{u} _ _ (coprodIsCoprod X Y)⟩).2.2
 
@@ -308,7 +306,7 @@ def coprodMk : X ⊕ Y ≃ₜ (X ⨿ Y : Scheme.{u}) :=
 
 @[simp]
 lemma coprodMk_inl (x : X) :
-    coprodMk X Y (.inl x) = (coprod.inl : X ⟶ X ⨿ Y).base x := by
+    coprodMk X Y (.inl x) = (coprod.inl : X ⟶ X ⨿ Y) x := by
   change ((TopCat.binaryCofan X Y).inl ≫
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inl x
@@ -318,7 +316,7 @@ lemma coprodMk_inl (x : X) :
 
 @[simp]
 lemma coprodMk_inr (x : Y) :
-    coprodMk X Y (.inr x) = (coprod.inr : Y ⟶ X ⨿ Y).base x := by
+    coprodMk X Y (.inr x) = (coprod.inr : Y ⟶ X ⨿ Y) x := by
   change ((TopCat.binaryCofan X Y).inr ≫
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inr x
@@ -383,7 +381,7 @@ lemma coprodSpec_inr : coprod.inr ≫ coprodSpec R S =
   coprod.inr_desc _ _
 
 lemma coprodSpec_coprodMk (x) :
-    (coprodSpec R S).base (coprodMk _ _ x) = (PrimeSpectrum.primeSpectrumProd R S).symm x := by
+    coprodSpec R S (coprodMk _ _ x) = (PrimeSpectrum.primeSpectrumProd R S).symm x := by
   apply PrimeSpectrum.ext
   obtain (x | x) := x <;>
     simp only [coprodMk_inl, coprodMk_inr, ← Scheme.Hom.comp_apply,
@@ -394,8 +392,7 @@ lemma coprodSpec_coprodMk (x) :
     ext; simp [Ideal.prod, CommRingCat.ofHom]
 
 lemma coprodSpec_apply (x) :
-    (coprodSpec R S).base x =
-      (PrimeSpectrum.primeSpectrumProd R S).symm ((coprodMk _ _).symm x) := by
+    coprodSpec R S x = (PrimeSpectrum.primeSpectrumProd R S).symm ((coprodMk _ _).symm x) := by
   rw [← coprodSpec_coprodMk, Homeomorph.apply_symm_apply]
 
 lemma isIso_stalkMap_coprodSpec (x) :
@@ -451,7 +448,7 @@ instance : PreservesColimitsOfShape (Discrete WalkingPair) Scheme.Spec.{u} :=
 instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec.{u} := by
   have : IsEmpty (Scheme.Spec.obj (⊥_ CommRingCatᵒᵖ)) :=
     @Function.isEmpty _ _ spec_punit_isEmpty (Scheme.Spec.mapIso
-      (initialIsoIsInitial (initialOpOfTerminal CommRingCat.punitIsTerminal))).hom.base
+      (initialIsoIsInitial (initialOpOfTerminal CommRingCat.punitIsTerminal))).hom
   have := preservesInitial_of_iso Scheme.Spec (asIso (initial.to _))
   exact preservesColimitsOfShape_pempty_of_preservesInitial _
 

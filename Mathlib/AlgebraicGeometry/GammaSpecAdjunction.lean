@@ -417,8 +417,7 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
 end ΓSpec
 
 theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
-    (Scheme.toSpecΓ X).base x =
-      (Spec.map (X.presheaf.germ ⊤ x trivial)).base (IsLocalRing.closedPoint _) := rfl
+    Scheme.toSpecΓ X x = Spec.map (X.presheaf.germ ⊤ x trivial) (IsLocalRing.closedPoint _) := rfl
 
 @[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :

@@ -528,9 +528,9 @@ namespace Scheme
 
 theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
     {i : W ⟶ X} {j : W ⟶ Y} (h : CommSq i j f g)
-    (H : Disjoint (Set.range f.base) (Set.range g.base)) : IsEmpty W :=
+    (H : Disjoint (Set.range f) (Set.range g)) : IsEmpty W :=
   ⟨fun x ↦ (Set.disjoint_iff_inter_eq_empty.mp H).le
-    ⟨⟨i.base x, congr($(h.w).base x)⟩, ⟨j.base x, rfl⟩⟩⟩
+    ⟨⟨i x, congr($(h.w) x)⟩, ⟨j x, rfl⟩⟩⟩
 
 /-- The empty scheme. -/
 @[simps]
@@ -841,7 +841,7 @@ alias Scheme.iso_hom_base_inv_base := Scheme.Hom.hom_base_inv_base
 
 @[simp]
 lemma Scheme.Hom.hom_inv_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
-    e.inv (e.hom.base x) = x := by
+    e.inv (e.hom x) = x := by
   change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
@@ -892,7 +892,7 @@ lemma stalkMap_id (X : Scheme.{u}) (x : X) :
   PresheafedSpace.stalkMap.id _ x
 
 lemma stalkMap_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f.base x) ≫ f.stalkMap x :=
+    (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f x) ≫ f.stalkMap x :=
   PresheafedSpace.stalkMap.comp f.toPshHom g.toPshHom x
 
 @[reassoc]
@@ -925,37 +925,37 @@ lemma stalkMap_congr_point (x x' : X) (hxx' : x = x') :
 
 @[reassoc (attr := simp)]
 lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
-    e.hom.stalkMap (e.inv.base y) ≫ e.inv.stalkMap y =
+    e.hom.stalkMap (e.inv y) ≫ e.inv.stalkMap y =
       (Y.presheaf.stalkCongr (.of_eq (by simp))).hom :=
   LocallyRingedSpace.stalkMap_hom_inv (forgetToLocallyRingedSpace.mapIso e) y
 
 @[simp]
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
-    e.inv.stalkMap y (e.hom.stalkMap (e.inv.base y) z) =
+    e.inv.stalkMap y (e.hom.stalkMap (e.inv y) z) =
       (Y.presheaf.stalkCongr (.of_eq (by simp))).hom z :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z
 
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
-    e.inv.stalkMap (e.hom.base x) ≫ e.hom.stalkMap x =
+    e.inv.stalkMap (e.hom x) ≫ e.hom.stalkMap x =
       (X.presheaf.stalkCongr (.of_eq (by simp))).hom :=
   LocallyRingedSpace.stalkMap_inv_hom (forgetToLocallyRingedSpace.mapIso e) x
 
 @[simp]
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
-    e.hom.stalkMap x (e.inv.stalkMap (e.hom.base x) y) =
+    e.hom.stalkMap x (e.inv.stalkMap (e.hom x) y) =
       (X.presheaf.stalkCongr (.of_eq (by simp))).hom y :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y
 
 @[reassoc (attr := simp)]
-lemma germ_stalkMap (U : Y.Opens) (x : X) (hx : f.base x ∈ U) :
-    Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x =
+lemma germ_stalkMap (U : Y.Opens) (x : X) (hx : f x ∈ U) :
+    Y.presheaf.germ U (f x) hx ≫ f.stalkMap x =
       f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx :=
   PresheafedSpace.stalkMap_germ f.toPshHom U x hx
 
 @[simp]
-lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f.base x ∈ U) (y) :
-    f.stalkMap x (Y.presheaf.germ _ (f.base x) hx y) =
+lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f x ∈ U) (y) :
+    f.stalkMap x (Y.presheaf.germ _ (f x) hx y) =
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
@@ -1006,7 +1006,7 @@ open IsLocalRing
 
 @[simp]
 lemma Spec_closedPoint {R S : CommRingCat} [IsLocalRing R] [IsLocalRing S]
-    {f : R ⟶ S} [IsLocalHom f.hom] : (Spec.map f).base (closedPoint S) = closedPoint R :=
+    {f : R ⟶ S} [IsLocalHom f.hom] : Spec.map f (closedPoint S) = closedPoint R :=
   IsLocalRing.comap_closedPoint f.hom
 
 end IsLocalRing
