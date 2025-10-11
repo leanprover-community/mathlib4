@@ -176,7 +176,7 @@ theorem exists_finite_submodule_right_of_finite' (s : Set (M₁ ⊗[R] N₁)) (h
 
 open Module in
 /-- Given an element `z : E ⊗ F`, there exists finite subspaces `E'` and `F'`
-such that `z ∈ map₂ (mk R E F) E' F'`. -/
+whose tensor product contains `z`. -/
 lemma exists_finite_mem_map₂ {R E F : Type*} [CommRing R]
     [AddCommGroup E] [AddCommGroup F] [Module R E] [Module R F] (z : E ⊗[R] F) :
     ∃ (E' : Submodule R E) (F' : Submodule R F) (_ : Module.Finite R E') (_ : Module.Finite R F'),
