@@ -72,8 +72,7 @@ does not require differentiability of `f` because we define `deriv f c = 0` when
 differentiable at `c`. -/
 theorem exists_deriv_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l))
     (hfb : Tendsto f (𝓝[<] b) (𝓝 l)) : ∃ c ∈ Ioo a b, deriv f c = 0 := by
-  by_cases h : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x
+  by_cases! h : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x
   · exact exists_hasDerivAt_eq_zero' hab hfa hfb fun x hx => (h x hx).hasDerivAt
-  · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x := by
-      push_neg at h; exact h
+  · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x := h
     exact ⟨c, hc, deriv_zero_of_not_differentiableAt hcdiff⟩

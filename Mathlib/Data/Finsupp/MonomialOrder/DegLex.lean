@@ -201,9 +201,9 @@ noncomputable def degLex :
   toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
   toSyn_monotone a b h := by
     simp only [AddEquiv.coe_mk, DegLex.le_iff, ofDegLex_toDegLex]
-    by_cases ha : a.degree < b.degree
+    by_cases! ha : a.degree < b.degree
     · exact Or.inl ha
-    · refine Or.inr ⟨le_antisymm ?_ (not_lt.mp ha), toLex_monotone h⟩
+    · refine Or.inr ⟨le_antisymm ?_ ha, toLex_monotone h⟩
       rw [← add_tsub_cancel_of_le h, degree_add]
       exact Nat.le_add_right a.degree (b - a).degree
 

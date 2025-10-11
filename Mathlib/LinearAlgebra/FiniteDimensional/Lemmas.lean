@@ -382,10 +382,10 @@ theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {
 
 theorem ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : ℕ) :
     LinearMap.ker (f ^ m) ≤ LinearMap.ker (f ^ finrank K V) := by
-  by_cases h_cases : m < finrank K V
-  · rw [← add_tsub_cancel_of_le (Nat.le_of_lt h_cases), add_comm, pow_add]
+  by_cases! h_cases : m < finrank K V
+  · rw [← add_tsub_cancel_of_le h_cases.le, add_comm, pow_add]
     apply LinearMap.ker_le_ker_comp
-  · rw [ker_pow_eq_ker_pow_finrank_of_le (le_of_not_gt h_cases)]
+  · rw [ker_pow_eq_ker_pow_finrank_of_le h_cases]
 
 end End
 

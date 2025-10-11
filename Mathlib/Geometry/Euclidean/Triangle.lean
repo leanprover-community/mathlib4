@@ -354,15 +354,14 @@ theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)
     apply Real.sin_nonneg_of_mem_Icc
     simp [angle_nonneg, angle_le_pi]
   intro h1
-  by_cases h2 : ∠ a b c ≤ π / 2
+  by_cases! h2 : ∠ a b c ≤ π / 2
   · have h3 : Real.sin (∠ a c b) < Real.sin (∠ a b c) := by
       exact Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h2 h1
     by_contra! w
     have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
       exact mul_lt_mul h3 w hac hsinabc
     linarith
-  · push_neg at h2
-    by_contra! w
+  · by_contra! w
     have h3 : Real.sin (∠ a b c) ≤ Real.sin (∠ a c b) := by
       by_contra! w1
       have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
