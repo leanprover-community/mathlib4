@@ -604,14 +604,14 @@ end End
 end Module
 
 open TensorProduct in
-/-- Given an element `z : V ⊗ V'`, there exists finite subspaces `E'` and `F'`
+/-- Given an element `z : E ⊗ F'`, there exists finite subspaces `E'` and `F'`
 such that `z ∈ range (mapIncl E' F')`. -/
-lemma TensorProduct.exists_finite_mem_range_mapIncl {R V V' : Type*} [CommRing R]
-    [AddCommGroup V] [AddCommGroup V'] [Module R V] [Module R V'] (z : V ⊗[R] V') :
-    ∃ (E' : Submodule R V) (F' : Submodule R V') (_ : Module.Finite R E') (_ : Module.Finite R F'),
+lemma TensorProduct.exists_finite_mem_range_mapIncl {R E F : Type*} [CommRing R]
+    [AddCommGroup E] [AddCommGroup F] [Module R E] [Module R F] (z : E ⊗[R] F) :
+    ∃ (E' : Submodule R E) (F' : Submodule R F) (_ : Module.Finite R E') (_ : Module.Finite R F'),
     z ∈ LinearMap.range (mapIncl E' F') :=
   z.induction_on
-  ⟨⊥, ⊥, Finite.bot R V, Finite.bot R V', Submodule.zero_mem _⟩
+  ⟨⊥, ⊥, Finite.bot R E, Finite.bot R F, Submodule.zero_mem _⟩
   fun e f => by
     exact ⟨span R {e}, span R {f}, Finite.span_singleton R e, Finite.span_singleton R f,
       ⟨e, mem_span_singleton_self e⟩ ⊗ₜ ⟨f, mem_span_singleton_self f⟩, rfl⟩
