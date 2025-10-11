@@ -140,11 +140,11 @@ def IndepFun {β γ} {_mΩ : MeasurableSpace Ω} [MeasurableSpace β] [Measurabl
 
 end Definitions
 
-@[inherit_doc]
-notation X:50 " ⟂ᵢ[" μ "] " Y:50 => ProbabilityTheory.IndepFun X Y μ
+@[inherit_doc ProbabilityTheory.IndepFun]
+scoped [ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" μ "] " Y:50 => ProbabilityTheory.IndepFun X Y μ
 
-@[inherit_doc]
-notation X:50 " ⟂ᵢ " Y:50 => ProbabilityTheory.IndepFun X Y volume
+@[inherit_doc ProbabilityTheory.IndepFun]
+scoped [ProbabilityTheory] notation3 X:50 " ⟂ᵢ " Y:50 => ProbabilityTheory.IndepFun X Y volume
 
 section Definition_lemmas
 variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {_ : MeasurableSpace Ω} {μ : Measure Ω}

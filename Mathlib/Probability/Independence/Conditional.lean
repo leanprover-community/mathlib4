@@ -151,13 +151,13 @@ end
 
 end Definitions
 
-@[inherit_doc]
-notation X:50 " ⟂ᵢ[" Z ", " hZ "; " μ "] " Y:50 =>
+@[inherit_doc ProbabilityTheory.CondIndepFun]
+scoped [ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" Z ", " hZ "; " μ "] " Y:50 =>
   ProbabilityTheory.CondIndepFun (MeasurableSpace.comap Z inferInstance) (Measurable.comap_le hZ)
   X Y μ
 
-@[inherit_doc]
-notation X:50 " ⟂ᵢ[" Z ", " hZ "] " Y:50 =>
+@[inherit_doc ProbabilityTheory.CondIndepFun]
+scoped [ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" Z ", " hZ "] " Y:50 =>
   ProbabilityTheory.CondIndepFun (MeasurableSpace.comap Z inferInstance) (Measurable.comap_le hZ)
   X Y volume
 
