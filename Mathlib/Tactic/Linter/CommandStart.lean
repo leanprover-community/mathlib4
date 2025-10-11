@@ -44,6 +44,31 @@ register_option linter.style.commandStart.verbose : Bool := {
   descr := "enable the commandStart linter"
 }
 
+/-- If `stx` represents a declaration, return the syntax for any attributes that `stx` has.
+This is purely syntactic, and does not take e.g. `attribute [...]` declarations into account. -/
+def _root_.Lean.Syntax.getAttributes (stx : Syntax) : Array Syntax :=
+  if let some stx := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
+    -- `stx[0]` are all declaration modifiers,
+    -- the first ones are any attributes applied to this lemma
+    match stx[0][1] with
+    | .node _ _ args => args
+    | _ => #[]
+  else #[]
+
+/-- If `stx` represents a declaration, return the position of the corresponding keyword. -/
+def CommandStart.keywordPos (stx : Syntax) : Option String.Pos :=
+  if stx.getKind == `lemma then
+    let group := stx[1]
+    dbg_trace "real group? {group}"
+    -- TODO: this returns an absolute column, without any line breaks... :-(
+    group.getPos?
+  else if stx.getKind == ``Parser.Command.declaration then
+    dbg_trace "declaration"
+    dbg_trace stx
+    none
+  else none
+-- keywordPos should be 1, unless the start is an attribute!
+
 /--
 `CommandStart.endPos stx` returns the position up until the `commandStart` linter checks the
 formatting.
@@ -312,7 +337,15 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if stx.find? (·.isOfKind `Lean.Parser.Command.macro_rules) |>.isSome then
     return
   let some upTo := CommandStart.endPos stx | return
-
+  -- If the lemma, theorem, etc. keyword does not start on the first column, also emit a warning,
+  -- unless the line starts with an attribute (e.g. `@[simp] lemma ...`).
+  if let some start := CommandStart.keywordPos stx then
+    if (stx.getAttributes).isEmpty then
+      let colKeyword :=((← getFileMap).toPosition start).column
+      if colKeyword ≠ 0 then
+        Linter.logLint linter.style.commandStart stx
+          m!"Keyword syntax '{stx}' starts on column {start}, \
+          but should start at the beginning of the line"
   let fmt : Option Format := ←
       try
         liftCoreM <| PrettyPrinter.ppCategory `command stx
