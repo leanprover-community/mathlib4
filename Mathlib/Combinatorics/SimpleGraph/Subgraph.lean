@@ -802,6 +802,20 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
 
+@[simp]
+theorem _root_.SimpleGraph.card_neighborSet_toSubgraph (H : SimpleGraph V) (h : H ≤ G)
+    (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
+    Fintype.card ↑((toSubgraph H h).neighborSet v) = H.degree v := by
+  refine (Finset.card_eq_of_equiv_fintype ?_).symm
+  simp only [mem_neighborFinset]
+  rfl
+
+@[simp]
+lemma _root_.SimpleGraph.toSubgraph.degree (H : SimpleGraph V) (h : H ≤ G) {v : V}
+    [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
+    (toSubgraph H h).degree v = H.degree v := by
+  simp [Subgraph.degree]
+
 lemma neighborSet_eq_of_equiv {v : V} {H : Subgraph G}
     (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
     H.neighborSet v = G.neighborSet v := by
