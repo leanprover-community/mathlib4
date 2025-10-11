@@ -526,6 +526,78 @@ theorem isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow
     have : i = unit := by simp only
     simp [toBlocks₂₁, this, listTransvecCol_mul_mul_listTransvecRow_last_col M hM]
 
+/-- The pivot entry is preserved under the canonical left and right transvections clearing
+the last row and column. -/
+@[simp]
+theorem listTransvecCol_mul_mul_listTransvecRow_pivot (M : Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜)
+    :
+    ((listTransvecCol M).prod * M * (listTransvecRow M).prod) (inr unit) (inr unit)
+      = M (inr unit) (inr unit) := by
+
+  have hrow : (((listTransvecCol M).prod * M)) (inr unit) = M (inr unit) := by
+    funext i; simpa using listTransvecCol_mul_last_row M i
+
+  have hL : listTransvecRow M = listTransvecRow ((listTransvecCol M).prod * M) := by
+    simp [listTransvecRow, listTransvecCol_mul_last_row]
+  simpa [Matrix.mul_assoc, hrow, hL] using
+    (mul_listTransvecRow_last_col ((listTransvecCol M).prod * M) (inr unit))
+
+/-- If the pivot entry of `M` is nonzero, then the determinant of `M` is equal to the
+determinant of the top-left block multiplied by the pivot entry, after applying the
+canonical transvections that clear the last row and column. -/
+theorem det_eq_detTopLeft_mul_pivot (hM : M (inr unit) (inr unit) ≠ 0) :
+    det M =
+      det (toBlocks₁₁ ((listTransvecCol M).prod * M * (listTransvecRow M).prod))
+        * M (inr unit) (inr unit) := by
+  classical
+  set M₁ := (listTransvecCol M).prod * M * (listTransvecRow M).prod
+  have hTwo : IsTwoBlockDiagonal M₁ := by
+    simpa [M₁] using isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow M hM
+  set A := toBlocks₁₁ M₁
+  set c : 𝕜 := M₁ (inr unit) (inr unit)
+  have hM₁_blocks : M₁ = fromBlocks A 0 0 (diagonal fun _ : Unit => c) := by
+    rw [← fromBlocks_toBlocks M₁, hTwo.1, hTwo.2]
+    rfl
+  have hdet_M₁ : det M₁ = det A * c := by
+    calc
+      det M₁
+          = det (fromBlocks A 0 0 (diagonal fun _ : Unit => c)) := by
+            simp [hM₁_blocks]
+      _ = det A * c := by
+            simp [det_fromBlocks_zero₂₁]
+
+  let L : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜) :=
+    List.ofFn fun i : Fin r =>
+      ⟨inl i, inr unit, by simp, -M (inl i) (inr unit) / M (inr unit) (inr unit)⟩
+  let L' : List (TransvectionStruct (Fin r ⊕ Unit) 𝕜) :=
+    List.ofFn fun i : Fin r =>
+      ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) / M (inr unit) (inr unit)⟩
+  have hL_map : L.map toMatrix = listTransvecCol M := by
+    simp [L, listTransvecCol, Function.comp_def]
+  have hL'_map : L'.map toMatrix = listTransvecRow M := by
+    simp [L', listTransvecRow, Function.comp_def]
+  have hdetL : det ((L.map toMatrix).prod) = 1 := by simp
+  have hdetL' : det ((L'.map toMatrix).prod) = 1 := by simp
+
+  have hMulDet : det M₁ =
+      det ((listTransvecCol M).prod) * (det M * det ((listTransvecRow M).prod)) := by
+    simp [M₁, Matrix.det_mul, Matrix.mul_assoc]
+  have h1 : det ((listTransvecCol M).prod) = 1 := by simpa [hL_map] using hdetL
+  have h2 : det ((listTransvecRow M).prod) = 1 := by simpa [hL'_map] using hdetL'
+  have hpres : det M₁ = det M := by
+    simpa [h1, h2, mul_comm, mul_left_comm, mul_assoc]
+      using hMulDet
+
+  have hdet' : det M = det A * M₁ (inr unit) (inr unit) := by
+    simpa [hdet_M₁, c] using hpres.symm
+
+  have hpivot : M₁ (inr unit) (inr unit) = M (inr unit) (inr unit) := by
+    change ((listTransvecCol M).prod * M * (listTransvecRow M).prod) (inr unit) (inr unit)
+      = M (inr unit) (inr unit)
+    exact listTransvecCol_mul_mul_listTransvecRow_pivot (M := M)
+
+  simpa [hpivot] using hdet'
+
 /-- There exist two lists of `TransvectionStruct` such that multiplying by them on the left and
 on the right makes a matrix block-diagonal, when the last coefficient is nonzero. -/
 theorem exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0) :
