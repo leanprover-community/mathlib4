@@ -562,23 +562,16 @@ is also Galois.
 theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensional F K]
     (h : K ⊔ L = ⊤) : IsGalois L E := by
   obtain ⟨T, hT₁, hT₂⟩ := IsGalois.is_separable_splitting_field F K
-  let T' := Polynomial.map (algebraMap F L) T
-  have : T'.IsSplittingField L E := by
-    refine isSplittingField_iff_intermediateField.mpr ⟨?_, ?_⟩
-    · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
-      exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
-    · suffices K = adjoin F (T'.rootSet E) by
-        rw [← restrictScalars_inj F, restrictScalars_adjoin, restrictScalars_top, adjoin_union,
-          adjoin_self, sup_comm, ← h, this]
-      apply eq_adjoin_of_eq_algebra_adjoin
-      convert (congr_arg (Subalgebra.map (IsScalarTower.toAlgHom F K E)) hT₂.2).symm
-      · ext; simp
-      · have : T'.rootSet E = T.rootSet E := by
-          ext
-          rw [Polynomial.mem_rootSet', Polynomial.mem_rootSet', Polynomial.map_map,
-            ← IsScalarTower.algebraMap_eq, Polynomial.aeval_map_algebraMap]
-        rw [← Algebra.adjoin_image, Polynomial.image_rootSet hT₂.1, this]
-  exact IsGalois.of_separable_splitting_field (p := T') <| Polynomial.Separable.map hT₁
+  let T' := T.map (algebraMap F L)
+  suffices T'.IsSplittingField L E from IsGalois.of_separable_splitting_field (p := T') hT₁.map
+  rw [isSplittingField_iff_intermediateField] at hT₂ ⊢
+  constructor
+  · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
+    exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
+  · have h' : T'.rootSet E = T.rootSet E := by simp [Set.ext_iff, Polynomial.mem_rootSet', T']
+    rw [← (lift_injective K).eq_iff, lift_adjoin, ← coe_val, T.image_rootSet hT₂.1] at hT₂
+    rw [h', ← restrictScalars_inj F, restrictScalars_top, restrictScalars_adjoin, adjoin_union,
+      adjoin_self, hT₂.2, lift_top, sup_comm, h]
 
 end IsGalois
 
