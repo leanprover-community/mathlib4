@@ -141,7 +141,7 @@ def fstProj (Y Z : Over X) [HasPullbacksAlong Y.hom] :
     Sigma Y (Reindex Y Z) ⟶ Y :=
   Over.homMk (pullback.snd Z.hom Y.hom) (by simp)
 
-lemma fstProj_sigma_fst (Y Z : Over X) [HasPullbacksAlong Y.hom] [HasPullbacksAlong Z.hom] :
+lemma fstProj_sigma_fst (Y Z : Over X) [HasPullbacksAlong Y.hom] :
     fstProj Y Z = Sigma.fst (Reindex Y Z) := by
   rfl
 
