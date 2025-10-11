@@ -294,7 +294,7 @@ lemma t1Space_iff (x : α) [IsPretransitive G α] :
 @[to_additive]
 lemma discreteTopology_iff (x : α) [IsPretransitive G α] :
     DiscreteTopology α ↔ IsOpen {x} := by
-  rw [← singletons_open_iff_discrete]
+  rw [discreteTopology_iff_isOpen_singleton]
   refine ⟨fun H ↦ H _, fun hx y ↦ ?_⟩
   rcases MulAction.exists_smul_eq G x y with ⟨g, rfl⟩
   rw [← image_singleton, image_smul]
