@@ -226,12 +226,12 @@ theorem divisor_inv {f : 𝕜 → 𝕜} :
 @[simp]
 theorem divisor_fun_inv {f : 𝕜 → 𝕜} : divisor (fun z ↦ (f z)⁻¹) U = -divisor f U := divisor_inv
 
-open Classical in
 /--
 If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
 -/
 theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
     divisor (f ^ n) U = n • divisor f U := by
+  classical
   ext z
   by_cases hn : n = 0
   · simp [hn]
