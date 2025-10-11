@@ -162,6 +162,7 @@ Factorized rational functions are nowhere locally constant zero.
 -/
 theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
     meromorphicOrderAt (∏ᶠ u, (· - u) ^ d u) z ≠ ⊤ := by
+  classical
   by_cases hd : d.support.Finite
   · simp [meromorphicOrderAt_eq d hd]
   · rw [← mulSupport] at hd
