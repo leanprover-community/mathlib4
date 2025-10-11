@@ -213,22 +213,41 @@ theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁
 
 theorem dlookup_map (l : List (Sigma β))
     {f : α → α'} (hf : Function.Injective f) (g : ∀ a, β a → β' (f a)) (a : α) :
-    (l.map fun x => ⟨f x.1, g _ x.2⟩).dlookup (f a) = (l.dlookup a).map (g a) := by
+    (l.map (.map f g)).dlookup (f a) = (l.dlookup a).map (g a) := by
   induction l with
   | nil => grind
   | cons s _ _ =>
     have (h : a ≠ s.fst) : ¬ f a = (⟨f s.fst, g s.fst s.snd⟩ : Sigma β').fst := fun he => h <| hf he
-    by_cases a = s.fst <;> grind
+    by_cases a = s.fst <;> grind [Sigma.map]
 
 theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))
     {f : α → α'} (hf : Function.Injective f) (a : α) :
-    (l.map fun x => ⟨f x.1, x.2⟩ : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
-  have := dlookup_map (β' := fun _ => β) (f := f) (g := fun _ x => x)
+    (l.map (.map f fun _ => id) : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
+  have := dlookup_map (β' := fun _ => β) (f := f) (g := fun _ => id)
   grind [Option.map_id']
 
 theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a, γ a → δ a} (a : α) :
-    (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
+    (l.map (.map id f) : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
+
+theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
+    (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
+  induction l with
+  | nil => grind [nodupKeys_nil]
+  | cons hd tl =>
+    have := dlookup_map₁ tl hf hd.fst
+    grind [dlookup_isSome, → notMem_keys_of_nodupKeys_cons, nodupKeys_of_nodupKeys_cons,
+      nodupKeys_cons]
+
+omit [DecidableEq α] in
+theorem map₂_keys {β β' : α → Type*} (f : (a : α) → β a → β' a) (l : List (Σ a, β a)) :
+    (l.map (.map id f)).keys = l.keys := by
+  induction l <;> grind [Sigma.map]
+
+omit [DecidableEq α] in
+theorem NodupKeys.map₂ {β β' : α → Type*} (f : (a : α) → β a → β' a) (l : List (Σ a, β a))
+    (nd : l.NodupKeys) : (l.map (.map id f)).NodupKeys := by
+  simp_all [NodupKeys, map₂_keys]
 
 theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
     (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
