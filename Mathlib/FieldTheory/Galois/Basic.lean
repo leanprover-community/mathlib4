@@ -569,9 +569,9 @@ theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensiona
   · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
     exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
   · have h' : T'.rootSet E = T.rootSet E := by simp [Set.ext_iff, Polynomial.mem_rootSet', T']
-    rw [← (lift_injective K).eq_iff, lift_adjoin, ← coe_val, T.image_rootSet hT₂.1] at hT₂
-    rw [h', ← restrictScalars_inj F, restrictScalars_top, restrictScalars_adjoin, adjoin_union,
-      adjoin_self, hT₂.2, lift_top, sup_comm, h]
+    rw [← lift_inj, lift_adjoin, ← coe_val, T.image_rootSet hT₂.1] at hT₂
+    rw [← restrictScalars_eq_top_iff (K := F), restrictScalars_adjoin, adjoin_union, adjoin_self,
+      h', hT₂.2, lift_top, sup_comm, h]
 
 end IsGalois
 
