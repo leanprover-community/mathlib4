@@ -288,6 +288,23 @@ theorem nextCoeff_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
     (hp : IsUnit p.leadingCoeff) : (p.map f).nextCoeff = f p.nextCoeff :=
   nextCoeff_map_of_leadingCoeff_ne_zero _ <| f.isUnit_map hp |>.ne_zero
 
+theorem degree_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
+    (p.map f).degree = p.degree := by
+  simp [hf, map_ne_zero_iff, ne_or_eq]
+
+theorem natDegree_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
+    (p.map f).natDegree = p.natDegree :=
+  natDegree_eq_of_degree_eq <| degree_map_eq_of_injective hf _
+
+theorem leadingCoeff_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f)
+    (p : Polynomial R) : (p.map f).leadingCoeff = f p.leadingCoeff := by
+  grind [leadingCoeff, natDegree_map_eq_of_injective, coeff_map]
+
+theorem nextCoeff_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
+    (p.map f).nextCoeff = f p.nextCoeff := by
+  simp only [hf, nextCoeff, natDegree_map_eq_of_injective]
+  split_ifs <;> simp
+
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
   grind [nextCoeff]
 
