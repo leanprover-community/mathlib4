@@ -248,7 +248,7 @@ theorem IsClosed.smul_right_of_isCompact [ProperSMul G X] {s : Set G} {t : Set X
       (image_subset_iff.mpr fun ⟨g, ⟨x, hx⟩⟩ hg ↦ smul_mem_smul hg hx)
   rw [this]
   have : CompactSpace t := isCompact_iff_compactSpace.mp ht
-  exact (isProperMap_fst.comp Ψ_proper).isClosedMap _ (hs.preimage continuous_fst)
+  exact (isProperMap_fst_of_compactSpace.comp Ψ_proper).isClosedMap _ (hs.preimage continuous_fst)
 
 /-! One may expect `IsClosed.smul_right_of_isCompact` to hold for arbitrary continuous actions,
 but such a lemma can't be true in this level of generality. For a counterexample, consider
