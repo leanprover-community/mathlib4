@@ -630,6 +630,9 @@ Q643513:
 
 Q643826:
   title: Slutsky's theorem
+  decl: MeasureTheory.tendstoInDistribution_prodMk_of_tendstoInMeasure_const
+  authors: Rémy Degenne
+  date: 2025
 
 Q646523:
   title: Pick's theorem
