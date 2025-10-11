@@ -211,25 +211,37 @@ instance : Inhabited (Σ e, (ExBase sα) e) := ⟨default, .atom 0⟩
 instance : Inhabited (Σ e, (ExSum sα) e) := ⟨_, .zero⟩
 instance : Inhabited (Σ e, (ExProd sα) e) := ⟨default, .const 0 none⟩
 
+/-!
+### Cast operations
+-/
 mutual
 
 /-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExBase.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)}
+    (hu : v =QL u := by assumption)
+    (hα : $β =Q $α := by assumption)
+    (hsα : $sβ =Q $sα := by assumption) :
     ExBase sα a → Σ a, ExBase sβ a
   | .atom i => ⟨a, .atom i⟩
   | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
 
 /-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExProd.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)}
+    (hu : v =QL u := by assumption)
+    (hα : $β =Q $α := by assumption)
+    (hsα : $sβ =Q $sα := by assumption) :
     ExProd sα a → Σ a, ExProd sβ a
   | .const i h => ⟨a, .const i h⟩
   | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
 
 /-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExSum.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)}
+    (hu : v =QL u := by assumption)
+    (hα : $β =Q $α := by assumption)
+    (hsα : $sβ =Q $sα := by assumption) :
     ExSum sα a → Σ a, ExSum sβ a
   | .zero => ⟨_, .zero⟩
   | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
@@ -584,15 +596,15 @@ polynomial expressions.
 -/
 def evalNSMul {a : Q(ℕ)} {b : Q($α)} (va : ExSum sℕ a) (vb : ExSum sα b) :
     AtomM (Result (ExSum sα) q($a • $b)) := do
-  if ← isDefEq sα sℕ then
-    let ⟨_, va'⟩ := va.cast
-    have _b : Q(ℕ) := b
-    let ⟨(_c : Q(ℕ)), vc, (pc : Q($a * $_b = $_c))⟩ ← evalMul sα va' vb
-    pure ⟨_, vc, (q(smul_nat $pc) : Expr)⟩
-  else
-    let ⟨_, va', pa'⟩ ← va.evalNatCast sα
-    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
-    pure ⟨_, vc, (q(smul_eq_cast $pa' $pc) : Expr)⟩
+  if let .defEq hu ← isLevelDefEqQ u 0 then
+    if let .defEq hα ← isDefEqQ q($α) q(ℕ) then
+      if let .defEq hsα ← isDefEqQ q($sα) sℕ then
+        let ⟨_, va'⟩ := va.cast
+        let ⟨_, vc, pc⟩ ← evalMul sα va' vb
+        return ⟨_, vc, (q(smul_nat $pc) : Expr)⟩
+  let ⟨_, va', pa'⟩ ← va.evalNatCast sα
+  let ⟨_, vc, pc⟩ ← evalMul sα va' vb
+  pure ⟨_, vc, (q(smul_eq_cast $pa' $pc) : Expr)⟩
 
 /-! ### Scalar multiplication by `ℤ` -/
 
@@ -685,17 +697,18 @@ polynomial expressions.
 -/
 def evalZSMul {a : Q(ℤ)} {b : Q($α)} (rα : Q(Ring $α)) (va : ExSum sℤ a) (vb : ExSum sα b) :
     AtomM (Result (ExSum sα) q($a • $b)) := do
-  if ← isDefEq sα sℤ then
-    let ⟨_, va'⟩ := va.cast
-    have _b : Q(ℤ) := b
-    let ⟨(_c : Q(ℤ)), vc, (pc : Q($a * $_b = $_c))⟩ ← evalMul sα va' vb
-    pure ⟨_, vc, (q(smul_int $pc) : Expr)⟩
-  else
-    let ⟨_, va', pa'⟩ ← va.evalIntCast sα rα
-    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
-    -- Qq is probably unhappy about `Ring` and `CommSemiring` at the same time.
-    let pf ← mkAppM ``smul_eq_intCast #[pa', pc]
-    pure ⟨_, vc, pf⟩
+  if let .defEq hu ← isLevelDefEqQ u 0 then
+    if let .defEq hα ← isDefEqQ q($α) q(ℤ) then
+      if let .defEq hsα ← isDefEqQ q($sα) sℤ then
+        let ⟨a', va'⟩ := va.cast
+        let ⟨_, vc, pc⟩ ← evalMul sα va' vb
+        -- Qq is probably unhappy about `Ring` and `CommSemiring` at the same time.
+        return ⟨_, vc, (q(smul_int $pc) : Expr)⟩
+  let ⟨_, va', pa'⟩ ← va.evalIntCast sα rα
+  let ⟨_, vc, pc⟩ ← evalMul sα va' vb
+  -- Qq is probably unhappy about `Ring` and `CommSemiring` at the same time.
+  let pf ← mkAppM ``smul_eq_intCast #[pa', pc]
+  return ⟨_, vc, pf⟩
 
 /-! ### Negation -/
 
