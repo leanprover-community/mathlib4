@@ -94,3 +94,11 @@ def Lean.Meta.withEnsuringLocalInstance {α : Type} (inst : MVarId) (k : MetaM (
       let (e, v) ← k
       let e' := (← e.abstractM #[inst']).instantiate1 instE
       return (e', v)
+
+/-- Checks that `e` is a function (i.e. that its type is a `.forallE` after `instantiateMVars` and
+`whnf`). If not, coerces `e` to a function or fails with a descriptive error. -/
+def Lean.Meta.ensureIsFunction (e : Expr) : MetaM Expr := do
+  let ty ← whnf <|← instantiateMVars <|← inferType e
+  if ty.isForall then return e else (← coerceToFunction? e).getDM <|
+    throwError "Expected{indentD e}\nof type{indentD ty}\nto be a function, or to be coercible to \
+      a function"
