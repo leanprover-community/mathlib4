@@ -819,6 +819,17 @@ theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsD
     {f : A →+* B} (p : A[X]) : (p.map f).roots.card ≤ p.natDegree :=
   card_roots' _ |>.trans natDegree_map_le
 
+theorem filter_roots_map_range_eq_map_roots [IsDomain A] [IsDomain B] {f : A →+* B}
+    [DecidableEq A] [DecidableEq B] [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)
+    (p : A[X]) : (p.map f).roots.filter (· ∈ f.range) = p.roots.map f := by
+  ext b
+  rw [Multiset.count_filter]
+  split_ifs with h
+  · obtain ⟨a, rfl⟩ := h
+    simp [hf, Multiset.count_map_eq_count', eq_rootMultiplicity_map hf]
+  · refine (Multiset.count_eq_zero.mpr fun h' ↦ h ?_).symm
+    exact Exists.imp (fun _ ↦ And.right) <| Multiset.mem_map.mp h'
+
 theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
     Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
   rw [← p.roots.card_map f]
