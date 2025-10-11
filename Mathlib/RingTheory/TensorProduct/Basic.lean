@@ -310,6 +310,9 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
+lemma algebraMap_def [SMulCommClass R S A] :
+    algebraMap S (A ⊗[R] B) = includeLeftRingHom.comp (algebraMap S A) := rfl
+
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
@@ -502,6 +505,10 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
     simp [mul_comm]
 
 attribute [local instance] TensorProduct.rightAlgebra
+
+lemma algebraMap_eq_includeRight :
+    letI := rightAlgebra (R := R) (A := A) (B := B)
+    algebraMap B (A ⊗[R] B) = includeRight (R := R) (A := A) (B := B) := rfl
 
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
@@ -891,6 +898,9 @@ def map (f : A →ₐ[S] C) (g : B →ₐ[R] D) : A ⊗[R] B →ₐ[S] C ⊗[R] 
   algHomOfLinearMapTensorProduct (AlgebraTensorModule.map f.toLinearMap g.toLinearMap) (by simp)
     (by simp [one_def])
 
+@[simp] lemma toLinearMap_map (f : A →ₐ[S] C) (g : B →ₐ[R] D) :
+    (map f g).toLinearMap = TensorProduct.AlgebraTensorModule.map f.toLinearMap g.toLinearMap := rfl
+
 @[simp]
 theorem map_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] D) (a : A) (b : B) : map f g (a ⊗ₜ b) = f a ⊗ₜ g b :=
   rfl
@@ -947,6 +957,14 @@ lemma comm_comp_map_apply (f : A →ₐ[R] C) (g : B →ₐ[R] D) (x) :
     TensorProduct.comm R C D (Algebra.TensorProduct.map f g x) =
     (Algebra.TensorProduct.map g f) (TensorProduct.comm R A B x) :=
   congr($(comm_comp_map f g) x)
+
+variable (A) in
+/-- `lTensor A g : A ⊗ B →ₐ A ⊗ D` is the natural algebra morphism induced by `g : B →ₐ D`. -/
+noncomputable abbrev lTensor (g : B →ₐ[R] D) : (A ⊗[R] B) →ₐ[S] (A ⊗[R] D) := map (.id S A) g
+
+variable (B) in
+/-- `rTensor B f : A ⊗ B →ₐ C ⊗ B` is the natural algebra morphism induced by `f : A →ₐ C`. -/
+noncomputable abbrev rTensor (f : A →ₐ[S] C) : A ⊗[R] B →ₐ[S] C ⊗[R] B := map f (.id R B)
 
 /-- Construct an isomorphism between tensor products of an S-algebra with an R-algebra
 from S- and R- isomorphisms between the tensor factors.
