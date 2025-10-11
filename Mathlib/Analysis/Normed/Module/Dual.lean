@@ -7,8 +7,6 @@ import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.Normed.Module.RCLike.Basic
 import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # The strong dual of a normed space
@@ -236,18 +234,17 @@ namespace LinearMap
 section NormedField
 
 variable {𝕜 E F : Type*}
-variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
-variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
-
+open ComplexOrder in
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
   exact AbsConvex.iInter₂ fun i hi =>
     ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
-      (convex_closedBall _ _).linear_preimage (B i)⟩
+      (convex_RCLike_iff_convex_real.mpr (convex_closedBall 0 1)).linear_preimage _⟩
 
 end NormedField
 

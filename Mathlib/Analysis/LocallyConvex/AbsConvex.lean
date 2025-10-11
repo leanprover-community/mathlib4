@@ -30,14 +30,6 @@ topological vector space has a basis consisting of absolutely convex sets.
 * `closedAbsConvexHull_closure_eq_closedAbsConvexHull` : the closed absolutely convex hull of the
   closure of `s` equals the closed absolutely convex hull of `s`;
 
-## Implementation notes
-
-Mathlib's definition of `Convex` requires the scalars to be an `OrderedSemiring` whereas the
-definition of `Balanced` requires the scalars to be a `SeminormedRing`. Mathlib doesn't currently
-have a concept of a semi-normed ordered ring, so we define a set as `AbsConvex` if it is balanced
-over a `SeminormedRing` `𝕜` and convex over `ℝ`, assuming `IsScalarTower ℝ 𝕜 E` and
-`SMulCommClass ℝ 𝕜 E` where required.
-
 ## Tags
 
 disks, convex, balanced
@@ -51,13 +43,10 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvex
 
-variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid E]
-/-- A set is absolutely convex if it is balanced and convex. Mathlib's definition of `Convex`
-requires the scalars to be an `OrderedSemiring` whereas the definition of `Balanced` requires the
-scalars to be a `SeminormedRing`. Mathlib doesn't currently have a concept of a semi-normed ordered
-ring, so we define a set as `AbsConvex` if it is balanced over a `SeminormedRing` `𝕜` and convex
-over `ℝ`. -/
-def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex ℝ s
+variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [AddCommMonoid E] [PartialOrder 𝕜]
+
+/-- A set is absolutely convex if it is balanced and convex. -/
+def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex 𝕜 s
 
 variable {𝕜}
 
@@ -97,7 +86,7 @@ theorem absConvex_absConvexHull : AbsConvex 𝕜 (absConvexHull 𝕜 s) :=
 theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
   absConvex_absConvexHull.1
 
-theorem convex_absConvexHull : Convex ℝ (absConvexHull 𝕜 s) :=
+theorem convex_absConvexHull : Convex 𝕜 (absConvexHull 𝕜 s) :=
   absConvex_absConvexHull.2
 
 variable (𝕜 s) in
@@ -189,13 +178,17 @@ theorem closedAbsConvexHull_closure_eq_closedAbsConvexHull {s : Set E} :
       (closure_subset_closedAbsConvexHull (𝕜 := 𝕜) (E := E))))
     ((closedAbsConvexHull 𝕜).monotone subset_closure)
 
+@[simp]
+theorem closedAbsConvexHull_empty : closedAbsConvexHull 𝕜 (∅ : Set E) = ∅ :=
+  subset_eq_empty (closedAbsConvexHull_min (fun _ a ↦ a) AbsConvex.empty isClosed_empty) rfl
+
 end AbsolutelyConvex
 
 section NormedField
 
-variable [NormedField 𝕜]
-  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [TopologicalSpace E]
-  [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
+variable [NormedField 𝕜] [PartialOrder 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
   ⟨Balanced.closure hs.1, Convex.closure hs.2⟩
@@ -211,23 +204,22 @@ end NormedField
 section NontriviallyNormedField
 
 variable (𝕜 E)
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [TopologicalSpace E] [LocallyConvexSpace 𝕜 E] [ContinuousSMul 𝕜 E]
 
 theorem nhds_hasBasis_absConvex :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
   refine
-    (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
+    (LocallyConvexSpace.convex_basis_zero 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs =>
       ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
-  refine ⟨convexHull ℝ (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
-  refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull ℝ _), ?_⟩
+  refine ⟨convexHull 𝕜 (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
+  refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull 𝕜 _), ?_⟩
   refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
-  exact convex_convexHull ℝ (balancedCore 𝕜 s)
+  exact convex_convexHull 𝕜 (balancedCore 𝕜 s)
 
-variable [ContinuousSMul ℝ E] [IsTopologicalAddGroup E]
+variable [IsTopologicalAddGroup E]
 
-theorem nhds_hasBasis_absConvex_open :
+theorem nhds_hasBasis_absConvex_open [ZeroLEOneClass 𝕜] :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
@@ -242,8 +234,8 @@ end NontriviallyNormedField
 
 section
 
-variable (𝕜) [NontriviallyNormedField 𝕜]
-variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
+variable (𝕜) [NontriviallyNormedField 𝕜] [PartialOrder 𝕜]
+variable [AddCommGroup E] [Module 𝕜 E]
 
 theorem absConvexHull_add_subset {s t : Set E} :
     absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
@@ -251,17 +243,17 @@ theorem absConvexHull_add_subset {s t : Set E} :
     ⟨Balanced.add balanced_absConvexHull balanced_absConvexHull,
       Convex.add convex_absConvexHull convex_absConvexHull⟩
 
-theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s : Set E} :
-    absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := le_antisymm
+theorem absConvexHull_eq_convexHull_balancedHull {s : Set E} :
+    absConvexHull 𝕜 s = convexHull 𝕜 (balancedHull 𝕜 s) := le_antisymm
   (absConvexHull_min
-    ((subset_convexHull ℝ s).trans (convexHull_mono (subset_balancedHull 𝕜)))
+    ((subset_convexHull 𝕜 s).trans (convexHull_mono (subset_balancedHull 𝕜)))
       ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull ..⟩)
   (convexHull_min (balanced_absConvexHull.balancedHull_subset_of_subset subset_absConvexHull)
       convex_absConvexHull)
 
 /-- In general, equality doesn't hold here - e.g. consider `s := {(-1, 1), (1, 1)}` in `ℝ²`. -/
 theorem balancedHull_convexHull_subseteq_absConvexHull {s : Set E} :
-    balancedHull 𝕜 (convexHull ℝ s) ⊆ absConvexHull 𝕜 s :=
+    balancedHull 𝕜 (convexHull 𝕜 s) ⊆ absConvexHull 𝕜 s :=
   balanced_absConvexHull.balancedHull_subset_of_subset
     (convexHull_min subset_absConvexHull convex_absConvexHull)
 
@@ -294,7 +286,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
 variable (E 𝕜) {s : Set E}
-variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
 variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
@@ -307,7 +299,7 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
 
 end
 
-lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [AddCommGroup E] [Module ℝ E]
+lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddCommGroup E]
     [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
   balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)
 
