@@ -155,24 +155,24 @@ theorem inner_ext_threefold'_iff {G : Type*} [NormedAddCommGroup G]
 section FiniteDimensional
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 
-theorem comm_adjoint :
+@[simp] theorem adjoint_comm :
     LinearMap.adjoint (TensorProduct.comm 𝕜 E F).toLinearMap =
       (TensorProduct.comm 𝕜 E F).symm.toLinearMap := TensorProduct.ext' fun x y => by
   simp [inner_ext_iff, LinearMap.adjoint_inner_left, mul_comm]
 
-theorem map_adjoint {A B : Type*} [NormedAddCommGroup A] [NormedAddCommGroup B]
+@[simp] theorem adjoint_map {A B : Type*} [NormedAddCommGroup A] [NormedAddCommGroup B]
     [InnerProductSpace 𝕜 A] [InnerProductSpace 𝕜 B]
     [FiniteDimensional 𝕜 A] [FiniteDimensional 𝕜 B] (f : A →ₗ[𝕜] B) (g : E →ₗ[𝕜] F) :
     LinearMap.adjoint (TensorProduct.map f g)
       = TensorProduct.map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
   TensorProduct.ext' fun x y => by simp [inner_ext_iff, LinearMap.adjoint_inner_left]
 
-theorem lid_adjoint :
+@[simp] theorem adjoint_lid :
     LinearMap.adjoint (TensorProduct.lid 𝕜 E).toLinearMap
       = (TensorProduct.lid 𝕜 E).symm.toLinearMap := by
   simp [LinearMap.ext_iff, inner_ext_iff, LinearMap.adjoint_inner_left, inner_smul_right]
 
-theorem assoc_adjoint {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+@[simp] theorem adjoint_assoc {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     [FiniteDimensional 𝕜 G] :
     LinearMap.adjoint (TensorProduct.assoc 𝕜 E F G).toLinearMap
       = (TensorProduct.assoc 𝕜 E F G).symm.toLinearMap := by
