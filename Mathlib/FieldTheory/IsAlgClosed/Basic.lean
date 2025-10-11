@@ -122,11 +122,11 @@ variable (k)
 theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommSemiring R] [IsAlgClosed k] [Algebra R k]
     (hinj : Function.Injective (algebraMap R k)) (p : R[X]) (hp : p.degree ≠ 0) :
     ∃ x : k, aeval x p = 0 :=
-  exists_eval₂_eq_zero_of_injective (algebraMap R k) hinj p hp
+  exists_eval₂_eq_zero_of_injective _ hinj _ hp
 
-theorem exists_aeval_eq_zero {R : Type*} [Field R] [IsAlgClosed k] [Algebra R k] (p : R[X])
-    (hp : p.degree ≠ 0) : ∃ x : k, aeval x p = 0 :=
-  exists_eval₂_eq_zero (algebraMap R k) p hp
+theorem exists_aeval_eq_zero {R : Type*} [CommSemiring R] [IsAlgClosed k] [Algebra R k]
+    [FaithfulSMul R k] (p : R[X]) (hp : p.degree ≠ 0) : ∃ x : k, aeval x p = 0 :=
+  exists_aeval_eq_zero_of_injective _ (FaithfulSMul.algebraMap_injective _ _) _ hp
 
 
 /--
