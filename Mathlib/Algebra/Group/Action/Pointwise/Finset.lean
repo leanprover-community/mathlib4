@@ -159,6 +159,10 @@ variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α
 theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
   (MulAction.injective _).mem_finset_image
 
+@[to_additive (attr := simp)]
+lemma mul_mem_smul_finset_iff [DecidableEq α] (a : α) {b : α} {s : Finset α} :
+    a * b ∈ a • s ↔ b ∈ s := smul_mem_smul_finset_iff _
+
 @[to_additive]
 theorem inv_smul_mem_iff : a⁻¹ • b ∈ s ↔ b ∈ a • s := by
   rw [← smul_mem_smul_finset_iff a, smul_inv_smul]
