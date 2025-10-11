@@ -136,19 +136,19 @@ theorem divisor_const (e : E) :
 /--
 The divisor a constant function is `0`.
 -/
-theorem divisor_const_intCast (n : ℤ) :
+theorem divisor_intCast (n : ℤ) :
     divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
 
 /--
 The divisor a constant function is `0`.
 -/
-theorem divisor_const_natCast (n : ℕ) :
+theorem divisor_natCast (n : ℕ) :
     divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
 
 /--
 The divisor a constant function is `0`.
 -/
-@[simp] theorem meromorphicOrderAt_const_ofNat (n : ℕ) :
+@[simp] theorem meromorphicOrderAt_ofNat (n : ℕ) :
     divisor (ofNat(n) : 𝕜 → 𝕜) U = 0 := by
   convert divisor_const (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
@@ -232,7 +232,6 @@ theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
   ext z
   by_cases hn : n = 0
   · simp [hn]
-
   by_cases hz : z ∈ U
   · simp [hf.pow, divisor_apply, meromorphicOrderAt_pow (hf z hz), hf, hz]
   · simp [hz]
