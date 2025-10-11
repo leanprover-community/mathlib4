@@ -239,6 +239,11 @@ variable {K : Type*} [Field K] [Algebra K E] [Algebra K F] [IsScalarTower K F E]
 theorem restrictScalars_top : (⊤ : IntermediateField F E).restrictScalars K = ⊤ :=
   rfl
 
+@[simp]
+theorem restrictScalars_eq_top_iff {L : IntermediateField F E} :
+    L.restrictScalars K = ⊤ ↔ L = ⊤ := by
+  simp [SetLike.ext_iff]
+
 variable (K)
 variable (L L' : IntermediateField F E)
 
