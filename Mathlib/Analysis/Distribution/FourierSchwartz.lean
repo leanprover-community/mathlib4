@@ -112,14 +112,38 @@ theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : 
     (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
   rwa [flip_innerₗ] at this
 
-/-- Plancherel's theorem for Schwartz functions. -/
+/-- Plancherel's theorem for Schwartz functions.
+
+Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (𝓕 g ξ) = ∫ x, M (f x) (g x) := by
-  have := integral_sesq_fourierIntegral_eq f (fourierTransformCLM ℂ g) M
-  simp only [fourierTransformCLM_apply, fourier_inversion] at this
-  assumption
+  simpa only [fourierTransformCLM_apply, fourier_inversion]
+    using integral_sesq_fourierIntegral_eq f (fourierTransformCLM ℂ g) M
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
+    ∫ ξ, inner ℂ (𝓕 f ξ) (𝓕 g ξ) = ∫ x, inner ℂ (f x) (g x) :=
+  integral_sesq_fourier_fourier f g (innerSL ℂ)
+
+theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
+    ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
+  simp_rw [norm_sq_eq_re_inner (𝕜 := ℂ)]
+  rw [integral_re, integral_re]
+  · congr 1
+    exact integral_inner_fourier_fourier f f
+  · change Integrable fun x ↦ innerSL ℂ (f x) (f x)
+
+    sorry
+  · sorry
+
+variable (f : 𝓢(V, H)) (x : V)
+
+#check (innerSL ℂ (E := H)).memLp_of_bilin
+
+#check (innerSL ℂ (f x)).integrable_comp f.integrable
+
+#exit
 
 theorem inner_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
     inner ℂ ((fourierTransformCLM ℂ f).toLp 2) ((fourierTransformCLM ℂ f).toLp 2) =
