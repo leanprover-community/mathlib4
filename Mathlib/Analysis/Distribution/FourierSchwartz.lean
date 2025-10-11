@@ -129,21 +129,16 @@ theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
   simp_rw [norm_sq_eq_re_inner (𝕜 := ℂ)]
-  rw [integral_re, integral_re]
-  · congr 1
-    exact integral_inner_fourier_fourier f f
-  · change Integrable fun x ↦ innerSL ℂ (f x) (f x)
-
-    sorry
-  · sorry
-
-variable (f : 𝓢(V, H)) (x : V)
-
-#check (innerSL ℂ (E := H)).memLp_of_bilin
-
-#check (innerSL ℂ (f x)).integrable_comp f.integrable
-
-#exit
+  have : ∀ (g : 𝓢(V, H)), Integrable (fun x ↦ inner ℂ (g x) (g x)) volume := by
+    intro g
+    rw [← Integrable.re_im_iff]
+    constructor
+    · simp_rw [← norm_sq_eq_re_inner (𝕜 := ℂ)]
+      rw [← MeasureTheory.memLp_two_iff_integrable_sq_norm (g.continuous.aestronglyMeasurable)]
+      exact memLp g 2 volume
+    · simp
+  rw [integral_re (this f), integral_re, integral_inner_fourier_fourier f f]
+  exact this (fourierTransformCLM ℂ f)
 
 theorem inner_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
     inner ℂ ((fourierTransformCLM ℂ f).toLp 2) ((fourierTransformCLM ℂ f).toLp 2) =
