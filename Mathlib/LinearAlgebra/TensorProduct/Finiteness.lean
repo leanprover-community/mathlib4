@@ -95,8 +95,11 @@ theorem exists_finset (x : M ⊗[R] N) :
 
 /-- For a finite subset `s` of `M ⊗[R] N`, there are finitely generated
 submodules `M'` and `N'` of `M` and `N`, respectively, such that `s` is contained in the image
-of `M' ⊗[R] N'` in `M ⊗[R] N`. -/
-theorem exists_finite_submodule_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite) :
+of `M' ⊗[R] N'` in `M ⊗[R] N`.
+
+This means that every element of a tensor product lies in the tensor product of some finite
+submodules. -/
+theorem exists_finite_submodule_of_finiteSet (s : Set (M ⊗[R] N)) (hs : s.Finite) :
     ∃ (M' : Submodule R M) (N' : Submodule R N), Module.Finite R M' ∧ Module.Finite R N' ∧
       s ⊆ LinearMap.range (mapIncl M' N') := by
   simp_rw [Module.Finite.iff_fg]
@@ -118,33 +121,42 @@ theorem exists_finite_submodule_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite)
     · exact range_mapIncl_mono le_sup_right le_sup_right (h₂ (Set.mem_insert y s))
     · exact range_mapIncl_mono le_sup_left le_sup_left (h₁ (Set.subset_insert x s hz))
 
+@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_of_finite :=
+  exists_finite_submodule_of_finiteSet
+
 /-- For a finite subset `s` of `M ⊗[R] N`, there exists a finitely generated
 submodule `M'` of `M`, such that `s` is contained in the image
 of `M' ⊗[R] N` in `M ⊗[R] N`. -/
-theorem exists_finite_submodule_left_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite) :
+theorem exists_finite_submodule_left_of_finiteSet (s : Set (M ⊗[R] N)) (hs : s.Finite) :
     ∃ M' : Submodule R M, Module.Finite R M' ∧ s ⊆ LinearMap.range (M'.subtype.rTensor N) := by
-  obtain ⟨M', _, hfin, _, h⟩ := exists_finite_submodule_of_finite s hs
+  obtain ⟨M', _, hfin, _, h⟩ := exists_finite_submodule_of_finiteSet s hs
   refine ⟨M', hfin, ?_⟩
   rw [mapIncl, ← LinearMap.rTensor_comp_lTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
+@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_left_of_finite :=
+  exists_finite_submodule_left_of_finiteSet
+
 /-- For a finite subset `s` of `M ⊗[R] N`, there exists a finitely generated
 submodule `N'` of `N`, such that `s` is contained in the image
 of `M ⊗[R] N'` in `M ⊗[R] N`. -/
-theorem exists_finite_submodule_right_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite) :
+theorem exists_finite_submodule_right_of_finiteSet (s : Set (M ⊗[R] N)) (hs : s.Finite) :
     ∃ N' : Submodule R N, Module.Finite R N' ∧ s ⊆ LinearMap.range (N'.subtype.lTensor M) := by
-  obtain ⟨_, N', _, hfin, h⟩ := exists_finite_submodule_of_finite s hs
+  obtain ⟨_, N', _, hfin, h⟩ := exists_finite_submodule_of_finiteSet s hs
   refine ⟨N', hfin, ?_⟩
   rw [mapIncl, ← LinearMap.lTensor_comp_rTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
+@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_right_of_finite :=
+  exists_finite_submodule_right_of_finiteSet
+
 /-- Variation of `TensorProduct.exists_finite_submodule_of_finite` where `M` and `N` are
 already submodules. -/
-theorem exists_finite_submodule_of_finite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
+theorem exists_finite_submodule_of_finiteSet' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
     ∃ (M' : Submodule R M) (N' : Submodule R N) (hM : M' ≤ M₁) (hN : N' ≤ N₁),
       Module.Finite R M' ∧ Module.Finite R N' ∧
         s ⊆ LinearMap.range (TensorProduct.map (inclusion hM) (inclusion hN)) := by
-  obtain ⟨M', N', _, _, h⟩ := exists_finite_submodule_of_finite s hs
+  obtain ⟨M', N', _, _, h⟩ := exists_finite_submodule_of_finiteSet s hs
   have hM := map_subtype_le M₁ M'
   have hN := map_subtype_le N₁ N'
   refine ⟨_, _, hM, hN, .map _ _, .map _ _, ?_⟩
@@ -154,31 +166,33 @@ theorem exists_finite_submodule_of_finite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.
     map_comp] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
+@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_of_finite' :=
+  exists_finite_submodule_of_finiteSet'
+
 /-- Variation of `TensorProduct.exists_finite_submodule_left_of_finite` where `M` and `N` are
 already submodules. -/
-theorem exists_finite_submodule_left_of_finite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
+theorem exists_finite_submodule_left_of_finiteSet' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
     ∃ (M' : Submodule R M) (hM : M' ≤ M₁), Module.Finite R M' ∧
       s ⊆ LinearMap.range ((inclusion hM).rTensor N₁) := by
-  obtain ⟨M', _, hM, _, hfin, _, h⟩ := exists_finite_submodule_of_finite' s hs
+  obtain ⟨M', _, hM, _, hfin, _, h⟩ := exists_finite_submodule_of_finiteSet' s hs
   refine ⟨M', hM, hfin, ?_⟩
   rw [← LinearMap.rTensor_comp_lTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
+@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_left_of_finite' :=
+  exists_finite_submodule_left_of_finiteSet'
+
 /-- Variation of `TensorProduct.exists_finite_submodule_right_of_finite` where `M` and `N` are
 already submodules. -/
-theorem exists_finite_submodule_right_of_finite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
+theorem exists_finite_submodule_right_of_finiteSet' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
     ∃ (N' : Submodule R N) (hN : N' ≤ N₁), Module.Finite R N' ∧
       s ⊆ LinearMap.range ((inclusion hN).lTensor M₁) := by
-  obtain ⟨_, N', _, hN, _, hfin, h⟩ := exists_finite_submodule_of_finite' s hs
+  obtain ⟨_, N', _, hN, _, hfin, h⟩ := exists_finite_submodule_of_finiteSet' s hs
   refine ⟨N', hN, hfin, ?_⟩
   rw [← LinearMap.lTensor_comp_rTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
-/-- Every element of a tensor product lies in the tensor product of some finite submodules. -/
-lemma exists_finite_mem_map₂ (z : M ⊗[R] N) :
-    ∃ (M' : Submodule R M) (N' : Submodule R N) (_ : Module.Finite R M') (_ : Module.Finite R N'),
-      z ∈ Submodule.map₂ (mk R M N) M' N' := by
-  obtain ⟨M', N', hM', hN', h⟩ := exists_finite_submodule_of_finite {z} (Set.finite_singleton z)
-  exact ⟨M', N', hM', hN', range_mapIncl M' N' ▸ Set.singleton_subset_iff.mp h⟩
+@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_right_of_finite' :=
+  exists_finite_submodule_right_of_finiteSet'
 
 end TensorProduct
