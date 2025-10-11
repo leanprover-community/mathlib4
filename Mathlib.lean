@@ -3933,11 +3933,13 @@ import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 import Mathlib.Geometry.Manifold.IntegralCurve.UniformTime
+import Mathlib.Geometry.Manifold.IsImmersionEmbedding
 import Mathlib.Geometry.Manifold.IsManifold.Basic
 import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
+import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
