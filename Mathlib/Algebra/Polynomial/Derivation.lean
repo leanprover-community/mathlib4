@@ -61,8 +61,7 @@ def mkDerivation : A →ₗ[R] Derivation R R[X] A where
   map_smul' := fun t a ↦ by ext; simp
 
 lemma mkDerivation_apply (a : A) (f : R[X]) :
-    mkDerivation R a f = derivative f • a := by
-  rfl
+    mkDerivation R a f = derivative f • a := rfl
 
 @[simp]
 theorem mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation_apply]
@@ -86,8 +85,7 @@ def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
       right_inv := fun _ => mkDerivation_X _ _ }
 
 @[simp] lemma mkDerivationEquiv_apply (a : A) :
-    mkDerivationEquiv R a = mkDerivation R a := by
-  rfl
+    mkDerivationEquiv R a = mkDerivation R a := rfl
 
 @[simp] lemma mkDerivationEquiv_symm_apply (D : Derivation R R[X] A) :
     (mkDerivationEquiv R).symm D = D X := rfl

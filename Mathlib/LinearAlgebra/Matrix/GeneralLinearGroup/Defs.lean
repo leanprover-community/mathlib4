@@ -133,8 +133,7 @@ theorem map_id : map (RingHom.id R) = MonoidHom.id (GL n R) :=
   rfl
 
 @[simp]
-protected lemma map_apply (f : R →+* S) (i j : n) (g : GL n R) : map f g i j = f (g i j) := by
-  rfl
+protected lemma map_apply (f : R →+* S) (i j : n) (g : GL n R) : map f g i j = f (g i j) := rfl
 
 @[simp]
 theorem map_comp (f : T →+* R) (g : R →+* S) :

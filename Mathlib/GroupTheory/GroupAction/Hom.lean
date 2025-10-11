@@ -311,8 +311,7 @@ def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' �
 @[to_additive]
 lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
-    inverse f g h₁ h₂ = inverse' f g (congrFun rfl) h₁ h₂ := by
-  rfl
+    inverse f g h₁ h₂ = inverse' f g (congrFun rfl) h₁ h₂ := rfl
 
 @[to_additive]
 theorem inverse'_inverse'
@@ -682,8 +681,7 @@ protected def id : A →+[M] A :=
   ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
 
 @[simp]
-theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
-  rfl
+theorem id_apply (x : A) : DistribMulActionHom.id M x = x := rfl
 
 variable {M C ψ χ}
 
