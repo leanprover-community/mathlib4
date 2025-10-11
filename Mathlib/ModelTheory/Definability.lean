@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2021 Aaron Anderson. All rights reserved.
+Copyright (c) 2021 Aaron Anderson, Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Alex Meiburg
 -/
 import Mathlib.Data.SetLike.Basic
 import Mathlib.ModelTheory.Semantics
+import Mathlib.Tactic.FunProp
 
 /-!
 # Definable Sets
@@ -21,15 +22,19 @@ This file defines what it means for a set over a first-order structure to be def
   `(s : Set (M × M))` is definable with parameters in `A`.
 - A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the Boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
+- A function `f` is `A.TermDefinable L` if it can be expressed as a term in the language,
+  which is stronger than typical FO definability. `A.TermDefinable L`
 
 ## Main Results
 
 - `L.DefinableSet A α` forms a `BooleanAlgebra`
 - `Set.Definable.image_comp` shows that definability is closed under projections in finite
   dimensions.
+- `Set.Definable_trans` shows that `Set.Definable` is transitive, in the sense that if `S` can be
+  defined in `L` and all of `L`'s functions and relations can be defined in `L'`, then `S` is
+  also definable in `L'`.
 
 -/
-
 
 universe u v w u₁
 
@@ -267,6 +272,21 @@ def Definable₁ (s : Set M) : Prop :=
 def Definable₂ (s : Set (M × M)) : Prop :=
   A.Definable L { x : Fin 2 → M | (x 0, x 1) ∈ s }
 
+variable (L' : Language) [inst' : L'.Structure M]
+
+/-- Definability is transitive. Given a structure S on L and T on L', if:
+  * a set S is Definable in some M-structure on L,
+  * the realizations of all L.Functions have tupleGraph that's Definable on S,
+  * the realizations of all L.Relations are Definable on S,
+then S is Definable on T, as well. -/
+theorem Definable.trans {S : Set (α → M)} (h₁ : A.Definable L S)
+    (h₂ : ∀ {n} (g : L[[A]].Functions n), A.Definable L' (g.term.realize).tupleGraph)
+    (h₃ : ∀ {n} (g : L[[A]].Relations n), A.Definable L' (RelMap g)) :
+    A.Definable L' S :=
+  h₁.elim fun φ₁ hφ₁ ↦
+    ⟨_, hφ₁.trans <| (φ₁.subst_definitions_eq
+      (fun g ↦ (h₂ g).choose_spec.symm) (fun g ↦ (h₃ g).choose_spec.symm)).symm⟩
+
 end Set
 
 namespace FirstOrder
@@ -385,3 +405,149 @@ end DefinableSet
 end Language
 
 end FirstOrder
+
+namespace Set
+
+variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) {L' : FirstOrder.Language}
+variable [L.Structure M] [L'.Structure M]
+
+variable {α : Type u₁} {β : Type*}
+
+open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
+
+/-- A function from a Cartesian power of a structure to that structure is term-definable over
+  a set `A` when the value of the function is given by a term with constants `A`. -/
+@[fun_prop]
+def TermDefinable (f : (α → M) → M) : Prop :=
+  ∃ φ : L[[A]].Term α, f = φ.realize
+
+/-- Every TermDefinable function has a tupleGraph that is definable. -/
+theorem TermDefinable.Definable {f : (α → M) → M} (h : A.TermDefinable L f) :
+    A.Definable L f.tupleGraph := by
+  obtain ⟨φ,rfl⟩ := h
+  use (φ.relabel Sum.inl).equal (Term.var (Sum.inr ()))
+  ext v
+  simp [Function.tupleGraph]
+
+variable {L} {A B} {f : (α → M) → M}
+
+@[fun_prop]
+theorem TermDefinable.map_expansion (h : A.TermDefinable L f)
+    (φ : L →ᴸ L') [φ.IsExpansionOn M] : A.TermDefinable L' f := by
+  obtain ⟨ψ, rfl⟩ := h
+  use (φ.addConstants A).onTerm ψ
+  simp
+
+theorem empty_termDefinable_iff :
+    (∅ : Set M).TermDefinable L f ↔ ∃ φ : L.Term α, f = φ.realize := by
+  rw [TermDefinable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onTerm]
+  simp
+
+theorem termDefinable_iff_empty_termDefinable_with_params :
+    A.TermDefinable L f ↔ (∅ : Set M).TermDefinable (L[[A]]) f :=
+  empty_termDefinable_iff.symm
+
+@[fun_prop]
+theorem TermDefinable.mono {f : (α → M) → M} (h : A.TermDefinable L f) (hAB : A ⊆ B) :
+    B.TermDefinable L f := by
+  rw [termDefinable_iff_empty_termDefinable_with_params] at *
+  exact h.map_expansion (L.lhomWithConstantsMap (Set.inclusion hAB))
+
+/-- TermDefinable is transitive. If f is TermDefinable in a structure S on L, and all of the
+  functions' realizations on S are TermDefinable on a structure T on L', then f is
+  TermDefinable on T in L'. -/
+@[fun_prop]
+theorem TermDefinable.trans {f : (β → M) → M} (h₁ : A.TermDefinable L f)
+    (h₂ : ∀ {n} (g : L[[A]].Functions n), A.TermDefinable L' g.term.realize) :
+    A.TermDefinable L' f := by
+  obtain ⟨x,rfl⟩ := h₁
+  use x.substFunc (fun {n} (g : L[[A]].Functions n) ↦ Classical.choose (h₂ g))
+  have hc : ∀ {n} (g : L[[A]].Functions n), _ := fun {n} g ↦ congrFun (Classical.choose_spec (h₂ g))
+  funext v
+  induction x
+  next x₀ =>
+    simp
+  next n f ts ih =>
+    simp [← ih, ← hc]
+
+variable (L)
+
+/-- A function from a structure to itself is term-definable over a set `A` when the value of the
+  function is given by a term with constants `A`. Like `TermDefinable` but specialized for unary
+  functions in order to write `M → M` instead of `(Unit → M) → M`. -/
+@[fun_prop]
+def TermDefinable₁ (f : M → M) : Prop :=
+  ∃ φ : L[[A]].Term Unit, f = φ.realize ∘ Function.const _
+
+/-- `TermDefinable₁` is equivalent to `TermDefinable` on the `Unit` index type. -/
+theorem TermDefinable₁_iff_TermDefinable (f : M → M) : A.TermDefinable₁ L f ↔
+    A.TermDefinable L (fun v ↦ f (v ())) := by
+  dsimp [TermDefinable, TermDefinable₁]
+  constructor <;> intro h <;> obtain ⟨φ,hφ⟩ := h <;> use φ
+  · subst hφ
+    funext v
+    rw [Function.comp_apply, ← eq_const_of_subsingleton]
+  · funext v
+    rw [Function.comp_apply, ← congrFun hφ (Function.const Unit v), Function.const]
+
+@[fun_prop]
+theorem TermDefinable.TermDefinable₁ {f : M → M} (h : A.TermDefinable L (fun v ↦ f (v ()))) :
+     A.TermDefinable₁ L f :=
+  (A.TermDefinable₁_iff_TermDefinable L f).mpr h
+
+/-- A `TermDefinable₁` function has a graph that's `Definable₂`. -/
+theorem TermDefinable₁.Definable₂ {f : M → M} (h : A.TermDefinable₁ L f) :
+    A.Definable₂ L f.graph := by
+  rw [TermDefinable₁_iff_TermDefinable] at h
+  obtain ⟨t,h⟩ := TermDefinable.Definable A L h
+  use t.relabel (Sum.elim (fun _ ↦ 0) (fun _ ↦ 1))
+  funext v
+  convert congrFun h (Sum.elim (fun _ ↦ v 0) (fun _ ↦ v 1))
+  rw [setOf, Formula.realize_relabel, Sum.comp_elim]
+  rfl
+
+/-- `id` is `TermDefinable₁` -/
+@[fun_prop]
+theorem TermDefinable₁_id : A.TermDefinable₁ L (id : M → M) :=
+  ⟨Term.var (), rfl⟩
+
+/-- `const` is `TermDefinable₁`, if the constant value is a language constant. -/
+@[fun_prop]
+theorem TermDefinable₁_const (C : L[[A]].Constants) : A.TermDefinable₁ L (Function.const M C) :=
+  ⟨C.term, by simp only [Term.realize_constants]; rfl⟩
+
+/-- `TermDefinable₁` functions are closed under composition. -/
+@[fun_prop]
+theorem TermDefinable₁_comp {f g : M → M} (hf : A.TermDefinable₁ L f) (hg : A.TermDefinable₁ L g) :
+    A.TermDefinable₁ L (f ∘ g) := by
+  obtain ⟨fφ,rfl⟩ := hf
+  obtain ⟨gφ,rfl⟩ := hg
+  use fφ.subst (fun (_:Unit) ↦ gφ)
+  funext m
+  simp [Function.const_def]
+
+/-- A `TermDefinable` function postcomposed with `TermDefinable₁` is `TermDefinable`. -/
+@[fun_prop]
+theorem TermDefinable₁_comp_TermDefinable {f : M → M} {g : (α → M) → M}
+    (hf : A.TermDefinable₁ L f) (hg : A.TermDefinable L g) :
+    A.TermDefinable L (f ∘ g) := by
+  obtain ⟨fφ,rfl⟩ := hf
+  obtain ⟨gφ,rfl⟩ := hg
+  use fφ.subst (fun (_:Unit) ↦ gφ)
+  funext m
+  simp [Function.const_def]
+
+/-- A kary `TermDefinable` function composed with k `TermDefinable` functions is `TermDefinable`. -/
+theorem TermDefinable_comp_TermDefinable {f : (α → M) → M} {g : α → (β → M) → M}
+    (hf : A.TermDefinable L f) (hg : ∀ a, A.TermDefinable L (g a)) :
+    A.TermDefinable L (fun b ↦ f (g · b)) := by
+  obtain ⟨fφ,rfl⟩ := hf
+  -- obtain ⟨gφ,rfl⟩ := hg
+  use fφ.subst (fun a ↦ (hg a).choose)
+  funext m
+  conv =>
+    enter [1, 1, a]
+    rw [(hg a).choose_spec]
+  simp
+
+end Set
