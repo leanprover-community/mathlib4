@@ -198,7 +198,7 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
   rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
-  rw [← sum_ramification_inertia B p K L hpb]
+  rw [← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
   rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp
