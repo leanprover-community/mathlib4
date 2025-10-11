@@ -14,7 +14,7 @@ It checks whether `P` allows only one possible value for `a`, and if so, substit
 the leading quantifier.
 
 The procedure traverses the body, branching at each `∧` and entering existential quantifiers,
-searching for a subexpression of the form `a = a'` or `a' = a` for `a'` that is indepenent of `a`.
+searching for a subexpression of the form `a = a'` or `a' = a` for `a'` that is independent of `a`.
 If such an expression is found, all occurrences of `a` are replaced with `a'`. If `a'` depends on
 variables bound by existential quantifiers, those quantifiers are moved outside.
 
@@ -49,7 +49,10 @@ instance : Inhabited HypQ where
   default := ⟨default, default⟩
 
 /-- Failure function for the `existsAndEq` simproc. -/
-def fail {α : Type} : MetaM α := throwError "existsAndEq simproc failed"
+private def fail {α : Type} : MetaM α := do
+  logError "existsAndEq simproc failed"
+  -- the following error will be caught by `simp` so we additionaly log it above
+  throwError "existsAndEq simproc failed"
 
 /-- Constructs `∃ f₁ f₂ ... fₙ, body`, where `[f₁, ..., fₙ] = fvars`. -/
 def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
@@ -138,9 +141,9 @@ exs = [b]:
   P := ∃ b, body
   Exists.elim h (fun b hb ↦ act hb)
 exs = [b, c]:
-  P := ∃ c b, body
-  Exists.elim h (fun c hc ↦
-    Exists.elim hc (fun b hb ↦ act hb)
+  P := ∃ b c, body
+  Exists.elim h (fun b hb ↦
+    Exists.elim hb (fun c hc ↦ act hc)
   )
 ...
 ``` -/
@@ -157,32 +160,6 @@ def withNestedExistsElim {P body goal : Q(Prop)} (exs : List VarQ) (h : Q($P))
       let pf1 ← withNestedExistsElim tl hb act
       let pf2 : Q(∀ b, $p b → $goal) ← mkLambdaFVars #[b, hb] pf1
       return q(Exists.elim $h $pf2)
-
-/-- When `P = ∃ f₁ ... fₙ, body`, where `exs = [f₁, ..., fₙ]`, this function takes
-`act : body` and proves `P` using `Exists.intro`.
-
-Example:
-```
-exs = []: act
-exs = [b]:
-  P := ∃ b, body
-  Exists.intro b act
-exs = [b, c]:
-  P := ∃ c b, body
-  Exists.intro c (Exists.intro b act)
-...
-``` -/
-def withNestedExistsIntro {P body : Q(Prop)} (exs : List VarQ)
-    (act : MetaM Q($body)) : MetaM Q($P) := do
-  match exs with
-  | [] =>
-    let _ : $P =Q $body := ⟨⟩
-    act
-  | ⟨u, β, b⟩ :: tl =>
-    let ~q(@Exists.{u} $γ $p) := P | fail
-    let _ : $β =Q $γ := ⟨⟩
-    let pf ← withNestedExistsIntro tl act
-    return q(Exists.intro $b $pf)
 
 /-- Generates a proof of `P' → ∃ a, p a`. We assume that `fvars = [f₁, ..., fₙ]` are free variables
 and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.
@@ -298,6 +275,32 @@ def withExistsElimAlongPath {u : Level} {α : Q(Sort u)}
     (act : Q($a = $a') → List HypQ → MetaM Q($goal)) :
     MetaM Q($goal) :=
   withExistsElimAlongPathImp h exs path [] act
+
+/-- When `P = ∃ f₁ ... fₙ, body`, where `exs = [f₁, ..., fₙ]`, this function takes
+`act : body` and proves `P` using `Exists.intro`.
+
+Example:
+```
+exs = []: act
+exs = [b]:
+  P := ∃ b, body
+  Exists.intro b act
+exs = [b, c]:
+  P := ∃ b c, body
+  Exists.intro b (Exists.intro c act)
+...
+``` -/
+def withNestedExistsIntro {P body : Q(Prop)} (exs : List VarQ)
+    (act : MetaM Q($body)) : MetaM Q($P) := do
+  match exs with
+  | [] =>
+    let _ : $P =Q $body := ⟨⟩
+    act
+  | ⟨u, β, b⟩ :: tl =>
+    let ~q(@Exists.{u} $γ $p) := P | fail
+    let _ : $β =Q $γ := ⟨⟩
+    let pf ← withNestedExistsIntro tl act
+    return q(Exists.intro $b $pf)
 
 /-- Generates a proof of `∃ a, p a → P'`. We assume that `fvars = [f₁, ..., fₙ]` are free variables
 and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.

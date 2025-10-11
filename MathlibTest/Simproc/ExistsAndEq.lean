@@ -41,11 +41,12 @@ example (f : β → α) {P : α → Prop} :
     (∃ a, P a ∧ ∃ b, a = f b) ↔ ∃ b, P (f b) := by
   simp only [existsAndEq, and_true]
 
+-- The simproc should not trigger on `a = a'` when `a'` depends on `a`
 /--
 error: `simp` made no progress
 -/
 #guard_msgs in
-example {α : Type} : ∃ a : α, ∃ (b : α → α), b a = a := by
+example {α : Type} : ∃ a : α, ∃ b : α → α, b a = a := by
   simp only [existsAndEq]
 
 -- lemmas like `Subtype.exists` and `Prod.exists` prevent `existsAndEq`
