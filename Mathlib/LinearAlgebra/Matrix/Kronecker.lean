@@ -404,6 +404,13 @@ theorem conjTranspose_kronecker' [Mul R] [StarMul R] (x : Matrix l m R) (y : Mat
     (x ⊗ₖ y)ᴴ = (yᴴ ⊗ₖ xᴴ).submatrix Prod.swap Prod.swap := by
   ext; simp
 
+theorem IsUnit.kronecker [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+    {x : Matrix n n R} {y : Matrix m m R} (hx : IsUnit x) (hy : IsUnit y) :
+    IsUnit (x ⊗ₖ y) := by
+  obtain ⟨xinv, hx⟩ := isUnit_iff_exists.mp hx
+  obtain ⟨yinv, hy⟩ := isUnit_iff_exists.mp hy
+  exact isUnit_iff_exists.mpr ⟨xinv ⊗ₖ yinv, by simp [← mul_kronecker_mul, hx, hy]⟩
+
 end Kronecker
 
 /-! ### Specialization to `Matrix.kroneckerMap (⊗ₜ)` -/
