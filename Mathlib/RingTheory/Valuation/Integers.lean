@@ -201,7 +201,7 @@ lemma coe_span_singleton_eq_setOf_le_v_algebraMap (hv : Integers v O) (x : O) :
   simp [SetLike.mem_coe, Ideal.mem_span_singleton, hv.dvd_iff_le]
 
 lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
-    [Subsingleton (MonoidHom.mrange v)ˣ] :
+    [IsSharpMonoid (MonoidHom.mrange v)] :
     Function.Bijective (algebraMap O F) := by
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
   rcases eq_or_ne x 0 with rfl | hx
