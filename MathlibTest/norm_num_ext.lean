@@ -20,6 +20,7 @@ import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.RealSqrt
 import Mathlib.Tactic.NormNum.Irrational
 import Mathlib.Tactic.Simproc.Factors
+import Mathlib.Tactic.NormNum.IsSquare
 
 /-!
 # Tests for `norm_num` extensions
@@ -583,5 +584,17 @@ example : Irrational
 -- We only need to check that it is coprime with the denominator.
 example : Irrational (100 ^ ((10^1000 + 10^500) / 3 : ℝ)) := by norm_num1
 
-
 end irrational
+
+section IsSquare
+
+example : IsSquare (243089725342304986 ^ 2 : ℕ) := by norm_num1
+example : ¬IsSquare (243089725342304986 ^ 2 + 1 : ℤ) := by norm_num1
+example : ¬IsSquare (10^101 : ℕ) := by norm_num1
+example : IsSquare (100^100 : ℤ) := by norm_num1
+example : ¬IsSquare (-256 : ℤ) := by norm_num1
+example : IsSquare ((15553 * 256) / (15553 * 289) : ℚ) := by norm_num1
+example : ¬IsSquare (21/8 : ℚ) := by norm_num1
+example : ¬IsSquare (-21/8 : ℚ) := by norm_num1
+
+end IsSquare
