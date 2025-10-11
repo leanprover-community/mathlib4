@@ -28,7 +28,7 @@ theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
     l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
       l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
     by simp [this]
-  congr; ext; simp [pow_succ]; ring
+  congr; ext; ring
 
 theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
     ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
@@ -61,9 +61,9 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     (b.digits n).length ≤ k ↔ n < b ^ k  := by
   by_cases h : n = 0
-  · simp [h]
-    positivity
-  rw [digits_len b n hb h, lt_pow_iff_log_lt hb h]
+  · have : 0 < b ^ k := by positivity
+    simpa [h]
+  rw [digits_len b n hb h, ← log_lt_iff_lt_pow hb h]
   exact add_one_le_iff
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
