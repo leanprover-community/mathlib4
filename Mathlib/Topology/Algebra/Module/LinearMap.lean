@@ -313,10 +313,12 @@ section
 variable (R₁ M₁)
 
 /-- the identity map as a continuous linear map. -/
-def id : M₁ →L[R₁] M₁ :=
+protected def id : M₁ →L[R₁] M₁ :=
   ⟨LinearMap.id, continuous_id⟩
 
 end
+
+open ContinuousLinearMap (id)
 
 instance one : One (M₁ →L[R₁] M₁) :=
   ⟨id R₁ M₁⟩
@@ -757,6 +759,8 @@ end ToSpanSingleton
 
 end Semiring
 
+open ContinuousLinearMap (id)
+
 section Ring
 
 variable {R : Type*} [Ring R] {R₂ : Type*} [Ring R₂] {R₃ : Type*} [Ring R₃] {M : Type*}
@@ -1122,6 +1126,8 @@ end Ring
 end RestrictScalars
 
 end ContinuousLinearMap
+
+open ContinuousLinearMap (id)
 
 namespace Submodule
 
