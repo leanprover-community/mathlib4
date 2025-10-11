@@ -135,25 +135,6 @@ theorem HomogeneousSubmodule.mem_toSubmodule_iff {I : HomogeneousSubmodule 𝒜 
 
 end HomogeneousDef
 
-section HomogeneousCore
-
-variable (ℳ : ιM → σM) [SetLike σM M]
-
-variable (A) in
-/-- For any `p : Submodule A M`, not necessarily homogeneous, `p.homogeneousCore' ℳ`
-is the largest homogeneous `A`-submodule contained in `p`, as an `A`-submodule. -/
-def Submodule.homogeneousCore' (p : Submodule A M) : Submodule A M :=
-  Submodule.span A ((↑) '' (((↑) : Subtype (IsHomogeneousElem ℳ) → M) ⁻¹' p))
-
-theorem Submodule.homogeneousCore'_mono :
-    Monotone (Submodule.homogeneousCore' A ℳ) :=
-  fun _ _ I_le_J => Submodule.span_mono <| Set.image_mono fun _ => @I_le_J _
-
-theorem Submodule.homogeneousCore'_le (p : Submodule A M) : p.homogeneousCore' A ℳ ≤ p :=
-  Submodule.span_le.2 <| image_preimage_subset _ _
-
-end HomogeneousCore
-
 section IsHomogeneousSubmoduleDefs
 
 variable (𝒜 : ιA → σA) (ℳ : ιM → σM)
@@ -195,32 +176,65 @@ theorem Submodule.homogeneous_span (s : Set M) (h : ∀ x ∈ s, IsHomogeneousEl
 
 /-- For any `p : Submodule A M`, not necessarily homogeneous, `p.homogeneousCore' ℳ`
 is the largest homogeneous `A`-submodule contained in `p`. -/
-def Submodule.homogeneousCore : HomogeneousSubmodule 𝒜 ℳ :=
-  ⟨p.homogeneousCore' A ℳ, Submodule.homogeneous_span 𝒜 ℳ _ fun _ h => by aesop⟩
+def Submodule.homogeneousCore : HomogeneousSubmodule 𝒜 ℳ where
+  carrier := { x | ∀ i, (decompose ℳ x i : M) ∈ p }
+  add_mem' := by aesop
+  zero_mem' := by aesop
+  smul_mem' c x hx i := by
+    classical rw [← DirectSum.sum_support_decompose ℳ x, Finset.smul_sum, decompose_sum,
+      ← DirectSum.coeFnAddMonoidHom_apply, map_sum, Finset.sum_apply,
+      AddSubmonoidClass.coe_finset_sum]
+    exact sum_mem fun j hj ↦ p.smul_homogeneous_element_mem_of_mem 𝒜 ℳ _ _ (by aesop) (hx j) _
+  is_homogeneous' _ _ _ _ := by aesop (add norm coe_of_apply)
+
+theorem Submodule.toSubmodule_homogeneousCore_eq_span :
+    (p.homogeneousCore 𝒜 ℳ).toSubmodule =
+    .span A ((↑) '' (((↑) : Subtype (IsHomogeneousElem ℳ) → M) ⁻¹' p)) := by
+  rw [image_preimage_eq_inter_range]
+  refine le_antisymm (fun x hx ↦ ?_) <| span_le.mpr ?_
+  · classical rw [← DirectSum.sum_support_decompose ℳ x]
+    exact sum_mem <| by aesop
+  · rintro _ ⟨hxp, ⟨x, i, hxi⟩, rfl⟩ j
+    rw [decompose_of_mem ℳ hxi]
+    aesop (add norm coe_of_apply)
 
 theorem Submodule.homogeneousCore_mono : Monotone (Submodule.homogeneousCore 𝒜 ℳ) :=
-  Submodule.homogeneousCore'_mono ℳ
+  fun _ _ hpq _ hx i ↦ hpq <| hx i
 
-theorem Submodule.toSubmodule_homogeneousCore_le : (p.homogeneousCore 𝒜 ℳ).toSubmodule ≤ p :=
-  Submodule.homogeneousCore'_le _ _
+theorem Submodule.toSubmodule_homogeneousCore_le : (p.homogeneousCore 𝒜 ℳ).toSubmodule ≤ p := by
+  intro x hx
+  classical rw [← DirectSum.sum_support_decompose ℳ x]
+  exact sum_mem fun i hi ↦ hx i
 
 theorem Submodule.mem_homogeneousCore_of_homogeneous_of_mem {x : M} (h : IsHomogeneousElem ℳ x)
-    (hmem : x ∈ p) : x ∈ p.homogeneousCore 𝒜 ℳ :=
-  Submodule.subset_span ⟨⟨x, h⟩, hmem, rfl⟩
+    (hmem : x ∈ p) : x ∈ p.homogeneousCore 𝒜 ℳ := by
+  obtain ⟨i, hx⟩ := h
+  intro j
+  rw [decompose_of_mem ℳ hx]
+  aesop (add norm coe_of_apply)
+
+theorem Submodule.le_homogeneousCore_of_homogeneous_of_le {q : Submodule A M}
+    (hq : q.IsHomogeneous ℳ) (hqp : q ≤ p) : q ≤ (p.homogeneousCore 𝒜 ℳ).toSubmodule :=
+  fun _ hx i ↦ hqp <| hq i hx
+
+theorem Submodule.le_homogeneousCore_iff_of_homogeneous {q : Submodule A M}
+    (hq : q.IsHomogeneous ℳ) : q ≤ (p.homogeneousCore 𝒜 ℳ).toSubmodule ↔ q ≤ p :=
+  ⟨(·.trans <| p.toSubmodule_homogeneousCore_le 𝒜 ℳ),
+  p.le_homogeneousCore_of_homogeneous_of_le 𝒜 ℳ hq⟩
+
+variable {p} in
+theorem HomogeneousSubmodule.le_homogeneousCore_iff (q : HomogeneousSubmodule 𝒜 ℳ) :
+    q ≤ p.homogeneousCore 𝒜 ℳ ↔ q.toSubmodule ≤ p :=
+  p.le_homogeneousCore_iff_of_homogeneous _ _ q.2
 
 theorem Submodule.IsHomogeneous.toSubmodule_homogeneousCore_eq_self (h : p.IsHomogeneous ℳ) :
     (p.homogeneousCore 𝒜 ℳ).toSubmodule = p :=
-  le_antisymm (p.homogeneousCore'_le ℳ) <| fun x hx ↦ by
-  classical
-  rw [← DirectSum.sum_support_decompose ℳ x]
-  exact Submodule.sum_mem _ fun j _ =>
-    Submodule.subset_span ⟨⟨_, isHomogeneousElem_coe _⟩, h _ hx, rfl⟩
+  le_antisymm (p.toSubmodule_homogeneousCore_le 𝒜 ℳ) fun _ hx i ↦ h i hx
 
 @[simp]
 theorem HomogeneousSubmodule.toSubmodule_homogeneousCore_eq_self (p : HomogeneousSubmodule 𝒜 ℳ) :
-    p.toSubmodule.homogeneousCore 𝒜 ℳ = p := by
-  ext1
-  convert Submodule.IsHomogeneous.toSubmodule_homogeneousCore_eq_self 𝒜 ℳ _ p.isHomogeneous
+    p.toSubmodule.homogeneousCore 𝒜 ℳ = p :=
+  ext _ _ <| p.2.toSubmodule_homogeneousCore_eq_self 𝒜 ℳ _
 
 theorem Submodule.IsHomogeneous.iff_eq :
     p.IsHomogeneous ℳ ↔ (p.homogeneousCore 𝒜 ℳ).toSubmodule = p :=
@@ -230,7 +244,7 @@ include 𝒜 in
 theorem Submodule.IsHomogeneous.iff_exists :
     p.IsHomogeneous ℳ ↔
     ∃ S : Set {x // IsHomogeneousElem ℳ x}, p = Submodule.span A ((↑) '' S) := by
-  rw [Submodule.IsHomogeneous.iff_eq 𝒜, eq_comm]
+  rw [iff_eq 𝒜, toSubmodule_homogeneousCore_eq_span, eq_comm]
   exact ((Set.image_preimage.compose (Submodule.gi _ _).gc).exists_eq_l _).symm
 
 end IsHomogeneousSubmoduleDefs
@@ -412,8 +426,6 @@ instance : Add (HomogeneousSubmodule 𝒜 ℳ) := ⟨(· ⊔ ·)⟩
 theorem toSubmodule_add (I J : HomogeneousSubmodule 𝒜 ℳ) :
     (I + J).toSubmodule = I.toSubmodule + J.toSubmodule := rfl
 
-instance : Inhabited (HomogeneousSubmodule 𝒜 ℳ) where default := ⊥
-
 end HomogeneousSubmodule
 
 end Operations
@@ -431,9 +443,8 @@ variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 variable (p : Submodule A M)
 
 theorem Submodule.homogeneousCore.gc :
-    GaloisConnection toSubmodule (Submodule.homogeneousCore 𝒜 ℳ) := fun I _ =>
-  ⟨fun H => I.toSubmodule_homogeneousCore_eq_self (𝒜 := 𝒜) ▸ Submodule.homogeneousCore_mono 𝒜 ℳ H,
-    fun H => le_trans H (Submodule.homogeneousCore'_le _ _)⟩
+    GaloisConnection toSubmodule (Submodule.homogeneousCore 𝒜 ℳ) := fun p _ ↦
+  (le_homogeneousCore_iff_of_homogeneous 𝒜 ℳ _ p.2).symm
 
 /-- `toSubmodule : HomogeneousSubmodule A ℳ → Submodule A M` and `Submodule.homogeneousCore 𝒜 ℳ`
 forms a galois coinsertion. -/
@@ -443,24 +454,24 @@ def Submodule.homogeneousCore.gi :
     ⟨I, le_antisymm (I.toSubmodule_homogeneousCore_le 𝒜 ℳ) HI ▸
       HomogeneousSubmodule.isHomogeneous _⟩
   gc := Submodule.homogeneousCore.gc 𝒜 ℳ
-  u_l_le _ := Submodule.homogeneousCore'_le _ _
+  u_l_le _ := Submodule.toSubmodule_homogeneousCore_le _ _ _
   choice_eq I H := le_antisymm H (I.toSubmodule_homogeneousCore_le _ _)
+
+theorem HomogeneousSubmodule.toSubmodule_le_toSubmodule_iff {p q : HomogeneousSubmodule 𝒜 ℳ} :
+    p.toSubmodule ≤ q.toSubmodule ↔ p ≤ q :=
+  (Submodule.homogeneousCore.gi 𝒜 ℳ).l_le_l_iff
 
 theorem Submodule.homogeneousCore_eq_sSup :
     p.homogeneousCore 𝒜 ℳ = sSup { q : HomogeneousSubmodule 𝒜 ℳ | q.toSubmodule ≤ p } :=
   Eq.symm <| IsLUB.sSup_eq <| (Submodule.homogeneousCore.gc 𝒜 ℳ).isGreatest_u.isLUB
 
 include 𝒜 in
-theorem Submodule.homogeneousCore'_eq_sSup :
-    p.homogeneousCore' A ℳ = sSup { q : Submodule A M | q.IsHomogeneous ℳ ∧ q ≤ p } := by
-  refine (IsLUB.sSup_eq <| IsGreatest.isLUB ?_).symm
-  have coe_mono : Monotone (toSubmodule : HomogeneousSubmodule 𝒜 ℳ → Submodule A M) := fun x y => id
-  convert coe_mono.map_isGreatest (Submodule.homogeneousCore.gc 𝒜 ℳ).isGreatest_u using 1
-  ext x
-  rw [mem_image, mem_setOf_eq]
-  refine ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, ?_⟩
-  rintro ⟨x, ⟨hx, rfl⟩⟩
-  exact ⟨x.isHomogeneous, hx⟩
+theorem Submodule.toSubmodule_homogeneousCore_eq_sSup :
+    (p.homogeneousCore 𝒜 ℳ).toSubmodule =
+    sSup { q : Submodule A M | q.IsHomogeneous ℳ ∧ q ≤ p } := by
+  rw [Submodule.homogeneousCore_eq_sSup, toSubmodule_sSup]
+  exact le_antisymm (iSup_le fun q ↦ iSup_le fun hqp ↦ le_sSup ⟨q.2, hqp⟩) <|
+    sSup_le fun q hq ↦ le_biSup HomogeneousSubmodule.toSubmodule (i := ⟨q, hq.1⟩) hq.2
 
 end homogeneousCore
 
@@ -477,7 +488,7 @@ variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 variable (p : Submodule A M)
 
 /-- For any `p : Submodule A M`, not necessarily homogeneous, `p.homogeneousHull 𝒜 ℳ` is the
-smallest  homogeneous `A`-submodule containing `p`. -/
+smallest homogeneous `A`-submodule containing `p`. -/
 def Submodule.homogeneousHull : HomogeneousSubmodule 𝒜 ℳ :=
   ⟨Submodule.span A { r : M | ∃ (i : ιM) (x : p), (DirectSum.decompose ℳ (x : M) i : M) = r }, by
     refine Submodule.homogeneous_span 𝒜 ℳ _ fun x hx => ?_
@@ -497,17 +508,18 @@ theorem Submodule.homogeneousHull_mono :
   rintro r ⟨hr1, ⟨x, hx⟩, rfl⟩
   exact ⟨hr1, ⟨⟨x, I_le_J hx⟩, rfl⟩⟩
 
-variable {𝒜 ℳ p}
-theorem Submodule.IsHomogeneous.toSubmodule_homogeneousHull_eq_self (h : p.IsHomogeneous ℳ) :
-    (Submodule.homogeneousHull 𝒜 ℳ p).toSubmodule = p := by
-  refine le_antisymm (Submodule.span_le.2 ?_) (Submodule.le_toSubmodule_homogeneousHull _ _ _)
-  rintro _ ⟨i, x, rfl⟩
-  exact h _ x.prop
+variable {p}
 
-@[simp]
-theorem HomogeneousSubmodule.homogeneousHull_toSubmodule_eq_self (p : HomogeneousSubmodule 𝒜 ℳ) :
-    p.toSubmodule.homogeneousHull 𝒜 ℳ = p :=
-  HomogeneousSubmodule.toSubmodule_injective _ _ <| p.2.toSubmodule_homogeneousHull_eq_self
+theorem Submodule.IsHomogeneous.homogeneousHull_le_iff
+    {q : Submodule A M} (hq : q.IsHomogeneous ℳ) :
+    (p.homogeneousHull 𝒜 ℳ).toSubmodule ≤ q ↔ p ≤ q := by
+  refine ⟨(p.le_toSubmodule_homogeneousHull 𝒜 ℳ|>.trans ·), fun hpq ↦ span_le.mpr ?_⟩
+  rintro - ⟨i, x, rfl⟩
+  exact hq i <| hpq x.2
+
+theorem Submodule.IsHomogeneous.toSubmodule_homogeneousHull_eq_self (h : p.IsHomogeneous ℳ) :
+    (Submodule.homogeneousHull 𝒜 ℳ p).toSubmodule = p :=
+  le_antisymm ((h.homogeneousHull_le_iff 𝒜 ℳ).mpr le_rfl) <| le_toSubmodule_homogeneousHull _ _ _
 
 variable (p)
 theorem Submodule.toSubmodule_homogeneousHull_eq_iSup :
@@ -524,6 +536,18 @@ theorem Submodule.homogeneousHull_eq_iSup :
   ext1
   rw [Submodule.toSubmodule_homogeneousHull_eq_iSup, toSubmodule_iSup]
 
+variable {𝒜 ℳ}
+
+theorem HomogeneousSubmodule.homogeneousHull_le_iff
+    {p : Submodule A M} {q : HomogeneousSubmodule 𝒜 ℳ} :
+    p.homogeneousHull 𝒜 ℳ ≤ q ↔ p ≤ q.toSubmodule :=
+  Submodule.IsHomogeneous.homogeneousHull_le_iff 𝒜 ℳ q.isHomogeneous
+
+@[simp]
+theorem HomogeneousSubmodule.homogeneousHull_toSubmodule_eq_self (p : HomogeneousSubmodule 𝒜 ℳ) :
+    p.toSubmodule.homogeneousHull 𝒜 ℳ = p :=
+  ext _ _ <| p.2.toSubmodule_homogeneousHull_eq_self 𝒜 ℳ
+
 end homogeneousHull
 
 section GaloisConnection
@@ -537,13 +561,13 @@ variable [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposit
 variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
 theorem Submodule.homogeneousHull.gc :
-    GaloisConnection (Submodule.homogeneousHull 𝒜 ℳ) toSubmodule := fun _ J =>
-  ⟨le_trans (Submodule.le_toSubmodule_homogeneousHull _ _ _),
-    fun H => J.homogeneousHull_toSubmodule_eq_self (𝒜 := 𝒜) ▸ Submodule.homogeneousHull_mono 𝒜 ℳ H⟩
+    GaloisConnection (Submodule.homogeneousHull 𝒜 ℳ) toSubmodule := fun _ _ =>
+  homogeneousHull_le_iff
 
 /-- `Submodule.homogeneousHull 𝒜 ℳ` and `toSubmodule : HomogeneousSubmodule A ℳ → Submodule A M`
 form a galois insertion. -/
-def Submodule.homogeneousHull.gi : GaloisInsertion (Submodule.homogeneousHull 𝒜 ℳ) toSubmodule where
+def Submodule.homogeneousHull.gi :
+    GaloisInsertion (Submodule.homogeneousHull 𝒜 ℳ) toSubmodule where
   choice I H := ⟨I, le_antisymm H (I.le_toSubmodule_homogeneousHull 𝒜 ℳ) ▸ isHomogeneous _⟩
   gc := Submodule.homogeneousHull.gc 𝒜 ℳ
   le_l_u _ := Submodule.le_toSubmodule_homogeneousHull 𝒜 _ _
