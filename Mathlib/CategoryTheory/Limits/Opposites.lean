@@ -838,6 +838,26 @@ instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
     hasLimitsOfShape_of_equivalence walkingSpanOpEquiv.symm
   infer_instance
 
+/-- The canonical isomorphism relating `parallelPair f.op g.op` and `(parallelPair f g).op` -/
+@[simps!]
+def parallelPairOp {X Y : C} (f g : X ⟶ Y) :
+    parallelPair f.op g.op ≅ walkingParallelPairOpEquiv.functor ⋙ (parallelPair f g).op :=
+  NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
+    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
+
+/-- The canonical isomorphism relating `(parallelPair f g).op` and `parallelPair f.op g.op` -/
+@[simps!]
+def opParallelPair {X Y : C} (f g : X ⟶ Y) :
+    (parallelPair f g).op ≅ walkingParallelPairOpEquiv.inverse ⋙ parallelPair f.op g.op :=
+  calc
+    (parallelPair f g).op ≅ 𝟭 _ ⋙ (parallelPair f g).op := by rfl
+    _ ≅ (walkingParallelPairOpEquiv.inverse ⋙ walkingParallelPairOpEquiv.functor) ⋙ _ :=
+      (isoWhiskerRight walkingParallelPairOpEquiv.symm.unitIso _)
+    _ ≅ walkingParallelPairOpEquiv.inverse ⋙ walkingParallelPairOpEquiv.functor ⋙ _ :=
+      (Functor.associator _ _ _)
+    _ ≅ walkingParallelPairOpEquiv.inverse ⋙ parallelPair f.op g.op :=
+      isoWhiskerLeft _ (parallelPairOp f g).symm
+
 /-- The canonical isomorphism relating `Span f.op g.op` and `(Cospan f g).op` -/
 @[simps!]
 def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -1041,6 +1061,43 @@ theorem pullbackIsoUnopPushout_hom_inr {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
   dsimp
   rw [← pullbackIsoUnopPushout_inv_snd, Iso.hom_inv_id_assoc]
 
+/-- The pullback of `f` and `g` in `Cᵒᵖ` is isomorphic to the pushout of
+`f.unop` and `g.unop` in `C`. -/
+noncomputable def pullbackIsoOpPushout {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [h : HasPullback f g]
+    [HasPushout f.unop g.unop] : pullback f g ≅ op (pushout f.unop g.unop) :=
+  IsLimit.conePointUniqueUpToIso (@limit.isLimit _ _ _ _ _ h)
+    ((PushoutCocone.isColimitEquivIsLimitOp _) (colimit.isColimit (span f.unop g.unop)))
+
+@[reassoc (attr := simp)]
+theorem pullbackIsoOpPushout_inv_fst {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
+    [HasPushout f.unop g.unop] :
+    (pullbackIsoOpPushout f g).inv ≫ pullback.fst f g =
+      (pushout.inl _ _ : _ ⟶ pushout f.unop g.unop).op :=
+  (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp)
+
+@[reassoc (attr := simp)]
+theorem pullbackIsoOpPushout_inv_snd {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
+    [HasPushout f.unop g.unop] :
+    (pullbackIsoOpPushout f g).inv ≫ pullback.snd f g =
+      (pushout.inr _ _ : _ ⟶ pushout f.unop g.unop).op :=
+  (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp)
+
+@[reassoc (attr := simp)]
+theorem pullbackIsoOpPushout_hom_inl {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
+    [HasPushout f.unop g.unop] :
+    pushout.inl _ _ ≫ (pullbackIsoOpPushout f g).hom.unop = (pullback.fst f g).unop := by
+  apply Quiver.Hom.op_inj
+  dsimp
+  rw [← pullbackIsoOpPushout_inv_fst, Iso.hom_inv_id_assoc]
+
+@[reassoc (attr := simp)]
+theorem pullbackIsoOpPushout_hom_inr {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
+    [HasPushout f.unop g.unop] : pushout.inr _ _ ≫ (pullbackIsoOpPushout f g).hom.unop =
+    (pullback.snd f g).unop := by
+  apply Quiver.Hom.op_inj
+  dsimp
+  rw [← pullbackIsoOpPushout_inv_snd, Iso.hom_inv_id_assoc]
+
 end Pullback
 
 section Pushout
@@ -1080,7 +1137,310 @@ theorem pushoutIsoUnopPullback_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
   dsimp
   rw [← pushoutIsoUnopPullback_inr_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
+/-- The pushout of `f` and `g` in `Cᵒᵖ` is isomorphic to the pullback of
+`f.unop` and `g.unop` in `C`. -/
+noncomputable def pushoutIsoOpPullback {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [h : HasPushout f g]
+    [HasPullback f.unop g.unop] : pushout f g ≅ op (pullback f.unop g.unop) :=
+  IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)
+    ((PullbackCone.isLimitEquivIsColimitOp _) (limit.isLimit (cospan f.unop g.unop)))
+
+@[reassoc (attr := simp)]
+theorem pushoutIsoOpPullback_inl_hom {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
+    [HasPullback f.unop g.unop] :
+    pushout.inl _ _ ≫ (pushoutIsoOpPullback f g).hom = (pullback.fst f.unop g.unop).op :=
+  (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
+
+@[reassoc (attr := simp)]
+theorem pushoutIsoOpPullback_inr_hom {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
+    [HasPullback f.unop g.unop] :
+    pushout.inr _ _ ≫ (pushoutIsoOpPullback f g).hom = (pullback.snd f.unop g.unop).op :=
+  (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
+
+@[simp]
+theorem pushoutIsoOpPullback_inv_fst {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
+    [HasPullback f.unop g.unop] :
+    (pushoutIsoOpPullback f g).inv.unop ≫ pullback.fst f.unop g.unop = (pushout.inl f g).unop := by
+  apply Quiver.Hom.op_inj
+  dsimp
+  rw [← pushoutIsoOpPullback_inl_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+
+@[simp]
+theorem pushoutIsoOpPullback_inv_snd {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
+    [HasPullback f.unop g.unop] :
+    (pushoutIsoOpPullback f g).inv.unop ≫ pullback.snd f.unop g.unop = (pushout.inr f g).unop := by
+  apply Quiver.Hom.op_inj
+  dsimp
+  rw [← pushoutIsoOpPullback_inr_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]
+
 end Pushout
+
+namespace Cofork
+
+/-- The obvious map `Cofork f g → Fork f.unop g.unop` -/
+@[simps!]
+def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :=
+  Cocone.unop ((Cocones.precompose (opParallelPair f.unop g.unop).hom).obj
+    (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
+
+theorem unop_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
+    c.unop.ι = c.π.unop := by
+  simp only [unop, walkingParallelPairOpEquiv_inverse, parallelPair_obj_zero, Fork.ι, Cocone.unop_π,
+    Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.removeOp_app, NatTrans.comp_app,
+    opParallelPair_hom_app, walkingParallelPairOp_zero, walkingParallelPairOp_one, Iso.refl_inv,
+    Category.comp_id, whiskerLeft_app, leftOp_obj, app_one_eq_π, unop_comp]
+  nth_rw 2 [← Category.comp_id c.π.unop]
+  congr
+
+/-- The obvious map `Cofork f g → Fork f.op g.op` -/
+@[simps!]
+def op {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.op g.op :=
+  (Cones.postcompose (parallelPairOp f g).symm.hom).obj
+    (Cone.whisker walkingParallelPairOpEquiv.functor (Cocone.op c))
+
+theorem op_ι {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
+    c.op.ι = c.π.op := by simp [Fork.ι, Cofork.op]
+
+end Cofork
+
+namespace Fork
+
+/-- The obvious map `Fork f g → Cofork f.unop g.unop` -/
+@[simps!]
+def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.unop g.unop :=
+  Cone.unop ((Cones.postcompose (opParallelPair f.unop g.unop).symm.hom).obj
+    (Cone.whisker walkingParallelPairOpEquiv.inverse c))
+
+theorem unop_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
+    c.unop.π = c.ι.unop := by
+  simp only [unop, walkingParallelPairOpEquiv_inverse, parallelPair_obj_zero, Cofork.π, Cone.unop_ι,
+    Cones.postcompose_obj_π, Cone.whisker_π, NatTrans.removeOp_app, NatTrans.comp_app,
+    opParallelPair_inv_app, Iso.symm_hom, walkingParallelPairOp_one, Iso.refl_hom,
+    Category.id_comp, whiskerLeft_app, leftOp_obj, app_zero_eq_ι, unop_comp]
+  nth_rw 2 [← Category.id_comp c.ι.unop]
+  congr
+
+/-- The obvious map `Fork f g → Cofork f.op g.op` -/
+@[simps!]
+def op {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.op g.op :=
+  (Cocones.precompose (parallelPairOp f g).hom).obj
+    (Cocone.whisker walkingParallelPairOpEquiv.functor (Cone.op c))
+
+theorem op_π {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
+    c.op.π = c.ι.op := by simp [Cofork.π, Fork.op]
+
+end Fork
+
+namespace Cofork
+
+theorem op_unop_π {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : c.op.unop.π = c.π := by
+  simp [Fork.unop_π, Cofork.op_ι]
+
+theorem unop_op_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : c.unop.op.π = c.π := by
+  simp [Fork.op_π, Cofork.unop_ι]
+
+/-- If `c` is a cofork, then `c.op.unop` is isomorphic to `c`. -/
+def opUnop {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : c.op.unop ≅ c :=
+  Cofork.ext (Iso.refl _) (by simp [op_unop_π])
+
+/-- If `c` is a cofork in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
+def unopOp {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : c.unop.op ≅ c :=
+  Cofork.ext (Iso.refl _) (by simp [unop_op_π])
+
+end Cofork
+
+namespace Fork
+
+theorem op_unop_ι {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : c.op.unop.ι = c.ι := by
+  simp [Cofork.unop_ι, Fork.op_π]
+
+theorem unop_op_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : c.unop.op.ι = c.ι := by
+  simp [Fork.unop_π, Cofork.op_ι]
+
+/-- If `c` is a fork, then `c.op.unop` is isomorphic to `c`. -/
+def opUnop {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : c.op.unop ≅ c :=
+  Fork.ext (Iso.refl _) (by simp [op_unop_ι])
+
+/-- If `c` is a fork in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
+def unopOp {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : c.unop.op ≅ c :=
+  Fork.ext (Iso.refl _) (by simp [unop_op_ι])
+
+end Fork
+
+namespace Cofork
+
+/-- A cofork is a colimit cocone if and only if the corresponding fork in the opposite category is
+a limit cone. -/
+noncomputable -- just for performance; compilation takes several seconds
+def isColimitEquivIsLimitOp {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
+    IsColimit c ≃ IsLimit c.op := by
+  apply equivOfSubsingletonOfSubsingleton
+  · exact fun h ↦ (IsLimit.postcomposeHomEquiv _ _).invFun
+      ((IsLimit.whiskerEquivalenceEquiv _).toFun h.op)
+  · exact fun h ↦ (IsColimit.equivIsoColimit c.opUnop).toFun
+      (((IsLimit.postcomposeHomEquiv _ _).invFun
+        ((IsLimit.whiskerEquivalenceEquiv walkingParallelPairOpEquiv.symm).toFun h)).unop)
+
+/-- A cofork is a colimit cocone in `Cᵒᵖ` if and only if the corresponding fork in `C` is
+a limit cone. -/
+noncomputable -- just for performance; compilation takes several seconds
+def isColimitEquivIsLimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
+    IsColimit c ≃ IsLimit c.unop := by
+  apply equivOfSubsingletonOfSubsingleton
+  · exact fun h ↦ ((IsColimit.precomposeHomEquiv _ _).invFun
+      ((IsColimit.whiskerEquivalenceEquiv walkingParallelPairOpEquiv.symm).toFun h)).unop
+  · exact fun h ↦ (IsColimit.equivIsoColimit c.unopOp).toFun
+      ((IsColimit.precomposeHomEquiv _ _).invFun ((IsColimit.whiskerEquivalenceEquiv _).toFun h.op))
+
+/-- The canonical isomorphism between `(Cofork.ofπ π w).op` and `Fork.ofι π.op w'`. -/
+def ofπOpIsoOfι {X Y P : C} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
+    (w' : π'.op ≫ f.op = π'.op ≫ g.op) (h : π = π') :
+    (Cofork.ofπ π w).op ≅ Fork.ofι π'.op w' :=
+  Fork.ext (Iso.refl _) (by simp [Cofork.op_ι, h])
+
+/-- The canonical isomorphism between `(Cofork.ofπ π w).unop` and `Fork.ofι π.unop w'`. -/
+def ofπUnopIsoOfι {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
+    (w' : π'.unop ≫ f.unop = π'.unop ≫ g.unop) (h : π = π') :
+    (Cofork.ofπ π w).unop ≅ Fork.ofι π'.unop w' :=
+  Fork.ext (Iso.refl _) (by simp [Cofork.unop_ι, h])
+
+/-- `Cofork.ofπ π w` is a colimit cocone if and only if `Fork.ofι π.op w'` in the opposite
+category is a limit cocone. -/
+def isColimitOfπEquivIsLimitOp {X Y P : C} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
+    (w' : π'.op ≫ f.op = π'.op ≫ g.op) (h : π = π') :
+    IsColimit (Cofork.ofπ π w) ≃ IsLimit (Fork.ofι π'.op w') :=
+  (Cofork.ofπ π w).isColimitEquivIsLimitOp.trans (IsLimit.equivIsoLimit (ofπOpIsoOfι π π' w w' h))
+
+/-- `Cofork.ofπ π w` is a colimit cocone in `Cᵒᵖ` if and only if `Fork.ofι π'.unop w'` in `C` is
+a limit cocone. -/
+def isColimitOfπEquivIsLimitUnop {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
+    (w' : π'.unop ≫ f.unop = π'.unop ≫ g.unop) (h : π = π') :
+    IsColimit (Cofork.ofπ π w) ≃ IsLimit (Fork.ofι π'.unop w') :=
+  (Cofork.ofπ π w).isColimitEquivIsLimitUnop.trans (IsLimit.equivIsoLimit
+    (ofπUnopIsoOfι π π' w w' h))
+
+end Cofork
+
+namespace Fork
+
+/-- A fork is a limit cone if and only if the corresponding cofork in the opposite category is
+a colimit cocone. -/
+def isLimitEquivIsColimitOp {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
+    IsLimit c ≃ IsColimit c.op :=
+  (IsLimit.equivIsoLimit c.opUnop).symm.trans c.op.isColimitEquivIsLimitUnop.symm
+
+/-- A fork is a limit cone in `Cᵒᵖ` if and only if the corresponding cofork in `C` is
+a colimit cocone. -/
+def isLimitEquivIsColimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
+    IsLimit c ≃ IsColimit c.unop :=
+  (IsLimit.equivIsoLimit c.unopOp).symm.trans c.unop.isColimitEquivIsLimitOp.symm
+
+/-- The canonical isomorphism between `(Fork.ofι ι w).op` and `Cofork.ofπ ι.op w'`. -/
+def ofιOpIsoOfπ {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
+    (w' : f.op ≫ ι'.op = g.op ≫ ι'.op) (h : ι = ι') :
+    (Fork.ofι ι w).op ≅ Cofork.ofπ ι'.op w' :=
+  Cofork.ext (Iso.refl _) (by simp [Fork.op_π, h])
+
+/-- The canonical isomorphism between `(Fork.ofι ι w).unop` and `Cofork.ofπ ι.unop w.unop`. -/
+def ofιUnopIsoOfπ {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
+    (w' : f.unop ≫ ι'.unop = g.unop ≫ ι'.unop) (h : ι = ι') :
+    (Fork.ofι ι w).unop ≅ Cofork.ofπ ι'.unop w' :=
+  Cofork.ext (Iso.refl _) (by simp [Fork.unop_π, h])
+
+/-- `Fork.ofι ι w` is a limit cocone if and only if `Cofork.ofπ ι'.op w'` in the opposite
+category is a colimit cocone. -/
+def isLimitOfιEquivIsColimitOp {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
+    (w' : f.op ≫ ι'.op = g.op ≫ ι'.op) (h : ι = ι') :
+    IsLimit (Fork.ofι ι w) ≃ IsColimit (Cofork.ofπ ι'.op w') :=
+  (Fork.ofι ι w).isLimitEquivIsColimitOp.trans (IsColimit.equivIsoColimit (ofιOpIsoOfπ ι ι' w w' h))
+
+/-- `Fork.ofι ι w` is a limit cocone in `Cᵒᵖ` if and only if `Cofork.ofπ ι.unop w.unop` in `C` is
+a colimit cocone. -/
+def isLimitOfιEquivIsColimitUnop {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
+    (w' : f.unop ≫ ι'.unop = g.unop ≫ ι'.unop) (h : ι = ι') :
+    IsLimit (Fork.ofι ι w) ≃ IsColimit (Cofork.ofπ ι'.unop w') :=
+  (Fork.ofι ι w).isLimitEquivIsColimitUnop.trans (IsColimit.equivIsoColimit
+    (ofιUnopIsoOfπ ι ι' w w' h))
+
+end Fork
+
+namespace Cofork
+
+/-- `Cofork.ofπ f pullback.condition` is a limit cocone if and only if
+`Fork.ofι f.op pushout.condition` in the opposite category is a colimit cocone. -/
+def isColimitCoforkPushoutEquivIsColimitForkOpPullback
+    {X Y : C} {f : X ⟶ Y} [HasPullback f f] [HasPushout f.op f.op] :
+    IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.op pushout.condition) where
+  toFun h := Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitOp f f
+      pullback.condition (by simp only [← op_comp, pullback.condition]) rfl h) _ (.refl _)
+        (pullbackIsoUnopPushout f f).op.symm (.refl _)
+          (by simp [← op_comp]) (by simp [← op_comp]) (by simp)
+  invFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f.op f.op
+      pushout.condition (by rw [← unop_comp, ← unop_comp, pushout.condition]) rfl h) _
+        (pullbackIsoUnopPushout f f).symm ( .refl _) (.refl _) (by simp) (by simp) (by simp)
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
+/-- `Cofork.ofπ f pullback.condition` is a limit cocone in `Cᵒᵖ` if and only if
+`Fork.ofι f.unop pushout.condition` in `C` is a colimit cocone. -/
+def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
+    {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPullback f f] [HasPushout f.unop f.unop] :
+    IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.unop pushout.condition) where
+  toFun h := Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitUnop f f pullback.condition
+      (by simp only [← unop_comp, pullback.condition]) rfl h) _ (.refl _)
+        (pullbackIsoOpPushout f f).unop.symm (.refl _)
+          (by simp [← unop_comp]) (by simp [← unop_comp]) (by simp)
+  invFun h :=
+    Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitOp f.unop f.unop pushout.condition
+      (by rw [← op_comp, ← op_comp, pushout.condition]) rfl h) _
+        (pullbackIsoOpPushout f f).symm ( .refl _) (.refl _) (by simp) (by simp) (by simp)
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
+end Cofork
+
+namespace Fork
+
+/-- `Fork.ofι f pushout.condition` is a limit cocone if and only if
+`Cofork.ofπ f.op pullback.condition` in the opposite category is a colimit cocone. -/
+def isLimitForkPushoutEquivIsColimitForkOpPullback
+    {X Y : C} {f : X ⟶ Y} [HasPushout f f] [HasPullback f.op f.op] :
+    IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.op pullback.condition) where
+  toFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitOp f f
+    pushout.condition (by simp only [← op_comp, pushout.condition]) rfl h) _
+      ((pushoutIsoUnopPullback f f).op.symm ≪≫ eqToIso rfl) (.refl _) (.refl _)
+        (by simp) (by simp) (by simp)
+  invFun h := by
+    refine Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitUnop f.op f.op
+      pullback.condition (by simp only [← unop_comp, pullback.condition]) rfl h) _ (.refl _)
+        ((pushoutIsoUnopPullback f f).symm) (.refl _) ?_ ?_ (by simp)
+    · rw [Iso.symm_hom, ← Quiver.Hom.unop_op (pushoutIsoUnopPullback f f).inv, ← unop_comp,
+        pushoutIsoUnopPullback_inv_fst, Quiver.Hom.unop_op, Iso.refl_hom, Category.id_comp]
+    · rw [Iso.symm_hom, ← Quiver.Hom.unop_op (pushoutIsoUnopPullback f f).inv, ← unop_comp,
+        pushoutIsoUnopPullback_inv_snd, Quiver.Hom.unop_op, Iso.refl_hom, Category.id_comp]
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
+/-- `Fork.ofι f pushout.condition` is a limit cocone in `Cᵒᵖ` if and only if
+`Cofork.ofπ f.op pullback.condition` in `C` is a colimit cocone. -/
+def isLimitForkPushoutEquivIsColimitForkUnopPullback
+    {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPushout f f] [HasPullback f.unop f.unop] :
+    IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.unop pullback.condition) where
+  toFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f f pushout.condition
+    (by simp only [← unop_comp, pushout.condition]) rfl h) _
+      ((pushoutIsoOpPullback f f).unop.symm ≪≫ eqToIso rfl) (.refl _) (.refl _)
+        (by simp) (by simp) (by simp)
+  invFun h := by
+    refine Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitOp f.unop f.unop pullback.condition
+      (by simp only [← op_comp, pullback.condition]) rfl h) _ (.refl _)
+        ((pushoutIsoOpPullback f f).symm) (.refl _) ?_ ?_ (by simp)
+    · rw [Iso.symm_hom, ← Quiver.Hom.op_unop (pushoutIsoOpPullback f f).inv, ← op_comp,
+        pushoutIsoOpPullback_inv_fst, Quiver.Hom.op_unop, Iso.refl_hom, Category.id_comp]
+    · rw [Iso.symm_hom, ← Quiver.Hom.op_unop (pushoutIsoOpPullback f f).inv, ← op_comp,
+        pushoutIsoOpPullback_inv_snd, Quiver.Hom.op_unop, Iso.refl_hom, Category.id_comp]
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
+end Fork
 
 section HasZeroMorphisms
 
