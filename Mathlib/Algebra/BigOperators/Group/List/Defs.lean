@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Vector.Defs
 
 /-!
 # Sums and products from lists
@@ -110,3 +111,17 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
 end Monoid
 
 end List
+
+-- This can also be moved to `Algebra/BigOperators/Group/Vector/Defs.lean`.
+namespace List.Vector
+
+section Mul
+
+variable [Mul M] [One M] {n} {v : List.Vector M n} {a : M}
+
+@[to_additive (attr := simp)]
+theorem prod_cons {a} : (cons a v).toList.prod = a * v.toList.prod := rfl -- or `List.prod_cons`
+
+end Mul
+
+end List.Vector
