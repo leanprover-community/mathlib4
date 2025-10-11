@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Opposite
+import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 import Mathlib.Order.CompleteLattice.Basic
 
 /-!
@@ -71,17 +71,5 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     isoClosure_iSup, isoClosure_eq_self]
 
 end
-
-open Opposite
-
-@[simp]
-lemma op_le_op_iff {P Q : ObjectProperty C} :
-    P.op ≤ Q.op ↔ P ≤ Q :=
-  ⟨fun h X hX ↦ h (op X) hX, fun h X hX ↦ h X.unop hX⟩
-
-@[simp]
-lemma unop_le_unop_iff {P Q : ObjectProperty Cᵒᵖ} :
-    P.unop ≤ Q.unop ↔ P ≤ Q :=
-  op_le_op_iff.symm
 
 end CategoryTheory.ObjectProperty
