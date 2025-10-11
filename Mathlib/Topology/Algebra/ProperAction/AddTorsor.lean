@@ -20,7 +20,5 @@ instance : ProperVAdd V P where
     { toFun vp := (vp.1 +ᵥ vp.2, vp.2)
       invFun pq := (pq.1 -ᵥ pq.2, pq.2)
       left_inv _ := by simp
-      right_inv _ := by simp
-      continuous_toFun := by fun_prop
-      continuous_invFun := by fun_prop }
+      right_inv _ := by simp }
     exact Φ.isProperMap
