@@ -55,24 +55,24 @@ restriction of the domain chart, and local in the target.
 
 Motivating examples are immersions and submersions of smooth manifolds. -/
 structure IsLocalSourceTargetProperty
-    (P : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop) : Prop where
-  mono_source : ∀ {f : M → N}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph N G},
+    (P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop) : Prop where
+  mono_source : ∀ {f : M → N}, ∀ {φ : OpenPartialHomeomorph M H}, ∀ {ψ : OpenPartialHomeomorph N G},
     ∀ {s : Set M}, IsOpen s → P f φ ψ → P f (φ.restr s) ψ
   -- Note: the analogous `mono_target` statement is true for both immersions and submersions.
   -- If and when a future lemma requires it, add this here.
-  congr : ∀ {f g : M → N}, ∀ {φ : PartialHomeomorph M H}, ∀ {ψ : PartialHomeomorph N G},
+  congr : ∀ {f g : M → N}, ∀ {φ : OpenPartialHomeomorph M H}, ∀ {ψ : OpenPartialHomeomorph N G},
     ∀ {s : Set M}, EqOn f g s → IsOpen s → φ.source ⊆ s → P f φ ψ → P g φ ψ
 
 variable (I I' n) in
 /-- Data witnessing the fact that `f` has local property `P` at `x` -/
 structure LocalPresentationAt (f : M → N) (x : M)
-    (P : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop) where
+    (P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop) where
   /-- A choice of chart on the domain `M` of the local property `P` of `f` at `x`:
   w.r.t. this chart and `codChart`, `f` has the local property `P` at `x`. -/
-  domChart : PartialHomeomorph M H
+  domChart : OpenPartialHomeomorph M H
   /-- A choice of chart on the target `N` of the local property `P` of `f` at `x`:
   w.r.t. this chart and `domChart`, `f` has the local property `P` at `x`. -/
-  codChart : PartialHomeomorph N G
+  codChart : OpenPartialHomeomorph N G
   mem_domChart_source : x ∈ domChart.source
   mem_codChart_source : f x ∈ codChart.source
   domChart_mem_maximalAtlas : domChart ∈ IsManifold.maximalAtlas I n M
@@ -90,13 +90,13 @@ The motivating example are smooth immersions and submersions: the corresponding 
 in the charts `φ` and `ψ`.
 -/
 def LiftSourceTargetPropertyAt (f : M → N) (x : M)
-    (P : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop) : Prop :=
+    (P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop) : Prop :=
   Nonempty (LocalPresentationAt I I' n f x P)
 
 namespace LiftSourceTargetPropertyAt
 
 variable {f g : M → N} {x : M}
-  {P : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop}
+  {P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop}
 
 /-- A choice of charts witnessing the local property `P` of `f` at `x`. -/
 noncomputable def localPresentationAt (h : LiftSourceTargetPropertyAt I I' n f x P) :
@@ -107,14 +107,14 @@ noncomputable def localPresentationAt (h : LiftSourceTargetPropertyAt I I' n f x
 w.r.t. this chart and `h.codChart`, `f` has the local property `P` at `x`.
 The particular chart is arbitrary, but this choice matches the witness given by `h.codChart`. -/
 noncomputable def domChart (h : LiftSourceTargetPropertyAt I I' n f x P) :
-    PartialHomeomorph M H :=
+    OpenPartialHomeomorph M H :=
   h.localPresentationAt.domChart
 
 /-- A choice of chart on the co-domain `N` of a local property of `f` at `x`:
 w.r.t. this chart and `h.domChart`, `f` has the local property `P` at `x`
 The particular chart is arbitrary, but this choice matches the witness given by `h.domChart`. -/
 noncomputable def codChart (h : LiftSourceTargetPropertyAt I I' n f x P) :
-    PartialHomeomorph N G :=
+    OpenPartialHomeomorph N G :=
   h.localPresentationAt.codChart
 
 lemma mem_domChart_source (h : LiftSourceTargetPropertyAt I I' n f x P) :
@@ -143,27 +143,27 @@ lemma property (h : LiftSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.
 
 omit [ChartedSpace H M] [ChartedSpace G N] in
 lemma congr_iff (hP : IsLocalSourceTargetProperty P)
-    {f g : M → N} {φ : PartialHomeomorph M H} {ψ : PartialHomeomorph N G} {s : Set M}
+    {f g : M → N} {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G} {s : Set M}
     (hs : IsOpen s) (hφ : φ.source ⊆ s) (hfg : EqOn f g s) :
     P f φ ψ ↔ P g φ ψ :=
   ⟨hP.congr hfg hs hφ, hP.congr hfg.symm hs hφ⟩
 
--- XXX: should `PartialHomeomorph.restr_source'` be tagged with grind?
+-- XXX: should `OpenPartialHomeomorph.restr_source'` be tagged with grind?
 /-- If `P` is a local property, by monotonicity w.r.t. restricting `domChart`,
 if `f` is continuous at `x`, to prove `LiftSourceTargetPropertyAt I I' n f x P`
 we need not check the condition `f '' domChart.source ⊆ codChart.source`. -/
 lemma mk_of_continuousAt (hf : ContinuousAt f x)
     (hP : IsLocalSourceTargetProperty P)
-    (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph N G)
+    (domChart : OpenPartialHomeomorph M H) (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas I' n N)
     (hfP : P f domChart codChart) : LiftSourceTargetPropertyAt I I' n f x P := by
   obtain ⟨s, hs, hsopen, hxs⟩ := mem_nhds_iff.mp <|
     hf.preimage_mem_nhds (codChart.open_source.mem_nhds hfx)
-  exact ⟨domChart.restr s, codChart, by grind [PartialHomeomorph.restr_source'], hfx,
+  exact ⟨domChart.restr s, codChart, by grind [OpenPartialHomeomorph.restr_source'], hfx,
     restr_mem_maximalAtlas (contDiffGroupoid n I) hdomChart hsopen, hcodChart,
-    by grind [PartialHomeomorph.restr_source'], hP.mono_source hsopen hfP⟩
+    by grind [OpenPartialHomeomorph.restr_source'], hP.mono_source hsopen hfP⟩
 
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 if `f` has property `P` at `x` and `f` and `g` are eventually equal near `x`,
@@ -183,7 +183,7 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
       · exact Subset.trans (by simp) hf.source_subset_preimage_source
     · rw [hfg.inter_preimage_eq]; exact inter_subset_right
   · apply hP.congr (hfg.mono hss') hs
-    · grind [PartialHomeomorph.restr_source']
+    · grind [OpenPartialHomeomorph.restr_source']
     exact hP.mono_source hs hf.property
 
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,

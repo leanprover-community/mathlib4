@@ -80,7 +80,7 @@ charts, `f` looks like the inclusion `u ↦ (u, 0)`.
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`. -/
-def ImmersionAtProp : (M → N) → PartialHomeomorph M H → PartialHomeomorph N G → Prop :=
+def ImmersionAtProp : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop :=
   fun f domChart codChart ↦ ∃ equiv : (E × F) ≃L[𝕜] E'',
     EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target
@@ -116,8 +116,8 @@ variable {f g : M → N} {x : M}
 
 namespace IsImmersionAt
 
-lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : PartialHomeomorph M H)
-    (codChart : PartialHomeomorph N G)
+lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHomeomorph M H)
+    (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
@@ -133,7 +133,7 @@ around `x` and `f x`, respectively such that in these charts, `f` looks like `u 
 This version does not assume that `f` maps `φ.source` to `ψ.source`,
 but that `f` is continuous at `x`. -/
 lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : (E × F) ≃L[𝕜] E'')
-    (domChart : PartialHomeomorph M H) (codChart : PartialHomeomorph N G)
+    (domChart : OpenPartialHomeomorph M H) (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
@@ -148,7 +148,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
-noncomputable def domChart (h : IsImmersionAt F I J n f x) : PartialHomeomorph M H := by
+noncomputable def domChart (h : IsImmersionAt F I J n f x) : OpenPartialHomeomorph M H := by
   rw [IsImmersionAt_def] at h
   exact LiftSourceTargetPropertyAt.domChart h
 
@@ -157,7 +157,7 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
-noncomputable def codChart (h : IsImmersionAt F I J n f x) : PartialHomeomorph N G := by
+noncomputable def codChart (h : IsImmersionAt F I J n f x) : OpenPartialHomeomorph N G := by
   rw [IsImmersionAt_def] at h
   exact LiftSourceTargetPropertyAt.codChart h
 
@@ -221,11 +221,11 @@ continuous at `x` (see `mk_of_continuousAt`), which is easy to acertain in pract
 lemma map_target_subset_target (h : IsImmersionAt F I J n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend J).target := by
   rw [← h.writtenInCharts.image_eq, Set.image_comp, Set.image_comp,
-    PartialEquiv.symm_image_target_eq_source, PartialHomeomorph.extend_source,
+    PartialEquiv.symm_image_target_eq_source, OpenPartialHomeomorph.extend_source,
     ← PartialEquiv.image_source_eq_target]
   have : f '' h.domChart.source ⊆ h.codChart.source := by
     simp [h.source_subset_preimage_source]
-  grw [this, PartialHomeomorph.extend_source]
+  grw [this, OpenPartialHomeomorph.extend_source]
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
