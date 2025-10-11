@@ -264,7 +264,7 @@ lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toS
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
 lemma verts_toSubgraph_toPath_subset {u v : V} {p : G.Walk u v} [DecidableEq V] :
-    (p.toPath : G.Walk u v).toSubgraph.verts ⊆ p.toSubgraph.verts := by
+    (p.toPath : G.Walk u v).toSubgraph.verts ⊆ {x | x ∈ p.support} := by
   simpa using p.support_toPath_subset
 
 lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
@@ -278,8 +278,9 @@ lemma adj_toSubgraph_toPath {u v u' v' : V} {p : G.Walk u v} [DecidableEq V]
   exact p.edges_toPath_subset hp
 
 lemma toSubgraph_toPath_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
-    (p.toPath : G.Walk u v).toSubgraph ≤ p.toSubgraph :=
-  ⟨verts_toSubgraph_toPath_subset, fun _ _ h ↦ adj_toSubgraph_toPath h⟩
+    (p.toPath : G.Walk u v).toSubgraph ≤ p.toSubgraph := by
+  refine ⟨?_, fun _ _ h ↦ adj_toSubgraph_toPath h⟩
+  simpa using p.verts_toSubgraph_toPath_subset
 
 namespace IsPath
 
@@ -647,6 +648,7 @@ lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [
     have p_le_H' {z : V} (z_mem_H' : z ∈ (H.deleteVerts {v}).verts) {p : G.Walk u z}
         (p_le_H : p.toSubgraph ≤ H) : (p.toPath : G.Walk u z).toSubgraph ≤ H.deleteVerts {v} := by
       obtain ⟨p_verts_subset_H_verts, H_adj_if_p_adj⟩ := p_le_H
+      rw [p.verts_toSubgraph] at p_verts_subset_H_verts
       /- Prove vertex v is not in the path by showing that vertex u is passed twice. -/
       have v_not_mem_p' : v ∉ (p.toPath : G.Walk u z).toSubgraph.verts := by
         rw [Walk.verts_toSubgraph, Set.mem_setOf_eq]
