@@ -1162,7 +1162,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
     exact getVert_copy q n (getVert_zero q).symm rfl
 
 @[simp]
-theorem getVert_mem_tail_support {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) (i : ℕ) (h : i > 0) :
+theorem getVert_mem_tail_support {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) (i : ℕ) (h : 0 < i) :
     p.getVert i ∈ p.support.tail := by
   cases i
   · contradiction
