@@ -178,7 +178,7 @@ theorem exists_finite_submodule_right_of_finite' (s : Set (M₁ ⊗[R] N₁)) (h
 lemma exists_finite_mem_map₂ {R E F : Type*} [CommRing R]
     [AddCommGroup E] [AddCommGroup F] [Module R E] [Module R F] (z : E ⊗[R] F) :
     ∃ (E' : Submodule R E) (F' : Submodule R F) (_ : Module.Finite R E') (_ : Module.Finite R F'),
-    z ∈ Submodule.map₂ (mk R E F) E' F' :=
+      z ∈ Submodule.map₂ (mk R E F) E' F' :=
   z.induction_on
   ⟨⊥, ⊥, .bot R E, .bot R F, Submodule.zero_mem _⟩
   (fun e f => ⟨span R {e}, span R {f}, .span_singleton R e, .span_singleton R f,
