@@ -16,7 +16,7 @@ be used in the proof of the Special Adjoint Functor Theorem.
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe w v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -38,7 +38,7 @@ instance small_inverseImage_proj_of_locallySmall
     rw [this]
     infer_instance
   ext X
-  simp only [ObjectProperty.prop_inverseImage_iff, proj_obj, ObjectProperty.prop_ofObj_iff,
+  simp only [ObjectProperty.prop_inverseImage_iff, proj_obj, ObjectProperty.ofObj_iff,
     Sigma.exists, Subtype.exists, exists_prop]
   exact ⟨fun h ↦ ⟨_, h, _, rfl⟩, by rintro ⟨_, h, _, rfl⟩; exact h⟩
 
@@ -64,7 +64,7 @@ instance small_inverseImage_proj_of_locallySmall
     rw [this]
     infer_instance
   ext X
-  simp only [ObjectProperty.prop_inverseImage_iff, proj_obj, ObjectProperty.prop_ofObj_iff,
+  simp only [ObjectProperty.prop_inverseImage_iff, proj_obj, ObjectProperty.ofObj_iff,
     Sigma.exists, Subtype.exists, exists_prop]
   exact ⟨fun h ↦ ⟨_, h, _, rfl⟩, by rintro ⟨_, h, _, rfl⟩; exact h⟩
 
