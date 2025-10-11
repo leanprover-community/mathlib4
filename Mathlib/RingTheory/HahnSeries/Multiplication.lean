@@ -147,10 +147,14 @@ end
 
 section BaseStructure
 
-variable [PartialOrder Γ] [AddCommMonoid V] [SMul R V]
+variable [PartialOrder Γ] [SMul R V]
 
-instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
+instance instZero [Zero V] : Zero (HahnModule Γ R V) :=
+  inferInstanceAs <| Zero (HahnSeries Γ V)
+instance instAddCommMonoid [AddCommMonoid V] : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
+instance instAddCommGroup [AddCommGroup V] : AddCommGroup (HahnModule Γ R V) :=
+  inferInstanceAs <| AddCommGroup (HahnSeries Γ V)
 
 instance instAddCommGroup {V} [AddCommGroup V] [SMul R V] : AddCommGroup (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommGroup (HahnSeries Γ V)
@@ -164,8 +168,8 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 @[simp] theorem of_sub {V} [AddCommGroup V] [SMul R V] (x y : HahnSeries Γ V) :
     of R (x - y) = of R x - of R y := rfl
 
-@[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
-@[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
+@[simp] theorem of_symm_zero [Zero V] : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
+@[simp] theorem of_symm_add [AddCommMonoid V] (x y : HahnModule Γ R V) :
     (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
 @[simp] theorem of_symm_sub {V} [AddCommGroup V] [SMul R V] (x y : HahnModule Γ R V) :
     (of R).symm (x - y) = (of R).symm x - (of R).symm y := rfl

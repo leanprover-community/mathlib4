@@ -103,6 +103,7 @@ lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R 
     d₁₂ R L M f x y = - f ⁅x, y⁆ := by
   simp
 
+/-- The coboundary function taking degree 2 cochains to a space containing degree 3 cochains. -/
 private def d₂₃_aux (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
   toFun x :=
     { toFun y :=
