@@ -3,6 +3,7 @@ Copyright (c) 2025 Bernhard Reinke. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
+import Mathlib.Data.List.Induction
 import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
@@ -71,4 +72,79 @@ theorem flatten_replicate (n : ℕ) (h : IsCyclicallyReduced L) :
     exact h.2 _ ha _ hb
 
 end IsCyclicallyReduced
+
+/-- This function produces a subword of a word `w` by cancelling the first and last letters of `w`
+as long as possible. If `w` is reduced, the resulting word will be cyclically reduced. -/
+@[to_additive /-- This function produces a subword of a word `w` by cancelling the first and last
+letters of `w` as long as possible. If `w` is reduced, the resulting word will be cyclically
+reduced. -/]
+def reduceCyclically [DecidableEq α] : List (α × Bool) → List (α × Bool) :=
+  List.bidirectionalRec
+    (nil := [])
+    (singleton := fun x => [x])
+    (cons_append := fun a l b rC => if b.1 = a.1 ∧ (!b.2) = a.2 then rC else a :: l ++ [b])
+
+namespace reduceCyclically
+variable [DecidableEq α]
+
+/-- Partner function to `reduceCyclically`. See `reduceCyclically.conjugation`. -/
+@[to_additive /-- Partner function to `reduceCyclically`. See `reduceCyclically.conjugation`. -/]
+def conjugator : List (α × Bool) → List (α × Bool) :=
+  List.bidirectionalRec
+    (nil := [])
+    (singleton := fun _ => [])
+    (cons_append := fun a _ b rCC => if b.1 = a.1 ∧ (!b.2) = a.2 then a :: rCC else [] )
+
+@[to_additive (attr := simp)]
+theorem nil : reduceCyclically ([] : List (α × Bool)) = [] := by simp [reduceCyclically]
+
+@[to_additive (attr := simp)]
+theorem singleton {a : α × Bool} : reduceCyclically [a] = [a] := by simp [reduceCyclically]
+
+@[to_additive (attr := simp)]
+theorem conjugator.nil : conjugator ([] : List (α × Bool)) = [] := by simp [conjugator]
+
+@[to_additive (attr := simp)]
+theorem conjugator.singleton {a : α × Bool} : conjugator [a] = [] := by simp [conjugator]
+
+@[to_additive]
+theorem cons_append {a b : α × Bool} (l : List (α × Bool)) :
+    reduceCyclically (a :: (l ++ [b])) =
+    if b.1 = a.1 ∧ (!b.2) = a.2 then reduceCyclically l else a :: l ++ [b] := by
+  simp [reduceCyclically]
+
+@[to_additive]
+theorem conjugator.cons_append {a b : α × Bool} (l : List (α × Bool)) :
+    conjugator (a :: (l ++ [b])) = if b.1 = a.1 ∧ (!b.2) = a.2 then a :: conjugator l else [] := by
+  simp [conjugator]
+
+@[to_additive]
+theorem conjugation (w : List (α × Bool)) :
+    w = conjugator w ++ reduceCyclically w ++ invRev (conjugator w) := by
+  induction w using List.bidirectionalRec
+  case nil => simp
+  case singleton => simp
+  case cons_append a l b eq =>
+    rw [cons_append, conjugator.cons_append]
+    split
+    case isTrue h =>
+      nth_rw 1 [eq]
+      simp [invRev, h.1.symm, h.2.symm]
+    case isFalse => simp
+
+@[to_additive]
+theorem sound (w : List (α × Bool)) (h : IsReduced w) :
+    IsCyclicallyReduced (reduceCyclically w) := by
+  induction w using List.bidirectionalRec
+  case nil => simp
+  case singleton => simp
+  case cons_append a l b ih =>
+    rw [cons_append]
+    split
+    case isTrue => exact ih (h.infix ⟨[a], [b], rfl⟩)
+    case isFalse h' =>
+      rw [isCyclicallyReduced_cons_append_iff]
+      exact ⟨h, by simpa using h'⟩
+
+end reduceCyclically
 end FreeGroup
