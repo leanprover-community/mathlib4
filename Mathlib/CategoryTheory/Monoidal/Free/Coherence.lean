@@ -288,12 +288,12 @@ def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
 end
 
 /-- The monoidal coherence theorem. -/
-instance subsingleton_hom : Quiver.IsThin (F C) := fun X Y =>
+instance subsingleton_hom : Quiver.IsThin (F C) := ⟨fun X Y =>
   ⟨fun f g => by
     have hfg : (fullNormalize C).map f = (fullNormalize C).map g := Subsingleton.elim _ _
     have hf := NatIso.naturality_2 (fullNormalizeIso.{u} C) f
     have hg := NatIso.naturality_2 (fullNormalizeIso.{u} C) g
-    exact hf.symm.trans (Eq.trans (by simp only [Functor.comp_map, hfg]) hg)⟩
+    exact hf.symm.trans (Eq.trans (by simp only [Functor.comp_map, hfg]) hg)⟩⟩
 
 section Groupoid
 
