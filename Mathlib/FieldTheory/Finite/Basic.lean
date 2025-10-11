@@ -369,7 +369,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
     · simp_rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply,
         ← Module.card_eq_pow_finrank, pow_card]
     have := card_le_degree_of_subset_roots (R := L) (p := X ^ q ^ m - X) (Z := univ) fun x _ ↦ by
-      simp_rw [mem_roots', IsRoot, eval_sub, eval_X_pow]
+      simp_rw [mem_roots', IsRoot, eval_sub, eval_pow, eval_X]
       have := DFunLike.congr_fun eq x
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
@@ -446,7 +446,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
       rw [eq_univ_iff_forall]
       intro x
-      rw [Multiset.mem_toFinset, mem_roots aux, IsRoot.def, eval_sub, eval_X_pow,
+      rw [Multiset.mem_toFinset, mem_roots aux, IsRoot.def, eval_sub, eval_pow, eval_X,
         sub_eq_zero, pow_card]
     rw [← this, Multiset.toFinset_val, eq_comm, Multiset.dedup_eq_self]
     apply nodup_roots

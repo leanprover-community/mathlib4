@@ -49,7 +49,7 @@ theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
     rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
-    simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_X_pow,
+    simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       LinearMap.map_smulₛₗ, RingHom.id_apply, mul_comm]
 
 theorem isRoot_of_hasEigenvalue [NoZeroSMulDivisors R M] {f : End R M} {μ : R}
