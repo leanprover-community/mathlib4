@@ -90,7 +90,7 @@ variable (s) in
     dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
 
 @[simp]
-lemma dual_span (s : Set M) : dual p (Submodule.span R≥0 s) = dual p s := by
+lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
   refine le_antisymm (dual_le_dual Submodule.subset_span) (fun x hx y hy => ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx h
