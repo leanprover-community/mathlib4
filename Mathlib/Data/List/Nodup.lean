@@ -146,6 +146,15 @@ theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count
     ⟨fun H h => H.antisymm (count_pos_iff.mpr h),
      fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
 
+theorem get_bijective_iff [DecidableEq α] : l.get.Bijective ↔ ∀ a, l.count a = 1 :=
+  ⟨fun h a ↦ (nodup_iff_count_eq_one.mp <| nodup_iff_injective_get.mpr h.injective)
+    a <| mem_iff_get.mpr <| h.surjective a,
+  fun h ↦ ⟨nodup_iff_injective_get.mp <| nodup_iff_count_eq_one.mpr fun a _ ↦ h a,
+    fun a ↦ mem_iff_get.mp <| List.one_le_count_iff.mp <| by grind⟩⟩
+
+theorem getElem_bijective_iff [DecidableEq α] :
+    (fun (n : Fin l.length) ↦ l[n]).Bijective ↔ ∀ a, l.count a = 1 :=
+  get_bijective_iff
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
