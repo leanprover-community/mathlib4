@@ -364,7 +364,7 @@ variable [Nonempty ι] [Nonempty ι']
 
 protected theorem ciSup_add (hf : BddAbove (range f)) (c : Cardinal.{v}) :
     (⨆ i, f i) + c = ⨆ i, f i + c := by
-  have : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
+  have (i : ι) : f i + c ≤ (⨆ i, f i) + c := add_le_add_left (le_ciSup hf i) c
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
@@ -443,10 +443,10 @@ theorem add_one_inj {α β : Cardinal} : α + 1 = β + 1 ↔ α = β :=
 
 theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) :
     α + γ ≤ β + γ ↔ α ≤ β := by
-  refine ⟨fun h => ?_, fun h => add_le_add_right h γ⟩
+  refine ⟨fun h => ?_, fun h => by gcongr⟩
   contrapose h
   rw [not_le, lt_iff_le_and_ne, Ne] at h ⊢
-  exact ⟨add_le_add_right h.1 γ, mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
+  exact ⟨add_le_add_left h.1 γ, mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
 
 @[simp]
 theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
