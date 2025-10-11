@@ -276,7 +276,7 @@ where
       Term.elabTerm resTerm none
     | _ => throwError "{e} is not a `TangentBundle`"
   /-- Attempt to find the trivial model on a normed space. -/
-  fromNormedSpace : TermElabM Expr := do
+  fromNormedSpace : TermElabM (Expr × Option (Expr × Expr)) := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
@@ -284,7 +284,7 @@ where
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on {e} among local instances."
     trace[Elab.DiffGeo.MDiff] "Field is: {K}"
-    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+    return (← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst], some (K, e))
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
