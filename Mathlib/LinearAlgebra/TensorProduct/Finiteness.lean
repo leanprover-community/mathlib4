@@ -97,7 +97,7 @@ theorem exists_finset (x : M ⊗[R] N) :
 submodules `M'` and `N'` of `M` and `N`, respectively, such that `s` is contained in the image
 of `M' ⊗[R] N'` in `M ⊗[R] N`.
 
-This means that every element of a tensor product lies in the tensor product of some finite
+In particular, every element of a tensor product lies in the tensor product of some finite
 submodules. -/
 theorem exists_finite_submodule_of_setFinite (s : Set (M ⊗[R] N)) (hs : s.Finite) :
     ∃ (M' : Submodule R M) (N' : Submodule R N), Module.Finite R M' ∧ Module.Finite R N' ∧
