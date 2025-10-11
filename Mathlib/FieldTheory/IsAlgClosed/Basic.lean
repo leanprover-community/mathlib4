@@ -113,9 +113,9 @@ theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Semiring R] [IsAlgClose
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 
-theorem exists_eval₂_eq_zero {R : Type*} [DivisionRing R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
-    (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
-  exists_eval₂_eq_zero_of_injective f f.injective p hp
+theorem exists_eval₂_eq_zero {R : Type*} [Ring R] [IsSimpleRing R] [IsAlgClosed k] (f : R →+* k)
+    (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
+  exists_eval₂_eq_zero_of_injective _ f.injective _ hp
 
 variable (k)
 
