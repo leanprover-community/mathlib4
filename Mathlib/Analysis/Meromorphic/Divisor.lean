@@ -120,6 +120,40 @@ theorem AnalyticOnNhd.divisor_nonneg {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f
   · simp [hf.meromorphicOn, hx, (hf x hx).meromorphicOrderAt_nonneg]
   simp [hx]
 
+/--
+The divisor a constant function is `0`.
+-/
+theorem divisor_const (e : E) :
+    divisor (fun _ ↦ e) U = 0 := by
+  classical
+  ext x
+  simp only [divisor_def, meromorphicOrderAt_const, Function.locallyFinsuppWithin.coe_zero,
+    Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero,
+    LinearOrderedAddCommGroupWithTop.top_ne_zero, imp_false, ite_eq_left_iff, WithTop.zero_ne_top,
+    Decidable.not_not, and_imp]
+  tauto
+
+/--
+The divisor a constant function is `0`.
+-/
+theorem divisor_const_intCast (n : ℤ) :
+    divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
+
+/--
+The divisor a constant function is `0`.
+-/
+theorem divisor_const_natCast (n : ℕ) :
+    divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
+
+
+/--
+The divisor a constant function is `0`.
+-/
+@[simp] theorem meromorphicOrderAt_const_ofNat (n : ℕ) :
+    divisor (ofNat(n) : 𝕜 → 𝕜) U = 0 := by
+  convert divisor_const (n : 𝕜)
+  simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
+
 /-!
 ## Behavior under Standard Operations
 -/
@@ -198,7 +232,8 @@ theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
     divisor (f ^ n) U = n • divisor f U := by
   ext z
   by_cases hn : n = 0
-  · simp [hn, divisor_def]
+  · simp [hn]
+
   by_cases hz : z ∈ U
   · simp [hf.pow, divisor_apply, meromorphicOrderAt_pow (hf z hz), hf, hz]
   · simp [hz]
@@ -217,7 +252,7 @@ theorem divisor_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
     divisor (f ^ n) U = n • divisor f U := by
   ext z
   by_cases hn : n = 0
-  · simp [hn, divisor_def]
+  · simp [hn]
   by_cases hz : z ∈ U
   · simp [hf.zpow, divisor_apply, meromorphicOrderAt_zpow (hf z hz), hf, hz]
   · simp [hz]
