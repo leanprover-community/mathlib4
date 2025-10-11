@@ -19,4 +19,4 @@ See note [foundational algebra order theory].
 assert_not_exists Set.Subsingleton Ring
 
 instance Int.instIsOrderedAddMonoid : IsOrderedAddMonoid ℤ where
-  add_le_add_left _ _ := Int.add_le_add_left
+  add_le_add_left _ _ := Int.add_le_add_right

@@ -644,7 +644,7 @@ lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
 lemma add_iSup [Nonempty ι] (f : ι → ℝ≥0∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ∞
   · simp
-  refine le_antisymm ?_ <| iSup_le fun i ↦ add_le_add_left (le_iSup ..) _
+  refine le_antisymm ?_ <| iSup_le fun i ↦ add_le_add_right (le_iSup ..) _
   refine add_le_of_le_tsub_left_of_le (le_iSup_of_le (Classical.arbitrary _) le_self_add) ?_
   exact iSup_le fun i ↦ ENNReal.le_sub_of_add_le_left ha <| le_iSup (a + f ·) i
 

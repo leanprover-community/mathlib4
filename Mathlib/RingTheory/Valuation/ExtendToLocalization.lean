@@ -44,7 +44,7 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
           IsLocalization.toLocalizationMap_apply]
       iterate 3 rw [f.lift_mk']
       rw [max_mul_mul_right]
-      apply mul_le_mul_right' (v.map_add a b) }
+      apply mul_le_mul_left (v.map_add a b) }
 
 @[simp]
 theorem Valuation.extendToLocalization_mk' (x : A) (y : S) :

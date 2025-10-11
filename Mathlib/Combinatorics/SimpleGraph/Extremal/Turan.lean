@@ -394,11 +394,11 @@ theorem mul_card_edgeFinset_turanGraph_le :
   rw [card_edgeFinset_turanGraph, mul_add]
   apply (Nat.add_le_add_right (Nat.mul_div_le ..) _).trans
   rw [tsub_mul, ← Nat.sub_add_comm]; swap
-  · exact mul_le_mul_right' (pow_le_pow_left' (Nat.mod_le ..) _) _
+  · exact mul_le_mul_left (pow_le_pow_left' (Nat.mod_le ..) _) _
   rw [Nat.sub_le_iff_le_add, mul_comm, Nat.add_le_add_iff_left, Nat.choose_two_right,
     ← Nat.mul_div_assoc _ (Nat.even_mul_pred_self _).two_dvd, mul_assoc,
     mul_div_cancel_left₀ _ two_ne_zero, ← mul_assoc, ← mul_rotate, sq, ← mul_rotate (r - 1)]
-  refine mul_le_mul_right' ?_ _
+  refine mul_le_mul_left ?_ _
   rcases r.eq_zero_or_pos with rfl | hr; · cutsat
   rw [Nat.sub_one_mul, Nat.sub_one_mul, mul_comm]
   exact Nat.sub_le_sub_left (Nat.mod_lt _ hr).le _

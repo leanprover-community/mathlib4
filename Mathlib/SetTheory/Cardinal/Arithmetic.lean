@@ -38,7 +38,7 @@ section mul
 
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
-  refine le_antisymm ?_ (by simpa only [mul_one] using mul_le_mul_left' (one_le_aleph0.trans h) c)
+  refine le_antisymm ?_ (by simpa only [mul_one] using mul_le_mul_right (one_le_aleph0.trans h) c)
   -- the only nontrivial part is `c * c ≤ c`. We prove it inductively.
   refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Cardinal.inductionOn c fun α IH ol => ?_) h
   -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
@@ -89,8 +89,8 @@ theorem mul_eq_max {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a 
   le_antisymm
       (mul_eq_self (ha.trans (le_max_left a b)) ▸
         mul_le_mul' (le_max_left _ _) (le_max_right _ _)) <|
-    max_le (by simpa only [mul_one] using mul_le_mul_left' (one_le_aleph0.trans hb) a)
-      (by simpa only [one_mul] using mul_le_mul_right' (one_le_aleph0.trans ha) b)
+    max_le (by simpa only [mul_one] using mul_le_mul_right (one_le_aleph0.trans hb) a)
+      (by simpa only [one_mul] using mul_le_mul_left (one_le_aleph0.trans ha) b)
 
 @[simp]
 theorem mul_mk_eq_max {α β : Type u} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
@@ -140,7 +140,7 @@ theorem mul_eq_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) (h' : b
   refine (mul_le_max_of_aleph0_le_left h).antisymm ?_
   have : b ≤ a := hb.le.trans h
   rw [max_eq_left this]
-  convert mul_le_mul_left' (one_le_iff_ne_zero.mpr h') a
+  convert mul_le_mul_right (one_le_iff_ne_zero.mpr h') a
   rw [mul_one]
 
 theorem mul_le_max_of_aleph0_le_right {a b : Cardinal} (h : ℵ₀ ≤ b) : a * b ≤ max a b := by
@@ -174,7 +174,7 @@ theorem mul_eq_right {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a ≤ b) (ha' : 
   rw [mul_comm, mul_eq_left hb ha ha']
 
 theorem le_mul_left {a b : Cardinal} (h : b ≠ 0) : a ≤ b * a := by
-  convert mul_le_mul_right' (one_le_iff_ne_zero.mpr h) a
+  convert mul_le_mul_left (one_le_iff_ne_zero.mpr h) a
   rw [one_mul]
 
 theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
@@ -234,7 +234,7 @@ section add
 theorem add_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c + c = c :=
   le_antisymm
     (by
-      convert mul_le_mul_right' ((nat_lt_aleph0 2).le.trans h) c using 1
+      convert mul_le_mul_left ((nat_lt_aleph0 2).le.trans h) c using 1
       <;> simp [two_mul, mul_eq_self h])
     (self_le_add_left c c)
 
@@ -364,7 +364,7 @@ variable [Nonempty ι] [Nonempty ι']
 
 protected theorem ciSup_add (hf : BddAbove (range f)) (c : Cardinal.{v}) :
     (⨆ i, f i) + c = ⨆ i, f i + c := by
-  have : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
+  have (i : ι) : f i + c ≤ (⨆ i, f i) + c := add_le_add_left (le_ciSup hf i) c
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
@@ -393,7 +393,7 @@ protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i *
   · have hfc : ¬ BddAbove (range (f · * c)) := fun bdd ↦ hf
       ⟨⨆ i, f i * c, forall_mem_range.mpr fun i ↦ (le_mul_right h0).trans (le_ciSup bdd i)⟩
     simp [iSup, csSup_of_not_bddAbove, hf, hfc]
-  have : ∀ i, f i * c ≤ (⨆ i, f i) * c := fun i ↦ mul_le_mul_right' (le_ciSup hf i) c
+  have : ∀ i, f i * c ≤ (⨆ i, f i) * c := fun i ↦ mul_le_mul_left (le_ciSup hf i) c
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · * c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
@@ -443,10 +443,10 @@ theorem add_one_inj {α β : Cardinal} : α + 1 = β + 1 ↔ α = β :=
 
 theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) :
     α + γ ≤ β + γ ↔ α ≤ β := by
-  refine ⟨fun h => ?_, fun h => add_le_add_right h γ⟩
+  refine ⟨fun h => ?_, fun h => by gcongr⟩
   contrapose h
   rw [not_le, lt_iff_le_and_ne, Ne] at h ⊢
-  exact ⟨add_le_add_right h.1 γ, mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
+  exact ⟨add_le_add_left h.1 γ, mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
 
 @[simp]
 theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
@@ -476,7 +476,7 @@ theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : 
           le_of_le_of_eq
             (by
               rw [Nat.cast_succ, power_add, power_one]
-              exact mul_le_mul_right' ih _)
+              exact mul_le_mul_left ih _)
             (mul_eq_self H1))
       H1
 

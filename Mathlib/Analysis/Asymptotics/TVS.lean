@@ -140,7 +140,7 @@ theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : 
   obtain ⟨V, hV₀, hV⟩ := h.exists_eventuallyLE_mul U hU
   refine ⟨V, hV₀, fun ε hε ↦ ?_⟩
   cases ε with
-  | top => exact (hV 1 one_ne_zero).trans <| .of_forall fun _ ↦ mul_le_mul_right' le_top _
+  | top => exact (hV 1 one_ne_zero).trans <| .of_forall fun _ ↦ mul_le_mul_left le_top _
   | coe ε => exact hV ε (mod_cast hε)
 
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :

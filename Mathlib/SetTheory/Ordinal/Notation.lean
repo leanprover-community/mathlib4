@@ -229,7 +229,7 @@ theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
     rw [repr]
     apply ((add_lt_add_iff_left _).2 IH).trans_le
     rw [← mul_succ]
-    apply (mul_le_mul_left' (succ_le_of_lt (nat_lt_omega0 _)) _).trans
+    apply (mul_le_mul_right (succ_le_of_lt (nat_lt_omega0 _)) _).trans
     rw [← opow_succ]
     exact opow_le_opow_right omega0_pos (succ_le_of_lt h₃)
 
@@ -777,12 +777,12 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   rw [← opow_mul, ← opow_mul]
   apply opow_le_opow_right omega0_pos
   rcases le_or_gt ω (repr e) with h | h
-  · apply (mul_le_mul_left' (le_succ b) _).trans
+  · apply (mul_le_mul_right (le_succ b) _).trans
     rw [← add_one_eq_succ, add_mul_succ _ (one_add_of_omega0_le h), add_one_eq_succ, succ_le_iff]
     gcongr
     exact isSuccLimit_omega0.succ_lt l
   · apply (principal_mul_omega0 (isSuccLimit_omega0.succ_lt h) l).le.trans
-    simpa using mul_le_mul_right' (one_le_iff_ne_zero.2 e0) ω
+    simpa using mul_le_mul_left (one_le_iff_ne_zero.2 e0) ω
 
 section
 
@@ -836,7 +836,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · exact
         lt_of_lt_of_le Rl
           (opow_le_opow_right omega0_pos <|
-            mul_le_mul_left' (succ_le_succ_iff.2 (Nat.cast_le.2 (le_of_lt k.lt_succ_self))) _)
+            mul_le_mul_right (succ_le_succ_iff.2 (Nat.cast_le.2 (le_of_lt k.lt_succ_self))) _)
   calc
     (ω0 ^ (k.succ : Ordinal)) * α' + R'
     _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) := by
@@ -854,7 +854,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       rw [opow_mul, opow_succ]
       gcongr
       exact No.snd'.repr_lt
-    · have := mul_le_mul_left' (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
+    · have := mul_le_mul_right (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
       rw [opow_mul]
       simpa [-opow_succ]
   · cases m
@@ -863,7 +863,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · rw [natCast_succ, add_mul_succ]
       apply add_absorp Rl
       rw [opow_mul, opow_succ]
-      apply mul_le_mul_left'
+      apply mul_le_mul_right
       simpa [repr] using omega0_le_oadd a0 n a'
 
 end

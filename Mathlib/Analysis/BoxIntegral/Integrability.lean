@@ -148,7 +148,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   lift m to ℝ≥0 using ne_top_of_lt this
   rw [ENNReal.coe_toReal, ← NNReal.coe_natCast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_natCast, mul_comm]
-  exact (mul_le_mul_left' this.le _).trans ENNReal.mul_div_le
+  exact (mul_le_mul_right this.le _).trans ENNReal.mul_div_le
 
 /-- If `f` has integral `y` on a box `I` with respect to a locally finite measure `μ` and `g` is
 a.e. equal to `f` on `I`, then `g` has the same integral on `I`. -/

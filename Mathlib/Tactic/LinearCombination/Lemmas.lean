@@ -26,19 +26,19 @@ theorem add_eq_eq [Add α] (p₁ : (a₁ : α) = b₁) (p₂ : a₂ = b₂) : a�
 
 theorem add_le_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) ≤ b₁) (p₂ : a₂ = b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
-  p₂ ▸ add_le_add_right p₁ b₂
+  p₂ ▸ add_le_add_left p₁ b₂
 
 theorem add_eq_le [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) = b₁) (p₂ : a₂ ≤ b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
-  p₁ ▸ add_le_add_left p₂ b₁
+  p₁ ▸ add_le_add_right p₂ b₁
 
 theorem add_lt_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p₁ : (a₁ : α) < b₁) (p₂ : a₂ = b₂) : a₁ + a₂ < b₁ + b₂ :=
-  p₂ ▸ add_lt_add_right p₁ b₂
+  p₂ ▸ add_lt_add_left p₁ b₂
 
 theorem add_eq_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] {a₁ b₁ a₂ b₂ : α}
     (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
-  p₁ ▸ add_lt_add_left p₂ b₁
+  p₁ ▸ add_lt_add_right p₂ b₁
 
 /-! ### Multiplication -/
 
@@ -147,7 +147,7 @@ theorem le_of_le [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid 
     a' ≤ b' := by
   rw [← add_le_add_iff_right b]
   apply H.trans
-  apply add_le_add_left p
+  apply add_le_add_right p
 
 theorem le_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) = b) (H : a' + b ≤ b' + a) :
@@ -164,7 +164,7 @@ theorem lt_of_le [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid 
     a' < b' := by
   rw [← add_lt_add_iff_right b]
   apply H.trans_le
-  apply add_le_add_left p
+  apply add_le_add_right p
 
 theorem lt_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) = b) (H : a' + b < b' + a) :
@@ -176,7 +176,7 @@ theorem lt_of_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid 
     a' < b' := by
   rw [← add_lt_add_iff_right b]
   apply H.trans_lt
-  apply add_lt_add_left p
+  apply add_lt_add_right p
 
 alias ⟨eq_rearrange, _⟩ := sub_eq_zero
 

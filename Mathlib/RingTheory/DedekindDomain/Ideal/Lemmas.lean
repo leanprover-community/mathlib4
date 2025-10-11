@@ -244,7 +244,7 @@ lemma Ideal.mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal 
   have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans Ideal.mul_le_right
   obtain ⟨K, hK⟩ := Ideal.dvd_iff_le.mpr H
   rw [hK]
-  refine mul_le_mul_left' ?_ I
+  refine mul_le_mul_right ?_ I
   rw [le_iInf_iff]
   intro i
   rw [← mul_le_mul_iff_of_pos_left (a := I), ← hK]

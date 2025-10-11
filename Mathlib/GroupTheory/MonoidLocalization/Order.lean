@@ -68,7 +68,7 @@ instance partialOrder : PartialOrder (Localization s) where
       apply le_of_mul_le_mul_left' _
       · exact ↑b.2
       rw [mul_left_comm]
-      refine (mul_le_mul_left' hab _).trans ?_
+      refine (mul_le_mul_right hab _).trans ?_
       rwa [mul_left_comm, mul_left_comm (b.2 : α), mul_le_mul_iff_left]
   le_antisymm a b := by
     induction a using Localization.rec
@@ -85,7 +85,7 @@ instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where
     Localization.induction_on₂ a b fun a b hab c =>
       Localization.induction_on c fun c => by
         simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab ⊢
-        exact mul_le_mul_left' hab _
+        exact mul_le_mul_right hab _
   le_of_mul_le_mul_left := fun a b c =>
     Localization.induction_on₃ a b c fun a b c hab => by
       simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ a.1] at hab ⊢

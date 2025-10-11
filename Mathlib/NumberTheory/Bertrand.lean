@@ -202,7 +202,7 @@ theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_large : 512 ≤ n
     Nat.four_pow_lt_mul_centralBinom n (le_trans (by norm_num1) n_large)
   have H3 : n.centralBinom ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) :=
     centralBinom_le_of_no_bertrand_prime n (lt_of_lt_of_le (by norm_num1) n_large) no_prime
-  rw [mul_assoc] at H1; exact not_le.2 H2 ((mul_le_mul_left' H3 n).trans H1)
+  rw [mul_assoc] at H1; exact not_le.2 H2 ((mul_le_mul_right H3 n).trans H1)
 
 /-- Proves that Bertrand's postulate holds over all positive naturals less than n by identifying a
 descending list of primes, each no more than twice the next, such that the list contains a witness

@@ -133,7 +133,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
           lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, const_zero,
           coe_piecewise, coe_const, coe_zero, Set.piecewise_eq_indicator, Function.const_apply, hs]
       calc
-        (c : ℝ≥0∞) * μ u ≤ c * (μ s + ε / c) := mul_le_mul_left' μu.le _
+        (c : ℝ≥0∞) * μ u ≤ c * (μ s + ε / c) := mul_le_mul_right μu.le _
         _ = c * μ s + ε := by
           simp_rw [mul_add]
           rw [ENNReal.mul_div_cancel _ ENNReal.coe_ne_top]
@@ -345,7 +345,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           SimpleFunc.const_zero, lintegral_indicator, SimpleFunc.coe_zero,
           Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, Measure.restrict_apply]
       calc
-        (c : ℝ≥0∞) * μ s ≤ c * (μ F + ε / c) := mul_le_mul_left' μF.le _
+        (c : ℝ≥0∞) * μ s ≤ c * (μ F + ε / c) := mul_le_mul_right μF.le _
         _ = c * μ F + ε := by
           simp_rw [mul_add]
           rw [ENNReal.mul_div_cancel _ ENNReal.coe_ne_top]

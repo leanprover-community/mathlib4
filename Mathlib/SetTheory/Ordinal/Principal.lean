@@ -341,7 +341,7 @@ theorem mul_lt_omega0_opow (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) : a * b 
   · rw [opow_succ] at ha
     obtain ⟨n, hn, an⟩ :=
       ((isNormal_mul_right <| opow_pos _ omega0_pos).limit_lt isSuccLimit_omega0).1 ha
-    apply (mul_le_mul_right' (le_of_lt an) _).trans_lt
+    apply (mul_le_mul_left (le_of_lt an) _).trans_lt
     rw [opow_succ, mul_assoc]
     gcongr
     exacts [opow_pos _ omega0_pos, principal_mul_omega0 hn hb]
@@ -357,10 +357,10 @@ theorem mul_omega0_opow_opow (a0 : 0 < a) (h : a < ω ^ ω ^ b) : a * ω ^ ω ^ 
   · apply le_antisymm
     · obtain ⟨x, xb, ax⟩ :=
         (lt_opow_of_isSuccLimit omega0_ne_zero (isSuccLimit_opow_left isSuccLimit_omega0 b0)).1 h
-      apply (mul_le_mul_right' (le_of_lt ax) _).trans
+      apply (mul_le_mul_left (le_of_lt ax) _).trans
       rw [← opow_add, add_omega0_opow xb]
     · conv_lhs => rw [← one_mul (ω ^ _)]
-      exact mul_le_mul_right' (one_le_iff_pos.2 a0) _
+      exact mul_le_mul_left (one_le_iff_pos.2 a0) _
 
 theorem principal_mul_omega0_opow_opow (o : Ordinal) : Principal (· * ·) (ω ^ ω ^ o) :=
   principal_mul_iff_mul_left_eq.2 fun _ => mul_omega0_opow_opow
@@ -401,13 +401,13 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : Principal (· * ·) b) (hb₂ 
     intro ⟨c, hcb⟩
     have hb₁ : 1 < b := one_lt_two.trans hb₂
     have hbo₀ : b ^ log b a ≠ 0 := Ordinal.pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
-    apply (mul_le_mul_right' (le_of_lt (lt_mul_succ_div a hbo₀)) c).trans
+    apply (mul_le_mul_left (le_of_lt (lt_mul_succ_div a hbo₀)) c).trans
     rw [mul_assoc, opow_succ]
-    refine mul_le_mul_left' (hb (hbl.succ_lt ?_) hcb).le _
+    refine mul_le_mul_right (hb (hbl.succ_lt ?_) hcb).le _
     rw [div_lt hbo₀, ← opow_succ]
     exact lt_opow_succ_log_self hb₁ _
   · rw [opow_succ]
-    exact mul_le_mul_right' (opow_log_le_self b ha) b
+    exact mul_le_mul_left (opow_log_le_self b ha) b
 
 /-! #### Exponential principal ordinals -/
 

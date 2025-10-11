@@ -589,7 +589,7 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
       apply (hδ (A n)).2
       exact ht n
     _ ≤ ∑' n, ((Real.toNNReal |(A n).det| + 1 : ℝ≥0) : ℝ≥0∞) * 0 := by
-      refine ENNReal.tsum_le_tsum fun n => mul_le_mul_left' ?_ _
+      refine ENNReal.tsum_le_tsum fun n => mul_le_mul_right ?_ _
       exact le_trans (measure_mono inter_subset_left) (le_of_eq hs)
     _ = 0 := by simp only [tsum_zero, mul_zero]
 
@@ -642,7 +642,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
         exact measurableSet_closedBall.inter (t_meas n)
     _ ≤ ε * μ (closedBall 0 R) := by
       rw [← inter_iUnion]
-      exact mul_le_mul_left' (measure_mono inter_subset_left) _
+      exact mul_le_mul_right (measure_mono inter_subset_left) _
 
 /-- A version of Sard lemma in fixed dimension: given a differentiable function from `E` to `E` and
 a set where the differential is not invertible, then the image of this set has zero measure. -/

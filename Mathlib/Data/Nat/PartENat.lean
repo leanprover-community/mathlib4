@@ -249,11 +249,11 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
   · rintro ⟨hx, H⟩
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_ge (h _) (H _)⟩
 
-noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat :=
-  { add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
-      PartENat.casesOn c (by simp [top_add]) fun c =>
-        ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
-          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
+noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat where
+  add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
+      PartENat.casesOn c (by simp [add_top]) fun c =>
+        ⟨fun h => And.intro (h₁ h.1) (dom_natCast _), fun h => by
+          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩
 
 instance semilatticeSup : SemilatticeSup PartENat :=
   { PartENat.partialOrder with
@@ -435,7 +435,7 @@ protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ �
     exact_mod_cast natCast_lt_top _
   intro h
   norm_cast at h
-  exact_mod_cast add_lt_add_right h _
+  exact mod_cast add_lt_add_left h _
 
 protected theorem add_lt_add_iff_right {x y z : PartENat} (hz : z ≠ ⊤) : x + z < y + z ↔ x < y :=
   ⟨lt_of_add_lt_add_right, fun h => PartENat.add_lt_add_right h hz⟩

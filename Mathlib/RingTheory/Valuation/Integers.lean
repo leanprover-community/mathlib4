@@ -69,7 +69,7 @@ theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) 
   le_antisymm (H _) <| by
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul]
-    exact mul_le_mul_left' (H (u⁻¹ : Units O)) _
+    exact mul_le_mul_right (H (u⁻¹ : Units O)) _
 
 theorem one_of_isUnit (hv : Integers v O) {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   one_of_isUnit' hx hv.map_le_one
@@ -94,7 +94,7 @@ theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
     v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   let ⟨z, hz⟩ := h
   rw [← mul_one (v (algebraMap O R x)), hz, RingHom.map_mul, v.map_mul]
-  exact mul_le_mul_left' (hv.2 z) _
+  exact mul_le_mul_right (hv.2 z) _
 
 lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
   constructor <;> intro h
@@ -131,7 +131,7 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
     fun hy : algebraMap O F y ≠ 0 =>
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       rw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul]
-      exact mul_le_mul_left' h _
+      exact mul_le_mul_right h _
     let ⟨z, hz⟩ := hv.3 this
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 

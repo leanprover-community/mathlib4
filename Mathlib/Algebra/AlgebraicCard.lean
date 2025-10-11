@@ -53,7 +53,7 @@ theorem cardinalMk_lift_le_mul :
 theorem cardinalMk_lift_le_max :
     Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ max (Cardinal.lift.{v} #R) ℵ₀ :=
   (cardinalMk_lift_le_mul R A).trans <|
-    (mul_le_mul_right' (lift_le.2 cardinalMk_le_max) _).trans <| by simp
+    (mul_le_mul_left (lift_le.2 cardinalMk_le_max) _).trans <| by simp
 
 @[simp]
 theorem cardinalMk_lift_of_infinite [Infinite R] :

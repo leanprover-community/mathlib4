@@ -22,7 +22,7 @@ namespace Nat
 /-! ### Instances -/
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing â„• where
-  add_le_add_left := @Nat.add_le_add_left
+  add_le_add_left := @Nat.add_le_add_right
   le_of_add_le_add_left := @Nat.le_of_add_le_add_left
   zero_le_one := Nat.le_of_lt (Nat.zero_lt_succ 0)
   mul_lt_mul_of_pos_left := @Nat.mul_lt_mul_of_pos_left
@@ -33,7 +33,7 @@ instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero â
   bot := 0
   bot_le := zero_le
   zero_le_one := zero_le_one
-  mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
+  mul_le_mul_left _ _ h c := Nat.mul_le_mul_right c h
 
 /-! ### Miscellaneous lemmas -/
 

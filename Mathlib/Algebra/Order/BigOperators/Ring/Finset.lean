@@ -166,7 +166,7 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
   simp_rw [prod_eq_mul_prod_diff_singleton hi]
-  refine le_trans ?_ (mul_le_mul_right' h2i _)
+  refine le_trans ?_ (mul_le_mul_left h2i _)
   rw [right_distrib]
   gcongr with j hj j hj <;> simp_all
 
