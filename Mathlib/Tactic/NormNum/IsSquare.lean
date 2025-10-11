@@ -6,12 +6,12 @@ Authors: Aaron Liu
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Tactic.NormNum.NatSqrt
-import Mathlib.Tactic.NormNum.GCD
 
 /-! # `norm_num` extension for `IsSquare`
 
 This module defines a `norm_num` extension for `IsSquare x` for `x` a `Nat`, `Int`, or `Rat`.
-Depends on the `Nat.sqrt` extension.
+The extension for `Rat` depends on the `Rat.num` and `Rat.den` extensions,
+and will not work without them imported (from `Mathlib.Tactic.NormNum.GCD`).
 
 -/
 
@@ -115,7 +115,8 @@ def evalIsSquareInt : NormNumExt where eval {u α} e := do
   | _ => failure
 
 /-- `norm_num` extension that proves `IsSquare x` for `x : ℚ`.
-Depends on the extensions for `Rat.num` and `Rat.den`. -/
+Depends on the extensions for `Rat.num` and `Rat.den`,
+which are in `Mathlib.Tactic.NormNum.GCD`. -/
 @[norm_num IsSquare (_ : ℚ)]
 def evalIsSquareRat : NormNumExt where eval {u α} e := do
   let 0 := u | failure
