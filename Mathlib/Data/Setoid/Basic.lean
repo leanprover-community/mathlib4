@@ -6,6 +6,7 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 import Mathlib.Logic.Relation
 import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Equivalence relations
@@ -77,6 +78,7 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
+@[simp]
 theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
   Iff.rfl
 
@@ -314,14 +316,22 @@ theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quoti
   ext ⟨x⟩
   rw [← Quotient.mk, Quotient.lift_mk f H, Hg, Function.comp_apply, Quotient.mk''_eq_mk]
 
+/-- Given a function `f`, lift it to the quotient by its kernel. -/
+abbrev kerLift (f : α → β) : Quotient (ker f) → β := Quotient.lift f fun _ _ ↦ id
+
+@[simp]
+theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x := rfl
+
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
 injective. -/
-theorem ker_lift_injective (f : α → β) : Injective (@Quotient.lift _ _ (ker f) f fun _ _ h => h) :=
+theorem injective_kerLift (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
+
+@[deprecated (since := "2025-10-11")] alias ker_lift_injective := injective_kerLift
 
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
-theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : ∀ x y, r x y → f x = f y)
+theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : r ≤ ker f)
     (h : Injective (Quotient.lift f H)) : ker f = r :=
   le_antisymm
     (fun x y hk =>
@@ -330,23 +340,27 @@ theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : ∀ x y, r
 
 variable (r : Setoid α) (f : α → β)
 
+/-- The image of `f` lifted to the quotient by its kernel is equal to the image of `f` itself. -/
+theorem range_kerLift_eq_range : Set.range (kerLift f) = Set.range f :=
+  Set.range_quotient_lift (s := ker f) _
+
+/-- The quotient of `α` by the kernel of a function `f`
+bijects with the image of `f` lifted to the quotient. -/
+noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range (kerLift f) :=
+  .ofInjective _ <| injective_kerLift _
+
 /-- The first isomorphism theorem for sets: the quotient of α by the kernel of a function f
 bijects with f's image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
-  Equiv.ofBijective
-    ((@Quotient.lift _ (Set.range f) (ker f) fun x => ⟨f x, Set.mem_range_self x⟩) fun _ _ h =>
-      Subtype.ext h)
-    ⟨fun x y h => ker_lift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
-      fun ⟨_, z, hz⟩ =>
-      ⟨@Quotient.mk'' _ (ker f) z, Subtype.ext_iff.2 hz⟩⟩
+  quotientKerEquivRangeKerLift _ |>.trans <| .setCongr <| range_kerLift_eq_range _
 
 /-- If `f` has a computable right-inverse, then the quotient by its kernel is equivalent to its
 domain. -/
 @[simps]
 def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g f) :
     Quotient (ker f) ≃ β where
-  toFun a := (Quotient.liftOn' a f) fun _ _ => id
-  invFun b := Quotient.mk'' (g b)
+  toFun := kerLift f
+  invFun := Quotient.mk'' ∘ g
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 
