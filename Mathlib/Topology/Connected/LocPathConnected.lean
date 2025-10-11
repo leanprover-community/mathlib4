@@ -95,9 +95,11 @@ lemma pathComponentIn_mem_nhds (hF : F ∈ 𝓝 x) : pathComponentIn F x ∈ �
   exact mem_nhds_iff.mpr ⟨pathComponentIn u x, pathComponentIn_mono huF,
     hu.pathComponentIn x, mem_pathComponentIn_self hxu⟩
 
+instance [ConnectedSpace X] : PathConnectedSpace X :=
+  ⟨inferInstance, fun x y ↦ by simp [← mem_pathComponent_iff, IsClopen.pathComponent _ |>.eq_univ]⟩
+
 theorem pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ ConnectedSpace X := by
-  refine ⟨fun _ ↦ inferInstance, fun h ↦ ⟨inferInstance, fun x y ↦ ?_⟩⟩
-  rw [← mem_pathComponent_iff, (IsClopen.pathComponent _).eq_univ] <;> simp
+  refine ⟨fun _ ↦ inferInstance, fun h ↦ inferInstance⟩
 
 theorem pathComponent_eq_connectedComponent (x : X) : pathComponent x = connectedComponent x :=
   (pathComponent_subset_component x).antisymm <|
