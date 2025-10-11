@@ -910,7 +910,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
 
 instance Pi.wellQuasiOrderedLE {α : ι → Type*} [∀ i, LinearOrder (α i)]
-    [∀ i, IsWellOrder (α i) (· < ·)] [Finite ι] : WellQuasiOrderedLE (∀ i, α i) :=
+    [∀ i, WellFoundedLT (α i)] [Finite ι] : WellQuasiOrderedLE (∀ i, α i) :=
   isPWO_univ_iff.mp (Pi.isPWO _)
 
 section ProdLex
