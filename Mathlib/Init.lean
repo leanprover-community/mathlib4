@@ -7,6 +7,7 @@ import Mathlib.Tactic.Linter.DocString
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Header
+import Mathlib.Tactic.Linter.Indentation
 -- This linter is disabled by default, but downstream projects may want to enable it:
 -- to facilitate this, we import the linter here.
 import Mathlib.Tactic.Linter.FlexibleLinter
@@ -81,6 +82,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.setOption
   linter.style.show
   linter.style.maxHeartbeats
+  linter.indentation
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 /-- Define a set of linters that are used in the `nightly-testing` branch
