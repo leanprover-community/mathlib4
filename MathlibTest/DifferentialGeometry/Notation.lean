@@ -891,15 +891,15 @@ Hint: Additional diagnostic information may be available using the `set_option d
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map g (Prod.map h k)))
 
--- Products of normed spaces
--- TODO this should infer 𝓘(E × F) instead; this already warns accordingly
-/-- info: ContMDiff (𝓘(𝕜, E).prod 𝓘(𝕜, EM')) (I.prod I') 2 (Prod.map f' g') : Prop -/
+-- Products of normed spaces: make sure to infer 𝓘(E × F)
+-- XXX: should this error about this case instead?
+/-- info: ContMDiff 𝓘(𝕜, E × EM') (I.prod I') 2 (Prod.map f' g') : Prop -/
 #guard_msgs in
 #check CMDiff 2 (Prod.map f' g')
 
 /--
 error: failed to synthesize
-  ChartedSpace (ModelProd EM' F) (E × EM' × F)
+  ChartedSpace (EM' × F) (E × EM' × F)
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
@@ -908,7 +908,7 @@ Hint: Additional diagnostic information may be available using the `set_option d
 
 /--
 error: failed to synthesize
-  ChartedSpace (ModelProd E E) ((E × EM') × F)
+  ChartedSpace (E × E) ((E × EM') × F)
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
@@ -921,7 +921,7 @@ Hint: Additional diagnostic information may be available using the `set_option d
 
 /--
 error: failed to synthesize
-  ChartedSpace (ModelProd E E) ((E × EM') × F × F)
+  ChartedSpace (E × E) ((E × EM') × F × F)
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
@@ -935,9 +935,6 @@ Hint: Additional diagnostic information may be available using the `set_option d
   -- when having normed space, form the product all the way (not recursively)
   -- i.e., E × E × E gets model 𝓘(𝕜, E × E × E) and similarly for M × E × E × E
   -- also: (M × E) × E × E and (M × E) × (E × E); what are the correct answers here?
-
-  -- when we take the product of two normed spaces, warn about this/print an info line!
-
 
 -- TODO: add tests for a function on ModelProd H H'
 end

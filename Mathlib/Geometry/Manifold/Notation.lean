@@ -412,23 +412,30 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   match_expr e with
   | Prod src tgt =>
     trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
+    trace[Elab.DiffGeo.MDiff] "Finding a model for {src}"
     let some detailsSrc := ← findModelInner src baseInfo
       | match_expr src with
         | Prod src1 src2 =>
           trace[Elab.DiffGeo.MDiff] "Expression {src} is a product, recursing into each factor"
+          trace[Elab.DiffGeo.MDiff] "Finding a model for {src1}"
           let some res1 := ← findModelInner src1 baseInfo
             | throwError "Found no model with corners on {src1}"
+          trace[Elab.DiffGeo.MDiff] "Finding a model for {src2}"
           let some res2 := ← findModelInner src1 baseInfo
             | throwError "Found no model with corners on {src2}"
+          -- TODO: why does just `combine res1 res2` fail here; what detail am I missing?
           let r := ← combine res1 res2
           return r.1
         | _ => throwError "Found no model with corners on {src}"
+    trace[Elab.DiffGeo.MDiff] "Finding a model for {tgt}"
     let some detailsTgt := ← findModelInner tgt baseInfo
       | match_expr tgt with
         | Prod tgt1 tgt2 =>
           trace[Elab.DiffGeo.MDiff] "Expression {tgt} is a product, recursing into each factor"
+          trace[Elab.DiffGeo.MDiff] "Finding a model for {tgt1}"
           let some res1 := ← findModelInner tgt1 baseInfo
             | throwError "Found no model with corners on {tgt1}"
+          trace[Elab.DiffGeo.MDiff] "Finding a model for {tgt2}"
           let some res2 := ← findModelInner tgt2 baseInfo
             | throwError "Found no model with corners on {tgt2}"
           let r := ← combine res1 res2
@@ -438,18 +445,23 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   | _ => throwError "Could not find a model with corners for {e}"
 where
   /- Form the product expression for two models with corners.
-  -- Emits the wrong choice for the product of normed spaces, but at least warns about this. -/
+  For two normed spaces, we currently take the model over their product.
+  In the future, we may warn about this (or error loudly, just for this case). -/
   combine (eI eJ : Expr × Option (Expr × Expr)) : TermElabM (Expr × Option (Expr × Expr)) := do
+    if let some (kI, eI) := eI.2 then
+      if let some (_kJ, eJ) := eJ.2 then
+        trace[Elab.DiffGeo.MDiff] "product of normed spaces"
+        -- TODO: ensure the base fields coincide, and error otherwise!
+        -- trace[Elab.DiffGeo.MDiff] "Product of normed spaces: computing the 'wrong' model!"
+        let kT : Term ← Term.exprToSyntax kI
+        let eIT : Term ← Term.exprToSyntax eI
+        let eJT : Term ← Term.exprToSyntax eJ
+        return (← Term.elabTerm (← ``(𝓘($kT, Prod $eIT $eJT))) none,
+          (kI, ← Term.elabTerm (← ``(Prod $eIT $eJT)) none))
     let aT : Term ← Term.exprToSyntax eI.1
     let bT : Term ← Term.exprToSyntax eJ.1
     let iTerm : Term ← ``(ModelWithCorners.prod $aT $bT)
-    if eI.2.isSome && eJ.2.isSome then
-      -- TODO: extract the respective expressions E and F (and their base fields),
-      -- ensure the base fields coincide, and return the model over E × F instead.
-      trace[Elab.DiffGeo.MDiff] "Product of normed spaces: computing the 'wrong' model!"
-      return (← Term.elabTerm iTerm none, eI.2 /- TODO: placeholder!!! -/)
-    else
-      return (← Term.elabTerm iTerm none, none)
+    return (← Term.elabTerm iTerm none, none)
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
