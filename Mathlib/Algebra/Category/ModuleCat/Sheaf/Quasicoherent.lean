@@ -23,9 +23,7 @@ universe u v' u'
 open CategoryTheory Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
-
-
-variable {R : Sheaf J RingCat.{u}}
+  {R : Sheaf J RingCat.{u}}
 
 namespace SheafOfModules
 
@@ -77,17 +75,24 @@ def localGeneratorsData (q : M.QuasicoherentData) : M.LocalGeneratorsData where
 
 end QuasicoherentData
 
+variable (R) in
 /-- A sheaf of modules is quasi-coherent if it is locally the cokernel of a
 morphism between coproducts of copies of the sheaf of rings. -/
-class IsQuasicoherent : Prop where
-  nonempty_quasicoherentData : Nonempty M.QuasicoherentData
+def isQuasicoherent : ObjectProperty (SheafOfModules.{u} R) :=
+  fun M ↦ Nonempty M.QuasicoherentData
 
+variable (R) in
 /-- A sheaf of modules is finitely presented if it is locally the cokernel of a
 morphism between coproducts of finitely many copies of the sheaf of rings. -/
-class IsFinitePresentation : Prop where
-  exists_quasicoherentData :
-    ∃ (σ : M.QuasicoherentData), ∀ (i : σ.I), (Finite (σ.presentation i).generators.I ∧
-      Finite (σ.presentation i).relations.I)
+def isFinitePresentation : ObjectProperty (SheafOfModules.{u} R) :=
+  fun M ↦ ∃ (σ : M.QuasicoherentData), ∀ (i : σ.I),
+    (Finite (σ.presentation i).generators.I ∧ Finite (σ.presentation i).relations.I)
+
+@[inherit_doc isQuasicoherent]
+abbrev IsQuasicoherent : Prop := (isQuasicoherent R).Is M
+
+@[inherit_doc isFinitePresentation]
+abbrev IsFinitePresentation : Prop := (isFinitePresentation R).Is M
 
 section
 
@@ -95,18 +100,18 @@ variable [h : M.IsFinitePresentation]
 
 /-- A choice of local presentations when `M` is a sheaf of modules of finite presentation. -/
 noncomputable def quasicoherentDataOfIsFinitePresentation : M.QuasicoherentData :=
-  h.exists_quasicoherentData.choose
+  h.prop.choose
 
 instance (i : M.quasicoherentDataOfIsFinitePresentation.I) :
     Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).generators.I :=
   have : _ ∧ Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).relations.I :=
-    h.exists_quasicoherentData.choose_spec i
+    h.prop.choose_spec i
   this.1
 
 instance (i : M.quasicoherentDataOfIsFinitePresentation.I) :
     Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).relations.I :=
   have : _ ∧ Finite (M.quasicoherentDataOfIsFinitePresentation.presentation i).relations.I :=
-    h.exists_quasicoherentData.choose_spec i
+    h.prop.choose_spec i
   this.2
 
 end
