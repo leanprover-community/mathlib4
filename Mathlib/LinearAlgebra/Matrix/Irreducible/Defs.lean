@@ -11,31 +11,54 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.Tactic.Ring.RingNF
 
 /-!
-# Irreducibility and primitivity of nonnegative matrices via quivers
+# Irreducibility and primitivity of nonnegative matrices
 
-This file develops a graph-theoretic interface for studying nonnegative square matrices over a
-`LinearOrderedRing` `R` through the quiver formed by their strictly positive entries.
-It shows the equivalence between positivity of suitable matrix powers and existence of directed
-paths in this quiver.
+This file develops a graph-theoretic interface for studying the properties of nonnegative square
+matrices, which are fundamental to the Perron-Frobenius theorem.
+
+The idea is to associate a directed graph (quiver) with a matrix `A`, where an edge `i ⟶ j`
+exists if and only if the entry `A i j` is strictly positive. This allows translating algebraic
+properties of the matrix (like powers) into graph-theoretic properties of its quiver (like the
+existence of paths).
+
+## Main definitions
+
+*   `Matrix.toQuiver A`: The quiver associated with a matrix `A`, where an edge `i ⟶ j` exists if
+    `0 < A i j`.
+*   `Matrix.Irreducible A`: A matrix `A` is defined as irreducible if it is entrywise nonnegative
+    and its associated quiver `toQuiver A` is strongly connected. The theorem
+    `irreducible_iff_exists_pow_pos` proves this graph-theoretic definition is equivalent to the
+    algebraic one in semeta2006 (Def 1.6, p.18): for every pair of indices `(i, j)`, there exists a
+    positive integer `k` such that `(A ^ k) i j > 0`.
+*   `Matrix.IsPrimitive A`: A matrix `A` is primitive if it is nonnegative and some power `A ^ k`
+    is strictly positive (all entries are `> 0`), (seneta2006 Definition 1.1, p.14).
+
+## Main results
+
+*   `pow_entry_pos_iff_exists_path`: Establishes the key link between matrix powers and graph
+    theory:
+    `(A ^ k) i j > 0` if and only if there is a path of length `k` from `i` to `j` in `toQuiver A`.
+*   `irreducible_iff_exists_pow_pos`: Shows the equivalence between the graph-theoretic definition
+    of irreducibility (strong connectivity) and the algebraic one (existence of a positive entry
+    in some power).
+*   `IsPrimitive.to_Irreducible`: Proves that a primitive matrix is also irreducible, as stated in
+    Seneta (p.14).
+*   `Irreducible.transpose`: Shows that the irreducibility property is preserved under
+    transposition.
 
 ## Implementation notes
 
-* The quiver `toQuiver A` has an edge `i ⟶ j` iff `0 < A i j`.
-* A matrix `A` is `Irreducible` if it is entrywise nonnegative and `toQuiver A` is strongly
-  connected (`IsSStronglyConnected`).
-* A matrix `A` is `IsPrimitive` if it is entrywise nonnegative and some power `A ^ k` is
-  entrywise positive.
+Throughout we work over a `LinearOrderedRing R`. Some results require stronger assumptions,
+like `PosMulStrictMono R` or `Nontrivial R`. Some statements expand matrix powers and thus require
+`[DecidableEq n]` to reason about finite sums.
 
-## Prerequisites and scope
+## References
 
-* Throughout we work over a `LinearOrderedRing R`. Some results require stronger assumptions,
-  like `PosMulStrictMono R` or `Nontrivial R`.
-* Some statements expand matrix powers and thus require `[DecidableEq n]`
-  to reason about finite sums.
+*   [E. Seneta, *Non-negative Matrices and Markov Chains*][seneta2006]
 
 ## Tags
 
-matrix, nonnegative, positive, power, quiver, graph, irreducible, primitive, strongly connected
+matrix, nonnegative, positive, power, quiver, graph, irreducible, primitive, perron-frobenius
 -/
 
 namespace Matrix
