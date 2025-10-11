@@ -1,15 +1,14 @@
 /-
-Copyright (c) 2021 Bhavik Mehta. All rights reserved.
+Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Comma.Over.Pullback
--- import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
--- import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Equivalence
 
-/-! # Preliminaries for the theory of locally cartesian closed categories
+/-!
+# Preliminaries for the theory of locally cartesian closed categories
 
 # Main declarations
 
@@ -25,8 +24,8 @@ import Mathlib.CategoryTheory.Equivalence
 
 ## Notation
 
-- `μ X Y` : is notation for `fstProj : (Sigma Y (Reindex Y Z)) ⟶ Z`
-- `π X Y` : is notation for `sndProj : (Sigma Y (Reindex Y Z)) ⟶ Y`
+- `μ X Y` : is notation for `fstProj : Sigma Y (Reindex Y Z) ⟶ Z`
+- `π X Y` : is notation for `sndProj : Sigma Y (Reindex Y Z) ⟶ Y`
 
 ## Main results
 
