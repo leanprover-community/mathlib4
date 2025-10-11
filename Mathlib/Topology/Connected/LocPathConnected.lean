@@ -236,4 +236,8 @@ instance : DiscreteTopology <| ZerothHomotopy X := by
   rw [← isQuotientMap_quotient_mk'.isOpen_preimage]
   grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]
 
+/-- A locally path-connected compact space has finitely many path components. -/
+instance [CompactSpace X] : Finite <| ZerothHomotopy X :=
+  finite_of_compact_of_discrete
+
 end LocPathConnectedSpace
