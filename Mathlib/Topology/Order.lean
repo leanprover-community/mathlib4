@@ -223,17 +223,54 @@ theorem closure.mono (h : t₁ ≤ t₂) : closure[t₁] s ⊆ closure[t₂] s :
 theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) ↔ t₂ ≤ t₁ :=
   Iff.rfl
 
+section nontriviality
+
+/-- A topological space is indiscrete if the only open sets are the empty set and the whole space,
+that is that its topology equals the indiscrete topology `⊤`.
+
+This can also go by the name of the "trivial topology" or the "codiscrete topology". -/
+class IndiscreteTopology (α) [TopologicalSpace α] where
+  eq_top (α) : ‹TopologicalSpace α› = ⊤
+
+instance : @IndiscreteTopology α ⊤ := @IndiscreteTopology.mk _ ⊤ rfl
+
+
+/-- A topological space is nontrivial if it is not the indiscrete topology. -/
+class NontrivialTopology (α) [TopologicalSpace α] where
+  ne_top (α) : ‹TopologicalSpace α› ≠ ⊤
+
+theorem TopologicalSpace.indiscrete_or_nontrivial (α) [TopologicalSpace α] :
+    IndiscreteTopology α ∨ NontrivialTopology α :=
+  (eq_or_ne ‹TopologicalSpace α› ⊤).imp .mk .mk
+
+@[simp]
+theorem TopologicalSpace.not_indiscrete_iff [TopologicalSpace α] :
+    ¬IndiscreteTopology α ↔ NontrivialTopology α :=
+  ⟨fun h => ⟨fun x => h ⟨x⟩⟩, fun h x => h.ne_top x.eq_top⟩
+
+@[simp]
+theorem TopologicalSpace.not_nontrivial_iff [TopologicalSpace α] :
+    ¬NontrivialTopology α ↔ IndiscreteTopology α :=
+  TopologicalSpace.not_indiscrete_iff.not_right.symm
+
+end nontriviality
+
 /-- The only open sets in the indiscrete topology are the empty set and the whole space. -/
-theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
-  ⟨fun h => by
-    induction h with
+theorem IndiscreteTopology.isOpen_iff [IndiscreteTopology α] (U : Set α) :
+    IsOpen U ↔ U = ∅ ∨ U = univ := by
+  cases IndiscreteTopology.eq_top α
+  refine ⟨fun h => ?_, ?_⟩
+  · induction h with
     | basic _ h => exact False.elim h
     | univ => exact .inr rfl
     | inter _ _ _ _ h₁ h₂ =>
       rcases h₁ with (rfl | rfl) <;> rcases h₂ with (rfl | rfl) <;> simp
-    | sUnion _ _ ih => exact sUnion_mem_empty_univ ih, by
-      rintro (rfl | rfl)
-      exacts [@isOpen_empty _ ⊤, @isOpen_univ _ ⊤]⟩
+    | sUnion _ _ ih => exact sUnion_mem_empty_univ ih
+  · rintro (rfl | rfl)
+    exacts [@isOpen_empty _ ⊤, @isOpen_univ _ ⊤]
+
+theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
+  letI : TopologicalSpace α := ⊤; IndiscreteTopology.isOpen_iff _
 
 /-- A topological space is discrete if every set is open, that is,
   its topology equals the discrete topology `⊥`. -/
@@ -488,14 +525,21 @@ instance (priority := 100) Subsingleton.discreteTopology [t : TopologicalSpace �
     DiscreteTopology α :=
   ⟨Unique.eq_default t⟩
 
+instance [TopologicalSpace α] [Subsingleton α] : IndiscreteTopology α where
+  eq_top := Subsingleton.elim _ _
+
+
 instance : TopologicalSpace Empty := ⊥
 instance : DiscreteTopology Empty := ⟨rfl⟩
+instance : IndiscreteTopology Empty := inferInstance
 
 instance : TopologicalSpace PEmpty := ⊥
 instance : DiscreteTopology PEmpty := ⟨rfl⟩
+instance : IndiscreteTopology PEmpty := inferInstance
 
 instance : TopologicalSpace PUnit := ⊥
 instance : DiscreteTopology PUnit := ⟨rfl⟩
+instance : IndiscreteTopology PUnit := inferInstance
 
 instance : TopologicalSpace Bool := ⊥
 instance : DiscreteTopology Bool := ⟨rfl⟩
@@ -630,20 +674,35 @@ theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
     IsOpen[t₁ ⊔ t₂] s ↔ IsOpen[t₁] s ∧ IsOpen[t₂] s :=
   Iff.rfl
 
-/-- In the trivial topology no points are separable.
+
+theorem IndiscreteTopology.nhds_eq [TopologicalSpace α] [IndiscreteTopology α] (a : α) :
+    nhds a = ⊤ := by
+  cases IndiscreteTopology.eq_top α
+  exact nhds_top
+
+/-- In the indiscrete topology no points are separable.
 
 The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`. -/
 @[simp]
-theorem inseparable_top (x y : α) : @Inseparable α ⊤ x y := nhds_top.trans nhds_top.symm
+theorem Inseparable.all [TopologicalSpace α] [IndiscreteTopology α] (x y : α) :
+    Inseparable x y :=
+  (IndiscreteTopology.nhds_eq _).trans (IndiscreteTopology.nhds_eq _).symm
 
-theorem TopologicalSpace.eq_top_iff_forall_inseparable {t : TopologicalSpace α} :
-    t = ⊤ ↔ (∀ x y : α, Inseparable x y) where
-  mp h := h ▸ inseparable_top
-  mpr h := ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs
+theorem IndiscreteTopology.of_forall_inseparable [TopologicalSpace α]
+    (h : ∀ x y : α, Inseparable x y) : IndiscreteTopology α where
+  eq_top := ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs
 
-theorem TopologicalSpace.ne_top_iff_exists_not_inseparable {t : TopologicalSpace α} :
-    t ≠ ⊤ ↔ ∃ x y : α, ¬Inseparable x y := by
-  simpa using eq_top_iff_forall_inseparable.not
+theorem TopologicalSpace.indiscrete_iff_forall_inseparable {t : TopologicalSpace α} :
+    IndiscreteTopology α ↔ (∀ x y : α, Inseparable x y) where
+  mp _ := Inseparable.all
+  mpr := .of_forall_inseparable
+
+theorem TopologicalSpace.nontrivial_iff_exists_not_inseparable {t : TopologicalSpace α} :
+    NontrivialTopology α ↔ ∃ x y : α, ¬Inseparable x y := by
+  simpa using indiscrete_iff_forall_inseparable.not
+
+alias ⟨NontrivialTopology.exists_not_inseparable, NontrivialTopology.of_exists_not_inseparable⟩ :=
+  TopologicalSpace.nontrivial_iff_exists_not_inseparable
 
 open TopologicalSpace
 
