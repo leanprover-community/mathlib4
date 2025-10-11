@@ -4018,6 +4018,7 @@ import Mathlib.GroupTheory.FreeGroup.CyclicallyReduced
 import Mathlib.GroupTheory.FreeGroup.GeneratorEquiv
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
+import Mathlib.GroupTheory.FreeGroup.Orbit
 import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.GroupTheory.Goursat
 import Mathlib.GroupTheory.GroupAction.Basic
