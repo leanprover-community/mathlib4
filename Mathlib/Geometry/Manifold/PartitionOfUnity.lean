@@ -726,7 +726,7 @@ alias Metric.exists_smooth_forall_closedBall_subset :=
   Metric.exists_contMDiffMap_forall_closedBall_subset
 
 lemma IsOpen.exists_contMDiff_support_eq_aux {s : Set H} (hs : IsOpen s) :
-    ∃ f : H → ℝ, f.support = s ∧ ContMDiff I 𝓘(ℝ) n f ∧ Set.range f ⊆ Set.Icc 0 1 := by
+    ∃ f : H → ℝ, f.support = s ∧ CMDiff n f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   have h's : IsOpen (I.symm ⁻¹' s) := I.continuous_symm.isOpen_preimage _ hs
   rcases h's.exists_contDiff_support_eq with ⟨f, f_supp, f_diff, f_range⟩
   refine ⟨f ∘ I, ?_, ?_, ?_⟩
