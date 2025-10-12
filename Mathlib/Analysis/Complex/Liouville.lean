@@ -47,6 +47,14 @@ theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : 
   refine (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans ?_
   simp only [cauchyPowerSeries_apply, one_div, zpow_neg, pow_one, smul_smul, zpow_two, mul_inv]
 
+theorem iteratedDeriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {n : ℕ} {f : ℂ → F}
+    (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R)) : iteratedDeriv n f c = n.factorial  •
+    (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z := by
+  lift R to ℝ≥0 using hR.le
+  rw [iteratedDeriv, ← (hf.hasFPowerSeriesOnBall hR).factorial_smul, cauchyPowerSeries]
+  simp
+
+/-- Cauchy's Estimate. -/
 theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
@@ -60,6 +68,18 @@ theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F
     _ ≤ R * (C / (R * R)) :=
       (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le this)
     _ = C / R := by rw [mul_div_left_comm, div_self_mul_self', div_eq_mul_inv]
+
+theorem norm_iteratedDeriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {n : ℕ} {f : ℂ → F}
+    (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
+    ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
+  have : ∀ z ∈ sphere c R, ‖(z - c) ^ (- (n + 1) : ℤ) • f z‖ ≤ C / (R ^ n  * R) :=
+    fun z (hz : ‖z - c‖ = R) => by sorry
+  calc
+    ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I : ℂ)⁻¹ •
+      ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ := by sorry
+    _ ≤ n.factorial * R * C / (R ^ n * R) := by sorry
+    _ = n.factorial * C / R ^ n := by
+      sorry
 
 /-- If `f` is complex differentiable on an open disc of radius `R > 0`, is continuous on its
 closure, and its values on the boundary circle of this disc are bounded from above by `C`, then the
