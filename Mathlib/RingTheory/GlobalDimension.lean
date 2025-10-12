@@ -36,7 +36,7 @@ variable (R : Type u) [CommRing R]
 
 open CategoryTheory
 
-local instance [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
+instance [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
     Small.{v} (LocalizedModule S M) :=
   small_of_surjective (IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M))
 

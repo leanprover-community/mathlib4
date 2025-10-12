@@ -519,6 +519,7 @@ lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] 
 end
 
 --set_option pp.universes true in
+open associatedPrimes in
 lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
     supportDim R M ≤ injectiveDimension M := by
   --ENat.exists_eq_iSup_of_lt_top
@@ -539,9 +540,16 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
       (Shrink.{v, u} (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.ResidueField))
     (M.localizedModule (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.primeCompl) i) := by
     induction i
-    · simp only [Fin.zero_eta]
-
-      sorry
+    · simp only [Fin.zero_eta, Ext.homEquiv₀.nontrivial_congr, ModuleCat.localizedModule]
+      rw [ModuleCat.homAddEquiv.nontrivial_congr, ((Shrink.linearEquiv.{v} _ _).congrLeft _
+        (Localization (q 0).1.1.primeCompl)).nontrivial_congr,
+        (Shrink.linearEquiv.{v} _ _).congrRight.nontrivial_congr]
+      have ass := minimalPrimes_annihilator_subset_associatedPrimes R M head_min
+      simp only [AssociatePrimes.mem_iff] at ass
+      have := mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes ass
+      simp only [AssociatePrimes.mem_iff, isAssociatedPrime_iff_exists_injective_linearMap] at this
+      rcases this with ⟨_, f, hf⟩
+      exact nontrivial_of_ne f 0  (LinearMap.ne_zero_of_injective hf)
     · rename_i i ih
       exact ext_succ_nontrivial_of_eq_of_le.{v, u, v} M (q.step ⟨i, h⟩) (eq_of_le ⟨i, h⟩) i
         (ih (Nat.le_of_succ_le h))
