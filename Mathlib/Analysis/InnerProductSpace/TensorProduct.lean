@@ -54,7 +54,7 @@ open scoped ComplexOrder
 open Module
 
 private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
-  obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_finite {x} (Set.finite_singleton x)
+  obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
   rw [← inner_coe_of_mem_range hz hz] at hx
   let y := hz.choose
@@ -78,7 +78,7 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
 
 private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
-  obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_finite {x} (Set.finite_singleton x)
+  obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
   rw [← inner_coe_of_mem_range hz hz]
   let y := hz.choose
