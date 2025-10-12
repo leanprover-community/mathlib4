@@ -362,6 +362,7 @@ def Algebra.intNormAux :
 
 variable {A K L B}
 
+omit [FiniteDimensional K L] in
 lemma Algebra.map_intNormAux (x : B) :
     algebraMap A K (Algebra.intNormAux A K L B x) = Algebra.norm K (algebraMap B L x) := by
   dsimp [Algebra.intNormAux]
