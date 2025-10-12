@@ -738,8 +738,7 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
   rfl
 
 section mulSemiringAction
-variable {R A₁ A₂ : Type*}
-  [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁] [Algebra R A₂]
+variable {R A₁ A₂ : Type*} [Semiring A₁] [Semiring A₂] [SMul R A₁] [SMul R A₂]
 
 /-- The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
 
@@ -760,14 +759,6 @@ protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a 
 instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
   ⟨AlgEquiv.ext⟩
 
-instance apply_smulCommClass {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
-    SMulCommClass S (A₁ ≃ₐ[R] A₁) A₁ where
-  smul_comm r e a := (e.toLinearEquiv.map_smul_of_tower r a).symm
-
-instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
-    SMulCommClass (A₁ ≃ₐ[R] A₁) S A₁ :=
-  SMulCommClass.symm _ _ _
-
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
   smul := fun f => Units.map f
   one_smul := fun x => by ext; rfl
@@ -782,6 +773,20 @@ theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
 @[simp]
 lemma _root_.MulSemiringAction.toRingEquiv_algEquiv (σ : A₁ ≃ₐ[R] A₁) :
     MulSemiringAction.toRingEquiv _ A₁ σ = σ := rfl
+
+end mulSemiringAction
+
+section mulSemiringAction2
+variable {R A₁ A₂ : Type*}
+  [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁] [Algebra R A₂]
+
+instance apply_smulCommClass {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
+    SMulCommClass S (A₁ ≃ₐ[R] A₁) A₁ where
+  smul_comm r e a := (e.toLinearEquiv.map_smul_of_tower r a).symm
+
+instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
+    SMulCommClass (A₁ ≃ₐ[R] A₁) S A₁ :=
+  SMulCommClass.symm _ _ _
 
 @[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
@@ -806,7 +811,7 @@ lemma pow_toLinearMap (σ : A₁ ≃ₐ[R] A₁) (n : ℕ) :
     (σ ^ n).toLinearMap = σ.toLinearMap ^ n :=
   (AlgEquiv.toLinearMapHom R A₁).map_pow σ n
 
-end mulSemiringAction
+end mulSemiringAction2
 
 @[simp]
 lemma one_toLinearMap {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A]
