@@ -30,10 +30,10 @@ section ENat
 lemma ENat.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
     a + c ≤ b + c ↔ a ≤ b := by
   induction a with
-  | top => simp only [_root_.top_add, top_le_iff]; exact WithTop.add_coe_eq_top_iff
+  | top => simpa only [_root_.top_add, top_le_iff] using WithTop.add_coe_eq_top_iff
   | coe a => induction b with
     | top => simp
-    | coe b => norm_cast; exact Nat.add_le_add_iff_right
+    | coe b => simp [← Nat.cast_add]
 
 lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
     a + c ≤ b + c ↔ a ≤ b := by
@@ -50,9 +50,7 @@ lemma WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
     a + 1 ≤ 0 ↔ a = ⊥ := by
   induction a with
   | bot => simp
-  | coe a =>
-    norm_cast
-    simp
+  | coe a => simp [← WithBot.coe_one, ← WithBot.coe_add]
 
 end ENat
 
@@ -532,18 +530,30 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
     have := lt_of_le_of_ne rle ne
     --insert `r` into `q`
     sorry
-  have tail_eq : (q ⟨q.length,lt_add_one q.length⟩).1.1 = maximalIdeal R := by
+  have tail_eq : (q ⟨q.length, lt_add_one q.length⟩).1.1 = maximalIdeal R := by
     sorry
-  have lem (i : Fin q.length) :=
-    ext_succ_nontrivial_of_eq_of_le.{v, u, v} M (q.step i) (eq_of_le i) i
-  have : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) M q.length) := by
+  have head_min : (q 0).1.1 ∈ (Module.annihilator R M).minimalPrimes := by
+    sorry
+  have lem' (i : ℕ) (h : i ≤ q.length) : Nontrivial (Ext.{v}
+    (ModuleCat.of (Localization (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.primeCompl)
+      (Shrink.{v, u} (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.ResidueField))
+    (M.localizedModule (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.primeCompl) i) := by
+    induction i
+    · simp only [Fin.zero_eta]
+
+      sorry
+    · rename_i i ih
+      exact ext_succ_nontrivial_of_eq_of_le.{v, u, v} M (q.step ⟨i, h⟩) (eq_of_le ⟨i, h⟩) i
+        (ih (Nat.le_of_succ_le h))
+  have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) M
+    q.length) := by
     --apply `lem` obtain a ntr for `Localization (maximalIdeal R).primeCompl`
     --then consider it as localization
     sorry
   simp only [← hq, injectiveDimension_eq_sInf.{v, u, v} M, le_sInf_iff, Set.mem_setOf_eq]
   intro b hb
   by_contra! lt
-  exact (not_subsingleton_iff_nontrivial.mpr this) (hb q.length lt)
+  exact (not_subsingleton_iff_nontrivial.mpr ntr) (hb q.length lt)
 
 lemma injectiveDimension_eq_depth
     (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
@@ -556,8 +566,47 @@ lemma injectiveDimension_eq_depth
     simpa using IsRegular.nil _ _) lttop.symm.lt_top'
   rw [← len]
   have reg : IsRegular R rs := ((Shrink.linearEquiv.{v} R R).isRegular_congr rs).mp reg'
+  apply le_antisymm
+  · obtain ⟨r, hr⟩ : ∃ n : ℕ, injectiveDimension M = n := by
+      generalize hd : injectiveDimension M = d
+      induction d with
+      | bot =>
+        absurd not_nontrivial_iff_subsingleton.mpr
+          (ModuleCat.isZero_iff_subsingleton.mp ((injectiveDimension_eq_bot_iff M).mp hd))
+        assumption
+      | coe d =>
+        induction d with
+        | top => simp [hd] at h
+        | coe d =>
+          use d
+          rfl
+    rw [hr]
+    apply Nat.cast_le.mpr
+    have : projectiveDimension (ModuleCat.of R
+      ((Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)))) = rs.length := by
+      let _ : Module.Free R (Shrink.{v} R) := Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+      have : projectiveDimension (ModuleCat.of R (Shrink.{v} R)) = 0 := by
+        apply le_antisymm
+        · apply (projectiveDimension_le_iff _ 0).mpr
+          simpa [HasProjectiveDimensionLE, ← projective_iff_hasProjectiveDimensionLT_one]
+            using ModuleCat.projective_of_categoryTheory_projective _
+        · have : projectiveDimension (ModuleCat.of R (Shrink.{v, u} R)) ≠ ⊥ := by
+            simpa [projectiveDimension_eq_bot_iff] using not_subsingleton (Shrink.{v, u} R)
+          rw [← WithBot.coe_unbot _ this, ← WithBot.coe_zero, WithBot.coe_le_coe]
+          exact zero_le _
+      simp [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
+        reg'.1 mem, this]
 
-  sorry
+    sorry
+  · simp only [injectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
+    intro b hb
+    by_contra! lt
+    let _ := hb rs.length lt
+    absurd HasInjectiveDimensionLT.subsingleton.{v} M rs.length rs.length (le_refl _)
+      (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs)))
+    apply not_subsingleton_iff_nontrivial.mpr
+    rw [(ext_quotient_regular_sequence_length.{v, u, v} M rs reg).nontrivial_congr]
+    sorry
 
 end
 
