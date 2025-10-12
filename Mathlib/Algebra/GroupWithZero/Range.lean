@@ -126,7 +126,7 @@ variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
 
 /-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
 @[simps!]
-def valueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
+def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
   MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
     <| WithZero.map' (valueGroup f).subtype
 
