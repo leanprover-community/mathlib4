@@ -42,7 +42,6 @@ instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
 
 @[simp] theorem toLex_apply (x : Π₀ i, α i) (i : ι) : toLex x i = x i := rfl
-@[simp] theorem ofLex_apply (x : Lex (Π₀ i, α i)) (i : ι) : ofLex x i = x i := rfl
 
 theorem lex_lt_iff [LT ι] [∀ i, LT (α i)] {a b : Lex (Π₀ i, α i)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=

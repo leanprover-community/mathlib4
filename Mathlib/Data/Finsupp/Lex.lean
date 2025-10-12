@@ -46,7 +46,6 @@ instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
 @[simp] theorem toLex_apply (x : α →₀ N) (i : α) : toLex x i = x i := rfl
-@[simp] theorem ofLex_apply (x : Lex (α →₀ N)) (i : α) : ofLex x i = x i := rfl
 
 theorem lex_lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
