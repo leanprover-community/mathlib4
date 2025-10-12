@@ -541,29 +541,29 @@ theorem sortedGT_iff_get : l.SortedGT ↔ ∀ (i j : Fin l.length), i < j → l.
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] < l[i] := by
   simp_rw [sortedGT_iff_get, Fin.forall_iff]; grind
 
-@[grind] theorem sortedLE_iff_pairwise : SortedLE l ↔ Pairwise (· ≤ ·) l :=
+theorem sortedLE_iff_pairwise : SortedLE l ↔ Pairwise (· ≤ ·) l :=
   sortedLE_iff_get.trans (Iff.symm pairwise_iff_get)
 alias ⟨SortedLE.pairwise, Pairwise.sortedLE⟩ := sortedLE_iff_pairwise
-@[grind] theorem sortedGE_iff_pairwise : SortedGE l ↔ Pairwise (· ≥ ·) l :=
+theorem sortedGE_iff_pairwise : SortedGE l ↔ Pairwise (· ≥ ·) l :=
   sortedGE_iff_get.trans (Iff.symm pairwise_iff_get)
 alias ⟨SortedGE.pairwise, Pairwise.sortedGE⟩ := sortedGE_iff_pairwise
-@[grind] theorem sortedLT_iff_pairwise : SortedLT l ↔ Pairwise (· < ·) l :=
+theorem sortedLT_iff_pairwise : SortedLT l ↔ Pairwise (· < ·) l :=
   sortedLT_iff_get.trans (Iff.symm pairwise_iff_get)
 alias ⟨SortedLT.pairwise, Pairwise.sortedLT⟩ := sortedLT_iff_pairwise
-@[grind] theorem sortedGT_iff_pairwise : SortedGT l ↔ Pairwise (· > ·) l :=
+theorem sortedGT_iff_pairwise : SortedGT l ↔ Pairwise (· > ·) l :=
   sortedGT_iff_get.trans (Iff.symm pairwise_iff_get)
 alias ⟨SortedGT.pairwise, Pairwise.sortedGT⟩ := sortedGT_iff_pairwise
 
-@[grind] theorem sortedLE_iff_isChain : SortedLE l ↔ IsChain (· ≤ ·) l :=
+theorem sortedLE_iff_isChain : SortedLE l ↔ IsChain (· ≤ ·) l :=
   sortedLE_iff_pairwise.trans isChain_iff_pairwise.symm
 alias ⟨SortedLE.isChain, IsChain.sortedLE⟩ := sortedLE_iff_isChain
-@[grind] theorem sortedGE_iff_isChain : SortedGE l ↔ IsChain (· ≥ ·) l :=
+theorem sortedGE_iff_isChain : SortedGE l ↔ IsChain (· ≥ ·) l :=
   sortedGE_iff_pairwise.trans isChain_iff_pairwise.symm
 alias ⟨SortedGE.isChain, IsChain.sortedGE⟩ := sortedGE_iff_isChain
-@[grind] theorem sortedLT_iff_isChain : SortedLT l ↔ IsChain (· < ·) l :=
+theorem sortedLT_iff_isChain : SortedLT l ↔ IsChain (· < ·) l :=
   sortedLT_iff_pairwise.trans isChain_iff_pairwise.symm
 alias ⟨SortedLT.isChain, IsChain.sortedLT⟩ := sortedLT_iff_isChain
-@[grind] theorem sortedGT_iff_isChain : SortedGT l ↔ IsChain (· > ·) l :=
+theorem sortedGT_iff_isChain : SortedGT l ↔ IsChain (· > ·) l :=
   sortedGT_iff_pairwise.trans isChain_iff_pairwise.symm
 alias ⟨SortedGT.isChain, IsChain.sortedGT⟩ := sortedGT_iff_isChain
 
@@ -582,8 +582,8 @@ protected theorem SortedLT.sortedLE {l : List α} (h : l.SortedLT) :
 protected theorem SortedGT.sortedGE {l : List α} (h : l.SortedGT) :
     l.SortedGE := (h.pairwise.imp le_of_lt).sortedGE
 
-theorem SortedLT.nodup (h : l.SortedLT) : l.Nodup := h.pairwise.imp (fun {_ _} ↦ ne_of_lt)
-theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.pairwise.imp (fun {_ _} ↦ ne_of_gt)
+theorem SortedLT.nodup (h : l.SortedLT) : l.Nodup := h.pairwise.imp ne_of_lt
+theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.pairwise.imp ne_of_gt
 
 @[simp] theorem sortedLE_reverse : l.reverse.SortedLE ↔ l.SortedGE := by
   simp_rw [sortedGE_iff_pairwise, sortedLE_iff_pairwise, pairwise_reverse]
@@ -630,21 +630,15 @@ alias ⟨_, SortedLT.reverse⟩ := sortedGT_reverse
     (l.map OrderDual.toDual).SortedGT ↔ l.SortedLT := by
   simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.toDual_lt_toDual]
 
-theorem sortedLT_range (n : ℕ) : (range n).SortedLT := by
-  rw [sortedLT_iff_getElem]
-  simp
+theorem sortedLT_range (n : ℕ) : (range n).SortedLT := by simp [sortedLT_iff_getElem]
 
 lemma sortedLT_range' (a b) {s} (hs : s ≠ 0) :
-    (range' a b s).SortedLT := by
-  simp [sortedLT_iff_getElem, Nat.pos_of_ne_zero hs]
+    (range' a b s).SortedLT := by simp [sortedLT_iff_getElem, Nat.pos_of_ne_zero hs]
 
-lemma sorted_le_range' (a b s) :
+lemma sortedLE_range' (a b s) :
     (range' a b s).SortedLE := by
-  by_cases hs : s ≠ 0
-  · exact (sortedLT_range' a b hs).sortedLE
-  · rw [ne_eq, Decidable.not_not] at hs
-    rw [hs, range'_0]
-    exact pairwise_replicate_of_refl.sortedLE
+  simp only [sortedLE_iff_getElem, length_range', getElem_range', Nat.add_le_add_iff_left]
+  exact fun _ _ _ _ h => Nat.mul_le_mul_left _ h.le
 
 section OfFn
 
@@ -882,19 +876,19 @@ namespace StrictAnti
 
 variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
 
-theorem sorted_le_listMap (hf : StrictAnti f) :
+theorem sortedLE_listMap (hf : StrictAnti f) :
     (l.map f).SortedLE ↔ l.SortedGE := by
   simp_rw [← List.sortedGE_map_toDual, List.map_map, hf.dual_right.sortedGE_listMap]
 
-theorem sorted_ge_listMap (hf : StrictAnti f) :
+theorem sortedGE_listMap (hf : StrictAnti f) :
     (l.map f).SortedGE ↔ l.SortedLE := by
   simp_rw [← List.sortedLE_map_toDual, List.map_map, hf.dual_right.sortedLE_listMap]
 
-theorem sorted_lt_listMap (hf : StrictAnti f) :
+theorem sortedLT_listMap (hf : StrictAnti f) :
     (l.map f).SortedLT ↔ l.SortedGT := by
   simp_rw [← List.sortedGT_map_toDual, List.map_map, hf.dual_right.sortedGT_listMap]
 
-theorem sorted_gt_listMap (hf : StrictAnti f) :
+theorem sortedGT_listMap (hf : StrictAnti f) :
     (l.map f).SortedGT ↔ l.SortedLT := by
   simp_rw [← List.sortedLT_map_toDual, List.map_map, hf.dual_right.sortedLT_listMap]
 
