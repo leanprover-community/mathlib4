@@ -48,8 +48,7 @@ theorem enumerate_eq_none :
     · cases m with
       | zero => contradiction
       | succ m' =>
-        simp? [hs, enumerate] at h ⊢ says
-          simp only [enumerate, hs, Option.bind_eq_bind, Option.bind_some] at h ⊢
+        simp only [enumerate, hs] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
 
@@ -81,7 +80,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
       have : a ∈ s \ {a} := enumerate_mem sel h_sel h'
       simp_all
   | succ k ih =>
-    rw [show k + 1 + m = (k + m) + 1 by omega] at h₂
+    rw [show k + 1 + m = (k + m) + 1 by cutsat] at h₂
     cases h : sel s <;> simp_all [enumerate] ; tauto
 
 end Enumerate

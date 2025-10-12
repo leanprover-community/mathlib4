@@ -800,7 +800,7 @@ lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
   obtain rfl | hs := Set.eq_empty_or_nonempty s
   · obtain rfl : t = ∅ := by simpa [Set.eq_empty_iff_forall_notMem] using h
     rfl
-  apply le_antisymm _ (csInf_le_csInf ht (hs.image _) (image_mono hst))
+  refine le_antisymm ?_ (by gcongr; exacts [ht, hs.image f])
   refine le_csInf ((hs.mono hst).image f) ?_
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro a ha

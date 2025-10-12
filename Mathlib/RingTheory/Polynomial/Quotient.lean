@@ -3,12 +3,14 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
+import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Ideal
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Quotients of polynomial rings
@@ -120,7 +122,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
   right_inv := by
     rintro ⟨f⟩
     refine Polynomial.induction_on' f ?_ ?_
-    · intros p q hp hq
+    · intro p q hp hq
       simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, map_add, Quotient.lift_mk,
         coe_eval₂RingHom] at hp hq ⊢
       rw [hp, hq]
@@ -174,6 +176,13 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
     rw [RingHom.mem_ker, RingHom.map_sub, hf.2, sub_eq_zero, coe_mapRingHom, map_C]
   exact hx
 
+/-- Given a domain `R`, if `R[X]` is a principal ideal ring, then `R` is a field. -/
+lemma IsField.of_isPrincipalIdealRing_polynomial [IsDomain R] [IsPrincipalIdealRing R[X]] :
+    IsField R := by
+  apply (quotientSpanXSubCAlgEquiv 0).symm.toMulEquiv.isField
+  rw [← Quotient.maximal_ideal_iff_isField_quotient]
+  exact PrincipalIdealRing.isMaximal_of_irreducible (irreducible_X_sub_C 0)
+
 end
 
 end Ideal
@@ -216,11 +225,11 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
     obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
     rw [eval₂_C, Ideal.Quotient.lift_mk, RingHom.comp_apply, Ideal.Quotient.lift_mk, eval₂Hom_C,
       RingHom.comp_apply]
-  · intros p q hp hq
+  · intro p q hp hq
     simp only [RingHom.map_add, MvPolynomial.eval₂_add]
       at hp hq ⊢
     rw [hp, hq]
-  · intros p i hp
+  · intro p i hp
     simp only at hp
     simp only [hp, coe_eval₂Hom, Ideal.Quotient.lift_mk, eval₂_mul, RingHom.map_mul, eval₂_X]
 
@@ -239,11 +248,11 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
   · intro r
     rw [Ideal.Quotient.lift_mk, eval₂Hom_C, RingHom.comp_apply, eval₂_C, Ideal.Quotient.lift_mk,
       RingHom.comp_apply]
-  · intros p q hp hq
+  · intro p q hp hq
     rw [Ideal.Quotient.lift_mk] at hp hq ⊢
     simp only [eval₂_add, RingHom.map_add, coe_eval₂Hom] at hp hq ⊢
     rw [hp, hq]
-  · intros p i hp
+  · intro p i hp
     simp only [coe_eval₂Hom, Ideal.Quotient.lift_mk,
       eval₂_mul, RingHom.map_mul, eval₂_X] at hp ⊢
     simp only [hp]

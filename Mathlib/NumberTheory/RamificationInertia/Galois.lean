@@ -162,6 +162,12 @@ theorem ramificationIdxIn_eq_ramificationIdx [IsGalois K L] :
   rw [ramificationIdxIn, dif_pos h]
   exact ramificationIdx_eq_of_isGalois p h.choose P K L
 
+theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime] (hp : p ≠ ⊥)
+    [IsGalois K L] [NoZeroSMulDivisors A B] : p.ramificationIdxIn B ≠ 0 := by
+  obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
+  rw [ramificationIdxIn_eq_ramificationIdx p P K L]
+  exact IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P.1 hp
+
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
 theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] [IsGalois K L] :
     inertiaDegIn p B = inertiaDeg p P := by
@@ -169,6 +175,12 @@ theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] [IsGalois K L] :
   obtain ⟨_, _⟩ := h.choose_spec
   rw [inertiaDegIn, dif_pos h]
   exact inertiaDeg_eq_of_isGalois p h.choose P K L
+
+theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [IsGalois K L] [NoZeroSMulDivisors A B] :
+    inertiaDegIn p B ≠ 0 := by
+  obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
+  rw [inertiaDegIn_eq_inertiaDeg p P K L]
+  exact inertiaDeg_ne_zero _ _
 
 end RamificationInertia
 
@@ -186,7 +198,7 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
   rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
-  rw [← sum_ramification_inertia B p K L hpb]
+  rw [← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
   rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp

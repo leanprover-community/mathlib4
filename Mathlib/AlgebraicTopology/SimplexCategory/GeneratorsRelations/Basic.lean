@@ -232,13 +232,13 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
 
 /-- A version of δ_comp_δ with indices in ℕ satisfying relevant inequalities. -/
 lemma δ_comp_δ_nat {n} (i j : ℕ) (hi : i < n + 2) (hj : j < n + 2) (H : i ≤ j) :
-    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by omega⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by omega⟩ :=
-  δ_comp_δ (n := n) (i := ⟨i, by omega⟩) (j := ⟨j, by omega⟩) (by simpa)
+    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by cutsat⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by cutsat⟩ :=
+  δ_comp_δ (n := n) (i := ⟨i, by cutsat⟩) (j := ⟨j, by cutsat⟩) (by simpa)
 
 /-- A version of σ_comp_σ with indices in ℕ satisfying relevant inequalities. -/
 lemma σ_comp_σ_nat {n} (i j : ℕ) (hi : i < n + 1) (hj : j < n + 1) (H : i ≤ j) :
-    σ ⟨i, by omega⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by omega⟩ ≫ σ ⟨i, hi⟩ :=
-  σ_comp_σ (n := n) (i := ⟨i, by omega⟩) (j := ⟨j, by omega⟩) (by simpa)
+    σ ⟨i, by cutsat⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by cutsat⟩ ≫ σ ⟨i, hi⟩ :=
+  σ_comp_σ (n := n) (i := ⟨i, by cutsat⟩) (j := ⟨j, by cutsat⟩) (by simpa)
 
 end SimplicialIdentities
 
