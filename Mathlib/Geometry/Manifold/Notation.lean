@@ -402,9 +402,31 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  match ← findModelInner e baseInfo with
-  | some (m, _eK) => return m
-  | none => throwError "Could not find a model with corners for {e}"
+  -- At first, try finding a model on the space itself.
+  if let some (m, _) ← findModelInner e baseInfo then return m
+  -- Otherwise, check if we have a binary product.
+  -- TODO: also support higher order products, by recursively calling this method on them
+  -- At first, try finding a model on the space itself.
+  match_expr e with
+  | Prod E F =>
+    trace[Elab.DiffGeo.MDiff] "Expression {e} is a product, recursing into each factor"
+    -- Future: only emit the note if E is actually a product...
+    let some (srcE, normedSpaceE) := ← findModelInner E baseInfo
+      | throwError "Found no model with corners on first factor {E}\n\
+      Note: finding a model with corners on products of three or more spaces is not implemented yet"
+    let some (srcF, normedSpaceF) := ← findModelInner F baseInfo
+      | throwError "Found no model with corners on second factor {F}\n\
+      Note: finding a model with corners on products of three or more spaces is not implemented yet"
+    -- If both E and F are normed spaces, emit a warning and return (for now).
+    if normedSpaceE.isSome && normedSpaceF.isSome then
+      throwError "Found no model with corners on the product {e}\n\
+      Note: this would be a model with corners on a product of normed spaces, which is ambiguous \
+      and therefore not supported yet."
+    let eTerm : Term ← Term.exprToSyntax srcE
+    let fTerm : Term ← Term.exprToSyntax srcF
+    let iTerm : Term ← ``(ModelWithCorners.prod $eTerm $fTerm)
+    Term.elabTerm iTerm none
+  | _ => throwError "Could not find a model with corners for {e}"
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
