@@ -20,7 +20,7 @@ is equivalent to saying that the restricted Yoneda functor
 `Functor.isDense_iff_fullyFaithful_restrictedULiftYoneda`).
 
 We also show that the range of a dense functor is a strong
-generator (see `Functor.isStrongGenerator_range_of_isDense`).
+generator (see `Functor.isStrongGenerator_of_isDense`).
 
 ## References
 
