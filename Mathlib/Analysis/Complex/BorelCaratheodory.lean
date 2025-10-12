@@ -22,7 +22,7 @@ This file proves the Borel-Caratheodory theorem, in the version that is needed f
 the PrimeNumberTheoremAnd/StrongPNT [kontorovich2025] project of Alex Kontorovich and
 Terence Tao. This version is also used in most textbook proofs of the Prime Number Theorem.
 
-## Main result.
+## Main results.
 
 `borelCaratheodory_closedBall`
 
@@ -85,9 +85,14 @@ conclusion specialized to $|z| ≤ r$ with $r ≤ R$. This is of course trivial,
 and the only reason to include such a conclusion, is because this form of
 the conclusion is used twice in the proof of Borel-Caratheodory.
 
-Finally in `borelCaratheodory_closedBall` we prove the Borel-Caratheodory
-theorem. The proof of Borel-Caratheodory follows the blueprint laid out in
-the StrongPNT project [kontorovich2025].
+In `borelCaratheodory_closedBall` we prove the Borel-Caratheodory
+theorem under the assumption that $f(0) = 0$. This proof of Borel-Caratheodory
+follows the blueprint laid out in the StrongPNT project [kontorovich2025].
+
+Finally in `borelCaratheodory_closedBall'` we deduce from
+`borelCaratheodory_closedBall` a version of Borel-Caratheodory that does
+not assume vanishing of $f$ at $0$. This version matches the statement of
+the theorem as seen in Wikipedia.
 
 ## References
 
@@ -391,7 +396,8 @@ theorem borelCaratheodory_closedBall' {M R r : ℝ} {z : ℂ} {f : ℂ → ℂ}
     · positivity
     · intro z hyp_z
       calc (f z - f 0).re
-        _ ≤ (f z).re + (- (f 0)).re := by simp
+        _ ≤ (f z).re + (- (f 0)).re := by
+          rw [Complex.sub_re, Complex.neg_re, le_add_neg_iff_add_le, sub_add_cancel]
         _ ≤ M + (- (f 0)).re := by gcongr; apply realPartBounded; exact hyp_z
         _ ≤ M + ‖- (f 0)‖ := by gcongr; apply Complex.re_le_norm
         _ = M + ‖f 0‖ := by rw [norm_neg]
@@ -403,6 +409,6 @@ theorem borelCaratheodory_closedBall' {M R r : ℝ} {z : ℂ} {f : ℂ → ℂ}
   calc ‖f z‖
     _ ≤ ‖f z - f 0‖ + ‖f 0‖ := by apply norm_le_norm_sub_add
     _ ≤ 2 * (M + ‖f 0‖) * r / (R - r) + ‖f 0‖ := by gcongr
-    _ = 2 * (M + ‖f 0‖) * r / (R - r) + ‖f 0‖ * 1 := by simp
+    _ = 2 * (M + ‖f 0‖) * r / (R - r) + ‖f 0‖ * 1 := by rw [mul_one]
     _ = 2 * (M + ‖f 0‖) * r / (R - r) + ‖f 0‖ * ((R - r) / (R - r)) := by congr; rw [← div_self T]
     _ = 2 * M * r / (R - r) + ‖f 0‖ * (R + r) / (R - r) := by ring_nf
