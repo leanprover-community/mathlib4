@@ -417,7 +417,7 @@ theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid
   simp
 
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
-    (↑ζ * f) x = ∑ i ∈ divisors x, f i :=
+    (ζ * f) x = ∑ i ∈ divisors x, f i :=
   coe_zeta_smul_apply
 
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
@@ -429,11 +429,18 @@ theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     rw [natCoe_apply, zeta_apply_ne (right_ne_zero_of_mul h), cast_one, mul_one]
   · rw [← map_div_right_divisors, sum_map, Function.Embedding.coeFn_mk]
 
+theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
+  ext x
+  rw [coe_zeta_mul_apply, coe_mul_zeta_apply]
+
 theorem zeta_mul_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (ζ * f) x = ∑ i ∈ divisors x, f i := by
   rw [← natCoe_nat ζ, coe_zeta_mul_apply]
 
 theorem mul_zeta_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (f * ζ) x = ∑ i ∈ divisors x, f i := by
   rw [← natCoe_nat ζ, coe_mul_zeta_apply]
+
+theorem zeta_mul_comm {f : ArithmeticFunction ℕ} : ζ * f = f * ζ := by
+  rw [← natCoe_nat ζ, coe_zeta_mul_comm]
 
 end Zeta
 
@@ -482,6 +489,11 @@ def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
 
 @[simp]
 theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif_pos rfl]
+
+@[simp]
+theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by
+  simp only [ppow, pow_one]
+  rfl
 
 @[simp]
 theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
@@ -785,8 +797,7 @@ theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticF
     (h_zero : f m = 0) :
     f n = 0 := by
   rcases hmn with ⟨k, rfl⟩
-  simp only [MulZeroClass.zero_mul, hf.map_mul_of_coprime
-    (coprime_of_squarefree_mul hn), h_zero]
+  simp only [zero_mul, hf.map_mul_of_coprime (coprime_of_squarefree_mul hn), h_zero]
 
 end IsMultiplicative
 
@@ -809,6 +820,10 @@ theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k :
   cases k <;> simp [pow]
 
 theorem pow_zero_eq_zeta : pow 0 = ζ := by
+  ext n
+  simp
+
+theorem pow_one_eq_id : pow 1 = id := by
   ext n
   simp
 
@@ -942,6 +957,12 @@ theorem sigma_eq_one_iff (k n : ℕ) : σ k n = 1 ↔ n = 1 := by
     cutsat
   · rintro rfl
     simp
+
+theorem sigma_eq_prod_primeFactors_sum_range_factorization_pow_mul {k n : ℕ} (hn : n ≠ 0) :
+    σ k n = ∏ p ∈ n.primeFactors, ∑ i ∈ .range (n.factorization p + 1), p ^ (i * k) := by
+  rw [isMultiplicative_sigma.multiplicative_factorization _ hn]
+  exact Finset.prod_congr n.support_factorization fun _ h ↦
+    sigma_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
 
 theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     ∑ d ∈ n.divisors, d = ∏ p ∈ n.primeFactors, ∑ k ∈ .range (n.factorization p + 1), p ^ k := by

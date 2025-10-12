@@ -34,11 +34,8 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 
 ## Implementation Notes
 
-- Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
-  is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-  indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-  `∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
-  `n : Fin (n + 1)`.
+- `BoundedFormula` uses a locally nameless representation with bound variables as well-scoped de
+  Bruijn levels. See the implementation note in `Syntax.lean` for details.
 
 ## References
 
@@ -231,7 +228,8 @@ namespace BoundedFormula
 
 open Term
 
-/-- A bounded formula can be evaluated as true or false by giving values to each free variable. -/
+/-- A bounded formula can be evaluated as true or false by giving values to each free and bound
+variable. -/
 def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l → M), Prop
   | _, falsum, _v, _xs => False
   | _, equal t₁ t₂, v, xs => t₁.realize (Sum.elim v xs) = t₂.realize (Sum.elim v xs)
@@ -731,7 +729,7 @@ theorem completeTheory.subset [MT : M ⊨ T] : T ⊆ L.completeTheory M :=
 end Theory
 
 instance model_completeTheory : M ⊨ L.completeTheory M :=
-  Theory.model_iff_subset_completeTheory.2 (subset_refl _)
+  Theory.model_iff_subset_completeTheory.2 subset_rfl
 
 variable (M N)
 
