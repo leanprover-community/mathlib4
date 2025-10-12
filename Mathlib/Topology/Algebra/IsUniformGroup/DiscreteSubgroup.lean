@@ -6,6 +6,7 @@ Authors: David Loeffler
 
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
@@ -49,40 +50,29 @@ variable [IsTopologicalGroup G] [T2Space G]
 /-- If `G` is a topological group and `H` a finite-index subgroup, then `G` is topologically
 discrete iff `H` is. -/
 @[to_additive]
-lemma Subgroup.discreteTopology_iff_of_index_ne_zero {H : Subgroup G} (hind : H.index ≠ 0) :
+lemma Subgroup.discreteTopology_iff_of_finiteIndex {H : Subgroup G} [H.FiniteIndex] :
     DiscreteTopology H ↔ DiscreteTopology G := by
-  refine ⟨fun hH ↦ ?_, fun hG ↦ instDiscreteTopologySubtype⟩
-  let s (i : G ⧸ H) : Set G := QuotientGroup.mk ⁻¹' {i}
-  have : ⋃ i, s i = Set.univ := by
-    simpa only [Set.eq_univ_iff_forall, Set.mem_iUnion] using fun i ↦ ⟨⟦i⟧, rfl⟩
-  rw [← (Homeomorph.Set.univ G).discreteTopology_iff]
-  suffices h : DiscreteTopology (⋃ i, s i) by convert h <;> rw [this]
-  haveI : Fintype (G ⧸ H) := fintypeOfIndexNeZero hind
-  apply discreteTopology_iUnion_fintype
-  · -- show `s i` is discrete for all `i`
-    rintro ⟨k⟩
-    change DiscreteTopology (QuotientGroup.mk ⁻¹' {⟦k⟧})
-    rw [(Set.image_singleton ▸ QuotientGroup.preimage_image_mk_eq_mul H {k} :)]
-    exact ((Homeomorph.mulLeft k).subtype (p := (· ∈ H)) (by simp)).discreteTopology
-  · -- show `s i` is closed for all `i`
-    rintro ⟨k⟩
-    change IsClosed (QuotientGroup.mk ⁻¹' {⟦k⟧})
-    rw [(Set.image_singleton ▸ QuotientGroup.preimage_image_mk_eq_mul H {k} :)]
-    convert (Homeomorph.mulLeft k).isClosed_image.mpr H.isClosed_of_discrete
-    ext g
-    simp only [Set.singleton_mul, Set.image_mul_left, Set.mem_preimage, Homeomorph.coe_mulLeft]
+  refine ⟨fun hH ↦ ?_, fun hG ↦ inferInstance⟩
+  suffices IsOpen (H : Set G) by
+    rw [discreteTopology_iff_isOpen_singleton_one, isOpen_singleton_iff_nhds_eq_pure,
+        ← H.coe_one, ← this.isOpenEmbedding_subtypeVal.map_nhds_eq, nhds_discrete, map_pure]
+  exact H.isOpen_of_isClosed_of_finiteIndex Subgroup.isClosed_of_discrete
 
 @[to_additive]
-lemma Subgroup.discreteTopology_iff_of_finite_relIndex {H K : Subgroup G} (hHK : H ≤ K)
-    (hind : H.relIndex K ≠ 0) : DiscreteTopology H ↔ DiscreteTopology K := by
-  rw [← discreteTopology_iff_of_index_ne_zero hind,
-    (subgroupOfContinuousMulEquivOfLe hHK).symm.discreteTopology_iff]
+lemma Subgroup.discreteTopology_iff_of_isFiniteRelIndex {H K : Subgroup G} (hHK : H ≤ K)
+    [IsFiniteRelIndex H K] : DiscreteTopology H ↔ DiscreteTopology K := by
+  haveI : (H.subgroupOf K).FiniteIndex := IsFiniteRelIndex.to_finiteIndex_subgroupOf
+  rw [← (subgroupOfContinuousMulEquivOfLe hHK).discreteTopology_iff,
+    discreteTopology_iff_of_finiteIndex]
 
 @[to_additive]
 lemma Subgroup.Commensurable.discreteTopology_iff
     {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]
     {H K : Subgroup G} (h : Commensurable H K) :
-    DiscreteTopology H ↔ DiscreteTopology K := by
-  rw [Commensurable, ← Subgroup.inf_relIndex_left H K, ← Subgroup.inf_relIndex_right H K] at h
-  rw [← Subgroup.discreteTopology_iff_of_finite_relIndex inf_le_right h.1,
-    ← Subgroup.discreteTopology_iff_of_finite_relIndex inf_le_left h.2]
+    DiscreteTopology H ↔ DiscreteTopology K :=
+  calc DiscreteTopology H ↔ DiscreteTopology ↑(H ⊓ K) :=
+    haveI : IsFiniteRelIndex (H ⊓ K) H := ⟨Subgroup.inf_relIndex_left H K ▸ h.2⟩
+    (Subgroup.discreteTopology_iff_of_isFiniteRelIndex inf_le_left).symm
+  _ ↔ DiscreteTopology K :=
+    haveI : IsFiniteRelIndex (H ⊓ K) K := ⟨Subgroup.inf_relIndex_right H K ▸ h.1⟩
+    Subgroup.discreteTopology_iff_of_isFiniteRelIndex inf_le_right
