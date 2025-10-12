@@ -91,7 +91,7 @@ theorem equiv [FinitePresentation R A] (e : A ≃ₐ[R] B) : FinitePresentation 
 variable (R)
 
 /-- The ring of polynomials in finitely many variables is finitely presented. -/
-protected instance mvPolynomial (ι : Type*) [Finite ι] :
+private lemma mvPolynomial_aux (ι : Type*) [Finite ι] :
     FinitePresentation R (MvPolynomial ι R) where
   out := by
     cases nonempty_fintype ι
@@ -99,15 +99,6 @@ protected instance mvPolynomial (ι : Type*) [Finite ι] :
     exact
       ⟨Fintype.card ι, eqv, eqv.surjective,
         ((RingHom.injective_iff_ker_eq_bot _).1 eqv.injective).symm ▸ Submodule.fg_bot⟩
-
-/-- `R` is finitely presented as `R`-algebra. -/
-instance self : FinitePresentation R R :=
-  equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
-
-/-- `R[X]` is finitely presented as `R`-algebra. -/
-instance polynomial : FinitePresentation R R[X] :=
-  letI := FinitePresentation.mvPolynomial R Unit
-  equiv (MvPolynomial.pUnitAlgEquiv R)
 
 variable {R}
 
@@ -137,7 +128,7 @@ theorem iff :
   · rintro ⟨n, f, hf⟩
     exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
   · rintro ⟨n, I, e, hfg⟩
-    letI := (FinitePresentation.mvPolynomial R _).quotient hfg
+    letI := (FinitePresentation.mvPolynomial_aux R _).quotient hfg
     exact equiv e
 
 /-- An algebra is finitely presented if and only if it is a quotient of a polynomial ring whose
@@ -191,6 +182,22 @@ theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
   letI : FinitePresentation R (MvPolynomial (Fin n) A ⧸ I) :=
     (mvPolynomial_of_finitePresentation _).quotient hfg
   exact equiv (e.restrictScalars R)
+
+/-- The ring of polynomials in finitely many variables is finitely presented. -/
+protected instance mvPolynomial [FinitePresentation R A] (ι : Type*) [Finite ι] :
+    FinitePresentation R (MvPolynomial ι A) :=
+  have := FinitePresentation.mvPolynomial_aux A ι; .trans _ A _
+
+/-- `R` is finitely presented as `R`-algebra. -/
+instance self : FinitePresentation R R :=
+  have := FinitePresentation.mvPolynomial_aux R Empty
+  equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
+
+/-- `R[X]` is finitely presented as `R`-algebra. -/
+instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
+  letI := FinitePresentation.mvPolynomial R A Unit
+  have := equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} A)
+  .trans _ A _
 
 open MvPolynomial
 
