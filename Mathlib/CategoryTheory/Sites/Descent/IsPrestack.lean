@@ -137,14 +137,13 @@ class IsPrestack (J : GrothendieckTopology C) : Prop where
   isSheaf {S : C} (M N : F.obj (.mk (op S))) :
     Presheaf.IsSheaf (J.over S) (F.presheafHom M N)
 
-variable (J : GrothendieckTopology C) [F.IsPrestack J]
-
 /-- If `F` is a prestack from `Cᵒᵖ` to `Cat` relatively to a Grothendieck topology `J`,
 and `M` and `N` are two objects in `F.obj (.mk (op S))`, this is the sheaf of
 morphisms from `M` to `N`: it sends an object `T : Over S` corresponding to
 a morphism `p : X ⟶ S` to the type of morphisms $$p^* M ⟶ p^* N$$. -/
 @[simps]
-def sheafHom {S : C} (M N : F.obj (.mk (op S))) :
+def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
+    {S : C} (M N : F.obj (.mk (op S))) :
     Sheaf (J.over S) (Type v') where
   val := F.presheafHom M N
   cond := IsPrestack.isSheaf _ _
