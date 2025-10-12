@@ -149,11 +149,12 @@ theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
     algebraMap S (AdjoinRoot f) = (of f).comp (algebraMap S R) :=
   rfl
 
-theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
-  .of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
+instance finiteType [CommSemiring S] [Algebra S R] [FiniteType S R] :
+    FiniteType S (AdjoinRoot f) := by
+  unfold AdjoinRoot; infer_instance
 
-theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
-  (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
+instance finitePresentation [CommRing S] [Algebra S R] [FinitePresentation S R] :
+    FinitePresentation S (AdjoinRoot f) := .quotient (Submodule.fg_span_singleton f)
 
 /-- The adjoined root. -/
 def root : AdjoinRoot f :=
