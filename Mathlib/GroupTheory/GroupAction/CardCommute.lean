@@ -90,6 +90,6 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
 
 /-- Orbit-stabilizer theorem using `Nat.card`. -/
 theorem nat_card_orbit_mul_card_stabilizer_eq_card_group
-    (α : Type*) (β : Type*) [Group α] [MulAction α β] (b : β) :
+    (α : Type*) {β : Type*} [Group α] [MulAction α β] (b : β) :
     Nat.card (MulAction.orbit α b) * Nat.card (MulAction.stabilizer α b) = Nat.card α := by
   rw [← Nat.card_prod, Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup α b)]
