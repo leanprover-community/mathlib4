@@ -16,8 +16,8 @@ import Mathlib.Tactic.Ring.RingNF
 This file develops a graph-theoretic interface for studying the properties of nonnegative square
 matrices.
 
-The idea is to associate a directed graph (quiver) with a matrix `A`, where an edge `i ⟶ j`
-exists if and only if the entry `A i j` is strictly positive. This allows translating algebraic
+We associate a directed graph (quiver) with a matrix `A`, where an edge `i ⟶ j` exists if and only
+if the entry `A i j` is strictly positive. This allows translating algebraic
 properties of the matrix (like powers) into graph-theoretic properties of its quiver (like the
 existence of paths).
 
@@ -28,10 +28,10 @@ existence of paths).
 *   `Matrix.Irreducible A`: A matrix `A` is defined as irreducible if it is entrywise nonnegative
     and its associated quiver `toQuiver A` is strongly connected. The theorem
     `irreducible_iff_exists_pow_pos` proves this graph-theoretic definition is equivalent to the
-    algebraic one in semeta2006 (Def 1.6, p.18): for every pair of indices `(i, j)`, there exists a
+    algebraic one in seneta2006 (Def 1.6, p.18): for every pair of indices `(i, j)`, there exists a
     positive integer `k` such that `(A ^ k) i j > 0`.
 *   `Matrix.IsPrimitive A`: A matrix `A` is primitive if it is nonnegative and some power `A ^ k`
-    is strictly positive (all entries are `> 0`), (seneta2006 Definition 1.1, p.14).
+    is strictly positive (all entries are `> 0`), (seneta2006, Definition 1.1, p.14).
 
 ## Main results
 
