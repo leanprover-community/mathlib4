@@ -57,11 +57,10 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
   rw [← inner_coe_of_mem_range hz hz] at hx
-  let y := hz.choose
+  set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
   have hy : y = hz.choose := rfl
-  rw [← hy] at hx
   rw [y.basis_sum_repr e.toBasis f.toBasis] at hx
   simp only [OrthonormalBasis.coe_toBasis, inner_def] at hx
   simp only [map_smulₛₗ, map_sum, LinearMap.sum_apply, LinearMap.smul_apply, RingHom.id_apply,
@@ -81,11 +80,9 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
   rw [← inner_coe_of_mem_range hz hz]
-  let y := hz.choose
+  set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
-  have hy : y = hz.choose := rfl
-  rw [← hy]
   rw [y.basis_sum_repr e.toBasis f.toBasis]
   simp only [OrthonormalBasis.coe_toBasis, inner_def, map_sum, LinearMap.sum_apply, map_smulₛₗ]
   simp only [LinearMap.smul_apply, RingHom.id_apply, ← inner_def, inner_tmul, smul_eq_mul,
