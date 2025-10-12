@@ -495,7 +495,7 @@ universe w
 
 variable [UnivLE.{v, w}]
 
---need localization commute with localization
+--need `Ext` commute with localization
   --use `IsLocalizedModule` to state
   --for `i ≥ 2`, dimension shift
   --for `i = 0`, proven
