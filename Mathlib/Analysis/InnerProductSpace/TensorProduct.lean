@@ -256,7 +256,7 @@ lemma tensorProduct_apply'
 @[simp]
 lemma tensorProduct_repr_tmul_apply (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F)
     (x : E) (y : F) (i : ι₁) (j : ι₂) :
-    ((b₁.tensorProduct b₂).repr (x ⊗ₜ[𝕜] y)) (i, j) = (b₂.repr y j) * (b₁.repr x i) := by
+    (b₁.tensorProduct b₂).repr (x ⊗ₜ[𝕜] y) (i, j) = b₂.repr y j * b₁.repr x i := by
   simp [OrthonormalBasis.tensorProduct]
 
 lemma tensorProduct_repr_tmul_apply'
