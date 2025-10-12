@@ -72,14 +72,22 @@ theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F
 theorem norm_iteratedDeriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {n : ℕ} {f : ℂ → F}
     (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
-  have : ∀ z ∈ sphere c R, ‖(z - c) ^ (- (n + 1) : ℤ) • f z‖ ≤ C / (R ^ n  * R) :=
-    fun z (hz : ‖z - c‖ = R) => by sorry
+  have : ∀ z ∈ sphere c R, ‖(z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ ≤ C / (R ^ n  * R) :=
+    fun z (hz : ‖z - c‖ = R) => by
+    have := (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
+    simp [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul, ← div_mul_eq_div_div, mul_comm R]
+    exact this
   calc
     ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I : ℂ)⁻¹ •
-      ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ := by sorry
-    _ ≤ n.factorial * R * C / (R ^ n * R) := by sorry
+      ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ :=
+      congr_arg norm (iteratedDeriv_eq_smul_circleIntegral hR hf)
+    _ ≤ n.factorial * (R * (C / (R ^ n * R))) := by
+      simp only [RCLike.norm_nsmul (K := ℂ), nsmul_eq_mul]
+      have := (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le this)
+      refine mul_le_mul_of_nonneg_left this (?_ : (0 : ℝ) ≤ n.factorial)
+      exact_mod_cast ((Nat.factorial_pos n).le)
     _ = n.factorial * C / R ^ n := by
-      sorry
+      grind
 
 /-- If `f` is complex differentiable on an open disc of radius `R > 0`, is continuous on its
 closure, and its values on the boundary circle of this disc are bounded from above by `C`, then the
