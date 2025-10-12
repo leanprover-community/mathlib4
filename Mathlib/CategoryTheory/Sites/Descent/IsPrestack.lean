@@ -132,6 +132,7 @@ variable (F)
 
 /-- The property that a pseudofunctor `F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat`
 satisfies the descent property for morphisms, i.e. is a prestack. -/
+@[stacks 026F "(2)"]
 class IsPrestack (J : GrothendieckTopology C) : Prop where
   isSheaf {S : C} (M N : F.obj (.mk (op S))) :
     Presheaf.IsSheaf (J.over S) (F.presheafHom M N)
