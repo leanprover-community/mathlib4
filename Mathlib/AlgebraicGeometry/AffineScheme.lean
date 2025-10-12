@@ -339,6 +339,11 @@ lemma Scheme.Opens.toSpecΓ_appTop {X : Scheme.{u}} (U : X.Opens) :
     U.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
   simp [Scheme.Opens.toSpecΓ]
 
+@[reassoc]
+lemma Scheme.Opens.toSpecΓ_SpecMap_map_top {X : Scheme} (U : X.Opens) :
+    U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE le_top).op) = U.ι ≫ X.toSpecΓ := by
+  simp
+
 namespace IsAffineOpen
 
 variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
@@ -491,6 +496,11 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     rw [Subtype.range_coe, Subtype.range_coe]
     rfl
   mpr hU := hU.image_of_isOpenImmersion f
+
+lemma preimage_of_isOpenImmersion {U : Y.Opens} (hV : IsAffineOpen U)
+    (f : X ⟶ Y) [IsOpenImmersion f] (hU : U ≤ f.opensRange) : IsAffineOpen (f ⁻¹ᵁ U) := by
+  rwa [← f.isAffineOpen_iff_of_isOpenImmersion,
+    f.image_preimage_eq_opensRange_inter U, inf_eq_right.mpr hU]
 
 /-- The affine open sets of an open subscheme corresponds to
 the affine open sets containing in the image. -/
