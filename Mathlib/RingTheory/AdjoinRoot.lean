@@ -48,6 +48,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
+open Algebra (FinitePresentation FiniteType)
 open Ideal Module Polynomial
 
 universe u v w
