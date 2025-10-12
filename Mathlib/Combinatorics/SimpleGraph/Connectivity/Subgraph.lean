@@ -602,28 +602,24 @@ protected theorem Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn 
 
 namespace Subgraph
 
+protected lemma Connected.map_Subgraph_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected := by
+  rw [connected_iff_forall_exists_walk_subgraph]
+  simp only [map_verts, Set.image_nonempty, hconn.nonempty, Set.mem_image, Subtype.exists,
+    forall_exists_index, and_imp, true_and]
+  intro u v u' _ hu'' hfu'' v' _ hv'' hfv''
+  rw [← hfu'', ← hfv'']
+  rw [connected_iff_forall_exists_walk_subgraph] at hconn
+  obtain ⟨_, hp⟩ := hconn
+  obtain ⟨p, _⟩ := hp hu'' hv''
+  use p.map f
+  rw [p.toSubgraph_map]
+  gcongr
+
 protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (hconn : G''.Connected) :
     (Subgraph.coeSubgraph G'').Connected := by
-  obtain ⟨hpreconn, _⟩ := Subgraph.connected_iff.mp hconn
-  have := hpreconn.coe.set_univ_walk_nonempty
-  simp_all only [connected_iff_forall_exists_walk_subgraph, Subtype.forall, true_and, map_verts,
-    hom_apply, Set.image_nonempty, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-    forall_exists_index]
-  intro u v hu' hu'' hv' hv''
-  obtain ⟨p'', _⟩ := this u hu' hu'' v hv' hv''
-  use p''.map {
-    toFun x := x.val.val
-    map_rel' := by
-      intro _ _ h''
-      exact coe_adj_sub _ _ _ (h''.adj_sub' ..)
-  }
-  constructor
-  all_goals simp only [Walk.toSubgraph_map, map_verts, RelHom.coeFn_mk, hom_apply]
-  · grind
-  · intro _ _ ⟨x'', y'', h'', _, _⟩
-    use x''.val, y''.val
-    simp_all [← coe_adj, h''.adj_sub]
+  exact hconn.map_Subgraph_coe G'.hom
 
 /-- The graph resulting from removing a vertex of degree one from a nontrivial connected graph is
 connected. -/
