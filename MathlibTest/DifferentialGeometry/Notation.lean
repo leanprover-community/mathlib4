@@ -900,6 +900,94 @@ open ContDiff in -- for the ∞ notation
 
 end
 
+/-! Products of models with corners: TODO, add lots of further tests -/
+section
+
+variable {EM' : Type*} [NormedAddCommGroup EM']
+  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {f g : M → M'} {h : M → 𝕜} {h' : E → M'} {k : M × E → M'} {φ φ' : OpenPartialHomeomorph M H}
+  {f' : E → M} {g' : EM' → M'} {h' k' : F → M'}
+
+/-- info: MDifferentiable I I' f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+/-- error: Could not find a model with corners for `M × M` -/
+#guard_msgs in
+#check MDiff (Prod.map f g)
+
+/-- error: Could not find a model with corners for `M × M` -/
+#guard_msgs in
+#check MDiff (Prod.map f h)
+
+/-- error: Could not find a model with corners for `M × M` -/
+#guard_msgs in
+#check MDiff (Prod.map f φ)
+
+/-- error: Could not find a model with corners for `M' × M'` -/
+#guard_msgs in
+#check MDiff (fun x ↦ (f x, g x))
+
+/-- error: Could not find a model with corners for `M × E` -/
+#guard_msgs in
+#check MDiff k
+
+/-- error: Could not find a model with corners for `E × E` -/
+#guard_msgs in
+#check CMDiff 2 (Prod.map f' f')
+
+/-- error: Could not find a model with corners for `M × M` -/
+#guard_msgs in
+#check MDiff (Prod.map φ φ')
+
+-- Currently, higher-order products are not implemented.
+-- XXX: double-check these could work, by trying out the equivalent
+-- MDifferentiable/ContMDiff incantation
+/-- error: Could not find a model with corners for `M × M × M` -/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map h g))
+
+/-- error: Could not find a model with corners for `(M × M) × M` -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f g) h)
+
+/-- error: Could not find a model with corners for `(M × M) × M × M × E` -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f g) (Prod.map h k))
+
+/-- error: Could not find a model with corners for `((M × M) × M) × M × E` -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map (Prod.map f g) h) k)
+
+/-- error: Could not find a model with corners for `M × M × M × M × E` -/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map g (Prod.map h k)))
+
+/-- error: Could not find a model with corners for `E × EM' × F` -/
+#guard_msgs in
+#check CMDiff 2 (Prod.map f' (Prod.map g' h'))
+
+/-- error: Could not find a model with corners for `(E × EM') × F` -/
+#guard_msgs in
+#check CMDiff 2 (Prod.map (Prod.map f' g') h')
+
+/-- error: Could not find a model with corners for `((E × EM') × F) × F` -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map (Prod.map f' g') h') k')
+
+/-- error: Could not find a model with corners for `(E × EM') × F × F` -/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f' g') (Prod.map h' k'))
+
+/-- error: Could not find a model with corners for `E × EM' × F × F` -/
+#guard_msgs in
+#check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
+
+-- TODO: add many more tests!
+
+end
+
 section trace
 
 /- Test that basic tracing works. -/
