@@ -2262,7 +2262,7 @@ Q3180727:
 
 Q3229335:
   title: Borel–Carathéodory theorem
-  decl: Analysis.Complex.borelCaratheodory_closedBall
+  decl: borelCaratheodory_closedBall
   authors: Maksym Radziwill
   date: 2025
 
