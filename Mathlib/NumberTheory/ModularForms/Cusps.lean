@@ -389,6 +389,7 @@ lemma commensurable_strictPeriods_periods (𝒢 : Subgroup (GL (Fin 2) K)) :
   · rcases 𝒢.relIndex_strictPeriods with h | h <;> simp [h]
   · simp [AddSubgroup.relIndex_eq_one.mpr 𝒢.strictPeriods_le_periods]
 
+/-- A subgroup is *regular at ∞* if its periods and strict periods coincide. -/
 def IsRegularAtInfty (𝒢 : Subgroup (GL (Fin 2) K)) : Prop :=
     𝒢.strictPeriods = 𝒢.periods
 
