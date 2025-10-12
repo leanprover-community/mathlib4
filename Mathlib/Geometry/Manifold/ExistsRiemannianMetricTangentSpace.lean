@@ -19,8 +19,6 @@ open Bundle ContDiff Manifold
 
 -- Let E be a smooth vector bundle over a manifold E
 
-universe uE uH uB
-
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB] [InnerProductSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
@@ -96,27 +94,6 @@ IB :=
   (F₁ := EB) (E₁ := (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) (F₂ := EB →L[ℝ] ℝ)
   (E₂ := V (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))
 
-noncomputable
-def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) : ℝ :=
-  let ψ := extChartAt IB i
-  let dψ := mfderiv IB (modelWithCornersSelf ℝ EB) ψ p
-  let x : EB := dψ v
-  let y : EB := dψ w
-  @Inner.inner ℝ EB _ x y
-
-variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
-
-noncomputable
-def g_global (f : SmoothPartitionOfUnity B IB B) :
-    ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
-  fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
-
-example : true := by
-  obtain ⟨f, hf⟩ := SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source IB B
-  let g_global : ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
-    fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
-  trivial
-
 variable (E) in
 /-- The real vector bundle `Hom(E, Hom(E, T)) = Hom(E, V)`, whose fiber at `x` is
 (equivalent to) the space of continuous real bilinear maps `E x → E x → ℝ`. -/
@@ -163,6 +140,27 @@ instance (x : B) : IsTopologicalAddGroup (W E x) := by
   infer_instance
 
 end
+
+noncomputable
+def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) : ℝ :=
+  let ψ := extChartAt IB i
+  let dψ := mfderiv IB (modelWithCornersSelf ℝ EB) ψ p
+  let x : EB := dψ v
+  let y : EB := dψ w
+  @Inner.inner ℝ EB _ x y
+
+variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
+
+noncomputable
+def g_global (f : SmoothPartitionOfUnity B IB B) :
+    ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
+  fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
+
+example : true := by
+  obtain ⟨f, hf⟩ := SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source IB B
+  let g_global : ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
+    fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
+  trivial
 
 noncomputable
 def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
