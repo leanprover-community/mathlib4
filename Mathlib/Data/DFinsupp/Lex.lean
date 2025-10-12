@@ -186,8 +186,6 @@ We assume `AddLeftStrictMono` (covariant with *strict* inequality `<`) also when
 with the *weak* inequality `≤`. This is actually necessary: addition on `Lex (Π₀ i, α i)` may fail
 to be monotone, when it is "just" monotone on `α i`. -/
 
--- TODO: add the `Colex` instances once the `Add (Colex (Π₀ i, α i))` instance is defined.
-
 section Left
 
 variable [∀ i, AddLeftStrictMono (α i)]
@@ -195,8 +193,14 @@ variable [∀ i, AddLeftStrictMono (α i)]
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 
+instance Colex.addLeftStrictMono : AddLeftStrictMono (Colex (Π₀ i, α i)) :=
+  Lex.addLeftStrictMono (ι := ιᵒᵈ)
+
 instance Lex.addLeftMono : AddLeftMono (Lex (Π₀ i, α i)) :=
   addLeftMono_of_addLeftStrictMono _
+
+instance Colex.addLeftMono : AddLeftMono (Colex (Π₀ i, α i)) :=
+  Lex.addLeftMono (ι := ιᵒᵈ)
 
 end Left
 
@@ -208,8 +212,14 @@ instance Lex.addRightStrictMono : AddRightStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 
+instance Colex.addRightStrictMono : AddRightStrictMono (Colex (Π₀ i, α i)) :=
+  Lex.addRightStrictMono (ι := ιᵒᵈ)
+
 instance Lex.addRightMono : AddRightMono (Lex (Π₀ i, α i)) :=
   addRightMono_of_addRightStrictMono _
+
+instance Colex.addRightMono : AddRightMono (Colex (Π₀ i, α i)) :=
+  Lex.addRightMono (ι := ιᵒᵈ)
 
 end Right
 
@@ -225,16 +235,32 @@ instance Lex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
   bot := 0
   bot_le _ := DFinsupp.toLex_monotone bot_le
 
+instance Colex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, CanonicallyOrderedAdd (α i)] :
+    OrderBot (Colex (Π₀ i, α i)) where
+  bot := 0
+  bot_le _ := DFinsupp.toColex_monotone bot_le
+
 instance Lex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedCancelAddMonoid (α i)] :
     IsOrderedCancelAddMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
 
+instance Colex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedCancelAddMonoid (α i)] :
+    IsOrderedCancelAddMonoid (Colex (Π₀ i, α i)) :=
+  Lex.isOrderedCancelAddMonoid (ι := ιᵒᵈ)
+
 instance Lex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedAddMonoid (α i)] :
     IsOrderedAddMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ := add_le_add_left
+
+instance Colex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedAddMonoid (α i)] :
+    IsOrderedAddMonoid (Colex (Π₀ i, α i)) :=
+  Lex.isOrderedAddMonoid (ι := ιᵒᵈ)
 
 end OrderedAddMonoid
 
