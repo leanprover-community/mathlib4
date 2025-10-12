@@ -69,7 +69,7 @@ theorem raise_lower : ∀ {l n}, List.SortedLE (n :: l) → raise (lower l n) n 
   | [], _, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_pairwise_cons h.pairwise List.mem_cons_self
-    simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.pairwise.of_cons.isChain.sortedLE]
+    simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.pairwise.of_cons.sortedLE]
 
 theorem isChain_raise : ∀ l n, List.IsChain (· ≤ ·) (raise l n)
   | [], _ => .nil
@@ -95,7 +95,7 @@ instance multiset : Denumerable (Multiset α) :=
      fun s => by
       have :=
         raise_lower (List.pairwise_cons.2 ⟨fun n _ => Nat.zero_le n,
-        (s.map encode).pairwise_sort _⟩).isChain.sortedLE
+        (s.map encode).pairwise_sort _⟩).sortedLE
       simp [-Multiset.map_coe, this],
      fun n => by
       simp [-Multiset.map_coe, List.mergeSort_eq_self _ (raise_sorted _ _).pairwise, lower_raise]⟩

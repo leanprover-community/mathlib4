@@ -577,10 +577,10 @@ instance decidableSortedGT [DecidableLT α] : Decidable (l.SortedGT) :=
   decidable_of_iff' _ sortedGT_iff_isChain
 
 protected theorem SortedLT.sortedLE {l : List α} (h : l.SortedLT) :
-    l.SortedLE := (h.pairwise.imp le_of_lt).isChain.sortedLE
+    l.SortedLE := (h.pairwise.imp le_of_lt).sortedLE
 
 protected theorem SortedGT.sortedGE {l : List α} (h : l.SortedGT) :
-    l.SortedGE := (h.pairwise.imp le_of_lt).isChain.sortedGE
+    l.SortedGE := (h.pairwise.imp le_of_lt).sortedGE
 
 theorem SortedLT.nodup (h : l.SortedLT) : l.Nodup := h.pairwise.imp (fun {_ _} ↦ ne_of_lt)
 theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.pairwise.imp (fun {_ _} ↦ ne_of_gt)
@@ -644,7 +644,7 @@ lemma sorted_le_range' (a b s) :
   · exact (sortedLT_range' a b hs).sortedLE
   · rw [ne_eq, Decidable.not_not] at hs
     rw [hs, range'_0]
-    exact pairwise_replicate_of_refl.isChain.sortedLE
+    exact pairwise_replicate_of_refl.sortedLE
 
 section OfFn
 
@@ -687,11 +687,11 @@ variable [PartialOrder α]
 
 protected theorem SortedLE.sortedLT {l : List α} (h₁ : l.SortedLE)
     (h₂ : l.Nodup) : l.SortedLT :=
-  (h₁.pairwise.imp₂ (fun _ _ => lt_of_le_of_ne) h₂).isChain.sortedLT
+  (h₁.pairwise.imp₂ (fun _ _ => lt_of_le_of_ne) h₂).sortedLT
 
 protected theorem SortedGE.sortedGT {l : List α} (h₁ : l.SortedGE)
     (h₂ : l.Nodup) : l.SortedGT :=
-  (h₁.pairwise.imp₂ (fun _ _ => lt_of_le_of_ne) <| h₂.imp Ne.symm).isChain.sortedGT
+  (h₁.pairwise.imp₂ (fun _ _ => lt_of_le_of_ne) <| h₂.imp Ne.symm).sortedGT
 
 theorem sortedLT_iff_nodup_and_sortedLE : l.SortedLT ↔ l.Nodup ∧ l.SortedLE :=
   ⟨fun h => ⟨h.nodup, h.sortedLE⟩, fun h => h.2.sortedLT h.1⟩

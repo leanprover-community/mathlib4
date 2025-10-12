@@ -79,7 +79,7 @@ theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.SortedLT l →
     have : n ≤ m := h₁ _ List.mem_cons_self
     simp [raise', lower', Nat.sub_add_cancel this,
       raise_lower' (fun _ => List.rel_of_pairwise_cons h₂.pairwise : ∀ a ∈ l, m < a)
-      h₂.pairwise.of_cons.isChain.sortedLT]
+      h₂.pairwise.of_cons.sortedLT]
 
 theorem isChain_raise' : ∀ (l) (n), List.IsChain (· < ·) (raise' l n)
   | [], _ => .nil

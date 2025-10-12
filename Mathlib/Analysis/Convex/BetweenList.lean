@@ -180,13 +180,13 @@ lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
   | nil => simp
   | cons head tail ih =>
     rw [wbtw_cons]
-    refine ⟨?_, ih h.pairwise.of_cons.isChain.sortedLE⟩
+    refine ⟨?_, ih h.pairwise.of_cons.sortedLE⟩
     clear ih
     induction tail with
     | nil => simp
     | cons head' tail' ih =>
       rw [pairwise_cons]
-      refine ⟨?_, ih (h.pairwise.sublist ?_).isChain.sortedLE⟩
+      refine ⟨?_, ih (h.pairwise.sublist ?_).sortedLE⟩
       · simp_rw [sortedLE_iff_pairwise, pairwise_cons_cons, pairwise_cons] at h
         exact fun a ha ↦ .of_le_of_le h.1 (h.2.2.1 a ha)
       · simp
@@ -259,7 +259,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
       (l.length = 1 ∨ l.head hl ≠ l.getLast hl)) ↔ l.Sbtw R := by
   refine ⟨fun ⟨l', hl's, hl'l, hla⟩ ↦
             ⟨(exists_map_eq_of_sorted_nonempty_iff_wbtw hl).1
-            ⟨l', (hl's.pairwise.imp LT.lt.le).isChain.sortedLE, hl'l⟩, ?_⟩,
+            ⟨l', (hl's.pairwise.imp LT.lt.le).sortedLE, hl'l⟩, ?_⟩,
           fun h ↦ ?_⟩
   · rw [← hl'l]
     rcases hla with hla | hla
@@ -270,7 +270,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
     refine ⟨l', ?_, hl'l, ?_⟩
     · rw [← hl'l] at hp
       have hp' : l'.Pairwise (· ≠ ·) := hp.of_map _ (by simp)
-      exact ((pairwise_and_iff.2 ⟨hl's.pairwise, hp'⟩).imp lt_iff_le_and_ne.2).isChain.sortedLT
+      exact ((pairwise_and_iff.2 ⟨hl's.pairwise, hp'⟩).imp lt_iff_le_and_ne.2).sortedLT
     · cases l with
       | nil => simp at hl
       | cons head tail =>

@@ -87,7 +87,7 @@ lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
 lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
     IsAdmissible (m + 1) l := by
-  refine ⟨(List.pairwise_cons.mp h.sorted.pairwise).right.isChain.sortedLT, ?_⟩
+  refine ⟨(List.pairwise_cons.mp h.sorted.pairwise).right.sortedLT, ?_⟩
   intro k _
   simpa [Nat.add_assoc, Nat.add_comm 1] using h.le (k + 1) (by simpa)
 
