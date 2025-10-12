@@ -97,7 +97,10 @@ end LocallyDiscreteOpToCat
 
 open LocallyDiscreteOpToCat
 
+section
+
 variable (F) {S : C} (M N : F.obj (.mk (op S)))
+
 /-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat`, and `M` and `N` are objects in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
@@ -123,20 +126,25 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
         F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ (by
           simp only [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w_assoc])])
 
+end
+
+variable (F)
+
 /-- The property that a pseudofunctor `F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat`
 satisfies the descent property for morphisms, i.e. is a prestack. -/
+@[stacks 026F "(2)"]
 class IsPrestack (J : GrothendieckTopology C) : Prop where
   isSheaf {S : C} (M N : F.obj (.mk (op S))) :
     Presheaf.IsSheaf (J.over S) (F.presheafHom M N)
 
-variable (J : GrothendieckTopology C) [F.IsPrestack J]
-
 /-- If `F` is a prestack from `Cᵒᵖ` to `Cat` relatively to a Grothendieck topology `J`,
-and `M` and `N` are to objects in `F.obj (.mk (op S))`, this is the sheaf of
+and `M` and `N` are two objects in `F.obj (.mk (op S))`, this is the sheaf of
 morphisms from `M` to `N`: it sends an object `T : Over S` corresponding to
 a morphism `p : X ⟶ S` to the type of morphisms $$p^* M ⟶ p^* N$$. -/
 @[simps]
-def sheafHom : Sheaf (J.over S) (Type v') where
+def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
+    {S : C} (M N : F.obj (.mk (op S))) :
+    Sheaf (J.over S) (Type v') where
   val := F.presheafHom M N
   cond := IsPrestack.isSheaf _ _
 

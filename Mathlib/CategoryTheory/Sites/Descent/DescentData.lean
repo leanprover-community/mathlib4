@@ -33,7 +33,7 @@ open Opposite
 
 namespace Pseudofunctor
 
--- TODO: can we make grind to this?
+-- TODO: can we make grind do this?
 /-- Tactic which does `simp [← Quiver.Hom.comp_toLoc, ← op_comp]` before applying `aesop`. -/
 macro "aesoptoloc" : tactic =>
   `(tactic|(simp [← Quiver.Hom.comp_toLoc, ← op_comp] <;> aesop))
@@ -49,7 +49,7 @@ the `X i` relative to the morphisms `f i` consists in families of
 objects `obj i` in `F.obj (.mk (op (X i)))` together with morphisms `hom`
 between the pullbacks of `obj i₁` and `obj i₂` over any object `Y` which maps
 to both `X i₁` and `X i₂` (in a way that is compatible with the morphisms to `S`).
-The compatibles these morphisms satisfy imply that the morphisms `hom` are isomorphisms. -/
+The compatibilities these morphisms satisfy imply that the morphisms `hom` are isomorphisms. -/
 structure DescentData where
   /-- The objects over `X i` for all `i` -/
   obj (i : ι) : F.obj (.mk (op (X i)))
