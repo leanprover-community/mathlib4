@@ -34,7 +34,7 @@ lemma ValueGroup₀.monoidWithZeroHom_strictMono :
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
 the use of `ValueGroup₀.MonoidWithZeroHom` and apply the above lemma
 `ValueGroup₀.MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
-def ValueGroup₀.OrderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
+def ValueGroup₀.orderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
   toFun := ValueGroup₀.monoidWithZeroHom
   inj' := ValueGroup₀.monoidWithZeroHom_strictMono.injective
   map_rel_iff' := ValueGroup₀.monoidWithZeroHom_strictMono.le_iff_le
