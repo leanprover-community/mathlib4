@@ -42,6 +42,16 @@ lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     ← F.map₂_comp_assoc, eqToHom_trans, eqToHom_refl, PrelaxFunctor.map₂_id,
     Category.id_comp]
 
+@[to_app (attr := reassoc)]
+lemma mapComp'_comp_id_hom {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
+    (F.mapComp' f (𝟙 b₁) f).hom = (ρ_ _).inv ≫ _ ◁ (F.mapId b₁).inv := by
+  simp [mapComp'_comp_id]
+
+@[to_app (attr := reassoc)]
+lemma mapComp'_comp_id_inv {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
+    (F.mapComp' f (𝟙 b₁) f).inv = _ ◁ (F.mapId b₁).hom ≫ (ρ_ _).hom := by
+  simp [mapComp'_comp_id]
+
 lemma mapComp'_id_comp {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' (𝟙 b₀) f f = (λ_ _).symm ≪≫ whiskerRightIso (F.mapId b₀).symm _ := by
   ext
@@ -51,52 +61,107 @@ lemma mapComp'_id_comp {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     ← F.map₂_comp_assoc, eqToHom_trans, eqToHom_refl, PrelaxFunctor.map₂_id,
     Category.id_comp]
 
+@[to_app (attr := reassoc)]
+lemma mapComp'_id_comp_hom {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
+    (F.mapComp' (𝟙 b₀) f f).hom = (λ_ _).inv ≫ (F.mapId b₀).inv ▷ _ := by
+  simp [mapComp'_id_comp]
+
+@[to_app (attr := reassoc)]
+lemma mapComp'_id_comp_inv {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
+    (F.mapComp' (𝟙 b₀) f f).inv = (F.mapId b₀).hom ▷ _ ≫ (λ_ _).hom := by
+  simp [mapComp'_id_comp]
+
 section associativity
 
 variable {b₀ b₁ b₂ b₃ : B} (f₀₁ : b₀ ⟶ b₁)
   (f₁₂ : b₁ ⟶ b₂) (f₂₃ : b₂ ⟶ b₃) (f₀₂ : b₀ ⟶ b₂) (f₁₃ : b₁ ⟶ b₃) (f : b₀ ⟶ b₃)
   (h₀₂ : f₀₁ ≫ f₁₂ = f₀₂) (h₁₃ : f₁₂ ≫ f₂₃ = f₁₃)
 
-@[reassoc]
-lemma mapComp'_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁₃ = f) :
-    (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom =
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁₃ = f) :
+    (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃).hom =
     (F.mapComp' f₀₂ f₂₃ f).hom ≫
       (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ ≫ (α_ _ _ _).hom := by
   subst h₀₂ h₁₃ hf
   simp [mapComp_assoc_right_hom, Strict.associator_eqToIso, mapComp']
 
-@[reassoc]
-lemma mapComp'_inv_comp_mapComp'_hom (hf : f₀₁ ≫ f₁₃ = f) :
+@[deprecated (since := "2025-10-02")] alias mapComp'_hom_comp_whiskerLeft_mapComp'_hom :=
+  mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom
+
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
     (F.mapComp' f₀₁ f₁₃ f).inv ≫ (F.mapComp' f₀₂ f₂₃ f).hom =
     F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
       (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ := by
   rw [← cancel_epi (F.mapComp' f₀₁ f₁₃ f hf).hom, Iso.hom_inv_id_assoc,
-    F.mapComp'_hom_comp_whiskerLeft_mapComp'_hom_assoc _ _ _ _ _ _ h₀₂ h₁₃ hf]
+    F.mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom_assoc _ _ _ _ _ _ h₀₂ h₁₃ hf]
   simp
 
-@[reassoc]
-lemma whiskerLeft_mapComp'_inv_comp_mapComp'_inv (hf : f₀₁ ≫ f₁₃ = f) :
+@[deprecated (since := "2025-10-02")] alias mapComp'_inv_comp_mapComp'_hom :=
+  mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom
+
+@[to_app (attr := reassoc)]
+lemma whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁₃ = f) :
     F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv ≫ (F.mapComp' f₀₁ f₁₃ f hf).inv =
     (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫
       (F.mapComp' f₀₂ f₂₃ f).inv := by
   simp [← cancel_mono (F.mapComp' f₀₂ f₂₃ f).hom,
-    F.mapComp'_inv_comp_mapComp'_hom _ _ _ _ _ _ h₀₂ h₁₃ hf]
+    F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom _ _ _ _ _ _ h₀₂ h₁₃ hf]
 
-@[reassoc]
-lemma mapComp'_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f₂₃ = f) :
+@[deprecated (since := "2025-10-02")] alias whiskerLeft_mapComp'_inv_comp_mapComp'_inv :=
+  whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv
+
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).hom ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ =
     (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
       (α_ _ _ _).inv := by
-  rw [F.mapComp'_hom_comp_whiskerLeft_mapComp'_hom_assoc _ _ _ _ _ f h₀₂ h₁₃ (by cat_disch)]
+  rw [F.mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom_assoc _ _ _ _ _ f h₀₂ h₁₃ (by cat_disch)]
   simp
 
-@[reassoc]
-lemma mapComp'_inv_whiskerRight_comp_mapComp'_inv (hf : f₀₂ ≫ f₂₃ = f) :
+@[deprecated (since := "2025-10-02")] alias mapComp'_hom_comp_mapComp'_hom_whiskerRight :=
+  mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight
+
+@[to_app (attr := reassoc)]
+lemma mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫ (F.mapComp' f₀₂ f₂₃ f).inv =
     (α_ _ _ _).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv ≫
       (F.mapComp' f₀₁ f₁₃ f).inv := by
-  rw [whiskerLeft_mapComp'_inv_comp_mapComp'_inv _ _ _ _ _ _ f h₀₂ h₁₃,
+  rw [whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv _ _ _ _ _ _ f h₀₂ h₁₃,
     Iso.hom_inv_id_assoc]
+
+@[deprecated (since := "2025-10-02")] alias mapComp'_inv_whiskerRight_comp_mapComp'_inv :=
+  mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv
+
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁₃ = f) :
+    (F.mapComp' f₀₁ f₁₃ f).inv =
+    F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫ (α_ _ _ _).inv ≫
+      (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫ (F.mapComp' f₀₂ f₂₃ f).inv := by
+  simp [← whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv _ _ _ _ _ _ f h₀₂ h₁₃ hf]
+
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₁₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
+    (F.mapComp' f₀₁ f₁₃ f).hom =
+    (F.mapComp' f₀₂ f₂₃ f).hom ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ ≫
+    (α_ _ _ _).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv := by
+  rw [← cancel_epi (F.mapComp' f₀₁ f₁₃ f).inv, Iso.inv_hom_id]
+  simp [mapComp'₀₁₃_inv _ _ _ _ _ _ f h₀₂ h₁₃ hf]
+
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₂₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
+    (F.mapComp' f₀₂ f₂₃ f).hom =
+    (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
+      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃:= by
+  simp [← mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_assoc _ _ _ _ _ _ f h₀₂ h₁₃ hf]
+
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
+    (F.mapComp' f₀₂ f₂₃ f).inv =
+    (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ ≫ (α_ _ _ _).hom ≫
+    F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv ≫ (F.mapComp' f₀₁ f₁₃ f).inv := by
+  rw [← cancel_epi (F.mapComp' f₀₂ f₂₃ f).hom, Iso.hom_inv_id]
+  simp [mapComp'₀₂₃_hom _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
 end associativity
 
