@@ -399,16 +399,6 @@ theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
   classical
   simpa using mul_mul_conjTranspose_same .one hA
 
-
-/-- In a nontrivial commutative ring with nontrivial index, the matrices
-`vecMulVec a (star a)` and `vecMulVec (star a) a` are never positive definite. -/
-theorem _root_.Matrix.not_posDef_vecMulVec [Nontrivial n] [Nontrivial R'] (a : n → R') :
-    ¬ (vecMulVec a (star a)).PosDef ∧ ¬ (vecMulVec (star a) a).PosDef := by
-  rw [← PosDef.transpose_iff, transpose_vecMulVec, and_self]
-  rintro ⟨h1, h2⟩
-  obtain ⟨b, hb, H⟩ := exists_ne_zero_dotProduct_eq_zero (star a)
-  simpa [vecMulVec_mulVec, H] using h2 (star b) (star_ne_zero.mpr hb)
-
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
 
 @[simp]
