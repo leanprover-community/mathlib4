@@ -163,7 +163,7 @@ private theorem inner_comm_comm (x y : E ⊗[𝕜] F) :
 variable (𝕜 E F) in
 /-- The linear isometry equivalence version of `TensorProduct.comm`. -/
 @[simps!]
-def commLinearIsometryEquiv : (E ⊗[𝕜] F) ≃ₗᵢ[𝕜] (F ⊗[𝕜] E) where
+def commLinearIsometryEquiv : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E where
   toLinearEquiv := TensorProduct.comm 𝕜 E F
   norm_map' _ := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_comm_comm]
 
@@ -180,7 +180,7 @@ private theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
 variable (𝕜 E) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
 @[simps!]
-def lidLinearIsometryEquiv : (𝕜 ⊗[𝕜] E) ≃ₗᵢ[𝕜] E where
+def lidLinearIsometryEquiv : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E where
   toLinearEquiv := TensorProduct.lid 𝕜 E
   norm_map' _ := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_lid_lid]
 
