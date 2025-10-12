@@ -127,9 +127,15 @@ variable {R : Type*} [Ring R]
 def Subgroup.adjoinNegOne (𝒢 : Subgroup (GL n R)) : Subgroup (GL n R) where
   carrier := {g | g ∈ 𝒢 ∨ -g ∈ 𝒢}
   mul_mem' ha hb := by
-    rcases ha with ha | ha <;> rcases hb with hb | hb <;> · have := mul_mem ha hb; aesop
+    rcases ha with ha | ha <;>
+      rcases hb with hb | hb <;>
+      · have := mul_mem ha hb
+        aesop
   one_mem' := by simp
-  inv_mem' ha := by rcases ha with (ha | ha) <;> · have := inv_mem ha; aesop
+  inv_mem' ha := by
+    rcases ha with (ha | ha) <;>
+    · have := inv_mem ha
+      aesop
 
 @[simp] lemma Subgroup.mem_adjoinNegOne_iff {𝒢 : Subgroup (GL n R)} {g : GL n R} :
     g ∈ 𝒢.adjoinNegOne ↔ g ∈ 𝒢 ∨ -g ∈ 𝒢 :=
@@ -145,22 +151,6 @@ lemma Subgroup.adjoinNegOne_eq_self_iff {𝒢 : Subgroup (GL n R)} :
     𝒢.adjoinNegOne = 𝒢 ↔ -1 ∈ 𝒢 :=
   ⟨fun h ↦ h ▸ negOne_mem_adjoinNegOne 𝒢, fun hG ↦ 𝒢.le_adjoinNegOne.antisymm'
     fun g hg ↦ hg.elim id (fun h ↦ by simpa using mul_mem hG h)⟩
-
-@[to_additive]
-lemma Subgroup.index_eq_two_iff_exists_notMem_and {G : Type*} [Group G] {H : Subgroup G} :
-    H.index = 2 ↔ ∃ a, a ∉ H ∧ ∀ b, (b * a ∈ H) ∨ (b ∈ H) := by
-  simp only [Subgroup.index_eq_two_iff, xor_iff_or_and_not_and]
-  exact exists_congr fun a ↦ ⟨fun h ↦ ⟨fun ha ↦ ((h a)).2 ⟨mul_mem ha ha, ha⟩, fun b ↦ (h b).1⟩,
-    fun h b ↦ ⟨h.2 b, fun h' ↦ h.1 (by simpa using mul_mem (inv_mem h'.2) h'.1)⟩⟩
-
-/-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and`. -/
-@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and`. -/]
-lemma Subgroup.relIndex_eq_two_iff_exists_notMem_and {G : Type*} [Group G] {H K : Subgroup G} :
-    H.relIndex K = 2 ↔ ∃ a ∈ K, a ∉ H ∧ ∀ b ∈ K, (b * a ∈ H) ∨ (b ∈ H) := by
-  rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and]
-  simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
-  refine exists_congr fun g ↦ ?_
-  simp only [and_left_comm]
 
 lemma Subgroup.relindex_adjoinNegOne_eq_two {𝒢 : Subgroup (GL n R)} (h𝒢 : -1 ∉ 𝒢) :
     𝒢.relIndex 𝒢.adjoinNegOne = 2 := by
