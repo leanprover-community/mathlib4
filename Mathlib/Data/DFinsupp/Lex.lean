@@ -38,7 +38,7 @@ theorem _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ i, α i 
 
 theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a b : Π₀ i, α i} :
     DFinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s j (a j) (b j) :=
-  Iff.rfl
+  .rfl
 
 instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
@@ -46,16 +46,19 @@ instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
 instance [LT ι] [∀ i, LT (α i)] : LT (Colex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· > ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
 
-theorem lex_lt_def [LT ι] [∀ i, LT (α i)] (a b : Lex (Π₀ i, α i)) (i : ι) :
-    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
-  fun h1 h2 ↦ ⟨i, h1, h2⟩
+@[simp] theorem toLex_apply (x : Π₀ i, α i) (i : ι) : toLex x i = x i := rfl
+@[simp] theorem ofLex_apply (x : Lex (Π₀ i, α i)) (i : ι) : ofLex x i = x i := rfl
 
-@[deprecated (since := "2025-10-12")]
-alias lt_of_forall_lt_of_lt := lex_lt_def
+@[simp] theorem toColex_apply (x : Π₀ i, α i) (i : ι) : toColex x i = x i := rfl
+@[simp] theorem ofColex_apply (x : Lex (Π₀ i, α i)) (i : ι) : ofColex x i = x i := rfl
 
-theorem colex_lt_def [LT ι] [∀ i, LT (α i)] (a b : Colex (Π₀ i, α i)) (i : ι) :
-    (∀ ⦃j⦄, i < j → ofColex a j = ofColex b j) → ofColex a i < ofColex b i → a < b :=
-  fun h1 h2 ↦ ⟨i, h1, h2⟩
+theorem lex_lt_iff [LT ι] [∀ i, LT (α i)] {a b : Lex (Π₀ i, α i)} :
+    a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
+  .rfl
+
+theorem colex_lt_iff [LT ι] [∀ i, LT (α i)] {a b : Colex (Π₀ i, α i)} :
+    a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
+  .rfl
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
@@ -85,7 +88,6 @@ instance Colex.isStrictOrder [∀ i, PartialOrder (α i)] :
 /-- The partial order on `DFinsupp`s obtained by the lexicographic ordering.
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
-  lt := (· < ·)
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
@@ -93,7 +95,6 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
 /-- The partial order on `DFinsupp`s obtained by the colexicographic ordering.
 See `DFinsupp.Colex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Colex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Colex (Π₀ i, α i)) where
-  lt := (· < ·)
   le x y := ⇑(ofColex x) = ⇑(ofColex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Colex (Π₀ i, α i) ↦ toColex (⇑(ofColex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
@@ -168,6 +169,11 @@ theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
 
 theorem toColex_monotone : Monotone (@toColex (Π₀ i, α i)) :=
   toLex_monotone (ι := ιᵒᵈ)
+
+@[deprecated lex_lt_iff (since := "2025-10-12")]
+theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
+    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
+  fun h1 h2 ↦ ⟨i, h1, h2⟩
 
 end Zero
 
