@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 import Mathlib.Data.Int.DivMod
 import Mathlib.Order.Lattice
 import Mathlib.Tactic.Common
+import Batteries.Data.Fin.Basic
 
 /-!
 # The finite type with `n` elements
