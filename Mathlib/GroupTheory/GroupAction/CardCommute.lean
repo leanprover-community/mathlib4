@@ -87,3 +87,16 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
       _ = card (ConjClasses G) * card G := by
              congr 1; apply card_congr'; congr; ext
              exact (Setoid.comm' _).trans isConj_iff.symm
+
+/-- Orbit-stabilizer theorem using Nat.card. -/
+theorem nat_card_orbit_mul_card_stabilizer_eq_card_group
+ (α : Type*) (β : Type*) [Group α] [MulAction α β] (b : β) [Finite α] :
+    Nat.card (MulAction.orbit α b) * Nat.card (MulAction.stabilizer α b) = Nat.card α := by
+  classical
+  have : Fintype α := Fintype.ofFinite α
+  have : Fintype (MulAction.orbit α b) := by
+    refine Set.Finite.fintype ?_
+    exact Finite.finite_mulAction_orbit b
+  have : Fintype (MulAction.stabilizer α b) := inferInstance
+  simp [Nat.card_eq_fintype_card]
+  convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group α b
