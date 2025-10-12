@@ -27,7 +27,7 @@ open Functor
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
 structure Core (C : Type u₁) where
