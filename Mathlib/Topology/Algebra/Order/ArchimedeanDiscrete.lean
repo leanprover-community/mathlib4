@@ -20,10 +20,11 @@ namespace Subgroup
 
 variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
 
+-- this does not really belong thematically to this file, but it is not easy to find a place for it
+-- without big import increases
 @[to_additive (attr := simp)]
 lemma zpowers_mabs (g : G) : zpowers |g|ₘ = zpowers g := by
-  rcases mabs_cases g with h | h <;>
-    simp only [h, zpowers_inv]
+  rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
 
 variable [TopologicalSpace G] [OrderTopology G]
 
