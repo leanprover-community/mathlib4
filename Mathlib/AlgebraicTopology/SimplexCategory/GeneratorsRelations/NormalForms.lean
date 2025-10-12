@@ -311,7 +311,7 @@ lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
     simp only [IsAdmissible, List.sortedLT_iff_pairwise, List.pairwise_cons, List.length_cons] at hL
     obtain h | rfl | h := Nat.lt_trichotomy j a
     · grind [simplicialEvalσ_monotone, Monotone,
-        simplicialEvalσ_of_lt_mem, List.sortedLT_iff_pairwise]
+        simplicialEvalσ_of_lt_mem]
     · grind
     · have := simplicialEvalσ_of_lt_mem L (a + 1) <| fun x h ↦ hL.1.1 x h
       grind [simplicialEvalσ_monotone, Monotone]
@@ -322,10 +322,10 @@ lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j
   | nil => grind
   | cons a L h_rec =>
     constructor
-    · grind [List.mem_iff_getElem, IsAdmissible, List.sorted_cons]
+    · grind [List.mem_iff_getElem, IsAdmissible, List.pairwise_cons]
     · obtain rfl | h := List.mem_cons.mp hj
       · grind [simplicialEvalσ_of_lt_mem, simplicialEvalσ, IsAdmissible,
-          List.sorted_cons, List.sortedLT_iff_pairwise]
+          List.pairwise_cons]
       · have := h_rec hL.tail h
         grind [simplicialEvalσ]
 
