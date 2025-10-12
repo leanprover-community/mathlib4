@@ -67,7 +67,7 @@ variable (C : Type u) [Category.{v} C]
 products and coproducts, and every monomorphism and every epimorphism is normal.
 
 Notice that every such category is abelian (see `CategoryTheory.NonPreadditiveAbelian.preadditive`),
-so in practice it is prefereable to work directly with `Abelian`.
+so in practice it is preferable to work directly with `Abelian`.
 -/
 class NonPreadditiveAbelian extends HasZeroMorphisms C, IsNormalMonoCategory C,
     IsNormalEpiCategory C where
