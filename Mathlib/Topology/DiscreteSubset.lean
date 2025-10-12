@@ -48,7 +48,7 @@ theorem discreteTopology_subtype_iff {S : Set Y} :
 
 lemma discreteTopology_subtype_iff' {S : Set Y} :
     DiscreteTopology S ↔ ∀ y ∈ S, ∃ U : Set Y, IsOpen U ∧ U ∩ S = {y} := by
-  simp [← singletons_open_iff_discrete, isOpen_induced_iff, Set.ext_iff]
+  simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
   grind
 
 section cofinite_cocompact
