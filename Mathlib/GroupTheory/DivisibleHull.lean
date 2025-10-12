@@ -171,6 +171,7 @@ variable {M : Type*} [AddCommGroup M]
 theorem neg_mk (m : M) (s : ℕ+) : -mk m s = mk (-m) s :=
   (eq_neg_of_add_eq_zero_left (by simp [mk_add_mk_left])).symm
 
+-- TODO `show ℚ≥0...`
 noncomputable
 instance : SMul ℚ (DivisibleHull M) where
   smul a x := (SignType.sign a : ℤ) • (show ℚ≥0 from ⟨|a|, abs_nonneg _⟩) • x
