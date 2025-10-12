@@ -235,7 +235,6 @@ lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :
 lemma nontrivial_of_rankAtStalk_pos (h : 0 < rankAtStalk (R := R) M) :
     Nontrivial M := by
   by_contra! hn
-  have : Subsingleton M := not_nontrivial_iff_subsingleton.mp hn
   simp at h
 
 lemma rankAtStalk_eq_of_equiv {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :

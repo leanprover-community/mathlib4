@@ -355,9 +355,7 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
 
 theorem shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
-  symm
-  rw [← Functor.comp_map, Iso.app_inv]
-  apply NatIso.naturality_1
+  simp
 
 variable (A)
 
@@ -522,7 +520,7 @@ lemma shiftFunctorCompIsoId_add'_inv_app :
       (by rw [← add_left_inj n, hn, add_assoc, h, hp]) h (by rw [add_assoc, h, hp]),
     ← Functor.map_comp_assoc, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
     Category.assoc, Category.assoc,
-    shiftFunctorAdd'_assoc_inv_app n' m' m p' 0 n' _ _
+    shiftFunctorAdd'_assoc_inv_app n' m' m p' 0 n' _ hm
       (by rw [add_assoc, hm, add_zero]), Iso.hom_inv_id_app_assoc,
     ← shiftFunctorAdd'_add_zero_hom_app, Iso.hom_inv_id_app,
     Functor.map_id, Category.id_comp, Iso.hom_inv_id_app]
@@ -735,8 +733,9 @@ def hasShift :
       zero_add_hom_app := fun n X => hF.map_injective (by
         have this := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
         rw [← cancel_mono ((i n).hom.app ((s 0).obj X)) ]
-        simp [this, map_add_hom_app,
-          shiftFunctorAdd_zero_add_hom_app, eqToHom_map]
+        simp only [comp_obj, map_add_hom_app, this, shiftFunctorAdd_zero_add_hom_app, id_obj,
+          Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, Iso.inv_hom_id_app,
+          Category.comp_id, map_comp, eqToHom_map]
         congr 1
         erw [(i n).hom.naturality]
         simp)

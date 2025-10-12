@@ -7,6 +7,11 @@ Authors: Kim Morrison
 import Mathlib.Data.Fintype.Basic
 import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Game.Birthday
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Short` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Short games

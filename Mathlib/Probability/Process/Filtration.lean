@@ -218,10 +218,6 @@ theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Meas
     UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
   hg.uniformIntegrable_condExp f.le
 
-@[deprecated (since := "2025-01-21")]
-alias Integrable.uniformIntegrable_condexp_filtration :=
-  Integrable.uniformIntegrable_condExp_filtration
-
 theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] (f : Ω → E) {μ : Measure Ω} (ℱ : Filtration ι m)
     {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
@@ -335,9 +331,6 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
   · exact MemLp.zero
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
-
 end Limit
 
 section piLE
@@ -387,13 +380,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   le' s := s.measurable_restrict.comap_le
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
-    piFinset (X := X) s = pi.comap s.toSet.restrict := by
-  apply le_antisymm
-  · simp_rw [piFinset, ← Set.piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft,
-      ← comap_comp]
-    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
-  · rw [← piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
-    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
+    piFinset (X := X) s = pi.comap s.toSet.restrict := rfl
 
 end piFinset
 

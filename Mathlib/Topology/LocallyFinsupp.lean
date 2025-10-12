@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
 import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Topology.DiscreteSubset

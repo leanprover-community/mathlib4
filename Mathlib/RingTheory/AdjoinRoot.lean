@@ -131,6 +131,15 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
+/- TODO : generalise base ring -/
+/-- `R`-algebra homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
+def mkₐ : R[X] →ₐ[R] AdjoinRoot f :=
+  Ideal.Quotient.mkₐ R _
+
+@[simp, norm_cast] theorem mkₐ_toRingHom : ↑(mkₐ f) = mk f := rfl
+
+@[simp] theorem coe_mkₐ : ⇑(mkₐ f) = mk f := rfl
+
 @[simp]
 theorem algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
   rfl
@@ -141,7 +150,7 @@ theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
   rfl
 
 theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
-  (Algebra.FiniteType.polynomial R).of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
+  .of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
 
 theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
   (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
@@ -190,15 +199,19 @@ theorem mk_ne_zero_of_natDegree_lt (hf : Monic f) {g : R[X]} (h0 : g ≠ 0)
     (hd : natDegree g < natDegree f) : mk f g ≠ 0 :=
   mk_eq_zero.not.2 <| hf.not_dvd_of_natDegree_lt h0 hd
 
+theorem aeval_eq_of_algebra [CommRing S] [Algebra R S] (f : S[X]) (p : R[X]) :
+    aeval (root f) p = mk f (map (algebraMap R S) p) := by
+  induction p using Polynomial.induction_on with
+  | C a =>
+    simp only [Polynomial.aeval_C, Polynomial.map_C, mk_C]
+    rw [IsScalarTower.algebraMap_apply R S]
+    simp
+  | add p q _ _ => simp_all
+  | monomial n a _ => simp_all [pow_add, ← mul_assoc]
+
 @[simp]
-theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
-  Polynomial.induction_on p
-    (fun x => by
-      rw [aeval_C]
-      rfl)
-    (fun p q ihp ihq => by rw [map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
-    rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow, mk_X]
-    rfl
+theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p := by
+  rw [aeval_eq_of_algebra, Algebra.algebraMap_self, Polynomial.map_id]
 
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
@@ -325,6 +338,27 @@ theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f
 
 end Prime
 
+section
+
+/-- If `f = g`, `R` adjoin a root of `f` is isomorphic to `R` adjoin a root of `g`. -/
+def algEquivOfEq {f g : R[X]} (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
+  .ofAlgHom
+    (liftHom f (root g) (by simp [hfg]))
+    (liftHom g (root f) (by simp [hfg]))
+    (by ext; simp)
+    (by ext; simp)
+
+variable {f g : R[X]} (hfg : f = g)
+
+@[simp] lemma algEquivOfEq_root : algEquivOfEq hfg (root f) = root g := by
+  simp [algEquivOfEq]
+
+@[simp] lemma algEquivOfEq_symm : (algEquivOfEq hfg).symm = algEquivOfEq hfg.symm := by
+  ext
+  simp [algEquivOfEq]
+
+end
+
 end CommRing
 
 section Irreducible
@@ -367,7 +401,7 @@ variable (f)
 
 theorem mul_div_root_cancel [Fact (Irreducible f)] :
     (X - C (root f)) * ((f.map (of f)) / (X - C (root f))) = f.map (of f) :=
-  mul_div_eq_iff_isRoot.2 <| isRoot_root _
+  (isRoot_root _).mul_div_eq
 
 end Irreducible
 
@@ -419,12 +453,8 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
       map_smul' := fun f₁ f₂ =>
         funext fun i => by
           simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
-      -- Porting note: another proof that I converted to tactic mode
-      left_inv := by
-        intro f
-        induction f using AdjoinRoot.induction_on
+      left_inv f := AdjoinRoot.induction_on _ f fun f => Eq.symm <| mk_eq_mk.mpr <| by
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
-        refine (mk_eq_mk.mpr ?_).symm
         rw [modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel]
         exact dvd_mul_right _ _
       right_inv := fun x =>
@@ -543,6 +573,18 @@ theorem minpoly_powerBasis_gen_of_monic (hf : f.Monic) (hf' : f ≠ 0 := hf.ne_z
     minpoly K (powerBasis hf').gen = f := by
   rw [minpoly_powerBasis_gen hf', hf.leadingCoeff, inv_one, C.map_one, mul_one]
 
+/--
+See `finrank_quotient_span_eq_natDegree'` for a version over a ring when `f` is monic.
+-/
+theorem _root_.finrank_quotient_span_eq_natDegree {f : K[X]} :
+    Module.finrank K (K[X] ⧸ Ideal.span {f}) = f.natDegree := by
+  by_cases hf : f = 0
+  · rw [hf, natDegree_zero,
+      ((Submodule.quotEquivOfEqBot _ (by simp)).restrictScalars K).finrank_eq]
+    exact finrank_of_not_finite Polynomial.not_finite
+  rw [PowerBasis.finrank]
+  exact AdjoinRoot.powerBasis_dim hf
+
 end PowerBasis
 
 section Equiv
@@ -599,10 +641,7 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
   { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
-    -- Porting note: another term-mode proof converted to tactic-mode.
-    left_inv := fun x => by
-      induction x using AdjoinRoot.induction_on
-      rw [liftHom_mk, pb.lift_aeval, aeval_eq]
+    left_inv x := AdjoinRoot.induction_on _ x fun x => by rw [liftHom_mk, pb.lift_aeval, aeval_eq]
     right_inv := fun x => by
       nontriviality S
       obtain ⟨f, _hf, rfl⟩ := pb.exists_eq_aeval x
@@ -637,7 +676,7 @@ end Field
 
 end Equiv
 
--- Porting note: consider splitting the file here.  In the current mathlib3, the only result
+-- TODO: consider splitting the file here.  In the current mathlib3, the only result
 -- that depends any of these lemmas was
 -- `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` in `NumberTheory.KummerDedekind`
 -- that uses
@@ -759,9 +798,8 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
         algebraMap R (AdjoinRoot f ⧸ Ideal.map (of f) I) x =
           Ideal.Quotient.mk (Ideal.map (AdjoinRoot.of f) I) ((mk f) (C x)) :=
         rfl
-      rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C]
-      -- Porting note: the following `rfl` was not needed
-      rfl)
+      rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C, Quotient.alg_map_eq]
+      simp only [RingHom.comp_apply, Quotient.algebraMap_eq, Polynomial.algebraMap_apply])
 
 @[simp]
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :

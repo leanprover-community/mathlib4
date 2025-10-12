@@ -84,7 +84,7 @@ theorem inner_map_self_eq_zero (T : V →ₗ[ℂ] V) : (∀ x : V, ⟪T x, x⟫_
     ext x
     rw [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V, inner_map_polarization]
     simp only [hT]
-    norm_num
+    simp
   · rintro rfl x
     simp only [LinearMap.zero_apply, inner_zero_left]
 
@@ -205,9 +205,6 @@ def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
 theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
   rfl
 
-set_option linter.style.maxHeartbeats false in
--- This option was set before the `maxHeartbeats` linter existed and had no comment.
-set_option synthInstance.maxHeartbeats 40000 in
 variable (F) in
 @[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
   ext v w
@@ -251,7 +248,7 @@ theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
     le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
   rcases (norm_nonneg x).eq_or_lt' with (h | h)
   · simp [h]
-  · refine (mul_le_mul_right h).mp ?_
+  · refine (mul_le_mul_iff_left₀ h).mp ?_
     calc
       ‖x‖ * ‖x‖ = ‖(⟪x, x⟫ : 𝕜)‖ := by
         rw [← sq, inner_self_eq_norm_sq_to_K, norm_pow, norm_ofReal, abs_norm]

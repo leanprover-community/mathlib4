@@ -289,4 +289,16 @@ lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY 
    rw [covariance_eq_sub hX hY, h.integral_mul_eq_mul_integral
        hX.aestronglyMeasurable hY.aestronglyMeasurable, sub_self]
 
+section Prod
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
+  [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {X : Ω → ℝ} {Y : Ω' → ℝ}
+
+lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
+    cov[fun p ↦ X p.1, fun p ↦ Y p.2; μ.prod ν] = 0 :=
+  (indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable).covariance_eq_zero
+    (hfμ.comp_fst ν) (hgν.comp_snd μ)
+
+end Prod
+
 end ProbabilityTheory

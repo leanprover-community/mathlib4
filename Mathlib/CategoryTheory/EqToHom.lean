@@ -26,23 +26,27 @@ result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 open Opposite
-
-variable {C : Type u₁} [Category.{v₁} C]
 
 /-- An equality `X = Y` gives us a morphism `X ⟶ Y`.
 
 It is typically better to use this, rather than rewriting by the equality then using `𝟙 _`
 which usually leads to dependent type theory hell.
 -/
-def eqToHom {X Y : C} (p : X = Y) : X ⟶ Y := by rw [p]; exact 𝟙 _
+def eqToHom {C : Type u₁} [CategoryStruct.{v₁} C] {X Y : C} (p : X = Y) :
+    X ⟶ Y := by
+  rw [p]
+  exact 𝟙 _
 
 @[simp]
-theorem eqToHom_refl (X : C) (p : X = X) : eqToHom p = 𝟙 X :=
+theorem eqToHom_refl {C : Type u₁} [CategoryStruct.{v₁} C] (X : C) (p : X = X) :
+    eqToHom p = 𝟙 X :=
   rfl
+
+variable {C : Type u₁} [Category.{v₁} C]
 
 @[reassoc (attr := simp)]
 theorem eqToHom_trans {X Y Z : C} (p : X = Y) (q : Y = Z) :
@@ -230,9 +234,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
       F.map f = eqToHom (h_obj X) ≫ G.map f ≫ eqToHom (h_obj Y).symm := by cat_disch) :
     F = G := by
   match F, G with
-  | mk F_pre _ _ , mk G_pre _ _ =>
-    match F_pre, G_pre with
-    | Prefunctor.mk F_obj _ , Prefunctor.mk G_obj _ =>
+  | mk F_obj _ _ _, mk G_obj _ _ _ =>
     obtain rfl : F_obj = G_obj := by
       ext X
       apply h_obj

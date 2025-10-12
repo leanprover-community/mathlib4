@@ -153,6 +153,14 @@ lemma nz_of_isNegNat {n : ℕ} [Ring A] [PartialOrder A] [IsStrictOrderedRing A]
   apply ne_of_gt
   simpa using w
 
+lemma pos_of_isNNRat {n d : ℕ} [Semiring A] [LinearOrder A] [IsStrictOrderedRing A] :
+    (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
+  | ⟨inv, eq⟩, h => by
+    have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
+    have pos_n : (0 < (n : A)) := Nat.cast_pos (n := n) |>.2 (of_decide_eq_true h)
+    rw [eq]
+    exact mul_pos pos_n pos_invOf_d
+
 lemma pos_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
@@ -160,6 +168,10 @@ lemma pos_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrdered
     have pos_n : (0 < (n : A)) := Int.cast_pos (n := n) |>.2 (of_decide_eq_true h)
     rw [eq]
     exact mul_pos pos_n pos_invOf_d
+
+lemma nonneg_of_isNNRat {n d : ℕ} [Semiring A] [LinearOrder A] :
+    (NormNum.IsNNRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
+  | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
 lemma nonneg_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
@@ -248,21 +260,30 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
     haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
     pure (.nonzero q(nz_of_isNegNat $p $p'))
-  | .isRat _i q n d p =>
+  | .isNNRat _i q n d p =>
+    let _a ← synthInstanceQ q(Semiring $α)
+    let _a ← synthInstanceQ q(LinearOrder $α)
+    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
+    assumeInstancesCommute
+    have p : Q(NormNum.IsNNRat $e $n $d) := p
+    if 0 < q then
+      haveI' w : decide (0 < $n) =Q true := ⟨⟩
+      pure (.positive q(pos_of_isNNRat $p $w))
+    else -- should not be reachable, but just in case
+      haveI' w : decide ($n = 0) =Q true := ⟨⟩
+      pure (.nonnegative q(nonneg_of_isNNRat $p $w))
+  | .isNegNNRat _i q n d p =>
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
-    have p : Q(NormNum.IsRat $e $n $d) := p
-    if 0 < q then
-      haveI' w : decide (0 < $n) =Q true := ⟨⟩
-      pure (.positive q(pos_of_isRat $p $w))
-    else if q = 0 then -- should not be reachable, but just in case
-      haveI' w : decide ($n = 0) =Q true := ⟨⟩
-      pure (.nonnegative q(nonneg_of_isRat $p $w))
-    else
-      haveI' w : decide ($n < 0) =Q true := ⟨⟩
+    have p : Q(NormNum.IsRat $e (.negOfNat $n) $d) := p
+    if q < 0 then
+      haveI' w : decide (Int.negOfNat $n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
+    else -- should not be reachable, but just in case
+      haveI' w : decide (Int.negOfNat $n = 0) =Q true := ⟨⟩
+      pure (.nonnegative q(nonneg_of_isRat $p $w))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
@@ -394,7 +415,7 @@ end Meta.Positivity
 namespace Meta.Positivity
 
 /-- Given an expression `e`, use the core method of the `positivity` tactic to prove it positive,
-or, failing that, nonnegative; return a boolean (signalling whether the strict or non-strict
+or, failing that, nonnegative; return a Boolean (signalling whether the strict or non-strict
 inequality was established) together with the proof as an expression. -/
 def bestResult (e : Expr) : MetaM (Bool × Expr) := do
   let ⟨u, α, _⟩ ← inferTypeQ' e

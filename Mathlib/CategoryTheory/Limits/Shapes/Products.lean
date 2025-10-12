@@ -93,16 +93,12 @@ abbrev HasCoproduct (f : β → C) :=
 
 lemma hasCoproduct_of_equiv_of_iso (f : α → C) (g : β → C)
     [HasCoproduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasCoproduct g := by
-  have : HasColimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
-    hasColimit_equivalence_comp _
   have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasColimit_of_iso α
 
 lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
     [HasProduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasProduct g := by
-  have : HasLimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
-    hasLimit_equivalence_comp _
   have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasLimit_of_iso α.symm
@@ -207,14 +203,15 @@ abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
 abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
   colimit.ι (Discrete.functor f) (Discrete.mk b)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added the next two lemmas to ease automation; without these lemmas,
--- `limit.hom_ext` would be applied, but the goal would involve terms
--- in `Discrete β` rather than `β` itself
+/-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
+in `Discrete β` rather than `β` itself. -/
 @[ext 1050]
 lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ᶜ f)
     (h : ∀ (b : β), g₁ ≫ Pi.π f b = g₂ ≫ Pi.π f b) : g₁ = g₂ :=
   limit.hom_ext (fun ⟨j⟩ => h j)
 
+/-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
+in `Discrete β` rather than `β` itself. -/
 @[ext 1050]
 lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
     (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂) : g₁ = g₂ :=
@@ -563,8 +560,6 @@ def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (
   hom := Sigma.map' e fun j => (w j).inv
   inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
 
-#adaptation_note /-- nightly-2024-04-01
-The last proof was previously by `cat_disch`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
@@ -572,7 +567,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     { cone := Fan.mk (∏ᶜ fun i => ∏ᶜ g i) (fun X => Pi.π (fun i => ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
       isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
         (by simp)
-        (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
+        (by intro s (m : _ ⟶ (∏ᶜ fun i ↦ ∏ᶜ g i)) w; aesop (add norm simp Sigma.forall)) }
 
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
@@ -582,8 +577,6 @@ def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
   inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
-#adaptation_note /-- nightly-2024-04-01
-The last proof was previously by `cat_disch`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     HasCoproduct fun p : Σ i, f i => g p.1 p.2 where
@@ -593,7 +586,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
       isColimit := mkCofanColimit _
         (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
         (by simp)
-        (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
+        (by intro s (m : (∐ fun i ↦ ∐ g i) ⟶ _) w; aesop_cat (add norm simp Sigma.forall)) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
@@ -839,6 +832,22 @@ theorem Sigma.ι_reindex_inv (b : β) :
 end
 
 end Reindex
+
+section
+
+variable {J : Type u₂} [Category.{v₂} J] (F : J ⥤ C)
+
+instance [HasLimit F] [HasProduct F.obj] : Mono (Pi.lift (limit.π F)) where
+  right_cancellation _ _ h := by
+    refine limit.hom_ext fun j => ?_
+    simpa using h =≫ Pi.π _ j
+
+instance [HasColimit F] [HasCoproduct F.obj] : Epi (Sigma.desc (colimit.ι F)) where
+  left_cancellation _ _ h := by
+    refine colimit.hom_ext fun j => ?_
+    simpa using  Sigma.ι _ j ≫= h
+
+end
 
 section Fubini
 
