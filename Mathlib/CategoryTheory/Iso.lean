@@ -225,7 +225,7 @@ end Iso
 /-- The `IsIso` typeclass expresses that a morphism is invertible.
 
 Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get
-the inverse using `inf v`. -/
+the inverse using `inv f`. -/
 class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
