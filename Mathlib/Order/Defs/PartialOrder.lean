@@ -128,12 +128,8 @@ instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
 instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
-  | a, b =>
-    if hab : a ≤ b then
-      if hba : b ≤ a then isFalse fun hab' => not_le_of_gt hab' hba
-      else isTrue <| lt_of_le_not_ge hab hba
-    else isFalse fun hab' => hab (le_of_lt hab')
+def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
+  fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
 This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
