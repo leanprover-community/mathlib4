@@ -350,21 +350,18 @@ lemma proj_comp_equiv_comp_section (E E' : Extension R N M) (e : Equiv E E') {s 
   simp only [LinearMap.coe_comp, LieHom.coe_toLinearMap, LinearEquiv.coe_coe,
     LieEquiv.coe_toLinearEquiv, Function.comp_apply, LinearMap.id_coe, id_eq]
   rw [← LieEquiv.coe_toLieHom, ← LieHom.comp_apply, Equiv.proj_comm, hs]
-
 /-!
+/-- An equivalence of central extensions induced by an equality of 2-cocycles. -/
 def Equiv.ofTwoCocycleOfSplitting [LieRingModule M N] [LieModule R M N] [LieModule.IsTrivial M N]
     (h : IsLieAbelian N) (c : twoCocycle R M N) (E : Extension R N M) (hE : E.IsCentral)
     {s : M →ₗ[R] E.L} (hs : ∀ (x : M), E.proj (s x) = x) {p : E.L →ₗ[R] N}
     (hp : p ∘ₗ E.incl.toLinearMap = LinearMap.id) (hc : E.twoCocycleOfSplitting hE hs = c) :
     Equiv (ofTwoCocycle h c) E where
   toLieEquiv := {
-    toFun a := s ((ofProd c).symm a).1 + E.incl ((ofProd c).symm a).2
-    map_add' _ _ := by
-      rw [of_symm_add, Prod.fst_add, Prod.snd_add, map_add, map_add]
-      abel
-    map_smul' r x := by
-      rw [RingHom.id_apply, of_symm_smul, Prod.smul_fst, Prod.smul_snd, LinearMap.map_smulₛₗ,
-        RingHom.id_apply, smul_add, LieHom.map_smul]
+    toFun a := s ((ofProd c).symm ((ofAlg h c).symm a)).1 +
+      E.incl ((ofProd c).symm ((ofAlg h c).symm a)).2
+    map_add' _ _ := by simp; abel
+    map_smul' r x := by simp
     map_lie' {x y} := by
       refine E.eq_of_proj_eq ?_ hp ?_
       · simp only [lie_add, add_lie]
@@ -375,31 +372,32 @@ def Equiv.ofTwoCocycleOfSplitting [LieRingModule M N] [LieModule R M N] [LieModu
           rw [← lie_skew, zero_left, neg_eq_zero]
         simp only [zero_right, add_zero, zero_left]
         rw [bracket_ofTwoCocycle, LieEquiv.map_lie, LieEquiv.apply_symm_apply,
-          LieEquiv.apply_symm_apply, bracket_ofTwoCocycleAlg, Equiv.symm_apply_apply]
-        rw [map_add, bracket_of_splitting E hE hs p hp ((ofProd c).symm x).1 ((ofProd c).symm y).1,
-          map_add, hc, ← twoCochain_val_apply]
+          LieEquiv.apply_symm_apply, bracket_ofTwoCocycleAlg]
+        rw [map_add, bracket_of_splitting E hE hs p hp, map_add, hc, ← twoCochain_val_apply]
+        simp
       · simp only [LieHom.map_add, proj_incl, add_zero, lie_add, add_lie,
           LieHom.map_lie, zero_lie, lie_zero, lie_self, hs]
         rw [bracket_ofTwoCocycle, LieEquiv.map_lie, LieEquiv.apply_symm_apply,
           LieEquiv.apply_symm_apply, bracket_ofTwoCocycleAlg, Equiv.symm_apply_apply]
-    invFun x := ofProd c (E.proj x, p x)
+    invFun x := ofProd c (E.proj x, p x) --change this!
     left_inv x := by
       simp only [map_add, proj_incl, add_zero]
       rw [comp_eq_id E _ ((ofProd c).symm x).1]
       · refine (Equiv.apply_eq_iff_eq_symm_apply (ofProd c)).mpr ?_
         refine Prod.ext rfl ?_
-
-      sorry
+        simp only
+        have (z : N) : p (E.incl z) = z := by
+          rw [← LieHom.coe_toLinearMap, ← LinearMap.comp_apply, hp, LinearMap.id_apply]
+        rw [this]
+        sorry
+      · exact LinearMap.ext_iff.mpr hs
     right_inv x := by
       simp only
-      rw [@Equiv.symm_apply_apply]
+      rw [Equiv.symm_apply_apply]
       sorry
     }
   incl_comm := sorry
   proj_comm := sorry
-
-An equivalence between an extension and the extension given by a cocycle, given a
-module-splitting and an equality of cocycles.
 
 /-- The 2-coboundary corresponding to an equivalence of module-split extensions. -/
 def Equiv.coboundaryOf (E E' : Extension R N M) (e : Equiv E E') (hE : E.IsCentral)
