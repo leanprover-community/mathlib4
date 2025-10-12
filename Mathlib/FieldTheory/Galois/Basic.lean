@@ -556,7 +556,7 @@ theorem tfae [FiniteDimensional F E] : List.TFAE [
   tfae_finish
 
 /--
-If `K/F` is a finite Galois extension then, for any extension `L/F`, the extension `KL/L`
+If `K/F` is a finite Galois extension, then for any extension `L/F`, the extension `KL/L`
 is also Galois.
 -/
 theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensional F K]
