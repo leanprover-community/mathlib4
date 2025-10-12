@@ -3,7 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # Difference of finite sets
@@ -11,7 +12,7 @@ import Mathlib.Data.Finset.Lattice.Lemmas
 ## Main declarations
 
 * `Finset.instSDiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
-* `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a boolean algebra structure
+* `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a Boolean algebra structure
 
 ## Tags
 
@@ -56,13 +57,9 @@ theorem mem_sdiff : a ∈ s \ t ↔ a ∈ s ∧ a ∉ t :=
 @[simp]
 theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ := by grind
 
-instance : GeneralizedBooleanAlgebra (Finset α) :=
-  { sup_inf_sdiff := fun x y => by
-      simp only [Finset.ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter,
-        ← and_or_left, em, and_true, implies_true]
-    inf_inf_sdiff := fun x y => by
-      simp only [inter_sdiff_self, inter_empty, inter_assoc,
-        inf_eq_inter, bot_eq_empty] }
+instance : GeneralizedBooleanAlgebra (Finset α) where
+  sup_inf_sdiff := by grind
+  inf_inf_sdiff := by grind
 
 theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by grind
 
@@ -73,11 +70,9 @@ theorem notMem_sdiff_of_notMem_left (h : a ∉ s) : a ∉ s \ t := by simp [h]
 @[deprecated (since := "2025-05-23")]
 alias not_mem_sdiff_of_not_mem_left := notMem_sdiff_of_notMem_left
 
-theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t :=
-  sup_sdiff_cancel_right h
+theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t := by grind
 
-theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂ \ s₁ ∪ s₁ = s₂ :=
-  (union_comm _ _).trans (union_sdiff_of_subset h)
+theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂ \ s₁ ∪ s₁ = s₂ := by grind
 
 /-- See also `Finset.sdiff_inter_right_comm`. -/
 lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := inf_sdiff_assoc ..
@@ -110,14 +105,13 @@ theorem sdiff_empty : s \ ∅ = s :=
   sdiff_bot
 
 @[mono, gcongr]
-theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v :=
-  subset_of_le (sdiff_le_sdiff hst hvu)
+theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v := by grind
 
 theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆ r) :
     r \ s ⊆ r \ t ↔ t ⊆ s := by
   simpa only [← le_eq_subset] using sdiff_le_sdiff_iff_le hs ht
 
-@[simp, norm_cast]
+@[simp, grind =, norm_cast]
 theorem coe_sdiff (s₁ s₂ : Finset α) : ↑(s₁ \ s₂) = (s₁ \ s₂ : Set α) :=
   Set.ext fun _ => mem_sdiff
 
@@ -156,6 +150,7 @@ theorem subset_sdiff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u :=
 theorem sdiff_eq_empty_iff_subset : s \ t = ∅ ↔ s ⊆ t :=
   sdiff_eq_bot_iff
 
+@[grind =]
 theorem sdiff_nonempty : (s \ t).Nonempty ↔ ¬s ⊆ t :=
   nonempty_iff_ne_empty.trans sdiff_eq_empty_iff_subset.not
 
@@ -169,6 +164,8 @@ theorem insert_sdiff_of_notMem (s : Finset α) {t : Finset α} {x : α} (h : x �
 @[deprecated (since := "2025-05-23")] alias insert_sdiff_of_not_mem := insert_sdiff_of_notMem
 
 theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s \ t = s \ t := by grind
+
+@[simp] lemma insert_sdiff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by grind
 
 @[simp] lemma insert_sdiff_cancel (ha : a ∉ s) : insert a s \ s = {a} := by grind
 
@@ -188,8 +185,7 @@ theorem sdiff_insert_of_notMem {x : α} (h : x ∉ s) (t : Finset α) : s \ inse
 
 @[simp] theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := le_iff_subset.mp sdiff_le
 
-theorem sdiff_ssubset (h : t ⊆ s) (ht : t.Nonempty) : s \ t ⊂ s :=
-  sdiff_lt (le_iff_subset.mpr h) ht.ne_empty
+theorem sdiff_ssubset (h : t ⊆ s) (ht : t.Nonempty) : s \ t ⊂ s := by grind
 
 theorem union_sdiff_distrib (s₁ s₂ t : Finset α) : (s₁ ∪ s₂) \ t = s₁ \ t ∪ s₂ \ t :=
   sup_sdiff
@@ -201,10 +197,7 @@ theorem union_sdiff_self (s t : Finset α) : (s ∪ t) \ t = s \ t :=
   sup_sdiff_right_self
 
 theorem Nontrivial.sdiff_singleton_nonempty {c : α} {s : Finset α} (hS : s.Nontrivial) :
-    (s \ {c}).Nonempty := by
-  rw [Finset.sdiff_nonempty, Finset.subset_singleton_iff]
-  push_neg
-  exact ⟨by rintro rfl; exact Finset.not_nontrivial_empty hS, hS.ne_singleton⟩
+    (s \ {c}).Nonempty := by grind
 
 theorem sdiff_sdiff_left' (s t u : Finset α) : (s \ t) \ u = s \ t ∩ (s \ u) :=
   _root_.sdiff_sdiff_left'
@@ -229,7 +222,7 @@ theorem union_eq_sdiff_union_sdiff_union_inter (s t : Finset α) : s ∪ t = s \
   sup_eq_sdiff_sup_sdiff_sup_inf
 
 theorem sdiff_eq_self_iff_disjoint : s \ t = s ↔ Disjoint s t :=
-  sdiff_eq_self_iff_disjoint'
+  sdiff_eq_left
 
 theorem sdiff_eq_self_of_disjoint (h : Disjoint s t) : s \ t = s :=
   sdiff_eq_self_iff_disjoint.2 h

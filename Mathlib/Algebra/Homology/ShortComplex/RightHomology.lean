@@ -362,11 +362,11 @@ structure RightHomologyMapData where
   /-- the induced map on right homology -/
   φH : h₁.H ⟶ h₂.H
   /-- commutation with `p` -/
-  commp : h₁.p ≫ φQ = φ.τ₂ ≫ h₂.p := by aesop_cat
+  commp : h₁.p ≫ φQ = φ.τ₂ ≫ h₂.p := by cat_disch
   /-- commutation with `g'` -/
-  commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by aesop_cat
+  commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by cat_disch
   /-- commutation with `ι` -/
-  commι : φH ≫ h₂.ι = h₁.ι ≫ φQ := by aesop_cat
+  commι : φH ≫ h₂.ι = h₁.ι ≫ φQ := by cat_disch
 
 namespace RightHomologyMapData
 

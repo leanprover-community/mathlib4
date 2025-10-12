@@ -111,7 +111,7 @@ theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
 theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun μ : Measure α => ∫⁻ x, f x ∂μ := by
   simp only [lintegral_eq_iSup_eapprox_lintegral, hf, SimpleFunc.lintegral]
-  refine .iSup fun n => Finset.measurable_sum _ fun i _ => ?_
+  refine .iSup fun n => Finset.measurable_fun_sum _ fun i _ => ?_
   refine Measurable.const_mul ?_ _
   exact measurable_coe ((SimpleFunc.eapprox f n).measurableSet_preimage _)
 

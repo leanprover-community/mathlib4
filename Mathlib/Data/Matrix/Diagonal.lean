@@ -5,8 +5,9 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Matrix.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.LinearAlgebra.Matrix.Defs
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices
@@ -20,7 +21,7 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
-assert_not_exists Algebra Star
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
@@ -192,6 +193,10 @@ instance one : One (Matrix n n α) :=
 
 @[simp]
 theorem diagonal_one : (diagonal fun _ => 1 : Matrix n n α) = 1 :=
+  rfl
+
+@[simp]
+theorem diagonal_one' : (diagonal 1 : Matrix n n α) = 1 :=
   rfl
 
 theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=

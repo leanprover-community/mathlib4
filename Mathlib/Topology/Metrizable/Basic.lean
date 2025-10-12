@@ -72,9 +72,6 @@ theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace 
   ⟨⟨u.comap f, u.toTopologicalSpace_comap.trans hf.eq_induced.symm,
     Filter.comap.isCountablyGenerated (uniformity Y) (Prod.map f f)⟩⟩
 
-@[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.pseudoMetrizableSpace := IsInducing.pseudoMetrizableSpace
-
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
     [h : PseudoMetrizableSpace X] : FirstCountableTopology X :=
@@ -126,9 +123,6 @@ theorem _root_.Topology.IsEmbedding.metrizableSpace [MetrizableSpace Y] {f : X �
     (hf : IsEmbedding f) : MetrizableSpace X where
   toPseudoMetrizableSpace := hf.toIsInducing.pseudoMetrizableSpace
   toT0Space := hf.t0Space
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.metrizableSpace := IsEmbedding.metrizableSpace
 
 instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
   IsEmbedding.subtypeVal.metrizableSpace

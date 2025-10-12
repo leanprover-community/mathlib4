@@ -253,9 +253,9 @@ lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
     apply Subring.subset_closure
     apply Set.mem_insert_of_mem
     exact degree_C_le
-  · intros p1 p2 h1 h2
+  · intro p1 p2 h1 h2
     exact Subring.add_mem _ h1 h2
-  · intros n r hr
+  · intro n r hr
     rw [pow_succ, ← mul_assoc]
     apply Subring.mul_mem _ hr
     apply Subring.subset_closure
@@ -622,11 +622,12 @@ private theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing'
     {R : Type*} [CommRing R] [IsJacobsonRing R]
     (P : Ideal (MvPolynomial (Fin n) R)) (hP : P.IsMaximal) :
     RingHom.IsIntegral (algebraMap R (MvPolynomial (Fin n) R ⧸ P)) := by
-  induction' n with n IH
-  · apply RingHom.isIntegral_of_surjective
+  induction n with
+  | zero =>
+    apply RingHom.isIntegral_of_surjective
     apply Function.Surjective.comp Quotient.mk_surjective
     exact C_surjective (Fin 0)
-  · apply aux_IH IH (finSuccEquiv R n).symm P hP
+  | succ n IH => apply aux_IH IH (finSuccEquiv R n).symm P hP
 
 theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing {R : Type*} [CommRing R] [IsJacobsonRing R]
     (P : Ideal (MvPolynomial (Fin n) R)) [hP : P.IsMaximal] :
@@ -684,7 +685,7 @@ lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field 
   exact Algebra.IsIntegral.finite
 
 /--
-If `f : R →+* S` is a ring homomorphism from a jacobson ring to a field,
+If `f : R →+* S` is a ring homomorphism from a Jacobson ring to a field,
 then it is finite if and only if it is finite type.
 -/
 lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
@@ -693,7 +694,7 @@ lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
   ⟨RingHom.FiniteType.of_finite,
     by intro; algebraize [f]; exact finite_of_finite_type_of_isJacobsonRing R S⟩
 
-/-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
+/-- If `K` is a Jacobson Noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 theorem finite_of_algHom_finiteType_of_isJacobsonRing
     {K L A : Type*} [CommRing K] [DivisionRing L] [CommRing A]
@@ -707,7 +708,7 @@ theorem finite_of_algHom_finiteType_of_isJacobsonRing
   exact Module.Finite.of_injective ((Ideal.Quotient.mkₐ K m).comp f).toLinearMap
     (RingHom.injective _)
 
-/-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
+/-- If `K` is a Jacobson Noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     {K L A : Type*} [CommRing K] [Field L] [CommRing A]
@@ -716,66 +717,3 @@ nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     f.Finite := by
   algebraize [f, (g.comp f)]
   exact finite_of_algHom_finiteType_of_isJacobsonRing ⟨g, fun _ ↦ rfl⟩
-
-namespace Ideal
-
-@[deprecated (since := "2024-10-27")]
-alias IsJacobson := IsJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iff := isJacobsonRing_iff
-@[deprecated (since := "2024-10-27")]
-alias IsJacobson.out := IsJacobsonRing.out
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iff_prime_eq := isJacobsonRing_iff_prime_eq
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iff_sInf_maximal := isJacobsonRing_iff_sInf_maximal
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iff_sInf_maximal' := isJacobsonRing_iff_sInf_maximal'
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_of_surjective := isJacobsonRing_of_surjective
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iso := isJacobsonRing_iso
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_of_isIntegral := isJacobsonRing_of_isIntegral
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_of_isIntegral' := isJacobsonRing_of_isIntegral'
-@[deprecated (since := "2024-10-27")]
-alias isMaximal_iff_isMaximal_disjoint := IsLocalization.isMaximal_iff_isMaximal_disjoint
-@[deprecated (since := "2024-10-27")]
-alias isMaximal_of_isMaximal_disjoint := IsLocalization.isMaximal_of_isMaximal_disjoint
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_localization := isJacobsonRing_localization
-
-namespace Polynomial
-
-@[deprecated (since := "2024-10-27")]
-alias isIntegral_isLocalization_polynomial_quotient := isIntegral_isLocalization_polynomial_quotient
-@[deprecated (since := "2024-10-27")]
-alias jacobson_bot_of_integral_localization := jacobson_bot_of_integral_localization
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_polynomial_of_isJacobson := isJacobsonRing_polynomial_of_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_polynomial_iff_isJacobson := isJacobsonRing_polynomial_iff_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias isMaximal_comap_C_of_isMaximal := isMaximal_comap_C_of_isMaximal
-@[deprecated (since := "2024-10-27")]
-alias quotient_mk_comp_C_isIntegral_of_jacobson :=
-  Polynomial.quotient_mk_comp_C_isIntegral_of_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias isMaximal_comap_C_of_isJacobson := isMaximal_comap_C_of_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias comp_C_integral_of_surjective_of_jacobson :=
-  Polynomial.comp_C_integral_of_surjective_of_isJacobsonRing
-
-end Polynomial
-
-@[deprecated (since := "2024-10-27")]
-alias MvPolynomial.isJacobson_MvPolynomial_fin := isJacobsonRing_MvPolynomial_fin
-@[deprecated (since := "2024-10-27")]
-alias MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson :=
-  MvPolynomial.quotient_mk_comp_C_isIntegral_of_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias MvPolynomial.comp_C_integral_of_surjective_of_jacobson :=
-  MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing
-
-end Ideal

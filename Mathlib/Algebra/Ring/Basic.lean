@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.TFAE
 
 /-!
 # Semirings and rings
@@ -174,20 +175,45 @@ lemma IsRightCancelMulZero.to_noZeroDivisors [MulZeroClass α]
   eq_zero_or_eq_zero_of_mul_eq_zero {_ y} h :=
     or_iff_not_imp_right.mpr fun ne ↦ mul_right_cancel₀ ne ((zero_mul y).symm ▸ h)
 
-instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
-    [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
-    IsCancelMulZero α where
-  mul_left_cancel_of_ne_zero ha _ _ h := by
-    rw [← sub_eq_zero, ← mul_sub] at h
-    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
-  mul_right_cancel_of_ne_zero hb _ _ h := by
-    rw [← sub_eq_zero, ← sub_mul] at h
-    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb)
+section NonUnitalNonAssocRing
+
+variable {R : Type*} [NonUnitalNonAssocRing R] {r : R}
+
+lemma isLeftRegular_iff_right_eq_zero_of_mul : IsLeftRegular r ↔ ∀ x, r * x = 0 → x = 0 where
+  mp h r' eq := h (by simp_rw [eq, mul_zero])
+  mpr h r₁ r₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [mul_sub, eq, sub_self]
+
+lemma isRightRegular_iff_left_eq_zero_of_mul : IsRightRegular r ↔ ∀ x, x * r = 0 → x = 0 where
+  mp h r' eq := h (by simp_rw [eq, zero_mul])
+  mpr h r₁ r₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [sub_mul, eq, sub_self]
+
+lemma isRegular_iff_eq_zero_of_mul :
+    IsRegular r ↔ (∀ x, r * x = 0 → x = 0) ∧ (∀ x, x * r = 0 → x = 0) := by
+  rw [isRegular_iff, isLeftRegular_iff_right_eq_zero_of_mul, isRightRegular_iff_left_eq_zero_of_mul]
+
+/-- A (not necessarily unital or associative) ring with no zero divisors has cancellative
+multiplication on both sides. Since either left or right cancellative multiplication implies
+the absence of zero divisors, the four conditions are equivalent to each other. -/
+lemma noZeroDivisors_tfae : List.TFAE
+    [NoZeroDivisors R, IsLeftCancelMulZero R, IsRightCancelMulZero R, IsCancelMulZero R] := by
+  simp_rw [isLeftCancelMulZero_iff, isRightCancelMulZero_iff, isCancelMulZero_iff_forall_isRegular,
+    isLeftRegular_iff_right_eq_zero_of_mul, isRightRegular_iff_left_eq_zero_of_mul,
+    isRegular_iff_eq_zero_of_mul]
+  tfae_have 1 ↔ 2 := noZeroDivisors_iff_right_eq_zero_of_mul
+  tfae_have 1 ↔ 3 := noZeroDivisors_iff_left_eq_zero_of_mul
+  tfae_have 1 ↔ 4 := noZeroDivisors_iff_eq_zero_of_mul
+  tfae_finish
 
 /-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
-lemma isCancelMulZero_iff_noZeroDivisors [NonUnitalNonAssocRing α] :
-    IsCancelMulZero α ↔ NoZeroDivisors α :=
-  ⟨fun _ => IsRightCancelMulZero.to_noZeroDivisors _, fun _ => inferInstance⟩
+lemma isCancelMulZero_iff_noZeroDivisors : IsCancelMulZero R ↔ NoZeroDivisors R :=
+  noZeroDivisors_tfae.out 3 0
+
+variable (R) in
+instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
+    [NoZeroDivisors R] : IsCancelMulZero R :=
+  isCancelMulZero_iff_noZeroDivisors.mpr ‹_›
+
+end NonUnitalNonAssocRing
 
 lemma NoZeroDivisors.to_isDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
     IsDomain α :=
@@ -211,7 +237,7 @@ scoped[Subsingleton] attribute [instance] Subsingleton.to_noZeroDivisors
 
 lemma isDomain_iff_cancelMulZero_and_nontrivial [Semiring α] :
     IsDomain α ↔ IsCancelMulZero α ∧ Nontrivial α :=
-  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => {}⟩
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ {}⟩
 
 lemma isCancelMulZero_iff_isDomain_or_subsingleton [Semiring α] :
     IsCancelMulZero α ↔ IsDomain α ∨ Subsingleton α := by
@@ -253,7 +279,6 @@ lemma div_neg_eq_neg_div (a b : R) : b / -a = -(b / a) :=
 lemma neg_div (a b : R) : -b / a = -(b / a) := by
   rw [neg_eq_neg_one_mul, mul_div_assoc, ← neg_eq_neg_one_mul]
 
-@[field_simps]
 lemma neg_div' (a b : R) : -(b / a) = -b / a := by simp [neg_div]
 
 @[simp]

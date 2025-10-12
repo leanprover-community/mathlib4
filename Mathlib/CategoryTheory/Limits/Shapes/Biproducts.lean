@@ -81,9 +81,9 @@ structure BiconeMorphism {F : J → C} (A B : Bicone F) where
   /-- A morphism between the two vertex objects of the bicones -/
   hom : A.pt ⟶ B.pt
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  wπ : ∀ j : J, hom ≫ B.π j = A.π j := by aesop_cat
+  wπ : ∀ j : J, hom ≫ B.π j = A.π j := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  wι : ∀ j : J, A.ι j ≫ hom = B.ι j := by aesop_cat
+  wι : ∀ j : J, A.ι j ≫ hom = B.ι j := by cat_disch
 
 attribute [reassoc (attr := simp)] BiconeMorphism.wι BiconeMorphism.wπ
 
@@ -94,9 +94,9 @@ instance Bicone.category : Category (Bicone F) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
--- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
--- the `hom` field of a category, we need to write the `ext` lemma in terms of the categorical
--- morphism, rather than the underlying structure.
+/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+-- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
+the underlying structure. -/
 @[ext]
 theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
   cases f
@@ -110,8 +110,8 @@ namespace Bicones
   maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
-    (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by aesop_cat)
-    (wπ : ∀ j, φ.hom ≫ c'.π j = c.π j := by aesop_cat) : c ≅ c' where
+    (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by cat_disch)
+    (wπ : ∀ j, φ.hom ≫ c'.π j = c.π j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
@@ -129,7 +129,7 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
       ι := fun j => G.map (A.ι j)
       ι_π := fun i j => (Functor.map_comp _ _ _).symm.trans <| by
         rw [A.ι_π]
-        aesop_cat }
+        cat_disch }
   map f :=
     { hom := G.map f.hom
       wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
@@ -142,7 +142,7 @@ instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
   map_surjective t :=
    ⟨{ hom := G.preimage t.hom
       wι := fun j => G.map_injective (by simpa using t.wι j)
-      wπ := fun j => G.map_injective (by simpa using t.wπ j) }, by aesop_cat⟩
+      wπ := fun j => G.map_injective (by simpa using t.wπ j) }, by cat_disch⟩
 
 instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
     (functoriality F G).Faithful where
@@ -348,7 +348,7 @@ class HasBiproductsOfShape : Prop where
 
 attribute [instance 100] HasBiproductsOfShape.has_biproduct
 
-/-- `HasFiniteBiproducts C` represents a choice of biproduct for every family of objects in `C`
+/-- A category `HasFiniteBiproducts` if it has a biproduct for every finite family of objects in `C`
 indexed by a finite type. -/
 class HasFiniteBiproducts : Prop where
   out : ∀ n, HasBiproductsOfShape (Fin n) C
@@ -400,8 +400,8 @@ variable {J : Type w} {K : Type*}
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
 /-- `biproduct f` computes the biproduct of a family of elements `f`. (It is defined as an
-   abbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will
-   just use general facts about limits and colimits.) -/
+abbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will
+just use general facts about limits and colimits.) -/
 abbrev biproduct (f : J → C) [HasBiproduct f] : C :=
   (biproduct.bicone f).pt
 
@@ -431,7 +431,7 @@ theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
   convert (biproduct.bicone f).ι_π j j'
 
-@[reassoc] -- Porting note: both versions proven by simp
+@[reassoc] -- Not `simp` because `simp` can prove this
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
     biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp
 
@@ -726,7 +726,7 @@ theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
       biproduct.lift fun j => if h : p j then biproduct.π (Subtype.restrict p f) ⟨j, h⟩ else 0 :=
   biproduct.hom_ext _ _ (by simp)
 
-@[reassoc] -- Porting note: both version solved using simp
+@[reassoc] -- Not `@[simp]` because `simp` can prove this
 theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
     biproduct.fromSubtype f p ≫ biproduct.π f j = biproduct.π (Subtype.restrict p f) j := by
   classical
@@ -877,7 +877,7 @@ def kernelForkBiproductToSubtype (p : Set K) :
         · simp
         · replace w := w =≫ biproduct.π _ ⟨j, not_not.mp h⟩
           simpa using w.symm)
-      (by aesop_cat)
+      (by cat_disch)
 
 instance (p : Set K) : HasKernel (biproduct.toSubtype f p) :=
   HasLimit.mk (kernelForkBiproductToSubtype f p)
@@ -914,7 +914,7 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
         · simp
         · replace w := biproduct.ι _ (⟨j, not_not.mp h⟩ : p) ≫= w
           simpa using w.symm)
-      (by aesop_cat)
+      (by cat_disch)
 
 instance (p : Set K) : HasCokernel (biproduct.fromSubtype f p) :=
   HasColimit.mk (cokernelCoforkBiproductFromSubtype f p)
@@ -947,7 +947,6 @@ theorem biproduct.matrix_π (m : ∀ j k, f j ⟶ g k) (k : K) :
 @[reassoc (attr := simp)]
 theorem biproduct.ι_matrix (m : ∀ j k, f j ⟶ g k) (j : J) :
     biproduct.ι f j ≫ biproduct.matrix m = biproduct.lift fun k => m j k := by
-  ext
   simp [biproduct.matrix]
 
 /-- Extract the matrix components from a morphism of biproducts. -/
@@ -1002,9 +1001,9 @@ theorem biproduct.conePointUniqueUpToIso_inv (f : J → C) [HasBiproduct f] {b :
     biproduct.bicone_π, biproduct.ι_desc, biproduct.ι_π, b.toCone_π_app, b.ι_π]
 
 /-- Biproducts are unique up to isomorphism. This already follows because bilimits are limits,
-    but in the case of biproducts we can give an isomorphism with particularly nice definitional
-    properties, namely that `biproduct.lift b.π` and `biproduct.desc b.ι` are inverses of each
-    other. -/
+but in the case of biproducts we can give an isomorphism with particularly nice definitional
+properties, namely that `biproduct.lift b.π` and `biproduct.desc b.ι` are inverses of each
+other. -/
 @[simps]
 def biproduct.uniqueUpToIso (f : J → C) [HasBiproduct f] {b : Bicone f} (hb : b.IsBilimit) :
     b.pt ≅ ⨁ f where

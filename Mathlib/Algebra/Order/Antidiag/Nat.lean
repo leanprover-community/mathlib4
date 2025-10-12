@@ -162,12 +162,9 @@ lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     ← Finset.mul_prod_erase _ _ (mem_erase.mpr ⟨hij, mem_univ _⟩), ← mul_assoc]
   apply Nat.dvd_mul_right
 
-@[deprecated (since := "2024-12-17")]
-alias finMulAntidiag_exists_unique_prime_dvd := finMulAntidiag_existsUnique_prime_dvd
-
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i} , p
+  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i}, p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
     (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
