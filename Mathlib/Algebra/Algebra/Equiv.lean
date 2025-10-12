@@ -905,6 +905,7 @@ of algebras provided here unless `e 1 = 1`. -/
     {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (e : R ≃ₗ[R] A) : R ≃ₐ[R] A where
   __ := Algebra.ofId R A
+  map_smul' _ _ := by simp [Algebra.smul_def]
   invFun x := e.symm (e 1 * x)
   left_inv x := calc
     e.symm (e 1 * (algebraMap R A) x)
