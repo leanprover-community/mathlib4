@@ -426,6 +426,8 @@ variable {R}
 
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
+@[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A := rfl
+
 @[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
