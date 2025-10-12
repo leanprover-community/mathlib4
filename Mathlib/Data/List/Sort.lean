@@ -519,57 +519,53 @@ alias ⟨SortedLT.get_strictMono, _⟩ := sortedLT_iff_strictMono
 unseal SortedGT in theorem sortedGT_iff_strictAnti : l.SortedGT ↔ StrictAnti l.get := Iff.rfl
 alias ⟨SortedGT.get_strictAnti, _⟩ := sortedGT_iff_strictAnti
 
-theorem sortedLE_iff_get : l.SortedLE ↔ ∀ (i j : Fin l.length), i < j → (l.get i) ≤ (l.get j) :=
+theorem sortedLE_iff_get : l.SortedLE ↔ ∀ (i j : Fin l.length), i < j → l.get i ≤ l.get j :=
   sortedLE_iff_monotone.trans monotone_iff_forall_lt
-theorem sortedGE_iff_get : l.SortedGE ↔ ∀ (i j : Fin l.length), i < j → (l.get j) ≤ (l.get i) :=
+theorem sortedGE_iff_get : l.SortedGE ↔ ∀ (i j : Fin l.length), i < j → l.get j ≤ l.get i :=
   sortedGE_iff_antitone.trans antitone_iff_forall_lt
-theorem sortedLT_iff_get : l.SortedLT ↔ ∀ (i j : Fin l.length), i < j → (l.get i) < (l.get j) :=
+theorem sortedLT_iff_get : l.SortedLT ↔ ∀ (i j : Fin l.length), i < j → l.get i < l.get j :=
   sortedLT_iff_strictMono
-theorem sortedGT_iff_get : l.SortedGT ↔ ∀ (i j : Fin l.length), i < j → (l.get j) < (l.get i) :=
+theorem sortedGT_iff_get : l.SortedGT ↔ ∀ (i j : Fin l.length), i < j → l.get j < l.get i :=
   sortedGT_iff_strictAnti
 
-theorem sortedLE_iff_getElem : l.SortedLE ↔
+@[grind] theorem sortedLE_iff_getElem : l.SortedLE ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] ≤ l[j] := by
   simp_rw [sortedLE_iff_get, Fin.forall_iff]; grind
-theorem sortedGE_iff_getElem : l.SortedGE ↔
+@[grind] theorem sortedGE_iff_getElem : l.SortedGE ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] ≤ l[i] := by
   simp_rw [sortedGE_iff_get, Fin.forall_iff]; grind
-theorem sortedLT_iff_getElem : l.SortedLT ↔
+@[grind] theorem sortedLT_iff_getElem : l.SortedLT ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] < l[j] := by
   simp_rw [sortedLT_iff_get, Fin.forall_iff]; grind
-theorem sortedGT_iff_getElem : l.SortedGT ↔
+@[grind] theorem sortedGT_iff_getElem : l.SortedGT ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] < l[i] := by
   simp_rw [sortedGT_iff_get, Fin.forall_iff]; grind
 
-@[grind]
-theorem sortedLE_iff_pairwise : SortedLE l ↔ Pairwise (· ≤ ·) l :=
+@[grind] theorem sortedLE_iff_pairwise : SortedLE l ↔ Pairwise (· ≤ ·) l :=
   sortedLE_iff_get.trans (Iff.symm pairwise_iff_get)
-alias ⟨SortedLE.pairwise, _⟩ := sortedLE_iff_pairwise
-@[grind]
-theorem sortedGE_iff_pairwise : SortedGE l ↔ Pairwise (· ≥ ·) l :=
+alias ⟨SortedLE.pairwise, Pairwise.sortedLE⟩ := sortedLE_iff_pairwise
+@[grind] theorem sortedGE_iff_pairwise : SortedGE l ↔ Pairwise (· ≥ ·) l :=
   sortedGE_iff_get.trans (Iff.symm pairwise_iff_get)
-alias ⟨SortedGE.pairwise, _⟩ := sortedGE_iff_pairwise
-@[grind]
-theorem sortedLT_iff_pairwise : SortedLT l ↔ Pairwise (· < ·) l :=
+alias ⟨SortedGE.pairwise, Pairwise.sortedGE⟩ := sortedGE_iff_pairwise
+@[grind] theorem sortedLT_iff_pairwise : SortedLT l ↔ Pairwise (· < ·) l :=
   sortedLT_iff_get.trans (Iff.symm pairwise_iff_get)
-alias ⟨SortedLT.pairwise, _⟩ := sortedLT_iff_pairwise
-@[grind]
-theorem sortedGT_iff_pairwise : SortedGT l ↔ Pairwise (· > ·) l :=
+alias ⟨SortedLT.pairwise, Pairwise.sortedLT⟩ := sortedLT_iff_pairwise
+@[grind] theorem sortedGT_iff_pairwise : SortedGT l ↔ Pairwise (· > ·) l :=
   sortedGT_iff_get.trans (Iff.symm pairwise_iff_get)
-alias ⟨SortedGT.pairwise, _⟩ := sortedGT_iff_pairwise
+alias ⟨SortedGT.pairwise, Pairwise.sortedGT⟩ := sortedGT_iff_pairwise
 
-theorem sortedLE_iff_isChain : SortedLE l ↔ IsChain (· ≤ ·) l :=
+@[grind] theorem sortedLE_iff_isChain : SortedLE l ↔ IsChain (· ≤ ·) l :=
   sortedLE_iff_pairwise.trans isChain_iff_pairwise.symm
-alias ⟨_, IsChain.sortedLE⟩ := sortedLE_iff_isChain
-theorem sortedGE_iff_isChain : SortedGE l ↔ IsChain (· ≥ ·) l :=
+alias ⟨SortedLE.isChain, IsChain.sortedLE⟩ := sortedLE_iff_isChain
+@[grind] theorem sortedGE_iff_isChain : SortedGE l ↔ IsChain (· ≥ ·) l :=
   sortedGE_iff_pairwise.trans isChain_iff_pairwise.symm
-alias ⟨_, IsChain.sortedGE⟩ := sortedGE_iff_isChain
-theorem sortedLT_iff_isChain : SortedLT l ↔ IsChain (· < ·) l :=
+alias ⟨SortedGE.isChain, IsChain.sortedGE⟩ := sortedGE_iff_isChain
+@[grind] theorem sortedLT_iff_isChain : SortedLT l ↔ IsChain (· < ·) l :=
   sortedLT_iff_pairwise.trans isChain_iff_pairwise.symm
-alias ⟨_, IsChain.sortedLT⟩ := sortedLT_iff_isChain
-theorem sortedGT_iff_isChain : SortedGT l ↔ IsChain (· > ·) l :=
+alias ⟨SortedLT.isChain, IsChain.sortedLT⟩ := sortedLT_iff_isChain
+@[grind] theorem sortedGT_iff_isChain : SortedGT l ↔ IsChain (· > ·) l :=
   sortedGT_iff_pairwise.trans isChain_iff_pairwise.symm
-alias ⟨_, IsChain.sortedGT⟩ := sortedGT_iff_isChain
+alias ⟨SortedGT.isChain, IsChain.sortedGT⟩ := sortedGT_iff_isChain
 
 instance decidableSortedLE [DecidableLE α] : Decidable (l.SortedLE) :=
   decidable_of_iff' _ sortedLE_iff_isChain

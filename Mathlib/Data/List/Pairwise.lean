@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Batteries.Data.List.Pairwise
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
-import Mathlib.Data.List.Basic
 
 /-!
 # Pairwise relations on a list
@@ -97,11 +96,11 @@ protected alias ⟨Pairwise.of_reverse, Pairwise.reverse⟩ := pairwise_reverse
 
 theorem Pairwise.head!_le [Inhabited α] [IsRefl α R] (h : l.Pairwise R)
     (ha : a ∈ l) : R l.head! a := by
-  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
-  rw [pairwise_cons] at h
-  cases ha
-  · exact refl_of ..
-  · exact h.1 _ (by assumption)
+  cases l
+  · contradiction
+  · cases ha with
+    | head => exact refl_of ..
+    | tail => exact rel_of_pairwise_cons h (by assumption)
 
 theorem pairwise_replicate_of_refl {n} [IsRefl α R] : (replicate n a).Pairwise R :=
   pairwise_replicate.mpr  (Or.inr <| refl_of ..)
