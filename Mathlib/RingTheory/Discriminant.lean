@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.Trace.Basic
 
 /-!
