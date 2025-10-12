@@ -582,7 +582,7 @@ lemma injectiveDimension_eq_depth
           rfl
     rw [hr]
     apply Nat.cast_le.mpr
-    have : projectiveDimension (ModuleCat.of R
+    have projdim : projectiveDimension (ModuleCat.of R
       ((Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)))) = rs.length := by
       let _ : Module.Free R (Shrink.{v} R) := Module.Free.of_equiv (Shrink.linearEquiv R R).symm
       have : projectiveDimension (ModuleCat.of R (Shrink.{v} R)) = 0 := by
@@ -596,7 +596,15 @@ lemma injectiveDimension_eq_depth
           exact zero_le _
       simp [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
         reg'.1 mem, this]
-
+    have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M r) := by
+      --use `injectiveDimension_eq_sInf`
+      sorry
+    by_contra! lt
+    let _ := projectiveDimension_lt_iff.mp (lt_of_eq_of_lt projdim (Nat.cast_lt.mpr lt))
+    have sub := HasProjectiveDimensionLT.subsingleton.{v} (ModuleCat.of R
+      ((Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)))) r r (le_refl r) M
+    absurd not_nontrivial_iff_subsingleton.mpr sub
+    --see book for the surjection and use `ntr`
     sorry
   · simp only [injectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
     intro b hb
@@ -606,7 +614,9 @@ lemma injectiveDimension_eq_depth
       (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs)))
     apply not_subsingleton_iff_nontrivial.mpr
     rw [(ext_quotient_regular_sequence_length.{v, u, v} M rs reg).nontrivial_congr]
-    sorry
+    apply Submodule.Quotient.nontrivial_of_lt_top _ (lt_top_iff_ne_top.mpr _)
+    apply (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator _).symm
+    exact le_trans (Ideal.span_le.mpr mem) (maximalIdeal_le_jacobson _)
 
 end
 
