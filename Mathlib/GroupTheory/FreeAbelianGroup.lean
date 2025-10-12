@@ -20,7 +20,7 @@ under pointwise addition. In this file, it is defined as the abelianisation
 of the free group on `α`. All the constructions and theorems required to show
 the adjointness of the construction and the forgetful functor are proved in this
 file, but the category-theoretic adjunction statement is in
-`Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+`Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
 
 ## Main definitions
 

@@ -22,8 +22,8 @@ open CategoryTheory Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 
-variable (R : Sheaf J RingCat.{u}) [HasWeakSheafify J AddCommGrp.{v}]
-  [J.WEqualsLocallyBijective AddCommGrp.{v}] (K : Type w) [Category.{w'} K]
+variable (R : Sheaf J RingCat.{u}) [HasWeakSheafify J AddCommGrpCat.{v}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{v}] (K : Type w) [Category.{w'} K]
 
 instance [HasColimitsOfShape K (PresheafOfModules.{v} R.val)] :
     HasColimitsOfShape K (SheafOfModules.{v} R) where

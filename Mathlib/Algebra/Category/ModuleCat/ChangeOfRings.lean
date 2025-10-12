@@ -859,18 +859,18 @@ noncomputable instance preservesLimit_restrictScalars
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => ⟨by
-    have hc' := isLimitOfPreserves (forget₂ _ AddCommGrp) hc
-    exact isLimitOfReflects (forget₂ _ AddCommGrp) hc'⟩⟩
+    have hc' := isLimitOfPreserves (forget₂ _ AddCommGrpCat) hc
+    exact isLimitOfReflects (forget₂ _ AddCommGrpCat) hc'⟩⟩
 
 instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
     (f : R →+* S) {J : Type*} [Category J] (F : J ⥤ ModuleCat.{v} S)
-    [HasColimit (F ⋙ forget₂ _ AddCommGrp)] :
+    [HasColimit (F ⋙ forget₂ _ AddCommGrpCat)] :
     PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
-  have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrp) :=
-    inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrp))
+  have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrpCat) :=
+    inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrpCat))
   apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
-  apply isColimitOfReflects (forget₂ _ AddCommGrp)
-  apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrp.{v})
+  apply isColimitOfReflects (forget₂ _ AddCommGrpCat)
+  apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrpCat.{v})
   exact HasColimit.isColimitColimitCocone F
 
 variable (R) in

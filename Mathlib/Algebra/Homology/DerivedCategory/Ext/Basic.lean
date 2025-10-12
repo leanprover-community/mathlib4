@@ -24,12 +24,12 @@ However, in the development of the API for Ext-groups, it is important
 to keep a larger degree of generality for universes, as `w < v`
 may happen in certain situations. Indeed, if `X : Scheme.{u}`,
 then the underlying category of the étale site of `X` shall be a large
-category. However, the category `Sheaf X.Etale AddCommGrp.{u}`
+category. However, the category `Sheaf X.Etale AddCommGrpCat.{u}`
 shall have good properties (because there is a small category of affine
 schemes with the same category of sheaves), and even though the type of
-morphisms in `Sheaf X.Etale AddCommGrp.{u}` shall be
+morphisms in `Sheaf X.Etale AddCommGrpCat.{u}` shall be
 in `Type (u + 1)`, these types are going to be `u`-small.
-Then, for `C := Sheaf X.etale AddCommGrp.{u}`, we will have
+Then, for `C := Sheaf X.etale AddCommGrpCat.{u}`, we will have
 `Category.{u + 1} C`, but `HasExt.{u} C` will hold
 (as `C` has enough injectives). Then, the `Ext` groups between étale
 sheaves over `X` shall be in `Type u`.
@@ -389,24 +389,24 @@ end Ext
 
 /-- Auxiliary definition for `extFunctor`. -/
 @[simps]
-noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrp.{w} where
-  obj Y := AddCommGrp.of (Ext X Y n)
-  map f := AddCommGrp.ofHom ((Ext.mk₀ f).postcomp _ (add_zero n))
+noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} where
+  obj Y := AddCommGrpCat.of (Ext X Y n)
+  map f := AddCommGrpCat.ofHom ((Ext.mk₀ f).postcomp _ (add_zero n))
   map_comp f f' := by
     ext α
-    dsimp [AddCommGrp.ofHom]
+    dsimp [AddCommGrpCat.ofHom]
     rw [← Ext.mk₀_comp_mk₀]
     symm
     apply Ext.comp_assoc
     omega
 
-/-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrp` which sends `X : C` and `Y : C`
+/-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrpCat` which sends `X : C` and `Y : C`
 to `Ext X Y n`. -/
 @[simps]
-noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
+noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{w} where
   obj X := extFunctorObj X.unop n
   map {X₁ X₂} f :=
-    { app := fun Y ↦ AddCommGrp.ofHom (AddMonoidHom.mk'
+    { app := fun Y ↦ AddCommGrpCat.ofHom (AddMonoidHom.mk'
         (fun α ↦ (Ext.mk₀ f.unop).comp α (zero_add _)) (by simp))
       naturality := fun {Y₁ Y₂} g ↦ by
         ext α
