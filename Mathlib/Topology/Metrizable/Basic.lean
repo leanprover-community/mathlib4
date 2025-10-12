@@ -92,7 +92,6 @@ instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (A i)] :
 
 instance PseudoMetrizableSpace.regularSpace [PseudoMetrizableSpace X] : RegularSpace X :=
   let := pseudoMetrizableSpaceUniformity X
-  have := pseudoMetrizableSpaceUniformity_countably_generated X
   inferInstance
 
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
