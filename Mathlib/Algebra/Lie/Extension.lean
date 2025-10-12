@@ -118,21 +118,16 @@ def kerProjEquiv :
     E.proj.ker ≃ₗ[R] N := E.projInclEquiv ≪≫ₗ E.sectLeft
 
 lemma eq_of_proj_eq (E : Extension R N M) {p : E.L →ₗ[R] N} {x y : E.L} (h : p x = p y)
-    (hp : p ∘ₗ E.incl.toLinearMap = LinearMap.id) (hE : E.proj x = E.proj y) : x = y := by
+    (hp : Function.LeftInverse p E.incl) (hE : E.proj x = E.proj y) : x = y := by
   have : x - y ∈ LinearMap.ker E.proj.toLinearMap := LinearMap.sub_mem_ker_iff.mpr hE
   have : ∃ z : N, E.incl z = x - y := by
     rw [← LieHom.ker_toSubmodule] at this
     rw [← LieHom.mem_range, exact]
     exact this
   obtain ⟨z, hz⟩ := this
-  have hcomp : (p ∘ₗ E.incl) z = z := by
-    rw [LinearMap.ext_iff] at hp
-    exact hp z
-  rw [← LieHom.coe_toLinearMap] at hz
-  have : p (x - y) = 0 := by
-    rw [LinearMap.map_sub, h, sub_eq_zero]
-  rw [LinearMap.comp_apply, hz, this] at hcomp
-  rw [← hcomp, LinearMap.map_zero] at hz
+  have : p (x - y) = 0 := by rw [LinearMap.map_sub, h, sub_eq_zero]
+  have : z = 0 := by rw [← hp z, hz, this]
+  rw [this, map_zero] at hz
   rw [← sub_eq_zero, ← hz]
 
 /-- `Extension`s are equivalent iff there is a homomorphism making a commuting diagram. -/
