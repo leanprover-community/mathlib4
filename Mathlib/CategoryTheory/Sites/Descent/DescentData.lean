@@ -304,7 +304,8 @@ def pullFunctorCompIso
         pullFunctorObjHom_eq _ _ _ _ _ (s ≫ q) (f₁ ≫ q' k₁) (f₂ ≫ q' k₂)]
       dsimp
       rw [pullFunctorObjHom_eq _ _ _ _ _ (s ≫ r) (f₁ ≫ r' k₁) (f₂ ≫ r' k₂)
-        rfl (by simp [w', reassoc_of% hf₁, reassoc_of% hf₂])]
+        rfl (by simp [w', reassoc_of% hf₁, reassoc_of% hf₂]) (by
+          simp [reassoc_of% w', reassoc_of% hf₁, hr])]
       dsimp
       simp only [Category.assoc]
       rw [mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app_assoc _ _ _ _ _ _ _
