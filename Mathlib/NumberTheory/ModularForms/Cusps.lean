@@ -180,21 +180,18 @@ usually defined to be the smallest `h > 0` such that `±[1, h; 0, 1] ∈ Γ`, bu
 positive sign here.)
 -/
 
-variable (K : Type*) [Ring K]
+variable {K : Type*} [Ring K]
+initialize_simps_projections AddChar (toFun → apply)
 
 /-- The map sending `x` to `[1, x; 0, 1]` (bundled as an `AddChar`). -/
+@[simps apply]
 def Matrix.GeneralLinearGroup.upperRightHom : AddChar K (GL (Fin 2) K) where
   toFun x := ⟨!![1, x; 0, 1], !![1, -x; 0, 1], by simp [one_fin_two], by simp [one_fin_two]⟩
   map_zero_eq_one' := by simp [Units.ext_iff, one_fin_two]
   map_add_eq_mul' a b := by simp [Units.ext_iff, add_comm]
 
-variable {K} in
-@[simp] lemma Matrix.GeneralLinearGroup.upperRightHom_apply {x : K} : (upperRightHom K x) =
-    ⟨!![1, x; 0, 1], !![1, -x; 0, 1], by simp [one_fin_two], by simp [one_fin_two]⟩ :=
-  rfl
-
 lemma continuous_upperRightHom [TopologicalSpace K] [IsTopologicalRing K] :
-    Continuous (upperRightHom K) := by
+    Continuous (upperRightHom (K := K)) := by
   simp only [continuous_induced_rng, Function.comp_def, upperRightHom_apply,
     Units.embedProduct_apply, Units.inv_mk, continuous_prodMk, MulOpposite.unop_op]
   constructor <;>
@@ -203,18 +200,18 @@ lemma continuous_upperRightHom [TopologicalSpace K] [IsTopologicalRing K] :
     fin_cases j <;>
     simp [continuous_const, continuous_neg, continuous_id']
 
-lemma injective_upperRightHom : Function.Injective (upperRightHom K) := by
-  refine (injective_iff_map_eq_zero (upperRightHom K).toAddMonoidHom).mpr ?_
+lemma injective_upperRightHom : Function.Injective (upperRightHom (K := K)) := by
+  refine (injective_iff_map_eq_zero (upperRightHom (K := K)).toAddMonoidHom).mpr ?_
   simp [Units.ext_iff, one_fin_two]
 
-variable {K}
 
 namespace Subgroup.HasDetPlusMinusOne
 
-variable {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.HasDetPlusMinusOne]
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+  {𝒢 : Subgroup (GL (Fin 2) K)} [𝒢.HasDetPlusMinusOne]
 
 lemma isParabolic_iff_of_upperTriangular {g} (hg : g ∈ 𝒢) (hg10 : g 1 0 = 0) :
-    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom ℝ x) ∨ (∃ x ≠ 0, g = -upperRightHom ℝ x) := by
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) := by
   rw [GeneralLinearGroup.isParabolic_iff_of_upperTriangular hg10]
   constructor
   · rintro ⟨hg00, hg01⟩
@@ -235,16 +232,18 @@ lemma isParabolic_iff_of_upperTriangular {g} (hg : g ∈ 𝒢) (hg10 : g 1 0 = 0
 
 end Subgroup.HasDetPlusMinusOne
 
+namespace Subgroup
+
 /-- For a subgroup `𝒢` of `GL(2, K)`, this is the additive group of `x : K` such that
 `[1, x; 0, 1] ∈ 𝒢`. -/
-def Subgroup.strictPeriods (𝒢 : Subgroup (GL (Fin 2) K)) : AddSubgroup K :=
-  (toAddSubgroup 𝒢).comap (upperRightHom K).toAddMonoidHom
+def strictPeriods (𝒢 : Subgroup (GL (Fin 2) K)) : AddSubgroup K :=
+  (toAddSubgroup 𝒢).comap upperRightHom.toAddMonoidHom
 
-@[simp] lemma Subgroup.mem_strictPeriods_iff {𝒢 : Subgroup (GL (Fin 2) K)} {x : K} :
-    x ∈ 𝒢.strictPeriods ↔ upperRightHom K x ∈ 𝒢 := by
+@[simp] lemma mem_strictPeriods_iff {𝒢 : Subgroup (GL (Fin 2) K)} {x : K} :
+    x ∈ 𝒢.strictPeriods ↔ upperRightHom x ∈ 𝒢 := by
   simp [strictPeriods]
 
-@[simp] lemma Subgroup.strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
+@[simp] lemma strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
   ext x
   simp only [mem_strictPeriods_iff, MonoidHom.mem_range, Units.ext_iff, mapGL_coe_matrix,
     map_apply_coe]
@@ -258,60 +257,39 @@ def Subgroup.strictPeriods (𝒢 : Subgroup (GL (Fin 2) K)) : AddSubgroup K :=
 instance instDiscreteTopStrictPeriods [TopologicalSpace K] [IsTopologicalRing K]
     (𝒢 : Subgroup (GL (Fin 2) K)) [hG : DiscreteTopology 𝒢] :
     DiscreteTopology 𝒢.strictPeriods := by
-  let H := ↑𝒢 ∩ (Set.range (upperRightHom K))
+  let H : Set (GL (Fin 2) K) := 𝒢 ∩ (Set.range upperRightHom)
   have hH : DiscreteTopology H := hG.of_subset Set.inter_subset_left
-  have : Set.MapsTo (upperRightHom K) 𝒢.strictPeriods H := fun x hx ↦ by
+  have : Set.MapsTo upperRightHom 𝒢.strictPeriods H := fun x hx ↦ by
     rw [SetLike.mem_coe, Subgroup.mem_strictPeriods_iff] at hx
     tauto
-  exact .of_continuous_injective ((continuous_upperRightHom K).restrict this)
-    (this.restrict_inj.mpr (injective_upperRightHom K).injOn)
-
-lemma AddSubgroup.discrete_iff_cyclic {A : AddSubgroup ℝ} :
-    IsAddCyclic A ↔ DiscreteTopology A := by
-  rw [AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq_top]
-  constructor
-  · rintro ⟨g, rfl⟩
-    apply NormedSpace.discreteTopology_zmultiples
-  · intro hA
-    have := A.dense_or_cyclic
-    simp only [← AddSubgroup.zmultiples_eq_closure, Eq.comm (a := A)] at this
-    refine this.resolve_left fun h ↦ ?_
-    -- remains to show a contradiction assuming `A` is both dense and discrete
-    obtain ⟨U, hU⟩ := discreteTopology_subtype_iff'.mp hA 0 (by simp)
-    obtain ⟨j, hj⟩ := mem_closure_iff.mp (h.diff_singleton 0 0) U hU.1
-      (by simpa only [← Set.singleton_subset_iff, ← hU.2] using Set.inter_subset_left)
-    grind
+  exact .of_continuous_injective (continuous_upperRightHom.restrict this)
+    (this.restrict_inj.mpr injective_upperRightHom.injOn)
 
 /-- The strict width of the cusp `∞`, i.e. the `x` such that `𝒢.strictPeriods = zmultiples x`, or
 0 if no such `x` exists. -/
-noncomputable def Subgroup.strictWidthInfty (𝒢 : Subgroup (GL (Fin 2) ℝ)) : ℝ :=
+noncomputable def strictWidthInfty (𝒢 : Subgroup (GL (Fin 2) ℝ)) : ℝ :=
   by classical exact if h : DiscreteTopology 𝒢.strictPeriods then
   |Exists.choose <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
-      <| AddSubgroup.discrete_iff_cyclic.mpr h|
+      <| AddSubgroup.discrete_iff_addCyclic.mpr h|
   else 0
 
-lemma Subgroup.strictWidthInfty_nonneg (𝒢 : Subgroup (GL (Fin 2) ℝ)) : 0 ≤ 𝒢.strictWidthInfty := by
-  unfold Subgroup.strictWidthInfty; aesop
+lemma strictWidthInfty_nonneg (𝒢 : Subgroup (GL (Fin 2) ℝ)) : 0 ≤ 𝒢.strictWidthInfty := by
+  unfold strictWidthInfty; aesop
 
-@[simp]
-lemma AddSubgroup.zmultiples_abs {A : Type*} [AddCommGroup A] [LinearOrder A] [IsOrderedAddMonoid A]
-    (a : A) : zmultiples |a| = zmultiples a := by
-  rcases abs_cases a with (h | h) <;> simp only [h, AddSubgroup.zmultiples_neg]
-
-lemma Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty {𝒢 : Subgroup (GL (Fin 2) ℝ)}
+lemma strictPeriods_eq_zmultiples_strictWidthInfty {𝒢 : Subgroup (GL (Fin 2) ℝ)}
     [DiscreteTopology 𝒢.strictPeriods] :
     𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
   simp [Subgroup.strictWidthInfty, dif_pos,
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
-      <| AddSubgroup.discrete_iff_cyclic.mpr inferInstance]
+      <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
 
-lemma Subgroup.strictWidthInfty_mem_strictPeriods (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
+lemma strictWidthInfty_mem_strictPeriods (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
     𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
   · simp [strictPeriods_eq_zmultiples_strictWidthInfty]
   · simpa only [strictWidthInfty, dif_neg h] using 𝒢.strictPeriods.zero_mem
 
-lemma Subgroup.strictWidthInfty_pos_iff {𝒢 : Subgroup (GL (Fin 2) ℝ)}
+lemma strictWidthInfty_pos_iff {𝒢 : Subgroup (GL (Fin 2) ℝ)}
     [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDetPlusMinusOne] :
     0 < 𝒢.strictWidthInfty ↔ IsCusp ∞ 𝒢 := by
   constructor
@@ -340,14 +318,19 @@ lemma Subgroup.strictWidthInfty_pos_iff {𝒢 : Subgroup (GL (Fin 2) ℝ)}
 
 /-- For a subgroup `𝒢` of `GL(2, K)`, this is the additive group of `x : K` such that
 `±[1, x; 0, 1] ∈ 𝒢`. -/
-noncomputable def Subgroup.periods (𝒢 : Subgroup (GL (Fin 2) K)) : AddSubgroup K :=
+protected noncomputable def periods (𝒢 : Subgroup (GL (Fin 2) K)) : AddSubgroup K :=
   𝒢.adjoinNegOne.strictPeriods
 
-lemma Subgroup.strictPeriods_le_periods (𝒢 : Subgroup (GL (Fin 2) K)) :
+lemma strictPeriods_le_periods (𝒢 : Subgroup (GL (Fin 2) K)) :
     𝒢.strictPeriods ≤ 𝒢.periods := by
   intro k
   simp only [Subgroup.periods, Subgroup.mem_strictPeriods_iff]
   apply 𝒢.le_adjoinNegOne
+
+lemma strictPeriods_eq_periods_of_neg_one_mem
+    {𝒢 : Subgroup (GL (Fin 2) K)} (h𝒢 : -1 ∈ 𝒢) :
+    𝒢.strictPeriods = 𝒢.periods := by
+  simp [Subgroup.periods, adjoinNegOne_eq_self_iff.mpr h𝒢]
 
 /-- If `𝒢` is discrete, so is its period subgroup. -/
 instance instDiscreteTopPeriods [TopologicalSpace K] [IsTopologicalRing K] [T2Space K]
@@ -356,36 +339,36 @@ instance instDiscreteTopPeriods [TopologicalSpace K] [IsTopologicalRing K] [T2Sp
 
 /-- The width of the cusp `∞`, i.e. the `x` such that `𝒢.periods = zmultiples x`, or 0 if no such
 `x` exists. -/
-noncomputable def Subgroup.widthInfty (𝒢 : Subgroup (GL (Fin 2) ℝ)) : ℝ :=
+noncomputable def widthInfty (𝒢 : Subgroup (GL (Fin 2) ℝ)) : ℝ :=
   𝒢.adjoinNegOne.strictWidthInfty
 
-lemma Subgroup.widthInfty_nonneg (𝒢 : Subgroup (GL (Fin 2) ℝ)) : 0 ≤ 𝒢.widthInfty :=
+lemma widthInfty_nonneg (𝒢 : Subgroup (GL (Fin 2) ℝ)) : 0 ≤ 𝒢.widthInfty :=
   𝒢.adjoinNegOne.strictWidthInfty_nonneg
 
-lemma Subgroup.periods_eq_zmultiples_widthInfty {𝒢 : Subgroup (GL (Fin 2) ℝ)}
+lemma periods_eq_zmultiples_widthInfty {𝒢 : Subgroup (GL (Fin 2) ℝ)}
     [DiscreteTopology 𝒢.periods] :
     𝒢.periods = AddSubgroup.zmultiples 𝒢.widthInfty :=
   have : DiscreteTopology 𝒢.adjoinNegOne.strictPeriods := ‹_›
   𝒢.adjoinNegOne.strictPeriods_eq_zmultiples_strictWidthInfty
 
-lemma Subgroup.widthInfty_mem_periods (𝒢 : Subgroup (GL (Fin 2) ℝ)) : 𝒢.widthInfty ∈ 𝒢.periods :=
+lemma widthInfty_mem_periods (𝒢 : Subgroup (GL (Fin 2) ℝ)) : 𝒢.widthInfty ∈ 𝒢.periods :=
   𝒢.adjoinNegOne.strictWidthInfty_mem_strictPeriods
 
-lemma Subgroup.widthInfty_pos_iff {𝒢 : Subgroup (GL (Fin 2) ℝ)}
+lemma widthInfty_pos_iff {𝒢 : Subgroup (GL (Fin 2) ℝ)}
     [DiscreteTopology 𝒢.periods] [𝒢.HasDetPlusMinusOne] :
     0 < 𝒢.widthInfty ↔ IsCusp ∞ 𝒢 := by
   have : DiscreteTopology 𝒢.adjoinNegOne.strictPeriods := ‹_›
   rw [widthInfty, strictWidthInfty_pos_iff, (commensurable_adjoinNegOne_self 𝒢).isCusp_iff]
 
-lemma Subgroup.two_mul_withInfty_mem_strictPeriods (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
+lemma two_mul_withInfty_mem_strictPeriods (𝒢 : Subgroup (GL (Fin 2) ℝ)) :
     2 * 𝒢.widthInfty ∈ 𝒢.strictPeriods := by
   have := 𝒢.widthInfty_mem_periods
-  simp only [periods, mem_strictPeriods_iff] at this
+  simp only [Subgroup.periods, mem_strictPeriods_iff] at this
   rcases this with (h | h) <;>
     simpa only [neg_sq, ← AddChar.map_nsmul_eq_pow, nsmul_eq_mul, Nat.cast_ofNat] using
       Subgroup.pow_mem _ h 2
 
-lemma Subgroup.relIndex_strictPeriods (𝒢 : Subgroup (GL (Fin 2) K)) :
+lemma relIndex_strictPeriods (𝒢 : Subgroup (GL (Fin 2) K)) :
     𝒢.strictPeriods.relIndex 𝒢.periods = 1 ∨ 𝒢.strictPeriods.relIndex 𝒢.periods = 2 := by
   by_cases h : 𝒢.strictPeriods = 𝒢.periods
   · simp [h]
@@ -393,16 +376,31 @@ lemma Subgroup.relIndex_strictPeriods (𝒢 : Subgroup (GL (Fin 2) K)) :
     obtain ⟨u, hu_mem, hu_notMem⟩ := (SetLike.lt_iff_le_and_exists.mp h).2
     rw [AddSubgroup.relIndex_eq_two_iff_exists_notMem_and]
     refine .inr ⟨u, hu_mem, hu_notMem, fun b hb ↦ ?_⟩
-    simp only [periods, mem_strictPeriods_iff, mem_adjoinNegOne_iff, AddChar.map_add_eq_mul]
-      at hu_mem hu_notMem hb ⊢
+    simp only [Subgroup.periods, mem_strictPeriods_iff, mem_adjoinNegOne_iff,
+      AddChar.map_add_eq_mul] at hu_mem hu_notMem hb ⊢
     rcases hb with h | h
     · exact Or.inr h
     · simpa only [neg_mul_neg] using Or.inl (mul_mem h <| hu_mem.resolve_left hu_notMem)
 
-lemma Subgroup.commensurable_strictPeriods_periods (𝒢 : Subgroup (GL (Fin 2) K)) :
+lemma commensurable_strictPeriods_periods (𝒢 : Subgroup (GL (Fin 2) K)) :
     𝒢.strictPeriods.Commensurable 𝒢.periods := by
   constructor
   · rcases 𝒢.relIndex_strictPeriods with h | h <;> simp [h]
   · simp [AddSubgroup.relIndex_eq_one.mpr 𝒢.strictPeriods_le_periods]
+
+def IsRegularAtInfty (𝒢 : Subgroup (GL (Fin 2) K)) : Prop :=
+    𝒢.strictPeriods = 𝒢.periods
+
+lemma isRegularAtInfty_iff {𝒢 : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology 𝒢.periods] :
+    𝒢.IsRegularAtInfty ↔ 𝒢.widthInfty ∈ 𝒢.strictPeriods := by
+  refine ⟨fun h ↦ h ▸ widthInfty_mem_periods 𝒢, fun h ↦ ?_⟩
+  apply 𝒢.strictPeriods_le_periods.antisymm
+  rwa [periods_eq_zmultiples_widthInfty, AddSubgroup.zmultiples_le]
+
+lemma isRegularAtInfty_of_neg_one_mem
+    {𝒢 : Subgroup (GL (Fin 2) K)} (h𝒢 : -1 ∈ 𝒢) : 𝒢.IsRegularAtInfty :=
+  𝒢.strictPeriods_eq_periods_of_neg_one_mem h𝒢
+
+end Subgroup
 
 end Width

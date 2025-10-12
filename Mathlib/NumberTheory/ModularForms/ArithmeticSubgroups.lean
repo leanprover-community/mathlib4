@@ -3,7 +3,6 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.GroupTheory.Complement
 import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Instances.Matrix
