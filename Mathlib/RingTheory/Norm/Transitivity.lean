@@ -200,7 +200,7 @@ theorem Algebra.norm_norm {A} [Ring A] [Algebra R A] [Algebra S A]
     norm R (norm S a) = norm R a := by
   rw [norm_apply S, norm_apply R a, ← LinearMap.det_restrictScalars]; rfl
 
-variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
+variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L]
 
 open Module IntermediateField AdjoinSimple
 
@@ -208,6 +208,9 @@ namespace Algebra
 
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L}
     (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
+  by_cases h : FiniteDimensional K L
+  swap
+  · simpa [norm_eq_one_of_not_module_finite h] using isIntegral_one
   let F := K⟮x⟯
   rw [← norm_norm (S := F), ← coe_gen K x, ← IntermediateField.algebraMap_apply,
     norm_algebraMap_of_basis (Module.Free.chooseBasis F L) (gen K x), map_pow]
@@ -221,6 +224,19 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L
 
 theorem norm_eq_norm_adjoin (x : L) :
     norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
+  by_cases h : FiniteDimensional K L
+  swap
+  · rw [norm_eq_one_of_not_module_finite h]
+    by_cases hx : IsIntegral K x
+    · have h₁ : ¬ FiniteDimensional K⟮x⟯ L := fun H ↦ h <| by
+        have : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx
+        exact Finite.trans K⟮x⟯ L
+      simp [finrank_of_not_finite h₁]
+    · rw [norm_eq_one_of_not_module_finite]
+      · simp
+      · refine fun H ↦ hx ?_
+        rw [← isIntegral_gen]
+        exact IsIntegral.isIntegral (gen K x)
   let F := K⟮x⟯
   nth_rw 1 [← coe_gen K x]
   rw [← norm_norm (S := F), ← IntermediateField.algebraMap_apply,
@@ -234,6 +250,8 @@ theorem norm_eq_prod_roots {x : L} (hF : (minpoly K x).Splits (algebraMap K F)) 
     algebraMap K F (norm K x) =
       ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
+
+variable [FiniteDimensional K L]
 
 /-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
 of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
