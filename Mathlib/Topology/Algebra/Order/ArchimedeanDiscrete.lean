@@ -19,7 +19,13 @@ involving discreteness of subgroups, which require heavier imports.
 namespace Subgroup
 
 variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
-  [TopologicalSpace G] [OrderTopology G]
+
+@[to_additive (attr := simp)]
+lemma zpowers_mabs (g : G) : zpowers |g|ₘ = zpowers g := by
+  rcases mabs_cases g with h | h <;>
+    simp only [h, zpowers_inv]
+
+variable [TopologicalSpace G] [OrderTopology G]
 
 /-- In a linearly ordered group with the order topology, the powers of a single element form a
 discrete subgroup. -/
