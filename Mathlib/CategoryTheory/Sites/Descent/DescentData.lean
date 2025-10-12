@@ -29,7 +29,7 @@ open Opposite
 
 namespace Pseudofunctor
 
--- TODO: can we make grind to this?
+-- TODO: can we make grind do this?
 /-- Tactic which does `simp [← Quiver.Hom.comp_toLoc, ← op_comp]` before applying `aesop`. -/
 macro "aesoptoloc" : tactic =>
   `(tactic|(simp [← Quiver.Hom.comp_toLoc, ← op_comp] <;> aesop))
