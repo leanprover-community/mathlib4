@@ -318,31 +318,29 @@ protected def id : M₁ →L[R₁] M₁ :=
 
 end
 
-open ContinuousLinearMap (id)
-
 instance one : One (M₁ →L[R₁] M₁) :=
-  ⟨id R₁ M₁⟩
+  ⟨.id R₁ M₁⟩
 
-theorem one_def : (1 : M₁ →L[R₁] M₁) = id R₁ M₁ :=
+theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ :=
   rfl
 
-theorem id_apply (x : M₁) : id R₁ M₁ x = x :=
-  rfl
-
-@[simp, norm_cast]
-theorem coe_id : (id R₁ M₁ : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
+theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_id' : ⇑(id R₁ M₁) = _root_.id :=
+theorem coe_id : (ContinuousLinearMap.id R₁ M₁ : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_id' : ⇑(ContinuousLinearMap.id R₁ M₁) = id :=
   rfl
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_id :
-    (id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
+    (ContinuousLinearMap.id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
 
 @[simp, norm_cast]
-theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = id _ _ := by
+theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
   rw [← coe_id, coe_inj]
 
 @[simp]
@@ -443,11 +441,11 @@ theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M�
   rfl
 
 @[simp]
-theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (id R₁ M₁) = f :=
+theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (.id R₁ M₁) = f :=
   ext fun _x => rfl
 
 @[simp]
-theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (id R₂ M₂).comp f = f :=
+theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (ContinuousLinearMap.id R₂ M₂).comp f = f :=
   ext fun _x => rfl
 
 section
@@ -759,8 +757,6 @@ end ToSpanSingleton
 
 end Semiring
 
-open ContinuousLinearMap (id)
-
 section Ring
 
 variable {R : Type*} [Ring R] {R₂ : Type*} [Ring R₂] {R₃ : Type*} [Ring R₃] {M : Type*}
@@ -891,7 +887,7 @@ variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
 `LinearMap.range f₂`. -/
 def projKerOfRightInverse [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M)
     (h : Function.RightInverse f₂ f₁) : M →L[R] LinearMap.ker f₁ :=
-  (id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁) fun x => by simp [h (f₁ x)]
+  (.id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁) fun x => by simp [h (f₁ x)]
 
 @[simp]
 theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
@@ -1127,8 +1123,6 @@ end RestrictScalars
 
 end ContinuousLinearMap
 
-open ContinuousLinearMap (id)
-
 namespace Submodule
 
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
@@ -1147,7 +1141,8 @@ theorem ClosedComplemented.exists_isClosed_isCompl {p : Submodule R M} [T1Space 
 protected theorem ClosedComplemented.isClosed [IsTopologicalAddGroup M] [T1Space M]
     {p : Submodule R M} (h : ClosedComplemented p) : IsClosed (p : Set M) := by
   rcases h with ⟨f, hf⟩
-  have : ker (id R M - p.subtypeL.comp f) = p := LinearMap.ker_id_sub_eq_of_proj hf
+  have : ker (ContinuousLinearMap.id R M - p.subtypeL.comp f) = p :=
+    LinearMap.ker_id_sub_eq_of_proj hf
   exact this ▸ isClosed_ker _
 
 @[simp]
@@ -1156,7 +1151,8 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 
 @[simp]
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
-  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff.2 <| by simp⟩
+  ⟨(ContinuousLinearMap.id R M).codRestrict ⊤ fun _x => trivial,
+    fun x => Subtype.ext_iff.2 <| by simp⟩
 
 end Submodule
 

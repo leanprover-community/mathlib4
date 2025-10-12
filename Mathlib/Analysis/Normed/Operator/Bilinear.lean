@@ -26,8 +26,7 @@ variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
 
 section SemiNormed
 
-open Metric
-open ContinuousLinearMap (id)
+open Metric ContinuousLinearMap
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Eₗ] [SeminormedAddCommGroup F]
   [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup G] [SeminormedAddCommGroup Gₗ]
@@ -229,7 +228,7 @@ vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
 def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
-  flip (id 𝕜₂ (E →SL[σ₁₂] F))
+  flip (.id 𝕜₂ (E →SL[σ₁₂] F))
 
 variable {F σ₁₂}
 
@@ -244,7 +243,7 @@ vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
 def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
-  flip (id 𝕜 (E →L[𝕜] Fₗ))
+  flip (.id 𝕜 (E →L[𝕜] Fₗ))
 
 variable {𝕜 Fₗ}
 
