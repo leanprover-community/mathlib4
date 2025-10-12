@@ -186,6 +186,7 @@ We assume `AddLeftStrictMono` (covariant with *strict* inequality `<`) also when
 with the *weak* inequality `≤`. This is actually necessary: addition on `Lex (Π₀ i, α i)` may fail
 to be monotone, when it is "just" monotone on `α i`. -/
 
+-- TODO: add the `Colex` instances once the `Add (Colex (Π₀ i, α i))` instance is defined.
 
 section Left
 
