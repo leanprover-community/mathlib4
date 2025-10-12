@@ -7,6 +7,7 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Data.Int.Init
+import Batteries.Data.Fin.Lemmas
 
 /-!
 # Equivalences for `Fin n`
