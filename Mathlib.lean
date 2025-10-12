@@ -658,6 +658,7 @@ import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Chain
+import Mathlib.Algebra.Lie.Weights.IsSimple
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.Algebra.Lie.Weights.RootSystem
@@ -1679,6 +1680,7 @@ import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convex.Visible
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.AddCircle
@@ -1706,6 +1708,7 @@ import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
@@ -2561,6 +2564,7 @@ import Mathlib.CategoryTheory.Localization.StructuredArrow
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Localization.Trifunctor
 import Mathlib.CategoryTheory.LocallyDirected
+import Mathlib.CategoryTheory.MarkovCategory.Basic
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
@@ -2615,6 +2619,7 @@ import Mathlib.CategoryTheory.Monoidal.ExternalProduct.KanExtension
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Monoidal.Functor.Types
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Grp_
 import Mathlib.CategoryTheory.Monoidal.Hopf_
@@ -2882,6 +2887,7 @@ import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Yoneda
 import Mathlib.CategoryTheory.Types.Basic
+import Mathlib.CategoryTheory.Types.Monomorphisms
 import Mathlib.CategoryTheory.Types.Set
 import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
@@ -5583,6 +5589,7 @@ import Mathlib.RingTheory.Grassmannian
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.HEval
+import Mathlib.RingTheory.HahnSeries.HahnEmbedding
 import Mathlib.RingTheory.HahnSeries.Lex
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.HahnSeries.PowerSeries
