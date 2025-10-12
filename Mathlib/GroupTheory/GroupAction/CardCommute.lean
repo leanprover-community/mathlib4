@@ -94,9 +94,7 @@ theorem nat_card_orbit_mul_card_stabilizer_eq_card_group
     Nat.card (MulAction.orbit α b) * Nat.card (MulAction.stabilizer α b) = Nat.card α := by
   classical
   have : Fintype α := .ofFinite α
-  have : Fintype (MulAction.orbit α b) := by
-    refine Set.Finite.fintype ?_
-    exact Finite.finite_mulAction_orbit b
+  have : Fintype (MulAction.orbit α b) := (Finite.finite_mulAction_orbit b).fintype
   have : Fintype (MulAction.stabilizer α b) := inferInstance
   simp [Nat.card_eq_fintype_card]
   convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group α b
