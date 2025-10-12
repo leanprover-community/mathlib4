@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.RingTheory.Localization.NumDen
-import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+import Mathlib.RingTheory.Localization.NumDen
+import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
+import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 
 /-!
 # Cusps
