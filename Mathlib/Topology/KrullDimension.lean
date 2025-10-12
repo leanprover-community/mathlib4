@@ -72,7 +72,7 @@ variable {U X : Type*} [TopologicalSpace X] [TopologicalSpace U] (f : U → X) (
 Alternate definition of `map` not requiring the map to be closed, instead taking the closure of the
 image.
 -/
-def map' (T : IrreducibleCloseds U) : {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅} where
+def closureImage (T : IrreducibleCloseds U) : {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅} where
   val.carrier := closure (f '' T.1)
   val.is_irreducible' := T.is_irreducible'.image f (Continuous.continuousOn h) |>.closure
   val.is_closed' := isClosed_closure
@@ -93,34 +93,18 @@ def comap (h2 : IsOpenEmbedding f) (V : {V : IrreducibleCloseds X | f ⁻¹' V �
 /--
 The map taking an irreducible closed set `T` to `closure (f '' T)` is monotone.
 -/
-lemma map'_mono {U X : Type*} [TopologicalSpace X] [TopologicalSpace U]
+lemma closureImage_mono {U X : Type*} [TopologicalSpace X] [TopologicalSpace U]
   (f : U → X) (h2 : Continuous f) :
-  Monotone <| map' f h2 := fun _ _ s ↦ closure_mono (image_mono s)
+  Monotone <| closureImage f h2 := fun _ _ s ↦ closure_mono (image_mono s)
 
 /--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is injective when `f` is an
-open embedding
+The map taking an irreducible closed set `T` to `closure (f '' T)` is left inverse to the preimage
+when `f` is an open embedding
 -/
-lemma map'_injective_of_openEmbedding (h2 : IsOpenEmbedding f) :
-    Function.Injective <| map' f h := by
-  intro V W hVW
-  simp only [ne_eq, coe_setOf, map', mem_setOf_eq, Subtype.mk.injEq,
-    IrreducibleCloseds.mk.injEq] at hVW
-  have : f ⁻¹' closure (f '' V) = f ⁻¹' closure (f '' W) := congrArg (preimage f) hVW
-  simp only [h2.isOpenMap.preimage_closure_eq_closure_preimage h,
-        Function.Injective.preimage_image h2.1.injective _,
-        V.isClosed.closure_eq, W.isClosed.closure_eq] at this
-  exact IrreducibleCloseds.ext_iff.mpr this
-
-/--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is surjective onto irreducible
-closeds `V` satisfying `f ⁻¹' V ≠ ∅` when `f` is an open embedding.
--/
-lemma map'_surjective_of_openEmbedding (h2 : IsOpenEmbedding f) :
-    Function.Surjective <| map' f h := by
+lemma closureImage_comap_leftInverse (h2 : IsOpenEmbedding f) :
+    Function.LeftInverse (closureImage f h) (comap f h h2) := by
   intro V
-  use comap f h h2 V
-  simp only [ne_eq, coe_setOf, map', mem_setOf_eq]
+  simp only [ne_eq, coe_setOf, closureImage, mem_setOf_eq]
   have : (V.1.1 ∩ range f).Nonempty := by
     have := V.2
     dsimp at this
@@ -135,38 +119,81 @@ lemma map'_surjective_of_openEmbedding (h2 : IsOpenEmbedding f) :
   convert lem
   exact image_preimage_eq_inter_range
 
+
+/--
+The map taking an irreducible closed set `T` to `closure (f '' T)` is right inverse to the preimage
+when `f` is an open embedding
+-/
+lemma closureImage_comap_rightInverse (h2 : IsOpenEmbedding f) :
+    Function.RightInverse (closureImage f h) (comap f h h2) := by
+  intro V
+  simp only [comap, ne_eq, mem_setOf_eq, closureImage, IrreducibleCloseds.coe_mk]
+  apply le_antisymm
+  · apply le_trans (b := closure V.carrier)
+    · rw[Topology.isOpenEmbedding_iff_continuous_injective_isOpenMap] at h2
+      simp only [IrreducibleCloseds.coe_mk, le_eq_subset,
+          IsOpenMap.preimage_closure_eq_closure_preimage h2.2.2 h]
+      rw [preimage_image_eq]
+      exact h2.2.1
+    · rw [IsClosed.closure_eq V.3]
+      rfl
+  · apply le_trans subset_closure (closure_subset_preimage_closure_image h)
+
+/--
+The map taking an irreducible closed set `T` to `closure (f '' T)` is injective when `f` is an
+open embedding
+-/
+lemma closureImage_injective_of_openEmbedding (h2 : IsOpenEmbedding f) :
+    Function.Injective <| closureImage f h := by
+  exact Function.LeftInverse.injective <| closureImage_comap_rightInverse f h h2
+
+/--
+The map taking an irreducible closed set `T` to `closure (f '' T)` is surjective onto irreducible
+closeds `V` satisfying `f ⁻¹' V ≠ ∅` when `f` is an open embedding.
+-/
+lemma closureImage_surjective_of_openEmbedding (h2 : IsOpenEmbedding f) :
+    Function.Surjective <| closureImage f h := by
+  exact Function.RightInverse.surjective <| closureImage_comap_leftInverse f h h2
+
 /--
 The map taking an irreducible closed set `T` to `closure (f '' T)` is bijective onto irreducible
 closeds `V` satisfying `f ⁻¹' V ≠ ∅` when `f` is an open embedding.
 -/
-lemma map'_bijective_of_openEmbedding (h2 : IsOpenEmbedding f) :
-  Function.Bijective <| map' f h :=
-  ⟨map'_injective_of_openEmbedding f h h2, map'_surjective_of_openEmbedding f h h2⟩
+lemma closureImage_bijective_of_openEmbedding (h2 : IsOpenEmbedding f) :
+  Function.Bijective <| closureImage f h :=
+  ⟨closureImage_injective_of_openEmbedding f h h2, closureImage_surjective_of_openEmbedding f h h2⟩
 
 /--
 The map taking an irreducible closed set `T` to `closure (f '' T)` is strictly monotone when
 `f` is an open embedding.
 -/
-lemma map'_strictMono_of_openEmbedding (h2 : IsOpenEmbedding f) :
-  StrictMono <| map' f h := Monotone.strictMono_of_injective
-   (map'_mono f h) (map'_injective_of_openEmbedding f h h2)
+lemma closureImage_strictMono_of_openEmbedding (h2 : IsOpenEmbedding f) :
+  StrictMono <| closureImage f h := Monotone.strictMono_of_injective
+   (closureImage_mono f h) (closureImage_injective_of_openEmbedding f h h2)
 
 /--
 Given `f : U → X` a continuous open embedding, the irreducble closeds of `U` are order isomorphic
 to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
 -/
 noncomputable
-def map'OrderIso (h2 : IsOpenEmbedding f) :
-  IrreducibleCloseds U ≃o {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅} := by
-  refine ⟨Equiv.ofBijective (map' f h) (map'_bijective_of_openEmbedding f h h2), ?_⟩
-  have := map'_mono f h
-  refine fun a b ↦ ⟨fun h ↦ ?_, fun a_1 ↦ (map'_mono f h) a_1⟩
-  · have eq : f ⁻¹' closure (f '' a.carrier) ≤ f ⁻¹' closure (f '' b.carrier) := fun _ b ↦ h b
-    have (c : IrreducibleCloseds U) : c.carrier = f ⁻¹' (closure (f '' c.carrier)) := by
-      suffices closure c.carrier = f ⁻¹' (closure (f '' c.carrier)) by
-        nth_rewrite 1 [← IsClosed.closure_eq c.3]
-        exact this
-      exact Topology.IsEmbedding.closure_eq_preimage_closure_image h2.isEmbedding c
-    rwa [← this a, ← this b] at eq
+def closureImageOrderIso (h2 : IsOpenEmbedding f) :
+  IrreducibleCloseds U ≃o {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅} where
+    toFun := closureImage f h
+    invFun := comap f h h2
+    left_inv := closureImage_comap_rightInverse f h h2
+    right_inv := closureImage_comap_leftInverse f h h2
+    map_rel_iff' := by
+      intro a b
+      simp only [ne_eq, coe_setOf, mem_setOf_eq, Equiv.coe_fn_mk]
+      constructor
+      · intro c
+        have eq : f ⁻¹' closure (f '' a.carrier) ≤ f ⁻¹' closure (f '' b.carrier) := fun _ b ↦ c b
+        have (z : IrreducibleCloseds U) : z.carrier = f ⁻¹' (closure (f '' z.carrier)) := by
+          suffices closure z.carrier = f ⁻¹' (closure (f '' z.carrier)) by
+            nth_rewrite 1 [← IsClosed.closure_eq z.3]
+            exact this
+          exact Topology.IsEmbedding.closure_eq_preimage_closure_image h2.isEmbedding z
+        rwa [← this a, ← this b] at eq
+      · exact fun c ↦ (closureImage_mono f h) c
 
 end IrreducibleCloseds

@@ -180,12 +180,12 @@ lemma coheight_eq_of_isOpenEmbedding {U X : Type*} [TopologicalSpace U] [Topolog
     : coheight (f x) = coheight x := by
   rw [← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm (f x),
       ← coheight_orderIso (irreducibleSetEquivPoints (α := U)).symm x,
-      ← coheight_orderIso (map'OrderIso f hf hf')
+      ← coheight_orderIso (closureImageOrderIso f hf hf')
         ((irreducibleSetEquivPoints (α := U)).symm x)]
   let g : {V : IrreducibleCloseds X | f ⁻¹' ↑V ≠ ∅} ↪o
       IrreducibleCloseds X :=
     OrderEmbedding.subtype {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅}
-  let a := (map'OrderIso f hf hf')
+  let a := (closureImageOrderIso f hf hf')
       (irreducibleSetEquivPoints.symm x)
   have : ∀ p : LTSeries (IrreducibleCloseds X), p.head = g a →
          ∃ p' : LTSeries ({V : IrreducibleCloseds X | f ⁻¹' ↑V ≠ ∅}),
@@ -205,11 +205,11 @@ lemma coheight_eq_of_isOpenEmbedding {U X : Type*} [TopologicalSpace U] [Topolog
     }
     exact ⟨p', SetCoe.ext hp, rfl⟩
   have := coheight_eq_of_strictMono g (fun _ _ a ↦ a)
-     ((map'OrderIso f hf hf')
+     ((closureImageOrderIso f hf hf')
      (irreducibleSetEquivPoints.symm x)) this
   convert this.symm
-  simp only [irreducibleSetEquivPoints, ne_eq, coe_setOf, mem_setOf_eq, map'OrderIso,
-    RelIso.coe_fn_mk, Equiv.ofBijective_apply, map']
+  simp only [irreducibleSetEquivPoints, ne_eq, coe_setOf, mem_setOf_eq, closureImageOrderIso,
+    RelIso.coe_fn_mk, Equiv.ofBijective_apply, closureImage]
   suffices closure {f x} = closure (f '' (closure {x})) from
     IrreducibleCloseds.ext_iff.mpr this
   simp [closure_image_closure hf]
