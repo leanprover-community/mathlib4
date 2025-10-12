@@ -534,6 +534,15 @@ instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
 
 end Limits
 
+section Colimits
+
+variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C]
+
+instance hasColimitsOfSize : HasColimitsOfSize.{w, w'} (Subobject X) := by
+  apply hasColimitsOfSize_thinSkeleton
+
+end Colimits
+
 section Pullback
 
 variable [HasPullbacks C]
