@@ -95,6 +95,5 @@ theorem nat_card_orbit_mul_card_stabilizer_eq_card_group
   classical
   have : Fintype α := .ofFinite α
   have : Fintype (MulAction.orbit α b) := (Finite.finite_mulAction_orbit b).fintype
-  have : Fintype (MulAction.stabilizer α b) := inferInstance
   simp [Nat.card_eq_fintype_card]
   convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group α b
