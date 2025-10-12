@@ -46,7 +46,7 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
-  contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
+  contMDiff_add : CMDiff n fun p : G × G => p.1 + p.2
 
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
@@ -58,7 +58,7 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
-  contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2
+  contMDiff_mul : CMDiff n fun p : G × G => p.1 * p.2
 
 section ContMDiffMul
 
@@ -97,7 +97,7 @@ section
 variable (I n)
 
 @[to_additive]
-theorem contMDiff_mul [ContMDiffMul I n G] : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2 :=
+theorem contMDiff_mul [ContMDiffMul I n G] : CMDiff n fun p : G × G => p.1 * p.2 :=
   ContMDiffMul.contMDiff_mul
 
 include I n in
@@ -315,8 +315,8 @@ variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {
   {s : Set M} {x x₀ : M} {t : Finset ι} {f : ι → M → G} {p : ι → Prop}
 
 @[to_additive]
-theorem ContMDiffWithinAt.prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x₀) :
-    ContMDiffWithinAt I' I n (fun x ↦ ∏ i ∈ t, f i x) s x₀ := by
+theorem ContMDiffWithinAt.prod (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x₀) :
+    CMDiffAt[s] n (fun x ↦ ∏ i ∈ t, f i x) x₀ := by
   classical
   induction t using Finset.induction_on with
   | empty => simp [contMDiffWithinAt_const]
@@ -326,21 +326,21 @@ theorem ContMDiffWithinAt.prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) 
 
 @[to_additive]
 theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f i) {x₀ : M}
-    (h : ∀ i, ContMDiffWithinAt I' I n (f i) s x₀) :
-    ContMDiffWithinAt I' I n (fun x ↦ ∏ᶠ i, f i x) s x₀ :=
+    (h : ∀ i, CMDiffAt[s] n (f i) x₀) :
+    CMDiffAt[s] n (fun x ↦ ∏ᶠ i, f i x) x₀ :=
   let ⟨_I, hI⟩ := finprod_eventually_eq_prod lf x₀
   (ContMDiffWithinAt.prod fun i _hi ↦ h i).congr_of_eventuallyEq
     (eventually_nhdsWithin_of_eventually_nhds hI) hI.self_of_nhds
 
 @[to_additive]
-theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
-    ContMDiffWithinAt I' I n (∏ i ∈ t, f i) s x :=
-  Finset.prod_induction f (fun f => ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.mul hg)
+theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x) :
+    CMDiffAt[s] n (∏ i ∈ t, f i) x :=
+  Finset.prod_induction f (fun f => CMDiffAt[s] n f x) (fun _ _ hf hg => hf.mul hg)
     (contMDiffWithinAt_const (c := 1)) h
 
 @[to_additive]
-theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
-    ContMDiffWithinAt I' I n (fun x => ∏ i ∈ t, f i x) s x := by
+theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x) :
+    CMDiffAt[s] n (fun x => ∏ i ∈ t, f i x) x := by
   simp only [← Finset.prod_apply]
   exact contMDiffWithinAt_finset_prod' h
 
