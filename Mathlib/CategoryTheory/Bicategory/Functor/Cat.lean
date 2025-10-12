@@ -13,13 +13,15 @@ for pseudofunctors to `Cat`.
 
 -/
 
+universe w v v' u u'
+
 namespace CategoryTheory
 
 open Bicategory
 
 namespace Pseudofunctor
 
-variable {B : Type*} [Bicategory B] (F : Pseudofunctor B Cat)
+variable {B : Type u} [Bicategory.{w, v} B] (F : Pseudofunctor B Cat.{v', u'})
 
 section naturality
 
@@ -49,7 +51,7 @@ variable (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
 @[reassoc]
 lemma mapComp'_hom_naturality :
     (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
-      (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
+    (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
   (F.mapComp' f g fg hfg).hom.naturality a
 
 @[reassoc (attr := simp)]
@@ -62,14 +64,14 @@ lemma mapComp'_inv_naturality :
 lemma mapComp'_naturality_1 :
     (F.mapComp' f g fg hfg).inv.app X ≫
       (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
-      (F.map g).map ((F.map f).map a) :=
+    (F.map g).map ((F.map f).map a) :=
   NatIso.naturality_1 (F.mapComp' f g fg hfg) a
 
 @[reassoc]
 lemma mapComp'_naturality_2 :
     (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) ≫
       (F.mapComp' f g fg hfg).inv.app Y =
-      (F.map fg).map a :=
+    (F.map fg).map a :=
   NatIso.naturality_2 (F.mapComp' f g fg hfg) a
 
 end
