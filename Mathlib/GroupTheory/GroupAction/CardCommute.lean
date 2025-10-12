@@ -96,4 +96,4 @@ theorem nat_card_orbit_mul_card_stabilizer_eq_card_group
   have : Fintype α := .ofFinite α
   have : Fintype (MulAction.orbit α b) := (Finite.finite_mulAction_orbit b).fintype
   simp_rw [Nat.card_eq_fintype_card]
-  convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group α b
+  exact MulAction.card_orbit_mul_card_stabilizer_eq_card_group α b
