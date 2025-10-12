@@ -60,7 +60,6 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
-  have hy : y = hz.choose := rfl
   rw [y.basis_sum_repr e.toBasis f.toBasis] at hx
   simp only [OrthonormalBasis.coe_toBasis, inner_def] at hx
   simp only [map_smulₛₗ, map_sum, LinearMap.sum_apply, LinearMap.smul_apply, RingHom.id_apply,
@@ -73,7 +72,7 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   have : y = 0 := by
     rw [Basis.ext_elem_iff (e.toBasis.tensorProduct f.toBasis)]
     simp only [hx, map_zero, Finsupp.coe_zero, Pi.zero_apply, implies_true]
-  rw [← hz.choose_spec, ← hy, this, map_zero]
+  rw [← hz.choose_spec, (by rfl : hz.choose = y), this, map_zero]
 
 private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
