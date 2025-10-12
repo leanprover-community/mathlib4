@@ -45,15 +45,12 @@ theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → P
 instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
-@[simp] theorem toLex_apply (x : α →₀ N) (i : ι) : toLex x i = x i := rfl
-@[simp] theorem ofLex_apply (x : Lex (α →₀ N)) (i : ι) : ofLex x i = x i := rfl
+@[simp] theorem toLex_apply (x : α →₀ N) (i : α) : toLex x i = x i := rfl
+@[simp] theorem ofLex_apply (x : Lex (α →₀ N)) (i : α) : ofLex x i = x i := rfl
 
 theorem lex_lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
-
-@[deprecated (since := "2025-10-12")]
-alias lt_of_forall_lt_of_lt := lex_lt_iff
 
 theorem lex_lt_iff_of_unique [Preorder α] [LT N] [Unique α] {a b : Lex (α →₀ N)} :
     a < b ↔ a default < b default := by
