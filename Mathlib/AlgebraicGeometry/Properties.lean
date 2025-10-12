@@ -307,7 +307,7 @@ instance [IsIntegral X] : OrderTop X where
 open IrreducibleCloseds Set in
 @[stacks 02I4]
 lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X)
-    [k : IsOpenImmersion f] : Order.coheight (f.base x) = Order.coheight x :=
+    [IsOpenImmersion f] : Order.coheight (f.base x) = Order.coheight x :=
   coheight_eq_of_isOpenEmbedding f.base (Scheme.Hom.continuous f) f.isOpenEmbedding
 
 open Order in
