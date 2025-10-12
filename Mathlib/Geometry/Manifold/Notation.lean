@@ -188,6 +188,28 @@ be caught.
 
 Trace messages produced during the execution of `x` are wrapped in a collapsible trace node titled
 with `strategyDescr` and an indicator of success. -/
+private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr × α)) :
+    TermElabM (Option (Expr × α)) := do
+  let s ← saveState
+  try
+    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+      let e ←
+        try
+          Term.withoutErrToSorry <| Term.withSynthesize x
+        /- Catch the exception so that we can trace it, then throw it again to inform
+        `withTraceNode` of the result. -/
+        catch ex =>
+          trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
+          throw ex
+      trace[Elab.DiffGeo.MDiff] "Found model: {e.1}"
+      return e
+  catch _ =>
+    -- Restore infotrees to prevent any stale hovers, code actions, etc.
+    -- Note that this does not break tracing, which saves each trace message's context.
+    s.restore true
+    return none
+
+-- TODO: deduplicate with tryStrategy', somehow!
 private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     TermElabM (Option Expr) := do
   let s ← saveState
@@ -212,15 +234,16 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
 /-- Workhorse method for `findModel`: try all strategies, and return an `Option` whether it
 succeeded. -/
 def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-    TermElabM <| Option Expr := do
-  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return m
-  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return m
-  if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return m
-  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return m
-  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return m
-  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
-  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
-  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
+    TermElabM <| Option (Expr × Option (Expr × Expr)) := do
+  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return some (m, none)
+  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return some (m, none)
+  if let some (m, eK) ← tryStrategy' (Expr × Expr) m!"NormedSpace" fromNormedSpace then
+    return some (m, some eK)
+  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return some (m, none)
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return some (m, none)
+  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return some (m, none)
+  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return some (m, none)
+  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return some (m, none)
   return none
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -271,7 +294,7 @@ where
       Term.elabTerm resTerm none
     | _ => throwError "{e} is not a `TangentBundle`"
   /-- Attempt to find the trivial model on a normed space. -/
-  fromNormedSpace : TermElabM Expr := do
+  fromNormedSpace : TermElabM (Expr × (Expr × Expr)) := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
@@ -279,7 +302,7 @@ where
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on {e} among local instances."
     trace[Elab.DiffGeo.MDiff] "Field is: {K}"
-    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+    return (← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst], (K, e))
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
@@ -380,7 +403,7 @@ This implementation is not maximally robust yet.
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   match ← findModelInner e baseInfo with
-  | some m => return m
+  | some (m, _eK) => return m
   | none => throwError "Could not find a model with corners for {e}"
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
