@@ -605,8 +605,33 @@ lemma injectiveDimension_eq_depth
       simp [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
         reg'.1 mem, this]
     have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M r) := by
-      --use `injectiveDimension_eq_sInf`
-      sorry
+      by_contra! sub
+      have (i : ℕ) (lt : r < i) :
+        Subsingleton (Ext.{v} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i) := by
+        let _ := (injectiveDimension_le_iff _ r).mp (le_of_eq hr)
+        exact HasInjectiveDimensionLT.subsingleton M (r + 1) i lt _
+      let _ := (injectiveDimension_le_iff _ r).mp (le_of_eq hr)
+      match r with
+      | 0 =>
+        have : injectiveDimension M ≤ ⊥ := by
+          rw [injectiveDimension_eq_sInf.{v, u, v} M]
+          apply sInf_le
+          intro i _
+          match i with
+          | 0 => exact sub
+          | i + 1 => exact this (i + 1) (Nat.zero_lt_succ i)
+        simp [hr] at this
+      | s + 1 =>
+        have : injectiveDimension M ≤ s := by
+          rw [injectiveDimension_eq_sInf.{v, u, v} M]
+          apply sInf_le
+          intro i hi
+          have le : s + 1 ≤ i := Nat.cast_lt.mp hi
+          rcases eq_or_lt_of_le le with eq|lt
+          · simpa [← eq] using sub
+          · exact this i lt
+        rw [hr, Nat.cast_le] at this
+        simp at this
     by_contra! lt
     let _ := projectiveDimension_lt_iff.mp (lt_of_eq_of_lt projdim (Nat.cast_lt.mpr lt))
     have sub := HasProjectiveDimensionLT.subsingleton.{v} (ModuleCat.of R
