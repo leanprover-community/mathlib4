@@ -149,12 +149,28 @@ def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) : ℝ :
   let y : EB := dψ w
   @Inner.inner ℝ EB _ x y
 
+omit [IsManifold IB ω B] in
+lemma g_symm (i p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
+  g i p v w = g i p w v := by
+  unfold g
+  rw [real_inner_comm]
+
 variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
 
 noncomputable
 def g_global (f : SmoothPartitionOfUnity B IB B) :
     ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
   fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
+
+omit [IsManifold IB ω B] [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B]
+     [T2Space B]
+lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
+        (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
+  g_global f p v w = g_global f p w v := by
+    unfold g_global
+    have : ∑ᶠ (i : B), (f i) p * g i p v w = ∑ᶠ (i : B), (f i) p * g i p w v := by
+      simp_rw [g_symm]
+    exact this
 
 example : true := by
   obtain ⟨f, hf⟩ := SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source IB B
@@ -192,7 +208,7 @@ def riemannian_metric_exists
     ContMDiffRiemannianMetric (IB := IB) (n := ⊤) (F := EB)
      (E := @TangentSpace ℝ _ _ _ _ _ _ IB B _ _) :=
   { inner := g_global_bilinear f
-    symm := sorry
+    symm := g_global_symm f
     pos := sorry
     isVonNBounded := sorry
     contMDiff := (g_global_smooth_section f hf).contMDiff_toFun
