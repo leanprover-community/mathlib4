@@ -112,7 +112,7 @@ Note that if you want both the lemma and the new lemma to be `simp` lemmas, you 
 `@[to_app (attr := simp)]`. The variant `@[simp, to_app]` on a lemma `F` will tag `F` with
 `@[simp]`, but not `F_app` (this is sometimes useful).
 -/
-syntax (name := to_app) "to_app" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+syntax (name := to_app) "to_app" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `to_app
