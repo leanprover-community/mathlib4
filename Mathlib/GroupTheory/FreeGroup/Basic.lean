@@ -13,7 +13,7 @@ import Mathlib.Data.List.Chain
 
 This file defines free groups over a type. Furthermore, it is shown that the free group construction
 is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
-functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+functor from groups to types, see `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
 
 ## Main definitions
 

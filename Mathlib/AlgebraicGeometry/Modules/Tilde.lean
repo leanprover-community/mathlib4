@@ -163,7 +163,7 @@ noncomputable def tilde : (Spec <| .of R).Modules where
         { toFun := M.tildeInType.val.map i
           map_smul' := by intros; rfl
           map_add' := by intros; rfl } }
-  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ ).2
+  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrpCat) _ ).2
     M.tildeInType.2
 
 /--

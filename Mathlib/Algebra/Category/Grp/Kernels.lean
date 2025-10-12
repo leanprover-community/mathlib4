@@ -11,13 +11,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 # The concrete (co)kernels in the category of abelian groups are categorical (co)kernels.
 -/
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 open AddMonoidHom CategoryTheory Limits QuotientAddGroup
 
 universe u
 
-variable {G H : AddCommGrp.{u}} (f : G ⟶ H)
+variable {G H : AddCommGrpCat.{u}} (f : G ⟶ H)
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
@@ -46,4 +46,4 @@ def cokernelIsColimit : IsColimit <| cokernelCocone f :=
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
       (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using h)
 
-end AddCommGrp
+end AddCommGrpCat
