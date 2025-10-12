@@ -3,6 +3,7 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
@@ -136,6 +137,23 @@ end LinearOrderedRing
 
 namespace GeneralLinearGroup
 
+section Ring
+
+variable {R : Type*} [Ring R]
+
+/-- The map sending `x` to `[1, x; 0, 1]` (bundled as an `AddChar`). -/
+@[simps apply]
+def upperRightHom : AddChar R (GL (Fin 2) R) where
+  toFun x := ⟨!![1, x; 0, 1], !![1, -x; 0, 1], by simp [one_fin_two], by simp [one_fin_two]⟩
+  map_zero_eq_one' := by simp [Units.ext_iff, one_fin_two]
+  map_add_eq_mul' a b := by simp [Units.ext_iff, add_comm]
+
+lemma injective_upperRightHom : Function.Injective (upperRightHom (R := R)) := by
+  refine (injective_iff_map_eq_zero (upperRightHom (R := R)).toAddMonoidHom).mpr ?_
+  simp [Units.ext_iff, one_fin_two]
+
+end Ring
+
 variable {R K : Type*} [CommRing R] [Field K]
 
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
@@ -210,6 +228,28 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
 lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
     g.IsParabolic ↔ g 0 0 = g 1 1 ∧ g 0 1 ≠ 0 :=
   Matrix.isParabolic_iff_of_upperTriangular hg
+
+/-- Specialized version of `isParabolic_iff_of_upperTriangular` intended for use with
+discrete subgroups of `GL(2, ℝ)`. -/
+lemma isParabolic_iff_of_upperTriangular_of_det [LinearOrder K] [IsStrictOrderedRing K]
+    {g : GL (Fin 2) K} (h_det : g.det = 1 ∨ g.det = -1) (hg10 : g 1 0 = 0) :
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) := by
+  rw [isParabolic_iff_of_upperTriangular hg10]
+  constructor
+  · rintro ⟨hg00, hg01⟩
+    have : g 1 1 ^ 2 = 1 := by
+      have : g.det = g 1 1 ^ 2 := by rw [val_det_apply, det_fin_two, hg10, hg00]; ring
+      simp only [Units.ext_iff, Units.val_one, Units.val_neg, this] at h_det
+      exact h_det.resolve_right (neg_one_lt_zero.trans_le <| sq_nonneg _).ne'
+    apply (sq_eq_one_iff.mp this).imp <;> intro hg11 <;> simp only [Units.ext_iff]
+    · refine ⟨g 0 1, hg01, ?_⟩
+      rw [g.val.eta_fin_two]
+      simp_all
+    · refine ⟨-g 0 1, neg_eq_zero.not.mpr hg01, ?_⟩
+      rw [g.val.eta_fin_two]
+      simp_all
+  · rintro (⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩) <;>
+    simpa using hx
 
 end GeneralLinearGroup
 
