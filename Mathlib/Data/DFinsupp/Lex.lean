@@ -25,7 +25,9 @@ variable [∀ i, Zero (α i)]
 
 /-- `DFinsupp.Lex r s` is the lexicographic relation on `Π₀ i, α i`, where `ι` is ordered by `r`,
 and `α i` is ordered by `s i`.
-The type synonym `Lex (Π₀ i, α i)` has an order given by `DFinsupp.Lex (· < ·) (· < ·)`.
+
+The type synonym `Lex (Π₀ i, α i)` has an order given by `DFinsupp.Lex (· < ·) (· < ·)`, whereas
+`Colex (Π₀ i, α i)` has an order given by `DFinsupp.Lex (· > ·) (· < ·)`.
 -/
 protected def Lex (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) (x y : Π₀ i, α i) : Prop :=
   Pi.Lex r (s _) x y
@@ -40,6 +42,20 @@ theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a 
 
 instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
+
+instance [LT ι] [∀ i, LT (α i)] : LT (Colex (Π₀ i, α i)) :=
+  ⟨fun f g ↦ DFinsupp.Lex (· > ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
+
+theorem lex_lt_def [LT ι] [∀ i, LT (α i)] (a b : Lex (Π₀ i, α i)) (i : ι) :
+    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
+  fun h1 h2 ↦ ⟨i, h1, h2⟩
+
+@[deprecated (since := "2025-10-12")]
+alias lt_of_forall_lt_of_lt := lex_lt_def
+
+theorem colex_lt_def [LT ι] [∀ i, LT (α i)] (a b : Colex (Π₀ i, α i)) (i : ι) :
+    (∀ ⦃j⦄, i < j → ofColex a j = ofColex b j) → ofColex a i < ofColex b i → a < b :=
+  fun h1 h2 ↦ ⟨i, h1, h2⟩
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
@@ -62,6 +78,10 @@ instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
   irrefl _ := lt_irrefl (α := Lex (∀ i, α i)) _
   trans _ _ _ := lt_trans (α := Lex (∀ i, α i))
 
+instance Colex.isStrictOrder [∀ i, PartialOrder (α i)] :
+    IsStrictOrder (Colex (Π₀ i, α i)) (· < ·) :=
+  Lex.isStrictOrder (ι := ιᵒᵈ)
+
 /-- The partial order on `DFinsupp`s obtained by the lexicographic ordering.
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
@@ -70,9 +90,17 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
 
+/-- The partial order on `DFinsupp`s obtained by the colexicographic ordering.
+See `DFinsupp.Colex.linearOrder` for a proof that this partial order is in fact linear. -/
+instance Colex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Colex (Π₀ i, α i)) where
+  lt := (· < ·)
+  le x y := ⇑(ofColex x) = ⇑(ofColex y) ∨ x < y
+  __ := PartialOrder.lift (fun x : Colex (Π₀ i, α i) ↦ toColex (⇑(ofColex x)))
+    (DFunLike.coe_injective (F := DFinsupp α))
+
 section LinearOrder
 
-variable [∀ i, LinearOrder (α i)]
+variable [H : ∀ i, LinearOrder (α i)]
 
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
 can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
@@ -88,20 +116,42 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
     · exact h_gt ⟨wit, fun j hj ↦
         notMem_neLocus.mp (Finset.notMem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
+instance Lex.isTotalLE : IsTotal (Lex (Π₀ i, α i)) (· ≤ ·) where
+  total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
+
+instance Colex.isTotalLE : IsTotal (Colex (Π₀ i, α i)) (· ≤ ·) :=
+  Lex.isTotalLE (ι := ιᵒᵈ)
+
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
 irreducible_def Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
 
+/-- The less-or-equal relation for the colexicographic ordering is decidable. -/
+irreducible_def Colex.decidableLE : DecidableLE (Colex (Π₀ i, α i)) :=
+  Lex.decidableLE (ι := ιᵒᵈ)
+
 /-- The less-than relation for the lexicographic ordering is decidable. -/
 irreducible_def Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 
+/-- The less-than relation for the colexicographic ordering is decidable. -/
+irreducible_def Colex.decidableLT : DecidableLT (Colex (Π₀ i, α i)) :=
+  Lex.decidableLT (ι := ιᵒᵈ)
+
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
   __ := Lex.partialOrder
-  le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
+  le_total := total_of _
+  toDecidableLT := decidableLT
+  toDecidableLE := decidableLE
+  toDecidableEq := inferInstance
+
+/-- The linear order on `DFinsupp`s obtained by the colexicographic ordering. -/
+instance Colex.linearOrder : LinearOrder (Colex (Π₀ i, α i)) where
+  __ := Colex.partialOrder
+  le_total := total_of _
   toDecidableLT := decidableLT
   toDecidableLE := decidableLE
   toDecidableEq := inferInstance
@@ -118,9 +168,8 @@ theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
     fun j hj ↦ notMem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_gt hj,
     (h _).lt_of_ne (mem_neLocus.1 <| Finset.min'_mem _ _)⟩
 
-theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
-    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
-  fun h1 h2 ↦ ⟨i, h1, h2⟩
+theorem toColex_monotone : Monotone (@toColex (Π₀ i, α i)) :=
+  toLex_monotone (ι := ιᵒᵈ)
 
 end Zero
 
