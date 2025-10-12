@@ -31,8 +31,8 @@ universe u v' u'
 open CategoryTheory Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
-  [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
+  [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 namespace SheafOfModules
 
@@ -86,9 +86,9 @@ def equivOfIso (e : M ≅ N) :
 
 end GeneratingSections
 
-variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGrp.{u}]
-  [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrp.{u}]
-  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrp.{u})]
+variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat.{u})]
 
 /-- The data of generating sections of the restriction of a sheaf of modules
 over a covering of the terminal object. -/
