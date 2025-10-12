@@ -13,13 +13,15 @@ for pseudofunctors to `Cat`.
 
 -/
 
+universe w v v' u u'
+
 namespace CategoryTheory
 
 open Bicategory
 
 namespace Pseudofunctor
 
-variable {B : Type*} [Bicategory B] (F : Pseudofunctor B Cat)
+variable {B : Type u} [Bicategory.{w, v} B] (F : Pseudofunctor B Cat.{v', u'})
 
 section naturality
 
