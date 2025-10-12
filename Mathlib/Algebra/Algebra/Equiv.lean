@@ -837,7 +837,7 @@ end AlgEquiv
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M G : Type*} (R A : Type*) [Semiring A] [SMul R A]
 
 section
 
@@ -849,7 +849,7 @@ This is a stronger version of `MulSemiringAction.toRingEquiv` and
 `DistribMulAction.toLinearEquiv`. -/
 @[simps! apply symm_apply toEquiv]
 def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
-  { MulSemiringAction.toRingEquiv _ _ g, MulSemiringAction.toAlgHom R A g with
+  { MulSemiringAction.toRingEquiv _ _ g with
     map_smul' _ _ := by simp [smul_comm] }
 
 theorem toAlgEquiv_injective [FaithfulSMul G A] :
