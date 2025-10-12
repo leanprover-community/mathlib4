@@ -265,7 +265,7 @@ lemma tensorProduct_repr_tmul_apply'
   tensorProduct_repr_tmul_apply _ _ _ _ _ _
 
 @[simp]
-lemma tensorProduct_toBasis (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
+lemma toBasis_tensorProduct (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
     (b₁.tensorProduct b₂).toBasis = b₁.toBasis.tensorProduct b₂.toBasis := by
   simp [OrthonormalBasis.tensorProduct]
 
