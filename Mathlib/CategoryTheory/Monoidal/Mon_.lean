@@ -985,7 +985,7 @@ Projects:
   available in https://github.com/leanprover-community/mathlib3/pull/3463)
 * More generally, check that `Mon (Mon C) ≌ CommMon C` when `C` is braided.
 * Check that `Mon TopCat ≌ [bundled topological monoids]`.
-* Check that `Mon AddCommGrp ≌ RingCat`.
+* Check that `Mon AddCommGrpCat ≌ RingCat`.
   (We've already got `Mon (ModuleCat R) ≌ AlgCat R`,
   in `Mathlib/CategoryTheory/Monoidal/Internal/Module.lean`.)
 * Can you transport this monoidal structure to `RingCat` or `AlgCat R`?

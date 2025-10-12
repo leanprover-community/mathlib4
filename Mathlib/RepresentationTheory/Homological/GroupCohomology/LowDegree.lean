@@ -1076,7 +1076,7 @@ lemma cocyclesMk₁_eq (x : cocycles₁ A) :
       simp [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
       (isoCocycles₁ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
-    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+    (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
 
@@ -1139,7 +1139,7 @@ lemma cocyclesMk₂_eq (x : cocycles₂ A) :
       simp [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
       (isoCocycles₂ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
-    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+    (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
 
