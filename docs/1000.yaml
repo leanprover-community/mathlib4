@@ -2262,6 +2262,9 @@ Q3180727:
 
 Q3229335:
   title: Borel–Carathéodory theorem
+  decl: Analysis.Complex.borelCaratheodory_closedBall
+  authors: Maksym Radziwill
+  date: 2025
 
 Q3229352:
   title: Vitali covering theorem

@@ -24,25 +24,38 @@ Terence Tao. This version is also used in most textbook proofs of the Prime Numb
 
 ## Main result.
 
+`borelCaratheodory_closedBall`
+
 Let $R, M>0$. Let $f$ be analytic on $|z|≤ R$ such that $f(0) = 0$ and suppose
 $\mathfrak{R}f(z)\leq M$ for all $|z|\leq R$. Then for any $0 < r < R$,
 $$
   \sup_{|z|\leq r}|f(z)|\leq\frac{2Mr}{R-r}.
 $$
 
+We also provide a variant that does not require vanishing of $f$ at $0$.
+This version aligns with the statement of the Theorem available on Wikipedia.
+
+`borelCaratheodory_closedBall'`
+
+Let $R, M>0$. Let $f$ be analytic on $|z|≤ R$ and suppose $\mathfrak{R}f(z)\leq M$
+for all $|z|\leq R$. Then for any $0 < r < R$,
+$$
+  \sup_{|z|\leq r}|f(z)|\leq\frac{2Mr}{R-r} + |f(0)|\frac{R+r}{R-r}.
+$$
+
 ## Implementation notes
 
 The proof relies on the fact that if $f(0) = 0$ and $f$ is analytic in $|z| ≤ R$
 with $R > 0$ then $f(z) / z$ is also analytic in $|z| ≤ R$. To avoid repetition
-the file defines in `divRemovable_zero` a function equal to $f(z) / z$ for
+the file defines in `divRemovableZero` a function equal to $f(z) / z$ for
 $z ≠ 0$ and equal to $f'(0)$ for $z = 0$. No restriction to $f$ with
 $f(0) = 0$ is made in this definition.
 
-In `AnalyticOn.divRemovable_zero` we prove that if $f$ is analytic in an open
+In `AnalyticOn.divRemovableZero` we prove that if $f$ is analytic in an open
 set containing zero, and $f(0) = 0$ then $f(z) / z$ is analytic in the same
 open set.
 
-In `AnalyticOn.divRemovable_zero_closedBall` we prove the same statement for
+In `AnalyticOn.divRemovableZero_closedBall` we prove the same statement for
 functions analytic on closed balls $|z| ≤ R$. As is the proof is a little bit
 awkward, it would be more natural to prove that if $f$ is analytic in $|z| ≤ R$,
 then it is analytic on an open set containing $|z| ≤ R$ and appeal to the
@@ -78,7 +91,7 @@ the StrongPNT project [kontorovich2025].
 
 ## References
 
-* [Alex Kontorovich et. al, *PrimeNumberTheoremAnd*][kontorovich2025]
+* [Alex Kontorovich et al., *PrimeNumberTheoremAnd*][kontorovich2025]
 * <https://en.wikipedia.org/wiki/Borel%E2%80%93Carath%C3%A9odory_theorem>
 
 ## Tags
@@ -87,21 +100,21 @@ Borel-Caratheodory, borel, caratheodory, complex, analytic, prime number theorem
 
 -/
 
-/-- Given `f`, the function `divRemovable_zero f` defines a function equal
+/-- Given `f`, the function `divRemovableZero f` defines a function equal
 to `f z / z` for `z ≠ 0` and equal to `deriv f 0` for `z = 0`. -/
-noncomputable abbrev divRemovable_zero (f : ℂ → ℂ) : ℂ → ℂ :=
+noncomputable abbrev divRemovableZero (f : ℂ → ℂ) : ℂ → ℂ :=
   Function.update (fun z ↦ (f z) / z) 0 ((deriv f) 0)
 
-/-- For `z ≠ 0`, `divRemovable_zero f z` is equal to `f z / z`. -/
-lemma divRemovable_zero_of_ne_zero {z : ℂ} (f : ℂ → ℂ)
-    (z_ne_0 : z ≠ 0) : divRemovable_zero f z = f z / z := by
-  unfold divRemovable_zero; apply Function.update_of_ne z_ne_0
+/-- For `z ≠ 0`, `divRemovableZero f z` is equal to `f z / z`. -/
+lemma divRemovableZero_of_ne_zero {z : ℂ} (f : ℂ → ℂ)
+    (z_ne_0 : z ≠ 0) : divRemovableZero f z = f z / z := by
+  unfold divRemovableZero; apply Function.update_of_ne z_ne_0
 
 /-- If `f` is analytic on an open set `s` and `f 0 = 0` then `f z / z` is also
 analytic on `s`. -/
-lemma AnalyticOn.divRemovable_zero {f : ℂ → ℂ} {s : Set ℂ}
+lemma AnalyticOn.divRemovableZero {f : ℂ → ℂ} {s : Set ℂ}
     (sInNhds0 : s ∈ nhds (0 : ℂ)) (zero : f 0 = 0) (o : IsOpen s)
-    (analytic : AnalyticOn ℂ f s) : AnalyticOn ℂ (divRemovable_zero f) s := by
+    (analytic : AnalyticOn ℂ f s) : AnalyticOn ℂ (divRemovableZero f) s := by
   rw [Complex.analyticOn_iff_differentiableOn o]
   rw [←(Complex.differentiableOn_compl_singleton_and_continuousAt_iff sInNhds0)]
   constructor
@@ -130,9 +143,9 @@ lemma AnalyticOn.divRemovable_zero {f : ℂ → ℂ} {s : Set ℂ}
 
 /-- If `f` is analytic on `|z| ≤ R` and `f 0 = 0` then `f z / z` is analytic in
 `|z| ≤ R`. -/
-lemma AnalyticOn.divRemovable_zero_closedBall {f : ℂ → ℂ} {R : ℝ} (Rpos : 0 < R)
+lemma AnalyticOn.divRemovableZero_closedBall {f : ℂ → ℂ} {R : ℝ} (Rpos : 0 < R)
     (analytic : AnalyticOn ℂ f (Metric.closedBall 0 R)) (zero : f 0 = 0) :
-    AnalyticOn ℂ (_root_.divRemovable_zero f) (Metric.closedBall (0 : ℂ) R) := by
+    AnalyticOn ℂ (_root_.divRemovableZero f) (Metric.closedBall (0 : ℂ) R) := by
   apply analyticOn_of_locally_analyticOn
   intro x x_hyp
   by_cases h : ‖x‖ = R
@@ -143,9 +156,9 @@ lemma AnalyticOn.divRemovable_zero_closedBall {f : ℂ → ℂ} {R : ℝ} (Rpos 
       · simp only [Metric.mem_ball, dist_self, Nat.ofNat_pos,
                    div_pos_iff_of_pos_right]; positivity
       · have Z : ∀ w ∈ Metric.closedBall 0 R ∩ Metric.ball x (R / 2),
-                   _root_.divRemovable_zero f w = f w / w := by
+                   _root_.divRemovableZero f w = f w / w := by
           intro x₂ hyp_x₂
-          apply divRemovable_zero_of_ne_zero
+          apply divRemovableZero_of_ne_zero
           rw [ball_eq, Set.mem_inter_iff, Metric.mem_closedBall,
               dist_zero_right, Set.mem_setOf_eq] at hyp_x₂
           rw [← norm_pos_iff]
@@ -190,15 +203,15 @@ lemma AnalyticOn.divRemovable_zero_closedBall {f : ℂ → ℂ} {R : ℝ} (Rpos 
           rw [Metric.mem_closedBall, dist_zero_right] at x_hyp
           exact Metric.ball_subset_closedBall
         rw [si]
-        apply AnalyticOn.divRemovable_zero
+        apply AnalyticOn.divRemovableZero
         · apply Metric.ball_mem_nhds; positivity
         · exact zero
         · apply Metric.isOpen_ball
         · apply AnalyticOn.mono analytic Metric.ball_subset_closedBall
 
-/-- Given `f` we define the `schwarzQuotient` as `(divRemovable_zero f z) / (2 * M - f z)`. -/
+/-- Given `f` we define the `schwarzQuotient` as `(divRemovableZero f z) / (2 * M - f z)`. -/
 noncomputable abbrev schwartzQuotient (f : ℂ → ℂ) (M : ℝ) : ℂ → ℂ :=
-  fun z ↦ (divRemovable_zero f z) / (2 * M - f z)
+  fun z ↦ (divRemovableZero f z) / (2 * M - f z)
 
 /-- Given `f` analytic in `|z| ≤ R`, the Schwartz quotient
 `(f(z) / z) / (2 * M - f(z))` is analytic in `|z| ≤ R` provided
@@ -212,7 +225,7 @@ lemma AnalyticOn.schwartzQuotient {f : ℂ → ℂ} {R : ℝ} (M : ℝ)
     apply Metric.closedBall_mem_nhds; exact Rpos
 
   exact AnalyticOn.div
-    (AnalyticOn.divRemovable_zero_closedBall Rpos analytic zero)
+    (AnalyticOn.divRemovableZero_closedBall Rpos analytic zero)
     (AnalyticOn.sub (analyticOn_const) analytic) nonzero
 
 /-- If `x.re ≤ M` then `|x| ≤ |2 * M - x|` -/
@@ -247,9 +260,9 @@ lemma AnalyticOn.norm_le_of_norm_le_on_sphere {f : ℂ → ℂ} {C R r : ℝ}
   · rw [frontier_closedBall']; exact cond
   · rw [Metric.closure_closedBall]; exact wInS
 
-/-- The Borel-Caratheodory theorem: If `f` is analytic in `|z| ≤ R`
-and `(f z).re ≤ M` for all `|z| ≤ R` then for any `0 < r < R` and
-all `|z| ≤ r` we have `|f(z)| ≤ 2 * M * r / (R - r)` -/
+/-- The Borel-Caratheodory theorem (first version): If `f` is analytic in `|z| ≤ R`
+and `f 0 = 0` and `(f z).re ≤ M` for all `|z| ≤ R` then for any
+`0 < r < R` and all `|z| ≤ r` we have `|f(z)| ≤ 2 * M * r / (R - r)` -/
 theorem borelCaratheodory_closedBall {M R r : ℝ} {z : ℂ} {f : ℂ → ℂ}
     (Rpos : 0 < R) (analytic : AnalyticOn ℂ f (Metric.closedBall 0 R))
     (zeroAtZero : f 0 = 0) (Mpos : 0 < M)
@@ -282,7 +295,7 @@ theorem borelCaratheodory_closedBall {M R r : ℝ} {z : ℂ} {f : ℂ → ℂ}
 
     calc ‖schwartzQuotient f M z‖
       _ = (‖f z‖ / ‖z‖) / ‖2 * M - f z‖ := by
-        simp only [Complex.norm_div, divRemovable_zero_of_ne_zero f zNe0]
+        simp only [Complex.norm_div, divRemovableZero_of_ne_zero f zNe0]
       _ ≤ (‖f z‖ / ‖z‖) / ‖f z‖ := by
         by_cases h : ‖f z‖ = 0;
         · simp only [h, zero_div, div_zero, le_refl]
@@ -306,7 +319,7 @@ theorem borelCaratheodory_closedBall {M R r : ℝ} {z : ℂ} {f : ℂ → ℂ}
     have := maxMod z zInS
     unfold schwartzQuotient at this
     have U : z ≠ 0 := by rw [← norm_pos_iff]; linarith
-    rw [divRemovable_zero_of_ne_zero f U] at this
+    rw [divRemovableZero_of_ne_zero f U] at this
     simp only [Complex.norm_div, one_div] at this
     have U : 0 < r * ‖2 * M - f z‖ := by
       simp only [r_pos, mul_pos_iff_of_pos_left, norm_pos_iff,
@@ -361,3 +374,35 @@ theorem borelCaratheodory_closedBall {M R r : ℝ} {z : ℂ} {f : ℂ → ℂ}
       (by
         apply lt_of_le_of_ne U
         · rw [ne_eq, eq_comm]; exact pos_r) z hyp_z
+
+/-- The Borel-Caratheodory theorem (second version): If `f` is analytic in `|z| ≤ R`
+and `(f z).re ≤ M` for all `|z| ≤ R` then for any `0 < r < R` and all
+`|z| ≤ r` we have `|f(z)| ≤ 2 * M * r / (R - r) + |f 0| * (R + r) / (R - r) -/
+theorem borelCaratheodory_closedBall' {M R r : ℝ} {z : ℂ} {f : ℂ → ℂ}
+    (Rpos : 0 < R) (analytic : AnalyticOn ℂ f (Metric.closedBall 0 R))
+    (Mpos : 0 < M) (realPartBounded : ∀ z ∈ Metric.closedBall 0 R, (f z).re ≤ M)
+    (hyp_r : r < R) (hyp_z : z ∈ Metric.closedBall 0 r)
+    : ‖f z‖ ≤ (2 * M * r) / (R - r) + ‖f 0‖ * (R + r) / (R - r) := by
+  have Z : ‖f z - f 0‖ ≤ (2 * (M + ‖f 0‖) * r) / (R - r) := by
+    apply borelCaratheodory_closedBall (f := fun z ↦ f z - f 0)
+    · exact Rpos
+    · apply AnalyticOn.sub analytic analyticOn_const
+    · rw [sub_self]
+    · positivity
+    · intro z hyp_z
+      calc (f z - f 0).re
+        _ ≤ (f z).re + (- (f 0)).re := by simp
+        _ ≤ M + (- (f 0)).re := by gcongr; apply realPartBounded; exact hyp_z
+        _ ≤ M + ‖- (f 0)‖ := by gcongr; apply Complex.re_le_norm
+        _ = M + ‖f 0‖ := by rw [norm_neg]
+    · exact hyp_r
+    · exact hyp_z
+
+  have T : R - r ≠ 0 := by linarith
+
+  calc ‖f z‖
+    _ ≤ ‖f z - f 0‖ + ‖f 0‖ := by apply norm_le_norm_sub_add
+    _ ≤ 2 * (M + ‖f 0‖) * r / (R - r) + ‖f 0‖ := by gcongr
+    _ = 2 * (M + ‖f 0‖) * r / (R - r) + ‖f 0‖ * 1 := by simp
+    _ = 2 * (M + ‖f 0‖) * r / (R - r) + ‖f 0‖ * ((R - r) / (R - r)) := by congr; rw [← div_self T]
+    _ = 2 * M * r / (R - r) + ‖f 0‖ * (R + r) / (R - r) := by ring_nf
