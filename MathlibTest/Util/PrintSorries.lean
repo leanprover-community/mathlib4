@@ -193,26 +193,22 @@ warning: declaration uses 'sorry'
 Check that `admit` and `stop` are correctly handled
 -/
 
-/-- info: thm4 has sorry of type
+/--
+info: thm4 has sorry of type
   True
 ---
 warning: declaration uses 'sorry'
----
-warning: 'admit' tactic does nothing
-
-Note: This linter can be disabled with `set_option linter.unusedTactic false` -/
+-/
 #guard_msgs in
 #print sorries in
 theorem thm4 : True := by admit
 
-/-- info: thm5 has sorry of type
+/--
+info: thm5 has sorry of type
   True
 ---
 warning: declaration uses 'sorry'
----
-warning: 'stop admit' tactic does nothing
-
-Note: This linter can be disabled with `set_option linter.unusedTactic false` -/
+-/
 #guard_msgs in
 #print sorries in
 theorem thm5 : True := by stop admit
