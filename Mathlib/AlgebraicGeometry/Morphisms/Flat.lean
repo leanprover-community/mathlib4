@@ -85,8 +85,6 @@ instance {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {
     [∀ i, Flat (f i)] : Flat (Sigma.desc f) :=
   IsLocalAtSource.sigmaDesc (fun _ ↦ inferInstance)
 
-section FlatAndSurjective
-
 /-- A surjective, quasi-compact, flat morphism is a quotient map. -/
 @[stacks 02JY]
 lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [QuasiCompact f]
@@ -145,8 +143,6 @@ lemma flat_and_surjective_iff_of_faithfullyFlat_of_isAffine [IsAffine X] [IsAffi
     have : Surjective (Spec.map (Scheme.Hom.appTop f)) := ⟨hf₂⟩
     exact (Category.comp_id f ▸ Scheme.toSpecΓ_isoSpec_inv Y ▸
       Scheme.isoSpec_hom_naturality_assoc f _).symm ▸ ⟨inferInstance, inferInstance⟩
-
-end FlatAndSurjective
 
 end Flat
 
