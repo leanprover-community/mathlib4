@@ -750,18 +750,18 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
     (Subsingleton (Ext N M i) ∧ Subsingleton (Ext N M (i + 1))) := by
     refine ⟨fun h ↦ ?_, fun ⟨h1, h3⟩ ↦ ?_⟩
     · constructor
-      · exact @Function.Injective.subsingleton _ _ _ ((AddCommGrp.mono_iff_injective _).mp
+      · exact @Function.Injective.subsingleton _ _ _ ((AddCommGrpCat.mono_iff_injective _).mp
           (ShortComplex.Exact.mono_g
           (Ext.covariant_sequence_exact₂' N reg.smulShortComplex_shortExact i)
           (ext_hom_eq_zero_of_mem_ann mem i))) h
-      · exact @Function.Surjective.subsingleton _ _ _ h ((AddCommGrp.epi_iff_surjective _).mp
+      · exact @Function.Surjective.subsingleton _ _ _ h ((AddCommGrpCat.epi_iff_surjective _).mp
           (ShortComplex.Exact.epi_f
           (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact i (i + 1) rfl)
           (ext_hom_eq_zero_of_mem_ann mem (i + 1))))
-    · exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+    · exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact i (i + 1) rfl)
-        ((@AddCommGrp.isZero_of_subsingleton _ h1).eq_zero_of_src _)
-        ((@AddCommGrp.isZero_of_subsingleton _ h3).eq_zero_of_tgt _)
+        ((@AddCommGrpCat.isZero_of_subsingleton _ h1).eq_zero_of_src _)
+        ((@AddCommGrpCat.isZero_of_subsingleton _ h3).eq_zero_of_tgt _)
   apply le_antisymm
   · rw [ENat.add_sSup ⟨0, by simp⟩]
     apply iSup_le (fun n ↦ iSup_le (fun hn ↦ ?_))
