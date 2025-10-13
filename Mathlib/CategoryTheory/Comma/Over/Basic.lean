@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {T : Type u₁} [Category.{v₁} T]
 variable {D : Type u₂} [Category.{v₂} D]
 
