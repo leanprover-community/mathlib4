@@ -39,6 +39,20 @@ The neutral element is not contained in one of the startsWith sets.
 theorem startsWith.ne_one {w : α × Bool} (g : FreeGroup α) (h : g ∈ FreeGroup.startsWith w) :
     g ≠ 1 := fun h1 ↦ by simp [h1, startsWith, FreeGroup.toWord_one] at h
 
+theorem not_startsWith_of_ne {w w' : α × Bool} (hw : w ≠ w')
+    (g : FreeGroup α) (h : g ∈ FreeGroup.startsWith w) : ¬ g ∈ FreeGroup.startsWith w' := by
+  grind [startsWith]
+
+theorem startsWith_mk_mul {w : α × Bool} (g : FreeGroup α)
+    (h : ¬ g ∈ FreeGroup.startsWith (w.1, !w.2)) : mk [w] * g ∈ FreeGroup.startsWith w := by
+  by_cases hC : 0 < g.toWord.length
+  · simp only [startsWith, Set.mem_setOf_eq, getElem?_pos, Option.some.injEq,
+    Prod.eq_iff_fst_eq_snd_eq, not_and, Bool.not_eq_not, toWord_mul, toWord_mk, reduce.cons,
+    reduce_nil, List.cons_append, List.nil_append, reduce_toWord, hC] at *
+    rw [show g.toWord = g.toWord.head (by grind) :: g.toWord.tail by grind]
+    grind
+  · simp_all [startsWith]
+
 variable [MulAction (FreeGroup α) X]
 
 /--
@@ -50,85 +64,25 @@ theorem Orbit.duplicate (x : X) (w : α × Bool) :
     {(mk [w])⁻¹ • y | y ∈ Orbit (startsWith w) x} =
       (⋃ v ∈ {z : α × Bool | z ≠ (w.1, !w.2)}, Orbit (startsWith v) x) ∪ {x} := by
   ext i
-  simp only [Orbit, startsWith, Set.mem_setOf_eq, inv_mk, exists_exists_and_eq_and, ne_eq,
-    Set.union_singleton, Set.mem_insert_iff, Set.mem_iUnion, exists_prop, Prod.exists,
-    Prod.mk.injEq, not_and, Bool.not_eq_not, Bool.exists_bool, Bool.false_eq, Bool.true_eq]
   constructor
-  · rintro ⟨g, ⟨h1,h2⟩⟩
-    have h : g.toWord[0]'(by grind) = w := by grind
-    subst h2
-    by_cases hC : g.toWord.length > 1
-    · right
-      use (g.toWord[1]'hC).1
-      have h4 : reduce g.toWord.tail = g.toWord.tail := by
-        have h6 : IsReduced g.toWord.tail := IsReduced.infix g.isReduced_toWord
-                      (by rw [List.IsInfix]; use [g.toWord.head (by grind)]; use []; simp)
-        rw [IsReduced.reduce_eq h6]
-      cases hg3 : (g.toWord[1]'hC).2
-      · left
-        refine ?test
-        constructor
-        · intro h
-          have h5 := List.IsChain.getElem (isReduced_toWord : IsReduced g.toWord) 0 (by grind)
-                        (by grind)
-          grind
-        · use mk g.toWord.tail
-          constructor
-          · grind [toWord_mk, zero_add]
-          · rw [← mul_smul]
-            congr 1
-            rw [show g = mk (g.toWord) by exact Eq.symm mk_toWord, mul_mk]
-            refine reduce.exact ?_
-            simp only [toWord_mk, reduce_toWord, invRev, List.map_cons, List.map_nil,
-              List.reverse_cons, List.reverse_nil, List.nil_append, List.cons_append, reduce.cons,
-              Bool.not_eq_eq_eq_not, Bool.not_not]
-            rw [show g.toWord = g.toWord.head (by grind) :: g.toWord.tail by grind]
-            grind
-      · right
-        constructor
-        · intro h
-          have h5 := List.IsChain.getElem (isReduced_toWord : IsReduced g.toWord) 0 (by grind)
-                        (by grind)
-          grind
-        · use mk g.toWord.tail
-          constructor
-          · grind [toWord_mk, zero_add]
-          · rw [← mul_smul]
-            congr 1
-            rw [show g = mk (g.toWord) from Eq.symm mk_toWord, mul_mk]
-            refine reduce.exact ?_
-            simp only [toWord_mk, reduce_toWord, invRev, List.map_cons, List.map_nil,
-              List.reverse_cons, List.reverse_nil, List.nil_append, List.cons_append, reduce.cons,
-              Bool.not_eq_eq_eq_not, Bool.not_not]
-            rw [show g.toWord = g.toWord.head (by grind) :: g.toWord.tail by grind]
-            grind
-    · left
-      have h3 : g = mk [w] := by
-        refine toWord_injective ?_
-        simp only [toWord_mk, reduce.cons, reduce_nil]
-        induction hg : g.toWord with
-        | nil => grind
-        | cons head tail ih => simp_all
-      rw [h3,← mul_smul,← inv_mk, inv_mul_cancel, one_smul]
-  · rintro (h | ⟨a,⟨h1, ⟨g, ⟨h2, h3⟩⟩⟩|⟨h1, ⟨g, ⟨h2, h3⟩⟩⟩⟩)
-    · use mk [w]
-      simp [h, ← mul_smul, ← inv_mk]
-    · subst h3
-      have hg : g.toWord.head (by grind) = (a, false) := by grind
-      use mk (w :: g.toWord)
-      constructor
-      · simp only [toWord_mk, reduce.cons, reduce_toWord]
-        rw [show g.toWord = g.toWord.head (by grind) :: g.toWord.tail by grind]
-        grind
-      · have h3 : mk (w :: g.toWord) = mk [w] * g := toWord_injective (by simp [toWord_mul])
-        rw [h3, ← mul_smul, ← inv_mk, ← mul_assoc, inv_mul_cancel, one_mul]
-    · subst h3
-      use mk (w :: g.toWord)
-      constructor
-      · simp only [toWord_mk, reduce.cons, reduce_toWord]
-        rw [show g.toWord = g.toWord.head (by grind) :: g.toWord.tail by grind]
-        grind
-      · have h3 : mk (w :: g.toWord) = mk [w] * g := toWord_injective (by simp [toWord_mul])
-        rw [h3, ← mul_smul, ← inv_mk, ← mul_assoc, inv_mul_cancel, one_mul]
+  · rintro ⟨-, ⟨g, hg, rfl⟩, rfl⟩
+    set l := g.toWord with hl
+    match l with
+    | [] => simp [← hl, startsWith] at hg
+    | [a] =>
+      rw [← g.mk_toWord, ← hl, show a = w by simpa [← hl, startsWith] using hg, inv_smul_smul]
+      exact Or.inr rfl
+    | a :: b :: l =>
+      have ha : a = w := by simpa [← hl, startsWith] using hg
+      have h := isReduced_cons_cons.mp (hl ▸ isReduced_toWord)
+      refine Or.inl (Set.mem_biUnion (x := b) (by grind) ?_)
+      · rw [← g.mk_toWord, ← hl, ha, ← List.singleton_append (l := b :: l), ← mul_mk,
+          mul_smul, inv_smul_smul]
+        refine ⟨mk (b :: l), ?_, rfl⟩
+        simp [startsWith, h.2.reduce_eq]
+  · rintro (⟨-, ⟨w', rfl⟩, -, ⟨hw, rfl⟩, g, hg, rfl⟩ | rfl)
+    · exact ⟨mk [w] • g • x, ⟨mk [w] * g, startsWith_mk_mul g (not_startsWith_of_ne hw g hg),
+        mul_smul (mk [w]) g x⟩, inv_smul_smul (mk [w]) (g • x)⟩
+    · exact ⟨mk [w] • i, ⟨mk [w], rfl, rfl⟩, inv_smul_smul (mk [w]) i⟩
 
 end FreeGroup
