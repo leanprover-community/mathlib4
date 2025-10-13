@@ -249,6 +249,16 @@ theorem PosSemidef.trace_eq_zero_iff {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
       (by simpa using hA.eigenvalues_nonneg), Finset.mem_univ, true_imp_iff] at h
   exact funext_iff.eq ▸ hA.isHermitian.eigenvalues_eq_zero_iff.mp <| h
 
+/-- The matrix `vecMulVec a (star a)` is always positive semi-definite. -/
+theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
+    (vecMulVec a (star a)).PosSemidef := by
+  simp [vecMulVec_eq Unit, ← conjTranspose_replicateCol, posSemidef_self_mul_conjTranspose]
+
+/-- The matrix `vecMulVec (star a) a` is always postive semi-definite. -/
+theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
+    (vecMulVec (star a) a).PosSemidef := by
+  simp [vecMulVec_eq Unit, ← conjTranspose_replicateRow, posSemidef_conjTranspose_mul_self]
+
 /-!
 ## Positive definite matrices
 -/
@@ -382,6 +392,12 @@ theorem conjTranspose_mul_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
     PosDef (Aᴴ * A) := by
   classical
   simpa using conjTranspose_mul_mul_same .one hA
+
+theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matrix m n R)
+    (hA : Function.Injective A.vecMul) :
+    PosDef (A * Aᴴ) := by
+  classical
+  simpa using mul_mul_conjTranspose_same .one hA
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
 
