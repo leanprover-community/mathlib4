@@ -229,7 +229,7 @@ end isometry
       = TensorProduct.map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
   TensorProduct.ext' fun x y => by simp [inner_ext_iff, LinearMap.adjoint_inner_left]
 
-theorem inner_ext_threefold'_iff (x y : E ⊗[𝕜] (F ⊗[𝕜] G)) :
+theorem inner_ext_threefold_iff' (x y : E ⊗[𝕜] (F ⊗[𝕜] G)) :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) = inner 𝕜 y (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) := by
   simp only [← (assocLinearIsometryEquiv 𝕜 E F G).symm.injective.eq_iff, inner_ext_threefold_iff,
     LinearIsometryEquiv.inner_map_eq_flip]
