@@ -41,7 +41,7 @@ variable {X μ} {P : Measure Ω}
 
 lemma HasLaw.congr {Y : Ω → 𝓧} (hX : HasLaw X μ P) (hY : Y =ᵐ[P] X) : HasLaw Y μ P where
   aemeasurable := hX.aemeasurable.congr hY.symm
-  map_eq := by rw [Measure.map_congr hY, hX.map_eq]
+  map_eq := by rw [map_congr hY, hX.map_eq]
 
 lemma _root_.MeasureTheory.MeasurePreserving.hasLaw (h : MeasurePreserving X P μ) :
     HasLaw X μ P where
@@ -52,6 +52,9 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
     MeasurePreserving X P μ where
   measurable := h₂
   map_eq := h₁.map_eq
+
+protected lemma HasLaw.id : HasLaw id μ μ where
+  map_eq := map_id
 
 protected theorem HasLaw.isFiniteMeasure_iff (hX : HasLaw X μ P) :
     IsFiniteMeasure μ ↔ IsFiniteMeasure P := by
