@@ -393,7 +393,9 @@ scoped elab:max "MDiff" ppSpace t:term:arg : term => do
   mkAppM ``MDifferentiable #[srcI, tgtI, e]
 
 -- We ensure the type of `n` before checking `f` is a function to provide better error messages
--- in case e.g. just `n` was forgotten.
+-- in case e.g. `f` and `n` are swapped.
+-- TODO: provide better error messages if just `n` is forgotten (say, by making `n` optional in
+-- the parser and erroring later in the elaborator); currently, this yields just a parser error.
 
 /-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
 trying to determine `I` and `J` from the local context.

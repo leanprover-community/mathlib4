@@ -573,6 +573,7 @@ variable [IsManifold I 1 M] [IsManifold I' 1 M']
 section error
 
 -- yields a parse error, "unexpected token '/--'; expected term"
+-- TODO: make this parse, but error in the elaborator
 -- #check CMDiffAt[s] f
 
 /--
