@@ -625,9 +625,9 @@ protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
 connected. -/
 lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [DecidableEq V]
     {H : G.Subgraph} (hconn : H.Connected) {v : V} [Fintype ↑(H.neighborSet v)]
-    (hdeg : H.degree v = 1) [Nontrivial H.verts] : (H.deleteVerts {v}).Connected := by
+    (hdeg : H.degree v = 1) : (H.deleteVerts {v}).Connected := by
   refine (H.deleteVerts {v}).connected_iff_forall_exists_walk_subgraph.mpr ⟨?_, ?_⟩
-  · have := @Nontrivial.exists_pair_ne H.verts _
+  · have := (H.nontrivial_of_degree_ne_zero (ne_zero_of_eq_one hdeg)).exists_pair_ne
     apply Set.diff_nonempty.mpr
     grind
   /- There exists a walk between any two vertices w and x in H.deleteVerts {v}

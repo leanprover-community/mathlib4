@@ -798,10 +798,21 @@ theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)
   rw [← card_neighborSet_eq_degree, Subgraph.degree]
   congr!
 
+theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
+    0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
+  simp only [degree, Fintype.card_pos_iff, nonempty_subtype, mem_neighborSet]
+
 theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
+
+theorem nontrivial_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
+    (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
+  rw [Nat.ne_zero_iff_zero_lt, degree_pos_iff_exists_adj] at h
+  obtain ⟨w, hw⟩ := h
+  exact nontrivial_of_ne ⟨v, G'.edge_vert hw⟩ ⟨w, G'.edge_vert hw.symm⟩
+    (Subtype.coe_ne_coe.mp hw.ne)
 
 @[simp]
 theorem _root_.SimpleGraph.card_neighborSet_toSubgraph (H : SimpleGraph V) (h : H ≤ G)
