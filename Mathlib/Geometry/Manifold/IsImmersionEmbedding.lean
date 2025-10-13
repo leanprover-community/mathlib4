@@ -333,7 +333,52 @@ namespace IsImmersion
 
 open Manifold
 
-variable {f g : M → N}
+variable {f g : M → N} {x : M}
+
+-- TODO: why is this error? this should not be!
+/--
+error: Function expected at
+  F
+but this term has type
+  Type u_6
+
+Note: Expected a function because this term is being applied to the argument
+  f
+---
+info: IsImmersionAt % sorry : ?m.45
+-/
+#guard_msgs in
+#check IsImmersionAt% F f x
+-- Much better error message; TODO say something similar!
+/--
+error: Application type mismatch: The argument
+  f
+has type
+  M → N
+of sort `Type (max u_12 u_14)` but is expected to have type
+  WithTop ℕ∞
+of sort `Type` in the application
+  IsImmersionAt F I J f
+-/
+#guard_msgs in
+#check IsImmersionAt F I J f x
+
+-- TODO: why does this error? I'm really confused now...
+/--
+error: Function expected at
+  F
+but this term has type
+  Type u_6
+
+Note: Expected a function because this term is being applied to the argument
+  n
+---
+info: IsImmersionAt % sorry : ?m.45
+-/
+#guard_msgs in
+#check IsImmersionAt% F n f x
+
+#check IsImmersionAt F I J n f x
 
 /-- If `f` is an immersion, it is an immersion at each point. -/
 lemma isImmersionAt (h : IsImmersion F I J n f) (x : M) : IsImmersionAt F I J n f x := h x
