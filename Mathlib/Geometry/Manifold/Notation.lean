@@ -516,17 +516,6 @@ scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
   let (srcI, tgtI) ← findModels e none
   mkAppM ``mfderiv #[srcI, tgtI, e]
 
-/-- `IsImmersionAt% F n f x` elaborates to `IsImmersionAt F I J n f x`,
-trying to determine `I` and `J` from the local context. -/
-scoped elab:max "IsImmersionAt% " F:term:arg ppSpace nt:term:arg ppSpace
-    f:term:arg ppSpace x:term:arg : term => do
-  let eF ← Term.elabTerm F none
-  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
-  let ef ← ensureIsFunction <|← Term.elabTerm f none
-  let ex ← Term.elabTerm x none
-  let (srcI, tgtI) ← findModels ef none
-  mkAppM `IsImmersionAt #[eF, srcI, tgtI, ne, ef, ex]
-
 /-- `IsImmersion% F n f` elaborates to `IsImmersion F I J n f`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "IsImmersion% " F:term:arg ppSpace nt:term:arg ppSpace f:term:arg : term => do

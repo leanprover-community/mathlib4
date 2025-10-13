@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+import Mathlib.Geometry.Manifold.Notation
 
 /-! # Smooth immersions and embeddings
 
@@ -114,6 +115,20 @@ irreducible_def IsImmersionAt (f : M → N) (x : M) : Prop :=
 variable {f g : M → N} {x : M}
 
 namespace IsImmersionAt
+
+open Manifold
+
+open Lean Elab Meta Qq in
+/-- `IsImmersionAt% F n f x` elaborates to `IsImmersionAt F I J n f x`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "IsImmersionAt%" ppSpace F:term:arg ppSpace nt:term:arg ppSpace
+    f:term:arg ppSpace x:term:arg : term => do
+  let eF ← Term.elabTerm F none
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let ex ← Term.elabTerm x none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``IsImmersionAt #[eF, srcI, tgtI, ne, ef, ex]
 
 lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHomeomorph M H)
     (codChart : OpenPartialHomeomorph N G)
