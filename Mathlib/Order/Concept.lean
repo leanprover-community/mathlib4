@@ -42,7 +42,6 @@ variable {ι : Sort*} {α β γ : Type*} {κ : ι → Sort*} (r : α → β → 
 
 /-! ### Lower and upper polars -/
 
-
 /-- The upper polar of `s : Set α` along a relation `r : α → β → Prop` is the set of all elements
 which `r` relates to all elements of `s`. -/
 def upperPolar (s : Set α) : Set β :=
@@ -204,7 +203,6 @@ alias extentClosure_anti := lowerPolar_anti
 
 /-! ### `IsIntent` and `IsExtent` -/
 
-
 namespace Order
 
 variable {r}
@@ -270,7 +268,6 @@ protected theorem IsIntent.iInter₂ (f : ∀ i, κ i → Set β) (hf : ∀ i j,
 end Order
 
 /-! ### Concepts -/
-
 
 variable (α β)
 
