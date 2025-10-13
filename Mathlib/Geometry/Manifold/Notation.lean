@@ -21,18 +21,20 @@ All of these elaborators are scoped to the `Manifold` namespace.
 We provide compact notation for differentiability and continuous differentiability on manifolds,
 including inference of the model with corners.
 
-| Notation            | Elaborates to                       |
-|---------------------|-------------------------------------|
-| `MDiff f`           | `MDifferentiable I J f`             |
-| `MDiffAt f x`       | `MDifferentiableAt I J f x`         |
-| `MDiff[u] f`        | `MDifferentiableOn I J f u`         |
-| `MDiffAt[u] f x`    | `MDifferentiableWithinAt I J f u x` |
-| `CMDiff n f`        | `ContMDiff I J n f`                 |
-| `CMDiffAt n f x`    | `ContMDiffAt I J n f x`             |
-| `CMDiff[u] n f`     | `ContMDiffOn I J n f u`             |
-| `CMDiffAt[u] n f x` | `ContMDiffWithinAt I J n f u x`     |
-| `mfderiv[u] f x`    | `mfderivWithin I J f u x`           |
-| `mfderiv% f x`      | `mfderiv I J f x`                   |
+| Notation                 | Elaborates to                       |
+|--------------------------|-------------------------------------|
+| `MDiff f`                | `MDifferentiable I J f`             |
+| `MDiffAt f x`            | `MDifferentiableAt I J f x`         |
+| `MDiff[u] f`             | `MDifferentiableOn I J f u`         |
+| `MDiffAt[u] f x`         | `MDifferentiableWithinAt I J f u x` |
+| `CMDiff n f`             | `ContMDiff I J n f`                 |
+| `CMDiffAt n f x`         | `ContMDiffAt I J n f x`             |
+| `CMDiff[u] n f`          | `ContMDiffOn I J n f u`             |
+| `CMDiffAt[u] n f x`      | `ContMDiffWithinAt I J n f u x`     |
+| `mfderiv[u] f x`         | `mfderivWithin I J f u x`           |
+| `mfderiv% f x`           | `mfderiv I J f x`                   |
+| `IsImmersionAt% F n f x` | `IsImmersionAt F I J n f x`         |
+| `IsImmersion% F n f`     | `IsImmersion F I J n f`             |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
@@ -513,6 +515,26 @@ scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``mfderiv #[srcI, tgtI, e]
+
+/-- `IsImmersionAt% F n f x` elaborates to `IsImmersionAt F I J n f x`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "IsImmersionAt% " F:term:arg ppSpace nt:term:arg ppSpace
+    f:term:arg ppSpace x:term:arg : term => do
+  let eF ← Term.elabTerm F none
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let ex ← Term.elabTerm x none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM `IsImmersionAt #[eF, srcI, tgtI, ne, ef, ex]
+
+/-- `IsImmersion% F n f` elaborates to `IsImmersion F I J n f`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "IsImmersion% " F:term:arg ppSpace nt:term:arg ppSpace f:term:arg : term => do
+  let eF ← Term.elabTerm F none
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM `IsImmersion #[eF, srcI, tgtI, ne, ef]
 
 end Manifold
 
