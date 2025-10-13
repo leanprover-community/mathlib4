@@ -27,13 +27,19 @@ section OrderedAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
   {s : Finset ι} {f g : ι → α}
 
-lemma expect_eq_zero_iff_of_nonneg (hs : s.Nonempty) (hf : ∀ i ∈ s, 0 ≤ f i) :
+lemma expect_eq_zero_iff_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonneg hf, hs.ne_empty]
+  rw [←sum_eq_zero_iff_of_nonneg hf, expect, smul_eq_zero, or_iff_right_iff_imp,
+      inv_eq_zero, Nat.cast_eq_zero, card_eq_zero]
+  intro hs
+  rw [hs, sum_empty]
 
-lemma expect_eq_zero_iff_of_nonpos (hs : s.Nonempty) (hf : ∀ i ∈ s, f i ≤ 0) :
+lemma expect_eq_zero_iff_of_nonpos (hf : ∀ i ∈ s, f i ≤ 0) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonpos hf, hs.ne_empty]
+  rw [←sum_eq_zero_iff_of_nonpos hf, expect, smul_eq_zero, or_iff_right_iff_imp,
+      inv_eq_zero, Nat.cast_eq_zero, card_eq_zero]
+  intro hs
+  rw [hs, sum_empty]
 
 section PosSMulMono
 variable [PosSMulMono ℚ≥0 α] {a : α}
@@ -162,11 +168,13 @@ variable [Fintype ι]
 section OrderedAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] {f : ι → α}
 
-lemma expect_eq_zero_iff_of_nonneg [Nonempty ι] (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonneg hf]
+lemma expect_eq_zero_iff_of_nonneg (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
+  rw [Finset.expect_eq_zero_iff_of_nonneg (by aesop)]
+  aesop
 
-lemma expect_eq_zero_iff_of_nonpos [Nonempty ι] (hf : f ≤ 0) : 𝔼 i, f i = 0 ↔ f = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonpos hf]
+lemma expect_eq_zero_iff_of_nonpos (hf : f ≤ 0) : 𝔼 i, f i = 0 ↔ f = 0 := by
+  rw [Finset.expect_eq_zero_iff_of_nonpos (by aesop)]
+  aesop
 
 end OrderedAddCommMonoid
 end Fintype
