@@ -71,14 +71,15 @@ lemma covarianceBilin_self [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_self_eq_variance h]
   rfl
 
-lemma covarianceBilin_apply_eq [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x y : E) :
+lemma covarianceBilin_apply_eq_cov [CompleteSpace E] [IsFiniteMeasure μ]
+    (h : MemLp id 2 μ) (x y : E) :
     covarianceBilin μ x y = cov[fun u ↦ ⟪x, u⟫_ℝ, fun u ↦ ⟪y, u⟫_ℝ; μ] := by
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_eq_covariance h]
   rfl
 
 lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x y : ℝ) :
     covarianceBilin μ x y = x * y * Var[id; μ] := by
-  simp only [covarianceBilin_apply_eq h, RCLike.inner_apply, conj_trivial, mul_comm]
+  simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
   rw [covariance_mul_left, covariance_mul_right, ← mul_assoc, covariance_self aemeasurable_id']
   rfl
 
@@ -122,7 +123,7 @@ lemma covarianceBilin_apply_basisFun {ι Ω : Type*} [Fintype ι] {mΩ : Measura
     covarianceBilin (μ.map (fun ω ↦ toLp 2 (X · ω)))
       (basisFun ι ℝ i) (basisFun ι ℝ j) = cov[X i, X j; μ] := by
   have (i : ι) := (hX i).aemeasurable
-  rw [covarianceBilin_apply_eq, covariance_map]
+  rw [covarianceBilin_apply_eq_cov, covariance_map]
   · simp [basisFun_inner]; rfl
   · exact Measurable.aestronglyMeasurable (by fun_prop)
   · exact Measurable.aestronglyMeasurable (by fun_prop)
@@ -143,7 +144,7 @@ lemma covarianceBilin_apply_pi {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpa
     covarianceBilin (μ.map (fun ω ↦ toLp 2 (X · ω))) x y =
       ∑ i, ∑ j, x i * y j * cov[X i, X j; μ] := by
   have (i : ι) := (hX i).aemeasurable
-  nth_rw 1 [covarianceBilin_apply_eq, covariance_map_fun, ← (basisFun ι ℝ).sum_repr' x,
+  nth_rw 1 [covarianceBilin_apply_eq_cov, covariance_map_fun, ← (basisFun ι ℝ).sum_repr' x,
     ← (basisFun ι ℝ).sum_repr' y]
   · simp_rw [sum_inner, real_inner_smul_left, basisFun_inner, PiLp.toLp_apply]
     rw [covariance_fun_sum_fun_sum]
