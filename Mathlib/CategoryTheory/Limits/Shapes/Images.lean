@@ -165,8 +165,8 @@ def ofIsoI (F : MonoFactorisation f) {I'} (e : F.I ≅ I') :
   e := F.e ≫ e.hom
 
 /--
-Copying a mono factorisation to another mono factorisation with propositionally equal fields.
-This is useful when one needs precise control of the `m` and `e` fields.
+Copying a mono factorisation to another mono factorisation with propositionally equal
+`m` and `e` fields.
 -/
 @[simps]
 def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)

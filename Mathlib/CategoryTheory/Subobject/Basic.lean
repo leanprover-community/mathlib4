@@ -499,7 +499,7 @@ theorem lower_comm (F : MonoOver Y ⥤ MonoOver X) :
 Applying `lower F` and then `representative` is isomorphic to first applying `representative`
 and then applying `F`.
 -/
-def isoLowerRepresentative (F : MonoOver Y ⥤ MonoOver X) :
+def lowerCompRepresentativeIso (F : MonoOver Y ⥤ MonoOver X) :
     lower F ⋙ representative ≅ representative ⋙ F :=
   ThinSkeleton.isoCompFromThinSkeleton _
 
@@ -727,16 +727,17 @@ def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback
 Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`
 and then taking representatives.
 -/
-def isoExistsRepresentative (f : X ⟶ Y) :
+def existsCompRepresentativeIso (f : X ⟶ Y) :
     («exists» f) ⋙ representative ≅ representative ⋙ (MonoOver.exists f) :=
   isoLowerRepresentative _
 
 /-- `exists f` applied to a subobject `x` is isomorphic to the image of `x.arrow ≫ f`. -/
-def isoExistsImage (f : X ⟶ Y) (x : Subobject X) :
+def existsIsoImage (f : X ⟶ Y) (x : Subobject X) :
     ((«exists» f).obj x : C) ≅ Limits.image (x.arrow ≫ f) :=
   (MonoOver.forget Y ⋙ Over.forget Y).mapIso <| (isoExistsRepresentative f).app x
 
-/-- `exists f` is the image factorisation of `x.arrow ≫ f`. -/
+/-- Given a subobject `x`, the `ImageFactorisation` of `x.arrow ≫ f`` through `(exists f).obj x`. -/
+@[simps! F_I F_m]
 def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
     ImageFactorisation (x.arrow ≫ f) :=
   have h :
