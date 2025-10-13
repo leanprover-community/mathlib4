@@ -1,5 +1,4 @@
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.NumberTheory.FunctionField.Basic
 import Mathlib.RingTheory.Valuation.Discrete.Basic
 
