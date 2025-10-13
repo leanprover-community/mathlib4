@@ -18,6 +18,10 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above.
+* `smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ (with derivative/asymptotic
+  facts) used in the inductive estimates.
+* `p`: the Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1$
+  (existence/uniqueness and related properties).
 * `sumTransform`: The transformation which turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
 * `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
@@ -534,9 +538,9 @@ lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
 ### The sum transform
 
 This section defines the "sum transform" of a function `g` as
-`∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`, and uses it to define `asympBound` as the bound satisfied
-by an Akra-Bazzi recurrence, namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. Here, the exponent `p`
-refers to the one established in the previous section.
+`∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)`, and uses it to define `asympBound` as the bound
+satisfied by an Akra-Bazzi recurrence, namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. Here, the
+exponent `p` refers to the one established in the previous section.
 
 Several properties of the sum transform are then proven.
 -/
