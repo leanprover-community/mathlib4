@@ -20,15 +20,15 @@ Let `μ` be a finite measure on a normed space `E` with the Borel σ-algebra. We
 * `Dual.toLp`: the function `MemLp.toLp` as a continuous linear map from `Dual 𝕜 E` (for `RCLike 𝕜`)
   into the space `Lp 𝕜 p μ` for `p ≥ 1`. This needs a hypothesis `MemLp id p μ` (we set it to the
   junk value 0 if that's not the case).
-* `covarianceBilin` : covariance of a measure `μ` with `∫ x, ‖x‖^2 ∂μ < ∞` on a Banach space,
+* `covarianceBilinDual` : covariance of a measure `μ` with `∫ x, ‖x‖^2 ∂μ < ∞` on a Banach space,
   as a continuous bilinear form `Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ`.
-  If the second moment of `μ` is not finite, we set `covarianceBilin μ = 0`.
+  If the second moment of `μ` is not finite, we set `covarianceBilinDual μ = 0`.
 
 ## Main statements
 
-* `covarianceBilin_apply` : the covariance of `μ` on `L₁, L₂ : Dual ℝ E` is equal to
+* `covarianceBilinDual_apply` : the covariance of `μ` on `L₁, L₂ : Dual ℝ E` is equal to
   `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ`.
-* `covarianceBilin_same_eq_variance`: `covarianceBilin μ L L = Var[L; μ]`.
+* `covarianceBilinDual_same_eq_variance`: `covarianceBilinDual μ L L = Var[L; μ]`.
 
 ## Implementation notes
 
@@ -162,13 +162,16 @@ variable [NormedSpace ℝ E] [OpensMeasurableSpace E]
 /-- Continuous bilinear form with value `∫ x, L₁ x * L₂ x ∂μ` on `(L₁, L₂)`.
 This is equal to the covariance only if `μ` is centered. -/
 noncomputable
-def uncenteredCovarianceBilin (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ :=
+def uncenteredCovarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ :=
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
     (StrongDual.toLp μ 2) (StrongDual.toLp μ 2)
 
-lemma uncenteredCovarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
-    uncenteredCovarianceBilin μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
-  simp only [uncenteredCovarianceBilin, ContinuousLinearMap.bilinearComp_apply,
+@[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin :=
+  uncenteredCovarianceBilinDual
+
+lemma uncenteredCovarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
+    uncenteredCovarianceBilinDual μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
+  simp only [uncenteredCovarianceBilinDual, ContinuousLinearMap.bilinearComp_apply,
     StrongDual.toLp_apply h, L2.inner_def, RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
   filter_upwards [MemLp.coeFn_toLp (h.continuousLinearMap_comp L₁),
@@ -176,21 +179,30 @@ lemma uncenteredCovarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDua
   simp only [id_eq] at hxL₁ hxL₂
   rw [hxL₁, hxL₂, mul_comm]
 
-lemma uncenteredCovarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
-    uncenteredCovarianceBilin μ L₁ L₂ = 0 := by
-  simp [uncenteredCovarianceBilin, StrongDual.toLp_of_not_memLp h]
+@[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_apply :=
+  uncenteredCovarianceBilinDual_apply
 
-lemma uncenteredCovarianceBilin_zero : uncenteredCovarianceBilin (0 : Measure E) = 0 := by
+lemma uncenteredCovarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
+    uncenteredCovarianceBilinDual μ L₁ L₂ = 0 := by
+  simp [uncenteredCovarianceBilinDual, StrongDual.toLp_of_not_memLp h]
+
+@[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_of_not_memLp :=
+  uncenteredCovarianceBilinDual_of_not_memLp
+
+lemma uncenteredCovarianceBilinDual_zero : uncenteredCovarianceBilinDual (0 : Measure E) = 0 := by
   ext
   have : Subsingleton (Lp ℝ 2 (0 : Measure E)) := ⟨fun x y ↦ Lp.ext_iff.2 rfl⟩
-  simp [uncenteredCovarianceBilin, Subsingleton.eq_zero (StrongDual.toLp 0 2)]
+  simp [uncenteredCovarianceBilinDual, Subsingleton.eq_zero (StrongDual.toLp 0 2)]
 
-lemma norm_uncenteredCovarianceBilin_le (L₁ L₂ : StrongDual ℝ E) :
-    ‖uncenteredCovarianceBilin μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
+@[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_zero :=
+  uncenteredCovarianceBilinDual_zero
+
+lemma norm_uncenteredCovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
+    ‖uncenteredCovarianceBilinDual μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
   by_cases h : MemLp id 2 μ
-  swap; · simp only [uncenteredCovarianceBilin_of_not_memLp h, norm_zero]; positivity
-  calc ‖uncenteredCovarianceBilin μ L₁ L₂‖
-  _ = ‖∫ x, L₁ x * L₂ x ∂μ‖ := by rw [uncenteredCovarianceBilin_apply h]
+  swap; · simp only [uncenteredCovarianceBilinDual_of_not_memLp h, norm_zero]; positivity
+  calc ‖uncenteredCovarianceBilinDual μ L₁ L₂‖
+  _ = ‖∫ x, L₁ x * L₂ x ∂μ‖ := by rw [uncenteredCovarianceBilinDual_apply h]
   _ ≤ ∫ x, ‖L₁ x‖ * ‖L₂ x‖ ∂μ := (norm_integral_le_integral_norm _).trans (by simp)
   _ ≤ ∫ x, ‖L₁‖ * ‖x‖ * ‖L₂‖ * ‖x‖ ∂μ := by
     refine integral_mono_ae ?_ ?_ (ae_of_all _ fun x ↦ ?_)
@@ -212,6 +224,9 @@ lemma norm_uncenteredCovarianceBilin_le (L₁ L₂ : StrongDual ℝ E) :
     congr with x
     ring
 
+@[deprecated (since := "2025-10-10")] alias norm_uncenteredCovarianceBilin_le :=
+  norm_uncenteredCovarianceBilinDual_le
+
 end Centered
 
 section Covariance
@@ -222,13 +237,13 @@ open Classical in
 /-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`
 if `MemLp id 2 μ`. If not, we set it to zero. -/
 noncomputable
-def covarianceBilin (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ :=
-  uncenteredCovarianceBilin (μ.map (fun x ↦ x - ∫ x, x ∂μ))
+def covarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ :=
+  uncenteredCovarianceBilinDual (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
 @[simp]
-lemma covarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
-    covarianceBilin μ L₁ L₂ = 0 := by
-  rw [covarianceBilin, uncenteredCovarianceBilin_of_not_memLp]
+lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
+    covarianceBilinDual μ L₁ L₂ = 0 := by
+  rw [covarianceBilinDual, uncenteredCovarianceBilinDual_of_not_memLp]
   rw [(measurableEmbedding_subRight _).memLp_map_measure_iff]
   refine fun h_Lp ↦ h ?_
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp
@@ -236,45 +251,45 @@ lemma covarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDua
   exact h_Lp.add (memLp_const _)
 
 @[simp]
-lemma covarianceBilin_zero : covarianceBilin (0 : Measure E) = 0 := by
-  rw [covarianceBilin, Measure.map_zero, uncenteredCovarianceBilin_zero]
+lemma covarianceBilinDual_zero : covarianceBilinDual (0 : Measure E) = 0 := by
+  rw [covarianceBilinDual, Measure.map_zero, uncenteredCovarianceBilinDual_zero]
 
-lemma covarianceBilin_comm (L₁ L₂ : StrongDual ℝ E) :
-    covarianceBilin μ L₁ L₂ = covarianceBilin μ L₂ L₁ := by
+lemma covarianceBilinDual_comm (L₁ L₂ : StrongDual ℝ E) :
+    covarianceBilinDual μ L₁ L₂ = covarianceBilinDual μ L₂ L₁ := by
   by_cases h : MemLp id 2 μ
   · have h' : MemLp id 2 (Measure.map (fun x ↦ x - ∫ (x : E), x ∂μ) μ) :=
       (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _)
-    simp_rw [covarianceBilin, uncenteredCovarianceBilin_apply h', mul_comm (L₁ _)]
+    simp_rw [covarianceBilinDual, uncenteredCovarianceBilinDual_apply h', mul_comm (L₁ _)]
   · simp [h]
 
 variable [CompleteSpace E]
 
-lemma covarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
-    covarianceBilin μ L₁ L₂ = ∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ := by
-  rw [covarianceBilin, uncenteredCovarianceBilin_apply,
+lemma covarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
+    covarianceBilinDual μ L₁ L₂ = ∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ := by
+  rw [covarianceBilinDual, uncenteredCovarianceBilinDual_apply,
     integral_map (by fun_prop) (by fun_prop)]
   · have hL (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
       L.integral_comp_comm (h.integrable (by simp))
     simp [← hL]
   · exact (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _)
 
-lemma covarianceBilin_apply' (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
-    covarianceBilin μ L₁ L₂ = ∫ x, L₁ (x - μ[id]) * L₂ (x - μ[id]) ∂μ := by
-  rw [covarianceBilin_apply h]
+lemma covarianceBilinDual_apply' (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
+    covarianceBilinDual μ L₁ L₂ = ∫ x, L₁ (x - μ[id]) * L₂ (x - μ[id]) ∂μ := by
+  rw [covarianceBilinDual_apply h]
   have hL (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
     L.integral_comp_comm (h.integrable (by simp))
   simp [← hL]
 
-lemma covarianceBilin_eq_covariance (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
-    covarianceBilin μ L₁ L₂ = cov[L₁, L₂; μ] := by
-  rw [covarianceBilin_apply h, covariance]
+lemma covarianceBilinDual_eq_covariance (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
+    covarianceBilinDual μ L₁ L₂ = cov[L₁, L₂; μ] := by
+  rw [covarianceBilinDual_apply h, covariance]
 
-lemma covarianceBilin_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual ℝ E) :
-    covarianceBilin μ L L = Var[L; μ] := by
-  rw [covarianceBilin_eq_covariance h, covariance_self (by fun_prop)]
+lemma covarianceBilinDual_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual ℝ E) :
+    covarianceBilinDual μ L L = Var[L; μ] := by
+  rw [covarianceBilinDual_eq_covariance h, covariance_self (by fun_prop)]
 
 @[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
-  covarianceBilin_self_eq_variance
+  covarianceBilinDual_self_eq_variance
 
 end Covariance
 
