@@ -19,15 +19,15 @@ open Limits Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 variable {D : Type u'} [Category.{v'} D] [Abelian D] [HasExt.{w'} D]
-variable (F : C ⥤ D) [F.Additive] [PreservesLimits F] [PreservesColimits F]
+variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 noncomputable def Functor.mapExt (X Y : C) (n : ℕ) :
-    Ext.{w} X Y n → Ext.{w'} (F.obj X) (F.obj Y) n := by
+    Ext.{w} X Y n → Ext.{w'} (F.obj X) (F.obj Y) n :=
   letI := HasDerivedCategory.standard C
   letI := HasDerivedCategory.standard D
-  refine Ext.homEquiv.symm ∘ (fun f ↦ ?_) ∘ Ext.homEquiv
-  convert f.map F.mapDerivedCategory
-  · sorry
-  · sorry
+  Ext.homEquiv.symm ∘ (fun f ↦
+    (F.mapDerivedCategoryFactorSingleFunctor 0).symm.hom.app X
+       ≫ f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) (n : ℤ)).map
+        ((F.mapDerivedCategoryFactorSingleFunctor 0).hom.app Y))) ∘ Ext.homEquiv
 
 end CategoryTheory
