@@ -1106,8 +1106,7 @@ theorem mul_finsum_mem {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors
   rw [mul_finsum]
   congr
   ext a
-  by_cases h : a ∈ s
-  <;> simp_all
+  by_cases h : a ∈ s <;> simp_all
 
 open Classical in
 /--
