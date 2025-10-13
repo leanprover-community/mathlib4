@@ -326,8 +326,8 @@ lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j
       rcases hj with ⟨i, hi, rfl⟩
       exact (hL.2 _ _).trans_lt (Nat.add_lt_add_left hi m)
     · obtain rfl | h := List.mem_cons.mp hj
-      · have : ∀ k ∈ L, j + 1 ≤ k := fun _ hk => List.rel_of_pairwise_cons hL.1.pairwise hk
-        grind [simplicialEvalσ, simplicialEvalσ_of_lt_mem]
+      · grind [List.sortedLT_iff_pairwise, simplicialEvalσ_of_lt_mem,
+          simplicialEvalσ, IsAdmissible, List.pairwise_cons]
       · have := h_rec hL.tail h
         grind [simplicialEvalσ]
 
