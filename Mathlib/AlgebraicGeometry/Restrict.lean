@@ -220,7 +220,7 @@ lemma Scheme.Opens.ι_image_basicOpen_topIso_inv (r : Γ(X, U)) :
 alias Scheme.map_basicOpen_map := Scheme.Opens.ι_image_basicOpen_topIso_inv
 
 @[simp]
-lemma mem_basicOpen_toScheme {U : X.Opens} {V : Scheme.Opens U} {r : Γ(U, V)} {x : U} :
+lemma Scheme.Opens.mem_basicOpen_toScheme {U : X.Opens} {V : Scheme.Opens U} {r : Γ(U, V)} {x : U} :
     x ∈ U.toScheme.basicOpen r ↔ (x : X) ∈ X.basicOpen r := by
   rw [← U.toScheme.basicOpen_res_eq _ (eqToHom (U.ι.preimage_image_eq V)).op]
   exact congr(x ∈ $(U.ι.preimage_basicOpen r)).to_iff.symm
@@ -290,6 +290,7 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
   delta Scheme.homOfLE
   infer_instance
 
+@[simp]
 lemma Scheme.opensRange_homOfLE {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).opensRange = V.ι ⁻¹ᵁ U :=
   V.ι.image_injective (by simp [← Hom.opensRange_comp, Hom.image_preimage_eq_opensRange_inf, e])

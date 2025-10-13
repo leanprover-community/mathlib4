@@ -464,10 +464,8 @@ lemma SpecMap_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
 alias Spec_map_appLE_fromSpec_assoc := SpecMap_appLE_fromSpec_assoc
 
 lemma fromSpec_top [IsAffine X] : (isAffineOpen_top X).fromSpec = X.isoSpec.inv := by
-  rw [fromSpec, isoSpec_inv, Category.assoc, ← @Scheme.isoSpec_inv_naturality,
-    ← Spec.map_comp_assoc, Scheme.Opens.ι_appTop, ← X.presheaf.map_comp, ← op_comp,
-    eqToHom_comp_homOfLE, ← eqToHom_eq_homOfLE rfl, eqToHom_refl, op_id, X.presheaf.map_id,
-    Spec.map_id, Category.id_comp]
+  rw [fromSpec, Iso.inv_comp_eq]
+  simp [isoSpec_hom]
 
 lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
     hU.fromSpec.app V = X.presheaf.map (homOfLE h).op ≫
@@ -599,19 +597,13 @@ theorem ι_basicOpen_preimage (r : Γ(X, ⊤)) :
     ← Scheme.basicOpen_res _ _ (homOfLE le_top).op]
   exact hU.basicOpen _
 
-@[simp]
-lemma mem_basicOpen_toScheme {U : X.Opens} {V : Scheme.Opens U} {r : Γ(U, V)} {x : U} :
-    x ∈ U.toScheme.basicOpen r ↔ (x : X) ∈ X.basicOpen r := by
-  rw [← U.toScheme.basicOpen_res_eq _ (eqToHom (U.ι.preimage_image_eq V)).op]
-  exact congr(x ∈ $(U.ι.preimage_basicOpen r)).to_iff.symm
-
 include hU in
 theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
     ∃ f : Γ(X, U), X.basicOpen f ≤ V ∧ ↑x ∈ X.basicOpen f := by
   have : IsAffine _ := hU
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, h₁, h₂ : _ ≤ U.ι ⁻¹ᵁ V⟩ :=
     (isBasis_basicOpen U).exists_subset_of_mem_open (x.2 : (⟨x, h⟩ : U) ∈ _) (U.ι ⁻¹ᵁ V).isOpen
-  replace h₁ : x.1 ∈ X.basicOpen r := by simpa [mem_basicOpen_toScheme (X := X)] using h₁
+  replace h₁ : x.1 ∈ X.basicOpen r := by simpa [U.mem_basicOpen_toScheme] using h₁
   replace h₂ : X.basicOpen r ≤ V := by
     simpa [Scheme.image_basicOpen] using (U.ι.image_mono h₂).trans (U.ι.image_preimage_le _)
   exact ⟨U.topIso.hom.hom r, by simp [Scheme.Opens.toScheme_presheaf_obj, h₁, h₂]⟩
