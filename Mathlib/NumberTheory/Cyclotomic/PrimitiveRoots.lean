@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.PNat.Prime
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.RingTheory.Adjoin.PowerBasis
-import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.RingTheory.SimpleModule.Basic
