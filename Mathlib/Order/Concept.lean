@@ -302,7 +302,7 @@ theorem isLowerSet_extent_le {α : Type*} [Preorder α] (c : Concept α α (· �
 
 theorem isUpperSet_intent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
     IsUpperSet c.intent :=
-  fun _ _ ↦ mem_extent_of_rel_extent
+  fun _ _ ↦ mem_intent_of_intent_rel
 
 theorem isLowerSet_extent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
     IsLowerSet c.extent :=
@@ -310,7 +310,7 @@ theorem isLowerSet_extent_lt {α : Type*} [PartialOrder α] (c : Concept α α (
 
 theorem isUpperSet_intent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
     IsUpperSet c.intent :=
-  fun _ _ hb ha ↦ hb.eq_or_lt.elim (fun h ↦ h ▸ ha) fun hb ↦ mem_intent_of_rel_intent hb ha
+  fun _ _ hb ha ↦ hb.eq_or_lt.elim (fun h ↦ h ▸ ha) fun hb ↦ mem_intent_of_intent_rel hb ha
 
 instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>
