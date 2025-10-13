@@ -21,13 +21,18 @@ variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 variable {D : Type u'} [Category.{v'} D] [Abelian D] [HasExt.{w'} D]
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
-noncomputable def Functor.mapExt (X Y : C) (n : ℕ) :
-    Ext.{w} X Y n → Ext.{w'} (F.obj X) (F.obj Y) n :=
+noncomputable def Functor.mapExtAddHom (X Y : C) (n : ℕ) :
+    Ext.{w} X Y n →+ Ext.{w'} (F.obj X) (F.obj Y) n :=
   letI := HasDerivedCategory.standard C
   letI := HasDerivedCategory.standard D
-  Ext.homEquiv.symm ∘ (fun f ↦
-    (F.mapDerivedCategorySingleFunctor 0).symm.hom.app X
+  (Ext.homAddEquiv.symm.toAddMonoidHom.comp {
+    toFun f := (F.mapDerivedCategorySingleFunctor 0).inv.app X
        ≫ f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) (n : ℤ)).map
-        ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))) ∘ Ext.homEquiv
+        ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))
+    map_zero' := by simp [ShiftedHom.map]
+    map_add' x y := by
+      rw [ShiftedHom.map, F.mapDerivedCategory.map_add]
+      simp [ShiftedHom.map]
+  }).comp Ext.homAddEquiv.toAddMonoidHom
 
 end CategoryTheory

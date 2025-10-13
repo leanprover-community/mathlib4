@@ -31,6 +31,8 @@ by an exact functor `F : C₁ ⥤ C₂` between abelian categories. -/
 noncomputable def mapDerivedCategory : DerivedCategory C₁ ⥤ DerivedCategory C₂ :=
   F.mapHomologicalComplexUpToQuasiIso (ComplexShape.up ℤ)
 
+instance : F.mapDerivedCategory.Additive := sorry
+
 /-- The functor `F.mapDerivedCategory` is induced
 by `F.mapHomologicalComplex (ComplexShape.up ℤ)`. -/
 noncomputable def mapDerivedCategoryFactors :
