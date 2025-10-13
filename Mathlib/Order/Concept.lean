@@ -254,11 +254,7 @@ alias snd_injective := intent_injective
 /-- Copy a concept, adjusting definitional equalities. -/
 @[simps!]
 def copy (c : Concept α β r) (e : Set α) (he : e = c.extent) (i : Set β) (hi : i = c.intent) :
-    Concept α β r where
-  extent := e
-  intent := i
-  upperPolar_extent := by simp_all
-  lowerPolar_intent := by simp_all
+    Concept α β r := ⟨e, i, he ▸ hi ▸ c.upperPolar_extent, he ▸ hi ▸ c.lowerPolar_intent⟩
 
 theorem copy_eq (c : Concept α β r)
     (e : Set α) (he : e = c.extent) (i : Set β) (hi : i = c.intent) :
@@ -301,12 +297,10 @@ theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r')
   ⟨c'.disjoint_extent_intent, c'.codisjoint_extent_intent⟩
 
 theorem isLowerSet_extent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
-    IsLowerSet c.extent :=
-  @mem_extent_of_rel_extent _ _ _ _
+    IsLowerSet c.extent := fun _ _ ↦ mem_extent_of_rel_extent
 
 theorem isUpperSet_intent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
-    IsUpperSet c.intent :=
-  @mem_intent_of_intent_rel _ _ _ _
+    IsUpperSet c.intent := fun _ _ => mem_extent_of_rel_extent
 
 theorem isLowerSet_extent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
     IsLowerSet c.extent := by
