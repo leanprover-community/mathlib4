@@ -740,9 +740,8 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   | .raw => pure r
   | .SOP => do
     let thms : SimpTheorems := {}
-    let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
-      ``_root_.pow_one, ``mul_neg, ``add_neg, ``one_smul,
-      ``Nat.ofNat_nsmul_eq_mul, ``mul_smul_comm].foldlM (·.addConst ·) thms
+    let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
+      ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm].foldlM (·.addConst ·) thms
     let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
        ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
     let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
@@ -1039,7 +1038,6 @@ def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) 
   let sAlg ← synthInstanceQ q(Algebra $R $A)
   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
   let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) q($e₁) q($e₂)
-  -- surely there's a better way to apply the cleanup routine to each goal.
   let res ← mids.mapM (runSimp (RingNF.cleanup {}))
   g.assign eq
   return res

@@ -41,21 +41,6 @@ example {x y : ℕ} : algebraMap ℕ ℤ (x * (y+1) : ℕ) = x*y + x := by
   ring_nf
   rfl
 
-def postprocess (mvarId : MVarId) : MetaM MVarId := do
-  -- collect the available `push_cast` lemmas
-  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
-  let simps : Array Name := #[``Polynomial.smul_eq_C_mul, ``MvPolynomial.smul_eq_C_mul,  ``Polynomial.map_add,
-    ``Polynomial.map_smul, ]
-  for thm in simps do
-    let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
-    thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
-  -- now run `simp` with these lemmas, and (importantly) *no* simprocs
-  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
-  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
-    throwError "internal error in polynomial tactic: postprocessing should not close goals"
-  return r
-
-
 -- TODO: figure out what to do with Polynomial.map
 /- TODO: we don't currently have a good way to normalize monomials of MvPolynomials. These are
 indexed by finsupps, making it difficult to turn into the appropriate normal form. -/
@@ -99,6 +84,8 @@ elab (name := matchCoeffients) "match_coefficients" :tactic =>
       | throwError "polynomial failed: not an equality"
     let some β := inferBase α | throwError "polynomial failed: not an equality of (mv)polynomials"
     let goals ← matchScalarsAux (some (← inferLevelQ β)) (← preprocess g)
+    /- TODO: What if the base ring is `Polynomial _`? We would have rewritten `C` into `_ • 1` and
+    should really turn it back to `C`. Maybe we just rung the polynomial cleanup routine instead?-/
     goals.mapM (runSimp (RingNF.cleanup {}))
 
 def evalExprPoly (e : Expr) : AtomM Simp.Result := do
