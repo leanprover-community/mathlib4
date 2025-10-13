@@ -198,7 +198,7 @@ theorem TensorProduct.basis_sum_repr {R E F : Type*} [CommSemiring R]
     {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : Basis ι₁ R E) (b₂ : Basis ι₂ R F)
     (x : TensorProduct R E F) :
     x = ∑ i : ι₁, ∑ j : ι₂, (b₁.tensorProduct b₂).repr x (i, j) • b₁ i ⊗ₜ[R] b₂ j := by
-  nth_rw 1 [← Basis.sum_repr (b₁.tensorProduct b₂) x]
-  simp [← Finset.sum_product', Basis.tensorProduct_apply']
+  conv_lhs => rw [← (b₁.tensorProduct b₂).sum_repr x]
+  simp [← Finset.sum_product']
 
 end
