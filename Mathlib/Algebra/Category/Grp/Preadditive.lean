@@ -16,16 +16,16 @@ open CategoryTheory
 
 universe u
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
-variable {M N : AddCommGrp.{u}}
+variable {M N : AddCommGrpCat.{u}}
 
 instance : Add (M ⟶ N) where
   add f g := ofHom (f.hom + g.hom)
 
 @[simp] lemma hom_add (f g : M ⟶ N) : (f + g).hom = f.hom + g.hom := rfl
 
-lemma hom_add_apply {P Q : AddCommGrp} (f g : P ⟶ Q) (x : P) : (f + g) x = f x + g x := rfl
+lemma hom_add_apply {P Q : AddCommGrpCat} (f g : P ⟶ Q) (x : P) : (f + g) x = f x + g x := rfl
 
 instance : Zero (M ⟶ N) where
   zero := ofHom 0
@@ -52,22 +52,22 @@ instance : SMul ℤ (M ⟶ N) where
 
 @[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
-instance (P Q : AddCommGrp) : AddCommGroup (P ⟶ Q) :=
+instance (P Q : AddCommGrpCat) : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (Hom.hom) ConcreteCategory.hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance : Preadditive AddCommGrp where
+instance : Preadditive AddCommGrpCat where
 
-/-- `AddCommGrp.Hom.hom` bundled as an additive equivalence. -/
+/-- `AddCommGrpCat.Hom.hom` bundled as an additive equivalence. -/
 @[simps!]
 def homAddEquiv : (M ⟶ N) ≃+ (M →+ N) :=
-  { ConcreteCategory.homEquiv (C := AddCommGrp) with
+  { ConcreteCategory.homEquiv (C := AddCommGrpCat) with
     map_add' _ _ := rfl }
 
-lemma subsingleton_of_isZero {G : AddCommGrp} (h : Limits.IsZero G) :
+lemma subsingleton_of_isZero {G : AddCommGrpCat} (h : Limits.IsZero G) :
     Subsingleton G := by
   apply subsingleton_of_forall_eq 0 (fun g ↦ ?_)
-  rw [← AddMonoidHom.id_apply G g, ← AddCommGrp.hom_id]
+  rw [← AddMonoidHom.id_apply G g, ← AddCommGrpCat.hom_id]
   simp [(CategoryTheory.Limits.IsZero.iff_id_eq_zero G).mp h]
 
-end AddCommGrp
+end AddCommGrpCat
