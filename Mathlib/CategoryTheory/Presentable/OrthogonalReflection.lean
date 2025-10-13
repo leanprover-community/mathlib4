@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Localization.Bousfield
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
@@ -35,7 +35,7 @@ namespace MorphismProperty
 
 lemma isStableUnderColimitsOfShape_rightOrthogonal (J : Type w) [SmallCategory J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] :
-    W.IsStableUnderColimitsOfShape J := sorry
+    W..IsStableUnderColimitsOfShape J := sorry
 
 end MorphismProperty
 
