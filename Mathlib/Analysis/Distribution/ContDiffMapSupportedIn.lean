@@ -216,8 +216,8 @@ lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [Continuo
   rfl
 
 instance : AddCommGroup 𝓓^{n}_{K}(E, F) :=
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 variable (E F K n)
 
@@ -242,7 +242,7 @@ section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     Module R 𝓓^{n}_{K}(E, F) :=
-  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ => rfl
+  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
 
 end Module
 
