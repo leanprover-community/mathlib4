@@ -8,6 +8,7 @@ import Batteries.Tactic.Init
 import Mathlib.Init
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.AssertExists
@@ -30,7 +31,7 @@ upstreamed to Batteries or the Lean standard library easily.
 See note [foundational algebra order theory].
 -/
 
-library_note "foundational algebra order theory"/--
+library_note2 «foundational algebra order theory» /--
 Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
@@ -428,7 +429,17 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
 
 /-! ### `Nat.AtLeastTwo` -/
 
-/-- A type class for natural numbers which are greater than or equal to `2`. -/
+/-- A type class for natural numbers which are greater than or equal to `2`.
+
+`NeZero` and `AtLeastTwo` are used for numeric literals, and also for groups of related lemmas
+sharing a common value of `n` that needs to be nonzero, or at least `2`, and where it is
+convenient to pass this information implicitly. Instances for these classes cover some of the
+cases where it is most structurally obvious from the syntactic form of `n` that it satisfies the
+required conditions, such as `m + 1`. Less widely used cases may be defined as lemmas rather than
+global instances and then made into instances locally where needed. If implicit arguments,
+appearing before other explicit arguments, are allowed to be `autoParam`s in a future version of
+Lean, such an `autoParam` that is proved `by cutsat` might be a more general replacement for the
+use of typeclass inference for this purpose. -/
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n
 
@@ -443,6 +454,9 @@ lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
 
 instance (priority := 100) toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
   ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
+
+variable (n) in
+lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); cutsat⟩
 
 end AtLeastTwo
 
