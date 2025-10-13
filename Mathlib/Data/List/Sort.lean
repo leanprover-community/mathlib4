@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Order.Fin.Basic
 
