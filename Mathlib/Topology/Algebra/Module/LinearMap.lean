@@ -318,8 +318,6 @@ protected def id : M₁ →L[R₁] M₁ :=
 
 end
 
-open ContinuousLinearMap (id)
-
 instance one : One (M₁ →L[R₁] M₁) :=
   ⟨.id R₁ M₁⟩
 
@@ -1126,8 +1124,6 @@ end Ring
 end RestrictScalars
 
 end ContinuousLinearMap
-
-open ContinuousLinearMap (id)
 
 namespace Submodule
 
