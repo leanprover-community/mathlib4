@@ -389,11 +389,11 @@ lemma injective_of_quotients_ext_one_subsingleton [Small.{v} R] (M : ModuleCat.{
     exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr exac
     mono_f := (ModuleCat.mono_iff_injective _).mpr inj
     epi_g := (ModuleCat.epi_iff_surjective _).mpr surj }
-  have : IsZero (AddCommGrp.of (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) :=
-    @AddCommGrp.isZero_of_subsingleton _ (h I)
+  have : IsZero (AddCommGrpCat.of (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) :=
+    @AddCommGrpCat.isZero_of_subsingleton _ (h I)
   have exac := Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl
   have surj : Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) :=
-    (AddCommGrp.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
+    (AddCommGrpCat.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
   let f := g.comp (Shrink.linearEquiv R I).toLinearMap
   rcases surj (Ext.mk₀ (ModuleCat.ofHom f)) with ⟨f', hf'⟩
   simp only [Ext.bilinearComp_apply_apply] at hf'
@@ -425,12 +425,12 @@ lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : �
       epi_g := coequalizer.π_epi}
     have (N : ModuleCat R) : Subsingleton (Ext N M (n + 1 + 1)) ↔
       Subsingleton (Ext N (cokernel f) (n + 1)) := by
-      have (m : ℕ) : Subsingleton (AddCommGrp.of (Ext N S.X₂ (m + 1))) :=
+      have (m : ℕ) : Subsingleton (AddCommGrpCat.of (Ext N S.X₂ (m + 1))) :=
         subsingleton_of_forall_eq 0 Ext.eq_zero_of_injective
       have := ComposableArrows.Exact.isIso_map'
         (Ext.covariantSequence_exact N S_exact (n + 1) (n + 1 + 1) rfl) 1 (by decide)
-        (IsZero.eq_zero_of_src (AddCommGrp.of (Ext N S.X₂ (n + 1))).isZero_of_subsingleton _)
-        (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext N S.X₂ (n + 1 + 1))).isZero_of_subsingleton _)
+        (IsZero.eq_zero_of_src (AddCommGrpCat.of (Ext N S.X₂ (n + 1))).isZero_of_subsingleton _)
+        (IsZero.eq_zero_of_tgt (AddCommGrpCat.of (Ext N S.X₂ (n + 1 + 1))).isZero_of_subsingleton _)
       exact (@asIso _ _ _ _ _ this).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
     simp only [this] at h ⊢
     exact ih (cokernel f) h
