@@ -286,25 +286,22 @@ lemma Over.sigmaReindexNatIsoTensorLeft_hom_app {Y : Over X} (Z : Over X) :
 
 end TensorLeft
 
-variable (C)
-
 /-- The functor from `C` to `Over (⊤_ C)` which sends `X : C` to `terminal.from X`. -/
 @[simps! obj_left obj_hom map_left]
-def Functor.toOverTerminal [HasTerminal C] : C ⥤ Over (⊤_ C) where
-  obj X := Over.mk (terminal.from X)
+def Functor.toOverTerminal (X : C) (h : IsTerminal X) : C ⥤ Over X where
+  obj X := Over.mk <| h.from X
   map {X Y} f := Over.homMk f
 
 /-- The slice category over the terminal object is equivalent to the original category. -/
-def equivOverTerminal [HasTerminal C] : Over (⊤_ C) ≌ C where
+def equivOverTerminal (X : C) (h : IsTerminal X) : Over (X) ≌ C where
   functor := Over.forget _
-  inverse := Functor.toOverTerminal C
-  unitIso := NatIso.ofComponents fun X => Over.isoMk (Iso.refl _)
+  inverse := Functor.toOverTerminal X h
+  unitIso := NatIso.ofComponents fun _ =>
+    Over.isoMk (Iso.refl _) (by apply IsTerminal.hom_ext;exact h)
   counitIso := NatIso.ofComponents fun X => Iso.refl _
   functor_unitIso_comp := by aesop
 
 namespace Over
-
-variable {C}
 
 @[simp]
 lemma star_map [HasBinaryProducts C] {X : C} {Y Z : C} (f : Y ⟶ Z) :
@@ -364,12 +361,9 @@ end Adjunction
 namespace Over
 
 /-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
-def starIsoToOverTerminal [HasTerminal C] [HasBinaryProducts C] :
-    star (⊤_ C) ≅ Functor.toOverTerminal C := by
-  apply Adjunction.equivalenceRightAdjointIsoInverse
-    (equivOverTerminal C) (star (⊤_ C)) (forgetAdjStar (⊤_ C))
-
-variable {C}
+def starIsoToOverTerminal [HasBinaryProducts C] (X : C) (h : IsTerminal X) :
+    star X ≅ Functor.toOverTerminal X h :=
+  Adjunction.equivalenceRightAdjointIsoInverse (equivOverTerminal X h) (star X) (forgetAdjStar X)
 
 /-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
