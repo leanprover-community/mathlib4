@@ -292,8 +292,7 @@ lemma covarianceBilinDual_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual �
   covarianceBilinDual_self_eq_variance
 
 @[simp]
-lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) :
-    0 ≤ covarianceBilinDual μ L L := by
+lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceBilinDual μ L L := by
   by_cases h : MemLp id 2 μ
   · rw [covarianceBilinDual_self_eq_variance h]
     exact variance_nonneg ..
