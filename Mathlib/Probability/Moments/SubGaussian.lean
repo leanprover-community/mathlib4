@@ -104,7 +104,7 @@ conditional expectation kernel for `m`, `condExpKernel μ m`, and the restrictio
 Note that `condExpKernel μ m ∘ₘ μ.trim hm = μ`. The definition is equivalent to the two
 conditions
 * for all `t`, `exp (t * X)` is `μ`-integrable,
-* for `μ.trim hm`-almost all `ω`, for all `t`, the mgf with respect to the the conditional
+* for `μ.trim hm`-almost all `ω`, for all `t`, the mgf with respect to the conditional
   distribution `condExpKernel μ m ω` is bounded by `exp (c * t ^ 2 / 2)`.
 
 For any `t`, we can write the mgf of `X` with respect to the conditional expectation kernel as
