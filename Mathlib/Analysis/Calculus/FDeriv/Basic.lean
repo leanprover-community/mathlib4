@@ -713,18 +713,18 @@ section id
 /-! ### Derivative of the identity -/
 
 @[fun_prop]
-theorem hasStrictFDerivAt_id (x : E) : HasStrictFDerivAt id (id 𝕜 E) x :=
+theorem hasStrictFDerivAt_id (x : E) : HasStrictFDerivAt id (.id 𝕜 E) x :=
   .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left <| by simp
 
-theorem hasFDerivAtFilter_id (x : E) (L : Filter E) : HasFDerivAtFilter id (id 𝕜 E) x L :=
+theorem hasFDerivAtFilter_id (x : E) (L : Filter E) : HasFDerivAtFilter id (.id 𝕜 E) x L :=
   .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left <| by simp
 
 @[fun_prop]
-theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (id 𝕜 E) s x :=
+theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (.id 𝕜 E) s x :=
   hasFDerivAtFilter_id _ _
 
 @[fun_prop]
-theorem hasFDerivAt_id (x : E) : HasFDerivAt id (id 𝕜 E) x :=
+theorem hasFDerivAt_id (x : E) : HasFDerivAt id (.id 𝕜 E) x :=
   hasFDerivAtFilter_id _ _
 
 @[simp, fun_prop]
@@ -761,14 +761,14 @@ theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
   differentiable_id.differentiableOn
 
 @[simp]
-theorem fderiv_id : fderiv 𝕜 id x = id 𝕜 E :=
+theorem fderiv_id : fderiv 𝕜 id x = .id 𝕜 E :=
   HasFDerivAt.fderiv (hasFDerivAt_id x)
 
 @[simp]
 theorem fderiv_id' : fderiv 𝕜 (fun x : E => x) x = ContinuousLinearMap.id 𝕜 E :=
   fderiv_id
 
-theorem fderivWithin_id (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 id s x = id 𝕜 E := by
+theorem fderivWithin_id (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 id s x = .id 𝕜 E := by
   rw [DifferentiableAt.fderivWithin differentiableAt_id hxs]
   exact fderiv_id
 
