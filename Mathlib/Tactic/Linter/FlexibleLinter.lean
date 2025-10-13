@@ -117,7 +117,7 @@ section goals_heuristic
 namespace Lean.Elab.TacticInfo
 
 /-!
-###  Heuristics for determining goals goals that a tactic modifies what they become
+###  Heuristics for determining goals that a tactic modifies and what they become
 
 The two definitions `goalsTargetedBy`, `goalsCreatedBy` extract a list of
 `MVarId`s attempting to determine on which goals the tactic `t` is acting and what are the

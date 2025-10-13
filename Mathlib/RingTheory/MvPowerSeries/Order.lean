@@ -73,7 +73,7 @@ nonzero coefficient of degree equal to the order.
 is at least that degree.
 
 - `MvPowerSeries.nat_le_order`: if all coefficients of degree strictly smaller than some integer
-vanish, then the order is at at least that integer.
+vanish, then the order is at least that integer.
 
 - `MvPowerSeries.order_eq_nat_iff`:  the order of a power series is an integer `n` iff there exists
 a nonzero coefficient in that degree, and all coefficients below that degree vanish.

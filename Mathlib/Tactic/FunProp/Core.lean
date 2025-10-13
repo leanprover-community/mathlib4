@@ -161,7 +161,7 @@ def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Op
 
 
 /--
-Try to prove `e` using using *identity lambda theorem*.
+Try to prove `e` using the *identity lambda theorem*.
 
 For example, `e = q(Continuous fun x => x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
@@ -181,7 +181,7 @@ def applyIdRule (funPropDecl : FunPropDecl) (e : Expr)
   return none
 
 /--
-Try to prove `e` using using *constant lambda theorem*.
+Try to prove `e` using the *constant lambda theorem*.
 
 For example, `e = q(Continuous fun x => y)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
@@ -201,7 +201,7 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
   return none
 
 /--
-Try to prove `e` using using *apply lambda theorem*.
+Try to prove `e` using the *apply lambda theorem*.
 
 For example, `e = q(Continuous fun f => f x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/

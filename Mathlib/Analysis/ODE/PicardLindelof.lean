@@ -564,7 +564,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
   {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
 
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, integral form. This version shows the existence
-of a local solution whose initial point `x` may be be different from the centre `x₀` of the closed
+of a local solution whose initial point `x` may be different from the centre `x₀` of the closed
 ball within which the properties of the vector field hold. -/
 theorem exists_eq_forall_mem_Icc_eq_picard
     (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r) :
@@ -574,7 +574,7 @@ theorem exists_eq_forall_mem_Icc_eq_picard
   rw [FunSpace.compProj_apply, FunSpace.next_apply, hα, projIcc_of_mem _ ht]
 
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
-existence of a local solution whose initial point `x` may be be different from the centre `x₀` of
+existence of a local solution whose initial point `x` may be different from the centre `x₀` of
 the closed ball within which the properties of the vector field hold. -/
 theorem exists_eq_forall_mem_Icc_hasDerivWithinAt
     (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r) :
