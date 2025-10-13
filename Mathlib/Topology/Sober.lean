@@ -209,7 +209,7 @@ lemma coheight_eq_of_isOpenEmbedding {U X : Type*} [TopologicalSpace U] [Topolog
      (irreducibleSetEquivPoints.symm x)) this
   convert this.symm
   simp only [irreducibleSetEquivPoints, ne_eq, coe_setOf, mem_setOf_eq, closureImageOrderIso,
-    RelIso.coe_fn_mk, Equiv.ofBijective_apply, closureImage]
+    RelIso.coe_fn_mk]
   suffices closure {f x} = closure (f '' (closure {x})) from
     IrreducibleCloseds.ext_iff.mpr this
   simp [closure_image_closure hf]
