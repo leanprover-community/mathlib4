@@ -287,6 +287,7 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
     ofAdd_neg, WithZero.coe_inv]
   apply v.associates_irreducible
 
+@[simp]
 theorem intValuation_eq_one_iff {R : Type*} [CommRing R] [IsDedekindDomain R]
     {v : HeightOneSpectrum R} {x : R} : v.intValuation x = 1 ↔ x ∉ v.asIdeal := by
   refine ⟨fun h ↦ by simp [← (intValuation_lt_one_iff_mem _ _).not, h], fun h ↦ ?_⟩
@@ -344,7 +345,7 @@ variable (K) in
 open scoped algebraMap in
 /-- The `v` adic valuation of `a / b ∈ K` is `≤ 1` if and only if `b ∉ v`, provided that `a` and
 `b` are coprime at `v`. -/
-theorem valuation_le_one_iff (a : R) {b : R} (hb : b ≠ 0)
+theorem valuation_div_le_one_iff (a : R) {b : R} (hb : b ≠ 0)
     (h : b ∈ v.asIdeal → a ∉ v.asIdeal) :
     v.valuation K (a / b) ≤ 1 ↔ b ∉ v.asIdeal := by
   refine ⟨fun hv ↦ ?_, fun hb ↦ by
@@ -667,7 +668,7 @@ open IsDedekindDomain.HeightOneSpectrum
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R]
 
-theorem num_not_mem_ideal_of_den_mem [Nonempty (R ≃+* ℤ)] {𝔭 : Ideal R} (hp : Prime 𝔭) (x : ℚ)
+theorem num_notMem_ideal_of_den_mem [Nonempty (R ≃+* ℤ)] {𝔭 : Ideal R} (hp : Prime 𝔭) (x : ℚ)
     (hden : ↑x.den ∈ 𝔭) : ↑x.num ∉ 𝔭 := by
   let f := Classical.arbitrary (R ≃+* ℤ)
   obtain ⟨p, h𝔭⟩ := IsPrincipalIdealRing.principal (Ideal.map f 𝔭) |>.map_ringHom f.symm
@@ -686,7 +687,7 @@ theorem valuation_le_one_iff_den [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempt
     (𝔭 : HeightOneSpectrum R) (x : ℚ) :
     𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
   have : (x.den : R) ≠ 0 := fun h ↦ by simpa using congrArg (Classical.arbitrary (R ≃+* ℤ)) h
-  simp [← 𝔭.valuation_le_one_iff ℚ x.num this (x.num_not_mem_ideal_of_den_mem 𝔭.prime),
+  simp [← 𝔭.valuation_div_le_one_iff ℚ x.num this (x.num_notMem_ideal_of_den_mem 𝔭.prime),
     x.num_div_den]
 
 end Rat
