@@ -118,9 +118,9 @@ instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     have : Subsingleton (Ext S.X₂ M (n + 1)) :=
       subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
     have epi := (Ext.contravariant_sequence_exact₃' S_exact M n (n + 1) (add_comm 1 n)).epi_f
-      (Limits.IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton _)
+      ((AddCommGrpCat.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton.eq_zero_of_tgt _)
     have surj : Function.Surjective (S_exact.extClass.precomp M (add_comm 1 n)) :=
-      (AddCommGrp.epi_iff_surjective _).mp epi
+      (AddCommGrpCat.epi_iff_surjective _).mp epi
     let f : Ext S.X₁ M n →ₗ[R] Ext S.X₃ M (n + 1) := {
       __ := S_exact.extClass.precomp M (add_comm 1 n)
       map_smul' r x := by simp }
@@ -179,8 +179,8 @@ lemma ext_vanish_of_for_all_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finit
           subsingleton_of_forall_eq 0 (fun y ↦ Ext.eq_zero_of_projective y)
         have isi := ComposableArrows.Exact.isIso_map' (Ext.contravariantSequence_exact S_exact L
             (n + 1) (n + 2) (add_comm 1 _)) 1 (by decide)
-          (((AddCommGrp.of (Ext S.X₂ L (n + 1))).isZero_of_subsingleton).eq_zero_of_src _)
-          (((AddCommGrp.of (Ext S.X₂ L (n + 2))).isZero_of_subsingleton).eq_zero_of_tgt _)
+          (((AddCommGrpCat.of (Ext S.X₂ L (n + 1))).isZero_of_subsingleton).eq_zero_of_src _)
+          (((AddCommGrpCat.of (Ext S.X₂ L (n + 2))).isZero_of_subsingleton).eq_zero_of_tgt _)
         exact (@CategoryTheory.asIso _ _ _ _ _ isi).addCommGroupIsoToAddEquiv.subsingleton_congr
       simp only [← this]
       apply hn S.X₁
@@ -233,11 +233,11 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
         have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
           (n + 1 + 1) (i + 1) (Nat.add_le_add_right hi 1) L
         have exac := Ext.contravariant_sequence_exact₁' S_exact L i (i + 1) (add_comm 1 i)
-        have epi := exac.epi_f ((@AddCommGrp.isZero_of_subsingleton _ zero).eq_zero_of_tgt _)
+        have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ zero).eq_zero_of_tgt _)
         have : S.f = x • 𝟙 M := by
           ext
           simp [S]
-        simp only [S, this, AddCommGrp.epi_iff_surjective, AddCommGrp.hom_ofHom] at epi
+        simp only [S, this, AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom] at epi
         by_contra ntr
         let _ : Nontrivial (Ext M L i) := not_subsingleton_iff_nontrivial.mp ntr
         have : x ∈ (Module.annihilator R (Ext M L i)).jacobson :=
@@ -374,9 +374,9 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
       mono_f := (ModuleCat.mono_iff_injective S.f).mpr inj
       epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surj }
     have := (Ext.contravariant_sequence_exact₂' S_exact M n).isZero_X₂
-      ((@AddCommGrp.isZero_of_subsingleton _ (h3 h2.2)).eq_zero_of_src _)
-      ((@AddCommGrp.isZero_of_subsingleton _ (h1 h2.1)).eq_zero_of_tgt _)
-    exact AddCommGrp.subsingleton_of_isZero this
+      ((@AddCommGrpCat.isZero_of_subsingleton _ (h3 h2.2)).eq_zero_of_src _)
+      ((@AddCommGrpCat.isZero_of_subsingleton _ (h1 h2.1)).eq_zero_of_tgt _)
+    exact AddCommGrpCat.subsingleton_of_isZero this
 
 open Pointwise in
 lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
@@ -407,11 +407,11 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
     simpa [Algebra.smul_def, Ideal.Quotient.eq_zero_iff_mem, nmem] using hr
   have S_exact : S.ShortExact := IsSMulRegular.smulShortComplex_shortExact reg
   have exac := Ext.contravariant_sequence_exact₁' S_exact M n (n + 1) (add_comm 1 n)
-  have epi := exac.epi_f ((@AddCommGrp.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
+  have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _)
   have : S.f = x • 𝟙 (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))) := by
     ext
     simp [S]
-  simp only [S, this, AddCommGrp.epi_iff_surjective, AddCommGrp.hom_ofHom] at epi
+  simp only [S, this, AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom] at epi
   have : x ∈ (Module.annihilator R (Ext S.X₂ M n)).jacobson :=
     (IsLocalRing.maximalIdeal_le_jacobson _) hx
   by_contra ntr
