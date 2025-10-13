@@ -297,12 +297,22 @@ being an immersion at `x` includes a choice of linear isomorphism between `E × 
 -/
 def IsImmersion (f : M → N) : Prop := ∀ x, IsImmersionAt F I J n f x
 
+open Lean Elab Meta Qq in
+/-- `IsImmersion% F n f` elaborates to `IsImmersion F I J n f`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "IsImmersion% " F:term:arg ppSpace nt:term:arg ppSpace f:term:arg : term => do
+  let eF ← Term.elabTerm F none
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM `IsImmersion #[eF, srcI, tgtI, ne, ef]
+
 namespace IsImmersion
 
 variable {f g : M → N}
 
 /-- If `f` is an immersion, it is an immersion at each point. -/
-lemma isImmersionAt (h : IsImmersion F I J n f) (x : M) : IsImmersionAt F I J n f x := h x
+lemma isImmersionAt (h : IsImmersion% F n f) (x : M) : IsImmersionAt F I J n f x := h x
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I J n f) (heq : f = g) : IsImmersion F I J n g :=
