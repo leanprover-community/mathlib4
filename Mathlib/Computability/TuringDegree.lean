@@ -29,9 +29,9 @@ defines Turing degrees as the quotient under this relation.
 
 ## Implementation notes
 
-The type of partial functions recursive in a set of oracles `O` is the smallest type containing the
-constant zero, the successor, left and right projections, each oracle `g ∈ O`, and is closed under
-pairing, composition, primitive recursion, and μ-recursion.
+The type of partial functions recursive in a set of oracles `O` is the smallest type containing
+the constant zero, the successor, left and right projections, each oracle `g ∈ O`,
+and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
 
