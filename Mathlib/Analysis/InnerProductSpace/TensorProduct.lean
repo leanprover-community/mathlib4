@@ -36,19 +36,9 @@ instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
-private lemma inner_coe_of_eq {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x y : E' ⊗[𝕜] F'} :
-    inner 𝕜 x y = inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) :=
+@[simp] lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
+    inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
   x.induction_on (by simp) (y.induction_on (by simp) (by simp) (by simp_all)) (by simp_all)
-
-private lemma inner_coe_of_eq' {x y : E ⊗[𝕜] F} {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F}
-    {x' y' : E' ⊗[𝕜] F'} (hx : x = mapIncl E' F' x') (hy : y = mapIncl E' F' y') :
-    inner 𝕜 x' y' = inner 𝕜 x y :=
-  hx ▸ hy ▸ inner_coe_of_eq
-
-private lemma inner_coe_of_mem_range {x y : E ⊗[𝕜] F} {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F}
-    (hx : x ∈ LinearMap.range (mapIncl E' F')) (hy : y ∈ LinearMap.range (mapIncl E' F')) :
-    inner 𝕜 hx.choose hy.choose = inner 𝕜 x y :=
-  TensorProduct.inner_coe_of_eq' hx.choose_spec.symm hy.choose_spec.symm
 
 open scoped ComplexOrder
 open Module
@@ -56,7 +46,7 @@ open Module
 private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
-  rw [← inner_coe_of_mem_range hz hz] at hx
+  rw [← hz.choose_spec, inner_mapIncl_mapIncl] at hx
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
@@ -78,7 +68,7 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
-  rw [← inner_coe_of_mem_range hz hz]
+  rw [← hz.choose_spec, inner_mapIncl_mapIncl]
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
@@ -105,6 +95,12 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] 
 
 instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) :=
   .ofCore _
+
+/-- The linear isometry version of `TensorProduct.mapIncl`. -/
+def mapInclLinearIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
+    E' ⊗[𝕜] F' →ₗᵢ[𝕜] E ⊗[𝕜] F where
+  toLinearMap := mapIncl E' F'
+  norm_map' x := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_mapIncl_mapIncl]
 
 @[simp]
 theorem norm_tmul (x : E) (y : F) :
