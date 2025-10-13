@@ -26,6 +26,8 @@ open Matrix hiding mul_smul
 
 open scoped Modular MatrixGroups ComplexConjugate ModularForm
 
+variable {E : Type*} [SeminormedAddCommGroup E]
+
 namespace ModularGroup
 
 /-- The standard fundamental domain truncated at height `y`. -/
@@ -70,7 +72,7 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     · rw [sq_le_sq₀ hz.1 (hz.1.trans hz.2.1)]
       exact hz.2.1
 
-lemma exists_bound_fundamental_domain_of_isBigO {E : Type*} [inst : SeminormedAddCommGroup E]
+lemma exists_bound_fundamental_domain_of_isBigO
     {f : ℍ → E} (hf_cont : Continuous f) {t : ℝ} (hf_infinity : f =O[atImInfty] fun z ↦ z.im ^ t) :
     ∃ F, ∀ τ ∈ 𝒟, ‖f τ‖ ≤ F * τ.im ^ t := by
   -- Extract a bound for large `im τ` using `hf_infty`.
@@ -99,8 +101,7 @@ some `0 ≤ t`, is bounded on `ℍ` by a constant multiple of `(max (im τ) (1 /
 
 This will be applied to `f τ * (im τ) ^ (k / 2)` for `f` a modular form of weight `k`, taking
 `t = 0` if `f` is cuspidal, and `t = k/2` otherwise. -/
-lemma exists_bound_of_invariant_of_isBigO {E : Type*} [SeminormedAddCommGroup E]
-    {f : ℍ → E} (hf_cont : Continuous f) {t : ℝ} (ht : 0 ≤ t)
+lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous f) {t : ℝ} (ht : 0 ≤ t)
     (hf_infinity : f =O[atImInfty] fun z ↦ (im z) ^ t)
     (hf_inv : ∀ (g : SL(2, ℤ)) τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C * (max (im τ) (1 / im τ)) ^ t := by
@@ -148,7 +149,7 @@ lemma exists_bound_of_invariant_of_isBigO {E : Type*} [SeminormedAddCommGroup E]
 /-- A function on `ℍ` which is invariant under a finite-index subgroup of `SL(2, ℤ)`, and satisfies
 an `O((im τ) ^ t)` bound at all cusps for some `0 ≤ t`, is in fact uniformly bounded by a multiple
 of `(max (im τ) (1 / im τ)) ^ t`. -/
-lemma exists_bound_of_subgroup_invariant_of_isBigO {E : Type*} [SeminormedAddCommGroup E]
+lemma exists_bound_of_subgroup_invariant_of_isBigO
     {f : ℍ → E} (hf_cont : Continuous f) {t : ℝ} (ht : 0 ≤ t)
     (hf_infinity : ∀ (g : SL(2, ℤ)), (fun τ ↦ f (g • τ)) =O[atImInfty] fun z ↦ (im z) ^ t)
     {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex] (hf_inv : ∀ g ∈ Γ, ∀ τ, f (g • τ) = f τ) :
@@ -176,35 +177,47 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO {E : Type*} [SeminormedAddCom
   simpa [Real.norm_of_nonneg <| show 0 ≤ ∑ γ, ‖f' τ γ‖ by positivity, -sl_moeb, f'] using
     Finset.univ.single_le_sum (fun γ _ ↦ norm_nonneg (f' τ γ)) (Finset.mem_univ ⟦1⟧)
 
-/-- A function on `ℍ` which is invariant under `SL(2, ℤ)`, and bounded at `∞`, is bounded. -/
-lemma exists_bound_of_invariant {E : Type*} [SeminormedAddCommGroup E]
+/-- A function on `ℍ` which is invariant under an arithmetic subgroup of `GL(2, ℝ)`, and satisfies
+an `O((im τ) ^ t)` bound at all cusps for some `0 ≤ t`, is in fact uniformly bounded by a multiple
+of `(max (im τ) (1 / im τ)) ^ t`. -/
+lemma exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO
+    {f : ℍ → E} (hf_cont : Continuous f) {t : ℝ} (ht : 0 ≤ t)
+    (hf_infinity : ∀ (g : SL(2, ℤ)), (fun τ ↦ f (g • τ)) =O[atImInfty] fun z ↦ (im z) ^ t)
+    {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] (hf_inv : ∀ g ∈ Γ, ∀ τ, f (g • τ) = f τ) :
+    ∃ C, ∀ τ, ‖f τ‖ ≤ C * max τ.im (1 / τ.im) ^ t :=
+  exists_bound_of_subgroup_invariant_of_isBigO hf_cont ht hf_infinity (Γ := Γ.comap (mapGL ℝ))
+    (fun g hg ↦ hf_inv g hg)
+
+/-- A function on `ℍ` which is invariant under `SL(2, ℤ)`, and bounded at `∞`, is uniformly
+bounded. -/
+lemma exists_bound_of_invariant
     {f : ℍ → E} (hf_cont : Continuous f) (hf_infinity : IsBoundedAtImInfty f)
     (hf_inv : ∀ (g : SL(2, ℤ)) τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C := by
   simpa using exists_bound_of_invariant_of_isBigO hf_cont le_rfl
     (by simpa only [Real.rpow_zero] using hf_infinity) hf_inv
 
-/-- A function on `ℍ` which is invariant under a finite-index subgroup of `SL(2, ℤ)`, and bounded
-at all cusps, is bounded. -/
-lemma exists_bound_of_subgroup_invariant {E : Type*} [SeminormedAddCommGroup E]
-    {f : ℍ → E} (hf_cont : Continuous f)
+/-- A function on `ℍ` which is invariant under an arithmetic subgroup and bounded at all cusps,
+is uniformly bounded. -/
+lemma exists_bound_of_subgroup_invariant {f : ℍ → E} (hf_cont : Continuous f)
     (hf_infinity : ∀ (g : SL(2, ℤ)), IsBoundedAtImInfty fun τ ↦ f (g • τ))
-    {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex] (hf_inv : ∀ g ∈ Γ, ∀ τ, f (g • τ) = f τ) :
+    {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] (hf_inv : ∀ g ∈ Γ, ∀ τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C := by
-  simpa using exists_bound_of_subgroup_invariant_of_isBigO hf_cont le_rfl
+  simpa using exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO hf_cont le_rfl
     (by simpa only [Real.rpow_zero] using hf_infinity) hf_inv
 
 end ModularGroup
 
 /-- If `f, f'` are modular forms, then `petersson k f f'` is bounded by a constant multiple of
 `max τ.im (1 / τ.im) ^ k`. -/
-lemma ModularFormClass.exists_petersson_le
-    {k : ℤ} (hk : 0 ≤ k) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] {F F' : Type*} (f : F) (f' : F')
+lemma ModularFormClass.exists_petersson_le {k : ℤ} (hk : 0 ≤ k) (Γ : Subgroup (GL (Fin 2) ℝ))
+    [Γ.IsArithmetic] {F F' : Type*} (f : F) (f' : F')
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [ModularFormClass F Γ k] [ModularFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C * max τ.im (1 / τ.im) ^ k := by
-  have := ModularGroup.exists_bound_of_subgroup_invariant_of_isBigO
-      (show Continuous (petersson k f f') by fun_prop) (mod_cast hk : 0 ≤ (k : ℝ))
-      (fun g ↦ ?_) (fun g hg τ ↦ SlashInvariantFormClass.petersson_smul (Γ.mem_map_of_mem _ hg))
+  conv => enter [1, C, τ, 1]; rw [← norm_norm]
+  have := ModularGroup.exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO
+      (show Continuous (‖petersson k f f' ·‖) by fun_prop) (mod_cast hk : 0 ≤ (k : ℝ))
+      (fun g ↦ ?_) (fun g hg τ ↦ SlashInvariantFormClass.norm_petersson_smul hg)
   · simpa using this
   · simp_rw [← UpperHalfPlane.petersson_slash_SL, Real.rpow_intCast]
     have hft := bdd_at_infty_slash f g
@@ -217,48 +230,30 @@ lemma ModularFormClass.exists_petersson_le
 open ConjAct Pointwise in
 /-- If `f` is a cusp form and `f'` a modular form, then `petersson k f f'` is bounded. -/
 lemma CuspFormClass.petersson_bounded_left
-    (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] {F F' : Type*} (f : F) (f' : F')
+    (k : ℤ) (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.IsArithmetic] {F F' : Type*} (f : F) (f' : F')
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [CuspFormClass F Γ k] [ModularFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C := by
-  refine ModularGroup.exists_bound_of_subgroup_invariant
-    (show Continuous (petersson k f f') by fun_prop) (fun g ↦ ?_)
-    fun g hg τ ↦ SlashInvariantFormClass.petersson_smul (Γ.mem_map_of_mem _ hg)
+  conv => enter [1, C, τ, 1]; rw [← norm_norm]
+  refine ModularGroup.exists_bound_of_subgroup_invariant (by fun_prop) (fun g ↦ ?_)
+    fun g hg τ ↦ SlashInvariantFormClass.norm_petersson_smul hg
   apply IsZeroAtImInfty.isBoundedAtImInfty
+  rw [IsZeroAtImInfty, ZeroAtFilter, ← tendsto_zero_iff_norm_tendsto_zero]
   simp_rw [← UpperHalfPlane.petersson_slash_SL]
-  let ft₀ := CuspForm.translate f g
-  have hgΓ : (toConjAct g⁻¹ • Γ).FiniteIndex := by
-    constructor
-    have := (‹_› : Γ.FiniteIndex).index_ne_zero
-    rwa [← Γ.index_map_equiv (MulDistribMulAction.toMulEquiv SL(2, ℤ) (toConjAct g⁻¹))] at this
-  have : ((toConjAct (g : GL (Fin 2) ℝ)⁻¹) • Γ.map (mapGL ℝ)).IsArithmetic := by
-    -- XXX TODO: this is horrendous, there must be a better way.
-    -- Relate to `Subgroup.IsArithmetic.conj` somehow?
-    rw [← Subgroup.isArithmetic_iff_finiteIndex] at hgΓ
-    convert hgΓ
-    ext x
-    simp only [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, map_inv, inv_inv,
-        Subgroup.mem_map]
-    constructor
-    · rintro ⟨y, hy, hy'⟩
-      refine ⟨toConjAct g⁻¹ • y, by simp [hy], ?_⟩
-      simp only [toConjAct_smul, map_mul, inv_inv, hy']
-      simp only [mapGL, MonoidHom.comp_apply, ← mul_assoc, map_inv, algebraMap_int_eq,
-        inv_mul_cancel, one_mul, inv_mul_cancel_right]
-    · rintro ⟨y, hy, rfl⟩
-      refine ⟨_, hy, ?_⟩
-      simp only [toConjAct_smul, map_mul, map_inv, mapGL, MonoidHom.comp_apply, algebraMap_int_eq]
-  convert (CuspFormClass.zero_at_infty ft₀).petersson_isZeroAtImInfty_left k _
+  have : ((toConjAct (g : GL (Fin 2) ℝ)⁻¹) • Γ).IsArithmetic := by
+    simpa [(show Rat.castHom ℝ = algebraMap ℚ ℝ by rfl), map_inv, map_mapGL]
+      using Subgroup.IsArithmetic.conj Γ (mapGL ℚ g)⁻¹
+  apply (CuspFormClass.zero_at_infty <| CuspForm.translate f g).petersson_isZeroAtImInfty_left k _
     (ModularForm.translate f' g) -- "exact" fails here -- why?
 
 /-- If `f` is a modular form and `f'` a cusp form, then `petersson k f f'` is bounded. -/
 lemma CuspFormClass.petersson_bounded_right
-    (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] {F F' : Type*} (f : F) (f' : F')
+    (k : ℤ) (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.IsArithmetic] {F F' : Type*} (f : F) (f' : F')
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [ModularFormClass F Γ k] [CuspFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C := by
   simpa [petersson, mul_comm] using petersson_bounded_left k Γ f' f
 
 /-- A weight `k` cusp form is bounded in norm by a constant multiple of `(im τ) ^ (-k / 2)`. -/
-lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
+lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
     {F : Type*} [FunLike F ℍ ℂ] [CuspFormClass F Γ k] (f : F) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C / τ.im ^ (k / 2 : ℝ) := by
   obtain ⟨C, hC⟩ := petersson_bounded_left k Γ f f
@@ -275,8 +270,8 @@ lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [Γ.Finite
 open Real in
 /-- A weight `k` modular form is bounded in norm by a constant multiple of
 `max 1 (1 / (τ.im) ^ k)`. -/
-lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
-    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
+lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL (Fin 2) ℝ)}
+    [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C * (max 1 (1 / (τ.im) ^ k)) := by
   obtain ⟨C, hC⟩ := ModularFormClass.exists_petersson_le hk Γ f f
   refine ⟨C.sqrt, fun τ ↦ ?_⟩
@@ -301,51 +296,53 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2
 
 local notation "𝕢" => Function.Periodic.qParam
 
-open Complex in
-lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2, ℤ)}
-    [Γ.FiniteIndex] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
-    (fun n ↦ (ModularFormClass.qExpansion Γ.strictWidthInfty f).coeff n)
-      =O[atTop] fun n ↦ (n : ℝ) ^ k := by
+open Complex ModularFormClass
+
+/-- General result on bounding q-expansion coefficients using a bound on the norm of the function.
+This will get used twice over, once for cusp forms (with `e = k/2`) and once for modular forms
+(with `e = k`). -/
+lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
+    [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) (e : ℝ)
+    (hF : IsBigO (comap UpperHalfPlane.im (𝓝 0)) f (fun τ ↦ τ.im ^ (-e))) :
+    (fun n ↦ (qExpansion Γ.strictWidthInfty f).coeff n) =O[atTop] fun n ↦ (n : ℝ) ^ e := by
   let h := Γ.strictWidthInfty
   have hh : 0 < h := Γ.strictWidthInfty_pos_iff.mpr Fact.out
   haveI : NeZero h := ⟨hh.ne'⟩
   have hΓ : h ∈ Γ.strictPeriods := Γ.strictWidthInfty_mem_strictPeriods
-  obtain ⟨C, hC⟩ := exists_bound hk f
+  obtain ⟨C, Cpos, hC⟩ := hF.exists_pos
   rw [isBigO_iff]
+  rw [IsBigOWith, eventually_comap] at hC
   use (1 / Real.exp (-2 * Real.pi / ↑h)) * C
-  filter_upwards [eventually_gt_atTop 0] with n hn
+  have := (Tendsto.eventually (tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop) hC)
+  filter_upwards [eventually_gt_atTop 0, this] with n hn hn'
   rw [qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hh hΓ _ (by positivity),
     ← intervalIntegral.integral_const_mul]
   simp only [ofReal_div, ofReal_one, ofReal_natCast]
   refine intervalIntegral.norm_integral_le_integral_norm (by positivity) |>.trans ?_
   let F (x : ℝ) : ℝ := ‖1 / ↑h * (1 / 𝕢 h ((x : ℂ) + 1 / n * I) ^ n
       * f ⟨(x : ℂ) + 1 / n * Complex.I, by simp [hn]⟩)‖
-  have (x : ℝ) : F x ≤ 1 / h * ((1 / Real.exp (-2 * Real.pi / ↑h))) * (C * n ^ k) := by
+  have (x : ℝ) : F x ≤ 1 / h * ((1 / Real.exp (-2 * Real.pi / ↑h))) * (C * n ^ e) := by
     simp only [F]
     rw [norm_mul, norm_mul, norm_div, norm_real, norm_one, norm_div, norm_one, norm_pow,
       mul_assoc, Real.norm_of_nonneg hh.le]
     apply mul_le_mul_of_nonneg_left _ (by positivity)
     apply mul_le_mul
-    · rw [Function.Periodic.norm_qParam, add_im, ofReal_im, zero_add,
-        mul_I_im, ← ofReal_one, ← ofReal_natCast, ← ofReal_div, ofReal_re, mul_one_div,
-        div_right_comm, ← Real.exp_nat_mul, mul_div_cancel₀]
-      exact_mod_cast hn.ne'
-    · refine (hC _).trans (le_of_eq ?_)
-      congr 1
-      rw [← UpperHalfPlane.coe_im, UpperHalfPlane.coe_mk_subtype, add_im, ofReal_im, zero_add,
-        mul_I_im, ← ofReal_one, ← ofReal_natCast, ← ofReal_div, ofReal_re, div_zpow, one_zpow,
-        one_div_one_div]
-      exact max_eq_right <| one_le_zpow₀ (mod_cast hn) hk
+    · rw [Function.Periodic.norm_qParam, add_im, ofReal_im, zero_add, mul_I_im, ← ofReal_one,
+        ← ofReal_natCast, ← ofReal_div, ofReal_re, mul_one_div, div_right_comm, ← Real.exp_nat_mul,
+        mul_div_cancel₀ _ (mod_cast hn.ne')]
+    · refine (hn' _ ?_).trans (le_of_eq ?_) <;>
+        simp_rw [← UpperHalfPlane.coe_im, UpperHalfPlane.coe_mk_subtype, add_im, ofReal_im,
+          zero_add, mul_I_im, ← ofReal_one, ← ofReal_natCast, ← ofReal_div, ofReal_re]
+      · rw [Function.comp_apply, inv_eq_one_div]
+      · rw [one_div, Real.rpow_neg_eq_inv_rpow, inv_inv, Real.norm_of_nonneg (by positivity)]
     · exact norm_nonneg _
     · positivity
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
   · apply Continuous.intervalIntegrable
-    unfold F
     apply Continuous.norm
     apply continuous_const.mul
     apply Continuous.mul
-    · unfold Function.Periodic.qParam
-      simp_rw [← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
+    · simp_rw [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
       fun_prop
     · have : Continuous f := (ModularFormClass.holo f).continuous
       apply this.comp
@@ -355,4 +352,26 @@ lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup
   · apply continuous_const.intervalIntegrable
   · rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul]
     simp only [← mul_assoc, mul_one_div_cancel (NeZero.ne (h : ℝ)), one_mul,
-      Real.norm_of_nonneg (show 0 ≤ (n : ℝ) ^ k by positivity)]
+      Real.norm_of_nonneg (show 0 ≤ (n : ℝ) ^ e by positivity)]
+
+lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL (Fin 2) ℝ)}
+    [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
+    (fun n ↦ (qExpansion Γ.strictWidthInfty f).coeff n) =O[atTop] fun n ↦ (n : ℝ) ^ k := by
+  simp only [← Real.rpow_intCast]
+  apply qExpansion_coeff_isBigO_of_norm_isBigO
+  obtain ⟨C, hC⟩ := exists_bound hk f
+  simp_rw [IsBigO, ← Int.cast_neg, Real.rpow_intCast, IsBigOWith, eventually_comap]
+  use C
+  filter_upwards [eventually_le_nhds zero_lt_one] with _ hτ τ rfl
+  refine (hC τ).trans (le_of_eq ?_)
+  rw [max_eq_right, zpow_neg, Real.norm_of_nonneg (by positivity), one_div]
+  exact one_le_one_div (by positivity) (zpow_le_one₀ τ.im_pos hτ hk)
+
+lemma CuspFormClass.qExpansion_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
+    [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [CuspFormClass F Γ k] (f : F) :
+    (fun n ↦ (ModularFormClass.qExpansion Γ.strictWidthInfty f).coeff n)
+      =O[atTop] fun n ↦ (n : ℝ) ^ ((k : ℝ) / 2) := by
+  apply qExpansion_coeff_isBigO_of_norm_isBigO
+  obtain ⟨C, hC⟩ := exists_bound f
+  refine isBigO_of_le' (c := C) _ fun τ ↦ (hC τ).trans (le_of_eq ?_)
+  rw [Real.norm_of_nonneg (by positivity), Real.rpow_neg τ.im_pos.le, div_eq_mul_inv]

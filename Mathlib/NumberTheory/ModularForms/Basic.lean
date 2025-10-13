@@ -135,7 +135,7 @@ instance (priority := 100) ModularFormClass.modularForm :
   bdd_at_cusps := ModularForm.bdd_at_cusps'
 
 @[fun_prop]
-lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
+lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
     Continuous f :=
   (ModularFormClass.holo f).continuous

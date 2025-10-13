@@ -65,6 +65,13 @@ section
 
 variable {F F' : Type*} [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ]
 
+lemma SlashInvariantFormClass.norm_petersson_smul {k g τ} {Γ : Subgroup (GL (Fin 2) ℝ)}
+    [Γ.HasDetPlusMinusOne] [SlashInvariantFormClass F Γ k] {f : F}
+    [SlashInvariantFormClass F' Γ k] {f' : F'} (hg : g ∈ Γ) :
+    ‖petersson k f f' (g • τ)‖ = ‖petersson k f f' τ‖ := by
+  conv_rhs => rw [← slash_action_eq f _ hg, ← slash_action_eq f' _ hg, petersson_slash,
+    Subgroup.HasDetPlusMinusOne.abs_det hg, Complex.ofReal_one, one_zpow, one_mul, norm_σ]
+
 lemma SlashInvariantFormClass.petersson_smul {k g τ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetOne]
     [SlashInvariantFormClass F Γ k] {f : F} [SlashInvariantFormClass F' Γ k] {f' : F'}
     (hg : g ∈ Γ) : petersson k f f' (g • τ) = petersson k f f' τ := by
