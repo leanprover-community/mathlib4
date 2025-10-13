@@ -70,13 +70,13 @@ lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module 
   apply subsingleton_of_forall_eq 0 (fun m ↦ ?_)
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
-variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrp.{v})
+variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrpCat.{v})
 
 open DirectSum
 
-/-- Given a function `Z : ι → AddCommGrp`, the `Cofan` obtained from `DirectSum.of Z i`. -/
+/-- Given a function `Z : ι → AddCommGrpCat`, the `Cofan` obtained from `DirectSum.of Z i`. -/
 def coproductCocone : Cofan Z :=
   Cofan.mk (of (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.of (fun i ↦ Z i) i)
 
@@ -94,11 +94,11 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     simpa [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
       congr($(h ⟨i⟩) x)
 
-/-- The isomorphism in `AddCommGrp` between coproduct and directsum. -/
-noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrp.of (⨁ i, Z i) :=
+/-- The isomorphism in `AddCommGrpCat` between coproduct and directsum. -/
+noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrpCat.of (⨁ i, Z i) :=
   colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
 
-end AddCommGrp
+end AddCommGrpCat
 
 open Module
 
@@ -173,7 +173,7 @@ instance (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M ⟶ N)
     (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) :
-    (AddCommGrp.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero n)) = 0 := by
+    (AddCommGrpCat.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero n)) = 0 := by
   refine Submodule.smul_induction_on mem ?_ ?_
   · intro r hr f hf
     ext x
@@ -184,8 +184,8 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
     simp [Ext.mk₀_smul, ← Ext.smul_comp, this]
   · intro g1 g2 hg1 hg2
     ext x
-    have : AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x +
-      AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0 := by simp [hg1, hg2]
+    have : AddCommGrpCat.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x +
+      AddCommGrpCat.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0 := by simp [hg1, hg2]
     simpa [Ext.mk₀_add] using this
 
 lemma ENat.add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
@@ -282,20 +282,20 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (Subsingleton (Ext K (ModuleCat.of R (Shrink.{v} R)) i) ∧
       Subsingleton (Ext K (ModuleCat.of R (Shrink.{v} R)) (i + 1))) := by
     refine ⟨fun h ↦ ?_, fun ⟨h1, h3⟩ ↦ ?_⟩
-    · have zero : IsZero (AddCommGrp.of (Ext K M i)) := @AddCommGrp.isZero_of_subsingleton _ h
+    · have zero : IsZero (AddCommGrpCat.of (Ext K M i)) := @AddCommGrpCat.isZero_of_subsingleton _ h
       constructor
-      · have := AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+      · have := AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
           (Ext.covariant_sequence_exact₂' K S_exact i) (hom_zero i) (zero.eq_zero_of_tgt _)
         exact (finte_free_ext_vanish_iff S.X₂ K i).mp this
-      · have := AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+      · have := AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
           (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl)
           (zero.eq_zero_of_src _) (hom_zero (i + 1))
         exact (finte_free_ext_vanish_iff S.X₁ K (i + 1)).mp this
-    · have zero1 : IsZero (AddCommGrp.of (Ext K S.X₂ i)) :=
-        @AddCommGrp.isZero_of_subsingleton _ ((finte_free_ext_vanish_iff _ _ i).mpr h1)
-      have zero3 : IsZero (AddCommGrp.of (Ext K S.X₁ (i + 1))) :=
-        @AddCommGrp.isZero_of_subsingleton _ ((finte_free_ext_vanish_iff _ _ (i + 1)).mpr h3)
-      exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+    · have zero1 : IsZero (AddCommGrpCat.of (Ext K S.X₂ i)) :=
+        @AddCommGrpCat.isZero_of_subsingleton _ ((finte_free_ext_vanish_iff _ _ i).mpr h1)
+      have zero3 : IsZero (AddCommGrpCat.of (Ext K S.X₁ (i + 1))) :=
+        @AddCommGrpCat.isZero_of_subsingleton _ ((finte_free_ext_vanish_iff _ _ (i + 1)).mpr h3)
+      exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
   simp only [IsLocalRing.depth, Ideal.depth, moduleDepth]
@@ -307,7 +307,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     by_cases eq0 : i = 0
     · rw [eq0, ← finte_free_ext_vanish_iff S.X₁]
       have mono := extFunctorObj_zero_preserve_momoMorphism K S.X₁ S.X₂ S.f S_exact.mono_f
-      exact AddCommGrp.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ (hom_zero 0))
+      exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ (hom_zero 0))
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
         rw [add_comm, ← eq, ENat.coe_add, ENat.coe_sub, ENat.coe_one] at hi
@@ -429,14 +429,14 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
           rw [← LinearMap.comp_apply, Subsingleton.eq_zero ((LinearMap.ker f).subtype.comp F)]
           simp
         have ext_iso (i : ℕ) (lt : i + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R))) :
-          IsIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K (Eq.refl (i + 1)))) := by
+          IsIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K (Eq.refl (i + 1)))) := by
           apply (CategoryTheory.isIso_iff_mono_and_epi _).mpr ⟨?_, ?_⟩
           · apply ShortComplex.Exact.mono_g (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
-            apply IsZero.eq_zero_of_src (@AddCommGrp.isZero_of_subsingleton _ ?_)
+            apply IsZero.eq_zero_of_src (@AddCommGrpCat.isZero_of_subsingleton _ ?_)
             rw [finte_free_ext_vanish_iff]
             exact ext_subsingleton_of_lt_moduleDepth (lt_of_le_of_lt (le_self_add) lt)
           · apply ShortComplex.Exact.epi_f (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl)
-            apply IsZero.eq_zero_of_tgt (@AddCommGrp.isZero_of_subsingleton _ ?_)
+            apply IsZero.eq_zero_of_tgt (@AddCommGrpCat.isZero_of_subsingleton _ ?_)
             simp only [finte_free_ext_vanish_iff]
             exact ext_subsingleton_of_lt_moduleDepth lt
         have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
@@ -448,7 +448,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
                 rw [← h_ker', ENat.add_lt_top]
                 exact ⟨ENat.coe_lt_top i, ENat.coe_lt_top 1⟩
               have := ext_iso i lt
-              rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
+              rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                 (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
               apply ext_subsingleton_of_lt_moduleDepth
               exact lt_of_lt_of_eq (ENat.coe_lt_top (i + 1)) eqtop.symm
@@ -469,12 +469,12 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
                 omega
               refine ⟨?_, fun i hi ↦ ?_⟩
               · have := ext_iso (k - 1) lt
-                rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
+                rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                   (Eq.refl (k - 1 + 1))))).addCommGroupIsoToAddEquiv.nontrivial_congr, eq]
                 exact Nat.find_spec exist
               · have := ext_iso i <|
                   lt_trans (ENat.add_one_lt_add_one_iff.mp (ENat.coe_lt_coe.mpr hi)) lt
-                rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
+                rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                   (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
                 exact not_nontrivial_iff_subsingleton.mp
                   (Nat.find_min exist (Nat.add_lt_of_lt_sub hi))
