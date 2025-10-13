@@ -523,19 +523,46 @@ end
 open associatedPrimes in
 lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
     supportDim R M ≤ injectiveDimension M := by
-  --ENat.exists_eq_iSup_of_lt_top
-  obtain ⟨q, hq⟩ : ∃ q : LTSeries (Module.support R M), q.length = supportDim R M := sorry
+  obtain ⟨q, hq⟩ : ∃ q : LTSeries (Module.support R M), q.length = supportDim R M := by
+    have (n : ℕ) : (n : WithBot ℕ∞) = (n : ℕ∞) := rfl
+    simp only [this, supportDim, Order.krullDim_eq_iSup_length, WithBot.coe_inj]
+    apply ENat.exists_eq_iSup_of_lt_top
+    rw [← WithBot.coe_lt_coe, ← Order.krullDim_eq_iSup_length, WithBot.coe_top, lt_top_iff_ne_top]
+    apply ne_top_of_le_ne_top ringKrullDim_ne_top (Module.supportDim_le_ringKrullDim R M)
   have eq_of_le (i : Fin q.length) :
     ∀ r : PrimeSpectrum R, q i.castSucc < r → r ≤ q i.succ → r = q i.succ := by
     intro r ltr rle
     by_contra ne
-    have := lt_of_le_of_ne rle ne
-    --insert `r` into `q`
-    sorry
+    let q' := q.insertNth i ⟨r, Module.mem_support_mono (le_of_lt ltr) (q i.castSucc).2⟩ ltr
+      (lt_of_le_of_ne rle ne)
+    have : q'.length > q.length := by simp [q']
+    absurd this
+    simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
+      hq, supportDim, Order.krullDim]
+    exact le_iSup_iff.mpr fun b a ↦ a q'
   have tail_eq : (q ⟨q.length, lt_add_one q.length⟩).1.1 = maximalIdeal R := by
-    sorry
+    by_contra! ne
+    let _ := (q ⟨q.length, lt_add_one q.length⟩).1.2
+    have lt := ne.lt_of_le (IsLocalRing.le_maximalIdeal_of_isPrime _)
+    let q' := q.snoc ⟨IsLocalRing.closedPoint R, closedPoint_mem_support R M⟩ lt
+    have : q'.length > q.length := by simp [q']
+    absurd this
+    simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
+      hq, supportDim, Order.krullDim]
+    exact le_iSup_iff.mpr fun b a ↦ a q'
   have head_min : (q 0).1.1 ∈ (Module.annihilator R M).minimalPrimes := by
-    sorry
+    rcases Ideal.exists_minimalPrimes_le (annihilator_le_of_mem_support (q 0).2) with ⟨p, min, ple⟩
+    rcases lt_or_eq_of_le ple with lt|eq
+    · have pp : p.IsPrime := Ideal.minimalPrimes_isPrime min
+      have : ⟨p, pp⟩ ∈ Module.support R M := by
+        simpa [Module.mem_support_iff_of_finite] using min.1.2
+      let q' := q.cons ⟨⟨p, pp⟩, this⟩ lt
+      have : q'.length > q.length := by simp [q']
+      absurd this
+      simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
+        hq, supportDim, Order.krullDim]
+      exact le_iSup_iff.mpr fun b a ↦ a q'
+    · simpa [← eq] using min
   have lem' (i : ℕ) (h : i ≤ q.length) : Nontrivial (Ext.{v}
     (ModuleCat.of (Localization (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.primeCompl)
       (Shrink.{v, u} (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.ResidueField))
