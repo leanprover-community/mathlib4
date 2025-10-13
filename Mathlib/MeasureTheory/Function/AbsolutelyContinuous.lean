@@ -36,7 +36,7 @@ We use the filter version to prove that absolutely continuous functions are clos
 and that absolutely continuous implies uniform continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
 
-We use the the `ε`-`δ` definition to prove that
+We use the `ε`-`δ` definition to prove that
 * Lipschitz continuous functions are absolutely continuous -
 `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
