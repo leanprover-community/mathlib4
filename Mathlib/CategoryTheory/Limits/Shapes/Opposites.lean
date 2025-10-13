@@ -750,16 +750,6 @@ def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :
    Cocone.unop ((Cocones.precompose (opParallelPairIso f.unop g.unop).hom).obj
       (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
 
-@[simp]
-lemma unop_π_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.unop.π.app .one = (Quiver.Hom.unop (c.ι.app .zero)) := by
-  simp [unop, walkingParallelPairOpEquiv]
-
-@[simp]
-lemma unop_π_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.unop.π.app .zero = (Quiver.Hom.unop (c.ι.app .one)) := by
-  simp [unop, walkingParallelPairOpEquiv]
-
 theorem unop_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     c.unop.ι = c.π.unop := by simp [unop, Fork.ι]
 
