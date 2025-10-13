@@ -178,11 +178,11 @@ lemma exist_isRegular_tfae_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
       use N
       simp only [ntr, fin, h_supp, true_and]
       intro i hi
-      have zero1 : IsZero (AddCommGrp.of (Ext N M i)) :=
-        @AddCommGrp.isZero_of_subsingleton _ (h_ext i (Nat.lt_add_right 1 hi))
-      have zero2 : IsZero (AddCommGrp.of (Ext N M (i + 1))) :=
-        @AddCommGrp.isZero_of_subsingleton _ (h_ext (i + 1) (Nat.add_lt_add_right hi 1))
-      exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+      have zero1 : IsZero (AddCommGrpCat.of (Ext N M i)) :=
+        @AddCommGrpCat.isZero_of_subsingleton _ (h_ext i (Nat.lt_add_right 1 hi))
+      have zero2 : IsZero (AddCommGrpCat.of (Ext N M (i + 1))) :=
+        @AddCommGrpCat.isZero_of_subsingleton _ (h_ext (i + 1) (Nat.add_lt_add_right hi 1))
+      exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         ((Ext.covariant_sequence_exact₃' N hxk.smulShortComplex_shortExact) i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
     rcases ih (ModuleCat.of R M') ntr'
@@ -191,8 +191,8 @@ lemma exist_isRegular_tfae_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     simpa [len, hk] using ⟨mem, hxk, reg⟩
 
 lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
-    (f_mono : Mono (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
-    N (add_zero i)))) : Mono (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
+    (f_mono : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
+    N (add_zero i)))) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
     N (add_zero i))) := by
   induction k
   · simp at kpos
@@ -201,10 +201,10 @@ lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{
     by_cases eq0 : k = 0
     · rw [eq0, pow_zero, one_mul]
       exact f_mono
-    · have eq_comp :
-        (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k * a)).f).postcomp N (add_zero i))) =
-        (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i))) ≫
-        (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp N (add_zero i))) := by
+    · have eq_comp : (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k * a)).f).postcomp
+        N (add_zero i))) = (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
+        N (add_zero i))) ≫ (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
+        N (add_zero i))) := by
         have : (a ^ k * a) • (LinearMap.id (R := R) (M := M)) =
           (a • (LinearMap.id (M := M))).comp ((a ^ k) • (LinearMap.id (M := M))) := by
           rw [LinearMap.comp_smul, LinearMap.smul_comp, smul_smul, LinearMap.id_comp]
@@ -264,17 +264,17 @@ lemma exist_isRegular_tfae_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (
         have : Subsingleton (N ⟶ M) := ModuleCat.homEquiv.subsingleton
         exact Ext.addEquiv₀.subsingleton
       · have lt : i - 1 < n := by omega
-        let g := (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp N (add_zero i)))
+        let g := (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp N (add_zero i)))
         have mono_g : Mono g := by
           apply ShortComplex.Exact.mono_g (CategoryTheory.Abelian.Ext.covariant_sequence_exact₁'
             N reg.1.smulShortComplex_shortExact (i - 1) i (by omega)) (IsZero.eq_zero_of_src _ _)
-          exact @AddCommGrp.isZero_of_subsingleton _ (ih (ModuleCat.of R M') Qntr
+          exact @AddCommGrpCat.isZero_of_subsingleton _ (ih (ModuleCat.of R M') Qntr
             (Module.Finite.quotient R _) smul_lt' exist_reg' (i - 1) lt)
-        let gk := (AddCommGrp.ofHom
+        let gk := (AddCommGrpCat.ofHom
           ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
         have mono_gk : Mono gk := mono_of_mono a kpos i mono_g
         have zero_gk : gk = 0 := ext_hom_eq_zero_of_mem_ann hk i
-        exact AddCommGrp.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
+        exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /-- The Rees theorem -/
 lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ)
