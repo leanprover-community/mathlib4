@@ -1132,8 +1132,7 @@ theorem finsum_mem_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors
   rw [finsum_mul]
   congr
   ext a
-  by_cases h : a ∈ s
-  <;> simp_all
+  by_cases h : a ∈ s <;> simp_all
 
 @[to_additive (attr := simp)]
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).Finite) (a : α) :
