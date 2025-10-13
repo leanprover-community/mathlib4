@@ -452,20 +452,20 @@ theorem lt_of_forall_ge_imp_ne (H : ∀ c, a ≤ c → c ≠ b) : b < a :=
 alias le_of_forall_ne := le_of_forall_lt_imp_ne
 alias lt_of_forall_ne := lt_of_forall_le_imp_ne
 
-theorem le_iff_forall_lt_imp_ne : (∀ c < a, c ≠ b) ↔ a ≤ b :=
+theorem forall_lt_imp_ne_iff_le : (∀ c < a, c ≠ b) ↔ a ≤ b :=
   ⟨le_of_forall_lt_imp_ne, fun ha _ hc ↦ (hc.trans_le ha).ne⟩
 
-theorem lt_iff_forall_le_imp_ne : (∀ c ≤ a, c ≠ b) ↔ a < b :=
+theorem forall_le_imp_ne_iff_lt : (∀ c ≤ a, c ≠ b) ↔ a < b :=
   ⟨lt_of_forall_le_imp_ne, fun ha _ hc ↦ (hc.trans_lt ha).ne⟩
 
-theorem le_iff_forall_gt_imp_ne : (∀ c, a < c → c ≠ b) ↔ b ≤ a :=
+theorem forall_gt_imp_ne_iff_le : (∀ c, a < c → c ≠ b) ↔ b ≤ a :=
   ⟨le_of_forall_gt_imp_ne, fun ha _ hc ↦ (ha.trans_lt hc).ne'⟩
 
-theorem lt_iff_forall_ge_imp_ne : (∀ c, a ≤ c → c ≠ b) ↔ b < a :=
+theorem forall_ge_imp_ne_iff_lt : (∀ c, a ≤ c → c ≠ b) ↔ b < a :=
   ⟨lt_of_forall_ge_imp_ne, fun ha _ hc ↦ (ha.trans_le hc).ne'⟩
 
-alias le_iff_forall_ne := le_iff_forall_lt_imp_ne
-alias lt_iff_forall_ne := lt_iff_forall_le_imp_ne
+alias forall_ne_iff_le := forall_lt_imp_ne_iff_le
+alias forall_ne_iff_lt := forall_le_imp_ne_iff_lt
 
 theorem eq_of_forall_lt_iff (h : ∀ c, c < a ↔ c < b) : a = b :=
   (le_of_forall_lt fun _ ↦ (h _).1).antisymm <| le_of_forall_lt fun _ ↦ (h _).2
