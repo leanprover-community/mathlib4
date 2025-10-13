@@ -10,14 +10,24 @@ import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 # Induced map between Ext
 
 -/
+
 universe u u' v v' w w'
 
 namespace CategoryTheory
 
-open Limits
+open Limits Abelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
-variable {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+variable {D : Type u'} [Category.{v'} D] [Abelian D] [HasExt.{w'} D]
 variable (F : C ⥤ D) [F.Additive] [PreservesLimits F] [PreservesColimits F]
+
+noncomputable def Functor.mapExt (X Y : C) (n : ℕ) :
+    Ext.{w} X Y n → Ext.{w'} (F.obj X) (F.obj Y) n := by
+  letI := HasDerivedCategory.standard C
+  letI := HasDerivedCategory.standard D
+  refine Ext.homEquiv.symm ∘ (fun f ↦ ?_) ∘ Ext.homEquiv
+  convert f.map F.mapDerivedCategory
+  · sorry
+  · sorry
 
 end CategoryTheory
