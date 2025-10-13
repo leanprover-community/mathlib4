@@ -5,7 +5,8 @@ Authors: Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-import Mathlib.CategoryTheory.Equivalence
+-- import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Adjunction.Unique
 
 /-!
 # Preliminaries for the theory of locally cartesian closed categories
@@ -346,24 +347,14 @@ end forgetAdjStar
 
 end Over
 
-namespace Adjunction
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
-/-- A right adjoint to the forward functor of an equivalence is naturally isomorphic to the
-inverse functor of the equivalence. -/
-def equivalenceRightAdjointIsoInverse (e : D ≌ C) (R : C ⥤ D) (adj : e.functor ⊣ R) :
-    R ≅ e.inverse :=
-  conjugateIsoEquiv adj (e.toAdjunction) (Iso.refl _)
-
-end Adjunction
-
 namespace Over
+
+open Adjunction
 
 /-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
 def starIsoToOverTerminal [HasBinaryProducts C] (X : C) (h : IsTerminal X) :
     star X ≅ Functor.toOverTerminal X h :=
-  Adjunction.equivalenceRightAdjointIsoInverse (equivOverTerminal X h) (star X) (forgetAdjStar X)
+  rightAdjointUniq (forgetAdjStar X) (equivOverTerminal X h |>.toAdjunction)
 
 /-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
