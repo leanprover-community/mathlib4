@@ -659,6 +659,7 @@ import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Chain
+import Mathlib.Algebra.Lie.Weights.IsSimple
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.Algebra.Lie.Weights.RootSystem
@@ -1680,6 +1681,7 @@ import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convex.Visible
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.AddCircle
@@ -1707,6 +1709,7 @@ import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
@@ -2121,6 +2124,7 @@ import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Bicategory.EqToHom
 import Mathlib.CategoryTheory.Bicategory.Extension
 import Mathlib.CategoryTheory.Bicategory.Free
+import Mathlib.CategoryTheory.Bicategory.Functor.Cat
 import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
@@ -2885,6 +2889,7 @@ import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Yoneda
 import Mathlib.CategoryTheory.Types.Basic
+import Mathlib.CategoryTheory.Types.Monomorphisms
 import Mathlib.CategoryTheory.Types.Set
 import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
@@ -3634,7 +3639,6 @@ import Mathlib.Data.Real.EReal
 import Mathlib.Data.Real.Embedding
 import Mathlib.Data.Real.GoldenRatio
 import Mathlib.Data.Real.Hyperreal
-import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.Data.Real.Pi.Irrational
 import Mathlib.Data.Real.Pi.Leibniz
@@ -5587,6 +5591,7 @@ import Mathlib.RingTheory.Grassmannian
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.HEval
+import Mathlib.RingTheory.HahnSeries.HahnEmbedding
 import Mathlib.RingTheory.HahnSeries.Lex
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.HahnSeries.PowerSeries
@@ -5853,6 +5858,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Radical
+import Mathlib.RingTheory.Real.Irrational
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
 import Mathlib.RingTheory.Regular.Category
