@@ -17,15 +17,17 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 ## Main definitions and results
 
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
-  recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `AkraBazziRecurrence.smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ (with
-  derivative/asymptotic facts) used in the inductive estimates.
-* `AkraBazziRecurrence.p`: the Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1$
-  (existence/uniqueness and related properties).
-* `sumTransform`: The transformation which turns a function `g` into
-  `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
-* `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
-  `n^p (1 + ∑ g(u) / u^(p+1))`
+  recurrence with parameters `g`, `a`, `b` and `r` as above, together with basic bounds on `r i n`
+  and positivity of `T`.
+* `AkraBazziRecurrence.smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ used in
+  the inductive estimates, along with monotonicity, differentiability, and asymptotic properties.
+* `AkraBazziRecurrence.p`: the unique Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1`
+  and supporting analytical lemmas such as continuity and injectivity of the defining sum.
+* `AkraBazziRecurrence.sumTransform`: the transformation that turns a function `g` into
+  `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)` and its eventual comparison with multiples of `g n`.
+* `AkraBazziRecurrence.asympBound`: the asymptotic bound satisfied by an Akra-Bazzi recurrence,
+  namely `n^p (1 + ∑ g(u) / u^(p+1))`, together with positivity statements along the branches
+  `r i n`.
 
 
 ## References
