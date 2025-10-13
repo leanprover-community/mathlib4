@@ -633,22 +633,18 @@ section RightCancelDivInvMonoid
 variable [DivInvMonoid G] [IsRightCancelMul G] {a b c : G}
 
 @[to_additive (attr := simp)]
-theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by
-  rw [div_eq_mul_inv, mul_eq_right]
+theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_eq_right]
 
 @[to_additive]
 theorem div_left_injective : Function.Injective fun a : G ↦ a / b := by
-  intro a₁ a₂ h
-  have h' : a₁ * b⁻¹ = a₂ * b⁻¹ := by simpa [div_eq_mul_inv] using h
-  simpa using (mul_right_cancel (a := a₁) (b := b⁻¹) (c := a₂) h')
+  -- FIXME this could be by `simpa`, but it fails. This is probably a bug in `simpa`.
+  simp only [div_eq_mul_inv]
+  exact fun a a' h ↦ mul_left_injective b⁻¹ h
 
 @[to_additive (attr := simp)]
 theorem div_left_inj : b / a = c / a ↔ b = c := by
-  constructor
-  · intro h
-    have h' : b * a⁻¹ = c * a⁻¹ := by simpa [div_eq_mul_inv] using h
-    simpa using (mul_right_cancel (a := b) (b := a⁻¹) (c := c) h')
-  · rintro rfl; rfl
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  exact mul_left_inj _
 
 end RightCancelDivInvMonoid
 
@@ -662,12 +658,13 @@ theorem div_eq_self : a / b = a ↔ b = 1 := by
 
 @[to_additive]
 theorem div_right_injective : Function.Injective fun x : G ↦ b / x := by
+  -- FIXME see above
   simp only [div_eq_mul_inv]
   exact fun a a' h ↦ inv_injective (mul_right_injective b h)
 
 @[to_additive (attr := simp)]
 theorem div_right_inj : a / b = a / c ↔ b = c :=
-  (div_right_injective (G := G) (b := a)).eq_iff
+  div_right_injective.eq_iff
 
 end LeftCancelDivisionMonoid
 
