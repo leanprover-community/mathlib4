@@ -219,3 +219,29 @@ info: Try these:
 #guard_msgs in
 example (R : Type) (a b : R) [CommRing R] (u₁ : Rˣ) : a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁ := by hint
 end field_simp
+
+section finiteness
+/--
+info: Try these:
+  • 🎉 finiteness
+-/
+#guard_msgs in
+open ENNReal in
+example : (1 : ℝ≥0∞) < ∞ := by hint
+end finiteness
+
+section ring
+/--
+info: Try these:
+  • 🎉 ring
+  • noncomm_ring
+    Remaining subgoals:
+    ⊢ X * (X * (X * (X * (X * X ^ (8 • 1))))) + (X ^ (8 • 1) + (X * (X * (X * (X * (X * X)))) + X)) =
+      X * (X * (X * (X * (X * X)))) +
+        (X +
+          (X * (X * (X * (X * (X * (X * (X * (X * (X * (X * (X * (X * X))))))))))) +
+            X * (X * (X * (X * (X * (X * (X * X))))))))
+-/
+#guard_msgs in
+example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by hint
+end ring
