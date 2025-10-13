@@ -168,7 +168,7 @@ lemma sort_roots_charpoly_eq_eigenvalues₀ :
     Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
   apply List.mergeSort_of_sorted
   simp_rw [decide_eq_true_eq, ← List.sortedGE_iff_pairwise]
-  exact (eigenvalues₀_antitone hA).ofFn_sortedGE
+  exact (eigenvalues₀_antitone hA).sortedGE_ofFn
 
 lemma eigenvalues_eq_eigenvalues_iff :
     hA.eigenvalues = hB.eigenvalues ↔ A.charpoly = B.charpoly := by
