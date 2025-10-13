@@ -135,21 +135,21 @@ theorem divisor_const (e : E) :
   tauto
 
 /--
-The divisor a constant function is `0`.
+The divisor of a constant function is `0`.
 -/
 @[simp]
 theorem divisor_intCast (n : ℤ) :
     divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
 
 /--
-The divisor a constant function is `0`.
+The divisor of a constant function is `0`.
 -/
 @[simp]
 theorem divisor_natCast (n : ℕ) :
     divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
 
 /--
-The divisor a constant function is `0`.
+The divisor of a constant function is `0`.
 -/
 @[simp] theorem meromorphicOrderAt_ofNat (n : ℕ) :
     divisor (ofNat(n) : 𝕜 → 𝕜) U = 0 := by
