@@ -14,7 +14,27 @@ import Mathlib.RingTheory.TensorProduct.Finite
 
 # Inner product space structure on tensor product spaces
 
-This file provides an inner product space structure on tensor product spaces.
+This file provides the inner product space structure on tensor product spaces.
+
+## Main definitions:
+
+* `TensorProduct.instNormedAddCommGroup`: the normed additive group structure on tensor products,
+where `‖x ⊗ₜ y‖ = ‖x‖ * ‖y‖`.
+* `TensorProduct.instInnerProductSpace`: the inner product space structure on tensor products, where
+`⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`.
+* `TensorProduct.mapInclLinearIsometry`: the linear isometry version of `TensorProduct.mapIncl`.
+* `TensorProduct.commLinearIsometryEquiv`: the linear isometry version of `TensorProduct.comm`.
+* `TensorProduct.lidLinearIsometryEquiv`: the linear isometry version of `TensorProduct.lid`.
+* `TensorProduct.assocLinearIsometryEquiv`: the linear isometry version of `TensorProduct.assoc`.
+* `OrthonormalBasis.tensorProduct`: the orthonormal basis of the tensor product of two orthonormal
+bases.
+
+## TODO:
+
+* Define the continuous linear map version of `TensorProduct.map`.
+* Complete space of tensor products.
+* Define the normed space without needing inner products, this should be analogous to
+`Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.
 
 -/
 
