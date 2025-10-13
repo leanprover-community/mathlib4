@@ -17,8 +17,8 @@ This is true as long as `C` is additive.
 Here, `C ⥤ₗ D` is the category of finite-limits-preserving functors from `C` to `D`.
 
 To construct a functor from `C ⥤ₗ Type v` to `C ⥤ₗ AddCommGrpCat.{v}`, notice that a left-exact
-functor `F : C ⥤ Type v` induces a functor `CommGrp_ C ⥤ CommGrp_ (Type v)`. But `CommGrp_ C` is
-equivalent to `C`, and `CommGrp_ (Type v)` is equivalent to `AddCommGrpCat.{v}`, so we turn this
+functor `F : C ⥤ Type v` induces a functor `CommGrp C ⥤ CommGrp (Type v)`. But `CommGrp C` is
+equivalent to `C`, and `CommGrp (Type v)` is equivalent to `AddCommGrpCat.{v}`, so we turn this
 into a functor `C ⥤ AddCommGrpCat.{v}`. By construction, composing with the forgetful
 functor recovers the functor we started with, so since the forgetful functor reflects finite
 limits and `F` preserves finite limits, our constructed functor also preserves finite limits. It
@@ -49,7 +49,7 @@ private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidal
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrpCat.{v} :=
   Functor.mapCommGrpFunctor ⋙
-    (Functor.whiskeringLeft _ _ _).obj Preadditive.commGrpEquivalence.functor ⋙
+    (Functor.whiskeringLeft _ _ _).obj Preadditive.CommGrp_Equivalence.functor ⋙
       (Functor.whiskeringRight _ _ _).obj
         (commGrpTypeEquivalenceCommGrp.functor ⋙ commGroupAddCommGroupEquivalence.functor)
 
@@ -72,10 +72,10 @@ This is the complicated bit, where we show that forgetting the group structure i
 noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimits F] (X : C) :
     letI : (F ⋙ forget AddCommGrpCat).Braided := .ofChosenFiniteProducts _
     commGrpTypeEquivalenceCommGrp.inverse.obj (AddCommGrpCat.toCommGrp.obj (F.obj X)) ≅
-      (F ⋙ forget AddCommGrpCat).mapCommGrp.obj (Preadditive.commGrpEquivalence.functor.obj X) := by
+      (F ⋙ forget AddCommGrpCat).mapCommGrp.obj (Preadditive.CommGrp_Equivalence.functor.obj X) := by
   letI : (F ⋙ forget AddCommGrpCat).Braided := .ofChosenFiniteProducts _
   letI : F.Monoidal := .ofChosenFiniteProducts _
-  refine CommGrp_.mkIso Multiplicative.toAdd.toIso (by
+  refine CommGrp.mkIso Multiplicative.toAdd.toIso (by
     erw [Functor.mapCommGrp_obj_grp_one]
     cat_disch) ?_
   dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_coe, -forget_map]
