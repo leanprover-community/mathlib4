@@ -26,8 +26,8 @@ noncomputable def Functor.mapExt (X Y : C) (n : ℕ) :
   letI := HasDerivedCategory.standard C
   letI := HasDerivedCategory.standard D
   Ext.homEquiv.symm ∘ (fun f ↦
-    (F.mapDerivedCategoryFactorSingleFunctor 0).symm.hom.app X
+    (F.mapDerivedCategorySingleFunctor 0).symm.hom.app X
        ≫ f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) (n : ℤ)).map
-        ((F.mapDerivedCategoryFactorSingleFunctor 0).hom.app Y))) ∘ Ext.homEquiv
+        ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))) ∘ Ext.homEquiv
 
 end CategoryTheory
