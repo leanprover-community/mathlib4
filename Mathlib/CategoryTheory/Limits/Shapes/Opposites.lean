@@ -933,8 +933,8 @@ end Fork
 
 namespace Cofork
 
-/-- `Cofork.ofπ f pullback.condition` is a limit cocone if and only if
-`Fork.ofι f.op pushout.condition` in the opposite category is a colimit cocone. -/
+/-- `Cofork.ofπ f pullback.condition` is a colimit cocone if and only if
+`Fork.ofι f.op pushout.condition` in the opposite category is a limit cocone. -/
 def isColimitCoforkPushoutEquivIsColimitForkOpPullback
     {X Y : C} {f : X ⟶ Y} [HasPullback f f] [HasPushout f.op f.op] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.op pushout.condition) where
@@ -948,8 +948,8 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-/-- `Cofork.ofπ f pullback.condition` is a limit cocone in `Cᵒᵖ` if and only if
-`Fork.ofι f.unop pushout.condition` in `C` is a colimit cocone. -/
+/-- `Cofork.ofπ f pullback.condition` is a colimit cocone in `Cᵒᵖ` if and only if
+`Fork.ofι f.unop pushout.condition` in `C` is a limit cocone. -/
 def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
     {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPullback f f] [HasPushout f.unop f.unop] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.unop pushout.condition) where
