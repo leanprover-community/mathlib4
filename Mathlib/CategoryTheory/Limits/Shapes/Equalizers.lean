@@ -171,6 +171,40 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
     walkingParallelPairOpEquiv.counitIso.app (op one) = Iso.refl (op one) :=
   rfl
 
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_zero :
+    walkingParallelPairOpEquiv.unitIso.hom.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_one :
+    walkingParallelPairOpEquiv.unitIso.hom.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_zero :
+    walkingParallelPairOpEquiv.unitIso.inv.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_one :
+    walkingParallelPairOpEquiv.unitIso.inv.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op one) = 𝟙 (op one) :=
+  rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op one) = 𝟙 (op one) :=
+  rfl
+
 variable {C : Type u} [Category.{v} C]
 variable {X Y : C}
 

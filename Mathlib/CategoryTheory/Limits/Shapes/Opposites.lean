@@ -382,30 +382,65 @@ instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
   infer_instance
 
 /-- The canonical isomorphism relating `parallelPair f.op g.op` and `(parallelPair f g).op` -/
-@[simps!]
-def parallelPairOp {X Y : C} (f g : X ⟶ Y) :
+def parallelPairOpIso {X Y : C} (f g : X ⟶ Y) :
     parallelPair f.op g.op ≅ walkingParallelPairOpEquiv.functor ⋙ (parallelPair f g).op :=
-  NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
+  NatIso.ofComponents (fun
+    | .zero => .refl _
+    | .one => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
+@[simp]
+lemma parallelPairOpIso_hom_app_zero {X Y : C} (f g : X ⟶ Y) :
+  (parallelPairOpIso f g).hom.app WalkingParallelPair.zero = 𝟙 _ := rfl
+
+@[simp]
+lemma parallelPairOpIso_hom_app_one {X Y : C} (f g : X ⟶ Y) :
+  (parallelPairOpIso f g).hom.app WalkingParallelPair.one = 𝟙 _ := rfl
+
+@[simp]
+lemma parallelPairOpIso_inv_app_zero {X Y : C} (f g : X ⟶ Y) :
+  (parallelPairOpIso f g).inv.app WalkingParallelPair.zero = 𝟙 _ := rfl
+
+@[simp]
+lemma parallelPairOpIso_inv_app_one {X Y : C} (f g : X ⟶ Y) :
+  (parallelPairOpIso f g).inv.app WalkingParallelPair.one = 𝟙 _ := rfl
+
 /-- The canonical isomorphism relating `(parallelPair f g).op` and `parallelPair f.op g.op` -/
-@[simps!]
-def opParallelPair {X Y : C} (f g : X ⟶ Y) :
+def opParallelPairIso {X Y : C} (f g : X ⟶ Y) :
     (parallelPair f g).op ≅ walkingParallelPairOpEquiv.inverse ⋙ parallelPair f.op g.op :=
   calc
-    (parallelPair f g).op ≅ 𝟭 _ ⋙ (parallelPair f g).op := by rfl
+    (parallelPair f g).op ≅ 𝟭 _ ⋙ (parallelPair f g).op := .refl _
     _ ≅ (walkingParallelPairOpEquiv.inverse ⋙ walkingParallelPairOpEquiv.functor) ⋙ _ :=
       (isoWhiskerRight walkingParallelPairOpEquiv.symm.unitIso _)
     _ ≅ walkingParallelPairOpEquiv.inverse ⋙ walkingParallelPairOpEquiv.functor ⋙ _ :=
       (Functor.associator _ _ _)
     _ ≅ walkingParallelPairOpEquiv.inverse ⋙ parallelPair f.op g.op :=
-      isoWhiskerLeft _ (parallelPairOp f g).symm
+      isoWhiskerLeft _ (parallelPairOpIso f g).symm
+
+@[simp]
+lemma opParallelPairIso_hom_app_zero {X Y : C} (f g : X ⟶ Y) :
+  (opParallelPairIso f g).hom.app (op WalkingParallelPair.zero) = 𝟙 _ := by simp [opParallelPairIso]
+
+@[simp]
+lemma opParallelPairIso_hom_app_one {X Y : C} (f g : X ⟶ Y) :
+  (opParallelPairIso f g).hom.app (op WalkingParallelPair.one) = 𝟙 _ := by simp [opParallelPairIso]
+
+@[simp]
+lemma opParallelPairIso_inv_app_zero {X Y : C} (f g : X ⟶ Y) :
+  (opParallelPairIso f g).inv.app (op WalkingParallelPair.zero) = 𝟙 _ := by simp [opParallelPairIso]
+
+@[simp]
+lemma opParallelPairIso_inv_app_one {X Y : C} (f g : X ⟶ Y) :
+  (opParallelPairIso f g).inv.app (op WalkingParallelPair.one) = 𝟙 _ := by simp [opParallelPairIso]
 
 /-- The canonical isomorphism relating `Span f.op g.op` and `(Cospan f g).op` -/
 @[simps!]
 def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     span f.op g.op ≅ walkingCospanOpEquiv.inverse ⋙ (cospan f g).op :=
-  NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
+  NatIso.ofComponents (fun
+    | .none => .refl _
+    | .left => .refl _
+    | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
 /-- The canonical isomorphism relating `(Cospan f g).op` and `Span f.op g.op` -/
@@ -413,7 +448,7 @@ def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
 def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (cospan f g).op ≅ walkingCospanOpEquiv.functor ⋙ span f.op g.op :=
   calc
-    (cospan f g).op ≅ 𝟭 _ ⋙ (cospan f g).op := by rfl
+    (cospan f g).op ≅ 𝟭 _ ⋙ (cospan f g).op := .refl _
     _ ≅ (walkingCospanOpEquiv.functor ⋙ walkingCospanOpEquiv.inverse) ⋙ (cospan f g).op :=
       (isoWhiskerRight walkingCospanOpEquiv.unitIso _)
     _ ≅ walkingCospanOpEquiv.functor ⋙ walkingCospanOpEquiv.inverse ⋙ (cospan f g).op :=
@@ -424,7 +459,10 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
 @[simps!]
 def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     cospan f.op g.op ≅ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
-  NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
+  NatIso.ofComponents (fun
+    | .none => .refl _
+    | .left => .refl _
+    | .right => .refl _)
     (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
 /-- The canonical isomorphism relating `(Span f g).op` and `Cospan f.op g.op` -/
@@ -498,11 +536,11 @@ theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.op.inr = c.snd.op := by simp
 
 /-- If `c` is a pullback cone, then `c.op.unop` is isomorphic to `c`. -/
-def opUnop {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.unop ≅ c :=
+def opUnopIso {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.unop ≅ c :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
 
 /-- If `c` is a pullback cone in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
-def unopOp {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.unop.op ≅ c :=
+def unopOpIso {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.unop.op ≅ c :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
 
 end PullbackCone
@@ -510,11 +548,11 @@ end PullbackCone
 namespace PushoutCocone
 
 /-- If `c` is a pushout cocone, then `c.op.unop` is isomorphic to `c`. -/
-def opUnop {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.unop ≅ c :=
+def opUnopIso {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.unop ≅ c :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
 
 /-- If `c` is a pushout cocone in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
-def unopOp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.unop.op ≅ c :=
+def unopOpIso {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.unop.op ≅ c :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
 
 /-- A pushout cone is a colimit cocone if and only if the corresponding pullback cone
@@ -527,7 +565,7 @@ def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : Pushout
     exact (IsLimit.postcomposeHomEquiv _ _).invFun
       ((IsLimit.whiskerEquivalenceEquiv walkingSpanOpEquiv.symm).toFun h.op)
   · intro h
-    exact (IsColimit.equivIsoColimit c.opUnop).toFun
+    exact (IsColimit.equivIsoColimit c.opUnopIso).toFun
       (((IsLimit.postcomposeHomEquiv _ _).invFun
         ((IsLimit.whiskerEquivalenceEquiv _).toFun h)).unop)
 
@@ -541,7 +579,7 @@ def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c :
     exact ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv _).toFun h)).unop
   · intro h
-    exact (IsColimit.equivIsoColimit c.unopOp).toFun
+    exact (IsColimit.equivIsoColimit c.unopOpIso).toFun
       ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv walkingCospanOpEquiv.symm).toFun h.op))
 
@@ -553,13 +591,13 @@ namespace PullbackCone
 in the opposite category is a colimit cocone. -/
 def isLimitEquivIsColimitOp {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     IsLimit c ≃ IsColimit c.op :=
-  (IsLimit.equivIsoLimit c.opUnop).symm.trans c.op.isColimitEquivIsLimitUnop.symm
+  (IsLimit.equivIsoLimit c.opUnopIso).symm.trans c.op.isColimitEquivIsLimitUnop.symm
 
 /-- A pullback cone is a limit cone in `Cᵒᵖ` if and only if the corresponding pushout cocone
 in `C` is a colimit cocone. -/
 def isLimitEquivIsColimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     IsLimit c ≃ IsColimit c.unop :=
-  (IsLimit.equivIsoLimit c.unopOp).symm.trans c.unop.isColimitEquivIsLimitOp.symm
+  (IsLimit.equivIsoLimit c.unopOpIso).symm.trans c.unop.isColimitEquivIsLimitOp.symm
 
 end PullbackCone
 
@@ -614,32 +652,26 @@ noncomputable def pullbackIsoOpPushout {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y �
 @[reassoc (attr := simp)]
 theorem pullbackIsoOpPushout_inv_fst {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPushout f.unop g.unop] :
-    (pullbackIsoOpPushout f g).inv ≫ pullback.fst f g =
-      (pushout.inl _ _ : _ ⟶ pushout f.unop g.unop).op :=
+    (pullbackIsoOpPushout f g).inv ≫ pullback.fst f g = (pushout.inl f.unop g.unop).op :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp)
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOpPushout_inv_snd {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPushout f.unop g.unop] :
-    (pullbackIsoOpPushout f g).inv ≫ pullback.snd f g =
-      (pushout.inr _ _ : _ ⟶ pushout f.unop g.unop).op :=
+    (pullbackIsoOpPushout f g).inv ≫ pullback.snd f g = (pushout.inr f.unop g.unop).op :=
   (IsLimit.conePointUniqueUpToIso_inv_comp _ _ _).trans (by simp)
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOpPushout_hom_inl {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPushout f.unop g.unop] :
-    pushout.inl _ _ ≫ (pullbackIsoOpPushout f g).hom.unop = (pullback.fst f g).unop := by
-  apply Quiver.Hom.op_inj
-  dsimp
-  rw [← pullbackIsoOpPushout_inv_fst, Iso.hom_inv_id_assoc]
+    pushout.inl _ _ ≫ (pullbackIsoOpPushout f g).hom.unop = (pullback.fst f g).unop :=
+  Quiver.Hom.op_inj <| by simp [← pullbackIsoOpPushout_inv_fst]
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOpPushout_hom_inr {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    [HasPushout f.unop g.unop] : pushout.inr _ _ ≫ (pullbackIsoOpPushout f g).hom.unop =
-    (pullback.snd f g).unop := by
-  apply Quiver.Hom.op_inj
-  dsimp
-  rw [← pullbackIsoOpPushout_inv_snd, Iso.hom_inv_id_assoc]
+    [HasPushout f.unop g.unop] :
+    pushout.inr _ _ ≫ (pullbackIsoOpPushout f g).hom.unop = (pullback.snd f g).unop :=
+  Quiver.Hom.op_inj <| by simp [← pullbackIsoOpPushout_inv_snd]
 
 end Pullback
 
@@ -720,28 +752,31 @@ end Pushout
 namespace Cofork
 
 /-- The obvious map `Cofork f g → Fork f.unop g.unop` -/
-@[simps!]
 def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :=
-  Cocone.unop ((Cocones.precompose (opParallelPair f.unop g.unop).hom).obj
-    (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
+   Cocone.unop ((Cocones.precompose (opParallelPairIso f.unop g.unop).hom).obj
+      (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
+
+@[simp]
+lemma unop_π_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
+    c.unop.π.app .one = (Quiver.Hom.unop (c.ι.app .zero)) := by
+  simp [unop, walkingParallelPairOpEquiv]
+
+@[simp]
+lemma unop_π_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
+    c.unop.π.app .zero = (Quiver.Hom.unop (c.ι.app .one)) := by
+  simp [unop, walkingParallelPairOpEquiv]
 
 theorem unop_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.unop.ι = c.π.unop := by
-  simp only [unop, walkingParallelPairOpEquiv_inverse, parallelPair_obj_zero, Fork.ι, Cocone.unop_π,
-    Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.removeOp_app, NatTrans.comp_app,
-    opParallelPair_hom_app, walkingParallelPairOp_zero, walkingParallelPairOp_one, Iso.refl_inv,
-    Category.comp_id, whiskerLeft_app, leftOp_obj, app_one_eq_π, unop_comp]
-  nth_rw 2 [← Category.comp_id c.π.unop]
-  congr
+  c.unop.ι = c.π.unop := by simp [unop, Fork.ι]
 
 /-- The obvious map `Cofork f g → Fork f.op g.op` -/
 @[simps!]
 def op {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.op g.op :=
-  (Cones.postcompose (parallelPairOp f g).symm.hom).obj
+  (Cones.postcompose (parallelPairOpIso f g).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.functor (Cocone.op c))
 
 theorem op_ι {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.op.ι = c.π.op := by simp [Fork.ι, Cofork.op]
+  c.op.ι = c.π.op := by simp [Fork.ι, Cofork.op]
 
 end Cofork
 
@@ -750,26 +785,20 @@ namespace Fork
 /-- The obvious map `Fork f g → Cofork f.unop g.unop` -/
 @[simps!]
 def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.unop g.unop :=
-  Cone.unop ((Cones.postcompose (opParallelPair f.unop g.unop).symm.hom).obj
+  Cone.unop ((Cones.postcompose (opParallelPairIso f.unop g.unop).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.inverse c))
 
 theorem unop_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
-    c.unop.π = c.ι.unop := by
-  simp only [unop, walkingParallelPairOpEquiv_inverse, parallelPair_obj_zero, Cofork.π, Cone.unop_ι,
-    Cones.postcompose_obj_π, Cone.whisker_π, NatTrans.removeOp_app, NatTrans.comp_app,
-    opParallelPair_inv_app, Iso.symm_hom, walkingParallelPairOp_one, Iso.refl_hom,
-    Category.id_comp, whiskerLeft_app, leftOp_obj, app_zero_eq_ι, unop_comp]
-  nth_rw 2 [← Category.id_comp c.ι.unop]
-  congr
+  c.unop.π = c.ι.unop := by simp [Cofork.π]
 
 /-- The obvious map `Fork f g → Cofork f.op g.op` -/
 @[simps!]
 def op {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.op g.op :=
-  (Cocones.precompose (parallelPairOp f g).hom).obj
+  (Cocones.precompose (parallelPairOpIso f g).hom).obj
     (Cocone.whisker walkingParallelPairOpEquiv.functor (Cone.op c))
 
 theorem op_π {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
-    c.op.π = c.ι.op := by simp [Cofork.π, Fork.op]
+  c.op.π = c.ι.op := by simp [Cofork.π, Fork.op]
 
 end Fork
 
@@ -782,11 +811,11 @@ theorem unop_op_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : c.unop.op.
   simp [Fork.op_π, Cofork.unop_ι]
 
 /-- If `c` is a cofork, then `c.op.unop` is isomorphic to `c`. -/
-def opUnop {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : c.op.unop ≅ c :=
+def opUnopIso {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : c.op.unop ≅ c :=
   Cofork.ext (Iso.refl _) (by simp [op_unop_π])
 
 /-- If `c` is a cofork in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
-def unopOp {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : c.unop.op ≅ c :=
+def unopOpIso {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : c.unop.op ≅ c :=
   Cofork.ext (Iso.refl _) (by simp [unop_op_π])
 
 end Cofork
@@ -800,11 +829,11 @@ theorem unop_op_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : c.unop.op.ι
   simp [Fork.unop_π, Cofork.op_ι]
 
 /-- If `c` is a fork, then `c.op.unop` is isomorphic to `c`. -/
-def opUnop {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : c.op.unop ≅ c :=
+def opUnopIso {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : c.op.unop ≅ c :=
   Fork.ext (Iso.refl _) (by simp [op_unop_ι])
 
 /-- If `c` is a fork in `Cᵒᵖ`, then `c.unop.op` is isomorphic to `c`. -/
-def unopOp {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : c.unop.op ≅ c :=
+def unopOpIso {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : c.unop.op ≅ c :=
   Fork.ext (Iso.refl _) (by simp [unop_op_ι])
 
 end Fork
@@ -819,7 +848,7 @@ def isColimitEquivIsLimitOp {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
   apply equivOfSubsingletonOfSubsingleton
   · exact fun h ↦ (IsLimit.postcomposeHomEquiv _ _).invFun
       ((IsLimit.whiskerEquivalenceEquiv _).toFun h.op)
-  · exact fun h ↦ (IsColimit.equivIsoColimit c.opUnop).toFun
+  · exact fun h ↦ (IsColimit.equivIsoColimit c.opUnopIso).toFun
       (((IsLimit.postcomposeHomEquiv _ _).invFun
         ((IsLimit.whiskerEquivalenceEquiv walkingParallelPairOpEquiv.symm).toFun h)).unop)
 
@@ -831,7 +860,7 @@ def isColimitEquivIsLimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
   apply equivOfSubsingletonOfSubsingleton
   · exact fun h ↦ ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv walkingParallelPairOpEquiv.symm).toFun h)).unop
-  · exact fun h ↦ (IsColimit.equivIsoColimit c.unopOp).toFun
+  · exact fun h ↦ (IsColimit.equivIsoColimit c.unopOpIso).toFun
       ((IsColimit.precomposeHomEquiv _ _).invFun ((IsColimit.whiskerEquivalenceEquiv _).toFun h.op))
 
 /-- The canonical isomorphism between `(Cofork.ofπ π w).op` and `Fork.ofι π.op w'`. -/
@@ -869,13 +898,13 @@ namespace Fork
 a colimit cocone. -/
 def isLimitEquivIsColimitOp {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
     IsLimit c ≃ IsColimit c.op :=
-  (IsLimit.equivIsoLimit c.opUnop).symm.trans c.op.isColimitEquivIsLimitUnop.symm
+  (IsLimit.equivIsoLimit c.opUnopIso).symm.trans c.op.isColimitEquivIsLimitUnop.symm
 
 /-- A fork is a limit cone in `Cᵒᵖ` if and only if the corresponding cofork in `C` is
 a colimit cocone. -/
 def isLimitEquivIsColimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     IsLimit c ≃ IsColimit c.unop :=
-  (IsLimit.equivIsoLimit c.unopOp).symm.trans c.unop.isColimitEquivIsLimitOp.symm
+  (IsLimit.equivIsoLimit c.unopOpIso).symm.trans c.unop.isColimitEquivIsLimitOp.symm
 
 /-- The canonical isomorphism between `(Fork.ofι ι w).op` and `Cofork.ofπ ι.op w'`. -/
 def ofιOpIsoOfπ {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
