@@ -302,12 +302,6 @@ variable {c d : Concept α β r} {c' : Concept α α r'}
 
 attribute [simp] upperPolar_extent lowerPolar_intent
 
-instance : LE (Concept α β r) where
-  le c d := c.extent ⊆ d.extent
-
-instance : LT (Concept α β r) where
-  lt c d := c.extent ⊂ d.extent
-
 /-- See `Concept.ext'` for a version using the intent. -/
 @[ext]
 theorem ext (h : c.extent = d.extent) : c = d := by
@@ -384,27 +378,8 @@ theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
   · contradiction
   · assumption
 
-@[simps!]
-instance : Max (Concept α β r) where
-  max c d := (c.isIntent_intent.inter d.isIntent_intent).concept
-
-alias sup_extent := max_extent
-alias sup_intent := max_intent
-
-@[simps!]
-instance : Min (Concept α β r) where
-  min c d := (c.isExtent_extent.inter d.isExtent_extent).concept
-
-alias inf_extent := min_extent
-alias inf_intent := min_intent
-
-instance : SemilatticeInf (Concept α β r) :=
-  extent_injective.semilatticeInf _ fun _ _ ↦ rfl
-
-instance : SemilatticeSup (Concept α β r) :=
-  (OrderDual.toDual.injective.comp intent_injective).semilatticeSup' _ fun _ _ ↦ rfl
-
-    #exit
+instance : PartialOrder (Concept α β r) :=
+  PartialOrder.lift _ extent_injective
 
 @[simp]
 theorem extent_subset_extent_iff : c.extent ⊆ d.extent ↔ c ≤ d :=
@@ -450,6 +425,30 @@ theorem strictAnti_intent : StrictAnti (@intent α β r) := fun _ _ =>
 
 @[deprecated (since := "2025-07-10")]
 alias strictMono_snd := strictAnti_intent
+
+@[simps!]
+instance : Max (Concept α β r) where
+  max c d := (c.isIntent_intent.inter d.isIntent_intent).concept
+
+alias sup_extent := max_extent
+alias sup_intent := max_intent
+
+@[simps!]
+instance : Min (Concept α β r) where
+  min c d := (c.isExtent_extent.inter d.isExtent_extent).concept
+
+alias inf_extent := min_extent
+alias inf_intent := min_intent
+
+instance : SemilatticeInf (Concept α β r) :=
+  extent_injective.semilatticeInf _ fun _ _ ↦ rfl
+
+instance : SemilatticeSup (Concept α β r) :=
+  show SemilatticeSup (Concept α β r)ᵒᵈ from
+    (OrderDual.toDual.injective.comp intent_injective).semilatticeSup' _
+      (by simp) (by simp) fun _ _ ↦ rfl
+
+instance : Lattice (Concept α β r) where
 
 @[simps!]
 instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
