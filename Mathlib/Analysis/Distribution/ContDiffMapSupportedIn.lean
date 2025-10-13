@@ -64,9 +64,9 @@ open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
 open scoped BoundedContinuousFunction Topology NNReal
 
 variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-variable {n : ℕ∞} {K : Compacts E}
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  {n : ℕ∞} {K : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
 compact set `K`. -/
@@ -137,9 +137,8 @@ theorem toFun_eq_coe {f : 𝓓^{n}_{K}(E, F)} : f.toFun = (f : E → F) :=
   rfl
 
 /-- See note [custom simps projection]. -/
-def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E →F := f
+def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E → F := f
 
--- this must come after the coe_to_fun definition.
 initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
 
 @[ext]
