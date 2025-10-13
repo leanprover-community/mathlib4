@@ -383,7 +383,7 @@ theorem spectralNorm.eq_of_normalClosure' (x : E) :
       x, ← minpoly.algebraMap_eq (algebraMap (↥E) L).injective x]
   simp_rw [h_min]
 
-/-- If `L/E/K` is a tower of fields and `x = algebraMap E L g`, then then the spectral norm
+/-- If `L/E/K` is a tower of fields and `x = algebraMap E L g`, then the spectral norm
   of `g : E` when regarded as an element of the normal closure of `E` equals the spectral norm
   of `x : L`. -/
 theorem spectralNorm.eq_of_normalClosure {E : IntermediateField K L} {x : L} (g : E)

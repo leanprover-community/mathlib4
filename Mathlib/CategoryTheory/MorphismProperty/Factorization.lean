@@ -20,7 +20,7 @@ fibration (or a trivial cofibration followed by a fibration).
 We also provide a structure `FunctorialFactorizationData W₁ W₂` which contains
 the data of a functorial factorization as above. With this design, when we
 formalize certain constructions (e.g. cylinder objects in model categories),
-we may first construct them using using `data : FactorizationData W₁ W₂`.
+we may first construct them using the data `data : FactorizationData W₁ W₂`.
 Without duplication of code, it shall be possible to show these cylinders
 are functorial when a term `data : FunctorialFactorizationData W₁ W₂` is available,
 the existence of which is asserted in the type-class `HasFunctorialFactorization W₁ W₂`.

@@ -73,7 +73,7 @@ namespace Mathlib.Linter
 open Lean Elab Command Linter
 
 /--
-The `directoryDependency` linter detects detects imports between directories that are supposed to be
+The `directoryDependency` linter detects imports between directories that are supposed to be
 independent. If this is the case, it emits a warning.
 -/
 register_option linter.directoryDependency : Bool := {

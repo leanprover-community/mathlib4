@@ -196,7 +196,7 @@ end FreeOn
 section uniqueBaseOn
 
 /-- The matroid on `E` whose unique base is the subset `I` of `E`.
-Intended for use when `I ⊆ E`; if this not not the case, then the base is `I ∩ E`. -/
+Intended for use when `I ⊆ E`; if this is not the case, then the base is `I ∩ E`. -/
 def uniqueBaseOn (I E : Set α) : Matroid α := freeOn I ↾ E
 
 @[simp] theorem uniqueBaseOn_ground : (uniqueBaseOn I E).E = E :=
