@@ -1246,6 +1246,7 @@ section DivisionMonoid
 section LeftCancel
 variable [DivisionMonoid α] [IsLeftCancelMul α] [DecidableEq α] {s t : Finset α}
 
+variable [IsLeftCancelMul α] in
 @[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : #t ≤ #(s / t) := by
   obtain ⟨a, ha⟩ := hs
   exact card_le_card_image₂_left _ ha (div_right_injective (b := a))
