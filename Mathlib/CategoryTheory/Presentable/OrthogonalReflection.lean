@@ -6,9 +6,10 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Localization.Bousfield
+import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 
 /-!
 # The Orthogonal-reflection construction
@@ -16,7 +17,19 @@ import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
 any `Z : C`. This morphism belongs to `LeftBousfield.W W.rightOrthogonal` and
-is an isomorphism iff `Z` belongs to `W.rightOrthogonal`.
+is an isomorphism iff `Z` belongs to `W.rightOrthogonal`. By doing a transfinite
+iteration of this construction, we show that the inclusion
+of the full subcategory `W.rightOrthogonal` in `C` has a left adjoint functor
+when the domains and codomains of the morphisms satisfying `W` are `κ`-presentable.
+
+## TODO (@joelriou)
+* Show that under the existence of colimits of size `w` and a suitable smallness
+assumption on `W`, the lemma `OrthogonalReflection.isRightAdjoint_ι` can be applied
+in order to prove (i) => (ii) in Theorem 1.39 from the book by Adámek and Rosický,
+which is that if `C` is locally `κ`-presentable, that the family of morphisms satisfying
+`W` is `w`-small and have `κ`-presentable domains and codomains, then `W.rightOrthogonal`
+is a reflective subcategory closed under `κ`-filtered colimits, and this
+subcategory is also locally `κ`-presentable.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -27,7 +40,7 @@ universe w v' u' v u
 
 namespace CategoryTheory
 
-open Limits Localization
+open Opposite Limits Localization
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
@@ -54,6 +67,8 @@ lemma MorphismProperty.isClosedUnderColimitsOfShape_rightOrthogonal
 namespace OrthogonalReflection
 
 variable (Z : C)
+
+section
 
 /-- The index type parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
@@ -230,17 +245,136 @@ lemma isIso_toSucc_iff :
         ← D₁.ι_comp_t_assoc, pushout.condition]
     · simp [reassoc_of% hf]
 
+end
+
 open SmallObject
 
-variable [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
+variable [HasPushouts C] [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
   [∀ Z, HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
   [∀ Z, HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The successor structure of the orthogonal-reflection construction. -/
+@[simps]
 noncomputable def succStruct (Z₀ : C) : SuccStruct C where
   X₀ := Z₀
   succ Z := succ W Z
   toSucc Z := toSucc W Z
+
+variable (κ : Cardinal.{w}) [OrderBot κ.ord.toType]
+  [HasIterationOfShape κ.ord.toType C]
+
+/-- The transfinite iteration of `succStruct W Z` to the power `κ.ord.toType`. -/
+noncomputable def reflectionObj : C := (succStruct W Z).iteration κ.ord.toType
+
+/-- The map which shall exhibit `reflectionObj W Z κ` as the image of `Z` by
+the left adjoint of the inclusion of `W.rightOrthogonal`, see `corepresentableBy`. -/
+noncomputable def reflection : Z ⟶ reflectionObj W Z κ :=
+  (succStruct W Z).ιIteration κ.ord.toType
+
+/-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` is a transfinite
+compositions of morphisms in `LeftBousfield.W W.rightOrthogonal`. -/
+noncomputable def transfiniteCompositionOfShapeReflection :
+    (LeftBousfield.W W.rightOrthogonal).TransfiniteCompositionOfShape κ.ord.toType
+      (reflection W Z κ) :=
+  ((succStruct W Z).transfiniteCompositionOfShapeιIteration κ.ord.toType).ofLE (by
+    rintro Z₀ _ _ ⟨_⟩
+    exact leftBousfieldW_rightOrthogonal_toSucc W Z₀)
+
+/-- The functor `κ.ord.toType ⥤ C` that is the diagram of the
+transfinite composition `transfiniteCompositionOfShapeReflection`. -/
+noncomputable abbrev iteration : κ.ord.toType ⥤ C :=
+  (transfiniteCompositionOfShapeReflection W Z κ).F
+
+section
+
+variable [Fact κ.IsRegular]
+
+/-- `(iteration W Z κ).obj (Order.succ j)` identifies to the image of
+`(iteration W Z κ).obj j` by `succ`. -/
+noncomputable def iterationObjSuccIso (j : κ.ord.toType) :
+  (iteration W Z κ).obj (Order.succ j) ≅ succ W ((iteration W Z κ).obj j) :=
+    (succStruct W Z).iterationFunctorObjSuccIso j (by
+      have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
+      exact not_isMax j)
+
+@[reassoc]
+lemma iteration_map_succ (j : κ.ord.toType) :
+    (iteration W Z κ).map (homOfLE (Order.le_succ j)) =
+      toSucc W _ ≫ (iterationObjSuccIso W Z κ j).inv :=
+  (succStruct W Z).iterationFunctor_map_succ _ _
+
+variable {κ W Z} in
+lemma iteration_map_succ_injectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.toType}
+    (g₁ g₂ : Y ⟶ (iteration W Z κ).obj j) (hg : f ≫ g₁ = f ≫ g₂) :
+    g₁ ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) =
+      g₂ ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) := by
+  simp [iteration_map_succ, reassoc_of% (toSucc_injectivity f hf _ _ hg)]
+
+variable {κ W Z} in
+lemma iteration_map_succ_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.toType}
+    (g : X ⟶ (iteration W Z κ).obj j) :
+    ∃ (g' : Y ⟶ (iteration W Z κ).obj (Order.succ j)),
+      f ≫ g' = g ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) := by
+  simp only [iteration_map_succ]
+  obtain ⟨g', hg'⟩ := toSucc_surjectivity f hf g
+  exact ⟨g' ≫ (iterationObjSuccIso W Z κ j).inv, by simp [reassoc_of% hg']⟩
+
+end
+
+lemma leftBousfieldW_rightOrthogonal_reflection :
+     LeftBousfield.W W.rightOrthogonal (reflection W Z κ) :=
+  (LeftBousfield.W W.rightOrthogonal).transfiniteCompositionsOfShape_le κ.ord.toType _
+    ⟨transfiniteCompositionOfShapeReflection W Z κ⟩
+
+variable {W} {κ} [Fact κ.IsRegular]
+  (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
+
+include hW
+
+-- why is it not synthetized automatically???
+instance (D : Type w) [SmallCategory.{w} D] : EssentiallySmall.{w} D :=
+  essentiallySmallSelf D
+
+lemma rightOrthogonal_reflectionObj :
+    W.rightOrthogonal (reflectionObj W Z κ) := by
+  let H := transfiniteCompositionOfShapeReflection W Z κ
+  intro X Y f hf
+  obtain ⟨_, _⟩ := hW f hf
+  refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
+  · obtain ⟨j, g₁, g₂, rfl, rfl⟩ :
+      ∃ (j : κ.ord.toType) (g₁' g₂' : Y ⟶ H.F.obj j), g₁' ≫ H.incl.app j = g₁ ∧
+        g₂' ≫ H.incl.app j = g₂ := by
+      obtain ⟨j₁, g₁, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ H.isColimit g₁
+      obtain ⟨j₂, g₂, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ H.isColimit g₂
+      exact ⟨max j₁ j₂, g₁ ≫ H.F.map (homOfLE (le_max_left _ _)),
+        g₂ ≫ H.F.map (homOfLE (le_max_right _ _)), by simp⟩
+    dsimp at h
+    obtain ⟨k, u, hk⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ H.isColimit
+      (f ≫ g₁) (f ≫ g₂) (by simpa)
+    have hg := iteration_map_succ_injectivity f hf
+      (g₁ ≫ H.F.map u) (g₂ ≫ H.F.map u) (by simpa using hk)
+    simp only [homOfLE_leOfHom, Category.assoc] at hg
+    have := H.incl.naturality (u ≫ homOfLE (Order.le_succ k))
+    simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id] at this
+    simp only [← this, Functor.map_comp, Category.assoc]
+    rw [reassoc_of% hg]
+  · obtain ⟨j, g, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ H.isColimit g
+    obtain ⟨g', hg'⟩ := iteration_map_succ_surjectivity f hf g
+    exact ⟨g' ≫ H.incl.app (Order.succ j), by simp [reassoc_of% hg']⟩
+
+/-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` exhibits `reflectionObj W Z κ`
+as the image of `Z` by the left adjoint of the inclusion ``. -/
+noncomputable def corepresentableBy :
+  (W.rightOrthogonal.ι ⋙ coyoneda.obj (op Z)).CorepresentableBy
+    ⟨_, rightOrthogonal_reflectionObj Z hW⟩ where
+  homEquiv {A} := Equiv.ofBijective _ (leftBousfieldW_rightOrthogonal_reflection W Z κ _ A.2)
+  homEquiv_comp := by cat_disch
+
+lemma isRightAdjoint_ι :
+    W.rightOrthogonal.ι.IsRightAdjoint := by
+  rw [Functor.isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top]
+  ext Z
+  simpa using (corepresentableBy Z hW).isCorepresentable
 
 end OrthogonalReflection
 
