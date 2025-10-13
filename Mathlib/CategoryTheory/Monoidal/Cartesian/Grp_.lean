@@ -27,8 +27,12 @@ instance. -/
 @[simps]
 def Grp.homMk (f : G ⟶ H) [IsMonHom f] : .mk G ⟶ Grp.mk H := ⟨f⟩
 
+@[deprecated (since := "2025-10-13")] alias Grp_.homMk := Grp.homMk
+
 @[simp]
 lemma Grp.homMk_hom' {G H : Grp C} (f : G ⟶ H) : homMk (G := G.X) (H := H.X) f.hom = f := rfl
+
+@[deprecated (since := "2025-10-13")] alias Grp_.homMk_hom' := Grp.homMk_hom'
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
