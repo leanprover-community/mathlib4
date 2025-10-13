@@ -621,11 +621,10 @@ protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (Subgraph.coeSubgraph G'').Connected := by
   exact hconn.map_Subgraph_coe G'.hom
 
-/-- The graph resulting from removing a vertex of degree one from a nontrivial connected graph is
-connected. -/
-lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [DecidableEq V]
-    {H : G.Subgraph} (hconn : H.Connected) {v : V} [Fintype ↑(H.neighborSet v)]
-    (hdeg : H.degree v = 1) : (H.deleteVerts {v}).Connected := by
+/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
+lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V] {H : G.Subgraph}
+    (hconn : H.Connected) {v : V} [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) :
+    (H.deleteVerts {v}).Connected := by
   refine (H.deleteVerts {v}).connected_iff_forall_exists_walk_subgraph.mpr ⟨?_, ?_⟩
   · have := (H.nontrivial_of_degree_ne_zero (ne_zero_of_eq_one hdeg)).exists_pair_ne
     apply Set.diff_nonempty.mpr
@@ -697,7 +696,7 @@ lemma Connected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [Dec
   · have : Nontrivial (toSubgraph T T_le_H).verts := by simp_all
     have := Fintype.ofFinite ((toSubgraph T T_le_H).neighborSet v)
     apply Connected.coeSubgraph
-    apply connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial (T_conn.toSubgraph T_le_H)
+    apply connected_deleteVerts_singleton_of_degree_eq_one (T_conn.toSubgraph T_le_H)
     simp [← hv]
 
 end Subgraph
