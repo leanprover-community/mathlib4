@@ -65,7 +65,7 @@ in that case one should simply use `Commute.cfcₙ_nnreal` directly.
 The point of this theorem is to have simpler hypotheses. -/
 lemma Commute.abs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute (abs a) b :=
-  .cfcₙ_nnreal (by simp_all [star_star b ▸ h₂.star_star]) _
+  .cfcₙ_nnreal (by simp_all [h₂.star_left]) _
 
 /- The hypotheses could be weakened to `Commute (star a * a) b`, but
 in that case one should simply use `Commute.cfcₙ_nnreal` directly.
@@ -81,8 +81,7 @@ in that case one should simply use `Commute.cfcₙ_nnreal` (twice) directly.
 The point of this theorem is to have simpler hypotheses. -/
 lemma Commute.abs_abs {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute (abs a) (abs b) :=
-  have h₃ := star_star b ▸ h₂.star_star
-  Commute.cfcₙ_nnreal (by simp_all) _ |>.symm.cfcₙ_nnreal _ |>.symm
+  Commute.cfcₙ_nnreal (by simp_all [h₂.star_left]) _ |>.symm.cfcₙ_nnreal _ |>.symm
 
 /-- Normal elements commute with their absolute value. -/
 lemma commute_abs_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
@@ -94,7 +93,7 @@ lemma Commute.abs_mul_eq {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star 
   have hab := h₁.abs_abs h₂
   rw [abs, CFC.sqrt_eq_iff _ _ (star_mul_self_nonneg _)
     (hab.mul_nonneg (abs_nonneg a) (abs_nonneg b)), hab.eq, hab.mul_mul_mul_comm,
-    abs_mul_abs, abs_mul_abs, star_mul, (commute_star_comm.mpr h₂).symm.mul_mul_mul_comm, h₁.eq]
+    abs_mul_abs, abs_mul_abs, star_mul, h₂.star_left.symm.mul_mul_mul_comm, h₁.eq]
 
 lemma abs_mul_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
     abs (a * a) = star a * a := by
@@ -226,16 +225,13 @@ lemma abs_one : abs (1 : A) = 1 := by
 
 variable [StarModule ℝ A]
 
-lemma abs_algebraMap_real (c : ℝ) : abs (algebraMap ℝ A c) = algebraMap ℝ A |c| := by
-  simp [Algebra.algebraMap_eq_smul_one]
-
 @[simp]
 lemma abs_algebraMap_nnreal (x : ℝ≥0) : abs (algebraMap ℝ≥0 A x) = algebraMap ℝ≥0 A x := by
   simp [Algebra.algebraMap_eq_smul_one]
 
 @[simp]
 lemma abs_natCast (n : ℕ) : abs (n : A) = n := by
-  simpa only [map_natCast, Nat.abs_cast] using abs_algebraMap_real (n : ℝ)
+  simpa only [map_natCast, Nat.abs_cast] using abs_algebraMap_nnreal (n : ℝ≥0)
 
 @[simp]
 lemma abs_ofNat (n : ℕ) [n.AtLeastTwo] : abs (ofNat(n) : A) = ofNat(n) := by
@@ -261,6 +257,7 @@ variable {p : A → Prop} [RCLike 𝕜]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
+@[simp]
 lemma abs_algebraMap_rclike (c : 𝕜) : abs (algebraMap 𝕜 A c) = algebraMap ℝ A ‖c‖ := by
   simp [Algebra.algebraMap_eq_smul_one]
 
