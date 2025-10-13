@@ -4863,8 +4863,7 @@ import Mathlib.NumberTheory.FactorisationProperties
 import Mathlib.NumberTheory.Fermat
 import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
-import Mathlib.NumberTheory.FunctionField.Basic
-import Mathlib.NumberTheory.FunctionField.Ostrowski
+import Mathlib.NumberTheory.FunctionField
 import Mathlib.NumberTheory.GaussSum
 import Mathlib.NumberTheory.Harmonic.Bounds
 import Mathlib.NumberTheory.Harmonic.Defs
@@ -4992,6 +4991,7 @@ import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.NumberTheory.RamificationInertia.Unramified
+import Mathlib.NumberTheory.RatFunc.Ostrowski
 import Mathlib.NumberTheory.Rayleigh
 import Mathlib.NumberTheory.SelbergSieve
 import Mathlib.NumberTheory.SiegelsLemma
