@@ -19,6 +19,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.RingTheory.CohenMacaulay.Basic
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.GlobalDimension
+import Mathlib.Algebra.Algebra.Shrink
 /-!
 
 # The Definition of Gorenstein (Local) Ring
@@ -563,6 +564,7 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
   by_contra! lt
   exact (not_subsingleton_iff_nontrivial.mpr ntr) (hb q.length lt)
 
+open Limits in
 lemma injectiveDimension_eq_depth
     (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
     injectiveDimension M = IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
@@ -637,8 +639,46 @@ lemma injectiveDimension_eq_depth
     have sub := HasProjectiveDimensionLT.subsingleton.{v} (ModuleCat.of R
       ((Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)))) r r (le_refl r) M
     absurd not_nontrivial_iff_subsingleton.mpr sub
-    --see book for the surjection and use `ntr`
-    sorry
+    have depth_zero : IsLocalRing.depth (ModuleCat.of R
+      ((Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)))) = 0 := by
+      have := depth_quotient_regular_sequence_add_length_eq_depth (ModuleCat.of R (Shrink.{v} R))
+        rs reg'
+      rw [IsLocalRing.depth_eq_sSup_length_regular (ModuleCat.of R (Shrink.{v} R)), ← len] at this
+      nth_rw 2 [← zero_add (rs.length : ℕ∞)] at this
+      exact (ENat.add_right_cancel_iff _ _ _ (ENat.coe_ne_top rs.length)).mp this
+    have := (moduleDepth_eq_zero_of_hom_nontrivial _ _).mp depth_zero
+    rcases (nontrivial_iff_exists_ne 0).mp this with ⟨f, hf⟩
+    have injf : Function.Injective f := by
+      rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+      intro x hx
+      by_contra ne
+      absurd hf
+      ext y
+      let e := Shrink.algEquiv R (R ⧸ maximalIdeal R)
+      let _ : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
+      calc
+      _ = f (e.symm (e y * (e x)⁻¹ * (e x))) := by
+        simp [AddEquivClass.map_ne_zero_iff.mpr ne]
+      _ = _ := by
+        rcases Ideal.Quotient.mk_surjective (e y * (e x)⁻¹) with ⟨r, hr⟩
+        rw [← hr, ← Ideal.Quotient.algebraMap_eq, ← Algebra.smul_def]
+        simp [LinearMap.mem_ker.mp hx]
+    let g : ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R)) ⟶
+      ModuleCat.of R (Shrink.{v, u} R ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R))) :=
+      ModuleCat.ofHom f
+    let S := ShortComplex.mk g (cokernel.π g) (cokernel.condition g)
+    have S_exact : S.ShortExact := {
+      exact := ShortComplex.exact_cokernel g
+      mono_f := (ModuleCat.mono_iff_injective g).mpr injf
+      epi_g := coequalizer.π_epi}
+    have exac := Ext.contravariant_sequence_exact₁'.{v} S_exact M r (r + 1) (add_comm 1 r)
+    have : IsZero (AddCommGrpCat.of (Ext.{v} S.X₃ M (r + 1))) := by
+      apply @AddCommGrpCat.isZero_of_subsingleton _ ?_
+      let _ := (injectiveDimension_le_iff M r).mp (le_of_eq hr)
+      exact HasInjectiveDimensionLT.subsingleton M (r + 1) (r + 1) (le_refl _) _
+    have surj : Function.Surjective ((Ext.mk₀.{v} S.f).precomp M (zero_add r)) :=
+      (AddCommGrpCat.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
+    exact surj.nontrivial
   · simp only [injectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
     intro b hb
     by_contra! lt
