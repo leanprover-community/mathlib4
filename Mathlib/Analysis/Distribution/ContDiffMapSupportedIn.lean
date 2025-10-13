@@ -161,12 +161,12 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 
 @[simp]
 theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-   (f : BoundedContinuousFunction E F) x  = (f x) := rfl
+   (f : BoundedContinuousFunction E F) x = (f x) := rfl
 
 section AddCommGroup
 
 instance : Zero 𝓓^{n}_{K}(E, F) where
-  zero := ContDiffMapSupportedIn.mk 0 contDiff_zero_fun fun _ _ ↦ rfl
+  zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
 @[simp]
 lemma coe_zero : (0 : 𝓓^{n}_{K}(E, F)) = (0 : E → F) :=
@@ -177,7 +177,7 @@ lemma zero_apply (x : E) : (0 : 𝓓^{n}_{K}(E, F)) x = 0 :=
   rfl
 
 instance : Add 𝓓^{n}_{K}(E, F) where
-  add f g := ContDiffMapSupportedIn.mk (f + g) (f.contDiff.add g.contDiff) <| by
+  add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
@@ -190,18 +190,34 @@ lemma add_apply (f g : 𝓓^{n}_{K}(E, F)) (x : E) : (f + g) x = f x + g x :=
   rfl
 
 instance : Neg 𝓓^{n}_{K}(E, F) where
-  neg f := ContDiffMapSupportedIn.mk (-f) (f.contDiff.neg) <| by
+  neg f := .mk (-f) (f.contDiff.neg) <| by
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
+@[simp]
+lemma coe_neg (f : 𝓓^{n}_{K}(E, F)) : (-f : 𝓓^{n}_{K}(E, F)) = (-f : E → F) :=
+  rfl
+
+@[simp]
+theorem neg_apply {f : 𝓓^{n}_{K}(E, F)} {x : E} : (-f) x = - f x :=
+  rfl
+
 instance instSub : Sub 𝓓^{n}_{K}(E, F) where
-  sub f g := ContDiffMapSupportedIn.mk (f - g) (f.contDiff.sub g.contDiff) <| by
+  sub f g := .mk (f - g) (f.contDiff.sub g.contDiff) <| by
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
+@[simp]
+lemma coe_sub (f g : 𝓓^{n}_{K}(E, F)) : (f - g : 𝓓^{n}_{K}(E, F)) = (f : E → F) - g :=
+  rfl
+
+@[simp]
+theorem sub_apply {f g : 𝓓^{n}_{K}(E, F)} {x : E} : (f - g) x = f x - g x :=
+  rfl
+
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
    SMul R 𝓓^{n}_{K}(E, F) where
-  smul c f := ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
+  smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
@@ -216,8 +232,8 @@ lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [Continuo
   rfl
 
 instance : AddCommGroup 𝓓^{n}_{K}(E, F) :=
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 variable (E F K n)
 
@@ -242,7 +258,7 @@ section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     Module R 𝓓^{n}_{K}(E, F) :=
-  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ => rfl
+  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
 
 end Module
 
