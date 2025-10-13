@@ -64,7 +64,7 @@ def homAddEquiv : (M ⟶ N) ≃+ (M →+ N) :=
   { ConcreteCategory.homEquiv (C := AddCommGrpCat) with
     map_add' _ _ := rfl }
 
-lemma subsingleton_of_isZero {G : AddCommGrp} (h : Limits.IsZero G) :
+lemma subsingleton_of_isZero {G : AddCommGrpCat} (h : Limits.IsZero G) :
     Subsingleton G := by
   apply subsingleton_of_forall_eq 0 (fun g ↦ ?_)
   rw [← AddMonoidHom.id_apply G g, ← AddCommGrp.hom_id]
