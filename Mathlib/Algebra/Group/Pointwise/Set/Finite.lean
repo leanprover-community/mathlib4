@@ -140,13 +140,11 @@ variable [DivisionMonoid α] [IsLeftCancelMul α] [IsRightCancelMul α] {s t : S
 
 @[to_additive]
 lemma finite_div : (s / t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
-  finite_image2 (fun b _ ↦ (div_left_injective (b := b)).injOn)
-    fun a _ ↦ (div_right_injective (b := a)).injOn
+  finite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
 
 @[to_additive]
 lemma infinite_div : (s / t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
-  infinite_image2 (fun b _ ↦ (div_left_injective (b := b)).injOn)
-    fun a _ ↦ (div_right_injective (b := a)).injOn
+  infinite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
 
 end DivisionMonoid
 
