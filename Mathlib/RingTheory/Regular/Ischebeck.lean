@@ -54,9 +54,9 @@ instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     have : Subsingleton (Ext S.X₂ M (n + 1)) :=
       subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
     have epi := (Ext.contravariant_sequence_exact₃' S_exact M n (n + 1) (add_comm 1 n)).epi_f
-      (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton _)
+      (IsZero.eq_zero_of_tgt (AddCommGrpCat.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton _)
     have surj : Function.Surjective (S_exact.extClass.precomp M (add_comm 1 n)) :=
-      (AddCommGrp.epi_iff_surjective _).mp epi
+      (AddCommGrpCat.epi_iff_surjective _).mp epi
     let f : Ext S.X₁ M n →ₗ[R] Ext S.X₃ M (n + 1) := {
       __ := S_exact.extClass.precomp M (add_comm 1 n)
       map_smul' r x := by simp }
@@ -184,16 +184,16 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           simp only [← hm, Nat.cast_lt] at dimlt'
           omega
       have zero : IsZero
-        (AddCommGrp.of (Ext.{v} (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
-        @AddCommGrp.isZero_of_subsingleton _ this
+        (AddCommGrpCat.of (Ext.{v} (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
+        @AddCommGrpCat.isZero_of_subsingleton _ this
       have epi' : Function.Surjective
         ⇑(x • LinearMap.id (R := R) (M := (Ext.{v} (of R L) M i))) := by
-        convert (AddCommGrp.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
+        convert (AddCommGrpCat.epi_iff_surjective _).mp <| ShortComplex.Exact.epi_f
           (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
           (zero.eq_zero_of_tgt _)
         ext a
         simp only [smul_apply, id_coe, id_eq, smulShortComplex_X₂, smulShortComplex_X₁,
-          smulShortComplex_f, AddCommGrp.hom_ofHom, Ext.bilinearComp_apply_apply]
+          smulShortComplex_f, AddCommGrpCat.hom_ofHom, Ext.bilinearComp_apply_apply]
         nth_rw 1 [← Ext.mk₀_id_comp a, ← Ext.smul_comp, ← Ext.mk₀_smul]
         congr
       have range : LinearMap.range (x • LinearMap.id) =
