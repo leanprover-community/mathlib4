@@ -20,7 +20,7 @@ We develop further preliminaries required for the theorem, up to the sum transfo
   recurrence with parameters `g`, `a`, `b` and `r` as above.
 * `AkraBazziRecurrence.smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ (with derivative/asymptotic
   facts) used in the inductive estimates.
-* `p`: the Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1$
+* `AkraBazziRecurrence.p`: the Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1$
   (existence/uniqueness and related properties).
 * `sumTransform`: The transformation which turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
