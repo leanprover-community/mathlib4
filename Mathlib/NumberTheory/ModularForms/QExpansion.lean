@@ -37,11 +37,54 @@ We also define the `q`-expansion of a modular form, either as a power series or 
   the graded ring of all modular forms?)
 -/
 
-open ModularForm Complex Filter UpperHalfPlane Function Matrix.SpecialLinearGroup
+open ModularForm Complex Filter Function Matrix.SpecialLinearGroup
+open UpperHalfPlane hiding I
 
 open scoped Real MatrixGroups CongruenceSubgroup
 
 noncomputable section
+
+section Cauchy
+-- move this stuff into complex analysis hierarchy somewhere
+
+open Metric
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+  {R : ℝ} {f : ℂ → E} {c : ℂ} {s : Set ℂ}
+
+/-- Cauchy integral formula for higher derivatives at the central point, most general form
+(assuming differentiability off a countable set). -/
+lemma Complex.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable
+    (h0 : 0 < R) (n : ℕ) (hs : s.Countable)
+    (hc : ContinuousOn f (closedBall c R)) (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
+    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
+      = (2 * π * I / n.factorial) • iteratedDeriv n f c := by
+  have := hasFPowerSeriesOnBall_of_differentiable_off_countable (R := ⟨R, h0.le⟩) hs hc hd h0
+      |>.factorial_smul 1 n
+  rw [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod, Finset.prod_const_one, one_smul] at this
+  rw [← this, cauchyPowerSeries_apply, ← Nat.cast_smul_eq_nsmul ℂ, ← mul_smul, ← mul_smul,
+    div_mul_cancel₀ _ (mod_cast n.factorial_ne_zero), mul_inv_cancel₀ two_pi_I_ne_zero, one_smul]
+  simp [← mul_smul, pow_succ, mul_comm]
+
+/-- Cauchy integral formula for higher derivatives at the central point, assuming differentiability
+on the open ball and continuity on its closure. -/
+lemma DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul
+    (h0 : 0 < R) (n : ℕ) (hc : DiffContOnCl ℂ f (ball c R)) :
+    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
+      = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
+  c.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable h0 n
+    Set.countable_empty hc.continuousOn_ball fun _ hx ↦ hc.differentiableAt isOpen_ball hx.1
+
+/-- Cauchy integral formula for higher derivatives at the central point, assuming differentiability
+on the closed ball. -/
+lemma DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul (h0 : 0 < R) (n : ℕ)
+    (hc : DifferentiableOn ℂ f (closedBall c R)) :
+    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
+      = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
+  (hc.mono closure_ball_subset_closedBall).diffContOnCl
+    |>.circleIntegral_one_div_sub_center_pow_smul h0 n
+
+end Cauchy
 
 variable {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] {Γ : Subgroup (GL (Fin 2) ℝ)}
     {h : ℝ} (f : F)
@@ -175,6 +218,55 @@ lemma hasFPowerSeries_cuspFunction [ModularFormClass F Γ k] [Γ.HasDetPlusMinus
   rw [EMetric.mem_ball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
     ← NNReal.coe_lt_one, coe_nnnorm] at hy
   simpa [qExpansionFormalMultilinearSeries] using hasSum_qExpansion_of_abs_lt f hh hΓ hy
+
+/-- The `q`-expansion coefficient can be expressed as a `circleIntegral` for any radius `0 < R < 1`.
+-/
+lemma qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
+    [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
+    (n : ℕ) {R : ℝ} (hR : 0 < R) (hR' : R < 1) :
+    (qExpansion h f).coeff n =
+      ((2 * π * I)⁻¹ * ∮ (z : ℂ) in C(0, R), cuspFunction h f z / z ^ (n + 1)) := by
+  have : DifferentiableOn ℂ (cuspFunction h f) (Metric.closedBall 0 R) := fun z hz ↦
+      (differentiableAt_cuspFunction f hh hΓ <| (mem_closedBall_zero_iff.mp hz).trans_lt hR')
+        |>.differentiableWithinAt
+  have := this.circleIntegral_one_div_sub_center_pow_smul hR n
+  rw [smul_eq_mul, div_eq_mul_inv, mul_assoc, mul_comm, ← div_eq_iff two_pi_I_ne_zero] at this
+  simp_rw [qExpansion, PowerSeries.coeff_mk, ← this, sub_zero, smul_eq_mul, one_div_mul_eq_div,
+    div_eq_inv_mul]
+
+/-- The `q`-expansion coefficient can be expressed as an integral along a horizontal line
+in the upper half-plane from `t * I` to `N + t * I`, for any `0 < t`.
+-/
+lemma qExpansion_coeff_eq_intervalIntegral [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
+    [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (n : ℕ)
+    {t : ℝ} (ht : 0 < t) : (qExpansion h f).coeff n =
+    1 / h * ∫ u in (0)..h, 1 / 𝕢 h (u + t * I) ^ n * f (⟨u + t * I, by simpa using ht⟩) := by
+  -- We use a circle integral in the `q`-domain of radius `R = exp (-2 * π * t / N)`.
+  let R := Real.exp (-2 * π * t / h)
+  have hR0 : 0 < R := Real.exp_pos _
+  have hR1 : R < 1 := Real.exp_lt_one_iff.mpr <| by
+    simp only [neg_mul, neg_div, neg_lt_zero]
+    exact div_pos (by positivity) hh
+  -- First apply `qExpansion_coeff_eq_circleIntegral` and rescale from `0 .. 2 * π` to `0 .. N`.
+  rw [qExpansion_coeff_eq_circleIntegral f hh hΓ n hR0 hR1, circleIntegral,
+    show 2 * π = h * (2 * π / h) by field_simp [NeZero.ne]]
+  conv => enter [1, 2, 2]; rw [show 0 = 0 * (2 * π / h) by simp]
+  simp_rw [← intervalIntegral.smul_integral_comp_mul_right, real_smul, ← mul_assoc,
+    ← intervalIntegral.integral_const_mul]
+  -- Compare the integrands
+  congr 1 with u
+  let τ : ℍ := ⟨u + t * I, by simpa using ht⟩
+  have : circleMap 0 R (u * (2 * π / h)) = 𝕢 h τ := by
+    simp only [circleMap, ofReal_exp, ← exp_add, zero_add, τ, UpperHalfPlane.coe_mk_subtype, R]
+    congr 1
+    push_cast
+    ring_nf
+    rw [I_sq]
+    ring_nf
+  -- now just complex exponential arithmetic to finish
+  simp_rw [deriv_circleMap, this, show u + t * I = τ by rfl, show ⟨↑τ, τ.2⟩ = τ by rfl,
+    eq_cuspFunction f _ hΓ hh.ne', smul_eq_mul, pow_succ, push_cast]
+  field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
 
 end ModularFormClass
 
