@@ -13,10 +13,7 @@ import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
 any `Z : C`. This morphism belongs to `LeftBousfield.W W.rightOrthogonal` and
-has the property that for any morphism `f : X ⟶ Y` satisfying `W`,
-any defect of bijectivity of the precomposition `(Y ⟶ Z) → (X ⟶ Z)` disappear
-in the map `(Y ⟶ succ W Z) ⟶ (X ⟶ succ W Z)` (see lemmas `toSucc_surjectivity` and
-`toSucc_injectivity`).
+is an isomorphism iff `Z` belongs to `W.rightOrthogonal`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -34,8 +31,6 @@ variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 namespace OrthogonalReflection
 
 variable (Z : C)
-
-section
 
 /-- The index type parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
@@ -67,6 +62,12 @@ noncomputable abbrev D₁.ιLeft {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z
 
 variable {W Z} in
 @[reassoc]
+lemma D₁.ι_comp_l (d : D₁ W Z) :
+    Sigma.ι _ d ≫ D₁.l W Z = d.2 := by
+  apply Sigma.ι_desc
+
+variable {W Z} in
+@[reassoc]
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.l W Z = g := by
   apply Sigma.ι_desc
@@ -86,26 +87,41 @@ noncomputable abbrev D₁.ιRight {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ 
 
 variable {W Z} in
 @[reassoc]
+lemma D₁.ι_comp_t (d : D₁ W Z) :
+    Sigma.ι _ d ≫ D₁.t W Z = d.1.1.hom ≫ Sigma.ι obj₂ d := by
+  apply ι_colimMap
+
+variable {W Z} in
+@[reassoc]
 lemma D₁.ιLeft_comp_t {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.t W Z = f ≫ D₁.ιRight f hf g := by
   apply ι_colimMap
 
 variable [HasPushouts C]
 
+/-- The intermediate object in the definition of the morphism `toSucc W Z : Z ⟶ succ W Z`.
+It is the pushout of the following square:
+```lean
+∐ D₁.obj₁ ⟶ ∐ D₁.obj₂
+   |           |
+   v           v
+   Z      ⟶   step W Z
+```
+where the coproduct is taken over all the diagram consisting of a morphism `f : X ⟶ Y`
+satisfying `W` and a morphism `X ⟶ Z`. The top map is the coproduct of all of these `f`.
+-/
+noncomputable abbrev step := pushout (D₁.t W Z) (D₁.l W Z)
+
 /-- The canonical map from `Z` to the pushout of `D₁.t W Z` and `D₁.l W Z`. -/
-noncomputable abbrev toColimit₁ : Z ⟶ pushout (D₁.t W Z) (D₁.l W Z) := pushout.inr _ _
+noncomputable abbrev toStep : Z ⟶ step W Z := pushout.inr _ _
 
-end
-
-section
-
-/-- The index type parametrising the data of two morphisms `g₁ g₂ : Y ⟶ Z`, and
+/-- The index type parametrising the data of two morphisms `g₁ g₂ : Y ⟶ step W Z`, and
 a map `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 def D₂ : Type _ :=
   Σ (f : W.toSet),
-    { pq : (f.1.right ⟶ Z) × (f.1.right ⟶ Z) // f.1.hom ≫ pq.1 = f.1.hom ≫ pq.2 }
+    { pq : (f.1.right ⟶ step W Z) × (f.1.right ⟶ step W Z) // f.1.hom ≫ pq.1 = f.1.hom ≫ pq.2 }
 
-/-- The shape of the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ Z` with
+/-- The shape of the multicoequalizer of all pairs of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 @[simps]
 def D₂.multispanShape : MultispanShape where
@@ -114,108 +130,94 @@ def D₂.multispanShape : MultispanShape where
   fst _ := .unit
   snd _ := .unit
 
-/-- The diagram of the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ Z` with
+/-- The diagram of the multicoequalizer of all pair of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 @[simps]
-def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C where
+noncomputable def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C where
   left d := d.1.1.right
-  right _ := Z
+  right _ := step W Z
   fst d := d.2.1.1
   snd d := d.2.1.2
 
 variable [HasMulticoequalizer (D₂.multispanIndex W Z)]
 
-/-- The projection from `Z` to the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ Z` with
+/-- The object `succ W Z` is the multicoequalizer of all pairs of morphisms
+ `g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
+noncomputable abbrev succ := multicoequalizer (D₂.multispanIndex W Z)
+
+/-- The projection from `Z` to the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
-noncomputable abbrev toColimit₂ : Z ⟶ multicoequalizer (D₂.multispanIndex W Z) :=
+noncomputable abbrev fromStep : step W Z ⟶ succ W Z :=
   Multicoequalizer.π (D₂.multispanIndex W Z) .unit
 
 variable {W Z} in
 @[reassoc]
 lemma D₂.condition {X Y : C} (f : X ⟶ Y) (hf : W f)
-    {g₁ g₂ : Y ⟶ Z} (h : f ≫ g₁ = f ≫ g₂) :
-      g₁ ≫ toColimit₂ W Z = g₂ ≫ toColimit₂ W Z :=
+    {g₁ g₂ : Y ⟶ step W Z} (h : f ≫ g₁ = f ≫ g₂) :
+      g₁ ≫ fromStep W Z = g₂ ≫ fromStep W Z :=
   Multicoequalizer.condition (D₂.multispanIndex W Z)
     ⟨⟨Arrow.mk f, hf⟩, ⟨g₁, g₂⟩, h⟩
 
-end
-
-section
-
-variable [HasPushouts C] [HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
-  [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
-  [HasMulticoequalizer (D₂.multispanIndex W Z)]
-
-/-- The pushout of the two constructions `toColimit₁ W Z` and `toColimit₂ W Z`.
-The morphism `toColimit₁ W Z : toColimit₁ : Z ⟶ pushout (D₁.t W Z) (D₁.l W Z)` allows
-to "extend" any morphism `X ⟶ Z` to `Y ⟶ pushout (D₁.t W Z) (D₁.l W Z)` for any `f : X ⟶ Y`
-satisfying `W` (see `toSucc_surjectivity`),
-while `toColimit₂ W Z : Z ⟶ multicoequalizer (D₂.multispanIndex W Z)` allows
-to "coequalize" two morphisms `g₁ g₂ : Y ⟶ Z` such that `f ≫ g₁ = f ≫ g₂` with `f : X ⟶ Y`
-satisfying `W` (see `toSucc_injectivity`). -/
-noncomputable abbrev succ : C := pushout (toColimit₁ W Z) (toColimit₂ W Z)
-
 /-- The morphism `Z ⟶ succ W Z`. -/
-noncomputable def toSucc : Z ⟶ succ W Z := toColimit₁ W Z ≫ pushout.inl _ _
-
-@[reassoc]
-lemma toColimit₁_inl : toColimit₁ W Z ≫ pushout.inl _ _ = toSucc W Z := rfl
-
-@[reassoc]
-lemma toColimit₂_inr : toColimit₂ W Z ≫ pushout.inr _ _ = toSucc W Z := pushout.condition.symm
-
-variable {W Z} in
-lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
-    ∃ (g' : Y ⟶ succ W Z), f ≫ g' = g ≫ toSucc W Z :=
-  ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ pushout.inl _ _, by
-    simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc, toColimit₁_inl]⟩
+noncomputable abbrev toSucc : Z ⟶ succ W Z := toStep W Z ≫ fromStep W Z
 
 variable {W Z} in
 lemma toSucc_injectivity {X Y : C} (f : X ⟶ Y) (hf : W f)
     (g₁ g₂ : Y ⟶ Z) (hg : f ≫ g₁ = f ≫ g₂) :
     g₁ ≫ toSucc W Z = g₂ ≫ toSucc W Z := by
-  simp only [← toColimit₂_inr, D₂.condition_assoc _ hf hg]
+  simpa using D₂.condition f hf (g₁ := g₁ ≫ toStep W Z) (g₂ := g₂ ≫ toStep W Z)
+    (by simp [reassoc_of% hg])
+
+variable {W Z} in
+lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
+    ∃ (g' : Y ⟶ succ W Z), f ≫ g' = g ≫ toSucc W Z :=
+  ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
+    simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
 lemma leftBousfieldW_rightOrthogonal_toSucc :
     LeftBousfield.W W.rightOrthogonal (toSucc W Z) := by
   refine fun T hT ↦ ⟨fun φ₁ φ₂ h ↦ ?_, fun g ↦ ?_⟩
-  · ext d
-    · apply (hT d.1.1.hom d.1.2).1
-      simpa only [← D₁.ιLeft_comp_l_assoc _ d.1.2 d.2, ← toColimit₁_inl_assoc,
-        ← pushout.condition_assoc, ι_colimMap_assoc] using d.2 ≫= h
-    · simpa [toColimit₁_inl_assoc]
-    · simp only [← toColimit₂_inr, Category.assoc] at h
-      simpa
-  · choose f hf using fun (d : D₁ W Z) ↦ (hT d.1.1.hom d.1.2).2 (d.2 ≫ g)
-    refine ⟨pushout.desc (pushout.desc (Sigma.desc f) g (by aesop))
-      (Multicoequalizer.desc _ _ (fun _ ↦ g)
-        ((fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])))) (by simp), ?_⟩
+  · ext ⟨⟩
+    simp at h
     dsimp
-    rw [← toColimit₂_inr_assoc, pushout.inr_desc]
-    simp
+    ext d
+    · apply (hT d.1.1.hom d.1.2).1
+      simp only [← D₁.ι_comp_t_assoc, pushout.condition_assoc, h]
+    · exact h
+  · choose f hf using fun (d : D₁ W Z) ↦ (hT d.1.1.hom d.1.2).2 (d.2 ≫ g)
+    exact ⟨Multicoequalizer.desc _ _ (fun ⟨⟩ ↦ pushout.desc (Sigma.desc f) g)
+      (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
 
-/-! On page 33 of the book by Adámek and Rosický, it is claimed that the morphism
-`toSucc W Z` is an isomorphism iff the object `Z` is orthogonal to `W`, and theorem 1.38
-on the same page states that after doing a suitable transfinite iteration, the
-construction stops, i.e. we find an object `Z'` such that `toSucc W Z'` is an isomorphism.
-
-Here is a counter-example. Let `Ab` be the category of abelian groups.
-Assume `W : MorphismProperty Ab` only contains the multiplication by `2` on `ℤ`.
-The abelian group `ℚ` belongs to `W.rightOrthogonal`, but I claim that
-the corresponding morphism `toSucc W ℚ` is not an isomorphism. As `ℚ` is already
-in `W.rightOrthogonal`, the morphism `toColimit₂` is an isomorphism (there is
-nothing to coequalize), so that `toSucc W ℚ` identifies to the morphism `toColimit₁ W Q`,
-but the cokernel of this morphism identifies to a (nontrivial) coproduct of copies of `ℤ/2ℤ`.
-
--/
-
-end
-
-variable [HasPushouts C] [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
-  [∀ Z, HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
-  [∀ Z, HasMulticoequalizer (D₂.multispanIndex W Z)]
+lemma isIso_toSucc_iff :
+    IsIso (toSucc W Z) ↔ W.rightOrthogonal Z := by
+  refine ⟨fun _ X Y f hf ↦ ?_, fun hZ ↦ ?_⟩
+  · refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
+    · simpa [← cancel_mono (toSucc W Z)] using
+        D₂.condition f hf (g₁ := g₁ ≫ toStep W Z) (g₂ := g₂ ≫ toStep W Z)
+          (by simp [reassoc_of% h])
+    · have hZ := IsIso.hom_inv_id (toSucc W Z)
+      simp only [Category.assoc] at hZ
+      exact ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z ≫ inv (toSucc W Z),
+        by simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc, hZ]⟩
+  · obtain ⟨f, hf⟩ := (leftBousfieldW_rightOrthogonal_toSucc W Z _ hZ).2 (𝟙 _)
+    dsimp at hf
+    refine ⟨f, hf, ?_⟩
+    ext ⟨⟩
+    dsimp
+    ext d
+    · simp only [Category.assoc] at hf
+      simp only [Category.comp_id, ← Category.assoc]
+      apply D₂.condition _ d.1.2
+      simp
+      rw [← D₁.ι_comp_t_assoc, pushout.condition_assoc, reassoc_of% hf,
+        ← D₁.ι_comp_t_assoc, pushout.condition]
+    · simp [reassoc_of% hf]
 
 open SmallObject
+
+variable [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
+  [∀ Z, HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
+  [∀ Z, HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The successor structure of the orthogonal-reflection construction. -/
 noncomputable def succStruct (Z₀ : C) : SuccStruct C where
