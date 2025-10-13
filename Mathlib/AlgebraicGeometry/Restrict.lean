@@ -751,7 +751,7 @@ lemma coe_resLE_apply (x : V) : (f.resLE U V e x).1 = f x := by
 
 @[deprecated (since := "2025-10-07")] alias coe_resLE_base := coe_resLE_apply
 
-/-- The stalk map of `f.resLE U V` at `x : V` is is the stalk map of `f` at `x`. -/
+/-- The stalk map of `f.resLE U V` at `x : V` is the stalk map of `f` at `x`. -/
 def resLEStalkMap (x : V) :
     Arrow.mk ((f.resLE U V e).stalkMap x) ≅ Arrow.mk (f.stalkMap x) :=
   Arrow.isoMk (U.stalkIso _ ≪≫
