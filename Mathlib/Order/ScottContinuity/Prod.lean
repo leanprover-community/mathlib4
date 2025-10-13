@@ -13,9 +13,8 @@ public import Mathlib.Order.Bounds.Lattice
 
 ## Main result
 
-- `ScottContinuous_prod_of_ScottContinuous`: A function is Scott continuous on a product space if it
-  is Scott continuous in each variable.
-- `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
+- `ScottContinuous.fromProd`: A function is Scott continuous on a product space if it is Scott
+  continuous in each variable.
 
 -/
 
@@ -25,8 +24,6 @@ open Set
 
 variable {α β γ : Type*}
 
-/-- If  is Scott continuous on a product space if it is Scott continuous and monotone in each
-variable -/
 lemma ScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} {D : Set (Set (α × β))}
     (h₁ : ∀ a, ScottContinuousOn ((fun d => Prod.snd '' d) '' D) (fun b => f (a, b)))
@@ -46,6 +43,8 @@ lemma ScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
   simp_all only [Subtype.exists, mem_image, Prod.exists,
     exists_and_right, exists_eq_right, exists_prop, mem_setOf_eq]
 
+/-- A function `f` is Scott continuous on a product space if it is Scott continuous and monotone in
+each variable -/
 lemma ScottContinuous.fromProd {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} (h₁ : ∀ a, ScottContinuous (fun b => f (a, b)))
     (h₂ : ∀ b, ScottContinuous (fun a => f (a, b))) : ScottContinuous f := by
