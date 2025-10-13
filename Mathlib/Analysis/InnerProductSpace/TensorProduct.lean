@@ -36,10 +36,10 @@ private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := r
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
-attribute [local simp] inner_def in
 @[simp] lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
     inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
-  x.induction_on (by simp) (y.induction_on (by simp) (by simp) (by simp_all)) (by simp_all)
+  x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
+    (by simp_all [inner_def])) (by simp_all [inner_def])
 
 open scoped ComplexOrder
 open Module
