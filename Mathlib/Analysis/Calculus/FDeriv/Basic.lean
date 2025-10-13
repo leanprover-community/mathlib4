@@ -107,7 +107,6 @@ derivative, differentiable, Fréchet, calculus
 -/
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
-open ContinuousLinearMap (id)
 
 noncomputable section
 

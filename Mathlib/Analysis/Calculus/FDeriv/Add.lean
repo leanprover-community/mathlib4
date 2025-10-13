@@ -23,7 +23,6 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 
 open Filter Asymptotics ContinuousLinearMap
-open ContinuousLinearMap (id)
 
 noncomputable section
 

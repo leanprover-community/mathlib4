@@ -29,7 +29,6 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
   [NormedAddCommGroup Fₗ]
 
 open Metric ContinuousLinearMap
-open ContinuousLinearMap (id)
 
 section
 

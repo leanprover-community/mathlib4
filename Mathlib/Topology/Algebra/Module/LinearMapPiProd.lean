@@ -14,7 +14,6 @@ assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
-open ContinuousLinearMap (id)
 
 universe u v w u'
 

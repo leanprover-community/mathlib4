@@ -757,8 +757,6 @@ end ToSpanSingleton
 
 end Semiring
 
-open ContinuousLinearMap (id)
-
 section Ring
 
 variable {R : Type*} [Ring R] {R₂ : Type*} [Ring R₂] {R₃ : Type*} [Ring R₃] {M : Type*}
