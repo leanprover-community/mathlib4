@@ -70,13 +70,13 @@ local instance : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 lemma ext_hom_eq_zero_of_mem_ann {r : R} (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
-    AddCommGrp.ofHom (((Ext.mk₀ (r • (𝟙 M)))).postcomp N (add_zero n)) = 0 := by
+    AddCommGrpCat.ofHom (((Ext.mk₀ (r • (𝟙 M)))).postcomp N (add_zero n)) = 0 := by
   ext h
   have smul (L : ModuleCat.{v} R): Ext.mk₀ (r • 𝟙 L) = r • Ext.mk₀ (𝟙 L) := by
     simp [Ext.smul_eq_comp_mk₀]
   have eq0 : r • (𝟙 N) = 0 := ModuleCat.hom_ext
     (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp mem_ann _))
   have : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [smul]
-  simp only [smul, AddCommGrp.hom_ofHom, AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply,
-    Ext.comp_smul, Ext.comp_mk₀_id, AddCommGrp.hom_zero, AddMonoidHom.zero_apply]
+  simp only [smul, AddCommGrpCat.hom_ofHom, AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply,
+    Ext.comp_smul, Ext.comp_mk₀_id, AddCommGrpCat.hom_zero, AddMonoidHom.zero_apply]
   simp [this, eq0]
