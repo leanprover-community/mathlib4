@@ -118,7 +118,7 @@ instance Colex.isTotalLE : IsTotal (Colex (Π₀ i, α i)) (· ≤ ·) :=
   Lex.isTotalLE (ι := ιᵒᵈ)
 
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
+instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
@@ -128,7 +128,7 @@ irreducible_def Colex.decidableLE : DecidableLE (Colex (Π₀ i, α i)) :=
   Lex.decidableLE (ι := ιᵒᵈ)
 
 /-- The less-than relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
+instance Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 
 /-- The less-than relation for the colexicographic ordering is decidable. -/
