@@ -126,6 +126,48 @@ Evaluation of the logarithmic counting function at zero yields zero.
     logCounting D 0 = 0 := by
   simp [logCounting]
 
+/--
+For `1 ≤ r`, the counting function is non-negative.
+-/
+theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
+    0 ≤ logCounting f r := by
+  have h₃r : 0 < r := by linarith
+  apply add_nonneg
+  · apply finsum_nonneg
+    · intro a
+      by_cases h₁a : a = 0
+      · simp_all
+      by_cases h₂a : a ∈ closedBall 0 |r|
+      · apply mul_nonneg
+        · simpa [toClosedBall, restrictMonoidHom_apply, restrict_apply, h₂a] using h a
+        · rw [log_nonneg_iff]
+          · rw [← inv_le_iff_one_le_mul₀]
+            · rw [inv_inv, ← abs_of_pos h₃r]
+              simp_all
+            · rwa [inv_pos, norm_pos_iff]
+          · simp_all
+      · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
+  · apply mul_nonneg (by simpa using h 0) (log_nonneg hr)
+
+/--
+For `1 ≤ r`, the counting function respects the `≤` relation.
+-/
+theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f₁ f₂ : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : f₁ ≤ f₂) (hr : 1 ≤ r) :
+    logCounting f₁ r ≤ logCounting f₂ r := by
+  rw [← sub_nonneg] at h ⊢
+  simpa using logCounting_nonneg h hr
+
+/--
+The counting function respects the `≤` relation asymptotically.
+-/
+theorem logCounting_eventually_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f₁ f₂ : locallyFinsuppWithin (univ : Set E) ℤ} (h : f₁ ≤ f₂) :
+    logCounting f₁ ≤ᶠ[Filter.atTop] logCounting f₂ := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_le h hr
+
 end Function.locallyFinsuppWithin
 
 /-!
@@ -233,5 +275,61 @@ function counting poles.
 @[simp] theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
   simpa [sub_eq_add_neg] using logCounting_add_const hf
+
+/-!
+## Behaviour under Arithmetic Operations
+-/
+
+/--
+For `1 ≤ r`, the counting function counting zeros of `f * g` is less than or
+equal to the sum of the counting functions counting zeros of `f` and `g`,
+respectively.
+-/
+theorem logCounting_zero_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤ r)
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z ∈ univ, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z ∈ univ, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) 0 r ≤ (logCounting f₁ 0 + logCounting f₂ 0) r := by
+  simp only [logCounting, WithTop.zero_ne_top, reduceDIte, WithTop.untop₀_zero, sub_zero]
+  rw [divisor_mul h₁f₁ h₁f₂ h₂f₁ h₂f₂, ← Function.locallyFinsuppWithin.logCounting.map_add]
+  apply Function.locallyFinsuppWithin.logCounting_le _ hr
+  apply Function.locallyFinsuppWithin.posPart_add
+
+/--
+Asymptotically, the counting function counting zeros of `f * g` is less than or
+equal to the sum of the counting functions counting zeros of `f` and `g`,
+respectively.
+-/
+theorem logCounting_zero_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z ∈ univ, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z ∈ univ, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) 0 ≤ᶠ[Filter.atTop] logCounting f₁ 0 + logCounting f₂ 0 := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
+
+/--
+For `1 ≤ r`, the counting function counting poles of `f * g` is less than or
+equal to the sum of the counting functions counting poles of `f` and `g`,
+respectively.
+-/
+theorem logCounting_top_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤ r)
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z ∈ univ, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z ∈ univ, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
+  simp only [logCounting, reduceDIte]
+  rw [divisor_mul h₁f₁ h₁f₂ h₂f₁ h₂f₂, ← Function.locallyFinsuppWithin.logCounting.map_add]
+  apply Function.locallyFinsuppWithin.logCounting_le _ hr
+  apply Function.locallyFinsuppWithin.negPart_add
+
+/--
+Asymptotically, the counting function counting zeros of `f * g` is less than or
+equal to the sum of the counting functions counting zeros of `f` and `g`,
+respectively.
+-/
+theorem logCounting_top_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z ∈ univ, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z ∈ univ, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) ⊤ ≤ᶠ[Filter.atTop] logCounting f₁ ⊤ + logCounting f₂ ⊤ := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
 
 end ValueDistribution
