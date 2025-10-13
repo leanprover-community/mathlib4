@@ -166,7 +166,7 @@ theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
 section AddCommGroup
 
 instance : Zero 𝓓^{n}_{K}(E, F) where
-  zero := ContDiffMapSupportedIn.mk 0 contDiff_zero_fun fun _ _ ↦ rfl
+  zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
 @[simp]
 lemma coe_zero : (0 : 𝓓^{n}_{K}(E, F)) = (0 : E → F) :=
@@ -177,7 +177,7 @@ lemma zero_apply (x : E) : (0 : 𝓓^{n}_{K}(E, F)) x = 0 :=
   rfl
 
 instance : Add 𝓓^{n}_{K}(E, F) where
-  add f g := ContDiffMapSupportedIn.mk (f + g) (f.contDiff.add g.contDiff) <| by
+  add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
@@ -190,7 +190,7 @@ lemma add_apply (f g : 𝓓^{n}_{K}(E, F)) (x : E) : (f + g) x = f x + g x :=
   rfl
 
 instance : Neg 𝓓^{n}_{K}(E, F) where
-  neg f := ContDiffMapSupportedIn.mk (-f) (f.contDiff.neg) <| by
+  neg f := .mk (-f) (f.contDiff.neg) <| by
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
@@ -203,7 +203,7 @@ theorem neg_apply {f : 𝓓^{n}_{K}(E, F)} {x : E} : (-f) x = - f x :=
   rfl
 
 instance instSub : Sub 𝓓^{n}_{K}(E, F) where
-  sub f g := ContDiffMapSupportedIn.mk (f - g) (f.contDiff.sub g.contDiff) <| by
+  sub f g := .mk (f - g) (f.contDiff.sub g.contDiff) <| by
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
@@ -217,7 +217,7 @@ theorem sub_apply {f g : 𝓓^{n}_{K}(E, F)} {x : E} : (f - g) x = f x - g x :=
 
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
    SMul R 𝓓^{n}_{K}(E, F) where
-  smul c f := ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
+  smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
