@@ -1,11 +1,19 @@
 import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ComputeDegree
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Finiteness
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Group
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.TautoSet
 
 /--
@@ -24,6 +32,9 @@ info: Try these:
   • norm_num
     Remaining subgoals:
     ⊢ Q
+  • group
+    Remaining subgoals:
+    ⊢ Q
 -/
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
@@ -34,6 +45,9 @@ info: Try these:
   • norm_num
     Remaining subgoals:
     ⊢ Q ∧ P ∧ R
+  • group
+    Remaining subgoals:
+    ⊢ Q ∧ P ∧ R
 -/
 #guard_msgs in
 example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
@@ -41,12 +55,15 @@ example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 /--
 info: Try these:
   • 🎉 exact Std.not_gt_of_lt h
-  • norm_num
-    Remaining subgoals:
-    ⊢ a ≤ b
   • intro
     Remaining subgoals:
     ⊢ False
+  • norm_num
+    Remaining subgoals:
+    ⊢ a ≤ b
+  • group
+    Remaining subgoals:
+    ⊢ ¬b < a
   • simp_all only [not_lt]
     Remaining subgoals:
     ⊢ a ≤ b
@@ -57,6 +74,9 @@ example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 /--
 info: Try these:
   • 🎉 ring
+  • noncomm_ring
+    Remaining subgoals:
+    ⊢ 1369 • 1 - 1225 • 1 = 72 • 2
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
@@ -65,6 +85,9 @@ example : 37^2 - 35^2 = 72 * 2 := by hint
 info: Try these:
   • 🎉 decide
   • ring_nf
+    Remaining subgoals:
+    ⊢ Nat.Prime 37
+  • norm_num
     Remaining subgoals:
     ⊢ Nat.Prime 37
 -/
@@ -80,6 +103,9 @@ info: Try these:
   • norm_num
     Remaining subgoals:
     ⊢ ∃ x, P x
+  • group
+    Remaining subgoals:
+    ⊢ ∃ x, P x ∧ 0 ≤ x
   • simp_all only [zero_le,
       and_true]
     Remaining subgoals:
@@ -142,6 +168,9 @@ info: Try these:
   • norm_num
     Remaining subgoals:
     ⊢ False
+  • group
+    Remaining subgoals:
+    ⊢ 2 ≤ 1
   • simp_all only [Nat.not_ofNat_le_one]
     Remaining subgoals:
     ⊢ False
@@ -181,6 +210,9 @@ info: Try these:
     Remaining subgoals:
     ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
   • norm_num
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • group
     Remaining subgoals:
     ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
