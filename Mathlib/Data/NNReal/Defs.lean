@@ -40,7 +40,7 @@ replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` whi
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 
-## Notations
+## Notation
 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
@@ -755,7 +755,7 @@ theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p
 
 @[simp]
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
-  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
+  rw [← mul_lt_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
   if h0 : c = 0 then by simp [h0] else (div_le_iff₀ (pos_iff_ne_zero.2 h0)).2 h

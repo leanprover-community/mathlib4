@@ -373,7 +373,6 @@ end Monotone
 lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE R] [MulPosMono R]
     [AddLeftMono R] [AddLeftReflectLE R]
     (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   exact add_le_add_left (mul_le_mul_of_nonneg_right hab hd) _
@@ -390,7 +389,6 @@ variable [AddLeftReflectLT R]
 lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddLeftStrictMono R]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   gcongr

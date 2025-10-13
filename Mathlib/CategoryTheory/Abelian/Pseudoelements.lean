@@ -53,7 +53,7 @@ Here are the metatheorems we provide:
   `g a' = 0 → g a = g a''`. We can think of `a''` as `a - a'`, but don't get too carried away
   by that: pseudoelements of an object do not form an abelian group.
 
-## Notations
+## Notation
 
 We introduce coercions from an object of an abelian category to the set of its pseudoelements
 and from a morphism to the function it induces on pseudoelements.

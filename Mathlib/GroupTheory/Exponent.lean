@@ -171,7 +171,7 @@ theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exp
 theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G, g ^ m ≠ 1 := by
   by_contra! h
   have hcon : exponent G ≤ m := exponent_min' m hpos h
-  omega
+  cutsat
 
 @[to_additive AddMonoid.exp_eq_one_iff]
 theorem exp_eq_one_iff : exponent G = 1 ↔ Subsingleton G := by

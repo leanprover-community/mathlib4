@@ -111,7 +111,7 @@ lemma exists_regular_cardinal (X : Type u) [Small.{w} X] :
 
 /-- For any `w`-small family `X : ι → Type u` of `w`-small types, there exists
 a regular cardinal `κ : Cardinal.{w}` such that `HasCardinalLT (X i) κ` for all `i : ι`. -/
-lemma exists_regular_cardinal_forall {ι : Type v} {X : ι → Type u} [Small.{w} ι]
+lemma exists_regular_cardinal_forall {ι : Type v} (X : ι → Type u) [Small.{w} ι]
     [∀ i, Small.{w} (X i)] :
     ∃ (κ : Cardinal.{w}), κ.IsRegular ∧ ∀ (i : ι), HasCardinalLT (X i) κ := by
   obtain ⟨κ, hκ, h⟩ := exists_regular_cardinal.{w} (Sigma X)
