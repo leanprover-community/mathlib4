@@ -13,6 +13,7 @@ import Mathlib.Order.ScottContinuity.Prod
 
 - `scottContinuous_iff_map_sSup`: A function is Scott continuous if and only if it commutes with
   `sSup` on directed sets.
+- `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
 
 -/
 
