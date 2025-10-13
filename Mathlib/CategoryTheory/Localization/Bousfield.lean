@@ -165,7 +165,7 @@ lemma ObjectProperty.le_rightOrthogonal_W (P : ObjectProperty C) :
     P ≤ (LeftBousfield.W P).rightOrthogonal := by
   rw [← LeftBousfield.le_W_iff]
 
-lemma MorphismProperty.le_leftBousfieldW_rightOthogonal (W : MorphismProperty C) :
+lemma MorphismProperty.le_leftBousfieldW_rightOrthogonal (W : MorphismProperty C) :
     W ≤ LeftBousfield.W W.rightOrthogonal := by
   rw [LeftBousfield.le_W_iff]
 
