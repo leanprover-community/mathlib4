@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Abel
@@ -148,8 +149,6 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 example : 2 ≤ 1 := by hint
-
-end tauto_set
 
 section compute_degree
 /--
