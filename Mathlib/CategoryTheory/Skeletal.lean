@@ -368,7 +368,7 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
 /--
 Applying `fromThinSkeleton`, `F` and then `toThinSkeleton` is isomorphic to applying `map F`.
 -/
-noncomputable def fromThinSkeletonCompToThinSkeletonIso [Quiver.IsThin D] (F : C ⥤ D) :
+noncomputable def fromThinSkeletonCompToThinSkeletonIso (F : C ⥤ D) :
     fromThinSkeleton C ⋙ F ⋙ toThinSkeleton D ≅ map F :=
   Functor.isoWhiskerLeft (fromThinSkeleton C) (Iso.refl _) ≪≫
     Functor.isoWhiskerRight (equivalence C).unitIso.symm (map F) ≪≫
