@@ -550,7 +550,7 @@ noncomputable def dpow : ℕ → B → B := fun n ↦
 variable {f} (hf : Function.Surjective f) {J} (hIJ : J = I.map f)
   (hIf : hI.IsSubDPIdeal (RingHom.ker f ⊓ I))
 
-/-- Divided powers on the the codomain `B` of a surjective ring homomorphism `f` are compatible
+/-- Divided powers on the codomain `B` of a surjective ring homomorphism `f` are compatible
   with `f`. -/
 theorem dpow_apply' (hIf : IsSubDPIdeal hI (RingHom.ker f ⊓ I)) {n : ℕ} {a : A} (ha : a ∈ I) :
     dpow hI f n (f a) = f (hI.dpow n a) := by

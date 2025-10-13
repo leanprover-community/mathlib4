@@ -41,7 +41,7 @@ structure Function.locallyFinsuppWithin [Zero Y] where
   toFun : X → Y
   /-- A proof that the support of `toFun` is contained in `U` -/
   supportWithinDomain' : toFun.support ⊆ U
-  /-- A proof the the support is locally finite within `U` -/
+  /-- A proof that the support is locally finite within `U` -/
   supportLocallyFiniteWithinDomain' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ toFun.support)
 
 variable (X Y) in
