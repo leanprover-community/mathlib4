@@ -15,7 +15,7 @@ defines Turing degrees as the quotient under this relation.
 
 ## Main definitions
 
-- `RecursiveIn O f`: An inductive definition representing that a partial function `f` is partial
+- `RecursiveIn O f`: An inductive definition representing that a partial function `f` is partially
   recursive given access to a set of oracles O.
 - `TuringReducible`: A relation defining Turing reducibility between partial functions.
 - `TuringEquivalent`: An equivalence relation defining Turing equivalence between partial functions.
