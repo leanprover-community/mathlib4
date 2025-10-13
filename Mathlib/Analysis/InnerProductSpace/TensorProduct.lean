@@ -124,20 +124,20 @@ theorem _root_.RCLike.inner_tmul_eq (a b c d : 𝕜) :
     inner 𝕜 (a ⊗ₜ[𝕜] b) (c ⊗ₜ[𝕜] d) = inner 𝕜 (a * b) (c * d) := by
   simp; ring
 
-theorem inner_ext_iff (x y : E ⊗[𝕜] F) :
+theorem ext_inner_right_iff (x y : E ⊗[𝕜] F) :
     x = y ↔ ∀ a b, inner 𝕜 x (a ⊗ₜ[𝕜] b) = inner 𝕜 y (a ⊗ₜ[𝕜] b) := by
   simp_rw [← @sub_eq_zero 𝕜 _ _ (inner _ _ _), ← inner_sub_left]
   rw [← sub_eq_zero]
   refine ⟨fun h a b => by rw [h, inner_zero_left], fun h => ext_inner_right 𝕜 fun y => ?_⟩
   exact y.induction_on (inner_zero_right _) h (fun c d hc hd => by simp [inner_add_right, hc, hd])
 
-theorem inner_ext_threefold_iff (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
+theorem ext_inner_right_threefold_iff (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) = inner 𝕜 y (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) := by
   simp_rw [← @sub_eq_zero 𝕜 _ _ (inner _ _ _), ← inner_sub_left]
   rw [← sub_eq_zero]
-  refine ⟨fun h a b => by simp [h, inner_zero_left], fun h => (inner_ext_iff _ _).mpr fun z b => ?_⟩
-  exact z.induction_on (by simp) (by simp [h]) (fun c d hc hd => by
-    simp [add_tmul, inner_add_right, hc, hd])
+  exact ⟨fun h a b => by simp [h, inner_zero_left], fun h => (ext_inner_right_iff _ _).mpr
+    fun z b => z.induction_on (by simp) (by simp [h])
+    fun c d hc hd => by simp [add_tmul, inner_add_right, hc, hd]⟩
 
 section isometry
 
@@ -227,12 +227,12 @@ end isometry
     (f : A →ₗ[𝕜] G) (g : E →ₗ[𝕜] F) :
     LinearMap.adjoint (TensorProduct.map f g)
       = TensorProduct.map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
-  TensorProduct.ext' fun x y => by simp [inner_ext_iff, LinearMap.adjoint_inner_left]
+  TensorProduct.ext' fun x y => by simp [ext_inner_right_iff, LinearMap.adjoint_inner_left]
 
-theorem inner_ext_threefold_iff' (x y : E ⊗[𝕜] (F ⊗[𝕜] G)) :
+theorem ext_inner_right_threefold_iff' (x y : E ⊗[𝕜] (F ⊗[𝕜] G)) :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) = inner 𝕜 y (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) := by
-  simp only [← (assocLinearIsometryEquiv 𝕜 E F G).symm.injective.eq_iff, inner_ext_threefold_iff,
-    LinearIsometryEquiv.inner_map_eq_flip]
+  simp only [← (assocLinearIsometryEquiv 𝕜 E F G).symm.injective.eq_iff,
+    ext_inner_right_threefold_iff, LinearIsometryEquiv.inner_map_eq_flip]
   simp
 
 end TensorProduct
