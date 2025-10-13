@@ -49,7 +49,7 @@ private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidal
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrpCat.{v} :=
   Functor.mapCommGrpFunctor ⋙
-    (Functor.whiskeringLeft _ _ _).obj Preadditive.CommGrp_Equivalence.functor ⋙
+    (Functor.whiskeringLeft _ _ _).obj Preadditive.commGrpEquivalence.functor ⋙
       (Functor.whiskeringRight _ _ _).obj
         (commGrpTypeEquivalenceCommGrp.functor ⋙ commGroupAddCommGroupEquivalence.functor)
 
@@ -72,7 +72,7 @@ This is the complicated bit, where we show that forgetting the group structure i
 noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimits F] (X : C) :
     letI : (F ⋙ forget AddCommGrpCat).Braided := .ofChosenFiniteProducts _
     commGrpTypeEquivalenceCommGrp.inverse.obj (AddCommGrpCat.toCommGrp.obj (F.obj X)) ≅
-      (F ⋙ forget AddCommGrpCat).mapCommGrp.obj (Preadditive.CommGrp_Equivalence.functor.obj X) := by
+      (F ⋙ forget AddCommGrpCat).mapCommGrp.obj (Preadditive.commGrpEquivalence.functor.obj X) := by
   letI : (F ⋙ forget AddCommGrpCat).Braided := .ofChosenFiniteProducts _
   letI : F.Monoidal := .ofChosenFiniteProducts _
   refine CommGrp.mkIso Multiplicative.toAdd.toIso (by
