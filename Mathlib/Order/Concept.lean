@@ -297,24 +297,20 @@ theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r')
   ⟨c'.disjoint_extent_intent, c'.codisjoint_extent_intent⟩
 
 theorem isLowerSet_extent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
-    IsLowerSet c.extent := fun _ _ ↦ mem_extent_of_rel_extent
+    IsLowerSet c.extent :=
+  fun _ _ ↦ mem_extent_of_rel_extent
 
 theorem isUpperSet_intent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
-    IsUpperSet c.intent := fun _ _ => mem_extent_of_rel_extent
+    IsUpperSet c.intent :=
+  fun _ _ ↦ mem_extent_of_rel_extent
 
 theorem isLowerSet_extent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
-    IsLowerSet c.extent := by
-  intro a b hb ha
-  obtain rfl | hb := hb.eq_or_lt
-  · assumption
-  · exact mem_extent_of_rel_extent hb ha
+    IsLowerSet c.extent :=
+  fun _ _ hb ha ↦ hb.eq_or_lt.elim (fun h ↦ h ▸ ha) fun hb ↦ mem_extent_of_rel_extent hb ha
 
 theorem isUpperSet_intent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
-    IsUpperSet c.intent := by
-  intro a b hb ha
-  obtain rfl | hb := hb.eq_or_lt
-  · assumption
-  · exact mem_intent_of_intent_rel hb ha
+    IsUpperSet c.intent :=
+  fun _ _ hb ha ↦ hb.eq_or_lt.elim (fun h ↦ h ▸ ha) fun hb ↦ mem_intent_of_rel_intent hb ha
 
 instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>
