@@ -126,9 +126,30 @@ scoped elab:max "IsImmersionAt%" ppSpace F:term:arg ppSpace nt:term:arg ppSpace
   let eF ← Term.elabTerm F none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let ef ← ensureIsFunction <|← Term.elabTerm f none
+  -- TODO: can I elaborate x as the type of the domain of f instead?
   let ex ← Term.elabTerm x none
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``IsImmersionAt #[eF, srcI, tgtI, ne, ef, ex]
+
+-- TODO: avoid the need for a type ascription here by inferring the type of x from f
+-- TODO: add analogous tests for the other elaborators, and fix the same bug!
+/--
+error: Application type mismatch: The argument
+  x
+has type
+  ?m.37
+of sort `Type ?u.15648` but is expected to have type
+  M
+of sort `Type u_12` in the application
+  IsImmersionAt F I J n f x
+---
+info: {x | sorry} : Set ?m.37
+-/
+#guard_msgs in
+#check {x | IsImmersionAt% F n f x}
+/-- info: {x | IsImmersionAt F I J n f x} : Set M -/
+#guard_msgs in
+#check {x : M | IsImmersionAt% F n f x}
 
 lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHomeomorph M H)
     (codChart : OpenPartialHomeomorph N G)
@@ -300,7 +321,8 @@ def IsImmersion (f : M → N) : Prop := ∀ x, IsImmersionAt F I J n f x
 open Lean Elab Meta Qq in
 /-- `IsImmersion% F n f` elaborates to `IsImmersion F I J n f`,
 trying to determine `I` and `J` from the local context. -/
-scoped elab:max "IsImmersion% " F:term:arg ppSpace nt:term:arg ppSpace f:term:arg : term => do
+scoped elab:max "IsImmersion%" ppSpace F:term:arg ppSpace nt:term:arg ppSpace
+  f:term:arg : term => do
   let eF ← Term.elabTerm F none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let ef ← ensureIsFunction <|← Term.elabTerm f none
@@ -309,10 +331,12 @@ scoped elab:max "IsImmersion% " F:term:arg ppSpace nt:term:arg ppSpace f:term:ar
 
 namespace IsImmersion
 
+open Manifold
+
 variable {f g : M → N}
 
 /-- If `f` is an immersion, it is an immersion at each point. -/
-lemma isImmersionAt (h : IsImmersion% F n f) (x : M) : IsImmersionAt F I J n f x := h x
+lemma isImmersionAt (h : IsImmersion F I J n f) (x : M) : IsImmersionAt F I J n f x := h x
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I J n f) (heq : f = g) : IsImmersion F I J n g :=
