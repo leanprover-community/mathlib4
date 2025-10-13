@@ -302,6 +302,12 @@ variable {c d : Concept α β r} {c' : Concept α α r'}
 
 attribute [simp] upperPolar_extent lowerPolar_intent
 
+instance : LE (Concept α β r) where
+  le c d := c.extent ⊆ d.extent
+
+instance : LT (Concept α β r) where
+  lt c d := c.extent ⊂ d.extent
+
 /-- See `Concept.ext'` for a version using the intent. -/
 @[ext]
 theorem ext (h : c.extent = d.extent) : c = d := by
@@ -392,8 +398,13 @@ instance : Min (Concept α β r) where
 alias inf_extent := min_extent
 alias inf_intent := min_intent
 
-instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
+instance : SemilatticeInf (Concept α β r) :=
   extent_injective.semilatticeInf _ fun _ _ ↦ rfl
+
+instance : SemilatticeSup (Concept α β r) :=
+  (OrderDual.toDual.injective.comp intent_injective).semilatticeSup' _ fun _ _ ↦ rfl
+
+    #exit
 
 @[simp]
 theorem extent_subset_extent_iff : c.extent ⊆ d.extent ↔ c ≤ d :=
@@ -439,14 +450,6 @@ theorem strictAnti_intent : StrictAnti (@intent α β r) := fun _ _ =>
 
 @[deprecated (since := "2025-07-10")]
 alias strictMono_snd := strictAnti_intent
-
-instance instLatticeConcept : Lattice (Concept α β r) where
-  sup := (· ⊔ ·)
-  le_sup_left _ _ := intent_subset_intent_iff.1 inter_subset_left
-  le_sup_right _ _ := intent_subset_intent_iff.1 inter_subset_right
-  sup_le _ _ _ := by
-    simp_rw [← intent_subset_intent_iff]
-    exact subset_inter
 
 @[simps!]
 instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
