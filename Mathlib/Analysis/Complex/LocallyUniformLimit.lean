@@ -40,6 +40,8 @@ holomorphic, because it depends continuously on `f` for the uniform topology. -/
 noncomputable def cderiv (r : ℝ) (f : ℂ → E) (z : ℂ) : E :=
   (2 * π * I : ℂ)⁻¹ • ∮ w in C(z, r), ((w - z) ^ 2)⁻¹ • f w
 
+/-- A circle integral which coincides with `iteratedDeriv n f z` whenever one can apply the Cauchy
+formula. -/
 noncomputable def citeratedDeriv (n : ℕ) (r : ℝ) (f : ℂ → E) (z : ℂ) : E :=
   (2 * π * I : ℂ)⁻¹ • ∮ w in C(z, r), (w - z)⁻¹ ^ n • (w - z)⁻¹ • f w
 

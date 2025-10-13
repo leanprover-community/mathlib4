@@ -35,11 +35,7 @@ namespace Complex
 
 /-- If `f` is complex differentiable on an open disc with center `c` and radius `R > 0` and is
 continuous on its closure, then `f' c` can be represented as an integral over the corresponding
-circle.
-
-TODO: add a version for `w ∈ Metric.ball c R`.
-
-TODO: add a version for higher derivatives. -/
+circle. -/
 theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) :
     deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
