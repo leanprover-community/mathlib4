@@ -102,8 +102,17 @@ theorem Pairwise.head!_le [Inhabited α] [IsRefl α R] (h : l.Pairwise R)
     | head => exact refl_of ..
     | tail => exact rel_of_pairwise_cons h (by assumption)
 
+@[deprecated  (since := "2025-10-11")]
+alias Sorted.head!_le := Pairwise.head!_le
+
+@[deprecated  (since := "2025-10-11")]
+alias Sorted.le_head! := Pairwise.head!_le
+
 theorem pairwise_replicate_of_refl {n} [IsRefl α R] : (replicate n a).Pairwise R :=
   pairwise_replicate.mpr  (Or.inr <| refl_of ..)
+
+@[deprecated (since := "2025-10-11")]
+alias sorted_replicate := pairwise_replicate_of_refl
 
 /-! ### Pairwise filtering -/
 
@@ -113,21 +122,36 @@ theorem pairwise_cons_cons_iff_of_trans [IsTrans α R] {l : List α} {a b : α} 
     Pairwise R (a :: b :: l) ↔ R a b ∧ Pairwise R (b :: l) := by
   simp_rw [← isChain_iff_pairwise, isChain_cons_cons]
 
+@[deprecated (since := "2025-10-11")]
+alias sorted_cons_cons := pairwise_cons_cons_iff_of_trans
+
 theorem Pairwise.cons_cons_of_trans [IsTrans α R] {l : List α} {a b : α} :
     R a b → Pairwise R (b :: l) → Pairwise R (a :: b :: l) := by
   simp_rw [pairwise_cons_cons_iff_of_trans]
   exact And.intro
 
+@[deprecated (since := "2025-10-11")]
+alias Sorted.cons := Pairwise.cons_cons_of_trans
+
 theorem Pairwise.rel_get_of_lt {l : List α} (h : l.Pairwise R) {a b : Fin l.length} (hab : a < b) :
     R (l.get a) (l.get b) :=
   List.pairwise_iff_get.1 h _ _ hab
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.rel_get_of_lt := Pairwise.rel_get_of_lt
 
 theorem Pairwise.rel_get_of_le [IsRefl α R] {l : List α} (h : l.Pairwise R) {a b : Fin l.length}
     (hab : a ≤ b) : R (l.get a) (l.get b) := by
   obtain rfl | hlt := Fin.eq_or_lt_of_le hab; exacts [refl _, (pairwise_iff_get.1 h) _ _ hlt]
 
+@[deprecated (since := "2025-10-11")]
+alias Sorted.rel_get_of_le := Pairwise.rel_get_of_le
+
 theorem Pairwise.decide [DecidableRel R] (l : List α) (h : Pairwise R l) :
     Pairwise (fun a b => decide (R a b) = true) l := by
   refine h.imp fun {a b} h => by simpa using h
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.decide := Pairwise.decide
 
 end List

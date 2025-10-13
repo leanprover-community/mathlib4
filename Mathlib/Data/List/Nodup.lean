@@ -13,7 +13,6 @@ import Mathlib.Order.Basic
 predicate.
 -/
 
-
 universe u v
 
 open Function
@@ -22,10 +21,12 @@ variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → 
 
 namespace List
 
-
 protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrrefl α r] (h : Pairwise r l) :
     Nodup l :=
   h.imp ne_of_irrefl
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.nodup := Pairwise.nodup
 
 open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup

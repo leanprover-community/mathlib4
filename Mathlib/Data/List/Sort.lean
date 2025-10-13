@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.List.Nodup
-import Mathlib.Order.Fin.Basic
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.TakeWhile
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Sorting algorithms on lists
@@ -32,7 +32,7 @@ section Sorted
 
 variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
 
-/-- `Sorted r l` is the same as `List.Pairwise r l` and has been deprecated -/
+/-- `Sorted r l` is the same as `List.Pairwise r l` and has been deprecated. -/
 @[deprecated (since := "2025-10-11")]
 alias Sorted := Pairwise
 
@@ -52,16 +52,7 @@ alias Sorted.tail := Pairwise.tail
 alias rel_of_sorted_cons := rel_of_pairwise_cons
 
 @[deprecated (since := "2025-10-11")]
-alias Sorted.cons := Pairwise.cons_cons_of_trans
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_cons_cons := pairwise_cons_cons_iff_of_trans
-
-@[deprecated (since := "2025-10-11")]
 alias sorted_cons := pairwise_cons
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.nodup := Pairwise.nodup
 
 @[deprecated (since := "2025-10-11")]
 alias Sorted.filter := Pairwise.filter
@@ -69,33 +60,11 @@ alias Sorted.filter := Pairwise.filter
 @[deprecated (since := "2025-10-11")]
 alias sorted_singleton := pairwise_singleton
 
-@[deprecated  (since := "2025-10-11")]
-alias Sorted.head!_le := Pairwise.head!_le
-
-@[deprecated  (since := "2025-10-11")]
-alias Sorted.le_head! := Pairwise.head!_le
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_replicate := pairwise_replicate_of_refl
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.rel_get_of_lt := Pairwise.rel_get_of_lt
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.rel_get_of_le := Pairwise.rel_get_of_le
-
 @[deprecated (since := "2025-10-11")]
 alias Sorted.rel_of_mem_take_of_mem_drop := Pairwise.rel_of_mem_take_of_mem_drop
 
 @[deprecated (since := "2025-10-11")]
-alias Sorted.decide := Pairwise.decide
-
-@[deprecated Pairwise.filterMap (since := "2025-10-11")]
-lemma Sorted.filterMap {α β : Type*} {p : α → Option β} {l : List α}
-    {r : α → α → Prop} {r' : β → β → Prop} (hl : l.Pairwise r)
-    (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
-    (l.filterMap p).Pairwise r' := by
-  exact Pairwise.filterMap _ (fun _ _ hr _ hp₁ _ hp₂ => hp _ _ _ _ hp₁ hp₂ hr) hl
+alias Sorted.filterMap := Pairwise.filterMap
 
 end Sorted
 
@@ -242,6 +211,9 @@ theorem Pairwise.insertionSort_eq : ∀ {l : List α}, Pairwise r l → insertio
     rw [insertionSort, Pairwise.insertionSort_eq, orderedInsert, if_pos]
     exacts [rel_of_pairwise_cons h mem_cons_self, h.tail]
 
+@[deprecated (since := "2025-10-11")]
+alias Sorted.insertionSort_eq := Pairwise.insertionSort_eq
+
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
@@ -337,6 +309,9 @@ theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (or
       · subst b'
         exact (total_of r _ _).resolve_left h'
       · exact rel_of_pairwise_cons h bm
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.orderedInsert := Pairwise.orderedInsert
 
 variable (r)
 
@@ -499,7 +474,16 @@ variable {α : Type u} {a b : α} {l : List α}
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] {n : ℕ} {f : Fin n → α}
+
+/-!
+These predicates are equivalent to `Monotone l.get` etc., but they are also equivalent to
+`IsChain (· < ·)` and `Pairwise (· < ·)`. API is provided to move between these proofs.
+
+API has deliberately not been provided for decomposed lists to avoid unneeded API replication.
+The provided API should be used to move to and from `Monotone` (or its equivalents),
+`Pairwise` or `IsChain` as needed.
+--/
 
 /-- `SortedLE l` means that the list is monotonic. -/
 @[irreducible] def SortedLE (l : List α) := Monotone l.get
@@ -511,35 +495,86 @@ variable [Preorder α]
 @[irreducible] def SortedGT (l : List α) := StrictAnti l.get
 
 unseal SortedLE in theorem sortedLE_iff_monotone : l.SortedLE ↔ Monotone l.get := Iff.rfl
-alias ⟨SortedLE.get_mono, _⟩ := sortedLE_iff_monotone
+alias ⟨SortedLE.get_mono, _root_.Monotone.sortedLE⟩ := sortedLE_iff_monotone
 unseal SortedGE in theorem sortedGE_iff_antitone : l.SortedGE ↔ Antitone l.get := Iff.rfl
-alias ⟨SortedGE.get_anti, _⟩ := sortedGE_iff_antitone
+alias ⟨SortedGE.get_anti, _root_.Antitone.sortedGE⟩ := sortedGE_iff_antitone
 unseal SortedLT in theorem sortedLT_iff_strictMono : l.SortedLT ↔ StrictMono l.get := Iff.rfl
-alias ⟨SortedLT.get_strictMono, _⟩ := sortedLT_iff_strictMono
+alias ⟨SortedLT.get_strictMono, _root_.StrictMono.sortedLT⟩ := sortedLT_iff_strictMono
 unseal SortedGT in theorem sortedGT_iff_strictAnti : l.SortedGT ↔ StrictAnti l.get := Iff.rfl
-alias ⟨SortedGT.get_strictAnti, _⟩ := sortedGT_iff_strictAnti
+alias ⟨SortedGT.get_strictAnti, _root_.StrictAnti.sortedGT⟩ := sortedGT_iff_strictAnti
+
+section OfFn
+
+/-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
+@[simp] theorem sortedLE_ofFn_iff : (ofFn f).SortedLE ↔ Monotone f :=
+  sortedLE_iff_monotone.trans (by simp [Monotone, Fin.forall_iff])
+
+/-- The list obtained from a monotone tuple is sorted. -/
+alias ⟨_, _root_.Monotone.sortedLE_ofFn⟩ := sortedLE_ofFn_iff
+
+@[deprecated (since := "2025-10-13")]
+alias _root_.Monotone.ofFn_sorted := Monotone.sortedLE_ofFn
+
+/-- The list `List.ofFn f` is sorted with respect to `(· ≥ ·)` if and only if `f` is antitone. -/
+@[simp] theorem sortedGE_ofFn_iff : (ofFn f).SortedGE ↔ Antitone f :=
+  sortedGE_iff_antitone.trans (by simp [Antitone, Fin.forall_iff])
+
+/-- The list obtained from an antitone tuple is sorted. -/
+alias ⟨_, _root_.Antitone.sortedGE_ofFn⟩ := sortedGE_ofFn_iff
+
+@[deprecated (since := "2025-10-13")]
+alias _root_.Antitone.ofFn_sorted := Antitone.sortedGE_ofFn
+
+/-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
+strictly monotone. -/
+@[simp] theorem sortedLT_ofFn_iff : (ofFn f).SortedLT ↔ StrictMono f :=
+  sortedLT_iff_strictMono.trans (by simp [StrictMono, Fin.forall_iff])
+
+/-- The list obtained from a strictly monotone tuple is sorted. -/
+alias ⟨_, _root_.StrictMono.sortedLT_ofFn⟩ := sortedLT_ofFn_iff
+
+/-- The list `List.ofFn f` is strictly sorted with respect to `(· ≥ ·)` if and only if `f` is
+strictly antitone. -/
+@[simp] theorem sortedGT_ofFn_iff : (ofFn f).SortedGT ↔ StrictAnti f :=
+  sortedGT_iff_strictAnti.trans (by simp [StrictAnti, Fin.forall_iff])
+
+/-- The list obtained from a strictly antitone tuple is sorted. -/
+alias ⟨_, _root_.StrictAnti.sortedGT_ofFn⟩ := sortedGT_ofFn_iff
+
+end OfFn
 
 theorem sortedLE_iff_get : l.SortedLE ↔ ∀ (i j : Fin l.length), i < j → l.get i ≤ l.get j :=
   sortedLE_iff_monotone.trans monotone_iff_forall_lt
+alias ⟨SortedLE.get_le_get, _⟩ := sortedLE_iff_get
 theorem sortedGE_iff_get : l.SortedGE ↔ ∀ (i j : Fin l.length), i < j → l.get j ≤ l.get i :=
   sortedGE_iff_antitone.trans antitone_iff_forall_lt
+alias ⟨SortedGE.get_le_get, _⟩ := sortedGE_iff_get
 theorem sortedLT_iff_get : l.SortedLT ↔ ∀ (i j : Fin l.length), i < j → l.get i < l.get j :=
   sortedLT_iff_strictMono
+alias ⟨SortedLT.get_lt_get, _⟩ := sortedLT_iff_get
 theorem sortedGT_iff_get : l.SortedGT ↔ ∀ (i j : Fin l.length), i < j → l.get j < l.get i :=
   sortedGT_iff_strictAnti
+alias ⟨SortedGT.get_lt_get, _⟩ := sortedGT_iff_get
 
-@[grind] theorem sortedLE_iff_getElem : l.SortedLE ↔
+theorem sortedLE_iff_getElem : l.SortedLE ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] ≤ l[j] := by
-  simp_rw [sortedLE_iff_get, Fin.forall_iff]; grind
-@[grind] theorem sortedGE_iff_getElem : l.SortedGE ↔
+  simp [sortedLE_iff_get, Fin.forall_iff]; grind
+alias ⟨SortedLE.getElem_le_getElem, _⟩ := sortedLE_iff_getElem
+theorem sortedGE_iff_getElem : l.SortedGE ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] ≤ l[i] := by
   simp_rw [sortedGE_iff_get, Fin.forall_iff]; grind
-@[grind] theorem sortedLT_iff_getElem : l.SortedLT ↔
+alias ⟨SortedGE.getElem_le_getElem, _⟩ := sortedGE_iff_getElem
+theorem sortedLT_iff_getElem : l.SortedLT ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] < l[j] := by
   simp_rw [sortedLT_iff_get, Fin.forall_iff]; grind
-@[grind] theorem sortedGT_iff_getElem : l.SortedGT ↔
+alias ⟨SortedLT.getElem_lt_getElem, _⟩ := sortedLT_iff_getElem
+theorem sortedGT_iff_getElem : l.SortedGT ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] < l[i] := by
   simp_rw [sortedGT_iff_get, Fin.forall_iff]; grind
+alias ⟨SortedGT.getElem_lt_getElem, _⟩ := sortedGT_iff_getElem
+
+attribute [grind →] SortedLE.getElem_le_getElem SortedGE.getElem_le_getElem
+  SortedLT.getElem_lt_getElem SortedGT.getElem_lt_getElem
 
 theorem sortedLE_iff_pairwise : SortedLE l ↔ Pairwise (· ≤ ·) l :=
   sortedLE_iff_get.trans (Iff.symm pairwise_iff_get)
@@ -587,48 +622,52 @@ theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.pairwise.imp ne_of_gt
 
 @[simp] theorem sortedLE_reverse : l.reverse.SortedLE ↔ l.SortedGE := by
   simp_rw [sortedGE_iff_pairwise, sortedLE_iff_pairwise, pairwise_reverse]
-alias ⟨_, SortedGE.reverse⟩ := sortedLE_reverse
+alias ⟨SortedLE.of_reverse, SortedGE.reverse⟩ := sortedLE_reverse
 @[simp] theorem sortedGE_reverse : l.reverse.SortedGE ↔ l.SortedLE := by
   simp_rw [sortedGE_iff_pairwise, sortedLE_iff_pairwise, pairwise_reverse]
-alias ⟨_, SortedLE.reverse⟩ := sortedGE_reverse
+alias ⟨SortedGE.of_reverse, SortedLE.reverse⟩ := sortedGE_reverse
 @[simp] theorem sortedLT_reverse : l.reverse.SortedLT ↔ l.SortedGT := by
   simp_rw [sortedGT_iff_pairwise, sortedLT_iff_pairwise, pairwise_reverse]
-alias ⟨_, SortedGT.reverse⟩ := sortedLT_reverse
+alias ⟨SortedLT.of_reverse, SortedGT.reverse⟩ := sortedLT_reverse
 @[simp] theorem sortedGT_reverse : l.reverse.SortedGT ↔ l.SortedLT := by
   simp_rw [sortedGT_iff_pairwise, sortedLT_iff_pairwise, pairwise_reverse]
-alias ⟨_, SortedLT.reverse⟩ := sortedGT_reverse
+alias ⟨SortedGT.of_reverse, SortedLT.reverse⟩ := sortedGT_reverse
 
-@[simp] theorem sortedLE_map_ofDual {l : List αᵒᵈ} :
-    (l.map OrderDual.ofDual).SortedLE ↔ l.SortedGE := by
+@[simp] theorem sortedLE_dual {l : List αᵒᵈ} :
+    l.SortedLE ↔ (l.map OrderDual.ofDual).SortedGE := by
   simp_rw [sortedLE_iff_pairwise, sortedGE_iff_pairwise, pairwise_map, OrderDual.ofDual_le_ofDual]
+alias ⟨SortedLE.of_dual, _⟩ := sortedLE_dual
 
-@[simp] theorem sortedLE_map_toDual :
-    (l.map OrderDual.toDual).SortedLE ↔ l.SortedGE := by
-  simp_rw [sortedLE_iff_pairwise, sortedGE_iff_pairwise, pairwise_map, OrderDual.toDual_le_toDual]
-
-@[simp] theorem sortedGE_map_ofDual {l : List αᵒᵈ} :
-    (l.map OrderDual.ofDual).SortedGE ↔ l.SortedLE := by
+@[simp] theorem sortedGE_dual {l : List αᵒᵈ} :
+    l.SortedGE ↔ (l.map OrderDual.ofDual).SortedLE := by
   simp_rw [sortedLE_iff_pairwise, sortedGE_iff_pairwise, pairwise_map, OrderDual.ofDual_le_ofDual]
+alias ⟨SortedGE.of_dual, _⟩ := sortedLE_dual
 
-@[simp] theorem sortedGE_map_toDual :
-    (l.map OrderDual.toDual).SortedGE ↔ l.SortedLE := by
-  simp_rw [sortedLE_iff_pairwise, sortedGE_iff_pairwise, pairwise_map, OrderDual.toDual_le_toDual]
-
-@[simp] theorem sortedLT_map_ofDual {l : List αᵒᵈ} :
-    (l.map OrderDual.ofDual).SortedLT ↔ l.SortedGT := by
+@[simp] theorem sortedLT_dual {l : List αᵒᵈ} :
+    l.SortedLT ↔ (l.map OrderDual.ofDual).SortedGT := by
   simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.ofDual_lt_ofDual]
+alias ⟨SortedLT.of_dual, _⟩ := sortedLE_dual
 
-@[simp] theorem sortedLT_map_toDual :
-    (l.map OrderDual.toDual).SortedLT ↔ l.SortedGT := by
-  simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.toDual_lt_toDual]
-
-@[simp] theorem sortedGT_map_ofDual {l : List αᵒᵈ} :
-    (l.map OrderDual.ofDual).SortedGT ↔ l.SortedLT := by
+@[simp] theorem sortedGT_dual {l : List αᵒᵈ} :
+    l.SortedGT ↔ (l.map OrderDual.ofDual).SortedLT := by
   simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.ofDual_lt_ofDual]
+alias ⟨SortedGT.of_dual, _⟩ := sortedLE_dual
 
-@[simp] theorem sortedGT_map_toDual :
-    (l.map OrderDual.toDual).SortedGT ↔ l.SortedLT := by
-  simp_rw [sortedLT_iff_pairwise, sortedGT_iff_pairwise, pairwise_map, OrderDual.toDual_lt_toDual]
+theorem sortedLE_map_toDual :
+    (l.map OrderDual.toDual).SortedLE ↔ l.SortedGE := by simp
+alias ⟨SortedLE.dual, _⟩ := sortedLE_dual
+
+theorem sortedGE_map_toDual :
+    (l.map OrderDual.toDual).SortedGE ↔ l.SortedLE := by simp
+alias ⟨SortedGE.dual, _⟩ := sortedGE_dual
+
+theorem sortedLT_map_toDual :
+    (l.map OrderDual.toDual).SortedLT ↔ l.SortedGT := by simp
+alias ⟨SortedLT.dual, _⟩ := sortedLT_dual
+
+theorem sortedGT_map_ofDual {l : List αᵒᵈ} :
+    (l.map OrderDual.ofDual).SortedGT ↔ l.SortedLT := by simp
+alias ⟨SortedGT.dual, _⟩ := sortedGT_dual
 
 theorem sortedLT_range (n : ℕ) : (range n).SortedLT := by simp [sortedLT_iff_getElem]
 
@@ -639,39 +678,6 @@ lemma sortedLE_range' (a b s) :
     (range' a b s).SortedLE := by
   simp only [sortedLE_iff_getElem, length_range', getElem_range', Nat.add_le_add_iff_left]
   exact fun _ _ _ _ h => Nat.mul_le_mul_left _ h.le
-
-section OfFn
-
-variable {n : ℕ} {f : Fin n → α}
-
-/-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
-@[simp] theorem sortedLE_ofFn_iff : (ofFn f).SortedLE ↔ Monotone f :=
-  sortedLE_iff_monotone.trans (by simp [Monotone, Fin.forall_iff])
-
-/-- The list `List.ofFn f` is sorted with respect to `(· ≥ ·)` if and only if `f` is antitone. -/
-@[simp] theorem sortedGE_ofFn_iff : (ofFn f).SortedGE ↔ Antitone f :=
-  sortedGE_iff_antitone.trans (by simp [Antitone, Fin.forall_iff])
-
-/-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
-strictly monotone. -/
-@[simp] theorem sortedLT_ofFn_iff : (ofFn f).SortedLT ↔ StrictMono f :=
-  sortedLT_iff_strictMono.trans (by simp [StrictMono, Fin.forall_iff])
-
-/-- The list `List.ofFn f` is strictly sorted with respect to `(· ≥ ·)` if and only if `f` is
-strictly antitone. -/
-@[simp] theorem sortedGT_ofFn_iff : (ofFn f).SortedGT ↔ StrictAnti f :=
-  sortedGT_iff_strictAnti.trans (by simp [StrictAnti, Fin.forall_iff])
-
-/-- The list obtained from a monotone tuple is sorted. -/
-alias ⟨_, _root_.Monotone.ofFn_sortedLE⟩ := sortedLE_ofFn_iff
-/-- The list obtained from an antitone tuple is sorted. -/
-alias ⟨_, _root_.Antitone.ofFn_sortedGE⟩ := sortedGE_ofFn_iff
-/-- The list obtained from a strictly monotone tuple is sorted. -/
-alias ⟨_, _root_StrictMono.ofFn_sortedLT⟩ := sortedLT_ofFn_iff
-/-- The list obtained from an antitone tuple is sorted. -/
-alias ⟨_, _root_.StrictAnti.ofFn_sortedGT⟩ := sortedGT_ofFn_iff
-
-end OfFn
 
 end Preorder
 
@@ -874,22 +880,24 @@ end StrictMono
 
 namespace StrictAnti
 
+open List
+
 variable {α β : Type*} [LinearOrder α] [Preorder β] {f : α → β} {l : List α}
 
 theorem sortedLE_listMap (hf : StrictAnti f) :
     (l.map f).SortedLE ↔ l.SortedGE := by
-  simp_rw [← List.sortedGE_map_toDual, List.map_map, hf.dual_right.sortedGE_listMap]
+  simpa using hf.dual_right.sortedGE_listMap
 
 theorem sortedGE_listMap (hf : StrictAnti f) :
     (l.map f).SortedGE ↔ l.SortedLE := by
-  simp_rw [← List.sortedLE_map_toDual, List.map_map, hf.dual_right.sortedLE_listMap]
+  simpa using hf.dual_right.sortedLE_listMap
 
 theorem sortedLT_listMap (hf : StrictAnti f) :
     (l.map f).SortedLT ↔ l.SortedGT := by
-  simp_rw [← List.sortedGT_map_toDual, List.map_map, hf.dual_right.sortedGT_listMap]
+  simpa using hf.dual_right.sortedGT_listMap
 
 theorem sortedGT_listMap (hf : StrictAnti f) :
     (l.map f).SortedGT ↔ l.SortedLT := by
-  simp_rw [← List.sortedLT_map_toDual, List.map_map, hf.dual_right.sortedLT_listMap]
+  simpa using hf.dual_right.sortedLT_listMap
 
 end StrictAnti
