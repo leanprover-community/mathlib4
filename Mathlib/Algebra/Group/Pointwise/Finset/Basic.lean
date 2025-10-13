@@ -1249,13 +1249,13 @@ variable [IsLeftCancelMul α] in
 @[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : #t ≤ #(s / t) :=
   have ⟨_, ha⟩ := hs; card_le_card_image₂_left _ ha div_right_injective
 
-variable [IsLeftCancelMul α] in
-@[to_additive] lemma card_le_card_div_self : #s ≤ #(s / s) := by
-  cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]
-
 variable [IsRightCancelMul α] in
 @[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : #s ≤ #(s / t) :=
   have ⟨_, ha⟩ := ht; card_le_card_image₂_right _ ha div_left_injective
+
+variable [IsLeftCancelMul α] in
+@[to_additive] lemma card_le_card_div_self : #s ≤ #(s / s) := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]
 
 end DivisionMonoid
 
