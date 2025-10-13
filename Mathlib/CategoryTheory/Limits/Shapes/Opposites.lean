@@ -750,30 +750,52 @@ def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :
    Cocone.unop ((Cocones.precompose (opParallelPairIso f.unop g.unop).hom).obj
       (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
 
+lemma unop_π_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
+    c.unop.π.app .one = (Quiver.Hom.unop (c.ι.app .zero)) := by
+  simp [unop, walkingParallelPairOpEquiv]
+
+lemma unop_π_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
+    c.unop.π.app .zero = (Quiver.Hom.unop (c.ι.app .one)) := by
+  simp [unop, walkingParallelPairOpEquiv]
+
 theorem unop_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.unop.ι = c.π.unop := by simp [unop, Fork.ι]
+    c.unop.ι = c.π.unop := by simp [Cofork.unop, Fork.ι]
 
 /-- The obvious map `Cofork f g → Fork f.op g.op` -/
-@[simps!]
 def op {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.op g.op :=
   (Cones.postcompose (parallelPairOpIso f g).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.functor (Cocone.op c))
 
+lemma op_π_app_one {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
+    c.op.π.app .one = (Quiver.Hom.op (c.ι.app .zero)) := by
+  simp [op, walkingParallelPairOpEquiv]
+
+lemma op_π_app_zero {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
+    c.op.π.app .zero = (Quiver.Hom.op (c.ι.app .one)) := by
+  simp [op, walkingParallelPairOpEquiv]
+
 theorem op_ι {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.op.ι = c.π.op := by simp [Fork.ι, Cofork.op]
+    c.op.ι = c.π.op := by simp [Cofork.op, Fork.ι]
 
 end Cofork
 
 namespace Fork
 
 /-- The obvious map `Fork f g → Cofork f.unop g.unop` -/
-@[simps!]
 def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.unop g.unop :=
   Cone.unop ((Cones.postcompose (opParallelPairIso f.unop g.unop).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.inverse c))
 
+lemma unop_ι_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
+    c.unop.ι.app .one = (Quiver.Hom.unop (c.π.app .zero)) := by
+  simp [unop, walkingParallelPairOpEquiv]
+
+lemma unop_ι_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
+    c.unop.ι.app .zero = (Quiver.Hom.unop (c.π.app .one)) := by
+  simp [unop, walkingParallelPairOpEquiv]
+
 theorem unop_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
-    c.unop.π = c.ι.unop := by simp [Cofork.π]
+    c.unop.π = c.ι.unop := by simp [Fork.unop, Cofork.π]
 
 /-- The obvious map `Fork f g → Cofork f.op g.op` -/
 @[simps!]
@@ -781,8 +803,16 @@ def op {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.op g.op :=
   (Cocones.precompose (parallelPairOpIso f g).hom).obj
     (Cocone.whisker walkingParallelPairOpEquiv.functor (Cone.op c))
 
+lemma op_ι_app_one {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
+    c.op.ι.app .one = (Quiver.Hom.op (c.π.app .zero)) := by
+  simp [op, walkingParallelPairOpEquiv]
+
+lemma op_ι_app_zero {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
+    c.op.ι.app .zero = (Quiver.Hom.op (c.π.app .one)) := by
+  simp [op, walkingParallelPairOpEquiv]
+
 theorem op_π {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
-    c.op.π = c.ι.op := by simp [Cofork.π, Fork.op]
+    c.op.π = c.ι.op := by simp [Fork.op, Cofork.π]
 
 end Fork
 
