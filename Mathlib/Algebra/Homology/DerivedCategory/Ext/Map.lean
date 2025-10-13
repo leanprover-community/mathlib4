@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jingting Wang
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 
 /-!
@@ -34,5 +35,13 @@ noncomputable def Functor.mapExtAddHom (X Y : C) (n : ℕ) :
       rw [ShiftedHom.map, F.mapDerivedCategory.map_add]
       simp [ShiftedHom.map]
   }).comp Ext.homAddEquiv.toAddMonoidHom
+
+variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
+
+noncomputable def Functor.mapExtLinearMap (X Y : C) (n : ℕ) :
+    Ext.{w} X Y n →ₗ[R] Ext.{w'} (F.obj X) (F.obj Y) n := sorry
+
+lemma Functor.mapExtLinearMap_toAddMonoidHom (X Y : C) (n : ℕ) :
+    F.mapExtLinearMap R X Y n = F.mapExtAddHom X Y n := sorry
 
 end CategoryTheory
