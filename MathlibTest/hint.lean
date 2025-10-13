@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Abel
@@ -136,27 +137,6 @@ example : True := by
 
 end multiline_hint
 
-section finiteness
-/--
-info: Try these:
-  • 🎉 finiteness
--/
-#guard_msgs in
-open ENNReal in
-example : (1 : ℝ≥0∞) < ∞ := by hint
-end finiteness
-
-section tauto_set
-
-register_hint 1000 tauto_set
-
-/--
-info: Try these:
-  • 🎉 tauto_set
--/
-#guard_msgs in
-example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by hint
-
 /--
 info: Try these:
   • aesop
@@ -179,8 +159,6 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 example : 2 ≤ 1 := by hint
-
-end tauto_set
 
 section compute_degree
 /--
@@ -245,3 +223,136 @@ info: Try these:
 #guard_msgs in
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by hint
 end ring
+
+/--
+info: Try these:
+  • 🎉 abel
+-/
+#guard_msgs in
+example {α} [AddCommMonoid α] (a b c d: α) : a + b + c + d + 0 = d + (c + b) + (0 + 0 + a) := by hint
+
+/--
+info: Try these:
+  • 🎉 bound
+  • noncomm_ring
+    Remaining subgoals:
+    ⊢ ‖b * b + a‖ ≥ ‖b * b‖ + -1 • ‖a‖ ∧ ‖b * b‖ + -1 • ‖a‖ ≥ ‖b * b‖ + -1 • ‖b‖ ∧ -1 • ‖b‖ + ‖b‖ * ‖b‖ ≥ 2 • ‖b‖
+  • ring_nf
+    Remaining subgoals:
+    ⊢ ‖b ^ 2 + a‖ ≥ ‖b ^ 2‖ - ‖a‖ ∧ ‖b ^ 2‖ - ‖a‖ ≥ ‖b ^ 2‖ - ‖b‖ ∧ -‖b‖ + ‖b‖ ^ 2 ≥ ‖b‖ * 2
+  • field_simp
+    Remaining subgoals:
+    ⊢ ‖b ^ 2‖ - ‖a‖ ≤ ‖b ^ 2 + a‖ ∧ ‖b ^ 2‖ - ‖b‖ ≤ ‖b ^ 2‖ - ‖a‖ ∧ 2 ≤ ‖b‖ - 1
+  • abel_nf
+    Remaining subgoals:
+    ⊢ ‖b ^ 2 + a‖ ≥ ‖b ^ 2‖ + -1 • ‖a‖ ∧ ‖b ^ 2‖ + -1 • ‖a‖ ≥ ‖b ^ 2‖ + -1 • ‖b‖ ∧ (‖b‖ + -1 • 1) * ‖b‖ ≥ 2 * ‖b‖
+  • norm_num
+    Remaining subgoals:
+    ⊢ b ^ 2 ≤ |b ^ 2 + a| + |a| ∧ b ^ 2 ≤ b ^ 2 - |a| + |b| ∧ 2 * |b| ≤ (|b| - 1) * |b|
+  • group
+    Remaining subgoals:
+    ⊢ ‖b ^ 2 + a‖ ≥ ‖b ^ 2‖ - ‖a‖ ∧ ‖b ^ 2‖ - ‖a‖ ≥ ‖b ^ 2‖ - ‖b‖ ∧ -‖b‖ + ‖b‖ ^ 2 ≥ ‖b‖ * 2
+  • simp_all only [Real.norm_eq_abs,
+      abs_pow, sq_abs, ge_iff_le, tsub_le_iff_right]
+    Remaining subgoals:
+    ⊢ b ^ 2 ≤ |b ^ 2 + a| + |a| ∧ b ^ 2 ≤ b ^ 2 - |a| + |b| ∧ 2 * |b| ≤ (|b| - 1) * |b|
+  • aesop
+    Remaining subgoals:
+    ⊢ b ^ 2 ≤ |b ^ 2 + a| + |a|
+    ⊢ b ^ 2 ≤ b ^ 2 - |a| + |b|
+    ⊢ 2 * |b| ≤ (|b| - 1) * |b|
+-/
+#guard_msgs in
+example (a b : ℝ) (h1 : ‖a‖ ≤ ‖b‖) (h2 : 3 ≤ ‖b‖) : ‖b ^ 2 + a‖ ≥ ‖b ^ 2‖ - ‖a‖ ∧ ‖b ^ 2‖ - ‖a‖ ≥ ‖b ^ 2‖ - ‖b‖ ∧ (‖b‖ - 1) * ‖b‖ ≥ 2 * ‖b‖ := by hint
+
+/--
+info: Try these:
+  • 🎉 group
+  • norm_num
+    Remaining subgoals:
+    ⊢ c⁻¹ * (b * c⁻¹) * c * (a * b) * (b⁻¹ * a⁻¹ * b⁻¹) * c = 1
+-/
+#guard_msgs in
+example (G : Type) (a b c : G) [Group G] : c⁻¹ * (b * c⁻¹) * c * (a * b) * (b⁻¹ * a⁻¹ * b⁻¹) * c = 1 := by hint
+
+/--
+info: Try these:
+  • 🎉 noncomm_ring
+-/
+#guard_msgs in
+example (R : Type) (a b : R) [Ring R] : (a + b) ^ 3 = a ^ 3 + a ^ 2 * b + a * b * a + a * b ^ 2 + b * a ^ 2 + b * a * b + b ^ 2 * a + b ^ 3 := by hint
+
+/--
+info: Try these:
+  • 🎉 norm_num
+  • ring_nf
+    Remaining subgoals:
+    ⊢ 2 < 5 / 2 ∧ 2 < 3
+  • field_simp
+    Remaining subgoals:
+    ⊢ 2 ^ 2 < 5 ∧ 5 / 2 < 3
+-/
+#guard_msgs in
+example : (2 : ℝ) < 5 / 2 ∧ 5 / 2 < 3 := by hint
+
+/--
+info: Try these:
+  • 🎉 positivity
+-/
+#guard_msgs in
+example (a : ℤ) : 0 < |a| + 3 := by hint
+
+/--
+info: Try these:
+  • 🎉 trivial
+  • ring_nf
+    Remaining subgoals:
+    ⊢ True ∧ m ≠ 1 ∧ ∀ n < 100, n ^ 2 < 10000
+  • norm_num
+    Remaining subgoals:
+    ⊢ ¬m = 1 ∧ ∀ n < 100, n ^ 2 < 10000
+-/
+#guard_msgs in
+example (m : Nat) (h : m ≠ 1) : True ∧ m ≠ 1 ∧ ∀ n < 100, n^2 < 10000 := by hint
+
+/--
+info: Try these:
+  • 🎉 tauto
+  • ring_nf
+    Remaining subgoals:
+    ⊢ P n → n = 7 ∨ n = 0 ∨ ¬(n = 7 ∨ n = 0) ∧ P n
+  • intro
+    Remaining subgoals:
+    ⊢ n = 7 ∨ n = 0 ∨ ¬(n = 7 ∨ n = 0) ∧ P n
+  • norm_num
+    Remaining subgoals:
+    ⊢ P n → n = 7 ∨ n = 0 ∨ (¬n = 7 ∧ ¬n = 0) ∧ P n
+  • group
+    Remaining subgoals:
+    ⊢ P n → n = 7 ∨ n = 0 ∨ ¬(n = 7 ∨ n = 0) ∧ P n
+  • simp_all only [not_or,
+      and_true]
+    Remaining subgoals:
+    ⊢ P n → n = 7 ∨ n = 0 ∨ ¬n = 7 ∧ ¬n = 0
+-/
+#guard_msgs in
+example (P : Nat → Prop) (n : Nat) : P n → n = 7 ∨ n = 0 ∨ ¬ (n = 7 ∨ n = 0) ∧ P n := by hint
+
+section tauto_set
+
+register_hint 450 tauto_set
+
+/--
+info: Try these:
+  • 🎉 tauto_set
+  • norm_num
+    Remaining subgoals:
+    ⊢ A ∩ B ∪ A ∩ C = A
+  • group
+    Remaining subgoals:
+    ⊢ A ∩ B ∪ A ∩ C = A
+-/
+#guard_msgs in
+example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by hint
+
+end tauto_set
