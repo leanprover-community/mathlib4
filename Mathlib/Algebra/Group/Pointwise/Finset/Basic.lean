@@ -1242,7 +1242,6 @@ lemma card_le_card_pow (hn : n ≠ 0) : #s ≤ #(s ^ n) := by
 end CancelMonoid
 
 section DivisionMonoid
-
 variable [DivisionMonoid α] [DecidableEq α] {s t : Finset α}
 
 variable [IsLeftCancelMul α] in
