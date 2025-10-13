@@ -146,52 +146,6 @@ lemma flat_and_surjective_iff_of_faithfullyFlat_of_isAffine [IsAffine X] [IsAffi
     exact (Category.comp_id f ▸ Scheme.toSpecΓ_isoSpec_inv Y ▸
       Scheme.isoSpec_hom_naturality_assoc f _).symm ▸ ⟨inferInstance, inferInstance⟩
 
-/-- An effective epimorphism structure on the continuous map underlying a flat surjective and
-quasi-compact map of schemes. -/
-noncomputable def effectiveEpiStructBaseOfSurjective [Flat f] [Surjective f] [QuasiCompact f] :
-    EffectiveEpiStruct f.base :=
-  TopCat.effectiveEpiStructOfQuotientMap _ (isQuotientMap_of_surjective f)
-
-/-- The underlying continuous map of a flat surjective and quasi-compact map of schemes is
-an effective epimorphism in the category of topological spaces. -/
-lemma effectiveEpi_base_of_surjective [Flat f] [Surjective f] [QuasiCompact f] :
-    EffectiveEpi f.base :=
-  ⟨⟨TopCat.effectiveEpiStructOfQuotientMap _ (isQuotientMap_of_surjective f)⟩⟩
-
-variable {f} in
-/-- A preparation lemma for `AlgebraicGeometry.Flat.base_factor`. -/
-lemma base_factorization_type [Surjective f] {W : Scheme.{u}} {e : X ⟶ W}
-    (h : pullback.fst f f ≫ e = pullback.snd f f ≫ e) :
-    ∃ (g : ↥Y → ↥W), ⇑e.base.hom = g ∘ ⇑f.base.hom := by
-  let : RegularEpi (Scheme.forget.map f) := by
-    have := (isSplitEpi_iff_surjective (Scheme.forget.map f)).mpr ‹Surjective f›.surj
-    exact regularEpiOfEffectiveEpi (Scheme.forget.map f)
-  refine ⟨_, types_comp _ _ ▸ Cofork.IsColimit.π_desc' this.isColimit _ ?_|>.symm⟩
-  change pullback.fst _ _ ≫ Scheme.forget.map e = pullback.snd _ _ ≫ Scheme.forget.map e
-  apply ((epi_iff_surjective _).mpr
-    (Scheme.Pullback.forget_comparison_surjective _ _)).left_cancellation
-  simp only [← Category.assoc, pullbackComparison_comp_fst, ← Functor.map_comp, h,
-    pullbackComparison_comp_snd]
-
-variable {f} in
-/-- For a flat surjective and quasi-compact morphism `f : X ⟶ Y` of schemes,
-any morphism `e : X ⟶ W` of schemes satisfying `pullback.fst f f ≫ e = pullback.snd f f ≫ e`
-factors through a unique *continuous map* on underlying topological spaces. -/
-lemma base_factorization [Flat f] [Surjective f] [QuasiCompact f] {W : Scheme.{u}} {e : X ⟶ W}
-    (h : pullback.fst f f ≫ e = pullback.snd f f ≫ e) :
-    ∃! (g : Y.carrier ⟶ W.carrier), f.base ≫ g = e.base := by
-  have {Z : TopCat} (g₁ g₂ : Z ⟶ X.carrier) (hg : g₁ ≫ f.base = g₂ ≫ f.base) :
-      g₁ ≫ e.base = g₂ ≫ e.base := by
-    apply TopCat.hom_ext
-    apply ContinuousMap.coe_injective
-    simp only [TopCat.hom_comp, ContinuousMap.coe_comp]
-    rw [(base_factorization_type h).choose_spec, Function.comp_assoc]
-    congr 1
-    exact congrArg (fun g ↦ g.toFun) ((TopCat.hom_comp _ _).trans (congrArg (fun g ↦ g.hom) hg))
-  exact ⟨(effectiveEpiStructBaseOfSurjective f).desc e.base this,
-    ⟨(effectiveEpiStructBaseOfSurjective f).fac e.base this,
-      fun g' hg' ↦ (effectiveEpiStructBaseOfSurjective f).uniq e.base this g' hg'⟩⟩
-
 end FlatAndSurjective
 
 end Flat
