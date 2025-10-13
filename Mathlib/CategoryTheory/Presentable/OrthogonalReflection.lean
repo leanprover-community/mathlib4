@@ -62,12 +62,6 @@ noncomputable abbrev D₁.ιLeft {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z
 
 variable {W Z} in
 @[reassoc]
-lemma D₁.ι_comp_l (d : D₁ W Z) :
-    Sigma.ι _ d ≫ D₁.l W Z = d.2 := by
-  apply Sigma.ι_desc
-
-variable {W Z} in
-@[reassoc]
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.l W Z = g := by
   apply Sigma.ι_desc
