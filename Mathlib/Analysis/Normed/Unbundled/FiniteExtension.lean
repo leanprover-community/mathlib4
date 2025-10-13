@@ -77,7 +77,7 @@ variable {B}
 theorem norm_extends {i : ι} (hBi : B i = (1 : L)) (x : K) :
     B.norm ((algebraMap K L) x) = ‖x‖ := by
   classical
-  simp only [norm, repr_algebraMap _ hBi]
+  simp only [norm, repr_algebraMap hBi, Finsupp.single_apply]
   apply le_antisymm
   · aesop
   · exact le_sup'_of_le _ (mem_univ i) (by simp)
@@ -151,7 +151,7 @@ theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i 
     (hBi : B i = (1 : L)) (k : K) (y : L) :
     B.norm ((algebraMap K L) k * y) = B.norm ((algebraMap K L) k) * B.norm y := by
   by_cases hk : k = 0
-  · rw [hk, map_zero, MulZeroClass.zero_mul, B.norm_zero, MulZeroClass.zero_mul]
+  · rw [hk, map_zero, zero_mul, B.norm_zero, zero_mul]
   · rw [norm_extends hBi]
     obtain ⟨i, _, hi⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖B.repr y i‖)
     obtain ⟨j, _, hj⟩ := exists_mem_eq_sup' univ_nonempty
@@ -161,7 +161,7 @@ theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i 
       apply le_antisymm _ (norm_repr_le_norm B j)
       have hj' := Finset.le_sup' (fun i ↦ ‖B.repr ((algebraMap K L) k * y) i‖) (mem_univ i)
       simp only [repr_smul', norm_mul, ← hi] at hj hj'
-      exact (mul_le_mul_left (lt_of_le_of_ne (norm_nonneg _)
+      exact (mul_le_mul_iff_right₀ (lt_of_le_of_ne (norm_nonneg _)
         (Ne.symm (norm_ne_zero_iff.mpr hk)))).mp (hj ▸ hj')
     simp only [norm, hj]
     rw [repr_smul', norm_mul, hi, hij]
@@ -195,7 +195,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   -- g 0 = 0seminormFromBounded
   have hg0 : g 0 = 0 := B.norm_zero
   -- g takes nonnegative values
-  have hg_nonneg : ∀ x : L, 0 ≤ g x := fun x ↦ by simp only [g, Basis.norm]; aesop
+  have hg_nonneg : ∀ x : L, 0 ≤ g x := fun x ↦ by simp only [g, Basis.norm]; simp
   -- g extends the norm on K
   have hg_ext : ∀ (x : K), g ((algebraMap K L) x) = ‖x‖ := Basis.norm_extends hB1
   -- g is nonarchimedean

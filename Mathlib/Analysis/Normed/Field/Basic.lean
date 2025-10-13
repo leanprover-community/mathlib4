@@ -138,9 +138,6 @@ lemma unitClosedBall_eq_univ_of_discrete : (Metric.closedBall 0 1 : Set 𝕜) = 
   ext
   simp
 
-@[deprecated (since := "2024-12-01")]
-alias discreteTopology_unit_closedBall_eq_univ := unitClosedBall_eq_univ_of_discrete
-
 end Discrete
 
 end NormedDivisionRing
@@ -162,7 +159,7 @@ class NontriviallyNormedField (α : Type*) extends NormedField α where
   non_trivial : ∃ x : α, 1 < ‖x‖
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
-which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
+which means it is also nontrivially normed. However, not all nontrivially normed fields are densely
 normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type*) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
@@ -295,7 +292,7 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     · exact ⟨x, hlt⟩
 
 noncomputable instance Real.normedField : NormedField ℝ :=
-  { Real.normedAddCommGroup, Real.field with
+  { Real.normedAddCommGroup, Real.instField with
     norm_mul := abs_mul }
 
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where

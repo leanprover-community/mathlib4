@@ -598,14 +598,14 @@ theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → 
     rcases h₁₂ with (rfl | h₁₂ | h₁₂)
     · unfold stmts₁ at h₀₁
       exact h₀₁
-    · exact Finset.mem_insert_of_mem (Finset.mem_union_left _ <| IH₁ h₁₂)
-    · exact Finset.mem_insert_of_mem (Finset.mem_union_right _ <| IH₂ h₁₂)
+    · grind
+    · grind
   | goto l => subst h₁₂; exact h₀₁
   | halt => subst h₁₂; exact h₀₁
   | _ _ q IH =>
     rcases h₁₂ with rfl | h₁₂
     · exact h₀₁
-    · exact Finset.mem_insert_of_mem (IH h₁₂)
+    · grind
 
 theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt Γ Λ σ} (h : q₁ ∈ stmts₁ q₂)
     (hs : SupportsStmt S q₂) : SupportsStmt S q₁ := by
@@ -1085,7 +1085,7 @@ theorem tr_respects :
       apply IH
     | branch p q₁ q₂ IH₁ IH₂ =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, Tape.mk'_head]
-      cases p R.head v <;> [apply IH₂; apply IH₁]
+      grind
     | goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
       apply ReflTransGen.refl

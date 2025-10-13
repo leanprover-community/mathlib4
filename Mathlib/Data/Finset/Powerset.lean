@@ -29,7 +29,7 @@ def powerset (s : Finset α) : Finset (Finset α) :=
   ⟨(s.1.powerset.pmap Finset.mk) fun _t h => nodup_of_le (mem_powerset.1 h) s.nodup,
     s.nodup.powerset.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   cases s
   simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,
@@ -86,17 +86,7 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     powerset (insert a s) = s.powerset ∪ s.powerset.image (insert a) := by
   ext t
   simp only [mem_powerset, mem_image, mem_union, subset_insert_iff]
-  by_cases h : a ∈ t
-  · constructor
-    · exact fun H => Or.inr ⟨_, H, insert_erase h⟩
-    · intro H
-      rcases H with H | H
-      · exact Subset.trans (erase_subset a t) H
-      · rcases H with ⟨u, hu⟩
-        rw [← hu.2]
-        exact Subset.trans (erase_insert_subset a u) hu.1
-  · have : ¬∃ u : Finset α, u ⊆ s ∧ insert a u = t := by simp [Ne.symm (ne_insert_of_notMem _ _ h)]
-    simp [Finset.erase_eq_of_notMem h, this]
+  grind
 
 lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
     (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
@@ -140,7 +130,7 @@ variable [DecidableEq α]
 def ssubsets (s : Finset α) : Finset (Finset α) :=
   erase (powerset s) s
 
-@[simp]
+@[simp, grind =]
 theorem mem_ssubsets {s t : Finset α} : t ∈ s.ssubsets ↔ t ⊂ s := by
   rw [ssubsets, mem_erase, mem_powerset, ssubset_iff_subset_ne, and_comm]
 
@@ -183,7 +173,7 @@ def powersetCard (n : ℕ) (s : Finset α) : Finset (Finset α) :=
   ⟨((s.1.powersetCard n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetCard.1 h).1 s.2,
     s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
-@[simp] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
+@[simp, grind =] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
   cases s; simp [powersetCard, val_le_iff.symm]
 
 @[simp]
@@ -199,11 +189,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 
 @[simp]
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
-  ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
-  refine
-    ⟨fun h => h.2, fun h => by
-      rw [h]
-      exact ⟨empty_subset s, rfl⟩⟩
+  grind
 
 lemma powersetCard_empty_subsingleton (n : ℕ) :
     (powersetCard n (∅ : Finset α) : Set <| Finset α).Subsingleton := by
@@ -306,11 +292,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
     constructor
     · classical
       intro h
-      have : map f (filter (fun x => (f x ∈ t)) s) = t := by
-        ext x
-        simp only [mem_map, mem_filter]
-        exact ⟨fun ⟨_y, ⟨_hy₁, hy₂⟩, hy₃⟩ => hy₃ ▸ hy₂,
-          fun hx => let ⟨y, hy⟩ := mem_map.1 (h.1 hx); ⟨y, ⟨hy.1, hy.2 ▸ hx⟩, hy.2⟩⟩
+      have : map f (filter (fun x => (f x ∈ t)) s) = t := by grind
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩

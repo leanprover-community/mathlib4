@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.DiffContOnCl
 import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.Real.Cardinality
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
@@ -297,8 +297,8 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   rw [Real.exp_le_exp] at hle
   -- Unfold definition of `circleIntegral` and cancel some terms.
   suffices
-    (∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp b) θ)) =
-      ∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp a) θ) by
+    (∫ θ in 0..2 * π, I • f (circleMap c (Real.exp b) θ)) =
+      ∫ θ in 0..2 * π, I • f (circleMap c (Real.exp a) θ) by
     simpa only [circleIntegral, add_sub_cancel_left, ofReal_exp, ← exp_add, smul_smul, ←
       div_eq_mul_inv, mul_div_cancel_left₀ _ (circleMap_ne_center (Real.exp_pos _).ne'),
       circleMap_sub_center, deriv_circleMap]
@@ -382,15 +382,18 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       rw [norm_smul, norm_inv, hz, ← dist_eq_norm]
       refine mul_le_mul_of_nonneg_left (hδ _ ⟨?_, hzne⟩).le (inv_nonneg.2 hr0.le)
       rwa [mem_closedBall_iff_norm, hz]
-    _ = ε := by field_simp [hr0.ne', Real.two_pi_pos.ne']; ac_rfl
+    _ = ε := by field_simp
 
-/-- **Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous
-on a closed disc of radius `R` and is complex differentiable at all but countably many points of its
-interior, then the integral $\oint_{|z-c|=R} \frac{f(z)}{z-c}\,dz$ is equal to `2πiy`. -/
+/--
+**Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous on a
+closed disc of radius `R` and center `c`, and is complex differentiable at all but countably many
+points of its interior, then the integral $\oint_{|z-c|=R} \frac{f(z)}{z-c}\,dz$ is equal to
+`2πi • f c`.
+-/
 theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 < R)
     {f : ℂ → E} {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
-    (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • f c :=
+    (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I) • f c :=
   circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto h0 hs
     (hc.mono diff_subset) (fun z hz => hd z ⟨hz.1.1, hz.2⟩)
     (hc.continuousAt <| closedBall_mem_nhds _ h0).continuousWithinAt

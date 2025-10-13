@@ -269,9 +269,9 @@ class MkEvalComp (m : Type → Type) where
   /-- Evaluate `(α ≫ η ≫ ηs) ≫ θ` -/
   mkEvalCompCons (α : Structural) (η : WhiskerLeft) (ηs θ ι : NormalExpr) (e_η : Expr) : m Expr
 
-/-- Evaluatte the expression `f ◁ η`. -/
+/-- Evaluate the expression `f ◁ η`. -/
 class MkEvalWhiskerLeft (m : Type → Type) where
-  /-- Evaluatte `f ◁ α` -/
+  /-- Evaluate `f ◁ α` -/
   mkEvalWhiskerLeftNil (f : Mor₁) (α : Structural) : m Expr
   /-- Evaluate `f ◁ (α ≫ η ≫ ηs)`. -/
   mkEvalWhiskerLeftOfCons (f : Atom₁) (α : Structural) (η : WhiskerLeft) (ηs θ : NormalExpr)

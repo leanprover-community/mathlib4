@@ -44,11 +44,11 @@ instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1,
 structure ReflPrefunctor (V : Type u₁) [ReflQuiver.{v₁} V] (W : Type u₂) [ReflQuiver.{v₂} W]
     extends Prefunctor V W where
   /-- A functor preserves identity morphisms. -/
-  map_id : ∀ X : V, map (𝟙rq X) = 𝟙rq (obj X) := by aesop_cat
+  map_id : ∀ X : V, map (𝟙rq X) = 𝟙rq (obj X) := by cat_disch
 
 namespace ReflPrefunctor
 
--- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
+-- These lemmas cannot be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
 lemma mk_obj {V W : Type*} [ReflQuiver V] [ReflQuiver W] {obj : V → W} {map} {X : V} :
     (Prefunctor.mk obj map).obj X = obj X := rfl
@@ -78,7 +78,6 @@ theorem ext' {V W : Type u} [ReflQuiver.{v} V] [ReflQuiver.{v} W]
       F.map f = Quiver.homOfEq (G.map f) (h_obj _).symm (h_obj _).symm) : F = G := by
   obtain ⟨Fpre, Fid⟩ := F
   obtain ⟨Gpre, Gid⟩ := G
-  simp at h_obj h_map
   obtain rfl : Fpre = Gpre := Prefunctor.ext' (V := V) (W := W) h_obj h_map
   rfl
 
@@ -141,7 +140,7 @@ open Opposite
 
 /-- `Vᵒᵖ` reverses the direction of all arrows of `V`. -/
 instance opposite {V} [ReflQuiver V] : ReflQuiver Vᵒᵖ where
-   id X := op (𝟙rq X.unop)
+  id X := op (𝟙rq X.unop)
 
 instance discreteReflQuiver (V : Type u) : ReflQuiver.{u+1} (Discrete V) :=
   { discreteCategory V with }

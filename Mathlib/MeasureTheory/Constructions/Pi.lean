@@ -89,7 +89,7 @@ theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = 
 
 theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
     piPremeasure m s ≤ piPremeasure m t :=
-  Finset.prod_le_prod' fun _ _ => measure_mono (image_subset _ h)
+  Finset.prod_le_prod' fun _ _ => measure_mono (Set.image_mono h)
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
     piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by
@@ -354,6 +354,47 @@ theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
   rw [← univ_pi_update_univ, pi_pi]
   apply Finset.prod_eq_zero (Finset.mem_univ i)
   simp [hμt]
+
+theorem quasiMeasurePreserving_eval (i : ι) :
+    QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
+  classical
+  refine ⟨by fun_prop, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  rw [map_apply (by fun_prop) hs, pi_eval_preimage_null μ h2s]
+
+lemma pi_map_eval [DecidableEq ι] (i : ι) :
+     (Measure.pi μ).map (Function.eval i) = (∏ j ∈ Finset.univ.erase i, μ j Set.univ) • (μ i) := by
+  ext s hs
+  classical
+  rw [Measure.map_apply (measurable_pi_apply i) hs, ← Set.univ_pi_update_univ, Measure.pi_pi,
+    Measure.smul_apply, smul_eq_mul, ← Finset.prod_erase_mul _ _ (a := i) (by simp)]
+  congrm ?_ * ?_
+  swap; · simp
+  refine Finset.prod_congr rfl fun j hj ↦ ?_
+  simp [Function.update, Finset.ne_of_mem_erase hj]
+
+lemma pi_map_pi {X Y : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) → Measure (X i)}
+    [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i} [hμ : ∀ i, SigmaFinite ((μ i).map (f i))]
+    (hf : ∀ i, AEMeasurable (f i) (μ i)) :
+    (Measure.pi μ).map (fun x i ↦ (f i (x i))) = Measure.pi (fun i ↦ (μ i).map (f i)) := by
+  have (i : ι) := (hμ i).of_map _ (hf i)
+  refine (pi_eq fun s hs ↦ ?_).symm
+  rw [map_apply_of_aemeasurable _ (.univ_pi hs)]
+  swap
+  · exact aemeasurable_pi_lambda _
+      fun i ↦ (hf i).comp_quasiMeasurePreserving (quasiMeasurePreserving_eval _ i)
+  have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' (Set.univ.pi s) =
+      Set.univ.pi (fun i ↦ (f i) ⁻¹' (s i)) := by ext x; simp
+  rw [this, pi_pi]
+  congr with i
+  rw [map_apply_of_aemeasurable (hf i) (hs i)]
+
+omit [∀ i, SigmaFinite (μ i)] in
+lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
+    MeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
+  refine ⟨measurable_pi_apply i, ?_⟩
+  classical
+  rw [Measure.pi_map_eval, Finset.prod_eq_one, one_smul]
+  exact fun _ _ ↦ measure_univ
 
 theorem pi_hyperplane (i : ι) [NoAtoms (μ i)] (x : α i) :
     Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
@@ -622,9 +663,9 @@ open Measure
 
 /-- We intentionally restrict this only to the nondependent function space, since type-class
 inference cannot find an instance for `ι → ℝ` when this is stated for dependent function spaces. -/
-@[to_additive "We intentionally restrict this only to the nondependent function space, since
+@[to_additive /-- We intentionally restrict this only to the nondependent function space, since
 type-class inference cannot find an instance for `ι → ℝ` when this is stated for dependent function
-spaces."]
+spaces. -/]
 instance Pi.isMulLeftInvariant_volume {α} [Group α] [MeasureSpace α]
     [SigmaFinite (volume : Measure α)] [MeasurableMul α] [IsMulLeftInvariant (volume : Measure α)] :
     IsMulLeftInvariant (volume : Measure (ι → α)) :=
@@ -632,16 +673,16 @@ instance Pi.isMulLeftInvariant_volume {α} [Group α] [MeasureSpace α]
 
 /-- We intentionally restrict this only to the nondependent function space, since type-class
 inference cannot find an instance for `ι → ℝ` when this is stated for dependent function spaces. -/
-@[to_additive "We intentionally restrict this only to the nondependent function space, since
+@[to_additive /-- We intentionally restrict this only to the nondependent function space, since
 type-class inference cannot find an instance for `ι → ℝ` when this is stated for dependent function
-spaces."]
+spaces. -/]
 instance Pi.isInvInvariant_volume {α} [Group α] [MeasureSpace α] [SigmaFinite (volume : Measure α)]
     [MeasurableInv α] [IsInvInvariant (volume : Measure α)] :
     IsInvInvariant (volume : Measure (ι → α)) :=
   pi.isInvInvariant _
 
 /-!
-### Measure preserving equivalences
+### Measure-preserving equivalences
 
 In this section we prove that some measurable equivalences (e.g., between `Fin 1 → α` and `α` or
 between `Fin 2 → α` and `α × α`) preserve measure or volume. These lemmas can be used to prove that
@@ -845,18 +886,15 @@ theorem volume_preserving_piFinsetUnion {ι : Type*} [DecidableEq ι] (α : ι �
 theorem measurePreserving_pi {ι : Type*} [Fintype ι] {α : ι → Type v} {β : ι → Type*}
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableSpace (β i)]
     (μ : (i : ι) → Measure (α i)) (ν : (i : ι) → Measure (β i))
-    {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]
+    {f : (i : ι) → (α i) → (β i)} [hν : ∀ i, SigmaFinite (ν i)]
     (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
     MeasurePreserving (fun a i ↦ f i (a i)) (Measure.pi μ) (Measure.pi ν) where
   measurable :=
     measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
   map_eq := by
-    haveI : ∀ i, SigmaFinite (μ i) := fun i ↦ (hf i).sigmaFinite
-    refine (Measure.pi_eq fun s hs ↦ ?_).symm
-    rw [Measure.map_apply, Set.preimage_pi, Measure.pi_pi]
-    · simp_rw [← MeasurePreserving.measure_preimage (hf _) (hs _).nullMeasurableSet]
-    · exact measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
-    · exact MeasurableSet.univ_pi hs
+    have (i : ι) : SigmaFinite ((μ i).map (f i)) := (hf i).map_eq ▸ hν i
+    rw [pi_map_pi (fun i ↦ (hf i).aemeasurable)]
+    exact congrArg _ <| funext fun i ↦ (hf i).map_eq
 
 theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' i)]
     [∀ i, MeasureSpace (β' i)] [∀ i, SigmaFinite (volume : Measure (β' i))]

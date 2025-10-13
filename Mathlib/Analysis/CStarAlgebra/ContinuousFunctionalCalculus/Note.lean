@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Init
-import Batteries.Util.LibraryNote
+import Mathlib.Tactic.Basic
 
 /-!
 # Documentation concerning the continuous functional calculus
@@ -14,7 +14,7 @@ as the organizational structure within Mathlib.
 -/
 
 
-library_note "continuous functional calculus" /--
+library_note2 «continuous functional calculus» /--
 # The continuous functional calculus
 
 In Mathlib, there are two classes --- `NonUnitalContinuousFunctionalCalculus` and

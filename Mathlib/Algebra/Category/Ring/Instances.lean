@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
-# Ring-theoretic results in terms of categorical languages
+# Ring-theoretic results in terms of categorical language
 -/
 
 universe u
@@ -26,8 +26,7 @@ instance localization_unit_isIso' (R : CommRingCat) :
 
 theorem IsLocalization.epi {R : Type*} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
     [Algebra R S] [IsLocalization M S] : Epi (CommRingCat.ofHom <| algebraMap R S) :=
-  ⟨fun {T} _ _ h => CommRingCat.hom_ext <|
-    @IsLocalization.ringHom_ext R _ M S _ _ T _ _ _ _ (congrArg CommRingCat.Hom.hom h)⟩
+  ⟨fun _ _ h => CommRingCat.hom_ext <| ringHom_ext M congr(($h).hom)⟩
 
 instance Localization.epi {R : Type*} [CommRing R] (M : Submonoid R) :
     Epi (CommRingCat.ofHom <| algebraMap R <| Localization M) :=

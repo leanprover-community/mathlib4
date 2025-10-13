@@ -160,7 +160,7 @@ theorem dual_ordSeparatingSet :
     dual_ordConnectedComponent, ← preimage_compl, preimage_inter, preimage_iUnion]
 
 /-- An auxiliary neighborhood that will be used in the proof of
-    `OrderTopology.CompletelyNormalSpace`. -/
+`OrderTopology.CompletelyNormalSpace`. -/
 def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 

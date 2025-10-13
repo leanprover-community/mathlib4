@@ -83,7 +83,6 @@ def enumerateCountable {s : Set α} (h : s.Countable) (default : α) : ℕ → �
 theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
     s ⊆ range (enumerateCountable h default) := fun x hx =>
   ⟨@Encodable.encode s h.toEncodable ⟨x, hx⟩, by
-    letI := h.toEncodable
     simp [enumerateCountable, Encodable.encodek]⟩
 
 lemma range_enumerateCountable_subset {s : Set α} (h : s.Countable) (default : α) :
@@ -112,7 +111,7 @@ theorem Countable.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) (hs : s₂.Count
   have := hs.to_subtype; (inclusion_injective h).countable
 
 theorem countable_range [Countable ι] (f : ι → β) : (range f).Countable :=
-  surjective_onto_range.countable.to_set
+  rangeFactorization_surjective.countable.to_set
 
 theorem countable_iff_exists_subset_range [Nonempty α] {s : Set α} :
     s.Countable ↔ ∃ f : ℕ → α, s ⊆ range f :=

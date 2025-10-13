@@ -89,7 +89,7 @@ theorem intrinsicFrontier_subset (hs : IsClosed s) : intrinsicFrontier 𝕜 s �
   image_subset_iff.2 (hs.preimage continuous_induced_dom).frontier_subset
 
 theorem intrinsicFrontier_subset_intrinsicClosure : intrinsicFrontier 𝕜 s ⊆ intrinsicClosure 𝕜 s :=
-  image_subset _ frontier_subset_closure
+  image_mono frontier_subset_closure
 
 theorem subset_intrinsicClosure : s ⊆ intrinsicClosure 𝕜 s :=
   fun x hx => ⟨⟨x, subset_affineSpan _ _ hx⟩, subset_closure hx, rfl⟩
@@ -214,9 +214,6 @@ namespace AffineIsometry
 variable [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V]
   [NormedSpace 𝕜 W] [MetricSpace P] [PseudoMetricSpace Q] [NormedAddTorsor V P]
   [NormedAddTorsor W Q]
-
--- Porting note: Removed attribute `local nolint fails_quickly`
-attribute [local instance] AffineSubspace.toNormedAddTorsor AffineSubspace.nonempty_map
 
 @[simp]
 theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
