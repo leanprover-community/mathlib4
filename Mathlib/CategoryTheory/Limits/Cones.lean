@@ -34,7 +34,7 @@ For more results about the category of cones, see `cone_category.lean`.
 -/
 
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 open CategoryTheory
