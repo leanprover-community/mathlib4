@@ -265,6 +265,22 @@ lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
     Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
   Iic_ciInf (α := αᵒᵈ) hf
 
+theorem ciSup_Iic [Preorder β] {f : β → α} (a : β) (hf : Monotone f) :
+    ⨆ x : Iic a, f x = f a := by
+  have H : BddAbove (range fun x : Iic a ↦ f x) := ⟨f a, fun _ ↦ by aesop⟩
+  apply (le_ciSup H (⟨a, le_refl a⟩ : Iic a)).antisymm'
+  rw [ciSup_le_iff H]
+  rintro ⟨a, h⟩
+  exact hf h
+
+theorem ciInf_Ici [Preorder β] {f : β → α} (a : β) (hf : Monotone f) :
+    ⨅ x : Ici a, f x = f a := by
+  have H : BddBelow (range fun x : Ici a ↦ f x) := ⟨f a, fun _ ↦ by aesop⟩
+  apply (ciInf_le H (⟨a, le_refl a⟩ : Ici a)).antisymm
+  rw [le_ciInf_iff H]
+  rintro ⟨a, h⟩
+  exact hf h
+
 theorem ciSup_subtype [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f : Subtype p → α}
     (hf : BddAbove (Set.range f)) (hf' : sSup ∅ ≤ iSup f) :
     iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ := by

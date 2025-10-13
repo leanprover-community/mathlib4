@@ -5,6 +5,11 @@ Authors: Fox Thomson
 -/
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.Tactic.NthRewrite
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Impartial.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Basic definitions about impartial (pre-)games

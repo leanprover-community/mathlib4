@@ -54,8 +54,7 @@ variable {ι κ M G : Type*}
 
 lemma fold_max_add [LinearOrder M] [Add M] [AddRightMono M] (s : Finset ι) (a : WithBot M)
     (f : ι → M) : s.fold max ⊥ (fun i ↦ ↑(f i) + a) = s.fold max ⊥ ((↑) ∘ f) + a := by
-  classical
-    induction' s using Finset.induction_on with a s _ ih <;> simp [*, max_add_add_right]
+  classical induction s using Finset.induction_on <;> simp [*, max_add_add_right]
 
 @[to_additive nsmul_inf']
 lemma inf'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : Finset ι)
