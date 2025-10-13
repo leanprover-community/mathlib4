@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Localization.Bousfield
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
@@ -28,6 +30,14 @@ namespace CategoryTheory
 open Limits Localization
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
+
+namespace MorphismProperty
+
+lemma isStableUnderColimitsOfShape_rightOrthogonal (J : Type w) [SmallCategory J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    W.IsStableUnderColimitsOfShape J := sorry
+
+end MorphismProperty
 
 namespace OrthogonalReflection
 
