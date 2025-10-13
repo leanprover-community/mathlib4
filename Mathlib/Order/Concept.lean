@@ -296,20 +296,18 @@ theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r')
     IsCompl c'.extent c'.intent :=
   ⟨c'.disjoint_extent_intent, c'.codisjoint_extent_intent⟩
 
-theorem isLowerSet_extent_le {α : Type*} [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
+theorem isLowerSet_extent_le [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
     IsLowerSet c.extent :=
   fun _ _ ↦ mem_extent_of_rel_extent
 
-theorem isUpperSet_intent_le {α : Type*} [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
+theorem isUpperSet_intent_le [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
     IsUpperSet c.intent :=
   fun _ _ ↦ mem_intent_of_intent_rel
 
-theorem isLowerSet_extent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
-    IsLowerSet c.extent :=
+theorem isLowerSet_extent_lt [PartialOrder α] (c : Concept α α (· < ·)) : IsLowerSet c.extent :=
   fun _ _ hb ha ↦ hb.eq_or_lt.elim (fun h ↦ h ▸ ha) fun hb ↦ mem_extent_of_rel_extent hb ha
 
-theorem isUpperSet_intent_lt {α : Type*} [PartialOrder α] (c : Concept α α (· < ·)) :
-    IsUpperSet c.intent :=
+theorem isUpperSet_intent_lt [PartialOrder α] (c : Concept α α (· < ·)) : IsUpperSet c.intent :=
   fun _ _ hb ha ↦ hb.eq_or_lt.elim (fun h ↦ h ▸ ha) fun hb ↦ mem_intent_of_intent_rel hb ha
 
 instance instSupConcept : Max (Concept α β r) :=
