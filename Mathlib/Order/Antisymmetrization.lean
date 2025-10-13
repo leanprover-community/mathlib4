@@ -187,19 +187,19 @@ theorem lt_of_antisymmRel_of_lt (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b <
 alias LT.lt.trans_antisymmRel := lt_of_lt_of_antisymmRel
 alias AntisymmRel.trans_lt := lt_of_antisymmRel_of_lt
 
-theorem not_lt_of_antisymmRel {α} [Preorder α] {x y : α} (h : AntisymmRel (· ≤ ·) x y) : ¬ x < y :=
+theorem not_lt_of_antisymmRel (h : AntisymmRel (· ≤ ·) a b) : ¬ a < b :=
   h.ge.not_gt
 
-theorem not_gt_of_antisymmRel {α} [Preorder α] {x y : α} (h : AntisymmRel (· ≤ ·) x y) : ¬ y < x :=
+theorem not_gt_of_antisymmRel (h : AntisymmRel (· ≤ ·) a b) : ¬ b < a :=
   h.le.not_gt
 
 alias AntisymmRel.not_lt := not_lt_of_antisymmRel
 alias AntisymmRel.not_gt := not_gt_of_antisymmRel
 
-theorem not_antisymmRel_of_lt {α} [Preorder α] {x y : α} : x < y → ¬ AntisymmRel (· ≤ ·) x y :=
+theorem not_antisymmRel_of_lt : a < b → ¬ AntisymmRel (· ≤ ·) a b :=
   imp_not_comm.1 not_lt_of_antisymmRel
 
-theorem not_antisymmRel_of_gt {α} [Preorder α] {x y : α} : y < x → ¬ AntisymmRel (· ≤ ·) x y :=
+theorem not_antisymmRel_of_gt : b < a → ¬ AntisymmRel (· ≤ ·) a b :=
   imp_not_comm.1 not_gt_of_antisymmRel
 
 alias LT.lt.not_antisymmRel := not_antisymmRel_of_lt
