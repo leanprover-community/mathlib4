@@ -8,7 +8,6 @@ import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
-import Mathlib.Topology.Category.TopCat.EffectiveEpi
 
 /-!
 # Flat morphisms
