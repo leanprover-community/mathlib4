@@ -21,6 +21,6 @@ instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
 
 theorem Real.ringHom_apply {F : Type*} [FunLike F ℝ ℝ] [RingHomClass F ℝ ℝ] (f : F) (r : ℝ) :
     f r = r := by
-  change (RingHomClass.toRingHom f) r = RingHom.id ℝ r
+  change RingHomClass.toRingHom f r = RingHom.id ℝ r
   congr
   exact Unique.eq_default _
