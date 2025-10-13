@@ -4863,7 +4863,8 @@ import Mathlib.NumberTheory.FactorisationProperties
 import Mathlib.NumberTheory.Fermat
 import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
-import Mathlib.NumberTheory.FunctionField
+import Mathlib.NumberTheory.FunctionField.Basic
+import Mathlib.NumberTheory.FunctionField.Ostrowski
 import Mathlib.NumberTheory.GaussSum
 import Mathlib.NumberTheory.Harmonic.Bounds
 import Mathlib.NumberTheory.Harmonic.Defs

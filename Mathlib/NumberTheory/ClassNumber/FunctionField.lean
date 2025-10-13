@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
 import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.FunctionField
+import Mathlib.NumberTheory.FunctionField.Basic
 
 /-!
 # Class numbers of function fields
