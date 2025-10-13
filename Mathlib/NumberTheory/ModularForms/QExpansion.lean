@@ -49,41 +49,6 @@ section Cauchy
 
 open Metric
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
-  {R : ℝ} {f : ℂ → E} {c : ℂ} {s : Set ℂ}
-
-/-- Cauchy integral formula for higher derivatives at the central point, most general form
-(assuming differentiability off a countable set). -/
-lemma Complex.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable
-    (h0 : 0 < R) (n : ℕ) (hs : s.Countable)
-    (hc : ContinuousOn f (closedBall c R)) (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
-    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
-      = (2 * π * I / n.factorial) • iteratedDeriv n f c := by
-  have := hasFPowerSeriesOnBall_of_differentiable_off_countable (R := ⟨R, h0.le⟩) hs hc hd h0
-      |>.factorial_smul 1 n
-  rw [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod, Finset.prod_const_one, one_smul] at this
-  rw [← this, cauchyPowerSeries_apply, ← Nat.cast_smul_eq_nsmul ℂ, ← mul_smul, ← mul_smul,
-    div_mul_cancel₀ _ (mod_cast n.factorial_ne_zero), mul_inv_cancel₀ two_pi_I_ne_zero, one_smul]
-  simp [← mul_smul, pow_succ, mul_comm]
-
-/-- Cauchy integral formula for higher derivatives at the central point, assuming differentiability
-on the open ball and continuity on its closure. -/
-lemma DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul
-    (h0 : 0 < R) (n : ℕ) (hc : DiffContOnCl ℂ f (ball c R)) :
-    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
-      = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
-  c.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable h0 n
-    Set.countable_empty hc.continuousOn_ball fun _ hx ↦ hc.differentiableAt isOpen_ball hx.1
-
-/-- Cauchy integral formula for higher derivatives at the central point, assuming differentiability
-on the closed ball. -/
-lemma DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul (h0 : 0 < R) (n : ℕ)
-    (hc : DifferentiableOn ℂ f (closedBall c R)) :
-    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
-      = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
-  (hc.mono closure_ball_subset_closedBall).diffContOnCl
-    |>.circleIntegral_one_div_sub_center_pow_smul h0 n
-
 end Cauchy
 
 variable {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] {Γ : Subgroup (GL (Fin 2) ℝ)}
