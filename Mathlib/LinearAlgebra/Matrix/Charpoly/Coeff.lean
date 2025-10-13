@@ -134,8 +134,9 @@ theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
     prod_X_sub_C_coeff_card_pred univ (fun i : n => M i i) Fintype.card_pos, neg_neg, trace]
   simp_rw [diag_apply]
 
-theorem trace_eq_neg_charpoly_nextCoeff [Nonempty n] [Nontrivial R] (M : Matrix n n R) :
+theorem trace_eq_neg_charpoly_nextCoeff [Nonempty n] (M : Matrix n n R) :
     M.trace = -M.charpoly.nextCoeff := by
+  nontriviality
   simp [trace_eq_neg_charpoly_coeff, nextCoeff]
 
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
