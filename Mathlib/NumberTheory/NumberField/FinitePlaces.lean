@@ -511,8 +511,10 @@ instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asI
     · intro a
       rwa [pow_eq_one_iff (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)] at a
 
+-- Only doesn't cause diamonds because I.LiesOver I doesn't exist yet ...
 noncomputable
-instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal] :
+instance instAlgebraLiesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
+    [w.asIdeal.LiesOver v.asIdeal] :
     Algebra (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
   inferInstanceAs (Algebra Valued.v.valuationSubring Valued.v.valuationSubring)
 
@@ -520,6 +522,7 @@ instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asI
    IsLocalHom (algebraMap (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)) :=
   inferInstanceAs (IsLocalHom (algebraMap Valued.v.valuationSubring Valued.v.valuationSubring))
 
+-- Only doesn't cause diamonds because I.LiesOver I doesn't exist yet ...
 noncomputable
 instance [IsFractionRing B L] [NoZeroSMulDivisors A B]
     [w.asIdeal.LiesOver v.asIdeal] :
@@ -727,8 +730,7 @@ instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
       apply Finset.sum_congr rfl
       intro e _
       simp
-      rw [← ValuationSubring.algebraMap_apply,
-        ← IsScalarTower.algebraMap_apply]
+      rw [← ValuationSubring.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
       left
       rfl
 
@@ -738,9 +740,8 @@ instance instIsIntegralClosure [w.asIdeal.LiesOver v.asIdeal] :
   -- takes too long to synthesize on its own
   let _ : Algebra.IsIntegral (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
     instIsIntegral _ _
-  inferInstance
-  --IsIntegralClosure.of_isIntegrallyClosed (w.adicCompletionIntegers L)
-    --(v.adicCompletionIntegers K) (w.adicCompletion L)
+  IsIntegralClosure.of_isIntegrallyClosed (w.adicCompletionIntegers L)
+    (v.adicCompletionIntegers K) (w.adicCompletion L)
 
 instance instFiniteIntegers [w.asIdeal.LiesOver v.asIdeal] :
     Module.Finite (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
