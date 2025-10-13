@@ -28,8 +28,8 @@ with respect to other language operations.
 * `1`: language consisting of only the empty string. This is because it is the unit of the `*`
   operator.
 * `l∗`: Kleene star – language of strings consisting of arbitrarily many members of `l`
-  concatenated together
-  (Note that this uses the Unicode asterisk operator `∗`, not the ASCII asterisk `*`)
+  concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
+  to the more common ASCII asterisk `*`.
 
 ## Main definitions
 
