@@ -194,10 +194,26 @@ instance : Neg 𝓓^{n}_{K}(E, F) where
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
+@[simp]
+lemma coe_neg (f : 𝓓^{n}_{K}(E, F)) : (-f : 𝓓^{n}_{K}(E, F)) = (-f : E → F) :=
+  rfl
+
+@[simp]
+theorem neg_apply {f : 𝓓^{n}_{K}(E, F)} {x : E} : (-f) x = - f x :=
+  rfl
+
 instance instSub : Sub 𝓓^{n}_{K}(E, F) where
   sub f g := ContDiffMapSupportedIn.mk (f - g) (f.contDiff.sub g.contDiff) <| by
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
+
+@[simp]
+lemma coe_sub (f g : 𝓓^{n}_{K}(E, F)) : (f - g : 𝓓^{n}_{K}(E, F)) = (f : E → F) - g :=
+  rfl
+
+@[simp]
+theorem sub_apply {f g : 𝓓^{n}_{K}(E, F)} {x : E} : (f - g) x = f x - g x :=
+  rfl
 
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
    SMul R 𝓓^{n}_{K}(E, F) where
