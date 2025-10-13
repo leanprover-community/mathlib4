@@ -263,5 +263,4 @@ protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : s
   contDiff' := hf
   zero_on_compl' := support_subset_iff'.mp hsupp
 
-
 end ContDiffMapSupportedIn
