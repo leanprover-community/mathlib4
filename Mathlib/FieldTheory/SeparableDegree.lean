@@ -904,7 +904,7 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
     obtain ⟨y, hy⟩ := exists_root_of_splits _
       (h _ (pow_one p ▸ natSepDegree_X_pow_char_pow_sub_C p 1 x))
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
-    exact ⟨y, by rwa [← eval, eval_sub, eval_pow, eval_X, eval_C, sub_eq_zero] at hy⟩
+    exact ⟨y, by rwa [← eval, eval_sub, eval_X_pow, eval_C, sub_eq_zero] at hy⟩
   exact PerfectRing.toPerfectField F p
 
 variable {E K} in
