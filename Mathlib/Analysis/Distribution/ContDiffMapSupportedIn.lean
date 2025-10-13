@@ -161,7 +161,7 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 
 @[simp]
 theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-   (f : BoundedContinuousFunction E F) x  = (f x) := rfl
+   (f : BoundedContinuousFunction E F) x = (f x) := rfl
 
 section AddCommGroup
 
