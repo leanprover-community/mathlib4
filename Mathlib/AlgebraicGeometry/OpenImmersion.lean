@@ -113,6 +113,9 @@ lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
   rw [opensRange_comp, opensRange_of_isIso, image_top_eq_opensRange]
 
+lemma image_le_opensRange (U : X.Opens) : f ''ᵁ U ≤ f.opensRange := by
+  simpa using f.image_mono le_top
+
 @[simp]
 lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
   apply Opens.ext
@@ -130,6 +133,9 @@ lemma image_preimage_eq_opensRange_inf (U : Y.Opens) : f ''ᵁ f ⁻¹ᵁ U = f.
 
 @[deprecated (since := "2025-10-07")]
 alias image_preimage_eq_opensRange_inter := image_preimage_eq_opensRange_inf
+
+lemma image_preimage_le (U : Y.Opens) : f ''ᵁ f ⁻¹ᵁ U ≤ U :=
+  (f.image_preimage_eq_opensRange_inf U).trans_le inf_le_right
 
 lemma image_injective : Function.Injective (f ''ᵁ ·) := by
   intro U V hUV

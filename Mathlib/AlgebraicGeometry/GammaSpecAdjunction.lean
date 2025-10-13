@@ -417,13 +417,13 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
 end ΓSpec
 
 theorem Scheme.toSpecΓ_apply (X : Scheme.{u}) (x) :
-    Scheme.toSpecΓ X x = Spec.map (X.presheaf.germ ⊤ x trivial) (IsLocalRing.closedPoint _) := rfl
+    Scheme.toSpecΓ X x = Spec.map (X.presheaf.Γgerm x) (IsLocalRing.closedPoint _) := rfl
 
 @[deprecated (since := "2025-10-17")] alias Scheme.toSpecΓ_base := Scheme.toSpecΓ_apply
 
 @[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.appTop) :=
+    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map f.appTop :=
   ΓSpec.adjunction.unit.naturality f
 
 @[simp]
@@ -435,12 +435,23 @@ theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
   simp only [Category.id_comp] at this
   rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
 
+-- We should reconsider if this simp lemma is in the right direction.
 @[simp]
 theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
     Spec.map ((Scheme.ΓSpecIso R).hom) = (Spec R).toSpecΓ := by
   have := ΓSpec.adjunction.right_triangle_components (op R)
   dsimp at this
   rwa [← IsIso.eq_comp_inv, Category.id_comp, ← Spec.map_inv, IsIso.Iso.inv_inv, eq_comm] at this
+
+@[reassoc (attr := simp)]
+theorem SpecMap_ΓSpecIso_inv_toSpecΓ (R : CommRingCat.{u}) :
+    Spec.map (Scheme.ΓSpecIso R).inv ≫ (Spec R).toSpecΓ = 𝟙 _ := by
+  rw [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Iso.hom_inv_id, Spec.map_id]
+
+@[reassoc (attr := simp)]
+theorem toSpecΓ_SpecMap_ΓSpecIso_inv (R : CommRingCat.{u}) :
+    (Spec R).toSpecΓ ≫ Spec.map (Scheme.ΓSpecIso R).inv = 𝟙 _ := by
+  rw [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Iso.inv_hom_id, Spec.map_id]
 
 lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
     X.toSpecΓ ⁻¹ᵁ PrimeSpectrum.basicOpen r = X.basicOpen r := by
@@ -476,8 +487,6 @@ theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
       U.toScheme.toSpecΓ.appTop ≫ U.topIso.hom := by simp
 
 /-! Immediate consequences of the adjunction. -/
-
-
 
 /-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
 is fully faithful. -/
