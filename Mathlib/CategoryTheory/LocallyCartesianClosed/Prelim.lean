@@ -295,10 +295,12 @@ def Functor.toOverTerminal [HasTerminal C] : C ⥤ Over (⊤_ C) where
   map {X Y} f := Over.homMk f
 
 /-- The slice category over the terminal object is equivalent to the original category. -/
-def equivOverTerminal [HasTerminal C] : Over (⊤_ C) ≌ C :=
-  CategoryTheory.Equivalence.mk (Over.forget _) (Functor.toOverTerminal C)
-    (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
-    (NatIso.ofComponents fun X => Iso.refl _)
+def equivOverTerminal [HasTerminal C] : Over (⊤_ C) ≌ C where
+  functor := Over.forget _
+  inverse := Functor.toOverTerminal C
+  unitIso := NatIso.ofComponents fun X => Over.isoMk (Iso.refl _)
+  counitIso := NatIso.ofComponents fun X => Iso.refl _
+  functor_unitIso_comp := by aesop
 
 namespace Over
 
