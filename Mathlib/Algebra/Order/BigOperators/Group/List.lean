@@ -180,7 +180,7 @@ lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [PartialOrder M] [IsOrd
   _root_.le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
 
 section CanonicallyOrderedMul
-variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {l : List M}
+variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff [IsOrderedMonoid M] : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
