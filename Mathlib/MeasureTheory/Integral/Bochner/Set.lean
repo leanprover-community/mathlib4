@@ -697,8 +697,6 @@ theorem setIntegral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
 theorem setIntegral_mono_ae (h : f ≤ᵐ[μ] g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   setIntegral_mono_ae_restrict hf hg (ae_restrict_of_ae h)
 
-@[gcongr high] -- higher priority than `integral_mono`
--- this lemma is better because it also gives the `x ∈ s` hypothesis
 theorem setIntegral_mono_on (hs : MeasurableSet s) (h : ∀ x ∈ s, f x ≤ g x) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   setIntegral_mono_ae_restrict hf hg
@@ -707,6 +705,23 @@ theorem setIntegral_mono_on (hs : MeasurableSet s) (h : ∀ x ∈ s, f x ≤ g x
 theorem setIntegral_mono_on_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
   refine setIntegral_mono_ae_restrict hf hg ?_; rwa [EventuallyLE, ae_restrict_iff' hs]
+
+lemma setIntegral_mono_on_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) :
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  rw [setIntegral_congr_set hs.toMeasurable_ae_eq.symm,
+    setIntegral_congr_set hs.toMeasurable_ae_eq.symm]
+  refine setIntegral_mono_on_ae ?_ ?_ ?_ ?_
+  · rwa [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
+  · rwa [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
+  · exact measurableSet_toMeasurable μ s
+  · filter_upwards [hs.toMeasurable_ae_eq.mem_iff, h] with x hx h
+    rwa [hx]
+
+@[gcongr high] -- higher priority than `integral_mono`
+-- this lemma is better because it also gives the `x ∈ s` hypothesis
+lemma setIntegral_mono_on₀ (hs : NullMeasurableSet s μ) (h : ∀ x ∈ s, f x ≤ g x) :
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
+  setIntegral_mono_on_ae₀ hf hg hs (Eventually.of_forall h)
 
 theorem setIntegral_mono (h : f ≤ g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   integral_mono hf hg h
