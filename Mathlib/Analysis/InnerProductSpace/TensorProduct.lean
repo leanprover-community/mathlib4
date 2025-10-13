@@ -102,6 +102,9 @@ def mapInclLinearIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
   toLinearMap := mapIncl E' F'
   norm_map' x := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_mapIncl_mapIncl]
 
+@[simp] lemma toLinearMap_mapInclLinearIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
+    (mapInclLinearIsometry E' F').toLinearMap = mapIncl E' F' := rfl
+
 @[simp]
 theorem norm_tmul (x : E) (y : F) :
     ‖x ⊗ₜ[𝕜] y‖ = ‖x‖ * ‖y‖ := by
