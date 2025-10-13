@@ -124,29 +124,8 @@ def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
 
 section flip
 
-/-- Auxiliary construction for the flip of a bilinear form, obtained by exchanging the left and
-right arguments. This version is a `LinearMap`; it is later upgraded to a `LinearEquiv`
-in `flipHom`. -/
-def flipHomAux : (BilinForm R M) →ₗ[R] (BilinForm R M) where
-  toFun A := A.flip
-  map_add' A₁ A₂ := by
-    ext
-    simp only [LinearMap.flip_apply, LinearMap.add_apply]
-  map_smul' c A := by
-    ext
-    simp only [LinearMap.flip_apply, LinearMap.smul_apply, RingHom.id_apply]
-
-theorem flip_flip_aux (A : BilinForm R M) :
-    flipHomAux (M := M) (flipHomAux (M := M) A) = A := by
-  ext A
-  simp [flipHomAux]
-
 /-- The flip of a bilinear form, obtained by exchanging the left and right arguments. -/
-def flipHom : BilinForm R M ≃ₗ[R] BilinForm R M :=
-  { flipHomAux with
-    invFun := flipHomAux (M := M)
-    left_inv := flip_flip_aux
-    right_inv := flip_flip_aux }
+def flipHom : BilinForm R M ≃ₗ[R] BilinForm R M := LinearMap.lflip
 
 @[simp]
 theorem flip_apply (A : BilinForm R M) (x y : M) : flipHom A x y = A y x :=

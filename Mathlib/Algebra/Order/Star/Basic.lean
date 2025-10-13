@@ -346,9 +346,9 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
         apply AddSubmonoid.subset_closure
         refine ⟨z • y, ?_⟩
         simp only [star_smul, smul_mul_smul_comm, hz, hy]
-      case zeroc => simpa only [zero_smul] using zero_mem _
+      case zeroc => simp only [zero_smul, zero_mem]
       case addc => exact fun c' d _ _ ↦ by simpa only [add_smul] using add_mem
-    case zero => simpa only [smul_zero] using zero_mem _
+    case zero => simp only [smul_zero, zero_mem]
     case add => exact fun x y _ _ ↦ by simpa only [smul_add] using add_mem
   case ne =>
     refine (smul_ne_zero ?_ ?_).symm
@@ -399,13 +399,31 @@ instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
     simp [this, le_iff_exists_add]
 
 namespace IsStarProjection
+
+section Ring
 variable [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {p : R}
 
 theorem one_sub_nonneg (hp : IsStarProjection p) : 0 ≤ 1 - p := hp.one_sub.nonneg
 
 theorem le_one (hp : IsStarProjection p) : p ≤ 1 := sub_nonneg.mp hp.one_sub_nonneg
 
+/-- For a star projection `p`, we have `0 ≤ p ≤ 1`. -/
 theorem mem_Icc (hp : IsStarProjection p) : p ∈ Set.Icc (0 : R) 1 := by
   simp only [Set.mem_Icc, hp.nonneg, hp.le_one, and_self]
+
+end Ring
+
+section NonUnitalRing
+variable [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {p q : R}
+
+/-- A star projection `p` is less than or equal to a star projection `q` when `p * q = p`. -/
+theorem le_of_mul_eq_left (hp : IsStarProjection p) (hq : IsStarProjection q)
+    (hpq : p * q = p) : p ≤ q := sub_nonneg.mp (hp.sub_of_mul_eq_left hq hpq).nonneg
+
+/-- A star projection `p` is less than or equal to a star projection `q` when `q * p = p`. -/
+theorem le_of_mul_eq_right (hp : IsStarProjection p) (hq : IsStarProjection q)
+    (hpq : q * p = p) : p ≤ q := sub_nonneg.mp (hp.sub_of_mul_eq_right hq hpq).nonneg
+
+end NonUnitalRing
 
 end IsStarProjection

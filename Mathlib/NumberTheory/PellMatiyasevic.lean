@@ -387,31 +387,27 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
 theorem xy_modEq_yn (n) :
     ∀ k, xn a1 (n * k) ≡ xn a1 n ^ k [MOD yn a1 n ^ 2] ∧ yn a1 (n * k) ≡
         k * xn a1 n ^ (k - 1) * yn a1 n [MOD yn a1 n ^ 3]
-  | 0 => by constructor <;> simpa using Nat.ModEq.refl _
+  | 0 => by simp [Nat.ModEq.refl]
   | k + 1 => by
     let ⟨hx, hy⟩ := xy_modEq_yn n k
     have L : xn a1 (n * k) * xn a1 n + d a1 * yn a1 (n * k) * yn a1 n ≡
-        xn a1 n ^ k * xn a1 n + 0 [MOD yn a1 n ^ 2] :=
-      (hx.mul_right _).add <|
-        modEq_zero_iff_dvd.2 <| by
-          rw [_root_.pow_succ]
-          exact
-            mul_dvd_mul_right
-              (dvd_mul_of_dvd_right
-                (modEq_zero_iff_dvd.1 <|
-                  (hy.of_dvd <| by simp [_root_.pow_succ]).trans <|
-                    modEq_zero_iff_dvd.2 <| by simp)
-                _) _
+        xn a1 n ^ k * xn a1 n + 0 [MOD yn a1 n ^ 2] := by
+      gcongr
+      rw [modEq_zero_iff_dvd, sq]
+      gcongr
+      apply dvd_mul_of_dvd_right
+      rw [← modEq_zero_iff_dvd]
+      refine (hy.of_dvd <| dvd_pow_self _ <| by decide).trans ?_
+      simp [modEq_zero_iff_dvd]
     have R : xn a1 (n * k) * yn a1 n + yn a1 (n * k) * xn a1 n ≡
-        xn a1 n ^ k * yn a1 n + k * xn a1 n ^ k * yn a1 n [MOD yn a1 n ^ 3] :=
-      ModEq.add
-          (by
-            rw [_root_.pow_succ]
-            exact hx.mul_right' _) <| by
-        have : k * xn a1 n ^ (k - 1) * yn a1 n * xn a1 n = k * xn a1 n ^ k * yn a1 n := by
+        xn a1 n ^ k * yn a1 n + k * xn a1 n ^ k * yn a1 n [MOD yn a1 n ^ 3] := by
+      gcongr ?_ + ?_
+      · rw [_root_.pow_succ]
+        exact hx.mul_right' _
+      · have : k * xn a1 n ^ (k - 1) * yn a1 n * xn a1 n = k * xn a1 n ^ k * yn a1 n := by
           rcases k with - | k <;> simp [_root_.pow_succ]; ring_nf
         rw [← this]
-        exact hy.mul_right _
+        gcongr
     rw [add_tsub_cancel_right, Nat.mul_succ, xn_add, yn_add, pow_succ (xn _ n), Nat.succ_mul,
       add_comm (k * xn _ n ^ k) (xn _ n ^ k), right_distrib]
     exact ⟨L, R⟩
@@ -473,7 +469,7 @@ theorem yn_modEq_a_sub_one : ∀ n, yn a1 n ≡ n [MOD a - 1]
 
 theorem yn_modEq_two : ∀ n, yn a1 n ≡ n [MOD 2]
   | 0 => by rfl
-  | 1 => by simp; rfl
+  | 1 => by simp [Nat.ModEq.refl]
   | n + 2 =>
     (yn_modEq_two n).add_right_cancel <| by
       rw [yn_succ_succ, mul_assoc, (by ring : n + 2 + n = 2 * (n + 1))]
@@ -725,8 +721,8 @@ end
 
 theorem xy_modEq_of_modEq {a b c} (a1 : 1 < a) (b1 : 1 < b) (h : a ≡ b [MOD c]) :
     ∀ n, xn a1 n ≡ xn b1 n [MOD c] ∧ yn a1 n ≡ yn b1 n [MOD c]
-  | 0 => by constructor <;> rfl
-  | 1 => by simpa using ⟨h, ModEq.refl 1⟩
+  | 0 => by simp [Nat.ModEq.refl]
+  | 1 => by simpa [Nat.ModEq.refl]
   | n + 2 =>
     ⟨(xy_modEq_of_modEq a1 b1 h n).left.add_right_cancel <| by
         rw [xn_succ_succ a1, xn_succ_succ b1]
@@ -803,7 +799,7 @@ theorem matiyasevic {a k x y} :
             have iln : i ≤ n :=
               le_of_not_gt fun hin =>
                 not_lt_of_ge (Nat.le_of_dvd vp (dvd_of_mul_left_dvd yv)) (strictMono_y a1 hin)
-            have yd : 4 * yn a1 i ∣ 4 * n := mul_dvd_mul_left _ <| dvd_of_ysq_dvd a1 yv
+            have yd : 4 * yn a1 i ∣ 4 * n := by gcongr; exact dvd_of_ysq_dvd a1 yv
             have jk : j ≡ k [MOD 4 * yn a1 i] :=
               have : 4 * yn a1 i ∣ b - 1 :=
                 Int.natCast_dvd_natCast.1 <| by rw [Int.ofNat_sub (le_of_lt b1)]; exact bm1.symm.dvd

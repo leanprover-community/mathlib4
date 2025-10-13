@@ -265,8 +265,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
       -- If `R = (· < ·)`, then the proof looks like
       -- `f x < f (l + a) ≤ f (l + n • a) < f y`
       trans f (l + (1 : ℤ) • a)
-      · rw [one_zsmul]
-        exact hf x (Ico_subset_Icc_self hx) (l + a) (by simpa) hx.2
+      · grind
       have hy : R (f (l + n • a)) (f y) := by
         rw [← sub_add_cancel y (n • a), map_add_zsmul, map_add_zsmul]
         refine hR _ <| hf _ ?_ _ (Ioc_subset_Icc_self hny) hny.1; simpa

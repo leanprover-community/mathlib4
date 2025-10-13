@@ -481,13 +481,7 @@ variable [Nonempty M]
 
 theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α → M}
     {xs : Fin n → M} : (φ.liftAt 1 n).all.Realize v xs ↔ φ.Realize v xs := by
-  inhabit M
-  simp only [realize_all, realize_liftAt_one_self]
-  refine ⟨fun h => ?_, fun h a => ?_⟩
-  · refine (congr rfl (funext fun i => ?_)).mp (h default)
-    simp
-  · refine (congr rfl (funext fun i => ?_)).mp h
-    simp
+  simp
 
 end BoundedFormula
 

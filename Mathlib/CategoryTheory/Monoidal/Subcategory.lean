@@ -63,7 +63,7 @@ class IsMonoidal (P : ObjectProperty C) : Prop extends
 /-- A property of objects is a monoidal closed if it is closed under taking internal homs
 -/
 class IsMonoidalClosed (P : ObjectProperty C) [MonoidalClosed C] : Prop where
-  prop_ihom (X Y : C) : P X → P Y → P ((ihom X).obj Y) := by aesop_cat
+  prop_ihom (X Y : C) : P X → P Y → P ((ihom X).obj Y) := by cat_disch
 
 lemma prop_ihom (P : ObjectProperty C) [MonoidalClosed C] [P.IsMonoidalClosed]
     {X Y : C} (hX : P X) (hY : P Y) : P ((ihom X).obj Y) :=

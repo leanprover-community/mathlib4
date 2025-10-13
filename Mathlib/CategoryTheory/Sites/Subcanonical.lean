@@ -134,8 +134,8 @@ lemma yonedaULiftEquiv_naturality {X Y : C} {F : Sheaf J (Type (max v v'))}
   simp [yonedaULift]
 
 /-- Variant of `yonedaEquiv_naturality` with general `g`. This is technically strictly more general
-    than `yonedaEquiv_naturality`, but `yonedaEquiv_naturality` is sometimes preferable because it
-    can avoid the "motive is not type correct" error. -/
+than `yonedaEquiv_naturality`, but `yonedaEquiv_naturality` is sometimes preferable because it
+can avoid the "motive is not type correct" error. -/
 lemma yonedaULiftEquiv_naturality' {X Y : Cᵒᵖ} {F : Sheaf J (Type (max v v'))}
     (f : J.yonedaULift.obj (unop X) ⟶ F) (g : X ⟶ Y) :
       F.val.map g (J.yonedaULiftEquiv f) = J.yonedaULiftEquiv (J.yonedaULift.map g.unop ≫ f) :=
@@ -171,8 +171,8 @@ lemma map_yonedaULiftEquiv {X Y : C} {F : Sheaf J (Type (max v v'))}
   rw [yonedaULiftEquiv_naturality, yonedaULiftEquiv_comp, yonedaULiftEquiv_yonedaULift_map]
 
 /-- Variant of `map_yonedaEquiv` with general `g`. This is technically strictly more general
-    than `map_yonedaEquiv`, but `map_yonedaEquiv` is sometimes preferable because it
-    can avoid the "motive is not type correct" error. -/
+than `map_yonedaEquiv`, but `map_yonedaEquiv` is sometimes preferable because it
+can avoid the "motive is not type correct" error. -/
 lemma map_yonedaULiftEquiv' {X Y : Cᵒᵖ} {F : Sheaf J (Type (max v v'))}
     (f : J.yonedaULift.obj (unop X) ⟶ F)
     (g : X ⟶ Y) : F.val.map g (J.yonedaULiftEquiv f) = f.val.app Y ⟨g.unop⟩ := by

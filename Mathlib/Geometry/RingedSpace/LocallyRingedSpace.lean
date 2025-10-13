@@ -79,12 +79,12 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
-  X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
+    X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
 
 @[simp, nolint simpVarHead]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
-    (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
-  Hom.toShHom ⟨f, hf⟩ = f := rfl
+    (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) : Hom.toShHom ⟨f, hf⟩ = f :=
+  rfl
 
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
@@ -277,7 +277,7 @@ def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
 noncomputable
 instance {X : LocallyRingedSpace.{u}} : Unique (∅ ⟶ X) where
   default := LocallyRingedSpace.emptyTo X
-  uniq f := by ext ⟨⟩ x; aesop_cat
+  uniq f := by ext ⟨⟩ x; cat_disch
 
 /-- The empty space is initial in `LocallyRingedSpace`. -/
 noncomputable

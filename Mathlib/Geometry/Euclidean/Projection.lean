@@ -3,7 +3,8 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
@@ -47,7 +48,7 @@ def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s]
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
-        exact Submodule.isCompl_orthogonal_of_completeSpace)
+        exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
 
 /-- The intersection of the subspace and the orthogonal subspace
 through the given point is the `orthogonalProjectionFn` of that
@@ -62,7 +63,7 @@ theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [No
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
-        exact Submodule.isCompl_orthogonal_of_completeSpace)
+        exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
 
 /-- The `orthogonalProjectionFn` lies in the given subspace. This
 lemma is only intended for use in setting up the bundled version and

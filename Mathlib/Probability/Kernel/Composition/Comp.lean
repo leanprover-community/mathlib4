@@ -129,9 +129,16 @@ theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
   refine ext_fun fun a f hf => ?_
   simp_rw [lintegral_comp _ _ _ hf, lintegral_comp _ _ _ hf.lintegral_kernel]
 
+lemma comp_discard' (κ : Kernel α β) :
+    discard β ∘ₖ κ =
+      { toFun a := κ a .univ • Measure.dirac ()
+        measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
+  ext a s hs
+  simp [comp_apply' _ _ _ hs, mul_comm]
+
 @[simp]
 lemma comp_discard (κ : Kernel α β) [IsMarkovKernel κ] : discard β ∘ₖ κ = discard α := by
-  ext a s hs; simp [comp_apply' _ _ _ hs]
+  ext; simp [comp_discard']
 
 @[simp]
 lemma swap_copy : (swap α α) ∘ₖ (copy α) = copy α := by

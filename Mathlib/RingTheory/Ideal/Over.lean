@@ -229,9 +229,6 @@ instance instFaithfulSMul : FaithfulSMul (A ⧸ p) (B ⧸ P) := by
   rw [RingHom.map_sub]
   exact Quotient.eq.mp hab
 
-@[deprecated (since := "2025-01-31")]
-alias algebraMap_injective_of_liesOver := instFaithfulSMul
-
 variable {p} in
 theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
   Quotient.nontrivial ((eq_top_iff_of_liesOver P p).mp.mt hp)

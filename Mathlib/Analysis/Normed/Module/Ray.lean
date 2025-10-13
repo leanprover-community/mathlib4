@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Rays in a real normed vector space

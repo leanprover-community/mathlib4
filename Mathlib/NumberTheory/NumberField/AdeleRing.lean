@@ -126,7 +126,7 @@ in practice are easier to work with than `AdeleRing (𝓞 ℚ) ℚ`.
 Note that this definition does not give the correct answer in the function field case.
 -/
 def AdeleRing (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
-  [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
+    [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
 
 namespace AdeleRing
 

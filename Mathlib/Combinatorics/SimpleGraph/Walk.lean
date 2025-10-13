@@ -390,7 +390,7 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
       rw [Nat.succ_sub hi.le]
       simp [getVert]
     next hi =>
-      obtain rfl | hi' := eq_or_lt_of_not_gt hi
+      obtain rfl | hi' := eq_or_gt_of_not_lt hi
       · simp
       · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
         simp [getVert]
@@ -1135,6 +1135,9 @@ lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
       rw [List.getElem_zero, List.getElem_zero, p.head_support, q.head_support] at h
       have : (p.copy h rfl).support = q.support := by simpa
       simp [← ih this]
+
+lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
+  fun _ _ ↦ ext_support
 
 lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
     (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :

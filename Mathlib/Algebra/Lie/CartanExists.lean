@@ -94,7 +94,7 @@ lemma lieCharpoly_map_eval (r : R) :
   have aux : (fun i ↦ (b.repr y) i * r + (b.repr x) i) = b.repr (r • y + x) := by
     ext i; simp [mul_comm r]
   simp_rw [← coe_aeval_eq_evalRingHom, ← AlgHom.comp_toRingHom, MvPolynomial.comp_aeval,
-    map_add, map_mul, aeval_C, Algebra.id.map_eq_id, RingHom.id_apply, aeval_X, aux,
+    map_add, map_mul, aeval_C, Algebra.algebraMap_self, RingHom.id_apply, aeval_X, aux,
     MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap]
 
 lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
@@ -141,7 +141,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   { engel K x with
     lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K x).lie_mem (hUle hu) hy }
   -- We may and do assume that `x ≠ 0`, since otherwise the statement is trivial.
-  obtain rfl|hx₀ := eq_or_ne x 0
+  obtain rfl | hx₀ := eq_or_ne x 0
   · simpa [Ex, Ey] using hmin Ey
   -- We denote by `Q` the quotient `L / E`, and by `r` the dimension of `E`.
   let Q := L ⧸ E
@@ -186,7 +186,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- Let us consider the `i`-th coefficient of `χ`, for `i < r`.
   intro i hi
   -- We separately consider the case `i = 0`.
-  obtain rfl|hi0 := eq_or_ne i 0
+  obtain rfl | hi0 := eq_or_ne i 0
   · -- `The polynomial `coeff χ 0` is zero if it evaluates to zero on all elements of `K`,
     -- provided that its degree is stictly less than `#K`.
     apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg

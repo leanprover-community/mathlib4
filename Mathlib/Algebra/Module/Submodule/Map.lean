@@ -105,7 +105,7 @@ theorem map_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] (f : 
 
 @[gcongr]
 theorem map_mono {f : F} {p p' : Submodule R M} : p ≤ p' → map f p ≤ map f p' :=
-  image_subset _
+  image_mono
 
 @[simp]
 protected theorem map_zero : map (0 : M →ₛₗ[σ₁₂] M₂) p = ⊥ :=

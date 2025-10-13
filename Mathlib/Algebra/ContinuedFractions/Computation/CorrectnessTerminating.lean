@@ -147,6 +147,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
       -- use the IH to show that the following equality suffices
       suffices
         compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts ifp_succ_n.fr by
+        #adaptation_note /-- 2025-08-10 replace the following with grind after
+        https://github.com/leanprover/lean4/issues/9825 is fixed -/
         have : v = compExactValue ppconts pconts ifp_n.fr := IH nth_stream_eq
         conv_lhs => rw [this]
         assumption
@@ -194,6 +196,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
       field_simp [compExactValue, contsAux_recurrence s_nth_eq ppconts_eq pconts_eq,
         nextConts, nextNum, nextDen]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
+      #adaptation_note /-- 2025-08-10 replace the following with grind after
+        https://github.com/leanprover/lean4/issues/9825 is fixed -/
       rw [one_div, if_neg _, ← one_div, hfr]
       · field_simp [pA, pB, ppA, ppB, pconts, ppconts, hA, hB]
         ac_rfl

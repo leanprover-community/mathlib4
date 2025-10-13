@@ -299,8 +299,8 @@ theorem IsTopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U 
 
 /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
 is closed, symmetric, and satisfies `V * V ⊆ U`. -/
-@[to_additive "Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
-identity which is closed, symmetric, and satisfies `V + V ⊆ U`."]
+@[to_additive /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
+identity which is closed, symmetric, and satisfies `V + V ⊆ U`. -/]
 theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
     ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
   rcases exists_open_nhds_one_mul_subset hU with ⟨V, V_open, V_mem, hV⟩
@@ -333,8 +333,8 @@ theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsC
 /-- If a function defined on a topological group has a support contained in a
 compact set, then either the function is trivial or the group is locally compact. -/
 @[to_additive
-      "If a function defined on a topological additive group has a support contained in a compact
-      set, then either the function is trivial or the group is locally compact."]
+      /-- If a function defined on a topological additive group has a support contained in a compact
+      set, then either the function is trivial or the group is locally compact. -/]
 theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
@@ -350,8 +350,8 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
 /-- If a function defined on a topological group has compact support, then either
 the function is trivial or the group is locally compact. -/
 @[to_additive
-      "If a function defined on a topological additive group has compact support,
-      then either the function is trivial or the group is locally compact."]
+      /-- If a function defined on a topological additive group has compact support,
+      then either the function is trivial or the group is locally compact. -/]
 theorem HasCompactSupport.eq_zero_or_locallyCompactSpace_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} (hf : HasCompactSupport f) (h'f : Continuous f) :

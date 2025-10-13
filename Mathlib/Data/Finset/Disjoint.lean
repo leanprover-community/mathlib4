@@ -128,7 +128,7 @@ ensures that the sets are disjoint. -/
 def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
   ⟨s.1 + t.1, Multiset.nodup_add.2 ⟨s.2, t.2, disjoint_val.2 h⟩⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by
   rcases s with ⟨⟨s⟩⟩; rcases t with ⟨⟨t⟩⟩; apply List.mem_append
 

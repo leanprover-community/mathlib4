@@ -25,7 +25,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α β γ ι M M' N P G H R S : Type*}
+variable {α M N R : Type*}
 
 namespace Finsupp
 
@@ -78,7 +78,7 @@ noncomputable
 def optionEquiv [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
   toFun P := (P .none, P.some)
   invFun P := (P.2.embDomain .some).update .none P.1
-  left_inv P := by ext (_|a) <;> simp [Finsupp.update]
+  left_inv P := by ext (_ | a) <;> simp [Finsupp.update]
   right_inv P := by ext <;> simp [Finsupp.update]
 
 theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :

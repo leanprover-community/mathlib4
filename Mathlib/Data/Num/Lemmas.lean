@@ -796,7 +796,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
 @[simp, norm_cast]
 theorem castNum_or : ∀ m n : Num, ↑(m ||| n) = (↑m ||| ↑n : ℕ) := by
   apply castNum_eq_bitwise fun x y => pos (PosNum.lor x y) <;>
-   (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
+    (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
 
 @[simp, norm_cast]
 theorem castNum_and : ∀ m n : Num, ↑(m &&& n) = (↑m &&& ↑n : ℕ) := by

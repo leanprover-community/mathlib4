@@ -215,7 +215,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
         | nil => exact (List.nil_lt_cons a []).le
         | cons b bs =>
           apply le_of_lt
-          rw [List.chain'_cons] at ha
+          rw [List.chain'_cons_cons] at ha
           exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel ha.1)
 
 end Fin

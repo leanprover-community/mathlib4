@@ -97,7 +97,7 @@ theorem ContinuousMap.exists_forall_mem_restrict_eq (hs : IsClosed s)
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
     ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.restrict s = f := by
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_restrict_eq hs
-  exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
+  exact ⟨comp ⟨Subtype.val, by fun_prop⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
 
 /-- This theorem is not intended to be used directly because it is rare for a set alone to
 satisfy `[TietzeExtension t]`. For example, `Metric.ball` in `ℝ` only satisfies it when
@@ -110,7 +110,7 @@ theorem ContinuousMap.exists_extension_forall_mem (he : IsClosedEmbedding e)
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
     ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.comp ⟨e, he.continuous⟩ = f := by
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_extension he
-  exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
+  exact ⟨comp ⟨Subtype.val, by fun_prop⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
 
 instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
     [∀ i, TietzeExtension.{u} (Y i)] : TietzeExtension.{u} (∀ i, Y i) where

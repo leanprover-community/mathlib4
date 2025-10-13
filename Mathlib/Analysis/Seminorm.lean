@@ -275,7 +275,7 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     -- Porting note: the `simp only` below used to be part of the `rw`.
     -- I'm not sure why this change was needed, and am worried by it!
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
-    smul' := fun _ _ => by simp only [map_smulₛₗ _]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
+    smul' _ _ := by simp only [map_smulₛₗ _]; rw [map_smul_eq_mul, RingHomIsometric.norm_map] }
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
   rfl
@@ -353,7 +353,7 @@ theorem exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) {s : Finset ι} 
 
 theorem zero_or_exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
     s.sup p x = 0 ∨ ∃ i ∈ s, s.sup p x = p i x := by
-  rcases Finset.eq_empty_or_nonempty s with (rfl|hs)
+  rcases Finset.eq_empty_or_nonempty s with (rfl | hs)
   · left; rfl
   · right; exact exists_apply_eq_finset_sup p hs x
 

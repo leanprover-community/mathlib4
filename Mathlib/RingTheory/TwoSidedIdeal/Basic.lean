@@ -110,7 +110,6 @@ lemma lt_iff (I J : TwoSidedIdeal R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := 
   rw [lt_iff_le_and_ne, Set.ssubset_iff_subset_ne, le_iff]
   simp
 
-@[simp]
 lemma zero_mem : 0 ∈ I := I.ringCon.refl 0
 
 lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa using I.ringCon.add hx hy

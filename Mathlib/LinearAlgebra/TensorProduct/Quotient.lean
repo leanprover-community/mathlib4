@@ -34,6 +34,8 @@ Quotient, Tensor Product
 
 -/
 
+assert_not_exists Cardinal
+
 namespace TensorProduct
 
 variable {R M N : Type*} [CommRing R]

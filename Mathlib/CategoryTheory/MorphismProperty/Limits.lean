@@ -88,7 +88,7 @@ instance : P.pullbacks.RespectsIso :=
     exact ⟨X, Y, p, e.inv.left ≫ f, e.inv.right ≫ g, hp,
       IsPullback.paste_horiz (IsPullback.of_horiz_isIso ⟨e.inv.w⟩) h⟩)
 
-/-- If `P : MorphismPropety C` is such that any object in `C` maps to the
+/-- If `P : MorphismProperty C` is such that any object in `C` maps to the
 target of some morphism in `P`, then `P.pushouts` contains the isomorphisms. -/
 lemma isomorphisms_le_pushouts
     (h : ∀ (X : C), ∃ (A B : C) (p : A ⟶ B) (_ : P p) (_ : B ⟶ X), IsIso p) :
@@ -185,21 +185,15 @@ theorem pullback_fst [IsStableUnderBaseChange P]
     P (pullback.fst f g) :=
   of_isPullback (IsPullback.of_hasPullback f g).flip H
 
-@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.fst := pullback_fst
-
 theorem pullback_snd [IsStableUnderBaseChange P]
     {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P f) :
     P (pullback.snd f g) :=
   of_isPullback (IsPullback.of_hasPullback f g) H
 
-@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.snd := pullback_snd
-
 theorem baseChange_obj [HasPullbacks C]
     [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
   pullback_snd X.hom f H
-
-@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.baseChange_obj := baseChange_obj
 
 theorem baseChange_map [HasPullbacks C]
     [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
@@ -211,8 +205,6 @@ theorem baseChange_map [HasPullbacks C]
     ext <;> dsimp [e] <;> simp
   rw [← this, P.cancel_left_of_respectsIso]
   exact pullback_snd _ _ H
-
-@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.baseChange_map := baseChange_map
 
 theorem pullback_map [HasPullbacks C]
     [IsStableUnderBaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
@@ -240,8 +232,6 @@ instance IsStableUnderBaseChange.hasOfPostcompProperty_monomorphisms
       simp [← cancel_mono g, pullback.condition]
     rw [this, cancel_left_of_respectsIso (P := P)]
     exact P.pullback_snd _ _ hcomp
-
-@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.pullback_map := pullback_map
 
 lemma of_isPushout [P.IsStableUnderCobaseChange]
     {A A' B B' : C} {f : A ⟶ A'} {g : A ⟶ B} {f' : B ⟶ B'} {g' : A' ⟶ B'}
@@ -309,13 +299,9 @@ theorem pushout_inl [IsStableUnderCobaseChange P]
     P (pushout.inl f g) :=
   of_isPushout (IsPushout.of_hasPushout f g) H
 
-@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inl := pushout_inl
-
 theorem pushout_inr [IsStableUnderCobaseChange P]
     {A B A' : C} (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (H : P f) : P (pushout.inr f g) :=
   of_isPushout (IsPushout.of_hasPushout f g).flip H
-
-@[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inr := pushout_inr
 
 instance IsStableUnderCobaseChange.hasOfPrecompProperty_epimorphisms
     [P.IsStableUnderCobaseChange] : P.HasOfPrecompProperty (MorphismProperty.epimorphisms C) where

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
@@ -934,8 +934,6 @@ theorem inertiaDeg_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.Is
   letI : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ I) := IsScalarTower.of_algebraMap_eq <| by
     rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply R S T x)
   exact (finrank_mul_finrank (R ⧸ p) (S ⧸ P) (T ⧸ I)).symm
-
-@[deprecated (since := "2024-12-09")] alias inertiaDeg_tower := inertiaDeg_algebra_tower
 
 end tower
 

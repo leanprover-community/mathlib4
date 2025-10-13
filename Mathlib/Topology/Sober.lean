@@ -218,7 +218,7 @@ lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι �
       H.isGenericPoint_genericPoint_closure.def]
     refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
       (closure_mono ?_)
-    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using Set.image_subset _ subset_closure
+    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using Set.image_mono subset_closure
 
 lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=

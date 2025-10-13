@@ -131,6 +131,7 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
+open Module
 open scoped TensorProduct
 
 noncomputable section
@@ -517,7 +518,7 @@ theorem of_isField' {A : Type v} [Ring A] {B : Type w} [Ring B]
     fa.range.LinearDisjoint fb.range := by
   apply of_isField
   exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa hfa)
-    (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField _ H
+    (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField H
 
 -- need to be in this file since it uses linearly disjoint
 open Cardinal Polynomial in

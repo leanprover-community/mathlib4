@@ -261,9 +261,6 @@ lemma IsSheaf.existsUnique_amalgamation_ofArrows :
   (Presieve.isSheafFor_arrows_iff _ _).1
     ((Presieve.isSheafFor_iff_generate _).2 (hP E _ hf)) x (fun _ _ _ _ _ w => hx _ _ w)
 
-@[deprecated (since := "2024-12-17")]
-alias IsSheaf.exists_unique_amalgamation_ofArrows := IsSheaf.existsUnique_amalgamation_ofArrows
-
 /-- If `P : Cᵒᵖ ⥤ A` is a sheaf and `f i : X i ⟶ S` is a covering family, then
 a morphism `E ⟶ P.obj (op S)` can be constructed from a compatible family of
 morphisms `x : E ⟶ P.obj (op (X i))`. -/
@@ -481,7 +478,7 @@ theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.
 instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (fun f : Sheaf.Hom P Q => f.1)
     (fun _ _ h => Sheaf.Hom.ext h) rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => by aesop_cat) (fun _ _ => by aesop_cat)
+    (fun _ _ => by cat_disch) (fun _ _ => by cat_disch)
 
 instance : Preadditive (Sheaf J A) where
   homGroup _ _ := Sheaf.Hom.addCommGroup

@@ -294,7 +294,7 @@ theorem integral_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
 alias integral_mul_left := integral_const_mul
 
 theorem integral_mul_const {L : Type*} [RCLike L] (r : L) (f : α → L) :
-    ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by simp only [mul_comm]; exact integral_const_mul r f
+    ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by simp only [mul_comm, integral_const_mul r f]
 
 @[deprecated (since := "2025-04-27")]
 alias integral_mul_right := integral_mul_const
@@ -349,9 +349,6 @@ theorem enorm_integral_le_lintegral_enorm (f : α → G) : ‖∫ a, f a ∂μ�
   simp_rw [← ofReal_norm_eq_enorm]
   apply ENNReal.ofReal_le_of_le_toReal
   exact norm_integral_le_lintegral_norm f
-
-@[deprecated (since := "2025-01-21")]
-alias ennnorm_integral_le_lintegral_ennnorm := enorm_integral_le_lintegral_enorm
 
 theorem integral_eq_zero_of_ae {f : α → G} (hf : f =ᵐ[μ] 0) : ∫ a, f a ∂μ = 0 := by
   simp [integral_congr_ae hf, integral_zero]
@@ -519,16 +516,10 @@ theorem integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f :
   · simp_rw [ofReal_norm_eq_enorm]
   · filter_upwards; simp_rw [Pi.zero_apply, norm_nonneg, imp_true_iff]
 
-@[deprecated (since := "2025-01-21")]
-alias integral_norm_eq_lintegral_nnnorm := integral_norm_eq_lintegral_enorm
-
 theorem ofReal_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ENNReal.ofReal (∫ x, ‖f x‖ ∂μ) = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal]
   exact lt_top_iff_ne_top.mp (hasFiniteIntegral_iff_enorm.mpr hf.2)
-
-@[deprecated (since := "2025-01-21")]
-alias ofReal_integral_norm_eq_lintegral_nnnorm := ofReal_integral_norm_eq_lintegral_enorm
 
 theorem SimpleFunc.integral_eq_integral (f : α →ₛ E) (hfi : Integrable f μ) :
     f.integral μ = ∫ x, f x ∂μ := by

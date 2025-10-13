@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
@@ -982,11 +983,8 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 
 @[simp]
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
-  ext j
-  by_cases h1 : j = i
-  · simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true,
-      Finset.mem_erase, false_and]
-  by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
+  ext
+  simp
 
 theorem support_update_ne_zero (f : Π₀ i, β i) (i : ι) {b : β i} (h : b ≠ 0) :
     support (f.update i b) = insert i f.support := by

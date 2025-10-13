@@ -254,7 +254,7 @@ theorem integral_comp_smul_deriv''' (hf : ContinuousOn f [[a, b]])
     have cdsub : [[c, d]] ⊆ Ioo (min a b) (max a b) := by
       rw [uIcc_of_le (hc.2.trans hd.1).le]
       exact Icc_subset_Ioo hc.1 hd.2
-    replace hg_cont := hg_cont.mono (image_subset f cdsub)
+    replace hg_cont := hg_cont.mono (image_mono cdsub)
     let J := [[sInf (f '' [[c, d]]), sSup (f '' [[c, d]])]]
     have hJ : f '' [[c, d]] = J := (hf.mono (cdsub.trans Ioo_subset_Icc_self)).image_uIcc
     rw [hJ] at hg_cont
@@ -285,7 +285,7 @@ theorem integral_comp_smul_deriv'' (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hf' : ContinuousOn f' [[a, b]]) (hg : ContinuousOn g (f '' [[a, b]])) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ u in f a..f b, g u := by
-  refine integral_comp_smul_deriv''' hf hff' (hg.mono <| image_subset _ Ioo_subset_Icc_self) ?_
+  refine integral_comp_smul_deriv''' hf hff' (hg.mono <| image_mono Ioo_subset_Icc_self) ?_
     (hf'.smul (hg.comp hf <| subset_preimage_image f _)).integrableOn_Icc
   rw [hf.image_uIcc] at hg ⊢
   exact hg.integrableOn_Icc

@@ -51,9 +51,6 @@ theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :
   ext
   rw [Function.comp_apply, Associates.mk_normalize]
 
-@[deprecated (since := "2024-12-04")]
-alias normalizedFactors_prod := prod_normalizedFactors
-
 theorem prod_normalizedFactors_eq {a : α} (ane0 : a ≠ 0) :
     (normalizedFactors a).prod = normalize a := by
   trans normalize (normalizedFactors a).prod

@@ -315,7 +315,8 @@ def Result.eq_trans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b
   Result.isFalse (x := a) q($eq ▸ $proof)
   | .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
   | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
-  | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
+  | .isNNRat inst q n d proof => Result.isNNRat inst q n d q($eq ▸ $proof)
+  | .isNegNNRat inst q n d proof => Result.isNegNNRat inst q n d q($eq ▸ $proof)
 
 protected lemma Finset.sum_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.sum ∅ f) 0 :=

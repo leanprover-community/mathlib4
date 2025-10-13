@@ -62,25 +62,25 @@ section Lattice
 
 lemma mul_inf₀ [SemilatticeInf G₀] [PosMulReflectLT G₀] {c : G₀} (hc : 0 ≤ c) (a b : G₀) :
     c * (a ⊓ b) = c * a ⊓ c * b := by
-  obtain (rfl|hc) := hc.eq_or_lt
+  obtain (rfl | hc) := hc.eq_or_lt
   · simp
   · exact (OrderIso.mulLeft₀ c hc).map_inf a b
 
 lemma mul_sup₀ [SemilatticeSup G₀] [PosMulReflectLT G₀] {c : G₀} (hc : 0 ≤ c) (a b : G₀) :
     c * (a ⊔ b) = c * a ⊔ c * b := by
-  obtain (rfl|hc) := hc.eq_or_lt
+  obtain (rfl | hc) := hc.eq_or_lt
   · simp
   · exact (OrderIso.mulLeft₀ c hc).map_sup a b
 
 lemma inf_mul₀ [SemilatticeInf G₀] [MulPosReflectLT G₀] {c : G₀} (hc : 0 ≤ c) (a b : G₀) :
     (a ⊓ b) * c = a * c ⊓ b * c := by
-  obtain (rfl|hc) := hc.eq_or_lt
+  obtain (rfl | hc) := hc.eq_or_lt
   · simp
   · exact (OrderIso.mulRight₀ c hc).map_inf a b
 
 lemma sup_mul₀ [SemilatticeSup G₀] [MulPosReflectLT G₀] {c : G₀} (hc : 0 ≤ c) (a b : G₀) :
     (a ⊔ b) * c = a * c ⊔ b * c := by
-  obtain (rfl|hc) := hc.eq_or_lt
+  obtain (rfl | hc) := hc.eq_or_lt
   · simp
   · exact (OrderIso.mulRight₀ c hc).map_sup a b
 

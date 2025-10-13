@@ -22,8 +22,8 @@ variable {G : Type*} [Group G]
 /-- A subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `g^n ∈ H`
 we have `n = 0` or `g ∈ H`. -/
 @[to_additive
-      "An additive subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `n•g ∈ H`
-      we have `n = 0` or `g ∈ H`."]
+/-- An additive subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `n•g ∈ H` we
+have `n = 0` or `g ∈ H`. -/]
 def Saturated (H : Subgroup G) : Prop :=
   ∀ ⦃n g⦄, g ^ n ∈ H → n = 0 ∨ g ∈ H
 

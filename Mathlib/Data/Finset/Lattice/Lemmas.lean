@@ -65,6 +65,15 @@ theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
 
 @[simp]
+lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
+  rfl
+
+@[simp]
+lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
+  rw [Finset.union_comm]
+  rfl
+
+@[simp]
 theorem insert_union (a : α) (s t : Finset α) : insert a s ∪ t = insert a (s ∪ t) := by
   simp only [insert_eq, union_assoc]
 

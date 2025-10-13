@@ -76,7 +76,7 @@ theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
 theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
   fun _ => not_nontrivial _ ‹_›
 
-lemma not_subsingleton_iff_nontrivial : ¬ Subsingleton α ↔ Nontrivial α := by
+lemma not_subsingleton_iff_nontrivial : ¬Subsingleton α ↔ Nontrivial α := by
   rw [← not_nontrivial_iff_subsingleton, Classical.not_not]
 
 /-- A type is either a subsingleton or nontrivial. -/

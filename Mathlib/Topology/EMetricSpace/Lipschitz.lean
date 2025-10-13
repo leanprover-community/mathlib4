@@ -310,8 +310,7 @@ theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s)
 
 theorem edist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ≥0∞} (hd : edist x y < d / K) : edist (f x) (f y) < d :=
-   hf.to_restrict.edist_lt_of_edist_lt_div <|
-    show edist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
+  hf.to_restrict.edist_lt_of_edist_lt_div <| show edist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
 
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=

@@ -140,7 +140,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   ofHom
     { ((AddCommGrp.FilteredColimits.colimitCocone
       (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j).hom with
-    map_smul' := fun r x => by erw [colimit_smul_mk_eq F r ⟨j, x⟩]; rfl }
+    map_smul' := by solve_by_elim }
 
 /-- The cocone over the proposed colimit module. -/
 def colimitCocone : Cocone F where
@@ -162,9 +162,9 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
     congr_fun ((forget _).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
-    map_smul' := fun r x => by
-      obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
-      simp [hf] }
+      map_smul' := fun r x => by
+        obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
+        simp [hf] }
 
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :

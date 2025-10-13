@@ -244,7 +244,7 @@ theorem iff_union_singleton_one :
   by_cases hS : ∃ s ∈ S, s ≠ 0
   · exact iff_union_of_dvd _ _ (by simpa)
   · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_diff_distrib,
-      show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by aesop]
+      show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by simp]
     refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
       simp [adjoin_singleton_one, empty]

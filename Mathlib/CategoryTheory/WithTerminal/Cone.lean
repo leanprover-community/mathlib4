@@ -72,7 +72,7 @@ private def coneLift : Cone K ⥤ Cone (liftFromOver.obj K) where
   map {t₁ t₂} f := {
     hom := f.hom.left
     w
-    | star => by aesop_cat
+    | star => by cat_disch
     | of a => by simp [← Comma.comp_left]
   }
 
@@ -184,7 +184,7 @@ private def coconeLift : Cocone K ⥤ Cocone (liftFromUnder.obj K) where
   map {t₁ t₂} f := {
     hom := f.hom.right
     w
-    | star => by aesop_cat
+    | star => by cat_disch
     | of a => by simp [← Comma.comp_right]
   }
 
@@ -225,7 +225,7 @@ lemma coconeEquiv_functor_obj_ι_app_star : (coconeEquiv.functor.obj t).ι.app s
 
 @[simp]
 lemma coconeEquiv_functor_obj_ι_app_of (Y : J) :
-   (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
+    (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
 
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
 `coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/

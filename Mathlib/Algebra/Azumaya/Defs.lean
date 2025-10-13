@@ -32,8 +32,7 @@ variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 open TensorProduct MulOpposite
 
 /-- `A` as a `A ⊗[R] Aᵐᵒᵖ`-module (or equivalently, an `A`-`A` bimodule). -/
-abbrev instModuleTensorProductMop :
-  Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
+abbrev instModuleTensorProductMop : Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
 
 /-- The canonical map from `A ⊗[R] Aᵐᵒᵖ` to `Module.End R A` where
   `a ⊗ b` maps to `f : x ↦ a * x * b`. -/
@@ -56,3 +55,4 @@ lemma AlgHom.mulLeftRight_apply (a : A) (b : Aᵐᵒᵖ) (x : A) :
   `AlgHom.mulLeftRight R A : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A` is an isomorphism. -/
 class IsAzumaya : Prop extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A where
     bij : Function.Bijective <| AlgHom.mulLeftRight R A
+

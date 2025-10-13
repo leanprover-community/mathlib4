@@ -414,7 +414,7 @@ theorem gcd_mul_left' [GCDMonoid α] (a b c : α) :
   obtain ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
   apply associated_of_dvd_dvd
   · rw [eq]
-    apply mul_dvd_mul_left
+    gcongr
     exact
       dvd_gcd ((mul_dvd_mul_iff_left ha).1 <| eq ▸ gcd_dvd_left _ _)
         ((mul_dvd_mul_iff_left ha).1 <| eq ▸ gcd_dvd_right _ _)

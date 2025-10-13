@@ -667,7 +667,7 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
       ↔ ¬ ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a)) := by
   rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff,
     ← exists_with_cycleType_iff, not_exists]
-  aesop
+  simp
 
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     #({g | g.cycleType = m} : Finset (Perm α)) *

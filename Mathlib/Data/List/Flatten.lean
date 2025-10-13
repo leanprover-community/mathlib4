@@ -35,10 +35,6 @@ protected theorem Sublist.flatMap {l₁ l₂ : List α} (h : l₁ <+ l₂) (f : 
     l₁.flatMap f <+ l₂.flatMap f :=
   (h.map f).flatten
 
-@[deprecated (since := "2024-10-25")] alias length_join' := length_flatten
-@[deprecated (since := "2024-10-25")] alias countP_join' := countP_flatten
-@[deprecated (since := "2024-10-25")] alias count_join' := count_flatten
-
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
 left with a list of length `1` made of the `i`-th element of the original list. -/
 theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length) :

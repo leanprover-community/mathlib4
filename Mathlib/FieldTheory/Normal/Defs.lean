@@ -207,7 +207,7 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
   dsimp only [restrictNormalHom, MonoidHom.mk'_apply, MonoidHom.id_apply]
   apply (algebraMap K K).injective
   rw [AlgEquiv.restrictNormal_commutes]
-  simp only [Algebra.id.map_eq_id, RingHom.id_apply]
+  simp only [Algebra.algebraMap_self, RingHom.id_apply]
 
 namespace IsScalarTower
 

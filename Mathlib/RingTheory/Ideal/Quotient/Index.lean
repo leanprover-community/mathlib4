@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.GroupTheory.Index
 import Mathlib.LinearAlgebra.DirectSum.Finsupp

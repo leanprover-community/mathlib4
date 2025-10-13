@@ -234,9 +234,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      obtain ⟨hx', h⟩ := h
-      rw [not_le] at h
-      exact h
+      omega
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
       obtain ⟨hx', h⟩ := h
@@ -739,6 +737,6 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
-    linearOrder, LinearOrder.toBiheytingAlgebra with }
+    linearOrder, linearOrder.toBiheytingAlgebra with }
 
 end PartENat

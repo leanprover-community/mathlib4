@@ -240,8 +240,12 @@ theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] 
     (hf : StrictMono f) (hc : OrdConnected (range f)) : IsEmbedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
 
-@[deprecated (since := "2024-10-26")]
-alias StrictMono.embedding_of_ordConnected := StrictMono.isEmbedding_of_ordConnected
+/-- An `OrderEmbedding` is a topological embedding provided that the range of `f` is
+order-connected -/
+lemma OrderEmbedding.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
+    [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [OrderTopology β]
+    (f : α ↪o β) (hc : OrdConnected (range f)) : Topology.IsEmbedding f :=
+  f.strictMono.isEmbedding_of_ordConnected hc
 
 /-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
@@ -256,25 +260,17 @@ theorem nhdsGE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderT
   refine le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf ?_ inf_le_left) inf_le_right)
   exact inf_le_right.trans (le_iInf₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_eq'' := nhdsGE_eq_iInf_inf_principal
-
 theorem nhdsLE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
     𝓝[≤] a = (⨅ l < a, 𝓟 (Ioi l)) ⊓ 𝓟 (Iic a) :=
   nhdsGE_eq_iInf_inf_principal (toDual a)
-
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_eq'' := nhdsLE_eq_iInf_inf_principal
 
 theorem nhdsGE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
   simp only [nhdsGE_eq_iInf_inf_principal, biInf_inf ha, inf_principal, Iio_inter_Ici]
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_eq' := nhdsGE_eq_iInf_principal
-
 theorem nhdsLE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : 𝓝[≤] a = ⨅ l < a, 𝓟 (Ioc l a) := by
   simp only [nhdsLE_eq_iInf_inf_principal, biInf_inf ha, inf_principal, Ioi_inter_Iic]
-
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_eq' := nhdsLE_eq_iInf_principal
 
 theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
@@ -284,26 +280,18 @@ theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderT
         Ico_subset_Ico_right (min_le_right _ _)⟩)
       ha
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_basis' := nhdsGE_basis_of_exists_gt
-
 theorem nhdsLE_basis_of_exists_lt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
   convert nhdsGE_basis_of_exists_gt (α := αᵒᵈ) ha using 2
   exact Ico_toDual.symm
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_basis' := nhdsLE_basis_of_exists_lt
-
 theorem nhdsGE_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α] (a : α) :
     (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
   nhdsGE_basis_of_exists_gt (exists_gt a)
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_basis := nhdsGE_basis
-
 theorem nhdsLE_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMinOrder α] (a : α) :
     (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a :=
   nhdsLE_basis_of_exists_lt (exists_lt a)
-
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_basis := nhdsLE_basis
 
 theorem nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
     𝓝 (⊤ : α) = ⨅ (l) (_ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
@@ -400,16 +388,10 @@ theorem exists_Icc_mem_subset_of_mem_nhdsGE [OrderTopology α] {a : α} {s : Set
     · refine ⟨c, hac.le, Icc_mem_nhdsGE hac, ?_⟩
       exact (Icc_subset_Ico_right hcb).trans hbs
 
-@[deprecated (since := "2024-12-22")]
-alias exists_Icc_mem_subset_of_mem_nhdsWithin_Ici := exists_Icc_mem_subset_of_mem_nhdsGE
-
 theorem exists_Icc_mem_subset_of_mem_nhdsLE [OrderTopology α] {a : α} {s : Set α}
     (hs : s ∈ 𝓝[≤] a) : ∃ b ≤ a, Icc b a ∈ 𝓝[≤] a ∧ Icc b a ⊆ s := by
   simpa only [Icc_toDual, toDual.surjective.exists] using
     exists_Icc_mem_subset_of_mem_nhdsGE (α := αᵒᵈ) (a := toDual a) hs
-
-@[deprecated (since := "2024-12-22")]
-alias exists_Icc_mem_subset_of_mem_nhdsWithin_Iic := exists_Icc_mem_subset_of_mem_nhdsLE
 
 theorem exists_Icc_mem_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
     ∃ b c, a ∈ Icc b c ∧ Icc b c ∈ 𝓝 a ∧ Icc b c ⊆ s := by
@@ -440,6 +422,23 @@ theorem dense_of_exists_between [OrderTopology α] [Nontrivial α] {s : Set α}
   obtain ⟨a, b, hab, H⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ U := U_open.exists_Ioo_subset U_nonempty
   obtain ⟨x, xs, hx⟩ : ∃ x ∈ s, a < x ∧ x < b := h hab
   exact ⟨x, ⟨H hx, xs⟩⟩
+
+theorem IsUpperSet.isClosed [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsUpperSet s) :
+    IsClosed s := by
+  obtain rfl | ⟨a, rfl⟩ := h.eq_empty_or_Ici
+  exacts [isClosed_empty, isClosed_Ici]
+
+theorem IsLowerSet.isClosed [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsLowerSet s) :
+    IsClosed s :=
+  h.toDual.isClosed
+
+theorem IsLowerSet.isOpen [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsLowerSet s) :
+    IsOpen s := by
+  simpa using h.compl.isClosed
+
+theorem IsUpperSet.isOpen [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsUpperSet s) :
+    IsOpen s :=
+  h.toDual.isOpen
 
 /-- A set in a nontrivial densely linear ordered type is dense in the sense of topology if and only
 if for any `a < b` there exists `c ∈ s`, `a < c < b`. Each implication requires less typeclass

@@ -168,8 +168,8 @@ variable {M N P Q : AddSubmonoid R}
 
 @[mono, gcongr] lemma mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q := smul_le_smul hmp hnq
 
-@[gcongr] lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
-@[gcongr] lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
+lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
+lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
 
 lemma mul_subset_mul : (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) := smul_subset_smul
 

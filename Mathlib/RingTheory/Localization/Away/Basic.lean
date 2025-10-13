@@ -150,9 +150,6 @@ theorem lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg (algebraMap R S a) = g a
 theorem lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
 
-@[deprecated (since := "2024-11-25")] alias AwayMap.lift_eq := lift_eq
-@[deprecated (since := "2024-11-25")] alias AwayMap.lift_comp := lift_comp
-
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `y * x`
 respectively, the homomorphism induced from `S` to `P`. -/
 noncomputable def awayToAwayLeft (y : R) [Algebra R P] [IsLocalization.Away (y * x) P] : S →+* P :=

@@ -141,7 +141,7 @@ def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
-    given by taking preimages under f. -/
+given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
   obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
   map i := ⟨⟨fun _ h => i.le h⟩⟩
@@ -284,7 +284,7 @@ end TopologicalSpace.Opens
 @[simps obj_coe]
 def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
   obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
-  map h := ⟨⟨Set.image_subset _ h.down.down⟩⟩
+  map h := ⟨⟨Set.image_mono h.down.down⟩⟩
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/

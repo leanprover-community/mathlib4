@@ -139,9 +139,6 @@ theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
     -- maps `K` to `U` as well
     filter_upwards [h K hK V hV] with g hg x hx using hVf _ (mem_image_of_mem f hx) (hg x hx)
 
-@[deprecated (since := "2024-11-19")] alias
-tendsto_iff_forall_compact_tendstoUniformlyOn := tendsto_iff_forall_isCompact_tendstoUniformlyOn
-
 /-- Interpret a bundled continuous map as an element of `α →ᵤ[{K | IsCompact K}] β`.
 
 We use this map to induce the `UniformSpace` structure on `C(α, β)`. -/

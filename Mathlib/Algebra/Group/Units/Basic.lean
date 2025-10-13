@@ -15,7 +15,7 @@ import Mathlib.Tactic.Subsingleton
 # Units (i.e., invertible elements) of a monoid
 
 An element of a `Monoid` is a unit if it has a two-sided inverse.
-This file contains the basic lemmas on units in a monoid, especially focussing on singleton types
+This file contains the basic lemmas on units in a monoid, especially focusing on singleton types
 and unique types.
 
 ## TODO
@@ -283,7 +283,7 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
   { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
-@[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
+@[to_additive /-- A subsingleton `AddMonoid` has a unique additive unit. -/]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   uniq _ := Units.val_eq_one.mp (by subsingleton)
 

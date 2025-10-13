@@ -20,10 +20,9 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
   parametrization of `QuadraticForm.weightedSumSquares`.
 -/
 
+open Module QuadraticMap
 
 variable {ι R K M M₁ M₂ M₃ V N : Type*}
-
-open QuadraticMap
 
 namespace QuadraticMap
 

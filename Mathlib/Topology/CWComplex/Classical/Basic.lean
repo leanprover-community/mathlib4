@@ -306,7 +306,7 @@ lemma RelCWComplex.isCompact_closedCell [RelCWComplex C D] {n : ℕ} {i : cell C
   (isCompact_closedBall _ _).image_of_continuousOn (continuousOn n i)
 
 lemma RelCWComplex.isClosed_closedCell [RelCWComplex C D] [T2Space X] {n : ℕ} {i : cell C n} :
-  IsClosed (closedCell n i) := isCompact_closedCell.isClosed
+    IsClosed (closedCell n i) := isCompact_closedCell.isClosed
 
 lemma RelCWComplex.isCompact_cellFrontier [RelCWComplex C D] {n : ℕ} {i : cell C n} :
     IsCompact (cellFrontier n i) :=

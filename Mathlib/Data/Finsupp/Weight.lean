@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Order
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # weights of Finsupp functions
@@ -229,7 +230,7 @@ lemma degree_eq_zero_iff {R : Type*}
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
 theorem le_degree {R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] [CanonicallyOrderedAdd R]
+    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support

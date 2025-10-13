@@ -35,8 +35,7 @@ open Opposite
 
 namespace Functor
 
-variable {J : Type u} [LinearOrder J] [SuccOrder J]
-   (F : Jᵒᵖ ⥤ Type v)
+variable {J : Type u} [LinearOrder J] [SuccOrder J] (F : Jᵒᵖ ⥤ Type v)
 
 /-- Given a functor `F : Jᵒᵖ ⥤ Type v` where `J` is a well-ordered type, this data
 allows to construct a section of `F` from an element in `F.obj (op ⊥)`,
@@ -191,7 +190,7 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
 
 variable [WellFoundedLT J]
 
-/-- When `j` is a limit element, this is the exntesion to `d.Extension val₀ j`
+/-- When `j` is a limit element, this is the extension to `d.Extension val₀ j`
 of a family of elements in `d.Extension val₀ i` for all `i < j`. -/
 def limit (j : J) (hj : Order.IsSuccLimit j)
     (e : ∀ (i : J) (_ : i < j), d.Extension val₀ i) :

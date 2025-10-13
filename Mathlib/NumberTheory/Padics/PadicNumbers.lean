@@ -210,8 +210,6 @@ theorem norm_eq_zpow_neg_valuation {f : PadicSeq p} (hf : ¬f ≈ 0) :
   rw [stationaryPoint_spec hf le_rfl hn]
   simpa [H] using hε
 
-@[deprecated (since := "2024-12-10")] alias norm_eq_pow_val := norm_eq_zpow_neg_valuation
-
 theorem val_eq_iff_norm_eq {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) :
     f.valuation = g.valuation ↔ f.norm = g.norm := by
   rw [norm_eq_zpow_neg_valuation hf, norm_eq_zpow_neg_valuation hg, ← neg_inj, zpow_right_inj₀]
@@ -640,7 +638,7 @@ theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     simpa
 
 theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε hε ↦ by
-  have hε3 : 0 < ε / 3 := div_pos hε (by norm_num)
+  have hε3 : 0 < ε / 3 := div_pos hε (by simp)
   let ⟨N, hN⟩ := exi_rat_seq_conv f hε3
   let ⟨N2, hN2⟩ := f.cauchy₂ hε3
   exists max N N2
@@ -1025,9 +1023,6 @@ lemma valuation_pow (x : ℚ_[p]) : ∀ n : ℕ, (x ^ n).valuation = n * x.valua
 lemma valuation_zpow (x : ℚ_[p]) : ∀ n : ℤ, (x ^ n).valuation = n * x.valuation
   | (n : ℕ) => by simp
   | .negSucc n => by simp [← neg_mul]; simp [Int.negSucc_eq]
-
-@[deprecated (since := "2024-12-10")] alias valuation_map_add := le_valuation_add
-@[deprecated (since := "2024-12-10")] alias valuation_map_mul := valuation_mul
 
 open Classical in
 /-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`. -/

@@ -38,7 +38,7 @@ open scoped Pointwise
 variable (R S T : H.LeftTransversal) [FiniteIndex H]
 
 /-- The difference of two left transversals -/
-@[to_additive "The difference of two left transversals"]
+@[to_additive /-- The difference of two left transversals -/]
 noncomputable def diff : A :=
   let α := S.2.leftQuotientEquiv
   let β := T.2.leftQuotientEquiv
@@ -73,7 +73,7 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 
 end leftTransversals
 
-open Equiv Function MemLeftTransversals MulAction ZMod
+open Equiv Function MulAction ZMod
 
 variable (g : G)
 
@@ -138,8 +138,8 @@ open MulAction Subgroup Subgroup.leftTransversals
 
 /-- Given `ϕ : H →* A` from `H : Subgroup G` to a commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →* A`. -/
-@[to_additive "Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
-the transfer homomorphism is `transfer ϕ : G →+ A`."]
+@[to_additive /-- Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
+the transfer homomorphism is `transfer ϕ : G →+ A`. -/]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)

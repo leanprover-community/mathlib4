@@ -3,10 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.RingTheory.HahnSeries.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Tactic.FastInstance
 
 /-!
@@ -75,6 +78,9 @@ theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x �
 theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     x.order ≤ (r • x).order :=
   le_of_not_gt (order_smul_not_lt r x h)
+
+theorem truncLT_smul [DecidableLT Γ] (c : Γ) (r : R) (x : HahnSeries Γ V) :
+    truncLT c (r • x) = r • truncLT c x := by ext; simp
 
 end SMulZeroClass
 
@@ -314,6 +320,11 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
 
 end Domain
 
+theorem truncLT_add [DecidableLT Γ] (c : Γ) (x y : HahnSeries Γ R) :
+    truncLT c (x + y) = truncLT c x + truncLT c y := by
+  ext i
+  by_cases h : i < c <;> simp [h]
+
 end AddMonoid
 
 section AddCommMonoid
@@ -325,8 +336,6 @@ instance : AddCommMonoid (HahnSeries Γ R) :=
     add_comm := fun x y => by
       ext
       apply add_comm }
-
-open BigOperators
 
 @[simp]
 theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
@@ -343,7 +352,7 @@ instance : Neg (HahnSeries Γ R) where
   neg x :=
     { coeff := fun a => -x.coeff a
       isPWO_support' := by
-        rw [Function.support_neg]
+        rw [Function.support_fun_neg]
         exact x.isPWO_support }
 
 @[simp]
@@ -506,6 +515,26 @@ protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r :
     {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : HahnSeries Γ V) := by
   ext; simp
 
+section Finsupp
+
+variable (R) in
+/-- `ofFinsupp` as a linear map. -/
+def ofFinsuppLinearMap : (Γ →₀ V) →ₗ[R] HahnSeries Γ V where
+  toFun := ofFinsupp
+  map_add' _ _ := by
+    ext
+    simp
+  map_smul' _ _ := by
+    ext
+    simp
+
+variable (R) in
+@[simp]
+theorem coeff_ofFinsuppLinearMap (f : Γ →₀ V) (a : Γ) :
+    (ofFinsuppLinearMap R f).coeff a = f a := rfl
+
+end Finsupp
+
 section Domain
 
 variable [PartialOrder Γ']
@@ -526,6 +555,18 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
   map_smul' := embDomain_smul f
 
 end Domain
+
+variable (R) in
+/-- `HahnSeries.truncLT` as a linear map. -/
+def truncLTLinearMap [DecidableLT Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnSeries Γ V where
+  toFun := truncLT c
+  map_add' := truncLT_add c
+  map_smul' := truncLT_smul c
+
+variable (R) in
+@[simp]
+theorem coe_truncLTLinearMap [DecidableLT Γ] (c : Γ) :
+    (truncLTLinearMap R c : HahnSeries Γ V → HahnSeries Γ V) = truncLT c := by rfl
 
 end Module
 

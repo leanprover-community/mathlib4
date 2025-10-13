@@ -107,7 +107,7 @@ example [Nonempty α] : 0 < dens (univ : Finset α) := by positivity
 example [Nonempty α] : dens (univ : Finset α) ≠ 0 := by positivity
 
 example {G : Type*} {A : Finset G} :
-  let f := fun _ : G ↦ 1; (∀ s, f s ^ 2 = 1) → 0 ≤ #A := by
+    let f := fun _ : G ↦ 1; (∀ s, f s ^ 2 = 1) → 0 ≤ #A := by
   intros
   positivity -- Should succeed despite failing to prove `A` is nonempty.
 

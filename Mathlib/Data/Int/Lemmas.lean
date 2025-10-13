@@ -21,9 +21,7 @@ open Nat
 namespace Int
 
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  by_cases h : m ≥ n
-  · exact le_of_eq (Int.ofNat_sub h).symm
-  · simp [le_of_not_ge h]
+  omega
 
 /-! ### `succ` and `pred` -/
 

@@ -70,7 +70,7 @@ lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
       Nat.sub_add_cancel (Nat.le_max_right _ _), Pi.add_apply, smul_add]
   rw [this]
   exact (((analyticAt_id.sub analyticAt_const).pow _).smul hf).add
-   (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
+    (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
 
 @[fun_prop]
 lemma fun_add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :

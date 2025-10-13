@@ -311,7 +311,7 @@ structure Hom (S₁ S₂ : Split C) where
   F : S₁.X ⟶ S₂.X
   /-- the morphism between the "nondegenerate" `n`-simplices for all `n : ℕ` -/
   f : ∀ n : ℕ, S₁.s.N n ⟶ S₂.s.N n
-  comm : ∀ n : ℕ, S₁.s.ι n ≫ F.app (op ⦋n⦌) = f n ≫ S₂.s.ι n := by aesop_cat
+  comm : ∀ n : ℕ, S₁.s.ι n ≫ F.app (op ⦋n⦌) = f n ≫ S₂.s.ι n := by cat_disch
 
 @[ext]
 theorem Hom.ext {S₁ S₂ : Split C} (Φ₁ Φ₂ : Hom S₁ S₂) (h : ∀ n : ℕ, Φ₁.f n = Φ₂.f n) : Φ₁ = Φ₂ := by

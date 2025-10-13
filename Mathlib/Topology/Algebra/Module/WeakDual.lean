@@ -145,7 +145,7 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
-   (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
+  (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
 
 end Semiring
 

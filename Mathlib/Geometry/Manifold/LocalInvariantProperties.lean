@@ -426,9 +426,6 @@ theorem liftPropWithinAt_mono_of_mem_nhdsWithin
   simp_rw [← mem_map, (chartAt H x).symm.map_nhdsWithin_preimage_eq (mem_chart_target H x),
     (chartAt H x).left_inv (mem_chart_source H x), hst]
 
-@[deprecated (since := "2024-10-31")]
-alias liftPropWithinAt_mono_of_mem := liftPropWithinAt_mono_of_mem_nhdsWithin
-
 theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
   refine ⟨h.1.mono hts, mono (fun y hy ↦ ?_) h.2⟩

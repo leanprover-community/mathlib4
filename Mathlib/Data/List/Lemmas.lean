@@ -11,8 +11,6 @@ import Mathlib.Data.List.InsertIdx
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
-open List
-
 variable {α β γ : Type*}
 
 namespace List
@@ -20,8 +18,6 @@ namespace List
 @[simp]
 theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
   Set.eq_empty_iff_forall_notMem.trans eq_nil_iff_forall_not_mem.symm
-
-@[deprecated (since := "2024-12-10")] alias tail_reverse_eq_reverse_dropLast := tail_reverse
 
 theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by

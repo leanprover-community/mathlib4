@@ -129,7 +129,9 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsArtinian R P :=
   ⟨fun _ ↦ isArtinian_of_linearEquiv f, fun _ ↦ isArtinian_of_linearEquiv f.symm⟩
 
-instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
@@ -397,7 +399,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
 -- See `Mathlib/RingTheory/Artinian/Ring.lean`
-assert_not_exists IsLocalization LocalRing
+assert_not_exists IsLocalization IsLocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
 

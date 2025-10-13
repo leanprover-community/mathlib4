@@ -326,7 +326,7 @@ instance of_iso (φ : a ≅ b) [IsHomLift p f φ.hom] : IsStronglyCocartesian p 
   universal_property' := by
     intro b' g τ hτ
     use φ.inv ≫ τ
-    refine ⟨?_, by aesop_cat⟩
+    refine ⟨?_, by cat_disch⟩
     simpa [← assoc] using (IsHomLift.comp p (isoOfIsoLift p f φ).inv (f ≫ g) φ.inv τ)
 
 instance of_isIso (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsStronglyCocartesian p f φ :=
@@ -353,7 +353,7 @@ end
 /-- The canonical isomorphism between the codomains of two strongly cocartesian arrows lying over
 isomorphic objects. -/
 noncomputable def codomainIsoOfBaseIso {R S S' : 𝒮} {a b b' : 𝒳} {f : R ⟶ S} {f' : R ⟶ S'}
-  {g : S ≅ S'} (h : f' = f ≫ g.hom) (φ : a ⟶ b) (φ' : a ⟶ b') [IsStronglyCocartesian p f φ]
+    {g : S ≅ S'} (h : f' = f ≫ g.hom) (φ : a ⟶ b) (φ' : a ⟶ b') [IsStronglyCocartesian p f φ]
     [IsStronglyCocartesian p f' φ'] : b ≅ b' where
   hom := map p f φ h φ'
   inv := @map _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (· ≫ g.inv) h.symm) φ

@@ -152,7 +152,7 @@ theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x
     mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
 
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
-    element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
+element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   let p : Submodule 𝕜 E := 𝕜 ∙ x
   let f := (‖x‖ : 𝕜) • coord 𝕜 x h
@@ -165,7 +165,7 @@ theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, �
       _ = ‖x‖ := by simp [-algebraMap_smul]
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing
-    the dual element arbitrarily when `x = 0`. -/
+the dual element arbitrarily when `x = 0`. -/
 theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
   · obtain ⟨y, hy⟩ := exists_ne (0 : E)
@@ -175,8 +175,8 @@ theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, 
   · exact exists_dual_vector 𝕜 x hx
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
-    the dual element has norm at most `1` (this can not be improved for the trivial
-    vector space). -/
+the dual element has norm at most `1` (this can not be improved for the trivial
+vector space). -/
 theorem exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
   · refine ⟨0, by simp, ?_⟩

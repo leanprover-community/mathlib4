@@ -256,13 +256,13 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     | .inl p, .inl q, .inl r => dist_triangle p q r
     | .inl p, .inr q, _ => by
       simp only [Sum.dist_eq_glueDist p q]
-      exact glueDist_triangle _ _ _ (by norm_num) _ _ _
+      exact glueDist_triangle _ _ _ (by simp) _ _ _
     | _, .inl q, .inr r => by
       simp only [Sum.dist_eq_glueDist q r]
-      exact glueDist_triangle _ _ _ (by norm_num) _ _ _
+      exact glueDist_triangle _ _ _ (by simp) _ _ _
     | .inr p, _, .inl r => by
       simp only [Sum.dist_eq_glueDist r p]
-      exact glueDist_triangle _ _ _ (by norm_num) _ _ _
+      exact glueDist_triangle _ _ _ (by simp) _ _ _
     | .inr p, .inr q, .inr r => dist_triangle p q r
   eq_of_dist_eq_zero {p q} h := by
     rcases p with p | p <;> rcases q with q | q

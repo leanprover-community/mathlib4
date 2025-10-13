@@ -169,9 +169,9 @@ variable [Module 𝕜 E] [Module 𝕜₂ F]
 variable {σ : 𝕜 →+* 𝕜₂} (f : E →ₛₗ[σ] F)
 
 /-- A (semi-)linear map which is a homothety is a continuous linear map.
-    Since the field `𝕜` need not have `ℝ` as a subfield, this theorem is not directly deducible from
-    the corresponding theorem about isometries plus a theorem about scalar multiplication.  Likewise
-    for the other theorems about homotheties in this file.
+Since the field `𝕜` need not have `ℝ` as a subfield, this theorem is not directly deducible from
+the corresponding theorem about isometries plus a theorem about scalar multiplication.  Likewise
+for the other theorems about homotheties in this file.
 -/
 def ContinuousLinearMap.ofHomothety (f : E →ₛₗ[σ] F) (a : ℝ) (hf : ∀ x, ‖f x‖ = a * ‖x‖) :
     E →SL[σ] F :=

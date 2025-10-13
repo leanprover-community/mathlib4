@@ -552,12 +552,26 @@ lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
 -/
-lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
+lemma _root_.Matrix.posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
     PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B := by
-  classical
   refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
   · simp [hA.posDef_sqrt.isHermitian.eq]
   · exact conjTranspose_mul_self _ (mulVec_injective_of_isUnit hB)
+
+@[deprecated (since := "07-08-2025")] alias posDef_iff_eq_conjTranspose_mul_self :=
+  Matrix.posDef_iff_eq_conjTranspose_mul_self
+
+/-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
+@[grind =]
+theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
+    (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
+  refine ⟨fun h => h.isUnit, fun h => ⟨hx.1, fun v hv => ?_⟩⟩
+  obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hx
+  simp_rw [dotProduct_mulVec, ← vecMul_vecMul, ← star_mulVec, ← dotProduct_mulVec,
+    dotProduct_star_self_pos_iff]
+  contrapose! hv
+  rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
+    mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
 end PosDef
 

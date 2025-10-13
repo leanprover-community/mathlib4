@@ -224,7 +224,7 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
   _ = (p / t) ^ p * max (exp (t * x)) (exp (- t * x)) := by
     rw [mul_rpow (by positivity) (by positivity)]
     congr
-    · field_simp
+    · simp
     · rw [rpow_max (by positivity) (by positivity) hp, ← exp_mul, ← exp_mul]
       ring_nf
       congr <;> rw [mul_assoc, mul_inv_cancel₀ hp_zero, mul_one]

@@ -149,10 +149,7 @@ lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
     dsimp
     rw [one_smul, Category.assoc, ι_totalDesc, one_smul, Linear.units_smul_comp]
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
-    intro h'
-    apply h
-    dsimp at h' ⊢
-    omega
+    grind [up_Rel]
 
 @[reassoc]
 lemma D₂_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x = n₀') (h₁ : n₁ + x = n₁') :
@@ -171,10 +168,7 @@ lemma D₂_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
     congr 1
     rw [add_comm p, Int.negOnePow_add, ← mul_assoc, Int.units_mul_self, one_mul]
   · rw [D₂_shape _ _ _ _ h, zero_comp, D₂_shape, comp_zero, smul_zero]
-    intro h'
-    apply h
-    dsimp at h' ⊢
-    omega
+    grind [up_Rel]
 
 /-- The isomorphism `((shiftFunctor₁ C x).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦x⟧`
 expressing the compatibility of the total complex with the shift on the first indices.
@@ -262,10 +256,7 @@ lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     congr 2
     linarith
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
-    intro h'
-    apply h
-    dsimp at h' ⊢
-    omega
+    grind [up_Rel]
 
 @[reassoc]
 lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y = n₀') (h₁ : n₁ + y = n₁') :
@@ -287,10 +278,8 @@ lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     congr 2
     omega
   · rw [D₂_shape _ _ _ _ h, zero_comp, D₂_shape, comp_zero, smul_zero]
-    intro h'
-    apply h
-    dsimp at h' ⊢
-    omega
+    simp_all only [up_Rel]
+    grind
 
 /-- The isomorphism `((shiftFunctor₂ C y).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦y⟧`
 expressing the compatibility of the total complex with the shift on the second indices.

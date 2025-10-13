@@ -66,7 +66,7 @@ theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.m
   conv_rhs =>
     rw [addHaarMeasure_unique StieltjesFunction.id.measure
         (stdOrthonormalBasis ℝ ℝ).toBasis.parallelepiped, A]
-  simp only [volume, Basis.addHaar, one_smul]
+  simp only [volume, Module.Basis.addHaar, one_smul]
 
 theorem volume_val (s) : volume s = StieltjesFunction.id.measure s := by
   simp [volume_eq_stieltjes_id]
@@ -510,7 +510,7 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
     · exact measurableSet_regionBetween hf hg hs
 
 /-- The volume of the region between two almost everywhere measurable functions on a measurable set
-    can be represented as a Lebesgue integral. -/
+can be represented as a Lebesgue integral. -/
 theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.restrict s))
     (hg : AEMeasurable g (μ.restrict s)) (hs : MeasurableSet s) :
     μ.prod volume (regionBetween f g s) = ∫⁻ y in s, ENNReal.ofReal ((g - f) y) ∂μ := by

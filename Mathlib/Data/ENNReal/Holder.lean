@@ -171,7 +171,7 @@ lemma lt_top_iff_one_lt : p < ∞ ↔ 1 < q := by
 
 lemma sub_one_mul_inv (hp : p ≠ ⊤) : (p - 1) * p⁻¹ = q⁻¹ := by
   have := pos p q |>.ne'
-  rw [ENNReal.sub_mul (by aesop), ENNReal.mul_inv_cancel this (by aesop)]
+  rw [ENNReal.sub_mul (by aesop), ENNReal.mul_inv_cancel this (by omega)]
   simp [one_sub_inv p q]
 
 end HolderConjugate

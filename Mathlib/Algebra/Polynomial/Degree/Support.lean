@@ -32,7 +32,7 @@ section Semiring
 variable [Semiring R] {p q r : R[X]}
 
 theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp
   apply WithBot.coe_injective
   rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,

@@ -252,9 +252,9 @@ private lemma span_range_relation_eq_ker_baseChange :
       induction x using MvPolynomial.induction_on with
       | C a =>
         simp only [algHom_C, TensorProduct.algebraMap_apply,
-          id.map_eq_id, RingHom.id_apply, e]
+          algebraMap_self, RingHom.id_apply, e]
         rw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
-        simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
+        simp only [TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply,
           TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one]
       | add p q hp hq => simp only [map_add, hp, hq]
       | mul_X p i hp => simp [hp, e]

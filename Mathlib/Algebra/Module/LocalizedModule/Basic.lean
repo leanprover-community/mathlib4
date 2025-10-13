@@ -934,9 +934,6 @@ theorem ext (map_unit : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
   rw [← lift_unique S f (k.comp f) map_unit j h, lift_unique]
   rfl
 
-@[deprecated (since := "2024-12-07")]
-alias ringHom_ext := ext
-
 /-- If `(M', f)` and `(M'', g)` both satisfy universal property of localized module, then `M', M''`
 are isomorphic as `R`-module
 -/

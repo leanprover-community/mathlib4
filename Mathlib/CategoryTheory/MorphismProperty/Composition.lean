@@ -67,7 +67,7 @@ instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C
   ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
 
 instance Pi.containsIdentities {J : Type w} {C : J → Type u}
-  [∀ j, Category.{v} (C j)] (W : ∀ j, MorphismProperty (C j)) [∀ j, (W j).ContainsIdentities] :
+    [∀ j, Category.{v} (C j)] (W : ∀ j, MorphismProperty (C j)) [∀ j, (W j).ContainsIdentities] :
     (pi W).ContainsIdentities :=
   ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 

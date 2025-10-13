@@ -995,7 +995,7 @@ theorem Function.Injective.swap_comp
   funext fun _ => hf.swap_apply _ _ _
 
 /-- To give an equivalence between two subsingleton types, it is sufficient to give any two
-    functions between them. -/
+functions between them. -/
 def equivOfSubsingletonOfSubsingleton [Subsingleton α] [Subsingleton β] (f : α → β) (g : β → α) :
     α ≃ β where
   toFun := f

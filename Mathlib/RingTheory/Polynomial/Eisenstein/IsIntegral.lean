@@ -157,11 +157,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     ring_nf
     rw [mul_comm _ 2, pow_mul, neg_one_sq, one_pow, mul_one]
   -- We claim the quotient of `Q^n * _` by `p^n` is the following `r`:
-  have aux : ∀ i ∈ (range (Q.natDegree + 1)).erase 0, B.dim ≤ i + n := by
-    intro i hi
-    simp only [mem_range, mem_erase] at hi
-    rw [hn]
-    exact le_add_pred_of_pos _ hi.1
+  have aux : ∀ i ∈ (range (Q.natDegree + 1)).erase 0, B.dim ≤ i + n := by grind [Finset.mem_erase]
   have hintsum :
     IsIntegral R
       (z * B.gen ^ n - ∑ x ∈ (range (Q.natDegree + 1)).erase 0, Q.coeff x • f (x + n)) := by

@@ -94,7 +94,7 @@ protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
   rcases exists_Lp_half β μ p (coe_ne_zero.mpr hε.ne') with ⟨η, hη_pos, hη⟩
   by_cases hη_top : η = ∞
   · replace hη := hη_top ▸ hη
-    refine ⟨∅, (by measurability), fun i ↦ ?_⟩
+    refine ⟨∅, (by simp), fun i ↦ ?_⟩
     simp only [compl_empty, indicator_univ, Pi.add_apply]
     exact (hη (f i) (g i) (hf_meas i) (hg_meas i) le_top le_top).le
   obtain ⟨s, hμs, hsm, hfs, hgs⟩ :
@@ -142,7 +142,7 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : MemLp g p 
     UnifTight (fun _ : ι => g) p μ := by
   intro ε hε
   by_cases hε_top : ε = ∞
-  · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
+  · exact ⟨∅, (by simp), fun _ => hε_top.symm ▸ le_top⟩
   obtain ⟨s, _, hμs, hgε⟩ := hg.exists_eLpNorm_indicator_compl_lt hp_ne_top (coe_ne_zero.mpr hε.ne')
   exact ⟨s, ne_of_lt hμs, fun _ => hgε.le⟩
 
@@ -150,9 +150,9 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : MemLp g p 
 theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
     {f : ι → α → β} (hf : ∀ i, MemLp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
   by_cases hε_top : ε = ∞
-  · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
+  · exact ⟨∅, by simp, fun _ => hε_top.symm ▸ le_top⟩
   by_cases hι : Nonempty ι
-  case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
+  case neg => exact ⟨∅, (by simp), fun i => False.elim <| hι <| Nonempty.intro i⟩
   obtain ⟨i⟩ := hι
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
@@ -169,7 +169,7 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
   | succ n h =>
     intro f hfLp ε hε
     by_cases hε_top : ε = ∞
-    · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
+    · exact ⟨∅, (by simp), fun _ => hε_top.symm ▸ le_top⟩
     let g : Fin n → α → β := fun k => f k
     have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i
     obtain ⟨S, hμS, hFε⟩ := h hgLp hε

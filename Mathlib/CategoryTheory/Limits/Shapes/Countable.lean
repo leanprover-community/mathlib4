@@ -257,15 +257,4 @@ end IsCofiltered
 
 end Preorder
 
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor := IsCofiltered.sequentialFunctor
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor_obj :=
-  IsCofiltered.sequentialFunctor_obj
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor_map :=
-  IsCofiltered.sequentialFunctor_map
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial_aux :=
-  IsCofiltered.sequentialFunctor_initial_aux
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial :=
-  IsCofiltered.sequentialFunctor_initial
-attribute [nolint defLemma] sequentialFunctor_initial
-
 end CategoryTheory.Limits

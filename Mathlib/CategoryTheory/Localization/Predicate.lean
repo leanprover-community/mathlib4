@@ -497,6 +497,11 @@ lemma map_eq (h : AreEqualizedByLocalization W f g) (L : C ⥤ D) [L.IsLocalizat
     L.map f = L.map g :=
   (areEqualizedByLocalization_iff L W f g).1 h
 
+lemma map_eq_of_isInvertedBy (h : AreEqualizedByLocalization W f g)
+    (F : C ⥤ D) (hF : W.IsInvertedBy F) :
+    F.map f = F.map g := by
+  simp [← NatIso.naturality_1 (Localization.fac F hF W.Q), h.map_eq W.Q]
+
 end AreEqualizedByLocalization
 
 end

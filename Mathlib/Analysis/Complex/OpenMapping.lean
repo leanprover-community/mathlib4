@@ -101,7 +101,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   obtain ⟨x, hx, hfx⟩ := (isCompact_sphere z₀ r).exists_isMinOn h8 h9
   refine ⟨‖f x - f z₀‖ / 2, half_pos (norm_sub_pos_iff.mpr (h7 x hx)), ?_⟩
   exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx hz) (not_eventually.mp h)).trans
-    (image_subset f (closedBall_subset_closedBall inf_le_right))
+    (by gcongr; exact inf_le_right)
 
 /-- The *open mapping theorem* for holomorphic functions, local version: is a function `g : E → ℂ`
 is analytic at a point `z₀`, then either it is constant in a neighborhood of `z₀`, or it maps every

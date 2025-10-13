@@ -131,19 +131,3 @@ lemma finite_quotient_iff [IsNoetherianRing R] [Finite (ResidueField R)] {I : Id
   exact Finite.of_surjective _ (Ideal.Quotient.factor_surjective hn)
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.quotient_span_eq_top_iff_span_eq_top :=
-  IsLocalRing.quotient_span_eq_top_iff_span_eq_top
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.finrank_quotient_map := IsLocalRing.finrank_quotient_map
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.basisQuotient := IsLocalRing.basisQuotient
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.basisQuotient_apply := IsLocalRing.basisQuotient_apply
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.basisQuotient_repr := IsLocalRing.basisQuotient_repr

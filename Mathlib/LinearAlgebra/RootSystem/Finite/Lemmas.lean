@@ -26,6 +26,9 @@ root pairings.
 
 -/
 
+#adaptation_note /-- 2025-08-10 add back `import Mathlib.Algebra.Ring.Torsion` after
+  https://github.com/leanprover/lean4/issues/9825 is fixed -/
+
 noncomputable section
 
 open Function Set
@@ -286,11 +289,13 @@ lemma apply_eq_or (i j : ι) :
     B.form (α j) (α j) = 2 * B.form (α i) (α i) ∨
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
-  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁]; exact B.apply_eq_or_aux i j' this
+  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁, B.apply_eq_or_aux i j' this]
   contrapose! h₂
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
 
+#adaptation_note /-- 2025-08-10 delete this after
+  https://github.com/leanprover/lean4/issues/9825 is fixed -/
 theorem exists_apply_eq_or_aux {x y z : R}
     (hij : x = 2 * y ∨ x = 3 * y ∨ y = 2 * x ∨ y = 3 * x)
     (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
@@ -327,6 +332,8 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm
+    #adaptation_note /-- 2025-08-10 replace the following with grind after
+  https://github.com/leanprover/lean4/issues/9825 is fixed -/
     have := exists_apply_eq_or_aux hij hik hjk
     aesop
 

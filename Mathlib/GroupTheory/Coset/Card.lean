@@ -18,9 +18,28 @@ assert_not_exists Field
 
 open scoped Pointwise
 
-namespace Subgroup
+variable {α : Type*} [Group α] {s : Subgroup α}
 
-variable {α : Type*} [Group α]
+namespace QuotientGroup
+
+@[to_additive]
+instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
+  Quotient.fintype (leftRel s)
+
+@[to_additive]
+instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
+    Fintype (Quotient (QuotientGroup.rightRel s)) :=
+  .ofEquiv (α ⧸ s) (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
+
+variable (s) in
+@[to_additive]
+lemma card_quotient_rightRel [Fintype (α ⧸ s)] :
+    Fintype.card (Quotient (QuotientGroup.rightRel s)) = Fintype.card (α ⧸ s) :=
+  Fintype.ofEquiv_card (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
+
+end QuotientGroup
+
+namespace Subgroup
 
 @[to_additive AddSubgroup.card_eq_card_quotient_mul_card_addSubgroup]
 theorem card_eq_card_quotient_mul_card_subgroup (s : Subgroup α) :
@@ -37,8 +56,8 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
-@[to_additive "**Lagrange's Theorem**: The order of an additive subgroup divides the order of its
-ambient additive group."]
+@[to_additive /-- **Lagrange's Theorem**: The order of an additive subgroup divides the order of its
+ambient additive group. -/]
 theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 

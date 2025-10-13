@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Data.Subtype
@@ -331,6 +330,11 @@ theorem bijective_comp (e : α ≃ β) (f : β → γ) : Bijective (f ∘ e) ↔
 theorem comp_bijective (f : α → β) (e : β ≃ γ) : Bijective (e ∘ f) ↔ Bijective f :=
   EquivLike.comp_bijective f e
 
+@[simp]
+theorem extend_apply {f : α ≃ β} (g : α → γ) (e' : β → γ) (b : β) :
+    extend f g e' b = g (f.symm b) := by
+  rw [← f.apply_symm_apply b, f.injective.extend_apply, apply_symm_apply]
+
 /-- If `α` is equivalent to `β` and `γ` is equivalent to `δ`, then the type of equivalences `α ≃ γ`
 is equivalent to the type of equivalences `β ≃ δ`. -/
 def equivCongr {δ : Sort*} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) where
@@ -407,8 +411,6 @@ def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   invFun := default
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
-
-@[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
 
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
 @[simps!]
@@ -526,8 +528,8 @@ def punitEquivPUnit : PUnit.{v} ≃ PUnit.{w} :=
 noncomputable def propEquivBool : Prop ≃ Bool where
   toFun p := @decide p (Classical.propDecidable _)
   invFun b := b
-  left_inv p := by simp [@Bool.decide_iff p (Classical.propDecidable _)]
-  right_inv b := by cases b <;> simp
+  left_inv p := by simp
+  right_inv b := by simp
 
 section
 
@@ -742,6 +744,9 @@ protected lemma exists_congr (h : ∀ a, p a ↔ q (e a)) : (∃ a, p a) ↔ ∃
 protected lemma exists_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃ a, p a) ↔ ∃ b, q b :=
   e.exists_congr_left.trans <| by simp [h]
 
+protected lemma exists_subtype_congr (e : {a // p a} ≃ {b // q b}) : (∃ a, p a) ↔ ∃ b, q b := by
+  simp [← nonempty_subtype, nonempty_congr e]
+
 protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
   e.exists_congr <| by simpa using fun _ _ ↦ e.forall_congr (by simp)
 
@@ -753,6 +758,11 @@ protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) 
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]
+
+protected lemma existsUnique_subtype_congr (e : {a // p a} ≃ {b // q b}) :
+    (∃! a, p a) ↔ ∃! b, q b := by
+  simp [← unique_subtype_iff_existsUnique, unique_iff_subsingleton_and_nonempty,
+        nonempty_congr e, subsingleton_congr e]
 
 -- We next build some higher arity versions of `Equiv.forall_congr`.
 -- Although they appear to just be repeated applications of `Equiv.forall_congr`,

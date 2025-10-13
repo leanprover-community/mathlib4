@@ -120,26 +120,6 @@ variable {p} {l}
 @[simp]
 theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by simp [rdropWhile]
 
--- it is in this file because it requires `List.Infix`
-@[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
-  rcases l with - | ⟨hd, tl⟩
-  · simp only [dropWhile, true_iff]
-    intro h
-    by_contra
-    rwa [length_nil, lt_self_iff_false] at h
-  · rw [dropWhile]
-    refine ⟨fun h => ?_, fun h => ?_⟩
-    · intro _ H
-      rw [get] at H
-      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons_self _ _))
-      rw [← h]
-      simp only [H]
-      exact List.IsSuffix.sublist (dropWhile_suffix p)
-    · have := h (by simp only [length, Nat.succ_pos])
-      rw [get] at this
-      simp_rw [this]
-
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
   simp [rdropWhile, reverse_eq_iff, getLast_eq_getElem, Nat.pos_iff_ne_zero]
@@ -152,6 +132,9 @@ theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
 
 theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
+
+theorem rdropWhile_reverse : l.reverse.rdropWhile p = (l.dropWhile p).reverse := by
+  simp_rw [rdropWhile, reverse_reverse]
 
 /-- Take elements from the tail end of a list that satisfy `p : α → Bool`.
 Implemented naively via `List.reverse` -/
@@ -195,6 +178,15 @@ theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
 theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
     rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
+
+theorem rtakeWhile_reverse : l.reverse.rtakeWhile p = (l.takeWhile p).reverse := by
+  simp_rw [rtakeWhile, reverse_reverse]
+
+@[simp]
+theorem rdropWhile_append_rtakeWhile :
+    l.rdropWhile p ++ l.rtakeWhile p = l := by
+  simp only [rdropWhile, rtakeWhile]
+  rw [← List.reverse_append, takeWhile_append_dropWhile, reverse_reverse]
 
 lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
   simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop]

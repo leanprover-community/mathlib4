@@ -135,6 +135,26 @@ instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representa
     (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
     Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
 
+section Commutative
+
+variable {k G : Type u} [CommRing k] [CommMonoid G]
+variable (A : Rep k G)
+
+/-- Given a representation `A` of a commutative monoid `G`, the map `ρ_A(g)` is a representation
+morphism `A ⟶ A` for any `g : G`. -/
+@[simps]
+noncomputable def applyAsHom (g : G) : A ⟶ A where
+  hom := ModuleCat.ofHom (A.ρ g)
+  comm _ := by ext; simp [← Module.End.mul_apply, ← map_mul, mul_comm]
+
+@[reassoc, elementwise]
+lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
+    A.applyAsHom g ≫ f = f ≫ B.applyAsHom g := by
+  ext
+  simp [hom_comm_apply]
+
+end Commutative
+
 section
 
 variable {G : Type u} [Group G] (A : Rep k G) (S : Subgroup G)
@@ -197,12 +217,22 @@ theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.I
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
     (forget₂ _ _).map f).2 h)⟩
 
+instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.hom :=
+  inferInstanceAs <| Mono ((forget₂ _ _).map f)
+
+instance {A B : Rep k G} (f : A ⟶ B) [Epi f] : Epi f.hom :=
+  inferInstanceAs <| Epi ((forget₂ _ _).map f)
+
 open MonoidalCategory in
 @[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 @[simp]
-lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
+lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) :
+    ρ ((Action.res _ f).obj A) = A.ρ.comp f := rfl
+
+@[simp]
+lemma coe_res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
     DFunLike.coe (F := G →* (A →ₗ[k] A)) (ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
 
 section Linearization
@@ -641,6 +671,31 @@ theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fi
   ext
   rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
 
+section
+
+variable [Fintype G] (A : Rep k G)
+
+/-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
+`A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
+@[simps]
+def norm : End A where
+  hom := ModuleCat.ofHom <| Representation.norm A.ρ
+  comm g := by ext; simp
+
+@[reassoc, elementwise]
+lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
+  ext
+  simp [Representation.norm, hom_comm_apply]
+
+/-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
+`x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
+@[simps]
+def normNatTrans : End (𝟭 (Rep k G)) where
+  app := norm
+  naturality _ _ := norm_comm
+
+end
+
 section MonoidalClosed
 open MonoidalCategory Action
 
@@ -864,8 +919,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
-        erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
-        exact AddEquiv.symm_apply_apply _ _}
+        simp }
 
 theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
@@ -887,8 +941,8 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
 def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k G) where
   functor := toModuleMonoidAlgebra
   inverse := ofModuleMonoidAlgebra
-  unitIso := NatIso.ofComponents (fun V => unitIso V) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun M => counitIso M) (by aesop_cat)
+  unitIso := NatIso.ofComponents (fun V => unitIso V) (by cat_disch)
+  counitIso := NatIso.ofComponents (fun M => counitIso M) (by cat_disch)
 
 -- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
 end

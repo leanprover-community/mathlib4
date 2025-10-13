@@ -108,7 +108,6 @@ lemma arrowMap_functor_to_top (i : J) (hi : i < j) :
 
 end mkOfLimit
 
-set_option backward.dsimp.proofs true in
 open mkOfLimit in
 /-- When `j` is a limit element, this is the element in `Φ.Iteration j`
 that is constructed from elements in `Φ.Iteration i` for all `i < j`. -/
@@ -130,6 +129,7 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
       dsimp
+      generalize_proofs
       rw [← arrowMap, ← arrowMap, arrowMap_functor hj iter l₁ l₂ _ (hl₂.trans hij),
         arrow_mk_mapObj]
       apply congr_arrowMap
@@ -138,6 +138,7 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
       dsimp
+      generalize_proofs
       rw [← arrowMap, arrow_mk_mapObj, arrowMap_functor _ _ _ _ _ hl₂, arrow_mk_mapObj]
 
 variable (Φ)

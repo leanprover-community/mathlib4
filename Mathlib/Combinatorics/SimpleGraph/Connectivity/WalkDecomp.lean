@@ -105,9 +105,9 @@ theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p
   induction p
   · rw [mem_support_nil_iff] at h
     subst u
-    simp!
+    simp
   · cases h
-    · simp!
+    · simp
     · simp! only
       split_ifs with h' <;> rw [eq_comm] at h' <;> subst_vars <;> simp! [*, List.count_cons]
 
@@ -117,10 +117,10 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
   | nil =>
     rw [mem_support_nil_iff] at h
     subst u
-    simp!
+    simp
   | cons ha p' ih =>
     cases h
-    · simp!
+    · simp
     · simp! only
       split_ifs with h'
       · subst h'

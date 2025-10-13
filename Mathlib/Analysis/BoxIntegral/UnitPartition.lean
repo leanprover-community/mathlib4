@@ -98,7 +98,7 @@ and of side length `1 / n`. -/
 def box [NeZero n] (ν : ι → ℤ) : Box ι where
   lower := fun i ↦ ν i / n
   upper := fun i ↦ (ν i + 1) / n
-  lower_lt_upper := fun _ ↦ by norm_num [add_div, n.pos_of_neZero]
+  lower_lt_upper := fun _ ↦ by simp [add_div, n.pos_of_neZero]
 
 @[simp]
 theorem box_lower [NeZero n] (ν : ι → ℤ) :
@@ -195,7 +195,7 @@ theorem volume_box (ν : ι → ℤ) :
 theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs₂ : volume s ≠ ⊤) :
     Set.Finite {ν : ι → ℤ | ↑(box n ν) ⊆ s} := by
   refine (Measure.finite_const_le_meas_of_disjoint_iUnion₀ volume (ε := 1 / n ^ card ι)
-    (by norm_num) (As := fun ν : ι → ℤ ↦ (box n ν) ∩ s) (fun ν ↦ ?_) (fun _ _ h ↦ ?_) ?_).subset
+    (by simp) (As := fun ν : ι → ℤ ↦ (box n ν) ∩ s) (fun ν ↦ ?_) (fun _ _ h ↦ ?_) ?_).subset
       (fun _ hν ↦ ?_)
   · refine NullMeasurableSet.inter ?_ hs₁
     exact (box n ν).measurableSet_coe.nullMeasurableSet
@@ -323,8 +323,8 @@ local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 variable {n} in
 theorem mem_smul_span_iff {v : ι → ℝ} :
     v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
-  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Basis.mem_span_iff_repr_mem]
-  simp_rw [Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
+  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Module.Basis.mem_span_iff_repr_mem]
+  simp_rw [Module.Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
     IsUnit.unit_spec, inv_inv, smul_eq_mul]
 
 theorem tag_mem_smul_span (ν : ι → ℤ) :

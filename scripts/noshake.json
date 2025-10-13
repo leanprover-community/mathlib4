@@ -22,6 +22,7 @@
   "Batteries.Tactic.Relation.Rfl",
   "Batteries.Tactic.Relation.Symm",
   "Batteries.Tactic.Replace",
+  "Batteries.Tactic.SeqFocus",
   "Batteries.Tactic.Simpa",
   "Batteries.Tactic.SolveByElim",
   "Batteries.Tactic.SolveByElim.Backtrack",
@@ -208,6 +209,7 @@
   ["Mathlib.Topology.Connected.TotallyDisconnected"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
+  "Mathlib.Topology.Instances.ENNReal.Lemmas": ["Mathlib.Tactic.Bound"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
@@ -506,6 +508,7 @@
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.Int.Defs": ["Mathlib.Algebra.Ring.GrindInstances"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
+  "Mathlib.Algebra.Regular.Defs": ["Mathlib.Algebra.Notation.Defs"],
   "Mathlib.Algebra.Order.Ring.Nat": ["Mathlib.Algebra.Order.Group.Nat"],
   "Mathlib.Algebra.Order.Quantale": ["Mathlib.Tactic.Variable"],
   "Mathlib.Algebra.Order.Pi": ["Mathlib.Algebra.Notation.Lemmas"],

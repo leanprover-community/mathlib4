@@ -102,8 +102,6 @@ theorem eq_inter_halfSpace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Non
   obtain ⟨w, hw⟩ := hB
   exact ⟨l, l w, Subset.antisymm (fun x hx => ⟨hx.1, hx.2 w hw.1⟩) fun x hx =>
     ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
-@[deprecated (since := "2024-11-12")] alias eq_inter_halfspace' := eq_inter_halfSpace'
-
 /-- For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
 some closed half-space. The converse is *not* true. It would require that the corresponding open
 half-space doesn't intersect `A`. -/
@@ -117,8 +115,6 @@ theorem eq_inter_halfSpace [IsOrderedRing 𝕜] [Nontrivial 𝕜] {A B : Set E} 
     have : ¬(1 : 𝕜) ≤ 0 := not_le_of_gt zero_lt_one
     contradiction
   exact hAB.eq_inter_halfSpace' hB
-@[deprecated (since := "2024-11-12")] alias eq_inter_halfspace := eq_inter_halfSpace
-
 protected theorem inter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed 𝕜 A B)
     (hC : IsExposed 𝕜 A C) : IsExposed 𝕜 A (B ∩ C) := by
   rintro ⟨w, hwB, hwC⟩

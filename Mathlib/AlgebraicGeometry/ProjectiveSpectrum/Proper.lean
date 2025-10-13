@@ -82,12 +82,12 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     (f := (pullbackDiagonalMapIdIso ..).inv) _).mp ?_
   let e₁ : pullback ((affineOpenCover 𝒜).map i ≫ toSpecZero 𝒜)
         ((affineOpenCover 𝒜).map j ≫ toSpecZero 𝒜) ≅
-        Spec (.of <| TensorProduct (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)) := by
+        Spec(TensorProduct (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)) := by
     refine pullback.congrHom ?_ ?_ ≪≫ pullbackSpecIso (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)
     · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
     · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
   let e₂ : pullback ((affineOpenCover 𝒜).map i) ((affineOpenCover 𝒜).map j) ≅
-        Spec (.of <| (Away 𝒜 (i.2 * j.2))) :=
+        Spec(Away 𝒜 (i.2 * j.2)) :=
     pullbackAwayιIso 𝒜 _ _ _ _ rfl
   rw [← MorphismProperty.cancel_right_of_respectsIso (P := @IsClosedImmersion) _ e₁.hom,
     ← MorphismProperty.cancel_left_of_respectsIso (P := @IsClosedImmersion) e₂.inv]
@@ -316,7 +316,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     rintro _ ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)
     exact hi
-  let φ : Spec (.of K) ⟶ _ := IsOpenImmersion.lift _ _ this
+  let φ : Spec(K) ⟶ _ := IsOpenImmersion.lift _ _ this
   have H : Spec.preimage i₂ ≫ CommRingCat.ofHom (algebraMap O K) =
       CommRingCat.ofHom (fromZeroRingHom 𝒜 _) ≫ Spec.preimage φ := by
     apply Spec.map_injective

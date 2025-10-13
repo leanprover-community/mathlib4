@@ -406,7 +406,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- for any `k ≥ p` and `n`, integrating `χ n` from time `k` to time `a n`
   -- with the trajectory up to `k` being equal to `z` gives something greater than `ε`.
   choose! ind hind using
-    fun k y h ↦ le_lmarginalPartialTraj_succ χ_dep mχ (by norm_num : (1 : ℝ≥0∞) ≠ ∞)
+    fun k y h ↦ le_lmarginalPartialTraj_succ χ_dep mχ (by simp : (1 : ℝ≥0∞) ≠ ∞)
       χ_le (anti_lma (k + 1)) (hl (k + 1)) ε y h
   let z := iterateInduction x₀ ind
   have main k (hk : p ≤ k) : ∀ x n,

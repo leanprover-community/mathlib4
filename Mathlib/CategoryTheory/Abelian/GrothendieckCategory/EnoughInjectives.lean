@@ -240,7 +240,7 @@ variable {J} in
 is a transfinite composition of pushouts of monomorphisms in the
 family `generatingMonomorphisms G`. -/
 noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
-  (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
+    (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
     ((functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)) where
   F := (Set.initialSegIic j).monotone.functor ⋙ functor hG A₀ J
   isoBot := Iso.refl _

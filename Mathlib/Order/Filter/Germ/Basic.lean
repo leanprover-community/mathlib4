@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Order.Filter.Tendsto
@@ -408,7 +409,7 @@ instance instMonoid [Monoid M] : Monoid (Germ l M) :=
     npow := fun n a => a ^ n }
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
-@[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
+@[to_additive /-- Coercion from functions to germs as an additive monoid homomorphism. -/]
 def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M where
   toFun := ofFun; map_one' := rfl; map_mul' _ _ := rfl
 

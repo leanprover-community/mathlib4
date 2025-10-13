@@ -65,17 +65,9 @@ def parseSetOption : Syntax → Option Name
   | `(tactic|set_option $name:ident $_val in $_x) => some name.getId
   | _ => none
 
-/-- Deprecated alias for `Mathlib.Linter.Style.setOption.parseSetOption`. -/
-@[deprecated parseSetOption (since := "2024-12-07")]
-def parse_set_option := @parseSetOption
-
 /-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
 def isSetOption : Syntax → Bool :=
   fun stx ↦ parseSetOption stx matches some _name
-
-/-- Deprecated alias for `Mathlib.Linter.Style.setOption.isSetOption`. -/
-@[deprecated isSetOption (since := "2024-12-07")]
-def is_set_option := @isSetOption
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.

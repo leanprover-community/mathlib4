@@ -913,4 +913,5 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
 -- The instance above does not create diamonds for concrete `𝕜`:
 example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
 example :
-  (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal := rfl
+    (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
+  rfl

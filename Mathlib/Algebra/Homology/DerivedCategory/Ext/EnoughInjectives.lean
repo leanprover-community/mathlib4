@@ -113,8 +113,7 @@ the universe `w`, and if we have two `HasExt.{w₁} C` and `HasExt.{w₂} C`
 instances, we would have to specify the universe explicitly almost
 everywhere, which would be an inconvenience. Then, we must be
 very selective regarding `HasExt` instances. -/
-lemma hasExt_of_enoughInjectives [LocallySmall.{w} C] [EnoughInjectives C] :
-  HasExt.{w} C := by
+lemma hasExt_of_enoughInjectives [LocallySmall.{w} C] [EnoughInjectives C] : HasExt.{w} C := by
     letI := HasDerivedCategory.standard C
     have := hasExt_of_hasDerivedCategory C
     rw [hasExt_iff_small_ext.{w}]

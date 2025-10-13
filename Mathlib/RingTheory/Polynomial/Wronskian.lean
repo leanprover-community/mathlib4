@@ -135,7 +135,4 @@ theorem _root_.IsCoprime.wronskian_eq_zero_iff
     rw [wronskian]
     rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
 
-@[deprecated (since := "2024-11-06")]
-alias IsCoprime.wronskian_eq_zero_iff := IsCoprime.wronskian_eq_zero_iff
-
 end Polynomial

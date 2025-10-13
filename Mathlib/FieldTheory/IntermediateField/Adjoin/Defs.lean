@@ -316,7 +316,7 @@ theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure 
 
 instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
 
-@[mono]
+@[mono, gcongr]
 theorem adjoin.mono (T : Set E) (h : S ⊆ T) : adjoin F S ≤ adjoin F T :=
   GaloisConnection.monotone_l gc h
 
@@ -373,7 +373,7 @@ theorem adjoin_insert_adjoin (x : E) :
       (Set.insert_subset_iff.mpr
         ⟨subset_adjoin _ _ (Set.mem_insert _ _),
           adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
-    (adjoin.mono _ _ _ (Set.insert_subset_insert (subset_adjoin _ _)))
+    (by grw [← subset_adjoin])
 
 /-- `F[S][T] = F[T][S]` -/
 theorem adjoin_adjoin_comm (T : Set E) :

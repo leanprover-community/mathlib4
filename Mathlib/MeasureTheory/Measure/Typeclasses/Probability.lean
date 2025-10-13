@@ -147,6 +147,10 @@ instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.
   MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
     simp [Function.Surjective.range_eq <| EquivLike.surjective _]
 
+lemma Measure.eq_of_le_of_isProbabilityMeasure {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (hμν : μ ≤ ν) : μ = ν :=
+  eq_of_le_of_measure_univ_eq hμν (by simp)
+
 end IsProbabilityMeasure
 
 section IsZeroOrProbabilityMeasure

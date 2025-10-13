@@ -5,7 +5,7 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 

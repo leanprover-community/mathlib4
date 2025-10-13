@@ -76,6 +76,14 @@ theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ 
 theorem vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : (v +ᵥ p₁) -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel_left]
 
+theorem vadd_vsub_vadd_comm (v₁ v₂ : G) (p₁ p₂ : P) :
+    (v₁ +ᵥ p₁) -ᵥ (v₂ +ᵥ p₂) = (v₁ - v₂) + (p₁ -ᵥ p₂) := by
+  rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_assoc, ← add_comm_sub]
+
+theorem sub_add_vsub_comm (v₁ v₂ : G) (p₁ p₂ : P) :
+    (v₁ - v₂) + (p₁ -ᵥ p₂) = (v₁ +ᵥ p₁) -ᵥ (v₂ +ᵥ p₂) :=
+  vadd_vsub_vadd_comm _ _ _ _ |>.symm
+
 theorem vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = (p₃ -ᵥ p₂) +ᵥ p₁ := by
   rw [← @vsub_eq_zero_iff_eq G, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub]
   simp
@@ -193,9 +201,6 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P} (h : Injectiv
   rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← two_nsmul, ← nsmul_zero 2, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
 
-@[deprecated (since := "2024-11-18")] alias pointReflection_fixed_iff_of_injective_bit0 :=
-pointReflection_fixed_iff_of_injective_two_nsmul
-
 theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (2 • · : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=
@@ -204,7 +209,10 @@ theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [Add
     vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero,
     ← two_nsmul, ← nsmul_zero 2, h.eq_iff, vsub_eq_zero_iff_eq] at hy
 
-@[deprecated (since := "2024-11-18")] alias injective_pointReflection_left_of_injective_bit0 :=
-injective_pointReflection_left_of_injective_two_nsmul
+/-- In the special case of additive commutative groups (as opposed to just additive torsors),
+`Equiv.pointReflection x` coincides with `Equiv.subLeft (2 • x)`. -/
+lemma pointReflection_eq_subLeft {G : Type*} [AddCommGroup G] (x : G) :
+    pointReflection x = Equiv.subLeft (2 • x) := by
+  ext; simp [pointReflection, sub_add_eq_add_sub, two_nsmul]
 
 end Equiv

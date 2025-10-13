@@ -174,13 +174,10 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
 unital, `A⁺¹ ≃⋆ₐ[ℂ] (ℂ × A)`. -/
 scoped[CStarAlgebra] postfix:max "⁺¹" => Unitization ℂ
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
     CStarAlgebra (Unitization ℂ A) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A] :
     CommCStarAlgebra (Unitization ℂ A) where
-  mul_comm := mul_comm
 
 end CStarProperty

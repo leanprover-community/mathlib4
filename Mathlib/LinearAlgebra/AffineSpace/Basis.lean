@@ -3,6 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.AffineSpace.Centroid
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 import Mathlib.LinearAlgebra.Basis.SMul
@@ -39,7 +40,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
-open Affine Set
+open Affine Module Set
 open scoped Pointwise
 
 universe u₁ u₂ u₃ u₄

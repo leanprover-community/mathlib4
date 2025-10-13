@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Sites.Coverage
 /-!
 # 0-hypercovers
 
-Given a coverage `J` on a category `C`, we define the tyoe
+Given a coverage `J` on a category `C`, we define the type
 of `0`-hypercovers of an object `S : C`. They consists of a covering family
 of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced presieve is in `J`.
 
@@ -102,7 +102,7 @@ structure Hom (E : PreZeroHypercover.{w} S) (F : PreZeroHypercover.{w'} S) where
   s₀ (i : E.I₀) : F.I₀
   /-- The refinement morphisms between objects in the coverings of `S`. -/
   h₀ (i : E.I₀) : E.X i ⟶ F.X (s₀ i)
-  w₀ (i : E.I₀) : h₀ i ≫ F.f (s₀ i) = E.f i := by aesop_cat
+  w₀ (i : E.I₀) : h₀ i ≫ F.f (s₀ i) = E.f i := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.w₀
 

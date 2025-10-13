@@ -302,12 +302,6 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
     ring
   all_goals exact intervalIntegrable_log'
 
-@[deprecated (since := "2025-01-12")]
-alias integral_log_of_pos := integral_log
-
-@[deprecated (since := "2025-01-12")]
-alias integral_log_of_neg := integral_log
-
 @[simp]
 theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
@@ -466,7 +460,7 @@ theorem integral_sin_pow_even :
 theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
-  refine mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos ?_ ?_) <;>
+  refine mul_pos (by simp [pi_pos]) (prod_pos fun n _ => div_pos ?_ ?_) <;>
   norm_cast <;>
   omega
 

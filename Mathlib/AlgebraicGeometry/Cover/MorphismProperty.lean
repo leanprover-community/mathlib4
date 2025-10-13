@@ -348,7 +348,7 @@ structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} P X) where
   /-- The morphism between open subsets associated to a morphism of covers. -/
   app (j : 𝒰.J) : 𝒰.obj j ⟶ 𝒱.obj (idx j)
   app_prop (j : 𝒰.J) : P (app j) := by infer_instance
-  w (j : 𝒰.J) : app j ≫ 𝒱.map _ = 𝒰.map _ := by aesop_cat
+  w (j : 𝒰.J) : app j ≫ 𝒱.map _ = 𝒰.map _ := by cat_disch
 
 attribute [reassoc (attr := simp)] Cover.Hom.w
 

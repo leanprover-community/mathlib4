@@ -161,6 +161,8 @@ theorem flip_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : f.flip.flip = f 
 theorem opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ = ‖f‖ :=
   le_antisymm (by simpa only [flip_flip] using le_norm_flip f.flip) (le_norm_flip f)
 
+@[simp]
+lemma flip_zero : flip (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) = 0 := rfl
 
 @[simp]
 theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
@@ -341,6 +343,18 @@ def bilinearComp (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ�
 theorem bilinearComp_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ₁'] E) (gF : F' →SL[σ₂'] F)
     (x : E') (y : F') : f.bilinearComp gE gF x y = f (gE x) (gF y) :=
   rfl
+
+@[simp]
+lemma bilinearComp_zero {gE : E' →SL[σ₁'] E} {gF : F' →SL[σ₂'] F} :
+    bilinearComp (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) gE gF = 0 := rfl
+
+@[simp]
+lemma bilinearComp_zero_left {f : E →SL[σ₁₃] F →SL[σ₂₃] G} {gF : F' →SL[σ₂'] F} :
+    bilinearComp f (0 : E' →SL[σ₁'] E) gF = 0 := by ext; simp
+
+@[simp]
+lemma bilinearComp_zero_right {f : E →SL[σ₁₃] F →SL[σ₂₃] G} {gE : E' →SL[σ₁'] E} :
+    bilinearComp f gE (0 : F' →SL[σ₂'] F) = 0 := by ext; simp
 
 variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂']
 

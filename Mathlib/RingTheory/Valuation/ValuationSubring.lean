@@ -115,7 +115,7 @@ instance : ValuationRing A where
       right
       ext
       field_simp
-    · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
+    · rw [show (a / b : K)⁻¹ = b / a by simp] at hh
       use ⟨b / a, hh⟩
       left
       ext
@@ -320,7 +320,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
       ext; field_simp
-    · field_simp
+    · simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
     ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩
@@ -668,7 +668,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
 
 /-- Porting note: Lean needs to be reminded of this instance -/
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
-  Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
+    Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
@@ -737,7 +737,7 @@ theorem smul_mem_pointwise_smul (g : G) (x : K) (S : ValuationSubring K) : x ∈
   (Set.smul_mem_smul_set : _ → _ ∈ g • (S : Set K))
 
 instance : CovariantClass G (ValuationSubring K) HSMul.hSMul LE.le :=
-  ⟨fun _ _ _ => Set.image_subset _⟩
+  ⟨fun _ _ _ => Set.image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
     x ∈ g • S ↔ ∃ s : K, s ∈ S ∧ g • s = x :=

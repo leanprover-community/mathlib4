@@ -90,8 +90,8 @@ theorem monic_X_pow_add {n : ℕ} (H : degree p < n) : Monic (X ^ n + p) :=
 
 variable (a) in
 theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic :=
-   monic_X_pow_add <| (lt_of_le_of_lt degree_C_le
-     (by simp only [Nat.cast_pos, Nat.pos_iff_ne_zero, ne_eq, h, not_false_eq_true]))
+  monic_X_pow_add <| (lt_of_le_of_lt degree_C_le
+    (by simp only [Nat.cast_pos, Nat.pos_iff_ne_zero, ne_eq, h, not_false_eq_true]))
 
 theorem monic_X_add_C (x : R) : Monic (X + C x) :=
   pow_one (X : R[X]) ▸ monic_X_pow_add_C x one_ne_zero

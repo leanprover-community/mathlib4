@@ -179,7 +179,7 @@ lemma IsUltra.finsetSup {Y : Type*} [AddCommMonoid R] [LinearOrder R] [AddLeftSt
     IsUltra (s.sup f) := by
   constructor
   intro x y z
-  rcases s.eq_empty_or_nonempty with rfl|hs
+  rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   simp_rw [finsetSup_apply hs]
   apply Finset.sup'_le

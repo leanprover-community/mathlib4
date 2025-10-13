@@ -153,7 +153,7 @@ lemma curry_obj_injective {F₁ F₂ : C × D ⥤ E} (h : curry.obj F₁ = curry
   rw [← uncurry_obj_curry_obj F₁, ← uncurry_obj_curry_obj F₂, h]
 
 lemma curry_obj_uncurry_obj (F : B ⥤ C ⥤ D) : curry.obj (uncurry.obj F) = F :=
-  Functor.ext (fun _ => Functor.ext (by simp) (by simp)) (by aesop_cat)
+  Functor.ext (fun _ => Functor.ext (by simp) (by simp)) (by cat_disch)
 
 lemma uncurry_obj_injective {F₁ F₂ : B ⥤ C ⥤ D} (h : uncurry.obj F₁ = uncurry.obj F₂) :
     F₁ = F₂ := by

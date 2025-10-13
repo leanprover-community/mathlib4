@@ -304,7 +304,6 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
         simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
   map_id X := by
     simp only
-    change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
     congr
     ext x y p
     refine Quotient.inductionOn p fun q => ?_

@@ -30,7 +30,7 @@ coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` 
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
-assert_not_exists Basis Ideal ContinuousMul
+assert_not_exists Module.Basis Ideal ContinuousMul
 
 universe u v w x
 

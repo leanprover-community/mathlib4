@@ -517,7 +517,7 @@ noncomputable def trStmts₁ : TM2.Stmt Γ Λ σ → Finset (Λ' K Γ Λ σ)
   | _ => ∅
 
 theorem trStmts₁_run {k : K} {s : StAct K Γ σ k} {q : TM2.Stmt Γ Λ σ} :
-open scoped Classical in
+    open scoped Classical in
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
   cases s <;> simp only [trStmts₁, stRun]
 

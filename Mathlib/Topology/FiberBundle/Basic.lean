@@ -192,8 +192,6 @@ variable [FiberBundle F E] (b : B)
 
 theorem totalSpaceMk_isInducing : IsInducing (@TotalSpace.mk B F E b) := totalSpaceMk_isInducing' b
 
-@[deprecated (since := "2024-10-28")] alias totalSpaceMk_inducing := totalSpaceMk_isInducing
-
 /-- Atlas of a fiber bundle. -/
 abbrev trivializationAtlas : Set (Trivialization F (π F E)) := trivializationAtlas'
 
@@ -258,17 +256,11 @@ map. -/
 theorem isQuotientMap_proj [Nonempty F] : IsQuotientMap (π F E) :=
   (isOpenMap_proj F E).isQuotientMap (continuous_proj F E) (surjective_proj F E)
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_proj := isQuotientMap_proj
-
 theorem continuous_totalSpaceMk (x : B) : Continuous (@TotalSpace.mk B F E x) :=
   (totalSpaceMk_isInducing F E x).continuous
 
 theorem totalSpaceMk_isEmbedding (x : B) : IsEmbedding (@TotalSpace.mk B F E x) :=
   ⟨totalSpaceMk_isInducing F E x, TotalSpace.mk_injective x⟩
-
-@[deprecated (since := "2024-10-26")]
-alias totalSpaceMk_embedding := totalSpaceMk_isEmbedding
 
 theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     IsClosedEmbedding (@TotalSpace.mk B F E x) :=
