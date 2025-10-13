@@ -41,7 +41,7 @@ products of exponential unitaries.
   `‖unitary.argSelfAdjoint u‖ = Real.arccos (1 - ‖(u - 1 : A)‖ ^ 2 / 2)`
 + `unitary.openPartialHomeomorph`: the maps `unitary.argSelfAdjoint` and `selfAdjoint.expUnitary`
   form a partial homeomorphism between `ball (1 : unitary A) 2` and `ball (0 : selfAdjoint A) π`.
-+ `selfAdjoint.expUnitary_pathToOne`: the path `t ↦ expUnitary (t • x)` from `1` to
++ `selfAdjoint.expUnitaryPathToOne`: the path `t ↦ expUnitary (t • x)` from `1` to
   `expUnitary x` for a selfadjoint element `x`.
 + `unitary.isPathConnected_ball`: any ball of radius `δ < 2` in the unitary group of a unital
   C⋆-algebra is path connected.
@@ -277,7 +277,7 @@ lemma unitary.expUnitary_eq_mul_inv (u v : unitary A) (huv : ‖(u - v : A)‖ <
 /-- For a selfadjoint element `x` in a C⋆-algebra, this is the path from `1` to `expUnitary x`
 given by `t ↦ expUnitary (t • x)`. -/
 @[simps]
-noncomputable def selfAdjoint.expUnitary_pathToOne (x : selfAdjoint A) :
+noncomputable def selfAdjoint.expUnitaryPathToOne (x : selfAdjoint A) :
     Path 1 (expUnitary x) where
   toFun t := expUnitary ((t : ℝ) • x)
   continuous_toFun := by fun_prop
@@ -287,7 +287,7 @@ noncomputable def selfAdjoint.expUnitary_pathToOne (x : selfAdjoint A) :
 @[simp]
 lemma selfAdjoint.joined_one_expUnitary (x : selfAdjoint A) :
     Joined (1 : unitary A) (expUnitary x) :=
-  ⟨expUnitary_pathToOne x⟩
+  ⟨expUnitaryPathToOne x⟩
 
 /-- The path `t ↦ expUnitary (t • argSelfAdjoint (v * star u)) * u`
 from `u : unitary A` to `v` when `‖v - u‖ < 2`. -/
