@@ -73,7 +73,7 @@ theorem isPreprimitive_fixingSubgroup_insert_iff {a : α} {t : Set (ofStabilizer
 
 end Preprimitive
 
-/-- An additive action is `n`-multiply preprimitive  if it is `n`-multiply transitive
+/-- An additive action is `n`-multiply preprimitive if it is `n`-multiply transitive
   and if, when `n ≥ 1`, for every set `s` of cardinality `n - 1`,
   the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
 @[mk_iff]
