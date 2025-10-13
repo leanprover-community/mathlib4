@@ -224,13 +224,16 @@ info: Try these:
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by hint
 end ring
 
+section abel
 /--
 info: Try these:
   • 🎉 abel
 -/
 #guard_msgs in
 example {α} [AddCommMonoid α] (a b c d: α) : a + b + c + d + 0 = d + (c + b) + (0 + 0 + a) := by hint
+end abel
 
+section bound
 /--
 info: Try these:
   • 🎉 bound
@@ -264,7 +267,9 @@ info: Try these:
 -/
 #guard_msgs in
 example (a b : ℝ) (h1 : ‖a‖ ≤ ‖b‖) (h2 : 3 ≤ ‖b‖) : ‖b ^ 2 + a‖ ≥ ‖b ^ 2‖ - ‖a‖ ∧ ‖b ^ 2‖ - ‖a‖ ≥ ‖b ^ 2‖ - ‖b‖ ∧ (‖b‖ - 1) * ‖b‖ ≥ 2 * ‖b‖ := by hint
+end bound
 
+section group
 /--
 info: Try these:
   • 🎉 group
@@ -274,14 +279,18 @@ info: Try these:
 -/
 #guard_msgs in
 example (G : Type) (a b c : G) [Group G] : c⁻¹ * (b * c⁻¹) * c * (a * b) * (b⁻¹ * a⁻¹ * b⁻¹) * c = 1 := by hint
+end group
 
+section noncomm_ring
 /--
 info: Try these:
   • 🎉 noncomm_ring
 -/
 #guard_msgs in
 example (R : Type) (a b : R) [Ring R] : (a + b) ^ 3 = a ^ 3 + a ^ 2 * b + a * b * a + a * b ^ 2 + b * a ^ 2 + b * a * b + b ^ 2 * a + b ^ 3 := by hint
+end noncomm_ring
 
+section norm_num
 /--
 info: Try these:
   • 🎉 norm_num
@@ -294,14 +303,18 @@ info: Try these:
 -/
 #guard_msgs in
 example : (2 : ℝ) < 5 / 2 ∧ 5 / 2 < 3 := by hint
+end norm_num
 
+section positivity
 /--
 info: Try these:
   • 🎉 positivity
 -/
 #guard_msgs in
 example (a : ℤ) : 0 < |a| + 3 := by hint
+end positivity
 
+section trivial
 /--
 info: Try these:
   • 🎉 trivial
@@ -314,7 +327,9 @@ info: Try these:
 -/
 #guard_msgs in
 example (m : Nat) (h : m ≠ 1) : True ∧ m ≠ 1 ∧ ∀ n < 100, n^2 < 10000 := by hint
+end trivial
 
+section tauto
 /--
 info: Try these:
   • 🎉 tauto
@@ -337,11 +352,10 @@ info: Try these:
 -/
 #guard_msgs in
 example (P : Nat → Prop) (n : Nat) : P n → n = 7 ∨ n = 0 ∨ ¬ (n = 7 ∨ n = 0) ∧ P n := by hint
+end tauto
 
 section tauto_set
-
 register_hint 450 tauto_set
-
 /--
 info: Try these:
   • 🎉 tauto_set
@@ -354,5 +368,4 @@ info: Try these:
 -/
 #guard_msgs in
 example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by hint
-
 end tauto_set
