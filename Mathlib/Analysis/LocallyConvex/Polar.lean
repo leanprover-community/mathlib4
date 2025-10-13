@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
@@ -23,7 +23,7 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 
 * `LinearMap.polar_eq_iInter`: The polar as an intersection.
 * `LinearMap.subset_bipolar`: The polar is a subset of the bipolar.
-* `LinearMap.polar_weak_closed`: The polar is closed in the weak topology induced by `B.flip`.
+* `LinearMap.polar_isClosed`: The polar is closed in the weak topology induced by `B.flip`.
 
 ## References
 
@@ -62,6 +62,7 @@ theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B
 theorem polar_eq_biInter_preimage (s : Set E) :
     B.polar s = ⋂ x ∈ s, ((B x) ⁻¹' Metric.closedBall (0 : 𝕜) 1) := by aesop
 
+-- TODO: this theorem is abusing defeq between F and WeakBilin B.flip
 theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s) := by
   rw [polar_eq_biInter_preimage]
   exact isClosed_biInter
@@ -120,12 +121,7 @@ theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx 
 theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s :=
   (B.polar_antitone (B.subset_bipolar s)).antisymm (subset_bipolar B.flip (B.polar s))
 
-/-- The polar set is closed in the weak topology induced by `B.flip`. -/
-theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
-    (B.polar s) := by
-  rw [polar_eq_iInter]
-  refine isClosed_iInter fun x => isClosed_iInter fun _ => ?_
-  exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
+@[deprecated (since := "2025-10-06")] alias polar_weak_closed := polar_isClosed
 
 theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
     ⋂₀ (B.polar '' { F | F.Finite ∧ F ⊆ s }) = B.polar s := by
