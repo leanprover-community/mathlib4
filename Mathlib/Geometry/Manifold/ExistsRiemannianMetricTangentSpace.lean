@@ -7,6 +7,8 @@ import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! ## Existence of a Riemannian bundle metric
 
@@ -155,6 +157,46 @@ lemma g_symm (i p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   unfold g
   rw [real_inner_comm]
 
+def linearEquivToSemiLinearEquiv
+  {E F : Type*} [AddCommMonoid E] [Module ℝ E] [AddCommMonoid F] [Module ℝ F]
+  [TopologicalSpace E] [TopologicalSpace F]
+  (e : E ≃L[ℝ] F) :
+  E ≃SL[RingHom.id ℝ] F :=
+{ toFun := e.toFun,
+  invFun := e.invFun,
+  map_add' := e.map_add,
+  map_smul' := by intro r x; exact e.map_smul r x,
+  left_inv := e.left_inv,
+  right_inv := e.right_inv }
+
+lemma g_pos (i p : B) (hp : p ∈ (extChartAt IB i).source)
+            (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
+  v ≠ 0 → 0 < g i p v v := by
+  intro hv
+  unfold g
+  simp only
+  let ψ := extChartAt IB i
+  let dψ := mfderiv IB (modelWithCornersSelf ℝ EB) ψ p
+  let x : EB := dψ v
+  have h_invert : dψ.IsInvertible := isInvertible_mfderiv_extChartAt hp
+  rcases h_invert with ⟨inv, left_inv⟩
+  let e : TangentSpace IB p ≃SL[RingHom.id ℝ] TangentSpace 𝓘(ℝ, EB) (ψ p) :=
+    linearEquivToSemiLinearEquiv inv
+  have h5 : Function.Injective e :=  ContinuousLinearEquiv.injective e
+  have inj : Function.Injective e := ContinuousLinearEquiv.injective e
+  have h1 : e v = dψ v := by
+    unfold e
+    rw[<-left_inv]
+    exact h5 (h5 (h5 (h5 rfl)))
+  have hx : x ≠ 0 := by
+    intro h
+    have h2 : e v = e 0 := by
+      rw [h1]
+      simp [x, h]
+    have h3 := inj h2
+    exact hv h3
+  exact real_inner_self_pos.mpr hx
+
 variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
 
 noncomputable
@@ -171,12 +213,6 @@ lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
     have : ∑ᶠ (i : B), (f i) p * g i p v w = ∑ᶠ (i : B), (f i) p * g i p w v := by
       simp_rw [g_symm]
     exact this
-
-example : true := by
-  obtain ⟨f, hf⟩ := SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source IB B
-  let g_global : ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
-    fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
-  trivial
 
 noncomputable
 def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
