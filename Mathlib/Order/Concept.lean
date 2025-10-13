@@ -296,11 +296,11 @@ theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r')
     IsCompl c'.extent c'.intent :=
   ⟨c'.disjoint_extent_intent, c'.codisjoint_extent_intent⟩
 
-theorem isLowerSet_extent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
+theorem isLowerSet_extent_le {α : Type*} [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
     IsLowerSet c.extent :=
   fun _ _ ↦ mem_extent_of_rel_extent
 
-theorem isUpperSet_intent_le {α : Type*} [Preorder α] (c : Concept α α (· ≤ ·)) :
+theorem isUpperSet_intent_le {α : Type*} [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
     IsUpperSet c.intent :=
   fun _ _ ↦ mem_intent_of_intent_rel
 
