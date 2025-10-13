@@ -79,7 +79,7 @@ namespace TestFunction
 
 open Distributions
 
-/-- `TestFunctionClass B E F n K` states that `B` is a type of `n`-times continously
+/-- `TestFunctionClass B E F n K` states that `B` is a type of bundled `n`-times continously
 differentiable functions `E → F` with compact support. -/
 class TestFunctionClass (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
@@ -222,6 +222,8 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
   (coeHom_injective n).module R (coeHom E F n) fun _ _ => rfl
 
 end Module
+
+section Topology
 
 variable (n : ℕ∞) (F)
 
