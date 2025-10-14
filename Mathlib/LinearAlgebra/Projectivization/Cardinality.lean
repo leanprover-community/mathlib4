@@ -59,16 +59,18 @@ lemma finite_iff_of_finite [Finite k] : Finite (ℙ k V) ↔ Finite V := by
 See `Projectivization.card'` and `Projectivization.card''` for other spellings of the formula. -/
 lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
   nontriviality V
-  wlog h : Finite k
-  · simp only [not_finite_iff_infinite] at h
+  cases finite_or_infinite k with
+  | inr h =>
     have : Infinite V := Module.Free.infinite k V
     simp
-  wlog h : Finite V
-  · simp only [not_finite_iff_infinite] at h
+  | inl h =>
+  cases finite_or_infinite V with
+  | inr h =>
     have := not_iff_not.mpr (finite_iff_of_finite k V)
-    simp only [not_finite_iff_infinite] at this
+    push_neg at this
     have : Infinite (ℙ k V) := by rwa [this]
     simp
+  | inl h =>
   classical
   haveI : Fintype V := Fintype.ofFinite V
   haveI : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
@@ -82,7 +84,7 @@ natural subtraction. -/
 lemma card' [Finite V] : Nat.card V = Nat.card (ℙ k V) * (Nat.card k - 1) + 1 := by
   rw [← card k V]
   have : Nat.card V > 0 := Nat.card_pos
-  omega
+  cutsat
 
 end
 
@@ -93,15 +95,14 @@ as a fraction. -/
 lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 1) := by
   have : 1 < Nat.card k := Finite.one_lt_card
   rw [card k, Nat.mul_div_cancel]
-  omega
+  cutsat
 
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
   wlog hf : Finite V
-  · simp only [not_finite_iff_infinite] at hf
-    have : Infinite (ℙ k V) := by
-      rw [← not_finite_iff_infinite, not_iff_not.mpr (finite_iff_of_finite k V)]
-      simpa
+  · have : Infinite (ℙ k V) := by
+      contrapose! hf
+      rwa [finite_iff_of_finite] at hf
     have : n = 0 := by
       rw [← h]
       apply Module.finrank_of_not_finite
@@ -109,7 +110,7 @@ lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
       simpa using Module.finite_of_finite k
     simp [this]
   have : 1 < Nat.card k := Finite.one_lt_card
-  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by omega) ?_
+  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by cutsat) ?_
   let e : V ≃ₗ[k] (Fin n → k) := LinearEquiv.ofFinrankEq _ _ (by simpa)
   have hc : Nat.card V = Nat.card k ^ n := by simp [Nat.card_congr e.toEquiv, Nat.card_fun]
   zify

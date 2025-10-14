@@ -12,6 +12,7 @@ import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
@@ -25,6 +26,9 @@ import Mathlib.Tactic.Simproc.Factors
 
 Some tests of unported extensions are still commented out.
 -/
+
+-- The default is very low, and we want to test performance on large numbers.
+set_option exponentiation.threshold 2000
 
 -- set_option profiler true
 -- set_option trace.profiler true
@@ -454,6 +458,24 @@ instance prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num1⟩
 example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
+
+section even_odd
+
+example : Even 16 := by norm_num1
+example : ¬Even 17 := by norm_num1
+example : Even (16 : ℤ) := by norm_num1
+example : ¬Even (17 : ℤ) := by norm_num1
+example : Even (-20 : ℤ) := by norm_num1
+example : ¬Even (-21 : ℤ) := by norm_num1
+
+example : Odd 5 := by norm_num1
+example : ¬Odd 4 := by norm_num1
+example : Odd (5 : ℤ) := by norm_num1
+example : ¬Odd (4 : ℤ) := by norm_num1
+example : Odd (-5 : ℤ) := by norm_num1
+example : ¬Odd (-4 : ℤ) := by norm_num1
+
+end even_odd
 
 section mod
 

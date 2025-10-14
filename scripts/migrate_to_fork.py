@@ -107,7 +107,7 @@ def get_user_input(prompt: str, default: Optional[str] = None) -> str:
 
 
 def yes_no_prompt(prompt: str, default: bool = True, auto_accept: bool = False) -> bool:
-    """Ask a yes/no question and return the boolean result."""
+    """Ask a yes/no question and return the Boolean result."""
     if auto_accept:
         print(f"{prompt} [Y/n]: Y (auto-accepted)")
         return True
