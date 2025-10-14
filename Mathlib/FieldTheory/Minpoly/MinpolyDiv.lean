@@ -201,7 +201,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
   · intro σ
     simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finset_sum,
       eval_smul, eval_map, eval₂_minpolyDiv_self, this.eq_iff, smul_eq_mul, mul_ite, mul_zero,
-      Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_pow, eval_X]
+      Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_X_pow]
     rw [sub_eq_zero, div_mul_cancel₀]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
     exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
