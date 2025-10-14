@@ -284,7 +284,8 @@ lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :
 variable [EssentiallySmall.{w} C]
   [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
 
-instance [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
+lemma WEqualsLocallyBijective.ofEssentiallySmall
+    [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
     J.WEqualsLocallyBijective A :=
   WEqualsLocallyBijective.transport J ((equivSmallModel C).inverse.inducedTopology J)
     (equivSmallModel C).inverse (IsDenseSubsite.coverPreserving _ _ _)

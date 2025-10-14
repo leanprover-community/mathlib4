@@ -32,7 +32,7 @@ instance hasSheafifyType :
     HasSheafify (coherentTopology LightProfinite.{u}) (Type u) :=
   hasSheafifyEssentiallySmallSite _ _
 
-example : (coherentTopology LightProfinite.{u}).HasSheafCompose (forget A) := by
-  infer_instance
+instance : (coherentTopology LightProfinite.{u}).WEqualsLocallyBijective A :=
+  GrothendieckTopology.WEqualsLocallyBijective.ofEssentiallySmall _
 
 end LightProfinite
