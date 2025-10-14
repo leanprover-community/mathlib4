@@ -91,13 +91,7 @@ instance : LinearOrder Empty where
 
 def PEmpty_iso : PEmpty ≃o PEmpty := by trivial
 
-structure OrdInitialSeg {α β : Type*} [LinearOrder α] [LinearOrder β] extends α ↪o β where
-  /-- The order embedding is an initial segment -/
-  mem_range_of_rel' : ∀ a b, b = (toEmbedding a) → b ∈ Set.range toEmbedding
-
 variable {α : Type u} {β : Type v} {γ : Type w}
-
-
 
 def ordIsoOfIsEmpty (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β]
     [IsEmpty β] [IsEmpty α] : α ≃o β :=
