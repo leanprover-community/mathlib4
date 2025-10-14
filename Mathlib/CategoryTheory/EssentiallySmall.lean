@@ -227,7 +227,7 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
       (skeletonEquivalence (ShrinkHoms C)).symm.trans
         ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
 
-theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
+instance essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
 
