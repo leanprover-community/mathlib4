@@ -464,7 +464,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   · apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
       h3g.card_support, add_comm, hn]
-  · rw [hn]; grind
+  · grind
   have := isPretransitive_of_isCycle_mem h3g.isCycle hg
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_three
