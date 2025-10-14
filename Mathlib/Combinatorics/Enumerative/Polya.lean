@@ -88,7 +88,7 @@ theorem coloringEquiv_equivalence : Equivalence (coloringEquiv (X := X) (Y := Y)
     rintro c₁ c₂ ⟨f, h⟩
     use f⁻¹
     rw [← h]
-    simp
+    exact inv_smul_smul f c₁
   trans := by
     rintro c₁ c₂ c₃ ⟨f, h₁⟩ ⟨g, h₂⟩
     use g * f
