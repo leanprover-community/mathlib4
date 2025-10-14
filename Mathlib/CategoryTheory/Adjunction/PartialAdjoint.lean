@@ -244,12 +244,14 @@ lemma partialRightAdjointHomEquiv_map_comp {X : C} {Y Y' : F.PartialRightAdjoint
   rw [partialRightAdjointHomEquiv_comp, partialRightAdjointHomEquiv_map,
     ← assoc, ← partialRightAdjointHomEquiv_comp, comp_id]
 
+@[reassoc]
 lemma partialRightAdjointHomEquiv_comp_symm {X X' : C} {Y : F.PartialRightAdjointSource}
     (f : F.obj X' ⟶ Y.obj) (g : X ⟶ X') :
     g ≫ F.partialRightAdjointHomEquiv.symm f =
       F.partialRightAdjointHomEquiv.symm (F.map g ≫ f) :=
   RepresentableBy.comp_homEquiv_symm ..
 
+@[reassoc]
 lemma partialRightAdjointHomEquiv_symm_comp {X : C} {Y Y' : F.PartialRightAdjointSource}
     (f : F.obj X ⟶ Y.obj) (g : Y ⟶ Y') :
     F.partialRightAdjointHomEquiv.symm f ≫ F.partialRightAdjointMap g =
@@ -333,6 +335,18 @@ lemma rightAdjointObjIsDefined_limit {J : Type*} [Category J] (R : J ⥤ D)
     (h : ∀ (j : J), F.rightAdjointObjIsDefined (R.obj j)) :
     F.rightAdjointObjIsDefined (limit R) :=
   rightAdjointObjIsDefined_of_isLimit (limit.isLimit R) h
+
+/-- To define a functor into `E ⥤ PartialRightAdjointSource F`,
+one can first define a functor `E ⥤ D`,
+and show that each object lands in the subcategory
+-/
+@[simps]
+def PartialRightAdjointSource.lift {E : Type*} [Category E] (G : E ⥤ D)
+    (hG : ∀ X, F.rightAdjointObjIsDefined (G.obj X)) : E ⥤ PartialRightAdjointSource F where
+  obj X := {
+    obj := G.obj X
+    property := hG X }
+  map f := G.map f
 
 end partialRightAdjoint
 
