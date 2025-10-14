@@ -1045,7 +1045,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 open Limits
 
-/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is is final on each
+/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is final on each
 fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
 functor `H : Grothendieck G ⥤ Type`. -/
 def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
