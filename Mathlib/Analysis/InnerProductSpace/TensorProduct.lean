@@ -169,20 +169,20 @@ theorem _root_.RCLike.inner_tmul_eq (a b c d : 𝕜) :
   simp; ring
 
 /-- Given `x, y : E ⊗ F`, `x = y` iff `⟪x, a ⊗ₜ b⟫ = ⟪y, a ⊗ₜ b⟫` for all `a, b`. -/
-protected theorem ext_inner_right_iff {x y : E ⊗[𝕜] F} :
+protected theorem ext_iff_inner_right {x y : E ⊗[𝕜] F} :
     x = y ↔ ∀ a b, inner 𝕜 x (a ⊗ₜ[𝕜] b) = inner 𝕜 y (a ⊗ₜ[𝕜] b) := by
-  rw [_root_.ext_inner_right_iff 𝕜]
+  rw [_root_.ext_iff_inner_right 𝕜]
   refine ⟨fun h a b => by rw [h], fun h v => ?_⟩
   exact v.induction_on (by simp) h (fun c d hc hd => by simp [inner_add_right, hc, hd])
 
 /-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪x, a ⊗ₜ b ⊗ₜ c⟫ = ⟪y, a ⊗ₜ b ⊗ₜ c⟫` for all `a, b, c`.
 
-See also `ext_inner_right_threefold_iff'` for when `x, y : E ⊗ (F ⊗ G)`. -/
-theorem ext_inner_right_threefold_iff {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
+See also `ext_iff_inner_right_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
+theorem ext_iff_inner_right_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) = inner 𝕜 y (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) := by
   simp_rw [← @sub_eq_zero 𝕜 _ _ (inner _ _ _), ← inner_sub_left]
   rw [← sub_eq_zero]
-  exact ⟨fun h a b => by simp [h, inner_zero_left], fun h => TensorProduct.ext_inner_right_iff.mpr
+  exact ⟨fun h a b => by simp [h, inner_zero_left], fun h => TensorProduct.ext_iff_inner_right.mpr
     fun z b => z.induction_on (by simp) (by simp [h])
     fun c d hc hd => by simp [add_tmul, inner_add_right, hc, hd]⟩
 
@@ -273,16 +273,16 @@ end isometry
     [FiniteDimensional 𝕜 A] [FiniteDimensional 𝕜 G] [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
     (f : A →ₗ[𝕜] G) (g : E →ₗ[𝕜] F) :
     LinearMap.adjoint (map f g) = map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
-  ext' fun x y => by simp [TensorProduct.ext_inner_right_iff, LinearMap.adjoint_inner_left]
+  ext' fun x y => by simp [TensorProduct.ext_iff_inner_right, LinearMap.adjoint_inner_left]
 
 /-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
 `a, b, c`.
 
-See also `ext_inner_right_threefold_iff` for when `x, y : E ⊗ F ⊗ G`. -/
-theorem ext_inner_right_threefold_iff' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
+See also `ext_iff_inner_right_threefold` for when `x, y : E ⊗ F ⊗ G`. -/
+theorem ext_iff_inner_right_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) = inner 𝕜 y (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) := by
   simp only [← (assocLinearIsometryEquiv 𝕜 E F G).symm.injective.eq_iff,
-    ext_inner_right_threefold_iff, LinearIsometryEquiv.inner_map_eq_flip]
+    ext_iff_inner_right_threefold, LinearIsometryEquiv.inner_map_eq_flip]
   simp
 
 end TensorProduct
