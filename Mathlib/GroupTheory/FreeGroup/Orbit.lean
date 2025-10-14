@@ -76,10 +76,10 @@ theorem Orbit.duplicate (x : X) (w : α × Bool) :
       have ha : a = w := by simpa [← hl, startsWith] using hg
       have h := isReduced_cons_cons.mp (hl ▸ isReduced_toWord)
       refine Or.inl (Set.mem_biUnion (x := b) (by grind) ?_)
-      · rw [← g.mk_toWord, ← hl, ha, ← List.singleton_append (l := b :: l), ← mul_mk,
-          mul_smul, inv_smul_smul]
-        refine ⟨mk (b :: l), ?_, rfl⟩
-        simp [startsWith, h.2.reduce_eq]
+      rw [← g.mk_toWord, ← hl, ha, ← List.singleton_append (l := b :: l), ← mul_mk,
+        mul_smul, inv_smul_smul]
+      refine ⟨mk (b :: l), ?_, rfl⟩
+      simp [startsWith, h.2.reduce_eq]
   · rintro (⟨-, ⟨w', rfl⟩, -, ⟨hw, rfl⟩, g, hg, rfl⟩ | rfl)
     · exact ⟨mk [w] • g • x, ⟨mk [w] * g, startsWith_mk_mul g (not_startsWith_of_ne hw g hg),
         mul_smul (mk [w]) g x⟩, inv_smul_smul (mk [w]) (g • x)⟩
