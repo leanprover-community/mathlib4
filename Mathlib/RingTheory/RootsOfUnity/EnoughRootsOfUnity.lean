@@ -68,12 +68,17 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
   refine dvd_antisymm ?_ ?_
   · exact Monoid.exponent_dvd_of_forall_pow_eq_one fun g ↦ OneMemClass.coe_eq_one.mp g.prop
   · nth_rewrite 1 [h.eq_orderOf]
-    rw [← (h.isUnit <| NeZero.pos n).unit_spec, orderOf_units]
-    let ζ' : rootsOfUnity n M := ⟨(h.isUnit <| NeZero.pos n).unit, ?_⟩
+    rw [← (h.isUnit NeZero.out).unit_spec, orderOf_units]
+    let ζ' : rootsOfUnity n M := ⟨(h.isUnit NeZero.out).unit, ?_⟩
     · rw [← Subgroup.orderOf_mk]
       exact Monoid.order_dvd_exponent ζ'
     simp only [mem_rootsOfUnity]
     rw [← Units.val_inj, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
+
+lemma of_card_le {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} [NeZero n]
+    (h : n ≤ Fintype.card (rootsOfUnity n R)) : HasEnoughRootsOfUnity R n where
+  prim := card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot.mp (le_antisymm (card_rootsOfUnity R n) h)
+  cyc := rootsOfUnity.isCyclic R n
 
 end HasEnoughRootsOfUnity
 

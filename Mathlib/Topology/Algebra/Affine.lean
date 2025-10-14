@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
+Authors: Frédéric Dupuis, Attila Gáspár
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
@@ -89,6 +89,24 @@ variable [CommRing R] [Module R V] [ContinuousConstSMul R V]
 theorem homothety_continuous (x : P) (t : R) : Continuous <| homothety x t := by
   rw [coe_homothety]
   fun_prop
+
+variable (R) [TopologicalSpace R] [Module R W] [ContinuousSMul R W] (x : Q) {s : Set Q}
+
+open Topology
+
+theorem _root_.eventually_homothety_mem_of_mem_interior {y : Q} (hy : y ∈ interior s) :
+    ∀ᶠ δ in 𝓝 (1 : R), homothety x δ y ∈ s := by
+  have cont : Continuous (fun δ : R => homothety x δ y) := lineMap_continuous
+  filter_upwards [cont.tendsto' 1 y (by simp) |>.eventually (isOpen_interior.eventually_mem hy)]
+    with _ h using interior_subset h
+
+theorem _root_.eventually_homothety_image_subset_of_finite_subset_interior {t : Set Q}
+    (ht : t.Finite) (h : t ⊆ interior s) : ∀ᶠ δ in 𝓝 (1 : R), homothety x δ '' t ⊆ s := by
+  suffices ∀ y ∈ t, ∀ᶠ δ in 𝓝 (1 : R), homothety x δ y ∈ s by
+    simp_rw [Set.image_subset_iff]
+    exact (Filter.eventually_all_finite ht).mpr this
+  intro y hy
+  exact eventually_homothety_mem_of_mem_interior R x (h hy)
 
 end CommRing
 
