@@ -65,8 +65,6 @@ lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
 lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
 
-@[deprecated (since := "2025-02-16")] alias abs_coe := norm_coe
-
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
 @[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
@@ -95,9 +93,7 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
 instance : IsTopologicalGroup Circle := Metric.sphere.instIsTopologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
-instance : IsUniformGroup Circle := by
-  convert topologicalGroup_is_uniform_of_compactSpace Circle
-  exact unique_uniformity_of_compact rfl rfl
+instance : IsUniformGroup Circle := inferInstance
 
 /-- If `z` is a nonzero complex number, then `conj z / z` belongs to the unit circle. -/
 @[simps]

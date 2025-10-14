@@ -45,11 +45,11 @@ theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 
   have : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   rw [absdiscr_prime 5 K, IsCyclotomicExtension.finrank (n := 5) K
-    (irreducible_rat (by norm_num)), nrComplexPlaces_eq_totient_div_two 5,
+    (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 5,
     totient_prime Nat.prime_five]
   simp only [Int.reduceNeg, succ_sub_succ_eq_sub, tsub_zero, reduceDiv, even_two, Even.neg_pow,
     one_pow, cast_ofNat, Int.reducePow, one_mul, Int.cast_abs, Int.cast_ofNat,
-    abs_of_pos (show (0 : ℝ) < 125 by norm_num), div_pow, show 4! = 24 by rfl]
+    abs_of_pos (show (0 : ℝ) < 125 by simp), div_pow, show 4! = 24 by rfl]
   suffices (2 * (3 ^ 2 / 4 ^ 2) * (4 ^ 4 / 24)) ^ 2 < (2 * (π ^ 2 / 4 ^ 2) * (4 ^ 4 / 24)) ^ 2 from
     lt_trans (by norm_num) this
   gcongr
