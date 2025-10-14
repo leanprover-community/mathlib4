@@ -17,11 +17,6 @@ a morphism `f : X ⟶ Y` defines two functors:
 - `Over.pullback`: base-change along `f`
 
 such that `Over.map` is the left adjoint to `Over.pullback`.
-We say that `P` is *stable* under pushforward if `Over.pullback`
-also is a left adjoint.
-We say that `P` is *closed* under pushforward if `Over.pullback`
-also is a left adjoint for any `f` satisfying `P`.
-
 -/
 
 namespace CategoryTheory.MorphismProperty
@@ -61,7 +56,7 @@ end Map
 
 section Pullback
 
-variable [∀ {W} (h : W ⟶ Y), HasPullback h f]
+variable [HasPullbacksAlong f]
   [P.IsStableUnderBaseChange] [Q.IsStableUnderBaseChange]
 
 /-- If `P` and `Q` are stable under base change and pullbacks exist in `T`,
@@ -80,12 +75,12 @@ variable {P} {Q}
 
 /-- `Over.pullback` commutes with composition. -/
 @[simps! hom_app_left inv_app_left]
-noncomputable def Over.pullbackComp (g : Y ⟶ Z) [∀ {W} (h : W ⟶ Z), HasPullback h g]
+noncomputable def Over.pullbackComp (g : Y ⟶ Z) [HasPullbacksAlong g]
     [Q.RespectsIso] : Over.pullback P Q (f ≫ g) ≅ Over.pullback P Q g ⋙ Over.pullback P Q f :=
   NatIso.ofComponents
     (fun X ↦ Over.isoMk ((pullbackLeftPullbackSndIso X.hom g f).symm) (by simp))
 
-lemma Over.pullbackComp_left_fst_fst (g : Y ⟶ Z) [∀ {W} (h : W ⟶ Z), HasPullback h g]
+lemma Over.pullbackComp_left_fst_fst (g : Y ⟶ Z) [HasPullbacksAlong g]
     [Q.RespectsIso] (A : P.Over Q Z) : ((Over.pullbackComp f g).hom.app A).left ≫
       pullback.fst (pullback.snd A.hom g) f ≫ pullback.fst A.hom g =
         pullback.fst A.hom (f ≫ g) := by
@@ -100,7 +95,7 @@ noncomputable def Over.pullbackCongr {g : X ⟶ Y} (h : f = g) :
 
 @[reassoc (attr := simp)]
 lemma Over.pullbackCongr_hom_app_left_fst {g : X ⟶ Y} (h : f = g) (A : P.Over Q Y) :
-    have {W : T} (k : W ⟶ Y) : HasPullback k g := by subst h; infer_instance
+    have : HasPullbacksAlong g := by subst h; infer_instance
     ((Over.pullbackCongr h).hom.app A).left ≫ pullback.fst A.hom g =
       pullback.fst A.hom f := by
   subst h
@@ -111,7 +106,7 @@ end Pullback
 section Adjunction
 
 variable [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
-  [Q.IsStableUnderBaseChange] [∀ {W} (h : W ⟶ Y), HasPullback h f]
+  [Q.IsStableUnderBaseChange] [HasPullbacksAlong f]
 
 /-- `P.Over.map` is left adjoint to `P.Over.pullback` if `f` satisfies `P`. -/
 noncomputable def Over.mapPullbackAdj [Q.HasOfPostcompProperty Q] (hPf : P f) (hQf : Q f) :
