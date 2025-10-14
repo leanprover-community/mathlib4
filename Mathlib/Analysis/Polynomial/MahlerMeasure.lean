@@ -149,16 +149,14 @@ theorem logMahlerMeasure_C_mul {a : ℂ} (ha : a ≠ 0) {p : ℂ[X]} (hp : p ≠
   rw [logMahlerMeasure_mul_eq_add_logMahelerMeasure (by simp [ha, hp]), logMahlerMeasure_const]
 
 open MeromorphicOn Metric in
-/-- The logarithmic Mahler measure of `X - C z` is `log⁺` of the absolute value of `z`. -/
+/-- The logarithmic Mahler measure of `X - C z` is the `log⁺` of the absolute value of `z`. -/
 @[simp]
 theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺ ‖z‖ := by
   by_cases hz₀ : z = 0
   · simp [hz₀, posLog_def]
-  have hmeroOn (U : Set ℂ) : MeromorphicOn (fun x ↦ x - z) U :=
-    (MeromorphicOn.id).sub <| const z
+  have hmeroOn (U : Set ℂ) : MeromorphicOn (fun x ↦ x - z) U := MeromorphicOn.id.sub <| const z
   have hmeroAt (u : ℂ) : MeromorphicAt (fun x ↦ x - z) u := hmeroOn (Eq u) u rfl
-  have hmeroBall : MeromorphicOn (fun x ↦ x - z) (closedBall 0 |1|) :=
-    hmeroOn (closedBall 0 |1|)
+  have hmeroBall : MeromorphicOn (fun x ↦ x - z) (closedBall 0 |1|) := hmeroOn (closedBall 0 |1|)
   have : MeromorphicOn (fun x ↦ (X - C z).eval x) (closedBall 0 |1|) :=
     (analyticOnNhd_id.aeval_polynomial (X - C z)).meromorphicOn
   rw [logMahlerMeasure_def, circleAverage_log_norm zero_ne_one.symm this]
@@ -186,7 +184,6 @@ theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺
       rw [← WithTop.untop₀_coe 1]
       congr
       rw [meromorphicOrderAt_eq_int_iff (hmeroAt z)]
-      simp only [ne_eq, zpow_one, smul_eq_mul]
       use fun x ↦ 1
       simpa using analyticAt_const
   rw [← finsum_mem_support]
@@ -211,10 +208,8 @@ theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺
     have : (fun u ↦ -((divisor (fun x ↦ x - z) (closedBall 0 |1|) u) * log ‖u‖)).support = ∅ := by
       rw [Function.support_eq_empty_iff]
       ext x
-      simp only [Pi.zero_apply, neg_eq_zero, mul_eq_zero, Int.cast_eq_zero, log_eq_zero,
-        norm_eq_zero]
-      rw [or_iff_not_imp_right]
-      simp only [not_or, and_imp]
+      simp only [Pi.ofNat_apply, neg_eq_zero, mul_eq_zero, Int.cast_eq_zero, log_eq_zero,
+        norm_eq_zero, or_iff_not_imp_right, Classical.not_imp, and_imp]
       intro _ h _
       by_cases hx : x = z
       · rw [hx] at h ⊢
