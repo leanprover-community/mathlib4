@@ -493,7 +493,7 @@ satisfies the integral equation. -/
 lemma picard_eq_of_hasDerivAt {t : ℝ}
     (hf : ContinuousOn (uncurry f) ((uIcc t₀ t) ×ˢ u))
     (hα : ∀ t' ∈ uIcc t₀ t, HasDerivWithinAt α (f t' (α t')) (uIcc t₀ t) t')
-    (hmap : MapsTo α (uIcc t₀ t) u) : -- need `Icc` for `uIcc_subset_Icc`
+    (hmap : MapsTo α (uIcc t₀ t) u) :
     picard f t₀ (α t₀) α t = α t := by
   rw [← add_sub_cancel (α t₀) (α t), picard_apply,
     integral_eq_sub_of_hasDeriv_right (HasDerivWithinAt.continuousOn hα) _
@@ -522,8 +522,7 @@ lemma contDiffOn_nat_picard_Icc
       simp only [Nat.cast_add, Nat.cast_one] at *
       rw [contDiffOn_succ_iff_derivWithin <| uniqueDiffOn_Icc hlt]
       refine ⟨fun t ht ↦ HasDerivWithinAt.differentiableWithinAt (this t ht), by simp, ?_⟩
-      have hα' : ContDiffOn ℝ n α (Icc tmin tmax) := ContDiffOn.congr (hn hf.of_succ) heqon
-      apply contDiffOn_comp hf.of_succ hα' hmem |>.congr
+      apply contDiffOn_comp hf.of_succ (ContDiffOn.congr (hn hf.of_succ) heqon) hmem |>.congr
       intro t ht
       exact HasDerivWithinAt.derivWithin (this t ht) <| (uniqueDiffOn_Icc hlt).uniqueDiffWithinAt ht
   · rw [(subsingleton_Icc_of_ge (not_lt.mp hlt)).eq_singleton_of_mem ht₀]
@@ -564,7 +563,7 @@ theorem contDiffOn_enat_Icc_of_hasDerivWithinAt {n : ℕ∞}
         (fun t' ht' ↦ hα t' (this ht') |>.mono this) (hmem.mono_left this)]
     exact contDiffOn_enat_picard_Icc ht₀ hf (HasDerivWithinAt.continuousOn hα) hmem (α t₀) this
       |>.congr this
-  · rw [not_lt, le_iff_lt_or_eq] at hlt -- missing lemma?
+  · rw [not_lt, le_iff_lt_or_eq] at hlt
     cases hlt with
     | inl h =>
       intro _ ht
