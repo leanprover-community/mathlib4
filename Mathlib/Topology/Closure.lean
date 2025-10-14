@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Topology.Basic
-
 /-!
 # Interior, closure and frontier of a set
 
@@ -157,17 +157,17 @@ theorem interior_sInter_subset (S : Set (Set X)) : interior (⋂₀ S) ⊆ ⋂ s
     interior (⋂₀ S) = interior (⋂ s ∈ S, s) := by rw [sInter_eq_biInter]
     _ ⊆ ⋂ s ∈ S, interior s := interior_iInter₂_subset _ _
 
-theorem Filter.HasBasis.lift'_interior {l : Filter X} {p : ι → Prop} {s : ι → Set X}
-    (h : l.HasBasis p s) : (l.lift' interior).HasBasis p fun i => interior (s i) :=
-  h.lift' fun _ _ ↦ interior_mono
+-- theorem Filter.HasBasis.lift'_interior {l : Filter X} {p : ι → Prop} {s : ι → Set X}
+--     (h : l.HasBasis p s) : (l.lift' interior).HasBasis p fun i => interior (s i) :=
+--   h.lift' fun _ _ ↦ interior_mono
 
-theorem Filter.lift'_interior_le (l : Filter X) : l.lift' interior ≤ l := fun _s hs ↦
-  mem_of_superset (mem_lift' hs) interior_subset
+-- theorem Filter.lift'_interior_le (l : Filter X) : l.lift' interior ≤ l := fun _s hs ↦
+--   mem_of_superset (mem_lift' hs) interior_subset
 
-theorem Filter.HasBasis.lift'_interior_eq_self {l : Filter X} {p : ι → Prop} {s : ι → Set X}
-    (h : l.HasBasis p s) (ho : ∀ i, p i → IsOpen (s i)) : l.lift' interior = l :=
-  le_antisymm l.lift'_interior_le <| h.lift'_interior.ge_iff.2 fun i hi ↦ by
-    simpa only [(ho i hi).interior_eq] using h.mem_of_mem hi
+-- theorem Filter.HasBasis.lift'_interior_eq_self {l : Filter X} {p : ι → Prop} {s : ι → Set X}
+--     (h : l.HasBasis p s) (ho : ∀ i, p i → IsOpen (s i)) : l.lift' interior = l :=
+--   le_antisymm l.lift'_interior_le <| h.lift'_interior.ge_iff.2 fun i hi ↦ by
+--     simpa only [(ho i hi).interior_eq] using h.mem_of_mem hi
 
 end Interior
 
@@ -343,22 +343,22 @@ theorem closure_inter_open_nonempty_iff (h : IsOpen t) :
   ⟨fun ⟨_x, hxcs, hxt⟩ => inter_comm t s ▸ mem_closure_iff.1 hxcs t h hxt, fun h =>
     h.mono <| inf_le_inf_right t subset_closure⟩
 
-theorem Filter.le_lift'_closure (l : Filter X) : l ≤ l.lift' closure :=
-  le_lift'.2 fun _ h => mem_of_superset h subset_closure
+-- theorem Filter.le_lift'_closure (l : Filter X) : l ≤ l.lift' closure :=
+--   le_lift'.2 fun _ h => mem_of_superset h subset_closure
 
-theorem Filter.HasBasis.lift'_closure {l : Filter X} {p : ι → Prop} {s : ι → Set X}
-    (h : l.HasBasis p s) : (l.lift' closure).HasBasis p fun i => closure (s i) :=
-  h.lift' (monotone_closure X)
+-- theorem Filter.HasBasis.lift'_closure {l : Filter X} {p : ι → Prop} {s : ι → Set X}
+--     (h : l.HasBasis p s) : (l.lift' closure).HasBasis p fun i => closure (s i) :=
+--   h.lift' (monotone_closure X)
 
-theorem Filter.HasBasis.lift'_closure_eq_self {l : Filter X} {p : ι → Prop} {s : ι → Set X}
-    (h : l.HasBasis p s) (hc : ∀ i, p i → IsClosed (s i)) : l.lift' closure = l :=
-  le_antisymm (h.ge_iff.2 fun i hi => (hc i hi).closure_eq ▸ mem_lift' (h.mem_of_mem hi))
-    l.le_lift'_closure
+-- theorem Filter.HasBasis.lift'_closure_eq_self {l : Filter X} {p : ι → Prop} {s : ι → Set X}
+--     (h : l.HasBasis p s) (hc : ∀ i, p i → IsClosed (s i)) : l.lift' closure = l :=
+--   le_antisymm (h.ge_iff.2 fun i hi => (hc i hi).closure_eq ▸ mem_lift' (h.mem_of_mem hi))
+--     l.le_lift'_closure
 
-@[simp]
-theorem Filter.lift'_closure_eq_bot {l : Filter X} : l.lift' closure = ⊥ ↔ l = ⊥ :=
-  ⟨fun h => bot_unique <| h ▸ l.le_lift'_closure, fun h =>
-    h.symm ▸ by rw [lift'_bot (monotone_closure _), closure_empty, principal_empty]⟩
+-- @[simp]
+-- theorem Filter.lift'_closure_eq_bot {l : Filter X} : l.lift' closure = ⊥ ↔ l = ⊥ :=
+--   ⟨fun h => bot_unique <| h ▸ l.le_lift'_closure, fun h =>
+--     h.symm ▸ by rw [lift'_bot (monotone_closure _), closure_empty, principal_empty]⟩
 
 theorem dense_iff_closure_eq : Dense s ↔ closure s = univ :=
   eq_univ_iff_forall.symm
@@ -556,3 +556,4 @@ theorem compl_frontier_eq_union_interior : (frontier s)ᶜ = interior s ∪ inte
   simp only [compl_inter, compl_compl]
 
 end Frontier
+-- #min_imports

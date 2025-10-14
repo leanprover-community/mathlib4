@@ -221,14 +221,14 @@ theorem Set.MapsTo.closure_left {t : Set Y} (h : MapsTo f s t)
     (hc : Continuous f) (ht : IsClosed t) : MapsTo f (closure s) t :=
   ht.closure_eq ▸ h.closure hc
 
-theorem Filter.Tendsto.lift'_closure (hf : Continuous f) {l l'} (h : Tendsto f l l') :
-    Tendsto f (l.lift' closure) (l'.lift' closure) :=
-  tendsto_lift'.2 fun s hs ↦ by
-    filter_upwards [mem_lift' (h hs)] using (mapsTo_preimage _ _).closure hf
+-- theorem Filter.Tendsto.lift'_closure (hf : Continuous f) {l l'} (h : Tendsto f l l') :
+--     Tendsto f (l.lift' closure) (l'.lift' closure) :=
+--   tendsto_lift'.2 fun s hs ↦ by
+--     filter_upwards [mem_lift' (h hs)] using (mapsTo_preimage _ _).closure hf
 
-theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
-    Tendsto f ((𝓝 x).lift' closure) ((𝓝 (f x)).lift' closure) :=
-  (hf.tendsto x).lift'_closure hf
+-- theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
+--     Tendsto f ((𝓝 x).lift' closure) ((𝓝 (f x)).lift' closure) :=
+--   (hf.tendsto x).lift'_closure hf
 
 /-!
 ### Function with dense range

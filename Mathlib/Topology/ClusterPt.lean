@@ -300,26 +300,26 @@ theorem mem_closure_iff_nhds_basis {p : ι → Prop} {s : ι → Set X} (h : (�
   (mem_closure_iff_nhds_basis' h).trans <| by
     simp only [Set.Nonempty, mem_inter_iff, and_comm]
 
-theorem clusterPt_iff_lift'_closure {F : Filter X} :
-    ClusterPt x F ↔ pure x ≤ (F.lift' closure) := by
-  simp_rw [clusterPt_iff_forall_mem_closure,
-    (hasBasis_pure _).le_basis_iff F.basis_sets.lift'_closure, id, singleton_subset_iff, true_and,
-    exists_const]
+-- theorem clusterPt_iff_lift'_closure {F : Filter X} :
+--     ClusterPt x F ↔ pure x ≤ (F.lift' closure) := by
+--   simp_rw [clusterPt_iff_forall_mem_closure,
+--     (hasBasis_pure _).le_basis_iff F.basis_sets.lift'_closure, id, singleton_subset_iff, true_and,
+--     exists_const]
 
-theorem clusterPt_iff_lift'_closure' {F : Filter X} :
-    ClusterPt x F ↔ (F.lift' closure ⊓ pure x).NeBot := by
-  rw [clusterPt_iff_lift'_closure, inf_comm]
-  constructor
-  · intro h
-    simp [h, pure_neBot]
-  · intro h U hU
-    simp_rw [← forall_mem_nonempty_iff_neBot, mem_inf_iff] at h
-    simpa using h ({x} ∩ U) ⟨{x}, by simp, U, hU, rfl⟩
+-- theorem clusterPt_iff_lift'_closure' {F : Filter X} :
+--     ClusterPt x F ↔ (F.lift' closure ⊓ pure x).NeBot := by
+--   rw [clusterPt_iff_lift'_closure, inf_comm]
+--   constructor
+--   · intro h
+--     simp [h, pure_neBot]
+--   · intro h U hU
+--     simp_rw [← forall_mem_nonempty_iff_neBot, mem_inf_iff] at h
+--     simpa using h ({x} ∩ U) ⟨{x}, by simp, U, hU, rfl⟩
 
-@[simp]
-theorem clusterPt_lift'_closure_iff {F : Filter X} :
-    ClusterPt x (F.lift' closure) ↔ ClusterPt x F := by
-  simp [clusterPt_iff_lift'_closure, lift'_lift'_assoc (monotone_closure X) (monotone_closure X)]
+-- @[simp]
+-- theorem clusterPt_lift'_closure_iff {F : Filter X} :
+--     ClusterPt x (F.lift' closure) ↔ ClusterPt x F := by
+--   simp [clusterPt_iff_lift'_closure, lift'_lift'_assoc (monotone_closure X) (monotone_closure X)]
 
 theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s :=
   calc
