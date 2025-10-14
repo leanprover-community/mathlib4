@@ -23,7 +23,7 @@ We promote `eval₂` to an algebra hom in `aeval`.
 - `Polynomial.aeval`: given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
-- `Polynomial.baseChange` : given `φ : S →ₐ[R] S'`, `baseChange φ` aplies `φ` on the
+- `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `baseChange φ` aplies `φ` on the
   coefficients of a polynomial in `S[X]`.
 
 -/
@@ -185,6 +185,19 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
   rfl
+
+lemma coeff_mapAlgHom_apply (f : A →ₐ[R] B) (p : A[X]) (n : ℕ) :
+    coeff (mapAlgHom f p) n = f (coeff p n) := by
+  simp
+
+lemma lcoeff_comp_mapAlgHom_eq (f : A →ₐ[R] B) (n : ℕ) :
+    LinearMap.comp (AlgHom.toLinearMap f) ((lcoeff A n).restrictScalars R) =
+      LinearMap.comp ((lcoeff B n).restrictScalars R) (mapAlgHom f).toLinearMap := by
+  ext f; simp
+
+lemma mapAlgHom_monomial (f : A →ₐ[R] B) (n : ℕ) (a : A) :
+    (mapAlgHom f) ((Polynomial.monomial n) a) = (Polynomial.monomial n) (f a) := by
+  simp
 
 /-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
 def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
@@ -749,35 +762,5 @@ lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
   mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
 
 end CommSemiring
-
-section BaseChange
-
-variable [CommSemiring R] [CommSemiring S] [Algebra R S] {S' : Type*} [CommSemiring S']
-  [Algebra R S']
-
-/-- `baseChange φ` aplies `φ` on the coefficients of a polynomial in `S[X]`. -/
-noncomputable def baseChange (φ : S →ₐ[R] S') : S[X] →ₐ[R] S'[X] where
-  toRingHom := eval₂RingHom (C.comp φ) X
-  commutes' := fun r ↦ by simp
-
-@[simp]
-lemma coeff_baseChange_apply (φ : S →ₐ[R] S') (f : S[X]) (p : ℕ) :
-    coeff (baseChange φ f) p = φ (coeff f p) := by
-  rw [baseChange, AlgHom.coe_mk, coe_eval₂RingHom]
-  induction f using Polynomial.induction_on with
-  | C r => simp [coeff_C, apply_ite φ]
-  | add f g hf hg => simp [hf, hg]
-  | monomial n r _ => simp [apply_ite φ]
-
-lemma lcoeff_comp_baseChange_eq (φ : S →ₐ[R] S') (p : ℕ) :
-    LinearMap.comp (AlgHom.toLinearMap φ) ((lcoeff S p).restrictScalars R) =
-      LinearMap.comp ((lcoeff S' p).restrictScalars R) (baseChange φ).toLinearMap := by
-  ext f; simp
-
-lemma baseChange_monomial (φ : S →ₐ[R] S') (n : ℕ) (a : S) :
-    (baseChange φ) ((Polynomial.monomial n) a) = (Polynomial.monomial n) (φ a) := by
-  simp [baseChange, C_mul_X_pow_eq_monomial]
-
-end BaseChange
 
 end Polynomial
