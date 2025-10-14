@@ -159,7 +159,7 @@ theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
   commutes with `eraseLead` in the number of sign changes. This is because the product of
   `P` and `X - η` has the pattern `[+, -, ...]` as well, so then `P.eraseLead` starts with
   `[-,...]`, and multiplying by `X - η` gives `[-, ...]` too. -/
-lemma signVariations_eraseLead_mul_XC_eq_XC_mul_eraseLead (hη : 0 < η) (hP₀ : 0 < leadingCoeff P)
+lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCoeff P)
     (hc : P.nextCoeff < 0) :
     ((X - C η) * P).eraseLead.signVariations = ((X - C η) * P.eraseLead).signVariations := by
   obtain ⟨d, hd⟩ := Nat.exists_eq_add_one.mpr (natDegree_pos_of_nextCoeff_ne_zero hc.ne)
@@ -225,7 +225,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
   have h₅ : (X - C η) ≠ 0 := X_sub_C_ne_zero η
   have h₆ : P.eraseLead ≠ 0 := mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₂
   obtain ⟨d, hd⟩ := Nat.exists_eq_add_of_lt (natDegree_pos_of_nextCoeff_ne_zero h₂)
-  replace h₂ := leadingCoeff_eraseLead_eq_nextCoeff h₂
+  apply leadingCoeff_eraseLead_eq_nextCoeff at h₂
   have h_cons := coeffList_eraseLead (mul_ne_zero h₅ h₆)
   generalize ((X - C η) * P.eraseLead).natDegree -
     ((X - C η) * P.eraseLead).eraseLead.degree.succ = n at h_cons ⊢
@@ -240,30 +240,27 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
     have : P.eraseLead.natDegree + 2 = ((X - C η) * P.eraseLead).coeffList.length := by
       simp [h₅, h₆, natDegree_mul, add_comm 1]
     have : P.natDegree + 2 = ((X - C η) * P).coeffList.length := by simp [X_sub_C_ne_zero, h₃, h₇]
-    have := P.natDegree.succ_pos
-    have := P.eraseLead.natDegree.succ_pos
     have := leadingCoeff_monic_mul (q := P) (monic_X_sub_C η)
     by_cases h₉ : ((X - C η) * P).nextCoeff = 0
     · suffices ((X - C η) * P).eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := coeffList_eraseLead (mul_ne_zero (X_sub_C_ne_zero η) h₃)
-        have : ((X - C η) * P).natDegree -
-          ((X - C η) * P).eraseLead.degree.succ = n + 1 := by grind
         grind [leadingCoeff_mul, leadingCoeff_X_sub_C]
-      rw [← self_sub_monomial_natDegree_leadingCoeff, h₈]
-      rw [← self_sub_monomial_natDegree_leadingCoeff]
-      grind [X_mul_monomial, sub_mul, leadingCoeff, coeff_X_sub_C_mul,
-        C_mul_monomial, nextCoeff_of_natDegree_pos, mul_sub, eq_of_sub_eq_zero]
+      suffices C η * monomial P.natDegree P.leadingCoeff = monomial P.natDegree P.nextCoeff by
+        grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff]
+      rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
+      grind [leadingCoeff, nextCoeff_of_natDegree_pos, C_mul_monomial, eq_of_sub_eq_zero,
+        coeff_X_sub_C_mul]
     · suffices ((X - C η) * P).eraseLead.eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := leadingCoeff_cons_eraseLead h₉
         have := coeffList_eraseLead (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₉)
         grind [leadingCoeff_eraseLead_eq_nextCoeff]
-      rw [← self_sub_monomial_natDegree_leadingCoeff, leadingCoeff_eraseLead_eq_nextCoeff h₉]
-      rw [show natDegree (eraseLead ((X - C η) * P)) = P.natDegree by
-        grind [natDegree_eraseLead_add_one]]
-      rw [← self_sub_monomial_natDegree_leadingCoeff, h₈]
-      rw [← self_sub_monomial_natDegree_leadingCoeff]
-      grind [X_mul_monomial, sub_mul, leadingCoeff, coeff_X_sub_C_mul,
-        C_mul_monomial, nextCoeff_of_natDegree_pos, mul_sub, map_sub]
+      suffices monomial P.natDegree ((X - C η) * P).nextCoeff =
+          monomial P.natDegree P.nextCoeff - C η * monomial P.natDegree P.leadingCoeff by
+        rw [← self_sub_monomial_natDegree_leadingCoeff]
+        grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff,
+          natDegree_eraseLead_add_one, leadingCoeff_eraseLead_eq_nextCoeff]
+      rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
+      grind [coeff_X_sub_C_mul, map_sub, C_mul_monomial, nextCoeff_of_natDegree_pos, leadingCoeff]
   · rw [h_cons, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, h₂]
 
 /-- If a polynomial starts with two positive coefficients, then the sign changes in the product
@@ -271,7 +268,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
 degree of P when P starts with matching coefficient signs. Of course this is also true when the
 first two coefficients of P are *negative*, but we just prove the case where they're positive
 since it's cleaner and sufficient for the later use. -/
-lemma signVariations_mul_eraseLead_le_of_nextCoeff (h : 0 < P.leadingCoeff) (h₂ : 0 < P.nextCoeff) :
+lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0 < P.nextCoeff) :
     signVariations ((X - C η) * P.eraseLead) ≤ signVariations ((X - C η) * P) := by
   obtain ⟨c₀, cs, ⟨hcs, hecs⟩⟩ := exists_cons_of_leadingCoeff_pos η h h₂.ne'
   simp +decide only [hcs, hecs, h, h₂, signVariations, List.destutter, List.map_cons, sign_pos,
@@ -364,12 +361,12 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
   · /- P starts with [+,+,...]. (X-C)*P starts with [+,?,...]. After dropping the lead of P, this
       becomes [+,...] and [+,...]. So the sign variations on P are unchanged when we induct, while
       (X-C)*P can only lose at most one sign change. -/
-    grind [sign_eq_one_iff, signVariations_mul_eraseLead_le_of_nextCoeff]
+    grind [sign_eq_one_iff, signVariations_X_sub_C_mul_eraseLead_le]
   · /- P starts with [+,-,...], so (X-C)*P starts with [+,-,...]. After dropping the lead of P, this
     becomes [-,...] and [-,...]. Dropping the first one of each decreases (X-C)*P by one and P by
     one, so we can induct. -/
     trans ((X - C η) * P).eraseLead.signVariations + 1
-    · grind [signVariations_eraseLead_mul_XC_eq_XC_mul_eraseLead, sign_eq_neg_one_iff]
+    · grind [signVariations_eraseLead_mul_X_sub_C, sign_eq_neg_one_iff]
     · suffices SignType.sign ((X - C η) * P).nextCoeff = -1 by
         simp +decide [signVariations_eq_eraseLead_add_ite h_mul, h_lC,
           leadingCoeff_eraseLead_eq_nextCoeff, ← sign_eq_zero_iff, this]
