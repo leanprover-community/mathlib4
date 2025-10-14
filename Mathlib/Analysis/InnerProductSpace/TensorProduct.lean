@@ -175,6 +175,12 @@ protected theorem ext_iff_inner_right {x y : E ⊗[𝕜] F} :
   refine ⟨fun h a b => by rw [h], fun h v => ?_⟩
   exact v.induction_on (by simp) h (fun c d hc hd => by simp [inner_add_right, hc, hd])
 
+/-- Given `x, y : E ⊗ F`, `x = y` iff `⟪a ⊗ₜ b, x⟫ = ⟪a ⊗ₜ b, y⟫` for all `a, b`. -/
+protected theorem ext_iff_inner_left {x y : E ⊗[𝕜] F} :
+    x = y ↔ ∀ a b, inner 𝕜 (a ⊗ₜ b) x = inner 𝕜 (a ⊗ₜ b) y := by
+  simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using
+    TensorProduct.ext_iff_inner_right (x := x) (y := y)
+
 /-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪x, a ⊗ₜ b ⊗ₜ c⟫ = ⟪y, a ⊗ₜ b ⊗ₜ c⟫` for all `a, b, c`.
 
 See also `ext_iff_inner_right_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
@@ -185,6 +191,14 @@ theorem ext_iff_inner_right_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
   exact ⟨fun h a b => by simp [h, inner_zero_left], fun h => TensorProduct.ext_iff_inner_right.mpr
     fun z b => z.induction_on (by simp) (by simp [h])
     fun c d hc hd => by simp [add_tmul, inner_add_right, hc, hd]⟩
+
+/-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪a ⊗ₜ b ⊗ₜ c, x⟫ = ⟪a ⊗ₜ b ⊗ₜ c, y⟫` for all `a, b, c`.
+
+See also `ext_iff_inner_left_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
+theorem ext_iff_inner_left_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
+    x = y ↔ ∀ a b c, inner 𝕜 (a ⊗ₜ b ⊗ₜ c) x = inner 𝕜 (a ⊗ₜ b ⊗ₜ c) y := by
+  simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using
+    ext_iff_inner_right_threefold (x := x) (y := y)
 
 section isometry
 
@@ -284,6 +298,15 @@ theorem ext_iff_inner_right_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
   simp only [← (assocLinearIsometryEquiv 𝕜 E F G).symm.injective.eq_iff,
     ext_iff_inner_right_threefold, LinearIsometryEquiv.inner_map_eq_flip]
   simp
+
+/-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪a ⊗ₜ (b ⊗ₜ c), x⟫ = ⟪a ⊗ₜ (b ⊗ₜ c), y⟫` for all
+`a, b, c`.
+
+See also `ext_iff_inner_left_threefold` for when `x, y : E ⊗ F ⊗ G`. -/
+theorem ext_iff_inner_left_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
+    x = y ↔ ∀ a b c, inner 𝕜 (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) x = inner 𝕜 (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) y := by
+  simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using
+    ext_iff_inner_right_threefold' (x := x) (y := y)
 
 end TensorProduct
 
