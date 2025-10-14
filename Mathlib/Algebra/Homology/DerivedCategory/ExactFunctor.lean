@@ -87,6 +87,7 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
       simp only [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app, map_id, comp_obj])
 
+/-- The commute of `DerivedCategory.singleFunctor` with `F` and `F.mapDerivedCategory`. -/
 noncomputable def mapDerivedCategorySingleFunctor (n : ℕ) :
     (DerivedCategory.singleFunctor C₁ n) ⋙ F.mapDerivedCategory ≅
       F ⋙ (DerivedCategory.singleFunctor C₂ n) :=
