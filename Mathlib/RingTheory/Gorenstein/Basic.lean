@@ -492,7 +492,7 @@ variable [Small.{v} R]
 
 section
 
-universe w
+universe u' w
 
 variable [UnivLE.{v, w}]
 
@@ -502,6 +502,46 @@ variable [UnivLE.{v, w}]
   --for `i = 0`, proven
   --for `i = 1`, use exactness lemma for `IsLocalizedModule` to prove cokernel is localized module
   --can set up totally abstract lemmas
+
+variable {S : Type u'} [CommRing S] [Algebra R S]
+
+lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+    [Module R M₁] [Module R M₂] [Module R M₃] {N₁ N₂ N₃ : Type*} [AddCommGroup N₁] [AddCommGroup N₂]
+    [AddCommGroup N₃] [Module R N₁] [Module R N₂] [Module R N₃] [Module S N₁] [Module S N₂]
+    [Module S N₃] [IsScalarTower R S N₁] [IsScalarTower R S N₂] [IsScalarTower R S N₃]
+    (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (exac1 : Function.Exact f g) (surj1 : Function.Surjective g)
+    (f' : N₁ →ₗ[S] N₂) (g' : N₂ →ₗ[S] N₃) (exac2 : Function.Exact f' g')
+    (surj2 : Function.Surjective g') (h₁ : M₁ →ₗ[R] N₁) (h₂ : M₂ →ₗ[R] N₂) (h₃ : M₃ →ₗ[R] N₃)
+    (comm1 : h₂.comp f = (f'.restrictScalars R).comp h₁)
+    (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂)
+    (isb1 : IsBaseChange S h₁) (isb2 : IsBaseChange S h₂) : IsBaseChange S h₃ := by
+  have eqmap : f'.restrictScalars R = IsTensorProduct.map isb1 isb2 LinearMap.id f := by
+    --use `comm1`
+    sorry
+  let N₃' := TensorProduct R S M₃
+  let isb3' := TensorProduct.isBaseChange R M₃ S
+  let g'' : N₂ →ₗ[S] N₃' := (g.baseChange S).comp isb2.equiv.symm.toLinearMap
+  have exac2' : Function.Exact f' g'' := by sorry
+  have surj2' : Function.Surjective g'' := by sorry
+  have kereq : LinearMap.ker g'' = LinearMap.ker g' := by
+    rw [LinearMap.exact_iff.mp exac2', LinearMap.exact_iff.mp exac2]
+  let e : N₃' ≃ₗ[S] N₃ := ((LinearMap.quotKerEquivOfSurjective _ surj2').symm.trans
+      (Submodule.quotEquivOfEq _ _ kereq)).trans (LinearMap.quotKerEquivOfSurjective _ surj2)
+  have comm3 : e.comp g'' = g' := by
+    ext x
+    have : ((g''.quotKerEquivOfSurjective surj2').symm (g'' x)) = Submodule.Quotient.mk x := by
+      apply (g''.quotKerEquivOfSurjective surj2').injective
+      simp
+    simp [e, this]
+  apply IsBaseChange.of_equiv e
+  intro x
+  rcases surj1 x with ⟨y, hy⟩
+  rw [← hy, ← LinearMap.comp_apply, comm2, LinearMap.comp_apply, LinearMap.coe_restrictScalars]
+  have : 1 ⊗ₜ[R] g y = g'' (h₂ y) := by
+    change 1 ⊗ₜ[R] g y = (LinearMap.baseChange S g) (isb2.equiv.symm (h₂ y))
+    simp [IsBaseChange.equiv_symm_apply isb2]
+  simp only [this, ← comm3, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  rfl
 
 instance (S : Submonoid R) : Small.{v} (Localization S) :=
   small_of_surjective Localization.mkHom_surjective
