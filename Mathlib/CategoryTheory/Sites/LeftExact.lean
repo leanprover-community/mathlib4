@@ -292,6 +292,11 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+instance [∀ (P : Cᵒᵖ ⥤ Type t) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+    [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] : HasSheafify J (Type t) :=
+  inferInstance
+
 end
 
 variable {D : Type w} [Category.{w'} D]
