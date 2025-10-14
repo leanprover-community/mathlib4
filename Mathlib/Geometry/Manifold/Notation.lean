@@ -306,12 +306,16 @@ where
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
     -- or `e` is `H` itself.
-    let some H ← findSomeLocalInstanceOf? ``ChartedSpace fun _ type ↦ do
-        trace[Elab.DiffGeo.MDiff] "found a `ChartedSpace` instance: `{type}`"
+    let some H ← findSomeLocalInstanceOf? ``ChartedSpace fun _inst type ↦ do
+        trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
         match_expr type with
         | ChartedSpace H _ M _ =>
-          if ← withReducible (pureIsDefEq M e) then return some H else
-          if ← withReducible (pureIsDefEq H e) then return some H else return none
+          if ← withReducible (pureIsDefEq M e) then
+            trace[Elab.DiffGeo.MDiff] "{e} is a charted space over `{H}`"
+            return some H else
+          if ← withReducible (pureIsDefEq H e) then
+            trace[Elab.DiffGeo.MDiff] "{e} is the charted space of `{M}`"
+            return some H else return none
         | _ => return none
       | throwError "Couldn't find a `ChartedSpace` structure on {e} among local instances, \
           and {e} is not the charted space of some type in the local context either."
