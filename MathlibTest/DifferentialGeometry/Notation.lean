@@ -468,7 +468,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
     [Elab.DiffGeo.MDiff] Failed with error:
         No `baseInfo` provided
   [Elab.DiffGeo.MDiff] ✅️ TangentSpace
-    [Elab.DiffGeo.MDiff] This is the total space of the tangent bundle of M
+    [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the tangent bundle of `M`
     [Elab.DiffGeo.MDiff] Found model: I.prod I.tangent
   [Elab.DiffGeo.MDiff] Found model: I.prod I.tangent
 [Elab.DiffGeo.MDiff] Finding a model for: F
@@ -479,7 +479,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
   [Elab.DiffGeo.MDiff] Failed with error:
       F is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ✅️ NormedSpace
-  [Elab.DiffGeo.MDiff] Field is: 𝕜
+  [Elab.DiffGeo.MDiff] F is a normed space over the field `𝕜`
   [Elab.DiffGeo.MDiff] Found model: 𝓘(𝕜, F)
 -/
 #guard_msgs in

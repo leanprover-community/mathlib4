@@ -140,14 +140,14 @@ scoped elab:max "T% " t:term:arg : term => do
     -- Note: we do not run `whnfR` on `tgt` because `Bundle.Trivial` is reducible.
     match_expr tgt with
     | Bundle.Trivial E E' _ =>
-      trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle"
+      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a section of `Bundle.Trivial {E} {E'}`"
       -- Note: we allow `isDefEq` here because any mvar assignments should persist.
       if ← withReducible (isDefEq E base) then
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, e.app x]
         mkLambdaFVars #[x] body
       else return e
     | TangentSpace _k _ E _ _ _H _ _I _M _ _ _x =>
-      trace[Elab.DiffGeo.TotalSpaceMk] "Vector field"
+      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `M`"
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, e.app x]
       mkLambdaFVars #[x] body
     | _ => match (← instantiateMVars tgt).cleanupAnnotations with
@@ -266,7 +266,7 @@ where
             if ← withReducible (pureIsDefEq E F) then return some K else return none
           | _ => return none
         | throwError "Couldn't find a `NormedSpace` structure on {F} among local instances."
-      trace[Elab.DiffGeo.MDiff] "{F} is a normed field over {K}"
+      trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"
       let kT : Term ← Term.exprToSyntax K
       let srcIT : Term ← Term.exprToSyntax srcI
       let FT : Term ← Term.exprToSyntax F
@@ -278,7 +278,7 @@ where
   fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
     match_expr V with
     | TangentSpace _k _ _E _ _ _H _ I M _ _ => do
-      trace[Elab.DiffGeo.MDiff] "This is the total space of the tangent bundle of {M}"
+      trace[Elab.DiffGeo.MDiff] "`{V}` is the total space of the tangent bundle of `{M}`"
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
       Term.elabTerm resTerm none
@@ -287,7 +287,7 @@ where
   fromTangentBundle : TermElabM Expr := do
     match_expr e with
     | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
-      trace[Elab.DiffGeo.MDiff] "{e} is a TangentBundle over model {I} on {M}"
+      trace[Elab.DiffGeo.MDiff] "{e} is a `TangentBundle` over model `{I}` on `{M}`"
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
       Term.elabTerm resTerm none
@@ -297,10 +297,11 @@ where
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
-          if ← withReducible (pureIsDefEq E e) then return some (inst, K) else return none
+          if ← withReducible (pureIsDefEq E e) then return some (inst, K)
+          else return none
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on {e} among local instances."
-    trace[Elab.DiffGeo.MDiff] "Field is: {K}"
+    trace[Elab.DiffGeo.MDiff] "{e} is a normed space over the field `{K}`"
     mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
@@ -326,8 +327,8 @@ where
         | _ => return none
       | throwError "Couldn't find a `ModelWithCorners` with model space {H} in the local context."
     return m
-  /-- Attempt to find a model with corners from a normed field. We attempt to find a global
-  instance here. -/
+  /-- Attempt to find a model with corners from a normed field.
+  We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do
     let eT : Term ← Term.exprToSyntax e
     let iTerm : Term ← ``(𝓘($eT, $eT))
