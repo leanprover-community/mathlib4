@@ -192,8 +192,8 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       · refine Integrable.integrableOn ?_
         refine hsub.integrable_stoppedValue ?_ (fun ω ↦ mod_cast hittingBtwn_le ω)
         exact hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici
-      · exact measurableSet_lt (Finset.measurable_range_sup'' fun n _ =>
-                (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const
+      · exact nullMeasurableSet_lt (Finset.measurable_range_sup'' fun n _ ↦
+          (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
       rw [Set.mem_setOf_eq] at hω
       have : hittingBtwn f {y : ℝ | ↑ε ≤ y} 0 n ω = n := by
         classical simp only [hittingBtwn, Set.mem_setOf_eq,
