@@ -174,10 +174,11 @@ end Neg
 
 section Const
 
-/-- The class of constant Lp functions. Has only `p = ∞` and `μ.IsFiniteMeasure` instances. -/
+/-- A class which encodes that constant functions are members of `Lp`.
+This has instances when `p := ∞` or `μ.IsFiniteMeasure`. -/
 class MemLp.Const {α : Type u_1} {m0 : MeasurableSpace α} (p : ℝ≥0∞)
   (μ : Measure α) where
-  eLpNorm_const_lt_top' (c : ε) : eLpNorm (fun _ ↦ c) p μ < ∞
+  eLpNorm_const_lt_top' (c : ENNReal) (hc : ‖c‖ₑ ≠ ∞) : eLpNorm (fun _ ↦ c) p μ < ∞
 
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
   [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
@@ -226,7 +227,7 @@ instance [IsFiniteMeasure μ] : MemLp.Const p μ where
 
 export MeasureTheory.MemLp.Const (eLpNorm_const_lt_top')
 
-theorem memLp_const_of_enorm [TopologicalSpace ε] [MemLp.Const ε p μ] {c : ε}
+theorem memLp_const_of_enorm [TopologicalSpace ε] [MemLp.Const p μ] {c : ε}
     (hc : ‖c‖ₑ ≠ ∞) : MemLp (fun _ ↦ c) p μ :=
   ⟨aestronglyMeasurable_const, eLpNorm_const_lt_top' _ hc⟩
 
@@ -256,10 +257,10 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [eLpNorm_const_lt_top_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top]; simp
 
-theorem eLpNorm_const_lt_top [MemLp.Const E p μ] (c : E) : eLpNorm (fun _ ↦ c) p μ < ∞ :=
-  MemLp.Const.eLpNorm_const_lt_top' c (by simp)
+theorem eLpNorm_const_lt_top [h : MemLp.Const p μ] (c : E) : eLpNorm (fun _ ↦ c) p μ < ∞ :=
+  MemLp.Const.eLpNorm_const_lt_top' (self := h) ‖c‖ₑ (by simp)
 
-theorem memLp_const (c : E) [MemLp.Const E p μ] : MemLp (fun _ ↦ c) p μ :=
+theorem memLp_const (c : E) [MemLp.Const p μ] : MemLp (fun _ ↦ c) p μ :=
   memLp_const_of_enorm (by simp)
 
 theorem memLp_const_iff_enorm
@@ -383,7 +384,7 @@ theorem eLpNormEssSup_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC
     eLpNormEssSup f μ ≤ C :=
   essSup_le_of_ae_le C hfC
 
-instance : MemLp.Const ε ∞ μ where
+instance : MemLp.Const ∞ μ where
   eLpNorm_const_lt_top' c hc := eLpNormEssSup_le_of_ae_enorm_bound (by simp) |>.trans_lt hc.lt_top
 
 theorem eLpNormEssSup_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
