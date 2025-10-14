@@ -33,7 +33,7 @@ open Function
 
 namespace MulAction
 
-variable (M : Type u) [Monoid M] (α : Type v) [MulAction M α] {β : Type*} [MulAction M β]
+variable (M : Type*) (α : Type*) [SMul M α]
 
 section Orbit
 
@@ -53,6 +53,8 @@ theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x 
 @[to_additive (attr := simp)]
 theorem mem_orbit (a : α) (m : M) : m • a ∈ orbit M a :=
   ⟨m, rfl⟩
+
+variable {M : Type*} {α : Type*} [Monoid M] [MulAction M α]
 
 @[to_additive]
 theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a₁) :
@@ -143,7 +145,7 @@ end FixedPoints
 
 section Stabilizers
 
-variable {α}
+variable {α : Type*} [Monoid M] [MulAction M α]
 
 /-- The stabilizer of a point `a` as a submonoid of `M`. -/
 @[to_additive /-- The stabilizer of a point `a` as an additive submonoid of `M`. -/]
