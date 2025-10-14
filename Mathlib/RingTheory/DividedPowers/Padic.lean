@@ -29,29 +29,6 @@ open DividedPowers DividedPowers.OfInvertibleFactorial Nat Ring
 
 variable (p : ℕ) [hp : Fact p.Prime]
 
-section Factorial
-
-theorem sub_one_mul_padicValNat_factorial_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
-    (p - 1) * padicValNat p n.factorial < n := by
-  rw [sub_one_mul_padicValNat_factorial n]
-  refine Nat.sub_lt_self ?_ (digit_sum_le p n)
-  have hnil : p.digits n ≠ [] := Nat.digits_ne_nil_iff_ne_zero.mpr hn
-  exact Nat.sum_pos_iff_exists_pos.mpr
-    ⟨_, List.getLast_mem hnil, Nat.pos_of_ne_zero (Nat.getLast_digit_ne_zero p hn)⟩
-
-theorem padicValNat_factorial_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
-    padicValNat p n.factorial < n := by
-  apply lt_of_le_of_lt _ (sub_one_mul_padicValNat_factorial_lt_of_ne_zero p hn)
-  apply Nat.le_mul_of_pos_left
-  exact le_sub_one_of_lt hp.out.one_lt
-
-theorem padicValNat_factorial_le (n : ℕ) : padicValNat p n.factorial ≤ n := by
-  by_cases hn : n = 0
-  · simp [hn]
-  · exact le_of_lt (padicValNat_factorial_lt_of_ne_zero p hn)
-
-end Factorial
-
 section Injective
 
 open Function
@@ -102,7 +79,7 @@ section Padic
 /-- The family `ℕ → ℚ_[p] → ℚ_[p]` given by `dpow n x = x ^ n / n!`. -/
 private noncomputable def dpow' : ℕ → ℚ_[p] → ℚ_[p] := fun m x => inverse (m ! : ℚ_[p]) * x ^ m
 
-lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
+private lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
     (hx : x ∈ Ideal.span {(p : ℤ_[p])}) : ‖dpow' p n x‖ ≤ (p : ℝ)⁻¹ := by
   unfold dpow'
   by_cases hx0 : x = 0
@@ -128,7 +105,8 @@ lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
       norm_cast
       rwa [← PadicInt.mem_span_pow_iff_le_valuation x hx0, pow_one]
 
-lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ_[p])}) : ‖dpow' p n x‖ ≤ 1 := by
+private lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ_[p])}) :
+    ‖dpow' p n x‖ ≤ 1 := by
   unfold dpow'
   by_cases hn : n = 0
   · simp [hn, factorial_zero, cast_one, inverse_one, pow_zero, mul_one, norm_one, le_refl]
@@ -138,13 +116,7 @@ lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ_[p])}) 
     · exact_mod_cast Nat.Prime.one_le hp.elim
     · norm_num
 
-lemma Coe.ringHom_apply (x : ℤ_[p]) : Coe.ringHom x = (x : ℚ_[p]) := rfl
-
-lemma coe_sum {α : Type*} (s : Finset α) (f : α → ℤ_[p]) :
-    (((∑ z ∈ s, f z) : ℤ_[p]) : ℚ_[p]) = ∑ z ∈ s, (f z : ℚ_[p]) := by
-  simp [← Coe.ringHom_apply, map_sum PadicInt.Coe.ringHom f s]
-
-theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ideal.span {↑p}) :
+private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ideal.span {↑p}) :
     ⟨dpow' p n x, dpow'_int p n hx⟩ ∈ Ideal.span {(p : ℤ_[p])} := by
   have hiff := PadicInt.norm_le_pow_iff_mem_span_pow ⟨dpow' p n x, dpow'_int p n hx⟩ 1
   rw [pow_one] at hiff
@@ -170,7 +142,7 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
 
 open Function
 
-lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
+private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
     (dividedPowers p).dpow n x = open Classical in
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
   simp only [dividedPowers, dividedPowers_of_injective]
@@ -183,6 +155,12 @@ lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
     simpa only [← hinj.eq_iff, (Exists.choose_spec (_ : ∃ a, ∃ _, Coe.ringHom a = _)).2,
       RatAlgebra.dpow_apply, Submodule.mem_top] using heq.symm
   · rfl
+
+lemma coe_dpow_eq (n : ℕ) (x : ℤ_[p]) :
+    ((dividedPowers p).dpow n x : ℚ_[p]) = open Classical in
+      if _ : x ∈ Ideal.span {(p : ℤ_[p])} then inverse (n ! : ℚ_[p]) * x ^ n else 0 := by
+  simp only [dividedPowers_eq, dpow', inverse_eq_inv', dite_eq_ite]
+  split_ifs <;> simp
 
 end Padic
 
