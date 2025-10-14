@@ -101,10 +101,6 @@ section MiscTheorems
 
 variable [Semiring k]
 
-/-- Copy of `Finsupp.smul_single'` that avoids the `MonoidAlgebra = Finsupp` defeq abuse. -/
-theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
-  Finsupp.smul_single' c a b
-
 theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
   simp
 
