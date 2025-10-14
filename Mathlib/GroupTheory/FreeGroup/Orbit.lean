@@ -65,21 +65,21 @@ theorem Orbit.duplicate (x : X) (w : α × Bool) :
   constructor
   · rintro ⟨-, ⟨⟨g, hg⟩, rfl⟩, rfl⟩
     set l := g.toWord with hl
-    have h_test : (⟨g, hg⟩ : startsWith w) = ⟨mk g.toWord, by simp [g.mk_toWord, hg]⟩ := by
+    have h : (⟨g, hg⟩ : startsWith w) = ⟨mk g.toWord, by simp [g.mk_toWord, hg]⟩ := by
       simp [g.mk_toWord]
     match l with
     | [] => simp [← hl, startsWith] at hg
     | [a] =>
-      simp_rw [h_test, ← hl, show a = w by simpa [← hl, startsWith] using hg, startsWith.smul_def,
+      simp_rw [h, ← hl, show a = w by simpa [← hl, startsWith] using hg, startsWith.smul_def,
         inv_smul_smul]
       exact Or.inr rfl
     | a :: b :: l =>
       have ha : a = w := by simpa [← hl, startsWith] using hg
-      have h := isReduced_cons_cons.mp (hl ▸ isReduced_toWord)
+      have h1 := isReduced_cons_cons.mp (hl ▸ isReduced_toWord)
       refine Or.inl (Set.mem_biUnion (x := b) (by grind) ?_)
-      simp_rw [h_test, ← hl, ha, ← List.singleton_append (l := b :: l), ← mul_mk,
-        startsWith.smul_def, mul_smul, inv_smul_smul]
-      exact ⟨⟨mk (b :: l), by simp [startsWith, h.2.reduce_eq]⟩, rfl⟩
+      simp_rw [h, ← hl, ha, ← List.singleton_append (l := b :: l), ← mul_mk, startsWith.smul_def,
+        mul_smul, inv_smul_smul]
+      exact ⟨⟨mk (b :: l), by simp [startsWith, h1.2.reduce_eq]⟩, rfl⟩
   · rintro (⟨-, ⟨w', rfl⟩, -, ⟨hw, rfl⟩, ⟨g, hg⟩, rfl⟩ | rfl)
     · exact ⟨mk [w] • g • x, ⟨⟨mk [w] * g, startsWith_mk_mul g (not_startsWith_of_ne hw g hg)⟩,
         mul_smul (mk [w]) g x⟩, inv_smul_smul (mk [w]) (g • x)⟩
