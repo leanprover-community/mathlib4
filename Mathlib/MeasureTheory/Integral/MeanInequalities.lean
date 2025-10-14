@@ -192,10 +192,18 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
     simp at hp
   | insert i₀ s hi₀ ih =>
     rcases eq_or_ne (p i₀) 1 with h2i₀|h2i₀
-    · have : ∀ i ∈ s, p i = 0 := by
+    · simp only [hi₀, not_false_eq_true, prod_insert]
+      have h2p : ∀ i ∈ s, p i = 0 := by
         simpa [hi₀, h2i₀, sum_eq_zero_iff_of_nonneg (fun i hi ↦ h2p i <| mem_insert_of_mem hi)]
           using hp
-      simp_all
+      calc ∫⁻ a, f i₀ a ^ p i₀ * ∏ i ∈ s, f i a ^ p i ∂μ
+          = ∫⁻ a, f i₀ a ^ p i₀ * ∏ i ∈ s, 1 ∂μ := by
+            congr! 3 with x
+            apply prod_congr rfl fun i hi ↦ by rw [h2p i hi, ENNReal.rpow_zero]
+        _ ≤ (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * ∏ i ∈ s, 1 := by simp [h2i₀]
+        _ = (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * ∏ i ∈ s, (∫⁻ a, f i a ∂μ) ^ p i := by
+            congr 1
+            apply prod_congr rfl fun i hi ↦ by rw [h2p i hi, ENNReal.rpow_zero]
     · have hpi₀ : 0 ≤ 1 - p i₀ := by
         simp_rw [sub_nonneg, ← hp, single_le_sum h2p (mem_insert_self ..)]
       have h2pi₀ : 1 - p i₀ ≠ 0 := by
