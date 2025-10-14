@@ -539,7 +539,7 @@ theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym �
 
 theorem fromRel_mono (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
     r₁ ≤ r₂ ↔ fromRel sym₁ ⊆ fromRel sym₂ :=
-  ⟨fun hle ↦ Sym2.ind fun _ _ h₁ ↦ hle _ _ h₁, fun hle _ _ h₁ ↦ fromRel_prop.mp <| hle h₁⟩
+  ⟨fun hle ↦ Sym2.ind hle, fun hle a b ↦ @hle s(a, b)⟩
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
   apply Set.eq_empty_of_forall_notMem fun e => _
