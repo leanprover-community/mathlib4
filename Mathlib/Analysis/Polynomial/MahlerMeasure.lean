@@ -195,7 +195,6 @@ theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺
   · have : ‖z‖ < 1 := by rwa [mem_ball, dist_zero_right, abs_one] at hzBall
     have : ‖z‖ ≤ 1 := le_of_lt this
     have hzcb : z ∈ B := Set.mem_of_mem_of_subset hzBall ball_subset_closedBall
-
     have : (fun u ↦ -((divisor (fun x ↦ x - z) (closedBall 0 |1|) u) * log ‖u‖)).support = {z} := by
       rw [Function.support_eq_iff]
       constructor
