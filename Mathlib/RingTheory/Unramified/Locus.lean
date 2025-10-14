@@ -20,8 +20,6 @@ import Mathlib.RingTheory.Support
   If `A` is (essentially) of finite type over `R`, then the unramified locus is open.
 -/
 
-universe u
-
 namespace Algebra
 
 section
@@ -60,7 +58,7 @@ end
 
 section
 
-variable {R A : Type u} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 lemma unramifiedLocus_eq_compl_support :
     unramifiedLocus R A = (Module.support A Ω[A⁄R])ᶜ := by

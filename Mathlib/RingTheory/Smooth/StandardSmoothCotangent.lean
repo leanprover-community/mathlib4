@@ -27,8 +27,6 @@ We also provide the corresponding instances for standard smooth algebras as coro
 We keep the notation `I = ker(R[X] → S)` in all docstrings of this file.
 -/
 
-universe u
-
 namespace Algebra
 
 section
@@ -267,7 +265,7 @@ instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
 
 end
 
-variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 instance (priority := 900) [IsStandardSmooth R S] : Smooth R S where
   formallySmooth := by
