@@ -47,6 +47,8 @@ import Mathlib.Tactic.StacksAttribute
 
 -/
 
+universe u₁ u₂
+
 open TensorProduct KaehlerDifferential
 
 open Function (Surjective)
@@ -400,7 +402,7 @@ with kernel `I` (typically a presentation `R[X] → S`),
 -/
 @[stacks 031I]
 theorem Algebra.Extension.formallySmooth_iff_split_injection
-    (P : Algebra.Extension R S) [FormallySmooth R P.Ring] :
+    (P : Algebra.Extension.{u₁} R S) [FormallySmooth R P.Ring] :
     Algebra.FormallySmooth R S ↔ ∃ l, l ∘ₗ P.cotangentComplex = LinearMap.id := by
   refine (Algebra.FormallySmooth.iff_split_injection P.algebraMap_surjective).trans ?_
   let e : P.ker.Cotangent ≃ₗ[P.Ring] P.Cotangent :=
@@ -478,7 +480,7 @@ instance [Algebra.FormallySmooth R S] : Subsingleton (Algebra.H1Cotangent R S) :
 
 namespace Algebra.Extension
 
-lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension R S) :
+lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u₁} R S) :
     Function.Bijective (CotangentSpace.map P.toInfinitesimal) := by
   suffices CotangentSpace.map P.toInfinitesimal =
       (tensorKaehlerQuotKerSqEquiv _ _ _).symm.toLinearMap by
@@ -491,7 +493,7 @@ lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension R S) :
   simp only [map_tmul, algebraMap_self, RingHom.id_apply, Hom.toAlgHom_apply]
   exact (tensorKaehlerQuotKerSqEquiv_symm_tmul_D _ _).symm
 
-lemma Cotangent.map_toInfinitesimal_bijective (P : Extension R S) :
+lemma Cotangent.map_toInfinitesimal_bijective (P : Extension.{u₁} R S) :
     Function.Bijective (Cotangent.map P.toInfinitesimal) := by
   constructor
   · rw [injective_iff_map_eq_zero]
@@ -512,7 +514,7 @@ lemma Cotangent.map_toInfinitesimal_bijective (P : Extension R S) :
     rw [ker_infinitesimal, Ideal.mk_mem_cotangentIdeal] at hx
     exact ⟨.mk ⟨x, hx⟩, rfl⟩
 
-lemma H1Cotangent.map_toInfinitesimal_bijective (P : Extension R S) :
+lemma H1Cotangent.map_toInfinitesimal_bijective (P : Extension.{u₁} R S) :
     Function.Bijective (H1Cotangent.map P.toInfinitesimal) := by
   constructor
   · intro x y e
@@ -529,7 +531,8 @@ Given extensions `0 → I₁ → P₁ → S → 0` and `0 → I₂ → P₂ → 
 this is an arbitrarily chosen map `P₁/I₁² → P₂/I₂²` of extensions.
 -/
 noncomputable
-def homInfinitesimal (P₁ P₂ : Extension R S) [FormallySmooth R P₁.Ring] :
+def homInfinitesimal (P₁ : Extension.{u₁} R S) (P₂ : Extension.{u₂} R S)
+    [FormallySmooth R P₁.Ring] :
     P₁.infinitesimal.Hom P₂.infinitesimal :=
   letI lift : P₁.Ring →ₐ[R] P₂.infinitesimal.Ring := FormallySmooth.liftOfSurjective
     (IsScalarTower.toAlgHom R P₁.Ring S)
@@ -555,14 +558,15 @@ def homInfinitesimal (P₁ P₂ : Extension R S) [FormallySmooth R P₁.Ring] :
 
 /-- Formally smooth extensions have isomorphic `H¹(L_P)`. -/
 noncomputable
-def H1Cotangent.equivOfFormallySmooth (P₁ P₂ : Extension R S)
+def H1Cotangent.equivOfFormallySmooth (P₁ : Extension.{u₁} R S) (P₂ : Extension.{u₂} R S)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
     P₁.H1Cotangent ≃ₗ[S] P₂.H1Cotangent :=
   .ofBijective _ (H1Cotangent.map_toInfinitesimal_bijective P₁) ≪≫ₗ
     H1Cotangent.equiv (Extension.homInfinitesimal _ _) (Extension.homInfinitesimal _ _)
     ≪≫ₗ .symm (.ofBijective _ (H1Cotangent.map_toInfinitesimal_bijective P₂))
 
-lemma H1Cotangent.equivOfFormallySmooth_toLinearMap {P₁ P₂ : Extension R S} (f : P₁.Hom P₂)
+lemma H1Cotangent.equivOfFormallySmooth_toLinearMap
+    {P₁ : Extension.{u₁} R S} {P₂ : Extension.{u₂} R S} (f : P₁.Hom P₂)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
     (H1Cotangent.equivOfFormallySmooth P₁ P₂).toLinearMap = map f := by
   ext1 x
@@ -571,18 +575,19 @@ lemma H1Cotangent.equivOfFormallySmooth_toLinearMap {P₁ P₂ : Extension R S} 
     ((map P₂.toInfinitesimal).restrictScalars S ∘ₗ map f) x
   rw [← map_comp, ← map_comp, map_eq]
 
-lemma H1Cotangent.equivOfFormallySmooth_apply {P₁ P₂ : Extension R S} (f : P₁.Hom P₂)
+lemma H1Cotangent.equivOfFormallySmooth_apply
+    {P₁ : Extension.{u₁} R S} {P₂ : Extension.{u₂} R S} (f : P₁.Hom P₂)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] (x) :
     H1Cotangent.equivOfFormallySmooth P₁ P₂ x = map f x := by
   rw [← equivOfFormallySmooth_toLinearMap]; rfl
 
-lemma H1Cotangent.equivOfFormallySmooth_symm (P₁ P₂ : Extension R S)
+lemma H1Cotangent.equivOfFormallySmooth_symm (P₁ : Extension.{u₁} R S) (P₂ : Extension.{u₂} R S)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
     (equivOfFormallySmooth P₁ P₂).symm = equivOfFormallySmooth P₂ P₁ := rfl
 
 /-- Any formally smooth extension can be used to calculate `H¹(L_{S/R})`. -/
 noncomputable
-def equivH1CotangentOfFormallySmooth (P : Extension R S) [FormallySmooth R P.Ring] :
+def equivH1CotangentOfFormallySmooth (P : Extension.{u₁} R S) [FormallySmooth R P.Ring] :
     P.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   have : FormallySmooth R (Generators.self R S).toExtension.Ring :=
     inferInstanceAs (FormallySmooth R (MvPolynomial _ _))
