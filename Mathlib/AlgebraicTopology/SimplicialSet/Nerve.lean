@@ -58,9 +58,14 @@ def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
 namespace nerve
 
 /-- Nerves of finite non-empty ordinals are representable functors. -/
-def RepresentableBySimplex (n : ℕ) : (nerve (Fin (n + 1))).RepresentableBy ⦋n⦌ where
-  homEquiv := SimplexCategory.homEquivFunctor
-  homEquiv_comp {_ _} _ _ := rfl
+def representableBy {n : ℕ} (α : Type u) [Preorder α] (e : α ≃o Fin (n + 1)) :
+    (nerve α).RepresentableBy ⦋n⦌ where
+  homEquiv := SimplexCategory.homEquivFunctor.trans
+    { toFun F := F ⋙ e.symm.monotone.functor
+      invFun F := F ⋙ e.monotone.functor
+      left_inv F := Functor.ext (fun x ↦ by simp)
+      right_inv F := Functor.ext (fun x ↦ by simp) }
+  homEquiv_comp _ _ := rfl
 
 variable {C : Type*} [Category C] {n : ℕ}
 

@@ -542,7 +542,7 @@ instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Cate
 instance hoFunctor.binarySimplexProductIsIso.{w} (n m : ℕ) :
     IsIso (prodComparison hoFunctor (Δ[n] : SSet.{w}) Δ[m]) :=
   IsIso.of_isIso_fac_right (prodComparison_natural
-    hoFunctor (simplexIsNerveULiftFin.{w} n).hom (simplexIsNerveULiftFin m).hom).symm
+    hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
 
 lemma hoFunctor.binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
