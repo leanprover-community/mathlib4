@@ -58,9 +58,9 @@ variable [Semiring k] [Mul G] [Semiring R]
 
 theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
     (f : k →+* R) (g : g_hom) (a b : MonoidAlgebra k G)
-    (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :
+    (h_comm : ∀ {x y}, y ∈ a.coeff.support → Commute (f (b.coeff x)) (g y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
-  conv_rhs => rw [← sum_single a, ← sum_single b]
+  conv_rhs => rw [← sum_coeff_single a, ← sum_coeff_single b]
   simp_rw [mul_def, map_finsuppSum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
   refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
   simp [mul_assoc, (h_comm hy).left_comm]
@@ -112,7 +112,7 @@ lemma mapRangeRingHom_apply (f : R →+* S) (x : MonoidAlgebra R M) (m : M) :
 @[simp]
 lemma mapRangeRingHom_single (f : R →+* S) (a : M) (b : R) :
     mapRangeRingHom M f (single a b) = single a (f b) := by
-  classical ext; simp [single_apply, apply_ite f]
+  classical ext; simp [Finsupp.single_apply, apply_ite f]
 
 @[simp] lemma mapRangeRingHom_id : mapRangeRingHom M (.id R) = .id (MonoidAlgebra R M) := by
   ext <;> simp
