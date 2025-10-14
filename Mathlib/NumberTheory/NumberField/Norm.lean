@@ -39,7 +39,7 @@ end Rat
 
 namespace RingOfIntegers
 
-variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
+variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L]
 
 /-- `Algebra.norm` as a morphism between the rings of integers. -/
 noncomputable def norm : 𝓞 L →* 𝓞 K :=
@@ -62,7 +62,8 @@ theorem norm_algebraMap (x : 𝓞 K) : norm K (algebraMap (𝓞 K) (𝓞 L) x) =
     RingOfIntegers.algebraMap_norm_algebraMap, Algebra.norm_algebraMap,
     RingOfIntegers.coe_eq_algebraMap, map_pow]
 
-theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) ↔ IsUnit x := by
+theorem isUnit_norm_of_isGalois [FiniteDimensional K L] [IsGalois K L] {x : 𝓞 L} :
+    IsUnit (norm K x) ↔ IsUnit x := by
   classical
   refine ⟨fun hx => ?_, IsUnit.map _⟩
   replace hx : IsUnit (algebraMap (𝓞 K) (𝓞 L) <| norm K x) := hx.map (algebraMap (𝓞 K) <| 𝓞 L)
@@ -79,7 +80,8 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
 
 /-- If `L/K` is a finite Galois extension of fields, then, for all `(x : 𝓞 L)` we have that
 `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`. -/
-theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x) := by
+theorem dvd_norm [FiniteDimensional K L] [IsGalois K L] (x : 𝓞 L) :
+    x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x) := by
   classical
   have hint :
     IsIntegral ℤ (∏ σ ∈ univ.erase (AlgEquiv.refl : L ≃ₐ[K] L), σ x) :=
