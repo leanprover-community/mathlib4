@@ -72,6 +72,7 @@ def _root_.Ideal.quotCotangentₐ {R : Type*} [CommRing R] (I : Ideal R) :
     I.quotCotangentₐ x = x :=
   rfl
 
+-- replaced with `iff_split_surjection` below
 private theorem split_of_formallySmooth_of_surjective'
     (R : Type u) (A : Type (max u v)) [CommRing R] [CommRing A] [Algebra R A]
     (B : Type v) [CommRing B] [Algebra R B] [FormallySmooth R B]
@@ -89,6 +90,7 @@ private theorem split_of_formallySmooth_of_surjective'
   obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective y
   exact hs
 
+-- replaced by `of_split` below
 private theorem comp_surjective_of_split'
     (R σ A : Type*) [CommRing R] [CommRing A] [Algebra R A] (f : MvPolynomial σ R →ₐ[R] A)
     (s : A →ₐ[R] MvPolynomial σ R ⧸ RingHom.ker f ^ 2) (hs : f.kerSquareLift.comp s = AlgHom.id R A)
@@ -108,6 +110,9 @@ private theorem comp_surjective_of_split'
   conv at hs => enter [1,2]; exact hx.symm -- kerSquareLift has RingHom.ker f.toRingHom which is bad
   simpa [← hx, show f x = r from hs] using hφ₁
 
+/-- If an `R`-algebra `A` is formally smooth, then it can "lift along nilpotent ideals", meaning
+that if `B` is any arbitrary `R`-algebra and `I` is an ideal in `B` with `I ^ 2 = ⊥`, then
+the natural map `(A →ₐ[R] B) → (A →ₐ[R] B ⧸ I)` is surjective. -/
 theorem comp_surjective {R A B : Type*} [CommRing R] [CommRing A] [Algebra R A] [FormallySmooth R A]
     [CommRing B] [Algebra R B] (I : Ideal B) (hi : I ^ 2 = ⊥) :
     Function.Surjective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
@@ -216,15 +221,15 @@ instance mvPolynomial : FormallySmooth R (MvPolynomial σ R) :=
   ⟨fun _ _ _ _ _ ↦ comp_surjective_mvPolynomial _ _ _ _⟩
 
 instance polynomial : FormallySmooth R R[X] :=
-  FormallySmooth.of_equiv (MvPolynomial.pUnitAlgEquiv R)
+  ⟨fun _ _ _ _ _ f ↦ ⟨Polynomial.aeval (f .X).out, by ext; simp⟩⟩
 
 end Polynomial
 
 section Comp
 
-variable (R : Type*) [CommSemiring R]
-variable (A : Type*) [CommSemiring A] [Algebra R A]
-variable (B : Type*) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+variable (R : Type*) [CommRing R]
+variable (A : Type*) [CommRing A] [Algebra R A]
+variable (B : Type*) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
 theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
   constructor
@@ -303,9 +308,9 @@ section BaseChange
 
 open scoped TensorProduct
 
-variable {R : Type*} [CommSemiring R]
-variable {A : Type*} [Semiring A] [Algebra R A]
-variable (B : Type*) [CommSemiring B] [Algebra R B]
+variable {R : Type*} [CommRing R]
+variable {A : Type*} [CommRing A] [Algebra R A]
+variable (B : Type*) [CommRing B] [Algebra R B]
 
 instance base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   constructor
