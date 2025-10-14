@@ -16,7 +16,7 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 
 * `BialgEquiv R A B`: the type of `R`-bialgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
@@ -299,14 +299,19 @@ theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     (ofBialgHom f g h₁ h₂).symm = ofBialgHom g f h₂ h₁ :=
   rfl
 
+end
+
+variable [Semiring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
+
 /-- Construct a bialgebra equiv from an algebra equiv respecting counit and comultiplication. -/
-@[simps apply] def ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
-    (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
-    A ≃ₐc[R] B where
+@[simps apply] def ofAlgEquiv (f : A ≃ₐ[R] B)
+    (counit_comp : (Bialgebra.counitAlgHom R B).comp f = Bialgebra.counitAlgHom R A)
+    (map_comp_comul : (Algebra.TensorProduct.map f f).comp (Bialgebra.comulAlgHom R A) =
+        (Bialgebra.comulAlgHom R B).comp f) : A ≃ₐc[R] B where
   __ := f
   map_smul' := map_smul f
-  counit_comp := counit_comp
-  map_comp_comul := map_comp_comul
+  counit_comp := congr($(counit_comp).toLinearMap)
+  map_comp_comul := congr($(map_comp_comul).toLinearMap)
 
 @[simp]
 lemma toLinearMap_ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp map_comp_comul) :
@@ -320,5 +325,4 @@ noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐ
 @[simp]
 lemma coe_ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : (ofBijective f hf : A → B) = f := rfl
 
-end
 end BialgEquiv

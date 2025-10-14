@@ -26,7 +26,7 @@ open Opposite Functor
 
 universe w v v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The Yoneda embedding, as a functor from `C` into presheaves on `C`. -/
@@ -600,8 +600,7 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso yonedaEquiv)) (by
     intro X Y f
     ext a b
-    dsimp [yonedaEquiv]
-    simp [← FunctorToTypes.naturality])
+    simp [yonedaEquiv, ← FunctorToTypes.naturality])
 
 /-- The curried version of the Yoneda lemma. -/
 def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
@@ -611,12 +610,12 @@ def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
     (fun X => NatIso.ofComponents
       (fun _ => Equiv.toIso <| yonedaEquiv.trans Equiv.ulift.symm)
       (by
-        intros Y Z f
+        intro Y Z f
         ext g
         rw [← ULift.down_inj]
         simpa using yonedaEquiv_comp _ _))
     (by
-      intros Y Z f
+      intro Y Z f
       ext F g
       rw [← ULift.down_inj]
       simpa using (yonedaEquiv_naturality _ _).symm)
@@ -645,7 +644,6 @@ lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
 lemma isIso_iff_yoneda_map_bijective {X Y : C} (f : X ⟶ Y) :
     IsIso f ↔ (∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)) := by
   refine ⟨fun _ ↦ ?_, fun hf ↦ isIso_of_yoneda_map_bijective f hf⟩
-  have : IsIso (yoneda.map f) := inferInstance
   intro T
   rw [← isIso_iff_bijective]
   exact inferInstanceAs (IsIso ((yoneda.map f).app _))
@@ -839,7 +837,7 @@ def largeCurriedCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
     (fun X => NatIso.ofComponents
       (fun _ => Equiv.toIso <| coyonedaEquiv.trans Equiv.ulift.symm)
       (by
-        intros Y Z f
+        intro Y Z f
         ext g
         rw [← ULift.down_inj]
         simpa using coyonedaEquiv_comp _ _))
@@ -873,7 +871,6 @@ lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
 lemma isIso_iff_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y) :
     IsIso f ↔ (∀ (T : C), Function.Bijective (fun (x : Y ⟶ T) => f ≫ x)) := by
   refine ⟨fun _ ↦ ?_, fun hf ↦ isIso_of_coyoneda_map_bijective f hf⟩
-  have : IsIso (coyoneda.map f.op) := inferInstance
   intro T
   rw [← isIso_iff_bijective]
   exact inferInstanceAs (IsIso ((coyoneda.map f.op).app _))

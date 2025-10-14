@@ -100,8 +100,6 @@ structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
   /-- The underlying `ContinuousMonoidHom`. -/
   hom' : A →ₜ* B
 
-attribute [to_additive existing ProfiniteAddGrp.Hom.mk] ProfiniteGrp.Hom.mk
-
 @[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ProfiniteGrp.Hom A B
@@ -228,9 +226,9 @@ instance : HasForget₂ FiniteGrp ProfiniteGrp where
     map := fun f => ⟨f.hom, by continuity⟩ }
 
 @[to_additive]
-instance : HasForget₂ ProfiniteGrp Grp where
-  forget₂.obj P := Grp.of P
-  forget₂.map f := Grp.ofHom f.hom.toMonoidHom
+instance : HasForget₂ ProfiniteGrp GrpCat where
+  forget₂.obj P := GrpCat.of P
+  forget₂.map f := GrpCat.ofHom f.hom.toMonoidHom
 
 /-- A closed subgroup of a profinite group is profinite. -/
 @[to_additive /-- A closed additive subgroup of a profinite additive group is profinite. -/]

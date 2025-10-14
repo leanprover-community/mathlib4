@@ -112,8 +112,6 @@ lemma norm_invInterpStrip {ε : ℝ} (hε : ε > 0) :
   repeat rw [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _]
   simp
 
-@[deprecated (since := "2025-02-17")] alias abs_invInterpStrip := norm_invInterpStrip
-
 /-- The function `invInterpStrip` is `diffContOnCl`. -/
 lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
     DiffContOnCl ℂ (fun z ↦ invInterpStrip f z ε) (verticalStrip 0 1) := by
@@ -157,7 +155,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
   -- Using bound
   use ((max 1 ((ε + sSupNormIm f 0) ^ (-(1 : ℝ)))) * max 1 ((ε + sSupNormIm f 1) ^ (-(1 : ℝ)))) * B
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  intros z hset
+  intro z hset
   specialize hB (‖f z‖) (by simpa [image_congr, mem_image, comp_apply] using ⟨z, hset, rfl⟩)
   -- Proof that the bound is correct
   simp only [norm_smul, norm_mul, ← ofReal_add]
@@ -186,7 +184,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
         neg_re, Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 1)
         (le_of_lt hM1_one) (neg_le_neg_iff.mpr hset.2)]
 
-/-- Proof that `F` is bounded by one one the edges. -/
+/-- Proof that `F` is bounded by one on the edges. -/
 lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ re ⁻¹' {0, 1}) :
     ‖F f ε z‖ ≤ 1 := by
@@ -445,8 +443,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
   apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
-  · apply tendsto_inf_left
-    simp only [tendsto_const_nhds_iff]
+  · simp only [tendsto_const_nhds_iff]
   -- Proof that we can let epsilon tend to zero.
   · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
     convert ContinuousWithinAt.tendsto _ using 2

@@ -641,9 +641,6 @@ theorem subtype_injective (S : L.Substructure M) : Function.Injective (subtype S
 theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
@@ -829,6 +826,9 @@ def eqLocus (f g : M →[L] N) : Substructure L M where
       repeat' rw [Function.comp_apply]
       apply hx
     simp [h]
+
+@[simp]
+theorem mem_eqLocus {f g : M →[L] N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 /-- If two `L.Hom`s are equal on a set, then they are equal on its substructure closure. -/
 theorem eqOn_closure {f g : M →[L] N} {s : Set M} (h : Set.EqOn f g s) :

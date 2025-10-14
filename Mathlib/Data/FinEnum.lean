@@ -105,7 +105,7 @@ instance empty : FinEnum Empty :=
   ofList [] fun x => Empty.elim x
 
 instance punit : FinEnum PUnit :=
-  ofList [PUnit.unit] fun x => by cases x; simp
+  ofList [PUnit.unit] fun x => by simp
 
 instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
   ofList (toList α ×ˢ toList β) fun x => by cases x; simp
@@ -143,7 +143,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       simp +contextual [eq_comm (a := s), or_iff_not_imp_left, hs]
 
 instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
-  ofList (Finset.enum (toList α)) (by intro; simp)
+  ofList (Finset.enum (toList α)) (by simp)
 
 instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinEnum { x // p x } :=
   ofList ((toList α).filterMap fun x => if h : p x then some ⟨_, h⟩ else none)
@@ -168,7 +168,7 @@ instance PSigma.finEnumPropRight {β : α → Prop} [FinEnum α] [∀ a, Decidab
 
 instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
     FinEnum (Σ' a, β a) :=
-  if h : ∃ a, β a then ofList [⟨h.fst, h.snd⟩] (by rintro ⟨⟩; simp)
+  if h : ∃ a, β a then ofList [⟨h.fst, h.snd⟩] (by simp)
   else ofList [] fun a => (h ⟨a.fst, a.snd⟩).elim
 
 instance [DecidableEq α] (xs : List α) : FinEnum { x : α // x ∈ xs } := ofList xs.attach (by simp)

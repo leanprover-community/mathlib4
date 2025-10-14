@@ -541,7 +541,7 @@ def IsBoundary₁ (x : G →₀ A) : Prop :=
   ∃ y : G × G →₀ A, y.sum
     (fun g a => single g.2 (g.1⁻¹ • a) - single (g.1 * g.2) a + single g.1 a) = x
 
-/-- A finsupp `x : G × G →₀ A` satsfies the 2-boundary condition if there's a finsupp
+/-- A finsupp `x : G × G →₀ A` satisfies the 2-boundary condition if there's a finsupp
 `∑ aᵢ·(gᵢ, hᵢ, jᵢ) : G × G × G →₀ A` such that
 `∑ (gᵢ⁻¹ • aᵢ)·(hᵢ, jᵢ) - aᵢ·(gᵢhᵢ, jᵢ) + aᵢ·(gᵢ, hᵢjᵢ) - aᵢ·(gᵢ, hᵢ) = x.` -/
 def IsBoundary₂ (x : G × G →₀ A) : Prop :=
@@ -935,7 +935,7 @@ open TensorProduct
 /-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
 sending `⟦g⟧, a` to `⟦single g a⟧`. -/
 def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
-  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicative'.symm <| Abelianization.lift {
+  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicativeRight.symm <| Abelianization.lift {
     toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHomClass.toAddMonoidHom
       ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
     map_one' := Multiplicative.toAdd.injective <|

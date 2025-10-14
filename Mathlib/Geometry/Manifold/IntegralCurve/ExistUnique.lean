@@ -78,7 +78,7 @@ theorem exists_isMIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
   refine ⟨(extChartAt I x₀).symm ∘ f,
     Eq.symm (by rw [Function.comp_apply, hf1, PartialEquiv.left_inv _ (mem_extChartAt_source ..)]),
     isMIntegralCurveAt_iff.mpr ⟨s, hs, ?_⟩⟩
-  intros t ht
+  intro t ht
   -- collect useful terms in convenient forms
   let xₜ : M := (extChartAt I x₀).symm (f t) -- `xₜ := γ t`
   have h : HasDerivAt f (x := t) <| fderivWithin ℝ (extChartAt I x₀ ∘ (extChartAt I xₜ).symm)
@@ -164,7 +164,7 @@ theorem isMIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPo
   have heq {g} (hg : IsMIntegralCurveAt g v t₀) :
     g =ᶠ[𝓝 t₀] (extChartAt I (g t₀)).symm ∘ ↑(extChartAt I (g t₀)) ∘ g := by
     apply (hsrc hg).mono
-    intros t ht
+    intro t ht
     rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hmem ht)]
   -- main proof
   suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' from
@@ -207,7 +207,7 @@ theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     -- TODO: shorten this when better API around subtype topology exists
     rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
-    intros t ht
+    intro t ht
     rw [mem_preimage, ← closure_subtype] at ht
     revert ht t
     apply IsClosed.closure_subset (isClosed_eq _ _)
