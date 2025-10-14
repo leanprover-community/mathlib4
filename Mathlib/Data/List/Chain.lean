@@ -106,9 +106,7 @@ theorem isChain_isInfix : ∀ l : List α, IsChain (fun x y => [x, y] <:+: l) l
 
 theorem isChain_split {c : α} {l₁ l₂ : List α} :
     IsChain R (l₁ ++ c :: l₂) ↔ IsChain R (l₁ ++ [c]) ∧ IsChain R (c :: l₂) := by
-  induction l₁ using twoStepInduction generalizing l₂ with
-  | nil | singleton => grind
-  | cons_cons a b l₁ IH IH2 => simp only [cons_append, isChain_cons_cons] at IH ⊢; grind
+  induction l₁ using twoStepInduction generalizing l₂ with grind
 
 @[deprecated (since := "2025-09-24")]
 alias chain'_split := isChain_split
