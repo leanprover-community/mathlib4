@@ -238,6 +238,9 @@ def Cover.ulift (𝒰 : Cover.{v} (precoverage P) X) : Cover.{u} (precoverage P)
     refine ⟨fun x ↦ ?_, fun i ↦ 𝒰.map_prop _⟩
     use x, (𝒰.exists_eq x).choose_spec.choose, (𝒰.exists_eq x).choose_spec.choose_spec
 
+instance : Precoverage.Small.{u} (precoverage P) where
+  zeroHypercoverSmall {S} 𝒰 := ⟨S, Cover.idx 𝒰, (Cover.ulift 𝒰).mem₀⟩
+
 section category
 
 -- TODO: replace this by `ZeroHypercover.Hom`
