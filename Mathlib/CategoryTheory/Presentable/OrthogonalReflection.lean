@@ -3,16 +3,35 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.Basic
+import Mathlib.CategoryTheory.Presentable.Adjunction
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
+import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 /-!
 # The Orthogonal-reflection construction
+
+Let `W : MorphismProperty C` be a `w`-small property of morphisms in a
+locally `κ`-presentable category `C` (with `κ : Cardinal.{w}` a regular cardinal),
+such that the domains and codomains of morphisms satisfying `W` are `κ`-presentable.
+Then, the fullsubcategory `W.rightOrthogonal` is also locally `κ`-presentable
+(it is also stable under `κ`-filtered colimits, and the inclusion functor as
+a left adjoint). This is essentially the implication (i) → (ii) in
+Theorem 1.39 in the book by Adámek and Rosický (note that according to the
+errata to this book, the proof of (ii) → (i) in the book is wrong and
+the statement is wrong if `κ = ℵ₀`.).
+
+The main part in the proof is the existence of the left adjoint to the inclusion
+of `W.rightOrthogonal`. The construction proceeds by a transfinite iteration
+of a certain construction involving colimits `OrthogonalReflection.succStruct`
+(which shares certain similarities with the construction for "small object argument",
+see `CategoryTheory.SmallObject.Construction`: in the case of the small object
+argument construction, one has to construct a lifting, here as we need to construct
+a *unique* lifting).
 
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
@@ -22,14 +41,12 @@ iteration of this construction, we show that the inclusion
 of the full subcategory `W.rightOrthogonal` in `C` has a left adjoint functor
 when the domains and codomains of the morphisms satisfying `W` are `κ`-presentable.
 
-## TODO (@joelriou)
-* Show that under the existence of colimits of size `w` and a suitable smallness
-assumption on `W`, the lemma `OrthogonalReflection.isRightAdjoint_ι` can be applied
-in order to prove (i) => (ii) in Theorem 1.39 from the book by Adámek and Rosický,
-which is that if `C` is locally `κ`-presentable, that the family of morphisms satisfying
-`W` is `w`-small and have `κ`-presentable domains and codomains, then `W.rightOrthogonal`
-is a reflective subcategory closed under `κ`-filtered colimits, and this
-subcategory is also locally `κ`-presentable.
+## Main definitions
+* `MorphismProperty.isRightAdjoint_ι_rightOrthogonal`: existence of the left adjoint
+of the inclusion `W.rightOrthogonal ⥤ C`;
+* `MorphismProperty.isLocallyPresentable_rightOrthogonal`: the fullsubcategory
+`W.rightOrthogonal` is locally presentable.
+
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -44,8 +61,12 @@ open Opposite Limits Localization
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
+-- why is it not synthetized automatically???
+instance (D : Type w) [SmallCategory.{w} D] : EssentiallySmall.{w} D :=
+  essentiallySmallSelf D
+
 lemma MorphismProperty.isClosedUnderColimitsOfShape_rightOrthogonal
-    (J : Type u) [Category.{v} J] [EssentiallySmall.{w} J]
+    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
     W.rightOrthogonal.IsClosedUnderColimitsOfShape J where
@@ -64,6 +85,15 @@ lemma MorphismProperty.isClosedUnderColimitsOfShape_rightOrthogonal
       obtain ⟨g, rfl⟩ := (p.prop_diag_obj j _ hf).2 g
       exact ⟨g ≫ p.ι.app j, by simp⟩
 
+lemma MorphismProperty.isCardinalAccessible_ι_rightOrthogonal
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [HasCardinalFilteredColimits C κ]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+    W.rightOrthogonal.ι.IsCardinalAccessible κ where
+  preservesColimitOfShape J _ _ := by
+    have := W.isClosedUnderColimitsOfShape_rightOrthogonal J κ hW
+    infer_instance
+
 namespace OrthogonalReflection
 
 variable (Z : C)
@@ -73,6 +103,18 @@ section
 /-- The index type parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
 def D₁ : Type _ := Σ (f : W.toSet), f.1.left ⟶ Z
+
+instance [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C] :
+    Small.{w} (D₁ (W := W) (Z := Z)) := by
+  dsimp [D₁]
+  infer_instance
+
+lemma D₁.hasCoproductsOfShape [MorphismProperty.IsSmall.{w} W]
+    [LocallySmall.{w} C]
+    [HasCoproducts.{w} C] :
+    HasCoproductsOfShape (D₁ (W := W) (Z := Z)) C :=
+  hasColimitsOfShape_of_equivalence
+    (Discrete.equivalence (equivShrink.{w} _).symm)
 
 variable {W Z} in
 /-- If `d : D₁ W Z` corresponds to the data of `f : X ⟶ Y` satisfying `W` and
@@ -162,6 +204,22 @@ def D₂.multispanShape : MultispanShape where
   fst _ := .unit
   snd _ := .unit
 
+section
+
+variable [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C]
+
+instance : Small.{w} (D₂ (W := W) (Z := Z)) := by
+  dsimp [D₂]
+  infer_instance
+
+instance : Small.{w} (D₂.multispanShape W Z).L := by dsimp; infer_instance
+
+attribute [local instance] essentiallySmall_of_small_of_locallySmall in
+lemma D₂.hasColimitsOfShape [HasColimitsOfSize.{w, w} C] :
+    HasColimitsOfShape (WalkingMultispan (multispanShape W Z)) C :=
+  hasColimitsOfShape_of_equivalence (equivSmallModel.{w} _).symm
+
+end
 /-- The diagram of the multicoequalizer of all pair of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 @[simps]
@@ -331,10 +389,6 @@ variable {W} {κ} [Fact κ.IsRegular]
 
 include hW
 
--- why is it not synthetized automatically???
-instance (D : Type w) [SmallCategory.{w} D] : EssentiallySmall.{w} D :=
-  essentiallySmallSelf D
-
 lemma rightOrthogonal_reflectionObj :
     W.rightOrthogonal (reflectionObj W Z κ) := by
   let H := transfiniteCompositionOfShapeReflection W Z κ
@@ -363,12 +417,13 @@ lemma rightOrthogonal_reflectionObj :
     exact ⟨g' ≫ H.incl.app (Order.succ j), by simp [reassoc_of% hg']⟩
 
 /-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` exhibits `reflectionObj W Z κ`
-as the image of `Z` by the left adjoint of the inclusion ``. -/
+as the image of `Z` by the left adjoint of the inclusion `W.rightOrthogonal.ι`. -/
 noncomputable def corepresentableBy :
   (W.rightOrthogonal.ι ⋙ coyoneda.obj (op Z)).CorepresentableBy
     ⟨_, rightOrthogonal_reflectionObj Z hW⟩ where
   homEquiv {A} := Equiv.ofBijective _ (leftBousfieldW_rightOrthogonal_reflection W Z κ _ A.2)
-  homEquiv_comp := by cat_disch
+
+variable (W κ)
 
 lemma isRightAdjoint_ι :
     W.rightOrthogonal.ι.IsRightAdjoint := by
@@ -377,5 +432,31 @@ lemma isRightAdjoint_ι :
   simpa using (corepresentableBy Z hW).isCorepresentable
 
 end OrthogonalReflection
+
+namespace MorphismProperty
+
+open OrthogonalReflection in
+lemma isRightAdjoint_ι_rightOrthogonal
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
+    [HasColimitsOfSize.{w, w} C] :
+    W.rightOrthogonal.ι.IsRightAdjoint := by
+  have : OrderBot κ.ord.toType :=
+    Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+  have := D₁.hasCoproductsOfShape.{w} W
+  have := D₂.hasColimitsOfShape.{w} W
+  exact isRightAdjoint_ι W κ hW
+
+lemma isLocallyPresentable_rightOrthogonal
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalLocallyPresentable C κ]
+    [MorphismProperty.IsSmall.{w} W]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+  IsCardinalLocallyPresentable W.rightOrthogonal.FullSubcategory κ := by
+    have := isRightAdjoint_ι_rightOrthogonal W κ hW
+    have := MorphismProperty.isCardinalAccessible_ι_rightOrthogonal W κ hW
+    exact (Adjunction.ofIsRightAdjoint W.rightOrthogonal.ι).isCardinalLocallyPresentable κ
+
+end MorphismProperty
 
 end CategoryTheory
