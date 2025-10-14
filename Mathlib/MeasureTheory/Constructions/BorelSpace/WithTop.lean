@@ -18,6 +18,7 @@ We then prove that the natural inclusion `ι → WithTop ι` is measurable, and 
 * `measurable_of_measurable_comp_coe`: if `f : WithTop ι → α` is such that `f ∘ coe` is measurable,
   then `f` is measurable.
 * `Measurable.withTop_coe`: the function `fun x : ι ↦ (x : WithTop ι)` is measurable.
+* `Measurable.untopD`: for `d : ι`, the function `WithTop.untopD d : WithTop ι → ι` is measurable.
 * `Measurable.untopA`: the function `WithTop.untopA : WithTop ι → ι` is measurable.
 
 -/
@@ -65,14 +66,14 @@ lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} [SecondCount
     exact hf measurableSet_Iic
 
 @[fun_prop]
-lemma _root_.Measurable.untopA {α} {mα : MeasurableSpace α} [Nonempty ι]
-    {f : α → WithTop ι} (hf : Measurable f) :
-    Measurable (fun x ↦ (f x).untopA) := measurable_untopA.comp hf
-
-@[fun_prop]
 lemma _root_.Measurable.untopD {α} {mα : MeasurableSpace α} (d : ι)
     {f : α → WithTop ι} (hf : Measurable f) :
-    Measurable (fun x ↦ (f x).untopD d) := (measurable_untopD _).comp hf
+    Measurable (fun x ↦ (f x).untopD d) := (measurable_untopD d).comp hf
+
+@[fun_prop]
+lemma _root_.Measurable.untopA {α} {mα : MeasurableSpace α} [Nonempty ι]
+    {f : α → WithTop ι} (hf : Measurable f) :
+    Measurable (fun x ↦ (f x).untopA) := hf.untopD _
 
 /-- Measurable equivalence between `WithTop ι` and `ι ⊕ Unit`. -/
 def measurableEquivSum : WithTop ι ≃ᵐ ι ⊕ Unit :=
