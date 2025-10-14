@@ -188,6 +188,7 @@ def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
   refine (DoubleQuot.quotQuotEquivQuotSup _ _).trans ?_
   exact Ideal.quotEquivOfEq (sup_eq_right.mpr <| Ideal.pow_le_self two_ne_zero)
 
+/-- The algebra isomorphism `(R ⧸ I ^ 2) ⧸ (I ⧸ I ^ 2) ≃ₐ[R] R ⧸ I`. -/
 def quotCotangentₐ : ((R ⧸ I ^ 2) ⧸ I.cotangentIdeal) ≃ₐ[R] R ⧸ I where
   __ := I.quotCotangent
   commutes' _ := rfl
