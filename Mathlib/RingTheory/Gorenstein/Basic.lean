@@ -70,19 +70,56 @@ variable {R} {S : Type u'} [CommRing S]
 
 section extendscalars'
 
-noncomputable def ModuleCat.extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S) :
+namespace ModuleCat
+
+noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S) :
   (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) := sorry
 
-variable [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+/-
 
-instance : (ModuleCat.extendScalars' f).IsLeftAdjoint := sorry
+variable [UnivLE.{v, v'}] [Small.{v'} S]
 
-lemma ModuleCat.extendScalars'_map_shortExact (flat : f.Flat)
-    (S : ShortComplex (ModuleCat.{v} R)) (h : S.ShortExact) :
-    (S.map (ModuleCat.extendScalars' f)).ShortExact := by
+def extendRestrictScalars'Adj (f : R →+* S) :
+    extendScalars'.{v'} f ⊣ restrictScalars.{v'} f := by
   sorry
 
---CategoryTheory.Functor.exact_tfae
+instance (f : R →+* S) : (ModuleCat.extendScalars'.{v'} f).IsLeftAdjoint :=
+  (extendRestrictScalars'Adj f).isLeftAdjoint
+
+-/
+
+instance [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S) :
+  (extendScalars'.{v, u, v', u'} f).Additive := sorry
+
+lemma extendScalars'_map_shortExact [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S) (flat : f.Flat)
+    (T : ShortComplex (ModuleCat.{v} R)) (h : T.ShortExact) :
+    (T.map (extendScalars' f)).ShortExact := by
+
+  sorry
+
+lemma extendScalars'_preservesFiniteLimits [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+    (flat : f.Flat) : Limits.PreservesFiniteLimits (extendScalars' f) := by
+  have := (((extendScalars' f).exact_tfae.out 0 3).mp (extendScalars'_map_shortExact f flat))
+  exact this.1
+
+lemma extendScalars'_preservesFiniteColimits [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+    (flat : f.Flat) : Limits.PreservesFiniteColimits (extendScalars' f) := by
+  have := (((extendScalars' f).exact_tfae.out 0 3).mp (extendScalars'_map_shortExact f flat))
+  exact this.2
+
+section algebra
+
+variable [Algebra R S] [UnivLE.{v, v'}] [Small.{v'} S]
+
+instance [Module.Flat R S] : Limits.PreservesFiniteLimits (extendScalars' (algebraMap R S)) :=
+  extendScalars'_preservesFiniteLimits (algebraMap R S) (RingHom.flat_algebraMap_iff.mpr ‹_›)
+
+instance [Module.Flat R S] : Limits.PreservesFiniteColimits (extendScalars' (algebraMap R S)) :=
+  extendScalars'_preservesFiniteColimits (algebraMap R S) (RingHom.flat_algebraMap_iff.mpr ‹_›)
+
+end algebra
+
+end ModuleCat
 
 end extendscalars'
 
