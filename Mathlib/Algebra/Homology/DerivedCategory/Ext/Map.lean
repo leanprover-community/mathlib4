@@ -24,19 +24,42 @@ variable {D : Type u'} [Category.{v'} D] [Abelian D]
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 open DerivedCategory in
+/-- The map between `ShiftedHom` induced by `F.mapDerivedCategory` where `F` is exact. -/
+noncomputable def Functor.mapShiftedHom
+    [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] (X Y : C) (n : ℤ) :
+    ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n →
+    ShiftedHom ((singleFunctor D 0).obj (F.obj X)) ((singleFunctor D 0).obj (F.obj Y)) n :=
+  fun f ↦ (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
+    f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) (n : ℤ)).map
+      ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))
+
+/-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
+noncomputable def Functor.mapExt [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
+    Ext.{w} X Y n → Ext.{w'} (F.obj X) (F.obj Y) n :=
+  letI := HasDerivedCategory.standard C
+  letI := HasDerivedCategory.standard D
+  (Ext.homEquiv.symm ∘ (F.mapShiftedHom X Y n)) ∘ Ext.homEquiv
+
+lemma Functor.mapShiftedHom_zero [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D]
+    (X Y : C) (n : ℤ) : F.mapShiftedHom X Y n 0 = 0 := by simp [mapShiftedHom, ShiftedHom.map]
+
+open DerivedCategory in
+lemma Functor.mapShiftedHom_add [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] (X Y : C)
+    (n : ℤ) (x y : ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n) :
+    F.mapShiftedHom X Y n (x + y) = F.mapShiftedHom X Y n x + F.mapShiftedHom X Y n y := by
+  rw [mapShiftedHom, ShiftedHom.map, F.mapDerivedCategory.map_add]
+  simp [mapShiftedHom, ShiftedHom.map]
+
+open DerivedCategory in
 /-- The additive homomorphism between `ShiftedHom` induced by
 `F.mapDerivedCategory` where `F` is exact. -/
 noncomputable def Functor.mapShiftedHomAddHom
     [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] (X Y : C) (n : ℤ) :
     ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n →+
     ShiftedHom ((singleFunctor D 0).obj (F.obj X)) ((singleFunctor D 0).obj (F.obj Y)) n := {
-  toFun f := (F.mapDerivedCategorySingleFunctor 0).inv.app X
-      ≫ f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) (n : ℤ)).map
-      ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))
-  map_zero' := by simp [ShiftedHom.map]
-  map_add' x y := by
-    rw [ShiftedHom.map, F.mapDerivedCategory.map_add]
-    simp [ShiftedHom.map] }
+  toFun := F.mapShiftedHom X Y n
+  map_zero' := F.mapShiftedHom_zero ..
+  map_add' _ _ := F.mapShiftedHom_add .. }
 
 /-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
 noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
@@ -46,11 +69,15 @@ noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) 
   (Ext.homAddEquiv.symm.toAddMonoidHom.comp (F.mapShiftedHomAddHom X Y n)).comp
     Ext.homAddEquiv.toAddMonoidHom
 
+@[simp]
+lemma Functor.mapExtAddHom_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
+    F.mapExtAddHom X Y n = F.mapExt X Y n := rfl
+
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
 
 instance [F.Linear R] : Functor.Linear R (F.mapHomotopyCategory (ComplexShape.up ℤ)) where
   map_smul {X Y} f r:= by
-    simp [Functor.mapHomotopyCategory]
+    dsimp only [Functor.mapHomotopyCategory]
     have full : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).Full := Quotient.full_functor _
     rcases full.1 f with ⟨g, hg⟩
     rw [← hg, ← Functor.Linear.map_smul]
@@ -71,7 +98,8 @@ lemma Functor.mapShiftedHomAddHom_linear [HasDerivedCategory.{w} C] [HasDerivedC
     (X Y : C) (n : ℤ) (r : R)
     (x : ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (n : ℤ)) :
     (F.mapShiftedHomAddHom X Y n) (r • x) = r • ((F.mapShiftedHomAddHom X Y n) x)  := by
-  simp only [mapShiftedHomAddHom, Int.cast_ofNat_Int, comp_obj, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  simp only [mapShiftedHomAddHom, mapShiftedHom, Int.cast_ofNat_Int, comp_obj, AddMonoidHom.coe_mk,
+    ZeroHom.coe_mk]
   rw [← Linear.comp_smul, ← Linear.smul_comp]
   congr
   simp [ShiftedHom.map, F.mapDerivedCategory.map_smul]
@@ -93,7 +121,25 @@ noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : 
   (Ext.homLinearEquiv.symm.toLinearMap.comp (F.mapShiftedHomLinearMap R X Y n)).comp
     Ext.homLinearEquiv.toLinearMap
 
+@[simp]
 lemma Functor.mapExtLinearMap_toAddMonoidHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     F.mapExtLinearMap R X Y n = F.mapExtAddHom X Y n := rfl
+
+@[simp]
+lemma Functor.mapExtLinearMap_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
+    F.mapExtLinearMap R X Y n = F.mapExt X Y n := rfl
+
+namespace Abelian.Ext
+
+lemma mk₀_apply_eq_mapExt_mk₀ [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
+    F.mapExt X Y 0 (mk₀ f) = mk₀ (F.map f) := sorry
+
+lemma mapExt_comp_eq_comp_mapExt [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b : ℕ}
+    (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
+    F.mapExt X Z c (α.comp β h) = (F.mapExt X Y a α).comp (F.mapExt Y Z b β) h := by
+  simp only [Functor.mapExt, Function.comp_apply]
+  sorry
+
+end Abelian.Ext
 
 end CategoryTheory
