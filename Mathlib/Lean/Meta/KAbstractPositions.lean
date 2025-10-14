@@ -75,7 +75,7 @@ def viewKAbstractSubExpr (e : Expr) (pos : SubExpr.Pos) : MetaM (Option (Expr ×
   return some (subExpr, if positions.size == 1 then none else some (n + 1))
 
 /-- Determine whether the result of abstracting `subExpr` from `e` at position `pos` results
-in a well typed expression. This is important if you want to rewrite at this position.
+in a well-typed expression. This is important if you want to rewrite at this position.
 
 Here is an example of what goes wrong with an ill-typed kabstract result:
 

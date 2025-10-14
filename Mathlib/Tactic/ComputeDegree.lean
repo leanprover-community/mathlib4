@@ -112,7 +112,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     (f * g).coeff d = if d = df + dg then a * b else 0 := by
   split_ifs with h
   · subst h_mul_left h_mul_right h
-    exact coeff_mul_of_natDegree_le ‹_› ‹_›
+    exact coeff_mul_add_eq_of_natDegree_le ‹_› ‹_›
   · apply coeff_eq_zero_of_natDegree_lt
     apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ddf ?_)
     · exact natDegree_mul_le_of_le ‹_› ‹_›
@@ -169,7 +169,7 @@ theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
   subst coeff_eq coeff_eq_deg deg_eq_deg
-  rcases eq_or_ne m ⊥ with rfl|hh
+  rcases eq_or_ne m ⊥ with rfl | hh
   · exact bot_unique h_deg_le
   · obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp hh
     exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›

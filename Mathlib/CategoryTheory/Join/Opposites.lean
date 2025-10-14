@@ -32,16 +32,16 @@ def opEquiv : (C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ where
       | op (left _) => Iso.refl _
       | op (right _) => Iso.refl _ )
     (@fun
-      | op (left _), op (left _), _ => by aesop_cat
-      | op (right _), op (left _), _ => by aesop_cat
-      | op (right _), op (right _), _ => by aesop_cat)
+      | op (left _), op (left _), _ => by cat_disch
+      | op (right _), op (left _), _ => by cat_disch
+      | op (right _), op (right _), _ => by cat_disch)
   counitIso := NatIso.ofComponents
     (fun
       | left _ => Iso.refl _
       | right _ => Iso.refl _)
   functor_unitIso_comp
-    | op (left _) => by aesop_cat
-    | op (right _) => by aesop_cat
+    | op (left _) => by cat_disch
+    | op (right _) => by cat_disch
 
 variable {C} in
 @[simp]

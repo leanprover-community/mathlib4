@@ -27,7 +27,7 @@ more glue.
 
 noncomputable section
 
-open Circle Finset Function Multiplicative
+open Circle Finset Function Module Multiplicative
 open Fintype (card)
 open Real hiding exp
 open scoped BigOperators DirectSum

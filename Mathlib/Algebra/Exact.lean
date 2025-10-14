@@ -26,8 +26,6 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 * add the multiplicative case (`Function.Exact` will become `Function.AddExact`?)
 -/
 
-
-
 variable {R M M' N N' P P' : Type*}
 
 namespace Function
@@ -338,7 +336,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
   · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
-    · intros x y e
+    · intro x y e
       simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
       simpa [h₁, h₂] using DFunLike.congr_arg g e
@@ -377,7 +375,7 @@ def Exact.splitInjectiveEquiv
   · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
-    · intros x y e
+    · intro x y e
       simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
       suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
@@ -468,7 +466,7 @@ lemma Exact.exact_mapQ_iff
   dsimp only [mapQ]
   rw [← ker_comp, range_liftQ, liftQ_mkQ, ker_comp, range_comp, comap_map_eq,
     ker_mkQ, ker_mkQ, ← hfg.linearMap_ker_eq, sup_comm,
-    ← LE.le.ge_iff_eq' (sup_le hqr (ker_le_comap g)),
+    ← (sup_le hqr (ker_le_comap g)).ge_iff_eq',
     ← comap_map_eq, ← map_le_iff_le_comap, map_comap_eq]
 
 end Function

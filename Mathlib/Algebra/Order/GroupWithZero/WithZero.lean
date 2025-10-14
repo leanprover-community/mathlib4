@@ -27,7 +27,7 @@ theory. These instances enable lemmas such as `mul_pos` to fire on `ℤᵐ⁰`.
 
 assert_not_exists Ring
 
--- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤᵐ⁰`
+-- this makes `mul_lt_mul_iff_right₀`, `mul_pos` etc. work on `ℤᵐ⁰`
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     PosMulStrictMono (WithZero α) where
   elim := @fun
@@ -97,5 +97,9 @@ between `WithZero αˣ` with `α`. -/
 def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
   map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
+
+lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
+    StrictMono (withZeroUnitsEquiv (G := α)).symm :=
+  OrderIso.withZeroUnits.symm.strictMono
 
 end Units

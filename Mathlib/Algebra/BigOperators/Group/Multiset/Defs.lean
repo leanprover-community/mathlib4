@@ -17,7 +17,7 @@ and sums indexed by finite sets.
 ## Main declarations
 
 * `Multiset.prod`: `s.prod f` is the product of `f i` over all `i ∈ s`. Not to be mistaken with
-  the cartesian product `Multiset.product`.
+  the Cartesian product `Multiset.product`.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
 
@@ -34,8 +34,8 @@ variable [CommMonoid M] [CommMonoid N] {s t : Multiset M} {a : M} {m : Multiset 
 /-- Product of a multiset given a commutative monoid structure on `M`.
   `prod {a, b, c} = a * b * c` -/
 @[to_additive
-      "Sum of a multiset given a commutative additive monoid structure on `M`.
-      `sum {a, b, c} = a + b + c`"]
+      /-- Sum of a multiset given a commutative additive monoid structure on `M`.
+      `sum {a, b, c} = a + b + c` -/]
 def prod : Multiset M → M :=
   foldr (· * ·) 1
 
@@ -57,7 +57,7 @@ theorem prod_toList (s : Multiset M) : s.toList.prod = s.prod := by
   conv_rhs => rw [← coe_toList s]
   rw [prod_coe]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem prod_zero : @prod M _ 0 = 1 :=
   rfl
 

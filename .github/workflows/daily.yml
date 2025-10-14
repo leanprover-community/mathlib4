@@ -42,7 +42,9 @@ jobs:
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
         run: |
-          git fetch --tags
+          # When in nightly mode, fetch tags from the nightly-testing repository
+          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
+          git fetch nightly-testing --tags
           LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
           echo "LATEST_TAG=${LATEST_TAG}" >> "$GITHUB_ENV"
 
@@ -58,6 +60,7 @@ jobs:
       - name: Checkout branch or tag
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
           ref: ${{ env.BRANCH_REF }}
 
       - name: Configure Lean
@@ -116,7 +119,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
+          to: 'nightly-testing'
           type: 'stream'
           topic: 'lean4checker'
           content: |
@@ -129,7 +132,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
+          to: 'nightly-testing'
           type: 'stream'
           topic: 'mathlib test executable'
           content: |
@@ -142,7 +145,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
+          to: 'nightly-testing'
           type: 'stream'
           topic: 'lean4checker failure'
           content: |
@@ -156,7 +159,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib reviewers'
+          to: 'nightly-testing'
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
