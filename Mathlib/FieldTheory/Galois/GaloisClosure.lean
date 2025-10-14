@@ -98,7 +98,7 @@ lemma le_iff (L₁ L₂ : FiniteGaloisIntermediateField k K) :
 
 variable (k) in
 /-- The minimal (finite) Galois intermediate field containing a finite set `s : Set K` in a
-Galois extension `K/k` defined as the the normal closure of the field obtained by adjoining
+Galois extension `K/k` defined as the normal closure of the field obtained by adjoining
 the set `s : Set K` to `k`. -/
 noncomputable def adjoin [IsGalois k K] (s : Set K) [Finite s] :
     FiniteGaloisIntermediateField k K := {
