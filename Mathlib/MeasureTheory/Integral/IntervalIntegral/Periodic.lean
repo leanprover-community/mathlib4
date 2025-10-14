@@ -215,8 +215,8 @@ lemma integral_liftIoc_eq_intervalIntegral {t : ℝ} {f : ℝ → E} :
 
 end AddCircle
 
-/-- If a function is MemLp on the interval `(t, t + T]`, then its lift to the AddCircle is also
-MemLp with respect to the Haar measure. -/
+/-- If a function satisfies `MemLp` on the interval `(t, t + T]`, then its lift to the AddCircle
+also satisfies `MemLp` with respect to the Haar measure. -/
 lemma MeasureTheory.MemLp.memLp_liftIoc {T : ℝ} [hT : Fact (0 < T)] {t : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞}
     (hLp : MemLp f p (volume.restrict (Ioc t (t + T)))) :
       MemLp (AddCircle.liftIoc T t f) p := by
