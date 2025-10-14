@@ -340,7 +340,7 @@ alias Scheme.Opens.toSpecΓ_SpecMap_map := Scheme.Opens.toSpecΓ_SpecMap_preshea
 @[deprecated (since := "2025-10-07")]
 alias Scheme.Opens.toSpecΓ_SpecMap_map_assoc := Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc
 
-@[reassoc (attr := simp)]
+@[reassoc] -- not simp because simp can prove this.
 lemma Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_top {X : Scheme} (U : X.Opens) :
     U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE le_top).op) = U.ι ≫ X.toSpecΓ := by
   delta Scheme.Opens.toSpecΓ
