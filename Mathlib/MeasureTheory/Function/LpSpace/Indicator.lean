@@ -221,7 +221,7 @@ variable (μ p) (c : E)
 
 section MemLp.Const
 
-variable [MemLp.Const E p μ]
+variable [MemLp.Const p μ]
 
 /-- Constant function as an element of `MeasureTheory.Lp`. -/
 protected def Lp.const : E →+ Lp E p μ where
