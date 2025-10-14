@@ -518,13 +518,17 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
 
-theorem exists_adj_of_ne_bot (h : G ≠ ⊥) : ∃ a b : V, G.Adj a b := by
-  contrapose! h
-  exact le_bot_iff.mp h
+theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+  refine ⟨fun h ↦ ?_, fun ⟨a, b, hab⟩ ↦ ?_⟩
+  · contrapose! h
+    exact le_bot_iff.mp h
+  · grind [SimpleGraph.bot_adj]
 
-theorem exists_adj_of_ne_top (h : G ≠ ⊤) : ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
-  contrapose! h
-  exact eq_top_iff.mpr h
+theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  refine ⟨fun h ↦ ?_, fun ⟨a, b, hne, hab⟩ ↦ ?_⟩
+  · contrapose! h
+    exact eq_top_iff.mpr h
+  · grind [SimpleGraph.top_adj]
 
 variable (G G₁ G₂)
 
