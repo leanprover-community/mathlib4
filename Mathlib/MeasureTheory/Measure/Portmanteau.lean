@@ -569,9 +569,8 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
   convert obs
   simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
-/-- One implication of the portmanteau theorem:
-If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
-μsₙ converge weakly to the measure μ. Formulated here for countably generated filters.
+/-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
+condition `μ(G) ≤ liminf μsₙ(G)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 
 This lemma uses a coercion from `ProbabilityMeasure` to `Measure` in the hypothesis.
 See `tendsto_of_forall_isOpen_le_liminf` for the version without coercion. -/
