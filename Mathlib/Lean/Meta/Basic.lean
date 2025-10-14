@@ -100,10 +100,10 @@ def Lean.Meta.withEnsuringLocalInstance {α : Type} (inst : MVarId) (k : MetaM (
 or fails with a descriptive error. -/
 def Lean.Meta.ensureHasType (e expectedType : Expr) : MetaM Expr := do
   let ty ← whnf <| ← instantiateMVars <| ← inferType e
-  let some name := expectedType.constName?
-    | throwError "expected type {expectedType} is not a constant"
-  if ty.isConstOf name then return e else (← coerceSimple? e expectedType).toOption.getDM <|
-    throwError "Expected{indentD e}\nto have type{indentD ty}\n or to be coercible to it"
+  let ty ← inferType e
+  if ← withNewMCtxDepth (isDefEq ty expectedType) then return e else
+    (← coerceSimple? e expectedType).toOption.getDM <|
+      throwError "Expected{indentD e}\nto have type{indentD ty}\n or to be coercible to it"
 
 /-- Checks that `e` is a function (i.e. that its type is a `.forallE` after `instantiateMVars` and
 `whnf`). If not, coerces `e` to a function or fails with a descriptive error. -/
