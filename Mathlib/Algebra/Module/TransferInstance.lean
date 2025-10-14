@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 import Mathlib.Algebra.Module.Equiv.Defs
+import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -48,6 +49,15 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
         apply e.symm.injective
         simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
         exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
+
+variable (R) in
+/-- Transfer `Module.IsTorsionFree` across an `Equiv` -/
+protected lemma moduleIsTorsionFree (e : α ≃ β) [AddCommMonoid β] [Module R β]
+    [Module.IsTorsionFree R β] :
+    let := e.addCommMonoid
+    let := e.module R
+    Module.IsTorsionFree R α := by
+  extract_lets; exact (e.linearEquiv R).injective.moduleIsTorsionFree _ (by simp)
 
 end Equiv
 

@@ -70,7 +70,7 @@ theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }
   have hy' : y ∈ ↑s := mem_of_mem_nhds hy
   rwa [s.add_mem_iff_right hy', ← Units.smul_def, s.smul_mem_iff' u] at hu
 
-variable (R M)
+variable (R M) [IsDomain R]
 
 /-- Let `R` be a topological ring such that zero is not an isolated point (e.g., a nontrivially
 normed field, see `NormedField.punctured_nhds_neBot`). Let `M` be a nontrivial module over `R`
@@ -81,7 +81,7 @@ This lemma is not an instance because Lean would need to find `[ContinuousSMul ?
 unknown `?m_1`. We register this as an instance for `R = ℝ` in `Real.punctured_nhds_module_neBot`.
 One can also use `haveI := Module.punctured_nhds_neBot R M` in a proof.
 -/
-theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [NoZeroSMulDivisors R M]
+theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [Module.IsTorsionFree R M]
     (x : M) : NeBot (𝓝[≠] x) := by
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   suffices Tendsto (fun c : R => x + c • y) (𝓝[≠] 0) (𝓝[≠] x) from this.neBot
