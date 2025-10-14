@@ -91,7 +91,7 @@ instance faithful_pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f]
   exact (mapPullbackAdj f).faithful_R_of_epi_counit_app
 
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
-def pullbackId {X : C} [∀ {Z} (g : Z ⟶ X), HasPullback g (𝟙 X)] : pullback (𝟙 X) ≅ 𝟭 _ :=
+def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
   conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
@@ -103,10 +103,6 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacksAlong f] [
 instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
-
-section
-
-variable [HasPullbacks C]
 
 open pullback in
 /-- If `F` is a left adjoint and its source category has pullbacks, then so is
@@ -124,8 +120,6 @@ instance isLeftAdjoint_post [HasPullbacks C] {F : C ⥤ D} [F.IsLeftAdjoint] :
     (post (X := X) F).IsLeftAdjoint :=
   let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
 
-end
-
 open Limits
 
 /-- The category over any object `X` factors through the category over the terminal object `T`. -/
@@ -135,7 +129,7 @@ noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T) :
   NatIso.ofComponents fun X ↦ .refl _
 
 section HasBinaryProducts
-variable [HasBinaryProducts C] (X)
+variable [HasBinaryProducts C]
 
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
@@ -209,7 +203,7 @@ instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
   exact (mapPushoutAdj f).faithful_L_of_mono_unit_app
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
-def pushoutId {X : C} [∀ {Z} (g : X ⟶ Z), HasPushout g (𝟙 X)] : pushout (𝟙 X) ≅ 𝟭 _ :=
+def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
   (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _)) ).symm
     (Under.mapId X).symm
 
@@ -251,7 +245,7 @@ noncomputable def forgetMapInitial {I : C} (hI : IsInitial I) :
   NatIso.ofComponents fun X ↦ .refl _
 
 section HasBinaryCoproducts
-variable [HasBinaryCoproducts C] (X)
+variable [HasBinaryCoproducts C]
 
 /-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`. -/
 @[simps! obj_left obj_hom map_left]
