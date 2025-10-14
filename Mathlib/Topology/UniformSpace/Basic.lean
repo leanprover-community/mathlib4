@@ -794,7 +794,7 @@ theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → 
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
   (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
 
-lemma UniformContinuous.swap :
+lemma uniformContinuous_swap :
     UniformContinuous (Prod.swap : α × β → β × α) :=
   uniformContinuous_snd.prodMk uniformContinuous_fst
 
