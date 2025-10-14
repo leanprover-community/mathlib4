@@ -316,7 +316,7 @@ noncomputable def functor : Arrow C ⥤ Arrow C where
   map_comp {π₁ π₂ π₃} τ τ' := by
     ext
     · dsimp
-      simp [functorMap]
+      simp only [functorMap, Arrow.comp_left, Arrow.mk_left]
       ext ⟨i, t, b, w⟩
       · simp
       · simp [ι_functorMapTgt_assoc f τ i t b w _ rfl _ rfl,
