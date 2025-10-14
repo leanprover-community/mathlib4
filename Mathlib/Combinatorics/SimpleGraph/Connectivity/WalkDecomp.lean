@@ -253,7 +253,7 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length := by
     exact length_takeUntil_lt _ h
   simp only [takeUntil_takeUntil] at h1 h2
-  omega
+  cutsat
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_support_takeUntil_support_takeUntil_subset :=

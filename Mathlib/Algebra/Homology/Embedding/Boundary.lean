@@ -175,13 +175,13 @@ lemma boundaryGE_embeddingUpIntGE_iff (p : ℤ) (n : ℕ) :
     · rfl
     · have := h.2 n
       dsimp at this
-      omega
+      cutsat
   · rintro rfl
     constructor
     · simp
     · intro i hi
       dsimp at hi
-      omega
+      cutsat
 
 lemma boundaryLE_embeddingUpIntLE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntLE p).BoundaryLE n ↔ n = 0 := by
@@ -191,12 +191,12 @@ lemma boundaryLE_embeddingUpIntLE_iff (p : ℤ) (n : ℕ) :
     · rfl
     · have := h.2 n
       dsimp at this
-      omega
+      cutsat
   · rintro rfl
     constructor
     · simp
     · intro i hi
       dsimp at hi
-      omega
+      cutsat
 
 end ComplexShape

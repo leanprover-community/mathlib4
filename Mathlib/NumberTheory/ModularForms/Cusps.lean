@@ -41,7 +41,7 @@ section IsCusp
 
 /-- The *cusps* of a subgroup of `GL(2, ℝ)` are the fixed points of parabolic elements of `g`. -/
 def IsCusp (c : OnePoint ℝ) (𝒢 : Subgroup (GL (Fin 2) ℝ)) : Prop :=
-    ∃ g ∈ 𝒢, g.IsParabolic ∧ g • c = c
+  ∃ g ∈ 𝒢, g.IsParabolic ∧ g • c = c
 
 open Pointwise in
 lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
@@ -71,12 +71,15 @@ lemma isCusp_iff_of_relIndex_ne_zero {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
 @[deprecated (since := "2025-09-13")]
 alias isCusp_iff_of_relindex_ne_zero := isCusp_iff_of_relIndex_ne_zero
 
-lemma Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
+lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
     (h𝒢 : Commensurable 𝒢 𝒢') {c : OnePoint ℝ} :
     IsCusp c 𝒢 ↔ IsCusp c 𝒢' := by
   rw [← isCusp_iff_of_relIndex_ne_zero inf_le_left, isCusp_iff_of_relIndex_ne_zero inf_le_right]
   · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
   · simpa [Subgroup.inf_relIndex_left] using h𝒢.2
+
+@[deprecated (since := "2025-09-17")]
+alias Commensurable.isCusp_iff := Subgroup.Commensurable.isCusp_iff
 
 /-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
 lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by

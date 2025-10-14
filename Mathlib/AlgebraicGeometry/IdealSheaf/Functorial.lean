@@ -72,6 +72,24 @@ lemma support_comap (I : Y.IdealSheafData) (f : X ⟶ Y) :
   rw [comap, Scheme.Hom.support_ker, Pullback.range_fst, range_subschemeι,
     TopologicalSpace.Closeds.coe_preimage, (I.support.isClosed.preimage f.continuous).closure_eq]
 
+lemma ker_fst_of_isClosedImmersion (i : Z ⟶ Y) (f : X ⟶ Y) [IsClosedImmersion i] :
+    (pullback.fst f i).ker = i.ker.comap f := by
+  delta IdealSheafData.comap
+  rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) (i.toImage) (𝟙 _)
+    (by simp) (by simp)), pullback.lift_fst, Category.comp_id]
+
+/-- To show that the pullback of the closed immersion `iX` along `f` is the closed immersion
+`iY`, it suffices to check that the preimage of `ker iY` under `f` is `ker iX`. -/
+lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
+    {ZX ZY X Y : Scheme} (iX : ZX ⟶ X) (iY : ZY ⟶ Y) (Zf : ZX ⟶ ZY) (f : X ⟶ Y)
+    [IsClosedImmersion iX] [IsClosedImmersion iY]
+    (h : iX ≫ f = Zf ≫ iY) (h' : iY.ker.comap f = iX.ker) : IsPullback iX Zf f iY := by
+  suffices IsIso (pullback.lift _ _ h) by
+    simpa using (IsPullback.of_vert_isIso (show CommSq iX (pullback.lift iX Zf h)
+      (𝟙 X) (pullback.fst _ _) from ⟨by simp⟩)).paste_vert (IsPullback.of_hasPullback f iY)
+  refine IsClosedImmersion.isIso_of_ker_eq iX (pullback.fst f iY) _ (by simp) ?_
+  rw [ker_fst_of_isClosedImmersion, h']
+
 /-- The pushforward of an ideal sheaf. -/
 def map (I : X.IdealSheafData) (f : X ⟶ Y) : Y.IdealSheafData :=
   (I.subschemeι ≫ f).ker

@@ -100,16 +100,16 @@ theorem modularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow
   obtain ⟨i, rfl⟩ := exists_add_of_le hi
   obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot L (p ^ (k + i))
   have h := hζ.pow (a := p ^ i) (Nat.pos_of_neZero _) (Nat.pow_add' _ _ _)
-  have h_unit : (h.isUnit (Nat.pos_of_neZero _)).unit =
-      (hζ.isUnit (Nat.pos_of_neZero _)).unit ^ (p ^ i) := by ext; rfl
+  have h_unit : (h.isUnit NeZero.out).unit =
+      (hζ.isUnit NeZero.out).unit ^ (p ^ i) := by ext; rfl
   have H₁ := aux_spec g (p ^ (k + i))
-    ⟨_, (hζ.isUnit_unit (Nat.pos_of_neZero _)).mem_rootsOfUnity⟩
+    ⟨_, (hζ.isUnit_unit NeZero.out).mem_rootsOfUnity⟩
   have H₂ := aux_spec g (p ^ k)
-    ⟨_, (h.isUnit_unit (Nat.pos_of_neZero _)).mem_rootsOfUnity⟩
+    ⟨_, (h.isUnit_unit NeZero.out).mem_rootsOfUnity⟩
   simp only [IsUnit.unit_spec, map_pow] at H₁ H₂
   rw [H₁, ← Units.val_pow_eq_pow_val, ← Units.ext_iff, h_unit, ← div_eq_one] at H₂
   simp only [← zpow_natCast, ← zpow_mul, div_eq_mul_inv, ← zpow_sub] at H₂
-  rw [(hζ.isUnit_unit (Nat.pos_of_neZero _)).zpow_eq_one_iff_dvd, mul_comm, ← mul_sub] at H₂
+  rw [(hζ.isUnit_unit NeZero.out).zpow_eq_one_iff_dvd, mul_comm, ← mul_sub] at H₂
   conv_lhs at H₂ => rw [Nat.pow_add', Nat.cast_mul]
   rwa [mul_dvd_mul_iff_left (by simp [NeZero.ne p]), Nat.cast_pow] at H₂
 
@@ -355,7 +355,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
       sub_eq_zero, eq_comm]
     apply modularCyclotomicCharacter.unique
     intro t ht
-    obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit (Nat.pos_of_neZero _)).eq_pow_of_mem_rootsOfUnity ht
+    obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
     rw [ZMod.val_one'', pow_one]
     · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
     · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'

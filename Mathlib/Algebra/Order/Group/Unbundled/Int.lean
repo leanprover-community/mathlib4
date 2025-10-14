@@ -78,7 +78,7 @@ theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := b
       simp only [negSucc_ne_zero, abs_eq_natAbs, natAbs_negSucc, succ_eq_add_one,
         Int.natCast_add, cast_ofNat_Int, add_eq_right, natCast_eq_zero, false_or, reduceNeg]
       rw [negSucc_eq]
-      omega
+      cutsat
 
 theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
   add_one_le_iff.mpr (abs_pos.mpr h₀)
@@ -87,10 +87,10 @@ lemma eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 :=
   by_contra h
   have := Int.natAbs_le_of_dvd_ne_zero h1 h
   rw [Int.abs_eq_natAbs] at h2
-  omega
+  cutsat
 
 lemma abs_sub_lt_of_lt_lt {m a b : ℕ} (ha : a < m) (hb : b < m) : |(b : ℤ) - a| < m := by
-  rw [abs_lt]; omega
+  rw [abs_lt]; cutsat
 
 /-! #### `/`  -/
 

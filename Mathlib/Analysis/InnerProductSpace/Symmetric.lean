@@ -5,7 +5,7 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
 /-!

@@ -440,23 +440,41 @@ def getProofWidgets (buildDir : FilePath) : IO Unit := do
     -- Check if the ProofWidgets build is out-of-date via `lake`.
     -- This is done through Lake as cache has no simple heuristic
     -- to determine whether the ProofWidgets JS is out-of-date.
-    let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "--no-build", "proofwidgets:release"]}).wait
-    if exitCode == 0 then -- up-to-date
+    let out ← IO.Process.output
+      {cmd := "lake", args := #["-v", "build", "--no-build", "proofwidgets:release"]}
+    if out.exitCode == 0 then -- up-to-date
       return
-    else if exitCode == 3 then -- needs fetch (`--no-build` triggered)
+    else if out.exitCode == 3 then -- needs fetch (`--no-build` triggered)
       pure ()
     else
-      throw <| IO.userError s!"Failed to validate ProofWidgets cloud release: lake failed with error code {exitCode}"
+      printLakeOutput out
+      throw <| IO.userError s!"Failed to validate ProofWidgets cloud release: \
+        lake failed with error code {out.exitCode}"
   -- Download and unpack the ProofWidgets cloud release (for its `.js` files)
-  let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "proofwidgets:release"]}).wait
-  if exitCode != 0 then
-    throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: lake failed with error code {exitCode}"
+  IO.print "Fetching ProofWidgets cloud release..."
+  let out ← IO.Process.output
+     {cmd := "lake", args := #["-v", "build", "proofwidgets:release"]}
+  if out.exitCode == 0 then
+    IO.println " done!"
+  else
+    IO.print "\n"
+    printLakeOutput out
+    throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: \
+      lake failed with error code {out.exitCode}"
   -- Prune non-JS ProofWidgets files (e.g., `olean`, `.c`)
   try
     IO.FS.removeDirAll (buildDir / "lib")
     IO.FS.removeDirAll (buildDir / "ir")
   catch e =>
     throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
+where
+  printLakeOutput out := do
+    unless out.stdout.isEmpty do
+      IO.eprintln "lake stdout:"
+      IO.eprint out.stderr
+    unless out.stderr.isEmpty do
+      IO.eprintln "lake stderr:"
+      IO.eprint out.stderr
 
 /-- Downloads missing files, and unpacks files. -/
 def getFiles

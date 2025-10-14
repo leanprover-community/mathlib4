@@ -52,9 +52,7 @@ theorem reduceOption_eq_nil_iff (l : List (Option α)) :
   constructor
   · intro h
     exact ⟨l.length, eq_replicate_of_mem h⟩
-  · intro ⟨_, h⟩
-    simp_rw [h, mem_replicate]
-    tauto
+  · grind
 
 theorem reduceOption_eq_singleton_iff (l : List (Option α)) (a : α) :
     l.reduceOption = [a] ↔ ∃ m n, l = replicate m none ++ some a :: replicate n none := by

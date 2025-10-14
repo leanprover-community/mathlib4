@@ -241,8 +241,8 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
   · rw [mem_range]
-    omega
-  · omega
+    cutsat
+  · cutsat
 
 theorem xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
   (xInTermsOfW_vars_aux p n).2

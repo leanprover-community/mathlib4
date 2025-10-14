@@ -6,6 +6,10 @@ Authors: David Loeffler
 import Mathlib.Data.Real.Basic
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.Instances.Matrix
+import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
@@ -14,11 +18,47 @@ We define a subgroup of `GL (Fin 2) ℝ` to be *arithmetic* if it is commensurab
 of `SL(2, ℤ)`.
 -/
 
-open Matrix.SpecialLinearGroup
+open Matrix Matrix.SpecialLinearGroup
 
 open scoped MatrixGroups
 
+local notation "SL" => SpecialLinearGroup
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
 namespace Subgroup
+
+section det_typeclasses
+
+variable {R : Type*} [CommRing R] (Γ : Subgroup (GL n R))
+
+/-- Typeclass saying that a subgroup of `GL(2, ℝ)` has determinant contained in `{±1}`. Necessary
+so that the typeclass system can detect when the slash action is multiplicative. -/
+class HasDetPlusMinusOne : Prop where
+  det_eq {g} (hg : g ∈ Γ) : g.det = 1 ∨ g.det = -1
+
+variable {Γ} in
+lemma HasDetPlusMinusOne.abs_det [LinearOrder R] [IsOrderedRing R] [HasDetPlusMinusOne Γ]
+    {g} (hg : g ∈ Γ) : |g.det.val| = 1 := by
+  rcases HasDetPlusMinusOne.det_eq hg with h | h <;> simp [h]
+
+/-- Typeclass saying that a subgroup of `GL(n, R)` is contained in `SL(n, R)`. Necessary so that
+the typeclass system can detect when the slash action is `ℂ`-linear. -/
+class HasDetOne : Prop where
+  det_eq {g} (hg : g ∈ Γ) : g.det = 1
+
+instance (Γ : Subgroup (SL n R)) : HasDetOne (Γ.map toGL) where
+  det_eq {g} hg := by rcases hg with ⟨g, hg, rfl⟩; simp
+
+instance {S : Type*} [CommRing S] [Algebra S R] (Γ : Subgroup (SL n S)) :
+    HasDetOne (Γ.map <| mapGL R) where
+  det_eq {g} hg := by rcases hg with ⟨g, hg, rfl⟩; simp
+
+instance [HasDetOne Γ] : HasDetPlusMinusOne Γ := ⟨fun {g} hg ↦ by simp [HasDetOne.det_eq hg]⟩
+
+end det_typeclasses
+
+section SL2Z_in_GL2R
 
 /-- The image of the modular group `SL(2, ℤ)`, as a subgroup of `GL(2, ℝ)`. -/
 scoped[MatrixGroups] notation "𝒮ℒ" => MonoidHom.range (mapGL ℝ : SL(2, ℤ) →* GL (Fin 2) ℝ)
@@ -50,4 +90,27 @@ instance IsArithmetic.finiteIndex_comap (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsAr
     (𝒢.comap (mapGL (R := ℤ) ℝ)).FiniteIndex :=
   ⟨𝒢.index_comap (mapGL (R := ℤ) ℝ) ▸ IsArithmetic.is_commensurable.1⟩
 
+instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinusOne Γ := by
+  refine ⟨fun {g} hg ↦ ?_⟩
+  suffices |g.det.val| = 1 by rcases abs_cases g.det.val <;> aesop
+  obtain ⟨n, hn, _, hgn⟩ := Subgroup.exists_pow_mem_of_relIndex_ne_zero
+    Subgroup.IsArithmetic.is_commensurable.2 hg
+  suffices |(g.det ^ n).val| = 1 by simpa [← abs_pow, abs_pow_eq_one _ (Nat.ne_zero_of_lt hn)]
+  obtain ⟨t, ht⟩ := hgn.1
+  have := congr_arg Matrix.GeneralLinearGroup.det ht.symm
+  rw [Matrix.SpecialLinearGroup.det_mapGL, map_pow] at this
+  simp [this]
+
+end SL2Z_in_GL2R
+
 end Subgroup
+
+namespace Matrix.SpecialLinearGroup
+
+instance discreteSpecialLinearGroupIntRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
+  (isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl)).toHomeomorph.discreteTopology
+
+lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
+  ⟨isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl), (mapGL ℝ).range.isClosed_of_discrete⟩
+
+end Matrix.SpecialLinearGroup
