@@ -29,7 +29,7 @@ open Function
 
 namespace Algebra
 
-variable {R : Type u} {A : Type w}
+variable {R A M : Type*}
 
 section Semiring
 
@@ -363,32 +363,33 @@ instance (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
 
 end FaithfulSMul
 
-namespace NoZeroSMulDivisors
+namespace Module.IsTorsionFree
 
 -- see Note [lower instance priority]
 instance (priority := 100) instOfFaithfulSMul {R A : Type*}
-    [CommSemiring R] [Semiring A] [Algebra R A] [NoZeroDivisors A] [FaithfulSMul R A] :
-    NoZeroSMulDivisors R A :=
-  ⟨fun hcx => (mul_eq_zero.mp ((Algebra.smul_def _ _).symm.trans hcx)).imp_left
-    (map_eq_zero_iff (algebraMap R A) <| FaithfulSMul.algebraMap_injective R A).mp⟩
+    [CommSemiring R] [Nontrivial R] [Ring A] [Algebra R A] [NoZeroDivisors A] [FaithfulSMul R A] :
+    IsTorsionFree R A where
+  isSMulRegular r hr a b hab := by
+    rw [← sub_eq_zero, ← smul_sub] at hab
+    simpa [Algebra.smul_def, FaithfulSMul.algebraMap_eq_zero_iff, sub_eq_zero, hr.ne_zero] using hab
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
 
-instance [Nontrivial A] [NoZeroSMulDivisors R A] : FaithfulSMul R A where
+instance [Nontrivial A] [IsTorsionFree R A] : FaithfulSMul R A where
   eq_of_smul_eq_smul {r₁ r₂} h := by
     specialize h 1
     rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at h
     exact h.resolve_right one_ne_zero
 
-theorem iff_faithfulSMul [IsDomain A] : NoZeroSMulDivisors R A ↔ FaithfulSMul R A :=
-  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+lemma iff_faithfulSMul [IsDomain A] : IsTorsionFree R A ↔ FaithfulSMul R A where
+  mp _ := inferInstance
+  mpr _ := inferInstance
 
 theorem iff_algebraMap_injective [IsDomain A] :
-    NoZeroSMulDivisors R A ↔ Injective (algebraMap R A) := by
-  rw [iff_faithfulSMul]
-  exact faithfulSMul_iff_algebraMap_injective R A
+    IsTorsionFree R A ↔ Injective (algebraMap R A) := by
+  rw [iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
 
-end NoZeroSMulDivisors
+end Module.IsTorsionFree
 
 section IsScalarTower
 
@@ -403,14 +404,17 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
+lemma isSMulRegular_algebraMap_iff {r : R} :
+    IsSMulRegular M (algebraMap R A r) ↔ IsSMulRegular M r :=
+  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul A r)
+
+variable (R M) in
 /-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
-theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [FaithfulSMul R A] [AddCommMonoid M] [Module R M] [Module A M]
-    [IsScalarTower R A M] [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
-  eq_zero_or_eq_zero_of_smul_eq_zero hx := by
-    rw [← algebraMap_smul (A := A)] at hx
-    simpa only [map_eq_zero_iff _ <| FaithfulSMul.algebraMap_injective R A] using
-      eq_zero_or_eq_zero_of_smul_eq_zero hx
+theorem Module.IsTorsionFree.trans_faithfulSMul [Nontrivial R] [IsDomain A] [FaithfulSMul R A]
+    [Module.IsTorsionFree A M] : Module.IsTorsionFree R M where
+  isSMulRegular a ha := by
+    rw [← isSMulRegular_algebraMap_iff A]
+    exact IsRegular.isSMulRegular <| isRegular_of_ne_zero <| by simpa using ha.ne_zero
 
 variable {A}
 
