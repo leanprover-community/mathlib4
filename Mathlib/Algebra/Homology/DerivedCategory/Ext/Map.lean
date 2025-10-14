@@ -46,11 +46,15 @@ noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) 
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
 
 instance [F.Linear R] [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] :
-    F.mapDerivedCategory.Linear R where
-  map_smul {X Y} f r := by
-
+    F.mapDerivedCategory.Linear R := by
+  rw [← Localization.functor_linear_iff DerivedCategory.Qh
+    (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) R
+    ((F.mapHomotopyCategory (ComplexShape.up ℤ)).comp DerivedCategory.Qh)
+    F.mapDerivedCategory]
+  have : Functor.Linear R (F.mapHomotopyCategory (ComplexShape.up ℤ)) := by
 
     sorry
+  infer_instance
 
 open DerivedCategory in
 lemma Functor.mapShiftedHomAddHom_linear [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D]
