@@ -1086,7 +1086,7 @@ variable (C)
 theorem hasColimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
     [HasColimitsOfSize.{v₁, u₁} C] : HasColimitsOfSize.{v₂, u₂} C where
   has_colimits_of_shape J {_} := hasColimitsOfShape_of_equivalence
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    ((ShrinkHoms.equivalence.{v₁} J).trans <| Shrink.equivalence _).symm
 
 /-- `hasColimitsOfSizeShrink.{v u} C` tries to obtain `HasColimitsOfSize.{v u} C`
 from some other `HasColimitsOfSize C`.
