@@ -6979,6 +6979,7 @@ import Mathlib.Util.CompileInductive
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Delaborators
 import Mathlib.Util.DischargerAsTactic
+import Mathlib.Util.ElabWithoutMVars
 import Mathlib.Util.Export
 import Mathlib.Util.FormatTable
 import Mathlib.Util.GetAllModules
