@@ -231,6 +231,8 @@ instance essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
 
+example (C : Type w) [SmallCategory C] : EssentiallySmall.{w} C := inferInstance
+
 instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
   essentiallySmall_iff C |>.1 h |>.1
 
