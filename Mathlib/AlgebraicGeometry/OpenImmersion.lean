@@ -82,7 +82,7 @@ def opensFunctor : X.Opens ⥤ Y.Opens :=
   LocallyRingedSpace.IsOpenImmersion.opensFunctor f.toLRSHom
 
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`.
-The prefered name in lemmas is `image` and it should be treated as a infix. -/
+The prefered name in lemmas is `image` and it should be treated as an infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
 
 @[simp] lemma coe_image {U : X.Opens} : f ''ᵁ U = f '' U := rfl
@@ -436,13 +436,18 @@ theorem iff_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) :
 
 @[deprecated (since := "2025-10-07")] alias iff_stalk_iso := iff_isIso_stalkMap
 
-theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) :
+theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion_and_epi_base
+    {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsOpenImmersion f ∧ Epi f.base :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => IsOpenImmersion.isIso f⟩
 
+@[deprecated (since := "2025-10-07")]
+alias _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion := isIso_iff_isOpenImmersion_and_epi_base
+
 theorem _root_.AlgebraicGeometry.isIso_iff_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsIso f.base ∧ ∀ x, IsIso (f.stalkMap x) := by
-  rw [isIso_iff_isOpenImmersion, IsOpenImmersion.iff_isIso_stalkMap, and_comm, ← and_assoc]
+  rw [isIso_iff_isOpenImmersion_and_epi_base,
+    IsOpenImmersion.iff_isIso_stalkMap, and_comm, ← and_assoc]
   refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
     convert_to
@@ -732,7 +737,7 @@ end IsOpenImmersion
 
 lemma isIso_of_isOpenImmersion_of_opensRange_eq_top {X Y : Scheme.{u}} (f : X ⟶ Y)
     [IsOpenImmersion f] (hf : f.opensRange = ⊤) : IsIso f := by
-  rw [isIso_iff_isOpenImmersion]
+  rw [isIso_iff_isOpenImmersion_and_epi_base]
   refine ⟨inferInstance, ?_⟩
   rw [TopCat.epi_iff_surjective, ← Set.range_eq_univ]
   exact TopologicalSpace.Opens.ext_iff.mp hf

@@ -385,7 +385,7 @@ instance (P : MorphismProperty Scheme) [IsZariskiLocalAtTarget P] :
   respectsIso := inferInstance
   to_basicOpen _ _ H := IsZariskiLocalAtTarget.restrict H _
   of_basicOpenCover {_ Y} _ _ _ hs := IsZariskiLocalAtTarget.of_iSup_eq_top _
-    (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
+    ((isAffineOpen_top Y).iSup_basicOpen_eq_self_iff.mpr hs)
 
 /-- A `P : AffineTargetMorphismProperty` is stable under base change if `P` holds for `Y ⟶ S`
 implies that `P` holds for `X ×ₛ Y ⟶ X` with `X` and `S` affine schemes. -/

@@ -209,8 +209,8 @@ lemma awayι_toSpecZero : awayι 𝒜 f f_deg hm ≫ toSpecZero 𝒜 =
       Scheme.homOfLE _ (le_top.trans_eq e.symm) := by
     simp only [← Category.assoc, Iso.comp_inv_eq]
     simp only [Scheme.topIso_hom, Category.assoc, Scheme.isoOfEq_hom_ι, Scheme.homOfLE_ι]
-  rw [reassoc_of% this, ← Scheme.Opens.toSpecΓ_SpecMap_map_assoc, basicOpenToSpec, Category.assoc,
-    ← Spec.map_comp, ← Spec.map_comp, ← Spec.map_comp]
+  rw [reassoc_of% this, ← Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc, basicOpenToSpec,
+    Category.assoc, ← Spec.map_comp, ← Spec.map_comp, ← Spec.map_comp]
   rfl
 
 variable {f}
@@ -239,7 +239,7 @@ lemma basicOpenToSpec_SpecMap_awayMap :
     basicOpenToSpec 𝒜 x ≫ Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg hx)) =
       (Proj 𝒜).homOfLE (basicOpen_mono _ _ _ ⟨_, hx⟩) ≫ basicOpenToSpec 𝒜 f := by
   rw [basicOpenToSpec, Category.assoc, ← Spec.map_comp, awayMap_awayToSection,
-    Spec.map_comp, Scheme.Opens.toSpecΓ_SpecMap_map_assoc]
+    Spec.map_comp, Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc]
   rfl
 
 @[reassoc]

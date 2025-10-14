@@ -90,7 +90,7 @@ instance : Category Scheme where
   comp f g := Hom.mk (f.toLRSHom ≫ g.toLRSHom)
 
 /-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`, the preimage of an open set `U` under `f`.
-The prefered name in lemmas is `preimage` and it should be treated as a infix. -/
+The prefered name in lemmas is `preimage` and it should be treated as an infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
   @Functor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
     (Opens.map (f : Scheme.Hom _ _).base) U
@@ -831,38 +831,38 @@ lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f 
   rw [← hu.mul_right_eq_zero, ← map_mul, hf, map_zero]
 
 @[reassoc (attr := simp)]
-lemma Scheme.Hom.hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+lemma Scheme.hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.hom.base ≫ e.inv.base = 𝟙 _ :=
   LocallyRingedSpace.iso_hom_base_inv_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
 
 @[deprecated (since := "2025-10-07")]
-alias Scheme.iso_hom_base_inv_base := Scheme.Hom.hom_base_inv_base
+alias Scheme.iso_hom_base_inv_base := Scheme.hom_base_inv_base
 
 @[simp]
-lemma Scheme.Hom.hom_inv_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
+lemma Scheme.hom_inv_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
     e.inv (e.hom x) = x := by
   change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[deprecated (since := "2025-10-07")]
-alias Scheme.iso_hom_base_inv_base_apply := Scheme.Hom.hom_inv_apply
+alias Scheme.iso_hom_base_inv_base_apply := Scheme.hom_inv_apply
 
 @[reassoc (attr := simp)]
-lemma Scheme.Hom.inv_base_hom_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+lemma Scheme.inv_base_hom_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.inv.base ≫ e.hom.base = 𝟙 _ :=
   LocallyRingedSpace.iso_inv_base_hom_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
 
 @[deprecated (since := "2025-10-07")]
-alias Scheme.iso_inv_base_hom_base := Scheme.Hom.inv_base_hom_base
+alias Scheme.iso_inv_base_hom_base := Scheme.inv_base_hom_base
 
 @[simp]
-lemma Scheme.Hom.inv_hom_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
+lemma Scheme.inv_hom_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
     e.hom (e.inv y) = y := by
   change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 @[deprecated (since := "2025-10-07")]
-alias Scheme.iso_inv_base_hom_base_apply := Scheme.Hom.inv_hom_apply
+alias Scheme.iso_inv_base_hom_base_apply := Scheme.inv_hom_apply
 
 theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
     (Spec R).zeroLocus ((Scheme.ΓSpecIso R).inv '' s) = PrimeSpectrum.zeroLocus s := by

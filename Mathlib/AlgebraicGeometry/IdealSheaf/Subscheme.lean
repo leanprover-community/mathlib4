@@ -138,7 +138,7 @@ lemma glueDataObjMap_glueDataObjι {U V : X.affineOpens} (h : U ≤ V) :
     Category.assoc]
   congr 1
   rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom, CommRingCat.ofHom_hom]
-  erw [Scheme.Opens.toSpecΓ_SpecMap_map_assoc U.1 V.1 h]
+  erw [Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc U.1 V.1 h]
   rw [← IsAffineOpen.isoSpec_hom V.2, Iso.hom_inv_id, Category.comp_id]
 
 lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :

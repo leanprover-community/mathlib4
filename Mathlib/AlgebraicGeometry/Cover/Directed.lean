@@ -147,7 +147,7 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
     rw [this, Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, Pullback.range_map]
     use iso.hom.base x
     simp only [Hom.id_base, TopCat.hom_id, ContinuousMap.coe_id, Set.range_id, Set.preimage_univ,
-      Set.univ_inter, Set.mem_preimage, Set.mem_range, Hom.hom_inv_apply, and_true]
+      Set.univ_inter, Set.mem_preimage, Set.mem_range, hom_inv_apply, and_true]
     exact ⟨yk, hyk⟩
   property_trans {i j} hij := by
     let iso : pullback f (𝒰.f i) ≅ pullback (pullback.snd f (𝒰.f j)) (𝒰.trans hij) :=

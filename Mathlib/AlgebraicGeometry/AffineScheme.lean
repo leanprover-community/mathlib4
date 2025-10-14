@@ -329,13 +329,19 @@ def Scheme.Opens.toSpecΓ {X : Scheme.{u}} (U : X.Opens) :
   U.toScheme.toSpecΓ ≫ Spec.map U.topIso.inv
 
 @[reassoc (attr := simp)]
-lemma Scheme.Opens.toSpecΓ_SpecMap_map {X : Scheme} (U V : X.Opens) (h : U ≤ V) :
+lemma Scheme.Opens.toSpecΓ_SpecMap_presheaf_map {X : Scheme} (U V : X.Opens) (h : U ≤ V) :
     U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE h).op) = X.homOfLE h ≫ V.toSpecΓ := by
   delta Scheme.Opens.toSpecΓ
   simp [← Spec.map_comp, ← X.presheaf.map_comp, toSpecΓ_naturality_assoc]
 
+@[deprecated (since := "2025-10-07")]
+alias Scheme.Opens.toSpecΓ_SpecMap_map := Scheme.Opens.toSpecΓ_SpecMap_presheaf_map
+
+@[deprecated (since := "2025-10-07")]
+alias Scheme.Opens.toSpecΓ_SpecMap_map_assoc := Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc
+
 @[reassoc (attr := simp)]
-lemma Scheme.Opens.toSpecΓ_SpecMap_map_top {X : Scheme} (U : X.Opens) :
+lemma Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_top {X : Scheme} (U : X.Opens) :
     U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE le_top).op) = U.ι ≫ X.toSpecΓ := by
   delta Scheme.Opens.toSpecΓ
   simp [← Spec.map_comp, ← X.presheaf.map_comp, toSpecΓ_naturality]
@@ -429,7 +435,8 @@ theorem range_fromSpec :
 @[reassoc (attr := simp)]
 lemma fromSpec_toSpecΓ {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) :
     hU.fromSpec ≫ X.toSpecΓ = Spec.map (X.presheaf.map (homOfLE le_top).op) := by
-  rw [fromSpec, Category.assoc, ← Scheme.Opens.toSpecΓ_SpecMap_map_top, isoSpec_inv_toSpecΓ_assoc]
+  rw [fromSpec, Category.assoc, ← Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_top,
+    isoSpec_inv_toSpecΓ_assoc]
 
 @[simp]
 theorem opensRange_fromSpec : hU.fromSpec.opensRange = U := Opens.ext (range_fromSpec hU)
@@ -543,8 +550,8 @@ theorem fromSpec_preimage_self :
 theorem ΓSpecIso_hom_fromSpec_app :
     (Scheme.ΓSpecIso Γ(X, U)).hom ≫ hU.fromSpec.app U =
       (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
+  change _ = (Spec Γ(X, U)).presheaf.map (homOfLE le_top).op
   simp [IsAffineOpen.fromSpec_app_of_le]
-  rfl
 
 @[elementwise]
 theorem fromSpec_app_self :
@@ -839,7 +846,7 @@ include hU in
 In an affine open set `U`, a family of basic open covers `U` iff the sections span `Γ(X, U)`.
 See `iSup_basicOpen_of_span_eq_top` for the inverse direction without the affine-ness assumption.
 -/
-theorem iSup_basicOpen_eq_self_iff (s : Set Γ(X, U)) :
+theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
     ⨆ f : s, X.basicOpen (f : Γ(X, U)) = U ↔ Ideal.span s = ⊤ := by
   trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).1 = Set.univ
   · trans hU.fromSpec ⁻¹' (⨆ f : s, X.basicOpen (f : Γ(X, U))).1 = hU.fromSpec ⁻¹' U.1
@@ -869,7 +876,7 @@ theorem iSup_basicOpen_eq_self_iff (s : Set Γ(X, U)) :
 alias basicOpen_union_eq_self_iff := iSup_basicOpen_eq_self_iff
 
 include hU in
-theorem self_le_iSup_basicOpen_iff (s : Set Γ(X, U)) :
+theorem self_le_iSup_basicOpen_iff {s : Set Γ(X, U)} :
     (U ≤ ⨆ f : s, X.basicOpen f.1) ↔ Ideal.span s = ⊤ := by
   rw [← hU.iSup_basicOpen_eq_self_iff, @comm _ Eq]
   refine ⟨fun h => le_antisymm h ?_, le_of_eq⟩
@@ -921,8 +928,8 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
           RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes,
           IsAffineOpen.algebraMap_Spec_obj, homOfLE_leOfHom]
     simp only [IsAffineOpen.isoSpec_hom, homOfLE_leOfHom, Spec.map_comp, Category.assoc,
-      Scheme.Opens.toSpecΓ_SpecMap_map_assoc, Scheme.Opens.toSpecΓ_top, Scheme.homOfLE_ι_assoc,
-      morphismRestrict_ι_assoc]
+      Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc, Scheme.Opens.toSpecΓ_top,
+      Scheme.homOfLE_ι_assoc, morphismRestrict_ι_assoc]
     simp only [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Category.assoc, Iso.inv_hom_id,
       Category.comp_id, Category.id_comp]
     rfl
@@ -944,7 +951,7 @@ lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
   · intro x hx
     obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open hx U.2
     refine SetLike.mem_of_subset ?_ hxV
-    rw [← (hV.iSup_basicOpen_eq_self_iff (X.presheaf.map (homOfLE hVU).op '' s)).mpr
+    rw [← (hV.iSup_basicOpen_eq_self_iff (s := X.presheaf.map (homOfLE hVU).op '' s)).mpr
       (by rw [← Ideal.map_span, hs, Ideal.map_top])]
     simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Set.iUnion_coe_set, Set.mem_image,
       Set.iUnion_exists, Set.biUnion_and', Set.iUnion_iUnion_eq_right, Scheme.basicOpen_res,
