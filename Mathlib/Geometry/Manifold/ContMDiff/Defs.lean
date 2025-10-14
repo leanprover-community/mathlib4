@@ -376,6 +376,16 @@ theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I n M)
   refine fun _ => contDiffWithinAt_congr_set ?_
   simp_rw [e.extend_symm_preimage_inter_range_eventuallyEq hs hx]
 
+theorem contMDiffAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I n M)
+    (he' : e' ∈ maximalAtlas I' n M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
+    ContMDiffAt I I' n f x ↔
+      ContinuousAt f x ∧
+        ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm)
+          (range I) (e.extend I x) := by
+  rw [← contMDiffWithinAt_univ,
+    contMDiffWithinAt_iff_of_mem_maximalAtlas he he' hx hy,
+    continuousWithinAt_univ, preimage_univ, univ_inter]
+
 /-- One can reformulate being `C^n` within a set at a point as continuity within this set at this
 point, and being `C^n` in any chart containing that point. -/
 theorem contMDiffWithinAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
