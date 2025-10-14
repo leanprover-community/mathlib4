@@ -499,13 +499,25 @@ lemma isDiag_map (hf : Injective f) : (e.map f).IsDiag ↔ e.IsDiag :=
 theorem diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 
-theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@diag α) := by
-  obtain ⟨x, y⟩ := z
-  rintro (rfl : x = y)
-  exact ⟨_, rfl⟩
+/-- The set of all `Sym2 α` elements on the diagonal. -/
+def diagSet : Set (Sym2 α) :=
+  Set.range diag
 
-theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
-  ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
+theorem isDiag_iff_mem_diagSet (z : Sym2 α) : IsDiag z ↔ z ∈ diagSet :=
+  ⟨z.inductionOn fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩, fun ⟨i, hi⟩ ↦ hi ▸ diag_isDiag i⟩
+
+@[deprecated (since := "2025-10-14")] alias isDiag_iff_mem_range_diag := isDiag_iff_mem_diagSet
+@[deprecated (since := "2025-10-14")] alias ⟨IsDiag.mem_range_diag, _⟩ := isDiag_iff_mem_diagSet
+
+theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b :=
+  isDiag_iff_mem_diagSet _ |>.symm
+
+theorem diagSet_eq_setOf_isDiag : diagSet = { z : Sym2 α | z.IsDiag } := by
+  ext z
+  exact isDiag_iff_mem_diagSet z |>.symm
+
+theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = { z : Sym2 α | ¬z.IsDiag } :=
+  congrArg _ diagSet_eq_setOf_isDiag
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
@@ -549,6 +561,22 @@ theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ
 
 theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
+
+lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.symmetric := by
+  ext z
+  exact z.ind fun _ _ ↦ mem_diagSet_iff_eq
+
+lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (fun _ _ ↦ Ne.symm) := by
+  ext z
+  exact z.ind fun _ _ ↦ mem_diagSet_iff_eq.not
+
+theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
+    Reflexive r ↔ diagSet ⊆ fromRel sym :=
+  ⟨fun hr _ ⟨_, hd⟩ ↦ hd ▸ hr _, fun h _ ↦ h ⟨_, rfl⟩⟩
+
+theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
+    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ :=
+  ⟨fun hr _ hz ⟨_, hd⟩ ↦ hr _ <| fromRel_prop.mp <| hd ▸ hz, fun h _ ha ↦ h ha ⟨_, rfl⟩⟩
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
