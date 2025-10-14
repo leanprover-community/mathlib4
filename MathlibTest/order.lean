@@ -136,7 +136,7 @@ trace:
     ¬ #0 < #5
 -/
 #guard_msgs in
-example [Lattice α] (a b c : α) : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
+example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
   order
 
 -- This used to work when a different matching strategy was used in `order`.
