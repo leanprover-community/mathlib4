@@ -313,8 +313,8 @@ where
           if ← withReducible (pureIsDefEq M e) then return some H else
           if ← withReducible (pureIsDefEq H e) then return some H else return none
         | _ => return none
-      | throwError "Couldn't find a `ChartedSpace` structure on {e} among local instances,\n\
-        and {e} is not the charted space of some type in the local context either."
+      | throwError "Couldn't find a `ChartedSpace` structure on {e} among local instances, \
+          and {e} is not the charted space of some type in the local context either."
     let some m ← findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
         | ModelWithCorners _ _ _ _ _ H' _ => do
