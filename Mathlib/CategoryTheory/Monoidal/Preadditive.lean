@@ -118,7 +118,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
-            simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
+            simp only [tensorHom_comp_tensorHom, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
               IsBilimit.total i])⟩ } }
 
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
@@ -128,7 +128,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
-            simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← id_tensorHom_id,
+            simp only [tensorHom_comp_tensorHom, Category.comp_id, ← sum_tensor, ← id_tensorHom_id,
                IsBilimit.total i])⟩ } }
 
 variable [HasFiniteBiproducts C]

@@ -50,6 +50,10 @@ example {α} [CommRing α] (a b c d e : α) :
   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
 example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
 
+example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
+example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
+example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
+
 section Rat
 
 variable [Field α]

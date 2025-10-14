@@ -406,6 +406,11 @@ theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
 alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
   IntegrableOn.integrable_of_forall_notMem_eq_zero
 
+theorem IntegrableOn.of_inter_support {f : α → ε'}
+    (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
+    IntegrableOn f s μ := by
+  simpa using hf.of_forall_diff_eq_zero hs
+
 theorem integrableOn_iff_integrable_of_support_subset
     {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by
   refine ⟨fun h => ?_, fun h => h.integrableOn⟩

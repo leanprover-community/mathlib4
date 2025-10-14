@@ -45,7 +45,7 @@ instance {X : C} (S : Presieve X) [S.Extensive] : S.HasPairwisePullbacks where
     apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct hc
 
 /--
-A finite product preserving presheaf is a sheaf for the extensive topology on a category which is
+A finite-product-preserving presheaf is a sheaf for the extensive topology on a category which is
 `FinitaryPreExtensive`.
 -/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.Extensive]

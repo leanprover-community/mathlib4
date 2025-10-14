@@ -18,7 +18,8 @@ showing that it is fully faithful and its (essential) image is the representable
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 universe w v u
-variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
+variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
+  [Category.{w} D] [CartesianMonoidalCategory D]
   {M N O X Y : C} [MonObj M] [MonObj N] [MonObj O]
 
 namespace MonObj
@@ -53,7 +54,6 @@ instance : IsMonHom (fst M N) where
 instance : IsMonHom (snd M N) where
 
 instance {f : M ⟶ N} {g : M ⟶ O} [IsMonHom f] [IsMonHom g] : IsMonHom (lift f g) where
-  mul_hom := by ext <;> simp [← tensor_comp_assoc]
 
 instance [IsCommMonObj M] : IsMonHom μ[M] where
   one_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
@@ -123,7 +123,7 @@ def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _)
 @[deprecated (since := "2025-03-07")]
 alias MonObjOfRepresentableBy := MonObj.ofRepresentableBy
 
-@[deprecated (since := "2025-09-09")] alias Mon_ClassOfRepresentableBy := MonObjOfRepresentableBy
+@[deprecated (since := "2025-09-09")] alias Mon_ClassOfRepresentableBy := MonObj.ofRepresentableBy
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
 abbrev Hom.monoid : Monoid (X ⟶ M) where
@@ -154,6 +154,34 @@ scoped[MonObj] attribute [instance] Hom.monoid
 
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
 lemma Hom.mul_def (f₁ f₂ : X ⟶ M) : f₁ * f₂ = lift f₁ f₂ ≫ μ := rfl
+
+namespace CategoryTheory.Functor
+variable (F : C ⥤ D) [F.Monoidal]
+
+open scoped Obj
+
+protected lemma map_mul (f g : X ⟶ M) : F.map (f * g) = F.map f * F.map g := by
+  simp only [Hom.mul_def, map_comp, obj.μ_def, ← Category.assoc]
+  congr 1
+  rw [← IsIso.comp_inv_eq]
+  ext <;> simp
+
+@[simp] protected lemma map_one : F.map (1 : X ⟶ M) = 1 := by simp [Hom.one_def]
+
+/-- `Functor.map` of a monoidal functor as a `MonoidHom`. -/
+@[simps]
+def homMonoidHom : (X ⟶ M) →* (F.obj X ⟶ F.obj M) where
+  toFun := F.map
+  map_one' := F.map_one
+  map_mul' := F.map_mul
+
+/-- `Functor.map` of a fully faithful monoidal functor as a `MulEquiv`. -/
+@[simps!]
+def FullyFaithful.homMulEquiv (hF : F.FullyFaithful) : (X ⟶ M) ≃* (F.obj X ⟶ F.obj M) where
+  __ := hF.homEquiv
+  __ := F.homMonoidHom
+
+end CategoryTheory.Functor
 
 section BraidedCategory
 variable [BraidedCategory C]
@@ -240,7 +268,7 @@ alias MonObjOfRepresentableBy_yonedaMonObjRepresentableBy :=
 
 @[deprecated (since := "2025-09-09")]
 alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
-  MonObjOfRepresentableBy_yonedaMonObjRepresentableBy
+  MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
 
 /-- The yoneda embedding for `Mon_C` is fully faithful. -/
 def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
@@ -327,3 +355,13 @@ lemma MonObj.mul_eq_mul : μ = fst M M * snd _ _ :=
   show _ = _ ≫ _ by rw [lift_fst_snd, Category.id_comp]
 
 @[deprecated (since := "2025-09-09")] alias Mon_Class.mul_eq_mul := MonObj.mul_eq_mul
+
+namespace Hom
+
+/-- If `M` and `N` are isomorphic as monoid objects, then `X ⟶ M` and `X ⟶ N` are isomorphic
+monoids. -/
+@[simps!]
+def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (X ⟶ N) :=
+  ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
+
+end Hom
