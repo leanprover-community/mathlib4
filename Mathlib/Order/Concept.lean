@@ -293,8 +293,8 @@ theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
   · assumption
 
 theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r') :
-    IsCompl c'.extent c'.intent :=
-  ⟨c'.disjoint_extent_intent, c'.codisjoint_extent_intent⟩
+    IsCompl c.extent c.intent :=
+  ⟨c.disjoint_extent_intent, c.codisjoint_extent_intent⟩
 
 theorem isLowerSet_extent_le [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
     IsLowerSet c.extent :=
