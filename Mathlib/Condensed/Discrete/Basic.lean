@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.Condensed.Basic
-import Mathlib.Condensed.Light.Basic
+import Mathlib.Condensed.Light.Instances
 /-!
 
 # Discrete-underlying adjunction

@@ -188,7 +188,7 @@ noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J _ A
 
-noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A :=
+lemma hasSheafifyEssentiallySmallSite : HasSheafify J A :=
   (equivSmallModel C).hasSheafify J ((equivSmallModel C).inverse.inducedTopology J) A
 
 instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
