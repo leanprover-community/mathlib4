@@ -15,7 +15,7 @@ open scoped Nat NNReal ContDiff
 
 open Asymptotics
 
-variable {𝕜 𝕜' D E F G V : Type*}
+variable {D E F : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -115,7 +115,7 @@ variable [NormedAddCommGroup D] [MeasurableSpace D]
 
 namespace MeasureTheory.Measure
 
-open MeasureTheory Module
+open Module
 open scoped ENNReal
 
 /-- A measure `μ` has temperate growth if there is an `n : ℕ` such that `(1 + ‖x‖) ^ (- n)` is
