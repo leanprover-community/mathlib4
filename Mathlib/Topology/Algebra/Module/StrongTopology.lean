@@ -659,7 +659,7 @@ def CompactConvergenceCLM [TopologicalSpace E] [TopologicalSpace F] := E →SL[�
 
 @[inherit_doc]
 scoped[CompactConvergenceCLM] notation
-  E " →SL_c[ " σ " ] " F => CompactConvergenceCLM σ E F
+  E " →SL_c[" σ "] " F => CompactConvergenceCLM σ E F
 
 namespace CompactConvergenceCLM
 
@@ -676,7 +676,7 @@ instance instAddCommGroup [TopologicalSpace E] [TopologicalSpace F] [IsTopologic
 
 instance instModule [TopologicalSpace E] [TopologicalSpace F]
     (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
-    [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] :
+    [ContinuousConstSMul R F] [IsTopologicalAddGroup F] :
     Module R (E →SL_c[σ] F) := ContinuousLinearMap.module
 
 /-- The topology of compact convergence on `E →L[𝕜] F`. -/
@@ -703,12 +703,12 @@ instance isUniformAddGroup [TopologicalSpace E] [UniformSpace F] [IsUniformAddGr
     IsUniformAddGroup (E →SL_c[σ] F) :=
   UniformConvergenceCLM.instIsUniformAddGroup σ F _
 
-instance instContinuousEvalConst [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F]
-    [ContinuousSMul 𝕜₁ E] : ContinuousEvalConst (E →SL_c[σ] F) E F :=
+instance instContinuousEvalConst [TopologicalSpace E] [TopologicalSpace F]
+    [IsTopologicalAddGroup F] : ContinuousEvalConst (E →SL_c[σ] F) E F :=
   UniformConvergenceCLM.continuousEvalConst σ F _ isCompact_covers
 
 instance instT2Space [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F]
-    [ContinuousSMul 𝕜₁ E] [T2Space F] : T2Space (E →SL_c[σ] F) :=
+    [T2Space F] : T2Space (E →SL_c[σ] F) :=
   UniformConvergenceCLM.t2Space σ F _ isCompact_covers
 
 protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace E] [TopologicalSpace F]
