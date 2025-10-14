@@ -79,7 +79,7 @@ theorem intrinsicStar_mulLeft (x : E) : star (mulLeft R x) = mulRight R (star x)
 theorem intrinsicStar_mulRight (x : E) : star (mulRight R x) = mulLeft R (star x) := by
   rw [star_eq_iff_star_eq, intrinsicStar_mulLeft, star_star]
 
--- TODO: when we have `Star (E ⊗[R] F)`, we can do these two:
+-- TODO: when we have `Star (E ⊗[R] F)` (PR #27290), we can do these two:
 -- `star (mul' R E) = mul' R E ∘ₗ TensorProduct.comm R E E`
 -- `star (f ⊗ₘ g) = star f ⊗ₘ star g`
 
