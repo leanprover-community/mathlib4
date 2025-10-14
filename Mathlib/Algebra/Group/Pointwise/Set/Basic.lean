@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Data.Set.NAry
-import Mathlib.Data.Fintype.Defs
 
 /-!
 # Pointwise operations of sets
@@ -161,12 +160,6 @@ variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
   rfl
 
-
-@[to_additive (attr := simp)]
-theorem inv_setOf' (p : α → Prop) [Fintype α] : {x | p x}⁻¹ = {x | p x⁻¹} :=
-  rfl
-
-#exit
 @[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
   Iff.rfl

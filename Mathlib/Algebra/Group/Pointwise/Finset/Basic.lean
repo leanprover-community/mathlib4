@@ -268,6 +268,11 @@ variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 @[to_additive (attr := simp)]
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
 
+@[to_additive (attr := simp)]
+theorem inv_setOf (p : α → Prop) [Fintype α] [DecidablePred p] :
+    ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
+  ext; simp
+
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
 
