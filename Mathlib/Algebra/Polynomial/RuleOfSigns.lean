@@ -244,7 +244,20 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
     by_cases h₉ : ((X - C η) * P).nextCoeff = 0
     · suffices ((X - C η) * P).eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := coeffList_eraseLead (mul_ne_zero (X_sub_C_ne_zero η) h₃)
-        grind [leadingCoeff_mul, leadingCoeff_X_sub_C]
+        #adaptation_note
+        /--
+        This used to be just
+        `grind [leadingCoeff_mul, leadingCoeff_X_sub_C]`
+        but this fails as of nightly-2025-10-14.
+        -/
+        simp only [this, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, ← List.cons_append, h₉]
+        congr 2
+        apply List.ext_getElem
+        · grind
+        · intro i h h'
+          rcases i with _ | i
+          · simp
+          · cases i <;> simp
       suffices C η * monomial P.natDegree P.leadingCoeff = monomial P.natDegree P.nextCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff]
       rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
