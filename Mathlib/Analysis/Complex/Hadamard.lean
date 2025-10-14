@@ -184,7 +184,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
         neg_re, Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 1)
         (le_of_lt hM1_one) (neg_le_neg_iff.mpr hset.2)]
 
-/-- Proof that `F` is bounded by one one the edges. -/
+/-- Proof that `F` is bounded by one on the edges. -/
 lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ re ⁻¹' {0, 1}) :
     ‖F f ε z‖ ≤ 1 := by
