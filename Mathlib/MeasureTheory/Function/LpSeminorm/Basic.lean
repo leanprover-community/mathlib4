@@ -257,8 +257,8 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [eLpNorm_const_lt_top_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top]; simp
 
-theorem eLpNorm_const_lt_top [h : MemLp.Const p μ] (c : E) : eLpNorm (fun _ ↦ c) p μ < ∞ :=
-  MemLp.Const.eLpNorm_const_lt_top' (self := h) ‖c‖ₑ (by simp)
+theorem eLpNorm_const_lt_top [MemLp.Const p μ] (c : E) : eLpNorm (fun _ ↦ c) p μ < ∞ :=
+  MemLp.Const.eLpNorm_const_lt_top' (p := p) ‖c‖ₑ (by simp)
 
 theorem memLp_const (c : E) [MemLp.Const p μ] : MemLp (fun _ ↦ c) p μ :=
   memLp_const_of_enorm (by simp)
