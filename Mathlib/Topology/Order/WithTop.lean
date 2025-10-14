@@ -19,15 +19,6 @@ namespace TopologicalSpace
 
 variable {ι : Type*} [Preorder ι]
 
-instance [h : IsEmpty ι] : Subsingleton (WithTop ι) where
-  allEq a b := by
-    cases a with
-    | coe a => exfalso; exact h.elim a
-    | top =>
-      cases b with
-      | coe b => exfalso; exact h.elim b
-      | top => rfl
-
 @[nolint unusedArguments]
 instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithTop ι) :=
   Preorder.topology _
@@ -206,11 +197,6 @@ lemma nhds_coe {r : ι} : 𝓝 (r : WithTop ι) = (𝓝 r).map (↑) :=
 lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) := isEmbedding_coe.continuous
 
 end Coe
-
-/-- Function that sends an element of `WithTop ι` to `ι`,
-with an arbitrary default value for `⊤`. -/
-noncomputable
-abbrev _root_.WithTop.untopA [Nonempty ι] : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
 
 @[simp]
 lemma untopA_coe_enat (n : ℕ) : WithTop.untopA (n : ℕ∞) = n := rfl

@@ -32,6 +32,8 @@ variable {a b : α}
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
   Option.nontrivial
 
+instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+
 open Function
 
 theorem coe_injective : Injective ((↑) : α → WithBot α) :=
@@ -86,6 +88,11 @@ theorem unbotD_eq_self_iff {d : α} {x : WithBot α} : unbotD d x = d ↔ x = d 
 theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
     unbotD d x = unbotD d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
   induction y <;> simp [unbotD_eq_iff, or_comm]
+
+/-- Function that sends an element of `WithBot α` to `α`,
+with an arbitrary default value for `⊥`. -/
+noncomputable
+abbrev unbotA [Nonempty α] : WithBot α → α := unbotD (Classical.arbitrary α)
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
@@ -505,6 +512,8 @@ variable {a b : α}
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
 
+instance [IsEmpty α] : Unique (WithTop α) := Option.instUniqueOfIsEmpty
+
 open Function
 
 theorem coe_injective : Injective ((↑) : α → WithTop α) :=
@@ -611,6 +620,11 @@ theorem untopD_eq_self_iff {d : α} {x : WithTop α} : untopD d x = d ↔ x = d 
 theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
     untopD d x = untopD d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
   WithBot.unbotD_eq_unbotD_iff
+
+/-- Function that sends an element of `WithTop α` to `α`,
+with an arbitrary default value for `⊤`. -/
+noncomputable
+abbrev untopA [Nonempty α] : WithTop α → α := untopD (Classical.arbitrary α)
 
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
