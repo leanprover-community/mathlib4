@@ -194,7 +194,8 @@ lemma hasSheafifyEssentiallySmallSite : HasSheafify J A :=
 instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
   (equivSmallModel C).hasSheafCompose J ((equivSmallModel C).inverse.inducedTopology J) F
 
-instance hasLimitsEssentiallySmallSite
+omit [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A] in
+lemma hasLimitsEssentiallySmallSite
     [HasLimits <| Sheaf ((equivSmallModel C).inverse.inducedTopology J) A] :
     HasLimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J
