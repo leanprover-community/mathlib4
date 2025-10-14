@@ -639,9 +639,8 @@ theorem tendsto_of_limsup_measure_closed_le
     Tendsto μs L (𝓝 μ) := by
   apply Filter.tendsto_of_seq_tendsto fun u hu ↦ ?_
   apply tendsto_of_limsup_measure_closed_le_nat fun F hF ↦ le_trans ?_ (h F hF)
-  change atTop.limsup ((fun i ↦ μs i F) ∘ u) ≤ _
-  rw [limsup_comp]
-  exact limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩
+  exact (limsup_comp (fun i ↦ μs i F) u _).trans_le
+    (limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩)
 
 end Closed
 
