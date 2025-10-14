@@ -26,21 +26,21 @@ localization at an element.
 
 open scoped TensorProduct
 
-universe u
+universe u v
 
 namespace Algebra
 
 section
 
 variable (R : Type u) [CommRing R]
-variable (A : Type u) [CommRing A] [Algebra R A]
+variable (A : Type v) [CommRing A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally étale if for every `R`-algebra, every square-zero ideal
 `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`. -/
 @[mk_iff, stacks 00UQ]
 class FormallyEtale : Prop where
-  comp_bijective :
-    ∀ ⦃B : Type u⦄ [CommRing B],
+  comp_bijective' :
+    ∀ ⦃B : Type (max u v)⦄ [CommRing B],
       ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 
@@ -50,13 +50,14 @@ namespace FormallyEtale
 
 section
 
-variable {R : Type u} [CommRing R]
-variable {A : Type u} [CommRing A] [Algebra R A]
+variable {R : Type*} [CommRing R]
+variable {A : Type*} [CommRing A] [Algebra R A]
 
 theorem iff_unramified_and_smooth :
-    FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A := by
-  rw [FormallyUnramified.iff_comp_injective, formallySmooth_iff, formallyEtale_iff]
-  simp_rw [← forall_and, Function.Bijective]
+    FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A :=
+  ⟨fun et ↦ ⟨.of_comp_injective fun _ _ _ _ h ↦ (et.1 _ h).injective,
+    ⟨fun _ _ _ _ h ↦ (et.1 _ h).surjective⟩⟩,
+  fun ⟨unr, sm⟩ ↦ ⟨fun _ _ _ _ h ↦ ⟨unr.comp_injective _ h, sm.comp_surjective _ h⟩⟩⟩
 
 instance (priority := 100) to_unramified [h : FormallyEtale R A] :
     FormallyUnramified R A :=
@@ -69,12 +70,17 @@ theorem of_unramified_and_smooth [h₁ : FormallyUnramified R A]
     [h₂ : FormallySmooth R A] : FormallyEtale R A :=
   FormallyEtale.iff_unramified_and_smooth.mpr ⟨h₁, h₂⟩
 
+theorem comp_bijective [FormallyEtale R A] ⦃B : Type*⦄ [CommRing B] [Algebra R B]
+    (I : Ideal B) (hI : I ^ 2 = ⊥) :
+    Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
+  ⟨FormallyUnramified.comp_injective _ hI, FormallySmooth.comp_surjective _ hI⟩
+
 end
 
 section OfEquiv
 
-variable {R : Type u} [CommRing R]
-variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable {R : Type*} [CommRing R]
+variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 theorem of_equiv [FormallyEtale R A] (e : A ≃ₐ[R] B) : FormallyEtale R B :=
   FormallyEtale.iff_unramified_and_smooth.mpr
@@ -87,9 +93,9 @@ end OfEquiv
 
 section Comp
 
-variable (R : Type u) [CommRing R]
-variable (A : Type u) [CommRing A] [Algebra R A]
-variable (B : Type u) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+variable (R : Type*) [CommRing R]
+variable (A : Type*) [CommRing A] [Algebra R A]
+variable (B : Type*) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
 theorem comp [FormallyEtale R A] [FormallyEtale A B] : FormallyEtale R B :=
   FormallyEtale.iff_unramified_and_smooth.mpr
@@ -101,9 +107,9 @@ section BaseChange
 
 open scoped TensorProduct
 
-variable {R : Type u} [CommRing R]
-variable {A : Type u} [CommRing A] [Algebra R A]
-variable (B : Type u) [CommRing B] [Algebra R B]
+variable {R : Type*} [CommRing R]
+variable {A : Type*} [CommRing A] [Algebra R A]
+variable (B : Type*) [CommRing B] [Algebra R B]
 
 instance base_change [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
   FormallyEtale.iff_unramified_and_smooth.mpr ⟨inferInstance, inferInstance⟩
@@ -129,7 +135,7 @@ subset `M` of `R`.
 -/
 
 /-! Let R, S, Rₘ, Sₘ be commutative rings -/
-variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
+variable {R S Rₘ Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
 /-! Let M be a multiplicatively closed subset of `R` -/
 variable (M : Submonoid R)
 /-! Assume that the rings are in a commutative diagram as above. -/
@@ -159,8 +165,8 @@ end FormallyEtale
 
 section
 
-variable (R : Type u) [CommRing R]
-variable (A : Type u) [CommRing A] [Algebra R A]
+variable (R : Type*) [CommRing R]
+variable (A : Type*) [CommRing A] [Algebra R A]
 
 /-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
 @[stacks 00U1 "Note that this is a different definition from this Stacks entry, but
@@ -175,8 +181,8 @@ namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
 
-variable {R : Type u} [CommRing R]
-variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable {R : Type*} [CommRing R]
+variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 /-- Being étale is transported via algebra isomorphisms. -/
 theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
@@ -208,7 +214,7 @@ end Algebra
 
 namespace RingHom
 
-variable {R S : Type u} [CommRing R] [CommRing S]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 /--
 A ring homomorphism `R →+* A` is formally étale if it is formally unramified and formally smooth.

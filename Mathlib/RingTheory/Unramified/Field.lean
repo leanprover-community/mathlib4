@@ -32,8 +32,6 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 open Algebra Module Polynomial
 open scoped TensorProduct
 
-universe u
-
 variable (K A L : Type*) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
 
 namespace Algebra.FormallyUnramified
@@ -204,7 +202,7 @@ theorem isSeparable : Algebra.IsSeparable K L := by
   rw [← range_eq_top_of_isPurelyInseparable (separableClosure K L) L]
   simp
 
-theorem iff_isSeparable (L : Type u) [Field L] [Algebra K L] [EssFiniteType K L] :
+theorem iff_isSeparable (L : Type*) [Field L] [Algebra K L] [EssFiniteType K L] :
     FormallyUnramified K L ↔ Algebra.IsSeparable K L :=
   ⟨fun _ ↦ isSeparable K L, fun _ ↦ of_isSeparable K L⟩
 

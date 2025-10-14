@@ -47,13 +47,11 @@ import Mathlib.Tactic.StacksAttribute
 
 -/
 
-universe u
-
 open TensorProduct KaehlerDifferential
 
 open Function (Surjective)
 
-variable {R P S : Type u} [CommRing R] [CommRing P] [CommRing S]
+variable {R P S : Type*} [CommRing R] [CommRing P] [CommRing S]
 variable [Algebra R P] [Algebra P S]
 
 section ofSection
@@ -402,7 +400,7 @@ with kernel `I` (typically a presentation `R[X] → S`),
 -/
 @[stacks 031I]
 theorem Algebra.Extension.formallySmooth_iff_split_injection
-    (P : Algebra.Extension.{u} R S) [FormallySmooth R P.Ring] :
+    (P : Algebra.Extension R S) [FormallySmooth R P.Ring] :
     Algebra.FormallySmooth R S ↔ ∃ l, l ∘ₗ P.cotangentComplex = LinearMap.id := by
   refine (Algebra.FormallySmooth.iff_split_injection P.algebraMap_surjective).trans ?_
   let e : P.ker.Cotangent ≃ₗ[P.Ring] P.Cotangent :=
@@ -480,7 +478,7 @@ instance [Algebra.FormallySmooth R S] : Subsingleton (Algebra.H1Cotangent R S) :
 
 namespace Algebra.Extension
 
-lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
+lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension R S) :
     Function.Bijective (CotangentSpace.map P.toInfinitesimal) := by
   suffices CotangentSpace.map P.toInfinitesimal =
       (tensorKaehlerQuotKerSqEquiv _ _ _).symm.toLinearMap by
@@ -493,7 +491,7 @@ lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
   simp only [map_tmul, algebraMap_self, RingHom.id_apply, Hom.toAlgHom_apply]
   exact (tensorKaehlerQuotKerSqEquiv_symm_tmul_D _ _).symm
 
-lemma Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
+lemma Cotangent.map_toInfinitesimal_bijective (P : Extension R S) :
     Function.Bijective (Cotangent.map P.toInfinitesimal) := by
   constructor
   · rw [injective_iff_map_eq_zero]
@@ -514,7 +512,7 @@ lemma Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
     rw [ker_infinitesimal, Ideal.mk_mem_cotangentIdeal] at hx
     exact ⟨.mk ⟨x, hx⟩, rfl⟩
 
-lemma H1Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
+lemma H1Cotangent.map_toInfinitesimal_bijective (P : Extension R S) :
     Function.Bijective (H1Cotangent.map P.toInfinitesimal) := by
   constructor
   · intro x y e

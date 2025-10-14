@@ -30,7 +30,7 @@ localization at an element.
 
 open scoped TensorProduct
 
-universe u v w
+universe u v
 
 namespace Algebra
 

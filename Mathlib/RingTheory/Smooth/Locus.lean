@@ -22,9 +22,7 @@ Some of them are true for arbitrary algebras but the proof is substantially hard
 - `Algebra.isOpen_smoothLocus` : The smooth locus is open.
 -/
 
-universe u
-
-variable (R A : Type u) [CommRing R] [CommRing A] [Algebra R A]
+variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A]
 
 namespace Algebra
 
@@ -100,7 +98,7 @@ lemma smoothLocus_eq_univ_iff [FinitePresentation R A] :
     ← basicOpen_subset_smoothLocus_iff]
   simp
 
-lemma smoothLocus_comap_of_isLocalization {Af : Type u} [CommRing Af] [Algebra A Af] [Algebra R Af]
+lemma smoothLocus_comap_of_isLocalization {Af : Type*} [CommRing Af] [Algebra A Af] [Algebra R Af]
     [IsScalarTower R A Af] (f : A) [IsLocalization.Away f Af] :
     PrimeSpectrum.comap (algebraMap A Af) ⁻¹' smoothLocus R A = smoothLocus R Af := by
   ext p

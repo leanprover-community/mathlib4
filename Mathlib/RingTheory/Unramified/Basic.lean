@@ -93,6 +93,21 @@ theorem iff_comp_injective :
       apply RingHom.kerLift_injective (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
       simpa using DFunLike.congr_fun (f₁.2.trans f₂.2.symm) x
 
+-- The injectivity criterion can be checked in any universe higher than `u` (the universe of `A`).
+theorem of_comp_injective (comp_injective' : ∀ ⦃B : Type (max w u)⦄ [CommRing B],
+    ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
+      Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)) :
+    FormallyUnramified R A := by
+  rw [iff_comp_injective]
+  introv hi a₁ h
+  let e₁ : ULift.{w} B ≃ₐ[R] B := ULift.algEquiv
+  let e₂ : (ULift.{w} B ⧸ I.comap e₁) ≃ₐ[R] (B ⧸ I) :=
+    Ideal.quotientEquivAlg _ _ e₁ (Ideal.map_comap_eq_self_of_equiv _ _).symm
+  exact (AlgHom.cancel_left (f := e₁.symm.toAlgHom) e₁.symm.injective).mp <|
+    comp_injective' (I.comap e₁) (eq_bot_iff.mpr <| (Ideal.le_comap_pow _ _).trans <| by
+      rw [hi, Ideal.comap_bot_of_injective _ (AlgEquiv.injective _)]) <|
+    (AlgHom.cancel_left (f := e₂.toAlgHom) e₂.injective).mp h
+
 theorem lift_unique
     [FormallyUnramified R A] (I : Ideal B) (hI : IsNilpotent I) (g₁ g₂ : A →ₐ[R] B)
     (h : (Ideal.Quotient.mkₐ R I).comp g₁ = (Ideal.Quotient.mkₐ R I).comp g₂) : g₁ = g₂ := by

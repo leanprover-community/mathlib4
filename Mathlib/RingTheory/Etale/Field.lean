@@ -32,7 +32,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 universe u
 
-variable (K L A : Type u) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]
+variable (K L A : Type*) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]
 
 open Algebra Polynomial
 
@@ -55,7 +55,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
   constructor
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`
   intro B _ _ I h
-  refine ⟨FormallyUnramified.iff_comp_injective.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
+  refine ⟨FormallyUnramified.comp_injective I h, ?_⟩
   intro f
   -- By separability and finiteness, we may assume `L = K(α)` with `p` the minpoly of `α`.
   let pb := Field.powerBasisOfFiniteOfSeparable K L
@@ -94,7 +94,8 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`.
   -- But we already know that there exists a unique lift for every finite subfield of `L`
   -- by `of_isSeparable_aux`, so we can glue them all together.
-  refine ⟨FormallyUnramified.iff_comp_injective.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
+  have := FormallyUnramified.of_isSeparable K L
+  refine ⟨FormallyUnramified.comp_injective I h, ?_⟩
   intro f
   have : ∀ k : L, ∃! g : K⟮k⟯ →ₐ[K] B,
       (Ideal.Quotient.mkₐ K I).comp g = f.comp (IsScalarTower.toAlgHom K _ L) := by
@@ -158,8 +159,8 @@ attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
 If `A` is an essentially of finite type algebra over a field `K`, then `A` is formally étale
 over `K` if and only if `A` is a finite product of separable field extensions.
 -/
-theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
-    FormallyEtale K A ↔
+theorem iff_exists_algEquiv_prod (K : Type*) (A : Type u) [Field K] [CommRing A] [Algebra K A]
+    [EssFiniteType K A] : FormallyEtale K A ↔
       ∃ (I : Type u) (_ : Finite I) (Ai : I → Type u) (_ : ∀ i, Field (Ai i))
         (_ : ∀ i, Algebra K (Ai i)) (_ : A ≃ₐ[K] Π i, Ai i),
         ∀ i, Algebra.IsSeparable K (Ai i) := by
@@ -185,7 +186,8 @@ end Algebra.FormallyEtale
 `A` is étale over a field `K` if and only if
 `A` is a finite product of finite separable field extensions.
 -/
-theorem Algebra.Etale.iff_exists_algEquiv_prod :
+theorem Algebra.Etale.iff_exists_algEquiv_prod (K : Type*) (A : Type u)
+    [Field K] [CommRing A] [Algebra K A] :
     Etale K A ↔
       ∃ (I : Type u) (_ : Finite I) (Ai : I → Type u) (_ : ∀ i, Field (Ai i))
         (_ : ∀ i, Algebra K (Ai i)) (_ : A ≃ₐ[K] Π i, Ai i),

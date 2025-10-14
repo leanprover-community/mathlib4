@@ -11,16 +11,14 @@ import Mathlib.RingTheory.Unramified.Basic
 
 ## Main result
 
-- `Algebra.FormallyUnramified.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-smooth
-  if and only if each `A i` is `R`-formally-smooth.
+- `Algebra.FormallyUnramified.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-unramified
+  if and only if each `A i` is `R`-formally-unramified.
 
 -/
 
 namespace Algebra.FormallyUnramified
 
-universe u v
-
-variable {R : Type max u v} {I : Type v} [Finite I] (f : I → Type max u v)
+variable {R : Type*} {I : Type*} [Finite I] (f : I → Type*)
 variable [CommRing R] [∀ i, CommRing (f i)] [∀ i, Algebra R (f i)]
 
 theorem pi_iff :
