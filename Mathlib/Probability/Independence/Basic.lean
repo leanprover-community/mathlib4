@@ -31,12 +31,12 @@ import Mathlib.MeasureTheory.Group.Convolution
   measurable space structures they generate are independent.
 * `IndepSets.indep`: variant with two π-systems.
 
-These notations are scoped in the `ProbabilityTheory` namespace.
-
 ## Notation
 
 * `X ⟂ᵢ[μ] Y` for `IndepFun X Y μ`, independence of two random variables.
 * `X ⟂ᵢ Y` for `IndepFun X Y volume`.
+
+These notations are scoped in the `ProbabilityTheory` namespace.
 
 ## Implementation notes
 
@@ -135,7 +135,8 @@ def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type*} [m : ∀ x : ι, M
 
 /-- Two functions are independent if the two measurable space structures they generate are
 independent. For a function `f` with codomain having measurable space structure `m`, the generated
-measurable space structure is `MeasurableSpace.comap f m`. -/
+measurable space structure is `MeasurableSpace.comap f m`.
+We use the notation `f ⟂ᵢ[μ] g` for `IndepFun f g μ`. -/
 def IndepFun {β γ} {_mΩ : MeasurableSpace Ω} [MeasurableSpace β] [MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω := by volume_tac) : Prop :=
   Kernel.IndepFun f g (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
