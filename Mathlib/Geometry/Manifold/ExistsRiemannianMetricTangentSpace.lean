@@ -29,7 +29,7 @@ variable
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [∀ x, AddCommGroup (E x)] [∀ x, Module ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
-  [IsManifold IB ⊤ B] [ContMDiffVectorBundle ⊤ F E IB]
+  [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
 
 noncomputable instance : TopologicalSpace (TotalSpace EB (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) :=
   inferInstanceAs (TopologicalSpace (TangentBundle IB B))
@@ -155,6 +155,12 @@ lemma g_symm (i p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   unfold g
   rw [real_inner_comm]
 
+omit [IsManifold IB ω B] in
+lemma g_nonneg (i p : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
+  0 ≤ g i p v v := by
+  unfold g
+  exact @inner_self_nonneg ℝ _ _ _ _ _
+
 lemma g_pos (i p : B) (hp : p ∈ (extChartAt IB i).source)
             (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) (hv : v ≠ 0) :
     0 < g i p v v := by
@@ -172,15 +178,15 @@ lemma g_pos (i p : B) (hp : p ∈ (extChartAt IB i).source)
     exact hv (inj h2)
   exact real_inner_self_pos.mpr hx
 
-variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
+variable [FiniteDimensional ℝ EB] [IsManifold IB ω B] [SigmaCompactSpace B] [T2Space B]
 
 noncomputable
 def g_global (f : SmoothPartitionOfUnity B IB B) :
     ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
   fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
 
-omit [IsManifold IB ω B] [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B]
-     [T2Space B]
+omit [IsManifold IB ω B] [FiniteDimensional ℝ EB] [SigmaCompactSpace B]
+     [T2Space B] in
 lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
         (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   g_global f p v w = g_global f p w v := by
@@ -189,20 +195,13 @@ lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
       simp_rw [g_symm]
     exact this
 
-#check finsum_pos'
-#check PartitionOfUnity.finsum_smul_mem_convex
-#check @finsum
-#check finsum_eq_zero_of_forall_eq_zero
-
 lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
   (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
   (p : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   v ≠ 0 → 0 < g_global f p v v := by
   intro hv
   unfold g_global
-
   have h_nonneg : ∀ i, 0 ≤ f.toFun i p := fun i => f.nonneg' i p
-
   have ⟨i, hi_pos⟩ : ∃ i, 0 < f i p := by
     by_contra hneg
     push_neg at hneg
@@ -210,8 +209,22 @@ lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
     have h1 : ∑ᶠ i, f i p = 0 := finsum_eq_zero_of_forall_eq_zero this
     have h2 : ∑ᶠ i, f i p = 1 := f.sum_eq_one' p trivial
     exact absurd (h1.symm.trans h2) one_ne_zero.symm
-
-  sorry
+  have hi_chart : p ∈ (extChartAt IB i).source := by
+    apply h_sub
+    apply subset_closure
+    exact Function.mem_support.mpr hi_pos.ne'
+  let h x := f x p * g x p v v
+  have h1 : ∀ j, 0 ≤ h j := fun j => mul_nonneg (h_nonneg j) (g_nonneg j p v)
+  have h2 : ∃ j, 0 < h j := ⟨i, mul_pos hi_pos (g_pos i p hi_chart v hv)⟩
+  have h3 : (Function.support h).Finite := by
+    apply (f.locallyFinite'.point_finite p).subset
+    intro x hx
+    simp [Function.mem_support, h] at hx
+    have :  f x p ≠ 0 ∧ g x p v v ≠ 0 := hx
+    have :   (f x) p * g x p v v ≠ 0 := mul_ne_zero_iff.mpr this
+    exact mul_ne_zero_iff.mp this |>.1
+  have h4 : 0 < ∑ᶠ i, h i := finsum_pos' h1 h2 h3
+  exact h4
 
 noncomputable
 def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
@@ -244,7 +257,7 @@ def riemannian_metric_exists
      (E := @TangentSpace ℝ _ _ _ _ _ _ IB B _ _) :=
   { inner := g_global_bilinear f
     symm := g_global_symm f
-    pos := sorry
+    pos := g_global_pos f (by simpa only [extChartAt_source] using hf)
     isVonNBounded := sorry
     contMDiff := (g_global_smooth_section f hf).contMDiff_toFun
      }
