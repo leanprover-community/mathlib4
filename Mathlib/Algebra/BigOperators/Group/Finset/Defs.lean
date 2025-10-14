@@ -75,7 +75,7 @@ theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note "operator precedence of big operators"/--
+library_note2 «operator precedence of big operators» /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
@@ -111,9 +111,10 @@ syntax bigOpBinderCollection := bigOpBinderParenthesized+
 syntax bigOpBinders := bigOpBinderCollection <|> (ppSpace bigOpBinder)
 
 /-- Collects additional binder/Finset pairs for the given `bigOpBinder`.
+
 Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
-def processBigOpBinder (processed : (Array (Term × Term)))
-    (binder : TSyntax ``bigOpBinder) : MacroM (Array (Term × Term)) :=
+def processBigOpBinder (processed : (Array (Term × Term))) (binder : TSyntax ``bigOpBinder) :
+    MacroM (Array (Term × Term)) :=
   set_option hygiene false in
   withRef binder do
     match binder with
@@ -140,18 +141,16 @@ def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
   | `(bigOpBinders| $[($bs:bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
   | _ => Macro.throwUnsupported
 
-/-- Collect the binderIdents into a `⟨...⟩` expression. -/
-def bigOpBindersPattern (processed : (Array (Term × Term))) :
-    MacroM Term := do
+/-- Collects the binderIdents into a `⟨...⟩` expression. -/
+def bigOpBindersPattern (processed : Array (Term × Term)) : MacroM Term := do
   let ts := processed.map Prod.fst
   if h : ts.size = 1 then
     return ts[0]
   else
     `(⟨$ts,*⟩)
 
-/-- Collect the terms into a product of sets. -/
-def bigOpBindersProd (processed : (Array (Term × Term))) :
-    MacroM Term := do
+/-- Collects the terms into a product of sets. -/
+def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
   if h₀ : processed.size = 0 then
     `((Finset.univ : Finset Unit))
   else if h₁ : processed.size = 1 then
@@ -166,12 +165,14 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
 - `∑ x ∈ s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
 - `∑ x ∈ s with p x, f x` is notation for `Finset.sum (Finset.filter p s) f`.
+- `∑ x ∈ s with h : p x, f x h` is notation for `Finset.sum s fun x ↦ if h : p x then f x h else 0`.
 - `∑ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∑" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
+Notation: `"∑" bigOpBinders* (" with" (ident ":")? term)? "," term` -/
+syntax (name := bigsum)
+  "∑ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -179,30 +180,41 @@ syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 - `∏ x ∈ s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
 - `∏ x ∈ s with p x, f x` is notation for `Finset.prod (Finset.filter p s) f`.
+- `∏ x ∈ s with h : p x, f x h` is notation for
+  `Finset.prod s fun x ↦ if h : p x then f x h else 1`.
 - `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.prod (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigprod) "∏ " bigOpBinders (" with " term)? ", " term:67 : term
+Notation: `"∏" bigOpBinders* ("with" (ident ":")? term)? "," term` -/
+syntax (name := bigprod)
+  "∏ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 macro_rules (kind := bigsum)
-  | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∑ $bs:bigOpBinders $[with $[$hx??:binderIdent :]? $p?:term]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
-    match p? with
-    | some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
-    | none => `(Finset.sum $s (fun $x ↦ $v))
+    -- `a` is interpreted as the filtering proposition, unless `b` exists, in which case `a` is the
+    -- proof and `b` is the filtering proposition
+    match hx??, p? with
+    | some (some hx), some p =>
+      `(Finset.sum $s fun $x ↦ if $hx : $p then $v else 0)
+    | _, some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
+    | _, none => `(Finset.sum $s (fun $x ↦ $v))
 
 macro_rules (kind := bigprod)
-  | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∏ $bs:bigOpBinders $[with $[$hx??:binderIdent :]? $p?:term]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
-    match p? with
-    | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
-    | none => `(Finset.prod $s (fun $x ↦ $v))
+    -- `a` is interpreted as the filtering proposition, unless `b` exists, in which case `a` is the
+    -- proof and `b` is the filtering proposition
+    match hx??, p? with
+    | some (some hx), some p =>
+      `(Finset.prod $s fun $x ↦ if $hx : $p then $v else 1)
+    | _, some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
+    | _, none => `(Finset.prod $s (fun $x ↦ $v))
 
 open PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder

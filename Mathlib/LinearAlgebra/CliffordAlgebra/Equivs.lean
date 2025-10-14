@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.Algebra.QuaternionBasis
-import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!

@@ -245,15 +245,15 @@ variable [Semiring A] [DecidableEq ι]
 variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
-/-- If `A` is graded by a canonically ordered add monoid, then the projection map `x ↦ x₀` is a ring
-homomorphism.
+/-- If `A` is graded by a canonically ordered additive monoid, then the projection map `x ↦ x₀`
+is a ring homomorphism.
 -/
 @[simps]
 def GradedRing.projZeroRingHom : A →+* A where
   toFun a := decompose 𝒜 a 0
   map_one' := decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
-  map_zero' := by rw [decompose_zero]; rfl
-  map_add' _ _ := by rw [decompose_add]; rfl
+  map_zero' := by rw [decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+  map_add' _ _ := by rw [decompose_add, add_apply, AddMemClass.coe_add]
   map_mul' := by
     refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]

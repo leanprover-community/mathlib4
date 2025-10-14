@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
+import Mathlib.CategoryTheory.Limits.Skeleton
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
@@ -69,7 +70,7 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -516,6 +517,32 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
 
+section Limits
+
+variable {J : Type u₃} [Category.{v₃} J]
+
+instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+    HasLimitsOfShape J (Subobject X) := by
+  apply hasLimitsOfShape_thinSkeleton
+
+instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (Subobject X) where
+  out _ _ _ := by infer_instance
+
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
+    HasLimitsOfSize.{w, w'} (Subobject X) where
+  has_limits_of_shape _ _ := by infer_instance
+
+end Limits
+
+section Colimits
+
+variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C]
+
+instance hasColimitsOfSize : HasColimitsOfSize.{w, w'} (Subobject X) := by
+  apply hasColimitsOfSize_thinSkeleton
+
+end Colimits
+
 section Pullback
 
 variable [HasPullbacks C]
@@ -526,12 +553,12 @@ def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
   lower (MonoOver.pullback f)
 
 theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
-  induction' x using Quotient.inductionOn' with f
+  induction x using Quotient.inductionOn' with | _ f
   exact Quotient.sound ⟨MonoOver.pullbackId.app f⟩
 
 theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
-  induction' x using Quotient.inductionOn' with t
+  induction x using Quotient.inductionOn' with | _ t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 
 theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
@@ -598,19 +625,18 @@ lemma map_mk {A X Y : C} (i : A ⟶ X) [Mono i] (f : X ⟶ Y) [Mono f] :
   rfl
 
 theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
-  induction' x using Quotient.inductionOn' with f
+  induction x using Quotient.inductionOn' with | _ f
   exact Quotient.sound ⟨(MonoOver.mapId _).app f⟩
 
 theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
     (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) := by
-  induction' x using Quotient.inductionOn' with t
+  induction x using Quotient.inductionOn' with | _ t
   exact Quotient.sound ⟨(MonoOver.mapComp _ _).app t⟩
 
 lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
-    Function.Injective (Subobject.map f).obj := by
-  intro X₁ X₂ h
-  induction' X₁ using Subobject.ind with X₁ i₁ _
-  induction' X₂ using Subobject.ind with X₂ i₂ _
+    Function.Injective (Subobject.map f).obj := fun X₁ X₂ h ↦ by
+  induction X₁ using Subobject.ind
+  induction X₂ using Subobject.ind
   simp only [map_mk] at h
   exact mk_eq_mk_of_comm _ _ (isoOfMkEqMk _ _ h) (by simp [← cancel_mono f])
 

@@ -49,7 +49,7 @@ pointwise subtraction
 
 assert_not_exists Set.iUnion MulAction MonoidWithZero OrderedAddCommMonoid
 
-library_note "pointwise nat action"/--
+library_note2 «pointwise nat action» /--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
 `SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
 nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
@@ -693,8 +693,6 @@ protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
 lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
   | 0 => by simp
   | n + 1 => by simp [pow_succ, prod_pow _ _ n]
-
-@[deprecated (since := "2025-02-17")] alias sum_nsmul := nsmul_prod
 
 end Monoid
 
