@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Projection
-import IMO.AngleProjection
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
 /-!
 # Oriented angles and orthogonal projection.
