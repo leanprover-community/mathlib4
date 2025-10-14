@@ -20,19 +20,7 @@ open scoped unitInterval Interval Pointwise Topology
 open Function Set MeasureTheory Filter
 open AffineMap (lineMap)
 
-instance Prod.instPosSMulMono {α β γ : Type*} [Zero α] [SMul α β] [SMul α γ] [Preorder α]
-    [Preorder β] [Preorder γ] [PosSMulMono α β] [PosSMulMono α γ] : PosSMulMono α (β × γ) where
-  smul_le_smul_of_nonneg_left _a ha _x _y hle :=
-    ⟨smul_le_smul_of_nonneg_left hle.1 ha, smul_le_smul_of_nonneg_left hle.2 ha⟩
-
-instance Prod.instZeroLEOneClass {R S : Type*} [Zero R] [One R] [LE R] [ZeroLEOneClass R]
-    [Zero S] [One S] [LE S] [ZeroLEOneClass S] : ZeroLEOneClass (R × S) :=
-  ⟨⟨zero_le_one, zero_le_one⟩⟩
-
-instance Pi.instZeroLEOneClass {ι : Type*} {R : ι → Type*} [∀ i, Zero (R i)] [∀ i, One (R i)]
-    [∀ i, LE (R i)] [∀ i, ZeroLEOneClass (R i)] : ZeroLEOneClass (∀ i, R i) :=
-  ⟨fun _ ↦ zero_le_one⟩
-
+/-
 @[to_additive]
 theorem nhds_smul {G X : Type*} [Group G] [TopologicalSpace X] [MulAction G X]
     [ContinuousConstSMul G X] (g : G) (x : X) : 𝓝 (g • x) = g • 𝓝 x :=
@@ -47,11 +35,10 @@ theorem Filter.smul_filter_inf {G α : Type*} [Group G] [MulAction G α] (g : G)
     g • (l₁ ⊓ l₂) = g • l₁ ⊓ g • l₂ :=
   map_inf <| MulAction.injective g
 
+@[to_additive]
 theorem nhdsWithin_smul {G X : Type*} [Group G] [TopologicalSpace X] [MulAction G X]
     [ContinuousConstSMul G X] (g : G) (s : Set X) (x : X) : 𝓝[g • s] (g • x) = g • 𝓝[s] x := by
   simp only [nhdsWithin, smul_filter_inf, nhds_smul, smul_principal]
-
--- ContinuousLinearEquiv.comp_right_fderivWithin
 
 theorem Set.Subsingleton.hasFDerivWithinAt {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -80,16 +67,7 @@ theorem Set.Subsingleton.derivWithin_eq {𝕜 E : Type*} [NontriviallyNormedFiel
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {s : Set 𝕜} (hs : s.Subsingleton) (f : 𝕜 → E) :
     derivWithin f s = 0 :=
   hs.finite.derivWithin_eq f
-
--- theorem deriv_comp_
-
--- TODO: add `derivWithin_comp_add_left` etc
-theorem derivWithin_comp_sub_left {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (f : 𝕜 → E) (s : Set 𝕜) (a b : 𝕜) :
-    derivWithin (f <| a - ·) s b = -derivWithin f (a +ᵥ (-s)) (a - b) := by
-  simp only [sub_eq_add_neg]
-  rw [derivWithin_comp_neg (f <| a + ·), derivWithin, derivWithin, fderivWithin_comp_add_left]
-
+-/
 section PathIntegral
 
 
