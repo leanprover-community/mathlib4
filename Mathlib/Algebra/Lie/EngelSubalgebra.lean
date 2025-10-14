@@ -71,7 +71,7 @@ lemma self_mem_engel (x : L) : x ∈ engel R x := by
 lemma engel_zero : engel R (0 : L) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
-  rw [mem_engel_iff, LieHom.map_zero]
+  rw [mem_engel_iff, map_zero]
   use 1
   simp only [pow_one, LinearMap.zero_apply]
 
