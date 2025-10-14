@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -75,7 +73,7 @@ theorem nodup_iff_injective_getElem {l : List α} :
   pairwise_iff_getElem.trans
     ⟨fun h i j hg => by
       obtain ⟨i, hi⟩ := i; obtain ⟨j, hj⟩ := j
-      rcases lt_trichotomy i j with (hij | rfl | hji)
+      rcases Nat.lt_trichotomy i j with (hij | rfl | hji)
       · exact (h i j hi hj hij hg).elim
       · rfl
       · exact (h j i hj hi hji hg.symm).elim,
@@ -99,7 +97,7 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
   rw [Nodup, pairwise_iff_getElem]
   constructor
   · intro h i j hij hj
-    rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
+    rw [getElem?_eq_getElem (Nat.lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
     exact h _ _ (by cutsat) hj hij
   · intro h i j hi hj hij
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
@@ -140,12 +138,12 @@ theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ 
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
       have : replicate 2 a <+ l ↔ 1 < count a l := replicate_sublist_iff ..
-      (not_congr this).trans not_lt
+      (not_congr this).trans Nat.not_lt
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
   nodup_iff_count_le_one.trans <| forall_congr' fun _ =>
-    ⟨fun H h => H.antisymm (count_pos_iff.mpr h),
-     fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
+    ⟨fun H h => Nat.le_antisymm H (count_pos_iff.mpr h),
+     fun H => if h : _ then Nat.le_of_eq (H h) else (count_eq_zero.mpr h) ▸ (Nat.zero_le 1)⟩
 
 theorem get_bijective_iff [DecidableEq α] : l.get.Bijective ↔ ∀ a, l.count a = 1 :=
   ⟨fun h a ↦ (nodup_iff_count_eq_one.mp <| nodup_iff_injective_get.mpr h.injective)
@@ -160,7 +158,7 @@ theorem getElem_bijective_iff [DecidableEq α] :
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
-  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff.2 h))
+  Nat.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff.2 h))
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
     count a l = if a ∈ l then 1 else 0 := by

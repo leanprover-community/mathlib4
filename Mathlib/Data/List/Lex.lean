@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Basic
 import Mathlib.Order.RelClasses
 
 /-!
@@ -128,7 +127,7 @@ theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     induction l₁ generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
-    · exact (not_lt_of_ge H).elim (succ_pos _)
+    · exact (Nat.not_lt_of_ge H).elim (succ_pos _)
     case cons.cons a l₁ IH =>
       by_cases ab : a = b
       · subst b

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.Nat.Basic
 
 /-!
 # zip & unzip
@@ -98,7 +97,7 @@ instance (f : α → α → β) [IsSymmOp f] : IsSymmOp (zipWith f) :=
 
 @[simp]
 theorem length_revzip (l : List α) : length (revzip l) = length l := by
-  simp only [revzip, length_zip, length_reverse, min_self]
+  simp only [revzip, length_zip, length_reverse, Nat.min_self]
 
 @[simp]
 theorem unzip_revzip (l : List α) : (revzip l).unzip = (l, l.reverse) :=

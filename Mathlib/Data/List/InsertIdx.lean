@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Basic
 
 /-!
 # insertIdx
@@ -48,7 +46,7 @@ theorem insertIdx_eraseIdx_self {l : List α} {n : ℕ} (hn : n ≠ length l) (a
 
 theorem insertIdx_eraseIdx_getElem {l : List α} {n : ℕ} (hn : n < length l) :
     (l.eraseIdx n).insertIdx n l[n] = l := by
-  simp [hn.ne]
+  simp [Nat.ne_of_lt hn]
 
 theorem eq_or_mem_of_mem_insertIdx {l : List α} {n : ℕ} {a b : α} (h : a ∈ l.insertIdx n b) :
     a = b ∨ a ∈ l := by
@@ -88,7 +86,7 @@ theorem eraseIdx_map (f : α → β) (l : List α) (n : ℕ) :
   simpa only [pmap_eq_map] using eraseIdx_pmap (fun a _ ↦ f a) (fun _ _ ↦ trivial) n
 
 theorem get_insertIdx_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk : k < l.length)
-    (hk' : k < (l.insertIdx n x).length := hk.trans_le length_le_length_insertIdx) :
+    (hk' : k < (l.insertIdx n x).length := Nat.lt_of_lt_of_le hk length_le_length_insertIdx) :
     (l.insertIdx n x).get ⟨k, hk'⟩ = l.get ⟨k, hk⟩ := by
   simp_all [getElem_insertIdx_of_lt]
 

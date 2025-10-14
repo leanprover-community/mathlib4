@@ -5,8 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Induction
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Basic
 
 /-!
 # Prefixes, suffixes, infixes
@@ -167,17 +165,17 @@ lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ 
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl
   trans _ _ _ := IsPrefix.trans
-  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| Nat.le_antisymm h₁.length_le h₂.length_le
 
 instance : IsPartialOrder (List α) (· <:+ ·) where
   refl _ := suffix_rfl
   trans _ _ _ := IsSuffix.trans
-  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| Nat.le_antisymm h₁.length_le h₂.length_le
 
 instance : IsPartialOrder (List α) (· <:+: ·) where
   refl _ := infix_rfl
   trans _ _ _ := IsInfix.trans
-  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| h₁.length_le.antisymm h₂.length_le
+  antisymm _ _ h₁ h₂ := h₁.eq_of_length <| Nat.le_antisymm h₁.length_le h₂.length_le
 
 end Fix
 
