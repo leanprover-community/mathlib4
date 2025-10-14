@@ -387,7 +387,7 @@ def map (r : Setoid α) (f : α → β) : Setoid β :=
 equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
 the elements of f⁻¹(y) by r. -/
 def mapOfSurjective (r : Setoid α) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
-  ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf h⟩
+  ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf @h⟩
 
 /-- A special case of the equivalence closure of an equivalence relation r equaling r. -/
 theorem mapOfSurjective_eq_map (h : ker f ≤ r) (hf : Surjective f) :
