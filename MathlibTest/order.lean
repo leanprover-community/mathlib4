@@ -33,9 +33,27 @@ example [PartialOrder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(
     c ≤ d := by
   order
 
-example [PartialOrder α] (a : α) :
-    ¬ (a < a) := by
+example [PartialOrder α] (a : α) : ¬ (a < a) := by
   order
+
+example (a b : α) [PartialOrder α] (h1 : a < b ∧ b < a) : False := by
+  order
+
+example (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
+  order
+
+example (a b : α) [Preorder α] (h : ∃ c, a < c ∧ c < b) : a ≠ b := by
+  order
+
+example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+  order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
+
+example (L : Type) [Lattice L] :
+    (∀ a b c : L, a ⊔ (b ⊓ c) = (a ⊔ b) ⊓ (a ⊔ c)) ↔
+    (∀ a b c : L, a ⊓ (b ⊔ c) = (a ⊓ b) ⊔ (a ⊓ c)) := by
+  refine ⟨fun h a b c ↦ ?_, fun h a b c ↦ ?_⟩
+  · order only [h (a ⊓ b) c a, h c a b]
+  · order only [h (a ⊔ b) c a, h c a b]
 
 example [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
     (h4 : a ≤ d) :
@@ -130,11 +148,6 @@ Additional diagnostic information may be available using the `set_option trace.o
 -/
 #guard_msgs in
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
-  order
-
-example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
-  have h1 := Matrix.rank_mul_le A B
-  have h2 := Matrix.rank_mul_le (A * B) C
   order
 
 -- worst case for the current algorithm
