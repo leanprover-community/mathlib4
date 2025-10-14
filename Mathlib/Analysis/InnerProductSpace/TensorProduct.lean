@@ -16,6 +16,9 @@ import Mathlib.RingTheory.TensorProduct.Finite
 
 This file provides the inner product space structure on tensor product spaces.
 
+We define the inner product on `E ⊗ F` by `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`, when `E` and `F` are
+inner product spaces.
+
 ## Main definitions:
 
 * `TensorProduct.instNormedAddCommGroup`: the normed additive group structure on tensor products,
@@ -67,6 +70,16 @@ open scoped ComplexOrder
 open Module
 
 private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
+  /-
+  The way we prove this is by first noting that every element of a tensor product lies
+  in the tensor product of some finite submodules.
+  So for `x : E ⊗ F`, there exists finite submodules `E', F'` such that `x ∈ mapIncl E' F'`.
+  Let `y : E' ⊗ F'` such that `x = mapIncl E' F' y`.
+  Let `e` be the orthonormal basis of `E'` and `f` be the orthonomal basis of `F'`.
+  Then it is easy to see that because `⟪x, x⟫ = 0`, we get
+  `(e.toBasis.tensorProduct f.toBasis).repr y (i, j) = 0` for all `i, j`. Which means `y = 0`.
+  And so `x = 0`.
+  -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
   rw [← hz.choose_spec, inner_mapIncl_mapIncl] at hx
@@ -89,6 +102,15 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
 
 private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
+  /-
+  Similarly to the above proof, for `x : E ⊗ F`, there exists finite submodules `E', F'` such that
+  `x ∈ mapIncl E' F'`.
+  Let `y : E' ⊗ F'` such that `x = mapIncl E' F' y`.
+  Let `e` be the orthonormal basis of `E'` and `f` be the orthonomal basis of `F'`.
+  Then it is easy to see that
+  `⟪x, x⟫ = ∑ i j, ‖(e.toBasis.tensorProduct f.toBasis).repr y (i, j)‖ ^ 2`,
+  which is clearly nonnegative.
+  -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
   rw [← hz.choose_spec, inner_mapIncl_mapIncl]
@@ -140,10 +162,13 @@ theorem edist_tmul_le (x x' : E) (y y' : F) :
     edist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖ₑ * ‖y‖ₑ + ‖x'‖ₑ * ‖y'‖ₑ := by
   grw [edist_eq_enorm_sub, enorm_sub_le]; simp
 
+/-- In `ℝ` or `ℂ` fields, the inner product on tensor products is essentially just the inner product
+with multiplication instead of tensors, i.e., `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a * b, c * d⟫`. -/
 theorem _root_.RCLike.inner_tmul_eq (a b c d : 𝕜) :
     inner 𝕜 (a ⊗ₜ[𝕜] b) (c ⊗ₜ[𝕜] d) = inner 𝕜 (a * b) (c * d) := by
   simp; ring
 
+/-- Given `x, y : E ⊗ F`, `x = y` iff `⟪x, a ⊗ₜ b⟫ = ⟪y, a ⊗ₜ b⟫` for all `a, b`. -/
 theorem ext_inner_right_iff (x y : E ⊗[𝕜] F) :
     x = y ↔ ∀ a b, inner 𝕜 x (a ⊗ₜ[𝕜] b) = inner 𝕜 y (a ⊗ₜ[𝕜] b) := by
   simp_rw [← @sub_eq_zero 𝕜 _ _ (inner _ _ _), ← inner_sub_left]
@@ -151,6 +176,9 @@ theorem ext_inner_right_iff (x y : E ⊗[𝕜] F) :
   refine ⟨fun h a b => by rw [h, inner_zero_left], fun h => ext_inner_right 𝕜 fun y => ?_⟩
   exact y.induction_on (inner_zero_right _) h (fun c d hc hd => by simp [inner_add_right, hc, hd])
 
+/-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪x, a ⊗ₜ b ⊗ₜ c⟫ = ⟪y, a ⊗ₜ b ⊗ₜ c⟫` for all `a, b, c`.
+
+See also `ext_inner_right_threefold_iff'` for when `x, y : E ⊗ (F ⊗ G)`. -/
 theorem ext_inner_right_threefold_iff (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) = inner 𝕜 y (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) := by
   simp_rw [← @sub_eq_zero 𝕜 _ _ (inner _ _ _), ← inner_sub_left]
@@ -249,6 +277,10 @@ end isometry
       = TensorProduct.map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
   TensorProduct.ext' fun x y => by simp [ext_inner_right_iff, LinearMap.adjoint_inner_left]
 
+/-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
+`a, b, c`.
+
+See also `ext_inner_right_threefold_iff` for when `x, y : E ⊗ F ⊗ G`. -/
 theorem ext_inner_right_threefold_iff' (x y : E ⊗[𝕜] (F ⊗[𝕜] G)) :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) = inner 𝕜 y (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) := by
   simp only [← (assocLinearIsometryEquiv 𝕜 E F G).symm.injective.eq_iff,
@@ -262,12 +294,14 @@ variable {ι₁ ι₂ : Type*} [DecidableEq ι₁] [DecidableEq ι₂]
 
 open Module
 
+/-- The tensor product of two orthonormal vectors is orthonormal. -/
 theorem Orthonormal.tensorProduct
     {b₁ : ι₁ → E} {b₂ : ι₂ → F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
     Orthonormal 𝕜 fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 :=
   orthonormal_iff_ite.mpr fun ⟨i₁, i₂⟩ ⟨j₁, j₂⟩ => by
     simp [orthonormal_iff_ite.mp, hb₁, hb₂, ← ite_and, and_comm]
 
+/-- The tensor product of two orthonormal bases is orthonormal. -/
 theorem Orthonormal.basisTensorProduct
     {b₁ : Basis ι₁ 𝕜 E} {b₂ : Basis ι₂ 𝕜 F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
     Orthonormal 𝕜 (b₁.tensorProduct b₂) := b₁.coe_tensorProduct b₂ ▸ hb₁.tensorProduct hb₂
