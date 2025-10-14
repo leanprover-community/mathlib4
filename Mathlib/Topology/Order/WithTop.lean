@@ -201,23 +201,33 @@ end Coe
 @[simp]
 lemma untopA_coe_enat (n : ℕ) : WithTop.untopA (n : ℕ∞) = n := rfl
 
-lemma tendsto_untopA [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
-    Tendsto WithTop.untopA (𝓝 a) (𝓝 a.untopA) := by
+section ContinuousUnTop
+
+lemma tendsto_untopD (d : ι) {a : WithTop ι} (ha : a ≠ ⊤) :
+    Tendsto (untopD d) (𝓝 a) (𝓝 (untopD d a)) := by
   lift a to ι using ha
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
 
-lemma continuousOn_untopA [Nonempty ι] : ContinuousOn WithTop.untopA { a : WithTop ι | a ≠ ⊤ } :=
-  fun _a ha ↦ ContinuousAt.continuousWithinAt (WithTop.tendsto_untopA ha)
+lemma continuousOn_untopD (d : ι) : ContinuousOn (untopD d) { a : WithTop ι | a ≠ ⊤ } :=
+  fun _a ha ↦ ContinuousAt.continuousWithinAt (tendsto_untopD d ha)
+
+lemma tendsto_untopA [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
+    Tendsto untopA (𝓝 a) (𝓝 a.untopA) := tendsto_untopD _ ha
+
+lemma continuousOn_untopA [Nonempty ι] : ContinuousOn untopA { a : WithTop ι | a ≠ ⊤ } :=
+  continuousOn_untopD _
 
 lemma tendsto_untop (a : {a : WithTop ι | a ≠ ⊤}) :
-    Tendsto (fun x ↦ WithTop.untop x.1 x.2) (𝓝 a) (𝓝 (untop a.1 a.2)) := by
+    Tendsto (fun x ↦ untop x.1 x.2) (𝓝 a) (𝓝 (untop a.1 a.2)) := by
   have : Nonempty ι := ⟨untop a.1 a.2⟩
   simp only [← untopA_eq_untop, ne_eq, coe_setOf, mem_setOf_eq]
   exact (tendsto_untopA a.2).comp <| tendsto_subtype_rng.mp tendsto_id
 
-lemma continuous_untop : Continuous (fun x : {a : WithTop ι | a ≠ ⊤} ↦ WithTop.untop x.1 x.2) :=
-  continuous_iff_continuousAt.mpr WithTop.tendsto_untop
+lemma continuous_untop : Continuous (fun x : {a : WithTop ι | a ≠ ⊤} ↦ untop x.1 x.2) :=
+  continuous_iff_continuousAt.mpr tendsto_untop
+
+end ContinuousUnTop
 
 variable (ι) in
 /-- Homeomorphism between the non-top elements of `WithTop ι` and `ι`. -/

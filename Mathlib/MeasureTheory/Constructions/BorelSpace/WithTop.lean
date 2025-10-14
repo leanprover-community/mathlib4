@@ -40,17 +40,17 @@ def MeasurableEquiv.neTopEquiv : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
 
 lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
     {f : WithTop ι → α} (h : Measurable fun p : ι ↦ f p) :
-    Measurable f := by
-  rcases isEmpty_or_nonempty ι with hι | hι
-  · exact Subsingleton.measurable
-  · exact measurable_of_measurable_on_compl_singleton ⊤
-      (MeasurableEquiv.neTopEquiv.symm.measurable_comp_iff.1 h)
+    Measurable f :=
+  measurable_of_measurable_on_compl_singleton ⊤
+    (MeasurableEquiv.neTopEquiv.symm.measurable_comp_iff.1 h)
 
-lemma measurable_untopA [Nonempty ι] : Measurable (WithTop.untopA (α := ι)) :=
+lemma measurable_untopD (d : ι) : Measurable (untopD d) :=
   measurable_of_measurable_comp_coe measurable_id
 
-lemma measurable_coe :
-    Measurable (fun x : ι ↦ (x : WithTop ι)) := continuous_coe.measurable
+lemma measurable_untopA [Nonempty ι] : Measurable (WithTop.untopA (α := ι)) :=
+  measurable_untopD _
+
+lemma measurable_coe : Measurable (fun x : ι ↦ (x : WithTop ι)) := continuous_coe.measurable
 
 @[fun_prop]
 lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} [SecondCountableTopology ι]
@@ -68,6 +68,11 @@ lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} [SecondCount
 lemma _root_.Measurable.untopA {α} {mα : MeasurableSpace α} [Nonempty ι]
     {f : α → WithTop ι} (hf : Measurable f) :
     Measurable (fun x ↦ (f x).untopA) := measurable_untopA.comp hf
+
+@[fun_prop]
+lemma _root_.Measurable.untopD {α} {mα : MeasurableSpace α} (d : ι)
+    {f : α → WithTop ι} (hf : Measurable f) :
+    Measurable (fun x ↦ (f x).untopD d) := (measurable_untopD _).comp hf
 
 /-- Measurable equivalence between `WithTop ι` and `ι ⊕ Unit`. -/
 def measurableEquivSum : WithTop ι ≃ᵐ ι ⊕ Unit :=
