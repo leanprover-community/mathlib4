@@ -62,16 +62,6 @@ theorem comp_surjective_mvPolynomial (R : Type*) [CommSemiring R] (σ : Type*)
       (MvPolynomial σ R →ₐ[R] A) → MvPolynomial σ R →ₐ[R] A ⧸ I) :=
   fun f ↦ ⟨MvPolynomial.aeval fun s ↦ (f <| .X s).out, by ext; simp⟩
 
--- MOVE
-def _root_.Ideal.quotCotangentₐ {R : Type*} [CommRing R] (I : Ideal R) :
-    ((R ⧸ I ^ 2) ⧸ I.cotangentIdeal) ≃ₐ[R] R ⧸ I where
-  __ := I.quotCotangent
-  commutes' _ := rfl
-
-@[simp] lemma _root_.Ideal.quotCotangentₐ_apply {R : Type*} [CommRing R] (I : Ideal R) (x : R) :
-    I.quotCotangentₐ x = x :=
-  rfl
-
 -- replaced with `iff_split_surjection` below
 private theorem split_of_formallySmooth_of_surjective'
     (R : Type u) (A : Type (max u v)) [CommRing R] [CommRing A] [Algebra R A]

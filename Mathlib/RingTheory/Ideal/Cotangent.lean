@@ -188,6 +188,12 @@ def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
   refine (DoubleQuot.quotQuotEquivQuotSup _ _).trans ?_
   exact Ideal.quotEquivOfEq (sup_eq_right.mpr <| Ideal.pow_le_self two_ne_zero)
 
+def quotCotangentₐ : ((R ⧸ I ^ 2) ⧸ I.cotangentIdeal) ≃ₐ[R] R ⧸ I where
+  __ := I.quotCotangent
+  commutes' _ := rfl
+
+@[simp] lemma quotCotangentₐ_mk_mk (x : R) : I.quotCotangentₐ x = x := rfl
+
 /-- The map `I/I² → J/J²` if `I ≤ f⁻¹(J)`. -/
 def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) :
     I₁.Cotangent →ₗ[R] I₂.Cotangent := by
