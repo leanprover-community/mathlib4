@@ -111,4 +111,3 @@ theorem orbit_size_eq_index (c : X → Y)
   exact (Nat.mul_div_cancel _ hb).symm
 
 end DistinctColorings
-
