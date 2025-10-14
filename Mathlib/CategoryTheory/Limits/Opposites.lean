@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
 
-We also give special cases for (co)products,
-(co)equalizers, and pullbacks / pushouts.
+We construct limits and colimits in the opposite categories.
 
 -/
 
@@ -28,7 +28,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {J : Type u₂} [Category.{v₂} J]
-
 
 /-- Turn a colimit for `F : J ⥤ Cᵒᵖ` into a limit for `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
@@ -477,5 +476,11 @@ instance hasColimits_op_of_hasLimits [HasLimitsOfSize.{v₂, u₂} C] :
 theorem hasColimits_of_hasLimits_op [HasLimitsOfSize.{v₂, u₂} Cᵒᵖ] :
     HasColimitsOfSize.{v₂, u₂} C :=
   { has_colimits_of_shape := fun _ _ => hasColimitsOfShape_of_hasLimitsOfShape_op }
+
+instance hasFiniteColimits_opposite [HasFiniteLimits C] : HasFiniteColimits Cᵒᵖ :=
+  ⟨fun _ _ _ => hasColimitsOfShape_op_of_hasLimitsOfShape⟩
+
+instance hasFiniteLimits_opposite [HasFiniteColimits C] : HasFiniteLimits Cᵒᵖ :=
+  ⟨fun _ _ _ => hasLimitsOfShape_op_of_hasColimitsOfShape⟩
 
 end CategoryTheory.Limits
