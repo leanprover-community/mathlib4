@@ -146,8 +146,8 @@ scoped elab:max "T% " t:term:arg : term => do
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, e.app x]
         mkLambdaFVars #[x] body
       else return e
-    | TangentSpace _k _ E _ _ _H _ _I _M _ _ _x =>
-      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `M`"
+    | TangentSpace _k _ E _ _ _H _ _I M _ _ _x =>
+      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `{M}`"
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, e.app x]
       mkLambdaFVars #[x] body
     | _ => match (← instantiateMVars tgt).cleanupAnnotations with
