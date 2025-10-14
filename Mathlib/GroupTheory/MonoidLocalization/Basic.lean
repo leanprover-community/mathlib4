@@ -802,10 +802,12 @@ theorem lift_of_comp (j : N →* P) : f.lift (f.isUnit_comp j) = j := by
   ext; simp_rw [lift_spec, j.comp_apply, ← map_mul, toMonoidHom_apply, sec_spec']
 
 @[to_additive]
-theorem epic_of_localizationMap {j k : N →* P}
-    (h : ∀ a, j.comp f.toMonoidHom a = k.comp f.toMonoidHom a) : j = k := by
-  rw [← f.lift_of_comp j, ← f.lift_of_comp k]
-  congr 1 with x; exact h x
+theorem epic_of_localizationMap {P : Type*} [Monoid P] {j k : N →* P}
+    (h : j.comp f.toMonoidHom = k.comp f.toMonoidHom) : j = k := by
+  ext n
+  obtain ⟨⟨m, s⟩, hn : n * f s = f m⟩ := f.surj n
+  replace h (a) : j (f a) = k (f a) := congr($h a)
+  exact ((f.map_units s).map j).mul_left_inj.mp <| by rw [← j.map_mul, h, ← k.map_mul, hn, h m]
 
 @[to_additive]
 theorem lift_unique {j : N →* P} (hj : ∀ x, j (f x) = g x) : f.lift hg = j := by

@@ -53,11 +53,11 @@ variable (R M₁ M₂)
 
 /-- The left injection into a product is a continuous linear map. -/
 def inl : M₁ →L[R] M₁ × M₂ :=
-  (id R M₁).prod 0
+  (ContinuousLinearMap.id R M₁).prod 0
 
 /-- The right injection into a product is a continuous linear map. -/
 def inr : M₂ →L[R] M₁ × M₂ :=
-  (0 : M₂ →L[R] M₁).prod (id R M₂)
+  (0 : M₂ →L[R] M₁).prod (.id R M₂)
 
 end
 
@@ -116,7 +116,7 @@ theorem coe_snd' : ⇑(snd R M₁ M₂) = Prod.snd :=
   rfl
 
 @[simp]
-theorem fst_prod_snd : (fst R M₁ M₂).prod (snd R M₁ M₂) = id R (M₁ × M₂) :=
+theorem fst_prod_snd : (fst R M₁ M₂).prod (snd R M₁ M₂) = .id R (M₁ × M₂) :=
   ext fun ⟨_x, _y⟩ => rfl
 
 @[simp]

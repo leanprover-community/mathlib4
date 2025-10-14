@@ -222,7 +222,7 @@ theorem union_eq_sdiff_union_sdiff_union_inter (s t : Finset α) : s ∪ t = s \
   sup_eq_sdiff_sup_sdiff_sup_inf
 
 theorem sdiff_eq_self_iff_disjoint : s \ t = s ↔ Disjoint s t :=
-  sdiff_eq_self_iff_disjoint'
+  sdiff_eq_left
 
 theorem sdiff_eq_self_of_disjoint (h : Disjoint s t) : s \ t = s :=
   sdiff_eq_self_iff_disjoint.2 h

@@ -260,8 +260,8 @@ abbrev R : SemiRingCat.{max v u} :=
 
 instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
   { (R F).semiring,
-    AddCommGrp.FilteredColimits.colimitAddCommGroup.{v, u}
-      (F ⋙ forget₂ RingCat AddCommGrp.{max v u}) with }
+    AddCommGrpCat.FilteredColimits.colimitAddCommGroup.{v, u}
+      (F ⋙ forget₂ RingCat AddCommGrpCat.{max v u}) with }
 
 /-- The bundled ring giving the filtered colimit of a diagram. -/
 def colimit : RingCat.{max v u} :=

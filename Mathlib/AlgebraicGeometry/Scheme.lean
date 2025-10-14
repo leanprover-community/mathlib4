@@ -16,14 +16,6 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
-## Notation
-
-`Spec R` typechecks only for `R : CommRingCat`. It happens quite often that we want to take Spec of
-an unbundled ring, and this can be spelled `Spec (CommRingCat.of R)`, or `Spec (.of R)` using
-anonymous dot notation. This is such a common situation that we have dedicated notation: `Spec(R)`
-
-Note that one can write `Spec(R)` for `R : CommRingCat`, but one shouldn't: This is `Spec (.of ↑R)`
-under the hood, which simplifies to `Spec R`.
 -/
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
@@ -427,10 +419,12 @@ def Spec (R : CommRingCat) : Scheme where
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 
 /-- The spectrum of an unbundled ring as a scheme.
+WARNING: This is potentially confusing as `Spec (R)` and `Spec(R)` have different meanings.
+Hence we avoid using it in mathlib but leave it as a scoped instance for downstream projects.
 
 WARNING: If `R` is already an element of `CommRingCat`, you should use `Spec R` instead of
 `Spec(R)`, which is secretly `Spec(↑R)`. -/
-scoped notation3 "Spec("R")" => Spec <| .of R
+scoped[SpecOfNotation] notation3 "Spec("R")" => AlgebraicGeometry.Spec <| .of R
 
 theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
@@ -574,11 +568,11 @@ lemma toOpen_eq (U) :
     (by exact StructureSheaf.toOpen R U) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
-instance {K} [Field K] : Unique Spec(K) :=
+instance {K} [Field K] : Unique <| Spec <| .of K :=
   inferInstanceAs <| Unique (PrimeSpectrum K)
 
 @[simp]
-lemma default_asIdeal {K} [Field K] : (default : Spec(K)).asIdeal = ⊥ := rfl
+lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl
 
 section BasicOpen
 

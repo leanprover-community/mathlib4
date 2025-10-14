@@ -10,7 +10,7 @@ import Mathlib.Algebra.Category.Grp.Basic
 In this file, we shall define the cohomology in degree 1 of a sheaf
 of groups (TODO).
 
-Currently, given a presheaf of groups `G : Cᵒᵖ ⥤ Grp` and a family
+Currently, given a presheaf of groups `G : Cᵒᵖ ⥤ GrpCat` and a family
 of objects `U : I → C`, we define 1-cochains/1-cocycles/H^1 with values
 in `G` over `U`. (This definition neither requires the assumption that `G`
 is a sheaf, nor that `U` covers the terminal object.)
@@ -48,7 +48,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace PresheafOfGroups
 
-variable (G : Cᵒᵖ ⥤ Grp.{w}) {I : Type w'} (U : I → C)
+variable (G : Cᵒᵖ ⥤ GrpCat.{w}) {I : Type w'} (U : I → C)
 
 /-- A zero cochain consists of a family of sections. -/
 def ZeroCochain := ∀ (i : I), G.obj (Opposite.op (U i))
@@ -68,7 +68,7 @@ lemma mul_apply (γ₁ γ₂ : ZeroCochain G U) (i : I) : (γ₁ * γ₂) i = γ
 
 end Cochain₀
 
-/-- A 1-cochain of a presheaf of groups `G : Cᵒᵖ ⥤ Grp` on a family `U : I → C` of objects
+/-- A 1-cochain of a presheaf of groups `G : Cᵒᵖ ⥤ GrpCat` on a family `U : I → C` of objects
 consists of the data of an element in `G.obj (Opposite.op T)` whenever we have elements
 `i` and `j` in `I` and maps `a : T ⟶ U i` and `b : T ⟶ U j`, and it must satisfy a compatibility
 with respect to precomposition. (When the binary product of `U i` and `U j` exists, this
@@ -189,7 +189,7 @@ end OneCocycle
 
 variable (G U) in
 /-- The cohomology in degree 1 of a presheaf of groups
-`G : Cᵒᵖ ⥤ Grp` on a family of objects `U : I → C`. -/
+`G : Cᵒᵖ ⥤ GrpCat` on a family of objects `U : I → C`. -/
 def H1 := Quot (OneCocycle.IsCohomologous (G := G) (U := U))
 
 /-- The cohomology class of a 1-cocycle. -/

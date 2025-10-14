@@ -18,14 +18,14 @@ properties.
 ## Main definitions
 
 - `Polynomial.logMahlerMeasure p`: the logarithmic Mahler measure of a polynomial `p` defined as
-`(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖`.
+  `(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖`.
 - `Polynomial.mahlerMeasure p`: the (exponential) Mahler measure of a polynomial `p`, which is equal
-to `e ^ p.logMahlerMeasure` if `p` is nonzero, and `0` otherwise.
+  to `e ^ p.logMahlerMeasure` if `p` is nonzero, and `0` otherwise.
 
 ## Main results
 
 - `Polynomial.mahlerMeasure_mul`: the Mahler measure of the product of two polynomials is the
-product of their Mahler measures.
+  product of their Mahler measures.
 -/
 
 namespace Polynomial
@@ -91,6 +91,10 @@ theorem mahlerMeasure_const (z : ℂ) : (C z).mahlerMeasure = ‖z‖ := by
 theorem mahlerMeasure_nonneg : 0 ≤ p.mahlerMeasure := by
   by_cases hp : p = 0 <;> simp [hp, mahlerMeasure_def_of_ne_zero, exp_nonneg]
 
+variable {p} in
+theorem mahlerMeasure_pos_of_ne_zero (hp : p ≠ 0) : 0 < p.mahlerMeasure := by
+  grind [exp_pos, mahlerMeasure_def_of_ne_zero]
+
 @[simp]
 theorem mahlerMeasure_eq_zero_iff : p.mahlerMeasure = 0 ↔ p = 0 := by
   refine ⟨?_, by simp_all [mahlerMeasure_zero]⟩
@@ -125,5 +129,16 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   rintro _ ⟨_, ⟨_, h⟩, _⟩
   contrapose h
   simp_all [log_mul]
+
+@[simp]
+theorem prod_mahlerMeasure_eq_mahlerMeasure_prod (s : Multiset ℂ[X]) :
+    (s.prod).mahlerMeasure = (s.map (fun p ↦ p.mahlerMeasure)).prod := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons _ _ ih => simp [mahlerMeasure_mul, ih]
+
+theorem logMahlerMeasure_mul_eq_add_logMahelerMeasure {p q : ℂ[X]} (hpq : p * q ≠ 0) :
+    (p * q).logMahlerMeasure = p.logMahlerMeasure + q.logMahlerMeasure := by
+  simp_all [logMahlerMeasure_eq_log_MahlerMeasure, mahlerMeasure_mul, log_mul]
 
 end Polynomial

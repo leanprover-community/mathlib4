@@ -37,6 +37,12 @@ def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
 
 namespace IsAntichain
 
+@[simp] protected theorem empty : IsAntichain r ∅ :=
+  pairwise_empty _
+
+@[simp] protected theorem singleton : IsAntichain r {a} :=
+  pairwise_singleton _ _
+
 protected theorem subset (hs : IsAntichain r s) (h : t ⊆ s) : IsAntichain r t :=
   hs.mono h
 
@@ -164,8 +170,13 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
 
 end IsAntichain
 
-theorem isAntichain_singleton (a : α) (r : α → α → Prop) : IsAntichain r {a} :=
-  pairwise_singleton _ _
+theorem isAntichain_union :
+    IsAntichain r (s ∪ t) ↔
+      IsAntichain r s ∧ IsAntichain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → rᶜ a b ∧ rᶜ b a := by
+  rw [IsAntichain, IsAntichain, IsAntichain, pairwise_union]
+
+@[deprecated (since := "2025-09-20")]
+alias isAntichain_singleton := IsAntichain.singleton
 
 theorem Set.Subsingleton.isAntichain (hs : s.Subsingleton) (r : α → α → Prop) : IsAntichain r s :=
   hs.pairwise _
@@ -202,12 +213,12 @@ theorem IsAntichain.not_lt (hs : IsAntichain (· ≤ ·) s) (ha : a ∈ s) (hb :
 theorem isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
-    exact ⟨isAntichain_singleton _ _, isLeast_singleton⟩⟩
+    exact ⟨IsAntichain.singleton, isLeast_singleton⟩⟩
 
 theorem isAntichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
-    exact ⟨isAntichain_singleton _ _, isGreatest_singleton⟩⟩
+    exact ⟨IsAntichain.singleton, isGreatest_singleton⟩⟩
 
 theorem IsAntichain.least_iff (hs : IsAntichain (· ≤ ·) s) : IsLeast s a ↔ s = {a} :=
   (and_iff_right hs).symm.trans isAntichain_and_least_iff

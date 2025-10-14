@@ -279,11 +279,11 @@ small object argument. -/
 noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 
 /-- The "inclusion" morphism in the factorization given by
-the the small object argument. -/
+the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
 /-- The "projection" morphism in the factorization given by
-the the small object argument. -/
+the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 

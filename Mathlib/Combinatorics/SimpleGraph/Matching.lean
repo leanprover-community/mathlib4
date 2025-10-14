@@ -455,7 +455,7 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
   have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
     intro h
     exact hw'1 (hp.snd_of_toSubgraph_adj h)
-  -- If w = w', then then the reachability can be proved with just one edge
+  -- If w = w', then the reachability can be proved with just one edge
   by_cases hww' : w = w'
   · subst hww'
     have : (G \  p.toSubgraph.spanningCoe).Adj w v := by

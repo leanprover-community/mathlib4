@@ -172,6 +172,62 @@ lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     obtain ⟨j, rfl⟩ := iy h₂
     rw [h]
 
+/-! ### Positive semidefinite bilinear forms -/
+
+section PositiveSemidefinite
+
+/-- A bilinear form `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
+structure IsNonneg [LE R] (B : BilinForm R M) where
+  nonneg : ∀ x, 0 ≤ B x x
+
+lemma isNonneg_def [LE R] {B : BilinForm R M} : B.IsNonneg ↔ ∀ x, 0 ≤ B x x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+/-- A bilinear form is nonnegative if and only if it is nonnegative as a sesquilinear form. -/
+lemma isNonneg_iff [LE R] {B : BilinForm R M} : B.IsNonneg ↔ LinearMap.IsNonneg B :=
+  isNonneg_def.trans LinearMap.isNonneg_def.symm
+
+@[simp]
+lemma isNonneg_zero [Preorder R] : IsNonneg (0 : BilinForm R M) :=
+  isNonneg_iff.2 LinearMap.isNonneg_zero
+
+protected lemma IsNonneg.add [Preorder R] [AddLeftMono R] {B C : BilinForm R M}
+    (hB : B.IsNonneg) (hC : C.IsNonneg) : (B + C).IsNonneg where
+  nonneg x := add_nonneg (hB.nonneg x) (hC.nonneg x)
+
+protected lemma IsNonneg.smul [Preorder R] [PosMulMono R] {B : BilinForm R M} {c : R}
+    (hB : B.IsNonneg) (hc : 0 ≤ c) : (c • B).IsNonneg where
+  nonneg x := mul_nonneg hc (hB.nonneg x)
+
+/-- A bilinear form `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
+structure IsPosSemidef [LE R] (B : BilinForm R M) extends
+  isSymm : B.IsSymm,
+  isNonneg : B.IsNonneg
+
+variable {B : BilinForm R M}
+
+lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsNonneg :=
+  ⟨fun h ↦ ⟨h.isSymm, h.isNonneg⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+
+/-- A bilinear form is positive semidefinite if and only if it is positive semidefinite
+  as a sesquilinear form. -/
+lemma isPosSemidef_iff [LE R] {B : BilinForm R M} : B.IsPosSemidef ↔ LinearMap.IsPosSemidef B :=
+  isPosSemidef_def.trans <| (isSymm_iff.and isNonneg_iff).trans LinearMap.isPosSemidef_def.symm
+
+@[simp]
+lemma isPosSemidef_zero [Preorder R] : IsPosSemidef (0 : BilinForm R M) :=
+  isPosSemidef_iff.2 LinearMap.isPosSemidef_zero
+
+protected lemma IsPosSemidef.add [Preorder R] [AddLeftMono R] {B C : BilinForm R M}
+    (hB : B.IsPosSemidef) (hC : C.IsPosSemidef) : (B + C).IsPosSemidef :=
+  isPosSemidef_iff.2 ((isPosSemidef_iff.1 hB).add (isPosSemidef_iff.1 hC))
+
+protected lemma IsPosSemidef.smul [Preorder R] [PosMulMono R] {B : BilinForm R M} {c : R}
+    (hB : B.IsPosSemidef) (hc : 0 ≤ c) : (c • B).IsPosSemidef :=
+  isPosSemidef_def.2 ⟨hB.isSymm.smul c, hB.isNonneg.smul hc⟩
+
+end PositiveSemidefinite
+
 /-- The proposition that a bilinear form is alternating -/
 def IsAlt (B : BilinForm R M) : Prop := LinearMap.IsAlt B
 

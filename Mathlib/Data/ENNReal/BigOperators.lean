@@ -128,7 +128,7 @@ lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
   induction s using Finset.cons_induction with
   | empty => simp
   | cons i s hi ih => ?_
-  simp [← ih (hf.mono <| by simp)]
+  simp only [Finset.prod_cons, ← ih (hf.mono <| by simp)]
   refine ENNReal.mul_inv (not_or_of_imp fun hi₀ ↦ prod_ne_top fun j hj ↦ ?_)
     (not_or_of_imp fun hi₀ ↦ Finset.prod_ne_zero_iff.2 fun j hj ↦ ?_)
   · exact imp_iff_not_or.2 (hf (by simp) (by simp [hj]) <| .symm <| ne_of_mem_of_not_mem hj hi) hi₀

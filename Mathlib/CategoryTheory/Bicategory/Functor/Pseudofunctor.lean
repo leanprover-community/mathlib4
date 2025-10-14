@@ -157,28 +157,28 @@ section
 
 variable (F : Pseudofunctor B C) {a b : B}
 
-@[to_app (attr:=reassoc)]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_right_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom = F.map₂ (α_ f g h).inv ≫
     (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h ≫
     (α_ (F.map f) (F.map g) (F.map h)).hom :=
   F.toOplax.mapComp_assoc_right _ _ _
 
-@[to_app (attr:=reassoc)]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_left_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h =
     F.map₂ (α_ f g h).hom ≫ (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom
     ≫ (α_ (F.map f) (F.map g) (F.map h)).inv :=
   F.toOplax.mapComp_assoc_left _ _ _
 
-@[to_app (attr:=reassoc)]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_right_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.map f ◁ (F.mapComp g h).inv ≫ (F.mapComp f (g ≫ h)).inv =
     (α_ (F.map f) (F.map g) (F.map h)).inv ≫ (F.mapComp f g).inv ▷ F.map h ≫
     (F.mapComp (f ≫ g) h).inv ≫ F.map₂ (α_ f g h).hom :=
   F.toLax.mapComp_assoc_right _ _ _
 
-@[to_app (attr:=reassoc)]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_left_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp f g).inv ▷ F.map h ≫ (F.mapComp (f ≫ g) h).inv =
     (α_ (F.map f) (F.map g) (F.map h)).hom ≫ F.map f ◁ (F.mapComp g h).inv ≫

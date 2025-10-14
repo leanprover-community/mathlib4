@@ -73,7 +73,7 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsS
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
-instance : IsLocalAtTarget @IsSeparated := by
+instance : IsZariskiLocalAtTarget @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
@@ -89,10 +89,10 @@ instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
 @[instance 100]
 lemma of_isAffineHom [h : IsAffineHom f] : IsSeparated f := by
   wlog hY : IsAffine Y
-  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsSeparated) _
+  · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsSeparated) _
       (iSup_affineOpens_eq_top Y)]
     intro U
-    have H : IsAffineHom (f ∣_ U) := IsLocalAtTarget.restrict h U
+    have H : IsAffineHom (f ∣_ U) := IsZariskiLocalAtTarget.restrict h U
     exact this _ U.2
   have : IsAffine X := HasAffineProperty.iff_of_isAffine.mp h
   rw [MorphismProperty.arrow_mk_iso_iff @IsSeparated (arrowIsoSpecΓOfIsAffine f)]
@@ -140,7 +140,10 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   refine ⟨i, j, ?_⟩
   simp_rw [diagonalCover_map]
   change x ∈ Set.range _
-  dsimp only [diagonalCover, Cover.bind_X, openCoverOfLeftRight_X]
+  simp only [diagonalCover, openCoverOfBase_I₀,
+    Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+    Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
+    PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X]
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
@@ -157,8 +160,13 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, (pullback.diagonal ((𝒱 i).f j ≫ pullback.snd f (𝒰.f i))).base w, ?_⟩
   rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
-  dsimp only [diagonalCover, Cover.pullbackHom, Cover.bind_X, openCoverOfLeftRight_X]
-  rw [← Scheme.comp_base_apply]
+  simp only [diagonalCover, openCoverOfBase_I₀,
+    Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+    Cover.pullbackHom, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
+    PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X,
+    PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, comp_coeBase,
+    TopCat.hom_comp, ContinuousMap.comp_apply, ContinuousMap.comp_assoc]
+  simp_rw [← Scheme.comp_base_apply]
   congr 5
   apply pullback.hom_ext <;> simp
 
@@ -174,7 +182,7 @@ lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
     exact le_iSup (fun i : Σ i, (𝒱 i).I₀ ↦ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange) i
   have hf : iSup U = ⊤ := (TopologicalSpace.Opens.map_iSup _ _).symm.trans
     (diagonalCoverDiagonalRange f 𝒰 𝒱).ι_preimage_self
-  rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsClosedImmersion) _ hf]
+  rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsClosedImmersion) _ hf]
   intro i
   rw [MorphismProperty.arrow_mk_iso_iff (P := @IsClosedImmersion) (morphismRestrictRestrict _ _ _),
     MorphismProperty.arrow_mk_iso_iff (P := @IsClosedImmersion) (morphismRestrictEq _ (hU i)),
@@ -187,7 +195,7 @@ lemma isSeparated_of_injective (hf : Function.Injective f.base) :
   constructor
   let 𝒰 := Y.affineCover
   let 𝒱 (i) := (pullback f (𝒰.f i)).affineCover
-  refine IsLocalAtTarget.of_iSup_eq_top (fun i : PUnit.{0} ↦ ⊤) (by simp) fun _ ↦ ?_
+  refine IsZariskiLocalAtTarget.of_iSup_eq_top (fun i : PUnit.{0} ↦ ⊤) (by simp) fun _ ↦ ?_
   rw [← diagonalCoverDiagonalRange_eq_top_of_injective f 𝒰 𝒱 hf]
   exact isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange f 𝒰 𝒱
 
@@ -289,6 +297,9 @@ instance [X.IsSeparated] : IsClosedImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
 
 instance (priority := 900) {X : Scheme.{u}} [IsAffine X] : X.IsSeparated := ⟨inferInstance⟩
 
+instance (priority := low) {X : Scheme.{u}} [X.IsSeparated] : QuasiSeparatedSpace X :=
+  quasiSeparatedSpace_of_quasiSeparated (terminal.from X)
+
 instance (priority := 900) [X.IsSeparated] : IsSeparated f := by
   apply (config := { allowSynthFailures := true }) @IsSeparated.of_comp (g := terminal.from Y)
   rw [terminal.comp_from]
@@ -301,7 +312,7 @@ end Scheme
 
 instance IsSeparated.hasAffineProperty :
     HasAffineProperty @IsSeparated fun X _ _ _ ↦ X.IsSeparated := by
-  convert HasAffineProperty.of_isLocalAtTarget @IsSeparated with X Y f hY
+  convert HasAffineProperty.of_isZariskiLocalAtTarget @IsSeparated with X Y f hY
   rw [Scheme.isSeparated_iff, ← terminal.comp_from f, IsSeparated.comp_iff]
   rfl
 

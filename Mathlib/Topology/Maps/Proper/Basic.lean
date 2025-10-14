@@ -121,14 +121,13 @@ lemma IsProperMap.ultrafilter_le_nhds_of_tendsto (h : IsProperMap f) ⦃𝒰 : U
   (isProperMap_iff_ultrafilter.mp h).2 hy
 
 /-- The composition of two proper maps is proper. -/
-lemma IsProperMap.comp (hf : IsProperMap f) (hg : IsProperMap g) :
+lemma IsProperMap.comp (hg : IsProperMap g) (hf : IsProperMap f) :
     IsProperMap (g ∘ f) := by
   refine ⟨by fun_prop, fun ℱ z h ↦ ?_⟩
   rw [mapClusterPt_comp] at h
   rcases hg.clusterPt_of_mapClusterPt h with ⟨y, rfl, hy⟩
   rcases hf.clusterPt_of_mapClusterPt hy with ⟨x, rfl, hx⟩
   use x, rfl
-
 
 /-- If the composition of two continuous functions `g ∘ f` is proper and `f` is surjective,
 then `g` is proper. -/
@@ -280,7 +279,7 @@ lemma IsClosed.isProperMap_subtypeVal {C : Set X} (hC : IsClosed C) : IsProperMa
 
 /-- The restriction of a proper map to a closed subset is proper. -/
 lemma IsProperMap.restrict {C : Set X} (hf : IsProperMap f) (hC : IsClosed C) :
-    IsProperMap fun x : C ↦ f x := hC.isProperMap_subtypeVal.comp  hf
+    IsProperMap fun x : C ↦ f x := hf.comp hC.isProperMap_subtypeVal
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
