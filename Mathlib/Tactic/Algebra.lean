@@ -32,7 +32,6 @@ TODOs:
   and handle the Algebra (Polynomial _) (Polynomial _) instance gracefully.
 * The new normal form naturally puts the coefficients an the end as `x * y * 1 • r` and
   `X^n * C a`. We fix this in post but we really ought to put it in front.
-* Fill in all the sorries - there are typeclass problems with all of the theorems involving negation
 -/
 
 section ExSum

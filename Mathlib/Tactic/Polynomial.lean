@@ -7,7 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Tactic.Algebra
+import Mathlib.Tactic.Polynomial.Core
 
 -- For the ring instance in testing.
 import Mathlib.Algebra.MvPolynomial.CommRing
@@ -20,6 +20,26 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 open Mathlib.Meta AtomM
 
 namespace Mathlib.Tactic.Polynomial
+
+section extension
+
+end extension
+
+/-- Infer base ring for `Polynomial R` -/
+@[polynomial Polynomial _]
+def polynomialInferBase : PolynomialExt where
+  infer := fun e ↦ do
+  match_expr e with
+  | Polynomial R _ => pure R
+  | _ => failure
+
+/-- Infer base ring for `MvPolynomial R` -/
+@[polynomial MvPolynomial _ _]
+def mvPolynomialInferBaseImpl : PolynomialExt where
+  infer := fun e ↦ do
+  match_expr e with
+  | MvPolynomial _ R _ => pure R
+  | _ => failure
 
 section Lemmas
 variable {σ R : Type*} [CommSemiring R]
@@ -63,26 +83,32 @@ def preprocess (mvarId : MVarId) : MetaM MVarId := do
 
 open Tactic
 
-/-- Infer the ring `R` in an expression of the form `Polynomial R` or `MvPolynomial R` -/
-def inferBase (e : Expr) : Option Expr :=
-  match_expr e with
-  | Polynomial R _ => some R
-  | MvPolynomial _ R _ => some R
-  | _ => none
+-- /-- Infer the ring `R` in an expression of the form `Polynomial R` or `MvPolynomial R` -/
+-- def inferBase (e : Expr) : Option Expr :=
+--   match_expr e with
+--   | Polynomial R _ => some R
+--   | MvPolynomial _ R _ => some R
+--   | _ => none
 
 elab (name := polynomial) "polynomial":tactic =>
   withMainContext do
     let g ← preprocess (← getMainGoal)
     let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
       | throwError "polynomial failed: not an equality"
-    let some β := inferBase α | throwError "polynomial failed: not an equality of (mv)polynomials"
-    AtomM.run .default (Algebra.proveEq (some (← inferLevelQ β)) g)
+    try
+      let β ← Polynomial.inferBase α
+      AtomM.run .default (Algebra.proveEq (some (← inferLevelQ β)) g)
+    catch _ =>
+      throwError "polynomial failed: not an equality of (mv)polynomials"
 
 elab (name := matchCoeffients) "match_coefficients" :tactic =>
   Tactic.liftMetaTactic fun g ↦ do
     let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
       | throwError "polynomial failed: not an equality"
-    let some β := inferBase α | throwError "polynomial failed: not an equality of (mv)polynomials"
+    let mut β : Expr := default
+    try
+      β ← inferBase α
+    catch _ => throwError "polynomial failed: not an equality of (mv)polynomials"
     let goals ← matchScalarsAux (some (← inferLevelQ β)) (← preprocess g)
     /- TODO: What if the base ring is `Polynomial _`? We would have rewritten `C` into `_ • 1` and
     should really turn it back to `C`. Maybe we just rung the polynomial cleanup routine instead?-/
@@ -90,9 +116,12 @@ elab (name := matchCoeffients) "match_coefficients" :tactic =>
 
 def evalExprPoly (e : Expr) : AtomM Simp.Result := do
   let ⟨u, α, e⟩ ← inferTypeQ e
-  let some R := inferBase α | throwError "not a polynomial"
-  let ⟨v, R⟩ ← inferLevelQ R
-  Algebra.evalExpr R e
+  let mut R : Expr := default
+  try R ← inferBase α
+  --TODO : better error message that explains that the tactic can be extended?
+  catch _ => throwError "not a polynomial"
+  let ⟨v, R'⟩ ← inferLevelQ R
+  Algebra.evalExpr R' e
 
 /-- A cleanup routine, which simplifies normalized expressions to a more human-friendly format.
 This is the `algebra_nf` cleanup routine with a little extra work to turn scalar multiplication
