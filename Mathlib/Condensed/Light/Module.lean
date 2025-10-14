@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Instances
 import Mathlib.CategoryTheory.Sites.Equivalence
+import Mathlib.Condensed.Light.Basic
 import Mathlib.Condensed.Light.Instances
 /-!
 

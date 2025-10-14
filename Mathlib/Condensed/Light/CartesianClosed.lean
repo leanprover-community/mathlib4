@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Closed.Types
 import Mathlib.CategoryTheory.Sites.CartesianClosed
 import Mathlib.CategoryTheory.Sites.Equivalence
+import Mathlib.Condensed.Light.Basic
 import Mathlib.Condensed.Light.Instances
 /-!
 
