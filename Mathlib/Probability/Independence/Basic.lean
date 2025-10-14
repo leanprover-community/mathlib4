@@ -31,6 +31,13 @@ import Mathlib.MeasureTheory.Group.Convolution
   measurable space structures they generate are independent.
 * `IndepSets.indep`: variant with two π-systems.
 
+## Notation
+
+* `X ⟂ᵢ[μ] Y` for `IndepFun X Y μ`, independence of two random variables.
+* `X ⟂ᵢ Y` for `IndepFun X Y volume`.
+
+These notations are scoped in the `ProbabilityTheory` namespace.
+
 ## Implementation notes
 
 The definitions of independence in this file are a particular case of independence with respect to a
@@ -128,12 +135,19 @@ def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type*} [m : ∀ x : ι, M
 
 /-- Two functions are independent if the two measurable space structures they generate are
 independent. For a function `f` with codomain having measurable space structure `m`, the generated
-measurable space structure is `MeasurableSpace.comap f m`. -/
+measurable space structure is `MeasurableSpace.comap f m`.
+We use the notation `f ⟂ᵢ[μ] g` for `IndepFun f g μ` (scoped in `ProbabilityTheory`). -/
 def IndepFun {β γ} {_mΩ : MeasurableSpace Ω} [MeasurableSpace β] [MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω := by volume_tac) : Prop :=
   Kernel.IndepFun f g (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
 
 end Definitions
+
+@[inherit_doc ProbabilityTheory.IndepFun]
+scoped[ProbabilityTheory] notation3 X:50 " ⟂ᵢ[" μ "] " Y:50 => ProbabilityTheory.IndepFun X Y μ
+
+@[inherit_doc ProbabilityTheory.IndepFun]
+scoped[ProbabilityTheory] notation3 X:50 " ⟂ᵢ " Y:50 => ProbabilityTheory.IndepFun X Y volume
 
 section Definition_lemmas
 variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {_ : MeasurableSpace Ω} {μ : Measure Ω}
@@ -250,17 +264,17 @@ lemma iIndepFun.meas_iInter [Fintype ι] {m : ∀ i, MeasurableSpace (κ i)} {f 
 
 lemma IndepFun_iff_Indep [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :
-    IndepFun f g μ ↔ Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) μ := by
+    f ⟂ᵢ[μ] g ↔ Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) μ := by
   simp only [IndepFun, Indep, Kernel.IndepFun]
 
 lemma IndepFun_iff {β γ} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :
-    IndepFun f g μ ↔ ∀ t1 t2, MeasurableSet[MeasurableSpace.comap f mβ] t1
+    f ⟂ᵢ[μ] g ↔ ∀ t1 t2, MeasurableSet[MeasurableSpace.comap f mβ] t1
       → MeasurableSet[MeasurableSpace.comap g mγ] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
   rw [IndepFun_iff_Indep, Indep_iff]
 
 lemma IndepFun.meas_inter [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ] {f : Ω → β} {g : Ω → γ}
-    (hfg : IndepFun f g μ) {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s)
+    (hfg : f ⟂ᵢ[μ] g) {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s)
     (ht : MeasurableSet[mγ.comap g] t) :
     μ (s ∩ t) = μ s * μ t :=
   (IndepFun_iff _ _ _).1 hfg _ _ hs ht
@@ -366,7 +380,7 @@ theorem iIndep.indep
 theorem iIndepFun.indepFun {β : ι → Type*}
     {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun f μ) {i j : ι}
     (hij : i ≠ j) :
-    IndepFun (f i) (f j) μ :=
+    f i ⟂ᵢ[μ] f j :=
   Kernel.iIndepFun.indepFun hf_Indep hij
 
 end FromIndepToIndep
@@ -563,7 +577,7 @@ variable {β β' γ γ' : Type*} {_mΩ : MeasurableSpace Ω} {μ : Measure Ω} {
 
 theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
     {mβ' : MeasurableSpace β'} :
-    IndepFun f g μ ↔
+    f ⟂ᵢ[μ] g ↔
       ∀ s t, MeasurableSet s → MeasurableSet t
         → μ (f ⁻¹' s ∩ g ⁻¹' t) = μ (f ⁻¹' s) * μ (g ⁻¹' t) := by
   simp only [IndepFun, Kernel.indepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
@@ -600,14 +614,14 @@ nonrec lemma iIndepFun.comp₀ {β γ : ι → Type*} {mβ : ∀ i, MeasurableSp
 
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
-    IndepFun f g μ ↔
+    f ⟂ᵢ[μ] g ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → IndepSet (f ⁻¹' s) (g ⁻¹' t) μ := by
   simp only [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg]
 
 theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) :
-    IndepFun f g μ ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
+    f ⟂ᵢ[μ] g ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
   rw [indepFun_iff_measure_inter_preimage_eq_mul]
   have h₀ {s : Set β} {t : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       μ (f ⁻¹' s) * μ (g ⁻¹' t) = μ.map f s * μ.map g t ∧
@@ -622,7 +636,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' 
 
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    IndepFun f g μ ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
+    f ⟂ᵢ[μ] g ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
   apply indepFun_iff_map_prod_eq_prod_map_map' hf hg <;> apply IsFiniteMeasure.toSigmaFinite
 
 theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
@@ -655,11 +669,11 @@ theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
 
 @[symm]
 nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
-    (hfg : IndepFun f g μ) : IndepFun g f μ := hfg.symm
+    (hfg : f ⟂ᵢ[μ] g) : g ⟂ᵢ[μ] f := hfg.symm
 
 theorem IndepFun.congr {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
-    {f' : Ω → β} {g' : Ω → β'} (hfg : IndepFun f g μ)
-    (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFun f' g' μ := by
+    {f' : Ω → β} {g' : Ω → β'} (hfg : f ⟂ᵢ[μ] g) (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') :
+    f' ⟂ᵢ[μ] g' := by
   refine Kernel.IndepFun.congr' hfg ?_ ?_ <;> simpa
 
 @[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr
@@ -673,7 +687,7 @@ variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'
 /-- Given random variables `X : Ω → 𝓧` and `Y : Ω' → 𝓨`, they are independent when viewed as random
 variables defined on the product space `Ω × Ω'`. -/
 lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
-    IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
+    (fun ω ↦ X ω.1) ⟂ᵢ[μ.prod ν] (fun ω ↦ Y ω.2) := by
   refine indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop) |>.2 ?_
   convert Measure.map_prod_map μ ν mX mY |>.symm
   · rw [← Function.comp_def, ← Measure.map_map mX measurable_fst, Measure.map_fst_prod,
@@ -684,8 +698,8 @@ lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
 /-- Given random variables `X : Ω → 𝓧` and `Y : Ω' → 𝓨`, they are independent when viewed as random
 variables defined on the product space `Ω × Ω'`. -/
 lemma indepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
-    IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
-  have : IndepFun (fun ω ↦ mX.mk X ω.1) (fun ω ↦ mY.mk Y ω.2) (μ.prod ν) :=
+    (fun ω ↦ X ω.1) ⟂ᵢ[μ.prod ν] (fun ω ↦ Y ω.2) := by
+  have : (fun ω ↦ mX.mk X ω.1) ⟂ᵢ[μ.prod ν] (fun ω ↦ mY.mk Y ω.2) :=
     indepFun_prod mX.measurable_mk mY.measurable_mk
   refine this.congr ?_ ?_
   · rw [← Function.comp_def, ← Function.comp_def]
@@ -722,34 +736,34 @@ end Prod
 
 theorem IndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
     {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
-    (hfg : IndepFun f g μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
-    IndepFun (φ ∘ f) (ψ ∘ g) μ :=
+    (hfg : f ⟂ᵢ[μ] g) (hφ : Measurable φ) (hψ : Measurable ψ) :
+    (φ ∘ f) ⟂ᵢ[μ] ψ ∘ g :=
   Kernel.IndepFun.comp hfg hφ hψ
 
 theorem IndepFun.comp₀ {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
     {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
-    (hfg : IndepFun f g μ) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (hfg : f ⟂ᵢ[μ] g) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (hφ : AEMeasurable φ (μ.map f)) (hψ : AEMeasurable ψ (μ.map g)) :
-    IndepFun (φ ∘ f) (ψ ∘ g) μ :=
+    (φ ∘ f) ⟂ᵢ[μ] (ψ ∘ g) :=
   Kernel.IndepFun.comp₀ hfg (by simp [hf]) (by simp [hg]) (by simp [hφ]) (by simp [hψ])
 
 lemma indepFun_const_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrProbabilityMeasure μ] (c : β) (X : Ω → β') :
-    IndepFun (fun _ ↦ c) X μ :=
+    (fun _ ↦ c) ⟂ᵢ[μ] X :=
   Kernel.indepFun_const_left c X
 
 lemma indepFun_const_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrProbabilityMeasure μ] (X : Ω → β) (c : β') :
-    IndepFun X (fun _ ↦ c) μ :=
+    X ⟂ᵢ[μ] (fun _ ↦ c) :=
   Kernel.indepFun_const_right X c
 
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
-    [MeasurableNeg β'] (hfg : IndepFun f g μ) :
-    IndepFun f (-g) μ := hfg.comp measurable_id measurable_neg
+    [MeasurableNeg β'] (hfg : f ⟂ᵢ[μ] g) :
+    f ⟂ᵢ[μ] (-g) := hfg.comp measurable_id measurable_neg
 
 theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
-    [MeasurableNeg β] (hfg : IndepFun f g μ) :
-    IndepFun (-f) g μ := hfg.comp measurable_neg measurable_id
+    [MeasurableNeg β] (hfg : f ⟂ᵢ[μ] g) :
+    (-f) ⟂ᵢ[μ] g := hfg.comp measurable_neg measurable_id
 
 section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
@@ -1042,7 +1056,7 @@ variable {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
 @[to_additive]
 theorem IndepFun.map_mul_eq_map_mconv_map₀'
     {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
-    (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) (hfg : IndepFun f g μ) :
+    (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) (hfg : f ⟂ᵢ[μ] g) :
     μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) := by
   conv in f * g => change (fun x ↦ x.1 * x.2) ∘ (fun ω ↦ (f ω, g ω))
   rw [← measurable_mul.aemeasurable.map_map_of_aemeasurable (hf.prodMk hg),
@@ -1051,14 +1065,14 @@ theorem IndepFun.map_mul_eq_map_mconv_map₀'
 @[to_additive]
 theorem IndepFun.map_mul_eq_map_mconv_map'
     {f g : Ω → M} (hf : Measurable f) (hg : Measurable g)
-    (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) (hfg : IndepFun f g μ) :
+    (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) (hfg : f ⟂ᵢ[μ] g) :
     μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) :=
   hfg.map_mul_eq_map_mconv_map₀' hf.aemeasurable hg.aemeasurable σf σg
 
 @[to_additive]
 theorem IndepFun.map_mul_eq_map_mconv_map₀
     [IsFiniteMeasure μ] {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
-    (hfg : IndepFun f g μ) :
+    (hfg : f ⟂ᵢ[μ] g) :
     μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) := by
   apply hfg.map_mul_eq_map_mconv_map₀' hf hg
     <;> apply IsFiniteMeasure.toSigmaFinite
@@ -1066,7 +1080,7 @@ theorem IndepFun.map_mul_eq_map_mconv_map₀
 @[to_additive]
 theorem IndepFun.map_mul_eq_map_mconv_map
     [IsFiniteMeasure μ] {f g : Ω → M} (hf : Measurable f) (hg : Measurable g)
-    (hfg : IndepFun f g μ) :
+    (hfg : f ⟂ᵢ[μ] g) :
     μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) :=
   hfg.map_mul_eq_map_mconv_map₀ hf.aemeasurable hg.aemeasurable
 

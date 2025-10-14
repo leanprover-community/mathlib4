@@ -28,7 +28,7 @@ variable {Ω E F : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
 the space is a probability space. -/
 lemma MemLp.isProbabilityMeasure_of_indepFun
     (f : Ω → E) (g : Ω → F) {p : ℝ≥0∞} (hp : p ≠ 0) (hp' : p ≠ ∞)
-    (hℒp : MemLp f p μ) (h'f : ¬ (∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
+    (hℒp : MemLp f p μ) (h'f : ¬ (∀ᵐ ω ∂μ, f ω = 0)) (hindep : f ⟂ᵢ[μ] g) :
     IsProbabilityMeasure μ := by
   obtain ⟨c, c_pos, hc⟩ : ∃ (c : ℝ≥0), 0 < c ∧ 0 < μ {ω | c ≤ ‖f ω‖₊} := by
     contrapose! h'f
@@ -47,7 +47,7 @@ lemma MemLp.isProbabilityMeasure_of_indepFun
 /-- If a nonzero function is integrable and is independent of another function, then
 the space is a probability space. -/
 lemma Integrable.isProbabilityMeasure_of_indepFun (f : Ω → E) (g : Ω → F)
-    (hf : Integrable f μ) (h'f : ¬ (∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
+    (hf : Integrable f μ) (h'f : ¬ (∀ᵐ ω ∂μ, f ω = 0)) (hindep : f ⟂ᵢ[μ] g) :
     IsProbabilityMeasure μ :=
   MemLp.isProbabilityMeasure_of_indepFun f g one_ne_zero ENNReal.one_ne_top
     (memLp_one_iff_integrable.mpr hf) h'f hindep
