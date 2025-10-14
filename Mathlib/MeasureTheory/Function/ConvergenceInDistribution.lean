@@ -11,8 +11,6 @@ import Mathlib.MeasureTheory.Measure.Portmanteau
 We introduce a definition of convergence in distribution of random variables: this is the
 weak convergence of the laws of the random variables. In Mathlib terms this is a `Tendsto` in the
 `ProbabilityMeasure` type.
-We also state results relating convergence in probability (`TendstoInMeasure`)
-and convergence in distribution.
 
 ## Main definitions
 
