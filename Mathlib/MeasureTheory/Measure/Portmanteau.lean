@@ -548,7 +548,7 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat' {μ : ProbabilityMeasure Ω}
   exact integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure f_nn h_opens
 
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf condition
-`μ(G) ≤ liminf μsₙ(G)`, then the measures μsₙ converge weakly to the measure μ.
+`μ(G) ≤ liminf μsₙ(G)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Superseded by `tendsto_of_forall_isOpen_le_liminf` which works for all countably
 generated filters. -/
 theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
