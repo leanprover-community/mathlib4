@@ -3,8 +3,7 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.NumberTheory.NumberField.Completion
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
 import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
@@ -162,6 +161,8 @@ theorem finrank_eq_one_of_isUnramified (w : InfinitePlace L) [w.LiesOver v] (h :
 
 end Completion
 
+open Completion
+
 open scoped Classical in
 theorem card_isUnramified_add_two_mul_card_isRamified [NumberField K] [NumberField L] :
     #(unramifiedPlacesOver L v) + 2 * #(ramifiedPlacesOver L v) = Module.finrank K L := by
@@ -179,10 +180,12 @@ open scoped Classical in
 protected def inertiaDeg (w : InfinitePlace L) : ℕ :=
   if _ : w.LiesOver v then (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) else 0
 
+-- takes a while to find FaithfulSMul now
+set_option synthInstance.maxHeartbeats 0 in
 variable {L} in
 theorem inertiaDeg_eq_finrank (v : InfinitePlace K)
     (w : InfinitePlace L) [i : w.LiesOver v] :
-    v.inertiaDeg w = Module.finrank v.Completion w.1.Completion := by
+    v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
   simp only [InfinitePlace.inertiaDeg, Ideal.inertiaDeg, i, dif_pos]
   simp [Ideal.comap_bot_of_injective _ <| FaithfulSMul.algebraMap_injective _ _]
   apply Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)

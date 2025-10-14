@@ -279,14 +279,13 @@ lemma _root_.NumberField.ComplexEmbedding.IsMixed.mk_isRamified {φ : K →+* �
 
 lemma IsUnramified.isUnmixed {w : InfinitePlace K} (h : w.IsUnramified k) :
     IsUnmixed k w.embedding := by
-  simp only [IsUnmixed, IsMixed, not_and, not_not]
+  simp only [IsUnmixed]
   intro hw
   rw [← isReal_mk_iff, ← NumberField.InfinitePlace.comap_mk, mk_embedding] at hw
   exact isReal_iff.1 <| (isUnramified_iff.1 h).resolve_right (not_isComplex_iff_isReal.2 hw)
 
 lemma IsUnramified.isUnmixed_conjugate {w : InfinitePlace K} (h : w.IsUnramified k) :
     IsUnmixed k (conjugate w.embedding) := by
-  simp [IsUnmixed, IsMixed, -IsSelfAdjoint.star_iff]
   intro hw
   rw [← isReal_mk_iff, ← NumberField.InfinitePlace.comap_mk, mk_conjugate_eq,
     mk_embedding] at hw
@@ -299,7 +298,7 @@ lemma _root_.NumberField.ComplexEmbedding.IsUnmixed.mk_isUnramified {φ : K →+
   rw [isUnramified_iff, isReal_iff]
   simp [IsUnmixed] at h
   by_cases hv : ComplexEmbedding.IsReal (φ.comp (algebraMap k K))
-  · simp_all [embedding_mk_eq_of_isReal, comap_mk, true_or, IsMixed]
+  · simp_all [embedding_mk_eq_of_isReal, comap_mk, true_or]
   · exact .inr <| by simpa using (isReal_mk_iff.not.2 hv)
 
 variable (k)
@@ -704,7 +703,7 @@ theorem unramifiedPlacesOver.mk_mem_unramifiedPlacesOver
     [NumberField L] {φ : L →+* ℂ} {v : InfinitePlace K}
     (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ unramifiedPlacesOver L v := by
-  simp_all [mem_unramifiedPlacesOver, mem_unmixedEmbeddingsOver]
+  simp_all only [mem_unramifiedPlacesOver, mem_unmixedEmbeddingsOver]
   use ⟨mk_embedding v ▸ comap_mk φ (algebraMap K L) ▸ congrArg InfinitePlace.mk h.1⟩
   exact h.2.mk_isUnramified
 

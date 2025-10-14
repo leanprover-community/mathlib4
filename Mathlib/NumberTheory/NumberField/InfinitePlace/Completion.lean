@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Field.WithAbs
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!
 # The completion of a number field at an infinite place
@@ -178,7 +179,8 @@ def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
 theorem ringEquivComplexOfIsComplex_apply {v : InfinitePlace K} (hv : IsComplex v)
     (x : v.Completion) : ringEquivComplexOfIsComplex hv x = extensionEmbedding v x :=
   RingEquiv.ofBijective_apply _ _ _
-  /-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is surjective. -/
+
+/-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is surjective. -/
 theorem surjective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Surjective (extensionEmbeddingOfIsReal hv) := by
   rw [← RingHom.fieldRange_eq_top_iff, ← Real.subfield_eq_of_closed]
@@ -209,8 +211,6 @@ theorem ringEquivRealOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v) (x : v
 def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbeddingOfIsReal hv
-
-end Completion
 
 end Completion
 
