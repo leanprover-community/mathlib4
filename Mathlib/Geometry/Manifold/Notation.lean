@@ -100,7 +100,7 @@ private def findSomeLocalInstanceOf? (c : Name) {α} (p : Expr → Expr → Meta
     MetaM (Option α) := do
   (← getLocalInstances).findSomeM? fun inst ↦ do
     if inst.className == c then
-      let type ← whnfR <|← instantiateMVars <|← inferType inst.fvar
+      let type ← whnfR <| ← instantiateMVars <| ← inferType inst.fvar
       p inst.fvar type
     else return none
 
@@ -110,7 +110,7 @@ to `p`. -/
 private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : MetaM (Option α) := do
   (← getLCtx).findDeclRevM? fun decl ↦ do
     if decl.isImplementationDetail then return none
-    let type ← whnfR <|← instantiateMVars decl.type
+    let type ← whnfR <| ← instantiateMVars decl.type
     p decl.toExpr type
 
 end Elab
@@ -132,7 +132,7 @@ run.
 -- TODO: factor out `MetaM` component for reuse
 scoped elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
-  let etype ← whnf <|← instantiateMVars <|← inferType e
+  let etype ← whnf <| ← instantiateMVars <| ← inferType e
   match etype with
   | .forallE x base tgt _ => withLocalDeclD x base fun x ↦ do
     let tgtHasLooseBVars := tgt.hasLooseBVars
@@ -317,7 +317,7 @@ We pass `e` instead of just its type for better diagnostics.
 
 If `es` is `some`, we verify that `src` and the type of `es` are definitionally equal. -/
 def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
-  let etype ← whnf <|← instantiateMVars <|← inferType e
+  let etype ← whnf <| ← instantiateMVars <| ← inferType e
   match etype with
   | .forallE _ src tgt _ =>
     if tgt.hasLooseBVars then
@@ -330,7 +330,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
       `estype` are acceptable.
       TODO: consider attempting to coerce `es` to a `Set`. -/
-      if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
+      if !(← isDefEq estype <| ← mkAppM ``Set #[src]) then
         throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
           the set {es} : {estype}"
     let tgtI ← findModel tgt (src, srcI)
@@ -346,7 +346,7 @@ trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
-  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let ef ← ensureIsFunction <| ← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
 
@@ -354,7 +354,7 @@ scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
 trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
-  let e ← ensureIsFunction <|← Term.elabTerm t none
+  let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
 
@@ -364,7 +364,7 @@ scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
 -- The argument `x` can be omitted. -/
 -- scoped elab:max "MDiffAt2" ppSpace t:term:arg : term => do
 --   let e ← Term.elabTerm t none
---   let etype ← whnfR <|← instantiateMVars <|← inferType e
+--   let etype ← whnfR <| ← instantiateMVars <| ← inferType e
 --   forallBoundedTelescope etype (some 1) fun src tgt ↦ do
 --     if let some src := src[0]? then
 --       let srcI ← findModel (← inferType src)
@@ -381,14 +381,14 @@ scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
-  let et ← ensureIsFunction <|← Term.elabTerm t none
+  let et ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels et es
   mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
 
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "MDiff" ppSpace t:term:arg : term => do
-  let e ← ensureIsFunction <|← Term.elabTerm t none
+  let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``MDifferentiable #[srcI, tgtI, e]
 
@@ -404,7 +404,7 @@ The argument `x` can be omitted. -/
 scoped elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
-  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let ef ← ensureIsFunction <| ← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
 
@@ -413,7 +413,7 @@ trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
 The argument `x` can be omitted. -/
 scoped elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
-  let e ← ensureIsFunction <|← Term.elabTerm t none
+  let e ← ensureIsFunction <| ← Term.elabTerm t none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
@@ -424,7 +424,7 @@ trying to determine `I` and `J` from the local context.
 scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
-  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let ef ← ensureIsFunction <| ← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
   mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
 
@@ -433,7 +433,7 @@ trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
 scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
-  let e ← ensureIsFunction <|← Term.elabTerm f none
+  let e ← ensureIsFunction <| ← Term.elabTerm f none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
 
@@ -441,14 +441,14 @@ scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "mfderiv[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
-  let e ← ensureIsFunction <|← Term.elabTerm t none
+  let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e es
   mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
 
 /-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
-  let e ← ensureIsFunction <|← Term.elabTerm t none
+  let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``mfderiv #[srcI, tgtI, e]
 
