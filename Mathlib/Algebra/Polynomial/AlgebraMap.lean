@@ -17,6 +17,15 @@ import Mathlib.Algebra.Polynomial.Monomial
 
 We show that `A[X]` is an R-algebra when `A` is an R-algebra.
 We promote `eval₂` to an algebra hom in `aeval`.
+
+## Main definitions
+
+- `Polynomial.aeval`: given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
+the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
+
+- `Polynomial.baseChange` : given `φ : S →ₐ[R] S'`, `baseChange φ` aplies `φ` on the
+  coefficients of a polynomial in `S[X]`.
+
 -/
 
 assert_not_exists Ideal
@@ -532,6 +541,19 @@ theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
 
 end aevalTower
 
+open LinearMap TensorProduct in
+lemma X_pow_mul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
+    [AddCommMonoid N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
+      X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
+        (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
+    induction sn using TensorProduct.induction_on with
+    | zero => simp
+    | add x y hx hy => simp [hx, hy]
+    | tmul s n =>
+      simp only [rTensor_tmul, coe_restrictScalars, monomial_zero_left]
+      rw [smul_tmul', smul_eq_mul, mul_comm, C_mul_X_pow_eq_monomial]
+
+
 end CommSemiring
 
 section CommRing
@@ -727,5 +749,35 @@ lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
   mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
 
 end CommSemiring
+
+section BaseChange
+
+variable [CommSemiring R] [CommSemiring S] [Algebra R S] {S' : Type*} [CommSemiring S']
+  [Algebra R S']
+
+/-- `baseChange φ` aplies `φ` on the coefficients of a polynomial in `S[X]`. -/
+noncomputable def baseChange (φ : S →ₐ[R] S') : S[X] →ₐ[R] S'[X] where
+  toRingHom := eval₂RingHom (C.comp φ) X
+  commutes' := fun r ↦ by simp
+
+@[simp]
+lemma coeff_baseChange_apply (φ : S →ₐ[R] S') (f : S[X]) (p : ℕ) :
+    coeff (baseChange φ f) p = φ (coeff f p) := by
+  rw [baseChange, AlgHom.coe_mk, coe_eval₂RingHom]
+  induction f using Polynomial.induction_on with
+  | C r => simp [coeff_C, apply_ite φ]
+  | add f g hf hg => simp [hf, hg]
+  | monomial n r _ => simp [apply_ite φ]
+
+lemma lcoeff_comp_baseChange_eq (φ : S →ₐ[R] S') (p : ℕ) :
+    LinearMap.comp (AlgHom.toLinearMap φ) ((lcoeff S p).restrictScalars R) =
+      LinearMap.comp ((lcoeff S' p).restrictScalars R) (baseChange φ).toLinearMap := by
+  ext f; simp
+
+lemma baseChange_monomial (φ : S →ₐ[R] S') (n : ℕ) (a : S) :
+    (baseChange φ) ((Polynomial.monomial n) a) = (Polynomial.monomial n) (φ a) := by
+  simp [baseChange, C_mul_X_pow_eq_monomial]
+
+end BaseChange
 
 end Polynomial
