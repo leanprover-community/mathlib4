@@ -28,8 +28,6 @@ your own code.
 
 -/
 
-assert_not_exists Ring
-
 open Function
 
 section
@@ -230,6 +228,8 @@ lemma noZeroDivisors_iff_forall_mem_nonZeroDivisors :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ M₀⁰ :=
   noZeroDivisors_iff_eq_zero_of_mul
 
+@[deprecated "`NoZeroSMulDivisors` is deprecated in favor of `Module.IsTorsionFree`"
+  (since := "2025-10-16")]
 lemma noZeroSMulDivisors_iff_forall_mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulAction M₀ M] :
     NoZeroSMulDivisors M₀ M ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroSMulDivisors M₀ M :=
   noZeroSMulDivisors_iff_right_eq_zero_of_smul
