@@ -56,12 +56,6 @@ theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
     (h.homeomorph f).symm.isClosedEmbedding
   le_antisymm fwd bwd
 
-
-
-
-
-
-
 /-!
 ### Main dimension theorems -/
 
