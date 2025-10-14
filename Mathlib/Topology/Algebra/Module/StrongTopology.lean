@@ -642,7 +642,7 @@ end ContinuousLinearEquiv
 
 section CompactSets
 
-/-! ### Topology of bounded convergence  -/
+/-! ### Topology of compact convergence  -/
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*}
 
@@ -654,12 +654,7 @@ variable {E F G : Type*}
   [AddCommGroup G] [Module 𝕜₃ G]
 
 variable (E F σ) in
-/-- Given `E` and `F` two topological vector spaces and `𝔖 : Set (Set E)`, then
-`UniformConvergenceCLM σ F 𝔖` is a type synonym of `E →SL[σ] F` equipped with the "topology of
-uniform convergence on the elements of `𝔖`".
-
-If the continuous linear image of any element of `𝔖` is bounded, this makes `E →SL[σ] F` a
-topological vector space. -/
+/-- The topology of compact convergence on `E →L[𝕜] F`. -/
 def CompactConvergenceCLM [TopologicalSpace E] [TopologicalSpace F] := E →SL[σ] F
 
 @[inherit_doc]
@@ -676,8 +671,6 @@ instance instContinuousSemilinearMapClass [TopologicalSpace E] [TopologicalSpace
     ContinuousSemilinearMapClass (CompactConvergenceCLM σ E F) σ E F :=
   ContinuousLinearMap.continuousSemilinearMapClass
 
-section Algebra
-
 instance instAddCommGroup [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F] :
     AddCommGroup (E →SL_c[σ] F) := ContinuousLinearMap.addCommGroup
 
@@ -686,11 +679,7 @@ instance instModule [TopologicalSpace E] [TopologicalSpace F]
     [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] :
     Module R (E →SL_c[σ] F) := ContinuousLinearMap.module
 
-end Algebra
-
-
-/-- The topology of bounded convergence on `E →L[𝕜] F`. This coincides with the topology induced by
-the operator norm when `E` and `F` are normed spaces. -/
+/-- The topology of compact convergence on `E →L[𝕜] F`. -/
 instance topologicalSpace [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F] :
     TopologicalSpace (CompactConvergenceCLM σ E F) :=
   UniformConvergenceCLM.instTopologicalSpace σ F { S | IsCompact S }
@@ -713,13 +702,6 @@ instance uniformSpace [TopologicalSpace E] [UniformSpace F] [IsUniformAddGroup F
 instance isUniformAddGroup [TopologicalSpace E] [UniformSpace F] [IsUniformAddGroup F] :
     IsUniformAddGroup (E →SL_c[σ] F) :=
   UniformConvergenceCLM.instIsUniformAddGroup σ F _
-
-lemma isCompact_covers {X : Type*} [TopologicalSpace X] :
-    ⋃₀ {(s : Set X) | IsCompact s} = univ := by
-  apply Set.eq_univ_of_forall
-  intro x
-  use {x}
-  simp
 
 instance instContinuousEvalConst [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [ContinuousSMul 𝕜₁ E] : ContinuousEvalConst (E →SL_c[σ] F) E F :=
