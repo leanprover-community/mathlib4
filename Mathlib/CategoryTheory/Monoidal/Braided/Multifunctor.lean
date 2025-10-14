@@ -161,7 +161,7 @@ same on the object level on three objects `X₁ X₂ X₃`).
 associator /          \ secondMap₁             /           \
           v            v                      v             v
      functor₁₂₃    functor₁₃₂'          (X₁ ⊗ X₂) ⊗ X₃    X₁ ⊗ (X₃ ⊗ X₂)
-firstMap₂ |            |secondMap₂           |             |
+firstMap₂ |            |secondMap₂            |             |
           v            v                      v             v
      functor₃₁₂'    functor₁₃₂          X₃ ⊗ (X₁ ⊗ X₂)    (X₁ ⊗ X₃) ⊗ X₂
   firstMap₃\           / secondMap₃            \            /
