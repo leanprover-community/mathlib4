@@ -68,11 +68,13 @@ end SMulInjective
 
 section Nat
 
+@[simp]
 theorem self_eq_neg
     (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     {v : M} : v = -v ↔ v = 0 := by
   rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
 
+@[simp]
 theorem neg_eq_self
     (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     {v : M} : -v = v ↔ v = 0 := by
