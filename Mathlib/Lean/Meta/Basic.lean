@@ -99,7 +99,6 @@ def Lean.Meta.withEnsuringLocalInstance {α : Type} (inst : MVarId) (k : MetaM (
 at the current transparency). If not, coerces `e` to this type
 or fails with a descriptive error. -/
 def Lean.Meta.ensureHasType (e expectedType : Expr) : MetaM Expr := do
-  let ty ← whnf <| ← instantiateMVars <| ← inferType e
   let ty ← inferType e
   if ← withNewMCtxDepth (isDefEq ty expectedType) then return e else
     (← coerceSimple? e expectedType).toOption.getDM <|
