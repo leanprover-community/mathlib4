@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
 
+import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
-import Mathlib.MeasureTheory.Integral.CircleAverage
+import Mathlib.Analysis.Complex.JensenFormula
+import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 # Mahler measure of complex polynomials
@@ -140,5 +142,151 @@ theorem prod_mahlerMeasure_eq_mahlerMeasure_prod (s : Multiset ℂ[X]) :
 theorem logMahlerMeasure_mul_eq_add_logMahelerMeasure {p q : ℂ[X]} (hpq : p * q ≠ 0) :
     (p * q).logMahlerMeasure = p.logMahlerMeasure + q.logMahlerMeasure := by
   simp_all [logMahlerMeasure_eq_log_MahlerMeasure, mahlerMeasure_mul, log_mul]
+
+
+theorem logMahlerMeasure_C_mul {a : ℂ} (ha : a ≠ 0) {p : ℂ[X]} (hp : p ≠ 0) :
+    (C a * p).logMahlerMeasure = log ‖a‖ + p.logMahlerMeasure := by
+  rw [logMahlerMeasure_mul_eq_add_logMahelerMeasure (by simp [ha, hp]), logMahlerMeasure_const]
+
+open MeromorphicOn Metric in
+/-- The logarithmic Mahler measure of `X - C z` is `log⁺` of the absolute value of `z`. -/
+@[simp]
+theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺ ‖z‖ := by
+  by_cases hz₀ : z = 0
+  · simp [hz₀, posLog_def]
+  have hmeroOn (U : Set ℂ) : MeromorphicOn (fun x ↦ x - z) U :=
+    (MeromorphicOn.id).sub <| const z
+  have hmeroAt (u : ℂ) : MeromorphicAt (fun x ↦ x - z) u := hmeroOn (Eq u) u rfl
+  have hmeroBall : MeromorphicOn (fun x ↦ x - z) (closedBall 0 |1|) :=
+    hmeroOn (closedBall 0 |1|)
+  have : MeromorphicOn (fun x ↦ (X - C z).eval x) (closedBall 0 |1|) :=
+    (analyticOnNhd_id.aeval_polynomial (X - C z)).meromorphicOn
+  rw [logMahlerMeasure_def, circleAverage_log_norm zero_ne_one.symm this]
+  --get rid of the `meromorphicTrailingCoeffAt`
+  have : meromorphicTrailingCoeffAt (fun x ↦ (X - C z).eval x) 0 = -z := by
+    rw [(AnalyticAt.aeval_polynomial analyticAt_id (X - C z)).meromorphicTrailingCoeffAt_of_ne_zero
+      (by simp [hz₀])]
+    simp
+  rw [this]
+  simp only [eval_sub, eval_X, eval_C, zero_sub, norm_neg, one_mul, log_inv, mul_neg, log_one,
+    mul_zero, add_zero]
+  -- divisor computations
+  let B := closedBall (0 : ℂ) |1|
+  have hdiv0 {u : ℂ} (hu : u ≠ z) : divisor (fun x ↦ x - z) B u = 0 := by
+    by_cases hu' : u ∈ B
+    · rw [divisor_apply (hmeroOn B) hu', ← WithTop.untop₀_coe 0]
+      congr
+      rw [meromorphicOrderAt_eq_int_iff (hmeroAt u)]
+      use fun x ↦ x - z
+      simp only [zpow_zero, smul_eq_mul, one_mul, Filter.eventually_true, and_true]
+      exact ⟨analyticAt_id.fun_sub analyticAt_const, sub_ne_zero_of_ne hu⟩
+    · simp_all
+  have hzdiv1 (h : z ∈ B) : (divisor (fun x ↦ x - z) B) z = 1 := by
+      simp_all only [eval_sub, eval_X, eval_C, divisor_apply]
+      rw [← WithTop.untop₀_coe 1]
+      congr
+      rw [meromorphicOrderAt_eq_int_iff (hmeroAt z)]
+      simp only [ne_eq, zpow_one, smul_eq_mul]
+      use fun x ↦ 1
+      simpa using analyticAt_const
+  rw [← finsum_mem_support]
+  --separate cases depending on whether z in in the open ball 0 |1| or not
+  by_cases hzBall : z ∈ ball 0 |1|;
+  · have : ‖z‖ < 1 := by rwa [mem_ball, dist_zero_right, abs_one] at hzBall
+    have : ‖z‖ ≤ 1 := le_of_lt this
+    have hzcb : z ∈ B := Set.mem_of_mem_of_subset hzBall ball_subset_closedBall
+
+    have : (fun u ↦ -((divisor (fun x ↦ x - z) (closedBall 0 |1|) u) * log ‖u‖)).support = {z} := by
+      rw [Function.support_eq_iff]
+      constructor
+      · simp only [ne_eq, neg_eq_zero, mul_eq_zero, Int.cast_eq_zero, log_eq_zero, norm_eq_zero]
+        grind [norm_nonneg, ne_of_lt]
+      · intro _ hu
+        rw [Set.mem_singleton_iff] at hu
+        rw [hdiv0 hu]
+        simp
+    simp only [this, Set.mem_singleton_iff, finsum_cond_eq_left]
+    rw [hzdiv1 hzcb]
+    grind [log_nonpos , norm_nonneg, posLog_def]
+  · have h1lez : 1 ≤ ‖z‖ := by grind [mem_ball, dist_zero_right, abs_one]
+    have : (fun u ↦ -((divisor (fun x ↦ x - z) (closedBall 0 |1|) u) * log ‖u‖)).support = ∅ := by
+      rw [Function.support_eq_empty_iff]
+      ext x
+      simp only [Pi.zero_apply, neg_eq_zero, mul_eq_zero, Int.cast_eq_zero, log_eq_zero,
+        norm_eq_zero]
+      rw [or_iff_not_imp_right]
+      simp only [not_or, and_imp]
+      intro _ h _
+      by_cases hx : x = z
+      · rw [hx] at h ⊢
+        apply Function.locallyFinsuppWithin.apply_eq_zero_of_notMem
+          (divisor (fun x ↦ x - z) (closedBall 0 |1|))
+        grind [abs_one, mem_closedBall, dist_zero_right]
+      · exact hdiv0 hx
+    simp [this, posLog_eq_log_max_one <| norm_nonneg z, h1lez]
+
+@[simp]
+theorem logMahlerMeasure_X_add_C (z : ℂ) : (X + C z).logMahlerMeasure = log⁺ ‖z‖ := by
+  simp [← sub_neg_eq_add, ← map_neg]
+
+theorem logMahlerMeasure_C_mul_X_add_C {a : ℂ} (b : ℂ) (ha : a ≠ 0) :
+    (C a * X + C b).logMahlerMeasure = log ‖a‖ + log⁺ ‖a⁻¹ * b‖ := by
+  rw [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
+    logMahlerMeasure_C_mul ha (X_add_C_ne_zero (a⁻¹ * b)), logMahlerMeasure_X_add_C]
+
+theorem logMahlerMeasure_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.logMahlerMeasure =
+    log ‖p.coeff 1‖ + log⁺ ‖(p.coeff 1)⁻¹ * p.coeff 0‖ := by
+  rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
+  simp [logMahlerMeasure_C_mul_X_add_C _ (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
+
+/-- The Mahler measure of `X - C z` equals `max 1 ‖z‖`. -/
+@[simp]
+theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z‖ := by
+  have := logMahlerMeasure_X_sub_C z
+  rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
+  apply_fun exp at this
+  rwa [posLog_eq_log_max_one (norm_nonneg z),
+    exp_log (mahlerMeasure_pos_of_ne_zero <| X_sub_C_ne_zero z),
+    exp_log (lt_of_lt_of_le zero_lt_one <| le_max_left 1 ‖z‖)] at this
+
+@[simp]
+theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z‖ := by
+  simp [← sub_neg_eq_add, ← map_neg]
+
+theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (b : ℂ) (ha : a ≠ 0) :
+    (C a * X + C b).mahlerMeasure = ‖a‖ * max 1 ‖a⁻¹ * b‖ := by
+  simp [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
+    mahlerMeasure_mul, -map_mul]
+
+theorem mahlerMeasure_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.mahlerMeasure =
+    ‖p.coeff 1‖ * max 1 ‖(p.coeff 1)⁻¹ * p.coeff 0‖ := by
+  rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
+  simp [mahlerMeasure_C_mul_X_add_C _ (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
+
+/-- The logarithmic Mahler measure of `p` is the `log` of the absolute value of its leading
+  coefficient plus the sum of the `log`s of the absolute values of its roots lying outside the unit
+  disk. -/
+theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.logMahlerMeasure =
+    log ‖p.leadingCoeff‖ + ((p.roots).map (fun a ↦ log⁺ ‖a‖)).sum := by
+  by_cases hp : p = 0
+  · simp [hp]
+  have : ∀ x ∈ Multiset.map (fun x ↦ max 1 ‖x‖) p.roots, x ≠ 0 := by grind [Multiset.mem_map]
+  nth_rw 1 [eq_prod_roots_of_splits_id (IsAlgClosed.splits p)]
+  rw [logMahlerMeasure_mul_eq_add_logMahelerMeasure (by simp [hp, X_sub_C_ne_zero])]
+  simp [posLog_eq_log_max_one,logMahlerMeasure_eq_log_MahlerMeasure,
+    prod_mahlerMeasure_eq_mahlerMeasure_prod, log_prod_eq_sum_log this]
+
+/-- The Mahler measure of `p` is the the absolute value of its leading coefficient times the product
+  absolute values of its roots lying outside the unit disk. -/
+theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeasure =
+    ‖p.leadingCoeff‖ * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+  by_cases hp : p = 0;
+  · simp [hp]
+  have := logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots p
+  rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
+  apply_fun exp at this
+  rw [exp_add, exp_log <| mahlerMeasure_pos_of_ne_zero hp,
+    exp_log <|norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
+  simp [this, exp_multiset_sum, posLog_eq_log_max_one, exp_log]
 
 end Polynomial
