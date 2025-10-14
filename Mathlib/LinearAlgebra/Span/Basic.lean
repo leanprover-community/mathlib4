@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
@@ -232,8 +231,9 @@ theorem span_range_inclusion_restrictScalars_eq_top :
 
 end IsScalarTower
 
-theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] {x y : M} : ((R ∙ x) = R ∙ y) ↔ ∃ z : Rˣ, z • x = y := by
+theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M]
+    [Module R M] [Module.IsTorsionFree R M] {x y : M} :
+    (R ∙ x) = (R ∙ y) ↔ ∃ z : Rˣ, z • x = y := by
   constructor
   · simp only [le_antisymm_iff, span_singleton_le_iff_mem, mem_span_singleton]
     rintro ⟨⟨a, rfl⟩, b, hb⟩
@@ -760,6 +760,9 @@ theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x �
   simp_rw [submoduleOf, mem_comap, subtype_apply, mem_span_singleton]
   aesop
 
+@[simp] lemma ker_toSpanSingleton_eq_bot_iff {x : R} :
+    ker (toSpanSingleton R R x) = ⊥ ↔ x ∈ nonZeroDivisorsRight R := le_bot_iff.symm
+
 end
 
 section AddCommMonoid
@@ -801,19 +804,15 @@ theorem ext_on_range {ι : Sort*} {v : ι → M} {f g : F} (hv : span R (Set.ran
 
 end AddCommMonoid
 
-section NoZeroDivisors
+section IsDomain
 
-variable (R M)
-variable [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M]
+variable (R)
+variable [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M] [Module.IsTorsionFree R M]
 
 theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
   SetLike.ext fun _ => smul_eq_zero.trans <| or_iff_left_of_imp fun h' => (h h').elim
 
-@[simp] theorem ker_toSpanSingleton_eq_bot_iff {x : R} :
-    ker (toSpanSingleton R R x) = ⊥ ↔ x ∈ nonZeroDivisorsRight R :=
-  le_bot_iff.symm
-
-end NoZeroDivisors
+end IsDomain
 
 section Field
 
@@ -835,7 +834,8 @@ open LinearMap
 namespace LinearEquiv
 
 variable (R M)
-variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] (x : M) (h : x ≠ 0)
+variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M] (x : M)
+  (h : x ≠ 0)
 
 /-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural
 isomorphism from `R` to the span of `x` given by $r \mapsto r \cdot x$. -/
@@ -843,7 +843,7 @@ noncomputable
 def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
   LinearEquiv.trans
     (LinearEquiv.ofInjective (LinearMap.toSpanSingleton R M x)
-      (ker_eq_bot.1 <| ker_toSpanSingleton R M h))
+      (ker_eq_bot.1 <| ker_toSpanSingleton R h))
     (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (range_toSpanSingleton x))
 
 @[simp] theorem toSpanNonzeroSingleton_apply (t : R) :

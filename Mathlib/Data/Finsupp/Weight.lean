@@ -100,7 +100,7 @@ class NonTorsionWeight (w : σ → M) : Prop where
 
 variable (R) in
 /-- Without zero divisors, nonzero weight is a `NonTorsionWeight` -/
-theorem nonTorsionWeight_of [NoZeroSMulDivisors R M] (hw : ∀ i : σ, w i ≠ 0) :
+theorem nonTorsionWeight_of [IsDomain R] [Module.IsTorsionFree R M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight R w where
   eq_zero_of_smul_eq_zero {n s} h := by
     rw [smul_eq_zero, or_iff_not_imp_right] at h

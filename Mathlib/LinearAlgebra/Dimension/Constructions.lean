@@ -532,8 +532,8 @@ end Semiring
 
 section Ring
 
-variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
-variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
+variable {F E : Type*} [CommRing F] [IsDomain F] [Ring E] [Algebra F E]
+variable [StrongRankCondition F] [Module.IsTorsionFree F E] [Nontrivial E]
 
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=

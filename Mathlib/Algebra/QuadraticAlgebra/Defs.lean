@@ -415,9 +415,9 @@ theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 
 theorem algebraMap_injective : (algebraMap R (QuadraticAlgebra R a b) : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
 
-instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
-    NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
-  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
+instance [Semiring S] [Module S R] [Module.IsTorsionFree S R] :
+    Module.IsTorsionFree S (QuadraticAlgebra R a b) :=
+  (linearEquivTuple ..).injective.moduleIsTorsionFree _ (by simp)
 
 @[norm_cast, simp]
 theorem coe_pow (n : ℕ) (r : R) : ((r ^ n : R) : QuadraticAlgebra R a b) =
