@@ -72,8 +72,19 @@ section extendscalars'
 
 namespace ModuleCat
 
+instance (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    [Small.{v'} M] [Small.{v'} N] : Small.{v'} (TensorProduct R M N) := by
+  sorry
+
+noncomputable def extendScalars'.obj' [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+    (M : ModuleCat.{v} R) : ModuleCat.{v'} S :=
+  let _ := Module.compHom S f
+  ModuleCat.of S (Shrink.{v'} (TensorProduct R S M))
+
 noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S) :
   (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) := sorry
+
+--IsBaseChange.map
 
 /-
 
@@ -88,28 +99,29 @@ instance (f : R →+* S) : (ModuleCat.extendScalars'.{v'} f).IsLeftAdjoint :=
 
 -/
 
-instance [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S) :
-  (extendScalars'.{v, u, v', u'} f).Additive := sorry
+variable [UnivLE.{v, v'}] [Small.{v'} S]
 
-lemma extendScalars'_map_shortExact [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S) (flat : f.Flat)
+instance (f : R →+* S) : (extendScalars' f).Additive := sorry
+
+lemma extendScalars'_map_shortExact (f : R →+* S) (flat : f.Flat)
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.ShortExact) :
     (T.map (extendScalars' f)).ShortExact := by
 
   sorry
 
-lemma extendScalars'_preservesFiniteLimits [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+lemma extendScalars'_preservesFiniteLimits (f : R →+* S)
     (flat : f.Flat) : Limits.PreservesFiniteLimits (extendScalars' f) := by
   have := (((extendScalars' f).exact_tfae.out 0 3).mp (extendScalars'_map_shortExact f flat))
   exact this.1
 
-lemma extendScalars'_preservesFiniteColimits [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+lemma extendScalars'_preservesFiniteColimits (f : R →+* S)
     (flat : f.Flat) : Limits.PreservesFiniteColimits (extendScalars' f) := by
   have := (((extendScalars' f).exact_tfae.out 0 3).mp (extendScalars'_map_shortExact f flat))
   exact this.2
 
 section algebra
 
-variable [Algebra R S] [UnivLE.{v, v'}] [Small.{v'} S]
+variable [Algebra R S]
 
 instance [Module.Flat R S] : Limits.PreservesFiniteLimits (extendScalars' (algebraMap R S)) :=
   extendScalars'_preservesFiniteLimits (algebraMap R S) (RingHom.flat_algebraMap_iff.mpr ‹_›)
@@ -135,9 +147,10 @@ lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCom
     (comm1 : h₂.comp f = (f'.restrictScalars R).comp h₁)
     (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂)
     (isb1 : IsBaseChange S h₁) (isb2 : IsBaseChange S h₂) : IsBaseChange S h₃ := by
-  have eqmap : f'.restrictScalars R = IsTensorProduct.map isb1 isb2 LinearMap.id f := by
+  /-have eqmap : f'.restrictScalars R = IsTensorProduct.map isb1 isb2 LinearMap.id f := by
     --use `comm1`
-    sorry
+    sorry-/
+
   let N₃' := TensorProduct R S M₃
   let isb3' := TensorProduct.isBaseChange R M₃ S
   let g'' : N₂ →ₗ[S] N₃' := (g.baseChange S).comp isb2.equiv.symm.toLinearMap
@@ -164,7 +177,7 @@ lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCom
   rfl
 
 end basechange
-
+/-
 lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
   have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
     by_contra eq
@@ -908,4 +921,5 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
 
     sorry
   sorry
+-/
 -/
