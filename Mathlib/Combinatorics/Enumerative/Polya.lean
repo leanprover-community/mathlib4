@@ -6,8 +6,7 @@ Authors: Zihui Bai Zhengfeng Yang
 
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.GroupTheory.Index
+import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 ## Main definitions and results
