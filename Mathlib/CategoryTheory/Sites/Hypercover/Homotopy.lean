@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Sites.Hypercover.One
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
+import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # The category of `1`-hypercovers up to homotopy
