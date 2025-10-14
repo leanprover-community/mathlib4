@@ -582,7 +582,7 @@ theorem tendsto_of_forall_isOpen_le_liminf' {ι : Type*} {μ : ProbabilityMeasur
   exact (h_opens G hG).trans (liminf_le_liminf_of_le hu)
 
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
-condition `μ(G) ≤ liminf μsₙ(G)`, then the measures μsₙ converge weakly to the measure μ.
+condition `μ(G) ≤ liminf μsₙ(G)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Formulated here for countably generated filters. -/
 theorem tendsto_of_forall_isOpen_le_liminf {ι : Type*} {μ : ProbabilityMeasure Ω}
     {μs : ι → ProbabilityMeasure Ω} {L : Filter ι} [L.IsCountablyGenerated]
