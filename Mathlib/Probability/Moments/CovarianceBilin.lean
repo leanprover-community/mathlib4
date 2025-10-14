@@ -3,8 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.CovarianceBilinDual
 
 /-!
