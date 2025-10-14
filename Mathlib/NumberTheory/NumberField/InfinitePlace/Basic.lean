@@ -106,7 +106,7 @@ theorem conjugate_embedding_injective :
   star_injective.comp <| embedding_injective K
 
 variable (K) in
-theorem eq_of_embedding_eq_conjugate {v₁ v₂ : InfinitePlace K}
+theorem eq_of_embedding_eq_conjugate (v₁ v₂ : InfinitePlace K)
     (h : v₁.embedding = ComplexEmbedding.conjugate v₂.embedding) : v₁ = v₂ := by
   rw [← mk_embedding v₁, h, mk_conjugate_eq, mk_embedding]
 

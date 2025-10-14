@@ -278,26 +278,18 @@ theorem conjugate_comp (σ : K →+* L) :
 
 variable [Algebra K L]
 
-variable (L) in
-/--
-If `L/K` and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then we say `φ` is an extension of `ψ` if
-`φ` restricted to `K` is `ψ`.
--/
-abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
-
-theorem Extension.comp_eq (φ : Extension L ψ) :
-    φ.1.comp (algebraMap K L) = ψ := φ.2
+abbrev IsExtension (φ : L →+* ℂ) : Prop := φ.comp (algebraMap K L) = ψ
 
 variable {φ ψ}
 
-theorem Extension.not_isExtension_conjugate (φ : Extension L ψ)
+theorem IsExtension.not_isExtension_conjugate (h : IsExtension ψ φ)
     (hf : ¬ComplexEmbedding.IsReal ψ) :
-    (conjugate φ).comp (algebraMap K L) ≠ ψ := by
+    ¬ IsExtension ψ (conjugate φ) := by
   aesop
 
-theorem Extension.not_isReal_of_not_isReal (φ : Extension L ψ)
-    (hf : ¬ComplexEmbedding.IsReal ψ) : ¬ComplexEmbedding.IsReal φ.1 :=
-  mt (IsReal.comp _) (φ.2 ▸ hf)
+theorem IsExtension.not_isReal_of_not_isReal (h : IsExtension ψ φ)
+    (hf : ¬ComplexEmbedding.IsReal ψ) : ¬ComplexEmbedding.IsReal φ :=
+  mt (IsReal.comp _) (h ▸ hf)
 
 variable (φ ψ)
 
@@ -308,9 +300,26 @@ mixed if `ψ` is real while the image of `φ` is complex.
 
 This is the complex embedding analogue of `InfinitePlace.IsRamified`.
 -/
-abbrev IsMixed (φ : L →+* ℂ) :=
+def IsMixed (φ : L →+* ℂ) :=
   ComplexEmbedding.IsReal (φ.comp (algebraMap K L)) ∧ ¬ComplexEmbedding.IsReal φ
 
+variable (L) in
+open scoped Classical in
+noncomputable
+def mixedEmbeddingsOver (φ : K →+* ℂ) [Fintype (L →+* ℂ)] [Algebra K L] : Finset (L →+* ℂ) :=
+  { ψ | IsExtension φ ψ ∧ IsMixed K ψ }
+
+theorem mem_mixedEmbeddingsOver (φ : K →+* ℂ) [Fintype (L →+* ℂ)] (ψ : L →+* ℂ) :
+    ψ ∈ mixedEmbeddingsOver L φ ↔ IsExtension φ ψ ∧ IsMixed K ψ := by
+  simp [mixedEmbeddingsOver]
+
+theorem mixedEmbeddingsOver.isExtension (φ : K →+* ℂ) [Fintype (L →+* ℂ)] {ψ : L →+* ℂ}
+    (h : ψ ∈ mixedEmbeddingsOver L φ) : IsExtension φ ψ :=
+  ((mem_mixedEmbeddingsOver φ ψ).mp h).1
+
+theorem mixedEmbeddingsOver.isMixed (φ : K →+* ℂ) [Fintype (L →+* ℂ)] {ψ : L →+* ℂ}
+    (h : ψ ∈ mixedEmbeddingsOver L φ) : IsMixed K ψ :=
+  ((mem_mixedEmbeddingsOver φ ψ).mp h).2
 
 variable {ψ} (K) in
 /--
@@ -320,14 +329,45 @@ if and only if the image of `φ` is real.
 
 This is the complex embedding analogue of `InfinitePlace.UnramifiedExtension`.
 -/
-abbrev IsUnmixed (φ : L →+* ℂ) := ¬IsMixed K φ
+def IsUnmixed (φ : L →+* ℂ) := ¬IsMixed K φ
 
 variable {ψ φ} in
 theorem IsUnmixed.isReal_of_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ)
     (hf : ComplexEmbedding.IsReal (φ.comp (algebraMap K L))) :
     ComplexEmbedding.IsReal φ := by
-  simp only [not_and, not_not] at h
+  simp only [IsUnmixed, IsMixed, not_and, not_not] at h
   exact h hf
+
+variable (L) in
+open scoped Classical in
+noncomputable
+def unmixedEmbeddingsOver (φ : K →+* ℂ) [Fintype (L →+* ℂ)] [Algebra K L] : Finset (L →+* ℂ) :=
+  { ψ | IsExtension φ ψ ∧ IsUnmixed K ψ }
+
+theorem mem_unmixedEmbeddingsOver {φ : K →+* ℂ} [Fintype (L →+* ℂ)] {ψ : L →+* ℂ} :
+    ψ ∈ unmixedEmbeddingsOver L φ ↔ IsExtension φ ψ ∧ IsUnmixed K ψ := by
+  simp [unmixedEmbeddingsOver]
+
+theorem unmixedEmbeddingsOver.isExtension (φ : K →+* ℂ) [Fintype (L →+* ℂ)] {ψ : L →+* ℂ}
+    (h : ψ ∈ unmixedEmbeddingsOver L φ) : IsExtension φ ψ :=
+  (mem_unmixedEmbeddingsOver.mp h).1
+
+theorem unmixedEmbeddingsOver.isUnmixed (φ : K →+* ℂ) [Fintype (L →+* ℂ)] {ψ : L →+* ℂ}
+    (h : ψ ∈ unmixedEmbeddingsOver L φ) : IsUnmixed K ψ :=
+  (mem_unmixedEmbeddingsOver.mp h).2
+
+variable (L) in
+open scoped Classical in
+theorem unmixedEmbeddingsOver.disjoint_mixedEmbeddingsOver (φ : K →+* ℂ) [Fintype (L →+* ℂ)] :
+    Disjoint (unmixedEmbeddingsOver L φ) (mixedEmbeddingsOver L φ) := by
+  simpa [mixedEmbeddingsOver, unmixedEmbeddingsOver, Finset.disjoint_filter] using fun ψ _ h _ ↦ h
+
+open scoped Classical in
+theorem unmixedEmbeddingsOver.union_mixedEmbeddingsOver (φ : K →+* ℂ) [Fintype (L →+* ℂ)] :
+    (unmixedEmbeddingsOver L φ) ∪ (mixedEmbeddingsOver L φ) =
+      ({ ψ | IsExtension φ ψ} : Finset _) := by
+  rw [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Finset.filter_or]
+  exact Finset.filter_congr fun ψ _ ↦ by simp [IsUnmixed, and_or_left.symm, em']
 
 end Extension
 
