@@ -6,7 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
@@ -220,8 +219,8 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
 
 end CommSemiring
 
-lemma NoZeroSMulDivisors.isReduced (R M : Type*)
-    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
+lemma Module.IsTorsionFree.isReduced (R M : Type*)
+    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [Module.IsTorsionFree R M] :
     IsReduced R := by
   refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
   induction k with

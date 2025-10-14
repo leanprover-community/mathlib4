@@ -296,7 +296,7 @@ instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M
   equiv <| MulOpposite.opLinearEquiv _
 
 -- see Note [lower instance priority]
-instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
+instance (priority := 100) [IsDomain R] : Module.IsTorsionFree R M := by
   refine (noZeroSMulDivisors_iff R M).mpr ?_
   intro r m hrm
   rw [or_iff_not_imp_left]

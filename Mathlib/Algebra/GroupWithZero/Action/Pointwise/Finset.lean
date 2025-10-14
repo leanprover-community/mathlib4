@@ -50,13 +50,13 @@ scoped[Pointwise] attribute [instance] Finset.smulZeroClass Finset.distribSMul
 instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
   Function.Injective.noZeroDivisors toSet coe_injective coe_zero coe_mul
 
-instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
-    NoZeroSMulDivisors (Finset α) (Finset β) where
+instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [Module.IsTorsionFree α β] :
+    Module.IsTorsionFree (Finset α) (Finset β) where
   eq_zero_or_eq_zero_of_smul_eq_zero {s t} := by
     exact_mod_cast eq_zero_or_eq_zero_of_smul_eq_zero (c := s.toSet) (x := t.toSet)
 
-instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
-    NoZeroSMulDivisors α (Finset β) :=
+instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [Module.IsTorsionFree α β] :
+    Module.IsTorsionFree α (Finset β) :=
   Function.Injective.noZeroSMulDivisors toSet coe_injective coe_zero coe_smul_finset
 
 section SMulZeroClass
@@ -70,7 +70,7 @@ lemma Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
 lemma zero_mem_smul_finset (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
   mem_smul_finset.2 ⟨0, h, smul_zero _⟩
 
-variable [Zero α] [NoZeroSMulDivisors α β]
+variable [Zero α] [Module.IsTorsionFree α β]
 
 lemma zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
@@ -97,7 +97,7 @@ lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
 lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ ↦ mem_zero.2 <| zero_smul α x
 
-variable [NoZeroSMulDivisors α β]
+variable [Module.IsTorsionFree α β]
 
 lemma zero_mem_smul_iff :
     (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by

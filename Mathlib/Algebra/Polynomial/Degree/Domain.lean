@@ -36,7 +36,7 @@ lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegre
 
 omit [NoZeroDivisors R] in
 variable (p) in
-lemma natDegree_smul {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisors S R] {a : S}
+lemma natDegree_smul {S : Type*} [Zero S] [SMulZeroClass S R] [Module.IsTorsionFree S R] {a : S}
     (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
   by_cases hp : p = 0
   · simp only [hp, smul_zero]

@@ -155,7 +155,7 @@ section RestrictScalars
 
 variable {S : Type*} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
 variable [Algebra R S] [Module S M] [Module R M]
-variable [IsScalarTower R S M] [NoZeroSMulDivisors R S] (b : Basis ι S M)
+variable [IsScalarTower R S M] [Module.IsTorsionFree R S] (b : Basis ι S M)
 variable (R)
 
 open Submodule
@@ -199,7 +199,7 @@ end RestrictScalars
 
 section AddSubgroup
 
-variable {M R : Type*} [Ring R] [Nontrivial R] [NoZeroSMulDivisors ℤ R]
+variable {M R : Type*} [Ring R] [Nontrivial R] [Module.IsTorsionFree ℤ R]
   [AddCommGroup M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
 
 /--

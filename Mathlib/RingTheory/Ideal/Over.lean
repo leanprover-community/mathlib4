@@ -186,7 +186,7 @@ end CommSemiring
 section CommRing
 
 variable (A : Type*) [CommRing A] (B : Type*) [Ring B] [Nontrivial B]
-  [Algebra A B] [NoZeroSMulDivisors A B] {p : Ideal A}
+  [Algebra A B] [Module.IsTorsionFree A B] {p : Ideal A}
 
 @[simp]
 theorem under_bot : under A (⊥ : Ideal B) = ⊥ :=

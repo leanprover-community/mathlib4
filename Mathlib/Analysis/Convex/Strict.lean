@@ -263,7 +263,7 @@ variable [CommSemiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E]
 
 section AddCommGroup
 
-variable [AddCommGroup E] [Module 𝕜 E] [NoZeroSMulDivisors 𝕜 E] [ContinuousConstSMul 𝕜 E]
+variable [AddCommGroup E] [Module 𝕜 E] [Module.IsTorsionFree 𝕜 E] [ContinuousConstSMul 𝕜 E]
   {s : Set E}
 
 theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :

@@ -660,8 +660,8 @@ instance SMulCommClass [CommSemiring R] [Module R V] :
     rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 
 instance instNoZeroSMulDivisors {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-    [Zero R] [SMulWithZero R V] [NoZeroSMulDivisors R V] :
-    NoZeroSMulDivisors (HahnSeries Γ R) (HahnModule Γ R V) where
+    [Zero R] [SMulWithZero R V] [Module.IsTorsionFree R V] :
+    Module.IsTorsionFree (HahnSeries Γ R) (HahnModule Γ R V) where
   eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
     contrapose! hxy
     simp only [ne_eq]
@@ -680,7 +680,7 @@ instance {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
-    haveI : NoZeroSMulDivisors (HahnSeries Γ R) (HahnSeries Γ R) :=
+    haveI : Module.IsTorsionFree (HahnSeries Γ R) (HahnSeries Γ R) :=
       HahnModule.instNoZeroSMulDivisors
     exact eq_zero_or_eq_zero_of_smul_eq_zero xy
 

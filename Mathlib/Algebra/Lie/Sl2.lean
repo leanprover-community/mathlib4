@@ -81,7 +81,7 @@ structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a simultaneous
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
-lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
+lemma HasPrimitiveVectorWith.mk' [Module.IsTorsionFree ℤ M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
     HasPrimitiveVectorWith t m μ  where
   ne_zero := hm
@@ -178,7 +178,7 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
 
 /-- The eigenvalue of a primitive vector must be a natural number if the representation is
 finite-dimensional. -/
-lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R] :
+lemma exists_nat [IsNoetherian R M] [Module.IsTorsionFree R M] [IsDomain R] [CharZero R] :
     ∃ n : ℕ, μ = n := by
   suffices ∃ n : ℕ, (ψ n) = 0 by
     obtain ⟨n, hn₁, hn₂⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists P.ne_zero this
@@ -196,7 +196,7 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
       Module.End.hasEigenvector_iff])).finite
 
 lemma pow_toEnd_f_ne_zero_of_eq_nat
-    [CharZero R] [NoZeroSMulDivisors R M]
+    [CharZero R] [Module.IsTorsionFree R M]
     {n : ℕ} (hn : μ = n) {i} (hi : i ≤ n) : (ψ i) ≠ 0 := by
   intro H
   induction i
@@ -211,7 +211,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
     exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_gt i.lt_succ_self
 
 lemma pow_toEnd_f_eq_zero_of_eq_nat
-    [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]
+    [IsNoetherian R M] [Module.IsTorsionFree R M] [IsDomain R] [CharZero R]
     {n : ℕ} (hn : μ = n) : (ψ (n + 1)) = 0 := by
   by_contra h
   have : t.HasPrimitiveVectorWith (ψ (n + 1)) (n - 2 * (n + 1) : R) :=

@@ -37,7 +37,7 @@ theorem aleph0_le_cardinalMk_of_charZero (R A : Type*) [CommRing R] [Ring A]
 section lift
 
 variable (R : Type u) (A : Type v) [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
-  [NoZeroSMulDivisors R A]
+  [Module.IsTorsionFree R A]
 
 theorem cardinalMk_lift_le_mul :
     Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ Cardinal.lift.{v} #R[X] * ℵ₀ := by
@@ -79,7 +79,7 @@ end lift
 section NonLift
 
 variable (R A : Type u) [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
-  [NoZeroSMulDivisors R A]
+  [Module.IsTorsionFree R A]
 
 theorem cardinalMk_le_mul : #{ x : A // IsAlgebraic R x } ≤ #R[X] * ℵ₀ := by
   rw [← lift_id #_, ← lift_id #R[X]]

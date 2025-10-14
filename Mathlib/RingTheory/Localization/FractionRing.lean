@@ -593,8 +593,8 @@ section IsScalarTower
 attribute [local instance] liftAlgebra
 
 instance (B C : Type*) [CommRing B] [IsDomain B] [CommRing C] [IsDomain C] [Algebra A B]
-    [Algebra A C] [Algebra B C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
-    [NoZeroSMulDivisors B C] [IsScalarTower A B C] :
+    [Algebra A C] [Algebra B C] [Module.IsTorsionFree A B] [Module.IsTorsionFree A C]
+    [Module.IsTorsionFree B C] [IsScalarTower A B C] :
     IsScalarTower (FractionRing A) (FractionRing B) (FractionRing C) where
   smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
     rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]

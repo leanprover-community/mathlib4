@@ -62,7 +62,7 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl :=
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 
 protected theorem smul {α} [Semiring α] [Module α R] [SMulCommClass R α R]
-    [NoZeroSMulDivisors α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
+    [Module.IsTorsionFree α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
     (a • B).IsRefl := fun _ _ h =>
   (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
     smul_eq_zero_of_right _ (hB _ _ hBz)

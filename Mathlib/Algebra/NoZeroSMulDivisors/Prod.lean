@@ -7,9 +7,9 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.Notation.Prod
 
 /-!
-# Prod instances for NoZeroSMulDivisors
+# Prod instances for Module.IsTorsionFree
 
-This file defines a NoZeroSMulDivisors instance for the binary product of actions.
+This file defines a Module.IsTorsionFree instance for the binary product of actions.
 -/
 
 variable {R M N : Type*}
@@ -17,8 +17,8 @@ variable {R M N : Type*}
 namespace Prod
 
 instance noZeroSMulDivisors [Zero R] [Zero M] [Zero N]
-    [SMulWithZero R M] [SMulWithZero R N] [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] :
-    NoZeroSMulDivisors R (M × N) where
+    [SMulWithZero R M] [SMulWithZero R N] [Module.IsTorsionFree R M] [Module.IsTorsionFree R N] :
+    Module.IsTorsionFree R (M × N) where
   eq_zero_or_eq_zero_of_smul_eq_zero {c xy} h := by simpa [Prod.ext_iff, or_and_left] using h
 
 end Prod

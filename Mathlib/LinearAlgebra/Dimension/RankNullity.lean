@@ -135,7 +135,7 @@ theorem exists_linearIndependent_snoc_of_lt_rank [StrongRankCondition R] {n : �
 /-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
 independent of the first one. -/
 theorem exists_linearIndependent_pair_of_one_lt_rank [StrongRankCondition R]
-    [NoZeroSMulDivisors R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
+    [Module.IsTorsionFree R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] := by
   obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
   have : Fin.snoc ![x] y = ![x, y] := by simp [Fin.snoc, ← List.ofFn_inj]
@@ -196,7 +196,7 @@ theorem exists_linearIndependent_cons_of_lt_finrank {n : ℕ} {v : Fin n → M}
 
 /-- Given a nonzero vector in a finite-dimensional space of dimension `> 1`, one may find another
 vector linearly independent of the first one. -/
-theorem exists_linearIndependent_pair_of_one_lt_finrank [NoZeroSMulDivisors R M]
+theorem exists_linearIndependent_pair_of_one_lt_finrank [Module.IsTorsionFree R M]
     (h : 1 < finrank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] :=
   exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
@@ -214,7 +214,7 @@ lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul 
   rw [← (N.restrictScalars R).finrank_quotient_add_finrank]
   exact Nat.eq_sub_of_add_eq rfl
 
-lemma Submodule.disjoint_ker_of_finrank_le [NoZeroSMulDivisors R M] {N : Type*} [AddCommGroup N]
+lemma Submodule.disjoint_ker_of_finrank_le [Module.IsTorsionFree R M] {N : Type*} [AddCommGroup N]
     [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
     (h : finrank R L ≤ finrank R (L.map f)) :
     Disjoint L (LinearMap.ker f) := by

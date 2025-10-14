@@ -244,11 +244,11 @@ instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
 
 end Empty
 
-section NoZeroSMulDivisors
+section Module.IsTorsionFree
 
 -- Can't be an instance because the basis can't be inferred.
 protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
-    NoZeroSMulDivisors R M :=
+    Module.IsTorsionFree R M :=
   ⟨fun {c x} hcx => by
     exact or_iff_not_imp_right.mpr fun hx => by
       rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
@@ -261,12 +261,12 @@ protected theorem smul_eq_zero [NoZeroDivisors R] (b : Basis ι R M) {c : R} {x 
     c • x = 0 ↔ c = 0 ∨ x = 0 :=
   @smul_eq_zero _ _ _ _ _ b.noZeroSMulDivisors _ _
 
-end NoZeroSMulDivisors
+end Module.IsTorsionFree
 
 section Singleton
 
 theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
+    [Module.IsTorsionFree R M] (ι : Type*) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩

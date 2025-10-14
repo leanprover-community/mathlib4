@@ -262,7 +262,7 @@ lemma LinearIndependent.pair_symm_iff :
   rw [pair_symm_iff, pair_neg_left_iff, pair_symm_iff]
 
 variable {S : Type*} [CommRing S] [Module S R] [Module S M]
-  [SMulCommClass S R M] [IsScalarTower S R M] [NoZeroSMulDivisors S R]
+  [SMulCommClass S R M] [IsScalarTower S R M] [Module.IsTorsionFree S R]
   (a b c d : S)
 
 lemma LinearIndependent.pair_smul_iff {u : S} (hu : u ≠ 0) :
@@ -449,7 +449,7 @@ lemma linearIndependent_algHom_toLinearMap
     (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e :))
 
 lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
-    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
+    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [Module.IsTorsionFree K L] :
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).restrict_scalars' K
 

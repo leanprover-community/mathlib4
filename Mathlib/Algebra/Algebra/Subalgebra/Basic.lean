@@ -326,7 +326,7 @@ theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S)
 
 end
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
+instance noZeroSMulDivisors_bot [Module.IsTorsionFree R A] : Module.IsTorsionFree R S :=
   ⟨fun {c} {x : S} h =>
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
@@ -854,7 +854,7 @@ lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algeb
     (S : Subalgebra R A) : Set.range (algebraMap S A) = (S : Set A) :=
   SetLike.ext'_iff.mp S.rangeS_algebraMap
 
-instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
+instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : Module.IsTorsionFree S A :=
   ⟨fun {c} x h =>
     have : (c : A) = 0 ∨ x = 0 := eq_zero_or_eq_zero_of_mul_eq_zero h
     this.imp_left (@Subtype.ext_iff _ _ c 0).mpr⟩

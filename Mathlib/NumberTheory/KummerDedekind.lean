@@ -62,7 +62,7 @@ namespace KummerDedekind
 
 variable [IsDomain R] [IsIntegrallyClosed R]
 variable [IsDedekindDomain S]
-variable [NoZeroSMulDivisors R S]
+variable [Module.IsTorsionFree R S]
 
 attribute [local instance] Ideal.Quotient.field
 

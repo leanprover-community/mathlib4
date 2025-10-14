@@ -878,7 +878,7 @@ instance instIsCentralScalar [SMul Rᵐᵒᵖ ℝ≥0∞] [IsCentralScalar R ℝ
 end SMul
 
 instance instNoZeroSMulDivisors [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    [NoZeroSMulDivisors R ℝ≥0∞] : NoZeroSMulDivisors R (Measure α) where
+    [Module.IsTorsionFree R ℝ≥0∞] : Module.IsTorsionFree R (Measure α) where
   eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne, ext_iff', forall_or_left] using h
 
 instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -935,7 +935,7 @@ theorem ae_smul_measure_le [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ�
 section SMulWithZero
 
 variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-  [NoZeroSMulDivisors R ℝ≥0∞] {c : R} {p : α → Prop}
+  [Module.IsTorsionFree R ℝ≥0∞] {c : R} {p : α → Prop}
 
 lemma ae_smul_measure_iff (hc : c ≠ 0) {μ : Measure α} : (∀ᵐ x ∂c • μ, p x) ↔ ∀ᵐ x ∂μ, p x := by
   simp [ae_iff, hc]

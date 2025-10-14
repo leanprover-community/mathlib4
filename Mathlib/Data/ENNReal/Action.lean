@@ -64,7 +64,7 @@ theorem coe_smul {R} (r : R) (s : ℝ≥0) [SMul R ℝ≥0] [SMul R ℝ≥0∞] 
     one_mul]
 
 theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    [NoZeroSMulDivisors R ℝ≥0∞] [DecidableEq R] (c : R) :
+    [Module.IsTorsionFree R ℝ≥0∞] [DecidableEq R] (c : R) :
     c • ∞ = if c = 0 then 0 else ∞ := by
   rw [← smul_one_mul, mul_top']
   simp_rw [smul_eq_zero, or_iff_left one_ne_zero]

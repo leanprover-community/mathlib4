@@ -564,7 +564,7 @@ end Module
 section Nontrivial
 
 variable [Ring R] [Nontrivial R] [AddCommGroup M]
-variable [Module R M] [NoZeroSMulDivisors R M]
+variable [Module R M] [Module.IsTorsionFree R M]
 variable {s t : Set M}
 
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :

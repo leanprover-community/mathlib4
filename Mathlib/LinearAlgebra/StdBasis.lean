@@ -57,7 +57,7 @@ theorem linearIndependent_single_one (ι R : Type*) [Semiring R] [DecidableEq ι
     <| by simp +contextual [Fintype.linearIndependent_iffₛ]
 
 lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+    [Module.IsTorsionFree R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
     LinearIndependent R fun i : ι ↦ Pi.single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by

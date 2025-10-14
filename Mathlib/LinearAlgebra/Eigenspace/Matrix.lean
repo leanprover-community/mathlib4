@@ -39,7 +39,7 @@ lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
   hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
 
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
-lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisors R M]
+lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [Module.IsTorsionFree R M]
     (b : Basis n R M) : HasEigenvalue (toLin b b (diagonal d)) μ ↔ ∃ i, d i = μ := by
   have (i : n) : HasEigenvalue (toLin b b (diagonal d)) (d i) :=
     hasEigenvalue_of_hasEigenvector <| hasEigenvector_toLin_diagonal d i b

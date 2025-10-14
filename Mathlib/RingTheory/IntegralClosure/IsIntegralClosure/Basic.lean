@@ -353,8 +353,8 @@ protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsInt
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
   ⟨fun x => IsIntegralClosure.isIntegral R B x⟩
 
-theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
-    NoZeroSMulDivisors R A := by
+theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [Module.IsTorsionFree R B] :
+    Module.IsTorsionFree R A := by
   refine
     Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
       (map_zero _) fun _ _ => ?_
@@ -528,7 +528,7 @@ variable (T) in
 /-- Let `T / S / R` be a tower of algebras, `T` is non-trivial and is a torsion free `S`-module,
   then if `T` is an integral `R`-algebra, then `S` is an integral `R`-algebra. -/
 theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
-    [NoZeroSMulDivisors S T] [Nontrivial T] [IsScalarTower R S T]
+    [Module.IsTorsionFree S T] [Nontrivial T] [IsScalarTower R S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
   isIntegral := by
     apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)

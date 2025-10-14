@@ -87,7 +87,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
-instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
+instance (α : Type*) [TopologicalSpace α] : Module.IsTorsionFree ℤ (LocallyConstant α ℤ) := by
   constructor
   intro c f h
   rw [or_iff_not_imp_left]

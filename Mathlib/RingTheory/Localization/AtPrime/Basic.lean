@@ -95,8 +95,8 @@ instance AtPrime.isLocalRing : IsLocalRing (Localization P.primeCompl) :=
   IsLocalization.AtPrime.isLocalRing (Localization P.primeCompl) P
 
 instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S] [Algebra R S]
-    [NoZeroSMulDivisors R S] [IsDomain S] [P.IsPrime] :
-    NoZeroSMulDivisors (Localization.AtPrime P)
+    [Module.IsTorsionFree R S] [IsDomain S] [P.IsPrime] :
+    Module.IsTorsionFree (Localization.AtPrime P)
     (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
   NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
 

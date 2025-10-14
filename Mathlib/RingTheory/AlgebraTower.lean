@@ -168,7 +168,7 @@ variable [CommRing R] [Ring S] [Algebra R S]
 
 theorem Module.Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
     (b : Basis ι R S) : Function.Injective (algebraMap R S) :=
-  have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
+  have : Module.IsTorsionFree R S := b.noZeroSMulDivisors
   FaithfulSMul.algebraMap_injective R S
 
 end Ring

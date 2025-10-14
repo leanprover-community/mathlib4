@@ -704,7 +704,7 @@ theorem support_X_mul (s : σ) (p : MvPolynomial σ R) :
   AddMonoidAlgebra.support_single_mul p _ (by simp) _
 
 @[simp]
-theorem support_smul_eq {S₁ : Type*} [Semiring S₁] [Module S₁ R] [NoZeroSMulDivisors S₁ R] {a : S₁}
+theorem support_smul_eq {S₁ : Type*} [Semiring S₁] [Module S₁ R] [Module.IsTorsionFree S₁ R] {a : S₁}
     (h : a ≠ 0) (p : MvPolynomial σ R) : (a • p).support = p.support :=
   Finsupp.support_smul_eq h
 

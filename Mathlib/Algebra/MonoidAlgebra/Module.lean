@@ -36,8 +36,8 @@ section SMul
 
 variable {S : Type*}
 
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R (MonoidAlgebra k G) :=
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [Module.IsTorsionFree R k] :
+    Module.IsTorsionFree R (MonoidAlgebra k G) :=
   Finsupp.noZeroSMulDivisors
 
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
@@ -210,8 +210,8 @@ end SMul
 
 section Semiring
 
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R k[G] :=
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [Module.IsTorsionFree R k] :
+    Module.IsTorsionFree R k[G] :=
   Finsupp.noZeroSMulDivisors
 
 end Semiring

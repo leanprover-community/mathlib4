@@ -395,7 +395,7 @@ end FractionalIdeal
 section IsIntegrallyClosed
 
 variable (B)
-variable [IsIntegrallyClosed A] [IsDedekindDomain B] [NoZeroSMulDivisors A B]
+variable [IsIntegrallyClosed A] [IsDedekindDomain B] [Module.IsTorsionFree A B]
 
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
@@ -592,7 +592,7 @@ section
 
 variable (L)
 variable [IsFractionRing B L] [IsDedekindDomain A] [IsDedekindDomain B]
-  [NoZeroSMulDivisors A B] [Module.Finite A B]
+  [Module.IsTorsionFree A B] [Module.Finite A B]
 
 include K L in
 lemma pow_sub_one_dvd_differentIdeal_aux

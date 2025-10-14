@@ -380,7 +380,7 @@ instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
-    [IsScalarTower R S A] [NoZeroSMulDivisors R A] {I : Submodule S A} : NoZeroSMulDivisors R I :=
+    [IsScalarTower R S A] [Module.IsTorsionFree R A] {I : Submodule S A} : Module.IsTorsionFree R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
 theorem pow_eq_zero_of_mem {I : Ideal R} {n m : ℕ} (hnI : I ^ n = 0) (hmn : n ≤ m) {x : R}

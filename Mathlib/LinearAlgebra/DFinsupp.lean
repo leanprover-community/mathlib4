@@ -606,7 +606,7 @@ theorem iSupIndep.linearEquiv_symm_apply {p : ι → Submodule R N} (ind : iSupI
 forms a linearly independent family.
 
 See also `iSupIndep.linearIndependent'`. -/
-theorem iSupIndep.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → Submodule R N)
+theorem iSupIndep.linearIndependent [Module.IsTorsionFree R N] {ι} (p : ι → Submodule R N)
     (hp : iSupIndep p) {v : ι → N} (hv : ∀ i, v i ∈ p i) (hv' : ∀ i, v i ≠ 0) :
     LinearIndependent R v := by
   let _ := Classical.decEq ι
@@ -625,7 +625,7 @@ theorem iSupIndep.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → Su
   simp only [coe_zero, Pi.zero_apply, ZeroMemClass.coe_zero, smul_eq_zero, ha] at this
   simpa
 
-theorem iSupIndep_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {ι} {v : ι → N}
+theorem iSupIndep_iff_linearIndependent_of_ne_zero [Module.IsTorsionFree R N] {ι} {v : ι → N}
     (h_ne_zero : ∀ i, v i ≠ 0) : (iSupIndep fun i => R ∙ v i) ↔ LinearIndependent R v :=
   let _ := Classical.decEq ι
   ⟨fun hv => hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero,

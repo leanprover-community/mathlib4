@@ -356,8 +356,8 @@ instance instModule : Module S (M [⋀^ι]→ₗ[R] N) where
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
   zero_smul _ := ext fun _ => zero_smul _ _
 
-instance instNoZeroSMulDivisors [NoZeroSMulDivisors S N] :
-    NoZeroSMulDivisors S (M [⋀^ι]→ₗ[R] N) :=
+instance instNoZeroSMulDivisors [Module.IsTorsionFree S N] :
+    Module.IsTorsionFree S (M [⋀^ι]→ₗ[R] N) :=
   coe_injective.noZeroSMulDivisors _ rfl coeFn_smul
 
 /-- Embedding of alternating maps into multilinear maps as a linear map. -/
@@ -763,7 +763,7 @@ end DomDomCongr
 
 /-- If the arguments are linearly dependent then the result is `0`. -/
 theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [Module K M]
-    {N : Type*} [AddCommGroup N] [Module K N] [NoZeroSMulDivisors K N] (f : M [⋀^ι]→ₗ[K] N)
+    {N : Type*} [AddCommGroup N] [Module K N] [Module.IsTorsionFree K N] (f : M [⋀^ι]→ₗ[K] N)
     (v : ι → M) (h : ¬LinearIndependent K v) : f v = 0 := by
   obtain ⟨s, g, h, i, hi, hz⟩ := not_linearIndependent_iff.mp h
   letI := Classical.decEq ι
