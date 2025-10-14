@@ -263,10 +263,11 @@ where
       let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
           match_expr type with
           | NormedSpace K E _ _ =>
-            if ← withReducible (pureIsDefEq E F) then return some K else return none
+            if ← withReducible (pureIsDefEq E F) then
+              trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"; return some K
+            else return none
           | _ => return none
         | throwError "Couldn't find a `NormedSpace` structure on {F} among local instances."
-      trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"
       let kT : Term ← Term.exprToSyntax K
       let srcIT : Term ← Term.exprToSyntax srcI
       let FT : Term ← Term.exprToSyntax F
@@ -278,7 +279,7 @@ where
   fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
     match_expr V with
     | TangentSpace _k _ _E _ _ _H _ I M _ _ => do
-      trace[Elab.DiffGeo.MDiff] "`{V}` is the total space of the tangent bundle of `{M}`"
+      trace[Elab.DiffGeo.MDiff] "`{V}` is the total space of the `TangentBundle` of `{M}`"
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
       Term.elabTerm resTerm none

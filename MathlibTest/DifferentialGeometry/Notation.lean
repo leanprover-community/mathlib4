@@ -468,7 +468,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
     [Elab.DiffGeo.MDiff] Failed with error:
         No `baseInfo` provided
   [Elab.DiffGeo.MDiff] ✅️ TangentSpace
-    [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the tangent bundle of `M`
+    [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the `TangentBundle` of `M`
     [Elab.DiffGeo.MDiff] Found model: I.prod I.tangent
   [Elab.DiffGeo.MDiff] Found model: I.prod I.tangent
 [Elab.DiffGeo.MDiff] Finding a model for: F
