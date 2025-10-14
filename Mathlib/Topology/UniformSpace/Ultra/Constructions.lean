@@ -8,14 +8,14 @@ import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Ultra.Basic
 
 /-!
-# Products of ultrametric (nonarchimedean) uniform spaces
+# Products of ultrametric (non-Archimedean) uniform spaces
 
 ## Main results
 
-* `IsUltraUniformity.prod`: a product of uniform spaces with nonarchimedean uniformities
-  has a nonarchimedean uniformity.
-* `IsUltraUniformity.pi`: an indexed product of uniform spaces with nonarchimedean uniformities
-  has a nonarchimedean uniformity.
+* `IsUltraUniformity.prod`: a product of uniform spaces with non-Archimedean uniformities
+  has a non-Archimedean uniformity.
+* `IsUltraUniformity.pi`: an indexed product of uniform spaces with non-Archimedean uniformities
+  has a non-Archimedean uniformity.
 
 ## Implementation details
 
@@ -47,8 +47,8 @@ lemma IsUltraUniformity.inf {u u' : UniformSpace X} (h : @IsUltraUniformity _ u)
   · exact fun _ ⟨⟨_, hU, _⟩, _, hU', _⟩ ↦ hU.inter hU'
   · exact fun _ ⟨⟨_, _, hU⟩, _, _, hU'⟩ ↦ hU.inter hU'
 
-/-- The product of uniform spaces with nonarchimedean uniformities has a
-nonarchimedean uniformity. -/
+/-- The product of uniform spaces with non-Archimedean uniformities has a
+non-Archimedean uniformity. -/
 instance IsUltraUniformity.prod [UniformSpace X] [UniformSpace Y]
     [IsUltraUniformity X] [IsUltraUniformity Y] :
     IsUltraUniformity (X × Y) :=
@@ -62,8 +62,8 @@ lemma IsUltraUniformity.iInf {ι : Type*} {U : (i : ι) → UniformSpace X}
   · exact fun _ ⟨_, h⟩ ↦ IsSymmetricRel.iInter fun i ↦ (h i).right.left
   · exact fun _ ⟨_, h⟩ ↦ IsTransitiveRel.iInter fun i ↦ (h i).right.right
 
-/-- The indexed product of uniform spaces with nonarchimedean uniformities has a
-nonarchimedean uniformity. -/
+/-- The indexed product of uniform spaces with non-Archimedean uniformities has a
+non-Archimedean uniformity. -/
 instance IsUltraUniformity.pi {ι : Type*} {X : ι → Type*} [U : Π i, UniformSpace (X i)]
     [h : ∀ i, IsUltraUniformity (X i)] :
     IsUltraUniformity (Π i, X i) := by
