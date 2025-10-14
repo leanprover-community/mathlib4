@@ -143,13 +143,11 @@ instance (x : B) : IsTopologicalAddGroup (W E x) := by
 
 end
 
-noncomputable
-def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) : ℝ :=
-  let ψ := extChartAt IB i
-  let dψ := mfderiv IB (modelWithCornersSelf ℝ EB) ψ p
-  let x : EB := dψ v
-  let y : EB := dψ w
-  @Inner.inner ℝ EB _ x y
+open Manifold
+
+noncomputable def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) : ℝ :=
+  letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
+  @Inner.inner ℝ EB _ (dψ v) (dψ w)
 
 omit [IsManifold IB ω B] in
 lemma g_symm (i p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
@@ -157,44 +155,21 @@ lemma g_symm (i p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   unfold g
   rw [real_inner_comm]
 
-def linearEquivToSemiLinearEquiv
-  {E F : Type*} [AddCommMonoid E] [Module ℝ E] [AddCommMonoid F] [Module ℝ F]
-  [TopologicalSpace E] [TopologicalSpace F]
-  (e : E ≃L[ℝ] F) :
-  E ≃SL[RingHom.id ℝ] F :=
-{ toFun := e.toFun,
-  invFun := e.invFun,
-  map_add' := e.map_add,
-  map_smul' := by intro r x; exact e.map_smul r x,
-  left_inv := e.left_inv,
-  right_inv := e.right_inv }
-
 lemma g_pos (i p : B) (hp : p ∈ (extChartAt IB i).source)
-            (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
-  v ≠ 0 → 0 < g i p v v := by
-  intro hv
-  unfold g
-  simp only
+            (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) (hv : v ≠ 0) :
+    0 < g i p v v := by
   let ψ := extChartAt IB i
-  let dψ := mfderiv IB (modelWithCornersSelf ℝ EB) ψ p
-  let x : EB := dψ v
+  let dψ := mfderiv IB 𝓘(ℝ, EB) ψ p
   have h_invert : dψ.IsInvertible := isInvertible_mfderiv_extChartAt hp
-  rcases h_invert with ⟨inv, left_inv⟩
-  let e : TangentSpace IB p ≃SL[RingHom.id ℝ] TangentSpace 𝓘(ℝ, EB) (ψ p) :=
-    linearEquivToSemiLinearEquiv inv
-  have h5 : Function.Injective e :=  ContinuousLinearEquiv.injective e
-  have inj : Function.Injective e := ContinuousLinearEquiv.injective e
-  have h1 : e v = dψ v := by
-    unfold e
-    rw[<-left_inv]
-    exact h5 (h5 (h5 (h5 rfl)))
-  have hx : x ≠ 0 := by
+  obtain ⟨inv, left_inv⟩ := h_invert
+  have inj : Function.Injective inv := inv.injective
+  have h1 : inv v = dψ v := by
+    rw[← left_inv]
+    exact inj (inj (inj (inj rfl)))
+  have hx : dψ v ≠ 0 := by
     intro h
-    have h2 : e v = e 0 := by
-      rw [h1]
-      simp [x, h]
-    have h3 := inj h2
-    exact hv h3
+    have h2 : inv v = inv 0 := by simp [h, h1]
+    exact hv (inj h2)
   exact real_inner_self_pos.mpr hx
 
 variable [FiniteDimensional ℝ EB] [IsManifold IB ∞ B] [SigmaCompactSpace B] [T2Space B]
@@ -213,6 +188,30 @@ lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
     have : ∑ᶠ (i : B), (f i) p * g i p v w = ∑ᶠ (i : B), (f i) p * g i p w v := by
       simp_rw [g_symm]
     exact this
+
+#check finsum_pos'
+#check PartitionOfUnity.finsum_smul_mem_convex
+#check @finsum
+#check finsum_eq_zero_of_forall_eq_zero
+
+lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
+  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
+  (p : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
+  v ≠ 0 → 0 < g_global f p v v := by
+  intro hv
+  unfold g_global
+
+  have h_nonneg : ∀ i, 0 ≤ f.toFun i p := fun i => f.nonneg' i p
+
+  have ⟨i, hi_pos⟩ : ∃ i, 0 < f i p := by
+    by_contra hneg
+    push_neg at hneg
+    have : ∀ (x : B), f x p = 0 := fun x => le_antisymm (hneg x) (h_nonneg x)
+    have h1 : ∑ᶠ i, f i p = 0 := finsum_eq_zero_of_forall_eq_zero this
+    have h2 : ∑ᶠ i, f i p = 1 := f.sum_eq_one' p trivial
+    exact absurd (h1.symm.trans h2) one_ne_zero.symm
+
+  sorry
 
 noncomputable
 def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
