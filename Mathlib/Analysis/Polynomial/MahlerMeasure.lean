@@ -257,7 +257,7 @@ theorem mahlerMeasure_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.mahlerMe
   rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
   simp [mahlerMeasure_C_mul_X_add_C _ (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
 
-/-- The logarithmic Mahler measure of `p` is the `log` of the absolute value of its leading
+/-- The logarithmic Mahler measure of a polynomial is the `log` of the absolute value of its leading
   coefficient plus the sum of the `log`s of the absolute values of its roots lying outside the unit
   disk. -/
 theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.logMahlerMeasure =
@@ -270,8 +270,8 @@ theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.
   simp [posLog_eq_log_max_one,logMahlerMeasure_eq_log_MahlerMeasure,
     prod_mahlerMeasure_eq_mahlerMeasure_prod, log_prod_eq_sum_log this]
 
-/-- The Mahler measure of `p` is the the absolute value of its leading coefficient times the product
-  absolute values of its roots lying outside the unit disk. -/
+/-- The Mahler measure of a polynomial is the the absolute value of its leading coefficient times
+  the product of the absolute values of its roots lying outside the unit disk. -/
 theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeasure =
     ‖p.leadingCoeff‖ * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
   by_cases hp : p = 0;
