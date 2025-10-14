@@ -210,23 +210,21 @@ lemma tendsto_untopA [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
 lemma continuousOn_untopA [Nonempty ι] : ContinuousOn WithTop.untopA { a : WithTop ι | a ≠ ⊤ } :=
   fun _a ha ↦ ContinuousAt.continuousWithinAt (WithTop.tendsto_untopA ha)
 
-variable (ι) in
-/-- Equivalence between the non-top elements of `WithTop ι` and `ι`. -/
-noncomputable
-def neTopEquiv [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ ι where
-  toFun x := WithTop.untopA x
-  invFun x := ⟨x, WithTop.coe_ne_top⟩
-  left_inv := fun x => Subtype.eq <| by
-    lift (x : WithTop ι) to ι using x.2 with y
-    simp
-  right_inv x := by simp
+lemma tendsto_untop (a : {a : WithTop ι | a ≠ ⊤}) :
+    Tendsto (fun x ↦ WithTop.untop x.1 x.2) (𝓝 a) (𝓝 (untop a.1 a.2)) := by
+  have : Nonempty ι := ⟨untop a.1 a.2⟩
+  simp only [← untopA_eq_untop, ne_eq, coe_setOf, mem_setOf_eq]
+  exact (tendsto_untopA a.2).comp <| tendsto_subtype_rng.mp tendsto_id
+
+lemma continuous_untop : Continuous (fun x : {a : WithTop ι | a ≠ ⊤} ↦ WithTop.untop x.1 x.2) :=
+  continuous_iff_continuousAt.mpr WithTop.tendsto_untop
 
 variable (ι) in
 /-- Homeomorphism between the non-top elements of `WithTop ι` and `ι`. -/
 noncomputable
-def neTopHomeomorph [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
-  toEquiv := neTopEquiv ι
-  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_untopA
+def neTopHomeomorph : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
+  toEquiv := Equiv.withTopSubtypeNe
+  continuous_toFun := continuous_untop
   continuous_invFun := continuous_coe.subtype_mk _
 
 variable (ι) in

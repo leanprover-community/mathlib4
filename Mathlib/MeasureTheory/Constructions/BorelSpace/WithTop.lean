@@ -35,7 +35,7 @@ variable [MeasurableSpace ι] [BorelSpace ι]
 
 /-- Measurable equivalence between the non-top elements of `WithTop ι` and `ι`. -/
 noncomputable
-def MeasurableEquiv.withTopEquiv [Nonempty ι] : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
+def MeasurableEquiv.neTopEquiv : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
   (WithTop.neTopHomeomorph ι).toMeasurableEquiv
 
 lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
@@ -44,9 +44,9 @@ lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
   rcases isEmpty_or_nonempty ι with hι | hι
   · exact Subsingleton.measurable
   · exact measurable_of_measurable_on_compl_singleton ⊤
-      (MeasurableEquiv.withTopEquiv.symm.measurable_comp_iff.1 h)
+      (MeasurableEquiv.neTopEquiv.symm.measurable_comp_iff.1 h)
 
-lemma measurable_untopA [Nonempty ι] : Measurable (WithTop.untopA (ι := ι)) :=
+lemma measurable_untopA [Nonempty ι] : Measurable (WithTop.untopA (α := ι)) :=
   measurable_of_measurable_comp_coe measurable_id
 
 lemma measurable_coe :

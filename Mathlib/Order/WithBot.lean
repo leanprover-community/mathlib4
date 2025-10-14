@@ -89,11 +89,6 @@ theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
     unbotD d x = unbotD d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
   induction y <;> simp [unbotD_eq_iff, or_comm]
 
-/-- Function that sends an element of `WithBot α` to `α`,
-with an arbitrary default value for `⊥`. -/
-noncomputable
-abbrev unbotA [Nonempty α] : WithBot α → α := unbotD (Classical.arbitrary α)
-
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
@@ -205,6 +200,16 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   invFun x := ⟨x, WithBot.coe_ne_bot⟩
   left_inv _ := by simp
   right_inv _ := by simp
+
+/-- Function that sends an element of `WithBot α` to `α`,
+with an arbitrary default value for `⊥`. -/
+noncomputable
+abbrev unbotA [Nonempty α] : WithBot α → α := unbotD (Classical.arbitrary α)
+
+lemma unbotA_eq_unbot [Nonempty α] {a : WithBot α} (ha : a ≠ ⊥) : unbotA a = unbot a ha := by
+  cases a with
+  | bot => contradiction
+  | coe a => simp
 
 end WithBot
 
@@ -621,11 +626,6 @@ theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
     untopD d x = untopD d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
   WithBot.unbotD_eq_unbotD_iff
 
-/-- Function that sends an element of `WithTop α` to `α`,
-with an arbitrary default value for `⊤`. -/
-noncomputable
-abbrev untopA [Nonempty α] : WithTop α → α := untopD (Classical.arbitrary α)
-
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
   Option.map f
@@ -747,6 +747,16 @@ theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
   invFun x := ⟨x, WithTop.coe_ne_top⟩
   left_inv _ := by simp
   right_inv _:= by simp
+
+/-- Function that sends an element of `WithTop α` to `α`,
+with an arbitrary default value for `⊤`. -/
+noncomputable
+abbrev untopA [Nonempty α] : WithTop α → α := untopD (Classical.arbitrary α)
+
+lemma untopA_eq_untop [Nonempty α] {a : WithTop α} (ha : a ≠ ⊤) : untopA a = untop a ha := by
+  cases a with
+  | top => contradiction
+  | coe a => simp
 
 end WithTop
 
