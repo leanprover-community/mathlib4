@@ -498,6 +498,6 @@ lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
 
 lemma T_S_rel : S • S • S • T • S • T • S = T⁻¹ := by
   ext i j
-  fin_cases i <;> fin_cases j <;> rfl
+  fin_cases i <;> fin_cases j <;> simp [S, T]
 
 end ModularGroup

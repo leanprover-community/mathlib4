@@ -813,7 +813,7 @@ private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _
 
 /-- Produce an `AlternatingMap` out of a `MultilinearMap`, by summing over all argument
 permutations. -/
-def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→ₗ[R] N' where
+irreducible_def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→ₗ[R] N' where
   toFun m :=
     { ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ with
       toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
@@ -829,12 +829,14 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
       zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
 
 theorem alternatization_coeFn (m : MultilinearMap R (fun _ : ι => M) N') :
-    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
+    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) := by
+  rw [alternatization_def]
   rfl
 
 theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
-    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
-  coe_injective rfl
+    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) := by
+  rw [alternatization_def]
+  exact coe_injective rfl
 
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
