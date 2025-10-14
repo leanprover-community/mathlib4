@@ -14,7 +14,7 @@ A morphism of schemes is quasi-compact if the preimages of quasi-compact open se
 quasi-compact.
 
 It suffices to check that preimages of affine open sets are compact
-(`quasiCompact_iff_forall_affine`).
+(`quasiCompact_iff_forall_isAffineOpen`).
 
 -/
 
@@ -69,7 +69,7 @@ instance quasiCompact_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCo
   · exact Continuous.isOpen_preimage (by fun_prop) _ hU
   apply QuasiCompact.isCompact_preimage <;> assumption
 
-theorem isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens {X : Scheme} {U : Set X} :
+theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens {U : Set X} :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⋃ i ∈ s, i := by
   apply Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
     (fun (U : X.affineOpens) => (U : X.Opens))
@@ -78,53 +78,53 @@ theorem isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens {X : Scheme} {U :
 
 @[deprecated (since := "2025-10-14")]
 alias isCompactOpen_iff_eq_finset_affine_union :=
-  isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens
+  isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens
 
-theorem isCompact_iff_eq_finset_affine_union {X : Scheme} (U : X.Opens) :
+theorem isCompact_iff_finite_and_eq_biUnion_affineOpens {U : X.Opens} :
     IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
-  convert isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens (U := U.1) using 4 with s
+  convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) using 4 with s
   · simp [U.isOpen]
   · convert SetLike.coe_injective.eq_iff.symm; simp
 
-theorem isCompact_and_isOpen_iff_eq_finite_biUnion_basicOpen {X : Scheme} [IsAffine X] (U : Set X) :
-    IsCompact U ∧ IsOpen U ↔
-      ∃ s : Set Γ(X, ⊤), s.Finite ∧ U = ⋃ i ∈ s, X.basicOpen i :=
+theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_basicOpen [IsAffine X] {U : Set X} :
+    IsCompact U ∧ IsOpen U ↔ ∃ s : Set Γ(X, ⊤), s.Finite ∧ U = ⋃ i ∈ s, X.basicOpen i :=
   (isBasis_basicOpen X).isCompact_open_iff_eq_finite_iUnion _
     (fun _ => ((isAffineOpen_top _).basicOpen _).isCompact) _
 
 @[deprecated (since := "2025-10-14")]
 alias isCompactOpen_iff_eq_basicOpen_union :=
-  isCompact_and_isOpen_iff_eq_finite_biUnion_basicOpen
+  isCompact_and_isOpen_iff_finite_and_eq_biUnion_basicOpen
 
-theorem quasiCompact_iff_forall_affine :
-    QuasiCompact f ↔
-      ∀ U : Y.Opens, IsAffineOpen U → IsCompact (f ⁻¹ᵁ U : Set X) := by
+variable {f} in
+theorem quasiCompact_iff_forall_isAffineOpen :
+    QuasiCompact f ↔ ∀ U : Y.Opens, IsAffineOpen U → IsCompact (f ⁻¹ᵁ U : Set X) := by
   rw [quasiCompact_iff]
   refine ⟨fun H U hU => H U U.isOpen hU.isCompact, ?_⟩
   intro H U hU hU'
-  obtain ⟨S, hS, rfl⟩ := isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens.mp ⟨hU', hU⟩
+  obtain ⟨S, hS, rfl⟩ := isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU', hU⟩
   simp only [Set.preimage_iUnion]
   exact Set.Finite.isCompact_biUnion hS (fun i _ => H i i.prop)
+
+@[deprecated (since := "2025-10-14")]
+alias quasiCompact_iff_forall_affine := quasiCompact_iff_forall_isAffineOpen
 
 theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
   classical
-  refine (isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens.mpr ?_).1
-  obtain ⟨s, hs, e⟩ := (isCompact_iff_eq_finset_affine_union _).mp hU
+  refine isCompact_iff_finite_and_eq_biUnion_affineOpens.mpr ?_
+  obtain ⟨s, hs, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hU
   let g : s → X.affineOpens := fun V ↦ ⟨V.1 ⊓ X.basicOpen f, by
     rw [← X.basicOpen_res _ (homOfLE ((le_iSup₂ V.1 V.2).trans_eq e.symm)).op]
     exact V.1.2.basicOpen _⟩
   haveI : Finite s := hs.to_subtype
   refine ⟨Set.range g, Set.finite_range g, ?_⟩
-  rw [Set.biUnion_range]
-  simp only [Opens.coe_inf, Set.iUnion_coe_set s, g, ← Set.iUnion₂_inter, Set.right_eq_inter]
-  exact subset_trans (X.basicOpen_le _) (by simpa using e.le)
+  rw [iSup_range, ← iSup_inf_eq, iSup_subtype, ← e, inf_eq_right.mpr (X.basicOpen_le f)]
 
 instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) where
   eq_targetAffineLocally' := by
     ext X Y f
-    simp only [quasiCompact_iff_forall_affine, isCompact_iff_compactSpace, targetAffineLocally,
-      Subtype.forall]
+    simp only [quasiCompact_iff_forall_isAffineOpen, isCompact_iff_compactSpace,
+      targetAffineLocally, Subtype.forall]
     rfl
   isLocal_affineProperty := by
     constructor
@@ -204,8 +204,7 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
   · change topologically @IsClosedMap f
     rw [IsZariskiLocalAtTarget.iff_of_openCover (P := topologically @IsClosedMap) Y.affineCover]
     intro i
-    haveI hqc : QuasiCompact (Y.affineCover.pullbackHom f i) :=
-        IsZariskiLocalAtTarget.of_isPullback (.of_hasPullback _ _) inferInstance
+    have _ : QuasiCompact (Y.affineCover.pullbackHom f i) := MorphismProperty.pullback_snd _ _ ‹_›
     refine this (Y.affineCover.pullbackHom f i) ?_ ⟨_, rfl⟩
     exact IsZariskiLocalAtTarget.of_isPullback
       (P := topologically @SpecializingMap) (.of_hasPullback _ _) H
@@ -227,23 +226,13 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
 
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
-    (hS : IsCompact S.1) (h₁ : P ⊥)
+    (hS : IsCompact (S : Set X)) (h₁ : P ⊥)
     (h₂ : ∀ (S : X.Opens) (_ : IsCompact S.1) (U : X.affineOpens), P S → P (S ⊔ U)) :
     P S := by
-  classical
-  obtain ⟨s, hs, hs'⟩ := isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens.mp ⟨hS, S.2⟩
-  replace hs' : S = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs'
-  subst hs'
-  apply @Set.Finite.induction_on _ _ _ hs
-  · convert h₁; rw [iSup_eq_bot]; rintro ⟨_, h⟩; exact h.elim
-  · intro x s _ hs h₄
-    have : IsCompact (⨆ i : s, (i : X.Opens)).1 := by
-      refine (isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens.mpr ?_).1
-      exact ⟨s, hs, by simp⟩
-    convert h₂ _ this x h₄
-    rw [iSup_subtype, sup_comm]
-    conv_rhs => rw [iSup_subtype]
-    exact iSup_insert
+  obtain ⟨s, hs, rfl⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hS
+  refine hs.induction_on _ (by simpa using h₁) fun {x s} _ hs h₄ ↦ ?_
+  rw [iSup_insert, sup_comm]
+  exact h₂ _ (isCompact_iff_finite_and_eq_biUnion_affineOpens.mpr ⟨s, hs, by simp⟩) x h₄
 
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
     {U : X.Opens} (hU : IsAffineOpen U) (x f : Γ(X, U))
@@ -259,7 +248,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     {U : X.Opens} (hU : IsCompact U.1) (x f : Γ(X, U))
     (H : x |_ (X.basicOpen f) = 0) :
     ∃ n : ℕ, f ^ n * x = 0 := by
-  obtain ⟨s, hs, e⟩ := isCompact_and_isOpen_iff_eq_finite_biUnion_affineOpens.mp ⟨hU, U.2⟩
+  obtain ⟨s, hs, e⟩ := isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU, U.2⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
   have h₁ (i : s) : i.1.1 ≤ U := by

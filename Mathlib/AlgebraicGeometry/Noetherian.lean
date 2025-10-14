@@ -193,7 +193,7 @@ lemma noetherianSpace_of_isAffineOpen (U : X.Opens) (hU : IsAffineOpen U)
 @[stacks 01OX]
 instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
     {f : Z ⟶ X} [IsOpenImmersion f] : QuasiCompact f := by
-  apply (quasiCompact_iff_forall_affine f).mpr
+  apply quasiCompact_iff_forall_isAffineOpen.mpr
   intro U hU
   rw [Opens.map_coe, ← Set.preimage_inter_range]
   apply f.isOpenEmbedding.isInducing.isCompact_preimage'

@@ -53,8 +53,7 @@ instance (priority := 900) [IsIso f] : IsAffineHom f :=
   ⟨fun _ hU ↦ hU.preimage_of_isIso f⟩
 
 instance (priority := 900) [IsAffineHom f] : QuasiCompact f :=
-  (quasiCompact_iff_forall_affine f).mpr
-    (fun U hU ↦ (IsAffineHom.isAffine_preimage U hU).isCompact)
+  quasiCompact_iff_forall_isAffineOpen.mpr fun _ hU ↦ (hU.preimage f).isCompact
 
 instance [IsAffineHom f] [IsAffineHom g] : IsAffineHom (f ≫ g) := by
   constructor
