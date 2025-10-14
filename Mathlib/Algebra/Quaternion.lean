@@ -1266,7 +1266,11 @@ theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ normSq.map_zero⟩
   rw [normSq_def', add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg]
     at h
-  · exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
+  · exact ext a 0
+      (eq_zero_of_pow_eq_zero h.1.1.1)
+      (eq_zero_of_pow_eq_zero h.1.1.2)
+      (eq_zero_of_pow_eq_zero h.1.2)
+      (eq_zero_of_pow_eq_zero h.2)
   all_goals apply_rules [sq_nonneg, add_nonneg]
 
 theorem normSq_ne_zero : normSq a ≠ 0 ↔ a ≠ 0 := normSq_eq_zero.not
