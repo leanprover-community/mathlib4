@@ -541,6 +541,9 @@ theorem fromRel_mono (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
     r₁ ≤ r₂ ↔ fromRel sym₁ ⊆ fromRel sym₂ :=
   ⟨fun hle ↦ Sym2.ind hle, fun hle a b ↦ @hle s(a, b)⟩
 
+def fromRel_orderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+  OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono .. |>.symm
+
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
   apply Set.eq_empty_of_forall_notMem fun e => _
   apply Sym2.ind
