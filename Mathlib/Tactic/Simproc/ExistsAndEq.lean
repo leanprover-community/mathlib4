@@ -48,11 +48,14 @@ abbrev HypQ := (P : Q(Prop)) × Q($P)
 instance : Inhabited HypQ where
   default := ⟨default, default⟩
 
-/-- Failure function for the `existsAndEq` simproc. -/
-private def fail {α : Type} : MetaM α := do
-  logError "existsAndEq simproc failed"
+/-- Used to indicate the current case should be unreachable, unless an invariant is violated.
+`context` should be used to indicate which case is asserted to be unreachable.
+For example, `"findEq: path for a conjunction should be nonempty"`. -/
+private def assertUnreachable {α : Type} (context : String) : MetaM α := do
+  let e := s!"existsAndEq: internal error, unreachable case has occurred:\n{context}."
+  logError e
   -- the following error will be caught by `simp` so we additionaly log it above
-  throwError "existsAndEq simproc failed"
+  throwError e
 
 /-- Constructs `∃ f₁ f₂ ... fₙ, body`, where `[f₁, ..., fₙ] = fvars`. -/
 def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
@@ -114,10 +117,11 @@ where
       return ([], ← getLCtx, P, y)
     if a == y && !(x.containsFVar a.fvarId!) then
       return ([], ← getLCtx, P, x)
-    fail
+    assertUnreachable
+      "findEq: some side of equality must be `a`, and the other must not depend on `a`"
   | ~q($L ∧ $R) =>
     match (generalizing := false) path with
-    | [] => fail
+    | [] => assertUnreachable "findEq: P is conjuction but path is empty"
     | .left :: tl =>
       let (fvars, lctx, P', a') ← go a q($L) tl
       return (fvars, lctx, q($P' ∧ $R), a')
@@ -126,10 +130,10 @@ where
       return (fvars, lctx, q($L ∧ $P'), a')
   | ~q(@Exists $β $pb) =>
     lambdaBoundedTelescope pb 1 fun bs (body : Q(Prop)) => do
-      let #[(b : Q($β))] := bs | fail
+      let #[(b : Q($β))] := bs | unreachable!
       let (fvars, lctx, P', a') ← go a q($body) path
       return (⟨_, _, b⟩ :: fvars, lctx, P', a')
-  | _ => fail
+  | _ => assertUnreachable s!"findEq: unexpected P = {← ppExpr P}"
 
 /-- When `P = ∃ f₁ ... fₙ, body`, where `exs = [f₁, ..., fₙ]`, this function takes
 `act : body → goal` and proves `P → goal` using `Exists.elim`.
@@ -154,7 +158,9 @@ def withNestedExistsElim {P body goal : Q(Prop)} (exs : List VarQ) (h : Q($P))
     let _ : $P =Q $body := ⟨⟩
     act q($h)
   | ⟨u, β, b⟩ :: tl =>
-    let ~q(@Exists.{u} $γ $p) := P | fail
+    let ~q(@Exists.{u} $γ $p) := P
+      | assertUnreachable <| "withNestedExistsElim: exs is not empty but P is not `Exists`.\n" ++
+          s!"P = {← ppExpr P}"
     let _ : $β =Q $γ := ⟨⟩
     withLocalDeclQ .anonymous .default q($p $b) fun hb => do
       let pf1 ← withNestedExistsElim tl hb act
@@ -200,30 +206,32 @@ where
   match goal with
   | ~q(@Exists $β $pb) =>
     match (generalizing := false) exs with
-    | [] => fail
+    | [] => assertUnreachable "mkAfterToBefore: goal is `Exists` but `exs` is empty"
     | ⟨v, γ, c⟩ :: exsTail =>
     let _ : u_1 =QL v := ⟨⟩
     let _ : $γ =Q $β := ⟨⟩
     let pf1 : Q($pb $c) := ← go h exsTail path
     return q(Exists.intro $c $pf1)
   | ~q(And $L $R) =>
-      match (generalizing := false) path with
-      | [] => fail
-      | .left :: tl =>
-        let ~q($L' ∧ $R') := P | fail
-        let _ : $R =Q $R' := ⟨⟩
-        let pfRight : Q($R) := q(And.right $h)
-        let pfLeft : Q($L) ← go q(And.left $h) exs tl
-        return q(And.intro $pfLeft $pfRight)
-      | .right :: tl =>
-        let ~q($L' ∧ $R') := P | fail
-        let _ : $L =Q $L' := ⟨⟩
-        let pfLeft : Q($L) := q(And.left $h)
-        let pfRight : Q($R) ← go q(And.right $h) exs tl
-        return q(And.intro $pfLeft $pfRight)
+    let ~q($L' ∧ $R') := P
+      | assertUnreachable "mkAfterToBefore: goal is `And` but `P` is not `And`"
+    match (generalizing := false) path with
+    | [] => assertUnreachable "mkAfterToBefore: goal is `And` but `exs` is empty"
+    | .left :: tl =>
+      let _ : $R =Q $R' := ⟨⟩
+      let pfRight : Q($R) := q(And.right $h)
+      let pfLeft : Q($L) ← go q(And.left $h) exs tl
+      return q(And.intro $pfLeft $pfRight)
+    | .right :: tl =>
+      let _ : $L =Q $L' := ⟨⟩
+      let pfLeft : Q($L) := q(And.left $h)
+      let pfRight : Q($R) ← go q(And.right $h) exs tl
+      return q(And.intro $pfLeft $pfRight)
   | _ =>
-    if !path.isEmpty then fail
-    let ~q($x = $y) := goal | fail
+    let ~q($x = $y) := goal
+      | assertUnreachable "mkAfterToBefore: unexpected goal: {← ppExpr goal}"
+    if !path.isEmpty then
+      assertUnreachable "mkAfterToBefore: `goal` is equality but `path` is not empty"
     let _ : $x =Q $y := ⟨⟩
     return q(rfl)
 
@@ -236,7 +244,7 @@ partial def withExistsElimAlongPathImp {u : Level} {α : Q(Sort u)}
   match P with
   | ~q(@Exists $β $pb) =>
     match (generalizing := false) exs with
-    | [] => fail
+    | [] => assertUnreachable "withExistsElimAlongPathImp: `P` is `Exists` but `exs` is empty"
     | ⟨v, γ, b⟩ :: exsTail =>
     let _ : u_1 =QL v := ⟨⟩
     let _ : $γ =Q $β := ⟨⟩
@@ -247,14 +255,15 @@ partial def withExistsElimAlongPathImp {u : Level} {α : Q(Sort u)}
       return q(Exists.elim $h $pf2)
   | ~q(And $L' $R') =>
       match (generalizing := false) path with
-      | [] => fail
+      | [] => assertUnreachable "withExistsElimAlongPathImp: `P` is `And` but `path` is empty"
       | .left :: tl =>
         withExistsElimAlongPathImp q(And.left $h) exs tl hs act
       | .right :: tl =>
         withExistsElimAlongPathImp q(And.right $h) exs tl hs act
   | ~q(@Eq.{u} $γ $x $y) =>
     let _ : $γ =Q $α := ⟨⟩
-    if !path.isEmpty then fail
+    if !path.isEmpty then
+      assertUnreachable "withExistsElimAlongPathImp: `P` is equality but `path` is not empty"
     if a == x then
       let _ : $a =Q $x := ⟨⟩
       let _ : $a' =Q $y := ⟨⟩
@@ -264,8 +273,8 @@ partial def withExistsElimAlongPathImp {u : Level} {α : Q(Sort u)}
       let _ : $a' =Q $x := ⟨⟩
       act q(Eq.symm $h) hs
     else
-      fail
-  | _ => fail
+      assertUnreachable "withExistsElimAlongPathImp: `P` is equality but niether of sides is `a`"
+  | _ => assertUnreachable s!"withExistsElimAlongPathImp: unexpected P = {← ppExpr P}"
 
 /-- Given `act : (a = a') → hb₁ → hb₂ → ... → hbₙ → goal` where `hb₁, ..., hbₙ` are hypotheses
 obtained when unpacking existential quantifiers with variables from `exs`, it proves `goal` using
@@ -297,7 +306,8 @@ def withNestedExistsIntro {P body : Q(Prop)} (exs : List VarQ)
     let _ : $P =Q $body := ⟨⟩
     act
   | ⟨u, β, b⟩ :: tl =>
-    let ~q(@Exists.{u} $γ $p) := P | fail
+    let ~q(@Exists.{u} $γ $p) := P
+      | assertUnreachable "withNestedExistsIntro: `exs` is not empty but `P` is not `Exists`"
     let _ : $β =Q $γ := ⟨⟩
     let pf ← withNestedExistsIntro tl act
     return q(Exists.intro $b $pf)
@@ -356,40 +366,42 @@ where
   match P with
   | ~q(@Exists $β $pb) =>
     match (generalizing := false) exs with
-    | [] => fail
+    | [] => assertUnreachable "mkBeforeToAfter: `P` is `Exists` but `exs` is empty"
     | ⟨v, γ, b⟩ :: exsTail =>
     let _ : u_1 =QL v := ⟨⟩
     let _ : $γ =Q $β := ⟨⟩
     match (generalizing := false) hs with
-    | [] => fail
+    | [] => assertUnreachable "mkBeforeToAfter: `P` is `Exists` but `hs` is empty"
     | ⟨H, hb⟩ :: hsTail =>
     let _ : $H =Q $pb $b := ⟨⟩
     let pf : Q($goal) := ← go hb exsTail hsTail path h_eq
     return pf
   | ~q(And $L $R) =>
-      match (generalizing := false) path with
-      | [] => fail
-      | .left :: tl =>
-        let ~q($L' ∧ $R') := goal | fail
-        let pa : Q($α → Prop) ← mkLambdaFVars #[a] R
-        let _ : $R =Q $pa $a := ⟨⟩
-        let _ : $R' =Q $pa $a' := ⟨⟩
-        let pfRight : Q($R) := q(And.right $h)
-        let pfRight' : Q($R') := q(Eq.mp (congrArg $pa $h_eq) $pfRight)
-        let pfLeft' : Q($L') ← go q(And.left $h) exs hs tl h_eq
-        return q(And.intro $pfLeft' $pfRight')
-      | .right :: tl =>
-        let ~q($L' ∧ $R') := goal | fail
-        let pa : Q($α → Prop) ← mkLambdaFVars #[a] L
-        let _ : $L =Q $pa $a := ⟨⟩
-        let _ : $L' =Q $pa $a' := ⟨⟩
-        let pfLeft : Q($L) := q(And.left $h)
-        let pfLeft' : Q($L') := q(Eq.mp (congrArg $pa $h_eq) $pfLeft)
-        let pfRight' : Q($R') ← go q(And.right $h) exs hs tl h_eq
-        return q(And.intro $pfLeft' $pfRight')
+    let ~q($L' ∧ $R') := goal
+      | assertUnreachable "mkBeforeToAfter: `P` is `And` but `goal` is not `And`"
+    match (generalizing := false) path with
+    | [] => assertUnreachable "mkBeforeToAfter: `P` is `And` but `path` is empty"
+    | .left :: tl =>
+      let pa : Q($α → Prop) ← mkLambdaFVars #[a] R
+      let _ : $R =Q $pa $a := ⟨⟩
+      let _ : $R' =Q $pa $a' := ⟨⟩
+      let pfRight : Q($R) := q(And.right $h)
+      let pfRight' : Q($R') := q(Eq.mp (congrArg $pa $h_eq) $pfRight)
+      let pfLeft' : Q($L') ← go q(And.left $h) exs hs tl h_eq
+      return q(And.intro $pfLeft' $pfRight')
+    | .right :: tl =>
+      let pa : Q($α → Prop) ← mkLambdaFVars #[a] L
+      let _ : $L =Q $pa $a := ⟨⟩
+      let _ : $L' =Q $pa $a' := ⟨⟩
+      let pfLeft : Q($L) := q(And.left $h)
+      let pfLeft' : Q($L') := q(Eq.mp (congrArg $pa $h_eq) $pfLeft)
+      let pfRight' : Q($R') ← go q(And.right $h) exs hs tl h_eq
+      return q(And.intro $pfLeft' $pfRight')
   | _ =>
-    if !path.isEmpty then fail
-    let ~q($x = $y) := goal | fail
+    let ~q($x = $y) := goal
+      | assertUnreachable s!"mkBeforeToAfter: unexpected goal = {← ppExpr goal}"
+    if !path.isEmpty then
+      assertUnreachable "mkBeforeToAfter: goal is equality but path is not empty"
     let _ : $x =Q $y := ⟨⟩
     return q(rfl)
 
@@ -401,7 +413,7 @@ or `a' = a` subexpression. -/
 simproc ↓ existsAndEq (Exists _) := fun e => do
   let_expr f@Exists α p := e | return .continue
   lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
-    let some u := f.constLevels![0]? | fail
+    let some u := f.constLevels![0]? | unreachable!
     have α : Q(Sort $u) := α; have p : Q($α → Prop) := p
     let some (a : Q($α)) := xs[0]? | return .continue
     let some path ← findEqPath a body | return .continue
