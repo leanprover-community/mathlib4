@@ -24,18 +24,21 @@ variable {D : Type u'} [Category.{v'} D] [Abelian D]
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 open DerivedCategory in
+/-- The additive homomorphism between `ShiftedHom` induced by
+`F.mapDerivedCategory` where `F` is exact. -/
 noncomputable def Functor.mapShiftedHomAddHom
     [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] (X Y : C) (n : ℤ) :
     ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n →+
     ShiftedHom ((singleFunctor D 0).obj (F.obj X)) ((singleFunctor D 0).obj (F.obj Y)) n := {
-    toFun f := (F.mapDerivedCategorySingleFunctor 0).inv.app X
-       ≫ f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) (n : ℤ)).map
-        ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))
-    map_zero' := by simp [ShiftedHom.map]
-    map_add' x y := by
-      rw [ShiftedHom.map, F.mapDerivedCategory.map_add]
-      simp [ShiftedHom.map] }
+  toFun f := (F.mapDerivedCategorySingleFunctor 0).inv.app X
+      ≫ f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) (n : ℤ)).map
+      ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))
+  map_zero' := by simp [ShiftedHom.map]
+  map_add' x y := by
+    rw [ShiftedHom.map, F.mapDerivedCategory.map_add]
+    simp [ShiftedHom.map] }
 
+/-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
 noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →+ Ext.{w'} (F.obj X) (F.obj Y) n :=
   letI := HasDerivedCategory.standard C
@@ -74,6 +77,7 @@ lemma Functor.mapShiftedHomAddHom_linear [HasDerivedCategory.{w} C] [HasDerivedC
   simp [ShiftedHom.map, F.mapDerivedCategory.map_smul]
 
 open DerivedCategory in
+/-- Upgrade of `F.mapShiftedHomAddHom` assuming `F` is linear. -/
 noncomputable def Functor.mapShiftedHomLinearMap
     [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] (X Y : C) (n : ℤ) :
     ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n →ₗ[R]
@@ -81,6 +85,7 @@ noncomputable def Functor.mapShiftedHomLinearMap
   __ := F.mapShiftedHomAddHom X Y n
   map_smul' := F.mapShiftedHomAddHom_linear R X Y n
 
+/-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
 noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →ₗ[R] Ext.{w'} (F.obj X) (F.obj Y) n :=
   letI := HasDerivedCategory.standard C
