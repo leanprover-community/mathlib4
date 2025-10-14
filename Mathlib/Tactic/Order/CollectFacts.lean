@@ -89,12 +89,20 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
 -- The linter claims `u` is unused, but it used on the next line.
 set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-def collectFactsImp : CollectFactsM Unit := do
+partial def collectFactsImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
+    CollectFactsM Unit := do
   let ctx ← getLCtx
-  for ldecl in ctx do
-    if ldecl.isImplementationDetail then
-      continue
-    processExpr ldecl.toExpr
+  for expr in hyps do
+    processExpr expr
+  processExpr negGoal
+  if !only? then
+    for ldecl in ctx do
+      if ldecl.isImplementationDetail then
+        continue
+      let e := ldecl.toExpr
+      if e == negGoal then
+        continue
+      processExpr e
 where
   /-- Extracts facts and atoms from the expression. -/
   processExpr (expr : Expr) : CollectFactsM Unit := do
@@ -133,13 +141,23 @@ where
         let yIdx ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
       | _ => return
+    | ~q($p ∧ $q) =>
+      processExpr q(And.left $expr)
+      processExpr q(And.right $expr)
+    | ~q(Exists $P) =>
+      processExpr q(Exists.choose_spec $expr)
     | _ => return
 
-/-- Collects facts from the local context. For each occurring type `α`, the returned map contains
-a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
-atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
-def collectFacts : MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := do
-  let res := (← collectFactsImp.run ∅).snd
+/-- Collects facts from the local context. `negGoal` is the negated goal, `hyps` is the expressions
+passed to the tactic using square brackets. If `only?` is true, we collect facts only from `hyps`
+and `negGoal`, otherwise we also use the local context.
+
+For each occurring type `α`, the returned map contains a pair `(idxToAtom, facts)`,
+where the map `idxToAtom` converts indices to found atomic expressions of type `α`,
+and `facts` contains all collected `AtomicFact`s about them. -/
+def collectFacts (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
+    MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := do
+  let res := (← (collectFactsImp only? hyps negGoal).run ∅).snd
   return res.map fun _ (atomToIdx, facts) =>
     let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := ∅) fun acc _ value =>
       acc.insert value.fst value.snd
