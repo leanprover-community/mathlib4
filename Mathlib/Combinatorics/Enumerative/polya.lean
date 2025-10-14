@@ -1,12 +1,15 @@
 /-
 Copyright (c) 2025 Beibei Xiong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors:Zihui Bai Zhengfeng Yang
+Authors: Zihui Bai Zhengfeng Yang
+-/
 
+import Mathlib.Data.Fintype.Basic
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.GroupTheory.Index
 
-! This file develops some basic lemmas about colorings under the action of
-  the permutation group `Equiv.Perm X`.
-
+/-!
 ## Main definitions and results
 
 * `MulAction (Equiv.Perm X) (X → Y)`: action of permutations on colorings by precomposition.
@@ -20,11 +23,6 @@ We model a coloring as a function `X → Y`, where `X` is a finite set of object
 and `Y` is a finite set of colors.
 The permutation group `Equiv.Perm X` acts on colorings by precomposition.
 -/
-
-import Mathlib.Data.Fintype.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.GroupTheory.Index
 
 open scoped BigOperators
 open MulAction Finset Equiv
@@ -88,7 +86,7 @@ theorem coloringEquiv_equivalence : Equivalence (coloringEquiv (X := X) (Y := Y)
     rintro c₁ c₂ ⟨f, h⟩
     use f⁻¹
     rw [← h]
-    simp
+    exact inv_smul_smul f c₁
   trans := by
     rintro c₁ c₂ c₃ ⟨f, h₁⟩ ⟨g, h₂⟩
     use g * f
