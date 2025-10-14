@@ -50,6 +50,7 @@ theorem keys_nil : @keys α β [] = [] :=
 theorem keys_cons {s} {l : List (Sigma β)} : (s :: l).keys = s.1 :: l.keys :=
   rfl
 
+@[simp, grind =]
 theorem keys_append : (l₁ ++ l₂).keys = l₁.keys ++ l₂.keys := by
   simp [keys]
 
@@ -61,16 +62,17 @@ theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
   have := exists_of_mem_map h
   grind
 
+@[grind =]
 theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigma.mk a b ∈ l :=
   ⟨exists_of_mem_keys, fun ⟨_, h⟩ => mem_keys_of_mem h⟩
 
 theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l := by
-  grind [mem_keys]
+  grind
 
 @[deprecated (since := "2025-05-23")] alias not_mem_keys := notMem_keys
 
 theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 := by
-  grind [mem_keys]
+  grind
 
 @[deprecated (since := "2025-04-27")]
 alias not_eq_key := ne_key
@@ -98,7 +100,6 @@ theorem nodupKeys_nil : @NodupKeys α β [] :=
 theorem nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} :
     NodupKeys (s :: l) ↔ s.1 ∉ l.keys ∧ NodupKeys l := by simp [keys, NodupKeys]
 
-@[grind =]
 theorem nodupKeys_middle {s : Sigma β} :
     (l₁ ++ s :: l₂).NodupKeys ↔ (s :: (l₁ ++ l₂)).NodupKeys := by
   simp_all [NodupKeys, keys, nodup_middle]
@@ -171,7 +172,7 @@ theorem dlookup_cons_eq (l) (a : α) (b : β a) : dlookup a (⟨a, b⟩ :: l) = 
 theorem dlookup_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → dlookup a (s :: l) = dlookup a l
   | ⟨_, _⟩, h => dif_neg h.symm
 
-@[grind _=_]
+@[grind =]
 theorem dlookup_isSome {a : α} {l : List (Sigma β)} : (dlookup a l).isSome ↔ a ∈ l.keys := by
   induction l with
   | nil => simp
@@ -249,6 +250,7 @@ theorem NodupKeys.map₂ {β β' : α → Type*} (f : (a : α) → β a → β' 
     (nd : l.NodupKeys) : (l.map (.map id f)).NodupKeys := by
   simp_all [NodupKeys, map₂_keys]
 
+@[simp, grind =]
 theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
     (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
   induction l₁ with
@@ -257,7 +259,7 @@ theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
 
 theorem sublist_dlookup {l₁ l₂ : List (Sigma β)} {a : α} {b : β a}
     (nd₂ : l₂.NodupKeys) (s : l₁ <+ l₂) (mem : b ∈ l₁.dlookup a) : b ∈ l₂.dlookup a := by
-  grind [Option.mem_def, dlookup_append, => perm_dlookup, → Sublist.exists_perm_append]
+  grind [Option.mem_def, => perm_dlookup, → Sublist.exists_perm_append]
 
 /-! ### `lookupAll` -/
 
