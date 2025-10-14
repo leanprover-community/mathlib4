@@ -167,7 +167,7 @@ theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
 variable (R)
 
 @[simp]
-theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [NoZeroSMulDivisors R A] [Nontrivial A] :
+theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [Module.IsTorsionFree R A] [Nontrivial A] :
     integralClosure R A = ⊥ :=
   (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
@@ -271,7 +271,7 @@ theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} 
 variable (R)
 
 /-- This is almost a duplicate of `IsIntegrallyClosedIn.integralClosure_eq_bot`,
-except the `NoZeroSMulDivisors` hypothesis isn't inferred automatically from `IsFractionRing`. -/
+except the `Module.IsTorsionFree` hypothesis isn't inferred automatically from `IsFractionRing`. -/
 @[simp]
 theorem integralClosure_eq_bot [IsIntegrallyClosed R] : integralClosure R K = ⊥ :=
   (integralClosure_eq_bot_iff K).mpr ‹_›

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.FieldSimp

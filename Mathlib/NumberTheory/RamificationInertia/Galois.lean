@@ -171,7 +171,7 @@ theorem ramificationIdxIn_eq_ramificationIdx :
 
 include G in
 theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime] (hp : p ≠ ⊥)
-    [NoZeroSMulDivisors A B] : p.ramificationIdxIn B ≠ 0 := by
+    [Module.IsTorsionFree A B] : p.ramificationIdxIn B ≠ 0 := by
   have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [ramificationIdxIn_eq_ramificationIdx p P G]
@@ -187,7 +187,7 @@ theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] :
   exact inertiaDeg_eq_of_isGaloisGroup p h.choose P G
 
 include G in
-theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [NoZeroSMulDivisors A B]
+theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [Module.IsTorsionFree A B]
     [Module.Finite A B] [Nontrivial B] :
     inertiaDegIn p B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))

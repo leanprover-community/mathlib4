@@ -7,8 +7,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
-public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
-public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Module.Torsion.Pi
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
@@ -86,8 +85,8 @@ section Module
 
 variable [Semiring S] [Module S M] [Module S M'] [SMulCommClass R' S M']
 
-instance [NoZeroSMulDivisors S M'] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M') :=
-  coe_injective.noZeroSMulDivisors _ rfl coe_smul
+instance [Module.IsTorsionFree S M'] : Module.IsTorsionFree S (M →ₛₗ[σ₁₂] M') :=
+  coe_injective.moduleIsTorsionFree _ coe_smul
 
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M') where
   add_smul _ _ _ := ext fun _ ↦ by

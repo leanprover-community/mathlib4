@@ -253,11 +253,11 @@ theorem isIntegral {x y : A} (hx : IsIntegral R x) (h : IsConjRoot R x y) :
 
 /--
 A variant of `IsConjRoot.eq_of_isConjRoot_algebraMap`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x` is a
+`Module.IsTorsionFree R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x` is a
 conjugate root of some element `algebraMap R S r` in the image of the base ring, then
 `x = algebraMap R S r`.
 -/
-theorem eq_algebraMap_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {r : R} {x : S}
+theorem eq_algebraMap_of_injective [Nontrivial R] [Module.IsTorsionFree R S] {r : R} {x : S}
     (h : IsConjRoot R (algebraMap R S r) x) (hf : Function.Injective (algebraMap R S)) :
     x = algebraMap R S r := by
   rw [IsConjRoot, minpoly.eq_X_sub_C_of_algebraMap_inj _ hf] at h
@@ -276,10 +276,10 @@ theorem eq_algebraMap {r : K} {x : S} (h : IsConjRoot K (algebraMap K S r) x) :
 
 /--
 A variant of `IsConjRoot.eq_zero`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x` is a
+`Module.IsTorsionFree R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x` is a
 conjugate root of `0`, then `x = 0`.
 -/
-theorem eq_zero_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {x : S} (h : IsConjRoot R 0 x)
+theorem eq_zero_of_injective [Nontrivial R] [Module.IsTorsionFree R S] {x : S} (h : IsConjRoot R 0 x)
     (hf : Function.Injective (algebraMap R S)) : x = 0 :=
   (algebraMap R S).map_zero ▸ (eq_algebraMap_of_injective ((algebraMap R S).map_zero ▸ h) hf)
 
@@ -293,11 +293,11 @@ end IsConjRoot
 
 /--
 A variant of `IsConjRoot.eq_of_isConjRoot_algebraMap`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x` is a
+`Module.IsTorsionFree R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `x` is a
 conjugate root of some element `algebraMap R S r` in the image of the base ring, then
 `x = algebraMap R S r`.
 -/
-theorem isConjRoot_iff_eq_algebraMap_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {r : R}
+theorem isConjRoot_iff_eq_algebraMap_of_injective [Nontrivial R] [Module.IsTorsionFree R S] {r : R}
     {x : S} (hf : Function.Injective (algebraMap R S)) :
     IsConjRoot R (algebraMap R S r) x ↔ x = algebraMap R S r :=
   ⟨fun h => eq_algebraMap_of_injective h hf, fun h => h.symm ▸ rfl⟩
@@ -323,10 +323,10 @@ theorem isConjRoot_iff_eq_algebraMap' {r : K} {x : S} :
 
 /--
 A variant of `IsConjRoot.iff_eq_zero`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. `x` is a
+`Module.IsTorsionFree R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. `x` is a
 conjugate root of `0` if and only if `x = 0`.
 -/
-theorem isConjRoot_zero_iff_eq_zero_of_injective [Nontrivial R] {x : S} [NoZeroSMulDivisors R S]
+theorem isConjRoot_zero_iff_eq_zero_of_injective [Nontrivial R] {x : S} [Module.IsTorsionFree R S]
     (hf : Function.Injective (algebraMap R S)) : IsConjRoot R 0 x ↔ x = 0 :=
   ⟨fun h => eq_zero_of_injective h hf, fun h => h.symm ▸ rfl⟩
 
@@ -348,10 +348,10 @@ namespace IsConjRoot
 
 /--
 A variant of `IsConjRoot.ne_zero`, only assuming `Nontrivial R`,
-`NoZeroSMulDivisors R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `y` is
+`Module.IsTorsionFree R A` and `Function.Injective (algebraMap R A)` instead of `Field R`. If `y` is
 a conjugate root of a nonzero element `x`, then `y` is not zero.
 -/
-theorem ne_zero_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {x y : S} (hx : x ≠ 0)
+theorem ne_zero_of_injective [Nontrivial R] [Module.IsTorsionFree R S] {x y : S} (hx : x ≠ 0)
     (h : IsConjRoot R x y) (hf : Function.Injective (algebraMap R S)) : y ≠ 0 :=
   fun g => hx (eq_zero_of_injective (g ▸ h.symm) hf)
 

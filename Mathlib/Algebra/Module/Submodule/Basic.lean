@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Module.Submodule.Defs
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Submodules of a module
@@ -82,10 +80,8 @@ instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐ�
     [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S p :=
   p.toSubMulAction.isCentralScalar
 
-instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
-  ⟨fun {c} {x : p} h =>
-    have : c = 0 ∨ (x : M) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
+instance moduleIsTorsionFree [Module.IsTorsionFree R M] : Module.IsTorsionFree R p :=
+  Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
 section AddAction
 
