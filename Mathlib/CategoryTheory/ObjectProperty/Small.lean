@@ -16,11 +16,11 @@ In this file, given `P : ObjectProperty C`, we define
 
 -/
 
-universe w v u
+universe w v v' u u'
 
 namespace CategoryTheory.ObjectProperty
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 /-- A property of objects is small relative to a universe `w`
 if the corresponding subtype is. -/
@@ -143,5 +143,20 @@ instance {α : Type*} (P : α → ObjectProperty C)
     simp only [iSup_le_iff]
     intro a
     exact (hQ a).trans (monotone_isoClosure (le_iSup Q a))
+
+instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] (F : C ⥤ D) :
+    ObjectProperty.Small.{w} (P.strictMap F) :=
+  small_of_surjective (f := fun (X : Subtype P) ↦ ⟨F.obj X.1, ⟨_, X.2⟩⟩) (by
+    rintro ⟨_, ⟨X, hX⟩⟩
+    exact ⟨⟨X, hX⟩, rfl⟩)
+
+instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P] (F : C ⥤ D) :
+    ObjectProperty.EssentiallySmall.{w} (P.map F) := by
+  obtain ⟨Q, _, hQ⟩ := EssentiallySmall.exists_small_le'.{w} P
+  have : P.map F ≤ (Q.strictMap F).isoClosure := by
+    rintro X ⟨Y, hY, ⟨e⟩⟩
+    obtain ⟨Z, hZ, ⟨e'⟩⟩ := hQ _ hY
+    exact ⟨_, ⟨_, hZ⟩, ⟨e.symm ≪≫ F.mapIso e'⟩⟩
+  exact EssentiallySmall.of_le this
 
 end CategoryTheory.ObjectProperty
