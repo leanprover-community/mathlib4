@@ -689,6 +689,15 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
   rcases le_total m n with hm | hm
   exacts [⟨m, hm, refl_mem_uniformity ha⟩, ⟨n, le_refl n, hn m hm n le_rfl⟩]
 
+/- TVS III.8 for complete spaces -/
+theorem isCompact_closure_of_totallyBounded [CompleteSpace α] {s : Set α} (ht : TotallyBounded s) :
+    IsCompact (closure s) := (TotallyBounded.closure ht).isCompact_of_isClosed isClosed_closure
+
+/-- The Bornology arising from the Totally Bounded sets -/
+abbrev totallyBoundedBornology : Bornology α :=
+  Bornology.ofBounded (setOf (TotallyBounded)) (totallyBounded_empty)
+    (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) totallyBounded_singleton
+
 /-- Given a family of points `xs n`, a family of entourages `V n` of the diagonal and a family of
 natural numbers `u n`, the intersection over `n` of the `V n`-neighborhood of `xs 1, ..., xs (u n)`.
 Designed to be relatively compact when `V n` tends to the diagonal. -/
