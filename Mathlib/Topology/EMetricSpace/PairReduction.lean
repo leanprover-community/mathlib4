@@ -9,27 +9,46 @@ import Mathlib.Order.CompletePartialOrder
 /-!
 # Pair Reduction
 
-The goal of this file is to prove the theorem `pair_reduction` which is used to prove a
-Kolmogorov–Chentsov theorem for general metric spaces. Given pseudometric spaces `T` and `E`,
-`c ≥ 0`, and a finite subset `J` of `T` such that `|J| ≤ aⁿ` for some `a ≥ 0` and `n : ℕ`,
-`pair_reduction` states that there exists a set `K ⊆ J²` such that for any function `f : T → E`:
+The goal of this file is to prove the theorem `pair_reduction`. This is essentially Lemma 6.1 in
+[kratschmer_urusov2023] which is an extension of Lemma B.2.7. in [talagrand2014].
+Given pseudometric spaces `T` and `E`, `c ≥ 0`, and a finite subset `J` of `T` such that
+`|J| ≤ aⁿ` for some `a ≥ 0` and `n : ℕ`, `pair_reduction` states that there exists a set `K ⊆ J²`
+such that for any function `f : T → E`:
 
 1. `|K| ≤ a|J|`
 2. `∀ s t ∈ K, d(s, t) ≤ cn`
 3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
 
-The key point being that it reduces bounding a supremum over points "close" in `J²` (which can be a
-set of size up to `|J|²`) to bounding a supremum over a set of points with size linear in `|J|`
-(whose points are still "close").
+When applying the chaining technique for bounding the supremum of the incremements of stochastic
+processes, `pair_reduction` is used to reduce the order of the dependence of the bound on the
+covering numbers of the pseudometric space. As a simple example, suppose `T` has an `ε`-covering
+number `N` and suppose `J` is an `ε`-covering of `T` with `|J| = N`. Let `f : Ω → T → E` be any
+stochastic process such that `𝔼 d(f(s), f(t)) ≤ d (s, t)` for all `s,t ∈ T`. Then naively
+```
+  𝔼[sup_{(s, t) ∈ J} : d(s, t) ≤ c} d(f(s), f(t))]
+    ≤ ∑_{(s, t) ∈ J² : d(s, t) ≤ c} 𝔼[d(f(s), f(t))]
+    ≤ |J|² c
+    = c N²
+```
+but applying `pair_reduction` with `n = log |J|` we get
+```
+  𝔼[sup_{(s, t) ∈ J : d(s, t) ≤ c} d(f(s), f(t))]
+    ≤ 2 𝔼[sup_{(s, t) ∈ K} d(f(s), f(t))]
+    ≤ 2 ∑_{(s, t) ∈ K} 𝔼[d(f(s), f(t))]
+    ≤ 2 a |J| c log |J|
+    ≤ 2 a c N log N
+```
+`pair_reduction` is used in [kratschmer_urusov2023] to prove a form of the Kolmogorov-Chentsov
+theorem that applies to stochastic processses which satisfy the Kolmogorov condition but works
+on very general metric spaces.
 
-This file was written with the goal of being used in the proof of a Kolmogorov–Chentsov theorem.
-In that application `f(s)` is random and our goal is to find an upper bound on the expectation
-of `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t))`.
-The way we deal with the expectation of a supremum is to bound it by a sum over the pairs.
-Suppose for simplicity that for all `u`, if `d(s, t) ≤ u` then `𝔼[d(f(s), f(t))] ≤ u`.
-If we work directly on the sum over all pairs we get a final upper bound `|J|² c`.
-However with the pair reduction lemma we get `2 𝔼[sup_{(s, t) ∈ K} d(f(s), f(t))] ≤ 2 a |J| c n`,
-and since `n = log|J|` we went from `|J|²` to `|J| log|J|`.
+## Implimentation notes
+
+## References
+
+* [V. Krätschmer, M. Urusov, *A Kolmogorov–Chentsov Type Theorem on General Metric Spaces with
+  Applications to Limit Theorems for Banach-Valued Processes*][kratschmer_urusov2023]
+* [M. Talagrand, *Upper and Lower Bounds for Stochastic Processes*][talagrand2014]
 
 -/
 
