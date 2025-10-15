@@ -219,7 +219,7 @@ def corepresentableBy₂' :
 
 /-- The isomorphism of functors between
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
-`(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that coresponsds to the associator
+`(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that corresponds to the associator
 isomorphism for Day convolution through `corepresentableBy₂` and `corepresentableBy₂`. -/
 @[simps!]
 def associatorCorepresentingIso :
@@ -249,7 +249,7 @@ def associatorCorepresentingIso :
       isoWhiskerLeft _ <|
         coyoneda.mapIso <| Iso.op <| NatIso.ofComponents (fun _ ↦ α_ _ _ _|>.symm)
 
-/-- The asociator isomorphism for Day convolution -/
+/-- The associator isomorphism for Day convolution -/
 def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
   corepresentableBy₂' F G H|>.ofIso (associatorCorepresentingIso F G H)|>.uniqueUpToIso <|
     corepresentableBy₂ F G H
@@ -894,7 +894,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
         tensorHom_id, id_whiskerRight, Category.id_comp]
       dsimp [DayConvolution.convolution]
       simp)
-    (tensor_comp := fun _ _ _ _ => by
+    (tensorHom_comp_tensorHom := fun _ _ _ _ => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_comp]
       apply (corepresentableBy (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective

@@ -3,6 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.WithTop
@@ -43,7 +44,8 @@ deriving instance Zero, CommSemiring, Nontrivial,
   IsOrderedRing, CanonicallyOrderedAdd,
   OrderBot, OrderTop, OrderedSub, SuccOrder,
   WellFoundedLT,
-  CharZero
+  CharZero,
+  NoZeroDivisors
   for ENat
 
 -- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
@@ -327,6 +329,8 @@ lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m
 lemma ne_top_iff_exists : n ≠ ⊤ ↔ ∃ m : ℕ, ↑m = n := WithTop.ne_top_iff_exists
 
 lemma eq_top_iff_forall_ne : n = ⊤ ↔ ∀ m : ℕ, ↑m ≠ n := WithTop.eq_top_iff_forall_ne
+lemma forall_ne_top {p : ℕ∞ → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : ℕ, p x := WithTop.forall_ne_top
+lemma exists_ne_top {p : ℕ∞ → Prop} : (∃ x ≠ ⊤, p x) ↔ ∃ x : ℕ, p x := WithTop.exists_ne_top
 lemma eq_top_iff_forall_gt : n = ⊤ ↔ ∀ m : ℕ, m < n := WithTop.eq_top_iff_forall_gt
 lemma eq_top_iff_forall_ge : n = ⊤ ↔ ∀ m : ℕ, m ≤ n := WithTop.eq_top_iff_forall_ge
 
@@ -350,6 +354,14 @@ lemma addLECancellable_coe (a : ℕ) : AddLECancellable (a : ℕ∞) := WithTop.
 
 protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c - a :=
   (addLECancellable_of_ne_top ha).le_tsub_of_add_le_left
+
+protected lemma le_sub_of_add_le_right (hb : b ≠ ⊤) : a + b ≤ c → a ≤ c - b :=
+  (addLECancellable_of_ne_top hb).le_tsub_of_add_le_right
+
+protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
+  cases b
+  · simp
+  · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_coe_add_one_iff.mp <| lt_tsub_iff_right.mp h
 
 protected lemma sub_sub_cancel (h : a ≠ ⊤) (h2 : b ≤ a) : a - (a - b) = b :=
   (addLECancellable_of_ne_top <| ne_top_of_le_ne_top h tsub_le_self).tsub_tsub_cancel_of_le h2
@@ -394,6 +406,21 @@ lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
 lemma self_le_mul_left (a : ℕ∞) (hc : c ≠ 0) : a ≤ c * a := by
   rw [mul_comm]
   exact ENat.self_le_mul_right a hc
+
+instance : Unique ℕ∞ˣ where
+  uniq x := by
+    have := x.val_inv
+    have x_top : x.val ≠ ⊤ := by
+      intro h
+      simp [h] at this
+    have x_inv_top : x.inv ≠ ⊤ := by
+      intro h
+      simp only [h, ne_eq, x.ne_zero, not_false_eq_true, mul_top, top_ne_one] at this
+    obtain ⟨y, x_y⟩ := ne_top_iff_exists.1 x_top
+    obtain ⟨z, x_z⟩ := ne_top_iff_exists.1 x_inv_top
+    replace x_y := x_y.symm
+    rw [x_y, ← x_z, ← coe_mul, ← coe_one, coe_inj, _root_.mul_eq_one] at this
+    rwa [this.1, Nat.cast_one, Units.val_eq_one] at x_y
 
 section withTop_enat
 
@@ -521,7 +548,7 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
     toFun := ENat.map f
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
-        (Option.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
+        (WithTop.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
@@ -541,8 +568,6 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
-
-instance : NoZeroDivisors ℕ∞ := inferInstanceAs (NoZeroDivisors (WithTop ℕ))
 
 end ENat
 
