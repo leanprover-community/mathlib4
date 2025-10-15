@@ -464,7 +464,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
 
 end PairReduction
 
-open Classical PairReduction in
+open PairReduction in
 theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [PseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J ×ˢ J
       ∧ #K ≤ a * #J
