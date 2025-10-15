@@ -7,6 +7,8 @@ import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.SuppressCompilation
 /-!
 # Composable arrows
 
@@ -898,3 +900,5 @@ def Functor.mapComposableArrowsOpIso :
 end
 
 end CategoryTheory
+
+#min_imports
