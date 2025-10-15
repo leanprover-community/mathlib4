@@ -48,7 +48,7 @@ theorem card_functions_sum_skolem₁ :
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
-  · refine sum_le_sum _ _ fun n => ?_
+  · gcongr with n
     rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{v}]
     refine ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => ?_⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩
