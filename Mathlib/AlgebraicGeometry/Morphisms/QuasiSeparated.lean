@@ -270,7 +270,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     -- swap; · rw [X.basicOpen_res]; exact inf_le_right
     -- Since `S ∪ U` is quasi-separated, `S ∩ U` can be covered by finite affine opens.
     obtain ⟨s, hs', hs⟩ :=
-      (isCompactOpen_iff_eq_finset_affine_union _).mp
+      isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp
         ⟨hSU _ _ Set.subset_union_left S.2 hS Set.subset_union_right U.1.2
             U.2.isCompact,
           (S ⊓ U.1).2⟩
