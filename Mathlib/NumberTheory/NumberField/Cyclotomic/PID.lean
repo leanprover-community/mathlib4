@@ -5,8 +5,8 @@ Authors: Riccardo Brasca
 -/
 
 import Mathlib.NumberTheory.NumberField.ClassNumber
-import Mathlib.NumberTheory.Cyclotomic.Rat
-import Mathlib.NumberTheory.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.
