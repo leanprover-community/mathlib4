@@ -17,6 +17,7 @@ import Mathlib.RingTheory.Valuation.Extension
 import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 import Mathlib.Algebra.Ring.Subring.IntPolynomial
 import Mathlib.Analysis.AbsoluteValue.Equivalence
+import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 
 /-!
 # Finite places of number fields
@@ -760,8 +761,10 @@ theorem compact_adicCompletionIntegers :
   · rw [Valued.integer.totallyBounded_iff_finite_residueField]
     obtain ⟨𝔭, _⟩ := exists_liesOver (𝓞 ℚ) _ v
     have : Finite (IsLocalRing.ResidueField (𝔭.adicCompletionIntegers ℚ)) := by
-      have : CompactSpace (𝔭.adicCompletionIntegers ℚ) := by sorry
-      erw [compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField] at this
+      have : CompactSpace (𝔭.adicCompletionIntegers ℚ) :=
+        𝔭.adicCompletionIntegersEquivPadicInt.toHomeomorph.symm.compactSpace
+      erw [compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField]
+        at this
       exact this.2.2
     let _ := instFiniteIntegers 𝔭 v
     exact IsLocalRing.ResidueField.finite_of_finite this (S := v.adicCompletionIntegers K)
