@@ -16,7 +16,7 @@ Given pseudometric spaces `T` and `E`, `c ≥ 0`, and a finite subset `J` of `T`
 such that for any function `f : T → E`:
 
 1. `|K| ≤ a|J|`
-2. `∀ s t ∈ K, d(s, t) ≤ cn`
+2. `∀ (s, t) ∈ K, d(s, t) ≤ cn`
 3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
 
 When applying the chaining technique for bounding the supremum of the incremements of stochastic
