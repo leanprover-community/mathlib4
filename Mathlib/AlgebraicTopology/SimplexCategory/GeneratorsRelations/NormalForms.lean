@@ -82,6 +82,14 @@ theorem isAdmissible_iff_isChain_and_le : IsAdmissible m L ↔
       fun | 0 => fun _ => h.1 | k + 1 => fun _ => (h.2 k _).trans (by grind),
       fun h => ⟨h 0 (by grind), fun k _ => (h (k + 1) (by grind)).trans (by grind)⟩⟩
 
+theorem isAdmissible_iff_pairwise_and_le : IsAdmissible m L ↔
+    L.Pairwise (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k := by
+  rw [isAdmissible_iff_isChain_and_le, List.isChain_iff_pairwise]
+
+theorem isAdmissible_iff_sorted_and_le : IsAdmissible m L ↔
+    L.Sorted (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k :=
+  isAdmissible_iff_pairwise_and_le
+
 end IsAdmissible
 
 namespace IsAdmissible
