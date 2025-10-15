@@ -314,5 +314,3 @@ theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x�
     (div_nonneg (sub_nonneg_of_le ha.1) zero_le_two) (by ring)
 
 end Real
-
-#min_imports

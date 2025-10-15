@@ -641,5 +641,3 @@ lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
   exact (FaithfulSMul.algebraMap_eq_one_iff R A).mp hab
 
 end CommSemiring
-
-#min_imports
