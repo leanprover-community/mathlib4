@@ -335,7 +335,7 @@ theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = Li
 instance one : One (M₁ →L[R₁] M₁) :=
   ⟨.id R₁ M₁⟩
 
-theorem one_def : (1 : M₁ →L[R₁] M₁) = id R₁ M₁ :=
+theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ :=
   rfl
 
 @[simp, norm_cast]
