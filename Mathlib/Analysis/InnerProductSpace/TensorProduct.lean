@@ -55,7 +55,7 @@ namespace TensorProduct
 
 /-- Bilinear map for the inner product on tensor products.
 On pure tensors: `inner_ (a ⊗ₜ b) (c ⊗ₜ d) = ⟪a, c⟫ * ⟪b, d⟫`. -/
-private abbrev inner_ :=
+private abbrev inner_ : E ⊗[𝕜] F →ₗ⋆[𝕜] E ⊗[𝕜] F →ₗ[𝕜] 𝕜 :=
   (lift <| mapBilinear 𝕜 E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
 
 instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
@@ -65,7 +65,7 @@ private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := r
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
-lemma inner_map_linearIsometry_linearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x y : E ⊗[𝕜] F) :
+@[simp] lemma inner_map_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x y : E ⊗[𝕜] F) :
     inner 𝕜 (map f.toLinearMap g.toLinearMap x) (map f.toLinearMap g.toLinearMap y) = inner 𝕜 x y :=
   x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
     (by simp_all [inner_def])) (by simp_all [inner_def])
@@ -87,8 +87,7 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
   rw [← hz.choose_spec] at hx
-  simp_rw [mapIncl, ← Submodule.subtypeₗᵢ_toLinearMap,
-    inner_map_linearIsometry_linearIsometry] at hx
+  simp_rw [mapIncl, ← Submodule.subtypeₗᵢ_toLinearMap, inner_map_map] at hx
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
@@ -120,7 +119,7 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
   rw [← hz.choose_spec]
-  simp_rw [mapIncl, ← Submodule.subtypeₗᵢ_toLinearMap, inner_map_linearIsometry_linearIsometry]
+  simp_rw [mapIncl, ← Submodule.subtypeₗᵢ_toLinearMap, inner_map_map]
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
@@ -209,7 +208,7 @@ the linear isometry version of `TensorProduct.map f g` when `f` and `g` are line
 def mapLinearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
     E ⊗[𝕜] F →ₗᵢ[𝕜] G ⊗[𝕜] H where
   toLinearMap := map f.toLinearMap g.toLinearMap
-  norm_map' x := by simp [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_map_linearIsometry_linearIsometry]
+  norm_map' x := by simp [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_map_map]
 
 @[simp] lemma mapLinearIsometry_apply (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
     mapLinearIsometry f g x = map f.toLinearMap g.toLinearMap x := rfl
