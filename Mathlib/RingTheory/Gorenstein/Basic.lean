@@ -169,9 +169,22 @@ instance (f : R →+* S) : (extendScalars' f).Additive where
 
 lemma extendScalars'_map_shortExact (f : R →+* S) (flat : f.Flat)
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.ShortExact) :
-    (T.map (extendScalars' f)).ShortExact := by
+    (T.map (extendScalars' f)).ShortExact where
+  exact := by
+    have : Function.Exact (ExtendScalars'.map' f T.f) (ExtendScalars'.map' f T.g) := by
 
-  sorry
+      sorry
+    exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
+  mono_f := by
+    have : Function.Injective (ExtendScalars'.map' f T.f) := by
+
+      sorry
+    exact (mono_iff_injective (T.map (extendScalars' f)).f).mpr this
+  epi_g := by
+    have : Function.Surjective (ExtendScalars'.map' f T.g) := by
+
+      sorry
+    exact (epi_iff_surjective (T.map (extendScalars' f)).g).mpr this
 
 lemma extendScalars'_preservesFiniteLimits (f : R →+* S)
     (flat : f.Flat) : Limits.PreservesFiniteLimits (extendScalars' f) := by
@@ -241,7 +254,7 @@ lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCom
   rfl
 
 end basechange
-/-
+
 lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
   have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
     by_contra eq
@@ -985,4 +998,4 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
 
     sorry
   sorry
--/-/
+-/
