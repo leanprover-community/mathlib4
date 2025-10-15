@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Const
 
 /-!
 # Additive operations on derivatives
@@ -126,6 +127,37 @@ theorem fderivWithin_const_smul (hxs : UniqueDiffWithinAt 𝕜 s x)
     fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x :=
   fderivWithin_fun_const_smul hxs h c
 
+/-- If `c` is invertible, `c • f` is differentiable at `x` within `s` if and only if `f` is. -/
+lemma differentiableWithinAt_smul_iff (c : R) [Invertible c] :
+    DifferentiableWithinAt 𝕜 (c • f) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.const_smul c⟩
+  apply (h.const_smul ⅟c).congr_of_eventuallyEq ?_ (by simp)
+  filter_upwards with x using by simp
+
+/-- A version of `fderivWithin_const_smul` without differentiability hypothesis:
+in return, the constant `c` must be invertible, i.e. if `R` is a field. -/
+theorem fderivWithin_const_smul_of_invertible (c : R) [Invertible c]
+    (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
+  by_cases h : DifferentiableWithinAt 𝕜 f s x
+  · exact (h.hasFDerivWithinAt.const_smul c).fderivWithin hs
+  · obtain (rfl | hc) := eq_or_ne c 0
+    · simp
+    have : ¬DifferentiableWithinAt 𝕜 (c • f) s x := by
+      contrapose! h
+      exact (differentiableWithinAt_smul_iff c).mp h
+    simp [fderivWithin_zero_of_not_differentiableWithinAt h,
+      fderivWithin_zero_of_not_differentiableWithinAt this]
+
+/-- Special case of `fderivWithin_const_smul_of_invertible` over a field: any constant is allowed -/
+lemma fderivWithin_const_smul_of_field (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
+  obtain (rfl | ha) := eq_or_ne c 0
+  · simp
+  · have : Invertible c := invertibleOfNonzero ha
+    ext x
+    simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
+
 @[deprecated (since := "2025-06-14")] alias fderivWithin_const_smul' := fderivWithin_const_smul
 
 theorem fderiv_fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
@@ -135,6 +167,23 @@ theorem fderiv_fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
 theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x :=
   (h.hasFDerivAt.const_smul c).fderiv
+
+/-- If `c` is invertible, `c • f` is differentiable at `x` if and only if `f` is. -/
+lemma differentiableAt_smul_iff (c : R) [Invertible c] :
+    DifferentiableAt 𝕜 (c • f) x ↔ DifferentiableAt 𝕜 f x := by
+  rw [← differentiableWithinAt_univ, differentiableWithinAt_smul_iff, differentiableWithinAt_univ]
+
+/-- A version of `fderiv_const_smul` without differentiability hypothesis: in return, the constant
+`c` must be invertible, i.e. if `R` is a field. -/
+theorem fderiv_const_smul_of_invertible (c : R) [Invertible c] :
+    fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x := by
+  simp [← fderivWithin_univ, fderivWithin_const_smul_of_invertible c uniqueDiffWithinAt_univ]
+
+/-- Special case of `fderiv_const_smul_of_invertible` over a field: any constant is allowed -/
+lemma fderiv_const_smul_of_field (c : 𝕜) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
+  simp_rw [← fderivWithin_univ]
+  ext x
+  simp [fderivWithin_const_smul_of_field c uniqueDiffWithinAt_univ]
 
 @[deprecated (since := "2025-06-14")] alias fderiv_const_smul' := fderiv_const_smul
 
@@ -148,7 +197,7 @@ section Add
 @[fun_prop]
 nonrec theorem HasStrictFDerivAt.fun_add (hf : HasStrictFDerivAt f f' x)
     (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
-   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
+  .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
     simp only [map_sub, add_apply]
     abel
 
@@ -895,11 +944,11 @@ theorem hasFDerivAt_sub_const_iff (c : F) : HasFDerivAt (f · - c) f' x ↔ HasF
 alias ⟨_, HasFDerivAt.sub_const⟩ := hasFDerivAt_sub_const_iff
 
 @[fun_prop]
-theorem hasStrictFDerivAt_sub_const {x : F} (c : F) : HasStrictFDerivAt (· - c) (id 𝕜 F) x :=
+theorem hasStrictFDerivAt_sub_const {x : F} (c : F) : HasStrictFDerivAt (· - c) (.id 𝕜 F) x :=
   (hasStrictFDerivAt_id x).sub_const c
 
 @[fun_prop]
-theorem hasFDerivAt_sub_const {x : F} (c : F) : HasFDerivAt (· - c) (id 𝕜 F) x :=
+theorem hasFDerivAt_sub_const {x : F} (c : F) : HasFDerivAt (· - c) (.id 𝕜 F) x :=
   (hasFDerivAt_id x).sub_const c
 
 @[fun_prop]

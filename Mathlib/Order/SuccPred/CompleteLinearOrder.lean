@@ -73,7 +73,7 @@ noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α
     rw [not_isMax_iff] at h
     exact hs.not_gt (csInf_mem h)
   succ_le_of_lt {a b} ha := by
-    simp [ha.not_isMax]
+    simp only [ha.not_isMax, ↓reduceIte]
     exact csInf_le ⟨a, fun _ hc => hc.le⟩ ha
 
 end ConditionallyCompleteLinearOrder
@@ -93,11 +93,6 @@ lemma csSup_mem_of_not_isSuccPrelimit'
 lemma exists_eq_ciSup_of_not_isSuccPrelimit'
     (hf : BddAbove (range f)) (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccPrelimit' hf hf'
-
-@[deprecated IsLUB.mem_of_not_isSuccPrelimit (since := "2025-01-05")]
-lemma IsLUB.exists_of_not_isSuccPrelimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) :
-    ∃ i, f i = x :=
-  hf.mem_of_not_isSuccPrelimit hx
 
 theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
   obtain rfl | hx := eq_bot_or_bot_lt x
@@ -153,10 +148,5 @@ lemma exists_eq_iSup_of_not_isSuccPrelimit (hf : ¬ IsSuccPrelimit (⨆ i, f i))
 lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i)) :
     ∃ i, f i = ⨅ i, f i :=
   sInf_mem_of_not_isPredPrelimit hf
-
-@[deprecated IsGLB.mem_of_not_isPredLimit (since := "2025-01-05")]
-lemma IsGLB.exists_of_not_isPredPrelimit (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) :
-    ∃ i, f i = x :=
-  hf.mem_of_not_isPredPrelimit hx
 
 end CompleteLinearOrder

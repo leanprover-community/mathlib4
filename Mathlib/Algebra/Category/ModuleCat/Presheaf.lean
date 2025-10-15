@@ -44,11 +44,11 @@ structure PresheafOfModules where
   map_id (X : Cᵒᵖ) :
     map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)).hom
       (congrArg RingCat.Hom.hom (R.map_id X))).inv.app _ := by
-        aesop_cat
+        cat_disch
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars _).map (map g) ≫
       (ModuleCat.restrictScalarsComp' (R.map f).hom (R.map g).hom (R.map (f ≫ g)).hom
-        (congrArg RingCat.Hom.hom <| R.map_comp f g)).inv.app _ := by aesop_cat
+        (congrArg RingCat.Hom.hom <| R.map_comp f g)).inv.app _ := by cat_disch
 
 namespace PresheafOfModules
 
@@ -71,7 +71,7 @@ structure Hom where
   app (X : Cᵒᵖ) : M₁.obj X ⟶ M₂.obj X
   naturality {X Y : Cᵒᵖ} (f : X ⟶ Y) :
       M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y) =
-        app X ≫ M₂.map f := by aesop_cat
+        app X ≫ M₂.map f := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.naturality
 
@@ -104,7 +104,7 @@ lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M�
 def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
     (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
       M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y).hom =
-        (app X).hom ≫ M₂.map f := by aesop_cat) : M₁ ≅ M₂ where
+        (app X).hom ≫ M₂.map f := by cat_disch) : M₁ ≅ M₂ where
   hom := { app := fun X ↦ (app X).hom }
   inv :=
     { app := fun X ↦ (app X).inv
@@ -115,7 +115,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
 noncomputable def presheaf : Cᵒᵖ ⥤ Ab where
   obj X := (forget₂ _ _).obj (M.obj X)
-  map f := AddCommGrp.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
+  map f := AddCommGrpCat.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
 
 @[simp]
 lemma presheaf_obj_coe (X : Cᵒᵖ) :
@@ -134,7 +134,7 @@ variable (R) in
 noncomputable def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
   obj M := M.presheaf
   map f :=
-    { app := fun X ↦ AddCommGrp.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
+    { app := fun X ↦ AddCommGrpCat.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
       naturality := fun X Y g ↦ by ext x; exact naturality_apply f g x }
 
 @[simp]
@@ -270,7 +270,7 @@ noncomputable def unit : PresheafOfModules R where
       (Y := (ModuleCat.restrictScalars (R.map f).hom).obj (ModuleCat.of (R.obj Y) (R.obj Y)))
     { toFun := fun x ↦ R.map f x
       map_add' := by simp
-      map_smul' := by aesop_cat }
+      map_smul' := by cat_disch }
 
 lemma unit_map_one {X Y : Cᵒᵖ} (f : X ⟶ Y) : (unit R).map f (1 : R.obj X) = (1 : R.obj Y) :=
   (R.map f).hom.map_one
@@ -375,7 +375,7 @@ noncomputable def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) 
 
 @[simp]
 lemma forgetToPresheafModuleCatObjMap_apply {Y Z : Cᵒᵖ} (f : Y ⟶ Z) (m : M.obj Y) :
-  (forgetToPresheafModuleCatObjMap X hX M f).hom m = M.map f m := rfl
+    (forgetToPresheafModuleCatObjMap X hX M f).hom m = M.map f m := rfl
 
 /--
 Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`
@@ -410,7 +410,7 @@ noncomputable def forgetToPresheafModuleCatMap
       (Y := (forgetToPresheafModuleCatObj X hX N).obj Y)
     { toFun := f.app Y
       map_add' := by simp
-      map_smul' := fun r ↦ (f.app Y).hom.map_smul (R.1.map (hX.to Y) _) }
+      map_smul' := fun r ↦ (f.app Y).hom.map_smul (R.map (hX.to Y) _) }
   naturality Y Z g := by
     ext x
     exact naturality_apply f g x

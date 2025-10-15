@@ -1,4 +1,4 @@
-import Mathlib.Data.Matrix.Rank
+import Mathlib.LinearAlgebra.Matrix.Rank
 import Mathlib.Tactic.Order
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
@@ -14,51 +14,144 @@ example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c := by
 example (a b : Int) (h1 : ¬(a < b)) (h2 : ¬(b < a)) : a = b := by
   order
 
-example {α : Type} [LinearOrder α] (a b : α) (h1 : ¬(a < b)) (h2 : ¬(b < a)) : a = b := by
+variable {α : Type*}
+
+example [LinearOrder α] (a b : α) (h1 : ¬(a < b)) (h2 : ¬(b < a)) : a = b := by
   order
 
-example {α : Type} [PartialOrder α] (a b c d e : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : c ≤ d) (h4 : d ≤ e) (h5 : b ≠ d) :
+example [PartialOrder α] (a b c d e : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : c ≤ d) (h4 : d ≤ e) (h5 : b ≠ d) :
     a < e := by
   order
 
-example {α : Type} [PartialOrder α] (s t x y : α) (h1 : s ≤ x) (h2 : x ≤ t) (h3 : s ≤ y)
+example [PartialOrder α] (s t x y : α) (h1 : s ≤ x) (h2 : x ≤ t) (h3 : s ≤ y)
     (h4 : y ≤ t) (h5 : x ≠ y) :
     s < t := by
   order
 
-example {α : Type} [PartialOrder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
+example [PartialOrder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
     (h4 : a ≤ d) :
     c ≤ d := by
   order
 
-example {α : Type} [PartialOrder α] (a : α) :
-    ¬ (a < a) := by
+example [PartialOrder α] (a : α) : ¬ (a < a) := by
   order
 
-example {α : Type} [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
-    (h4 : a ≤ d) :
-    c ≤ d := by
+example (a b : α) [PartialOrder α] (h1 : a < b ∧ b < a) : False := by
   order
 
-example {α : Type} [Preorder α] (a b : α) (h1 : a < b) : b > a := by
+example (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
   order
 
-example {α : Type} [Preorder α] (a b : α) (h1 : a > b) : b < a := by
+example (a b : α) [Preorder α] (h : ∃ c, a < c ∧ c < b) : a ≠ b := by
   order
 
 example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
-  have h1 := Matrix.rank_mul_le A B
-  have h2 := Matrix.rank_mul_le (A * B) C
-  have h3 : A.rank ⊓ B.rank ≤ A.rank := inf_le_left
-  have h4 : (A * B).rank ⊓ C.rank ≤ (A * B).rank := inf_le_left
-  have h5 : (A * B).rank ⊓ C.rank ≤ C.rank := inf_le_right
-  simp
-  constructor
-  · order
-  · order
+  order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
+
+example (L : Type) [Lattice L] :
+    (∀ a b c : L, a ⊔ (b ⊓ c) = (a ⊔ b) ⊓ (a ⊔ c)) ↔
+    (∀ a b c : L, a ⊓ (b ⊔ c) = (a ⊓ b) ⊔ (a ⊓ c)) := by
+  refine ⟨fun h a b c ↦ ?_, fun h a b c ↦ ?_⟩
+  · order only [h (a ⊓ b) c a, h c a b]
+  · order only [h (a ⊔ b) c a, h c a b]
+
+example [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
+    (h4 : a ≤ d) :
+    c ≤ d := by
+  order
+
+example [Preorder α] (a b : α) (h1 : a < b) : b > a := by
+  order
+
+example [Preorder α] (a b : α) (h1 : a > b) : b < a := by
+  order
+
+example [PartialOrder α] [OrderTop α] (a : α) (h1 : ⊤ ≤ a) : a = ⊤ := by
+  order
+
+example [Preorder α] [OrderTop α] (a : α) (h1 : a > ⊤) : a < a := by
+  order
+
+example [Preorder α] [OrderBot α] [OrderTop α] : (⊥ : α) ≤ ⊤ := by
+  order
+
+example (a b : α) [PartialOrder α] [OrderBot α] [OrderTop α] (h : (⊥ : α) = ⊤) : a = b := by
+  order
+
+example (a b : α) [SemilatticeSup α] : a ≤ a ⊔ b := by
+  order
+
+example (a b c : α) [SemilatticeSup α] (h1 : a ≤ c) (h2 : b ≤ c) : a ⊔ b ≤ c := by
+  order
+
+example (a b c : α) [SemilatticeSup α] (h1 : a ≤ b) : a ⊔ c ≤ b ⊔ c := by
+  order
+
+example (a b : α) [Lattice α] : a ⊓ b ≤ a ⊔ b := by
+  order
+
+example (a b : α) [Lattice α] : a ⊓ b ≤ a ⊔ b := by
+  order
+
+example (a b : α) [Lattice α] : a ⊔ b = b ⊔ a := by
+  order
+
+example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) ⊔ (a ⊓ c) := by
+  order
+
+set_option trace.order true in
+/--
+error: No contradiction found.
+
+Additional diagnostic information may be available using the `set_option trace.order true` command.
+---
+trace:
+[order] Working on type α (partial order)
+[order] Collected atoms:
+    #0 := a ⊓ (b ⊔ c)
+    #1 := a
+    #2 := b ⊔ c
+    #3 := b
+    #4 := c
+    #5 := a ⊓ b ⊔ a ⊓ c
+    #6 := a ⊓ b
+    #7 := a ⊓ c
+[order] Collected facts:
+    #3 ≤ #2
+    #4 ≤ #2
+    #2 := #3 ⊔ #4
+    #0 ≤ #1
+    #0 ≤ #2
+    #0 := #1 ⊓ #2
+    #6 ≤ #1
+    #6 ≤ #3
+    #6 := #1 ⊓ #3
+    #7 ≤ #1
+    #7 ≤ #4
+    #7 := #1 ⊓ #4
+    #6 ≤ #5
+    #7 ≤ #5
+    #5 := #6 ⊔ #7
+    #0 ≠ #5
+    ¬ #0 < #5
+-/
+#guard_msgs in
+example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
+  order
+
+-- This used to work when a different matching strategy was used in `order`.
+-- This example is now considered outside the scope of the `order` tactic.
+/--
+error: No contradiction found.
+
+Additional diagnostic information may be available using the `set_option trace.order true` command.
+-/
+#guard_msgs in
+example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
+  order
 
 -- worst case for the current algorithm
-example {α : Type u} [PartialOrder α]
+example [PartialOrder α]
     (x1 y1 : α)
     (x2 y2 : α)
     (x3 y3 : α)

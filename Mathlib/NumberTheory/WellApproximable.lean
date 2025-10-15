@@ -64,8 +64,8 @@ open scoped MeasureTheory Topology Pointwise
 
 /-- In a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ` is the set of
 elements within a distance `δ` of a point of order `n`. -/
-@[to_additive "In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
-`approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`."]
+@[to_additive /-- In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
+`approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`. -/]
 def approxOrderOf (A : Type*) [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :=
   thickening δ {y | orderOf y = n}
 
@@ -77,10 +77,10 @@ theorem mem_approxOrderOf_iff {A : Type*} [SeminormedGroup A] {n : ℕ} {δ : �
 /-- In a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`, `wellApproximable A δ`
 is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it is the set of points that
 lie in infinitely many of the sets `approxOrderOf A n δₙ`. -/
-@[to_additive addWellApproximable "In a seminormed additive group `A`, given a sequence of
+@[to_additive addWellApproximable /-- In a seminormed additive group `A`, given a sequence of
 distances `δ₁, δ₂, ...`, `addWellApproximable A δ` is the limsup as `n → ∞` of the sets
 `approxAddOrderOf A n δₙ`. Thus, it is the set of points that lie in infinitely many of the sets
-`approxAddOrderOf A n δₙ`."]
+`approxAddOrderOf A n δₙ`. -/]
 def wellApproximable (A : Type*) [SeminormedGroup A] (δ : ℕ → ℝ) : Set A :=
   blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n
 
@@ -321,7 +321,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ / 2))) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
   have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
-  let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ/2)
+  let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ / 2)
   have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_closedBall
   suffices ¬ Pairwise (Disjoint on B) by
     obtain ⟨i, j, hij, x, hx⟩ := exists_lt_mem_inter_of_not_pairwise_disjoint this

@@ -257,8 +257,7 @@ theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
 
 theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← Ordinal.sup] at *
-  rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
+  rw [← iSup_eq_lsub_iff_lt_iSup] at H
   rw [H]
   exact cof_lsub_le_lift f
 
@@ -269,7 +268,7 @@ theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
 
 theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : iSup f < c :=
-  (sup_le_lsub.{u, v} f).trans_lt (lsub_lt_ord_lift hι hf)
+  (iSup_le_lsub f).trans_lt (lsub_lt_ord_lift hι hf)
 
 theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → iSup f < c :=
@@ -278,7 +277,7 @@ theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
     (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
     (hf : ∀ i, f i < c) : iSup f < c := by
-  rw [← ord_lt_ord, iSup_ord (Cardinal.bddAbove_range _)]
+  rw [← ord_lt_ord, iSup_ord]
   refine iSup_lt_ord_lift hι fun i => ?_
   rw [ord_lt_ord]
   apply hf
@@ -389,8 +388,7 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
     · apply cof_type_le
       refine fun a => ⟨Sum.inr PUnit.unit, Set.mem_singleton _, ?_⟩
       rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp [EmptyRelation]
-    · rw [Cardinal.mk_fintype, Set.card_singleton]
-      simp
+    · simp
   · rw [← Cardinal.succ_zero, succ_le_iff]
     simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
       succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
@@ -498,7 +496,6 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     exact ⟨_, hf.ord_cof⟩
   rcases exists_lsub_cof a with ⟨ι, f, hf, hι⟩
   rcases ord_eq ι with ⟨r, wo, hr⟩
-  haveI := wo
   let r' := Subrel r fun i ↦ ∀ j, r j i → f j < f i
   let hrr' : r' ↪r r := Subrel.relEmbedding _ _
   haveI := hrr'.isWellOrder
@@ -530,7 +527,7 @@ theorem cof_cof (a : Ordinal.{u}) : cof (cof a).ord = cof a := by
   exact ord_injective (hf.trans hg).cof_eq.symm
 
 protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
-    {a o} (ha : IsLimit a) {g} (hg : IsFundamentalSequence a o g) :
+    {a o} (ha : IsSuccLimit a) {g} (hg : IsFundamentalSequence a o g) :
     IsFundamentalSequence (f a) o fun b hb => f (g b hb) := by
   refine ⟨?_, @fun i j _ _ h => hf.strictMono (hg.2.1 _ _ h), ?_⟩
   · rcases exists_lsub_cof (f a) with ⟨ι, f', hf', hι⟩
@@ -556,41 +553,41 @@ protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u
         hg.2.2]
     exact IsNormal.blsub_eq.{u, u} hf ha
 
-theorem IsNormal.cof_eq {f} (hf : IsNormal f) {a} (ha : IsLimit a) : cof (f a) = cof a :=
+theorem IsNormal.cof_eq {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a :=
   let ⟨_, hg⟩ := exists_fundamental_sequence a
   ord_injective (hf.isFundamentalSequence ha hg).cof_eq
 
 theorem IsNormal.cof_le {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
-  rcases zero_or_succ_or_limit a with (rfl | ⟨b, rfl⟩ | ha)
+  rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
   · rw [cof_zero]
     exact zero_le _
   · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_ne_zero, ← Ordinal.pos_iff_ne_zero]
-    exact (Ordinal.zero_le (f b)).trans_lt (hf.1 b)
+    exact (Ordinal.zero_le (f b)).trans_lt (hf.strictMono (lt_succ b))
   · rw [hf.cof_eq ha]
 
 @[simp]
 theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
-  rcases zero_or_succ_or_limit b with (rfl | ⟨c, rfl⟩ | hb)
+  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
   · rw [add_succ, cof_succ, cof_succ]
   · exact (isNormal_add_right a).cof_eq hb
 
-theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
-  rcases zero_or_succ_or_limit o with (rfl | ⟨o, rfl⟩ | l)
-  · simp [not_zero_isLimit, Cardinal.aleph0_ne_zero]
-  · simp [not_succ_isLimit, Cardinal.one_lt_aleph0]
+theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
+  rcases zero_or_succ_or_isSuccLimit o with (rfl | ⟨o, rfl⟩ | l)
+  · simp [Cardinal.aleph0_ne_zero]
+  · simp [Cardinal.one_lt_aleph0]
   · simp only [l, iff_true]
     refine le_of_not_gt fun h => ?_
     obtain ⟨n, e⟩ := Cardinal.lt_aleph0.1 h
     have := cof_cof o
     rw [e, ord_nat] at this
     cases n
-    · simp at e
-      simp [e, not_zero_isLimit] at l
+    · apply l.ne_bot
+      simpa using e
     · rw [natCast_succ, cof_succ] at this
       rw [← this, cof_eq_one_iff_is_succ] at e
       rcases e with ⟨a, rfl⟩
-      exact not_succ_isLimit _ l
+      exact not_isSuccLimit_succ _ l
 
 @[simp]
 theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = o.cof := by
@@ -599,16 +596,16 @@ theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = 
   · exact isNormal_preOmega.cof_eq ⟨h, ho⟩
 
 @[simp]
-theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
+theorem cof_omega {o : Ordinal} (ho : IsSuccLimit o) : (ω_ o).cof = o.cof :=
   isNormal_omega.cof_eq ho
 
 @[simp]
 theorem cof_omega0 : cof ω = ℵ₀ :=
-  (aleph0_le_cof.2 isLimit_omega0).antisymm' <| by
+  (aleph0_le_cof.2 isSuccLimit_omega0).antisymm' <| by
     rw [← card_omega0]
     apply cof_le_card
 
-theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r)) :
+theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsSuccLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
   let ⟨S, H, e⟩ := cof_eq r
   ⟨S, fun a =>
@@ -676,7 +673,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α �
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · apply bounded_singleton
       rw [← hr]
-      apply isLimit_ord ha
+      apply isSuccLimit_ord ha
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
@@ -686,7 +683,6 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
   · simp [ha]
   have h' : IsStrongLimit #α := ⟨ha, @h⟩
   rcases ord_eq α with ⟨r, wo, hr⟩
-  haveI := wo
   apply le_antisymm
   · conv_rhs => rw [← mk_bounded_subset h hr]
     apply mk_le_mk_of_subset
@@ -695,7 +691,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
     exact lt_cof_type hs
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · rw [mk_singleton]
-      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (isLimit_ord h'.aleph0_le))
+      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (isSuccLimit_ord h'.aleph0_le))
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
@@ -724,7 +720,7 @@ theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) 
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < c ^ c.ord.cof :=
   Cardinal.inductionOn c fun α h => by
     rcases ord_eq α with ⟨r, wo, re⟩
-    have := isLimit_ord h
+    have := isSuccLimit_ord h
     rw [re] at this ⊢
     rcases cof_eq' r this with ⟨S, H, Se⟩
     have := sum_lt_prod (fun a : S => #{ x // r x a }) (fun _ => #α) fun i => ?_

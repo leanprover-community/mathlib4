@@ -128,7 +128,7 @@ theorem edgeDensity_le_one (s : Finset α) (t : Finset β) : edgeDensity r s t �
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) :
     edgeDensity r s t + edgeDensity (fun x y ↦ ¬r x y) s t = 1 := by
-  rw [edgeDensity, edgeDensity, div_add_div_same, div_eq_one_iff_eq]
+  rw [edgeDensity, edgeDensity, ← add_div, div_eq_one_iff_eq]
   · exact mod_cast card_interedges_add_card_interedges_compl r s t
   · exact mod_cast (mul_pos hs.card_pos ht.card_pos).ne'
 
@@ -197,7 +197,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have hδ' : 0 ≤ 2 * δ - δ ^ 2 := by
     rw [sub_nonneg, sq]
     gcongr
-    exact hδ₁.le.trans (by norm_num)
+    exact hδ₁.le.trans (by simp)
   rw [← sub_pos] at hδ₁
   obtain rfl | hs₂' := s₂.eq_empty_or_nonempty
   · rw [Finset.card_empty, Nat.cast_zero] at hs₂
@@ -338,7 +338,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) (h : Disjoint s t) :
     G.edgeDensity s t + Gᶜ.edgeDensity s t = 1 := by
-  rw [edgeDensity_def, edgeDensity_def, div_add_div_same, div_eq_one_iff_eq]
+  rw [edgeDensity_def, edgeDensity_def, ← add_div, div_eq_one_iff_eq]
   · exact mod_cast card_interedges_add_card_interedges_compl _ h
   · positivity
 

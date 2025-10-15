@@ -47,24 +47,6 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
     F.IsSheaf :=
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
-/-- Deprecated: usage of this definition should be replaceable with `TopCat.Presheaf.restrictOpen`.
-
-Before, we had to specialze `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat`
-was not reliable. Unification hints appear to solve that issue.
-
-The following still holds for `restrictOpen`: instead of unfolding the definition, rewrite with
-`restrictOpenCommRingCat_apply` to ensure the correct coercion to functions is taken.
-
-(The correct fix in the longer term is to redesign concrete categories so we don't use `forget`
-everywhere, but the correct `FunLike` instance for the morphisms of those categories.)
--/
-@[deprecated TopCat.Presheaf.restrictOpen (since := "2024-12-19")]
-abbrev restrictOpenCommRingCat {X : TopCat}
-    {F : Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
-    (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
-    CommRingCat.carrier (F.obj (op U)) :=
-  TopCat.Presheaf.restrictOpen f U e
-
 open AlgebraicGeometry in
 /-- Unfold `restrictOpen` in the category of commutative rings (with the correct carrier type).
 
@@ -77,22 +59,13 @@ lemma restrictOpenCommRingCat_apply {X : TopCat}
     f |_ U = F.map (homOfLE e).op f :=
   rfl
 
-open AlgebraicGeometry in
-@[deprecated TopCat.Presheaf.restrict_restrict (since := "2024-12-19")]
-lemma _root_.CommRingCat.presheaf_restrict_restrict (X : TopCat)
-    {F : TopCat.Presheaf CommRingCat X}
-    {U V W : Opens ↑X} (e₁ : U ≤ V := by restrict_tac) (e₂ : V ≤ W := by restrict_tac)
-    (f : CommRingCat.carrier (F.obj (op W))) :
-    f |_ V |_ U = f |_ U :=
-  TopCat.Presheaf.restrict_restrict e₁ e₂ f
-
 section SubmonoidPresheaf
 
 open scoped nonZeroDivisors
 
 variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 
--- note: this was specialized to `CommRingCat` in #19757
+-- note: this was specialized to `CommRingCat` in https://github.com/leanprover-community/mathlib4/issues/19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
   /-- The submonoid structure for each component -/
@@ -157,16 +130,10 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 /-- The map into the presheaf of total quotient rings -/
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
+deriving Epi
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
-  -- Porting note: was an `apply (config := { instances := false })`
-  -- See https://github.com/leanprover/lean4/issues/2273
-  suffices ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U) from
-    NatTrans.mono_of_mono_app _
+  apply (config := { allowSynthFailures := true }) NatTrans.mono_of_mono_app
   intro U
   apply ConcreteCategory.mono_of_injective
   dsimp [toTotalQuotientPresheaf]
@@ -174,11 +141,12 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   set m := _
   change Function.Injective (algebraMap _ (Localization m))
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
+  rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
   rw [RingHom.map_zero]
-  apply Submonoid.mem_iInf.mp hs ⟨x, hx⟩
+  apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
   rw [← map_mul, e, map_zero]
 
 end SubmonoidPresheaf
@@ -243,8 +211,8 @@ def pullback {X Y : TopCatᵒᵖ} (f : X ⟶ Y) (R : TopCommRingCat) :
   { toFun g := f.unop ≫ g
     map_one' := rfl
     map_zero' := rfl
-    map_add' := by aesop_cat
-    map_mul' := by aesop_cat }
+    map_add' := by cat_disch
+    map_mul' := by cat_disch }
 
 /-- A homomorphism of topological rings can be postcomposed with functions from a source space `X`;
 this is a ring homomorphism (with respect to the pointwise ring operations on functions). -/
@@ -280,7 +248,7 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
 /-- The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
 values in some topological commutative ring `T`.
 
-For example, we could construct the presheaf of continuous complex valued functions of `X` as
+For example, we could construct the presheaf of continuous complex-valued functions of `X` as
 ```
 presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```

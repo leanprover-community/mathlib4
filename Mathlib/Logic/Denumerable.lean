@@ -119,7 +119,8 @@ instance option : Denumerable (Option α) :=
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
-    suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
+    suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by
+      simpa [bit_bodd_div2]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.map_some,
       Option.mem_def, Sum.exists]
     cases bodd n <;> simp [bit, encodeSum, Nat.two_mul]⟩
@@ -189,7 +190,7 @@ theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
   exact Fintype.false
     ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
       (fun (y : ℕ) (hy : y ∈ s) => Subtype.mk y hy) (by simp [-Multiset.range_succ])).toFinset,
-      by simpa [Subtype.ext_iff_val, Multiset.mem_filter, -Multiset.range_succ] ⟩
+      by simpa [Subtype.ext_iff, Multiset.mem_filter, -Multiset.range_succ] ⟩
 
 end Classical
 
@@ -204,19 +205,19 @@ theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_lt h
   have : Nat.find hx ≤ k := Nat.find_min' _ (hk ▸ x.2)
-  show (y : ℕ) + Nat.find hx + 1 ≤ x by omega
+  show (y : ℕ) + Nat.find hx + 1 ≤ x by cutsat
 
 theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
       (h ⟨_, Nat.find_spec hx⟩ hxy).not_gt <|
-        (by omega : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
+        (by cutsat : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
-    (x : ℕ) ≤ (x + _)  := le_add_right ..
-    _       < (succ x) := Nat.lt_succ_self (x + _)
+    (x : ℕ) ≤ (x + _) := le_add_right ..
+    _ < (succ x) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
   ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
@@ -232,9 +233,9 @@ theorem ofNat_surjective : Surjective (ofNat s)
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
-        (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
+        (by intro a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
-      simp [List.mem_filter, Subtype.ext_iff_val, ht]
+      simp [List.mem_filter, Subtype.ext_iff, ht]
     cases hmax : List.maximum t with
     | bot =>
       refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩

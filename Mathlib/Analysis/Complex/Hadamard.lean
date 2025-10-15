@@ -101,7 +101,7 @@ lemma sSupNormIm_nonneg (x : ℝ) : 0 ≤ sSupNormIm f x := by
 /-- `sSup` of `norm` translated by `ε > 0` is positive applied to the image of `f` on the
 vertical line `re z = x` -/
 lemma sSupNormIm_eps_pos {ε : ℝ} (hε : ε > 0) (x : ℝ) : 0 < ε + sSupNormIm f x := by
-   linarith [sSupNormIm_nonneg f x]
+  linarith [sSupNormIm_nonneg f x]
 
 /-- Useful rewrite for the absolute value of `invInterpStrip` -/
 lemma norm_invInterpStrip {ε : ℝ} (hε : ε > 0) :
@@ -111,8 +111,6 @@ lemma norm_invInterpStrip {ε : ℝ} (hε : ε > 0) :
   repeat rw [← ofReal_add]
   repeat rw [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _]
   simp
-
-@[deprecated (since := "2025-02-17")] alias abs_invInterpStrip := norm_invInterpStrip
 
 /-- The function `invInterpStrip` is `diffContOnCl`. -/
 lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
@@ -133,7 +131,7 @@ lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStr
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
     ‖f z‖ ≤ sSupNormIm f (z.re) := by
   refine le_csSup ?_ ?_
-  · apply BddAbove.mono (image_subset (norm ∘ f) _) hB
+  · revert hB; gcongr
     exact preimage_mono (singleton_subset_iff.mpr hD)
   · apply mem_image_of_mem (norm ∘ f)
     simp only [mem_preimage, mem_singleton]
@@ -157,7 +155,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
   -- Using bound
   use ((max 1 ((ε + sSupNormIm f 0) ^ (-(1 : ℝ)))) * max 1 ((ε + sSupNormIm f 1) ^ (-(1 : ℝ)))) * B
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  intros z hset
+  intro z hset
   specialize hB (‖f z‖) (by simpa [image_congr, mem_image, comp_apply] using ⟨z, hset, rfl⟩)
   -- Proof that the bound is correct
   simp only [norm_smul, norm_mul, ← ofReal_add]
@@ -186,7 +184,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
         neg_re, Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 1)
         (le_of_lt hM1_one) (neg_le_neg_iff.mpr hset.2)]
 
-/-- Proof that `F` is bounded by one one the edges. -/
+/-- Proof that `F` is bounded by one on the edges. -/
 lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ re ⁻¹' {0, 1}) :
     ‖F f ε z‖ ≤ 1 := by
@@ -246,7 +244,7 @@ since `0 ^ 0 = 1`. Hence the use of `ite`. -/
 noncomputable def interpStrip (z : ℂ) : ℂ :=
   if sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
     then 0
-    else sSupNormIm f 0 ^ (1-z) * sSupNormIm f 1 ^ z
+    else sSupNormIm f 0 ^ (1 - z) * sSupNormIm f 1 ^ z
 
 /-- Rewrite for `InterpStrip` when `0 < sSupNormIm f 0` and `0 < sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_pos (z : ℂ) (h0 : 0 < sSupNormIm f 0) (h1 : 0 < sSupNormIm f 1) :
@@ -374,7 +372,7 @@ lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       constructor
       · norm_cast
         rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re]
-        simp[hz₁]
+        simp [hz₁]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
         simp [hz₂]
   rw [this]
@@ -420,7 +418,7 @@ variable [NormedSpace ℂ E]
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
-    ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
+    ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
   simp only [norm_mul, ← ofReal_add, norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _,
     sub_re, one_re]
   rw [← mul_inv_le_iff₀', ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff₀,
@@ -430,7 +428,7 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 
     simpa [F, norm_invInterpStrip _ _ hε, norm_smul, mul_comm] using
       norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip f ε hε z hd hB hz
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
-  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1-z.re)]
+  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1 - z.re)]
 
 lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
@@ -445,8 +443,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
   apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
-  · apply tendsto_inf_left
-    simp only [tendsto_const_nhds_iff]
+  · simp only [tendsto_const_nhds_iff]
   -- Proof that we can let epsilon tend to zero.
   · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
     convert ContinuousWithinAt.tendsto _ using 2
@@ -571,7 +568,7 @@ lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u
     · apply le_of_lt; simp [hul]
     · exact hz.1
   · rw [← sub_le_sub_iff_right (l / (u - l)), add_sub_assoc, sub_self, add_zero, div_sub_div_same,
-      div_le_one (by simp[hul]), sub_le_sub_iff_right l]
+      div_le_one (by simp [hul]), sub_le_sub_iff_right l]
     exact hz.2
 
 /-- The function `scale f l u` is `diffContOnCl`. -/

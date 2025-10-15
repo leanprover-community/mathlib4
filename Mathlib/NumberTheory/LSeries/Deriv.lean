@@ -74,19 +74,19 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
 of `f` is differentiable with derivative the negative of the L-series of the point-wise
 product of `log` with `f`. -/
 lemma LSeries_hasDerivAt {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
-    HasDerivAt (LSeries f) (- LSeries (logMul f) s) s :=
+    HasDerivAt (LSeries f) (-LSeries (logMul f) s) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).2
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the derivative of this L-series at `s` is the negative of the L-series of `log * f`. -/
 lemma LSeries_deriv {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
-    deriv (LSeries f) s = - LSeries (logMul f) s :=
+    deriv (LSeries f) s = -LSeries (logMul f) s :=
   (LSeries_hasDerivAt h).deriv
 
 /-- The derivative of the L-series of `f` agrees with the negative of the L-series of
 `log * f` on the right half-plane of absolute convergence. -/
 lemma LSeries_deriv_eqOn {f : ℕ → ℂ} :
-    {s | abscissaOfAbsConv f < s.re}.EqOn (deriv (LSeries f)) (- LSeries (logMul f)) :=
+    {s | abscissaOfAbsConv f < s.re}.EqOn (deriv (LSeries f)) (-LSeries (logMul f)) :=
   deriv_eqOn (isOpen_re_gt_EReal _) fun _ hs ↦ (LSeries_hasDerivAt hs).hasDerivWithinAt
 
 /-- If the L-series of `f` is summable at `s` and `re s < re s'`, then the L-series of the

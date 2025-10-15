@@ -21,7 +21,7 @@ section CommMonoid
 variable [CommMonoid M]
 
 @[to_additive]
-theorem prod_apply_dite {p : ι → Prop} {hp : DecidablePred p}
+theorem prod_apply_dite {p : ι → Prop} [DecidablePred p]
     [DecidablePred fun x => ¬p x] (f : ∀ x : ι, p x → γ) (g : ∀ x : ι, ¬p x → γ) (h : γ → M) :
     (∏ x ∈ s, h (if hx : p x then f x hx else g x hx)) =
       (∏ x : {x ∈ s | p x}, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
@@ -41,14 +41,14 @@ theorem prod_apply_dite {p : ι → Prop} {hp : DecidablePred p}
         (prod_congr rfl fun x _hx => congr_arg h (dif_neg <| by simpa using (mem_filter.mp x.2).2))
 
 @[to_additive]
-theorem prod_apply_ite {s : Finset ι} {p : ι → Prop} {_hp : DecidablePred p} (f g : ι → γ)
+theorem prod_apply_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → γ)
     (h : γ → M) :
     (∏ x ∈ s, h (if p x then f x else g x)) =
       (∏ x ∈ s with p x, h (f x)) * ∏ x ∈ s with ¬p x, h (g x) :=
   (prod_apply_dite _ _ _).trans <| congr_arg₂ _ (prod_attach _ (h ∘ f)) (prod_attach _ (h ∘ g))
 
 @[to_additive]
-theorem prod_dite {s : Finset ι} {p : ι → Prop} {hp : DecidablePred p} (f : ∀ x : ι, p x → M)
+theorem prod_dite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f : ∀ x : ι, p x → M)
     (g : ∀ x : ι, ¬p x → M) :
     ∏ x ∈ s, (if hx : p x then f x hx else g x hx) =
       (∏ x : {x ∈ s | p x}, f x.1 (by simpa using (mem_filter.mp x.2).2)) *
@@ -56,40 +56,40 @@ theorem prod_dite {s : Finset ι} {p : ι → Prop} {hp : DecidablePred p} (f : 
   simp [prod_apply_dite _ _ fun x => x]
 
 @[to_additive]
-theorem prod_ite {s : Finset ι} {p : ι → Prop} {hp : DecidablePred p} (f g : ι → M) :
+theorem prod_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → M) :
     ∏ x ∈ s, (if p x then f x else g x) = (∏ x ∈ s with p x, f x) * ∏ x ∈ s with ¬p x, g x := by
   simp [prod_apply_ite _ _ fun x => x]
 
 @[to_additive]
-lemma prod_dite_of_false {p : ι → Prop} {_ : DecidablePred p} (h : ∀ i ∈ s, ¬ p i)
+lemma prod_dite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, ¬ p i)
     (f : ∀ i, p i → M) (g : ∀ i, ¬ p i → M) :
     ∏ i ∈ s, (if hi : p i then f i hi else g i hi) = ∏ i : s, g i.1 (h _ i.2) := by
   refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
 
 @[to_additive]
-lemma prod_ite_of_false {p : ι → Prop} {_ : DecidablePred p} (h : ∀ x ∈ s, ¬p x) (f g : ι → M) :
+lemma prod_ite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, ¬p x) (f g : ι → M) :
     ∏ x ∈ s, (if p x then f x else g x) = ∏ x ∈ s, g x :=
   (prod_dite_of_false h _ _).trans (prod_attach _ _)
 
 @[to_additive]
-lemma prod_dite_of_true {p : ι → Prop} {_ : DecidablePred p} (h : ∀ i ∈ s, p i) (f : ∀ i, p i → M)
+lemma prod_dite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, p i) (f : ∀ i, p i → M)
     (g : ∀ i, ¬ p i → M) :
     ∏ i ∈ s, (if hi : p i then f i hi else g i hi) = ∏ i : s, f i.1 (h _ i.2) := by
   refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
 
 @[to_additive]
-lemma prod_ite_of_true {p : ι → Prop} {_ : DecidablePred p} (h : ∀ x ∈ s, p x) (f g : ι → M) :
+lemma prod_ite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x) (f g : ι → M) :
     ∏ x ∈ s, (if p x then f x else g x) = ∏ x ∈ s, f x :=
   (prod_dite_of_true h _ _).trans (prod_attach _ _)
 
 @[to_additive]
-theorem prod_apply_ite_of_false {p : ι → Prop} {hp : DecidablePred p} (f g : ι → γ) (k : γ → M)
+theorem prod_apply_ite_of_false {p : ι → Prop} [DecidablePred p] (f g : ι → γ) (k : γ → M)
     (h : ∀ x ∈ s, ¬p x) : (∏ x ∈ s, k (if p x then f x else g x)) = ∏ x ∈ s, k (g x) := by
   simp_rw [apply_ite k]
   exact prod_ite_of_false h _ _
 
 @[to_additive]
-theorem prod_apply_ite_of_true {p : ι → Prop} {hp : DecidablePred p} (f g : ι → γ) (k : γ → M)
+theorem prod_apply_ite_of_true {p : ι → Prop} [DecidablePred p] (f g : ι → γ) (k : γ → M)
     (h : ∀ x ∈ s, p x) : (∏ x ∈ s, k (if p x then f x else g x)) = ∏ x ∈ s, k (f x) := by
   simp_rw [apply_ite k]
   exact prod_ite_of_true h _ _
@@ -104,7 +104,7 @@ lemma prod_attach_eq_prod_dite [Fintype ι] (s : Finset ι) (f : s → M) [Decid
     ∏ i ∈ s.attach, f i = ∏ i, if h : i ∈ s then f ⟨i, h⟩ else 1 := by
   rw [Finset.prod_dite, Finset.univ_eq_attach, Finset.prod_const_one, mul_one]
   congr
-  · ext; simp
+  · simp
   · ext; simp
   · apply Function.hfunext <;> simp +contextual [Subtype.heq_iff_coe_eq]
 
@@ -113,30 +113,24 @@ theorem prod_dite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, 
     ∏ x ∈ s, (if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
-    · intros _ _ h
+    · intro _ _ h
       rw [dif_neg]
       exact h.symm
     · simp [h]
   · rw [Finset.prod_eq_one]
-    intros
-    rw [dif_neg]
-    rintro rfl
-    contradiction
+    grind
 
 @[to_additive (attr := simp)]
 theorem prod_dite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, x = a → M) :
     ∏ x ∈ s, (if h : x = a then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
-    · intros _ _ h
+    · intro _ _ h
       rw [dif_neg]
       exact h
     · simp [h]
   · rw [Finset.prod_eq_one]
-    intros
-    rw [dif_neg]
-    rintro rfl
-    contradiction
+    grind
 
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
@@ -147,10 +141,10 @@ theorem prod_ite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
 alternative is `1` has value either the term at that index or `1`.
 
 The difference with `Finset.prod_ite_eq` is that the arguments to `Eq` are swapped. -/
-@[to_additive (attr := simp) "A sum taken over a conditional whose condition is an equality
+@[to_additive (attr := simp) /-- A sum taken over a conditional whose condition is an equality
 test on the index and whose alternative is `0` has value either the term at that index or `0`.
 
-The difference with `Finset.sum_ite_eq` is that the arguments to `Eq` are swapped."]
+The difference with `Finset.sum_ite_eq` is that the arguments to `Eq` are swapped. -/]
 theorem prod_ite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
     (∏ x ∈ s, ite (x = a) (b x) 1) = ite (a ∈ s) (b a) 1 :=
   prod_dite_eq' s a fun x _ => b x
@@ -219,7 +213,7 @@ theorem dvd_prod_of_mem (f : ι → M) {a : ι} {s : Finset ι} (ha : a ∈ s) :
 theorem prod_update_of_notMem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∉ s) (f : ι → M)
     (b : M) : ∏ x ∈ s, Function.update f i b x = ∏ x ∈ s, f x := by
   apply prod_congr rfl
-  intros j hj
+  intro j hj
   have : j ≠ i := by
     rintro rfl
     exact h hj
@@ -237,7 +231,7 @@ theorem prod_update_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ 
   simp [h]
 
 /-- See also `Finset.prod_ite_zero`. -/
-@[to_additive "See also `Finset.sum_boole`."]
+@[to_additive /-- See also `Finset.sum_boole`. -/]
 theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
     (h : ∀ i ∈ s, ∀ j ∈ s, p i → p j → i = j) (a : M) :
     ∏ i ∈ s, ite (p i) a 1 = ite (∃ i ∈ s, p i) a 1 := by
@@ -278,32 +272,34 @@ lemma prod_ite_mem (s : Finset ι) (f : ι → M) : ∏ i, (if i ∈ s then f i 
   simp
 
 /-- See also `Finset.prod_dite_eq`. -/
-@[to_additive "See also `Finset.sum_dite_eq`."] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → M) :
+@[to_additive /-- See also `Finset.sum_dite_eq`. -/]
+lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → M) :
     ∏ j, (if h : i = j then f j h else 1) = f i rfl := by
   rw [Finset.prod_dite_eq, if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_dite_eq'`. -/
-@[to_additive "See also `Finset.sum_dite_eq'`."] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → M) :
+@[to_additive /-- See also `Finset.sum_dite_eq'`. -/]
+lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → M) :
     ∏ j, (if h : j = i then f j h else 1) = f i rfl := by
   rw [Finset.prod_dite_eq', if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_ite_eq`. -/
-@[to_additive "See also `Finset.sum_ite_eq`."]
+@[to_additive /-- See also `Finset.sum_ite_eq`. -/]
 lemma prod_ite_eq (i : ι) (f : ι → M) : ∏ j, (if i = j then f j else 1) = f i := by
   rw [Finset.prod_ite_eq, if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_ite_eq'`. -/
-@[to_additive "See also `Finset.sum_ite_eq'`."]
+@[to_additive /-- See also `Finset.sum_ite_eq'`. -/]
 lemma prod_ite_eq' (i : ι) (f : ι → M) : ∏ j, (if j = i then f j else 1) = f i := by
   rw [Finset.prod_ite_eq', if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_pi_mulSingle`. -/
-@[to_additive "See also `Finset.sum_pi_single`."]
+@[to_additive /-- See also `Finset.sum_pi_single`. -/]
 lemma prod_pi_mulSingle {M : ι → Type*} [∀ i, CommMonoid (M i)] (i : ι) (f : ∀ i, M i) :
     ∏ j, Pi.mulSingle j (f j) i = f i := prod_dite_eq _ _
 
 /-- See also `Finset.prod_pi_mulSingle'`. -/
-@[to_additive "See also `Finset.sum_pi_single'`."]
+@[to_additive /-- See also `Finset.sum_pi_single'`. -/]
 lemma prod_pi_mulSingle' (i : ι) (a : M) : ∏ j, Pi.mulSingle i a j = a := prod_dite_eq' _ _
 
 end Fintype

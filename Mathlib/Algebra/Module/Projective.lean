@@ -3,7 +3,7 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
 -/
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Module.Shrink
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.Logic.UnivLE
 
@@ -173,7 +173,7 @@ theorem Projective.of_split [Module.Projective R M]
 
 theorem Projective.of_equiv [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
-  Projective.of_split e.symm e.toLinearMap (by ext; simp)
+  Projective.of_split e.symm e.toLinearMap (by simp)
 
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
 theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)

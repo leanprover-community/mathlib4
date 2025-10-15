@@ -3,6 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
@@ -580,7 +581,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     rcases eq_or_ne x y with (rfl | hxy)
     · simp
     rcases eq_or_ne (f x) (f y) with (h' | hfxfy)
-    · simp [h', dist_nonneg]
+    · simp [h']
     have I2 : cylinder x (firstDiff x y) = cylinder y (firstDiff x y) := by
       rw [← mem_cylinder_iff_eq]
       apply mem_cylinder_firstDiff
@@ -680,7 +681,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     and we define `f x` there to be the unique point in the intersection.
     This function is continuous and surjective by design. -/
   letI : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
-  have I0 : (0 : ℝ) < 1 / 2 := by norm_num
+  have I0 : (0 : ℝ) < 1 / 2 := by simp
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
@@ -783,7 +784,7 @@ theorem dist_summable (x y : ∀ i, F i) :
     Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
   refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
     summable_geometric_two_encode
-  exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
+  exact le_min (pow_nonneg (by simp) _) dist_nonneg
 
 theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
     min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) ≤ dist x y :=

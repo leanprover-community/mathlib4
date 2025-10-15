@@ -63,7 +63,8 @@ If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`
 -/
 noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
     Spec (X.presheaf.stalk x) ⟶ X :=
-  (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
+  (isAffineOpen_opensRange (X.affineCover.f (X.affineCover.idx x))).fromSpecStalk
+    (X.affineCover.covers x)
 
 @[simps over] noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).Over X := ⟨X.fromSpecStalk x⟩
@@ -283,7 +284,7 @@ lemma stalkClosedPointTo_comp (g : X ⟶ Y) :
   rw [stalkClosedPointTo, Scheme.stalkMap_comp]
   exact Category.assoc _ _ _
 
-lemma germ_stalkClosedPointTo_Spec {R S : CommRingCat} [IsLocalRing S] (φ : R ⟶ S):
+lemma germ_stalkClosedPointTo_Spec {R S : CommRingCat} [IsLocalRing S] (φ : R ⟶ S) :
     (Spec R).presheaf.germ ⊤ _ trivial ≫ stalkClosedPointTo (Spec.map φ) =
       (ΓSpecIso R).hom ≫ φ := by
   rw [stalkClosedPointTo, Scheme.stalkMap_germ_assoc, ← Iso.inv_comp_eq,

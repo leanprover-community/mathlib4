@@ -88,7 +88,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
   exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
 
 /-- **Krein-Milman theorem**: In a LCTVS, any compact convex set is the closure of the convex hull
-    of its extreme points. -/
+of its extreme points. -/
 theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex ℝ s) :
     closure (convexHull ℝ <| s.extremePoints ℝ) = s := by
   apply (closure_minimal (convexHull_min extremePoints_subset hAconv) hscomp.isClosed).antisymm
@@ -116,6 +116,7 @@ lemma surjOn_extremePoints_image (f : E →ᴬ[ℝ] F) (hs : IsCompact s) :
   -- `f x = w` and `x` is an extreme point of `s`, so we're done
   refine mem_image_of_mem _ ⟨hx, fun y hy z hz hxyz ↦ ?_⟩
   have := by simpa using image_openSegment _ f.toAffineMap y z
-  have := hw.2 (mem_image_of_mem _ hy) (mem_image_of_mem _ hz) <| by
+  rw [mem_extremePoints] at hw
+  have := hw.2 _ (mem_image_of_mem _ hy) _ (mem_image_of_mem _ hz) <| by
     rw [← this]; exact mem_image_of_mem _ hxyz
   exact hyt ⟨hy, this.1⟩ ⟨hz, this.2⟩ hxyz

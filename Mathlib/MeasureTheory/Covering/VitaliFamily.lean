@@ -21,9 +21,9 @@ differentiations of measure that apply in both contexts.
 This file gives the basic definition of Vitali families. More interesting developments of this
 notion are deferred to other files:
 * constructions of specific Vitali families are provided by the Besicovitch covering theorem, in
-`Besicovitch.vitaliFamily`, and by the Vitali covering theorem, in `Vitali.vitaliFamily`.
+  `Besicovitch.vitaliFamily`, and by the Vitali covering theorem, in `Vitali.vitaliFamily`.
 * The main theorem on differentiation of measures along a Vitali family is proved in
-`VitaliFamily.ae_tendsto_rnDeriv`.
+  `VitaliFamily.ae_tendsto_rnDeriv`.
 
 ## Main definitions
 

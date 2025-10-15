@@ -79,7 +79,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   · exact (mul_lt_aleph0 qo qo).trans_le ol
   · suffices (succ (typein LT.lt (g p))).card < #α from (IH _ this qo).trans_lt this
     rw [← lt_ord]
-    apply (isLimit_ord ol).succ_lt
+    apply (isSuccLimit_ord ol).succ_lt
     rw [e]
     apply typein_lt_type
 
@@ -681,7 +681,7 @@ theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α :
 
 theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal) :
     #{ t : Set α // #t ≤ c } ≤ #α ^ c := by
-  refine le_trans ?_ (by rw [← add_one_eq (aleph0_le_mk α)])
+  rw [← add_one_eq (aleph0_le_mk α)]
   induction c using Cardinal.inductionOn with | _ β
   fapply mk_le_of_surjective
   · intro f

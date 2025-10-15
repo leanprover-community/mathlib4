@@ -22,8 +22,8 @@ This file defines the Cantor ternary set and proves a few properties.
 -/
 
 /-- The order `n` pre-Cantor set, defined starting from `[0, 1]` and successively removing the
-    middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
-    union of the images under the functions `(· / 3)` and `((2 + ·) / 3)` of `preCantorSet n`.
+middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
+union of the images under the functions `(· / 3)` and `((2 + ·) / 3)` of `preCantorSet n`.
 -/
 def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
@@ -35,8 +35,8 @@ def preCantorSet : ℕ → Set ℝ
   rfl
 
 /-- The Cantor set is the subset of the unit interval obtained as the intersection of all
-    pre-Cantor sets. This means that the Cantor set is obtained by iteratively removing the
-    open middle third of each subinterval, starting from the unit interval `[0, 1]`.
+pre-Cantor sets. This means that the Cantor set is obtained by iteratively removing the
+open middle third of each subinterval, starting from the unit interval `[0, 1]`.
 -/
 def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 
@@ -45,7 +45,7 @@ def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 ## Simple Properties
 -/
 
-lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ preCantorSet n := by
+lemma quarters_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n ∧ 3 / 4 ∈ preCantorSet n := by
   induction n with
   | zero =>
     simp only [preCantorSet_zero]
@@ -53,15 +53,15 @@ lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ p
   | succ n ih =>
     apply And.intro
     · -- goal: 1 / 4 ∈ preCantorSet (n + 1)
-      -- follows by the inductive hyphothesis, since 3 / 4 ∈ preCantorSet n
+      -- follows by the inductive hypothesis, since 3 / 4 ∈ preCantorSet n
       exact Or.inl ⟨3 / 4, ih.2, by norm_num⟩
     · -- goal: 3 / 4 ∈ preCantorSet (n + 1)
-      -- follows by the inductive hyphothesis, since 1 / 4 ∈ preCantorSet n
+      -- follows by the inductive hypothesis, since 1 / 4 ∈ preCantorSet n
       exact Or.inr ⟨1 / 4, ih.1, by norm_num⟩
 
-lemma quarter_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
+lemma quarter_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
 
-theorem quarter_mem_cantorSet : 1/4 ∈ cantorSet :=
+theorem quarter_mem_cantorSet : 1 / 4 ∈ cantorSet :=
   Set.mem_iInter.mpr quarter_mem_preCantorSet
 
 lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
@@ -83,13 +83,7 @@ theorem preCantorSet_antitone : Antitone preCantorSet := by
     constructor <;> intro x <;>
       simp only [Set.mem_image, Set.mem_Icc, forall_exists_index, and_imp] <;>
       intro y _ _ _ <;> constructor <;> linarith
-  | succ m ih =>
-    simp only [preCantorSet_succ, Set.union_subset_iff, Set.image_union]
-    constructor
-    · constructor <;> apply Set.subset_union_of_subset_left
-      exacts [Set.image_mono ih.left, Set.image_mono ih.right]
-    · constructor <;> apply Set.subset_union_of_subset_right
-      exacts [Set.image_mono ih.left, Set.image_mono ih.right]
+  | succ m ih => grind [preCantorSet_succ, Set.image_union]
 
 lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 1 := by
   rw [← preCantorSet_zero]
@@ -105,17 +99,18 @@ theorem cantorSet_eq_union_halves :
   simp only [cantorSet]
   rw [Set.image_iInter, Set.image_iInter]
   rotate_left
-  · exact (mulRight_bijective₀ 3⁻¹ (by norm_num)).comp (AddGroup.addLeft_bijective 2)
-  · exact mulRight_bijective₀ 3⁻¹ (by norm_num)
-  rw [← Set.iInter_union_of_antitone
-    (by exact Set.monotone_image.comp_antitone preCantorSet_antitone)
-    (by exact Set.monotone_image.comp_antitone preCantorSet_antitone)]
-  change ⋂ n, preCantorSet n = ⋂ n, preCantorSet (n + 1)
+  · exact (mulRight_bijective₀ 3⁻¹ (by simp)).comp (AddGroup.addLeft_bijective 2)
+  · exact mulRight_bijective₀ 3⁻¹ (by simp)
+  simp_rw [← Function.comp_def,
+    ← Set.iInter_union_of_antitone
+      (Set.monotone_image.comp_antitone preCantorSet_antitone)
+      (Set.monotone_image.comp_antitone preCantorSet_antitone),
+    Function.comp_def, ← preCantorSet_succ]
   exact (preCantorSet_antitone.iInter_nat_add _).symm
 
 /-- The preCantor sets are closed. -/
 lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
-  let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by norm_num)
+  let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by simp)
   let g := (Homeomorph.addLeft (2 : ℝ)).trans f
   induction n with
   | zero => exact isClosed_Icc

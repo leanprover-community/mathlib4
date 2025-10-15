@@ -17,6 +17,8 @@ see `Module.free_iff_exists_presentation`.
 
 -/
 
+assert_not_exists Cardinal
+
 universe w w₀ w₁ v u
 
 namespace Module

@@ -31,7 +31,7 @@ CategoryStruct's are given by oplax transformations and strong transformations r
 
 We also provide API for going between oplax transformations and strong transformations:
 * `Oplax.StrongCore F G`: a structure on an oplax transformation between oplax functors that
-promotes it to a strong transformation.
+  promotes it to a strong transformation.
 * `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
@@ -65,18 +65,18 @@ structure OplaxTrans (F G : OplaxFunctor B C) where
   /-- Naturality of the oplax naturality constraint. -/
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
-    aesop_cat
+    cat_disch
   /-- Oplax unity. -/
   naturality_id (a : B) :
       naturality (𝟙 a) ≫ app a ◁ G.mapId a =
         F.mapId a ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
-    aesop_cat
+    cat_disch
   /-- Oplax functoriality. -/
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       naturality (f ≫ g) ≫ app a ◁ G.mapComp f g =
         F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
           (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.naturality_id
   OplaxTrans.naturality_comp
@@ -185,7 +185,7 @@ that is "natural up to 2-isomorphisms".
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
-`f : a ⟶ b`.
+  `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
@@ -194,16 +194,16 @@ structure StrongTrans (F G : OplaxFunctor B C) where
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ≅ app a ≫ G.map f
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ (naturality g).hom = (naturality f).hom ≫ app a ◁ G.map₂ η := by
-    aesop_cat
+    cat_disch
   naturality_id (a : B) :
       (naturality (𝟙 a)).hom ≫ app a ◁ G.mapId a =
         F.mapId a ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
-    aesop_cat
+    cat_disch
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       (naturality (f ≫ g)).hom ≫ app a ◁ G.mapComp f g =
         F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (naturality g).hom ≫
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
-    aesop_cat
+    cat_disch
 
 @[deprecated (since := "2025-04-23")] alias StrongOplaxNatTrans := StrongTrans
 
@@ -220,7 +220,7 @@ structure OplaxTrans.StrongCore {F G : OplaxFunctor B C} (η : F ⟶ G) where
   /-- The underlying 2-isomorphisms of the naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
   /-- The 2-isomorphisms agree with the underlying 2-morphism of the oplax transformation. -/
-  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
+  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by cat_disch
 
 attribute [simp] OplaxTrans.StrongCore.naturality_hom
 

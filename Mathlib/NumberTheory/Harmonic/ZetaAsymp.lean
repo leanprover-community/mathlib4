@@ -70,7 +70,7 @@ section s_eq_one
 -/
 
 lemma term_one {n : ℕ} (hn : 0 < n) :
-    term n 1 = (log (n + 1) - log n) -  1 / (n + 1) := by
+    term n 1 = (log (n + 1) - log n) - 1 / (n + 1) := by
   have hv : ∀ x ∈ uIcc (n : ℝ) (n + 1), 0 < x := by
     intro x hx
     rw [uIcc_of_le (by simp only [le_add_iff_nonneg_right, zero_le_one])] at hx
@@ -78,10 +78,8 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
   calc term n 1
     _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ 2 := by
       simp_rw [term, one_add_one_eq_two, ← Nat.cast_two (R := ℝ), rpow_natCast]
-    _ = ∫ x : ℝ in n..(n + 1), (1 / x - n / x ^ 2) := by
-      refine intervalIntegral.integral_congr (fun x hx ↦ ?_)
-      field_simp [(hv x hx).ne']
-      ring
+    _ = ∫ x : ℝ in n..(n + 1), (1 / x - n / x ^ 2) :=
+      intervalIntegral.integral_congr (fun x hx ↦ by field_simp)
     _ = (∫ x : ℝ in n..(n + 1), 1 / x) - n * ∫ x : ℝ in n..(n + 1), 1 / x ^ 2 := by
       simp_rw [← mul_one_div (n : ℝ)]
       rw [intervalIntegral.integral_sub]
@@ -102,11 +100,11 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
       rw [integral_rpow]
       · simp_rw [sub_div, (by norm_num : (-2 : ℝ) + 1 = -1), div_neg, div_one, neg_sub_neg,
           rpow_neg_one, ← one_div]
-      · refine Or.inr ⟨by norm_num, notMem_uIcc_of_lt ?_ ?_⟩
+      · refine Or.inr ⟨by simp, notMem_uIcc_of_lt ?_ ?_⟩
         all_goals positivity
     _ = log (↑n + 1) - log ↑n - 1 / (↑n + 1) := by
       congr 1
-      field_simp
+      simp [field]
 
 lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
   induction N with
@@ -262,7 +260,7 @@ lemma continuousOn_term (n : ℕ) :
     · exact this.le
     · linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
-    exact_mod_cast term_welldef (by omega : 0 < (n + 1)) zero_lt_one
+    exact_mod_cast term_welldef (by cutsat : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
     refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
@@ -417,7 +415,7 @@ lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
   · rw [lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
-      <| mul_le_mul_of_nonneg_left two_le_pi (by norm_num)
+      <| mul_le_mul_of_nonneg_left two_le_pi (by simp)
 
 end val_at_one
 

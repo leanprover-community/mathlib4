@@ -32,7 +32,7 @@ isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
 
 Another example arises from considering the square representing that a functor `H` preserves
 products, in particular the morphism `HA ⨯ H- ⟶ H(A ⨯ -)`. Then provided `(A ⨯ -)` and `HA ⨯ -`
-have left adjoints (for instance if the relevant categories are cartesian closed), the transferred
+have left adjoints (for instance if the relevant categories are Cartesian closed), the transferred
 natural transformation is the exponential comparison morphism: `H(A ^ -) ⟶ HA ^ H-`.
 Furthermore if `H` has a left adjoint `L`, this morphism is an isomorphism iff its mate
 `L(HA ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see
@@ -211,7 +211,7 @@ theorem mateEquiv_hcomp (α : TwoSquare G L₁ L₂ H) (β : TwoSquare H L₃ L�
     rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality (adj₄)]
   rw [R₂.map_comp, L₄.map_comp, R₄.map_comp, R₂.map_comp]
   slice_rhs 4 5 =>
-    rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄ , β.naturality]
+    rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄, β.naturality]
   simp only [comp_obj, Functor.comp_map, map_comp, assoc]
 
 end mateEquivHComp
@@ -259,7 +259,7 @@ composition with the unitors. Corresponding natural transformations are called `
 TODO: Generalise to when the two vertical functors are equivalences rather than being exactly `𝟭`.
 
 Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transformation is an iso
-iff its image under the bijection is an iso, see eg `CategoryTheory.conjugateIsoEquiv`.
+iff its image under the bijection is an iso, see e.g. `CategoryTheory.conjugateIsoEquiv`.
 This is in contrast to the general case `mateEquiv` which does not in general have this property.
 -/
 @[simps!]
@@ -275,12 +275,7 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
     L₂.map ((conjugateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app d =
       α.app _ ≫ adj₁.counit.app d := by
-  dsimp [conjugateEquiv]
-  rw [id_comp, comp_id]
-  have := mateEquiv_counit adj₁ adj₂ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) d
-  dsimp at this
-  rw [this]
-  simp only [comp_id, id_comp]
+  simp
 
 /-- A component of a transposed form of the inverse conjugation definition. -/
 theorem conjugateEquiv_counit_symm (α : R₁ ⟶ R₂) (d : D) :
@@ -419,8 +414,8 @@ def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
     hom := (conjugateEquiv adj₁ adj₂).symm β.hom
     inv := (conjugateEquiv adj₂ adj₁).symm β.inv
   }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 end ConjugateIsomorphism
 
@@ -433,7 +428,7 @@ variable {F₁ : A ⥤ C} {U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁) (adj₄ : F₂ ⊣ U₂)
 
-/-- When all four functors in a sequare are left adjoints, the mates operation can be iterated:
+/-- When all four functors in a square are left adjoints, the mates operation can be iterated:
 
 ```
          L₁                  R₁                  R₁

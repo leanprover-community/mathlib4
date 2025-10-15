@@ -62,14 +62,14 @@ theorem contentIdeal_eq_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by
   simp only [contentIdeal_def, span_eq_bot]
   refine ⟨?_, fun h ↦ by simp [h]⟩
   contrapose!
-  exact fun h ↦ ⟨p.leadingCoeff, coeff_mem_coeffs p p.natDegree (leadingCoeff_ne_zero.mpr h),
+  exact fun h ↦ ⟨p.leadingCoeff, coeff_mem_coeffs (leadingCoeff_ne_zero.mpr h),
     leadingCoeff_ne_zero.mpr h⟩
 
 theorem coeff_mem_contentIdeal (n : ℕ) : p.coeff n ∈ p.contentIdeal := by
   by_cases h : p.coeff n = 0
   · simp [h]
   · apply subset_span
-    simpa using coeff_mem_coeffs p n h
+    simpa using coeff_mem_coeffs h
 
 @[simp]
 theorem contentIdeal_monomial (n : ℕ) (r : R) : (monomial n r).contentIdeal = span {r} := by
@@ -134,7 +134,7 @@ theorem _root_.Submodule.IsPrincipal.contentIdeal_le_span_iff_dvd
     C r ∣ C h_prin.generator := by
       apply _root_.map_dvd C
       rwa [← span_singleton_le_span_singleton]
-     _   ∣ p := h_prin.contentIdeal_generator_dvd
+     _ ∣ p := h_prin.contentIdeal_generator_dvd
   · rw [← contentIdeal_C r]
     exact fun h ↦ contentIdeal_le_contentIdeal_of_dvd h
 

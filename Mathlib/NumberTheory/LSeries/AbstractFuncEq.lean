@@ -103,7 +103,7 @@ section symmetry
 /-- Reformulated functional equation with `f` and `g` interchanged. -/
 lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
-  rw [(div_div_cancel₀ (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
+  rw [(div_div_cancel₀ (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx) :), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
@@ -155,11 +155,10 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
   convert hC' using 1
   · congr 3
     rw [rpow_neg hx.le]
-    field_simp
+    simp [field]
   · simp_rw [norm_mul, norm_real, one_div, inv_rpow hx.le, rpow_neg hx.le, inv_inv, norm_inv,
       norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_add hx]
     field_simp
-    ring
 
 /-- Power asymptotic for `f - f₀` as `x → 0`. -/
 lemma hf_zero' (P : WeakFEPair E) :
@@ -292,11 +291,11 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
   · simp [f_modif, g_modif]
   · have : 1 < 1 / x := by rwa [lt_one_div one_pos hx, div_one]
     rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr this),
-      indicator_of_notMem (notMem_Ioo_of_ge this.le), add_zero, g_modif, Pi.add_apply,
+      indicator_of_notMem (notMem_Ioo_of_ge this.le), g_modif, Pi.add_apply,
       indicator_of_notMem (notMem_Ioi.mpr hx'.le),
-      indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩), zero_add, P.h_feq _ hx, smul_sub]
-    simp_rw [rpow_neg hx.le, ← mul_smul]
-    field_simp [(rpow_pos_of_pos hx P.k).ne', P.hε]
+      indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩), P.h_feq _ hx]
+    simp_rw [rpow_neg hx.le]
+    match_scalars <;> field_simp [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
@@ -346,7 +345,7 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
 lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
-    mellin (fun x ↦ P.f_modif x - P.f x + P.f₀) s = (1 / s) • P.f₀ + (P.ε  / (P.k - s)) • P.g₀ := by
+    mellin (fun x ↦ P.f_modif x - P.f x + P.f₀) s = (1 / s) • P.f₀ + (P.ε / (P.k - s)) • P.g₀ := by
   have h_re1 : -1 < re (s - 1) := by simpa using P.hk.trans hs
   have h_re2 : -1 < re (s - P.k - 1) := by simpa using hs
   calc
@@ -379,7 +378,7 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
       integral_cpow (Or.inl h_re1), integral_cpow (Or.inl h_re2), ofReal_zero, ofReal_one,
       one_cpow, sub_add_cancel, zero_cpow fun h ↦ lt_irrefl _ (P.hk.le.trans_lt (zero_re ▸ h ▸ hs)),
       zero_cpow (sub_ne_zero.mpr (fun h ↦ lt_irrefl _ ((ofReal_re _) ▸ h ▸ hs)) : s - P.k ≠ 0),
-      sub_zero, sub_eq_add_neg (_ •  _), ← mul_smul, ← neg_smul, mul_one_div, ← div_neg, neg_sub]
+      sub_zero, sub_eq_add_neg (_ • _), ← mul_smul, ← neg_smul, mul_one_div, ← div_neg, neg_sub]
 
 /-!
 ## Main theorems on weak FE-pairs
