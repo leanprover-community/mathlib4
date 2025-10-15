@@ -68,10 +68,6 @@ lemma inner_map_linearIsometry_linearIsometry (f : E →ₗᵢ[𝕜] G) (g : F �
   x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
     (by simp_all [inner_def])) (by simp_all [inner_def])
 
-lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
-    inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
-  inner_map_linearIsometry_linearIsometry (Submodule.subtypeₗᵢ E') (Submodule.subtypeₗᵢ F') x y
-
 open scoped ComplexOrder
 open Module
 
@@ -88,7 +84,9 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
-  rw [← hz.choose_spec, inner_mapIncl_mapIncl] at hx
+  rw [← hz.choose_spec] at hx
+  simp_rw [mapIncl, ← Submodule.subtypeₗᵢ_toLinearMap,
+    inner_map_linearIsometry_linearIsometry] at hx
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
@@ -119,7 +117,8 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
-  rw [← hz.choose_spec, inner_mapIncl_mapIncl]
+  rw [← hz.choose_spec]
+  simp_rw [mapIncl, ← Submodule.subtypeₗᵢ_toLinearMap, inner_map_linearIsometry_linearIsometry]
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
@@ -190,10 +189,8 @@ protected theorem ext_iff_inner_left {x y : E ⊗[𝕜] F} :
 
 See also `ext_iff_inner_right_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
 theorem ext_iff_inner_right_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
-    x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) = inner 𝕜 y (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) := by
-  refine ⟨fun h _ _ _ ↦ h ▸ rfl, fun h ↦ ?_⟩
-  rw [← innerSL_inj (𝕜 := 𝕜), ← ContinuousLinearMap.coe_inj]
-  exact TensorProduct.ext_threefold h
+    x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) = inner 𝕜 y (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) :=
+  ⟨fun h _ _ _ ↦ h ▸ rfl, fun h ↦ innerSL_inj.mp (ContinuousLinearMap.coe_inj.mp (ext_threefold h))⟩
 
 /-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪a ⊗ₜ b ⊗ₜ c, x⟫ = ⟪a ⊗ₜ b ⊗ₜ c, y⟫` for all `a, b, c`.
 
@@ -220,7 +217,7 @@ def mapLinearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
 /-- The linear isometry version of `TensorProduct.mapIncl`. -/
 def mapInclLinearIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
     E' ⊗[𝕜] F' →ₗᵢ[𝕜] E ⊗[𝕜] F :=
-  mapLinearIsometry (Submodule.subtypeₗᵢ E') (Submodule.subtypeₗᵢ F')
+  mapLinearIsometry E'.subtypeₗᵢ F'.subtypeₗᵢ
 
 @[simp] lemma mapInclLinearIsometry_apply (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F)
     (x : E' ⊗[𝕜] F') : mapInclLinearIsometry E' F' x = mapIncl E' F' x := rfl
