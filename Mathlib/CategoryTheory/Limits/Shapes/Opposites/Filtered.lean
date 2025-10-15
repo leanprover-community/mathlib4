@@ -13,7 +13,6 @@ We construct filered colimits and cofilered limits in the opposite categories.
 
 -/
 
-
 universe v₁ v₂ u₁ u₂
 
 noncomputable section
