@@ -273,7 +273,7 @@ partial def withExistsElimAlongPathImp {u : Level} {α : Q(Sort u)}
       let _ : $a' =Q $x := ⟨⟩
       act q(Eq.symm $h) hs
     else
-      assertUnreachable "withExistsElimAlongPathImp: `P` is equality but niether of sides is `a`"
+      assertUnreachable "withExistsElimAlongPathImp: `P` is equality but neither of sides is `a`"
   | _ => assertUnreachable s!"withExistsElimAlongPathImp: unexpected P = {← ppExpr P}"
 
 /-- Given `act : (a = a') → hb₁ → hb₂ → ... → hbₙ → goal` where `hb₁, ..., hbₙ` are hypotheses
