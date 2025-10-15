@@ -531,7 +531,9 @@ lemma contDiffOn_nat_picard_Icc
     exact contDiffWithinAt_singleton
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
-`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`. -/
+`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`.
+
+TODO: Extend to the analytic `n = ⊤` case. -/
 lemma contDiffOn_enat_picard_Icc
     (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
