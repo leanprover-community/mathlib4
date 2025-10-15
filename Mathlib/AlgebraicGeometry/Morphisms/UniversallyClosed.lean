@@ -90,6 +90,9 @@ instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf 
     UniversallyClosed (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g hf
 
+instance (f : X ⟶ Y) (V : Y.Opens) [UniversallyClosed f] : UniversallyClosed (f ∣_ V) :=
+  MorphismProperty.of_isPullback (isPullback_morphismRestrict f V).flip ‹_›
+
 instance universallyClosed_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
   apply universally_isZariskiLocalAtTarget

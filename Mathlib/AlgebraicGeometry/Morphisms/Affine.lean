@@ -81,7 +81,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
 lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     QuasiSeparatedSpace X := by
-  rw [quasiSeparatedSpace_iff_affine]
+  rw [quasiSeparatedSpace_iff_forall_affineOpens]
   intro U V
   obtain ⟨s', hs', e⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
   rw [← Set.inter_univ (_ ∩ _), ← Opens.coe_top, ← iSup_basicOpen_of_span_eq_top _ _ e,

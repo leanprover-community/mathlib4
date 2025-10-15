@@ -140,7 +140,7 @@ lemma IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact [IsZariskiLocalAtTar
   apply IsZariskiLocalAtTarget.descendsAlong
   intro R X Y f g hf h
   wlog hX : ∃ T, X = Spec T generalizing X
-  · have _ : CompactSpace X := by simpa [← quasiCompact_over_affine_iff f] using hf.2
+  · have _ : CompactSpace X := by simpa [← quasiCompact_iff_compactSpace f] using hf.2
     obtain ⟨Y, p, hsurj, hP', hY⟩ := X.exists_hom_isAffine_of_isZariskiLocalAtSource @IsLocalIso
     refine this (f := (Y.isoSpec.inv ≫ p) ≫ f) ?_ ?_ ⟨_, rfl⟩
     · rw [Category.assoc, (P' ⊓ @QuasiCompact).cancel_left_of_respectsIso]
