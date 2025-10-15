@@ -42,6 +42,8 @@ lemma mulActionBaseChange_smul_zero (a : A) :
     a • (0 : S ⊗[R] Ω[A⁄R]) = 0 := by
   rw [← zero_tmul _ (0 : Ω[A⁄R]), mulActionBaseChange_smul_tmul, smul_zero]
 
+set_option synthInstance.maxHeartbeats 30000 in
+-- Otherwise the second rewrite with `map_add` fails
 @[local simp]
 lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
     a • (x + y) = a • x + a • y := by
