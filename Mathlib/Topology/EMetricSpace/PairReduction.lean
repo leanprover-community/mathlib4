@@ -79,7 +79,7 @@ To prove (1) we have that
 (2) follows easily from the definition of K and the fact that `rᵢ ≤ n` for each `i`
 (see `edist_le_of_mem_pairSet` and `radius_logSizeBallSeq_le`)
 
-Finally we prove (3). Let `s,t ∈ J` such that `d(s, t) ≤ c`. Let `i` be the largest integer
+Finally we prove (3). Let `s, t ∈ J` such that `d(s, t) ≤ c`. Let `i` be the largest integer
 such that both `s,t ∈ Vᵢ`. WLOG suppose `s ∈ Vᵢ₊₁` so that in particular `s ∈ Bᵢ` which means
 by definition that `d(tᵢ, s) ≤ (rᵢ - 1)c`. Then we also have
 ```
