@@ -49,7 +49,7 @@ In this section we sketch a proof of `pair_reduction` with references to the cor
 in the lean code.
 
 For any `V : Finset T` and `t : T` we define the log-size radius of `t` in `V` to be the smallest
-natural number `n` greater than zero such that `|{x ∈ V | d(t, x) ≤ nc}| ≤ aⁿ`.
+natural number `k` greater than zero such that `|{x ∈ V | d(t, x) ≤ kc}| ≤ aᵏ`.
 (see `logSizeRadius`)
 
 We construct a sequence `Vᵢ` of subsets of `J`, a sequence `tᵢ ∈ Vᵢ` and a sequence of `rᵢ : ℕ`
