@@ -104,7 +104,7 @@ protected theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : ℂ)‖ = r :
 @[simp, norm_cast]
 lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
 
-@[simp 1100, norm_cast]
+@[norm_cast]
 lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := Complex.norm_of_nonneg n.cast_nonneg
 
 @[simp 1100]
@@ -114,7 +114,7 @@ lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
 protected lemma norm_two : ‖(2 : ℂ)‖ = 2 := norm_ofNat 2
 
 @[simp 1100, norm_cast]
-lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
+lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp [norm_natCast]
 
 @[simp 1100]
 lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -353,5 +353,28 @@ lemma re_neg_ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : (-s).re ≠ 0 :=
 
 lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
   re_neg_ne_zero_of_re_pos <| zero_lt_one.trans hs
+
+lemma norm_sub_one_sq_eq_of_norm_one {z : ℂ} (hz : ‖z‖ = 1) :
+    ‖z - 1‖ ^ 2 = 2 * (1 - z.re) := by
+  have : z.im * z.im = 1 - z.re * z.re := by
+    replace hz := sq_eq_one_iff.mpr (.inl hz)
+    rw [Complex.sq_norm, normSq_apply] at hz
+    linarith
+  simp [Complex.sq_norm, normSq_apply, this]
+  ring
+
+lemma norm_sub_one_sq_eqOn_sphere :
+    (Metric.sphere (0 : ℂ) 1).EqOn (‖· - 1‖ ^ 2) (fun z ↦ 2 * (1 - z.re)) :=
+  fun z hz ↦ norm_sub_one_sq_eq_of_norm_one (by simpa using hz)
+
+lemma normSq_ofReal_add_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    normSq (x + I * √(1 - x ^ 2)) = 1 := by
+  simp [mul_comm I, normSq_add_mul_I,
+    Real.sq_sqrt (x := 1 - x ^ 2) (by nlinarith [abs_le.mp hx])]
+
+lemma normSq_ofReal_sub_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    normSq (x - I * √(1 - x ^ 2)) = 1 := by
+  rw [← normSq_neg, neg_sub', sub_neg_eq_add]
+  simpa using normSq_ofReal_add_I_mul_sqrt_one_sub (x := -x) (by simpa)
 
 end Complex

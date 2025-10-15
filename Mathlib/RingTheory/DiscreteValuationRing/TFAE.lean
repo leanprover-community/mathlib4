@@ -56,8 +56,9 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
       intro b hb
       exact Irreducible.associated_of_dvd hx' (hf₁ b hb) ((H b).mp (hf₁ b hb).1)
     clear hr₁ hr₂ hf₁
-    induction' f using Multiset.induction with fa fs fh
-    · exact (hf₂ rfl).elim
+    induction f using Multiset.induction with
+    | empty => exact (hf₂ rfl).elim
+    | cons fa fs fh => ?_
     rcases eq_or_ne fs ∅ with (rfl | hf')
     · use 1
       rw [pow_one, Multiset.prod_cons, Multiset.empty_eq_zero, Multiset.prod_zero, mul_one]

@@ -22,24 +22,18 @@ open Finset
 
 open Finsupp hiding single mapDomain
 
-universe u₁ u₂ u₃ u₄
-
-variable (k : Type u₁) (G : Type u₂) (H : Type*) {R : Type*}
+variable {k G H R S T A B M N : Type*}
 
 /-! ### Multiplicative monoids -/
 
 namespace MonoidAlgebra
-
-variable {k G}
 
 /-! #### Non-unital, non-associative algebra structure -/
 
 
 section NonUnitalNonAssocAlgebra
 
-variable (k) [Semiring k] [DistribSMul R k] [Mul G]
-
-variable {A : Type u₃} [NonUnitalNonAssocSemiring A]
+variable (k) [Semiring k] [DistribSMul R k] [Mul G] [NonUnitalNonAssocSemiring A]
 
 /-- A non_unital `k`-algebra homomorphism from `MonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
@@ -115,11 +109,12 @@ instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid
   algebraMap := singleOneRingHom.comp (algebraMap k A)
   smul_def' := fun r a => by
     ext
-    rw [Finsupp.coe_smul]
-    simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
+    dsimp
+    rw [single_one_mul_apply, Algebra.smul_def]
   commutes' := fun r f => by
-    refine Finsupp.ext fun _ => ?_
-    simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes]
+    ext
+    dsimp
+    rw [single_one_mul_apply, mul_single_one_apply, Algebra.commutes]
 
 /-- `Finsupp.single 1` as an `AlgHom` -/
 @[to_additive (dont_translate := k A) (attr := simps! apply) /--
@@ -161,14 +156,17 @@ end Algebra
 
 section lift
 
-variable [CommSemiring k] [Monoid G] [Monoid H]
-variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
+variable [CommSemiring k] [Monoid G] [Monoid H] [Semiring A] [Algebra k A] [Semiring B]
+  [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra A G →ₐ[k] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
     commutes' := by simp [liftNCRingHom] }
+
+@[simp] lemma coe_liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm) :
+    ⇑(liftNCAlgHom f g h_comm) = liftNC f g := rfl
 
 /-- A `k`-algebra homomorphism from `MonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
@@ -188,8 +186,7 @@ theorem algHom_ext' ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
     φ₁ = φ₂ :=
   algHom_ext <| DFunLike.congr_fun h
 
-variable (k G A)
-
+variable (k G A) in
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
 `MonoidAlgebra k G →ₐ[k] A`. -/
 def lift : (G →* A) ≃ (MonoidAlgebra k G →ₐ[k] A) where
@@ -201,8 +198,6 @@ def lift : (G →* A) ≃ (MonoidAlgebra k G →ₐ[k] A) where
   right_inv F := by
     ext
     simp [liftNCAlgHom, liftNCRingHom]
-
-variable {k G H A}
 
 theorem lift_apply' (F : G →* A) (f : MonoidAlgebra k G) :
     lift k G A F f = f.sum fun a b => algebraMap k A b * F a :=
@@ -321,19 +316,69 @@ theorem domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.sy
 
 end lift
 
+section mapRange
+variable [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+  [Monoid M] [Monoid N]
+
+@[to_additive (attr := simp)]
+lemma mapDomainRingHom_comp_algebraMap (f : M →* N) :
+    (mapDomainRingHom A f).comp (algebraMap R <| MonoidAlgebra A M) =
+      algebraMap R (MonoidAlgebra A N) := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma mapRangeRingHom_comp_algebraMap (f : R →+* S) :
+    (mapRangeRingHom (M := M) f).comp (algebraMap _ _) = (algebraMap _ _).comp f := by ext; simp
+
+variable (M) in
+/-- The algebra homomorphism of monoid algebras induced by a homomorphism of the base algebras. -/
+@[to_additive
+/-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
+algebras. -/]
+noncomputable def mapRangeAlgHom (f : A →ₐ[R] B) : MonoidAlgebra A M →ₐ[R] MonoidAlgebra B M where
+  __ := mapRangeRingHom M f
+  commutes' := by simp
+
+variable (M) in
+@[to_additive (attr := simp)]
+lemma toRingHom_mapRangeAlgHom (f : A →ₐ[R] B) :
+    mapRangeAlgHom M f = mapRangeRingHom M f.toRingHom := rfl
+
+@[to_additive (attr := simp)]
+lemma mapRangeAlgHom_apply (f : A →ₐ[R] B) (x : MonoidAlgebra A M) (m : M) :
+    mapRangeAlgHom M f x m = f (x m) := mapRangeRingHom_apply f.toRingHom x m
+
+@[to_additive (attr := simp)]
+lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
+    mapRangeAlgHom M f (single m a) = single m (f a) := by
+  classical ext; simp [single_apply, apply_ite f]
+
+variable (M) in
+/-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
+@[to_additive (attr := simps apply)
+/-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
+algebras. -/]
+noncomputable def mapRangeAlgEquiv (f : A ≃ₐ[R] B) :
+    MonoidAlgebra A M ≃ₐ[R] MonoidAlgebra B M where
+  __ := mapRangeAlgHom M f
+  invFun := mapRangeAlgHom M (f.symm : B →ₐ[R] A)
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
+end mapRange
+
 section
 
 variable (k)
 
 /-- When `V` is a `k[G]`-module, multiplication by a group element `g` is a `k`-linear map. -/
-def GroupSMul.linearMap [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V] [Module k V]
+def GroupSMul.linearMap [Monoid G] [CommSemiring k] (V : Type*) [AddCommMonoid V] [Module k V]
     [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G) : V →ₗ[k] V where
   toFun v := single g (1 : k) • v
   map_add' x y := smul_add (single g (1 : k)) x y
   map_smul' _c _x := smul_algebra_smul_comm _ _ _
 
 @[simp]
-theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V]
+theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type*) [AddCommMonoid V]
     [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G)
     (v : V) : (GroupSMul.linearMap k V g) v = single g (1 : k) • v :=
   rfl
@@ -341,7 +386,7 @@ theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type u₃) [A
 section
 
 variable {k}
-variable [Monoid G] [CommSemiring k] {V : Type u₃} {W : Type u₄} [AddCommMonoid V] [Module k V]
+variable [Monoid G] [CommSemiring k] {V W : Type*} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
   (f : V →ₗ[k] W)
@@ -375,14 +420,11 @@ end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
-variable {k G H}
-
 /-! #### Non-unital, non-associative algebra structure -/
 
 section NonUnitalNonAssocAlgebra
 
-variable (k) [Semiring k] [DistribSMul R k] [Add G]
-variable {A : Type u₃} [NonUnitalNonAssocSemiring A]
+variable (k) [Semiring k] [DistribSMul R k] [Add G] [NonUnitalNonAssocSemiring A]
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -408,14 +450,16 @@ end NonUnitalNonAssocAlgebra
 
 section lift
 
-variable [CommSemiring k] [AddMonoid G]
-variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
+variable [CommSemiring k] [AddMonoid G] [Semiring A] [Algebra k A] [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[G] →ₐ[k] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
     commutes' := by simp [liftNCRingHom] }
+
+@[simp] lemma coe_liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm) :
+    ⇑(liftNCAlgHom f g h_comm) = liftNC f g := rfl
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -424,18 +468,15 @@ theorem algHom_ext' ⦃φ₁ φ₂ : k[G] →ₐ[k] A⦄
     φ₁ = φ₂ :=
   algHom_ext <| DFunLike.congr_fun h
 
-variable (k G A)
-
+variable (k G A) in
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
 `k[G] →ₐ[k] A`. -/
-def lift : (Multiplicative G →* A) ≃ (k[G] →ₐ[k] A) :=
-  { @MonoidAlgebra.lift k (Multiplicative G) _ _ A _ _ with
-    invFun := fun f => (f : k[G] →* A).comp (of k G)
-    toFun := fun F =>
-      { @MonoidAlgebra.lift k (Multiplicative G) _ _ A _ _ F with
-        toFun := liftNCAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _ } }
-
-variable {k G A}
+def lift : (Multiplicative G →* A) ≃ (k[G] →ₐ[k] A) where
+  __ := MonoidAlgebra.lift k (Multiplicative G) A
+  invFun f := (f : k[G] →* A).comp (of k G)
+  toFun F :=
+    { MonoidAlgebra.lift k (Multiplicative G) A F with
+      toFun := liftNCAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _ }
 
 theorem lift_apply' (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
     lift k G A F f = f.sum fun a b => algebraMap k A b * F (Multiplicative.ofAdd a) :=
@@ -488,6 +529,7 @@ end AddMonoidAlgebra
 
 variable [CommSemiring R]
 
+variable (k G) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
 def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMonoid G] :
@@ -495,6 +537,7 @@ def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMon
   { AddMonoidAlgebra.toMultiplicative k G with
     commutes' := fun r => by simp [AddMonoidAlgebra.toMultiplicative] }
 
+variable (k G) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
 def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :

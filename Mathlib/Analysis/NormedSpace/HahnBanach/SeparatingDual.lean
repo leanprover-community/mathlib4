@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Central.Defs
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
@@ -18,11 +18,20 @@ module `V` over `R` can be separated by continuous linear forms.
 This property is satisfied for normed spaces over `ℝ` or `ℂ` (by the analytic Hahn-Banach theorem)
 and for locally convex topological spaces over `ℝ` (by the geometric Hahn-Banach theorem).
 
+We show in `SeparatingDual.exists_ne_zero` that given any non-zero vector in an `R`-module `V`
+satisfying `SeparatingDual R V`, there exists a continuous linear functional whose value on `v` is
+non-zero.
+
+As a consequence of the existence of `SeparatingDual.exists_ne_zero`, a generalization of
+Hahn-Banach beyond the normed setting, we show that if `V` and `W` are nontrivial topological vector
+spaces over a topological field `R` that acts continuously on `W`, and if `SeparatingDual R V`,
+there are nontrivial continuous `R`-linear operators between `V` and `W`. This is recorded in the
+instance `SeparatingDual.instNontrivialContinuousLinearMapIdOfContinuousSMul`.
+
 Under the assumption `SeparatingDual R V`, we show in
-`SeparatingDual.exists_continuousLinearMap_apply_eq` that the group of continuous linear
+`SeparatingDual.exists_continuousLinearEquiv_apply_eq` that the group of continuous linear
 equivalences acts transitively on the set of nonzero vectors.
 -/
-
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
@@ -87,7 +96,8 @@ theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
 
 variable [SeparatingDual R V]
 
-open Function in
+open Function
+
 /-- Given a finite-dimensional subspace `W` of a space `V` with separating dual, any
   linear functional on `W` extends to a continuous linear functional on `V`.
   This is stated more generally for an injective linear map from `W` to `V`. -/
@@ -98,6 +108,19 @@ theorem dualMap_surjective_iff {W} [AddCommGroup W] [Module R W] [FiniteDimensio
   have := (separatingDual_iff_injective.mp ‹_›).comp hf
   rw [← LinearMap.coe_comp] at this
   exact LinearMap.flip_surjective_iff₁.mpr this
+
+variable (V) in
+open ContinuousLinearMap in
+/- As a consequence of the existence of non-zero linear maps, itself a consequence of Hahn-Banach
+in the normed setting, we show that if `V` and `W` are nontrivial topological vector spaces over a
+topological field `R` that acts continuously on `W`, and if `SeparatingDual R V`, there are
+nontrivial continuous `R`-linear operators between `V` and `W`. -/
+instance (W) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W]
+    [ContinuousSMul R W] [Nontrivial V] : Nontrivial (V →L[R] W) := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : W)
+  obtain ⟨ψ, hψ⟩ := exists_ne_zero (R := R) hv
+  exact ⟨ψ.smulRight w, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
 
 lemma exists_eq_one {x : V} (hx : x ≠ 0) :
     ∃ f : StrongDual R V, f x = 1 := by
