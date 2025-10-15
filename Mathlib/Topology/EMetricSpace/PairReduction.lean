@@ -24,7 +24,7 @@ processes, `pair_reduction` is used to reduce the order of the dependence of the
 covering numbers of the pseudometric space. As a simple example of how it could be used, suppose
 `T` has an `ε`-covering number `N` and suppose `J` is an `ε`-covering of `T` with `|J| = N`.
 Let `f : Ω → T → E` be any stochastic process such that `𝔼 d(f(s), f(t)) ≤ d (s, t)` for all
-`s,t ∈ T`. Then naively
+`s, t ∈ T`. Then naively
 ```
   𝔼[sup_{(s, t) ∈ J} : d(s, t) ≤ c} d(f(s), f(t))]
     ≤ ∑_{(s, t) ∈ J² : d(s, t) ≤ c} 𝔼[d(f(s), f(t))]
