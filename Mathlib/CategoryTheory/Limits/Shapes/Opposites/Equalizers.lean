@@ -13,7 +13,6 @@ We construct equalizers and coequalizers in the opposite categories.
 
 -/
 
-
 universe v₁ v₂ u₁ u₂
 
 noncomputable section
