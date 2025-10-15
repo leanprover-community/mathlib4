@@ -168,7 +168,7 @@ example (e : ℕ) (he : (hζ.toInteger - 1) ^ e ∣ p ∧ ¬ (hζ.toInteger - 1)
   rw [map_mul, map_pow, hζ.norm_toInteger_sub_one_of_prime_ne_two hodd] at h_main
   have hx' : ¬ ↑p ∣ Algebra.norm ℤ x := by
     by_contra!
-    
+
 
 
     sorry
