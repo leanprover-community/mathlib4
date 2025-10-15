@@ -353,8 +353,7 @@ lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
         using pow_logSizeRadius_le_card_le_logSizeRadius ha (point_mem_finset_logSizeBallSeq hJ _ h)
     simp [Finset.not_nonempty_iff_eq_empty.mp h]
 
-lemma card_pairSet_le (ha : 1 < a) (hJ_card : #J ≤ a ^ n) :
-    #(pairSet J a c) ≤ a * #J := by
+lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   wlog hJ : J.Nonempty
   · simp [Finset.not_nonempty_iff_eq_empty.mp hJ]
   unfold pairSet
