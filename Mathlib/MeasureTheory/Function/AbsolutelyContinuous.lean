@@ -171,7 +171,7 @@ theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M 
     AbsolutelyContinuousOnInterval (fun x ↦ α • f x) a b := by
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.const_mul ‖α‖)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
-  · simp only [Finset.mul_sum, dist_smul₀, le_refl]
+  · simp [Finset.mul_sum, dist_smul₀]
 
 theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α * f x) a b :=
@@ -196,7 +196,7 @@ theorem uniformlyContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     simp only [disjWithin, Finset.mem_range, preimage_setOf_eq, Nat.lt_one_iff,
       forall_eq, mem_setOf_eq, mem_prod]
     simp
-  · simp only [totalLengthFilter, comap_comap, Function.comp_def]
+  · simp [totalLengthFilter, comap_comap, Function.comp_def]
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is continuous on `uIcc a b`. -/
 theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
