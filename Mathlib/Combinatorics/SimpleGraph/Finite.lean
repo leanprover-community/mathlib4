@@ -574,4 +574,15 @@ theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Ad
 
 end Map
 
+theorem degree_eq_one_iff_unique_adj {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)] :
+    G.degree v = 1 ↔ ∃! w : V, G.Adj v w := by
+  rw [degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
+  simp only [mem_neighborFinset]
+
+theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)]
+    (h : G.degree v ≠ 0) : Nontrivial V := by
+  rw [Nat.ne_zero_iff_zero_lt, degree_pos_iff_exists_adj] at h
+  obtain ⟨w, hw⟩ := h
+  exact nontrivial_of_ne v w hw.ne
+
 end SimpleGraph
