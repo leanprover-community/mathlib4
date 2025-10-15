@@ -71,7 +71,7 @@ To prove (1) we have that
   |K| ≤ ∑_{i=0}^|J| |{x ∈ Vᵢ : d(t, x) ≤ crᵢ}|
       ≤ ∑_{i=0}^|J| a ^ rᵢ  (by definition of `rᵢ`)
       = a ∑_{i=0}^|J| a ^ (rᵢ - 1)
-      ≤ a ∑_{i=0}^|J| Bᵢ (by definition of `rᵢ`)
+      ≤ a ∑_{i=0}^|J| |Bᵢ| (by definition of `rᵢ`)
       ≤ a |J| (since the `Bᵢ` are disjoint (see `disjoint_smallBall_logSizeBallSeq`))
 ```
 (see `card_pairSet_le`).
