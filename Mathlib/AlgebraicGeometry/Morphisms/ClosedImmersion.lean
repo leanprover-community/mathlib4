@@ -129,7 +129,7 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
     [IsClosedImmersion (f ≫ g)] : IsClosedImmersion f where
   base_closed := by
     have h := (f ≫ g).isClosedEmbedding
-    simp only [Scheme.comp_coeBase, TopCat.coe_comp] at h
+    simp only [Scheme.Hom.comp_base, TopCat.coe_comp] at h
     refine .of_continuous_injective_isClosedMap (Scheme.Hom.continuous f) h.injective.of_comp ?_
     intro Z hZ
     rw [IsClosedEmbedding.isClosed_iff_image_isClosed g.isClosedEmbedding,
@@ -137,12 +137,14 @@ theorem of_comp_isClosedImmersion {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [
     exact h.isClosedMap _ hZ
   surj_on_stalks x := by
     have h := (f ≫ g).stalkMap_surjective x
-    simp_rw [Scheme.stalkMap_comp] at h
+    simp_rw [Scheme.Hom.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
-instance Spec_map_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.residue x)) :=
+instance SpecMap_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.residue x)) :=
   IsClosedImmersion.spec_of_surjective (X.residue x)
     Ideal.Quotient.mk_surjective
+
+@[deprecated (since := "2025-10-07")] alias Spec_map_residue := SpecMap_residue
 
 instance (priority := low) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsAffineHom f :=
   isAffineHom_of_isInducing _ f.isClosedEmbedding.isInducing f.isClosedEmbedding.isClosed_range
@@ -262,7 +264,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   let res (i : 𝒰.I₀) : Γ(X, ⊤) ⟶ Γ(𝒰.X i, ⊤) := (𝒰.f i).appTop
   refine stalkMap_injective_of_isAffine _ _ (fun (g : Γ(Y, ⊤)) h ↦ ?_)
-  rw [TopCat.Presheaf.Γgerm, Scheme.stalkMap_germ_apply] at h
+  rw [TopCat.Presheaf.Γgerm, Scheme.Hom.germ_stalkMap_apply] at h
   obtain ⟨U, w, (hx : x ∈ U), hg⟩ :=
     X.toRingedSpace.exists_res_eq_zero_of_germ_eq_zero ⊤ (φ g) ⟨x, trivial⟩ h
   obtain ⟨_, ⟨s, rfl⟩, hyv, bsle⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen Y)
@@ -270,9 +272,9 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   let W (i : 𝒰.I₀) : TopologicalSpace.Opens (𝒰.X i) := (𝒰.X i).basicOpen ((res i) (φ s))
   have hwle (i : 𝒰.I₀) : W i ≤ (𝒰.f i)⁻¹ᵁ U := by
     change (𝒰.X i).basicOpen ((𝒰.f i ≫ f).appTop s) ≤ _
-    rw [← Scheme.preimage_basicOpen_top, Scheme.comp_coeBase, Opens.map_comp_obj]
-    refine Scheme.Hom.preimage_le_preimage_of_le _
-      (le_trans (f.preimage_le_preimage_of_le bsle) (le_of_eq ?_))
+    rw [← Scheme.preimage_basicOpen_top, Scheme.Hom.comp_base, Opens.map_comp_obj]
+    refine Scheme.Hom.preimage_mono _
+      (le_trans (f.preimage_mono bsle) (le_of_eq ?_))
     simp [Set.preimage_image_eq _ hfinj₁]
   have h0 (i : 𝒰.I₀) : (𝒰.f i).appLE _ (W i) (by simp) (φ g) = 0 := by
     rw [← Scheme.Hom.appLE_map _ ((Opens.map _).map w).le (homOfLE <| hwle i).op,
@@ -310,7 +312,7 @@ the induced map on global sections is surjective. -/
 theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
     IsAffine X ∧ Function.Surjective (f.appTop) := by
   refine ⟨isAffine_of_isAffineHom f, ?_⟩
-  simp only [← f.toImage_imageι, Scheme.comp_appTop, CommRingCat.hom_comp, RingHom.coe_comp,
+  simp only [← f.toImage_imageι, Scheme.Hom.comp_appTop, CommRingCat.hom_comp, RingHom.coe_comp,
     Scheme.Hom.image, Scheme.Hom.imageι]
   rw [Scheme.Hom.appTop, Scheme.Hom.appTop, f.ker.subschemeι_app ⟨⊤, isAffineOpen_top Y⟩,
     CommRingCat.hom_comp, RingHom.coe_comp]

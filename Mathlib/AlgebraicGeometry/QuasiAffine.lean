@@ -48,7 +48,7 @@ private lemma IsQuasiAffine.of_isOpenImmersion [CompactSpace X]
   have : X.IsSeparated := ⟨by rw [← terminal.comp_from f]; infer_instance⟩
   apply IsOpenImmersion.of_forall_source_exists
   · refine .of_comp (f := (Spec.map f.appTop).base) ?_
-    rw [← TopCat.coe_comp, ← comp_coeBase, ← toSpecΓ_naturality]
+    rw [← TopCat.coe_comp, ← Hom.comp_base, ← toSpecΓ_naturality]
     exact (f ≫ Y.toSpecΓ).isOpenEmbedding.injective
   · intro x
     obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrf⟩ :=
@@ -66,17 +66,17 @@ private lemma IsQuasiAffine.of_isOpenImmersion [CompactSpace X]
       suffices ∀ (U : (Spec _).Opens) (hU : U = PrimeSpectrum.basicOpen r)
         (V : (Spec _).Opens) (hV : V = PrimeSpectrum.basicOpen (f.appTop r)),
         IsIso ((Spec.map f.appTop).appLE U V (by subst_vars; rfl)) from
-        this _ (by simp) _ (by simp; rfl)
+        this _ (by simp) _ (by simp)
       rintro _ rfl _ rfl
       convert_to IsIso ((f ≫ Y.toSpecΓ).app (PrimeSpectrum.basicOpen r) ≫ X.presheaf.map (eqToHom
-        (by simp only [preimage_comp, toSpecΓ_preimage_basicOpen, preimage_basicOpen_top])).op ≫
-        inv (X.toSpecΓ.app (PrimeSpectrum.basicOpen (f.appTop r)))) using 1
+        (by simp only [Hom.comp_preimage, toSpecΓ_preimage_basicOpen, preimage_basicOpen_top])).op
+        ≫ inv (X.toSpecΓ.app (PrimeSpectrum.basicOpen (f.appTop r)))) using 1
       · rw [← Category.assoc, IsIso.eq_comp_inv]
-        simp [Hom.app_eq_appLE, - comp_appLE, appLE_comp_appLE, toSpecΓ_naturality]
+        simp [Hom.app_eq_appLE, - Hom.comp_appLE, Hom.appLE_comp_appLE, toSpecΓ_naturality]
       · infer_instance
     convert_to IsOpenImmersion ((f ≫ Y.toSpecΓ) ∣_ _ ≫
       inv ((Spec.map (Hom.appTop f) ∣_ PrimeSpectrum.basicOpen r)) ≫ Scheme.Opens.ι _)
-    · trans Scheme.homOfLE _ (by rw [← preimage_comp, toSpecΓ_naturality]) ≫ X.toSpecΓ ∣_ _ ≫
+    · trans Scheme.homOfLE _ (by rw [← Hom.comp_preimage, toSpecΓ_naturality]) ≫ X.toSpecΓ ∣_ _ ≫
         (Spec.map f.appTop ⁻¹ᵁ PrimeSpectrum.basicOpen r).ι
       · simp
       · simp_rw [← Category.assoc, cancel_mono, IsIso.eq_comp_inv, ← cancel_mono (Scheme.Opens.ι _)]

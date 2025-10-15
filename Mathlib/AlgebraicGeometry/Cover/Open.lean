@@ -263,7 +263,7 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   f r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ⟨1, ?_⟩, AlgebraicGeometry.Scheme.basic_open_isOpenImmersion⟩
+    refine ⟨fun x ↦ ⟨1, ?_⟩, AlgebraicGeometry.Scheme.isOpenImmersion_SpecMap_localizationAway⟩
     rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
     · infer_instance
@@ -285,8 +285,8 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.f ⟨x, r⟩).base =
       (X.affineCover.f x).base '' (PrimeSpectrum.basicOpen r).1 := by
-  simp only [affineBasisCover, Precoverage.ZeroHypercover.bind_toPreZeroHypercover,
-    PreZeroHypercover.bind_f, comp_coeBase, TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
+  simp only [affineBasisCover, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, Set.range_comp,
+    PreZeroHypercover.bind_f, Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp]
   congr
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
 
