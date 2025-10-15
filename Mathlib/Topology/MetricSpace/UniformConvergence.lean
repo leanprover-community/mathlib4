@@ -150,16 +150,12 @@ variable [PseudoMetricSpace β]
 noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ β) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun f g ↦ ⨆ x, dist (toFun f x) (toFun g x))
-    (fun _ _ ↦ by
-      have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-      refine Real.iSup_nonneg ?_
-      exact fun i ↦ dist_nonneg)
-    (fun a b ↦ by
-    simp only [edist_def, dist_edist, ← ENNReal.toReal_iSup (fun _ ↦ edist_ne_top _ _)]
-    refine Eq.symm ((fun {a} ↦ ENNReal.ofReal_toReal_eq_iff.mpr) ?_)
-    have H_diam_lt_top := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-    refine ne_of_lt (lt_of_le_of_lt (iSup_le (fun x => EMetric.edist_le_diam_of_mem
-      (Set.mem_univ (toFun a x)) (Set.mem_univ (toFun b x)))) H_diam_lt_top))
+    (fun _ _ ↦ Real.iSup_nonneg fun i ↦ dist_nonneg)
+    fun f g ↦ by
+      cases isEmpty_or_nonempty α
+      · simp [edist_def]
+      have : BddAbove <| .range fun x ↦ dist (toFun f x) (toFun g x) := sorry
+      exact ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ by simp [edist_def, ciSup_le_iff this]
 
 lemma dist_def [BoundedSpace β] (f g : α →ᵤ β) :
     dist f g = ⨆ x, dist (toFun f x) (toFun g x) :=
@@ -306,7 +302,7 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun f g ↦ ⨆ x : ⋃₀ 𝔖, dist (toFun 𝔖 f x) (toFun 𝔖 g x))
     (fun _ _ ↦ Real.iSup_nonneg fun i ↦ dist_nonneg)
-    (fun f g ↦ by
+    fun f g ↦ by
       cases isEmpty_or_nonempty (⋃₀ 𝔖)
       · simp_all [edist_def]
       have : BddAbove (.range fun x : ⋃₀ 𝔖 ↦ dist (toFun 𝔖 f x) (toFun 𝔖 g x)) := by
@@ -315,7 +311,7 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
           ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
           EMetric.edist_le_diam_of_mem]
       refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
-      simp [edist_def, ciSup_le_iff this])
+      simp [edist_def, ciSup_le_iff this]
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by

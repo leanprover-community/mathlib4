@@ -60,6 +60,25 @@ are equivalent on `ℝ^n` for abstract (norm equivalence) reasons. Instead, we g
 We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 -/
 
+-- TODO: Move
+namespace ENNReal
+
+open scoped ENNReal NNReal
+
+lemma eq_of_forall_le_nnreal_iff : ∀ {x y : ℝ≥0∞}, (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y
+  | ⊤, ⊤, _ => rfl
+  | ⊤, (y : ℝ≥0), h => by simpa using h y
+  | (x : ℝ≥0), ⊤, h => by simpa using h x
+  | (x : ℝ≥0), (y : ℝ≥0), h => by simpa using eq_of_forall_ge_iff <| by simpa using h
+
+@[simp, norm_cast] lemma ofReal_le_coe {x : ℝ} {y : ℝ≥0} : ENNReal.ofReal x ≤ y ↔ x ≤ y := by
+  simp [← ofReal_le_ofReal_iff]
+
+end ENNReal
+
+-- TODO: Replace `Set.eq_empty_of_isEmpty`
+lemma Set.eq_empty_of_isEmpty' {α : Type*} (s : Set α) [IsEmpty s] : s = ∅ := by
+  simpa using ‹IsEmpty s›
 
 open Module Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
 
@@ -340,42 +359,19 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
         split_ifs with hp
         · linarith
         · exact Real.iSup_nonneg fun i ↦ dist_nonneg
-        exact rpow_nonneg (Fintype.sum_nonneg (fun i ↦  by positivity)) (1 / p.toReal))
+        · exact rpow_nonneg (Fintype.sum_nonneg fun i ↦ by positivity) (1 / p.toReal))
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp
-      · simp [edist, PseudoMetricSpace.edist_dist]
-        refine le_antisymm (ciSup_le fun i => ?_) ?_
-        · gcongr--rw [ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
-          sorry--exact le_iSup (fun j => dist (f j) (g j)) i
-        · rw [ENNReal.ofReal_le_iff_le_toReal]
-          refine Real.iSup_le ?_ (by positivity)
-          intro i
-          refine (ofReal_le_iff_le_toReal ?_).mp ?_
-          · refine lt_top_iff_ne_top.mp <| iSup_coe_lt_top.mpr ?_
-            simp [dist_edist]
-          · rw [le_iSup_iff]
-            exact fun _ hj ↦ hj i
-          · refine lt_top_iff_ne_top.mp <| iSup_coe_lt_top.mpr ?_
-            exact Finite.bddAbove_range fun i ↦ (dist (f i) (g i)).toNNReal
-    · simp [dist, edist]
-      split_ifs with hp1 hp2
-      all_goals try simp_all only [nonpos_iff_eq_zero, one_ne_zero, toReal_zero,
-        ENNReal.ofReal_natCast, Nat.cast_inj]
-      · contradiction
-      · rw [← dist_eq_iSup]
-        simp [dist]
-        simp [dist_edist,edist]
-        sorry
-      · have A (i) : edist (f i) (g i) ^ p.toReal ≠ ⊤ := by finiteness
-        simp [dist_edist, ← dist_eq_sum, edist_eq_sum (zero_lt_one.trans_le h), ENNReal.toReal_rpow,
-          dist_eq_sum (zero_lt_one.trans_le h), ← ENNReal.toReal_sum fun i _ => A i, edist]
-        sorry
-
-
-
+      · refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+        have : BddAbove <| .range fun i ↦ dist (f i) (g i) := Finite.bddAbove_range _
+        simp [ciSup_le_iff this]
+    · have : 0 < p.toReal := by rw [ENNReal.toReal_pos_iff_ne_top]; rintro rfl; norm_num at h
+      simp only [edist_eq_sum, edist_dist, dist_eq_sum, this]
+      rw [← ENNReal.ofReal_rpow_of_nonneg (by simp [Finset.sum_nonneg, Real.rpow_nonneg]) (by simp)]
+      simp [Real.rpow_nonneg, ENNReal.ofReal_sum_of_nonneg, ← ENNReal.ofReal_rpow_of_nonneg]
 
 attribute [local instance] PiLp.pseudoMetricAux
 
