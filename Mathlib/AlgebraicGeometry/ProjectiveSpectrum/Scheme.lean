@@ -31,7 +31,8 @@ structure sheaf so that `Proj` is a locally ringed space. In this file we will p
 equipped with this structure sheaf is a scheme. We achieve this by using an affine cover by basic
 open sets in `Proj`, more specifically:
 
-1. We prove that `Proj` can be covered by basic open sets at homogeneous elements of positive degree.
+1. We prove that `Proj` can be covered by basic open sets at homogeneous elements of positive
+    degree.
 2. We prove that for any homogeneous element `f : A` of positive degree `m`, `Proj.T | (pbo f)` is
     homeomorphic to `Spec.T A⁰_f`:
   - forward direction `toSpec`:

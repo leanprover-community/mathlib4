@@ -43,8 +43,8 @@ point on `W` can be given by `[x : y : z]` and the nonsingular condition on any 
 
 A nonsingular Jacobian point representative can be converted to a nonsingular point in affine
 coordinates using `WeierstrassCurve.Jacobian.Point.toAffine`, which lifts to a map on nonsingular
-Jacobian points using `WeierstrassCurve.Jacobian.Point.toAffineLift`. Conversely, a nonsingular point
-in affine coordinates can be converted to a nonsingular Jacobian point using
+Jacobian points using `WeierstrassCurve.Jacobian.Point.toAffineLift`. Conversely, a nonsingular
+point in affine coordinates can be converted to a nonsingular Jacobian point using
 `WeierstrassCurve.Jacobian.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toJacobian`.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
