@@ -1460,6 +1460,7 @@ import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 import Mathlib.Analysis.CStarAlgebra.Projection
 import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 import Mathlib.Analysis.CStarAlgebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.Unitary.Connected
 import Mathlib.Analysis.CStarAlgebra.Unitary.Span
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.CStarAlgebra.lpSpace
@@ -6444,6 +6445,7 @@ import Mathlib.Topology.Algebra.IsOpenUnits
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.Topology.Algebra.Localization
