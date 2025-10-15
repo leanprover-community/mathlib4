@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 # Pseudofunctoriality of categorical joins
 
 In this file, we promote the join construction to two pseudofunctors
-`Join.pseudofunctorLeft` and `Join.pseudoFunctorRight`, expressing its pseudofunctoriality in
+`Join.pseudofunctorLeft` and `Join.pseudofunctorRight`, expressing its pseudofunctoriality in
 each variable.
 
 -/
@@ -29,13 +29,13 @@ variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
 
 
 variable (A) in
-/-- The structural isomorphism for composition of `pseudoFunctorRight`. -/
+/-- The structural isomorphism for composition of `pseudofunctorRight`. -/
 def mapCompRight (F : B ⥤ C) (G : C ⥤ D) :
     mapPair (𝟭 A) (F ⋙ G) ≅ mapPair (𝟭 A) F ⋙ mapPair (𝟭 A) G :=
   mapIsoWhiskerRight (Functor.leftUnitor _).symm _ ≪≫ mapPairComp (𝟭 A) F (𝟭 A) G
 
 variable (D) in
-/-- The structural isomorphism for composition of `pseudoFunctorLeft`. -/
+/-- The structural isomorphism for composition of `pseudofunctorLeft`. -/
 def mapCompLeft (F : A ⥤ B) (G : B ⥤ C) :
     mapPair (F ⋙ G) (𝟭 D) ≅ mapPair F (𝟭 D) ⋙ mapPair G (𝟭 D) :=
   mapIsoWhiskerLeft _ (Functor.leftUnitor _).symm ≪≫ mapPairComp F (𝟭 D) G (𝟭 D)
