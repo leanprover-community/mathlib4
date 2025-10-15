@@ -105,7 +105,7 @@ lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
   simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
   obtain ⟨i, x, rfl⟩ := H x
   use (Limits.Sigma.ι (fun i ↦ Y i) i).base x
-  rw [← Scheme.comp_base_apply, Limits.Sigma.ι_desc]
+  rw [← Scheme.Hom.comp_apply, Limits.Sigma.ι_desc]
 
 instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
     Surjective (Limits.Sigma.desc fun i ↦ 𝒰.f i) :=
@@ -225,7 +225,7 @@ lemma IsDominant.of_comp_of_isOpenImmersion
     (f : X ⟶ Y) (g : Y ⟶ Z) [H : IsDominant (f ≫ g)] [IsOpenImmersion g] :
     IsDominant f := by
   rw [isDominant_iff, DenseRange] at H ⊢
-  simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] at H
+  simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp] at H
   convert H.preimage g.isOpenEmbedding.isOpenMap using 1
   rw [Set.preimage_image_eq _ g.isOpenEmbedding.injective]
 

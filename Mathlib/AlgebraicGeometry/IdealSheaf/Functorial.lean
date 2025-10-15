@@ -160,7 +160,7 @@ lemma map_vanishingIdeal {X Y : Scheme} (f : X ⟶ Y) (Z : TopologicalSpace.Clos
   apply le_antisymm
   · rw [map, ← le_support_iff_le_vanishingIdeal, TopologicalSpace.Closeds.closure_le]
     refine .trans ?_ (Hom.range_subset_ker_support _)
-    rw [Scheme.comp_base, TopCat.coe_comp, Set.range_comp,
+    rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp,
       range_subschemeι, coe_support_vanishingIdeal]
   · simp [le_map_iff_comap_le, ← le_support_iff_le_vanishingIdeal, ← Set.image_subset_iff,
       subset_closure, ← SetLike.coe_subset_coe]
@@ -169,7 +169,7 @@ lemma map_vanishingIdeal {X Y : Scheme} (f : X ⟶ Y) (Z : TopologicalSpace.Clos
 lemma support_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] :
     (I.map f).support = .closure (f.base '' I.support) := by
   ext1
-  rw [map, Scheme.Hom.support_ker, Scheme.comp_base, TopCat.coe_comp,
+  rw [map, Scheme.Hom.support_ker, Scheme.Hom.comp_base, TopCat.coe_comp,
     Set.range_comp, range_subschemeι, TopologicalSpace.Closeds.coe_closure]
 
 lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.affineOpens)

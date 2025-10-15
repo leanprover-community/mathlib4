@@ -105,9 +105,9 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
       Subtype.range_coe_subtype, Set.setOf_mem_eq]
     change _ = (Y.affineCover.pullbackHom f i ≫
       (Y.affineCover.f i).isoOpensRange.hom ≫ Opens.ι _).base.hom '' _
-    rw [Scheme.Hom.isoOpensRange_hom_ι, Cover.pullbackHom_map, Scheme.comp_base, TopCat.hom_comp,
-      ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range]
-    simp [IsOpenImmersion.range_pullback_fst_of_right, Set.image_inter_preimage]
+    rw [Scheme.Hom.isoOpensRange_hom_ι, Cover.pullbackHom_map, Scheme.Hom.comp_base,
+      TopCat.hom_comp, ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range]
+    simp [IsOpenImmersion.range_pullbackFst, Set.image_inter_preimage]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · have inst : CompactSpace X := HasAffineProperty.iff_of_isAffine.mp ‹QuasiCompact f›
@@ -118,7 +118,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
       HasAffineProperty.iff_of_isAffine.mpr (inferInstanceAs (CompactSpace (Spec _)))
     convert this (hs.preimage_of_isOpenEmbedding (𝒰.f i).isOpenEmbedding) _
       (𝒰.f i ≫ f) ⟨_, rfl⟩
-    rw [Scheme.comp_base, ← TopCat.Hom.hom, ← TopCat.Hom.hom, TopCat.hom_comp,
+    rw [Scheme.Hom.comp_base, ← TopCat.Hom.hom, ← TopCat.Hom.hom, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range, coe_opensRange]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
@@ -138,9 +138,9 @@ lemma Scheme.Hom.isConstructible_image (f : X.Hom Y)
 lemma Scheme.Hom.isConstructible_preimage (f : X.Hom Y) {s : Set Y} (hs : IsConstructible s) :
     IsConstructible (f.base ⁻¹' s) :=
   hs.preimage f.continuous fun t ht ht' ↦ IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr
-    ((quasiCompact_iff_spectral _).mp
+    (quasiCompact_iff_isSpectralMap.mp
     (MorphismProperty.of_isPullback (P := @QuasiCompact)
     (isPullback_morphismRestrict f ⟨t, ht⟩)
-    ((quasiCompact_iff_spectral _).mpr (IsRetrocompact_iff_isSpectralMap_subtypeVal.mp ht'))))
+    (quasiCompact_iff_isSpectralMap.mpr (IsRetrocompact_iff_isSpectralMap_subtypeVal.mp ht'))))
 
 end AlgebraicGeometry
