@@ -482,7 +482,7 @@ noncomputable def isLimitMapConeOfKernelForkOfι
   change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
   rw [Category.comp_id, Category.id_comp]
 
-/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphisms
+/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphism
 admitting a kernel such that `F` preserves this kernel and `F.map p` is an epi,
 then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
 noncomputable def isColimitMapCoconeOfCokernelCoforkOfπ
