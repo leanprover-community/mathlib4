@@ -57,7 +57,7 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
         (∫ (x : V), (1 + ‖x‖) ^ (- (integrablePower (volume : Measure V) : ℝ))) * 2 *
         ((Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)).sup
           (schwartzSeminormFamily 𝕜 V E)) f := by
-      apply Finset.sum_le_sum (fun p hp ↦ ?_)
+      gcongr with p hp
       simp only [Finset.mem_product, Finset.mem_range] at hp
       apply (f.integral_pow_mul_iteratedFDeriv_le 𝕜 _ _ _).trans
       simp only [mul_assoc]
