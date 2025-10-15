@@ -461,6 +461,7 @@ namespace Matrix.GeneralLinearGroup
   simp_rw [Units.continuous_iff, ← map_inv]
   constructor <;> fun_prop
 
+@[continuity, fun_prop]
 lemma continuous_upperRightHom {R : Type*} [Ring R] [TopologicalSpace R] [IsTopologicalRing R] :
     Continuous (upperRightHom (R := R)) := by
   simp only [continuous_induced_rng, Function.comp_def, upperRightHom_apply,
