@@ -221,8 +221,7 @@ theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf 
   pkg.extend_map pkg' (pkg''.uniformContinuous_coe.comp hg) hf
 
 /-- The uniform isomorphism between two completions of isomorphic uniform spaces. -/
-@[simps!]
-noncomputable def mapEquiv (e : α ≃ᵤ β) : hatα ≃ᵤ hatβ where
+def mapEquiv (e : α ≃ᵤ β) : hatα ≃ᵤ hatβ where
   toFun := pkg.map pkg' e
   invFun := pkg'.map pkg e.symm
   uniformContinuous_toFun := uniformContinuous_map ..
@@ -235,9 +234,8 @@ noncomputable def mapEquiv (e : α ≃ᵤ β) : hatα ≃ᵤ hatβ where
       simp [pkg.map_coe pkg' e.uniformContinuous, pkg'.map_coe pkg e.symm.uniformContinuous]
 
 @[simp]
-theorem mapEquiv_coe (e : α ≃ᵤ β) (a : α) :
-    pkg.mapEquiv pkg' e (ι a) = ι' (e a) := by
-  rw [mapEquiv_apply, pkg.map_coe pkg' e.uniformContinuous]
+theorem mapEquiv_coe (e : α ≃ᵤ β) (a : α) : pkg.mapEquiv pkg' e (ι a) = ι' (e a) :=
+  pkg.map_coe pkg' e.uniformContinuous _
 
 end MapSec
 
