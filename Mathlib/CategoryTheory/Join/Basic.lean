@@ -11,16 +11,16 @@ import Mathlib.CategoryTheory.Products.Basic
 
 Given categories `C, D`, this file constructs a category `C ⋆ D`. Its objects are either
 objects of `C` or objects of `D`, morphisms between objects of `C` are morphisms in `C`,
-morphisms between object of `D` are morphisms in `D`, and finally, given `c : C` and `d : D`,
+morphisms between objects of `D` are morphisms in `D`, and finally, given `c : C` and `d : D`,
 there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 
 ## Main constructions
 
 * `Join.edge c d`: the unique map from `c` to `d`.
-* `Join.inclLeft : C ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
+* `Join.inclLeft : C ⥤ C ⋆ D`, the left inclusion. Its action on morphisms is the main entry point
   to construct maps in `C ⋆ D` between objects coming from `C`.
-* `Join.inclRight : D ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
-  to construct maps in `C ⋆ D` between object coming from `D`.
+* `Join.inclRight : D ⥤ C ⋆ D`, the right inclusion. Its action on morphisms is the main entry point
+  to construct maps in `C ⋆ D` between objects coming from `D`.
 * `Join.mkFunctor`, A constructor for functors out of a join of categories.
 * `Join.mkNatTrans`, A constructor for natural transformations between functors out of a join
   of categories.
@@ -58,7 +58,7 @@ section CategoryStructure
 
 variable {C D}
 
-/-- Morphisms in `C ⋆ D` are those of `C` and `D`, plus an unique
+/-- Morphisms in `C ⋆ D` are those of `C` and `D`, plus a unique
 morphism `(left c ⟶ right d)` for every `c : C` and `d : D`. -/
 def Hom : C ⋆ D → C ⋆ D → Type (max v₁ v₂)
   | .left x, .left y => ULift (x ⟶ y)
@@ -107,7 +107,7 @@ end CategoryStructure
 section Inclusions
 
 /-- The canonical inclusion from C to `C ⋆ D`.
-Terms of the form `(inclLeft C D).map f`should be treated as primitive when working with joins
+Terms of the form `(inclLeft C D).map f` should be treated as primitive when working with joins
 and one should avoid trying to reduce them. For this reason, there is no `inclLeft_map` simp
 lemma. -/
 @[simps! obj]
@@ -116,7 +116,7 @@ def inclLeft : C ⥤ C ⋆ D where
   map := ULift.up
 
 /-- The canonical inclusion from D to `C ⋆ D`.
-Terms of the form `(inclRight C D).map f`should be treated as primitive when working with joins
+Terms of the form `(inclRight C D).map f` should be treated as primitive when working with joins
 and one should avoid trying to reduce them. For this reason, there is no `inclRight_map` simp
 lemma. -/
 @[simps! obj]
@@ -205,7 +205,7 @@ section Functoriality
 
 variable {C D} {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
-/-- A pair of functor `F : C ⥤ E, G : D ⥤ E` as well as a natural transformation
+/-- A pair of functors `F : C ⥤ E, G : D ⥤ E` as well as a natural transformation
 `α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G`. defines a functor out of `C ⋆ D`.
 This is the main entry point to define functors out of a join of categories. -/
 def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd C D ⋙ G) :

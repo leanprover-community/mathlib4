@@ -184,7 +184,7 @@ lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
 
 variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
 
-/-- The product of `Y` and `Z` in `Over X` is isomorpic to `Y ×ₓ Z`. -/
+/-- The product of `Y` and `Z` in `Over X` is isomorphic to `Y ×ₓ Z`. -/
 noncomputable
 def prodLeftIsoPullback :
     (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=
