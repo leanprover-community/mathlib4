@@ -224,6 +224,9 @@ def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
 @[simp] lemma enorm_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
     ‖map f.toLinearMap g.toLinearMap x‖ₑ = ‖x‖ₑ := mapIsometry f g |>.enorm_map x
 
+/-- The tensor product of two linear isometry equivalences is a linear isometry equivalence.
+In particular, this is the linear isometry equivalence version of `TensorProduct.congr f g` when `f`
+and `g` are linear isometry equivalences. -/
 def congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     E ⊗[𝕜] F ≃ₗᵢ[𝕜] G ⊗[𝕜] H :=
   congr f.toLinearEquiv g.toLinearEquiv |>.isometryOfInner <|
