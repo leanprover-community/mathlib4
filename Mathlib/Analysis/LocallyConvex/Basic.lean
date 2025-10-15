@@ -3,13 +3,9 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Topology.Bornology.Absorbs
-
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Topology.Bornology.Absorbs
 /-!
 # Local convexity
 
@@ -287,12 +283,14 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
 variable {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E]
 
 theorem Absorbent.submodule_eq_top {V : S} (hV : Absorbent 𝕜 (V : Set E)) :
-    (V : Set E) = .univ := by
-  rw [Set.eq_univ_iff_forall]
-  intro x
-  rcases (hV x).exists with ⟨c, hc⟩
-  rcases hc (Set.mem_singleton _) with ⟨x, hx, rfl⟩
-  exact SMulMemClass.smul_mem _ hx
+    (V : Set E) = ⊤ := by
+  nontriviality 𝕜
+  rw [eq_top_iff]
+  rintro x -
+  obtain ⟨c, hc, hc'⟩ :=
+    ((absorbent_iff_eventually_nhdsNE_zero.mp hV x).and eventually_mem_nhdsWithin).exists
+  rw [← inv_smul_smul₀ hc' x]
+  exact SMulMemClass.smul_mem c⁻¹ hc
 
 variable {F ℱ 𝕜₂ : Type*} [Field 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
 variable [AddCommGroup F] [Module 𝕜₂ F]
@@ -317,3 +315,5 @@ theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x�
     (div_nonneg (sub_nonneg_of_le ha.1) zero_le_two) (by ring)
 
 end Real
+
+#min_imports
