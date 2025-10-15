@@ -76,7 +76,7 @@ variable [Algebra.IsAlgebraic K L]
 section galLift
 variable {A B B₂ B₃}
 
-/-- A generalization of the the lift `End(B/A) → End(L/K)` in an ALKB setup.
+/-- A generalization of the lift `End(B/A) → End(L/K)` in an ALKB setup.
 This is inverse to the restriction. See `galRestrictHom`. -/
 noncomputable
 def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
@@ -362,6 +362,7 @@ def Algebra.intNormAux :
 
 variable {A K L B}
 
+omit [FiniteDimensional K L] in
 lemma Algebra.map_intNormAux (x : B) :
     algebraMap A K (Algebra.intNormAux A K L B x) = Algebra.norm K (algebraMap B L x) := by
   dsimp [Algebra.intNormAux]

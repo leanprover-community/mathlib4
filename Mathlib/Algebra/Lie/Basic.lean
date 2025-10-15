@@ -574,6 +574,12 @@ theorem toLinearEquiv_injective : Injective ((↑) : (L₁ ≃ₗ⁅R⁆ L₂) �
 theorem coe_injective : @Injective (L₁ ≃ₗ⁅R⁆ L₂) (L₁ → L₂) (↑) :=
   LinearEquiv.coe_injective.comp toLinearEquiv_injective
 
+instance : LinearEquivClass (L₁ ≃ₗ⁅R⁆ L₂) R L₁ L₂ where
+  map_add _ _ _ := by
+    rw [← @coe_toLinearEquiv, map_add]
+  map_smulₛₗ _ _ _ := by
+    rw [← @coe_toLinearEquiv, map_smul, RingHom.id_apply]
+
 @[ext]
 theorem ext {f g : L₁ ≃ₗ⁅R⁆ L₂} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h

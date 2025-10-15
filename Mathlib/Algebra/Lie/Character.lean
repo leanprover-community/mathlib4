@@ -50,7 +50,7 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     LieSubmodule.mem_toSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
   refine Submodule.span_induction ?_ ?_ ?_ ?_ h
   · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
-  · exact map_zero χ
+  · exact χ.toLinearMap.map_zero
   · intro y z _ _ hy hz; rw [map_add, hy, hz, add_zero]
   · intro t y _ hy; rw [map_smul, hy, smul_zero]
 
