@@ -95,11 +95,10 @@ theorem Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one {p n : ℕ
   haveI : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
   exact ZMod.mod_four_ne_three_of_sq_eq_neg_sq' one_ne_zero h
 
-@[deprecated mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one (since := "2025-10-15")]
-theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p.Prime) (hp : p ∣ n)
-    (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 :=
-  mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one
-    (Nat.mem_primeFactors.mpr ⟨hpp, hp, fun hn ↦ by rw [hn] at hs; simp [ZMod] at hs⟩) hs
+@[deprecated "Note that the statement now uses `Nat.primeFactors`, \
+  you can use `Nat.mem_primeFactors` to get the previous formulation" (since := "2025-10-15")]
+alias Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one :=
+  Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` does not have a prime factor `q` such that `q % 4 = 3`. -/
@@ -121,12 +120,11 @@ theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n :
         Nat.mem_primeFactors.mpr ⟨Nat.prime_of_mem_primeFactors hqp,
           dvd_mul_of_dvd_right (Nat.dvd_of_mem_primeFactors hqp) _, Squarefree.ne_zero hn⟩
 
-@[deprecated isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three (since := "2025-10-15")]
-theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
-    IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q.Prime → q ∣ n → q % 4 ≠ 3 :=
-  (isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three hn).trans
-    ⟨fun h _ hqp hqd ↦ h _ <| Nat.mem_primeFactors.mpr ⟨hqp, hqd, Squarefree.ne_zero hn⟩,
-      fun h _ hq ↦ h (Nat.prime_of_mem_primeFactors hq) (Nat.dvd_of_mem_primeFactors hq)⟩
+@[deprecated "Note that the statement now uses `Nat.primeFactors`, \
+  you can use `Nat.mem_primeFactors` and `Squarefree.ne_zero` to get the previous formulation"
+  (since := "2025-10-15")]
+alias ZMod.isSquare_neg_one_iff :=
+  ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` has no divisor `q` that is `≡ 3 mod 4`. -/
