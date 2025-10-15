@@ -79,7 +79,7 @@ theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] [LinearOrder �
   refine ⟨fun h ↦ ?_, by simp_all⟩
   grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x
     (le_of_lt hr), convexHull_mono h, ]
-  erw [convexHull_eq_self.mpr (Convex.semilinear_range (F := F') (F' := E) hτ f), LinearMap.coe_coe]
+  erw [convexHull_eq_self.mpr (Convex.semilinear_range (E := E) (F' := F') hτ f), LinearMap.coe_coe]
 
 omit [SemilinearMapClass 𝓕 σ₁₂ E F]
 
