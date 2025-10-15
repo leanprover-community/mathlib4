@@ -172,9 +172,8 @@ theorem _root_.RCLike.inner_tmul_eq (a b c d : 𝕜) :
 /-- Given `x, y : E ⊗ F`, `x = y` iff `⟪x, a ⊗ₜ b⟫ = ⟪y, a ⊗ₜ b⟫` for all `a, b`. -/
 protected theorem ext_iff_inner_right {x y : E ⊗[𝕜] F} :
     x = y ↔ ∀ a b, inner 𝕜 x (a ⊗ₜ[𝕜] b) = inner 𝕜 y (a ⊗ₜ[𝕜] b) := by
-  rw [_root_.ext_iff_inner_right 𝕜]
-  refine ⟨fun h a b => by rw [h], fun h v => ?_⟩
-  exact v.induction_on (by simp) h (fun c d hc hd => by simp [inner_add_right, hc, hd])
+  rw [← innerSL_inj (𝕜 := 𝕜), ← ContinuousLinearMap.coe_inj, TensorProduct.ext_iff]
+  simp [LinearMap.ext_iff]
 
 /-- Given `x, y : E ⊗ F`, `x = y` iff `⟪a ⊗ₜ b, x⟫ = ⟪a ⊗ₜ b, y⟫` for all `a, b`. -/
 protected theorem ext_iff_inner_left {x y : E ⊗[𝕜] F} :
@@ -363,7 +362,6 @@ lemma toBasis_tensorProduct (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : Ortho
     (b₁.tensorProduct b₂).toBasis = b₁.toBasis.tensorProduct b₂.toBasis := by
   simp [OrthonormalBasis.tensorProduct]
 
-@[simp]
 lemma coe_tensorProduct (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
     ⇑(b₁.tensorProduct b₂) = fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ b₂ i.2 := by
   ext; rw [tensorProduct_apply']

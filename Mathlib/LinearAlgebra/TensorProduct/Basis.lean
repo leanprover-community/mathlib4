@@ -53,7 +53,6 @@ theorem tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N) (m :
     (tensorProduct b c).repr (m ⊗ₜ n) (i, j) = c.repr n j • b.repr m i := by
   simp [tensorProduct]
 
-@[simp]
 lemma coe_tensorProduct (b : Basis ι R M) (c : Basis κ R N) :
     ⇑(b.tensorProduct c) = fun i : ι × κ ↦ b i.1 ⊗ₜ c i.2 := by
   ext; rw [tensorProduct_apply']
@@ -199,6 +198,6 @@ theorem TensorProduct.basis_sum_repr {R E F : Type*} [CommSemiring R]
     (x : TensorProduct R E F) :
     x = ∑ i : ι₁, ∑ j : ι₂, (b₁.tensorProduct b₂).repr x (i, j) • b₁ i ⊗ₜ[R] b₂ j := by
   conv_lhs => rw [← (b₁.tensorProduct b₂).sum_repr x]
-  simp [← Finset.sum_product']
+  simp [← Finset.sum_product', Basis.coe_tensorProduct]
 
 end
