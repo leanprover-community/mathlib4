@@ -68,7 +68,7 @@ protected def one : One (Finset α) :=
 
 scoped[Pointwise] attribute [instance] Finset.one Finset.zero
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem mem_one : a ∈ (1 : Finset α) ↔ a = 1 :=
   mem_singleton
 
@@ -265,7 +265,7 @@ open Pointwise
 section InvolutiveInv
 variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
 
 @[to_additive (attr := simp, norm_cast)]
@@ -318,7 +318,7 @@ theorem mul_def : s * t = (s ×ˢ t).image fun p : α × α => p.1 * p.2 :=
 theorem image_mul_product : ((s ×ˢ t).image fun x : α × α => x.fst * x.snd) = s * t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_mul {x : α} : x ∈ s * t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := mem_image₂
 
 @[to_additive (attr := simp, norm_cast)]
@@ -537,7 +537,7 @@ theorem div_def : s / t = (s ×ˢ t).image fun p : α × α => p.1 / p.2 :=
 theorem image_div_product : ((s ×ˢ t).image fun x : α × α => x.fst / x.snd) = s / t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_div : a ∈ s / t ↔ ∃ b ∈ s, ∃ c ∈ t, b / c = a :=
   mem_image₂
 
@@ -877,7 +877,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
   rw [← mem_coe, coe_list_prod, List.map_ofFn, Set.mem_prod_list_ofFn]
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
   simp [← mem_coe, coe_pow, Set.mem_pow]
