@@ -621,9 +621,10 @@ protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (Subgraph.coeSubgraph G'').Connected := by
   exact hconn.map_Subgraph_coe G'.hom
 
-/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
-lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V] {H : G.Subgraph}
-    (hconn : H.Connected) {v : V} [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) :
+/-- The graph resulting from removing a vertex of degree one from a (pre)connected graph is
+connected. -/
+lemma Preconnected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V] {H : G.Subgraph}
+    (hpreconn : H.Preconnected) {v : V} [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) :
     (H.deleteVerts {v}).Connected := by
   refine (H.deleteVerts {v}).connected_iff_forall_exists_walk_subgraph.mpr ⟨?_, ?_⟩
   · have := (H.nontrivial_of_degree_ne_zero (ne_zero_of_eq_one hdeg)).exists_pair_ne
@@ -632,7 +633,7 @@ lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V]
   /- There exists a walk between any two vertices w and x in H.deleteVerts {v}
   via the unique vertex u adjacent to vertex v. -/
   · intro w x w_mem_H' x_mem_H'
-    obtain ⟨_, exists_walk_le_H⟩ := H.connected_iff_forall_exists_walk_subgraph.mp hconn
+    have exists_walk_le_H := @H.preconnected_iff_forall_exists_walk_subgraph.mp hpreconn
     obtain ⟨u, H_adj_v_u, u_unique⟩ := degree_eq_one_iff_unique_adj.mp hdeg
     obtain ⟨puw, puw_le_H⟩ :=
       exists_walk_le_H (H.edge_vert H_adj_v_u.symm) (Set.mem_of_mem_inter_left w_mem_H')
@@ -659,7 +660,7 @@ lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V]
           have := List.one_le_count_iff.mpr (Walk.snd_mem_tail_support not_nil_pvz)
           rw [u_unique pvz.snd (H_adj_if_p_adj <| p.adj_toSubgraph_toPath <| by simp_all)] at this
           omega
-        simpa [List.nodup_iff_forall_not_duplicate.mp p.toPath.nodup_support u]
+        simpa [List.nodup_iff_forall_not_duplicate.mp p.toPath.nodup_support]
       constructor
       · exact Set.subset_diff_singleton
           (.trans p.verts_toSubgraph_toPath_subset p_verts_subset_H_verts) v_not_mem_p'
@@ -675,11 +676,13 @@ lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V]
     use .append puw.toPath.reverse (pux.toPath : G.Walk u x)
     simpa using ⟨p_le_H' w_mem_H' puw_le_H, p_le_H' x_mem_H' pux_le_H⟩
 
-/-- A nontrivial connected graph contains a vertex that leaves the graph connected if removed. -/
-lemma Connected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [DecidableEq V]
-    [Fintype V] {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected) :
+/-- A nontrivial (pre)connected graph contains a vertex that leaves the graph connected if
+removed. -/
+lemma Preconnected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [DecidableEq V]
+    [Fintype V] {H : G.Subgraph} [Nontrivial H.verts] (h : H.Preconnected) :
     ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
-  obtain ⟨T, T_le_H, T_isTree⟩ := h.coe.exists_isTree_le
+  obtain ⟨T, T_le_H, T_isTree⟩ :=
+    (Subgraph.connected_iff.mpr ⟨h, Set.Nonempty.of_subtype⟩).coe.exists_isTree_le
   have ⟨T_conn, _⟩ := T_isTree
   have := @Fintype.ofFinite H.verts
   have := Classical.decRel T.Adj
@@ -696,7 +699,7 @@ lemma Connected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [Dec
   · have : Nontrivial (toSubgraph T T_le_H).verts := by simp_all
     have := Fintype.ofFinite ((toSubgraph T T_le_H).neighborSet v)
     apply Connected.coeSubgraph
-    apply connected_deleteVerts_singleton_of_degree_eq_one (T_conn.toSubgraph T_le_H)
+    apply (T_conn.toSubgraph T_le_H).preconnected.connected_deleteVerts_singleton_of_degree_eq_one
     simp [← hv]
 
 end Subgraph
