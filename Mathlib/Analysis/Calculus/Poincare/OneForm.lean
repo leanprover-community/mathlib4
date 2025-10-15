@@ -9,7 +9,6 @@ import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 import Mathlib.Topology.Homotopy.Affine
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Analysis.Calculus.Deriv.Shift
-import Mathlib.Analysis.Calculus.DiffContOnCl
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Analysis.Calculus.Deriv.Prod
 import Mathlib.Analysis.Normed.Affine.AddTorsor
