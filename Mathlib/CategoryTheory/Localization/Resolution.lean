@@ -93,7 +93,7 @@ structure Hom (R R' : Φ.RightResolution X₂) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.RightResolution X₂`. -/
+/-- The identity of an object in `Φ.RightResolution X₂`. -/
 @[simps]
 def Hom.id (R : Φ.RightResolution X₂) : Hom R R where
   f := 𝟙 _
@@ -137,7 +137,7 @@ structure Hom (L L' : Φ.LeftResolution X₂) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.LeftResolution X₂`. -/
+/-- The identity of an object in `Φ.LeftResolution X₂`. -/
 @[simps]
 def Hom.id (L : Φ.LeftResolution X₂) : Hom L L where
   f := 𝟙 _
