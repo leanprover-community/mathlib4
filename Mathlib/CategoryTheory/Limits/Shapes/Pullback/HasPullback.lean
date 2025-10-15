@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 /-!
 # HasPullback
 `HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
-pullacks.
+pullbacks.
 
 # Main definitions
 
@@ -507,6 +507,14 @@ theorem inr_comp_pushoutSymmetry_inv [HasPushout f g] :
     pushout.inr _ _ ≫ (pushoutSymmetry f g).inv = pushout.inl _ _ := by simp [Iso.comp_inv_eq]
 
 end PushoutSymmetry
+
+/-- `HasPullbacksAlong f` states that pullbacks of all morphisms into `Y`
+along `f : X ⟶ Y` exist. -/
+abbrev HasPullbacksAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : W ⟶ Y), HasPullback h f
+
+/-- `HasPushoutsAlong f` states that pushouts of all morphisms out of `X`
+along `f : X ⟶ Y` exist. -/
+abbrev HasPushoutsAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : X ⟶ W), HasPushout h f
 
 variable (C)
 
