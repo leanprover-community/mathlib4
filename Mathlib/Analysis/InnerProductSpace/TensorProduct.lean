@@ -205,7 +205,7 @@ theorem ext_iff_inner_left_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
 
 section isometry
 
-/-- The tensor product of two linear isometries is a linear isometry. -/
+/-- The tensor product map of two linear isometries is a linear isometry. -/
 def mapLinearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
     E ⊗[𝕜] F →ₗᵢ[𝕜] G ⊗[𝕜] H where
   toLinearMap := map f.toLinearMap g.toLinearMap
@@ -297,9 +297,8 @@ def assocLinearIsometryEquiv : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[�
 end isometry
 
 -- TODO: upgrade `map` to a `ContinuousLinearMap`
-@[simp] theorem adjoint_map {A : Type*} [NormedAddCommGroup A] [InnerProductSpace 𝕜 A]
-    [FiniteDimensional 𝕜 A] [FiniteDimensional 𝕜 G] [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
-    (f : A →ₗ[𝕜] G) (g : E →ₗ[𝕜] F) :
+@[simp] theorem adjoint_map [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
+    [FiniteDimensional 𝕜 H] (f : E →ₗ[𝕜] F) (g : G →ₗ[𝕜] H) :
     LinearMap.adjoint (map f g) = map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
   ext' fun x y => by simp [TensorProduct.ext_iff_inner_right, LinearMap.adjoint_inner_left]
 
