@@ -9,49 +9,6 @@ open IsDedekindDomain
 
 open scoped NumberField WithZero
 
-@[simps!]
-noncomputable def UniformSpace.Completion.mapEquiv {α β : Type*} [UniformSpace α] [UniformSpace β]
-    (h : α ≃ᵤ β) : UniformSpace.Completion α ≃ᵤ UniformSpace.Completion β where
-  toFun := .map h
-  invFun := .map h.symm
-  uniformContinuous_toFun := uniformContinuous_map
-  uniformContinuous_invFun := uniformContinuous_map
-  left_inv := by
-    rw [Function.leftInverse_iff_comp]
-    apply ext (.comp continuous_map continuous_map) continuous_id fun a ↦ ?_
-    simp [map_coe h.uniformContinuous, map_coe h.symm.uniformContinuous]
-  right_inv := by
-    rw [Function.rightInverse_iff_comp]
-    apply ext (.comp continuous_map continuous_map) continuous_id fun a ↦ ?_
-    simp [map_coe h.symm.uniformContinuous, map_coe h.uniformContinuous]
-
-@[simp]
-theorem UniformSpace.Completion.mapEquiv_cast_apply {α β : Type*} [UniformSpace α] [UniformSpace β]
-    (h : α ≃ᵤ β) (a : α) :
-    UniformSpace.Completion.mapEquiv h (↑a : UniformSpace.Completion α) = ↑(h a) := by
-  rw [mapEquiv_apply, map_coe h.uniformContinuous]
-
-/-
-def HeightOneSpectrum.mapEquiv {R S F : Type*} [CommRing R] [CommRing S] [EquivLike F R S]
-    [RingEquivClass F R S] (f : F) : HeightOneSpectrum R ≃ HeightOneSpectrum S where
-  toFun v := ⟨v.asIdeal.map f, Ideal.map_isPrime_of_equiv f,
-    mt (Ideal.map_eq_bot_iff_of_injective (EquivLike.injective f)).1 v.ne_bot⟩
-  invFun v := ⟨v.asIdeal.map (RingEquiv.symm f), Ideal.map_isPrime_of_equiv _,
-    mt (Ideal.map_eq_bot_iff_of_injective (EquivLike.injective _)).1 v.ne_bot⟩
-  left_inv v := by
-    simp only [Ideal.map_symm]
-    congr
-    exact Ideal.comap_map_of_bijective f (EquivLike.toEquiv f).bijective
-  right_inv v := by
-    simp only [Ideal.map_symm]
-    congr
-    exact Ideal.map_comap_of_surjective f (EquivLike.toEquiv f).surjective _
-
-noncomputable
-def Rat.ringOfIntegersSpectrumEquiv : HeightOneSpectrum (𝓞 ℚ) ≃ HeightOneSpectrum ℤ :=
-    HeightOneSpectrum.mapEquiv ringOfIntegersEquiv
--/
-
 noncomputable
 def IsDedekindDomain.HeightOneSpectrum.natGenerator {R : Type*} [CommRing R]
     [h : Nonempty (R ≃+* ℤ)] (v : HeightOneSpectrum R) : ℕ :=
@@ -109,7 +66,7 @@ theorem _root_.Valuation.IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field 
     exact (mapEquiv (h.uniformEquiv hv hv')).toHomeomorph.isClosed_setOf_iff
       (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
   | ih a =>
-    rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, mapEquiv_cast_apply]
+    rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, mapEquiv_coe]
     simpa using h.le_one_iff_le_one
 
 noncomputable def adicCompletionIntegersEquivPadicInt {R : Type*} [CommRing R] [IsDedekindDomain R]
