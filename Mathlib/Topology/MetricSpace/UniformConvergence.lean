@@ -304,27 +304,18 @@ variable [Finite 𝔖] [PseudoMetricSpace β]
 
 noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
-    (fun f g ↦ ⨆ x ∈ ⋃₀ 𝔖, dist (toFun 𝔖 f x) (toFun 𝔖 g x))
-    (fun _ _ ↦ by
-      have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-      simp only [iSup, ge_iff_le]
-      rw [sSup_range]
-      refine Real.iSup_nonneg ?_
-      refine fun i ↦ Real.sSup_nonneg ?_
-      intro x hx
-      simp only [Set.mem_range, Set.mem_sUnion, exists_prop] at hx
-      obtain ⟨_, hx, rfl⟩ := hx
-      exact dist_nonneg)
-    (fun a b ↦ by
-      simp only [dist_edist, edist_def, ← ENNReal.toReal_iSup (fun _ ↦ edist_ne_top _ _)]
-      have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-      rw [←ENNReal.toReal_iSup]
-      · simp only [Set.mem_sUnion, iSup_exists]
-        exact Eq.symm ((fun {a} ↦ ENNReal.ofReal_toReal_eq_iff.mpr) <| Ne.symm (ne_of_gt <|
-          (iSup_le fun x => iSup_le fun i => iSup_le fun ⟨hi, hx⟩ =>
-          EMetric.edist_le_diam_of_mem (Set.mem_univ _) (Set.mem_univ _)).trans_lt this))
-      exact fun x ↦ lt_of_le_of_lt (iSup_le fun hx ↦ (EMetric.edist_le_diam_of_mem (Set.mem_univ _)
-       (Set.mem_univ _))) this |>.ne)
+    (fun f g ↦ ⨆ x : ⋃₀ 𝔖, dist (toFun 𝔖 f x) (toFun 𝔖 g x))
+    (fun _ _ ↦ Real.iSup_nonneg fun i ↦ dist_nonneg)
+    (fun f g ↦ by
+      cases isEmpty_or_nonempty (⋃₀ 𝔖)
+      · simp_all [edist_def]
+      have : BddAbove (.range fun x : ⋃₀ 𝔖 ↦ dist (toFun 𝔖 f x) (toFun 𝔖 g x)) := by
+        use (EMetric.diam (.univ : Set β)).toReal
+        simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
+          ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
+          EMetric.edist_le_diam_of_mem]
+      refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+      simp [edist_def, ciSup_le_iff this])
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by
