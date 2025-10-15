@@ -519,47 +519,48 @@ namespace NumberField.InfinitePlace
 
 open ComplexEmbedding
 
-variable {K : Type*} (L : Type*) [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
 
-/-- If `L / K` are fields and `v` is an infinite place of `K`, then we say an infinite place `w`
-of `L` _extends_ `v` if `v` is the restriction of `w` to `K`. -/
-protected abbrev Extension (v : InfinitePlace K) :=
-  { w : InfinitePlace L // w.comap (algebraMap K L) = v }
+/-- An infinite place `w` of `L / K` lies over the infinite place `v` of `K` if `v` is the
+restriction of `w` to `K`. -/
+class LiesOver : Prop where
+  comap_eq' : w.comap (algebraMap K L) = v
 
-namespace Extension
+namespace LiesOver
 
-variable {L} {v : InfinitePlace K} (w : v.Extension L)
+variable [w.LiesOver v]
 
-/-- If `w : v.Extension L` extends `v : InfinitePlace`, then `w.abs` is the absolute value
-in `AbsoluteValue L ℝ` associated to it. This is a shortcut to `w.1.1`. -/
-abbrev abs : AbsoluteValue L ℝ := w.1.1
+theorem comap_eq : w.comap (algebraMap K L) = v := LiesOver.comap_eq'
 
-theorem comap_eq : w.1.comap (algebraMap K L) = v := w.2
+theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
+  rw [← comap_mk, w.mk_embedding, comap_eq w v]
 
-/-- If `w : v.Extension L` extends a complex place `v : InfinitePlace K`, then `w` is complex. -/
-theorem isComplex_of_isComplex (hv : v.IsComplex) : w.1.IsComplex := by
-  rw [← not_isReal_iff_isComplex] at hv ⊢
-  convert mt (IsReal.comap (algebraMap K L)) (w.comap_eq ▸ hv)
+theorem embedding_comp_eq_or_conjugate_embedding_comp_eq :
+    w.embedding.comp (algebraMap K L) = v.embedding ∨
+      (conjugate w.embedding).comp (algebraMap K L) = v.embedding := by
+  cases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with
+  | inl hl => exact .inl (hl ▸ congrArg embedding (mk_embedding_comp w v))
+  | inr hr => simpa using .inr (hr ▸ congrArg embedding (mk_embedding_comp w v))
 
-/-- If `w : v.Extension L` is a real place extending `v : InfinitePlace K`, then `v` is real. -/
-theorem isReal (hw : w.1.IsReal) : v.IsReal :=
-  w.comap_eq ▸ hw.comap _
+theorem embedding_conjugate_comp_eq (h : ¬w.embedding.comp (algebraMap K L) = v.embedding) :
+    (conjugate w.embedding).comp (algebraMap K L) = v.embedding :=
+   (embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left h
 
-theorem mk_embedding_comp_eq : mk (w.1.embedding.comp (algebraMap K L)) = v := by
-  rw [← comap_mk, w.1.mk_embedding, w.comap_eq]
+theorem embedding_comp_eq (h : ¬(conjugate w.embedding).comp (algebraMap K L) = v.embedding) :
+    w.embedding.comp (algebraMap K L) = v.embedding :=
+  (embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_right h
 
-theorem _root_.NumberField.ComplexEmbedding.Extension.comap_mk_eq {v : InfinitePlace K}
-    (ψ : ComplexEmbedding.Extension L v.embedding) :
-    (mk ψ).comap (algebraMap K L) = v := by
-  rw [comap_mk, ψ.comp_eq, mk_embedding]
+variable {v}
 
-/-- If `w : InfinitePlace L` extends `v : InfinitePlace K`, then either `w.embedding`
-extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
-theorem embedding_or_conjugate_comp_eq :
-    w.1.embedding.comp (algebraMap K L) = v.embedding ∨
-      (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding := by
-  cases embedding_mk_eq (w.1.embedding.comp (algebraMap K L)) with
-  | inl hl => exact .inl (w.mk_embedding_comp_eq ▸ hl).symm
-  | inr hr => exact .inr (w.mk_embedding_comp_eq ▸ hr).symm
+theorem isComplex_of_isComplex_under (hv : v.IsComplex) : w.IsComplex := by
+  rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
+  let ⟨x, hx⟩ := hv
+  use algebraMap K L x
+  rw [← comap_eq w v, ← mk_embedding w, comap_mk] at hx
+  rcases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with (_ | _) <;> aesop
 
-end NumberField.InfinitePlace.Extension
+theorem isReal_of_isReal_over (hw : w.IsReal) : v.IsReal := by
+  rw [← not_isComplex_iff_isReal] at hw ⊢
+  exact mt (isComplex_of_isComplex_under w) hw
+
+end NumberField.InfinitePlace.LiesOver
