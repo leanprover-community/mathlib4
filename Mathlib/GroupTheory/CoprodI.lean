@@ -379,7 +379,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
   | nil => exact empty
   | cons m w ih =>
     refine cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
-    · rw [List.isChain_cons'] at h2
+    · rw [List.isChain_cons] at h2
       simp only [fstIdx, ne_eq, Option.map_eq_some_iff,
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
       intro m' hm'

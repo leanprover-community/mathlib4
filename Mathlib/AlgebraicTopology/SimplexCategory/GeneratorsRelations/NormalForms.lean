@@ -338,6 +338,9 @@ lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
 lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
     (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
     j ∈ L := by
+  induction hL
+  any_goals grind [simplicialEvalσ]
+  
   induction L generalizing m with
   | nil => grind [simplicialEvalσ]
   | cons a L h_rec =>
