@@ -91,7 +91,7 @@ lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
   congr
   simp
 
-@[deprecated  (since := "2025-07-15")]
+@[deprecated (since := "2025-07-15")]
 alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
 
 @[to_additive]
