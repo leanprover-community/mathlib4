@@ -99,23 +99,16 @@ def equivWithVal {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
     WithVal v ≃+* WithVal w :=
   (WithVal.equiv v).trans (WithVal.equiv w).symm
 
+theorem equivWithVal_symm {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
+    (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
+    (equivWithVal v w).symm = equivWithVal w v := rfl
+
 instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ :=
   Valued.mk' (valuation v)
 
 theorem apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 
 @[simp] theorem apply_symm_equiv (r : R) : Valued.v ((equiv v).symm r) = v r := rfl
-
-end Ring
-
-section CommRing
-
-variable [CommRing R] (v : Valuation R Γ₀)
-
-instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
-instance : (valuation v).Compatible := .ofValuation (valuation v)
-
-end CommRing
 
 theorem le_def {v : Valuation R Γ₀} {a b : WithVal v} :
     a ≤ b ↔ v (equiv v a) ≤ v (equiv v b) := .rfl
@@ -132,6 +125,22 @@ theorem equiv_equivWithVal_apply {Γ'₀ : Type*} [LinearOrderedCommGroupWithZer
 theorem equiv_equivWithVal_symm_apply {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
     (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : WithVal w) :
     equiv v ((equivWithVal v w).symm x) = equiv w x := rfl
+
+@[simp]
+theorem equivWithVal_symm_equiv_apply {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
+    (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : R) :
+    (equivWithVal v w).symm ((equiv w).symm x) = (equiv v).symm x := rfl
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] (v : Valuation R Γ₀)
+
+instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
+instance : (valuation v).Compatible := .ofValuation (valuation v)
+
+end CommRing
 
 end WithVal
 
@@ -165,47 +174,41 @@ def IsEquiv.orderRingIso [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀
     intro a b
     simp [h.symm (equiv v a), le_def]
 
-theorem IsEquiv.isUniformInducing_equivWithVal [DivisionRing R] {v : Valuation R Γ₀}
-    {w : Valuation R Γ₀'} (hv : Function.Surjective v) (hw : Function.Surjective w)
-    (h : v.IsEquiv w) : IsUniformInducing (equivWithVal v w) := by
-  refine (isUniformInducing_iff _).2 <| Filter.ext fun u ↦ ?_
-  simp only [Filter.mem_comap, (Valued.hasBasis_uniformity _ _).mem_iff, true_and]
-  refine ⟨fun ⟨t, ⟨γ, hγ⟩, htu⟩ ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
-  · obtain ⟨a, ha⟩ := hw γ
-    have : v (equiv w ((equiv v).symm a)) ≠ 0 := by
-      simpa [map_eq_zero (equiv v).symm] using
-        fun ha₀ ↦ absurd (map_zero w ▸ ha₀ ▸ ha).symm (Units.ne_zero γ)
-    refine ⟨.mk0 _ this, Set.Subset.trans (fun p hp ↦ Set.mem_preimage.2 ?_) htu⟩
-    apply hγ
-    rw [← ha]
-    rw [Units.val_mk0, ← equiv_equivWithVal_symm_apply v] at hp
-    change equivWithVal v w p.2 - equivWithVal v w p.1 < (equiv w).symm a
-    change p.2 - p.1 < h.orderRingIso.symm ((equiv w).symm a) at hp
-    simpa using h.orderRingIso.lt_symm_apply.1 hp
-  · use Prod.map (equivWithVal v w) (equivWithVal v w) '' u
-    have hinj : (Prod.map (equivWithVal v w) (equivWithVal v w)).Injective :=
-      Prod.map_injective.2 ⟨(equivWithVal v w).injective, (equivWithVal v w).injective⟩
-    refine ⟨?_, subset_of_eq <| hinj.preimage_image u⟩
-    obtain ⟨a, ha⟩ := hv γ
-    have : w (equiv v ((equiv w).symm a)) ≠ 0 := by
-      simpa [map_eq_zero (equiv w).symm] using
-        fun ha₀ ↦ absurd (map_zero v ▸ ha₀ ▸ ha).symm (Units.ne_zero γ)
-    refine ⟨.mk0 _ this, ?_⟩
-    refine Set.Subset.trans (fun p hp ↦ ?_) ((Set.image_subset_image_iff hinj).2 hγ)
-    refine ⟨((equivWithVal v w).symm p.1, (equivWithVal v w).symm p.2), ?_, by simp⟩
-    rw [← ha]
-    rw [Units.val_mk0, ← equiv_equivWithVal_apply v w] at hp
-    change p.2 - p.1 < h.orderRingIso ((equiv v).symm a) at hp
-    change (equivWithVal v w).symm p.2 - (equivWithVal v w).symm p.1 < (equiv v).symm a
-    simpa using h.orderRingIso.symm_apply_lt.2 hp
+@[simp]
+theorem IsEquiv.orderRingIso_apply [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
+    (h : v.IsEquiv w) (x : WithVal v) :
+    h.orderRingIso x = (equivWithVal v w) x := rfl
+
+@[simp]
+theorem IsEquiv.orderRingIso_symm_apply [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
+    (h : v.IsEquiv w) (x : WithVal w) :
+    h.orderRingIso.symm x = (equivWithVal v w).symm x := rfl
+
+-- TODO: remove surjectivity when we have bases for Valued's ValuativeRel
+theorem IsEquiv.uniformContinuous_equivWithVal [Ring R] {v : Valuation R Γ₀}
+    {w : Valuation R Γ₀'} (hw : Function.Surjective w) (h : v.IsEquiv w) :
+    UniformContinuous (equivWithVal v w) := by
+  refine uniformContinuous_of_continuousAt_zero _ ?_
+  rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+    (Valued.hasBasis_nhds_zero _ _)]
+  intro γ _
+  obtain ⟨r, hr⟩ := hw γ
+  use .mk0 (v r) (by simp [h.ne_zero, hr])
+  simp only [Units.val_mk0, Set.mem_setOf_eq, true_and]
+  intro x hx
+  rw [← hr, ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r, ← lt_def,
+    ← h.orderRingIso_apply, ← h.orderRingIso.lt_symm_apply]
+  rw [← WithVal.apply_equiv, ← (equiv v).apply_symm_apply r, ← lt_def] at hx
+  simpa
 
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/
-def IsEquiv.uniformEquiv [DivisionRing R] {v : Valuation R Γ₀} {v' : Valuation R Γ₀'}
-    (hv : Function.Surjective v) (hv' : Function.Surjective v') (h : v.IsEquiv v') :
-    WithVal v ≃ᵤ WithVal v' :=
-  Equiv.toUniformEquivOfIsUniformInducing (WithVal.equivWithVal v v')
-    (h.isUniformInducing_equivWithVal hv hv')
+def IsEquiv.uniformEquiv [DivisionRing R] {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
+    (hv : Function.Surjective v) (hw : Function.Surjective w) (h : v.IsEquiv w) :
+    WithVal v ≃ᵤ WithVal w where
+  __ := equivWithVal v w
+  uniformContinuous_toFun := h.uniformContinuous_equivWithVal hw
+  uniformContinuous_invFun := h.symm.uniformContinuous_equivWithVal hv
 
 end Equivalence
 
