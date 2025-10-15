@@ -33,9 +33,9 @@ noncomputable instance : InvolutiveStar (A ⊗[R] B) where
     convert congr($map_id x) <;> ext <;> simp
 
 noncomputable instance : StarAddMonoid (A ⊗[R] B) where
-  star_add _ _ := LinearMap.map_add _ _ _
+  star_add := LinearMap.map_add _
 
 instance : StarModule R (A ⊗[R] B) where
-  star_smul _ _ := LinearMap.map_smulₛₗ _ _ _
+  star_smul := LinearMap.map_smulₛₗ _
 
 end TensorProduct
