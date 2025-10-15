@@ -70,6 +70,8 @@ variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {n : WithTop ℕ∞} {f : E × F → F} {f' : E × F →L[𝕜] F} {a : E × F}
 
+/-- We record the parameters of our specific case in order to apply the general implicit function
+theorem. -/
 def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
     ImplicitFunctionData 𝕜 (E × F) E F where
   leftFun := Prod.fst
@@ -82,8 +84,7 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
   left_range := LinearMap.range_eq_top_of_surjective _ fun x ↦ ⟨(x, 0), rfl⟩
   right_range := h.range_eq_top
   isCompl_ker := by
-    have : LinearMap.ker (ContinuousLinearMap.fst 𝕜 E F) = LinearMap.ker (LinearMap.fst 𝕜 E F) :=
-      rfl
+    have : ker (ContinuousLinearMap.fst 𝕜 E F) = ker (LinearMap.fst 𝕜 E F) := rfl
     rw [isCompl_comm, this, LinearMap.ker_fst, h.ker_eq_left]
     exact LinearMap.isCompl_range_inl_inr
 
@@ -91,6 +92,8 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
 lemma implicitFunctionData_prodFun (h : IsContDiffImplicitAt n f f' a) :
     h.implicitFunctionData.prodFun h.implicitFunctionData.pt = (a.1, f a) := rfl
 
+/-- The implicit function provided by the general theorem, from which we construct the more useful
+form `IsContDiffImplicitAt.implicitFunction`. -/
 noncomputable def implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) : E → F → E × F :=
   h.implicitFunctionData.implicitFunction
 
@@ -102,7 +105,7 @@ lemma rightFun_implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), f (h.implicitFunctionAux p.1 p.2) = p.2 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
 
-/-- Implicit function `y` defined by `f (x, y x) = f a`. -/
+/-- Implicit function `φ` defined by `f (x, φ x) = f a`. -/
 noncomputable def implicitFunction (h : IsContDiffImplicitAt n f f' a) : E → F :=
   fun x ↦ (h.implicitFunctionAux x (f a)).2
 
@@ -116,10 +119,8 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   have := h.rightFun_implicitFunctionAux
   have hfst := h.implicitFunctionAux_fst
   rw [nhds_prod_eq, eventually_swap_iff] at this hfst
-  replace := this.curry.self_of_nhds
-  replace hfst := hfst.curry.self_of_nhds
-  apply this.mp
-  apply hfst.mono
+  apply this.curry.self_of_nhds.mp
+  apply hfst.curry.self_of_nhds.mono
   intro x
   simp_rw [Prod.swap_prod_mk]
   intro h1 h2
