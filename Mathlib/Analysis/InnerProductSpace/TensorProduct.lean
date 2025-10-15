@@ -72,7 +72,7 @@ private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := r
   x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
     (by simp_all [inner_def])) (by simp_all [inner_def])
 
-@[simp] lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
+lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
     inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
   inner_map_map E'.subtypeₗᵢ F'.subtypeₗᵢ x y
 
