@@ -97,6 +97,22 @@ theorem reachable_iff_reflTransGen (u v : V) :
     | refl => rfl
     | tail _ ha hr => exact Reachable.trans hr ⟨Walk.cons ha Walk.nil⟩
 
+theorem reachable_eq_reflTransGen : G.Reachable = Relation.ReflTransGen G.Adj := by
+  ext
+  exact reachable_iff_reflTransGen ..
+
+theorem reachable_fromEdgeSet_eq_reflTransGen_toRel {s : Set (Sym2 V)} :
+    (fromEdgeSet s).Reachable = Relation.ReflTransGen (Sym2.ToRel s) := by
+  rw [reachable_eq_reflTransGen, fromEdgeSet]
+  rw [← Relation.transGen_reflGen, ← Relation.transGen_reflGen]
+  apply congrArg
+  ext
+  simpa [Relation.reflGen_iff] using by tauto
+
+theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Symmetric r) :
+    (fromEdgeSet <| Sym2.fromRel sym).Reachable = Relation.ReflTransGen r :=
+  reachable_fromEdgeSet_eq_reflTransGen_toRel
+
 protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
   h.elim fun p => ⟨p.map f⟩
@@ -104,6 +120,10 @@ protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph 
 @[mono]
 protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
     (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v := Guv.map (.ofLE h)
+
+@[mono]
+theorem Reachable.mono' {G G' : SimpleGraph V} (h : G ≤ G') : G.Reachable ≤ G'.Reachable :=
+  fun _ _ ↦ Reachable.mono h
 
 theorem Reachable.exists_isPath {u v} (hr : G.Reachable u v) : ∃ p : G.Walk u v, p.IsPath := by
   classical
@@ -136,6 +156,29 @@ variable (G)
 
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
   Equivalence.mk (@Reachable.refl _ G) (@Reachable.symm _ G) (@Reachable.trans _ G)
+
+/-- The reachability relation as a set of pairs of vertices.
+A pair of vertices is in this set iff there exists a walk between these vertices. -/
+def reachabilitySet (G : SimpleGraph V) := Sym2.fromRel G.reachable_is_equivalence.symmetric
+
+@[simp]
+theorem mem_reachabilitySet_iff_reachable {u v : V} :
+    s(u, v) ∈ G.reachabilitySet ↔ G.Reachable u v := by
+  rfl
+
+theorem reachabilitySet_mono {G G' : SimpleGraph V} (h : G ≤ G') :
+    G.reachabilitySet ⊆ G'.reachabilitySet :=
+  Sym2.fromRel_mono _ _ <| Reachable.mono' h
+
+theorem reachabilitySet_fromEdgeSet_fromRel_eq_fromRel_reflTransGen {r : V → V → Prop}
+    (sym : Symmetric r) : (fromEdgeSet <| Sym2.fromRel sym).reachabilitySet =
+      Sym2.fromRel (Relation.ReflTransGen.symmetric sym) := by
+  grind [reachabilitySet, reachable_fromEdgeSet_fromRel_eq_reflTransGen]
+
+theorem reachabilitySet_fromEdgeSet_eq_fromRel_reflTransGen_toRel {s : Set (Sym2 V)} :
+    (fromEdgeSet s).reachabilitySet =
+      Sym2.fromRel (Relation.ReflTransGen.symmetric (Sym2.toRel_symmetric s)) := by
+  grind [reachabilitySet, reachable_fromEdgeSet_eq_reflTransGen_toRel]
 
 /-- Distinct vertices are not reachable in the empty graph. -/
 @[simp]
@@ -657,6 +700,10 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
+theorem isBridge_iff_mem_edgeSet_and_notMem_reachabilitySet_deleteEdges {e : Sym2 V} :
+    G.IsBridge e ↔ e ∈ G.edgeSet ∧ e ∉ (G.deleteEdges {e}).reachabilitySet :=
+  Sym2.inductionOn e fun _ _ ↦ isBridge_iff
+
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
   constructor
@@ -724,6 +771,11 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate hvc) (hc.isTrail.rotate hvc)
       ?_ (Walk.start_mem_support _)
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
+
+theorem mem_edgeSet_and_mem_reachabilitySet_deleteEdges_iff_exists_isCycle_and_mem_edges
+    {e : Sym2 V} : e ∈ G.edgeSet ∧ e ∈ (G.deleteEdges {e}).reachabilitySet ↔
+      ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ e ∈ p.edges :=
+  Sym2.inductionOn e fun _ _ ↦ adj_and_reachable_delete_edges_iff_exists_cycle
 
 theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
     G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
