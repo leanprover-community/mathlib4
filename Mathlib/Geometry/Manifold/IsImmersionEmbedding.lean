@@ -122,29 +122,14 @@ open Lean Elab Meta Qq in
 /-- `IsImmersionAt% F n f x` elaborates to `IsImmersionAt F I J n f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "IsImmersionAt%" ppSpace F:term:arg ppSpace nt:term:arg ppSpace
-    f:term:arg ppSpace x:term:arg : term => do
+    f:term:arg : term => do
   let eF ← Term.elabTerm F none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let ef ← ensureIsFunction <|← Term.elabTerm f none
-  -- TODO: can I elaborate x as the type of the domain of f instead?
-  let ex ← Term.elabTerm x none
   let (srcI, tgtI) ← findModels ef none
-  mkAppM ``IsImmersionAt #[eF, srcI, tgtI, ne, ef, ex]
+  mkAppM ``IsImmersionAt #[eF, srcI, tgtI, ne, ef]
 
--- TODO: avoid the need for a type ascription here by inferring the type of x from f
--- TODO: add analogous tests for the other elaborators, and fix the same bug!
-/--
-error: Application type mismatch: The argument
-  x
-has type
-  ?m.37
-of sort `Type ?u.15648` but is expected to have type
-  M
-of sort `Type u_12` in the application
-  IsImmersionAt F I J n f x
----
-info: {x | sorry} : Set ?m.37
--/
+/-- info: {x | IsImmersionAt F I J n f x} : Set M -/
 #guard_msgs in
 #check {x | IsImmersionAt% F n f x}
 /-- info: {x | IsImmersionAt F I J n f x} : Set M -/
@@ -335,7 +320,7 @@ open Manifold
 
 variable {f g : M → N} {x : M}
 
--- TODO: why is this error? this should not be!
+-- TODO: why is this an error? this should not be!
 /--
 error: Function expected at
   F
@@ -378,6 +363,8 @@ info: IsImmersionAt % sorry : ?m.45
 #guard_msgs in
 #check IsImmersionAt% F n f x
 
+/-- info: IsImmersionAt F I J n f x : Prop -/
+#guard_msgs in
 #check IsImmersionAt F I J n f x
 
 /-- If `f` is an immersion, it is an immersion at each point. -/
