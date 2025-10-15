@@ -73,9 +73,8 @@ Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for
 to the lemma `countingFunction_finsum_eq_finsum_add` for a formal statement.
 -/
 noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E] :
-    locallyFinsuppWithin (univ : Set E) ℤ →+ (ℝ → ℝ) where
+    locallyFinsuppWithin (univ : Set E) ℤ →ₗ[ℤ] (ℝ → ℝ) where
   toFun D := fun r ↦ ∑ᶠ z, D.toClosedBall r z * log (r * ‖z‖⁻¹) + (D 0) * log r
-  map_zero' := by aesop
   map_add' D₁ D₂ := by
     simp only [map_add, coe_add, Pi.add_apply, Int.cast_add]
     ext r
@@ -94,6 +93,17 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
         by_contra
         simp_all
     · ring
+  map_smul' n D := by
+    simp only [map_zsmul, coe_zsmul, Pi.smul_apply, eq_intCast, Int.cast_eq]
+    ext r
+    rw [Pi.smul_apply, smul_add, smul_finsum]
+    congr 1
+    · congr 1
+      ext z
+      rw [smul_eq_mul, Int.cast_mul]
+      ring
+    · rw [smul_eq_mul, Int.cast_mul]
+      ring
 
 /--
 Alternate presentation of the finsum that appears in the definition of the counting function.
