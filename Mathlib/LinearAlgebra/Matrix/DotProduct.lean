@@ -56,12 +56,12 @@ lemma dotProduct_nonneg_of_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) 
   Finset.sum_nonneg (fun i _ => mul_nonneg (hv i) (hw i))
 
 lemma dotProduct_le_dotProduct_of_nonneg_right {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
-    u ⬝ᵥ w ≤ v ⬝ᵥ w :=
-  Finset.sum_le_sum fun i _ => mul_le_mul_of_nonneg_right (huv i) (hw i)
+    u ⬝ᵥ w ≤ v ⬝ᵥ w := by
+  unfold dotProduct; gcongr <;> apply_rules
 
 lemma dotProduct_le_dotProduct_of_nonneg_left {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
-    w ⬝ᵥ u ≤ w ⬝ᵥ v :=
-  Finset.sum_le_sum (fun i _ => mul_le_mul_of_nonneg_left (huv i) (hw i))
+    w ⬝ᵥ u ≤ w ⬝ᵥ v := by
+  unfold dotProduct; gcongr <;> apply_rules
 
 end OrderedSemiring
 

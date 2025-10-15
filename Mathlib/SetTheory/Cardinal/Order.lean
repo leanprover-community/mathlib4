@@ -475,6 +475,7 @@ theorem sum_add_distrib' {ι} (f g : ι → Cardinal) :
     (Cardinal.sum fun i => f i + g i) = sum f + sum g :=
   sum_add_distrib f g
 
+@[gcongr]
 theorem sum_le_sum {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : sum f ≤ sum g :=
   ⟨(Embedding.refl _).sigmaMap fun i =>
       Classical.choice <| by have := H i; rwa [← Quot.out_eq (f i), ← Quot.out_eq (g i)] at this⟩
