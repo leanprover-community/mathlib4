@@ -31,9 +31,7 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, X b) := by
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun f g : ∀ b, X b => ((sup univ fun b => nndist (f b) (g b) : ℝ≥0) : ℝ))
     (fun f g => NNReal.zero_le_coe)
-    (fun f g => by
-      simp only [edist_pi_def, ENNReal.ofReal_coe_nnreal, ENNReal.coe_finset_sup,
-        coe_nnreal_ennreal_nndist])
+    (fun f g => by simp [edist_pi_def])
   refine i.replaceBornology fun s => ?_
   simp only [isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
     forall_mem_image, ← Filter.eventually_all, @dist_nndist (X _)]
