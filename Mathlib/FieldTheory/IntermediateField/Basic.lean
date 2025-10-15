@@ -619,6 +619,11 @@ def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateF
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
   map_injective F.val
 
+@[simp]
+theorem lift_inj {F : IntermediateField K L} (E E' : IntermediateField K F) :
+    lift E = lift E' ↔ E = E' :=
+  (lift_injective F).eq_iff
+
 theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
   rintro _ ⟨x, _, rfl⟩
   exact x.2
