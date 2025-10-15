@@ -205,32 +205,20 @@ the right-hand side holds, since `padicValNat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     (∃ x y, n = x ^ 2 + y ^ 2) ↔ ∀ q ∈ n.primeFactors, q % 4 = 3 → Even (padicValNat q n) := by
   rcases n.eq_zero_or_pos with (rfl | hn₀)
-  · exact ⟨fun _ q _ _ => (@padicValNat.zero q).symm ▸ Even.zero, fun _ => ⟨0, 0, rfl⟩⟩
+  · exact ⟨fun _ q _ _ ↦ padicValNat.zero.symm ▸ Even.zero, fun _ ↦ ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
-  rw [eq_sq_add_sq_iff_eq_sq_mul]
-  refine ⟨fun H q hq h => ?_, fun H => ?_⟩
-  · obtain ⟨a, b, h₁, h₂⟩ := H
-    have hqb := padicValNat.eq_zero_of_not_dvd fun hf => mod_four_ne_three_of_dvd_isSquare_neg_one
-      (mem_primeFactors.mpr ⟨prime_of_mem_primeFactors hq, hf, by cutsat⟩) h₂ h
-    have hab : a ^ 2 * b ≠ 0 := h₁ ▸ hn₀.ne'
-    have ha₂ := left_ne_zero_of_mul hab
-    have ha := mt sq_eq_zero_iff.mpr ha₂
-    have hb := right_ne_zero_of_mul hab
-    haveI hqi : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
-    simp_rw [h₁, padicValNat.mul ha₂ hb, padicValNat.pow 2 ha, hqb, add_zero]
-    exact even_two_mul _
+  refine eq_sq_add_sq_iff_eq_sq_mul.trans ⟨fun ⟨a, b, h₁, h₂⟩ q hq h ↦ ?_, fun H ↦ ?_⟩
+  · haveI : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
+    have : q ∣ b → q ∈ b.primeFactors := by grind [mem_primeFactors]
+    grind [padicValNat.eq_zero_of_not_dvd, mod_four_ne_three_of_dvd_isSquare_neg_one,
+      padicValNat.mul, padicValNat.pow]
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := sq_mul_squarefree_of_pos hn₀
-    refine ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun q hqp hq4 => ?_⟩
-    refine not_even_iff_odd.2 ?_
-      (H q (Nat.primeFactors_mono (Dvd.intro_left _ hab) (by cutsat) hqp) hq4)
-    have hqb' : padicValNat q b = 1 := b.factorization_def (prime_of_mem_primeFactors hqp) ▸
-        le_antisymm (hb.natFactorization_le_one _)
-          (Prime.dvd_iff_one_le_factorization (prime_of_mem_primeFactors hqp) hb₀.ne' |>.mp <|
-            dvd_of_mem_primeFactors hqp)
-    haveI hqi : Fact q.Prime := ⟨prime_of_mem_primeFactors hqp⟩
-    simp_rw [← hab, padicValNat.mul (pow_ne_zero 2 ha₀.ne') hb₀.ne', hqb',
-      padicValNat.pow 2 ha₀.ne']
-    exact odd_two_mul_add_one _
+    refine ⟨a, b, hab.symm, ZMod.isSquare_neg_one_iff hb |>.mpr fun q hq hq4 ↦ ?_⟩
+    haveI : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
+    have := Nat.primeFactors_mono <| Dvd.intro_left _ hab
+    have : b.factorization q = 1 := by grind [Squarefree.natFactorization_le_one,
+      Prime.dvd_iff_one_le_factorization, prime_of_mem_primeFactors, dvd_of_mem_primeFactors]
+    grind [factorization_def, prime_of_mem_primeFactors, padicValNat.mul, padicValNat.pow]
 
 end Main
 
