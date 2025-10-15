@@ -122,6 +122,8 @@ def functor : Diagram J κ ⥤ J where
 
 variable [Fact κ.IsRegular]
 
+variable {J κ} in
+@[simps]
 def PreDiagram.single (j : J) : PreDiagram J κ where
   W := .ofHoms (fun (_ : Unit) ↦ 𝟙 j)
   P := .ofObj (fun (_ : Unit) ↦ j)
@@ -138,6 +140,18 @@ def PreDiagram.single (j : J) : PreDiagram J κ where
   hP :=
     (hasCardinalLT_punit κ (Cardinal.IsRegular.aleph0_le Fact.out)).of_surjective
       (f := fun (_ : Unit) ↦ ⟨j, by simp⟩) (fun ⟨k, hk⟩ ↦ ⟨⟨⟩, by aesop⟩)
+
+variable {J κ} in
+def Diagram.single (j : J) : Diagram J κ where
+  toPreDiagram := .single j
+  e := j
+  terminal :=
+    { prop_id := ⟨⟨⟩⟩
+      lift := by rintro j hj; simp at hj; subst hj; exact 𝟙 _
+      hlift := by rintro j hj; simp at hj; subst hj; exact ⟨⟨⟩⟩
+      uniq := by rintro j hj φ hφ; simp at hj; subst hj; obtain ⟨⟨⟩⟩ := hφ; simp
+      comm := by rintro _ _ f hf; obtain ⟨⟨⟩⟩ := hf; simp }
+  uniq_terminal := by rintro _ ⟨⟨⟩⟩; rfl
 
 variable (hJ : ∀ (e : J), (∀ (j : J), Nonempty (j ⟶ e)) → False)
 
