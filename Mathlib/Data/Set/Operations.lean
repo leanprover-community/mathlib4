@@ -8,6 +8,7 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Basic definitions about sets
@@ -67,7 +68,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
-@[simp, mfld_simps]
+@[simp, mfld_simps, push]
 theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
 grind_pattern mem_setOf_eq => x ∈ setOf p
@@ -90,19 +91,19 @@ theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p 
 
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
-@[simp, mfld_simps, grind]
+@[simp, mfld_simps, grind, push]
 theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
 
 instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 
 theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 
 theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
@@ -114,13 +115,13 @@ def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
 /-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
 infixl:80 " ⁻¹' " => preimage
 
-@[simp, mfld_simps, grind =]
+@[simp, mfld_simps, grind =, push]
 theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s := Iff.rfl
 
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
 infixl:80 " '' " => image
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
   Iff.rfl
 
@@ -149,7 +150,7 @@ This function is more flexible than `f '' univ`, as the image requires that the 
 and not an arbitrary Sort. -/
 def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 
-@[simp, grind =] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
+@[simp, grind =, push] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
 
 @[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
 
@@ -190,10 +191,10 @@ variable {a : α} {b : β} {s : Set α} {t : Set β} {p : α × β}
 
 theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
 
-@[simp, mfld_simps, grind =]
+@[simp, mfld_simps, grind =, push]
 theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 
-@[mfld_simps]
+@[mfld_simps, push only high]
 theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
   rfl
 
@@ -208,12 +209,12 @@ def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
 
 theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
 
-@[simp, grind =] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
+@[simp, grind =, push] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
 
 /-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
 def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_offDiag {x : α × α} {s : Set α} : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
   Iff.rfl
 

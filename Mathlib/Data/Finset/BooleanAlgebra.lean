@@ -101,7 +101,7 @@ theorem sdiff_eq_inter_compl (s t : Finset α) : s \ t = s ∩ tᶜ :=
 theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
   rfl
 
-@[simp]
+@[simp, push]
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
 theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]

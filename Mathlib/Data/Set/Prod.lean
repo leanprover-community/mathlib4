@@ -818,8 +818,8 @@ theorem univ_pi_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} :=
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
     ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
-  rw [← Ne, ← nonempty_iff_ne_empty]
   intro hne i hi
+  push_neg at hne
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
     image_mono (f := fun f : ∀ i, α i => f i) h
 

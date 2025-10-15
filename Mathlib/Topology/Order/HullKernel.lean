@@ -92,8 +92,7 @@ lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
   | empty =>
     simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
       inf_empty]
-    by_contra hf
-    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
+    by_contra! hf
     obtain ⟨x, hx⟩ := hf
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr (eq_top_iff.mpr hx))
   | cons a F' _ I4 => simp [hull_inf hT, I4]

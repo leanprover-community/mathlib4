@@ -84,7 +84,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
       preimage_mono fun x hx ↦ ⟨Or.inl ⟨x, hx, rfl⟩, Or.inr ⟨x, hx, rfl⟩⟩
   · intro h; constructor
     intro K L hK hL
-    simp_rw [← nonempty_iff_ne_empty]
+    push_neg
     -- We want to show that a subset of `G` is finite, but as `G` has the discrete topology it
     -- is enough to show that this subset is compact.
     apply IsCompact.finite_of_discrete

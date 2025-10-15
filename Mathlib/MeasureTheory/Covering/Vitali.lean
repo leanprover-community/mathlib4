@@ -276,8 +276,7 @@ theorem exists_disjoint_covering_ae
       linarith [Idist_v a ⟨au, hax⟩, hR0 x]
     · have R0pos : 0 < R0 := (hR0 x).trans_le H
       have vnonempty : v.Nonempty := by
-        by_contra h
-        rw [nonempty_iff_ne_empty, Classical.not_not] at h
+        by_contra! h
         rw [h, image_empty, Real.sSup_empty] at R0_def
         exact lt_irrefl _ (R0pos.trans_le (le_of_eq R0_def))
       obtain ⟨a, hav, R0a⟩ : ∃ a ∈ v, R0 / 2 < r a := by

@@ -152,7 +152,8 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
     contrapose! h
     rw [DFinsupp.notMem_support_iff, u.archimedeanClassMk_of_mem_stratum ha h0]
     simpa using (f c).prop
-  · rw [Finset.not_nonempty_iff_eq_empty.mp hnonempty]
+  · push_neg at hnonempty
+    rw [hnonempty]
     symm
     simpa using h0
 
@@ -289,7 +290,8 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     contrapose! hne with hempty
     apply DFinsupp.sum_eq_zero
     intro c
-    simpa using DFinsupp.notMem_support_iff.mp (forall_not_of_not_exists hempty c)
+    rw [DFinsupp.notMem_support_iff.mp (by simp [hempty])]
+    simp
   have htop : f.support.min' hsupport ≠ ⊤ := by
     by_contra! h
     have h : ⊤ ∈ f.support := h ▸ f.support.min'_mem hsupport

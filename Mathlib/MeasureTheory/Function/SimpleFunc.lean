@@ -443,8 +443,7 @@ theorem range_one [Nonempty α] [One β] : (1 : α →ₛ β).range = {1} :=
 
 @[simp]
 theorem range_eq_empty_of_isEmpty {β} [hα : IsEmpty α] (f : α →ₛ β) : f.range = ∅ := by
-  rw [← Finset.not_nonempty_iff_eq_empty]
-  by_contra h
+  by_contra! h
   obtain ⟨y, hy_mem⟩ := h
   rw [SimpleFunc.mem_range, Set.mem_range] at hy_mem
   obtain ⟨x, hxy⟩ := hy_mem

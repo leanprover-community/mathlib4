@@ -133,7 +133,7 @@ theorem inclusion_exclusion_sum_biUnion (s : Finset ι) (S : ι → Finset α) (
           mul_zero, ite_smul, zero_smul, sum_ite, not_forall, sum_const_zero, add_zero]
         congr
         aesop
-      · obtain rfl := not_nonempty_iff_eq_empty.1 ht
+      · push_neg at ht; obtain rfl := ht
         simp
     _ = ∑ a ∈ s.biUnion S, (∏ i ∈ s,
           (Set.indicator (s.biUnion S) 1 a - Set.indicator (S i) 1 a) : ℤ) • f a := by

@@ -1093,8 +1093,9 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine sum_le_sum fun C hC ↦ ?_
       by_cases hPC : P C = ∅
       · simp [hPC]
+      push_neg at hPC
       have hCM : C.toSet.encard ≤ M :=
-        have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
+        have ⟨x, hx⟩ := hPC
         (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2

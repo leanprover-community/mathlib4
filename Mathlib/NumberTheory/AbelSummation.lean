@@ -247,7 +247,8 @@ theorem locallyIntegrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → �
     refine integrableOn_mul_sum_Icc _ (ha.trans h_inf) ?_
     refine hg.integrableOn_compact_subset ?_ isCompact_Icc
     exact (Set.Icc_subset_Ici_iff (Real.sInf_le_sSup _ hK₂.bddBelow hK₂.bddAbove)).mpr h_inf
-  · rw [Set.not_nonempty_iff_eq_empty.mp hK₃]
+  · push_neg at hK₃
+    rw [hK₃]
     exact integrableOn_empty
 
 theorem tendsto_sum_mul_atTop_nhds_one_sub_integral

@@ -284,8 +284,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
     rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
   simp only [nonempty_iff_ne_empty] at htn ⊢
   apply mt ((htc i₀).elim_directed_family_closed t htcl)
-  push_neg
-  simp only [← nonempty_iff_ne_empty] at htn ⊢
+  push_neg at htn ⊢
   refine ⟨htd, fun i => ?_⟩
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
   exact (htn j).mono (subset_inter hji₀ hji)
@@ -768,7 +767,7 @@ theorem IsCompact.ne_univ [NoncompactSpace X] (hs : IsCompact s) : s ≠ univ :=
 
 instance [NoncompactSpace X] : NeBot (Filter.cocompact X) := by
   refine Filter.hasBasis_cocompact.neBot_iff.2 fun hs => ?_
-  contrapose hs; rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
+  contrapose! hs; rw [compl_empty_iff] at hs
   rw [hs]; exact noncompact_univ X
 
 @[simp]

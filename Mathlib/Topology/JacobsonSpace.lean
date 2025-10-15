@@ -86,9 +86,8 @@ lemma jacobsonSpace_iff_locallyClosed :
     exact hZ this.2
   · intro H Z hZ
     refine subset_antisymm (hZ.closure_subset_iff.mpr Set.inter_subset_left) ?_
-    rw [← Set.disjoint_compl_left_iff_subset, Set.disjoint_iff_inter_eq_empty,
-      ← Set.not_nonempty_iff_eq_empty]
-    intro H'
+    rw [← Set.disjoint_compl_left_iff_subset, Set.disjoint_iff_inter_eq_empty]
+    by_contra! H'
     have := H _ H' (isClosed_closure.isOpen_compl.isLocallyClosed.inter hZ.isLocallyClosed)
     rw [Set.nonempty_iff_ne_empty, Set.inter_assoc, ne_eq,
       ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset] at this
