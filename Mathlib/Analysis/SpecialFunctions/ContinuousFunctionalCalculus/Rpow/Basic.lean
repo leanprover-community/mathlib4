@@ -369,8 +369,6 @@ theorem _root_.CStarAlgebra.nonneg_iff_eq_star_mul_self {a : A} :
     0 ≤ a ↔ ∃ b, a = star b * b := CStarAlgebra.nonneg_TFAE.out 0 4
 theorem _root_.CStarAlgebra.nonneg_iff_eq_mul_star_self {a : A} :
     0 ≤ a ↔ ∃ b, a = b * star b := CStarAlgebra.nonneg_TFAE.out 0 5
-theorem _root_.CStarAlgebra.nonneg_iff_eq_posPart {a : A} :
-    0 ≤ a ↔ a = a⁺ := CStarAlgebra.nonneg_TFAE.out 0 6
 theorem _root_.CStarAlgebra.nonneg_iff_isSelfAdjoint_and_negPart_eq_zero {a : A} :
     0 ≤ a ↔ IsSelfAdjoint a ∧ a⁻ = 0 := CStarAlgebra.nonneg_TFAE.out 0 7
 
