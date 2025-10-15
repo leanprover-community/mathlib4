@@ -71,6 +71,21 @@ instance : Subsingleton (D.Terminal e) where
     cases h₂
     aesop
 
+noncomputable def ofExistsUnique (prop_id : D.W (𝟙 e))
+    (h₁ : ∀ ⦃j : J⦄ (_ : D.P j), ∃ (lift : j ⟶ e), D.W lift)
+    (h₂ : ∀ ⦃j : J⦄ (_ : D.P j) (l₁ l₂ : j ⟶ e), D.W l₁ → D.W l₂ → l₁ = l₂)
+    (h₃ : ∀ ⦃i j : J⦄ (f : i ⟶ j) (_ : D.W f), ∃ (li : i ⟶ e) (lj : j ⟶ e),
+      D.W li ∧ D.W lj ∧ f ≫ lj = li) :
+    D.Terminal e where
+  prop_id := prop_id
+  lift hj := (h₁ hj).choose
+  hlift hj := (h₁ hj).choose_spec
+  uniq hj φ hφ := h₂ hj (h₁ hj).choose φ (h₁ hj).choose_spec hφ
+  comm _ hf := by
+    obtain ⟨li, lj, hli, hlj, fac⟩ := h₃ _ hf
+    rw [h₂ (D.src hf) _ li (h₁ (D.src hf)).choose_spec hli,
+      h₂ (D.tgt hf) _ lj (h₁ (D.tgt hf)).choose_spec hlj, fac]
+
 end Terminal
 
 end PreDiagram
@@ -168,7 +183,8 @@ def PreDiagram.iSup {ι : Type*} (D : ι → PreDiagram J κ) (hι : HasCardinal
     simp at hf ⊢
     obtain ⟨i, hi⟩ := hf
     exact ⟨i, (D i).tgt hi⟩
-  hW := sorry
+  hW := by
+    sorry
   hP := by
     rw [hasCardinalLT_iff_cardinal_mk_lt]
     sorry
@@ -205,18 +221,84 @@ lemma isCardinalFiltered : IsCardinalFiltered (Diagram J κ) κ :=
       ∀ (i₁ i₂ : ι) (j : J) (hj₁ : (D i₁).P j) (hj₂ : (D i₂).P j),
         (D i₁).terminal.lift hj₁ ≫ u i₁ ≫ t₂ = (D i₂).terminal.lift hj₂ ≫ u i₂ ≫ t₂ := by
       sorry
-    let φ (x : (Σ (i : ι), (Subtype (D i).P))) : (D x.1).e ⟶ m₂ :=
-      (D x.1).terminal.lift (D x.1).terminal.prop ≫ u x.1 ≫ t₂
+    let φ (x : (Σ (i : ι), (Subtype (D i).P))) : x.2.1 ⟶ m₂ :=
+      (D x.1).terminal.lift x.2.2 ≫ u x.1 ≫ t₂
     let D₀ := PreDiagram.iSup (fun i ↦ (D i).toPreDiagram) hι
+    have hD₀ {i : ι} : ¬ (D i).P m₂ := fun hi ↦
+      (hm₀ i).false (t₁ _ ≫ t₂ ≫ (D i).terminal.lift hi)
     let D₁ := D₀.max (.single m₂)
     let D₂ : PreDiagram J κ :=
       { W := D₁.W ⊔ .ofHoms φ
         P := D₁.P
-        src := sorry
-        tgt := sorry
+        src := by
+          simp [D₁, D₀]
+          rintro _ _ _ ((hf | ⟨⟨⟩⟩) | ⟨i, j, hj⟩)
+          · simp at hf
+            obtain ⟨i, hf⟩ := hf
+            exact Or.inl ⟨i, (D i).src hf⟩
+          · exact Or.inr rfl
+          · exact Or.inl ⟨i, hj⟩
+        tgt := by
+          simp [D₁, D₀]
+          rintro _ _ _ ((hf | ⟨⟨⟩⟩) | ⟨i, j, hj⟩)
+          · simp at hf
+            obtain ⟨i, hf⟩ := hf
+            exact Or.inl ⟨i, (D i).tgt hf⟩
+          · exact Or.inr rfl
+          · exact Or.inr rfl
         hW := sorry
         hP := sorry }
-    sorry)
+    have hD₂ {f : m₂ ⟶ m₂} (hf : D₂.W f) : f = 𝟙 _ := by
+      simp [D₂, D₁, D₀] at hf
+      obtain ((hf | ⟨⟨⟩⟩) | hf) := hf
+      · simp at hf
+        obtain ⟨i, hi⟩ := hf
+        exact (hD₀ ((D i).src hi)).elim
+      · rfl
+      · rw [MorphismProperty.ofHoms_iff] at hf
+        obtain ⟨⟨i, j, hj⟩, hi⟩ := hf
+        obtain rfl : m₂ = j := congr_arg Arrow.leftFunc.obj hi
+        exact (hD₀ hj).elim
+    let he : D₂.Terminal m₂ := by
+      have H {i : ι} {j : J} (hj : (D i).P j) {f : j ⟶ m₂} (hf : D₂.W f) :
+          f = φ ⟨i, ⟨_, hj⟩⟩ := by
+        simp [D₂, D₁, D₀] at hf
+        obtain ((hf | ⟨⟨⟩⟩) | ⟨⟨i', j, hj'⟩⟩) := hf
+        · simp at hf
+          obtain ⟨i, hf⟩ := hf
+          exact (hD₀ ((D i).tgt hf)).elim
+        · exact (hD₀ hj).elim
+        · apply hm₂
+      refine .ofExistsUnique ?_ ?_ ?_ ?_
+      · exact Or.inl (Or.inr ⟨⟨⟩⟩)
+      · simp [D₂, D₁, D₀]
+        rintro j (⟨i, hi⟩ | rfl)
+        · exact ⟨φ ⟨i, _, hi⟩, Or.inr (.mk _)⟩
+        · exact ⟨𝟙 _, Or.inl (Or.inr ⟨⟨⟩⟩)⟩
+      · intro j hj l₁ l₂ hl₁ hl₂
+        simp [D₂, D₁, D₀] at hj
+        obtain (⟨i, hj⟩ | rfl) := hj
+        · obtain rfl := H hj hl₁
+          obtain rfl := H hj hl₂
+          rfl
+        · rw [hD₂ hl₁, hD₂ hl₂]
+      · sorry
+    let D₂' : Diagram J κ :=
+      { toPreDiagram := D₂
+        e := _
+        terminal := he
+        uniq_terminal j hj := by
+          have := hj.prop
+          simp [D₂, D₁, D₀] at this
+          obtain (⟨i, hi⟩ | rfl) := this
+          · exfalso
+            exact (hm₀ i).false (t₁ _ ≫ t₂ ≫ hj.lift
+              (by simp [D₂, D₁]) ≫ (D i).terminal.lift hi)
+          · rfl }
+    refine ⟨D₂', fun i ↦ ⟨?_, ?_⟩⟩
+    · exact le_trans (le_trans (le_trans (by rfl) (le_iSup _ i))
+        le_sup_left) le_sup_left
+    · exact le_trans (le_trans (by rfl) (le_iSup _ i)) le_sup_left)
 
 end ExistsDirected
 
