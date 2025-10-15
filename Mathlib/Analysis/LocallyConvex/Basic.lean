@@ -284,7 +284,6 @@ variable {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E]
 
 theorem Absorbent.submodule_eq_top {V : S} (hV : Absorbent 𝕜 (V : Set E)) :
     (V : Set E) = ⊤ := by
-  nontriviality 𝕜
   rw [eq_top_iff]
   rintro x -
   obtain ⟨c, hc, hc'⟩ :=
