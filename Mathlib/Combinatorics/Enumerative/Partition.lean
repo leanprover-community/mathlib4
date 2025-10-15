@@ -60,6 +60,9 @@ deriving DecidableEq
 
 namespace Partition
 
+theorem le_of_mem_parts {n : ℕ} {p : Partition n} {m : ℕ} (h : m ∈ p.parts) : m ≤ n := by
+  simpa [p.parts_sum] using Multiset.le_sum_of_mem h
+
 /-- A composition induces a partition (just convert the list to a multiset). -/
 @[simps]
 def ofComposition (n : ℕ) (c : Composition n) : Partition n where
