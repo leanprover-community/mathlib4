@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Order.Fin.Basic
 import Mathlib.Util.Superscript
