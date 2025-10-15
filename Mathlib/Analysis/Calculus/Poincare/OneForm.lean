@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
+import Mathlib.Topology.Homotopy.Affine
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.DiffContOnCl
@@ -258,18 +259,6 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
   {a b c d : E}
 
-@[simps]
-def ContinuousMap.Homotopy.linear {X : Type*} [TopologicalSpace X] (f g : C(X, E)) :
-    f.Homotopy g where
-  toFun x := Path.segment (f x.2) (g x.2) x.1
-  continuous_toFun := by dsimp [AffineMap.lineMap_apply]; fun_prop
-  map_zero_left := by simp
-  map_one_left := by simp
-
-@[simp]
-lemma ContinuousMap.Homotopy.evalAt_linear {X : Type*} [TopologicalSpace X] (f g : C(X, E))
-    (x : X) : (Homotopy.linear f g).evalAt x = .segment (f x) (g x) := rfl
-
 theorem Convex.curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric
     {s : Set E} (hs : Convex ℝ s) {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F}
     (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
@@ -277,17 +266,17 @@ theorem Convex.curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     curveIntegral ω (.segment a b) + curveIntegral ω (.segment b c) =
       curveIntegral ω (.segment a c) := by
-  set φ := ContinuousMap.Homotopy.linear (Path.segment a b : C(I, E)) (Path.segment a c)
+  set φ := ContinuousMap.Homotopy.affine (Path.segment a b : C(I, E)) (Path.segment a c)
   have := φ.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn hω hdω ?_ ?_
   · convert this using 2
     · simp only [φ]
       -- TODO: why do we need to explicitly give `f`?
-      rw [ContinuousMap.Homotopy.evalAt_linear (Path.segment a b : C(I, E))]
+      rw [ContinuousMap.Homotopy.evalAt_affine (Path.segment a b : C(I, E))]
       dsimp only [ContinuousMap.coe_coe]
       rw [← Path.cast_segment (Path.segment a b).target (Path.segment a c).target,
         curveIntegral_cast]
     · simp only [φ]
-      rw [ContinuousMap.Homotopy.evalAt_linear (Path.segment a b : C(I, E))]
+      rw [ContinuousMap.Homotopy.evalAt_affine (Path.segment a b : C(I, E))]
       dsimp only [ContinuousMap.coe_coe]
       rw [← Path.cast_segment (Path.segment a b).source (Path.segment a c).source]
       simp
