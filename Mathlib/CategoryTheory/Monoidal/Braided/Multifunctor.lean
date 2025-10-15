@@ -101,11 +101,11 @@ we phrase the forward hexagon identity as an equality of natural transformations
 same on the object level on three objects `X₁ X₂ X₃`).
 
 ```
-            funtor₁₂₃                         (X₁ ⊗ X₂) ⊗ X₃
-associtator/          \ secondMap₁             /           \
+            functor₁₂₃                        (X₁ ⊗ X₂) ⊗ X₃
+associator /          \ secondMap₁             /           \
           v            v                      v             v
      functor₁₂₃'    functor₂₁₃          X₁ ⊗ (X₂ ⊗ X₃)    (X₂ ⊗ X₁) ⊗ X₃
- firsMap₂ |            |secondMap₂            |             |
+firstMap₂ |            |secondMap₂            |             |
           v            v                      v             v
      functor₂₃₁     functor₂₁₃'         (X₂ ⊗ X₃) ⊗ X₁    X₂ ⊗ (X₁ ⊗ X₃)
   firstMap₃\           / secondMap₃            \            /
@@ -157,11 +157,11 @@ we phrase the reverse hexagon identity as an equality of natural transformations
 same on the object level on three objects `X₁ X₂ X₃`).
 
 ```
-            funtor₁₂₃'                        X₁ ⊗ (X₂ ⊗ X₃)
-associtator/          \ secondMap₁             /           \
+            functor₁₂₃'                       X₁ ⊗ (X₂ ⊗ X₃)
+associator /          \ secondMap₁             /           \
           v            v                      v             v
      functor₁₂₃    functor₁₃₂'          (X₁ ⊗ X₂) ⊗ X₃    X₁ ⊗ (X₃ ⊗ X₂)
- firsMap₂ |            |secondMap₂            |             |
+firstMap₂ |            |secondMap₂            |             |
           v            v                      v             v
      functor₃₁₂'    functor₁₃₂          X₃ ⊗ (X₁ ⊗ X₂)    (X₁ ⊗ X₃) ⊗ X₂
   firstMap₃\           / secondMap₃            \            /
