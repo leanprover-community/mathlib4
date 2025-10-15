@@ -54,8 +54,7 @@ lemma measurable_untopA [Nonempty ι] : Measurable (WithTop.untopA (α := ι)) :
 lemma measurable_coe : Measurable (fun x : ι ↦ (x : WithTop ι)) := continuous_coe.measurable
 
 @[fun_prop]
-lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} [SecondCountableTopology ι]
-    {f : α → ι} (hf : Measurable f) :
+lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} {f : α → ι} (hf : Measurable f) :
     Measurable (fun x ↦ (f x : WithTop ι)) :=
   measurable_coe.comp hf
 
