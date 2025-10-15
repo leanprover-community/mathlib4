@@ -193,11 +193,14 @@ lemma _root_.Equiv.symm_simpleGraph (e : V ≃ W) : e.simpleGraph.symm = e.symm.
 /- Given a set `s` of vertices, we can restrict a graph to those vertices by restricting its
 adjacency relation. This gives a map between `SimpleGraph V` and `SimpleGraph s`.
 
-There is also a notion of induced subgraphs (see `SimpleGraph.subgraph.induce`). -/
+There is also a notion of induced subgraphs (see `SimpleGraph.Subgraph.induce`). -/
 /-- Restrict a graph to the vertices in the set `s`, deleting all edges incident to vertices
 outside the set. This is a wrapper around `SimpleGraph.comap`. -/
 abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
+
+variable {G} in
+lemma adj_induce {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .rfl
 
 @[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
   comap_top Subtype.val_injective
