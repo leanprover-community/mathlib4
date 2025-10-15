@@ -35,6 +35,26 @@ This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.l
 
 -/
 
+-- TODO: Move
+namespace ENNReal
+
+open scoped ENNReal NNReal
+
+lemma eq_of_forall_le_nnreal_iff : ∀ {x y : ℝ≥0∞}, (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y
+  | ⊤, ⊤, _ => rfl
+  | ⊤, (y : ℝ≥0), h => by simpa using h y
+  | (x : ℝ≥0), ⊤, h => by simpa using h x
+  | (x : ℝ≥0), (y : ℝ≥0), h => by simpa using eq_of_forall_ge_iff <| by simpa using h
+
+@[simp, norm_cast] lemma ofReal_le_coe {x : ℝ} {y : ℝ≥0} : ENNReal.ofReal x ≤ y ↔ x ≤ y := by
+  simp [← ofReal_le_ofReal_iff]
+
+end ENNReal
+
+-- TODO: Replace `Set.eq_empty_of_isEmpty`
+lemma Set.eq_empty_of_isEmpty' {α : Type*} (s : Set α) [IsEmpty s] : s = ∅ := by
+  simpa using ‹IsEmpty s›
+
 open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
 
 noncomputable section
@@ -344,34 +364,15 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       rcases p.dichotomy with (rfl | h)
       · simp [prod_dist_eq_sup]
       · simp only [dist, one_div, dite_eq_ite]
-        split_ifs with hp'
-        all_goals try linarith
-        all_goals positivity)
+        split_ifs with hp' <;> positivity)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
-    · rw [prod_edist_eq_sup, prod_dist_eq_sup]
-      refine le_antisymm (sup_le ?_ ?_) ?_
-      · rw [ofReal_max]
-        refine le_sup_of_le_left ?_
-        simp
-      · rw [ofReal_max]
-        refine le_sup_of_le_right ?_
-        simp
-      · rw [← Prod.dist_eq,← Prod.edist_eq,edist_dist]
-    · simp only [edist, one_div, dite_eq_ite]
-      split_ifs with hp' ha hb hc hd
-      all_goals try simp_all only [nonpos_iff_eq_zero, one_ne_zero, toReal_zero,
-        PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_zero, add_zero, zero_eq_ofReal, add_zero]
-      all_goals try contradiction
-      · simp at h
-        linarith [h]
-      · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
-        have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
-        simp only [dist_edist, ENNReal.toReal_rpow,
-        prod_dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2, one_div]
-        rw [ofReal_toReal_eq_iff.mpr (by finiteness),
-          ofReal_toReal_eq_iff.mpr (by finiteness), ofReal_toReal_eq_iff.mpr (by finiteness)]
-
+    · refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+      simp [prod_edist_eq_sup, prod_dist_eq_sup]
+    · have : 0 < p.toReal := by rw [ENNReal.toReal_pos_iff_ne_top]; rintro rfl; norm_num at h
+      simp only [prod_edist_eq_add, edist_dist, one_div, prod_dist_eq_add, this]
+      rw [← ENNReal.ofReal_rpow_of_nonneg, ENNReal.ofReal_add, ← ENNReal.ofReal_rpow_of_nonneg,
+        ← ENNReal.ofReal_rpow_of_nonneg] <;> simp [Real.rpow_nonneg, add_nonneg]
 
 attribute [local instance] WithLp.prodPseudoMetricAux
 
