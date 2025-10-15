@@ -43,19 +43,6 @@ variable {σ : Π x : M, V x}
 #guard_msgs in
 #check T% σ
 
--- Testing precedence.
-variable {x : M}
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
-#guard_msgs in
-#check (T% σ) x
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
-#guard_msgs in
-#check T% σ x
--- Nothing happening, as expected.
-/-- info: σ x : V x -/
-#guard_msgs in
-#check T% (σ x)
-
 -- Note how the name of the bound variable `x` resp. `y` is preserved.
 /-- info: fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
@@ -74,6 +61,49 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 /-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% X
+
+variable {x : M}
+
+-- Testing precedence.
+section precedence
+
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+#guard_msgs in
+#check (T% σ) x
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+#guard_msgs in
+#check T% σ x
+-- Nothing happening, as expected.
+/-- info: σ x : V x -/
+#guard_msgs in
+#check T% (σ x)
+
+-- Testing precedence when applied to a family of section.
+variable {ι j : Type*}
+
+-- Partially applied.
+/--
+info: fun a ↦ TotalSpace.mk' ((x : M) → V x) a (s a) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x))
+-/
+#guard_msgs in
+variable {s : ι → (x : M) → V x} in
+#check T% s
+
+/--
+info: (fun a ↦ TotalSpace.mk' (ι → (x : M) → V x) a (s a)) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x))
+-/
+#guard_msgs in
+variable {s : ι → ι → (x : M) → V x} {i : ι} in
+#check T% s i
+
+variable {X : ι → Π x : M, TangentSpace I x} {i : ι}
+
+-- Error message is okay, but not great.
+/-- error: Could not find a model with corners for `ι` -/
+#guard_msgs in
+#check MDiffAt (T% X) x
+
+end precedence
 
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
@@ -416,6 +446,7 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 
 end interaction
 
+-- Total space over the tangent space and tangent bundle.
 section
 
 variable [IsManifold I 2 M]
@@ -437,16 +468,19 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
     [Elab.DiffGeo.MDiff] Failed with error:
         No `baseInfo` provided
   [Elab.DiffGeo.MDiff] ✅️ TangentSpace
-    [Elab.DiffGeo.MDiff] This is the total space of the tangent bundle of M
-    [Elab.DiffGeo.MDiff] Found model: I.prod I.tangent
-  [Elab.DiffGeo.MDiff] Found model: I.prod I.tangent
+    [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the `TangentBundle` of `M`
+    [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
+  [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
 [Elab.DiffGeo.MDiff] Finding a model for: F
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      F is not a `Bundle.TotalSpace`.
+      `F` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `F` is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ✅️ NormedSpace
-  [Elab.DiffGeo.MDiff] Field is: 𝕜
-  [Elab.DiffGeo.MDiff] Found model: 𝓘(𝕜, F)
+  [Elab.DiffGeo.MDiff] `F` is a normed space over the field `𝕜`
+  [Elab.DiffGeo.MDiff] Found model: `𝓘(𝕜, F)`
 -/
 #guard_msgs in
 set_option trace.Elab.DiffGeo true in
@@ -476,74 +510,112 @@ Hint: Additional diagnostic information may be available using the `set_option d
 #guard_msgs in
 #check MDifferentiable (I.prod (𝓘(𝕜, E))) 𝓘(𝕜, F) h'
 
--- TODO: implement special handling for the tangent bundle
-/-- error: Could not find models with corners for TangentBundle I M -/
+/-- info: MDifferentiable I.tangent 𝓘(𝕜, F) h' : Prop -/
 #guard_msgs in
 #check MDiff h'
 
 end
 
+/-! (Extended) charts -/
+section
+
+variable {φ : OpenPartialHomeomorph M H} {ψ : PartialEquiv M E} {s : Set M}
+
+/-- info: ContMDiff I I 37 ↑φ : Prop -/
+#guard_msgs in
+#check CMDiff 37 φ
+
+/-- info: MDifferentiable I I ↑φ : Prop -/
+#guard_msgs in
+#check MDiff φ
+
+/-- info: MDifferentiable I 𝓘(𝕜, E) ↑ψ : Prop -/
+#guard_msgs in
+#check MDiff ψ
+
+/-- info: MDifferentiableWithinAt I I (↑φ) s : M → Prop -/
+#guard_msgs in
+#check MDiffAt[s] φ
+
+/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑ψ) s : M → Prop -/
+#guard_msgs in
+#check MDiffAt[s] ψ
+
+end
+
+-- Inferring a model with corners on a space of linear maps between normed spaces
+-- is currently not supported.
+variable {f : M → E →L[𝕜] E'} in
+/-- error: Could not find a model with corners for `E →L[𝕜] E'` -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : M → E →L[𝕜] E'} in
+/-- error: Could not find a model with corners for `E →L[𝕜] E'` -/
+#guard_msgs in
+#check CMDiff 2 f
+
 /-! Error messages in case of a forgotten `T%`. -/
 section
 
 /--
-error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+error: Term `X` is a dependent function, of type `(m : M) → TangentSpace I m`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff X
 
 /--
-error: Term σ is a dependent function, of type (x : M) → V x
+error: Term `σ` is a dependent function, of type `(x : M) → V x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff σ
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff σ'
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff[s] σ'
 
 /--
-error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+error: Term `X` is a dependent function, of type `(m : M) → TangentSpace I m`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt (X)
 
 /--
-error: Term σ is a dependent function, of type (x : M) → V x
+error: Term `σ` is a dependent function, of type `(x : M) → V x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt ((σ))
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiff[s] σ'
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check MDiffAt σ'
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
@@ -780,70 +852,84 @@ end coercions
 section dependent
 
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
-variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+variable {ι : Type*} {i : ι} (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+  (X' : ι → (m : M) → TangentSpace I m)
 
 /--
-error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+error: Term `X` is a dependent function, of type `(m : M) → TangentSpace I m`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 X
 
 /--
-error: Term σ is a dependent function, of type (x : M) → V x
+error: Term `σ` is a dependent function, of type `(x : M) → V x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 σ
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff 0 σ'
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff[s] 0 σ'
 
 /--
-error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+error: Term `X` is a dependent function, of type `(m : M) → TangentSpace I m`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 (X)
 
 /--
-error: Term σ is a dependent function, of type (x : M) → V x
+error: Term `σ` is a dependent function, of type `(x : M) → V x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 ((σ))
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiff[s] 0 σ'
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt 0 σ'
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check CMDiffAt[s] 0 σ'
+
+/--
+error: Term `X' i` is a dependent function, of type `(m : M) → TangentSpace I m`
+Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
+-/
+#guard_msgs in
+#check MDiffAt ((X' i)) x
+
+-- This error message is not great: this is missing *both* a T% elaborator
+-- and an argument i.
+/-- error: Could not find a model with corners for `ι` -/
+#guard_msgs in
+#check MDiffAt X' x
 
 end dependent
 
@@ -1039,13 +1125,13 @@ info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f sorry : TangentSpace 𝓘(𝕜, E)
 
 -- Error messages: argument s has mismatched type.
 /--
-error: The domain E of f is not definitionally equal to the carrier type of the set s' : Set M
+error: The domain `E` of `f` is not definitionally equal to the carrier type of the set `s'` : `Set M`
 -/
 #guard_msgs in
 #check mfderiv[s'] f
 
 /--
-error: The domain E of f is not definitionally equal to the carrier type of the set s' : Set M
+error: The domain `E` of `f` is not definitionally equal to the carrier type of the set `s'` : `Set M`
 -/
 #guard_msgs in
 #check mfderiv[s'] f m
@@ -1055,14 +1141,14 @@ end errors
 section
 
 /--
-error: Term X is a dependent function, of type (m : M) → TangentSpace I m
+error: Term `X` is a dependent function, of type `(m : M) → TangentSpace I m`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv% X x
 
 /--
-error: Term σ is a dependent function, of type (x : M) → V x
+error: Term `σ` is a dependent function, of type `(x : M) → V x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
@@ -1071,14 +1157,14 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 variable {t : Set E} {p : E}
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
 #check mfderiv[t] σ' p
 
 /--
-error: Term σ' is a dependent function, of type (x : E) → Trivial E E' x
+error: Term `σ'` is a dependent function, of type `(x : E) → Trivial E E' x`
 Hint: you can use the `T%` elaborator to convert a dependent function to a non-dependent one
 -/
 #guard_msgs in
@@ -1097,18 +1183,22 @@ set_option trace.Elab.DiffGeo true
 variable {f : Unit → Unit}
 
 /--
-error: Could not find models with corners for Unit
+error: Could not find a model with corners for `Unit`
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      Unit is not a `Bundle.TotalSpace`.
+      `Unit` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a `TangentBundle`
 [Elab.DiffGeo.MDiff] ❌️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on Unit among local instances.
-[Elab.DiffGeo.MDiff] ❌️ ChartedSpace
+      Couldn't find a `NormedSpace` structure on `Unit` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on Unit among local instances.
+      Couldn't find a `ChartedSpace` structure on Unit among local instances, and Unit is not the charted space of some type in the local context either.
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
