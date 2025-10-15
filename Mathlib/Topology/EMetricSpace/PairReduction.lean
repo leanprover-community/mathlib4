@@ -21,9 +21,10 @@ such that for any function `f : T → E`:
 
 When applying the chaining technique for bounding the supremum of the incremements of stochastic
 processes, `pair_reduction` is used to reduce the order of the dependence of the bound on the
-covering numbers of the pseudometric space. As a simple example, suppose `T` has an `ε`-covering
-number `N` and suppose `J` is an `ε`-covering of `T` with `|J| = N`. Let `f : Ω → T → E` be any
-stochastic process such that `𝔼 d(f(s), f(t)) ≤ d (s, t)` for all `s,t ∈ T`. Then naively
+covering numbers of the pseudometric space. As a simple example of how it could be used, suppose
+`T` has an `ε`-covering number `N` and suppose `J` is an `ε`-covering of `T` with `|J| = N`.
+Let `f : Ω → T → E` be any stochastic process such that `𝔼 d(f(s), f(t)) ≤ d (s, t)` for all
+`s,t ∈ T`. Then naively
 ```
   𝔼[sup_{(s, t) ∈ J} : d(s, t) ≤ c} d(f(s), f(t))]
     ≤ ∑_{(s, t) ∈ J² : d(s, t) ≤ c} 𝔼[d(f(s), f(t))]
@@ -42,7 +43,54 @@ but applying `pair_reduction` with `n = log |J|` we get
 theorem that applies to stochastic processses which satisfy the Kolmogorov condition but works
 on very general metric spaces.
 
-## Implimentation notes
+## Implimentation
+
+In this section we sketch a proof of `pair_reduction` with references to the corresponding steps
+in the lean code.
+
+For any `V : Finset T` and `t : T` we define the log-size radius of `t` in `V` to be the smallest
+natural number `n` greater than zero such that `|{x ∈ V | d(t, x) ≤ nc}| ≤ aⁿ`.
+(see `logSizeRadius`)
+
+We construct a sequence `Vᵢ` of subsets of `J`, a sequence `tᵢ ∈ Vᵢ` and a sequence of `rᵢ : ℕ`
+inductively as follows (see `logSizeBallSeq`):
+
+* `V₀ = J`, `tₒ` is chosen arbitarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+* `Vᵢ₊ᵢ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`,`tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁`
+  (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`.
+
+Then `Vᵢ` is a strictly decreasing sequence (see `card_finset_logSizeBallSeq_add_one_lt `) until
+`Vᵢ` is empty. In particular `Vᵢ = ∅` for `i ≥ |J|`
+(see `card_finset_logSizeBallSeq_card_eq_zero`).
+
+We will show that `K = ⋃_{i=1}^|J| {tᵢ} × {x ∈ Vᵢ | d(tᵢ, x) ≤ crᵢ}` suffices
+(see `pairSet` and `pairSetSeq`).
+
+To prove (1) we have that
+```
+  |K| ≤ ∑_{i=0}^|J| |{x ∈ Vᵢ : d(t, x) ≤ crᵢ}|
+      ≤ ∑_{i=0}^|J| a ^ rᵢ  (by definition of `rᵢ`)
+      = a ∑_{i=0}^|J| a ^ (rᵢ - 1)
+      ≤ a ∑_{i=0}^|J| Bᵢ (by definition of `rᵢ`)
+      ≤ a |J| (since the `Bᵢ` are disjoint (see `disjoint_smallBall_logSizeBallSeq`))
+```
+(see `card_pairSet_le`).
+
+(2) follows easily from the definition of K and the fact that `rᵢ ≤ n` for each `i`
+(see `edist_le_of_mem_pairSet` and `radius_logSizeBallSeq_le`)
+
+Finally we prove (3). Let `s,t ∈ J` such that `d(s, t) ≤ c`. Let `i` be the largest integer
+such that both `s,t ∈ Vᵢ`. WLOG suppose `s ∈ Vᵢ₊₁` so that in particular `s ∈ Bᵢ` which means
+by definition that `d(tᵢ, s) ≤ (rᵢ - 1)c`. Then we also have
+```
+d(tᵢ, t) ≤ d(tᵢ, s) + d(s, t) ≤ (rᵢ - 1)c + c = rᵢc
+```
+hence `(tᵢ, s), (tᵢ, t) ∈ K`. Furthermore
+```
+d(f(s), f(t)) ≤ d(f(tᵢ), f(s)) + d(f(tᵢ), f(t))
+```
+taking supremums completes the proof (see `iSup_edist_pairSet`).
+
 
 ## References
 
@@ -126,7 +174,7 @@ variable [DecidableEq T]
 
 /-- We recursively define a log-size ball sequence `(Vᵢ, tᵢ, rᵢ)` by
   * `V₀ = J`, `tₒ` is chosen arbitarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-  * `Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t,x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁, rᵢ₊₁` is
+  * `Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁, rᵢ₊₁` is
     the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T :=
