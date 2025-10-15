@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 import Mathlib.CategoryTheory.Sites.Equivalence
-import Mathlib.CategoryTheory.Sites.Instances
 
 /-!
 # Instances

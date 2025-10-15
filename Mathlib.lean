@@ -2808,7 +2808,6 @@ import Mathlib.CategoryTheory.Sites.Hypercover.Homotopy
 import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 import Mathlib.CategoryTheory.Sites.Hypercover.One
 import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-import Mathlib.CategoryTheory.Sites.Instances
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.JointlySurjective
 import Mathlib.CategoryTheory.Sites.LeftExact
