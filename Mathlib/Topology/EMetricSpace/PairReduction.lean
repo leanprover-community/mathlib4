@@ -43,7 +43,7 @@ but applying `pair_reduction` with `n = log |J|` we get
 theorem that applies to stochastic processses which satisfy the Kolmogorov condition but works
 on very general metric spaces.
 
-## Implimentation
+## Implementation
 
 In this section we sketch a proof of `pair_reduction` with references to the corresponding steps
 in the lean code.
