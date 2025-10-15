@@ -283,7 +283,7 @@ lemma IsUnramified.isUnmixed_conjugate {w : InfinitePlace K} (h : w.IsUnramified
   simp_rw [conjugate_comp, IsSelfAdjoint.star_iff, ← isReal_mk_iff, ← comap_mk, mk_embedding] at hw
   simpa using isReal_iff.1 <| (isUnramified_iff.1 h).resolve_right (not_isComplex_iff_isReal.2 hw)
 
-theorem isUnramified_mk_iff_isUnramified {φ : K →+* ℂ} :
+theorem isUnramified_mk_iff_isUnmixed {φ : K →+* ℂ} :
     (mk φ).IsUnramified k ↔ IsUnmixed k φ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases embedding_mk_eq φ with (hl | hr)
@@ -295,7 +295,7 @@ theorem isUnramified_mk_iff_isUnramified {φ : K →+* ℂ} :
     · exact .inr <| by simpa using (isReal_mk_iff.not.2 hv)
 
 alias ⟨_, _root_.NumberField.ComplexEmbedding.IsUnmixed.mk_isUnramified⟩ :=
-  isUnramified_mk_iff_isUnramified
+  isUnramified_mk_iff_isUnmixed
 
 variable (k)
 
