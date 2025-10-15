@@ -50,7 +50,8 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
-/-- Bilinear map for the inner product on tensor products. -/
+/-- Bilinear map for the inner product on tensor products.
+On pure tensors: `inner_ (a ⊗ₜ b) (c ⊗ₜ d) = ⟪a, c⟫ * ⟪b, d⟫`. -/
 private abbrev inner_ :=
   (lift <| mapBilinear 𝕜 E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
 
@@ -75,7 +76,7 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   in the tensor product of some finite submodules.
   So for `x : E ⊗ F`, there exists finite submodules `E', F'` such that `x ∈ mapIncl E' F'`.
   Let `y : E' ⊗ F'` such that `x = mapIncl E' F' y`.
-  Let `e` be the orthonormal basis of `E'` and `f` be the orthonomal basis of `F'`.
+  Let `e` be an orthonormal basis of `E'` and `f` be an orthonormal basis of `F'`.
   Then it is easy to see that because `⟪x, x⟫ = 0`, we get
   `(e.toBasis.tensorProduct f.toBasis).repr y (i, j) = 0` for all `i, j`. Which means `y = 0`.
   And so `x = 0`.
@@ -106,7 +107,7 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   Similarly to the above proof, for `x : E ⊗ F`, there exists finite submodules `E', F'` such that
   `x ∈ mapIncl E' F'`.
   Let `y : E' ⊗ F'` such that `x = mapIncl E' F' y`.
-  Let `e` be the orthonormal basis of `E'` and `f` be the orthonomal basis of `F'`.
+  Let `e` be an orthonormal basis of `E'` and `f` be an orthonormal basis of `F'`.
   Then it is easy to see that
   `⟪x, x⟫ = ∑ i j, ‖(e.toBasis.tensorProduct f.toBasis).repr y (i, j)‖ ^ 2`,
   which is clearly nonnegative.
