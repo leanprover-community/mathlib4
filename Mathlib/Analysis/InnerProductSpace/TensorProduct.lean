@@ -41,10 +41,11 @@ inner product spaces.
 
 -/
 
-variable {𝕜 E F G : Type*} [RCLike 𝕜]
+variable {𝕜 E F G H : Type*} [RCLike 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
   [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
 open scoped TensorProduct
 
@@ -62,10 +63,14 @@ private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := r
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
-lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
-    inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
+lemma inner_map_linearIsometry_linearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x y : E ⊗[𝕜] F) :
+    inner 𝕜 (map f.toLinearMap g.toLinearMap x) (map f.toLinearMap g.toLinearMap y) = inner 𝕜 x y :=
   x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
     (by simp_all [inner_def])) (by simp_all [inner_def])
+
+lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
+    inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
+  inner_map_linearIsometry_linearIsometry (Submodule.subtypeₗᵢ E') (Submodule.subtypeₗᵢ F') x y
 
 open scoped ComplexOrder
 open Module
@@ -200,11 +205,22 @@ theorem ext_iff_inner_left_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
 
 section isometry
 
+/-- The tensor product of two linear isometries is a linear isometry. -/
+def mapLinearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
+    E ⊗[𝕜] F →ₗᵢ[𝕜] G ⊗[𝕜] H where
+  toLinearMap := map f.toLinearMap g.toLinearMap
+  norm_map' x := by simp [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_map_linearIsometry_linearIsometry]
+
+@[simp] lemma mapLinearIsometry_apply (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
+    mapLinearIsometry f g x = map f.toLinearMap g.toLinearMap x := rfl
+
+@[simp] lemma toLinearMap_mapLinearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
+    (mapLinearIsometry f g).toLinearMap = map f.toLinearMap g.toLinearMap := rfl
+
 /-- The linear isometry version of `TensorProduct.mapIncl`. -/
 def mapInclLinearIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
-    E' ⊗[𝕜] F' →ₗᵢ[𝕜] E ⊗[𝕜] F where
-  toLinearMap := mapIncl E' F'
-  norm_map' x := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_mapIncl_mapIncl]
+    E' ⊗[𝕜] F' →ₗᵢ[𝕜] E ⊗[𝕜] F :=
+  mapLinearIsometry (Submodule.subtypeₗᵢ E') (Submodule.subtypeₗᵢ F')
 
 @[simp] lemma mapInclLinearIsometry_apply (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F)
     (x : E' ⊗[𝕜] F') : mapInclLinearIsometry E' F' x = mapIncl E' F' x := rfl
