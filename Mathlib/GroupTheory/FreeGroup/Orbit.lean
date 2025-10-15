@@ -3,9 +3,9 @@ Copyright (c) 2025 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Krause
 -/
-
 import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
+
 /-!
 For any `w : α × bool`, `FreeGroup.startsWith w` is the set of all elemenents of `FreeGroup α` that
 start with `w`.
