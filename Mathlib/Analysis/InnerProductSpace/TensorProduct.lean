@@ -27,6 +27,8 @@ inner product spaces.
   `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`.
 * `TensorProduct.mapIsometry`: the linear isometry version of `TensorProduct.map f g` when
   `f` and `g` are linear isometries.
+* `TensorProduct.congrIsometry`: the linear isometry equivalence version of
+  `TensorProduct.congr f g` when `f` and `g` are linear isometry equivalences.
 * `TensorProduct.mapInclIsometry`: the linear isometry version of `TensorProduct.mapIncl`.
 * `TensorProduct.commIsometry`: the linear isometry version of `TensorProduct.comm`.
 * `TensorProduct.lidIsometry`: the linear isometry version of `TensorProduct.lid`.
