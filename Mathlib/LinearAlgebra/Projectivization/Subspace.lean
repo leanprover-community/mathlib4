@@ -211,7 +211,7 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
       rcases eq_or_ne x 0 with rfl | hx₂
       · rwa [zero_add]
       rcases eq_or_ne y 0 with rfl | hy₂
-      · rw [add_zero]; exact hx₁
+      · rwa [add_zero]
       intro hxy
       exact s.mem_add _ _ hx₂ hy₂ hxy (hx₁ hx₂) (hy₁ hy₂)
     zero_mem' h := h.irrefl.elim
@@ -225,16 +225,14 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
       exact Iff.eq <| s.smul_mem_iff <| left_ne_zero_of_smul h
     mem_add' _ _ _ _ _ h₁ h₂ := s.add_mem h₁ h₂ }
   left_inv s := by
-    ext x
-    cases x with | _ x hx =>
+    ext ⟨x, hx⟩
     exact ⟨fun h => h hx, fun h _ => h⟩
   right_inv s := by
     ext x
-    change (x ≠ 0 → x ∈ s) ↔ x ∈ s
-    refine ⟨fun h => ?_, fun h _ => h⟩
-    rcases eq_or_ne x 0 with rfl | hx
-    · exact s.zero_mem
-    · exact h hx
+    suffices x = 0 → x ∈ s by
+      simpa [imp_iff_not_or]
+    rintro rfl
+    exact s.zero_mem
   map_rel_iff'.mp h₁ := Projectivization.ind fun _ hx h₂ => h₁ (fun _ => h₂) hx
   map_rel_iff'.mpr h₁ _ h₂ hx := h₁ <| h₂ hx
 
