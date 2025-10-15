@@ -88,8 +88,8 @@ theorem ZMod.isSquare_neg_one_mul {m n : ℕ} (hc : m.Coprime n) (hm : IsSquare 
   simpa only [RingEquiv.map_neg_one] using this.map (ZMod.chineseRemainder hc).symm
 
 /-- If `p` is a prime factor of `n` such that `-1` is a square modulo `n`, then `p % 4 ≠ 3`. -/
-theorem mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hp : p ∈ n.primeFactors)
-    (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 := by
+theorem Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one {p n : ℕ}
+    (hp : p ∈ n.primeFactors) (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 := by
   obtain ⟨y, h⟩ := ZMod.isSquare_neg_one_of_dvd (Nat.dvd_of_mem_primeFactors hp) hs
   rw [← sq, eq_comm, show (-1 : ZMod p) = -1 ^ 2 by ring] at h
   haveI : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
@@ -99,7 +99,8 @@ theorem mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hp : p ∈ n.prim
 `n` does not have a prime factor `q` such that `q % 4 = 3`. -/
 theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ q ∈ n.primeFactors, q % 4 ≠ 3 := by
-  refine ⟨fun H q hq => mod_four_ne_three_of_dvd_isSquare_neg_one hq H, fun H => ?_⟩
+  refine ⟨fun H q hq ↦ Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one hq H,
+    fun H ↦ ?_⟩
   induction n using induction_on_primes with
   | zero => exact False.elim (hn.ne_zero rfl)
   | one => exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
@@ -210,8 +211,8 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
   refine eq_sq_add_sq_iff_eq_sq_mul.trans ⟨fun ⟨a, b, h₁, h₂⟩ q hq h ↦ ?_, fun H ↦ ?_⟩
   · haveI : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
     have : q ∣ b → q ∈ b.primeFactors := by grind [mem_primeFactors]
-    grind [padicValNat.eq_zero_of_not_dvd, mod_four_ne_three_of_dvd_isSquare_neg_one,
-      padicValNat.mul, padicValNat.pow]
+    grind [padicValNat.mul, padicValNat.pow,
+      padicValNat.eq_zero_of_not_dvd, mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one]
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := sq_mul_squarefree_of_pos hn₀
     refine ⟨a, b, hab.symm, ZMod.isSquare_neg_one_iff hb |>.mpr fun q hq hq4 ↦ ?_⟩
     haveI : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
