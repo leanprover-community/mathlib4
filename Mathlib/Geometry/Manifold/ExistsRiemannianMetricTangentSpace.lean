@@ -149,6 +149,14 @@ noncomputable def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _
   letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
   @Inner.inner ℝ EB _ (dψ v) (dψ w)
 
+lemma g_add' (i p : B) (x y v : TangentSpace IB p) :
+  g i p v (x + y) = g i p v x + g i p v y := by
+  unfold g
+  let dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
+  have h_map : dψ (x + y) = dψ x + dψ y := ContinuousLinearMap.map_add dψ x y
+  rw [h_map]
+  exact @inner_add_right ℝ EB _ _ _ _ _ _
+
 omit [IsManifold IB ω B] in
 lemma g_symm (i p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   g i p v w = g i p w v := by
@@ -185,6 +193,26 @@ def g_global (f : SmoothPartitionOfUnity B IB B) :
     ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
   fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
 
+lemma g_global_add' (f : SmoothPartitionOfUnity B IB B) (p : B) (x y v : TangentSpace IB p) :
+  g_global f p v (x + y) = g_global f p v x + g_global f p v y := by
+  unfold g_global
+  simp_rw [g_add', mul_add]
+  have h1 : (Function.support fun i ↦ (f i) p * g i p v x).Finite := by
+    apply (f.locallyFinite'.point_finite p).subset
+    intro i hi
+    simp [Function.mem_support] at hi ⊢
+    have :  (f i) p ≠ 0 ∧ g i p v x ≠ 0 := hi
+    have : (f i) p * g i p v x ≠ 0 := mul_ne_zero_iff.mpr this
+    exact mul_ne_zero_iff.mp this |>.1
+  have h2 : (Function.support fun i ↦ (f i) p * g i p v y).Finite := by
+    apply (f.locallyFinite'.point_finite p).subset
+    intro i hi
+    simp [Function.mem_support] at hi ⊢
+    have :  (f i) p ≠ 0 ∧ g i p v y ≠ 0 := hi
+    have : (f i) p * g i p v y ≠ 0 := mul_ne_zero_iff.mpr this
+    exact mul_ne_zero_iff.mp this |>.1
+  exact @finsum_add_distrib _ ℝ _ _ _ h1 h2
+
 omit [IsManifold IB ω B] [FiniteDimensional ℝ EB] [SigmaCompactSpace B]
      [T2Space B] in
 lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
@@ -220,8 +248,8 @@ lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
     apply (f.locallyFinite'.point_finite p).subset
     intro x hx
     simp [Function.mem_support, h] at hx
-    have :  f x p ≠ 0 ∧ g x p v v ≠ 0 := hx
-    have :   (f x) p * g x p v v ≠ 0 := mul_ne_zero_iff.mpr this
+    have : f x p ≠ 0 ∧ g x p v v ≠ 0 := hx
+    have : (f x) p * g x p v v ≠ 0 := mul_ne_zero_iff.mpr this
     exact mul_ne_zero_iff.mp this |>.1
   have h4 : 0 < ∑ᶠ i, h i := finsum_pos' h1 h2 h3
   exact h4
@@ -233,7 +261,7 @@ def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
     { toFun := fun v ↦
         ContinuousLinearMap.mk
           { toFun := fun w ↦ g_global f p v w
-            map_add' := sorry
+            map_add' := fun x y ↦ g_global_add' f p x y v
             map_smul' := sorry }
           sorry
       map_add' := sorry
