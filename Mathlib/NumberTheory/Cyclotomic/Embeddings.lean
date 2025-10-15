@@ -59,5 +59,8 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
     apply nrComplexPlaces_eq_zero_of_finrank_eq_one
     rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat (NeZero.pos n)), this]
 
+theorem isTotallyReal [IsCyclotomicExtension {0} ℚ K] : IsTotallyReal K :=
+  IsTotallyReal.ofRingEquiv
+    (Polynomial.IsSplittingField.algEquiv ℚ (Polynomial.cyclotomic 0 ℚ)).toRingEquiv
 
 end IsCyclotomicExtension.Rat
