@@ -8,7 +8,7 @@ import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
@@ -460,6 +460,15 @@ namespace Matrix.GeneralLinearGroup
     Continuous (det : GL n R → Rˣ) := by
   simp_rw [Units.continuous_iff, ← map_inv]
   constructor <;> fun_prop
+
+@[continuity, fun_prop]
+lemma continuous_upperRightHom {R : Type*} [Ring R] [TopologicalSpace R] [IsTopologicalRing R] :
+    Continuous (upperRightHom (R := R)) := by
+  simp only [continuous_induced_rng, Function.comp_def, upperRightHom_apply,
+    Units.embedProduct_apply, Units.inv_mk, continuous_prodMk, MulOpposite.unop_op]
+  constructor <;>
+  · refine continuous_matrix fun i j ↦ ?_
+    fin_cases i <;> fin_cases j <;> simp [continuous_const, continuous_neg, continuous_id']
 
 end Matrix.GeneralLinearGroup
 
