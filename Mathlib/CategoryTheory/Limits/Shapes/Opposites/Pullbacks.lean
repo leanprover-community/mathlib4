@@ -13,7 +13,6 @@ We construct pullbacks and pushouts in the opposite categories.
 
 -/
 
-
 universe v₁ v₂ u₁ u₂
 
 noncomputable section
