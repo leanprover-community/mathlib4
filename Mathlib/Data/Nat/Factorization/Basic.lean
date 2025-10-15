@@ -458,24 +458,19 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : #{x ∈ Ioc 0 n | p ∣ x} = n 
   induction n with
   | zero => simp
   | succ n IH =>
-    -- TODO: Golf away `h1` after Yaël PRs a lemma asserting this
-    have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) := by
-      rcases n.eq_zero_or_pos with (rfl | hn)
-      · simp
-      simp_rw [← Ico_add_one_add_one_eq_Ioc, Ico_insert_right (add_le_add_right hn.le 1),
-        Ico_add_one_right_eq_Icc]
-    simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, IH,
-      Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
+    simp [Nat.succ_div, add_ite, add_zero, filter_insert, apply_ite card, IH,
+      Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n),
+      ← Finset.insert_Ioc_right_eq_Ioc_add_one (zero_le _)]
 
 /-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.
 See `Nat.card_multiples` for a "shifted-by-one" version. -/
 lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} = N / n := by
   induction N with
-    | zero => simp [Finset.filter_false_of_mem]
-    | succ N ih =>
-        rw [Finset.range_add_one, Finset.filter_insert]
-        by_cases h : n ∣ N.succ
-        · simp [h, succ_div_of_dvd, ih]
-        · simp [h, succ_div_of_not_dvd, ih]
+  | zero => simp [Finset.filter_false_of_mem]
+  | succ N ih =>
+    rw [Finset.range_add_one, Finset.filter_insert]
+    by_cases h : n ∣ N.succ
+    · simp [h, succ_div_of_dvd, ih]
+    · simp [h, succ_div_of_not_dvd, ih]
 
 end Nat

@@ -46,7 +46,7 @@ for `mₐ = μ {x | ‖x‖ ≤ a}`, `μ {x | t n < ‖x‖} ≤ mₐ * exp (- l
 We cut the space into annuli `{x | t n < ‖x‖ ≤ t n + 1}` and bound the integral separately on
 each annulus. On that set the function `exp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)` is bounded by
 `exp (logRatio c * a⁻¹ ^ 2 * t (n + 1) ^ 2)`, which is in turn less than
-`exp (2⁻¹ * log (c / (1 - c)) * 2 ^ n)` (from the definiton of the threshold `t` and `logRatio c`).
+`exp (2⁻¹ * log (c / (1 - c)) * 2 ^ n)` (from the definition of the threshold `t` and `logRatio c`).
 The measure of the annulus is bounded by `μ {x | t n < ‖x‖}`, for which we derived an upper bound
 above. The function gets exponentially large, but `μ {x | t n < ‖x‖}` decreases even faster, so the
 integral is bounded by a quantity of the form `exp (- u * 2 ^ n)` for `u>0`.
@@ -86,7 +86,7 @@ lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {
     simp only [tendsto_atTop_atTop_iff_of_monotone ht_mono.monotone] at ht_tendsto
     exact ht_tendsto x
   have h' m := Nat.find_min h (m := m)
-  simp only [not_le] at h' hx
+  simp only [not_le] at h'
   exact ⟨Nat.find h - 1, h' _ (by simp [hx]), by simp [Nat.find_spec h, hx]⟩
 
 end Aux
@@ -141,10 +141,8 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
       nth_rw 1 [← Real.sq_sqrt (by simp : (0 : ℝ) ≤ 2)]
       rw [pow_two, mul_inv, mul_assoc, inv_mul_cancel₀ (by positivity), mul_one]
     congr! with p
-    · rw [← sub_eq_add_neg, ← smul_sub, norm_smul, div_eq_inv_mul, div_eq_inv_mul]
-      congr
-    · rw [← smul_add, norm_smul, div_eq_inv_mul, div_eq_inv_mul]
-      congr
+    · rw [← sub_eq_add_neg, ← smul_sub, norm_smul, div_eq_inv_mul, div_eq_inv_mul, h_twos]
+    · rw [← smul_add, norm_smul, div_eq_inv_mul, div_eq_inv_mul, h_twos]
   _ ≤ (μ.prod μ) {p | (b - a) / √2 < ‖p.1‖ ∧ (b - a) / √2 < ‖p.2‖} := by
     -- The rotated bands are contained in quadrants.
     refine measure_mono fun p ↦ ?_
@@ -240,8 +238,7 @@ lemma measure_gt_normThreshold_le_rpow [IsProbabilityMeasure μ]
     _ ≤ c⁻¹ * (c * ((1 - c) / c) ^ 2 ^ n) ^ 2 := by gcongr
     _ = c * ((1 - c) / c) ^ 2 ^ (n + 1) := by
       rw [mul_pow, ← pow_mul, ← mul_assoc, pow_two, ← mul_assoc,
-        ENNReal.inv_mul_cancel hc_pos.ne' hc_lt_top.ne, one_mul]
-      congr
+        ENNReal.inv_mul_cancel hc_pos.ne' hc_lt_top.ne, one_mul, pow_add, pow_one]
 
 lemma measure_gt_normThreshold_le_exp [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
@@ -282,11 +279,11 @@ lemma logRatio_pos {c : ℝ≥0∞} (hc_gt : (2 : ℝ≥0∞)⁻¹ < c) (hc_lt :
     rwa [inv_eq_one_div, ENNReal.div_lt_iff (by simp) (by simp), mul_comm] at hc_gt
 
 lemma logRatio_nonneg {c : ℝ≥0∞} (hc_ge : (2 : ℝ≥0∞)⁻¹ ≤ c) (hc_le : c ≤ 1) : 0 ≤ logRatio c := by
-  by_cases hc1 : c = 2⁻¹
-  · simp [logRatio, hc1]
-  by_cases hc2 : c = 1
-  · simp [logRatio, hc2]
-  exact (logRatio_pos (lt_of_le_of_ne' hc_ge hc1) (lt_of_le_of_ne hc_le hc2)).le
+  cases hc_ge.eq_or_lt'
+  · simp [logRatio, *]
+  cases hc_le.eq_or_lt'
+  · simp [logRatio, *]
+  exact (logRatio_pos ‹_› ‹_›).le
 
 lemma logRatio_mono {c d : ℝ≥0∞} (hc : (2 : ℝ≥0∞)⁻¹ < c) (hd : d < 1) (h : c ≤ d) :
     logRatio c ≤ logRatio d := by
@@ -492,8 +489,17 @@ theorem lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self [IsProbabilityMeasu
     ∫⁻ x, .ofReal (rexp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ
       ≤ .ofReal (rexp (logRatio c))
         + ∑' n, .ofReal (rexp (- 2⁻¹ * Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
-  by_cases ha : a = 0
-  · simp only [ha, inv_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, mul_zero,
+  have ha : 0 ≤ a := by
+    by_contra! h_neg
+    have : {x : E | ‖x‖ ≤ a} = ∅ := by
+      ext x
+      simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_le]
+      exact h_neg.trans_le (norm_nonneg _)
+    simp only [this, measure_empty, nonpos_iff_eq_zero] at hc
+    simp [hc] at hc_gt
+  cases ha.eq_or_lt' with
+  | inl ha =>
+    simp only [ha, inv_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, mul_zero,
       zero_mul, Real.exp_zero, ENNReal.ofReal_one, lintegral_const, measure_univ, mul_one,
       ENNReal.toReal_div, neg_mul]
     refine le_add_right ?_
@@ -501,15 +507,7 @@ theorem lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self [IsProbabilityMeasu
     gcongr
     simp only [Real.one_le_exp_iff]
     exact logRatio_nonneg hc_gt.le (hc.trans prob_le_one)
-  have ha_pos : 0 < a := by
-    refine lt_of_le_of_ne' ?_ ha
-    by_contra h_neg
-    have : {x : E | ‖x‖ ≤ a} = ∅ := by
-      ext x
-      simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_le]
-      exact (not_le.mp h_neg).trans_le (norm_nonneg _)
-    simp only [this, measure_empty, nonpos_iff_eq_zero] at hc
-    simp [hc] at hc_gt
+  | inr ha_pos =>
   refine (lintegral_exp_mul_sq_norm_le_mul h_rot ha_pos hc hc_gt).trans ?_
   conv_rhs => rw [← one_mul (ENNReal.ofReal _ + _)]
   gcongr
