@@ -68,6 +68,9 @@ protected theorem Walk.reachable {G : SimpleGraph V} {u v : V} (p : G.Walk u v) 
 protected theorem Adj.reachable {u v : V} (h : G.Adj u v) : G.Reachable u v :=
   h.toWalk.reachable
 
+theorem adj_le_reachable (G : SimpleGraph V) : G.Adj ≤ G.Reachable :=
+  fun _ _ ↦ Adj.reachable
+
 @[refl]
 protected theorem Reachable.refl (u : V) : G.Reachable u u := ⟨Walk.nil⟩
 
@@ -165,6 +168,9 @@ def reachabilitySet (G : SimpleGraph V) := Sym2.fromRel G.reachable_is_equivalen
 theorem mem_reachabilitySet_iff_reachable {u v : V} :
     s(u, v) ∈ G.reachabilitySet ↔ G.Reachable u v := by
   rfl
+
+theorem edgeSet_subset_reachabilitySet : G.edgeSet ⊆ G.reachabilitySet :=
+  Sym2.fromRel_mono G.symm _ G.adj_le_reachable
 
 theorem reachabilitySet_mono {G G' : SimpleGraph V} (h : G ≤ G') :
     G.reachabilitySet ⊆ G'.reachabilitySet :=
