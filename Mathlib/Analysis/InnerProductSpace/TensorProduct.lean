@@ -319,7 +319,7 @@ def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
   (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
 
 variable (𝕜 E F G) in
-/-- The linear isometry equivalence version of `TensorProduct.lid`. -/
+/-- The linear isometry equivalence version of `TensorProduct.assoc`. -/
 def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[𝕜] (F ⊗[𝕜] G) :=
   TensorProduct.assoc 𝕜 E F G |>.isometryOfInner inner_assoc_assoc
 
