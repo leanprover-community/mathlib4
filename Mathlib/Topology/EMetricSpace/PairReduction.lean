@@ -59,7 +59,7 @@ inductively as follows (see `logSizeBallSeq`):
 * `Vᵢ₊ᵢ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁`
   (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`.
 
-Then `Vᵢ` is a strictly decreasing sequence (see `card_finset_logSizeBallSeq_add_one_lt `) until
+Then `Vᵢ` is a strictly decreasing sequence (see `card_finset_logSizeBallSeq_add_one_lt`) until
 `Vᵢ` is empty. In particular `Vᵢ = ∅` for `i ≥ |J|`
 (see `card_finset_logSizeBallSeq_card_eq_zero`).
 
