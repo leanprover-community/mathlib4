@@ -18,6 +18,8 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 open Real MeasureTheory MeasureTheory.Measure
 open scoped FourierTransform
 
+local notation "⟪" x ", " y "⟫" => inner ℂ x y
+
 namespace SchwartzMap
 
 variable
@@ -124,26 +126,19 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 
 /-- Plancherel's theorem for Schwartz functions. -/
 theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
-    ∫ ξ, inner ℂ (𝓕 f ξ) (𝓕 g ξ) = ∫ x, inner ℂ (f x) (g x) :=
+    ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
-  simp_rw [norm_sq_eq_re_inner (𝕜 := ℂ)]
-  have : ∀ (g : 𝓢(V, H)), Integrable (fun x ↦ inner ℂ (g x) (g x)) volume := by
-    intro g
-    rw [← Integrable.re_im_iff]
-    constructor
-    · simp_rw [← norm_sq_eq_re_inner (𝕜 := ℂ)]
-      rw [← MeasureTheory.memLp_two_iff_integrable_sq_norm (g.continuous.aestronglyMeasurable)]
-      exact memLp g 2 volume
-    · simp
-  rw [integral_re (this f), integral_re, integral_inner_fourier_fourier f f]
-  exact this (fourierTransformCLM ℂ f)
+  apply Complex.ofRealLI.injective
+  simp only [← LinearIsometry.integral_comp_comm]
+  convert integral_inner_fourier_fourier f f <;>
+  simp [inner_self_eq_norm_sq_to_K]
 
 theorem inner_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
-    inner ℂ ((fourierTransformCLM ℂ f).toLp 2) ((fourierTransformCLM ℂ f).toLp 2) =
-    inner ℂ (f.toLp 2) (f.toLp 2) := by
+    ⟪(fourierTransformCLM ℂ f).toLp 2, (fourierTransformCLM ℂ f).toLp 2⟫ =
+    ⟪f.toLp 2, f.toLp 2⟫ := by
   simp only [inner_toL2_toL2_eq]
   exact integral_sesq_fourier_fourier f f (innerSL ℂ)
 
