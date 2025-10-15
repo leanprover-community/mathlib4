@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.Interval.Set.InitialSeg

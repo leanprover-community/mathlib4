@@ -2485,6 +2485,11 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Kernels
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
