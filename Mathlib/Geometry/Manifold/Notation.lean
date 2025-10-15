@@ -170,8 +170,9 @@ scoped elab:max "T% " t:term:arg : term => do
         -- Check that `x` is not a bound variable in `tgt`!
         if tgtHasLooseBVars then
           throwError "Attempted to fall back to creating a section of the trivial bundle out of \
-            ({e} : {etype}) as a non-dependent function, but return type {tgt} depends on the bound
-            variable ({x} : {base}).\nHint: applying the `T%` elaborator twice makes no sense."
+            (`{e}` : `{etype}`) as a non-dependent function, but return type `{tgt}` depends on the
+            bound variable (`{x}` : `{base}`).\n\
+            Hint: applying the `T%` elaborator twice makes no sense."
         let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
         let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
         mkLambdaFVars #[x] body
@@ -202,7 +203,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
         catch ex =>
           trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
           throw ex
-      trace[Elab.DiffGeo.MDiff] "Found model: {e}"
+      trace[Elab.DiffGeo.MDiff] "Found model: `{e}`"
       return e
   catch _ =>
     -- Restore infotrees to prevent any stale hovers, code actions, etc.
@@ -243,7 +244,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"NormedSpace"   fromNormedSpace   then return m
   if let some m ← tryStrategy m!"Manifold"      fromManifold      then return m
   if let some m ← tryStrategy m!"NormedField"   fromNormedField   then return m
-  throwError "Could not find a model with corners for {e}"
+  throwError "Could not find a model with corners for `{e}`"
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
@@ -255,11 +256,11 @@ where
       if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
       if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
       throwError "Having a TotalSpace as source is not yet supported"
-    | _ => throwError "{e} is not a `Bundle.TotalSpace`."
+    | _ => throwError "`{e}` is not a `Bundle.TotalSpace`."
   /-- Attempt to use the provided `baseInfo` to find a model. -/
   fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
     if let some (src, srcI) := baseInfo then
-      trace[Elab.DiffGeo.MDiff] "Using base info {src}, {srcI}"
+      trace[Elab.DiffGeo.MDiff] "Using base info `{src}`, `{srcI}`"
       let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
           match_expr type with
           | NormedSpace K E _ _ =>
@@ -267,7 +268,7 @@ where
               trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"; return some K
             else return none
           | _ => return none
-        | throwError "Couldn't find a `NormedSpace` structure on {F} among local instances."
+        | throwError "Couldn't find a `NormedSpace` structure on `{F}` among local instances."
       let kT : Term ← Term.exprToSyntax K
       let srcIT : Term ← Term.exprToSyntax srcI
       let FT : Term ← Term.exprToSyntax F
@@ -292,7 +293,7 @@ where
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
       Term.elabTerm resTerm none
-    | _ => throwError "{e} is not a `TangentBundle`"
+    | _ => throwError "`{e}` is not a `TangentBundle`"
   /-- Attempt to find the trivial model on a normed space. -/
   fromNormedSpace : TermElabM Expr := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
@@ -301,8 +302,8 @@ where
           if ← withReducible (pureIsDefEq E e) then return some (inst, K)
           else return none
         | _ => return none
-      | throwError "Couldn't find a `NormedSpace` structure on {e} among local instances."
-    trace[Elab.DiffGeo.MDiff] "{e} is a normed space over the field `{K}`"
+      | throwError "Couldn't find a `NormedSpace` structure on `{e}` among local instances."
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over the field `{K}`"
     mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
@@ -326,7 +327,7 @@ where
         | ModelWithCorners _ _ _ _ _ H' _ => do
           if ← withReducible (pureIsDefEq H' H) then return some fvar else return none
         | _ => return none
-      | throwError "Couldn't find a `ModelWithCorners` with model space {H} in the local context."
+      | throwError "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
     return m
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
@@ -347,8 +348,8 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
   | .forallE _ src tgt _ =>
     if tgt.hasLooseBVars then
       -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
-      throwError "Term {e} is a dependent function, of type {etype}\nHint: you can use the `T%` \
-        elaborator to convert a dependent function to a non-dependent one"
+      throwError "Term `{e}` is a dependent function, of type `{etype}`\nHint: you can use \
+        the `T%` elaborator to convert a dependent function to a non-dependent one"
     let srcI ← findModel src
     if let some es := es then
       let estype ← inferType es
@@ -356,8 +357,8 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       `estype` are acceptable.
       TODO: consider attempting to coerce `es` to a `Set`. -/
       if !(← isDefEq estype <| ← mkAppM ``Set #[src]) then
-        throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
-          the set {es} : {estype}"
+        throwError "The domain `{src}` of `{e}` is not definitionally equal to the carrier type of \
+          the set `{es}` : `{estype}`"
     let tgtI ← findModel tgt (src, srcI)
     return (srcI, tgtI)
   | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
