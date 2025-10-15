@@ -1377,6 +1377,12 @@ theorem reverse_transfer (hp) :
 
 end Walk
 
+def Walk.induce {G : SimpleGraph V} {u v : V} (s : Set V) :
+    (p : G.Walk u v) → (h : ∀ w, w ∈ p.support → w ∈ s) →
+    (G.induce s).Walk ⟨u, h _ (p.start_mem_support)⟩ ⟨v, h _ (p.end_mem_support)⟩
+  | nil, _ => nil
+  | cons' x y z hxy pyz, _ => cons (by exact hxy) (pyz.induce s (by simp_all))
+
 /-! ## Deleting edges -/
 
 namespace Walk
