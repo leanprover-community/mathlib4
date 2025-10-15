@@ -317,7 +317,8 @@ def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
-     -- this is needed for packages using the module system:
+    (packageDir / LIBDIR / path.withExtension "ir", true),
+    (packageDir / LIBDIR / path.withExtension "ir.hash", true),
     (packageDir / LIBDIR / path.withExtension "olean.private", false),
     (packageDir / LIBDIR / path.withExtension "olean.private.hash", false),
     (packageDir / LIBDIR / path.withExtension "olean.server", false),
