@@ -75,7 +75,7 @@ lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := b
   simpa [isRestricted_iff] using hf
 
 lemma smul {f : PowerSeries R} (hf : IsRestricted c f) (r : R) : IsRestricted c (r • f) := by
-  if h : r = 0 then (simpa [h] using zero c) else
+  if h : r = 0 then simpa [h] using zero c else
   simp_rw [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at ⊢ hf
   intro ε _
   obtain ⟨n, hn⟩ := hf (ε / ‖r‖) (by positivity)
@@ -92,7 +92,7 @@ def convergenceSet (f : PowerSeries R) : Set ℝ := {‖coeff i f‖ * c^i | i :
 
 open Finset in
 lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
-  BddAbove (convergenceSet c f) := by
+    BddAbove (convergenceSet c f) := by
   simp_rw [isRestricted_iff] at hf
   obtain ⟨N, hf⟩ := by simpa using (hf 1)
   rw [bddAbove_def, convergenceSet]
