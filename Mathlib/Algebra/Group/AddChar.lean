@@ -93,6 +93,8 @@ instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
   coe_injective' φ ψ h := by cases φ; cases ψ; congr
 
+initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
+
 @[ext] lemma ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
   DFunLike.ext f g h
 
