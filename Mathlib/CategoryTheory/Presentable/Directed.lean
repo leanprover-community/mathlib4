@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
@@ -15,8 +16,8 @@ universe w
 
 lemma hasCardinalLT_of_finite
     (X : Type*) [Finite X] (κ : Cardinal) (hκ : Cardinal.aleph0 ≤ κ) :
-    HasCardinalLT X κ := by
-  exact HasCardinalLT.of_le (by rwa [hasCardinalLT_aleph0_iff]) hκ
+    HasCardinalLT X κ :=
+  .of_le (by rwa [hasCardinalLT_aleph0_iff]) hκ
 
 lemma hasCardinalLT_punit (κ : Cardinal) (hκ : Cardinal.aleph0 ≤ κ) :
     HasCardinalLT PUnit κ :=
@@ -153,9 +154,75 @@ def Diagram.single (j : J) : Diagram J κ where
       comm := by rintro _ _ f hf; obtain ⟨⟨⟩⟩ := hf; simp }
   uniq_terminal := by rintro _ ⟨⟨⟩⟩; rfl
 
-variable (hJ : ∀ (e : J), (∀ (j : J), Nonempty (j ⟶ e)) → False)
+variable {J κ} in
+@[simps]
+def PreDiagram.iSup {ι : Type*} (D : ι → PreDiagram J κ) (hι : HasCardinalLT ι κ) :
+    PreDiagram J κ where
+  W := ⨆ (i : ι), (D i).W
+  P := ⨆ (i : ι), (D i).P
+  src hf := by
+    simp at hf ⊢
+    obtain ⟨i, hi⟩ := hf
+    exact ⟨i, (D i).src hi⟩
+  tgt hf := by
+    simp at hf ⊢
+    obtain ⟨i, hi⟩ := hf
+    exact ⟨i, (D i).tgt hi⟩
+  hW := sorry
+  hP := by
+    rw [hasCardinalLT_iff_cardinal_mk_lt]
+    sorry
+
+variable {J κ} in
+@[simps]
+def PreDiagram.max (D₁ D₂ : PreDiagram J κ) :
+    PreDiagram J κ where
+  W := D₁.W ⊔ D₂.W
+  P := D₁.P ⊔ D₂.P
+  src := by
+    rintro _ _ _ (h | h)
+    · exact Or.inl (D₁.src h)
+    · exact Or.inr (D₂.src h)
+  tgt := by
+    rintro _ _ _ (h | h)
+    · exact Or.inl (D₁.tgt h)
+    · exact Or.inr (D₂.tgt h)
+  hW := sorry
+  hP := sorry
+
+variable [IsCardinalFiltered J κ]
+  (hJ : ∀ (e : J), ∃ (m : J) (_ : e ⟶ m), IsEmpty (m ⟶ e))
+
+include hJ in
+lemma isCardinalFiltered : IsCardinalFiltered (Diagram J κ) κ :=
+  isCardinalFiltered_preorder _ _ (fun ι D hι ↦ by
+    simp only [← hasCardinalLT_iff_cardinal_mk_lt] at hι
+    choose m₀ t₀ hm₀ using fun i ↦ hJ (D i).e
+    let m₁ := IsCardinalFiltered.max m₀ hι
+    let t₁ (i : ι) : m₀ i ⟶ m₁ := IsCardinalFiltered.toMax m₀ hι i
+    let u (i : ι) : (D i).e ⟶ m₁ := t₀ i ≫ t₁ i
+    obtain ⟨m₂, t₂, hm₂⟩ : ∃ (m₂ : J) (t₂ : m₁ ⟶ m₂),
+      ∀ (i₁ i₂ : ι) (j : J) (hj₁ : (D i₁).P j) (hj₂ : (D i₂).P j),
+        (D i₁).terminal.lift hj₁ ≫ u i₁ ≫ t₂ = (D i₂).terminal.lift hj₂ ≫ u i₂ ≫ t₂ := by
+      sorry
+    let φ (x : (Σ (i : ι), (Subtype (D i).P))) : (D x.1).e ⟶ m₂ :=
+      (D x.1).terminal.lift (D x.1).terminal.prop ≫ u x.1 ≫ t₂
+    let D₀ := PreDiagram.iSup (fun i ↦ (D i).toPreDiagram) hι
+    let D₁ := D₀.max (.single m₂)
+    let D₂ : PreDiagram J κ :=
+      { W := D₁.W ⊔ .ofHoms φ
+        P := D₁.P
+        src := sorry
+        tgt := sorry
+        hW := sorry
+        hP := sorry }
+    sorry)
 
 end ExistsDirected
+
+lemma exists_cardinal_directed [Fact κ.IsRegular] [IsCardinalFiltered J κ] :
+    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
+      (F : α ⥤ J), F.Final := sorry
 
 end IsCardinalFiltered
 
