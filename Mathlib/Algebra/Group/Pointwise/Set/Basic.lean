@@ -157,6 +157,10 @@ section Inv
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
+theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
   Iff.rfl
 
