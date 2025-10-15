@@ -89,7 +89,8 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
 
 @[simp]
 lemma implicitFunctionData_prodFun (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.prodFun h.implicitFunctionData.pt = (a.1, f a) := rfl
+    (h.implicitFunctionData.leftFun h.implicitFunctionData.pt,
+      h.implicitFunctionData.rightFun h.implicitFunctionData.pt) = (a.1, f a) := rfl
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
