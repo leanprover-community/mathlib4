@@ -27,21 +27,6 @@ neighbourhood of `a`. Furthoremore, `φ` is $C^n$ at `a`.
 implicit function, inverse function
 -/
 
-section
--- move somewhere
-variable {α β γ δ : Type*} {ι : Sort*}
-variable {s : Set α} {t : Set β} {f : Filter α} {g : Filter β}
-
-theorem Filter.eventually_prod_iff_exists_mem {p : α × β → Prop} :
-    (∀ᶠ x in f ×ˢ g, p x) ↔ ∃ s ∈ f, ∃ t ∈ g, ∀ x ∈ s, ∀ y ∈ t, p ⟨x, y⟩ := by
-  rw [Filter.eventually_iff_exists_mem]
-  refine ⟨fun ⟨st, hst, h⟩ ↦ ?_, fun ⟨s, hs, t, ht, h⟩ ↦ ?_⟩
-  · have ⟨s, hs, t, ht, hp⟩ := Filter.mem_prod_iff.mp hst
-    exact ⟨s, hs, t, ht, fun x hx y hy ↦ h _ <| hp ⟨hx, hy⟩⟩
-  · exact ⟨s ×ˢ t, Filter.prod_mem_prod hs ht, fun ⟨x, y⟩ ⟨hx, hy⟩ ↦ h x hx y hy⟩
-
-end
-
 namespace ImplicitFunctionData
 -- goes in the general theory
 
@@ -53,7 +38,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
 theorem contDiff_implicitFunction (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt)
     (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : 1 ≤ n) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
-  rw [implicitFunction, Function.uncurry_curry, toPartialHomeomorph,
+  rw [implicitFunction, Function.uncurry_curry, toOpenPartialHomeomorph,
     ← HasStrictFDerivAt.localInverse_def]
   exact (hl.prodMk hr).to_localInverse (φ.hasStrictFDerivAt |>.hasFDerivAt) hn
 
@@ -113,8 +98,6 @@ lemma implicitFunctionAux_fst (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), (h.implicitFunctionAux p.1 p.2).1 = p.1 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.fst
 
--- lemma for `implicitFunctionAux_snd` but only at `(x, f a)`
-
 lemma rightFun_implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), f (h.implicitFunctionAux p.1 p.2) = p.2 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
@@ -146,7 +129,8 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   · rw [h1]
   · rfl
 
-/-- If `f` is $C^n$ at `(x, y)`, then its implicit function around `x` is also $C^n$ at `x`. -/
+/-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
+also $C^n$ at `x`. -/
 theorem contDiff_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ContDiffAt 𝕜 n h.implicitFunction a.1 := by
   have := h.implicitFunctionData.contDiff_implicitFunction contDiffAt_fst h.contDiffAt h.one_le
