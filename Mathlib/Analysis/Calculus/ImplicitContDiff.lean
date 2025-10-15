@@ -28,7 +28,6 @@ implicit function, inverse function
 -/
 
 namespace ImplicitFunctionData
--- goes in the general theory
 
 variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [CompleteSpace E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
