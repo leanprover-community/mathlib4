@@ -199,7 +199,7 @@ lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) := isEmbedding_coe
 end Coe
 
 @[simp]
-lemma untopA_coe_enat (n : ℕ) : WithTop.untopA (n : ℕ∞) = n := rfl
+lemma untopD_coe_enat (d n : ℕ) : WithTop.untopD d (n : ℕ∞) = n := rfl
 
 section ContinuousUnTop
 
