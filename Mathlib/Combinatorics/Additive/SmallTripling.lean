@@ -53,10 +53,10 @@ private lemma inductive_claim_mul (hm : 3 ≤ m)
     calc
       (#A * #(π ε) : ℝ)
         = #A * #(V⁻¹ * W) := by
-        simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def, mul_assoc]
+        simp [π, V, W, List.finRange_succ, Fin.tail, Function.comp_def, mul_assoc]
       _ ≤ #(A * V) * #(A * W) := by norm_cast; exact ruzsa_triangle_inequality_invMul_mul_mul ..
       _ = #(π ![1, -ε 1, -ε 0]) * #(π <| Fin.cons 1 <| tail <| tail ε) := by
-        simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def]
+        simp [π, V, W, List.finRange_succ, Fin.tail, Function.comp_def]
       _ ≤ (k * #A) * (k ^ (m - 1) * #A) := by
         gcongr
         · exact h ![1, -ε 1, -ε 0] fun i ↦ by fin_cases i <;> simp [hε]
@@ -142,7 +142,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
       (hA.trans' <| by norm_cast; exact card_le_card_pow (by simp))
   rw [pow_mul]
   refine inductive_claim_mul hm (fun δ hδ ↦ ?_) ε hε
-  simp only [finRange_succ_eq_map, Nat.reduceAdd, isValue, finRange_zero, map_nil, List.map_cons,
+  simp only [finRange_succ, Nat.reduceAdd, isValue, finRange_zero, map_nil, List.map_cons,
     succ_zero_eq_one, succ_one_eq_two, List.prod_cons, prod_nil, mul_one, ← mul_assoc]
   simp only [zero_le_one, abs_eq, Int.reduceNeg, forall_iff_succ, isValue, succ_zero_eq_one,
     succ_one_eq_two, IsEmpty.forall_iff, and_true] at hδ
