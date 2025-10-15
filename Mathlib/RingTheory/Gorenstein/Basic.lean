@@ -161,7 +161,11 @@ instance (f : R →+* S) : (ModuleCat.extendScalars'.{v'} f).IsLeftAdjoint :=
 
 variable [UnivLE.{v, v'}] [Small.{v'} S]
 
-instance (f : R →+* S) : (extendScalars' f).Additive := sorry
+instance (f : R →+* S) : (extendScalars' f).Additive where
+  map_add {X Y} f g := by
+    simp only [extendScalars', ExtendScalars'.map', hom_add, LinearMap.baseChange_add]
+    ext x
+    simp
 
 lemma extendScalars'_map_shortExact (f : R →+* S) (flat : f.Flat)
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.ShortExact) :
