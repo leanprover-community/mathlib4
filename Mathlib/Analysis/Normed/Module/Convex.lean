@@ -64,8 +64,12 @@ theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r)
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-theorem convexHull_sphere_zero_eq_closedBall [Nontrivial F] {r : ℝ} (hr : 0 ≤ r) :
-    convexHull ℝ (sphere (0 : F) r) = closedBall 0 r := by
+open Pointwise in
+theorem convexHull_sphere_eq_closedBall [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
+    convexHull ℝ (sphere x r) = closedBall x r := by
+  suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by
+    rw [← add_zero x, ← vadd_eq_add, ← vadd_sphere, convexHull_vadd,
+      this, vadd_closedBall_zero, vadd_eq_add, add_zero]
   ext x
   refine ⟨fun h ↦ mem_convexHull_iff.mp h (closedBall 0 r) sphere_subset_closedBall <|
     convex_closedBall 0 r, fun h ↦ mem_convexHull_iff.mpr ?_⟩
@@ -89,12 +93,6 @@ theorem convexHull_sphere_zero_eq_closedBall [Nontrivial F] {r : ℝ} (hr : 0 �
   have := StarConvex.smul_mem (hU.starConvex zero_mem) hz (by positivity) hr₁
   rwa [hz_def, ← smul_assoc, smul_eq_mul, ← mul_assoc, mul_comm, mul_comm r⁻¹, mul_assoc _ r⁻¹,
     inv_mul_cancel₀ hr₀, mul_one, inv_mul_cancel₀ (by simp_all), one_smul] at this
-
-open Pointwise in
-theorem convexHull_sphere_eq_closedBall [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
-    convexHull ℝ (sphere x r) = closedBall x r := by
-  rw [← add_zero x, ← vadd_eq_add, ← vadd_sphere, convexHull_vadd,
-    convexHull_sphere_zero_eq_closedBall hr, vadd_closedBall_zero, vadd_eq_add, add_zero]
 
 
 /-- Given a point `x` in the convex hull of `s` and a point `y`, there exists a point
