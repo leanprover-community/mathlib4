@@ -9,6 +9,12 @@ import Mathlib.CategoryTheory.Sites.Equivalence
 /-!
 # Instances
 
+In this file, we obtain `HasSheafify (coherentTopology LightProfinite.{u}) (Type u)`
+instance (and similarly for other concrete categories). These instances
+are not obtained automatically because `LightProfinite.{u}` is a large category,
+but as it is essentially small, the instances can be obtained using the results
+in the file `CategoryTheory.Sites.Equivalence`.
+
 -/
 
 universe u u' v
@@ -27,7 +33,7 @@ instance hasSheafify :
     HasSheafify (coherentTopology LightProfinite.{u}) A :=
   hasSheafifyEssentiallySmallSite _ _
 
-instance hasSheafifyType :
+instance hasSheafify_type :
     HasSheafify (coherentTopology LightProfinite.{u}) (Type u) :=
   hasSheafifyEssentiallySmallSite _ _
 
