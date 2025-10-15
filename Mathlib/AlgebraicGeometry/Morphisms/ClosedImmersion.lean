@@ -3,12 +3,10 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
+import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
-import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 import Mathlib.AlgebraicGeometry.ResidueField
-import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!

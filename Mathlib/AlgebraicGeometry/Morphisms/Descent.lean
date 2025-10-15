@@ -3,10 +3,8 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.CategoryTheory.MorphismProperty.Descent
 
 /-!
