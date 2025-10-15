@@ -273,6 +273,13 @@ lemma commIsometry_symm :
 @[simp] lemma toLinearEquiv_commIsometry :
     (commIsometry 𝕜 E F).toLinearEquiv = TensorProduct.comm 𝕜 E F := rfl
 
+@[simp] lemma norm_comm (x : E ⊗[𝕜] F) :
+    ‖TensorProduct.comm 𝕜 E F x‖ = ‖x‖ := commIsometry 𝕜 E F |>.norm_map x
+@[simp] lemma nnnorm_comm (x : E ⊗[𝕜] F) :
+    ‖TensorProduct.comm 𝕜 E F x‖₊ = ‖x‖₊ := commIsometry 𝕜 E F |>.nnnorm_map x
+@[simp] lemma enorm_comm (x : E ⊗[𝕜] F) :
+    ‖TensorProduct.comm 𝕜 E F x‖ₑ = ‖x‖ₑ := commIsometry 𝕜 E F |>.toLinearIsometry.enorm_map x
+
 @[simp] theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
     inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
   x.induction_on (by simp) (fun _ _ => y.induction_on (by simp)
@@ -292,6 +299,13 @@ def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
 
 @[simp] lemma toLinearEquiv_lidIsometry :
     (lidIsometry 𝕜 E).toLinearEquiv = TensorProduct.lid 𝕜 E := rfl
+
+@[simp] lemma norm_lid (x : 𝕜 ⊗[𝕜] E) :
+    ‖TensorProduct.lid 𝕜 E x‖ = ‖x‖ := lidIsometry 𝕜 E |>.norm_map x
+@[simp] lemma nnnorm_lid (x : 𝕜 ⊗[𝕜] E) :
+    ‖TensorProduct.lid 𝕜 E x‖₊ = ‖x‖₊ := lidIsometry 𝕜 E |>.nnnorm_map x
+@[simp] lemma enorm_lid (x : 𝕜 ⊗[𝕜] E) :
+    ‖TensorProduct.lid 𝕜 E x‖ₑ = ‖x‖ₑ := lidIsometry 𝕜 E |>.toLinearIsometry.enorm_map x
 
 @[simp] theorem inner_assoc_assoc (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     inner 𝕜 (TensorProduct.assoc 𝕜 E F G x) (TensorProduct.assoc 𝕜 E F G y) = inner 𝕜 x y :=
@@ -316,6 +330,13 @@ def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[𝕜] (F ⊗
 
 @[simp] lemma toLinearEquiv_assocIsometry :
     (assocIsometry 𝕜 E F G).toLinearEquiv = TensorProduct.assoc 𝕜 E F G := rfl
+
+@[simp] lemma norm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
+    ‖TensorProduct.assoc 𝕜 E F G x‖ = ‖x‖ := assocIsometry 𝕜 E F G |>.norm_map x
+@[simp] lemma nnnorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
+    ‖TensorProduct.assoc 𝕜 E F G x‖₊ = ‖x‖₊ := assocIsometry 𝕜 E F G |>.nnnorm_map x
+@[simp] lemma enorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
+    ‖TensorProduct.assoc 𝕜 E F G x‖ₑ = ‖x‖ₑ := assocIsometry 𝕜 E F G |>.toLinearIsometry.enorm_map x
 
 end isometry
 
