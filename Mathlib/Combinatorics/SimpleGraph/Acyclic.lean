@@ -254,4 +254,32 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   rw [← hv]
   exact h.minDegree_eq_one_of_nontrivial
 
+/-- The graph resulting from removing a vertex of degree one from a preconnected graph is
+preconnected. -/
+lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [DecidableEq V]
+    (hconn : G.Preconnected) {v : V} [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) :
+    (G.induce {v}ᶜ).Connected := by
+  obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_unique_adj.mp hdeg
+  refine (connected_iff _).mpr ⟨?_, ?_⟩
+  · intro w x
+    obtain ⟨pwu, hpwu⟩ := hconn.exists_isPath w u
+    obtain ⟨pux, hpux⟩ := hconn.exists_isPath u x
+    rw [Reachable, ← exists_true_iff_nonempty]
+    use ((pwu.append pux).toPath.val.induce {v}ᶜ ?_).copy (SetCoe.ext rfl) (SetCoe.ext rfl)
+    intro z hz
+    rw [Set.mem_compl_iff, Set.mem_singleton_iff]
+    obtain ⟨pwz, pzx, p_eq_pwzx⟩ := mem_support_iff_exists_append.mp hz
+    by_contra
+    subst_vars
+    refine List.nodup_iff_forall_not_duplicate.mp (pwu.append pux).toPath.nodup_support u ?_
+    rw [p_eq_pwzx, support_append, List.duplicate_iff_two_le_count, List.count_append]
+    have := List.one_le_count_iff.mpr (pwz.getVert_mem_support (pwz.length - 1))
+    simp only [hu _ (pwz.adj_penultimate (not_nil_of_ne (by aesop))).symm] at this
+    have := List.one_le_count_iff.mpr (pzx.snd_mem_tail_support (not_nil_of_ne (by aesop)))
+    rw [hu _ (pzx.adj_snd (not_nil_of_ne (by aesop)))] at this
+    cutsat
+  · rw [nonempty_subtype]
+    use u
+    aesop
+
 end SimpleGraph
