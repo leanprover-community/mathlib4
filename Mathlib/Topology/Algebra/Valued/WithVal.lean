@@ -163,11 +163,12 @@ section Equivalence
 /-! The uniform isomorphism between `WithVal v` and `WithVal w` when `v` and `w` are
 equivalent. -/
 
-variable {R Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀']
+variable {R Γ₀ Γ₀' : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+  [LinearOrderedCommGroupWithZero Γ₀'] {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
 
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` is order-isomorphic
 to `WithVal w`. -/
-def IsEquiv.orderRingIso [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀'} (h : v.IsEquiv w) :
+def IsEquiv.orderRingIso (h : v.IsEquiv w) :
     WithVal v ≃+*o WithVal w where
   __ := equivWithVal v w
   map_le_map_iff' := by
@@ -175,18 +176,15 @@ def IsEquiv.orderRingIso [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀
     simp [h.symm (equiv v a), le_def]
 
 @[simp]
-theorem IsEquiv.orderRingIso_apply [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
-    (h : v.IsEquiv w) (x : WithVal v) :
+theorem IsEquiv.orderRingIso_apply (h : v.IsEquiv w) (x : WithVal v) :
     h.orderRingIso x = (equivWithVal v w) x := rfl
 
 @[simp]
-theorem IsEquiv.orderRingIso_symm_apply [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
-    (h : v.IsEquiv w) (x : WithVal w) :
+theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
     h.orderRingIso.symm x = (equivWithVal v w).symm x := rfl
 
 -- TODO: remove surjectivity when we have bases for Valued's ValuativeRel
-theorem IsEquiv.uniformContinuous_equivWithVal [Ring R] {v : Valuation R Γ₀}
-    {w : Valuation R Γ₀'} (hw : Function.Surjective w) (h : v.IsEquiv w) :
+theorem IsEquiv.uniformContinuous_equivWithVal (hw : Function.Surjective w) (h : v.IsEquiv w) :
     UniformContinuous (equivWithVal v w) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
@@ -203,9 +201,8 @@ theorem IsEquiv.uniformContinuous_equivWithVal [Ring R] {v : Valuation R Γ₀}
 
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/
-def IsEquiv.uniformEquiv [DivisionRing R] {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
-    (hv : Function.Surjective v) (hw : Function.Surjective w) (h : v.IsEquiv w) :
-    WithVal v ≃ᵤ WithVal w where
+def IsEquiv.uniformEquiv (hv : Function.Surjective v) (hw : Function.Surjective w)
+    (h : v.IsEquiv w) : WithVal v ≃ᵤ WithVal w where
   __ := equivWithVal v w
   uniformContinuous_toFun := h.uniformContinuous_equivWithVal hw
   uniformContinuous_invFun := h.symm.uniformContinuous_equivWithVal hv
