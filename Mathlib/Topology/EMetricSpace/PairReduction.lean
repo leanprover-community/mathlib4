@@ -177,14 +177,14 @@ variable [DecidableEq T]
   * `Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁, rᵢ₊₁` is
     the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`. -/
 noncomputable
-def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T :=
-  Nat.rec ({finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c})
-    (fun _ struct ↦
-      let V' := struct.finset \ struct.smallBall c
-      let t' := if hV' : V'.Nonempty then hV'.choose else struct.point
-      { finset := V',
-        point := t',
-        radius := logSizeRadius t' V' a c })
+def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T
+  | 0 => {finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c}
+  | n + 1 =>
+    let V' := (logSizeBallSeq J hJ a c n).finset \ ((logSizeBallSeq J hJ a c n).smallBall c)
+    let t' := if hV' : V'.Nonempty then hV'.choose else (logSizeBallSeq J hJ a c n).point
+    { finset := V',
+      point := t',
+      radius := logSizeRadius t' V' a c }
 
 lemma finset_logSizeBallSeq_zero (hJ : J.Nonempty) :
     (logSizeBallSeq J hJ a c 0).finset = J := rfl
