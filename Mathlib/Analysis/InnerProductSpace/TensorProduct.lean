@@ -22,22 +22,22 @@ inner product spaces.
 ## Main definitions:
 
 * `TensorProduct.instNormedAddCommGroup`: the normed additive group structure on tensor products,
-where `‖x ⊗ₜ y‖ = ‖x‖ * ‖y‖`.
+  where `‖x ⊗ₜ y‖ = ‖x‖ * ‖y‖`.
 * `TensorProduct.instInnerProductSpace`: the inner product space structure on tensor products, where
-`⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`.
+  `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`.
 * `TensorProduct.mapInclLinearIsometry`: the linear isometry version of `TensorProduct.mapIncl`.
 * `TensorProduct.commLinearIsometryEquiv`: the linear isometry version of `TensorProduct.comm`.
 * `TensorProduct.lidLinearIsometryEquiv`: the linear isometry version of `TensorProduct.lid`.
 * `TensorProduct.assocLinearIsometryEquiv`: the linear isometry version of `TensorProduct.assoc`.
 * `OrthonormalBasis.tensorProduct`: the orthonormal basis of the tensor product of two orthonormal
-bases.
+  bases.
 
 ## TODO:
 
 * Define the continuous linear map version of `TensorProduct.map`.
 * Complete space of tensor products.
 * Define the normed space without needing inner products, this should be analogous to
-`Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.
+  `Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.
 
 -/
 
@@ -186,11 +186,9 @@ protected theorem ext_iff_inner_left {x y : E ⊗[𝕜] F} :
 See also `ext_iff_inner_right_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
 theorem ext_iff_inner_right_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) = inner 𝕜 y (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) := by
-  simp_rw [← @sub_eq_zero 𝕜 _ _ (inner _ _ _), ← inner_sub_left]
-  rw [← sub_eq_zero]
-  exact ⟨fun h a b => by simp [h, inner_zero_left], fun h => TensorProduct.ext_iff_inner_right.mpr
-    fun z b => z.induction_on (by simp) (by simp [h])
-    fun c d hc hd => by simp [add_tmul, inner_add_right, hc, hd]⟩
+  refine ⟨fun h _ _ _ ↦ h ▸ rfl, fun h ↦ ?_⟩
+  rw [← innerSL_inj (𝕜 := 𝕜), ← ContinuousLinearMap.coe_inj]
+  exact TensorProduct.ext_threefold h
 
 /-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪a ⊗ₜ b ⊗ₜ c, x⟫ = ⟪a ⊗ₜ b ⊗ₜ c, y⟫` for all `a, b, c`.
 
@@ -310,7 +308,7 @@ theorem ext_iff_inner_left_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
 
 end TensorProduct
 
-section onb
+section orthonormal
 variable {ι₁ ι₂ : Type*} [DecidableEq ι₁] [DecidableEq ι₂]
 
 open Module
@@ -367,4 +365,4 @@ lemma coe_tensorProduct (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : Orthonorm
   ext; rw [tensorProduct_apply']
 
 end OrthonormalBasis
-end onb
+end orthonormal
