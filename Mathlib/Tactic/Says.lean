@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
-import Qq.Match
+import Qq.MatchImpl
 
 /-!
 # The `says` tactic combinator.
