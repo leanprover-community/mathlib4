@@ -326,14 +326,11 @@ theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
     IsReal (φ.comp (algebraMap K L)) ↔ IsReal φ := by
   aesop (add simp [IsReal.comp])
 
-variable {K} (L) (ψ) [Fintype (L →+* ℂ)]
+variable {K} (L) (ψ)
 
-open scoped Classical in
-noncomputable def mixedEmbeddingsOver : Finset (L →+* ℂ) := { φ | IsExtension ψ φ ∧ IsMixed K φ }
+noncomputable def mixedEmbeddingsOver : Set (L →+* ℂ) := { φ | IsExtension ψ φ ∧ IsMixed K φ }
 
-open scoped Classical in
-noncomputable def unmixedEmbeddingsOver : Finset (L →+* ℂ) :=
-  { φ | IsExtension ψ φ ∧ IsUnmixed K φ }
+noncomputable def unmixedEmbeddingsOver : Set (L →+* ℂ) := { φ | IsExtension ψ φ ∧ IsUnmixed K φ }
 
 variable {L} {ψ}
 
@@ -361,14 +358,12 @@ variable (L ψ)
 
 theorem unmixedEmbeddingsOver.disjoint_mixedEmbeddingsOver :
     Disjoint (unmixedEmbeddingsOver L ψ) (mixedEmbeddingsOver L ψ) := by
-  simpa [mixedEmbeddingsOver, unmixedEmbeddingsOver, Finset.disjoint_filter] using fun ψ _ h _ ↦ h
+  simpa [Set.disjoint_left, mixedEmbeddingsOver, unmixedEmbeddingsOver] using fun ψ _ h _ ↦ h
 
-open scoped Classical in
 theorem unmixedEmbeddingsOver.union_mixedEmbeddingsOver :
-    (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) =
-      ({ φ | IsExtension ψ φ} : Finset _) := by
-  rw [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Finset.filter_or]
-  exact Finset.filter_congr fun ψ _ ↦ by
+    (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) = { φ | IsExtension ψ φ } := by
+  rw [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
+  exact Set.setOf_inj.2 <| funext_iff.2 fun ψ ↦ by
     simp [isUnmixed_iff_not_isMixed, -not_and, and_or_left.symm, em']
 
 end Extension

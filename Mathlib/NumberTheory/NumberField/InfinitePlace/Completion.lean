@@ -225,6 +225,10 @@ instance : Algebra v.Completion w.Completion :=
     (comp_of_comap_eq (f := algebraMap (WithAbs v.1) (WithAbs w.1)) (LiesOver.comap_eq w v))
       |>.toAlgebra
 
+-- shortcut required because of low priority of GroupWithZero.toNoZeroSMulDivisors
+instance [w.LiesOver v] : NoZeroSMulDivisors v.Completion w.Completion :=
+  GroupWithZero.toNoZeroSMulDivisors
+
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
     algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x := by
