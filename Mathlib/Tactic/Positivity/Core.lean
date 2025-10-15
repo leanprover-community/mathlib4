@@ -508,13 +508,13 @@ example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
   positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
 ```
 -/
-elab (name := positivity) "positivity" : tactic => do
-  liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+syntax (name := positivity) "positivity" (" [" term,* "]")? : tactic
 
-@[tactic_alt positivity]
-macro "positivity" "[" h:term,* "]" : tactic =>
-  `(tactic| · $[have := $h];* ; positivity)
+elab_rules : tactic
+| `(tactic| positivity) => liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
 
+macro_rules
+| `(tactic| positivity [$h,*]) => `(tactic| · ($[have := $h];*); positivity)
 end Positivity
 
 end Mathlib.Tactic
