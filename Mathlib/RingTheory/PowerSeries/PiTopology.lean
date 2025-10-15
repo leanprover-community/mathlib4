@@ -156,6 +156,32 @@ theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFinite
   contrapose! hk
   exact coeff_of_lt_order _ <| by simpa using (hi k hk.le)
 
+variable {R} in
+/-- The geometric series converges if the constant term is zero. -/
+theorem summable_pow_of_constantCoeff_eq_zero {f : PowerSeries R} (h : f.constantCoeff = 0) :
+    Summable (f ^ ·) := by
+  apply summable_of_tendsto_order_atTop_nhds_top
+  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop]
+  refine fun n ↦ ⟨n + 1, fun m hm ↦ lt_of_lt_of_le ?_ (le_order_pow _ _)⟩
+  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm.le)).trans_le ?_
+  simpa [nsmul_eq_mul] using ENat.self_le_mul_right m (order_ne_zero_iff_constCoeff_eq_zero.mpr h)
+
+section GeomSeries
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsTopologicalRing R] [T2Space R]
+variable {f : PowerSeries R}
+
+/-- Formula for geometric series. -/
+theorem tsum_pow_mul_one_sub_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (∑' (i : ℕ), f ^ i) * (1 - f) = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).tsum_pow_mul_one_sub
+
+/-- Formula for geometric series. -/
+theorem one_sub_mul_tsum_pow_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (1 - f) * ∑' (i : ℕ), f ^ i = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).one_sub_mul_tsum_pow
+
+end GeomSeries
+
 end Sum
 
 section Prod

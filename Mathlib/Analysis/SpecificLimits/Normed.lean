@@ -304,21 +304,11 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
 
 variable [HasSummableGeomSeries R]
 
-theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
-  have := (summable_geometric_of_norm_lt_one h).hasSum.mul_right (1 - x)
-  refine tendsto_nhds_unique this.tendsto_sum_nat ?_
-  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
-    simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
-  convert← this
-  rw [← geom_sum_mul_neg, Finset.sum_mul]
+theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 :=
+  (summable_geometric_of_norm_lt_one h).tsum_pow_mul_one_sub
 
-theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 := by
-  have := (summable_geometric_of_norm_lt_one h).hasSum.mul_left (1 - x)
-  refine tendsto_nhds_unique this.tendsto_sum_nat ?_
-  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
-    simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
-  convert← this
-  rw [← mul_neg_geom_sum, Finset.mul_sum]
+theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 :=
+  (summable_geometric_of_norm_lt_one h).one_sub_mul_tsum_pow
 
 theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
   rw [eq_sub_iff_add_eq, (summable_geometric_of_norm_lt_one h).tsum_eq_zero_add,
