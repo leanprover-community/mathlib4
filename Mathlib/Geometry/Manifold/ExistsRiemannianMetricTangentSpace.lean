@@ -157,6 +157,16 @@ lemma g_add' (i p : B) (x y v : TangentSpace IB p) :
   rw [h_map]
   exact @inner_add_right ℝ EB _ _ _ _ _ _
 
+lemma g_smul' (i p : B) (x v : TangentSpace IB p) (m : ℝ) :
+  g i p v (m • x) = (RingHom.id ℝ) m • g i p v x := by
+  unfold g
+  let dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
+  have : dψ (m • x) = m • dψ x := ContinuousLinearMap.map_smul_of_tower dψ m x
+  rw [this]
+  have : @Inner.inner ℝ EB _ (dψ v) (m • (dψ x)) = m • @Inner.inner ℝ EB _ (dψ v) (dψ x) :=
+    @inner_smul_right_eq_smul ℝ EB _ _ _ _ _ _ _ _ _ _ (dψ v) (dψ x) m
+  exact this
+
 omit [IsManifold IB ω B] in
 lemma g_symm (i p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   g i p v w = g i p w v := by
