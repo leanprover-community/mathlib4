@@ -25,12 +25,12 @@ inner product spaces.
   where `‖x ⊗ₜ y‖ = ‖x‖ * ‖y‖`.
 * `TensorProduct.instInnerProductSpace`: the inner product space structure on tensor products, where
   `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`.
-* `TensorProduct.mapLinearIsometry`: the linear isometry version of `TensorProduct.map f g` when
+* `TensorProduct.mapIsometry`: the linear isometry version of `TensorProduct.map f g` when
   `f` and `g` are linear isometries.
-* `TensorProduct.mapInclLinearIsometry`: the linear isometry version of `TensorProduct.mapIncl`.
-* `TensorProduct.commLinearIsometryEquiv`: the linear isometry version of `TensorProduct.comm`.
-* `TensorProduct.lidLinearIsometryEquiv`: the linear isometry version of `TensorProduct.lid`.
-* `TensorProduct.assocLinearIsometryEquiv`: the linear isometry version of `TensorProduct.assoc`.
+* `TensorProduct.mapInclIsometry`: the linear isometry version of `TensorProduct.mapIncl`.
+* `TensorProduct.commIsometry`: the linear isometry version of `TensorProduct.comm`.
+* `TensorProduct.lidIsometry`: the linear isometry version of `TensorProduct.lid`.
+* `TensorProduct.assocIsometry`: the linear isometry version of `TensorProduct.assoc`.
 * `OrthonormalBasis.tensorProduct`: the orthonormal basis of the tensor product of two orthonormal
   bases.
 
@@ -70,6 +70,10 @@ private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := r
   x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
     (by simp_all [inner_def])) (by simp_all [inner_def])
 
+@[simp] lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
+    inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
+  inner_map_map E'.subtypeₗᵢ F'.subtypeₗᵢ x y
+
 open scoped ComplexOrder
 open Module
 
@@ -86,8 +90,7 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
-  rw [← hz.choose_spec] at hx
-  simp_rw [mapIncl, ← Submodule.subtypeₗᵢ_toLinearMap, inner_map_map] at hx
+  rw [← hz.choose_spec, inner_mapIncl_mapIncl] at hx
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
@@ -118,8 +121,7 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   rw [Set.singleton_subset_iff] at hz
-  rw [← hz.choose_spec]
-  simp_rw [mapIncl, ← Submodule.subtypeₗᵢ_toLinearMap, inner_map_map]
+  rw [← hz.choose_spec, inner_mapIncl_mapIncl]
   set y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
@@ -205,27 +207,47 @@ section isometry
 
 /-- The tensor product map of two linear isometries is a linear isometry. In particular, this is
 the linear isometry version of `TensorProduct.map f g` when `f` and `g` are linear isometries. -/
-def mapLinearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
-    E ⊗[𝕜] F →ₗᵢ[𝕜] G ⊗[𝕜] H where
-  toLinearMap := map f.toLinearMap g.toLinearMap
-  norm_map' x := by simp [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_map_map]
+def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
+    E ⊗[𝕜] F →ₗᵢ[𝕜] G ⊗[𝕜] H :=
+  map f.toLinearMap g.toLinearMap |>.isometryOfInner <| inner_map_map _ _
 
-@[simp] lemma mapLinearIsometry_apply (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
-    mapLinearIsometry f g x = map f.toLinearMap g.toLinearMap x := rfl
+@[simp] lemma mapIsometry_apply (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
+    mapIsometry f g x = map f.toLinearMap g.toLinearMap x := rfl
 
-@[simp] lemma toLinearMap_mapLinearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
-    (mapLinearIsometry f g).toLinearMap = map f.toLinearMap g.toLinearMap := rfl
+@[simp] lemma toLinearMap_mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
+    (mapIsometry f g).toLinearMap = map f.toLinearMap g.toLinearMap := rfl
+
+@[simp] lemma norm_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
+    ‖map f.toLinearMap g.toLinearMap x‖ = ‖x‖ := mapIsometry f g |>.norm_map x
+@[simp] lemma nnnorm_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
+    ‖map f.toLinearMap g.toLinearMap x‖₊ = ‖x‖₊ := mapIsometry f g |>.nnnorm_map x
+@[simp] lemma enorm_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
+    ‖map f.toLinearMap g.toLinearMap x‖ₑ = ‖x‖ₑ := mapIsometry f g |>.enorm_map x
+
+def congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
+    E ⊗[𝕜] F ≃ₗᵢ[𝕜] G ⊗[𝕜] H :=
+  congr f.toLinearEquiv g.toLinearEquiv |>.isometryOfInner <|
+    inner_map_map f.toLinearIsometry g.toLinearIsometry
+
+@[simp] lemma congrIsometry_apply (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
+    congrIsometry f g x = congr f g x := rfl
+
+lemma congrIsometry_symm (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
+    (congrIsometry f g).symm = congrIsometry f.symm g.symm := rfl
+
+@[simp] lemma toLinearEquiv_congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
+    (congrIsometry f g).toLinearEquiv = congr f.toLinearEquiv g.toLinearEquiv := rfl
 
 /-- The linear isometry version of `TensorProduct.mapIncl`. -/
-def mapInclLinearIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
+def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
     E' ⊗[𝕜] F' →ₗᵢ[𝕜] E ⊗[𝕜] F :=
-  mapLinearIsometry E'.subtypeₗᵢ F'.subtypeₗᵢ
+  mapIsometry E'.subtypeₗᵢ F'.subtypeₗᵢ
 
-@[simp] lemma mapInclLinearIsometry_apply (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F)
-    (x : E' ⊗[𝕜] F') : mapInclLinearIsometry E' F' x = mapIncl E' F' x := rfl
+@[simp] lemma mapInclIsometry_apply (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F)
+    (x : E' ⊗[𝕜] F') : mapInclIsometry E' F' x = mapIncl E' F' x := rfl
 
-@[simp] lemma toLinearMap_mapInclLinearIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
-    (mapInclLinearIsometry E' F').toLinearMap = mapIncl E' F' := rfl
+@[simp] lemma toLinearMap_mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
+    (mapInclIsometry E' F').toLinearMap = mapIncl E' F' := rfl
 
 @[simp] theorem inner_comm_comm (x y : E ⊗[𝕜] F) :
     inner 𝕜 (TensorProduct.comm 𝕜 E F x) (TensorProduct.comm 𝕜 E F y) = inner 𝕜 x y :=
@@ -235,17 +257,16 @@ def mapInclLinearIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
 
 variable (𝕜 E F) in
 /-- The linear isometry equivalence version of `TensorProduct.comm`. -/
-def commLinearIsometryEquiv : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E where
-  toLinearEquiv := TensorProduct.comm 𝕜 E F
-  norm_map' _ := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_comm_comm]
+def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
+  TensorProduct.comm 𝕜 E F |>.isometryOfInner inner_comm_comm
 
-@[simp] lemma commLinearIsometryEquiv_apply (x : E ⊗[𝕜] F) :
-    commLinearIsometryEquiv 𝕜 E F x = TensorProduct.comm 𝕜 E F x := rfl
-lemma commLinearIsometryEquiv_symm :
-    (commLinearIsometryEquiv 𝕜 E F).symm = commLinearIsometryEquiv 𝕜 F E := rfl
+@[simp] lemma commIsometry_apply (x : E ⊗[𝕜] F) :
+    commIsometry 𝕜 E F x = TensorProduct.comm 𝕜 E F x := rfl
+lemma commIsometry_symm :
+    (commIsometry 𝕜 E F).symm = commIsometry 𝕜 F E := rfl
 
-@[simp] lemma toLinearEquiv_commLinearIsometryEquiv :
-    (commLinearIsometryEquiv 𝕜 E F).toLinearEquiv = TensorProduct.comm 𝕜 E F := rfl
+@[simp] lemma toLinearEquiv_commIsometry :
+    (commIsometry 𝕜 E F).toLinearEquiv = TensorProduct.comm 𝕜 E F := rfl
 
 @[simp] theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
     inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
@@ -256,17 +277,16 @@ lemma commLinearIsometryEquiv_symm :
 
 variable (𝕜 E) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
-def lidLinearIsometryEquiv : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E where
-  toLinearEquiv := TensorProduct.lid 𝕜 E
-  norm_map' _ := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_lid_lid]
+def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
+  TensorProduct.lid 𝕜 E |>.isometryOfInner inner_lid_lid
 
-@[simp] lemma lidLinearIsometryEquiv_apply (x : 𝕜 ⊗[𝕜] E) :
-    lidLinearIsometryEquiv 𝕜 E x = TensorProduct.lid 𝕜 E x := rfl
-@[simp] lemma lidLinearIsometryEquiv_symm_apply (x : E) :
-    (lidLinearIsometryEquiv 𝕜 E).symm x = 1 ⊗ₜ x := rfl
+@[simp] lemma lidIsometry_apply (x : 𝕜 ⊗[𝕜] E) :
+    lidIsometry 𝕜 E x = TensorProduct.lid 𝕜 E x := rfl
+@[simp] lemma lidIsometry_symm_apply (x : E) :
+    (lidIsometry 𝕜 E).symm x = 1 ⊗ₜ x := rfl
 
-@[simp] lemma toLinearEquiv_lidLinearIsometryEquiv :
-    (lidLinearIsometryEquiv 𝕜 E).toLinearEquiv = TensorProduct.lid 𝕜 E := rfl
+@[simp] lemma toLinearEquiv_lidIsometry :
+    (lidIsometry 𝕜 E).toLinearEquiv = TensorProduct.lid 𝕜 E := rfl
 
 @[simp] theorem inner_assoc_assoc (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     inner 𝕜 (TensorProduct.assoc 𝕜 E F G x) (TensorProduct.assoc 𝕜 E F G y) = inner 𝕜 x y :=
@@ -281,17 +301,16 @@ def lidLinearIsometryEquiv : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E where
 
 variable (𝕜 E F G) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
-def assocLinearIsometryEquiv : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[𝕜] (F ⊗[𝕜] G) where
-  toLinearEquiv := TensorProduct.assoc 𝕜 E F G
-  norm_map' _ := by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_assoc_assoc]
+def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[𝕜] (F ⊗[𝕜] G) :=
+  TensorProduct.assoc 𝕜 E F G |>.isometryOfInner inner_assoc_assoc
 
-@[simp] lemma assocLinearIsometryEquiv_apply (x : E ⊗[𝕜] F ⊗[𝕜] G) :
-    assocLinearIsometryEquiv 𝕜 E F G x = TensorProduct.assoc 𝕜 E F G x := rfl
-@[simp] lemma assocLinearIsometryEquiv_symm_apply (x : E ⊗[𝕜] (F ⊗[𝕜] G)) :
-    (assocLinearIsometryEquiv 𝕜 E F G).symm x = (TensorProduct.assoc 𝕜 E F G).symm x := rfl
+@[simp] lemma assocIsometry_apply (x : E ⊗[𝕜] F ⊗[𝕜] G) :
+    assocIsometry 𝕜 E F G x = TensorProduct.assoc 𝕜 E F G x := rfl
+@[simp] lemma assocIsometry_symm_apply (x : E ⊗[𝕜] (F ⊗[𝕜] G)) :
+    (assocIsometry 𝕜 E F G).symm x = (TensorProduct.assoc 𝕜 E F G).symm x := rfl
 
-@[simp] lemma toLinearEquiv_assocLinearIsometryEquiv :
-    (assocLinearIsometryEquiv 𝕜 E F G).toLinearEquiv = TensorProduct.assoc 𝕜 E F G := rfl
+@[simp] lemma toLinearEquiv_assocIsometry :
+    (assocIsometry 𝕜 E F G).toLinearEquiv = TensorProduct.assoc 𝕜 E F G := rfl
 
 end isometry
 
@@ -307,7 +326,7 @@ end isometry
 See also `ext_iff_inner_right_threefold` for when `x, y : E ⊗ F ⊗ G`. -/
 theorem ext_iff_inner_right_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) = inner 𝕜 y (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) := by
-  simp only [← (assocLinearIsometryEquiv 𝕜 E F G).symm.injective.eq_iff,
+  simp only [← (assocIsometry 𝕜 E F G).symm.injective.eq_iff,
     ext_iff_inner_right_threefold, LinearIsometryEquiv.inner_map_eq_flip]
   simp
 
