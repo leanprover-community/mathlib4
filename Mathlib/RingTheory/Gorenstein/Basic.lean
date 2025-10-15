@@ -106,7 +106,7 @@ noncomputable def ExtendScalars'.obj'_map [UnivLE.{v, v'}] [Small.{v'} S] (f : R
   (((Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm.toLinearMap.restrictScalars R).comp
       (TensorProduct.mk R S M 1))
 
-lemma isBaseChange_obj' [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+lemma isBaseChange_obj'_map [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
     (M : ModuleCat.{v} R) : letI := RingHom.toAlgebra f
     IsBaseChange S (ExtendScalars'.obj'_map f M) := by
   let _ := RingHom.toAlgebra f
@@ -116,11 +116,35 @@ lemma isBaseChange_obj' [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
 --IsBaseChange.map
 
 noncomputable def ExtendScalars'.map' [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
-    {M1 M2 : ModuleCat.{v} R} : obj' f M1 ⟶ obj' f M2 :=
-  sorry
+    {M1 M2 : ModuleCat.{v} R} (g : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
+  let _ := RingHom.toAlgebra f
+  ModuleCat.ofHom (((Shrink.linearEquiv.{v'} S (TensorProduct R S M2)).symm.toLinearMap.comp
+    (g.hom.baseChange S)).comp (Shrink.linearEquiv.{v'} S (TensorProduct R S M1)).toLinearMap)
+
+lemma ExtendScalars'.map'_id [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+    (M : ModuleCat.{v} R) : map' f (𝟙 M) = 𝟙 (obj' f M) := by
+  simp [map', obj']
+
+lemma ExtendScalars'.map'_comp [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S)
+    {M1 M2 M3 : ModuleCat.{v} R} (g : M1 ⟶ M2) (h : M2 ⟶ M3) :
+    map' f (g ≫ h) = (map' f g) ≫ (map' f h) := by
+  let _ := RingHom.toAlgebra f
+  ext x
+  change (Shrink.linearEquiv S (TensorProduct R S M3)).symm
+      (((h.hom ∘ₗ g.hom).baseChange S) ((Shrink.linearEquiv S (TensorProduct R S M1)) x)) =
+      (Shrink.linearEquiv S (TensorProduct R S M3)).symm ((h.hom.baseChange S)
+      ((Shrink.linearEquiv S (TensorProduct R S M2))
+      ((Shrink.linearEquiv S (TensorProduct R S M2)).symm ((g.hom.baseChange S)
+      ((Shrink.linearEquiv S (TensorProduct R S M1)) x)))))
+  rw [LinearEquiv.apply_symm_apply]
+  simp [LinearMap.baseChange_comp]
 
 noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] (f : R →+* S) :
-  (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) := sorry
+    (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) where
+  obj := ExtendScalars'.obj' f
+  map := ExtendScalars'.map' f
+  map_id := ExtendScalars'.map'_id f
+  map_comp := ExtendScalars'.map'_comp f
 
 /-
 
@@ -213,7 +237,7 @@ lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCom
   rfl
 
 end basechange
-
+/-
 lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
   have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
     by_contra eq
@@ -957,4 +981,4 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
 
     sorry
   sorry
--/
+-/-/
