@@ -56,14 +56,8 @@ lemma measurable_coe : Measurable (fun x : ι ↦ (x : WithTop ι)) := continuou
 @[fun_prop]
 lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} [SecondCountableTopology ι]
     {f : α → ι} (hf : Measurable f) :
-    Measurable (fun x ↦ (f x : WithTop ι)) := by
-  refine measurable_of_Iic fun i ↦ ?_
-  cases i with
-  | top => simp
-  | coe i =>
-    have : ((fun x ↦ ↑(f x)) ⁻¹' Set.Iic (i : WithTop ι)) = (f ⁻¹' Set.Iic i) := by ext; simp
-    rw [this]
-    exact hf measurableSet_Iic
+    Measurable (fun x ↦ (f x : WithTop ι)) :=
+  measurable_coe.comp hf
 
 @[fun_prop]
 lemma _root_.Measurable.untopD {α} {mα : MeasurableSpace α} (d : ι)
