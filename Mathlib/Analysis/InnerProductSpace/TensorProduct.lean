@@ -25,6 +25,8 @@ inner product spaces.
   where `‖x ⊗ₜ y‖ = ‖x‖ * ‖y‖`.
 * `TensorProduct.instInnerProductSpace`: the inner product space structure on tensor products, where
   `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`.
+* `TensorProduct.mapLinearIsometry`: the linear isometry version of `TensorProduct.map f g` when
+  `f` and `g` are linear isometries.
 * `TensorProduct.mapInclLinearIsometry`: the linear isometry version of `TensorProduct.mapIncl`.
 * `TensorProduct.commLinearIsometryEquiv`: the linear isometry version of `TensorProduct.comm`.
 * `TensorProduct.lidLinearIsometryEquiv`: the linear isometry version of `TensorProduct.lid`.
@@ -202,7 +204,8 @@ theorem ext_iff_inner_left_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
 
 section isometry
 
-/-- The tensor product map of two linear isometries is a linear isometry. -/
+/-- The tensor product map of two linear isometries is a linear isometry. In particular, this is
+the linear isometry version of `TensorProduct.map f g` when `f` and `g` are linear isometries. -/
 def mapLinearIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
     E ⊗[𝕜] F →ₗᵢ[𝕜] G ⊗[𝕜] H where
   toLinearMap := map f.toLinearMap g.toLinearMap
