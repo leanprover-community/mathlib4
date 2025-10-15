@@ -16,9 +16,7 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 -/
 
 open Real MeasureTheory MeasureTheory.Measure
-open scoped FourierTransform
-
-local notation "⟪" x ", " y "⟫" => inner ℂ x y
+open scoped FourierTransform ComplexInnerProductSpace
 
 namespace SchwartzMap
 
