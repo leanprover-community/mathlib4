@@ -1010,8 +1010,7 @@ is everywhere finite, by pushing the edistance to reals. We set it up so that th
 uniformity are defeq in the pseudometric space and the emetric space. -/
 abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
     (h : ∀ x y : α, edist x y ≠ ⊤) : PseudoMetricSpace α :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist
-  (fun x y => ENNReal.toReal (edist x y)) (by simp) fun x y => (by simp [h])
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionaly) equal to some given bornology structure.

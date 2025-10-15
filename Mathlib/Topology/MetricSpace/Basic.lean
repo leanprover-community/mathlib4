@@ -73,18 +73,17 @@ uniformity are defeq in the metric space and the emetric space. In this definiti
 is given separately, to be able to prescribe some expression which is not defeq to the push-forward
 of the edistance to reals. -/
 abbrev EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
-    (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤) (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) :
+    (dist_nonneg : ∀ x y, 0 ≤ dist x y) (h : ∀ x y, edist x y = .ofReal (dist x y)) :
     MetricSpace α :=
-  @MetricSpace.ofT0PseudoMetricSpace _
-    (PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist (by intro x y; rw [h x y]; simp)
-      (by intro x y; simp_all)) _
+  letI := PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist dist_nonneg h
+  MetricSpace.ofT0PseudoMetricSpace _
 
 /-- One gets a metric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the metric space and the emetric space. -/
 def EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
     MetricSpace α :=
-  EMetricSpace.toMetricSpaceOfDist (fun x y => ENNReal.toReal (edist x y)) h fun _ _ => rfl
+  EMetricSpace.toMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
 /-- Metric space structure pulled back by an injective function. Injectivity is necessary to
 ensure that `dist x y = 0` only if `x = y`. -/
@@ -187,7 +186,7 @@ theorem SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : �
 
 instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α] :
     MetricSpace (SeparationQuotient α) :=
-  EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 edist_ne_top) <|
-    surjective_mk.forall₂.2 dist_edist
+  EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 fun _ _ ↦ dist_nonneg) <|
+    surjective_mk.forall₂.2 edist_dist
 
 end EqRel
