@@ -585,7 +585,7 @@ norm, relative to `ℤ`, of `ζ - 1` divides also `n`.
 -/
 theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
     [Field K] [NumberField K] {ζ : K} {p : ℕ} [hF : Fact (Nat.Prime p)] (hζ : IsPrimitiveRoot ζ n)
-    (hp : letI _ : NeZero n := NeZero.of_gt hn; (p : ℤ) ∣ norm ℤ (hζ.toInteger - 1)) :
+    (hp : haveI _ : NeZero n := NeZero.of_gt hn; (p : ℤ) ∣ norm ℤ (hζ.toInteger - 1)) :
     p ∣ n := by
   have : NeZero n := NeZero.of_gt hn
   obtain ⟨μ, hC, hμ, h⟩ :
