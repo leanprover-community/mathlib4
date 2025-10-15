@@ -314,7 +314,7 @@ variable {ι₁ ι₂ : Type*} [DecidableEq ι₁] [DecidableEq ι₂]
 open Module
 
 /-- The tensor product of two orthonormal vectors is orthonormal. -/
-theorem Orthonormal.tensorProduct
+theorem Orthonormal.tmul
     {b₁ : ι₁ → E} {b₂ : ι₂ → F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
     Orthonormal 𝕜 fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 :=
   orthonormal_iff_ite.mpr fun ⟨i₁, i₂⟩ ⟨j₁, j₂⟩ => by
@@ -323,7 +323,7 @@ theorem Orthonormal.tensorProduct
 /-- The tensor product of two orthonormal bases is orthonormal. -/
 theorem Orthonormal.basisTensorProduct
     {b₁ : Basis ι₁ 𝕜 E} {b₂ : Basis ι₂ 𝕜 F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
-    Orthonormal 𝕜 (b₁.tensorProduct b₂) := b₁.coe_tensorProduct b₂ ▸ hb₁.tensorProduct hb₂
+    Orthonormal 𝕜 (b₁.tensorProduct b₂) := b₁.coe_tensorProduct b₂ ▸ hb₁.tmul hb₂
 
 namespace OrthonormalBasis
 variable [Fintype ι₁] [Fintype ι₂]
