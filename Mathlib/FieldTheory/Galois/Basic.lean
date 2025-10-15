@@ -555,6 +555,24 @@ theorem tfae [FiniteDimensional F E] : List.TFAE [
   tfae_have 4 → 1 := fun ⟨h, hp1, _⟩ ↦ of_separable_splitting_field hp1
   tfae_finish
 
+/--
+If `K/F` is a finite Galois extension, then for any extension `L/F`, the extension `KL/L`
+is also Galois.
+-/
+theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensional F K]
+    (h : K ⊔ L = ⊤) : IsGalois L E := by
+  obtain ⟨T, hT₁, hT₂⟩ := IsGalois.is_separable_splitting_field F K
+  let T' := T.map (algebraMap F L)
+  suffices T'.IsSplittingField L E from IsGalois.of_separable_splitting_field (p := T') hT₁.map
+  rw [isSplittingField_iff_intermediateField] at hT₂ ⊢
+  constructor
+  · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
+    exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
+  · have h' : T'.rootSet E = T.rootSet E := by simp [Set.ext_iff, Polynomial.mem_rootSet', T']
+    rw [← lift_inj, lift_adjoin, ← coe_val, T.image_rootSet hT₂.1] at hT₂
+    rw [← restrictScalars_eq_top_iff (K := F), restrictScalars_adjoin, adjoin_union, adjoin_self,
+      h', hT₂.2, lift_top, sup_comm, h]
+
 end IsGalois
 
 end GaloisEquivalentDefinitions
