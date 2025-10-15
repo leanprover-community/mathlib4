@@ -27,17 +27,18 @@ variable {C : Type u} [SmallCategory C] (J : GrothendieckTopology C)
   [PreservesFilteredColimits (forget A)]
   [PreservesLimits (forget A)] [(forget A).ReflectsIsomorphisms]
 
-instance hasSheafifyOfConcrete : HasSheafify J A := by
-  infer_instance
+--instance hasSheafifyOfConcrete : HasSheafify J A := by
+--  infer_instance
 
-instance hasSheafComposeForget : J.HasSheafCompose (forget A) :=
-  hasSheafCompose_of_preservesMulticospan _ _
+--instance hasSheafComposeForget : J.HasSheafCompose (forget A) := by
+--  infer_instance
+
 
 end
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
-    HasSheafify J (Type u) := by
-  infer_instance
+--attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+--instance {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
+--    HasSheafify J (Type u) := by
+--  infer_instance
 
 end CategoryTheory
