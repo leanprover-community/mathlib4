@@ -900,5 +900,3 @@ def Functor.mapComposableArrowsOpIso :
 end
 
 end CategoryTheory
-
-#min_imports
