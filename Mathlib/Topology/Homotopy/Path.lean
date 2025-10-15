@@ -323,10 +323,14 @@ namespace ContinuousMap.Homotopy
 /-- Given a homotopy `H : f ∼ g`, get the path traced by the point `x` as it moves from
 `f x` to `g x`.
 -/
-def evalAt {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : C(X, Y)}
-    (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
+@[simps]
+def evalAt {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
   toFun t := H (t, x)
   source' := H.apply_zero x
   target' := H.apply_one x
+
+@[simp]
+theorem pathExtend_evalAt {f g : C(X, Y)} (H : f.Homotopy g) (x : X) :
+    (H.evalAt x).extend = (fun t ↦ H.extend t x) := rfl
 
 end ContinuousMap.Homotopy
