@@ -817,8 +817,10 @@ lemma le_log_of_pow_le (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤ log y :=
 lemma le_log_of_zpow_le {n : ℤ} (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤ log y :=
   le_log_of_rpow_le hx (rpow_intCast _ _ ▸ h)
 
-lemma rpow_le_of_le_log (hy : 0 < y) (h : log x ≤ z * log y) : x ≤ y ^ z :=
-  le_rpow_of_log_le hy h
+lemma rpow_le_of_le_log (hy : 0 < y) (h : log x ≤ z * log y) : x ≤ y ^ z := by
+  obtain hx | hx := le_or_gt x 0
+  · exact hx.trans (rpow_pos_of_pos hy _).le
+  · exact (le_rpow_iff_log_le hx hy).2 h
 
 lemma pow_le_of_le_log (hy : 0 < y) (h : log x ≤ n * log y) : x ≤ y ^ n :=
   rpow_natCast _ _ ▸ rpow_le_of_le_log hy h
@@ -844,8 +846,10 @@ lemma lt_log_of_pow_lt (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
 lemma lt_log_of_zpow_lt {n : ℤ} (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
   lt_log_of_rpow_lt hx (rpow_intCast _ _ ▸ h)
 
-lemma rpow_lt_of_lt_log (hy : 0 < y) (h : log x < z * log y) : x < y ^ z :=
-  lt_rpow_of_log_lt hy h
+lemma rpow_lt_of_lt_log (hy : 0 < y) (h : log x < z * log y) : x < y ^ z := by
+  obtain hx | hx := le_or_gt x 0
+  · exact hx.trans_lt (rpow_pos_of_pos hy _)
+  · exact (lt_rpow_iff_log_lt hx hy).2 h
 
 lemma pow_lt_of_lt_log (hy : 0 < y) (h : log x < n * log y) : x < y ^ n :=
   rpow_natCast _ _ ▸ rpow_lt_of_lt_log hy h
