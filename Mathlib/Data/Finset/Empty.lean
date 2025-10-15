@@ -95,7 +95,7 @@ instance inhabitedFinset : Inhabited (Finset α) :=
 theorem empty_val : (∅ : Finset α).1 = 0 :=
   rfl
 
-@[simp, grind]
+@[simp, grind ←]
 theorem notMem_empty (a : α) : a ∉ (∅ : Finset α) := by
   simp only [mem_def, empty_val, notMem_zero, not_false_iff]
 
