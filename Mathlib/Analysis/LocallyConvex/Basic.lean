@@ -271,6 +271,10 @@ end NormedField
 
 section NontriviallyNormedField
 
+variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+
+protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull 𝕜 s) := by
+  suffices Convex 𝕜 { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull 𝕜 s } by
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E] in
@@ -278,10 +282,33 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
     rw [balanced_iff_smul_mem] at hs ⊢
     refine fun a ha x hx => convexHull_min ?_ this hx a ha
-    exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
+    exact fun y hy a ha => subset_convexHull 𝕜 s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha
-  simp only [smul_add, ← smul_comm]
-  exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
+  rw [smul_add, ← smul_comm u, ← smul_comm v]
+  exact convex_convexHull 𝕜 s (hx a ha) (hy a ha) hu hv huv
+
+variable {F ℱ 𝕜₂ : Type*} [Field 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
+variable [AddCommGroup F] [Module 𝕜₂ F]
+variable [FunLike ℱ F E] [SemilinearMapClass ℱ σ F E]
+
+theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
+    V = ⊤ := by
+  ext x
+  refine ⟨by simp, fun _ ↦ ?_⟩
+  obtain ⟨r, r_pos, hr⟩ := Absorbs.exists_pos (hV x)
+  obtain ⟨α, hα⟩ := NormedField.exists_lt_norm 𝕜 r
+  have hα_unit : IsUnit α := by
+    apply isUnit_iff_ne_zero.mpr <| ne_zero_of_norm_ne_zero (a := α) _
+    linarith
+  obtain ⟨_, H, _, _, rfl⟩ := mem_smul.mp <|
+    singleton_subset_iff.mp <| singleton_smul (β := E) (a := α) ▸ hr α (le_of_lt hα)
+  rwa [← Submodule.smul_mem_iff_of_isUnit _ hα_unit.inv, mem_singleton_iff.mpr H,
+    ← smul_assoc, smul_eq_mul, hα_unit.inv_mul_cancel, one_smul]
+
+theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : ℱ} {s : Set E}
+    (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective := /- by -/
+  ⟨fun hs_sub ↦ range_eq_univ.mp (by
+    simp [← LinearMap.coe_range, (hs_abs.mono hs_sub).submodule_eq_top]), fun h a _ ↦ h a⟩
 
 variable {F ℱ 𝕜₂ : Type*} [Field 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
 variable [AddCommGroup F] [Module 𝕜₂ F]
