@@ -313,7 +313,7 @@ variable (R₁ M₁) in
 protected def id : M₁ →L[R₁] M₁ :=
   ⟨LinearMap.id, continuous_id⟩
 
-theorem id_apply (x : M₁) : id R₁ M₁ x = x :=
+theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x :=
   rfl
 
 @[simp, norm_cast]
