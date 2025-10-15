@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Topology.Bornology.Absorbs
 
+import Mathlib.Analysis.Normed.Module.Basic
 /-!
 # Local convexity
 
@@ -283,26 +284,22 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   rw [smul_add, ← smul_comm u, ← smul_comm v]
   exact convex_convexHull 𝕜 s (hx a ha) (hy a ha) hu hv huv
 
+variable {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E]
+
+theorem Absorbent.submodule_eq_top {V : S} (hV : Absorbent 𝕜 (V : Set E)) :
+    (V : Set E) = .univ := by
+  rw [Set.eq_univ_iff_forall]
+  intro x
+  rcases (hV x).exists with ⟨c, hc⟩
+  rcases hc (Set.mem_singleton _) with ⟨x, hx, rfl⟩
+  exact SMulMemClass.smul_mem _ hx
+
 variable {F ℱ 𝕜₂ : Type*} [Field 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
 variable [AddCommGroup F] [Module 𝕜₂ F]
 variable [FunLike ℱ F E] [SemilinearMapClass ℱ σ F E]
 
-theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
-    V = ⊤ := by
-  ext x
-  refine ⟨by simp, fun _ ↦ ?_⟩
-  obtain ⟨r, r_pos, hr⟩ := Absorbs.exists_pos (hV x)
-  obtain ⟨α, hα⟩ := NormedField.exists_lt_norm 𝕜 r
-  have hα_unit : IsUnit α := by
-    apply isUnit_iff_ne_zero.mpr <| ne_zero_of_norm_ne_zero (a := α) _
-    linarith
-  obtain ⟨_, H, _, _, rfl⟩ := mem_smul.mp <|
-    singleton_subset_iff.mp <| singleton_smul (β := E) (a := α) ▸ hr α (le_of_lt hα)
-  rwa [← Submodule.smul_mem_iff_of_isUnit _ hα_unit.inv, mem_singleton_iff.mpr H,
-    ← smul_assoc, smul_eq_mul, hα_unit.inv_mul_cancel, one_smul]
-
 theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : ℱ} {s : Set E}
-    (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective := /- by -/
+    (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
   ⟨fun hs_sub ↦ range_eq_univ.mp (by
     simp [← LinearMap.coe_range, (hs_abs.mono hs_sub).submodule_eq_top]), fun h a _ ↦ h a⟩
 
