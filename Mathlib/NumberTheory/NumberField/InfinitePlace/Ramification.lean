@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 
 /-!
 # Ramification of infinite places of a number field
@@ -243,11 +242,14 @@ theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamifi
   · contrapose! h_eq
     rw [← mk_embedding w₁, h_eq, mk_conjugate_eq, mk_embedding]
 
-lemma IsRamified.conjugate_embedding_comp {w : InfinitePlace K} (h : w.IsRamified k) :
-    (conjugate w.embedding).comp (algebraMap k K) = (w.comap (algebraMap k K)).embedding := by
-  rw [conjugate_comp, ← comap_embedding_of_isReal _ h.isReal,  ← ComplexEmbedding.isReal_iff,
-    ← isReal_iff]
-  exact h.isReal
+lemma IsRamified.comap_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
+    (w.comap (algebraMap k K)).embedding = w.embedding.comp (algebraMap k K) := by
+  rw [← comap_embedding_of_isReal _ (isRamified_iff.1 h).2]
+
+lemma IsRamified.comap_embedding_conjugate {w : InfinitePlace K} (h : w.IsRamified k) :
+    (w.comap (algebraMap k K)).embedding = (conjugate w.embedding).comp (algebraMap k K) := by
+  rw [← ComplexEmbedding.isReal_iff.1 <| isReal_iff.1 ((isRamified_iff.1 h).2)]
+  simp [conjugate_comp, comap_embedding_of_isReal _ ((isRamified_iff.1 h).2)]
 
 lemma IsRamified.isMixed_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
     IsMixed k w.embedding :=
@@ -255,7 +257,7 @@ lemma IsRamified.isMixed_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
 
 lemma IsRamified.isMixed_conjugate_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
     IsMixed k (conjugate w.embedding) :=
-  ⟨h.conjugate_embedding_comp ▸ isReal_iff.1 h.isReal,
+  ⟨h.comap_embedding_conjugate ▸ isReal_iff.1 h.isReal,
     by simpa using isComplex_iff.1 <| h.isComplex⟩
 
 theorem isRamified_mk_iff_isMixed {φ : K →+* ℂ} :
