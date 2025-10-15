@@ -347,10 +347,10 @@ theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
       a = a⁺,
       IsSelfAdjoint a ∧ a⁻ = 0,
       IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ].TFAE := by
+  tfae_have 1 ↔ 9 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
   tfae_have 1 ↔ 7 := eq_comm.eq ▸ (CFC.posPart_eq_self a).symm
   tfae_have 1 ↔ 8 := ⟨fun h => ⟨h.isSelfAdjoint, negPart_eq_zero_iff a |>.mpr h⟩,
     fun h => negPart_eq_zero_iff a |>.mp h.2⟩
-  tfae_have 1 ↔ 9 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
   tfae_have 1 → 2 := fun h => sqrt_mul_sqrt_self a |>.symm
   tfae_have 2 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, h⟩
   tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
@@ -734,7 +734,7 @@ theorem _root_.CStarAlgebra.isStrictlyPositive_TFAE {a : A} :
   tfae_have 5 → 6 := fun ⟨b, hb, hbsa, hab⟩ => ⟨b, hb, hbsa.symm ▸ hab⟩
   tfae_have 6 → 7 := fun ⟨b, hb, hab⟩ => ⟨star b, hb.star, star_star b |>.symm ▸ hab⟩
   tfae_have 7 → 8 := fun ⟨b, hb, hab⟩ => by
-    rw [hab, ← CStarAlgebra.nonneg_iff_eq_posPart.mp (mul_star_self_nonneg b)]
+    rw [hab, posPart_eq_self _ |>.mpr (mul_star_self_nonneg b)]
     exact ⟨hb.mul hb.star, rfl⟩
   tfae_have 7 → 10 := fun ⟨b, hb, hab⟩ => ⟨hab ▸ mul_star_self_nonneg _, hab ▸ hb.mul hb.star⟩
   tfae_have 8 → 9 := fun h => by
