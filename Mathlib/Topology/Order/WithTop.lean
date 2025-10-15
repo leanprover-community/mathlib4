@@ -198,9 +198,6 @@ lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) := isEmbedding_coe
 
 end Coe
 
-@[simp]
-lemma untopD_coe_enat (d n : ℕ) : WithTop.untopD d (n : ℕ∞) = n := rfl
-
 section ContinuousUnTop
 
 lemma tendsto_untopD (d : ι) {a : WithTop ι} (ha : a ≠ ⊤) :
