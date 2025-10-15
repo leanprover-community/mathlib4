@@ -56,8 +56,8 @@ We construct a sequence `Vᵢ` of subsets of `J`, a sequence `tᵢ ∈ Vᵢ` and
 inductively as follows (see `logSizeBallSeq`):
 
 * `V₀ = J`, `tₒ` is chosen arbitarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-* `Vᵢ₊ᵢ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁`
-  (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`.
+* `Vᵢ₊ᵢ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitarily in
+  `Vᵢ₊₁` (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`.
 
 Then `Vᵢ` is a strictly decreasing sequence (see `card_finset_logSizeBallSeq_add_one_lt`) until
 `Vᵢ` is empty. In particular `Vᵢ = ∅` for `i ≥ |J|`
@@ -465,6 +465,13 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
 end PairReduction
 
 open PairReduction in
+/-- **Pair Reduction**: Given pseudometric spaces `T` and `E`, `c ≥ 0`, and a finite subset `J` of
+`T` such that `|J| ≤ aⁿ` for some `a ≥ 0` and `n : ℕ`, `pair_reduction` states that there exists a
+set `K ⊆ J²` such that for any function `f : T → E`:
+1. `|K| ≤ a|J|`
+2. `∀ (s, t) ∈ K, d(s, t) ≤ cn`
+3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
+-/
 theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [PseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J ×ˢ J
       ∧ #K ≤ a * #J
@@ -472,6 +479,7 @@ theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [Ps
       ∧ (∀ f : T → E,
         ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
         ≤ 2 * ⨆ p : K, edist (f p.1.1) (f p.1.2)) := by
+  classical
   rcases le_or_gt a 1 with ha1 | ha1
   · rcases isEmpty_or_nonempty J with hJ | hJ
     · simp only [Finset.isEmpty_coe_sort] at hJ
@@ -485,5 +493,5 @@ theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [Ps
         exact ENNReal.pow_le_pow_left ha1
       · rwa [Finset.one_le_card, ← Finset.nonempty_coe_sort]
     simp_all
-  · exact ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha1 hJ_card,
+  · exact ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha1,
       fun _ _ ↦ edist_le_of_mem_pairSet ha1 hJ_card, iSup_edist_pairSet ha1⟩
