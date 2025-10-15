@@ -5,11 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.SuppressCompilation
 /-!
 # Composable arrows
 
@@ -878,53 +875,6 @@ def opEquivalence : (ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n 
 end ComposableArrows
 
 section
-
-universe u v
-
-/-- An alias for the underlying type of the category `Fin n` lifted to an object of `Cat.{v, u}`. -/
-def ULiftFin (n : ℕ) : Type u := ULiftHom.{v} (ULift.{u} (Fin n))
-
-attribute [local instance] uliftCategory in
-instance {n : ℕ} : Category (ULiftFin n) := ULiftHom.category
-
-namespace ULiftFin
-
-/-- The `Fin` underlying some `ULiftFin`. -/
-def toFin {n : ℕ} (a : ULiftFin n) : Fin n := a.objDown.down
-
-/-- The type-level equivalence between `Fin n` and `ULiftFin n`. -/
-def equiv {n : ℕ} : Fin n ≃ ULiftFin n := ULiftHomULiftCategory.objEquiv
-
-/-- The canonical equivalence between `Fin n` and `ULiftFin n`. -/
-def equivalence {n : ℕ} : Fin n ≌ ULiftFin n := ULiftHomULiftCategory.equiv _
-
-end ULiftFin
-
-namespace ComposableArrows
-
-variable {C} {n : ℕ}
-
-/-- The equivalence between `ComposableArrows C n` and `ULiftFin (n + 1) ⥤ C` obtained via the
-equivalence between `Fin (n + 1)` and `ULiftFin (n + 1)`. -/
-@[simps!] def equivalenceULiftFin : ComposableArrows C n ≌ (ULiftFin (n + 1) ⥤ C) :=
-  ULiftFin.equivalence.congrLeft
-
-/-- A term of type `ComposableArrows C n` defines a functor `ULiftFin (n + 1) ⥤ C`. -/
-@[simps!] def toULiftFin (G : ComposableArrows C n) : (ULiftFin (n + 1) ⥤ C) :=
-  equivalenceULiftFin.functor.obj G
-
-/-- A functor `ULiftFin (n + 1) ⥤ C` defines a term of type `ComposableArrows C n`. -/
-@[simps!] def _root_.CategoryTheory.ULiftFin.toComposableArrows (F : ULiftFin (n + 1) ⥤ C) :
-    ComposableArrows C n :=
-  equivalenceULiftFin.inverse.obj F
-
-/-- The type-level equivalence between `ComposableArrows C n` and `ULiftFin (n + 1) ⥤ C`. -/
-@[simps]
-def equivULiftFin : ComposableArrows C n ≃ (ULiftFin (n + 1) ⥤ C) where
-  toFun := toULiftFin
-  invFun := ULiftFin.toComposableArrows
-
-end ComposableArrows
 
 open ComposableArrows
 
