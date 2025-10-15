@@ -315,7 +315,7 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
       rintro l (rfl | hl)
       · exact h1
       · exact w.ne_one l hl
-    chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
+    chain_ne := w.chain_ne.cons (fstIdx_ne_iff.mp hmw) }
 
 @[simp]
 theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
