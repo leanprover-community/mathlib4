@@ -75,7 +75,6 @@ example (a b c : ℚ) : (X + C a)^2 = X^2 + C c * X + C b := by
 example (a : ℚ) : (X * C (C a) - C X) * (X * C (C a) + C X) = X^2 * (C <| C (a^2)) - C (X^2):= by
   match_coefficients
   -- TODO: The goal here is in terms of `smul` instead of `C`, so we shouldn't just use the `ring` cleanup routine.
-  algebra
 
 example (a b c : ℚ) : (X + C a)^2 = X^2 + C c * X + C b := by
   polynomial_nf

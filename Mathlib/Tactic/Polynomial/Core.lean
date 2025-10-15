@@ -5,6 +5,25 @@ namespace Mathlib.Tactic.Polynomial
 open Lean
 open Lean.Meta Qq Lean.Elab Term
 
+-- /-- Attribute for identifying `polynomial` extensions. -/
+-- syntax (name := polynomialPre) "polynomial_pre" : attr
+
+-- register_simp_attr polynomial_pre
+
+initialize polynomialPreExt : SimpExtension ←
+  registerSimpAttr `polynomial_pre "\
+    The `polynomial_pre` simp attribute uses preprocessing lemmas \
+    to turn specialized functions into `algebraMap`s"
+
+-- syntax (name := polynomialPost) "polynomial_post" : attr
+
+-- register_simp_attr polynomial_post
+
+initialize polynomialPostExt : SimpExtension ←
+  registerSimpAttr `polynomial_post "\
+    The `polynomial_post` simp attribute uses postprocessing lemmas \
+    to turn `algebraMap`s into more specialized functions."
+
 /-- Attribute for identifying `polynomial` extensions. -/
 syntax (name := polynomialAttr) "polynomial " term,+ : attr
 
@@ -63,7 +82,6 @@ initialize registerBuiltinAttribute {
       setEnv <| polynomialExt.addEntry env ((keys, declName), ext)
     | _ => throwUnsupportedSyntax
 }
-
 
 def inferBase (e : Expr) : MetaM Expr := do
   for ext in ← (polynomialExt.getState (← getEnv)).2.getMatch e do
