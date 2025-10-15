@@ -243,10 +243,9 @@ def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β 
 
 @[simp]
 lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by
-  by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤
+  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤
   · exact ratio_of_trivial hf.toDilation h
-  · push_neg at h
-    obtain ⟨x, y, h₁, h₂⟩ := h
+  · obtain ⟨x, y, h₁, h₂⟩ := h
     exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
 
 theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
@@ -275,10 +274,9 @@ protected theorem coe_id : ⇑(Dilation.id α) = id :=
   rfl
 
 theorem ratio_id : ratio (Dilation.id α) = 1 := by
-  by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
+  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · rw [ratio, if_pos h]
-  · push_neg at h
-    rcases h with ⟨x, y, hne⟩
+  · rcases h with ⟨x, y, hne⟩
     refine (ratio_unique hne.1 hne.2 ?_).symm
     simp
 
@@ -345,9 +343,8 @@ theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
 
 @[simp]
 theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
-  by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
+  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · simp [ratio_of_trivial, h]
-  push_neg at h
   exact ratio_comp' h
 
 /-- `Dilation.ratio` as a monoid homomorphism from `α →ᵈ α` to `ℝ≥0`. -/
