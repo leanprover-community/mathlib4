@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.FinCategory.Basic
+import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Bicones

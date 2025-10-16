@@ -185,12 +185,13 @@ theorem isSubDPIdeal_iSup {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDP
 
 theorem isSubDPIdeal_iInf {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDPIdeal hI (J i)) :
     IsSubDPIdeal hI (I ⊓ iInf (fun i ↦ J i)) := by
-  by_cases hι : Nonempty ι
-  · refine ⟨fun _ hx ↦ hx.1, ?_⟩
+  cases isEmpty_or_nonempty ι with
+  | inr _ =>
+    refine ⟨fun _ hx ↦ hx.1, ?_⟩
     intro n hn x hx
     simp only [Ideal.mem_inf, mem_iInf] at hx ⊢
     exact ⟨hI.dpow_mem hn hx.1, fun i ↦  IsSubDPIdeal.dpow_mem (hJ i) n hn (hx.2 i)⟩
-  · simp only [not_nonempty_iff] at hι
+  | inl _ =>
     simp only [iInf_of_empty, le_top, inf_of_le_left]
     exact IsSubDPIdeal.self hI
 
@@ -549,7 +550,7 @@ noncomputable def dpow : ℕ → B → B := fun n ↦
 variable {f} (hf : Function.Surjective f) {J} (hIJ : J = I.map f)
   (hIf : hI.IsSubDPIdeal (RingHom.ker f ⊓ I))
 
-/-- Divided powers on the the codomain `B` of a surjective ring homomorphism `f` are compatible
+/-- Divided powers on the codomain `B` of a surjective ring homomorphism `f` are compatible
   with `f`. -/
 theorem dpow_apply' (hIf : IsSubDPIdeal hI (RingHom.ker f ⊓ I)) {n : ℕ} {a : A} (ha : a ∈ I) :
     dpow hI f n (f a) = f (hI.dpow n a) := by

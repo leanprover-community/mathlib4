@@ -119,15 +119,15 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
   rw [← Finset.card_range (m + 1), ← Finset.sum_const, Finset.card_range]
   rcases max_cases 1 (‖x‖ ^ m) with (⟨hm, hx⟩|⟨hm, hx⟩) <;> rw [hm] <;>
   -- which we show by comparing the terms in the sum one by one
-  refine Finset.sum_le_sum fun i hi ↦ ?_
+  gcongr with i hi
   · rcases eq_or_ne m 0 with rfl | hm
     · simp only [pow_zero, le_refl,
         show i = 0 by simpa only [zero_add, Finset.range_one, Finset.mem_singleton] using hi]
     · rw [pow_le_one_iff_of_nonneg (norm_nonneg _) hm] at hx
       exact pow_le_one₀ (norm_nonneg _) hx
-  · refine pow_le_pow_right₀ ?_ (by simpa only [Finset.mem_range, Nat.lt_succ] using hi)
-    contrapose! hx
+  · contrapose! hx
     exact pow_le_one₀ (norm_nonneg _) hx.le
+  · simpa [Nat.lt_succ_iff] using hi
 
 end sufficient
 

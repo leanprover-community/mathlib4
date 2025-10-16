@@ -3,7 +3,7 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
-import Mathlib.Data.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Basic
@@ -369,7 +369,7 @@ def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
 private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
-  ⟨cast_pos.mpr hv, by norm_cast; omega⟩
+  ⟨cast_pos.mpr hv, by norm_cast; cutsat⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
 variable {ξ : ℝ} {u v : ℤ}

@@ -31,7 +31,7 @@ namespace Subalgebra
 
 open Algebra
 
-variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (S' : Subalgebra R S)
 
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` ∈ `S`, and `S'` a subalgebra of `S` that contains
@@ -75,7 +75,7 @@ end Subalgebra
 
 section MulSemiringAction
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (A B : Type*) [CommSemiring A] [Ring B] [Algebra A B]
 variable (G : Type*) [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 /-- The set of fixed points under a group action, as a subring. -/

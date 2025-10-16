@@ -413,7 +413,7 @@ lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔
       ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
   · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
       ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
-    omega
+    cutsat
 
 variable (I J K)
 
@@ -889,7 +889,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
-    (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => pow_eq_zero hn
+    (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => eq_zero_of_pow_eq_zero hn
 
 @[simp]
 theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivisors R] :
@@ -902,6 +902,15 @@ instance : IdemCommSemiring (Ideal R) :=
 variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
   Nat.recOn n one_eq_top fun n ih => by rw [pow_succ, ih, top_mul]
+
+@[simp]
+theorem pow_eq_top_iff {n : ℕ} :
+    I ^ n = ⊤ ↔ I = ⊤ ∨ n = 0 := by
+  refine ⟨fun h ↦ or_iff_not_imp_right.mpr
+      fun hn ↦ (eq_top_iff_one _).mpr <| pow_le_self hn <| (eq_top_iff_one _).mp h, ?_⟩
+  rintro (h | h)
+  · rw [h, top_pow]
+  · rw [h, pow_zero, one_eq_top]
 
 theorem natCast_eq_top {n : ℕ} (hn : n ≠ 0) : (n : Ideal R) = ⊤ :=
   natCast_eq_one hn |>.trans one_eq_top
