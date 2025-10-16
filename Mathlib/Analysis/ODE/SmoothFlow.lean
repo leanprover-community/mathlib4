@@ -51,14 +51,61 @@ noncomputable def implicitFunAux : E × C(Icc tmin tmax, E) → Icc tmin tmax �
     then fun t ↦ x₀ - α t + ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ))
     else fun _ ↦ 0
 
-lemma continuous_implicitFunAux (x₀ : E) (α : C(Icc tmin tmax, E)) :
-    Continuous (implicitFunAux f u t₀ ⟨x₀, α⟩) := by
-  sorry
+variable {f u t₀} in
+open Classical in
+lemma implicitFunAux_apply {x₀ : E} {α : C(Icc tmin tmax, E)} :
+    implicitFunAux f u t₀ (x₀, α) =
+      if (x₀, α) ∈ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }
+        then fun t ↦ x₀ - α t + ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ))
+        else fun _ ↦ 0 := rfl
 
+variable {f u t₀} in
+lemma implicitFunAux_apply_of_mem {x₀ : E} {α : C(Icc tmin tmax, E)}
+    (h : (x₀, α) ∈ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }) :
+    implicitFunAux f u t₀ (x₀, α) =
+      fun t ↦ x₀ - α t + ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ)) := by
+  rw [implicitFunAux_apply, if_pos h]
+
+variable {f u t₀} in
+lemma implicitFunAux_apply_of_not_mem {x₀ : E} {α : C(Icc tmin tmax, E)}
+    (h : (x₀, α) ∉ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }) :
+    implicitFunAux f u t₀ (x₀, α) = fun _ ↦ 0 := by
+  rw [implicitFunAux_apply, if_neg h]
+
+variable {f u} in
+lemma continuous_implicitFunAux (hf : ContinuousOn f u) (x₀ : E) (α : C(Icc tmin tmax, E)) :
+    Continuous (implicitFunAux f u t₀ (x₀, α)) := by
+  by_cases h : (x₀, α) ∈ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }
+  · rw [implicitFunAux_apply_of_mem h]
+    simp_rw [mem_prod, mem_setOf_eq] at h
+    obtain ⟨hx, hα⟩ := h
+    apply Continuous.add (by fun_prop)
+    have : (fun t : Icc tmin tmax ↦ ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ))) =
+        (fun t ↦ ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ))) ∘
+          (fun t : Icc tmin tmax ↦ (t : ℝ)) := by rfl
+    rw [this]
+    apply ContinuousOn.comp_continuous (s := Icc tmin tmax) _ (by fun_prop) (by simp)
+    nth_rw 8 [← Set.uIcc_of_le (le_of_Icc t₀)]
+    apply intervalIntegral.continuousOn_primitive_interval'
+    · apply ContinuousOn.intervalIntegrable
+      apply ContinuousOn.comp' (t := u) hf ((map_continuous α).comp_continuousOn'
+        continuous_projIcc.continuousOn)
+      intro t ht
+      apply hα
+      exact Set.mem_range_self _
+    · rw [Set.uIcc_of_le (le_of_Icc t₀)]
+      exact Subtype.coe_prop _
+  · rw [implicitFunAux_apply_of_not_mem h]
+    fun_prop
+
+variable {f u} in
 /-- The requisite function defining the implicit equation `E × F → F` whose zero set contains
 integral curves to the vector field `f` -/
-noncomputable def implicitFun : E × C(Icc tmin tmax, E) → C(Icc tmin tmax, E) :=
-  fun ⟨x₀, α⟩ ↦ ⟨implicitFunAux f u t₀ ⟨x₀, α⟩, continuous_implicitFunAux f u t₀ x₀ α ⟩
+noncomputable def implicitFun (hf : ContinuousOn f u) :
+    E × C(Icc tmin tmax, E) → C(Icc tmin tmax, E) :=
+  fun ⟨x₀, α⟩ ↦ ⟨implicitFunAux f u t₀ ⟨x₀, α⟩, continuous_implicitFunAux t₀ hf x₀ α⟩
+
+
 
 
 -- namespace test
