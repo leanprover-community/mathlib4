@@ -49,7 +49,7 @@ variable (k P) in
 neighborhoods at infinity in directions near `v`. In a topological vector space, this is the filter
 `Filter.atTop • 𝓝 v`. To support affine spaces, the actual definition is different and should be
 considered an implementation detail. Use `AffineSpace.asymptoticNhds_eq_smul` or
-`AffineSpace.asymptoticNhds_eq_smul` for unfolding. -/
+`AffineSpace.asymptoticNhds_eq_smul_vadd` for unfolding. -/
 @[irreducible]
 def asymptoticNhds (v : V) : Filter P := ⨆ p, atTop (α := k) • 𝓝 v +ᵥ pure p
 
