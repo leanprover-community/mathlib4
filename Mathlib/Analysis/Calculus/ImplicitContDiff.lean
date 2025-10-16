@@ -78,10 +78,10 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
   rightFun := f
   rightDeriv := f'
   pt := a
-  left_has_deriv := by fun_prop
-  right_has_deriv := h.contDiffAt.hasStrictFDerivAt' h.hasFDerivAt h.one_le
-  left_range := LinearMap.range_eq_top_of_surjective _ fun x ↦ ⟨(x, 0), rfl⟩
-  right_range := h.range_eq_top
+  hasStrictFDerivAt_leftFun := by fun_prop
+  hasStrictFDerivAt_rightFun := h.contDiffAt.hasStrictFDerivAt' h.hasFDerivAt h.one_le
+  range_leftFun := LinearMap.range_eq_top_of_surjective _ fun x ↦ ⟨(x, 0), rfl⟩
+  range_rightFun := h.range_eq_top
   isCompl_ker := by
     have : ker (ContinuousLinearMap.fst 𝕜 E F) = ker (LinearMap.fst 𝕜 E F) := rfl
     rw [isCompl_comm, this, LinearMap.ker_fst, h.ker_eq_left]
