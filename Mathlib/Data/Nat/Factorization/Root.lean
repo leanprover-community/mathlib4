@@ -50,7 +50,7 @@ we special-case the following values:
 def floorRoot (n a : ℕ) : ℕ :=
   if n = 0 ∨ a = 0 then 0 else a.factorization.prod fun p k ↦ p ^ (k / n)
 
-/-- The RHS is a noncomputable version of `Nat.floorRoot` with better order theoretical
+/-- The RHS is a noncomputable version of `Nat.floorRoot` with better order-theoretic
 properties. -/
 lemma floorRoot_def :
     floorRoot n a = if n = 0 ∨ a = 0 then 0 else (a.factorization ⌊/⌋ n).prod (· ^ ·) := by
@@ -110,7 +110,7 @@ we special-case the following values:
 def ceilRoot (n a : ℕ) : ℕ :=
   if n = 0 ∨ a = 0 then 0 else a.factorization.prod fun p k ↦ p ^ ((k + n - 1) / n)
 
-/-- The RHS is a noncomputable version of `Nat.ceilRoot` with better order theoretical
+/-- The RHS is a noncomputable version of `Nat.ceilRoot` with better order-theoretic
 properties. -/
 lemma ceilRoot_def :
     ceilRoot n a = if n = 0 ∨ a = 0 then 0 else (a.factorization ⌈/⌉ n).prod (· ^ ·) := by

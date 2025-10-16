@@ -14,7 +14,7 @@ This file deals with properties of cofiltered (and inverse) systems.
 
 Given a functor `F : J ⥤ Type v`:
 
-* For `j : J`, `F.eventualRange j` is the intersections of all ranges of morphisms `F.map f`
+* For `j : J`, `F.eventualRange j` is the intersection of all ranges of morphisms `F.map f`
   where `f` has codomain `j`.
 * `F.IsMittagLeffler` states that the functor `F` satisfies the Mittag-Leffler
   condition: the ranges of morphisms `F.map f` (with `f` having codomain `j`) stabilize.
@@ -189,7 +189,8 @@ theorem eventualRange_mapsTo (f : j ⟶ i) :
 
 theorem IsMittagLeffler.eq_image_eventualRange (h : F.IsMittagLeffler) (f : j ⟶ i) :
     F.eventualRange i = F.map f '' F.eventualRange j :=
-  (h.subset_image_eventualRange F f).antisymm <| mapsTo'.1 (F.eventualRange_mapsTo f)
+  (h.subset_image_eventualRange F f).antisymm <| mapsTo_iff_image_subset.1
+    (F.eventualRange_mapsTo f)
 
 theorem eventualRange_eq_iff {f : i ⟶ j} :
     F.eventualRange j = range (F.map f) ↔

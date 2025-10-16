@@ -116,7 +116,7 @@ Group Theory:
     Fourier transform for finite abelian groups: 'https://en.wikipedia.org/wiki/Fourier_transform_on_finite_groups#Fourier_transform_for_finite_abelian_groups'
     convolution: 'https://en.wikipedia.org/wiki/Fourier_transform_on_finite_groups#Transform_of_a_convolution'
     class function over a group: 'https://en.wikipedia.org/wiki/Class_function'
-    characters of a finite dimensional representation: 'FDRep.character'
+    characters of a finite-dimensional representation: 'FDRep.character'
     orthonormal basis of irreducible characters: 'https://en.wikipedia.org/wiki/Character_theory#Orthogonality_relations'
     examples of groups with small cardinality: ''
 
@@ -293,7 +293,7 @@ Single Variable Real Analysis:
     connected subsets of $\R$: 'setOf_isPreconnected_eq_of_ordered'
     additive subgroups of $\R$: 'AddSubgroup.dense_or_cyclic'
   Numerical series:
-    Convergence of real valued-series: 'https://en.wikipedia.org/wiki/Series_(mathematics)#Convergent_series'
+    Convergence of real-valued series: 'https://en.wikipedia.org/wiki/Series_(mathematics)#Convergent_series'
     Geometric series: 'tsum_geometric_of_norm_lt_one'
     convergence of $p$-series for $p>1$: 'Real.summable_one_div_nat_rpow'
     summation of comparison relations: 'http://braise.univ-rennes1.fr/donnees/ParamHTML/S%E9ries%20num%E9riques/Con/Sommation%20des%20relations%20de%20comparaison/cst.ps'
@@ -316,7 +316,7 @@ Single Variable Real Analysis:
     derivative of the inverse of a function: 'HasStrictDerivAt.of_local_left_inverse'
     Rolle's theorem: 'exists_deriv_eq_zero'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
-    higher order derivatives of functions: 'iteratedDeriv'
+    higher-order derivatives of functions: 'iteratedDeriv'
     $C^k$ functions: 'ContDiff'
     piecewise $C^k$ functions: 'https://en.wikipedia.org/wiki/Piecewise#Continuity_and_differentiability_of_piecewise_functions'
     Leibniz formula: 'deriv_mul'
@@ -364,9 +364,9 @@ Single Variable Real Analysis:
 
 # 7.
 Single Variable Complex Analysis:
-  Complex Valued series:
+  Complex-valued series:
     radius of convergence: 'FormalMultilinearSeries.radius'
-#    properties of sums of complex valued series on their disks of convergence: (this is a heading?)
+#    properties of sums of complex-valued series on their disks of convergence: (this is a heading?)
     continuity: 'HasFPowerSeriesOnBall.continuousOn'
     differentiability with respect to the complex variable: 'HasFPowerSeriesOnBall.differentiableOn'
     antiderivative: ''
@@ -514,7 +514,7 @@ Measures and integral calculus:
     Fatou's lemma: 'MeasureTheory.lintegral_liminf_le'
     integrable functions: 'MeasureTheory.Integrable'
     dominated convergence theorem: 'MeasureTheory.tendsto_integral_of_dominated_convergence'
-    finite dimensional vector-valued integrable functions: 'MeasureTheory.Integrable'
+    finite-dimensional vector-valued integrable functions: 'MeasureTheory.Integrable'
     continuity of integrals with respect to parameters: 'intervalIntegral.continuous_of_dominated_interval'
     differentiability of integrals with respect to parameters: ''
     $\mathrm{L}^p$ spaces where $1 ≤ p ≤ ∞$: 'MeasureTheory.Lp'
@@ -536,7 +536,7 @@ Measures and integral calculus:
     Parseval theorem: 'tsum_sq_fourierCoeff'
     Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourierIntegral'
     Fourier transform on $\mathrm{L}^2(\R^d)$: ''
-    Plancherel’s theorem: ''
+    Plancherel’s theorem: 'SchwartzMap.integral_inner_fourier_fourier'
     Fourier inversion formula: 'Continuous.fourier_inversion'
 
 # 11.
@@ -623,7 +623,7 @@ Distribution calculus:
     Fourier transform and convolution product: ''
   Applications:
     Poisson’s formula: ''
-    using convolution and Fourier-Laplace transform to solve one dimensional linear differential equations: ''
+    using convolution and Fourier-Laplace transform to solve one-dimensional linear differential equations: ''
     weak solution of partial derivative equation: ''
     fundamental solution of the Laplacian: ''
     solving the Laplace equations: ''
@@ -644,7 +644,7 @@ Numerical Analysis:
     spectral ray: ''
     singular value decomposition: ''
     example of discretisation matrix by finite differences of the laplacian in one dimension: ''
-  Iterative methods of solving systems of real and vector valued equations:
+  Iterative methods of solving systems of real and vector-valued equations:
     linear systems case: ''
     proper element search: ''
     brute force method: ''
@@ -658,7 +658,7 @@ Numerical Analysis:
   Numerical integration:
     Rectangle method: ''
     error estimation: ''
-    Monte-Carlo method: ''
+    Monte Carlo method: ''
     rate of convergence: ''
     application to the calculation of multiple integrals: ''
   Approximation of numerical functions:

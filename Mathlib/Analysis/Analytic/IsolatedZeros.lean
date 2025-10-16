@@ -57,7 +57,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
     exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
-  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field_simp [h], ?_⟩
+  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field_simp, ?_⟩
     have h1 : ∑ i ∈ Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by
@@ -342,8 +342,8 @@ theorem AnalyticAt.map_nhdsNE {x : 𝕜} {f : 𝕜 → E} (hfx : AnalyticAt 𝕜
 Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and not locally constant,
 then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
 
-See `AnalyticOnNhd.preimage_zero_codiscreteWithin` for the special case that `s` is the complement
-of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+See `AnalyticOnNhd.preimage_zero_mem_codiscreteWithin` for the special case that `s` is the
+complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
 -/
 theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))

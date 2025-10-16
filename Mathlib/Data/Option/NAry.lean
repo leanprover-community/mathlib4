@@ -62,7 +62,6 @@ theorem map₂_none_right (f : α → β → γ) (a : Option α) : map₂ f a no
 theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂ f a b = b.map fun b => f a b :=
   rfl
 
--- Porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
 theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) :
     map₂ f a b = a.map fun a => f a b := by grind

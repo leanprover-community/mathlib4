@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
@@ -232,10 +232,9 @@ lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
     apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _).symm
     apply PushoutCocone.isColimitOfFlip
     apply (isColimitMapCoconePushoutCoconeEquiv _ _).toFun
-    · refine @isColimitOfPreserves _ _ _ _ _ _ _ _ _ ?_ ?_ -- Porting note: more TC coddling
-      · exact PushoutCocone.flipIsColimit hc
-      · dsimp
-        infer_instance⟩
+    · -- Need to unfold these to allow the `PreservesColimit` instance to be found.
+      dsimp only [span_map_fst, span_map_snd]
+      exact isColimitOfPreserves _ (PushoutCocone.flipIsColimit hc)⟩
 
 theorem hasPushout_of_preservesPushout [HasPushout f g] : HasPushout (G.map f) (G.map g) :=
   ⟨⟨⟨_, isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout _ _)⟩⟩⟩
@@ -312,8 +311,7 @@ lemma PreservesPushout.of_iso_comparison [i : IsIso (pushoutComparison G f g)] :
     PreservesColimit (span f g) G := by
   apply preservesColimit_of_preserves_colimit_cocone (pushoutIsPushout f g)
   apply (isColimitMapCoconePushoutCoconeEquiv _ _).symm _
-  -- Porting note: apply no longer creates goals for instances
-  exact @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (span (G.map f) (G.map g))) i
+  exact IsColimit.ofPointIso _ (i := i)
 
 variable [PreservesColimit (span f g) G]
 

@@ -73,7 +73,8 @@ theorem smul_toInvSubmonoid (m : M) : m • (toInvSubmonoid M S m : S) = 1 := by
 
 variable {S}
 
--- Porting note: `surj'` was taken, so use `surj''` instead
+-- `surj'` was taken, so use `surj''` instead
+-- TODO: this can be fixed after the deprecations of 2025-09-04 are removed.
 theorem surj'' (z : S) : ∃ (r : R) (m : M), z = r • (toInvSubmonoid M S m : S) := by
   rcases IsLocalization.surj M z with ⟨⟨r, m⟩, e : z * _ = algebraMap R S r⟩
   refine ⟨r, m, ?_⟩

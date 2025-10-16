@@ -28,7 +28,7 @@ with respect to the volume `vol` is the sum of `vol J (f (π.tag J))` over all b
 The integral is defined as the limit of integral sums along a filter. Different filters correspond
 to different integration theories. In order to avoid code duplication, all our definitions and
 theorems take an argument `l : BoxIntegral.IntegrationParams`. This is a type that holds three
-boolean values, and encodes eight filters including those corresponding to Riemann,
+Boolean values, and encodes eight filters including those corresponding to Riemann,
 Henstock-Kurzweil, and McShane integrals.
 
 Following the design of infinite sums (see `hasSum` and `tsum`), we define a predicate
@@ -301,9 +301,11 @@ theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
   classical
-  induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
-  simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
-  exact h.1.add (ihs h.2)
+  induction s using Finset.induction_on with
+  | empty => simp [hasIntegral_zero]
+  | insert a s ha ihs =>
+    simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
+    exact h.1.add (ihs h.2)
 
 theorem HasIntegral.smul (hf : HasIntegral I l f vol y) (c : ℝ) :
     HasIntegral I l (c • f) vol (c • y) := by
@@ -693,7 +695,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     rw [← sum_mul]
     trans μ.toBoxAdditive I * ε₁; swap
     · linarith
-    simp_rw [mul_le_mul_right ε₁0, μ.toBoxAdditive_apply]
+    simp_rw [mul_le_mul_iff_left₀ ε₁0, μ.toBoxAdditive_apply]
     refine le_trans ?_ <| toReal_mono (lt_top_iff_ne_top.1 μI) <| μ.mono <| un (B \ B') sdiff_subset
     simp_rw [measureReal_def]
     rw [← toReal_sum (fun J hJ ↦ μJ_ne_top J (mem_sdiff.1 hJ).1), ← Finset.tsum_subtype]

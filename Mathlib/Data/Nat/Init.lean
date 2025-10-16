@@ -8,6 +8,7 @@ import Batteries.Tactic.Init
 import Mathlib.Init
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.AssertExists
@@ -30,8 +31,8 @@ upstreamed to Batteries or the Lean standard library easily.
 See note [foundational algebra order theory].
 -/
 
-library_note "foundational algebra order theory"/--
-Batteries has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ
+library_note2 «foundational algebra order theory» /--
+Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
 finsets, powers in groups, ...).
@@ -116,7 +117,7 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 @[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
-  omega
+  cutsat
 
 /-! ### `pow` -/
 
@@ -322,7 +323,8 @@ lemma decreasingInduction_succ_left {motive : (m : ℕ) → m ≤ n → Sort*} (
     (smn : m + 1 ≤ n) (mn : m ≤ n) :
     decreasingInduction (motive := motive) of_succ self mn =
       of_succ m smn (decreasingInduction of_succ self smn) := by
-  rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn), decreasingInduction_trans,
+  rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn),
+    decreasingInduction_trans (n := m + 1) (Nat.le_succ m),
     decreasingInduction_succ']
 
 /-- Given `P : ℕ → ℕ → Sort*`, if for all `m n : ℕ` we can extend `P` from the rectangle
@@ -370,11 +372,9 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   | a + 1, b + 1, h => by
     apply hd _ _ (Nat.add_lt_add_iff_right.1 h)
     · have this : a + 1 = b ∨ a + 1 < b := by omega
-      have wf : (a + 1) + b < (a + 1) + (b + 1) := by simp
       rcases this with (rfl | h)
       · exact ha _
       apply diag_induction P ha hb hd (a + 1) b h
-    have _ : a + (b + 1) < (a + 1) + (b + 1) := by simp
     apply diag_induction P ha hb hd a (b + 1)
     apply Nat.lt_of_le_of_lt (Nat.le_succ _) h
 
@@ -390,7 +390,7 @@ lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
 
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
-  omega
+  cutsat
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_left : m ∣ m + n ↔ m ∣ n := Nat.dvd_add_right (Nat.dvd_refl m)
@@ -429,14 +429,21 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
 
 /-! ### `Nat.AtLeastTwo` -/
 
-/-- A type class for natural numbers which are greater than or equal to `2`. -/
+/-- A type class for natural numbers which are greater than or equal to `2`.
+
+`NeZero` and `AtLeastTwo` are used for numeric literals, and also for groups of related lemmas
+sharing a common value of `n` that needs to be nonzero, or at least `2`, and where it is
+convenient to pass this information implicitly. Instances for these classes cover some of the
+cases where it is most structurally obvious from the syntactic form of `n` that it satisfies the
+required conditions, such as `m + 1`. Less widely used cases may be defined as lemmas rather than
+global instances and then made into instances locally where needed. If implicit arguments,
+appearing before other explicit arguments, are allowed to be `autoParam`s in a future version of
+Lean, such an `autoParam` that is proved `by cutsat` might be a more general replacement for the
+use of typeclass inference for this purpose. -/
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n
 
-instance instAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
-
-instance {n : ℕ} [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; omega⟩
+instance (n : ℕ) [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; cutsat⟩
 
 namespace AtLeastTwo
 
@@ -444,6 +451,12 @@ variable {n : ℕ} [n.AtLeastTwo]
 
 lemma one_lt : 1 < n := prop
 lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
+
+instance (priority := 100) toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
+  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
+
+variable (n) in
+lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); cutsat⟩
 
 end AtLeastTwo
 

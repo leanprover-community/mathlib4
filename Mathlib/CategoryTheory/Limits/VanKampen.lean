@@ -135,7 +135,6 @@ theorem IsUniversalColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (hc : IsUniver
   apply hc c'' α (f ≫ e.inv.1) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα
   intro j
   rw [← Category.comp_id (α.app j)]
-  have : IsIso e.inv.hom := Functor.map_isIso (Cocones.forget _) e.inv
   exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨by simp⟩)
 
 theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKampenColimit c)
@@ -226,7 +225,6 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J �
   · intro k
     rw [← Category.comp_id f]
     refine (H (e.inverse.obj k)).paste_vert ?_
-    have : IsIso (𝟙 (Cocone.whisker e.functor c).pt) := inferInstance
     exact IsPullback.of_vert_isIso ⟨by simp⟩
 
 theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category K] (e : J ≌ K)
@@ -630,7 +628,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   rintro ⟨j⟩
   simp only [limit.lift_π, PullbackCone.mk_pt,
     PullbackCone.mk_π_app, Category.comp_id]
-  induction' j using Fin.inductionOn
+  induction j using Fin.inductionOn
   · simp only [Fin.cases_zero]
   · simp only [Fin.cases_succ]
 
@@ -684,13 +682,14 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
         (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))) _ ?_
       intro ⟨j⟩
       simp only [Discrete.functor_obj, Cofan.mk_pt, Functor.const_obj_obj, Cofan.mk_ι_app]
-      induction' j using Fin.inductionOn with j _
+      induction j using Fin.inductionOn
       · simp only [Fin.cases_zero, m₁]
       · simp only [← m₂, colimit.ι_desc_assoc, Discrete.functor_obj,
           Cofan.mk_pt, Cofan.mk_ι_app, Fin.cases_succ]
-  induction' j using Fin.inductionOn with j _
-  · exact t₂' ⟨WalkingPair.left⟩
-  · have t₁' := (@t₁ (Discrete.functor (fun j ↦ F.obj ⟨j.succ⟩)) (Cofan.mk _ _) (Discrete.natTrans
+  induction j using Fin.inductionOn with
+  | zero => exact t₂' ⟨WalkingPair.left⟩
+  | succ j _ =>
+    have t₁' := (@t₁ (Discrete.functor (fun j ↦ F.obj ⟨j.succ⟩)) (Cofan.mk _ _) (Discrete.natTrans
       fun i ↦ α.app _) (Sigma.desc (fun j ↦ α.app _ ≫ c₁.inj _)) ?_
       (NatTrans.equifibered_of_discrete _)).mp ⟨coproductIsCoproduct _⟩ ⟨j⟩
     rotate_left

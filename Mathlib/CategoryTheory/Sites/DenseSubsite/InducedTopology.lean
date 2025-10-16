@@ -103,11 +103,11 @@ lemma mem_inducedTopology_sieves_iff {X : C} (S : Sieve X) :
     S ∈ (G.inducedTopology K) X ↔ (S.functorPushforward G) ∈ K (G.obj X) :=
   Iff.rfl
 
-/-- `G` is cover-lifting wrt the induced topology. -/
+/-- `G` is cover-lifting w.r.t. the induced topology. -/
 instance inducedTopology_isCocontinuous : G.IsCocontinuous (G.inducedTopology K) K :=
   ⟨@fun _ S hS => LocallyCoverDense.functorPushforward_functorPullback_mem ⟨S, hS⟩⟩
 
-/-- `G` is cover-preserving wrt the induced topology. -/
+/-- `G` is cover-preserving w.r.t. the induced topology. -/
 theorem inducedTopology_coverPreserving : CoverPreserving (G.inducedTopology K) K G :=
   ⟨@fun _ _ hS => hS⟩
 

@@ -279,7 +279,7 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
 
 end Map
 
-lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+lemma IndepFun.covariance_eq_zero (h : X ⟂ᵢ[μ] Y) (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
      cov[X, Y; μ] = 0 := by
    by_cases h' : ∀ᵐ ω ∂μ, X ω = 0
    · refine integral_eq_zero_of_ae ?_
@@ -288,5 +288,17 @@ lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY 
    have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
    rw [covariance_eq_sub hX hY, h.integral_mul_eq_mul_integral
        hX.aestronglyMeasurable hY.aestronglyMeasurable, sub_self]
+
+section Prod
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
+  [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {X : Ω → ℝ} {Y : Ω' → ℝ}
+
+lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
+    cov[fun p ↦ X p.1, fun p ↦ Y p.2; μ.prod ν] = 0 :=
+  (indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable).covariance_eq_zero
+    (hfμ.comp_fst ν) (hgν.comp_snd μ)
+
+end Prod
 
 end ProbabilityTheory
