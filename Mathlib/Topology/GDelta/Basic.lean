@@ -85,10 +85,10 @@ lemma isGδ_iff_eq_iInter_nat {s : Set X} :
     IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
   refine ⟨?_, ?_⟩
   · rintro ⟨T, hT, T_count, rfl⟩
-    rcases Set.eq_empty_or_nonempty T with rfl|hT
+    rcases Set.eq_empty_or_nonempty T with rfl | hT
     · exact ⟨fun _n ↦ univ, fun _n ↦ isOpen_univ, by simp⟩
     · obtain ⟨f, hf⟩ : ∃ (f : ℕ → Set X), T = range f := Countable.exists_eq_range T_count hT
-      exact ⟨f, by aesop, by simp [hf]⟩
+      exact ⟨f, by simp_all, by simp [hf]⟩
   · rintro ⟨f, hf, rfl⟩
     exact .iInter_of_isOpen hf
 
@@ -101,8 +101,6 @@ protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, 
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine ⟨⋃ i, T i, ?_, countable_iUnion hTc, (sInter_iUnion _).symm⟩
   simpa [@forall_swap ι'] using hTo
-
-@[deprecated (since := "2024.02.15")] alias isGδ_iInter := IsGδ.iInter
 
 theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
@@ -234,8 +232,8 @@ lemma IsMeagre.union {s t : Set X} (hs : IsMeagre s) (ht : IsMeagre t) : IsMeagr
   exact inter_mem hs ht
 
 /-- A countable union of meagre sets is meagre. -/
-lemma isMeagre_iUnion [Countable ι] {f : ι → Set X} (hs : ∀ i, IsMeagre (f i))
-    : IsMeagre (⋃ i, f i) := by
+lemma isMeagre_iUnion [Countable ι] {f : ι → Set X} (hs : ∀ i, IsMeagre (f i)) :
+    IsMeagre (⋃ i, f i) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 

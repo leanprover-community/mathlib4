@@ -245,9 +245,9 @@ def ensureIff (pf : Expr) : MetaM Expr := do
 inductive CongrType
   | eq | heq
 
-/-- A congruence lemma between two expressions.
-The proof is generated dynamically, depending on whether the resulting lemma should be
-an `Eq` or a `HEq`.
+/--
+A congruence lemma between two expressions. The proof is generated dynamically, depending on
+whether the resulting lemma should be an `Eq` or a `HEq`.
 If generating a proof impossible, then the generator can throw an error.
 This can be due to either an `Eq` proof being impossible
 or due to the lhs/rhs not being defeq to the lhs/rhs of the generated proof,
@@ -255,10 +255,10 @@ which can happen for user-supplied congruence holes.
 
 This complexity is to support two features:
 
-1. The user is free to supply Iff, Eq, and HEq lemmas in congurence holes,
+1. The user is free to supply Iff, Eq, and HEq lemmas in congruence holes,
    and we're able to transform them into whatever is appropriate for a
    given congruence lemma.
-2. If the congrence hole is a metavariable, then we can specialize that
+2. If the congruence hole is a metavariable, then we can specialize that
    hole to an Iff, Eq, or HEq depending on what's necessary at that site. -/
 structure CongrResult where
   /-- The left-hand side of the congruence result. -/

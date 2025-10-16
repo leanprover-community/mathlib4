@@ -70,7 +70,7 @@ structure NormedLinearOrderedGroup (α : Type*) extends LinearOrderedCommGroup �
 set_option linter.deprecated false in
 set_option linter.existingAttributeWarning false in
 /-- A `NormedLinearOrderedField` is a field that is both a `NormedField` and a
-    `LinearOrderedField`. This class is necessary to avoid diamonds. -/
+`LinearOrderedField`. This class is necessary to avoid diamonds. -/
 @[deprecated "Use `[NormedField α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-04-10")]
 structure NormedLinearOrderedField (α : Type*) extends LinearOrderedField α, Norm α,

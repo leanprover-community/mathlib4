@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # Chosen finite products in `Cat`
 
-This file proves that the cartesian product of a pair of categories agrees with the
+This file proves that the Cartesian product of a pair of categories agrees with the
 product in `Cat`, and provides the associated `CartesianMonoidalCategory` instance.
 -/
 
@@ -19,6 +19,7 @@ namespace Cat
 
 open Limits
 
+attribute [local instance] uliftCategory in
 /-- The chosen terminal object in `Cat`. -/
 abbrev chosenTerminal : Cat := Cat.of (ULift (ULiftHom (Discrete Unit)))
 

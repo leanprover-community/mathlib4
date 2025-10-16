@@ -188,7 +188,7 @@ theorem image_le_of_deriv_right_lt_deriv_boundary {f f' : ℝ → ℝ} {a b : �
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `f a ≤ B a`;
-* `B` has derivative `B'` everywhere on `ℝ`;
+* `B` has right derivative `B'` at every point of `[a, b)`;
 * `f` has right derivative `f'` at every point of `[a, b)`;
 * we have `f' x ≤ B' x` on `[a, b)`.
 
@@ -599,7 +599,7 @@ theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f
 theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (fderiv 𝕜 f) 0) : ∃ a, ∀ x ∈ s, f x = a := by
-  obtain (rfl|⟨y, hy⟩) := s.eq_empty_or_nonempty
+  obtain (rfl | ⟨y, hy⟩) := s.eq_empty_or_nonempty
   · exact ⟨0, by simp⟩
   · refine ⟨f y, fun x hx ↦ ?_⟩
     have h₁ := hs.isOpen_inter_preimage_of_fderiv_eq_zero hf hf' {f y}
@@ -766,7 +766,7 @@ theorem _root_.IsOpen.exists_eq_add_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen 
     (hs' : IsPreconnected s)
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
     (hf' : s.EqOn (deriv f) (deriv g)) : ∃ a, s.EqOn f (g · + a) :=
-  hs.exists_eq_add_of_fderiv_eq hs' hf hg (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' hx])
+  hs.exists_eq_add_of_fderiv_eq hs' hf hg (fun x hx ↦ by simp [← deriv_fderiv, hf' hx])
 
 theorem _root_.IsOpen.eqOn_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
     (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)

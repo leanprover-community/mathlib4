@@ -35,7 +35,7 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ => 1/x) y := by fun
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:
 ```lean
-import Mathlib.Data.Complex.Trigonometric
+import Mathlib.Analysis.Complex.Trigonometric
 example : Continuous (fun x : ℝ => x * Real.sin x) := by fun_prop
 ```
 Fails with the error:
@@ -277,7 +277,7 @@ There are four types of theorems that are used a bit differently.
 
     In fact, not only `DFunLike.coe` but any function coercion is treated this way. Such function
     coercion has to be registered with `Lean.Meta.registerCoercion` with coercion type `.coeFun`.
-    Here is an example of custom structure `MyFunLike` that that should be considered as bundled
+    Here is an example of custom structure `MyFunLike` that should be considered as bundled
     morphism by `fun_prop`:
     ```lean
     structure MyFunLike (α β : Type) where

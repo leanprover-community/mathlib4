@@ -24,11 +24,12 @@ def RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+
   letI : Algebra R S := f.toAlgebra
   Module.Flat R S
 
-lemma flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
+lemma RingHom.flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
     (algebraMap R S).Flat ↔ Module.Flat R S := by
-  simp only [RingHom.Flat]
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [RingHom.Flat, toAlgebra_algebraMap]
+
+@[deprecated (since := "2025-06-03")]
+alias flat_algebraMap_iff := RingHom.flat_algebraMap_iff
 
 namespace RingHom.Flat
 
@@ -63,11 +64,8 @@ lemma respectsIso : RespectsIso Flat := by
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Flat := by
   apply IsStableUnderBaseChange.mk respectsIso
   introv h
-  replace h : Module.Flat R T := by
-    rw [RingHom.Flat] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
-  suffices Module.Flat S (S ⊗[R] T) by
-    rw [RingHom.Flat]; convert this; congr; ext; simp_rw [Algebra.smul_def]; rfl
-  exact inferInstance
+  rw [flat_algebraMap_iff] at h ⊢
+  infer_instance
 
 lemma holdsForLocalizationAway : HoldsForLocalizationAway Flat := by
   introv R h

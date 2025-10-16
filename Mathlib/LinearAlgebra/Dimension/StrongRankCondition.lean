@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
-# Lemmas about rank and finrank in rings satisfying strong rank condition.
+# Lemmas about rank and `finrank` in rings satisfying strong rank condition.
 
 ## Main statements
 
@@ -30,7 +30,7 @@ For modules over rings satisfying the strong rank condition
   then the cardinality of `s` is bounded by the cardinality of `b`.
 
 For modules over rings with invariant basis number
-(including all commutative rings and all noetherian rings)
+(including all commutative rings and all Noetherian rings)
 
 * `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
   cardinality.
@@ -89,7 +89,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
 
 /-- Given two bases indexed by `ι` and `ι'` of an `R`-module, where `R` satisfies the invariant
 basis number property, an equiv `ι ≃ ι'`. -/
-def Basis.indexEquiv (v : Basis ι R M) (v' : Basis ι' R M) : ι ≃ ι' :=
+def Module.Basis.indexEquiv (v : Basis ι R M) (v' : Basis ι' R M) : ι ≃ ι' :=
   (Cardinal.lift_mk_eq'.1 <| mk_eq_mk_of_basis v v').some
 
 theorem mk_eq_mk_of_basis' {ι' : Type w} (v : Basis ι R M) (v' : Basis ι' R M) : #ι = #ι' :=
@@ -137,7 +137,8 @@ theorem basis_le_span' {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (
 /-- If `R` satisfies the rank condition,
 then the cardinality of any basis is bounded by the cardinality of any spanning set.
 -/
-theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : #(range v) ≤ #J := by
+theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) :
+    #(range v) ≤ #J := by
   haveI := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite J
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
@@ -314,7 +315,7 @@ theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι 
   · haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R
     exact infinite_basis_le_maximal_linearIndependent b v i m
 
-theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank R M := by
+theorem Module.Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank R M := by
   haveI := nontrivial_of_invariantBasisNumber R
   rw [Module.rank_def]
   apply le_antisymm
@@ -331,7 +332,7 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank 
     rintro ⟨s, li⟩
     apply linearIndependent_le_basis v _ li
 
-theorem Basis.mk_range_eq_rank (v : Basis ι R M) : #(range v) = Module.rank R M :=
+theorem Module.Basis.mk_range_eq_rank (v : Basis ι R M) : #(range v) = Module.rank R M :=
   v.reindexRange.mk_eq_rank''
 
 /-- If a vector space has a finite basis, then its dimension (seen as a cardinal) is equal to the
@@ -342,30 +343,34 @@ theorem rank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι R M) :
   haveI := nontrivial_of_invariantBasisNumber R
   rw [← h.mk_range_eq_rank, Cardinal.mk_fintype, Set.card_range_of_injective h.injective]
 
-theorem Basis.card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : Basis ι R M)
+namespace Module.Basis
+
+theorem card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : Basis ι R M)
     {ι' : Type*} [Fintype ι'] {v : ι' → M} (hv : LinearIndependent R v) :
     Fintype.card ι' ≤ Fintype.card ι := by
   letI := nontrivial_of_invariantBasisNumber R
   simpa [rank_eq_card_basis b, Cardinal.mk_fintype] using hv.cardinal_lift_le_rank
 
-theorem Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)
+theorem card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent
     (b'.linearIndependent.map_injOn N.subtype N.injective_subtype.injOn)
 
-theorem Basis.card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι] (b : Basis ι R O)
-    [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
+theorem card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι]
+    (b : Basis ι R O) [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent
     (b'.linearIndependent.map_injOn (inclusion hNO) (N.inclusion_injective _).injOn)
 
-theorem Basis.mk_eq_rank (v : Basis ι R M) :
+theorem mk_eq_rank (v : Basis ι R M) :
     Cardinal.lift.{v} #ι = Cardinal.lift.{w} (Module.rank R M) := by
   haveI := nontrivial_of_invariantBasisNumber R
   rw [← v.mk_range_eq_rank, Cardinal.mk_range_eq_of_injective v.injective]
 
-theorem Basis.mk_eq_rank'.{m} (v : Basis ι R M) :
+theorem mk_eq_rank'.{m} (v : Basis ι R M) :
     Cardinal.lift.{max v m} #ι = Cardinal.lift.{max w m} (Module.rank R M) :=
   Cardinal.lift_umax_eq.{w, v, m}.mpr v.mk_eq_rank
+
+end Module.Basis
 
 theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
     Module.rank R ↑(span R (range v)) = #(range v) := by
@@ -450,7 +455,7 @@ theorem finrank_self : finrank R R = 1 :=
   finrank_eq_of_rank_eq (by simp)
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
-noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
+noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
   have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
   have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]
   exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 this)
@@ -524,9 +529,6 @@ lemma Module.finrank_bot_le_finrank_of_isScalarTower (S T : Type*) [Semiring S] 
     finrank R S ≤ finrank R T :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_bot_le_lift_rank_of_isScalarTower R S T)
     (Module.rank_lt_aleph0 _ _)
-
-@[deprecated (since := "2024-11-21")]
-alias LinearMap.finrank_le_of_smul_regular := LinearMap.finrank_le_of_isSMulRegular
 
 end StrongRankCondition
 

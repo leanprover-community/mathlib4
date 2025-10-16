@@ -39,7 +39,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
     exact h₂.symm
   have key : exp (2 * (arctan z * I)) = (1 + z * I) / (1 - z * I) := by
     rw [arctan, ← mul_rotate, ← mul_assoc,
-      show 2 * (I * (-I / 2)) = 1 by field_simp, one_mul, exp_log]
+      show 2 * (I * (-I / 2)) = 1 by simp [field], one_mul, exp_log]
     · exact div_ne_zero z₁ z₂
   -- multiply top and bottom by `1 - z * I`
   rw [key, ← mul_div_mul_right _ _ z₂, sub_mul, add_mul, div_mul_cancel₀ _ z₂, one_mul,
@@ -58,7 +58,7 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
     rw [nr, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_iff_of_pos_right (by positivity)] at h₂
     norm_cast at h₁ h₂
     change -1 < _ at h₁
-    rwa [show 2 * k + 1 = 1 by omega, Int.cast_one, one_mul] at nr
+    rwa [show 2 * k + 1 = 1 by cutsat, Int.cast_one, one_mul] at nr
   · exact Or.inr ni
 
 theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h₂ : z.re ≤ π / 2) :

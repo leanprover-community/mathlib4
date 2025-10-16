@@ -19,8 +19,8 @@ open MulOpposite
 
 /-- The units of the opposites are equivalent to the opposites of the units. -/
 @[to_additive
-      "The additive units of the additive opposites are equivalent to the additive opposites
-      of the additive units."]
+      /-- The additive units of the additive opposites are equivalent to the additive opposites
+      of the additive units. -/]
 def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
   toFun u := op ⟨unop u, unop ↑u⁻¹, op_injective u.4, op_injective u.3⟩
   invFun := MulOpposite.rec' fun u => ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩

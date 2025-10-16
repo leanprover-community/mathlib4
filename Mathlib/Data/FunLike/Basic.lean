@@ -142,9 +142,6 @@ class DFunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort
   /-- The coercion to functions must be injective. -/
   coe_injective' : Function.Injective coe
 
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% DFunLike.coe
-
 /-- The class `FunLike F α β` (`Fun`ction-`Like`) expresses that terms of type `F`
 have an injective coercion to functions from `α` to `β`.
 `FunLike` is the non-dependent version of `DFunLike`.

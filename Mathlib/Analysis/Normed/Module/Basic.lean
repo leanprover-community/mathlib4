@@ -3,7 +3,6 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
@@ -37,6 +36,7 @@ equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ �
 Note that since this requires `SeminormedAddCommGroup` and not `NormedAddCommGroup`, this
 typeclass can be used for "semi normed spaces" too, just as `Module` can be used for
 "semi modules". -/
+@[ext]
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
   protected norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
@@ -70,6 +70,11 @@ theorem norm_intCast_eq_abs_mul_norm_one (α) [SeminormedRing α] [NormSMulClass
 theorem norm_natCast_eq_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ α] (n : ℕ) :
     ‖(n : α)‖ = n * ‖(1 : α)‖ := by
   simpa using norm_intCast_eq_abs_mul_norm_one α n
+
+@[simp]
+lemma norm_natCast {α : Type*} [SeminormedRing α] [NormOneClass α] [NormSMulClass ℤ α]
+    (a : ℕ) : ‖(a : α)‖ = a := by
+  simpa using norm_natCast_eq_mul_norm_one α a
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
@@ -261,6 +266,10 @@ theorem dist_algebraMap (x y : 𝕜) :
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
 
+@[simp]
+theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x • (1 : 𝕜')‖ = ‖x‖ := by
+  simp [norm_smul]
+
 /-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
@@ -309,7 +318,6 @@ theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 �
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
 
--- Porting note: cannot synth scalar tower ℚ ℝ k
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
 normed algebra over the rationals.
 
@@ -453,6 +461,12 @@ See Note [reducible non-instances].
 -/
 abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
+
+theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
+    [h : NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
+    NormedSpace.restrictScalars 𝕜 𝕜' E = h := by
+  ext
+  apply algebraMap_smul
 
 end NormedSpace
 
@@ -729,7 +743,7 @@ bounded on a neighborhood of `0`, must be continuous. -/
 lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 𝓝 (0 : G))
     (hbounded : IsBounded (f '' s)) : Continuous f := by
   obtain ⟨δ, hδ, hUε⟩ := Metric.mem_nhds_iff.mp hs
-  obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_subset f hUε)
+  obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_mono hUε)
   refine continuous_of_continuousAt_zero _ (continuousAt_iff.2 fun ε (hε : _ < _) => ?_)
   simp only [dist_zero_right, map_zero]
   simp only [subset_def, mem_image, mem_ball, dist_zero_right, forall_exists_index, and_imp,

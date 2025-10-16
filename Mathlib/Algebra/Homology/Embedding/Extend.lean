@@ -140,11 +140,7 @@ lemma isZero_extend_X' (i' : ι') (hi' : e.r i' = none) :
 
 lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     IsZero ((K.extend e).X i') :=
-  K.isZero_extend_X' e i' (by
-    obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
-    · exact hi'
-    · exfalso
-      exact hi' _ (e.f_eq_of_r_eq_some hi))
+  K.isZero_extend_X' e i' (ComplexShape.Embedding.r_eq_none e i' hi')
 
 instance : (K.extend e).IsStrictlySupported e where
   isZero i' hi' := K.isZero_extend_X e i' hi'
@@ -174,7 +170,7 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
 
 variable {K L M}
 
-/-- Given an ambedding `e : c.Embedding c'` of complexes shapes, this is the
+/-- Given an embedding `e : c.Embedding c'` of complexes shapes, this is the
 morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
 `HomologicalComplex C c`. -/
 noncomputable def extendMap : K.extend e ⟶ L.extend e where

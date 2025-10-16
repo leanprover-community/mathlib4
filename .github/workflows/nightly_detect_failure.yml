@@ -41,7 +41,15 @@ jobs:
         ref: nightly-testing # checkout nightly-testing branch
         fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
         token: ${{ secrets.NIGHTLY_TESTING }}
-    - name: Update the nightly-testing-YYYY-MM-DD branch
+    - name: Update the nightly-testing-green branch
+      continue-on-error: true
+      run: |
+        # The `nightly-testing-green` branch keeps a record of the successfully built commits on `nightly-testing`.
+        # This is allowed to fail, because it might happen that an earlier commit finishes CI later,
+        # we don't want to force push and revert the history.
+        # In case `nightly-testing` does have its history rewritten, we do a force push once a day.
+        git push origin HEAD:nightly-testing-green
+    - name: Create a nightly-testing-YYYY-MM-DD tag
       run: |
         toolchain="$(<lean-toolchain)"
         if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
@@ -55,6 +63,9 @@ jobs:
               printf 'Creating tag %s from the current state of the nightly-testing branch.' "nightly-testing-${version}"
               git tag "nightly-testing-${version}"
               git push origin "nightly-testing-${version}"
+              # Update the tracking branches. With `--force` in case history gets rewritten on the `nightly-testing` branch.
+              git push --force origin HEAD:nightly-testing-daily
+              git push --force origin HEAD:nightly-testing-green
               hash="$(git rev-parse "nightly-testing-${version}")"
               curl -X POST "https://speed.lean-lang.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
           fi
@@ -133,10 +144,10 @@ jobs:
           const branchName = `bump/nightly-${process.env.NIGHTLY}`;
           console.log(`Looking for branch: ${branchName}`);
 
-          // Use paginate to get all branches
+          // Use paginate to get all branches from nightly-testing repository
           const branches = await github.paginate(github.rest.repos.listBranches, {
-            owner: context.repo.owner,
-            repo: context.repo.repo
+            owner: 'leanprover-community',
+            repo: 'mathlib4-nightly-testing'
           });
 
           const exists = branches.some(branch => branch.name === branchName);
@@ -162,8 +173,8 @@ jobs:
         result-encoding: string
         script: |
           const branches = await github.paginate(github.rest.repos.listBranches, {
-            owner: context.repo.owner,
-            repo: context.repo.repo
+            owner: 'leanprover-community',
+            repo: 'mathlib4-nightly-testing'
           });
           const bumpBranches = branches
             .map(branch => branch.name)
@@ -187,8 +198,8 @@ jobs:
           // Get branch SHA first for durable URL
           try {
             const branchResponse = await github.rest.repos.getBranch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+              owner: 'leanprover-community',
+              repo: 'mathlib4-nightly-testing',
               branch: branchName
             });
             sha = branchResponse.data.commit.sha;
