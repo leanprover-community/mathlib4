@@ -299,6 +299,9 @@ instance instNeg : Neg 𝓢(E, F) :=
 @[simp]
 theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
 
+@[simp]
+theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
+
 end Neg
 
 section Add
@@ -519,6 +522,8 @@ end Topology
 
 section TemperateGrowth
 
+open Asymptotics
+
 /-! ### Functions of temperate growth -/
 
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
@@ -526,54 +531,60 @@ polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
   ContDiff ℝ ∞ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
 
+/-- A function has temperate growth if and only if it is smooth and its `n`-th iterated
+derivative is `O((1 + ‖x‖) ^ k)` for some `k : ℕ` (depending on `n`).
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+
+TODO: when `E` is finite dimensional, this is equivalent to the derivatives being `O(‖x‖ ^ k)`
+as `‖x‖ → ∞`.
+-/
+theorem _root_.Function.hasTemperateGrowth_iff_isBigO {f : E → F} :
+    f.HasTemperateGrowth ↔ ContDiff ℝ ∞ f ∧
+      ∀ n, ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k):= by
+  simp_rw [Asymptotics.isBigO_top]
+  congrm ContDiff ℝ ∞ f ∧ (∀ n, ∃ k C, ∀ x, _ ≤ C * ?_)
+  rw [norm_pow, Real.norm_of_nonneg (by positivity)]
+
+/-- If `f` as temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
+some `k : ℕ` (depending on `n`).
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+-/
+theorem _root_.Function.HasTemperateGrowth.isBigO {f : E → F}
+    (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
+    ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) :=
+  Function.hasTemperateGrowth_iff_isBigO.mp hf_temperate |>.2 n
+
+/-- If `f` as temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
+derivatives of `f` of order `≤ N` are `O((1 + ‖x‖) ^ k)`.
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+-/
+theorem _root_.Function.HasTemperateGrowth.isBigO_uniform {f : E → F}
+    (hf_temperate : f.HasTemperateGrowth) (N : ℕ) :
+    ∃ k, ∀ n ≤ N, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
+  choose k hk using hf_temperate.isBigO
+  use (Finset.range (N + 1)).sup k
+  intro n hn
+  refine (hk n).trans (isBigO_of_le _ fun x ↦ ?_)
+  rw [Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity)]
+  gcongr
+  · simp
+  · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
+
 theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
-  choose k C f using hf_temperate.2
-  use (Finset.range (n + 1)).sup k
-  let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := le_max_left _ _
-  use C', hC'
-  intro N hN x
-  rw [← Finset.mem_range_succ_iff] at hN
-  grw [f]
-  gcongr
-  · simp only [C', Finset.le_sup'_iff, le_max_iff]
-    right
-    exact ⟨N, hN, le_rfl⟩
-  · simp
-  exact Finset.le_sup hN
-
-section Mul
-
-variable [NormedField 𝕜] [NormedRing R] [NormedSpace 𝕜 R] [NormedAlgebra ℝ R]
-  [IsScalarTower 𝕜 R R] [SMulCommClass 𝕜 R R]
-
-theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
-    (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth := by
-  constructor
-  · exact hf.1.mul hg.1
-  intro n
-  rcases hf.norm_iteratedFDeriv_le_uniform_aux n with ⟨k1, C1, hC1, h1⟩
-  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨k2, C2, hC2, h2⟩
-  use k1 + k2
-  use ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C1 * C2)
-  intro x
-  apply le_trans (norm_iteratedFDeriv_mul_le hf.1 hg.1 x (right_eq_inf.mp rfl))
-  have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
-  simp_rw [mul_assoc ((n : ℝ) + 1), ← this, Finset.sum_mul]
-  refine Finset.sum_le_sum fun i hi => ?_
-  rw [one_mul]
-  move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n / 2) : ℝ)]
-  gcongr ?_ * ?_
-  swap
-  · norm_cast
-    exact i.choose_le_middle n
-  simp only [Finset.mem_range] at hi
-  grw [h1 i (Nat.le_of_lt_succ hi) x, h2 (n - i) (by simp only [tsub_le_self]) x]
-  grind
-
-end Mul
+  rcases hf_temperate.isBigO_uniform n with ⟨k, hk⟩
+  set F := fun x (N : Fin (n+1)) ↦ iteratedFDeriv ℝ N f x
+  have : F =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
+    simp_rw [F, isBigO_pi, Fin.forall_iff, Nat.lt_succ]
+    exact hk
+  rcases this.exists_nonneg with ⟨C, C_nonneg, hC⟩
+  simp (discharger := positivity) only [isBigOWith_top, Real.norm_of_nonneg,
+    pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ] at hC
+  exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
 
 lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
@@ -736,23 +747,19 @@ end TemperateGrowth
 section HasCompactSupport
 
 /-- A smooth compactly supported function is a Schwartz function. -/
-def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h1 : HasCompactSupport f)
-    (h2 : ContDiff ℝ ∞ f) : 𝓢(E, F) where
+@[simps]
+def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSupport f)
+    (h₂ : ContDiff ℝ ∞ f) : 𝓢(E, F) where
   toFun := f
-  smooth' := h2
-  decay' := by
-    intro k n
+  smooth' := h₂
+  decay' k n := by
     set g := fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖
-    have hg1 : Continuous g := by
+    have hg₁ : Continuous g := by
       apply Continuous.mul (by fun_prop)
-      exact (h2.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
-    have hg2 : HasCompactSupport g := (h1.iteratedFDeriv _).norm.mul_left
-    rcases hg1.exists_forall_ge_of_hasCompactSupport hg2 with ⟨x₀, hx₀⟩
+      exact (h₂.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
+    have hg₂ : HasCompactSupport g := (h₁.iteratedFDeriv _).norm.mul_left
+    obtain ⟨x₀, hx₀⟩ := hg₁.exists_forall_ge_of_hasCompactSupport hg₂
     exact ⟨g x₀, hx₀⟩
-
-@[simp]
-theorem _root_.HasCompactSupport.toSchwartzMap_apply {f : E → F} (h1 : HasCompactSupport f)
-    (h2 : ContDiff ℝ ∞ f) (x : E) : h1.toSchwartzMap h2 x = f x := rfl
 
 end HasCompactSupport
 
@@ -904,42 +911,8 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   simp
 
 @[simp]
-theorem bilinLeftCLM_apply_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
+theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) (x : D) : bilinLeftCLM B hg f x = B (f x) (g x) := rfl
-
-variable (E) in
-def smulLeftCLM {g : D → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) :=
-    bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
-
-@[simp]
-theorem smulLeftCLM_apply_apply {g : D → 𝕜} (hg : g.HasTemperateGrowth)
-    (f : 𝓢(D, E)) (x : D) : smulLeftCLM E hg f x = (g x) • f x := rfl
-
-variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R] [IsScalarTower 𝕜 R R]
-  [SMulCommClass 𝕜 R R]
-
-@[simp]
-theorem smulLeftCLM_mul {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
-    (hg₂ : g₂.HasTemperateGrowth) :
-    smulLeftCLM E hg₁ ∘L smulLeftCLM E hg₂ = smulLeftCLM E (hg₁.mul hg₂) := by
-  ext f x
-  simp [smul_smul]
-
-def _root_.ContinuousLinearMap.smul (c : 𝕜) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) where
-  toFun f := c • f
-  map_add' := DistribSMul.smul_add c
-  map_smul' := smul_comm c
-  cont := continuous_const_smul c
-
-@[simp]
-theorem _root_.ContinuousLinearMap.smulCLM_apply (c : 𝕜) (f : 𝓢(D, E)) :
-    ContinuousLinearMap.smul c f = c • f := rfl
-
-@[simp]
-theorem smulLeftCLM_const (c : 𝕜) :
-    smulLeftCLM E (Function.HasTemperateGrowth.const c (E := D)) = ContinuousLinearMap.smul c := by
-  ext
-  simp
 
 end Multiplication
 
