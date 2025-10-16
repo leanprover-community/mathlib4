@@ -808,8 +808,8 @@ theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighbo
     0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
   simp only [degree, Fintype.card_pos_iff, nonempty_subtype, mem_neighborSet]
 
-theorem degree_eq_zero_of_subsingleton {G' : Subgraph G} (v : V) [Fintype (G'.neighborSet v)]
-    [Subsingleton G'.verts] : G'.degree v = 0 := by
+theorem degree_eq_zero_of_subsingleton (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
+    (hG : G'.verts.Subsingleton) : G'.degree v = 0 := by
   by_cases hv : v ∈ G'.verts
   · rw [← G'.coe_degree ⟨v, hv⟩]
     exact G'.coe.degree_eq_zero_of_subsingleton ⟨v, hv⟩
