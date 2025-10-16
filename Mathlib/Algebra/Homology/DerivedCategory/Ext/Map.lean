@@ -12,7 +12,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 
 -/
 
-universe u u' v v' w w'
+universe w w' u u' v v'
 
 namespace CategoryTheory
 
