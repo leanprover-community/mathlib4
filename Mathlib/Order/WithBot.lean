@@ -32,6 +32,8 @@ variable {a b : α}
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
   Option.nontrivial
 
+instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+
 open Function
 
 theorem coe_injective : Injective ((↑) : α → WithBot α) :=
@@ -198,6 +200,16 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   invFun x := ⟨x, WithBot.coe_ne_bot⟩
   left_inv _ := by simp
   right_inv _ := by simp
+
+/-- Function that sends an element of `WithBot α` to `α`,
+with an arbitrary default value for `⊥`. -/
+noncomputable
+abbrev unbotA [Nonempty α] : WithBot α → α := unbotD (Classical.arbitrary α)
+
+lemma unbotA_eq_unbot [Nonempty α] {a : WithBot α} (ha : a ≠ ⊥) : unbotA a = unbot a ha := by
+  cases a with
+  | bot => contradiction
+  | coe a => simp
 
 end WithBot
 
@@ -505,6 +517,8 @@ variable {a b : α}
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
 
+instance [IsEmpty α] : Unique (WithTop α) := Option.instUniqueOfIsEmpty
+
 open Function
 
 theorem coe_injective : Injective ((↑) : α → WithTop α) :=
@@ -733,6 +747,16 @@ theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
   invFun x := ⟨x, WithTop.coe_ne_top⟩
   left_inv _ := by simp
   right_inv _:= by simp
+
+/-- Function that sends an element of `WithTop α` to `α`,
+with an arbitrary default value for `⊤`. -/
+noncomputable
+abbrev untopA [Nonempty α] : WithTop α → α := untopD (Classical.arbitrary α)
+
+lemma untopA_eq_untop [Nonempty α] {a : WithTop α} (ha : a ≠ ⊤) : untopA a = untop a ha := by
+  cases a with
+  | top => contradiction
+  | coe a => simp
 
 end WithTop
 
