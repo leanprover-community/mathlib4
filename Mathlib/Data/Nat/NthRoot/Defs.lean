@@ -3,6 +3,7 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Init
 
 /-!
 # Definition of `Nat.nthRoot`
