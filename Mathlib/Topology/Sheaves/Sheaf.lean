@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Sites.Spaces
 We define sheaves on a topological space, with values in an arbitrary category.
 
 A presheaf on a topological space `X` is a sheaf precisely when it is a sheaf under the
-grothendieck topology on `opens X`, which expands out to say: For each open cover `{ Uᵢ }` of
+Grothendieck topology on `opens X`, which expands out to say: For each open cover `{ Uᵢ }` of
 `U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an `A : X`, there exists a unique
 gluing `A ⟶ F(U)` compatible with the restriction.
 
@@ -40,13 +40,13 @@ variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 namespace Presheaf
 
 /-- The sheaf condition has several different equivalent formulations.
-The official definition chosen here is in terms of grothendieck topologies so that the results on
+The official definition chosen here is in terms of Grothendieck topologies so that the results on
 sites could be applied here easily, and this condition does not require additional constraints on
 the value category.
 The equivalent formulations of the sheaf condition on `presheaf C X` are as follows :
 
 1. `TopCat.Presheaf.IsSheaf`: (the official definition)
-  It is a sheaf with respect to the grothendieck topology on `opens X`, which is to say:
+  It is a sheaf with respect to the Grothendieck topology on `opens X`, which is to say:
   For each open cover `{ Uᵢ }` of `U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an
   `A : X`, there exists a unique gluing `A ⟶ F(U)` compatible with the restriction.
 
@@ -84,7 +84,7 @@ nonrec def IsSheaf (F : Presheaf.{w, v, u} C X) : Prop :=
 /-- The presheaf valued in `Unit` over any topological space is a sheaf.
 -/
 theorem isSheaf_unit (F : Presheaf (CategoryTheory.Discrete Unit) X) : F.IsSheaf :=
-  fun x U S _ x _ => ⟨eqToHom (Subsingleton.elim _ _), by aesop_cat, fun _ => by aesop_cat⟩
+  fun x U S _ x _ => ⟨eqToHom (Subsingleton.elim _ _), by cat_disch, fun _ => by cat_disch⟩
 
 theorem isSheaf_iso_iff {F G : Presheaf C X} (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf :=
   Presheaf.isSheaf_of_iso_iff α
@@ -103,10 +103,7 @@ satisfying the sheaf condition.
 -/
 nonrec def Sheaf : Type max u v w :=
   Sheaf (Opens.grothendieckTopology X) C
-
--- Porting note: `deriving Cat` failed
-instance SheafCat : Category (Sheaf C X) :=
-  show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
+deriving Category
 
 variable {C X}
 
@@ -127,11 +124,12 @@ namespace Sheaf
 def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
   sheafToPresheaf _ _
 
--- Porting note: `deriving Full` failed
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance forget_full : (forget C X).Full where
   map_surjective f := ⟨Sheaf.Hom.mk f, rfl⟩
 
--- Porting note: `deriving Faithful` failed
 instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.Hom.ext
 
@@ -144,5 +142,21 @@ theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
   rfl
 
 end Sheaf
+
+lemma Presheaf.IsSheaf.section_ext {X : TopCat.{u}}
+    {A : Type*} [Category.{u} A] {FC : A → A → Type*} {CC : A → Type u}
+    [∀ X Y : A, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{u} A FC]
+    [HasLimits A] [PreservesLimits (forget A)] [(forget A).ReflectsIsomorphisms]
+    {F : TopCat.Presheaf A X} (hF : TopCat.Presheaf.IsSheaf F)
+    {U : (Opens X)ᵒᵖ} {s t : ToType (F.obj U)}
+    (hst : ∀ x ∈ U.unop, ∃ V, ∃ hV : V ≤ U.unop, x ∈ V ∧
+      F.map (homOfLE hV).op s = F.map (homOfLE hV).op t) :
+    s = t := by
+  have := (isSheaf_iff_isSheaf_of_type _ _).mp
+    ((Presheaf.isSheaf_iff_isSheaf_forget (C := Opens X) (A' := A) _ F (forget _)).mp hF)
+  choose V hV hxV H using fun x : U.unop ↦ hst x.1 x.2
+  refine (this.isSheafFor _ (.ofArrows V fun x ↦ homOfLE (hV x)) ?_).isSeparatedFor.ext ?_
+  · exact fun x hx ↦ ⟨V ⟨x, hx⟩, homOfLE (hV _), Sieve.le_generate _ _ (.mk _), hxV _⟩
+  · rintro _ _ ⟨x⟩; exact H x
 
 end TopCat

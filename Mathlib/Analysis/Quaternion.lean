@@ -17,7 +17,7 @@ In this file we define the following structures on the space `ℍ := ℍ[ℝ]` o
 * normed ring;
 * normed space over `ℝ`.
 
-We show that the norm on `ℍ[ℝ]` agrees with the euclidean norm of its components.
+We show that the norm on `ℍ[ℝ]` agrees with the Euclidean norm of its components.
 
 ## Notation
 
@@ -49,10 +49,10 @@ theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
 noncomputable instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
-      conj_symm := fun x y => by simp [inner_def, mul_comm]
-      nonneg_re := fun _ => normSq_nonneg
+      conj_inner_symm := fun x y => by simp [inner_def, mul_comm]
+      re_inner_nonneg := fun _ => normSq_nonneg
       definite := fun _ => normSq_eq_zero.1
-      add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
+      add_left := fun x y z => by simp only [inner_def, add_mul, re_add]
       smul_left := fun x y r => by simp [inner_def] }
 
 noncomputable instance : InnerProductSpace ℝ ℍ :=
@@ -72,23 +72,17 @@ theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
 theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
-@[simp, nolint simpNF]
+-- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
-@[simp, nolint simpNF]
+-- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 
 noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
-  norm_mul' a b := by
-    simp only [norm_eq_sqrt_real_inner, inner_self, normSq.map_mul]
-    exact Real.sqrt_mul normSq_nonneg _
+  norm_mul _ _ := by simp [norm_eq_sqrt_real_inner, inner_self]
 
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
@@ -104,20 +98,28 @@ instance : CStarRing ℍ where
 instance : Coe ℂ ℍ := ⟨coeComplex⟩
 
 @[simp, norm_cast]
-theorem coeComplex_re (z : ℂ) : (z : ℍ).re = z.re :=
+theorem re_coeComplex (z : ℂ) : (z : ℍ).re = z.re :=
   rfl
 
-@[simp, norm_cast]
-theorem coeComplex_imI (z : ℂ) : (z : ℍ).imI = z.im :=
-  rfl
+@[deprecated (since := "2025-08-31")] alias coeComplex_re := re_coeComplex
 
 @[simp, norm_cast]
-theorem coeComplex_imJ (z : ℂ) : (z : ℍ).imJ = 0 :=
+theorem imI_coeComplex (z : ℂ) : (z : ℍ).imI = z.im :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias coeComplex_imI := imI_coeComplex
+
 @[simp, norm_cast]
-theorem coeComplex_imK (z : ℂ) : (z : ℍ).imK = 0 :=
+theorem imJ_coeComplex (z : ℂ) : (z : ℍ).imJ = 0 :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias coeComplex_imJ := imJ_coeComplex
+
+@[simp, norm_cast]
+theorem imK_coeComplex (z : ℂ) : (z : ℍ).imK = 0 :=
+  rfl
+
+@[deprecated (since := "2025-08-31")] alias coeComplex_imK := imK_coeComplex
 
 @[simp, norm_cast]
 theorem coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
@@ -152,9 +154,8 @@ def ofComplex : ℂ →ₐ[ℝ] ℍ where
 @[simp]
 theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
-/-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
-theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
-    ‖(WithLp.equiv 2 (Fin 4 → _)).symm (equivTuple ℝ x)‖ = ‖x‖ := by
+/-- The norm of the components as a Euclidean vector equals the norm of the quaternion. -/
+lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
   simp_rw [RCLike.inner_apply, starRingEnd_apply, star_trivial, ← sq]
@@ -167,7 +168,7 @@ noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace �
       (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
     toFun := fun a => !₂[a.1, a.2, a.3, a.4]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
-    norm_map' := norm_piLp_equiv_symm_equivTuple }
+    norm_map' := norm_toLp_equivTuple }
 
 @[continuity]
 theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
@@ -196,7 +197,7 @@ theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
 
 @[continuity]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by
-  simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
+  simpa only [← sub_re_self] using continuous_id.sub (continuous_coe.comp continuous_re)
 
 instance : CompleteSpace ℍ :=
   haveI : IsUniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
@@ -205,27 +206,25 @@ instance : CompleteSpace ℍ :=
 
 section infinite_sum
 
-variable {α : Type*}
+variable {α : Type*} {L : SummationFilter α}
 
 @[simp, norm_cast]
-theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=
+theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) L ↔ HasSum f r L :=
   ⟨fun h => by
     simpa only using
     h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _ _) continuous_re,
     fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
 
 @[simp, norm_cast]
-theorem summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summable f := by
+theorem summable_coe {f : α → ℝ} : (Summable (fun a => (f a : ℍ)) L) ↔ Summable f L := by
   simpa only using
     Summable.map_iff_of_leftInverse (algebraMap ℝ ℍ) (show ℍ →ₗ[ℝ] ℝ from
       QuaternionAlgebra.reₗ _ _ _)
-      (continuous_algebraMap _ _) continuous_re coe_re
+      (continuous_algebraMap _ _) continuous_re re_coe
 
 @[norm_cast]
-theorem tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) := by
-  by_cases hf : Summable f
-  · exact (hasSum_coe.mpr hf.hasSum).tsum_eq
-  · simp [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (summable_coe.not.mpr hf)]
+theorem tsum_coe (f : α → ℝ) : (∑'[L] a, (f a : ℍ)) = ↑(∑'[L] a, f a) :=
+  (Function.LeftInverse.map_tsum f (continuous_algebraMap _ _) continuous_re re_coe).symm
 
 end infinite_sum
 

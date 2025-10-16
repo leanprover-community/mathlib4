@@ -3,11 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Declarations about scalar multiplication on `Finsupp`
@@ -125,7 +126,7 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →�
 variable {α M}
 
 @[simp]
-theorem support_smul_eq [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] {b : R}
+theorem support_smul_eq [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {b : R}
     (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
   Finset.ext fun a => by simp [Finsupp.smul_apply, hb]
 
@@ -134,7 +135,7 @@ section
 variable {p : α → Prop} [DecidablePred p]
 
 @[simp]
-theorem filter_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] {b : R} {v : α →₀ M} :
+theorem filter_smul [Zero M] [SMulZeroClass R M] {b : R} {v : α →₀ M} :
     (b • v).filter p = b • v.filter p :=
   DFunLike.coe_injective <| by
     simp only [filter_eq_indicator, coe_smul]
@@ -142,17 +143,18 @@ theorem filter_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] {b : R} 
 
 end
 
-theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {f : α → β} (b : R)
+theorem mapDomain_smul [AddCommMonoid M] [DistribSMul R M] {f : α → β} (b : R)
     (v : α →₀ M) : mapDomain f (b • v) = b • mapDomain f v :=
   mapDomain_mapRange _ _ _ _ (smul_add b)
 
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
     c • Finsupp.single a b = Finsupp.single a (c * b) := by simp
 
-theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
+theorem smul_single_one [MulZeroOneClass R] (a : α) (b : R) :
+    b • single a (1 : R) = single a b := by
   rw [smul_single, smul_eq_mul, mul_one]
 
-theorem comapDomain_smul [AddMonoid M] [Monoid R] [DistribMulAction R M] {f : α → β} (r : R)
+theorem comapDomain_smul [Zero M] [SMulZeroClass R M] {f : α → β} (r : R)
     (v : β →₀ M) (hfv : Set.InjOn f (f ⁻¹' ↑v.support))
     (hfrv : Set.InjOn f (f ⁻¹' ↑(r • v).support) :=
       hfv.mono <| Set.preimage_mono <| Finset.coe_subset.mpr support_smul) :
@@ -161,24 +163,25 @@ theorem comapDomain_smul [AddMonoid M] [Monoid R] [DistribMulAction R M] {f : α
   rfl
 
 /-- A version of `Finsupp.comapDomain_smul` that's easier to use. -/
-theorem comapDomain_smul_of_injective [AddMonoid M] [Monoid R] [DistribMulAction R M] {f : α → β}
+theorem comapDomain_smul_of_injective [Zero M] [SMulZeroClass R M] {f : α → β}
     (hf : Function.Injective f) (r : R) (v : β →₀ M) :
     comapDomain f (r • v) hf.injOn = r • comapDomain f v hf.injOn :=
   comapDomain_smul _ _ _ _
 
 end
 
-theorem sum_smul_index [Semiring R] [AddCommMonoid M] {g : α →₀ R} {b : R} {h : α → R → M}
+theorem sum_smul_index [MulZeroClass R] [AddCommMonoid M] {g : α →₀ R} {b : R} {h : α → R → M}
     (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i a => h i (b * a) :=
   Finsupp.sum_mapRange_index h0
 
-theorem sum_smul_index' [AddMonoid M] [DistribSMul R M] [AddCommMonoid N] {g : α →₀ M} {b : R}
+theorem sum_smul_index' [Zero M] [SMulZeroClass R M] [AddCommMonoid N] {g : α →₀ M} {b : R}
     {h : α → M → N} (h0 : ∀ i, h i 0 = 0) : (b • g).sum h = g.sum fun i c => h i (b • c) :=
   Finsupp.sum_mapRange_index h0
 
 /-- A version of `Finsupp.sum_smul_index'` for bundled additive maps. -/
-theorem sum_smul_index_addMonoidHom [AddMonoid M] [AddCommMonoid N] [DistribSMul R M] {g : α →₀ M}
-    {b : R} {h : α → M →+ N} : ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
+theorem sum_smul_index_addMonoidHom [AddZeroClass M] [AddCommMonoid N] [SMulZeroClass R M]
+    {g : α →₀ M} {b : R} {h : α → M →+ N} :
+    ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
   sum_mapRange_index fun i => (h i).map_zero
 
 instance noZeroSMulDivisors [Zero R] [Zero M] [SMulZeroClass R M] {ι : Type*}
@@ -194,12 +197,7 @@ variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribM
 See also `Finsupp.lsingle` for the version as a linear map. -/
 def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
   { singleAddHom a with
-    map_smul' := fun k m => by
-      simp only
-      show singleAddHom a (k • m) = k • singleAddHom a m
-      change Finsupp.single a (k • m) = k • (Finsupp.single a m)
-      -- Porting note: because `singleAddHom_apply` is missing
-      simp only [smul_single] }
+    map_smul' := fun k m => by simp }
 
 theorem distribMulActionHom_ext {f g : (α →₀ M) →+[R] N}
     (h : ∀ (a : α) (m : M), f (single a m) = g (single a m)) : f = g :=

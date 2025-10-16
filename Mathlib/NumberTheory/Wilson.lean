@@ -43,12 +43,8 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
         rw [← Finset.prod_Ico_id_eq_factorial, prod_natCast]
       _ = ∏ x : (ZMod p)ˣ, (x : ZMod p) := ?_
       _ = -1 := by
-        -- Porting note: `simp` is less powerful.
-        -- simp_rw [← Units.coeHom_apply, ← (Units.coeHom (ZMod p)).map_prod,
-        --   prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
-        simp_rw [← Units.coeHom_apply]
-        rw [← map_prod (Units.coeHom (ZMod p))]
-        simp_rw [prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
+        simp_rw [← Units.coeHom_apply, ← map_prod (Units.coeHom (ZMod p)),
+          prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
   have hp : 0 < p := (Fact.out (p := p.Prime)).pos
   symm
   refine prod_bij (fun a _ => (a : ZMod p).val) ?_ ?_ ?_ ?_
@@ -91,7 +87,7 @@ theorem prime_of_fac_equiv_neg_one (h : ((n - 1)! : ZMod n) = -1) (h1 : n ≠ 1)
   obtain ⟨m, hm1, hm2 : 1 < m, hm3⟩ := exists_dvd_of_not_prime2 h1 h2
   have hm : m ∣ (n - 1)! := Nat.dvd_factorial (pos_of_gt hm2) (le_pred_of_lt hm3)
   refine hm2.ne' (Nat.dvd_one.mp ((Nat.dvd_add_right hm).mp (hm1.trans ?_)))
-  rw [← ZMod.natCast_zmod_eq_zero_iff_dvd, cast_add, cast_one, h, neg_add_cancel]
+  rw [← ZMod.natCast_eq_zero_iff, cast_add, cast_one, h, neg_add_cancel]
 
 /-- **Wilson's Theorem**: For `n ≠ 1`, `(n-1)!` is congruent to `-1` modulo `n` iff n is prime. -/
 theorem prime_iff_fac_equiv_neg_one (h : n ≠ 1) : Prime n ↔ ((n - 1)! : ZMod n) = -1 := by

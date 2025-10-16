@@ -7,9 +7,9 @@ import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-# Sheafification of `Type` valued presheaves
+# Sheafification of `Type`-valued presheaves
 
-We construct the sheafification of a `Type` valued presheaf,
+We construct the sheafification of a `Type`-valued presheaf,
 as the subsheaf of dependent functions into the stalks
 consisting of functions which are locally germs.
 
@@ -58,7 +58,7 @@ def isLocallyGerm : LocalPredicate fun x => F.stalk x :=
 
 end Sheafify
 
-/-- The sheafification of a `Type` valued presheaf, defined as the functions into the stalks which
+/-- The sheafification of a `Type`-valued presheaf, defined as the functions into the stalks which
 are locally equal to germs.
 -/
 def sheafify : Sheaf (Type v) X :=
@@ -73,7 +73,7 @@ def toSheafify : F ⟶ F.sheafify.1 where
   app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
-    apply Subtype.ext -- Porting note: Added `apply`
+    apply Subtype.ext -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Added `apply`
     ext ⟨u, m⟩
     exact germ_res_apply F f.unop u m x
 
@@ -113,8 +113,8 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   · intro w
     specialize wU ⟨w.1, w.2.2.1⟩
     specialize wV ⟨w.1, w.2.2.2⟩
-    dsimp at wU wV ⊢
-    rw [wU, ← F.germ_res iU' w w.2.1, wV, ← F.germ_res iV' w w.2.1,
+    refine wU.trans <| .trans ?_ wV.symm
+    rw [← F.germ_res iU' w w.2.1, ← F.germ_res iV' w w.2.1,
       CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']
 
 /-- The isomorphism between a stalk of the sheafification and the original stalk.

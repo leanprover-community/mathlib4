@@ -36,7 +36,7 @@ theorem piObjIso_hom_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
   simp [piObjIso]
 
 @[reassoc (attr := simp)]
-theorem piObjIso_inv_comp_pi (f : α → D ⥤ C) (d : D) (s : α) :
+theorem piObjIso_inv_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
     (piObjIso f d).inv ≫ (Pi.π f s).app d = Pi.π (fun s => (f s).obj d) s := by
   simp [piObjIso]
 

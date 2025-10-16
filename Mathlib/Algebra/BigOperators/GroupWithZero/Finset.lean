@@ -5,6 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Notation.Support
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Big operators on a finset in groups with zero
@@ -45,7 +47,7 @@ lemma prod_eq_zero_iff : ∏ x ∈ s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
   classical
     induction s using Finset.induction_on with
     | empty => exact ⟨Not.elim one_ne_zero, fun ⟨_, H, _⟩ => by simp at H⟩
-    | insert ha ih => rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
+    | insert _ _ ha ih => rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
 
 lemma prod_ne_zero_iff : ∏ x ∈ s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by
   rw [Ne, prod_eq_zero_iff]

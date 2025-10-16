@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Tactic.MinImports
+import Mathlib.Tactic.Spread
 
 /-!
 # Extensionality of monoid homs from `ℕ`
@@ -17,13 +17,13 @@ assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Additive Multiplicative
 
-variable {M M : Type*}
+variable {M : Type*}
 
 section AddMonoidHomClass
 
 variable {A B F : Type*} [FunLike F ℕ A]
 
-lemma ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
+lemma ext_nat' [AddZeroClass A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
   DFunLike.ext f g <| by
     intro n
     induction n with
@@ -32,7 +32,7 @@ lemma ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 
       simp [h, ihn]
 
 @[ext]
-lemma AddMonoidHom.ext_nat [AddMonoid A] {f g : ℕ →+ A} : f 1 = g 1 → f = g :=
+lemma AddMonoidHom.ext_nat [AddZeroClass A] {f g : ℕ →+ A} : f 1 = g 1 → f = g :=
   ext_nat' f g
 
 end AddMonoidHomClass
@@ -53,7 +53,7 @@ def multiplesHom : M ≃ (ℕ →+ M) where
 
 @[simp] lemma multiplesHom_apply (x : M) (n : ℕ) : multiplesHom M x n = n • x := rfl
 
-lemma multiplesHom_symm_apply (f : ℕ →+ M) : (multiplesHom M).symm f = f 1 := rfl
+@[simp] lemma multiplesHom_symm_apply (f : ℕ →+ M) : (multiplesHom M).symm f = f 1 := rfl
 
 lemma AddMonoidHom.apply_nat (f : ℕ →+ M) (n : ℕ) : f n = n • f 1 := by
   rw [← multiplesHom_symm_apply, ← multiplesHom_apply, Equiv.apply_symm_apply]
@@ -66,24 +66,20 @@ variable [Monoid M]
 variable (M) in
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-@[to_additive existing]
 def powersHom : M ≃ (Multiplicative ℕ →* M) :=
-  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicativeLeft
 
-@[to_additive existing (attr := simp)]
-lemma powersHom_apply (x : M) (n : Multiplicative ℕ) :
+@[simp] lemma powersHom_apply (x : M) (n : Multiplicative ℕ) :
     powersHom M x n = x ^ n.toAdd := rfl
 
-@[to_additive existing (attr := simp)]
-lemma powersHom_symm_apply (f : Multiplicative ℕ →* M) :
+@[simp] lemma powersHom_symm_apply (f : Multiplicative ℕ →* M) :
     (powersHom M).symm f = f (Multiplicative.ofAdd 1) := rfl
 
-@[to_additive existing AddMonoidHom.apply_nat]
 lemma MonoidHom.apply_mnat (f : Multiplicative ℕ →* M) (n : Multiplicative ℕ) :
     f n = f (Multiplicative.ofAdd 1) ^ n.toAdd := by
   rw [← powersHom_symm_apply, ← powersHom_apply, Equiv.apply_symm_apply]
 
-@[to_additive existing (attr := ext) AddMonoidHom.ext_nat]
+@[ext]
 lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* M⦄
     (h : f (Multiplicative.ofAdd 1) = g (Multiplicative.ofAdd 1)) : f = g :=
   MonoidHom.ext fun n ↦ by rw [f.apply_mnat, g.apply_mnat, h]
@@ -110,15 +106,14 @@ variable [CommMonoid M]
 
 variable (M) in
 /-- If `M` is commutative, `powersHom` is a multiplicative equivalence. -/
-@[to_additive existing]
 def powersMulHom : M ≃* (Multiplicative ℕ →* M) where
   __ := powersHom M
   map_mul' a b := MonoidHom.ext fun n ↦ by simp [mul_pow]
 
-@[to_additive existing (attr := simp)]
+@[simp]
 lemma powersMulHom_apply (x : M) (n : Multiplicative ℕ) : powersMulHom M x n = x ^ n.toAdd := rfl
 
-@[to_additive existing (attr := simp)]
+@[simp]
 lemma powersMulHom_symm_apply (f : Multiplicative ℕ →* M) : (powersMulHom M).symm f = f (ofAdd 1) :=
   rfl
 

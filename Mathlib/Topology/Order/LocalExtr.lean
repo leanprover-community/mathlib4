@@ -13,14 +13,14 @@ import Mathlib.Topology.ContinuousOn
 ## Main definitions
 
 This file defines special versions of `Is*Filter f a l`, `*=Min/Max/Extr`, from
-`Mathlib.Order.Filter.Extr` for two kinds of filters: `nhdsWithin` and `nhds`.  These versions are
-called `IsLocal*On` and `IsLocal*`, respectively.
+`Mathlib/Order/Filter/Extr.lean` for two kinds of filters: `nhdsWithin` and `nhds`.
+These versions are called `IsLocal*On` and `IsLocal*`, respectively.
 
 ## Main statements
 
-Many lemmas in this file restate those from `Mathlib.Order.Filter.Extr`, and you can find a detailed
-documentation there. These convenience lemmas are provided only to make the dot notation return
-propositions of expected types, not just `Is*Filter`.
+Many lemmas in this file restate those from `Mathlib/Order/Filter/Extr.lean`, and you can find
+detailed documentation there. These convenience lemmas are provided only to make the dot notation
+return propositions of expected types, not just `Is*Filter`.
 
 Here is the list of statements specific to these two types of filters:
 
@@ -128,6 +128,15 @@ theorem IsLocalMaxOn.isLocalMax (hf : IsLocalMaxOn f s a) (hs : s ∈ 𝓝 a) : 
 theorem IsLocalExtrOn.isLocalExtr (hf : IsLocalExtrOn f s a) (hs : s ∈ 𝓝 a) : IsLocalExtr f a :=
   hf.elim (fun hf => (hf.isLocalMin hs).isExtr) fun hf => (hf.isLocalMax hs).isExtr
 
+lemma isLocalMinOn_univ_iff : IsLocalMinOn f univ a ↔ IsLocalMin f a := by
+  simp only [IsLocalMinOn, IsLocalMin, nhdsWithin_univ]
+
+lemma isLocalMaxOn_univ_iff : IsLocalMaxOn f univ a ↔ IsLocalMax f a := by
+  simp only [IsLocalMaxOn, IsLocalMax, nhdsWithin_univ]
+
+lemma isLocalExtrOn_univ_iff : IsLocalExtrOn f univ a ↔ IsLocalExtr f a :=
+  isLocalMinOn_univ_iff.or isLocalMaxOn_univ_iff
+
 theorem IsMinOn.isLocalMin (hf : IsMinOn f s a) (hs : s ∈ 𝓝 a) : IsLocalMin f a :=
   hf.localize.isLocalMin hs
 
@@ -141,7 +150,7 @@ theorem IsLocalMinOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalMinOn f 
     [NeBot (𝓝[<] f a)] : ¬𝓝 (f a) ≤ map f (𝓝[s] a) := fun hle =>
   have : ∀ᶠ y in 𝓝[<] f a, f a ≤ y := (eventually_map.2 hf).filter_mono (inf_le_left.trans hle)
   let ⟨_y, hy⟩ := (this.and self_mem_nhdsWithin).exists
-  hy.1.not_lt hy.2
+  hy.1.not_gt hy.2
 
 theorem IsLocalMaxOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalMaxOn f s a)
     [NeBot (𝓝[>] f a)] : ¬𝓝 (f a) ≤ map f (𝓝[s] a) :=
@@ -222,6 +231,8 @@ nonrec theorem IsLocalExtrOn.comp_antitone (hf : IsLocalExtrOn f s a) {g : β �
     (hg : Antitone g) : IsLocalExtrOn (g ∘ f) s a :=
   hf.comp_antitone hg
 
+open scoped Relator
+
 nonrec theorem IsLocalMin.bicomp_mono [Preorder δ] {op : β → γ → δ}
     (hop : ((· ≤ ·) ⇒ (· ≤ ·) ⇒ (· ≤ ·)) op op) (hf : IsLocalMin f a) {g : α → γ}
     (hg : IsLocalMin g a) : IsLocalMin (fun x => op (f x) (g x)) a :=
@@ -297,7 +308,8 @@ end Preorder
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+  {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 nonrec theorem IsLocalMin.add (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => f x + g x) a :=
@@ -322,7 +334,8 @@ end OrderedAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 nonrec theorem IsLocalMin.neg (hf : IsLocalMin f a) : IsLocalMax (fun x => -f x) a :=
   hf.neg

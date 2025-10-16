@@ -3,10 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Hom
 import Mathlib.Algebra.Ring.Defs
 
 /-!
@@ -63,8 +63,8 @@ library) include:
   generates an action on `R`-linear maps from this module;
 - a continuous action on `X` generates an action on `C(X, Y)`;
 - a measurable action on `X` generates an action on `{ f : X → Y // Measurable f }`;
-- a quasi measure preserving action on `X` generates an action on `X →ₘ[μ] Y`;
-- a measure preserving action generates an isometric action on `MeasureTheory.Lp _ _ _`.
+- a quasi-measure-preserving action on `X` generates an action on `X →ₘ[μ] Y`;
+- a measure-preserving action generates an isometric action on `MeasureTheory.Lp _ _ _`.
 
 ### Left action vs right action
 
@@ -86,9 +86,9 @@ open Function
 /-- If `M` multiplicatively acts on `α`, then `DomMulAct M` acts on `α → β` as well as some
 bundled maps from `α`. This is a type synonym for `MulOpposite M`, so this corresponds to a right
 action of `M`. -/
-@[to_additive "If `M` additively acts on `α`, then `DomAddAct M` acts on `α → β` as
+@[to_additive /-- If `M` additively acts on `α`, then `DomAddAct M` acts on `α → β` as
 well as some bundled maps from `α`. This is a type synonym for `AddOpposite M`, so this corresponds
-to a right action of `M`."]
+to a right action of `M`. -/]
 def DomMulAct (M : Type*) := MulOpposite M
 
 @[inherit_doc] postfix:max "ᵈᵐᵃ" => DomMulAct
@@ -99,7 +99,7 @@ namespace DomMulAct
 variable {M : Type*}
 
 /-- Equivalence between `M` and `Mᵈᵐᵃ`. -/
-@[to_additive "Equivalence between `M` and `Mᵈᵐᵃ`."]
+@[to_additive /-- Equivalence between `M` and `Mᵈᵐᵃ`. -/]
 def mk : M ≃ Mᵈᵐᵃ := MulOpposite.opEquiv
 
 /-!

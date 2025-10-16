@@ -3,11 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.MorphismProperty.Concrete
-import Mathlib.CategoryTheory.Types
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Epi and mono in concrete categories
@@ -25,7 +25,8 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [HasForget.{w} C]
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{w} C FC]
 
 open Limits MorphismProperty
 
@@ -33,7 +34,6 @@ namespace ConcreteCategory
 
 section
 
-attribute [local instance] HasForget.instFunLike in
 /-- In any concrete category, injective morphisms are monomorphisms. -/
 theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
     Mono f :=
@@ -133,9 +133,6 @@ section
 
 open CategoryTheory.Limits
 
-attribute [local instance] HasForget.hasCoeToSort
-attribute [local instance] HasForget.instFunLike
-
 theorem injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Function.Injective f :=
   (mono_iff_injective ((forget C).map f)).mp inferInstance
@@ -158,14 +155,14 @@ theorem epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
   ((forget C).epi_map_iff_epi _).symm.trans (epi_iff_surjective _)
 
 theorem bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    Function.Bijective ((forget C).map f) := by
+    Function.Bijective f := by
   rw [← isIso_iff_bijective]
   infer_instance
 
 /-- If the forgetful functor of a concrete category reflects isomorphisms, being an isomorphism
 is equivalent to being bijective. -/
 theorem isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
-    {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective ((forget C).map f) := by
+    {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f := by
   rw [← CategoryTheory.isIso_iff_bijective]
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
 

@@ -50,14 +50,11 @@ theorem Sphere.secondInter_dist (s : Sphere P) (p : P) (v : V) :
 theorem Sphere.secondInter_mem {s : Sphere P} {p : P} (v : V) : s.secondInter p v ∈ s ↔ p ∈ s := by
   simp_rw [mem_sphere, Sphere.secondInter_dist]
 
-variable (V)
-
+variable (V) in
 /-- If the vector is zero, `secondInter` gives the original point. -/
 @[simp]
 theorem Sphere.secondInter_zero (s : Sphere P) (p : P) : s.secondInter p (0 : V) = p := by
   simp [Sphere.secondInter]
-
-variable {V}
 
 /-- The point given by `secondInter` equals the original point if and only if the line is
 orthogonal to the radius vector. -/
@@ -68,7 +65,7 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
     · simp [hv]
     rwa [Sphere.secondInter, eq_comm, eq_vadd_iff_vsub_eq, vsub_self, eq_comm, smul_eq_zero,
       or_iff_left hv, div_eq_zero_iff, inner_self_eq_zero, or_iff_left hv, mul_eq_zero,
-      or_iff_right (by norm_num : (-2 : ℝ) ≠ 0)] at hp
+      or_iff_right (by simp : (-2 : ℝ) ≠ 0)] at hp
   · rw [Sphere.secondInter, hp, mul_zero, zero_div, zero_smul, zero_vadd]
 
 /-- A point on a line through a point on a sphere equals that point or `secondInter`. -/
@@ -79,7 +76,7 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
   · rcases h with (h | h)
     · rwa [h]
     · rwa [h, Sphere.secondInter_mem]
-  · rw [AffineSubspace.mem_mk'_iff_vsub_mem, Submodule.mem_span_singleton] at hp'
+  · rw [AffineSubspace.mem_mk', Submodule.mem_span_singleton] at hp'
     rcases hp' with ⟨r, hr⟩
     rw [eq_comm, ← eq_vadd_iff_vsub_eq] at hr
     subst hr
@@ -103,7 +100,7 @@ theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r
 @[simp]
 theorem Sphere.secondInter_neg (s : Sphere P) (p : P) (v : V) :
     s.secondInter p (-v) = s.secondInter p v := by
-  rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by norm_num : (-1 : ℝ) ≠ 0)]
+  rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by simp : (-1 : ℝ) ≠ 0)]
 
 /-- Applying `secondInter` twice returns the original point. -/
 @[simp]
@@ -114,7 +111,7 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   simp only [Sphere.secondInter, vadd_vsub_assoc, vadd_vadd, inner_add_right, inner_smul_right,
     div_mul_cancel₀ _ hv']
   rw [← @vsub_eq_zero_iff_eq V, vadd_vsub, ← add_smul, ← add_div]
-  convert zero_smul ℝ (M := V) _
+  convert zero_smul ℝ _
   convert zero_div (G₀ := ℝ) _
   ring
 

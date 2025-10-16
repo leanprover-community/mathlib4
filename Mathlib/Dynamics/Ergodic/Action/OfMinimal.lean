@@ -43,11 +43,11 @@ Let `μ` be a finite inner regular measure on `X` which is ergodic with respect 
 If a null measurable set `s` is a.e. equal
 to its preimages under the action of a dense set of elements of `M`,
 then it is either null or conull. -/
-@[to_additive "Let `M` act continuously on an R₁ topological space `X`.
+@[to_additive /-- Let `M` act continuously on an R₁ topological space `X`.
 Let `μ` be a finite inner regular measure on `X` which is ergodic with respect to this action.
 If a null measurable set `s` is a.e. equal
 to its preimages under the action of a dense set of elements of `M`,
-then it is either null or conull."]
+then it is either null or conull. -/]
 theorem aeconst_of_dense_setOf_preimage_smul_ae (hsm : NullMeasurableSet s μ)
     (hd : Dense {g : M | (g • ·) ⁻¹' s =ᵐ[μ] s}) : EventuallyConst s (ae μ) := by
   borelize M
@@ -66,10 +66,10 @@ theorem aeconst_of_dense_setOf_preimage_smul_eq (hsm : NullMeasurableSet s μ)
 `g` is an element of `M such that its natural powers are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the scalar multiplication by `g` is an ergodic map. -/
-@[to_additive "If an additive monoid `M` continuously acts on an R₁ topological space `X`,
+@[to_additive /-- If an additive monoid `M` continuously acts on an R₁ topological space `X`,
 `g` is an element of `M such that its natural multiples are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
-then the vector addition of `g` is an ergodic map."]
+then the vector addition of `g` is an ergodic map. -/]
 theorem ergodic_smul_of_denseRange_pow {M : Type*} [Monoid M] [TopologicalSpace M]
     [MulAction M X] [ContinuousSMul M X] {g : M} (hg : DenseRange (g ^ · : ℕ → M))
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul M X μ] :
@@ -91,8 +91,8 @@ variable {M X : Type*} [Monoid M] [SMul M X]
 /-- If `N` acts continuously and ergodically on `X` and `M` acts minimally on `N`,
 then the corresponding action of `M` on `X` is ergodic. -/
 @[to_additive
-  "If `N` acts additively continuously and ergodically on `X` and `M` acts minimally on `N`,
-then the corresponding action of `M` on `X` is ergodic."]
+  /-- If `N` acts additively continuously and ergodically on `X` and `M` acts minimally on `N`,
+then the corresponding action of `M` on `X` is ergodic. -/]
 theorem ErgodicSMul.trans_isMinimal (N : Type*) [MulAction M N]
     [Monoid N] [TopologicalSpace N] [MulAction.IsMinimal M N]
     [MulAction N X] [IsScalarTower M N X] [ContinuousSMul N X] [ErgodicSMul N X μ] :
@@ -124,10 +124,10 @@ theorem aeconst_of_dense_aestabilizer_smul (hsm : NullMeasurableSet s μ)
 `g` is an element of `M such that its integer powers are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the scalar multiplication by `g` is an ergodic map. -/
-@[to_additive "If an additive monoid `M` continuously acts on an R₁ topological space `X`,
+@[to_additive /-- If an additive monoid `M` continuously acts on an R₁ topological space `X`,
 `g` is an element of `M such that its integer multiples are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
-then the vector addition of `g` is an ergodic map."]
+then the vector addition of `g` is an ergodic map. -/]
 theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ → G))
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul G X μ] :
     Ergodic (g • ·) μ := by
@@ -137,18 +137,18 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
     MulAction.mem_aestabilizer, ← preimage_smul, hs]
 
- end MulActionGroup
+end MulActionGroup
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
 
 /-- If the left multiplication by `g` is ergodic
 with respect to a measure which is positive on nonempty open sets,
 then the integer powers of `g` are dense in `G`. -/
-@[to_additive "If the left addition of `g` is ergodic
+@[to_additive /-- If the left addition of `g` is ergodic
 with respect to a measure which is positive on nonempty open sets,
-then the integer multiples of `g` are dense in `G`."]
+then the integer multiples of `g` are dense in `G`. -/]
 theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
     {μ : Measure G} [μ.IsOpenPosMeasure] {g : G} (hg : Ergodic (g * ·) μ) :
     DenseRange (g ^ · : ℤ → G) := by
@@ -199,20 +199,20 @@ theorem ergodic_mul_left_iff_denseRange_zpow (μ : Measure G) [IsFiniteMeasure �
     Ergodic (g * ·) μ ↔ DenseRange (g ^ · : ℤ → G) :=
   ⟨.zpow_of_ergodic_mul_left, (ergodic_mul_left_of_denseRange_zpow · μ)⟩
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 namespace MonoidHom
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
-  [TopologicalGroup G] [SecondCountableTopology G] [MeasurableSpace G] [BorelSpace G]
+  [IsTopologicalGroup G] [SecondCountableTopology G] [MeasurableSpace G] [BorelSpace G]
 
 /-- Let `f : G →* G` be a group endomorphism of a topological group with second countable topology.
 If the preimages of `1` under the iterations of `f` are dense,
 then it is preergodic with respect to any finite inner regular left invariant measure. -/
-@[to_additive "Let `f : G →+ G` be an additive group endomorphism
+@[to_additive /-- Let `f : G →+ G` be an additive group endomorphism
 of a topological additive group with second countable topology.
 If the preimages of `0` under the iterations of `f` are dense,
-then it is preergodic with respect to any finite inner regular left invariant measure."]
+then it is preergodic with respect to any finite inner regular left invariant measure. -/]
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) : PreErgodic f μ := by
@@ -229,10 +229,10 @@ theorem preErgodic_of_dense_iUnion_preimage_one
 of a compact topological group with second countable topology.
 If the preimages of `1` under the iterations of `f` are dense,
 then `f` is ergodic with respect to any finite inner regular left invariant measure. -/
-@[to_additive "Let `f : G →+ G` be a continuous surjective additive group endomorphism
+@[to_additive /-- Let `f : G →+ G` be a continuous surjective additive group endomorphism
 of a compact topological additive group with second countable topology.
 If the preimages of `0` under the iterations of `f` are dense,
-then `f` is ergodic with respect to any finite inner regular left invariant measure."]
+then `f` is ergodic with respect to any finite inner regular left invariant measure. -/]
 theorem ergodic_of_dense_iUnion_preimage_one [CompactSpace G] {μ : Measure G} [μ.IsHaarMeasure]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hcont : Continuous f) (hsurj : Surjective f) :
     Ergodic f μ :=

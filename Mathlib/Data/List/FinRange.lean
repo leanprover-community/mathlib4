@@ -35,55 +35,50 @@ theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n := by
 
 theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
   rw [finRange_eq_pmap_range]
-  exact (Pairwise.pmap (nodup_range n) _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
+  exact (Pairwise.pmap nodup_range _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
 
 @[simp]
 theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
-  rw [← length_eq_zero, length_finRange]
+  rw [← length_eq_zero_iff, length_finRange]
 
 theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) := by
   rw [finRange_eq_pmap_range]
-  exact (List.pairwise_lt_range n).pmap (by simp) (by simp)
+  exact List.pairwise_lt_range.pmap (by simp) (by simp)
 
 theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) := by
   rw [finRange_eq_pmap_range]
-  exact (List.pairwise_le_range n).pmap (by simp) (by simp)
+  exact List.pairwise_le_range.pmap (by simp) (by simp)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
+@[simp]
+lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
+  simp [count_eq_of_nodup (nodup_finRange n)]
+
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
-    (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
+    (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange (n := n) ▸ h⟩ := by
   simp
-
-@[deprecated (since := "2024-08-19")] alias nthLe_finRange := get_finRange
 
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
 
-@[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
-  have : (finRange k).idxOf i < (finRange k).length := idxOf_lt_length_iff.mpr (by simp)
-  have h₁ : (finRange k).get ⟨(finRange k).idxOf i, this⟩ = i := idxOf_get this
-  have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
-  simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
+@[simp]
+theorem finRange_map_getElem (l : List α) : (finRange l.length).map (l[·.1]) = l :=
+  finRange_map_get l
 
-@[deprecated (since := "2025-01-30")] alias indexOf_finRange := idxOf_get
+@[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
+  simpa using idxOf_getElem (nodup_finRange k) i
 
 @[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
   apply List.ext_getElem <;> simp
 
-theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ := by
-  apply map_injective_iff.mpr Fin.val_injective
-  rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
-    map_map]
-  simp only [Function.comp_def, Fin.val_succ]
-
--- Porting note: `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
+theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ :=
+  finRange_succ
 
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
   rw [pmap_eq_map_attach]
-  exact ext_getElem (by simp) fun i hi1 hi2 => by simp [List.getElem_ofFn f i hi1]
+  exact ext_getElem (by simp) fun i hi1 hi2 => by simp [List.getElem_ofFn hi1]
 
 theorem ofFn_id (n) : ofFn id = finRange n :=
   rfl
@@ -94,7 +89,7 @@ theorem ofFn_eq_map {n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
 theorem nodup_ofFn_ofInjective {n} {f : Fin n → α} (hf : Function.Injective f) :
     Nodup (ofFn f) := by
   rw [ofFn_eq_pmap]
-  exact (nodup_range n).pmap fun _ _ _ _ H => Fin.val_eq_of_eq <| hf H
+  exact nodup_range.pmap fun _ _ _ _ H => Fin.val_eq_of_eq <| hf H
 
 theorem nodup_ofFn {n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by
   refine ⟨?_, nodup_ofFn_ofInjective⟩

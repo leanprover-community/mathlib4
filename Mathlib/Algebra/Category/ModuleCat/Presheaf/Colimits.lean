@@ -63,24 +63,25 @@ taking a colimit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def colimitPresheafOfModules : PresheafOfModules R where
   obj X := colimit (F ⋙ evaluation R X)
-  map {_ Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := colimMap (Functor.whiskerLeft F (restriction R f)) ≫
     (preservesColimitIso (ModuleCat.restrictScalars (R.map f).hom) (F ⋙ evaluation R Y)).inv
   map_id X := colimit.hom_ext (fun j => by
     dsimp
-    rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app]
-    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X)).hom),
-      ModuleCat.restrictScalarsId'App_inv_naturality]
-    rw [map_id]
+    rw [ι_colimMap_assoc, Functor.whiskerLeft_app, restriction_app]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X)).hom)]
+    rw [ModuleCat.restrictScalarsId'App_inv_naturality, map_id]
     dsimp)
   map_comp {X Y Z} f g := colimit.hom_ext (fun j => by
     dsimp
-    rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
+    rw [ι_colimMap_assoc, Functor.whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g)).hom),
       ι_preservesColimitIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f).hom)]
     rw [← Functor.map_comp_assoc, ι_colimMap_assoc]
     erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map g).hom)]
     rw [map_comp, ModuleCat.restrictScalarsComp'_inv_app, assoc, assoc,
-      whiskerLeft_app, whiskerLeft_app, restriction_app, restriction_app]
+      Functor.whiskerLeft_app, Functor.whiskerLeft_app, restriction_app, restriction_app]
     simp only [Functor.map_comp, assoc]
     rfl)
 
@@ -111,13 +112,13 @@ instance evaluation_preservesColimit (X : Cᵒᵖ) :
   preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 variable [∀ X, PreservesColimit F
-  (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGrp)]
+  (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGrpCat)]
 
 instance toPresheaf_preservesColimit :
     PreservesColimit F (toPresheaf R) :=
   preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (Limits.evaluationJointlyReflectsColimits _
-      (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
+      (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrpCat)
         (isColimitColimitCocone F)))
 
 end Colimits
@@ -126,7 +127,7 @@ variable (R J)
 
 section HasColimitsOfShape
 
-variable [HasColimitsOfShape J AddCommGrp.{v}]
+variable [HasColimitsOfShape J AddCommGrpCat.{v}]
 
 instance hasColimitsOfShape : HasColimitsOfShape J (PresheafOfModules.{v} R) where
 

@@ -3,9 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
@@ -29,7 +27,7 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 section left
 variable {A} [SMulCommClass R A A]
 
-/-- The multiplication on the left in a algebra is a linear map.
+/-- The multiplication on the left in an algebra is a linear map.
 
 Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
 
@@ -91,7 +89,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
 -- TODO: upgrade to A-linear map if A is a semiring.
-noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
+def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 
 variable {A}
@@ -113,6 +111,14 @@ theorem mulLeftRight_apply (a b x : A) : mulLeftRight R (a, b) x = a * x * b :=
 @[simp]
 theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
+
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+
+theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
+    lift (lsmul R M ∘ₗ mul R R r) = lsmul R M r ∘ₗ lift (lsmul R M) := by
+  apply TensorProduct.ext'
+  intro x a
+  simp [← mul_smul, mul_comm]
 
 end NonUnitalNonAssoc
 
@@ -170,6 +176,19 @@ theorem map_mul_iff (f : A →ₗ[R] B) :
 
 end NonUnital
 
+section Injective
+variable {R A : Type*} [Semiring R] [NonAssocSemiring A] [Module R A]
+
+@[simp] lemma mulLeft_inj [SMulCommClass R A A] {a b : A} :
+    mulLeft R a = mulLeft R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+@[simp] lemma mulRight_inj [IsScalarTower R A A] {a b : A} :
+    mulRight R a = mulRight R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+end Injective
+
 section Semiring
 
 variable (R A : Type*)
@@ -183,18 +202,14 @@ variable [Module R A] [SMulCommClass R A A]
 theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := ext fun _ => one_mul _
 
 @[simp]
-theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
-  constructor <;> intro h
-  -- Porting note: had to supply `R` explicitly in `@mulLeft_apply` below
-  · rw [← mul_one a, ← mulLeft_apply R a 1, h, LinearMap.zero_apply]
-  · rw [h]
-    exact mulLeft_zero_eq_zero _ _
+theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 :=
+  mulLeft_zero_eq_zero R A ▸ mulLeft_inj
 
 @[simp]
 theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) :=
   match n with
-  | 0 => by rw [pow_zero, pow_zero, mulLeft_one, LinearMap.one_eq_id]
-  | (n + 1) => by rw [pow_succ, pow_succ, mulLeft_mul, LinearMap.mul_eq_comp, pow_mulLeft]
+  | 0 => by rw [pow_zero, pow_zero, mulLeft_one, Module.End.one_eq_id]
+  | (n + 1) => by rw [pow_succ, pow_succ, mulLeft_mul, Module.End.mul_eq_comp, pow_mulLeft]
 
 end left
 
@@ -205,18 +220,14 @@ variable [Module R A] [IsScalarTower R A A]
 theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := ext fun _ => mul_one _
 
 @[simp]
-theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
-  constructor <;> intro h
-  -- Porting note: had to supply `R` explicitly in `@mulRight_apply` below
-  · rw [← one_mul a, ← mulRight_apply R a 1, h, LinearMap.zero_apply]
-  · rw [h]
-    exact mulRight_zero_eq_zero _ _
+theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 :=
+  mulRight_zero_eq_zero R A ▸ mulRight_inj
 
 @[simp]
 theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) :=
   match n with
-  | 0 => by rw [pow_zero, pow_zero, mulRight_one, LinearMap.one_eq_id]
-  | (n + 1) => by rw [pow_succ, pow_succ', mulRight_mul, LinearMap.mul_eq_comp, pow_mulRight]
+  | 0 => by rw [pow_zero, pow_zero, mulRight_one, Module.End.one_eq_id]
+  | (n + 1) => by rw [pow_succ, pow_succ', mulRight_mul, Module.End.mul_eq_comp, pow_mulRight]
 
 end right
 
@@ -244,32 +255,12 @@ theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
 
 theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
     IsUnit (Algebra.lmul R A x) ↔ IsUnit x := by
-  rw [Module.End_isUnit_iff, Iff.comm]
+  rw [Module.End.isUnit_iff, Iff.comm]
   exact IsUnit.isUnit_iff_mulLeft_bijective
 
 theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.linearMap R A := by
   ext; simp
 
 end Semiring
-
-section Ring
-
-variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
-
-@[deprecated mul_right_injective₀ (since := "2024-11-18")]
-theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulLeft R x) :=
-  mul_right_injective₀ hx
-
-@[deprecated mul_left_injective₀ (since := "2024-11-18")]
-theorem mulRight_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulRight R x) :=
-  mul_left_injective₀ hx
-
-@[deprecated mul_right_injective₀ (since := "2024-11-18")]
-theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) :=
-   mul_right_injective₀ hx
-
-end Ring
 
 end LinearMap

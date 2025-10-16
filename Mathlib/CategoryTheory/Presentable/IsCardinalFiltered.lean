@@ -3,7 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Comma.CardinalArrow
@@ -53,7 +52,7 @@ namespace IsCardinalFiltered
 variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
-/-- A choice of cocone for a functor `F : A ⥤ J` such that `HasCardinatLT (Arrow A) κ`
+/-- A choice of cocone for a functor `F : A ⥤ J` such that `HasCardinalLT (Arrow A) κ`
 when `J` is a `κ`-filtered category, and `Arrow A` has cardinality `< κ`. -/
 noncomputable def cocone {A : Type v'} [Category.{u'} A]
     (F : A ⥤ J) (hA : HasCardinalLT (Arrow A) κ) :
@@ -128,7 +127,7 @@ end coeq
 end IsCardinalFiltered
 
 open IsCardinalFiltered in
-lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
+lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     IsFiltered J := by
   rw [IsFiltered.iff_cocone_nonempty.{w}]
@@ -139,13 +138,16 @@ lemma isFiltered_of_isCardinalDirected (J : Type u) [Category.{v} J]
     infer_instance
   exact ⟨cocone F hA⟩
 
+@[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
+  isFiltered_of_isCardinalFiltered
+
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     IsCardinalFiltered J Cardinal.aleph0.{w} ↔ IsFiltered J := by
   constructor
   · intro
-    exact isFiltered_of_isCardinalDirected J Cardinal.aleph0
+    exact isFiltered_of_isCardinalFiltered J Cardinal.aleph0
   · intro
     constructor
     intro A _ F hA
@@ -164,5 +166,37 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
     exact ⟨Cocone.mk j
       { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
+
+instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
+    IsCardinalFiltered κ.ord.toType κ :=
+  isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
+    have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
+    obtain ⟨j, hj⟩ := Ordinal.lt_cof_type
+      (α := κ.ord.toType) (r := (· < ·)) (S := Set.range f)
+      (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h)
+        (lt_of_lt_of_le hs (by simp [hκ.out.cof_eq])))
+    exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
+
+open IsCardinalFiltered
+
+instance isCardinalFiltered_under
+    (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J κ] (j₀ : J) : IsCardinalFiltered (Under j₀) κ where
+  nonempty_cocone {A _} F hA := ⟨by
+    have := isFiltered_of_isCardinalFiltered J κ
+    let c := cocone (F ⋙ Under.forget j₀) hA
+    let x (a : A) : j₀ ⟶ IsFiltered.max j₀ c.pt := (F.obj a).hom ≫ c.ι.app a ≫
+      IsFiltered.rightToMax j₀ c.pt
+    have hκ' : HasCardinalLT A κ := hasCardinalLT_of_hasCardinalLT_arrow hA
+    exact
+      { pt := Under.mk (toCoeq x hκ')
+        ι :=
+          { app a := Under.homMk (c.ι.app a ≫ IsFiltered.rightToMax j₀ c.pt ≫ coeqHom x hκ')
+              (by simpa [x] using coeq_condition x hκ' a)
+            naturality a b f := by
+              ext
+              have := c.w f
+              dsimp at this ⊢
+              simp only [reassoc_of% this, Category.comp_id] } }⟩
 
 end CategoryTheory

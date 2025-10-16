@@ -20,12 +20,12 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
 -/
 
 /-- The `@[notation_class]` attribute specifies that this is a notation class,
-  and this notation should be used instead of projections by `@[simps]`.
+and this notation should be used instead of projections by `@[simps]`.
   * This is only important if the projection is written differently using notation, e.g.
     `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
-    We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
+    We also add it to non-heterogeneous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
-  * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
+  * `@[notation_class* <projName> Simps.findCoercionArgs]` is used to configure the
     `SetLike` and `DFunLike` coercions.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).
@@ -50,8 +50,8 @@ def defaultfindArgs : findArgType := fun _ className args ↦ do
   let arity := classExpr.type.getNumHeadForalls
   if arity == args.size then
     return args.map some
-  else if args.size == 1 then
-    return mkArray arity args[0]!
+  else if h : args.size = 1 then
+    return .replicate arity args[0]
   else
     throwError "initialize_simps_projections cannot automatically find arguments for class \
       {className}"
@@ -83,24 +83,24 @@ def findCoercionArgs : findArgType := fun str className args ↦ do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.getNumHeadForalls
   let eStr := mkAppN (← mkConstWithLevelParams str) args
-  let classArgs := mkArray (arity - 1) none
+  let classArgs := .replicate (arity - 1) none
   return #[some eStr] ++ classArgs
 
 /-- Data needed to generate automatic projections. This data is associated to a name of a projection
-  in a structure that must be used to trigger the search. -/
+in a structure that must be used to trigger the search. -/
 structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
-  /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
-    class as hypothesis during type-class synthesis. -/
+  /-- `isNotation` is a Boolean that specifies whether this is notation
+  (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
+  class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/
   findArgs : Name := `Simps.defaultfindArgs
 deriving Inhabited
 
 /-- `@[notation_class]` attribute. Note: this is *not* a `NameMapAttribute` because we key on the
-  argument of the attribute, not the declaration name. -/
+argument of the attribute, not the declaration name. -/
 initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
   let ext ← registerNameMapExtension AutomaticProjectionData
   registerBuiltinAttribute {

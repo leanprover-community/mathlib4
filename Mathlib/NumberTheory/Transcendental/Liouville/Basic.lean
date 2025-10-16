@@ -6,7 +6,7 @@ Authors: Damiano Testa, Jujian Zhang
 import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!
@@ -112,8 +112,11 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
     -- use the "separation from `1`" (assumption `L`) for numerators,
     refine (L this).trans ?_
     -- remove a common factor and use the Lipschitz assumption `B`
-    refine mul_le_mul_of_nonneg_left ((B this).trans ?_) (zero_le_one.trans (d0 a))
-    exact mul_le_mul_of_nonneg_left (le_max_right _ M) dist_nonneg
+    gcongr
+    · exact zero_le_one.trans (d0 a)
+    · refine (B this).trans ?_
+      gcongr
+      apply le_max_right
 
 theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : ℤ[X]} (f0 : f ≠ 0)
     (fa : eval α (map (algebraMap ℤ ℝ) f) = 0) :
@@ -153,7 +156,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
         (fun y h => by rw [fR.deriv]; exact hM h) (convex_Icc _ _) hy (mem_Icc_iff_abs_le.mp ?_)
     exact @mem_closedBall_self ℝ _ α ζ (le_of_lt z0)
   -- 3: the weird inequality of Liouville type with powers of the denominators.
-  · show 1 ≤ (a + 1 : ℝ) ^ f.natDegree * |eval α fR - eval ((z : ℝ) / (a + 1)) fR|
+  · change 1 ≤ (a + 1 : ℝ) ^ f.natDegree * |eval α fR - eval ((z : ℝ) / (a + 1)) fR|
     rw [fa, zero_sub, abs_neg]
     rw [show (a + 1 : ℝ) = ((a + 1 : ℕ) : ℤ) by norm_cast] at hq ⊢
     -- key observation: the right-hand side of the inequality is an *integer*.  Therefore,
@@ -162,7 +165,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     -- As the evaluation of the polynomial vanishes, we found a root of `fR` that is rational.
     -- We know that `α` is the only root of `fR` in our interval, and `α` is irrational:
     -- follow your nose.
-    refine (irrational_iff_ne_rational α).mp ha z (a + 1) (mem_singleton_iff.mp ?_).symm
+    refine ha.ne_rational z (a + 1) (mem_singleton_iff.mp ?_).symm
     refine U.subset ?_
     refine ⟨hq, Finset.mem_coe.mp (Multiset.mem_toFinset.mpr ?_)⟩
     exact (mem_roots fR0).mpr (IsRoot.def.mpr hy)
@@ -201,7 +204,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
     refine hn.le.trans ?_
     rw [one_add_one_eq_two]
     gcongr
-    exact Int.cast_two.symm.le.trans (Int.cast_le.mpr (Int.add_one_le_iff.mpr b1))
+    norm_cast
   -- this branch of the proof exploits the "integrality" of evaluations of polynomials
   -- at ratios of integers.
   · lift b to ℕ using zero_le_one.trans b1.le

@@ -52,10 +52,17 @@ class AddAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y`.
   A transitive action should furthermore have `α` nonempty. -/
-@[to_additive]
+@[to_additive (attr := mk_iff)]
 class MulAction.IsPretransitive (M α : Type*) [SMul M α] : Prop where
   /-- There is `g` such that `g • x = y`. -/
   exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y
+
+@[to_additive]
+instance MulAction.instIsPretransitiveOfSubsingleton
+    {M α : Type*} [Monoid M] [MulAction M α] [Subsingleton α] :
+    MulAction.IsPretransitive M α where
+  exists_smul_eq x y := ⟨1, by
+    simp only [one_smul, Subsingleton.elim x y] ⟩
 
 namespace MulAction
 variable (M) [SMul M α] [IsPretransitive M α]
@@ -66,39 +73,24 @@ lemma exists_smul_eq (x y : α) : ∃ m : M, m • x = y := IsPretransitive.exis
 @[to_additive]
 lemma surjective_smul (x : α) : Surjective fun c : M ↦ c • x := exists_smul_eq M x
 
-/-- The regular action of a group on itself is transitive. -/
-@[to_additive "The regular action of a group on itself is transitive."]
+/-- The left regular action of a group on itself is transitive. -/
+@[to_additive /-- The regular action of a group on itself is transitive. -/]
 instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
   ⟨fun x y ↦ ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
+
+/-- The right regular action of a group on itself is transitive. -/
+@[to_additive /-- The right regular action of an additive group on itself is transitive. -/]
+instance Regular.isPretransitive_mulOpposite [Group G] : IsPretransitive Gᵐᵒᵖ G :=
+  ⟨fun x y ↦ ⟨.op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 
 end MulAction
 
 namespace MulAction
 
-variable (α)
-
-/-- If an action is transitive, then composing this action with a surjective homomorphism gives
-again a transitive action. -/
-@[to_additive]
-lemma isPretransitive_compHom {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G]
-    [IsPretransitive F G] {f : E →* F} (hf : Surjective f) :
-    letI : MulAction E G := MulAction.compHom _ f
-    IsPretransitive E G := by
-  let _ : MulAction E G := MulAction.compHom _ f
-  refine ⟨fun x y ↦ ?_⟩
-  obtain ⟨m, rfl⟩ : ∃ m : F, m • x = y := exists_smul_eq F x y
-  obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
-  exact ⟨e, rfl⟩
-
 @[to_additive]
 lemma IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α] [IsPretransitive M α]
     (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) : IsPretransitive N α where
   exists_smul_eq x y := (exists_smul_eq x y).elim fun m h ↦ ⟨f m, hf.trans h⟩
-
-@[to_additive]
-lemma IsPretransitive.of_compHom {M N α : Type*} [Monoid M] [Monoid N] [MulAction N α]
-    (f : M →* N) [h : letI := compHom α f; IsPretransitive M α] : IsPretransitive N α :=
-  letI := compHom α f; h.of_smul_eq f rfl
 
 end MulAction
 

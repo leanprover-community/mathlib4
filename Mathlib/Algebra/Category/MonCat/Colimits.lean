@@ -46,6 +46,7 @@ Monoid.mk : {M : Type u} →
 ```
 -/
 
+assert_not_exists MonoidWithZero
 
 universe v u
 
@@ -205,9 +206,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
     map_mul' x y := by
       induction x using Quot.inductionOn
       induction y using Quot.inductionOn
-      dsimp [descFun]
-      rw [← quot_mul]
-      simp only [descFunLift] }
+      solve_by_elim }
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
@@ -225,8 +224,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
       rfl
     | mul x y hx hy =>
       rw [quot_mul, map_mul, hx, hy]
-      dsimp [descMorphism, DFunLike.coe, descFun]
-      simp only [← quot_mul, descFunLift]
+      solve_by_elim
 
 instance hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=

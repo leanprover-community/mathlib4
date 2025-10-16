@@ -116,8 +116,8 @@ lemma hom_ext {X Y : Lat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : Lat} (f : X ⟶ Y) :
@@ -135,14 +135,10 @@ lemma ofHom_comp {X Y Z : Type u} [Lattice X] [Lattice Y] [Lattice Z]
 lemma ofHom_apply {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {X Y : Lat} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {X Y : Lat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where

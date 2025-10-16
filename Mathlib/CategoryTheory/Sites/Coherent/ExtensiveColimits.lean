@@ -21,7 +21,7 @@ eventually to sifted `J` once that API is developed.
 
 namespace CategoryTheory
 
-open CategoryTheory Limits Sheaf GrothendieckTopology Opposite
+open Limits Sheaf GrothendieckTopology Opposite
 
 section
 
@@ -41,8 +41,8 @@ lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A)
     inferInstanceAs (PreservesLimitsOfShape _ ((G ⋙ sheafToPresheaf _ _).obj d))⟩
 
 instance [Preadditive A] : PreservesFiniteProducts (colim (J := J) (C := A)) where
-  preserves I _ := by
-    apply ( config := {allowSynthFailures := true} )
+  preserves _ := by
+    apply (config := { allowSynthFailures := true })
       preservesProductsOfShape_of_preservesBiproductsOfShape
     apply preservesBiproductsOfShape_of_preservesCoproductsOfShape
 

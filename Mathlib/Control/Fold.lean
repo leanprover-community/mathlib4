@@ -5,11 +5,11 @@ Authors: Simon Hudon, Sean Leather
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.CategoryTheory.Category.KleisliCat
+import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Types
-import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -118,7 +118,7 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
   map_one' := rfl
   map_mul' := by
     intros
-    simp only [FreeMonoid.toList_mul, unop_op, List.foldl_append, op_inj, Function.flip_def]
+    simp only [FreeMonoid.toList_mul, List.foldl_append, Function.flip_def]
     rfl
 
 abbrev Foldr (α : Type u) : Type u :=
@@ -134,7 +134,7 @@ def Foldr.get (x : Foldr α) : α → α :=
 def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β where
   toFun xs := flip (List.foldr f) (FreeMonoid.toList xs)
   map_one' := rfl
-  map_mul' _ _ := funext fun _ => List.foldr_append _ _ _ _
+  map_mul' _ _ := funext fun _ => List.foldr_append
 
 abbrev foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
@@ -294,14 +294,12 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
       FreeMonoid.toList (foldMap FreeMonoid.of xs) =
           FreeMonoid.toList (foldMap FreeMonoid.of xs).reverse.reverse := by
           simp only [FreeMonoid.reverse_reverse]
-      _ = (List.foldr cons [] (foldMap FreeMonoid.of xs).toList.reverse).reverse := by
-          simp only [FreeMonoid.reverse_reverse, List.foldr_reverse, List.foldl_flip_cons_eq_append,
-            List.append_nil, List.reverse_reverse]
+      _ = (List.foldr cons [] (foldMap FreeMonoid.of xs).toList.reverse).reverse := by simp
       _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse := by
             simp [Function.flip_def, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
       _ = toList xs := by
             rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
-            simp only [toList, foldl, List.reverse_inj, Foldl.get, foldl.ofFreeMonoid_comp_of,
+            simp only [toList, foldl, Foldl.get, foldl.ofFreeMonoid_comp_of,
               Function.comp_apply]
 
 theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
@@ -332,7 +330,7 @@ theorem foldl_map (g : β → γ) (f : α → γ → α) (a : α) (l : t β) :
 @[simp]
 theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
     foldr f a (g <$> l) = foldr (f ∘ g) a l := by
-  simp only [foldr, foldMap_map, Function.comp_def, flip]
+  simp only [foldr, foldMap_map, Function.comp_def]
 
 @[simp]
 theorem toList_eq_self {xs : List α} : toList xs = xs := by
@@ -349,7 +347,7 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
   generalize 0 = n
   induction ys generalizing n with
   | nil => simp
-  | cons _ _ ih => simp_arith [ih]
+  | cons _ _ ih => simp +arith [ih]
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
@@ -375,7 +373,7 @@ theorem foldlm_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) 
 @[simp]
 theorem foldrm_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
     foldrm f a (g <$> l) = foldrm (f ∘ g) a l := by
-  simp only [foldrm, foldMap_map, Function.comp_def, flip]
+  simp only [foldrm, foldMap_map, Function.comp_def]
 
 end Equalities
 

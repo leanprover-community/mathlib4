@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
@@ -26,8 +26,6 @@ abbreviation for `⨂[R] i : Fin n, M`.
 In this file we use `ₜ1` and `ₜ*` as local notation for the graded multiplicative structure on
 tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferred.
 -/
-
-suppress_compilation
 
 open scoped TensorProduct
 
@@ -131,8 +129,7 @@ theorem cast_eq_cast {i j} (h : i = j) :
   rw [cast_refl]
   rfl
 
-variable (R)
-
+variable (R) in
 theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
     tprod R a ₜ* tprod R b = tprod R (Fin.append a b) := by
   dsimp [gMul_def, mulEquiv]
@@ -142,8 +139,6 @@ theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
   dsimp only [Fin.append, finSumFinEquiv, Equiv.coe_fn_symm_mk]
   apply funext
   apply Fin.addCases <;> simp
-
-variable {R}
 
 theorem one_mul {n} (a : ⨂[R]^n M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a := by
   rw [gMul_def, gOne_def]
@@ -181,7 +176,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
     (LinearMap.llcomp R _ _ _ ((mul _ nc).compr₂ e.toLinearMap)).comp (mul na nb)
   have lhs_eq : ∀ a b c, lhs a b c = e (a ₜ* b ₜ* c) := fun _ _ _ => rfl
   let rhs : (⨂[R]^na) M →ₗ[R] (⨂[R]^nb) M →ₗ[R] (⨂[R]^nc) M →ₗ[R] (⨂[R]^(na + (nb + nc))) M :=
-    (LinearMap.llcomp R _ _ _ (LinearMap.lflip (R := R)) <|
+    (LinearMap.llcomp R _ _ _ (LinearMap.lflip (R := R)).toLinearMap <|
         (LinearMap.llcomp R _ _ _ (mul na _).flip).comp (mul nb nc)).flip
   have rhs_eq : ∀ a b c, rhs a b c = a ₜ* (b ₜ* c) := fun _ _ _ => rfl
   suffices lhs = rhs from
@@ -189,7 +184,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   ext a b c
   -- clean up
   simp only [e, LinearMap.compMultilinearMap_apply, lhs_eq, rhs_eq, tprod_mul_tprod, cast_tprod]
-  congr with j
+  congr 1 with j
   rw [Fin.append_assoc]
   refine congr_arg (Fin.append a (Fin.append b c)) (Fin.ext ?_)
   rw [Fin.coe_cast, Fin.coe_cast]

@@ -1,4 +1,3 @@
-
 on:
   pull_request
 
@@ -10,75 +9,7 @@ jobs:
     name: Lint style
     runs-on: ubuntu-latest
     steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      - uses: actions/checkout@v4
-
-      - name: install Python
-        uses: actions/setup-python@v5
+      - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
         with:
-          python-version: 3.8
-
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      # if you update this step (or its dependencies), please also update them in bot_fix_style.yaml
-      - name: lint
-        run: |
-          lake exe lint-style --fix
-
-      - name: suggester / lint-style
-        uses: reviewdog/action-suggester@v1
-        with:
-          tool_name: lint-style (comment with "bot fix style" to have the bot commit all style suggestions)
-
-      - name: Install bibtool
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bibtool
-
-      # if you update this step (or its dependencies), please also update them in bot_fix_style.yaml
-      - name: lint references.bib
-        run: |
-          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
-          ./scripts/lint-bib.sh || true
-
-      - name: suggester / lint-bib
-        uses: reviewdog/action-suggester@v1
-        with:
-          tool_name: lint-bib (comment with "bot fix style" to have the bot commit all style suggestions)
-
-  check_imported:
-    if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
-    name: Check all files imported
-    runs-on: ubuntu-latest
-    steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      - uses: actions/checkout@v4
-
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      # if you update this step (or its dependencies), please also update them in bot_fix_style.yaml
-      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run:
-          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
-          lake exe mk_all || true
-
-      - name: suggester / import list
-        uses: reviewdog/action-suggester@v1
-        with:
-          tool_name: imports (comment with "bot fix style" to have the bot commit all style suggestions)
+          mode: suggest
+          lint-bib-file: true

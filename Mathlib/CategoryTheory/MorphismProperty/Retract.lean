@@ -48,6 +48,11 @@ instance IsStableUnderRetracts.isomorphisms : (isomorphisms C).IsStableUnderRetr
     · rw [← h.i_w_assoc, IsIso.hom_inv_id_assoc, h.retract_left]
     · rw [Category.assoc, Category.assoc, h.r_w, IsIso.inv_hom_id_assoc, h.retract_right]
 
+instance (P₁ P₂ : MorphismProperty C)
+    [P₁.IsStableUnderRetracts] [P₂.IsStableUnderRetracts] :
+    (P₁ ⊓ P₂).IsStableUnderRetracts where
+  of_retract := fun h ⟨h₁, h₂⟩ ↦ ⟨of_retract h h₁, of_retract h h₂⟩
+
 /-- The class of morphisms that are retracts of morphisms
 belonging to `P : MorphismProperty C`. -/
 def retracts (P : MorphismProperty C) : MorphismProperty C :=
@@ -73,6 +78,19 @@ lemma isStableUnderRetracts_iff_retracts_le (P : MorphismProperty C) :
 lemma retracts_le (P : MorphismProperty C) [P.IsStableUnderRetracts] :
     P.retracts ≤ P := by
   rwa [← isStableUnderRetracts_iff_retracts_le]
+
+@[simp]
+lemma retracts_le_iff {P Q : MorphismProperty C} [Q.IsStableUnderRetracts] :
+    P.retracts ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact le_trans P.le_retracts
+  · intro h
+    exact le_trans (retracts_monotone h) Q.retracts_le
+
+instance {P : MorphismProperty C} [P.IsStableUnderRetracts] :
+    P.RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _
+    (fun _ _ e ↦ of_retract (Retract.ofIso e.symm))
 
 end MorphismProperty
 

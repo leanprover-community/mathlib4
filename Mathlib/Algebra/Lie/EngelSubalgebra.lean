@@ -56,8 +56,8 @@ def engel (x : L) : LieSubalgebra R L :=
       rw [ad_pow_lie]
       apply Finset.sum_eq_zero
       intro ij hij
-      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; omega
-      all_goals simp [LinearMap.pow_map_zero_of_le h, hm, hn] }
+      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; cutsat
+      all_goals simp [Module.End.pow_map_zero_of_le h, hm, hn] }
 
 lemma mem_engel_iff (x y : L) :
     y ∈ engel R x ↔ ∃ n : ℕ, ((ad R L x) ^ n) y = 0 :=
@@ -71,7 +71,7 @@ lemma self_mem_engel (x : L) : x ∈ engel R x := by
 lemma engel_zero : engel R (0 : L) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
-  rw [mem_engel_iff, LieHom.map_zero]
+  rw [mem_engel_iff, map_zero]
   use 1
   simp only [pow_one, LinearMap.zero_apply]
 
@@ -88,8 +88,8 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   rw [← lie_skew, neg_mem_iff (G := L), mem_engel_iff] at hy
   rcases hy with ⟨n, hn⟩
   rw [mem_engel_iff]
-  use n+1
-  rw [pow_succ, LinearMap.mul_apply]
+  use n + 1
+  rw [pow_succ, Module.End.mul_apply]
   exact hn
 
 variable {R}
@@ -128,14 +128,14 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     generalize k+1 = k
     induction k generalizing y with
     | zero =>
-      cases y; intro hy; simp only [pow_zero, LinearMap.one_apply]
+      cases y; intro hy; simp only [pow_zero, Module.End.one_apply]
       exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
-    | succ k ih => simp only [pow_succ, LinearMap.mem_ker, LinearMap.mul_apply] at ih ⊢; apply ih
+    | succ k ih => solve_by_elim
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]
     rintro _ ⟨y, rfl⟩
-    simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_toSubmodule]
+    simp only [pow_succ', Module.End.mul_apply, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
@@ -151,7 +151,7 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   case mono =>
     intro y hy
     rw [LinearMap.mem_ker] at hy ⊢
-    exact LinearMap.pow_map_zero_of_le hmn hy
+    exact Module.End.pow_map_zero_of_le hmn hy
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr inferInstance K
   use n
   ext y
@@ -160,7 +160,7 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   rw [mem_engel_iff] at h
   obtain ⟨m, hm⟩ := h
   obtain (hmn|hmn) : m ≤ n ∨ n ≤ m := le_total m n
-  · exact LinearMap.pow_map_zero_of_le hmn hm
+  · exact Module.End.pow_map_zero_of_le hmn hm
   · have : ∀ k : ℕ, ((ad R L) x ^ k) y = 0 ↔ y ∈ K k := by simp [K, Subtype.ext_iff, coe_ad_pow]
     rwa [this, ← hn m hmn, ← this] at hm
 

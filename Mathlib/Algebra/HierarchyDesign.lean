@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
 import Mathlib.Init
-import Batteries.Util.LibraryNote
+import Mathlib.Tactic.Basic
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -18,13 +18,13 @@ TODO: Add sections about interactions with topological typeclasses, and order ty
 -/
 
 
-library_note "the algebraic hierarchy"/-- # The algebraic hierarchy
+library_note2 «the algebraic hierarchy» /-- # The algebraic hierarchy
 
 In any theorem proving environment,
 there are difficult decisions surrounding the design of the "algebraic hierarchy".
 
 There is a danger of exponential explosion in the number of gadgets,
-especially once interactions between algebraic and order/topological/etc structures are considered.
+especially once interactions between algebraic and order/topological/etc. structures are considered.
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
 1. when there is "real mathematics" to be done with them, or
@@ -60,22 +60,22 @@ one should attempt to add the following constructions and results,
 when applicable:
 
 * Instances transferred elementwise to products, like `Prod.Monoid`.
-  See `Mathlib.Algebra.Group.Prod` for more examples.
+  See `Mathlib/Algebra/Group/Prod.lean` for more examples.
   ```
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathlib.Algebra.Group.Pi` for more examples.
+  See `Mathlib/Algebra/Group/Pi.lean` for more examples.
   ```
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
-  See `Mathlib.Algebra.Opposites` for more examples.
+  See `Mathlib/Algebra/Opposites.lean` for more examples.
   ```
   instance MulOpposite.Z [Z M] : Z (MulOpposite M) := ...
   ```
 * Instances transferred to `ULift M`, like `ULift.Monoid`.
-  See `Mathlib.Algebra.Group.ULift` for more examples.
+  See `Mathlib/Algebra/Group/ULift.lean` for more examples.
   ```
   instance ULift.Z [Z M] : Z (ULift M) := ...
   ```
@@ -83,7 +83,7 @@ when applicable:
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
   We make these definitions `abbrev`, see note [reducible non-instances].
-  See `Mathlib.Algebra.Group.InjSurj` for more examples.
+  See `Mathlib/Algebra/Group/InjSurj.lean` for more examples.
   ```
   abbrev Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₁ := ...
@@ -92,17 +92,17 @@ when applicable:
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
-  See `Mathlib.Data.Finsupp.Pointwise` for more examples.
+  See `Mathlib/Data/Finsupp/Pointwise.lean` for more examples.
   ```
-  instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
+  instance Finsupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib.Algebra.Pointwise` for more examples.
+  See `Mathlib/Algebra/Pointwise.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathlib.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
+  See `Mathlib/Data/Equiv/TransferInstance.lean` for more examples. See also the `transport` tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /-- When there is a new notion of `Z`-equiv: -/
@@ -138,17 +138,17 @@ For many algebraic structures, particularly ones used in representation theory, 
 etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
-so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
-(which bundles together `CommRing`, `TopologicalSpace`, and `TopologicalRing`).
+so for example we have `AddCommGrpCat` as a bundled `AddCommGroup`, and `TopCommRingCat`
+(which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
 * a uniform notation for morphisms `X ⟶ Y`
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
 * interoperability with unbundled structures, via coercions to `Type`
-  (so if `G : AddCommGrp`, you can treat `G` as a type,
+  (so if `G : AddCommGrpCat`, you can treat `G` as a type,
   and it automatically has an `AddCommGroup` instance)
-  and lifting maps `AddCommGrp.of G`, when `G` is a type with an `AddCommGroup` instance.
+  and lifting maps `AddCommGrpCat.of G`, when `G` is a type with an `AddCommGroup` instance.
 
 If, for example you do the work of proving that a typeclass `Z` has a good notion of tensor product,
 you are strongly encouraged to provide the corresponding `MonoidalCategory` instance
@@ -182,12 +182,9 @@ briefly listing the parts of the API which still need to be provided.
 Hopefully this document makes it easy to assemble this list.
 
 Another alternative to a TODO list in the doc-strings is adding Github issues.
-
-
 -/
 
-
-library_note "reducible non-instances"/--
+library_note2 «reducible non-instances» /--
 Some definitions that define objects of a class cannot be instances, because they have an
 explicit argument that does not occur in the conclusion. An example is `Preorder.lift` that has a
 function `f : α → β` as an explicit argument to lift a preorder on `β` to a preorder on `α`.
@@ -204,7 +201,7 @@ sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
 Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 -/
 
-library_note "implicit instance arguments"/--
+library_note2 «implicit instance arguments» /--
 There are places where typeclass arguments are specified with implicit `{}` brackets instead of
 the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
 arguments to the type of one of the other arguments. When they can be inferred from these other
@@ -215,7 +212,7 @@ and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather tha
 `[Semiring α] [Semiring β]`.
 -/
 
-library_note "lower instance priority"/--
+library_note2 «lower instance priority» /--
 Certain instances always apply during type-class resolution. For example, the instance
 `AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
 resolution problems of the form `AddGroup _`, and type-class inference will then do an
@@ -230,4 +227,24 @@ See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1
 
 Therefore, if we create an instance that always applies, we set the priority of these instances to
 100 (or something similar, which is below the default value of 1000).
+-/
+
+library_note2 «instance argument order» /--
+When type class inference applies an instance, it attempts to solve the sub-goals from left to
+right (it used to be from right to left in lean 3). For example in
+```
+instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [Nonempty α] : IsEmpty (∀ x, p x)
+```
+we make sure to write `[∀ x, IsEmpty (p x)]` on the left of `[Nonempty α]` to avoid an expensive
+search for `Nonempty α` when there is no instance for `∀ x, IsEmpty (p x)`.
+
+This helps to speed up failing type class searches, for example those triggered by `simp` lemmas.
+
+In some situations, we can't reorder type class assumptions because one depends on the other,
+for example in
+```
+instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
+```
+where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
+type class synthesis order in this situation.
 -/

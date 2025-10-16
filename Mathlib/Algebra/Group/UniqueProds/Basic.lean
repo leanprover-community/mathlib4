@@ -3,11 +3,13 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Unique products and related notions
@@ -47,7 +49,7 @@ about the grading type and then a generic statement of the form "look at the coe
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
-assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule
+assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid OrderedCommMonoid
 
 open Finset
 
@@ -55,15 +57,19 @@ open Finset
 let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
 most one way as a product of an element of `A` and an element of `B`. -/
 @[to_additive
-      "Let `G` be a Type with addition, let `A B : Finset G` be finite subsets and
+      /-- Let `G` be a Type with addition, let `A B : Finset G` be finite subsets and
 let `a0 b0 : G` be two elements.  `UniqueAdd A B a0 b0` asserts `a0 + b0` can be written in at
-most one way as a sum of an element from `A` and an element from `B`."]
+most one way as a sum of an element from `A` and an element from `B`. -/]
 def UniqueMul {G} [Mul G] (A B : Finset G) (a0 b0 : G) : Prop :=
   ∀ ⦃a b⦄, a ∈ A → b ∈ B → a * b = a0 * b0 → a = a0 ∧ b = b0
 
 namespace UniqueMul
 
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
+
+@[to_additive]
+theorem mono {A' B' : Finset G} (hA : A ⊆ A') (hB : B ⊆ B') (h : UniqueMul A' B' a0 b0) :
+    UniqueMul A B a0 b0 := fun _ _ ha hb he ↦ h (hA ha) (hB hb) he
 
 @[to_additive (attr := nontriviality, simp)]
 theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
@@ -75,9 +81,6 @@ theorem of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : #A ≤ 1) (hB1
   rw [Finset.card_le_one_iff] at hA1 hB1
   obtain ⟨a, ha⟩ := hA; obtain ⟨b, hb⟩ := hB
   exact ⟨a, ha, b, hb, fun _ _ ha' hb' _ ↦ ⟨hA1 ha' ha, hB1 hb' hb⟩⟩
-
-@[deprecated (since := "2024-09-23")]
-alias _root_.UniqueAdd.of_card_nonpos := UniqueAdd.of_card_le_one
 
 @[to_additive]
 theorem mt (h : UniqueMul A B a0 b0) :
@@ -102,8 +105,6 @@ theorem set_subsingleton (h : UniqueMul A B a0 b0) :
   rcases h hy.1 hy.2.1 hy.2.2 with ⟨rfl, rfl⟩
   rfl
 
--- Porting note: mathport warning: expanding binder collection
---  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
 theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ∃! ab, ab ∈ A ×ˢ B ∧ ab.1 * ab.2 = a0 * b0 :=
@@ -111,8 +112,8 @@ theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     fun h ↦ h.elim
       (by
         rintro ⟨x1, x2⟩ _ J x y hx hy l
-        rcases Prod.mk.inj_iff.mp (J (a0, b0) ⟨Finset.mk_mem_product aA bB, rfl⟩) with ⟨rfl, rfl⟩
-        exact Prod.mk.inj_iff.mp (J (x, y) ⟨Finset.mk_mem_product hx hy, l⟩))⟩
+        rcases Prod.mk_inj.mp (J (a0, b0) ⟨Finset.mk_mem_product aA bB, rfl⟩) with ⟨rfl, rfl⟩
+        exact Prod.mk_inj.mp (J (x, y) ⟨Finset.mk_mem_product hx hy, l⟩))⟩
 
 open Finset in
 @[to_additive iff_card_le_one]
@@ -121,16 +122,9 @@ theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
   simp_rw [card_le_one_iff, mem_filter, mem_product]
   refine ⟨fun h p1 p2 ⟨⟨ha1, hb1⟩, he1⟩ ⟨⟨ha2, hb2⟩, he2⟩ ↦ ?_, fun h a b ha hb he ↦ ?_⟩
   · have h1 := h ha1 hb1 he1; have h2 := h ha2 hb2 he2
-    ext
-    · rw [h1.1, h2.1]
-    · rw [h1.2, h2.2]
+    grind
   · exact Prod.ext_iff.1 (@h (a, b) (a0, b0) ⟨⟨ha, hb⟩, he⟩ ⟨⟨ha0, hb0⟩, rfl⟩)
 
-@[deprecated (since := "2024-09-23")]
-alias _root_.UniqueAdd.iff_card_nonpos := UniqueAdd.iff_card_le_one
-
--- Porting note: mathport warning: expanding binder collection
---  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
 theorem exists_iff_exists_existsUnique :
     (∃ a0 b0 : G, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0) ↔
@@ -138,11 +132,11 @@ theorem exists_iff_exists_existsUnique :
   ⟨fun ⟨_, _, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
     have h' := h
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
-    cases' Finset.mem_product.mp hab with ha hb
+    obtain ⟨ha, hb⟩ := Finset.mem_product.mp hab
     exact ⟨a, b, ha, hb, (iff_existsUnique ha hb).mpr h⟩⟩
 
 /-- `UniqueMul` is preserved by inverse images under injective, multiplicative maps. -/
-@[to_additive "`UniqueAdd` is preserved by inverse images under injective, additive maps."]
+@[to_additive /-- `UniqueAdd` is preserved by inverse images under injective, additive maps. -/]
 theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G) {A B : Finset H}
     (u : UniqueMul A B (f a0) (f b0)) :
     UniqueMul (A.preimage f hf.injOn) (B.preimage f hf.injOn) a0 b0 := by
@@ -160,9 +154,9 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
 
 See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
 @[to_additive
-      "`UniqueAdd` is preserved under additive maps that are injective.
+      /-- `UniqueAdd` is preserved under additive maps that are injective.
 
-See `UniqueAdd.addHom_map_iff` for a version with swapped bundling."]
+See `UniqueAdd.addHom_map_iff` for a version with swapped bundling. -/]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 :=
   ⟨of_mulHom_image f fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·), fun h _ _ ↦ by
@@ -175,9 +169,9 @@ theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Inject
 
 See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
 @[to_additive
-      "`UniqueAdd` is preserved under embeddings that are additive.
+      /-- `UniqueAdd` is preserved under embeddings that are additive.
 
-See `UniqueAdd.addHom_image_iff` for a version with swapped bundling."]
+See `UniqueAdd.addHom_image_iff` for a version with swapped bundling. -/]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   classical simp_rw [← mulHom_image_iff ⟨f, mul⟩ f.2, Finset.map_eq_image]; rfl
@@ -300,7 +294,7 @@ variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
 @[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
-  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
+  ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_ | _) <;> rfl⟩
 @[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
 
 variable {G H}
@@ -324,7 +318,7 @@ theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f) (_ : U
     UniqueProds H := of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·))
 
 /-- `UniqueProd` is preserved under multiplicative equivalences. -/
-@[to_additive "`UniqueSums` is preserved under additive equivalences."]
+@[to_additive /-- `UniqueSums` is preserved under additive equivalences. -/]
 theorem _root_.MulEquiv.uniqueProds_iff (f : G ≃* H) : UniqueProds G ↔ UniqueProds H :=
   ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
@@ -354,7 +348,7 @@ open MulOpposite in
 @[to_additive] theorem toIsCancelMul [UniqueProds G] : IsCancelMul G where
   mul_left_cancel := toIsLeftCancelMul.mul_left_cancel
   mul_right_cancel _ _ _ h :=
-    op_injective <| toIsLeftCancelMul.mul_left_cancel _ _ _ <| unop_injective h
+    op_injective <| toIsLeftCancelMul.mul_left_cancel _ <| unop_injective h
 
 /-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
 
@@ -397,7 +391,7 @@ open MulOpposite in
       obtain ⟨b0, hb0, rfl⟩ := mem_map.mp hd
       refine ⟨(_, _), ⟨ha0, hb0⟩, (a, b), ⟨ha, hb⟩, ?_, fun a' b' ha' hb' he => ?_, hu⟩
       · simp_rw [Function.Embedding.coeFn_mk, Ne, inv_mul_eq_one, mul_inv_eq_one] at hne
-        rwa [Ne, Prod.mk.inj_iff, not_and_or, eq_comm]
+        rwa [Ne, Prod.mk_inj, not_and_or, eq_comm]
       specialize hu' (mem_map_of_mem _ ha') (mem_map_of_mem _ hb')
       simp_rw [Function.Embedding.coeFn_mk, mul_left_cancel_iff, mul_right_cancel_iff] at hu'
       rw [mul_assoc, ← mul_assoc a', he, mul_assoc, mul_assoc] at hu'
@@ -422,10 +416,10 @@ open MulOpposite in
         simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
       push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
       rcases hcard with hC | hD
-      · obtain ⟨c, hc, hc1⟩ := exists_ne_of_one_lt_card hC 1
+      · obtain ⟨c, hc, hc1⟩ := exists_mem_ne hC 1
         refine (hc1 ?_).elim
         simpa using hu ⟨_, ⟨_, hD, rfl⟩, _, hc, rfl⟩ ⟨_, hD, _, ⟨_, hc, rfl⟩, rfl⟩
-      · obtain ⟨d, hd, hd1⟩ := exists_ne_of_one_lt_card hD 1
+      · obtain ⟨d, hd, hd1⟩ := exists_mem_ne hD 1
         refine (hd1 ?_).elim
         simpa using hu ⟨_, ⟨_, hd, rfl⟩, _, hC, rfl⟩ ⟨_, hd, _, ⟨_, hC, rfl⟩, rfl⟩
     all_goals apply_rules [Nonempty.mul, Nonempty.image, Finset.Nonempty.map, hc.1, hc.2.1]
@@ -455,7 +449,8 @@ open UniqueMul in
     exact ⟨a0, ha0.1, b0, hb0.1, of_image_filter (Pi.evalMulHom G i) ha0.2 hb0.2 hi hu⟩
 
 open ULift in
-@[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
+@[to_additive] instance _root_.Prod.instUniqueProds [UniqueProds G] [UniqueProds H] :
+    UniqueProds (G × H) := by
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
@@ -483,7 +478,7 @@ open Finset
     [TwoUniqueProds G] : TwoUniqueProds H where
   uniqueMul_of_one_lt_card {A B} hc := by
     classical
-    obtain hc' | hc' := lt_or_le 1 (#(A.image f) * #(B.image f))
+    obtain hc' | hc' := lt_or_ge 1 (#(A.image f) * #(B.image f))
     · obtain ⟨⟨a1, b1⟩, h1, ⟨a2, b2⟩, h2, hne, hu1, hu2⟩ := uniqueMul_of_one_lt_card hc'
       simp_rw [mem_product, mem_image] at h1 h2 ⊢
       obtain ⟨⟨a1, ha1, rfl⟩, b1, hb1, rfl⟩ := h1
@@ -504,7 +499,7 @@ theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f)
   of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·))
 
 /-- `TwoUniqueProd` is preserved under multiplicative equivalences. -/
-@[to_additive "`TwoUniqueSums` is preserved under additive equivalences."]
+@[to_additive /-- `TwoUniqueSums` is preserved under additive equivalences. -/]
 theorem _root_.MulEquiv.twoUniqueProds_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H :=
   ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
@@ -524,7 +519,6 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
     simp_rw [mem_product, mem_image, ← filter_nonempty_iff] at h1 h2
     replace h1 := uniqueMul_of_twoUniqueMul ?_ h1.1 h1.2
     on_goal 1 => replace h2 := uniqueMul_of_twoUniqueMul ?_ h2.1 h2.2
-
     · obtain ⟨a1, ha1, b1, hb1, hu1⟩ := h1
       obtain ⟨a2, ha2, b2, hb2, hu2⟩ := h2
       rw [mem_filter] at ha1 hb1 ha2 hb2
@@ -532,8 +526,7 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       refine ⟨(a1, b1), ⟨ha1.1, hb1.1⟩, (a2, b2), ⟨ha2.1, hb2.1⟩, ?_,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha1.2 hb1.2 hi1 hu1,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha2.2 hb2.2 hi2 hu2⟩
-      contrapose! hne; rw [Prod.mk.inj_iff] at hne ⊢
-      rw [← ha1.2, ← hb1.2, ← ha2.2, ← hb2.2, hne.1, hne.2]; exact ⟨rfl, rfl⟩
+      grind
     all_goals rcases hc with hc | hc; · exact ihA _ (hc.2 _)
     · by_cases hA : {a ∈ A | a i = p2.1} = A
       · rw [hA]
@@ -545,7 +538,9 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       · exact ihA _ ((A.filter_subset _).ssubset_of_ne hA)
 
 open ULift in
-@[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
+@[to_additive]
+instance _root_.Prod.instTwoUniqueProds [TwoUniqueProds G] [TwoUniqueProds H] :
+    TwoUniqueProds (G × H) := by
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
@@ -575,8 +570,8 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
 /-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
-  "This instance asserts that if `G` has a right-cancellative addition, a linear order,
-  and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`." ]
+  /-- This instance asserts that if `G` has a right-cancellative addition, a linear order,
+  and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`. -/]
 instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     [LinearOrder G] [MulLeftStrictMono G] :
     TwoUniqueProds G where
@@ -589,28 +584,28 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     have : UniqueMul A B a0 b0 := by
       intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b0
-      · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| le_max' _ _ <| mul_mem_mul ha hb0).elim
+      · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| le_max' _ _ <| mul_mem_mul ha hb0).elim
       · exact ⟨mul_right_cancel he, rfl⟩
-      · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_le <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
+      · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_ge <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
     refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
-    · rw [Prod.mk.inj_iff] at he; rw [he.1, he.2, he1] at he0
-      obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
+    · rw [Prod.mk_inj] at he; rw [he.1, he.2, he1] at he0
+      obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_mem_ne hc (a0, b0)
       rw [mem_product] at h2
       refine (min'_lt_max' _ (mul_mem_mul ha0 hb0) (mul_mem_mul h2.1 h2.2) fun he ↦ hne ?_).ne he0
       exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
     · intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b1
-      · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_le <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
+      · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_ge <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
       · exact ⟨mul_right_cancel he, rfl⟩
-      · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| min'_le _ _ <| mul_mem_mul ha hb1).elim
+      · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| min'_le _ _ <| mul_mem_mul ha hb1).elim
 
 open MulOpposite in
 -- see Note [lower instance priority]
 /-- This instance asserts that if `G` has a left-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
-  "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
-  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`." ]
+  /-- This instance asserts that if `G` has a left-cancellative addition, a linear order, and
+  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`. -/]
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=
@@ -629,12 +624,3 @@ instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSu
 instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
   TwoUniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
-
-/-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
-instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
-  .of_mulHom ⟨Multiplicative.ofAdd ∘ List.length, fun _ _ ↦ congr_arg _ (List.length_append _ _)⟩
-    (fun _ _ _ _ h h' ↦ List.append_inj h <| Equiv.injective Multiplicative.ofAdd h'.1)
-
-/-- Any `FreeAddMonoid` has the `TwoUniqueSums` property. -/
-instance FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) :=
-  .of_addHom ⟨_, List.length_append⟩ (fun _ _ _ _ h h' ↦ List.append_inj h h'.1)

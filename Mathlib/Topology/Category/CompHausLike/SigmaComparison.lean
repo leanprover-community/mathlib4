@@ -3,6 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
@@ -54,7 +55,7 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   apply congrFun
   congr 2
   rw [← opCoproductIsoProduct_inv_comp_ι]
-  simp only [coe_of, Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
+  simp only [Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
   simp only [opCoproductIsoProduct, ← unop_comp, opCoproductIsoProduct'_comp_self]
   erw [IsColimit.fac]
   rfl

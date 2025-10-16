@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Regular.Basic
@@ -15,7 +16,6 @@ The theorems include formulas for computing coefficients, such as
 `coeff_add`, `coeff_sum`, `coeff_mul`
 
 -/
-
 
 
 noncomputable section
@@ -43,24 +43,22 @@ theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q
 @[simp]
 theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
     coeff (r • p) n = r • coeff p n := by
-  rcases p with ⟨⟩
-  simp_rw [← ofFinsupp_smul, coeff]
-  exact Finsupp.smul_apply _ _ _
+  rfl
 
 theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
+  rw [mem_support_iff] at hi ⊢
   contrapose! hi
   simp [hi]
 
 open scoped Pointwise in
 theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
   calc #(p * q).support
-   _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
-   _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
-    Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
-   _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
+    _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
+    _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
+      Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+    _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -69,19 +67,15 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
-    dsimp only
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
     simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 
-variable (R)
-
+variable (R) in
 /-- The nth coefficient, as a linear map. -/
 def lcoeff (n : ℕ) : R[X] →ₗ[R] R where
   toFun p := coeff p n
   map_add' p q := coeff_add p q n
   map_smul' r p := coeff_smul r p n
-
-variable {R}
 
 @[simp]
 theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
@@ -103,8 +97,7 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
 @[simp]
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
-  rcases p with ⟨⟩
-  simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
+  simp [Polynomial.sum]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
@@ -133,6 +126,9 @@ def constantCoeff : R[X] →+* R where
   map_zero' := coeff_zero 0
   map_add' p q := coeff_add p q 0
 
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff (R := R)) :=
+  fun x ↦ ⟨C x, by simp⟩
+
 theorem isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
   ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
 
@@ -143,7 +139,6 @@ theorem coeff_X_mul_zero (p : R[X]) : coeff (X * p) 0 = 0 := by simp
 theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
     coeff (C x * X ^ k : R[X]) n = if n = k then x else 0 := by
   rw [C_mul_X_pow_eq_monomial, coeff_monomial]
-  congr 1
   simp [eq_comm]
 
 theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by
@@ -166,22 +161,22 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
   exact AddMonoidAlgebra.mul_single_zero_apply p a n
 
 @[simp] lemma coeff_mul_natCast {a k : ℕ} :
-  coeff (p * (a : R[X])) k = coeff p k * (↑a : R) := coeff_mul_C _ _ _
+    coeff (p * (a : R[X])) k = coeff p k * (↑a : R) := coeff_mul_C _ _ _
 
 @[simp] lemma coeff_natCast_mul {a k : ℕ} :
-  coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
+    coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
 
 @[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff (p * (ofNat(a) : R[X])) k = coeff p k * ofNat(a) := coeff_mul_C _ _ _
+    coeff (p * (ofNat(a) : R[X])) k = coeff p k * ofNat(a) := coeff_mul_C _ _ _
 
 @[simp] lemma coeff_ofNat_mul {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff ((ofNat(a) : R[X]) * p) k = ofNat(a) * coeff p k := coeff_C_mul _
+    coeff ((ofNat(a) : R[X]) * p) k = ofNat(a) * coeff p k := coeff_C_mul _
 
 @[simp] lemma coeff_mul_intCast [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
-  coeff (p * (a : S[X])) k = coeff p k * (↑a : S) := coeff_mul_C _ _ _
+    coeff (p * (a : S[X])) k = coeff p k * (↑a : S) := coeff_mul_C _ _ _
 
 @[simp] lemma coeff_intCast_mul [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
-  coeff ((a : S[X]) * p) k = a * coeff p k := coeff_C_mul _
+    coeff ((a : S[X]) * p) k = a * coeff p k := coeff_C_mul _
 
 @[simp]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
@@ -211,14 +206,14 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     #(support (C x * X ^ k + C y * X ^ m)) = 2 := by
-  rw [support_binomial h hx hy, card_insert_of_not_mem (mt mem_singleton.mp h), card_singleton]
+  rw [support_binomial h hx hy, card_insert_of_notMem (mt mem_singleton.mp h), card_singleton]
 
 theorem card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) : #(support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
   rw [support_trinomial hkm hmn hx hy hz,
-    card_insert_of_not_mem
+    card_insert_of_notMem
       (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
-    card_insert_of_not_mem (mt mem_singleton.mp hmn.ne), card_singleton]
+    card_insert_of_notMem (mt mem_singleton.mp hmn.ne), card_singleton]
 
 end Fewnomials
 
@@ -226,14 +221,7 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, mul_zero]
-    rintro rfl
-    apply h2
-    rw [mem_antidiagonal, add_right_cancel_iff] at h1
-    subst h1
-    rfl
-  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+  all_goals grind [mem_antidiagonal, coeff_X_pow, mul_zero]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :
@@ -293,7 +281,7 @@ theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
   rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, map_sum]
-  simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C, Nat.cast_id]
+  simp only [lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C]
   rw [Finset.sum_eq_single k, coeff_X_pow_self, one_mul]
   · intro _ _ h
     simp [coeff_X_pow, h.symm]
@@ -367,5 +355,9 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
 end cast
 
 instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := natCast_inj.mp
+
+instance charP {p : ℕ} [CharP R p] : CharP R[X] p where
+  cast_eq_zero_iff n := by
+    rw [← CharP.cast_eq_zero_iff R, ← C_inj (R := R), map_natCast, C_0]
 
 end Polynomial

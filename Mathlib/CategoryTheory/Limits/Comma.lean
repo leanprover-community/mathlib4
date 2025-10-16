@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Unit
@@ -23,7 +23,7 @@ The duals of all the above are also given.
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 

@@ -1,14 +1,23 @@
-import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Linter.FlexibleLinter
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linter.UnusedTactic
+import Batteries.Linter.UnreachableTactic
+import Batteries.Tactic.PermuteGoals
 
 set_option linter.flexible true
 set_option linter.unusedVariables false
 
+/-! # Basic tests for the flexible linter
+
+This file contains basic tests for the flexible linter, which do not require any advanced imports.
+Anything which requires groups, rings or algebraic structures is considered advanced, and
+tests for these can be found in `MathlibTest/ImportHeavyFlexibleLinter.lean`
+
+-/
+
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'exact h' uses 'h'!
 -/
@@ -35,12 +44,14 @@ example {a b : Nat} (h : a = b) : a + 0 = b := by
 -- `induction` does not use the goal
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'assumption' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'assumption' uses '⊢'!
 -/
@@ -52,7 +63,8 @@ example {a b : Nat} (h : a = b) : a + 0 = b := by
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'exact h' uses 'h'!
 -/
@@ -66,12 +78,14 @@ example (h : 0 = 0 ∨ 0 = 0) : True := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'on_goal 2 => · contradiction' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'contradiction' uses '⊢'!
 -/
@@ -87,12 +101,14 @@ example {a : Nat} : a + 1 + 0 = 1 + a := by simp; all_goals omega
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'contradiction' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'contradiction' uses '⊢'!
 -/
@@ -104,12 +120,14 @@ example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
 
 /--
 warning: 'simp at h k' is a flexible tactic modifying 'k'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at k' uses 'k'!
 ---
 warning: 'simp at h k' is a flexible tactic modifying 'h'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -130,28 +148,10 @@ example {a b : Nat} (h : ∀ c, c + a + b = a + c) : (0 + 2 + 1 + a + b) = a + 3
   specialize h 3
   simp_all
 
--- `norm_num` is allowed after `simp`.
-#guard_msgs in
-example : (0 + 2 : Rat) + 1 = 3 := by
-  simp
-  norm_num
-
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
----
-info: … and 'rw [add_comm]' uses '⊢'!
--/
-#guard_msgs in
--- `norm_num` is allowed after `simp`, but "passes along the stain".
-example {a : Rat} : a + (0 + 2 + 1 : Rat) = 3 + a := by
-  simp
-  norm_num
-  rw [add_comm]
 
-/--
-warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'exact h.symm' uses '⊢'!
 -/
@@ -168,35 +168,28 @@ example (h : False) : 0 ≠ 0 := by
   try (simp; done)
   exact h.elim
 
---  `abel_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `abel_nf`.
+-- `grind` is another flexible tactic,
 #guard_msgs in
-example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
+example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
-  abel_nf
-  assumption
+  grind
 
---  `abel` is an allowed `simp`-follower.
+-- as are its `grobner` and `cutsat` front-ends.
 #guard_msgs in
-example {a b : Nat} : a + b = b + a + 0 := by
+example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
-  abel
+  grobner
 
---  `ring_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `ring_nf`.
+-- `cutsat` is another flexible tactic.
 #guard_msgs in
-example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
+example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
-  ring_nf
-  assumption
-
---  `ring` is an allowed `simp`-follower.
-#guard_msgs in
-example {a b : Nat} : a + b = b + a + 0 := by
-  simp
-  ring
+  cutsat
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'contradiction' uses '⊢'!
 -/
@@ -221,7 +214,8 @@ example (n : Nat) : n + 1 = 1 + n := by
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -237,12 +231,14 @@ example {h : 0 = 0} {k : 1 = 1} : ¬ ¬ True := by
 
 /--
 warning: 'simp at h k' is a flexible tactic modifying 'k'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at k' uses 'k'!
 ---
 warning: 'simp at h k' is a flexible tactic modifying 'h'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -258,7 +254,8 @@ example {h : 0 = 0} {k : 1 = 1} : True := by
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -273,7 +270,8 @@ example {h : 0 = 0} : True := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rwa [← Classical.not_not (a := False)]' uses '⊢'!
 -/
@@ -286,7 +284,8 @@ example {h : False} : 0 = 1 := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-note: this linter can be disabled with `set_option linter.flexible false`
+
+Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rwa [← Classical.not_not (a := False)]' uses '⊢'!
 -/
@@ -320,10 +319,11 @@ flex? simp_all only
 flex? simp
 /-- warning: true -/#guard_msgs in
 flex? simp_all
+
 end
 
 /-- info: #[h] -/ #guard_msgs in
 #eval show CoreM _ from do
   let h := mkIdent `h
-  let hc : TSyntax `Lean.Parser.Tactic.casesTarget := ⟨h⟩
+  let hc ← `(Lean.Parser.Tactic.elimTarget|$h:ident)
   IO.println s!"{(toStained (← `(tactic| cases $hc))).toArray}"

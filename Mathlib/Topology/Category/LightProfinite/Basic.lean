@@ -62,12 +62,6 @@ instance {X : LightProfinite} : TotallyDisconnectedSpace X :=
 instance {X : LightProfinite} : SecondCountableTopology X :=
   X.prop.2
 
-instance {X : LightProfinite} : TotallyDisconnectedSpace ((forget LightProfinite).obj X) :=
-  X.prop.1
-
-instance {X : LightProfinite} : SecondCountableTopology ((forget LightProfinite).obj X) :=
-  X.prop.2
-
 end LightProfinite
 
 /-- The fully faithful embedding of `LightProfinite` in `Profinite`. -/
@@ -157,7 +151,6 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
 noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [CountableCategory J] :
     CreatesLimitsOfShape J lightToProfinite.{max v u} where
   CreatesLimit {F} :=
-    have : HasLimitsOfSize Profinite := hasLimitsOfSizeShrink _
     createsLimitOfFullyFaithfulOfIso (limitCone.{v, u} F).pt <|
       (Profinite.limitConeIsLimit.{v, u} (F ⋙ lightToProfinite)).conePointUniqueUpToIso
         (limit.isLimit _)
@@ -262,25 +255,13 @@ instance : lightDiagramToProfinite.Faithful := show (inducedFunctor _).Faithful 
 
 instance : lightDiagramToProfinite.Full := show (inducedFunctor _).Full from inferInstance
 
-instance {X : LightDiagram} : TopologicalSpace ((forget LightDiagram).obj X) :=
-  (inferInstance : TopologicalSpace X.cone.pt)
-
-instance {X : LightDiagram} : TotallyDisconnectedSpace ((forget LightDiagram).obj X) :=
-  (inferInstance : TotallyDisconnectedSpace X.cone.pt)
-
-instance {X : LightDiagram} : CompactSpace ((forget LightDiagram).obj X) :=
-  (inferInstance : CompactSpace X.cone.pt )
-
-instance {X : LightDiagram} : T2Space ((forget LightDiagram).obj X) :=
-  (inferInstance : T2Space X.cone.pt )
-
 namespace LightProfinite
 
 instance (S : LightProfinite) : Countable (Clopens S) := by
   rw [TopologicalSpace.Clopens.countable_iff_secondCountable]
   infer_instance
 
-instance instCountableDiscreteQuotient (S : LightProfinite)  :
+instance instCountableDiscreteQuotient (S : LightProfinite) :
     Countable (DiscreteQuotient ((lightToProfinite.obj S))) :=
   (DiscreteQuotient.finsetClopens_inj S).countable
 
@@ -381,7 +362,7 @@ instance : LightDiagram'.toLightFunctor.{u}.Full where
 instance : LightDiagram'.toLightFunctor.{u}.EssSurj where
   mem_essImage Y :=
     ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨lightDiagramToProfinite.preimageIso (
-      (Limits.lim.mapIso (isoWhiskerRight ((isoWhiskerLeft Y.diagram
+      (Limits.lim.mapIso (Functor.isoWhiskerRight ((Functor.isoWhiskerLeft Y.diagram
       Skeleton.equivalence.counitIso)) toProfinite)) ≪≫
       (limit.isLimit _).conePointUniqueUpToIso Y.isLimit)⟩⟩
 

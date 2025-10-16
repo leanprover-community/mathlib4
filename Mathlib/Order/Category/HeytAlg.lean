@@ -111,7 +111,8 @@ lemma hom_ext {X Y : HeytAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [HeytingAlgebra X] [HeytingAlgebra Y] (f : HeytingHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : HeytAlg} (f : X ⟶ Y) :
@@ -130,14 +131,10 @@ lemma ofHom_apply {X Y : Type u} [HeytingAlgebra X] [HeytingAlgebra Y]
     (f : HeytingHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {X Y : HeytAlg} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {X Y : HeytAlg} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited HeytAlg :=

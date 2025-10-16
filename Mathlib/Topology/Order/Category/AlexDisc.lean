@@ -46,20 +46,17 @@ abbrev of (X : Type*) [TopologicalSpace X] [AlexandrovDiscrete X] : AlexDisc whe
 lemma coe_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : ↥(of α) = α := rfl
 
 @[simp] lemma forgetToTop_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
-  (forget₂ AlexDisc TopCat).obj (of α) = TopCat.of α := rfl
+    (forget₂ AlexDisc TopCat).obj (of α) = TopCat.of α := rfl
 
 @[simp] lemma coe_forgetToTop (X : AlexDisc) : ↥((forget₂ _ TopCat).obj X) = X := rfl
-
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.HasForget.instFunLike
 
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : AlexDisc} (e : α ≃ₜ β) : α ≅ β where
   hom := TopCat.ofHom (e : ContinuousMap α β)
   inv := TopCat.ofHom (e.symm : ContinuousMap β α)
-  hom_inv_id := DFunLike.ext _ _ e.symm_apply_apply
-  inv_hom_id := DFunLike.ext _ _ e.apply_symm_apply
+  hom_inv_id := by ext; apply e.symm_apply_apply
+  inv_hom_id := by ext; apply e.apply_symm_apply
 
 end AlexDisc
 

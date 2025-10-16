@@ -3,8 +3,8 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 
@@ -42,15 +42,16 @@ theorem Basis.ofRankEqZero_apply [Module.Free K V] {ι : Type*} [IsEmpty ι]
     (hV : Module.rank K V = 0) (i : ι) : Basis.ofRankEqZero hV i = 0 := rfl
 
 theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
-    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndependent K ((↑) : s → V) := by
+    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndepOn K id s := by
   haveI := nontrivial_of_invariantBasisNumber K
   constructor
   · intro h
     obtain ⟨κ, t'⟩ := Module.Free.exists_basis (R := K) (M := V)
     let t := t'.reindexRange
-    have : LinearIndependent K ((↑) : Set.range t' → V) := by
-      convert t.linearIndependent
-      ext; exact (Basis.reindexRange_apply _ _).symm
+    have : LinearIndepOn K id (Set.range t') := by
+      convert t.linearIndependent.linearIndepOn_id
+      ext
+      simp [t]
     rw [← t.mk_eq_rank'', le_mk_iff_exists_subset] at h
     rcases h with ⟨s, hst, hsc⟩
     exact ⟨s, hsc, this.mono hst⟩
@@ -119,19 +120,7 @@ its span. -/
 theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
-  constructor
-  · rintro ⟨⟨v₀, hv₀⟩, h⟩
-    use v₀, hv₀
-    intro v hv
-    obtain ⟨r, hr⟩ := h ⟨v, hv⟩
-    use r
-    rwa [Subtype.ext_iff, coe_smul] at hr
-  · rintro ⟨v₀, hv₀, h⟩
-    use ⟨v₀, hv₀⟩
-    rintro ⟨v, hv⟩
-    obtain ⟨r, hr⟩ := h v hv
-    use r
-    rwa [Subtype.ext_iff, coe_smul]
+  simp
 
 /-- A submodule has dimension `1` if and only if there is a
 single non-zero vector in the submodule such that the submodule is contained in
@@ -197,7 +186,7 @@ theorem finrank_eq_one_iff' [Module.Free K V] :
   rw [← rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
-/-- A finite dimensional module has dimension at most 1 iff
+/-- A finite-dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :
@@ -221,22 +210,15 @@ theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
   -- `Module.Finite.finite_basis` is in a much later file, so we copy its proof to here
   haveI : Finite s := by
     obtain ⟨t, ht⟩ := ‹Module.Finite K V›
-    exact basis_finite_of_finite_spans _ t.finite_toSet ht hs
+    exact basis_finite_of_finite_spans t.finite_toSet ht hs
   have := lift_mk_eq'.2 ⟨hs.repr.toEquiv⟩
   rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
     lift_lift, lift_umax] at this
-
-@[deprecated (since := "2024-11-10")]
-alias lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank :=
-  lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank
 
 theorem cardinalMk_eq_cardinalMk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
     [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
     #V = #K ^ Module.rank K V := by
   simpa using lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank K V
-
-@[deprecated (since := "2024-11-10")]
-alias cardinal_mk_eq_cardinal_mk_field_pow_rank := cardinalMk_eq_cardinalMk_field_pow_rank
 
 variable (K V) in
 theorem cardinal_lt_aleph0_of_finiteDimensional [Finite K] [Module.Free K V] [Module.Finite K V] :
@@ -294,7 +276,6 @@ theorem finrank_eq_one_iff [Nontrivial E] [Module.Free F S] : finrank F S = 1 �
 theorem bot_eq_top_iff_rank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
-  -- Porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 
 theorem bot_eq_top_iff_finrank_eq_one [Nontrivial E] [Module.Free F E] :

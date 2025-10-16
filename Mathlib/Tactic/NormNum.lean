@@ -1,5 +1,6 @@
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Abs
 import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Pow

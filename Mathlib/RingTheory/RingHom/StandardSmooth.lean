@@ -13,6 +13,14 @@ import Mathlib.Tactic.Algebraize
 In this file we define standard smooth ring homomorphisms and show their
 meta properties.
 
+## Main definitions
+
+- `RingHom.IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard
+  smooth as `R`-algebra.
+- `RingHom.IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard
+  smooth of relative dimension `n` if `S` is standard smooth of relative dimension `n` as
+  `R`-algebra.
+
 ## Notes
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
@@ -32,26 +40,26 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 /-- A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth as `R`-algebra. -/
 @[algebraize RingHom.IsStandardSmooth.toAlgebra]
 def IsStandardSmooth (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
+  @Algebra.IsStandardSmooth _ _ _ _ f.toAlgebra
 
-/-- Helper lemma for the `algebraize` tactic.-/
-lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth.{t, w} f) :
-    @Algebra.IsStandardSmooth.{t, w} R S _ _ f.toAlgebra := hf
+/-- Helper lemma for the `algebraize` tactic -/
+lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth f) :
+    @Algebra.IsStandardSmooth R S _ _ f.toAlgebra := hf
 
 /-- A ring homomorphism `R →+* S` is standard smooth of relative dimension `n` if
 `S` is standard smooth of relative dimension `n` as `R`-algebra. -/
 @[algebraize RingHom.IsStandardSmoothOfRelativeDimension.toAlgebra]
 def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
+  @Algebra.IsStandardSmoothOfRelativeDimension n _ _ _ _ f.toAlgebra
 
-/-- Helper lemma for the `algebraize` tactic.-/
+/-- Helper lemma for the `algebraize` tactic -/
 lemma IsStandardSmoothOfRelativeDimension.toAlgebra {f : R →+* S}
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
-    @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S _ _ f.toAlgebra := hf
+    (hf : IsStandardSmoothOfRelativeDimension n f) :
+    @Algebra.IsStandardSmoothOfRelativeDimension n R S _ _ f.toAlgebra := hf
 
 lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth (f : R →+* S)
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
-    IsStandardSmooth.{t, w} f := by
+    (hf : IsStandardSmoothOfRelativeDimension n f) :
+    IsStandardSmooth f := by
   algebraize [f]
   exact Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
 
@@ -59,42 +67,42 @@ variable {n m}
 
 variable (R) in
 lemma IsStandardSmoothOfRelativeDimension.id :
-    IsStandardSmoothOfRelativeDimension.{t, w} 0 (RingHom.id R) :=
+    IsStandardSmoothOfRelativeDimension 0 (RingHom.id R) :=
   Algebra.IsStandardSmoothOfRelativeDimension.id R
 
 lemma IsStandardSmoothOfRelativeDimension.equiv (e : R ≃+* S) :
-    IsStandardSmoothOfRelativeDimension.{t, w} 0 (e : R →+* S) := by
+    IsStandardSmoothOfRelativeDimension 0 (e : R →+* S) := by
   algebraize [e.toRingHom]
   exact Algebra.IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective e.bijective
 
 variable {T : Type*} [CommRing T]
 
 lemma IsStandardSmooth.comp {g : S →+* T} {f : R →+* S}
-    (hg : IsStandardSmooth.{t', w'} g) (hf : IsStandardSmooth.{t, w} f) :
-    IsStandardSmooth.{max t t', max w w'} (g.comp f) := by
+    (hg : IsStandardSmooth g) (hf : IsStandardSmooth f) :
+    IsStandardSmooth (g.comp f) := by
   rw [IsStandardSmooth]
   algebraize [f, g, (g.comp f)]
-  exact Algebra.IsStandardSmooth.trans.{t, t', w, w'} R S T
+  exact Algebra.IsStandardSmooth.trans R S T
 
 lemma IsStandardSmoothOfRelativeDimension.comp {g : S →+* T} {f : R →+* S}
-    (hg : IsStandardSmoothOfRelativeDimension.{t', w'} n g)
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} m f) :
-    IsStandardSmoothOfRelativeDimension.{max t t', max w w'} (n + m) (g.comp f) := by
+    (hg : IsStandardSmoothOfRelativeDimension n g)
+    (hf : IsStandardSmoothOfRelativeDimension m f) :
+    IsStandardSmoothOfRelativeDimension (n + m) (g.comp f) := by
   rw [IsStandardSmoothOfRelativeDimension]
   algebraize [f, g, (g.comp f)]
   exact Algebra.IsStandardSmoothOfRelativeDimension.trans m n R S T
 
 lemma isStandardSmooth_stableUnderComposition :
-    StableUnderComposition @IsStandardSmooth.{t, w} :=
+    StableUnderComposition @IsStandardSmooth :=
   fun _ _ _ _ _ _ _ _ hf hg ↦ hg.comp hf
 
-lemma isStandardSmooth_respectsIso : RespectsIso @IsStandardSmooth.{t, w} := by
+lemma isStandardSmooth_respectsIso : RespectsIso @IsStandardSmooth := by
   apply isStandardSmooth_stableUnderComposition.respectsIso
   introv
   exact (IsStandardSmoothOfRelativeDimension.equiv e).isStandardSmooth
 
 lemma isStandardSmoothOfRelativeDimension_respectsIso :
-    RespectsIso (@IsStandardSmoothOfRelativeDimension.{t, w} n) where
+    RespectsIso (@IsStandardSmoothOfRelativeDimension n) where
   left {R S T _ _ _} f e hf := by
     rw [← zero_add n]
     exact (IsStandardSmoothOfRelativeDimension.equiv e).comp hf
@@ -103,7 +111,7 @@ lemma isStandardSmoothOfRelativeDimension_respectsIso :
     exact hf.comp (IsStandardSmoothOfRelativeDimension.equiv e)
 
 lemma isStandardSmooth_isStableUnderBaseChange :
-    IsStableUnderBaseChange @IsStandardSmooth.{t, w} := by
+    IsStableUnderBaseChange @IsStandardSmooth := by
   apply IsStableUnderBaseChange.mk
   · exact isStandardSmooth_respectsIso
   · introv h
@@ -116,7 +124,7 @@ lemma isStandardSmooth_isStableUnderBaseChange :
 variable (n)
 
 lemma isStandardSmoothOfRelativeDimension_isStableUnderBaseChange :
-    IsStableUnderBaseChange (@IsStandardSmoothOfRelativeDimension.{t, w} n) := by
+    IsStableUnderBaseChange (@IsStandardSmoothOfRelativeDimension n) := by
   apply IsStableUnderBaseChange.mk
   · exact isStandardSmoothOfRelativeDimension_respectsIso
   · introv h
@@ -130,7 +138,7 @@ lemma isStandardSmoothOfRelativeDimension_isStableUnderBaseChange :
 
 lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : Type*} [CommRing Rᵣ]
     [Algebra R Rᵣ] (r : R) [IsLocalization.Away r Rᵣ] :
-    IsStandardSmoothOfRelativeDimension.{0, 0} 0 (algebraMap R Rᵣ) := by
+    IsStandardSmoothOfRelativeDimension 0 (algebraMap R Rᵣ) := by
   have : (algebraMap R Rᵣ).toAlgebra = ‹Algebra R Rᵣ› := by
     ext
     rw [Algebra.smul_def]
@@ -138,30 +146,30 @@ lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : 
   rw [IsStandardSmoothOfRelativeDimension, this]
   exact Algebra.IsStandardSmoothOfRelativeDimension.localization_away r
 
-lemma isStandardSmooth_localizationPreserves : LocalizationPreserves IsStandardSmooth.{t, w} :=
+lemma isStandardSmooth_localizationPreserves : LocalizationPreserves IsStandardSmooth :=
   isStandardSmooth_isStableUnderBaseChange.localizationPreserves
 
 lemma isStandardSmoothOfRelativeDimension_localizationPreserves :
-    LocalizationPreserves (IsStandardSmoothOfRelativeDimension.{t, w} n) :=
+    LocalizationPreserves (IsStandardSmoothOfRelativeDimension n) :=
   (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n).localizationPreserves
 
 lemma isStandardSmooth_holdsForLocalizationAway :
-    HoldsForLocalizationAway IsStandardSmooth.{0, 0} := by
+    HoldsForLocalizationAway IsStandardSmooth := by
   introv R h
   exact (IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r).isStandardSmooth
 
 lemma isStandardSmoothOfRelativeDimension_holdsForLocalizationAway :
-    HoldsForLocalizationAway (IsStandardSmoothOfRelativeDimension.{0, 0} 0) := by
+    HoldsForLocalizationAway (IsStandardSmoothOfRelativeDimension 0) := by
   introv R h
   exact IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r
 
 lemma isStandardSmooth_stableUnderCompositionWithLocalizationAway :
-    StableUnderCompositionWithLocalizationAway IsStandardSmooth.{0, 0} :=
+    StableUnderCompositionWithLocalizationAway IsStandardSmooth :=
   isStandardSmooth_stableUnderComposition.stableUnderCompositionWithLocalizationAway
     isStandardSmooth_holdsForLocalizationAway
 
 lemma isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway :
-    StableUnderCompositionWithLocalizationAway (IsStandardSmoothOfRelativeDimension.{0, 0} n) where
+    StableUnderCompositionWithLocalizationAway (IsStandardSmoothOfRelativeDimension n) where
   left R S _ _ _ _ _ r _ _ hf :=
     have : (algebraMap R S).IsStandardSmoothOfRelativeDimension 0 :=
       IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r

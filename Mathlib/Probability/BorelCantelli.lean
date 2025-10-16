@@ -21,7 +21,7 @@ filtration.
 - `ProbabilityTheory.measure_limsup_eq_one`: the second Borel-Cantelli lemma.
 
 **Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
-in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
+in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
 
 open scoped ENNReal Topology
@@ -37,33 +37,26 @@ variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddC
   [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
 theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
-    (hfi : iIndepFun (fun _ => mβ) f μ) (hij : i < j) :
+    (hfi : iIndepFun f μ) (hij : i < j) :
     Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ := by
   suffices Indep (⨆ k ∈ ({j} : Set ι), MeasurableSpace.comap (f k) mβ)
       (⨆ k ∈ {k | k ≤ i}, MeasurableSpace.comap (f k) mβ) μ by rwa [iSup_singleton] at this
   exact indep_iSup_of_disjoint (fun k => (hf k).measurable.comap_le) hfi (by simpa)
 
 theorem iIndepFun.condExp_natural_ae_eq_of_lt [SecondCountableTopology β] [CompleteSpace β]
-    [NormedSpace ℝ β] (hf : ∀ i, StronglyMeasurable (f i)) (hfi : iIndepFun (fun _ => mβ) f μ)
+    [NormedSpace ℝ β] (hf : ∀ i, StronglyMeasurable (f i)) (hfi : iIndepFun f μ)
     (hij : i < j) : μ[f j|Filtration.natural f hf i] =ᵐ[μ] fun _ => μ[f j] := by
   have : IsProbabilityMeasure μ := hfi.isProbabilityMeasure
   exact condExp_indep_eq (hf j).measurable.comap_le (Filtration.le _ _)
     (comap_measurable <| f j).stronglyMeasurable (hfi.indep_comap_natural_of_lt hf hij)
 
-@[deprecated (since := "2025-01-21")]
-alias iIndepFun.condexp_natural_ae_eq_of_lt := iIndepFun.condExp_natural_ae_eq_of_lt
-
 theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
     (hs : iIndepSet s μ) (hij : i < j) :
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
-    fun _ => (μ (s j)).toReal := by
-  rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
+    fun _ => μ.real (s j) := by
+  rw [Filtration.filtrationOfSet_eq_natural (β := fun _ ↦ ℝ) hsm]
   refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
   simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
-
-@[deprecated (since := "2025-01-21")]
-alias iIndepSet.condexp_indicator_filtrationOfSet_ae_eq :=
-  iIndepSet.condExp_indicator_filtrationOfSet_ae_eq
 
 open Filter
 
@@ -97,8 +90,8 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
     rw [mem_upperBounds] at hB
     specialize hB (∑ k ∈ Finset.range n, μ (s (k + 1))).toReal _
     · refine ⟨n, ?_⟩
-      rw [ENNReal.toReal_sum]
-      exact fun _ _ => measure_ne_top _ _
+      rw [ENNReal.toReal_sum (by finiteness)]
+      rfl
     · rwa [not_lt, ENNReal.ofNNReal_toNNReal, ENNReal.le_ofReal_iff_toReal_le]
       · simp
       · exact le_trans (by positivity) hB
