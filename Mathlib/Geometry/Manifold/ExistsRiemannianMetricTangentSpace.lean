@@ -277,6 +277,9 @@ lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
   have h4 : 0 < ∑ᶠ i, h i := finsum_pos' h1 h2 h3
   exact h4
 
+lemma g_global_cont (f : SmoothPartitionOfUnity B IB B) (p : B) (v : TangentSpace IB p) :
+  Continuous (fun w ↦ g_global f p v w) := sorry
+
 noncomputable
 def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
     W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p :=
@@ -286,10 +289,14 @@ def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
           { toFun := fun w ↦ g_global f p v w
             map_add' := fun x y ↦ g_global_add' f p x y v
             map_smul' := fun m x ↦ g_global_smul' f p x v m }
-          sorry
+          (g_global_cont f p v)
       map_add' := sorry
       map_smul' := sorry }
     sorry
+
+lemma g_global_bilinear_smooth (f : SmoothPartitionOfUnity B IB B) :
+  ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ω
+   (fun x ↦ TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_global_bilinear f x)) := sorry
 
 noncomputable
 def g_global_smooth_section
@@ -298,7 +305,7 @@ def g_global_smooth_section
     ContMDiffSection IB (EB →L[ℝ] EB →L[ℝ] ℝ) ⊤
       (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) :=
   { toFun := g_global_bilinear f
-    contMDiff_toFun := sorry }
+    contMDiff_toFun := g_global_bilinear_smooth f }
 
 noncomputable
 def riemannian_metric_exists
