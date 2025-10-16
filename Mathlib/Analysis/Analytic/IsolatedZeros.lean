@@ -320,7 +320,7 @@ theorem AnalyticAt.preimage_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (h
     f ⁻¹' s ∈ 𝓝[≠] x := by
   have : ∀ᶠ (z : 𝕜) in 𝓝 x, f z ∈ insert (f x) s := by
     filter_upwards [hfx.continuousAt.preimage_mem_nhds (insert_mem_nhds_iff.2 hs)]
-    tauto
+    grind
   contrapose! h₂f with h
   rw [eventuallyConst_iff_exists_eventuallyEq]
   use f x
@@ -329,7 +329,7 @@ theorem AnalyticAt.preimage_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (h
     (eventually_nhdsWithin_of_eventually_nhds this)).mono
   intro z ⟨h₁z, h₂z⟩
   rw [Set.mem_insert_iff] at h₂z
-  tauto
+  grind
 
 /-- Preimages of codiscrete sets, local filter version: if `f` is analytic at `x` and not locally
 constant, then the push-forward of the punctured neighbourhood filter `𝓝[≠] x` is less than or

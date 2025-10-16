@@ -74,7 +74,7 @@ variable (S)
 lemma ShortExact.moduleCat_exact_iff_function_exact :
     S.Exact ↔ Function.Exact S.f S.g := by
   rw [moduleCat_exact_iff_range_eq_ker, LinearMap.exact_iff]
-  tauto
+  grind
 
 /-- Constructor for short complexes in `ModuleCat.{v} R` taking as inputs
 morphisms `f` and `g` and the assumption `LinearMap.range f ≤ LinearMap.ker g`. -/

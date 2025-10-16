@@ -50,7 +50,7 @@ lemma eq_one_or_neg_one_of_mul_eq_one (h : u * v = 1) : u = 1 ∨ u = -1 :=
 lemma eq_one_or_neg_one_of_mul_eq_one' (h : u * v = 1) : u = 1 ∧ v = 1 ∨ u = -1 ∧ v = -1 := by
   have h' : v * u = 1 := mul_comm u v ▸ h
   obtain rfl | rfl := eq_one_or_neg_one_of_mul_eq_one h <;>
-      obtain rfl | rfl := eq_one_or_neg_one_of_mul_eq_one h' <;> tauto
+      obtain rfl | rfl := eq_one_or_neg_one_of_mul_eq_one h' <;> grind
 
 lemma eq_of_mul_eq_one (h : u * v = 1) : u = v :=
   (eq_one_or_neg_one_of_mul_eq_one' h).elim

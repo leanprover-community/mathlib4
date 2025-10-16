@@ -79,7 +79,7 @@ lemma card_not_easy_le_210 (hG : ∀ i, #(G i) ≤ 6) (hB : ∀ i j, ¬Disjoint 
     _ = ∑ i, #({p ∈ G i | ¬Easy B p}.biUnion fun p ↦ {j | p ∈ B j}) := by
       congr!; ext
       simp_rw [mem_biUnion, mem_inter, mem_filter]
-      congr! 2; tauto
+      congr! 2; grind
     _ ≤ ∑ i, ∑ p ∈ G i with ¬Easy B p, #{j | p ∈ B j} := sum_le_sum fun _ _ ↦ card_biUnion_le
     _ ≤ ∑ i, ∑ p ∈ G i with ¬Easy B p, 2 := by
       gcongr with i _ p mp
