@@ -121,10 +121,9 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   obtain ⟨y, rfl⟩ := Set.singleton_subset_iff.mp hz
-  rw [inner_mapIncl_mapIncl]
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
-  rw [inner_self y e f, RCLike.ofReal_re]
+  rw [inner_mapIncl_mapIncl, inner_self y e f, RCLike.ofReal_re]
   exact Finset.sum_nonneg fun i hi ↦ sq_nonneg _
 
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
