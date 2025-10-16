@@ -251,7 +251,7 @@ def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
 
 @[simp] lemma commIsometry_apply (x : E ⊗[𝕜] F) :
     commIsometry 𝕜 E F x = TensorProduct.comm 𝕜 E F x := rfl
-lemma commIsometry_symm :
+@[simp] lemma commIsometry_symm :
     (commIsometry 𝕜 E F).symm = commIsometry 𝕜 F E := rfl
 
 @[simp] lemma toLinearEquiv_commIsometry :
