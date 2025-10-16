@@ -58,7 +58,7 @@ def polynomialInferBase : PolynomialExt where
   | Polynomial R _ => pure R
   | _ => failure
 
-/-- Infer base ring for `MvPolynomial R` -/
+/-- Infer base ring for `MvPolynomial _ R` -/
 @[polynomial MvPolynomial _ _]
 def mvPolynomialInferBaseImpl : PolynomialExt where
   infer := fun e ↦ do
@@ -67,7 +67,7 @@ def mvPolynomialInferBaseImpl : PolynomialExt where
   | _ => failure
 
 section Lemmas
-variable {σ R : Type*} [CommSemiring R]
+variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 @[polynomial_post]
 theorem _root_.Polynomial.algebraMap_eq_C : algebraMap R _ = Polynomial.C := rfl
@@ -78,8 +78,16 @@ theorem _root_.MvPolynomial.algebraMap_eq_C : algebraMap R (MvPolynomial σ R) =
 @[polynomial_pre]
 theorem _root_.MvPolynomial.C_eq_algebraMap : MvPolynomial.C = algebraMap R (MvPolynomial σ R) := rfl
 
+@[polynomial_pre]
 theorem Polynomial.monomial_eq_smul (a : R) (n : ℕ) : Polynomial.monomial n a = a • (.X ^ n) := by
   rw [← Polynomial.C_mul_X_pow_eq_monomial, Polynomial.smul_eq_C_mul]
+
+-- polynomial_pre contains a lemma sending C -> algebraMap, so C is not simp normal form.
+@[polynomial_pre]
+theorem Polynomial.map_algebraMap (r : R) :
+    Polynomial.map (algebraMap R A) (algebraMap R (Polynomial R) r) =
+    algebraMap A (Polynomial A) (algebraMap R A r) := by
+  simp
 
 end Lemmas
 
@@ -87,7 +95,7 @@ open Mathlib.Meta AtomM
 
 attribute [polynomial_pre] Polynomial.C_eq_algebraMap
   Polynomial.monomial_eq_smul Polynomial.map_add Polynomial.map_mul Polynomial.map_pow
-  Polynomial.map_C Polynomial.map_X Polynomial.map_natCast Polynomial.map_intCast
+  Polynomial.map_X Polynomial.map_natCast Polynomial.map_intCast
 
 -- TODO: figure out what to do with Polynomial.map
 /- TODO: we don't currently have a good way to normalize monomials of MvPolynomials. These are
@@ -96,6 +104,7 @@ def preprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
   let preThms ← polynomialPreExt.getTheorems
+  -- IO.println s!"{preThms.lemmaNames.toList.map Origin.key}"
   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[preThms, thms])
   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
     throwError "internal error in polynomial tactic: preprocessing should not close goals"
@@ -113,7 +122,6 @@ elab (name := polynomial) "polynomial":tactic =>
       β ← Polynomial.inferBase α
     catch _ =>
       throwError "polynomial failed: not an equality of (mv)polynomials"
-    IO.println s!"inferred base {← ppExpr β}"
     AtomM.run .default (Algebra.proveEq (some (← inferLevelQ β)) g)
 
 elab (name := matchCoeffients) "match_coefficients" :tactic =>

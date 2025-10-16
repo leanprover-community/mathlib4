@@ -99,6 +99,13 @@ example (a b c d e : ℚ) (n : ℕ): (X^n + C a)*(X^n + X * C a) =
   · guard_target = a = c
     apply sorryPolynomialTest
 
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] {r₁ r₂ r₃ : R} {a₁ a₂ a₃ : A}
+example : Polynomial.map (algebraMap R A) (C r₁ * X) = C a₁ * X := by
+  polynomial_nf
+  -- simp_rw [Polynomial.map_C]
+  match_coefficients
+  apply sorryPolynomialTest
+
 end poly
 
 section mvpoly
