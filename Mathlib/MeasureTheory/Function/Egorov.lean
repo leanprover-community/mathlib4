@@ -67,7 +67,7 @@ theorem notConvergentSeq_measurableSet [Preorder ι] [Countable ι]
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a))) :
     MeasurableSet (notConvergentSeq f g n j) :=
   MeasurableSet.iUnion fun k ↦ MeasurableSet.iUnion fun _ ↦
-      StronglyMeasurable.measurableSet_lt stronglyMeasurable_const <| (hf k).stronglyMeasurable
+      measurableSet_lt measurable_const <| hf k
 
 theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a))) (hsm : MeasurableSet s)
