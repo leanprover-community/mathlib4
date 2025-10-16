@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Induction on subboxes
@@ -150,7 +151,7 @@ theorem exists_tagged_le_isHenstock_isSubordinate_iUnion_eq {I : Box ι} (r : (�
   refine ⟨π.biUnionTagged πi, biUnion_le _ _, isHenstock_biUnionTagged.2 fun J _ => πiH J,
     isSubordinate_biUnionTagged.2 fun J _ => πir J, ?_, π.iUnion_biUnion_partition fun J _ => πip J⟩
   rw [distortion_biUnionTagged]
-  exact sup_congr rfl fun J _ => πid J
+  exact Finset.sup_congr rfl fun J _ => πid J
 
 /-- Given a prepartition `π` of a box `I` and a function `r : ℝⁿ → (0, ∞)`, `π.toSubordinate r`
 is a tagged partition `π'` such that
