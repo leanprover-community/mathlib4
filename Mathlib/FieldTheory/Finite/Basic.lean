@@ -130,7 +130,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
     -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
     have h : u = 1 := by
       rw [← sub_left_inj, sub_self 1]
-      apply pow_eq_zero (n := p)
+      apply eq_zero_of_pow_eq_zero (n := p)
       rw [sub_pow_char_of_commute, one_pow, ← hu, pow_orderOf_eq_one, sub_self]
       exact Commute.one_right u
     -- ... meaning x didn't have order p after all, contradiction

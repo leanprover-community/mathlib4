@@ -435,7 +435,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
     rw [hw1, neg_sq, one_pow, add_eq_right] at hq
-    exact pow_eq_zero hq
+    exact eq_zero_of_pow_eq_zero hq
   have hQ : ∀ x : ℚ, 1 + x ^ 2 ≠ 0 := by
     intro q
     apply ne_of_gt

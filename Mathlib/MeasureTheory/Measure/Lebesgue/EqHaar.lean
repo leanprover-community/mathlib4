@@ -340,8 +340,7 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
     simp only [f, mul_one, LinearMap.det_smul, Ne, MonoidHom.map_one]
-    intro h
-    exact hr (pow_eq_zero h)
+    exact pow_ne_zero _ hr
   simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
 
 theorem quasiMeasurePreserving_smul {r : ℝ} (hr : r ≠ 0) :
