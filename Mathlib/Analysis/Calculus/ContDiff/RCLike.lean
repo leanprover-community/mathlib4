@@ -146,13 +146,31 @@ lemma LipschitzOnWith.closure {K}
     LipschitzOnWith K f (closure s) := by
   sorry
 
--- TODO: move to LocallyLipschitz
--- lemma: if f is locally Lipschitz on a compact set s, it is Lipschitz
--- why? at each point, you have a neighbourhood on which f is Lipschitz with some constant Kᵢ
--- finitely many of these neighbourhoods cover s
--- taking the maximum of the corresponding Kᵢ gives you a Lipschitz constant on K
+-- TODO: move to Lipschitz.lean
+/-- If `f` is Lipschitz on a collection of sets `sᵢ` with constants `Kᵢ`,
+it is also Lipschitz on `⋃ i, sᵢ` with constant `sup Kᵢ` (provided that supremum is finite). -/
+lemma LipschitzOnWith.sup {f : E → F} {ι : Type*} {s : ι → Set E} {K : ι → ℝ≥0} {K' : ℝ≥0}
+    (hf : ∀ i, LipschitzOnWith (K i) f (s i)) (hK' : ∀ i, K i ≤ K') :
+    LipschitzOnWith K' f (⋃ i, s i) := by
+  sorry
+
+-- TODO: move to Lipschitz.lean
+/-- If `f` is locally Lipschitz on a compact set `s`, it is Lipschitz on `s`. -/
 lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : E → F} (hs : IsCompact s)
-  (hf : LocallyLipschitzOn s f) : ∃ K, LipschitzOnWith K f s := sorry
+    (hf : LocallyLipschitzOn s f) : ∃ K, LipschitzOnWith K f s := by
+  -- At each point `x`, you have a neighbourhood `tₓ`
+  -- on which `f` is Lipschitz with some constant `Kₓ`.
+  choose Kx tx htx hfx using hf
+  -- Finitely many of these cover `s` (by compactness).
+  obtain ⟨ti, hti⟩ := hs.elim_nhdsWithin_subcover' tx htx
+  let Ki' : ti → ℝ≥0 := fun ⟨i, _hi⟩ ↦ Kx i.2
+  -- Taking the maximum of the corresponding Kᵢ gives you a Lipschitz constant for `f` on `s`.
+  use iSup Ki'
+  have : s = ⋃ i ∈ ti, tx i.2 := sorry
+  simp_rw [this]
+  -- make this work
+  -- apply LipschitzOnWith.sup (f := f) (K' := iSup Ki') (ι := ti)--(K := Ki')
+  sorry
 
 /-- If `f` is `C¹` on a convex compact set `s`, it is Lipschitz on `s`. -/
 theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiffOn ℝ n f s)
