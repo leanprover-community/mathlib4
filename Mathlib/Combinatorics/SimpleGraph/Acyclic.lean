@@ -308,14 +308,19 @@ lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [Decid
     (G.induce {v}ᶜ).Connected := by
   obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_unique_adj.mp hdeg
   refine (connected_iff _).mpr ⟨?_, ?_⟩
+  /- There exists a walk between any two vertices w and x in G.induce {v}ᶜ
+  via the unique vertex u adjacent to vertex v. -/
   · intro w x
     obtain ⟨pwu, hpwu⟩ := hconn.exists_isPath w u
     obtain ⟨pux, hpux⟩ := hconn.exists_isPath u x
     rw [Reachable, ← exists_true_iff_nonempty]
     use ((pwu.append pux).toPath.val.induce {v}ᶜ ?_).copy (SetCoe.ext rfl) (SetCoe.ext rfl)
+    /- Each path between vertex u and another vertex in G.induce {v}ᶜ
+    is contained in G.induce {v}ᶜ. -/
     intro z hz
     rw [Set.mem_compl_iff, Set.mem_singleton_iff]
     obtain ⟨pwz, pzx, p_eq_pwzx⟩ := mem_support_iff_exists_append.mp hz
+    /- Prove vertex v is not in the walk by showing that vertex u is passed twice. -/
     by_contra
     subst_vars
     refine List.nodup_iff_forall_not_duplicate.mp (pwu.append pux).toPath.nodup_support u ?_
