@@ -511,7 +511,7 @@ example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
 syntax (name := positivity) "positivity" (" [" term,* "]")? : tactic
 
 elab_rules : tactic
-| `(tactic| positivity) => liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+| `(tactic| positivity $[[]]?) => liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
 
 macro_rules
 | `(tactic| positivity [$h,*]) => `(tactic| · ($[have := $h];*); positivity)

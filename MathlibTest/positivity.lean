@@ -337,6 +337,7 @@ example {a : ℝ≥0∞} : 0 < a ^ 0 := by positivity
 example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity
 example {a : ℝ} : 0 < a ^ 0 := by positivity
 
+example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity []
 example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
     0 < a ^ c + 1 / (d - c) := by
   positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
