@@ -7,9 +7,9 @@ import Mathlib.Algebra.Algebra.Equiv
 import Lean.PrettyPrinter.Delaborator.Basic
 
 /-!
-# Notation for galois group
+# Notation for Galois group
 
-The galois group `Gal(L/K)` is implemented via `L ≃ₐ[K] L` in mathlib.
+The Galois group `Gal(L/K)` is implemented via `L ≃ₐ[K] L` in mathlib.
 We provide such a notation in this file.
 
 Although this notation works for all automorphism groups of algebras, we should only use this
@@ -21,15 +21,21 @@ section Notation
 /--
 Notation for `Gal(L/K) := L ≃ₐ[K] L`.
 
+`L ≃ₐ[K] L` will pretty-print as `Gal(L/K)` when `L` and `K` are both fields.
+
 Although this notation works for all automorphism groups of algebras, we should only use this
 notation when `L/K` is an extension of fields.
 -/
-notation "Gal(" L:100 "/" K ")" => L ≃ₐ[K] L
+/- We use a precedence of 100 here to avoid `L` capturing `/` as the infix notation for division,
+which has precedence 70. -/
+macro "Gal(" L:term:100 "/" K:term ")" : term => `($L ≃ₐ[$K] $L)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Pretty printer for the `Gal(L/K)` notation. -/
 @[app_delab AlgEquiv]
 partial def delabGal : Delab := whenPPOption getPPNotation do
+  -- In Lean 4.19 the pretty printer clears local instances, so we re-add them here.
+  Meta.withLocalInstances (← getLCtx).decls.toList.reduceOption do
   guard <| (← getExpr).isAppOfArity ``AlgEquiv 8
   let [u, v, _] := (← getExpr).getAppFn'.constLevels! | failure
   let #[R, A, B, _, _, _, _, _] := (← getExpr).getAppArgs | failure
