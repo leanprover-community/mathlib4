@@ -256,6 +256,6 @@ open UniformSpace.Completion in
 theorem extensionEmbedding_algebraMap_of_isReal (h : v.IsReal) (x : v.Completion) :
     extensionEmbedding w (algebraMap _ _ x) = extensionEmbedding v x :=
   extensionEmbedding_algebraMap w
-    (((LiesOver.comap_eq w v) ▸ comap_embedding_of_isReal _ (LiesOver.comap_eq w v ▸ h)).symm) _
+    (LiesOver.comap_eq w v ▸ comap_embedding_of_isReal _ (LiesOver.comap_eq w v ▸ h)).symm _
 
 end NumberField.InfinitePlace.LiesOver
