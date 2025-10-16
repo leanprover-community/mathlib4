@@ -1069,12 +1069,11 @@ variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n
   given that it is satisfied somewhere. Returns a subtype -/
 protected def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
     { i : Fin n // p i ∧ ∀ j < i, ¬ p j } :=
-  go n (by grind)
-where
-  go (m : Nat) (hj : ∀ j, (hm : j < n - m) → ¬p ⟨j, by grind⟩) := match m with
-  | m + 1 => if hnm : p ⟨(n - (m + 1)), Nat.sub_lt h.choose.pos ((Nat.succ_pos _))⟩
-    then ⟨⟨n - (m + 1), _⟩, ⟨hnm, fun ⟨x, _⟩ h => hj x h⟩⟩ else go m (by grind)
-  | 0 => (hj _ (Fin.is_lt _) h.choose_spec).elim
+  go n (by grind) where
+    go (m : Nat) (hj : ∀ j, (hm : j < n - m) → ¬p ⟨j, by grind⟩) := match m with
+    | m + 1 => if hnm : p <| Fin.mk _ <| n.sub_lt h.choose.pos (by grind)
+      then Subtype.mk _ ⟨hnm, fun _ => hj _⟩ else go m (by grind)
+    | 0 => (hj _ (by grind) h.choose_spec).elim
 
 /-- `find p` returns the smallest index `k` where `p k` is satisfied,
   given that it is satisfied somewhere. -/
@@ -1082,8 +1081,9 @@ protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, 
   (Fin.findX p h).1
 
 /-- If `find p = i`, then `p i` holds -/
-@[grind]
-theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := (Fin.findX p h).2.1
+protected theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := (Fin.findX p h).2.1
+
+grind_pattern Fin.find_spec => Fin.find p h
 
 /-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
@@ -1091,28 +1091,35 @@ the indices where `p` holds. -/
 protected theorem find_min (h : ∃ k, p k) {j : Fin n} : j < Fin.find p h → ¬ p j :=
   (Fin.findX p h).2.2 _
 
-@[simp] theorem val_find (h : ∃ k, p k) : (Fin.find p h).val = Nat.find (Fin.exists_iff.mp h) :=
-  ((Nat.find_eq_iff _).mpr ⟨⟨is_lt _, find_spec _⟩, fun _ hm ⟨_, hi⟩ => Fin.find_min h hm hi⟩).symm
-
 /-- If `find p = i`, then `p j` holds only for `i ≤ j`, i.e., `i` is minimal among
 the indices where `p` holds. -/
 protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :
-    p j → Fin.find p h ≤ j := (Fin.find_min _ <| lt_of_not_ge ·).mtr
+    p j → Fin.find p h ≤ j := (j.find_min _ <| lt_of_not_ge ·).mtr
+
+theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find p h = i ↔ p i ∧ ∀ j < i, ¬ p j := by
+  refine ⟨?_, fun ⟨hm, hlt⟩ => have := Fin.find_le_of_pos h hm; ?_⟩ <;> grind
+
+@[simp] theorem val_find (h : ∃ k, p k) :
+    (Fin.find p h).val = Nat.find ((Fin.exists_iff.mp h)) :=
+  ((Nat.find_eq_iff _).mpr ⟨⟨is_lt _, Fin.find_spec _⟩,
+    fun _ hm ⟨_, hi⟩ => Fin.find_min h hm hi⟩).symm
+
+@[simp] theorem find_nat_lt {p : ℕ → Prop} [DecidablePred p] (h : ∃ k < n, p k) :
+    Nat.find (p := p) (by grind) = Fin.find (n := n) (p ·) (Fin.exists_iff.mpr <| by grind) := by
+  rw [val_find]
+  have := h.choose_spec; exact Nat.find_congr (x := h.choose) (by grind) (by grind)
 
 @[simp] lemma find_lt_iff (h : ∃ k, p k) (i : Fin n) : Fin.find p h < i ↔ ∃ m < i, p m :=
-  ⟨(⟨_, ·, find_spec _⟩), fun ⟨_, hmn, hm⟩ => (Fin.find_le_of_pos h hm).trans_lt hmn⟩
+  ⟨by grind, fun ⟨_, hxi, hx⟩ => (Fin.find_le_of_pos h hx).trans_lt hxi⟩
 
 @[simp] lemma find_le_iff (h : ∃ k, p k) (i : Fin n) : Fin.find p h ≤ i ↔ ∃ m ≤ i, p m :=
-  ⟨(⟨_, ·, find_spec _⟩), fun ⟨_, hxi, hx⟩ => (Fin.find_le_of_pos h hx).trans hxi⟩
+  ⟨by grind, fun ⟨_, hxi, hx⟩ => (Fin.find_le_of_pos h hx).trans hxi⟩
 
 @[simp] lemma lt_find_iff (h : ∃ k, p k) (i : Fin n) : i < Fin.find p h ↔ ∀ m ≤ i, ¬p m := by
   simp_rw [← not_le, find_le_iff, not_exists, not_and]
 
 @[simp] lemma le_find_iff (h : ∃ k, p k) (i : Fin n) : i ≤ Fin.find p h ↔ ∀ m < i, ¬p m := by
   simp_rw [← not_lt, find_lt_iff, not_exists, not_and]
-
-theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find p h = i ↔ p i ∧ ∀ j < i, ¬ p j := by
-  rw [le_antisymm_iff, find_le_iff, le_find_iff]; grind
 
 @[simp] lemma find_eq_zero {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) :
   Fin.find p h = 0 ↔ p 0 := by simp [find_eq_iff]
@@ -1123,7 +1130,7 @@ lemma find_of_not_zero {p : Fin (n + 1) → Prop} [DecidablePred p]
     (Fin.find (fun k => p k.succ) <| (exists_fin_succ.mp h).resolve_left h0).succ := by
   simp_rw [find_eq_iff, forall_fin_succ, h0, not_false_eq_true,
     implies_true, true_and, succ_lt_succ_iff]
-  exact ⟨find_spec (p := fun i => p i.succ) _, fun j => Fin.find_min _⟩
+  exact ⟨Fin.find_spec (p := fun i => p i.succ) _, fun j => Fin.find_min _⟩
 
 theorem find_eq_dite {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ i, p i) :
     Fin.find p h = if h0 : p 0 then 0 else
@@ -1171,9 +1178,10 @@ lemma find_pos {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ i, p i) :
 lemma find_of_find_le {p : Fin (m + n) → Prop} [DecidablePred p]
     {hᵢ : ∃ i, p i} (hm : m ≤ Fin.find p hᵢ) :
     Fin.find p hᵢ = (Fin.find (fun j => p (j.natAdd m))
-    ⟨(Fin.cast (Nat.add_comm _ _) (Fin.find p hᵢ)).subNat _ hm, by simp [find_spec]⟩).natAdd m := by
+    ⟨(Fin.cast (Nat.add_comm _ _) (Fin.find p hᵢ)).subNat _ hm, by
+      simp [Fin.find_spec]⟩).natAdd m := by
   have hⱼ : ∃ j : Fin n, p (j.natAdd m) :=
-    ⟨(Fin.cast (Nat.add_comm _ _) (Fin.find p hᵢ)).subNat _ hm, by simp [find_spec]⟩
+    ⟨(Fin.cast (Nat.add_comm _ _) (Fin.find p hᵢ)).subNat _ hm, by simp [Fin.find_spec]⟩
   refine (find_eq_iff _).2 ⟨Fin.find_spec hⱼ, fun i hi ↦ ?_⟩
   cases i using addCases with | left i => _ | right i => _
   · exact Fin.find_min hᵢ (Fin.lt_iff_val_lt_val.mpr <| (Fin.castAdd_lt _ _).trans_le hm)
