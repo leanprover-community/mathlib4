@@ -204,6 +204,9 @@ combinatorial contexts.
 
 open Nat
 
+/-- The recursive definition of the sequence of the large Schroder numbers :
+`largeSchroder (n + 1) = largeSchroder n + `
+  `∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)` -/
 def largeSchroder : ℕ → ℕ
   | 0 => 1
   | n + 1 =>
@@ -238,6 +241,8 @@ theorem largeSchroder_succ_range (n : ℕ) :
     ∑ i ∈ Finset.range (n + 1), largeSchroder i * largeSchroder (n - i) := by
   rw [largeSchroder_succ, sum_range]
 
+/-- The small Schroder numbers are half the large Schroder numbers,
+except for `n = 0` and `n = 1`. -/
 def smallSchroder (n : ℕ) : ℚ :=
   match n with
   | 0 => 0
