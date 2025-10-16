@@ -1105,8 +1105,8 @@ lemma coheight_le_of_krullDim_preimage_le (x : α) :
 include f h in
 lemma krullDim_le_of_krullDim_preimage_le :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by
-  rw [Order.krullDim_eq_iSup_height, Order.krullDim_eq_iSup_height]
-  apply iSup_le fun x ↦ (le_trans (WithBot.coe_mono (height_le_of_krullDim_preimage_le f h x)) ?_)
+  rw [Order.krullDim_eq_iSup_height, Order.krullDim_eq_iSup_height, iSup_le_iff]
+  refine fun x ↦ (WithBot.coe_mono (height_le_of_krullDim_preimage_le f h x)).trans ?_
   push_cast
   apply add_le_add_right <| mul_le_mul_of_nonneg_left ?_ (right_eq_inf.mp rfl)
   exact le_iSup_iff.mpr fun b a ↦ a (f x)
