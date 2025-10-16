@@ -42,31 +42,36 @@ section AdmissibleLists
 -- propositions asserting that various List constructions produce admissible lists.
 
 /-- A list of natural numbers [i₀, ⋯, iₙ]) is said to be `m`-admissible (for `m : ℕ`) if
-`i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`.
+`i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`. This would suggest the definition
+`L.IsChain (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k`.
+However, we instead define `IsAdmissible` inductively and show, in
+`isAdmissible_iff_isChain_and_le`, that this is equivalent to the non-inductive definition.
 -/
 @[mk_iff]
 inductive IsAdmissible : (m : ℕ) → (L : List ℕ) → Prop
-| nil (m : ℕ) : IsAdmissible m []
-| singleton {m a} (ha : a ≤ m) : IsAdmissible m [a]
-| cons_cons {m a b L'} (hab : a < b) (hbL : IsAdmissible (m + 1) (b :: L'))
-    (ha : a ≤ m) : IsAdmissible m (a :: b :: L')
+  | nil (m : ℕ) : IsAdmissible m []
+  | singleton {m a} (ha : a ≤ m) : IsAdmissible m [a]
+  | cons_cons {m a b L'} (hab : a < b) (hbL : IsAdmissible (m + 1) (b :: L'))
+      (ha : a ≤ m) : IsAdmissible m (a :: b :: L')
 
 attribute [simp, grind ←] IsAdmissible.nil
+attribute [grind →] IsAdmissible.singleton
+attribute [grind →] IsAdmissible.cons_cons
 
 section IsAdmissible
 
 variable {m a b : ℕ} {L : List ℕ}
 
 @[simp, grind =]
-theorem isAdmissible_singleton : IsAdmissible m [a] ↔ a ≤ m :=
+theorem isAdmissible_singleton_iff : IsAdmissible m [a] ↔ a ≤ m :=
     ⟨fun | .singleton h => h, .singleton⟩
 
 @[simp, grind =]
-theorem isAdmissible_cons_cons : IsAdmissible m (a :: b :: L) ↔
+theorem isAdmissible_cons_cons_iff : IsAdmissible m (a :: b :: L) ↔
     a < b ∧ IsAdmissible (m + 1) (b :: L) ∧ a ≤ m :=
-  ⟨fun | .cons_cons hab hbL ha => ⟨hab, hbL, ha⟩, fun ⟨hab, hbL, ha⟩ => .cons_cons hab hbL ha⟩
+  ⟨fun | .cons_cons hab hbL ha => ⟨hab, hbL, ha⟩, by grind⟩
 
-theorem isAdmissible_cons : IsAdmissible m (a :: L) ↔
+theorem isAdmissible_cons_iff : IsAdmissible m (a :: L) ↔
     a ≤ m ∧ ((_ : 0 < L.length) → a < L[0]) ∧ IsAdmissible (m + 1) L := by
   cases L <;> grind
 
@@ -76,7 +81,7 @@ theorem isAdmissible_iff_isChain_and_le : IsAdmissible m L ↔
   | nil => grind
   | singleton _ => simp
   | cons_cons _ _ _ _ IH =>
-    simp_rw [isAdmissible_cons_cons, IH, List.length_cons, and_assoc,
+    simp_rw [isAdmissible_cons_cons_iff, IH, List.length_cons, and_assoc,
       List.isChain_cons_cons, and_assoc, and_congr_right_iff, and_comm]
     exact fun _ _ => ⟨fun h =>
       fun | 0 => fun _ => h.1 | k + 1 => fun _ => (h.2 k _).trans (by grind),
@@ -86,11 +91,7 @@ theorem isAdmissible_iff_pairwise_and_le : IsAdmissible m L ↔
     L.Pairwise (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k := by
   rw [isAdmissible_iff_isChain_and_le, List.isChain_iff_pairwise]
 
-theorem isAdmissible_iff_sorted_and_le : IsAdmissible m L ↔
-    L.Sorted (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k :=
-  isAdmissible_iff_pairwise_and_le
-
-theorem _root_.List.IsChain.isAdmissible_of_forall_getElem_le {m L} (hL : L.IsChain (· < ·))
+theorem isAdmissible_of_isChain_of_forall_getElem_le {m L} (hL : L.IsChain (· < ·))
     (hL₂ : ∀ k, (h : k < L.length) → L[k] ≤ m + k) : IsAdmissible m L :=
   (isAdmissible_iff_isChain_and_le.mpr ⟨hL, hL₂⟩)
 
@@ -103,11 +104,8 @@ theorem le {m} {L : List ℕ} (hL : IsAdmissible m L) : ∀ k (h : k < L.length)
     L[k] ≤ m + k := (isAdmissible_iff_isChain_and_le.mp hL).2
 
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
-lemma of_cons {m a L} (h : IsAdmissible m (a :: L)) :
+@[grind →] lemma of_cons {m a L} (h : IsAdmissible m (a :: L)) :
     IsAdmissible (m + 1) L := by cases L <;> grind
-
-/-- The tail of an `m`-admissible list is (m+1)-admissible. -/
-alias tail := IsAdmissible.of_cons
 
 lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by cases L <;> grind
@@ -119,11 +117,6 @@ theorem pairwise {m L} (hL : IsAdmissible m L) : L.Pairwise (· < ·) :=
 @[grind →]
 lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
     ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.pairwise
-
-lemma head_le {m a L} (hL : IsAdmissible m (a :: L)) :
-    ∀ a' ∈ (a :: L), a ≤ a' := by grind
-
-theorem sorted {m L} (hL : IsAdmissible m L) : L.Sorted (· < ·) := hL.pairwise
 
 lemma getElem_lt {m L} (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : L[k] < m + L.length := by
@@ -141,7 +134,7 @@ def head {m a L} (hl : IsAdmissible m (a :: L)) : Fin (m + 1) :=
   hl.getElemAsFin 0 (by simp)
 
 theorem mono {n} (hmn : m ≤ n) (hL : IsAdmissible m L) : IsAdmissible n L :=
-  hL.isChain.isAdmissible_of_forall_getElem_le
+  isAdmissible_of_isChain_of_forall_getElem_le hL.isChain
   fun _ _ => (hL.le _ _).trans <| Nat.add_le_add_right hmn _
 
 end IsAdmissible
@@ -156,6 +149,7 @@ satisfying `P_σ`!
 
 This is similar in nature to `List.orderedInsert`, but note that we increment one of the element
 every time we perform an exchange, making it a different construction. -/
+@[local grind]
 def simplicialInsert (a : ℕ) : List ℕ → List ℕ
   | [] => [a]
   | b :: l => if a < b then a :: b :: l else b :: simplicialInsert (a + 1) l
@@ -163,11 +157,7 @@ def simplicialInsert (a : ℕ) : List ℕ → List ℕ
 /-- `simplicialInsert` just adds one to the length. -/
 lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
     (simplicialInsert a L).length = L.length + 1 := by
-  induction L generalizing a with
-  | nil => rfl
-  | cons head tail h_rec =>
-    dsimp only [simplicialInsert, List.length_cons]
-    split_ifs with h <;> simp only [List.length_cons, h_rec (a + 1)]
+  induction L generalizing a <;> grind
 
 variable (m)
 
@@ -177,12 +167,7 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) 
     IsAdmissible m <| simplicialInsert j L := by
   induction L generalizing j m with
   | nil => exact IsAdmissible.singleton hj
-  | cons a L h_rec =>
-    simp only [simplicialInsert, apply_ite (IsAdmissible m ·)]
-    split_ifs with ha
-    · exact hL.cons_cons ha hj
-    · simp_rw [isAdmissible_cons]
-      cases L <;> grind [simplicialInsert]
+  | cons a L h_rec => cases L <;> grind
 
 end AdmissibleLists
 
@@ -229,26 +214,18 @@ Rather than defining it as such, we define it inductively for less painful induc
 It is expected to produce the correct result only if `L` is admissible, and values for
 non-admissible lists should be considered junk values. Similarly, values for out-of-bonds inputs
 are junk values. -/
+@[local grind]
 def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
   fun j ↦ match L with
   | [] => j
   | a :: L => if a < simplicialEvalσ L j then simplicialEvalσ L j - 1 else simplicialEvalσ L j
 
+@[grind ←]
 lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
-  induction L with
-  | nil => grind [simplicialEvalσ]
-  | cons _ _ _ =>
-    simp only [List.mem_cons, forall_eq_or_imp] at hj
-    grind [simplicialEvalσ]
-
-@[deprecated  (since := "2025-10-15")]
-alias simplicialEvalσ_of_lt_mem := simplicialEvalσ_of_le_mem
+  induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
 
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
-  intro a b hab
-  induction L generalizing a b with
-  | nil => exact hab
-  | cons head tail h_rec => grind [simplicialEvalσ]
+  induction L <;> grind [Monotone]
 
 variable {m}
 /- We prove that `simplicialEvalσ` is indeed a lift of
@@ -332,26 +309,16 @@ section MemIsAdmissible
 
 lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : simplicialEvalσ L L[k] = simplicialEvalσ L (L[k] + 1) := by
-  induction L generalizing m k with
-  | nil => grind
-  | cons a L h_rec =>
-    · cases k
-      · grind [simplicialEvalσ, simplicialEvalσ_of_le_mem]
-      · grind [simplicialEvalσ, isAdmissible_cons]
+  induction L generalizing m k with | nil => grind | cons a L h_rec => cases k <;> grind
 
 lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
     (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
     j ∈ L := by
   induction L generalizing m with
-  | nil => grind [simplicialEvalσ]
+  | nil => grind
   | cons a L h_rec =>
-    rcases lt_trichotomy j a with h | h | h
-    · grind [simplicialEvalσ_of_le_mem]
-    · grind
-    · have := simplicialEvalσ_of_le_mem L (a + 1) (by grind)
-      have := simplicialEvalσ_monotone L (a := a + 1)
-      have := h_rec hL.of_cons (by grind)
-      grind [simplicialEvalσ]
+    have := simplicialEvalσ_monotone L (a := a + 1)
+    rcases lt_trichotomy j a with h | h | h <;> grind
 
 lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j : ℕ) (hj : j ∈ L) :
     j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
