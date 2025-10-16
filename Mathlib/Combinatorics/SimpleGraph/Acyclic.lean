@@ -282,4 +282,31 @@ lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [Decid
     use u
     aesop
 
+/-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
+removed. -/
+lemma Connected.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
+    (hconn : G.Connected) [DecidableEq V] [Fintype V] [Nontrivial V] :
+    ∃ v : V, (G.induce {v}ᶜ).Connected := by
+  obtain ⟨T, _, T_isTree⟩ := hconn.exists_isTree_le
+  have ⟨hT, _⟩ := T_isTree
+  have := Classical.decRel T.Adj
+  obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
+  use v
+  exact (hT.preconnected.connected_induce_complement_singleton_of_degree_eq_one hv).mono (by tauto)
+
+/-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
+lemma Connected.exists_vertex_preconnected_induce_complement_singleton_of_fintype
+    (hconn : G.Connected) [DecidableEq V] [Fintype V] : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
+  by_cases h : Nontrivial V
+  · obtain ⟨v, hv⟩ :=
+      hconn.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
+    exact ⟨v, hv.preconnected⟩
+  · use hconn.nonempty.some
+    have := not_nontrivial_iff_subsingleton.mp h
+    have : G.induce {hconn.nonempty.some}ᶜ = ⊥ := by
+      ext w x
+      simp [subsingleton_iff.mp _ w x]
+    rw [this]
+    exact preconnected_bot
+
 end SimpleGraph
