@@ -10,7 +10,7 @@ In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryG
 each admits a normal form.
 
 In both cases, the normal forms are encoded as an integer `m`, and a strictly increasing
-lists of integers `[i₀,…,iₙ]` such that `iₖ ≤ m + k` for all `k`. We define a predicate
+list of integers `[i₀,…,iₙ]` such that `iₖ ≤ m + k` for all `k`. We define a predicate
 `isAdmissible m : List ℕ → Prop` encoding this property. And provide some lemmas to help
 work with such lists.
 
@@ -42,7 +42,7 @@ section AdmissibleLists
 -- propositions asserting that various List constructions produce admissible lists.
 
 variable (m : ℕ)
-/-- A list of natural numbers [i₀, ⋯, iₙ]) is said to be `m`-admissible (for `m : ℕ`) if
+/-- A list of natural numbers `[i₀, ⋯, iₙ]` is said to be `m`-admissible (for `m : ℕ`) if
 `i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`.
 -/
 def IsAdmissible (L : List ℕ) : Prop :=
@@ -192,7 +192,7 @@ variable (m : ℕ) (L : List ℕ)
 Rather than defining it as such, we define it inductively for less painful inductive reasoning,
 (see `simplicialEvalσ_of_isAdmissible`).
 It is expected to produce the correct result only if `L` is admissible, and values for
-non-admissible lists should be considered junk values. Similarly, values for out-of-bonds inputs
+non-admissible lists should be considered junk values. Similarly, values for out-of-bounds inputs
 are junk values. -/
 def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
   fun j ↦ match L with
