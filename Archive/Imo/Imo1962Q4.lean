@@ -96,7 +96,7 @@ theorem formula {R : Type*} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
     a ^ 2 + ((2 : R) * a ^ 2 - (1 : R)) ^ 2 + ((4 : R) * a ^ 3 - 3 * a) ^ 2 = 1 ↔
       ((2 : R) * a ^ 2 - (1 : R)) * ((4 : R) * a ^ 3 - 3 * a) = 0 := by
   constructor <;> intro h
-  · apply pow_eq_zero (n := 2)
+  · apply eq_zero_of_pow_eq_zero (n := 2)
     apply mul_left_injective₀ (b := 2) (by simp)
     linear_combination (8 * a ^ 4 - 10 * a ^ 2 + 3) * h
   · linear_combination 2 * a * h

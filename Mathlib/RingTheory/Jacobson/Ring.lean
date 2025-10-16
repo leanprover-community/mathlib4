@@ -447,7 +447,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
         fun x hx => by
           rwa [Quotient.eq_zero_iff_mem, (by rwa [eq_bot_iff] : (P.comap C : Ideal R) = ⊥)] at hx)
         (by simpa only [a, leadingCoeff_eq_zero, Polynomial.map_zero] using hp0')
-  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 (pow_eq_zero hn)
+  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 (eq_zero_of_pow_eq_zero hn)
   suffices (⊥ : Ideal (Localization M)).IsMaximal by
     rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ bot_prime
       (disjoint_iff_inf_le.mpr fun x hx => hM (hx.2 ▸ hx.1))]
@@ -483,7 +483,8 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
   let M : Submonoid (R ⧸ P') := Submonoid.powers a
   let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P C le_rfl
   have hP'_prime : P'.IsPrime := comap_isPrime C P
-  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 <| leadingCoeff_eq_zero.mp (pow_eq_zero hn)
+  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ =>
+    hp0 <| leadingCoeff_eq_zero.mp (eq_zero_of_pow_eq_zero hn)
   let M' : Submonoid (R[X] ⧸ P) := M.map φ
   refine RingHom.IsIntegral.tower_bot φ (algebraMap _ (Localization M')) ?_ ?_
   · refine IsLocalization.injective (Localization M')

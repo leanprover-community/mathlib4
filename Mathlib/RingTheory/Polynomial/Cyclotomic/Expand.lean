@@ -172,7 +172,7 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [IsRoot.def, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow]
       at h
-    replace h := pow_eq_zero h
+    replace h := eq_zero_of_pow_eq_zero h
     rwa [← IsRoot.def, isRoot_cyclotomic_iff] at h
   · rw [← isRoot_cyclotomic_iff, IsRoot.def] at h
     rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow,

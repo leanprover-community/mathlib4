@@ -107,7 +107,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     simp only [coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
       one_ne_zero, coeff_sub]
     intro hn
-    exact Nat.not_lt_zero 1 (pow_eq_zero hn.symm ▸ hp)
+    exact Nat.not_lt_zero 1 (eq_zero_of_pow_eq_zero hn.symm ▸ hp)
   · simp
   · simp only [aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
     intro x y _ _ hx hy
