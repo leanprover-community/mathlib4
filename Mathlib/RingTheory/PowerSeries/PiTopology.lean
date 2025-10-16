@@ -159,12 +159,8 @@ theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFinite
 variable {R} in
 /-- The geometric series converges if the constant term is zero. -/
 theorem summable_pow_of_constantCoeff_eq_zero {f : PowerSeries R} (h : f.constantCoeff = 0) :
-    Summable (f ^ ·) := by
-  apply summable_of_tendsto_order_atTop_nhds_top
-  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop]
-  refine fun n ↦ ⟨n + 1, fun m hm ↦ lt_of_lt_of_le ?_ (le_order_pow _ _)⟩
-  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm.le)).trans_le ?_
-  simpa [nsmul_eq_mul] using ENat.self_le_mul_right m (order_ne_zero_iff_constCoeff_eq_zero.mpr h)
+    Summable (f ^ ·) :=
+  MvPowerSeries.WithPiTopology.summable_pow_of_constantCoeff_eq_zero h
 
 section GeomSeries
 variable {R : Type*} [TopologicalSpace R] [Ring R] [IsTopologicalRing R] [T2Space R]
