@@ -55,3 +55,15 @@ abbrev Copy := L
 /-- info: L ≃ₐ[K] Copy L : Type uL -/
 #guard_msgs in
 #check L ≃ₐ[K] Copy L
+
+/-! `Gal(L/K)` should not pretty print when `pp.explicit` is set to true. -/
+
+set_option pp.explicit true in
+/--
+info:
+@AlgEquiv K L L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹)))
+  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
+-/
+#guard_msgs in
+#check Gal(L/K)
