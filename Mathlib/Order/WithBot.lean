@@ -249,33 +249,43 @@ section LE
 
 variable [LE α] {x y : WithBot α}
 
-instance (priority := 10) le : LE (WithBot α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
+/-- The order on `WithBot α`, defined by `⊥ ≤ ⊥`, `⊥ ≤ ↑a` and `a ≤ b → ↑a ≤ ↑b`.
 
-lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := .rfl
+Equivalently, `x ≤ y` can be defined as `∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b`,
+see `le_if_forall`. The definition as an inductive predicate is preferred since it
+cannot be accidentally unfolded too far. -/
+@[mk_iff le_def_aux]
+protected inductive LE : WithBot α → WithBot α → Prop
+  | protected bot_le (x : WithBot α) : WithBot.LE ⊥ x
+  | protected coe_le_coe {a b : α} : a ≤ b → WithBot.LE a b
+
+instance (priority := 10) instLE : LE (WithBot α) where le := WithBot.LE
+
+lemma le_def : x ≤ y ↔ x = ⊥ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b := le_def_aux ..
+
+lemma le_iff_forall : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := by
+  cases x <;> cases y <;> simp [le_def]
 
 @[simp, norm_cast] lemma coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by simp [le_def]
 
 lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
 
-instance orderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
+instance instOrderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
 
-instance orderTop [OrderTop α] : OrderTop (WithBot α) where le_top x := by cases x <;> simp [le_def]
-
-instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
-  { WithBot.orderBot, WithBot.orderTop with }
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) where
+  le_top x := by cases x <;> simp [le_def]
 
 /-- There is a general version `le_bot_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
-protected theorem le_bot_iff : ∀ {a : WithBot α}, a ≤ ⊥ ↔ a = ⊥
-  | (a : α) => by simp [not_coe_le_bot _]
+protected theorem le_bot_iff : ∀ {x : WithBot α}, x ≤ ⊥ ↔ x = ⊥
+  | (a : α) => by simp [not_coe_le_bot]
   | ⊥ => by simp
 
 theorem coe_le : ∀ {o : Option α}, b ∈ o → ((a : WithBot α) ≤ o ↔ a ≤ b)
   | _, rfl => coe_le_coe
 
-theorem coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by simp [le_def]
-theorem le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by simp [le_def]
+theorem coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by simp [le_iff_forall]
+theorem le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by simp [le_iff_forall]
 
 protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α) :=
   fun x ↦ by cases x <;> simp; simpa using @h _
@@ -284,16 +294,33 @@ lemma le_unbot_iff (hy : y ≠ ⊥) : a ≤ unbot y hy ↔ a ≤ y := by lift y 
 lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
 lemma unbotD_le_iff (hx : x = ⊥ → a ≤ b) : x.unbotD a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
 
+@[simp] lemma unbot_le_unbot (hx hy) : unbot x hx ≤ unbot y hy ↔ x ≤ y := by
+  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
+  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
+  lift x to α using id hx
+  lift y to α using id hy
+  simp
+
 end LE
 
 section LT
 
 variable [LT α] {x y : WithBot α}
 
-instance (priority := 10) lt : LT (WithBot α) :=
-  ⟨fun o₁ o₂ : WithBot α => ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b⟩
+/-- The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`.
 
-lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := .rfl
+Equivalently, `x ≤ y` can be defined as `∀ b : α, y = ↑v → ∃ a : α, x = ↑a ∧ a ≤ b`,
+see `le_if_forall`. The definition as an inductive predicate is preferred since it
+cannot be accidentally unfolded too far. -/
+instance (priority := 10) instLT : LT (WithBot α) where
+  lt
+  | ⊥, ⊥ => False
+  | (a : α), ⊥ => False
+  | ⊥, (b : α) => True
+  | (a : α), (b : α) => a < b
+
+lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
+  cases x <;> cases y <;> simp [LT.lt]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
@@ -311,14 +338,21 @@ lemma lt_unbot_iff (hy : y ≠ ⊥) : a < unbot y hy ↔ a < y := by lift y to �
 lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using id hx; simp
 lemma unbotD_lt_iff (hx : x = ⊥ → a < b) : x.unbotD a < b ↔ x < b := by cases x <;> simp [hx]
 
+@[simp] lemma unbot_lt_unbot (hx hy) : unbot x hx < unbot y hy ↔ x < y := by
+  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
+  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
+  lift x to α using id hx
+  lift y to α using id hy
+  simp
+
 end LT
 
-instance preorder [Preorder α] : Preorder (WithBot α) where
+instance instPreorder [Preorder α] : Preorder (WithBot α) where
   lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
   le_refl x := by cases x <;> simp [le_def]
   le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
 
-instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) where
+instance instPartialOrder [PartialOrder α] : PartialOrder (WithBot α) where
   le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
 
 section Preorder
@@ -796,10 +830,15 @@ section LE
 
 variable [LE α] {x y : WithTop α}
 
-instance (priority := 10) le : LE (WithTop α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a⟩
+/-- The order on `WithTop α`, defined by `⊤ ≤ ⊤`, `↑a ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`. -/
+instance (priority := 10) instLE : LE (WithTop α) where le a b := WithBot.LE (α := αᵒᵈ) b a
 
-lemma le_def : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b := .rfl
+lemma le_def : x ≤ y ↔ y = ⊤ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b :=
+  WithBot.le_def.trans <| or_congr_right <| exists_swap.trans <| exists₂_congr fun _ _ ↦
+    and_congr_right' and_comm
+
+lemma le_iff_forall : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b := by
+  cases x <;> cases y <;> simp [le_def]
 
 @[simp, norm_cast] lemma coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by simp [le_def]
 
@@ -821,8 +860,8 @@ protected theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
 theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔ a ≤ b)
   | _, rfl => coe_le_coe
 
-theorem le_coe_iff : x ≤ b ↔ ∃ a : α, x = a ∧ a ≤ b := by simp [le_def]
-theorem coe_le_iff : ↑a ≤ x ↔ ∀ b : α, x = ↑b → a ≤ b := by simp [le_def]
+theorem le_coe_iff : x ≤ b ↔ ∃ a : α, x = a ∧ a ≤ b := by simp [le_iff_forall]
+theorem coe_le_iff : ↑a ≤ x ↔ ∀ b : α, x = ↑b → a ≤ b := by simp [le_iff_forall]
 
 protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
   fun x ↦ by cases x <;> simp; simpa using @h _
@@ -837,10 +876,17 @@ section LT
 
 variable [LT α] {x y : WithTop α}
 
-instance (priority := 10) lt : LT (WithTop α) :=
-  ⟨fun o₁ o₂ : Option α => ∃ b ∈ o₁, ∀ a ∈ o₂, b < a⟩
+/-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`. -/
+instance (priority := 10) instLT : LT (WithTop α) where
+  -- We match on `b, a` rather than `a, b` to keep the defeq with `WithBot.instLT (α := αᵒᵈ)`
+  lt a b := match b, a with
+  | ⊤, ⊤ => False
+  | (b : α), ⊤ => False
+  | ⊤, (a : α) => True
+  | (b : α), (a : α) => a < b
 
-lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := .rfl
+lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := by
+  cases x <;> cases y <;> simp [LT.lt]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
@@ -1036,8 +1082,13 @@ instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > �
 
 lemma denselyOrdered_iff [LT α] [NoMaxOrder α] :
     DenselyOrdered (WithTop α) ↔ DenselyOrdered α := by
-  rw [← denselyOrdered_orderDual, iff_comm, ← denselyOrdered_orderDual]
-  exact WithBot.denselyOrdered_iff.symm
+  constructor <;> intro h <;> constructor
+  · intro a b hab
+    obtain ⟨c, hc⟩ := exists_between (coe_lt_coe.mpr hab)
+    induction c with
+    | top => simp at hc
+    | coe c => exact ⟨c, by simpa using hc⟩
+  · simpa [WithTop.exists, WithTop.forall, exists_gt] using DenselyOrdered.dense
 
 instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
   denselyOrdered_iff.mpr inferInstance

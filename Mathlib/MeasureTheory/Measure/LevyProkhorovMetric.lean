@@ -86,7 +86,7 @@ lemma levyProkhorovEDist_le_of_forall_add_pos_le (μ ν : Measure Ω) (δ : ℝ�
   · simp only [ε_top, add_top, le_top]
   apply sInf_le
   intro B B_mble
-  simpa only [add_assoc] using h ε B (coe_pos.mpr hε) coe_lt_top B_mble
+  simpa only [add_assoc] using h ε B (by positivity) coe_lt_top B_mble
 
 /-- A simple general sufficient condition for bounding `levyProkhorovEDist` from above. -/
 lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
