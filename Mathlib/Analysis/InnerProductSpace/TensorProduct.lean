@@ -216,12 +216,12 @@ def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
     mapIsometry (.id : E →ₗᵢ[𝕜] E) (.id : F →ₗᵢ[𝕜] F) = .id := by ext; simp
 
 variable (E) in
-/-- This is the linear isometry version of `LinearMap.lTensor E f` when `f` is a linear isometry. -/
+/-- This is the natural linear isometry induced by `f : F ≃ₗᵢ G`. -/
 def _root_.LinearIsometry.lTensor (f : F →ₗᵢ[𝕜] G) :
     E ⊗[𝕜] F →ₗᵢ[𝕜] E ⊗[𝕜] G := mapIsometry .id f
 
 variable (G) in
-/-- This is the linear isometry version of `LinearMap.rTensor G f` when `f` is a linear isometry. -/
+/-- This is the natural linear isometry induced by `f : E ≃ₗᵢ F`. -/
 def _root_.LinearIsometry.rTensor (f : E →ₗᵢ[𝕜] F) :
     E ⊗[𝕜] G →ₗᵢ[𝕜] F ⊗[𝕜] G := mapIsometry f .id
 
@@ -265,14 +265,12 @@ lemma congrIsometry_symm (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
   LinearIsometryEquiv.toLinearEquiv_inj.mp <| LinearEquiv.toLinearMap_inj.mp <| by ext; simp
 
 variable (E) in
-/-- This is the linear isometry equivalence version of `LinearEquiv.lTensor E f` when `f` is a
-linear isometry equivalence. -/
+/-- This is the natural linear isometric equivalence induced by `f : F ≃ₗᵢ G`. -/
 def _root_.LinearIsometryEquiv.lTensor (f : F ≃ₗᵢ[𝕜] G) :
     E ⊗[𝕜] F ≃ₗᵢ[𝕜] E ⊗[𝕜] G := congrIsometry (.refl 𝕜 E) f
 
 variable (G) in
-/-- This is the linear isometry equivalence version of `LinearEquiv.rTensor G f` when `f` is a
-linear isometry equivalence. -/
+/-- This is the natural linear isometric equivalence induced by `f : E ≃ₗᵢ F`. -/
 def _root_.LinearIsometryEquiv.rTensor (f : E ≃ₗᵢ[𝕜] F) :
     E ⊗[𝕜] G ≃ₗᵢ[𝕜] F ⊗[𝕜] G := congrIsometry f (.refl 𝕜 G)
 
