@@ -5,7 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Topology.Algebra.Order.Floor
-import Mathlib.RingTheory.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # `Real.pi` is irrational
