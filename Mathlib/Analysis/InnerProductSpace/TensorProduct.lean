@@ -119,15 +119,15 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
   rw [inner_mapIncl_mapIncl, inner_self y e f, RCLike.ofReal_re]
-  exact Finset.sum_nonneg fun i hi ↦ sq_nonneg _
+  exact Finset.sum_nonneg fun _ _ ↦ sq_nonneg _
 
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
   letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
   { conj_inner_symm x y :=
-      x.induction_on (by simp [inner]) (y.induction_on (by simp [inner]) (fun x y => by simp)
-        (fun x y hx hy a b => by simp_all [inner])) (fun x y hx hy => by simp_all [inner])
-    add_left _ _ _ := by simp [inner]
-    smul_left _ _ _ := by simp [inner]
+      x.induction_on (by simp [inner]) (y.induction_on (by simp [inner]) (by simp)
+        (by simp_all [inner])) (by simp_all [inner])
+    add_left _ _ _ := LinearMap.map_add₂ _ _ _ _
+    smul_left _ _ _ := LinearMap.map_smulₛₗ₂ _ _ _ _
     definite := TensorProduct.inner_definite
     re_inner_nonneg := TensorProduct.re_inner_self_nonneg }
   this.toNormedAddCommGroup
@@ -293,8 +293,8 @@ def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
 
 @[simp] theorem inner_assoc_assoc (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     inner 𝕜 (TensorProduct.assoc 𝕜 E F G x) (TensorProduct.assoc 𝕜 E F G y) = inner 𝕜 x y :=
-  x.induction_on (by simp) (fun a b =>
-    y.induction_on (by simp) (fun c d =>
+  x.induction_on (by simp) (fun a _ =>
+    y.induction_on (by simp) (fun c _ =>
       a.induction_on (by simp) (fun _ _ =>
         c.induction_on (by simp) (by simp [mul_assoc])
         fun _ _ h1 h2 => by simp only [add_tmul, inner_add_right, map_add, h1, h2])
@@ -328,7 +328,7 @@ end isometry
 @[simp] theorem adjoint_map [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
     [FiniteDimensional 𝕜 H] (f : E →ₗ[𝕜] F) (g : G →ₗ[𝕜] H) :
     LinearMap.adjoint (map f g) = map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
-  ext' fun x y => by simp [TensorProduct.ext_iff_inner_right, LinearMap.adjoint_inner_left]
+  ext' fun _ _ => by simp [TensorProduct.ext_iff_inner_right, LinearMap.adjoint_inner_left]
 
 /-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
 `a, b, c`.
