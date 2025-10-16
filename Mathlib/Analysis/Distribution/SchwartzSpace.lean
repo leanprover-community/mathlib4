@@ -299,9 +299,6 @@ instance instNeg : Neg 𝓢(E, F) :=
 @[simp]
 theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
 
-@[simp]
-theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
-
 end Neg
 
 section Add
@@ -606,6 +603,37 @@ lemma _root_.Function.HasTemperateGrowth.zero :
 lemma _root_.Function.HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
+
+section Mul
+
+variable [NormedField 𝕜] [NormedRing R] [NormedSpace 𝕜 R] [NormedAlgebra ℝ R]
+  [IsScalarTower 𝕜 R R] [SMulCommClass 𝕜 R R]
+
+theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth := by
+  constructor
+  · exact hf.1.mul hg.1
+  intro n
+  rcases hf.norm_iteratedFDeriv_le_uniform_aux n with ⟨k1, C1, hC1, h1⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨k2, C2, hC2, h2⟩
+  use k1 + k2
+  use ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C1 * C2)
+  intro x
+  apply le_trans (norm_iteratedFDeriv_mul_le hf.1 hg.1 x (right_eq_inf.mp rfl))
+  have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
+  simp_rw [mul_assoc ((n : ℝ) + 1), ← this, Finset.sum_mul]
+  refine Finset.sum_le_sum fun i hi => ?_
+  rw [one_mul]
+  move_mul [(Nat.choose n i : ℝ), (Nat.choose n (n / 2) : ℝ)]
+  gcongr ?_ * ?_
+  swap
+  · norm_cast
+    exact i.choose_le_middle n
+  simp only [Finset.mem_range] at hi
+  grw [h1 i (Nat.le_of_lt_succ hi) x, h2 (n - i) (by simp only [tsub_le_self]) x]
+  grind
+
+end Mul
 
 lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     Function.HasTemperateGrowth f := by
@@ -913,6 +941,30 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
 @[simp]
 theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) (x : D) : bilinLeftCLM B hg f x = B (f x) (g x) := rfl
+
+variable (E) in
+def smulLeftCLM {g : D → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) :=
+    bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+
+@[simp]
+theorem smulLeftCLM_apply {g : D → 𝕜} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) (x : D) : smulLeftCLM E hg f x = (g x) • f x := rfl
+
+variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R] [IsScalarTower 𝕜 R R]
+  [SMulCommClass 𝕜 R R]
+
+@[simp]
+theorem smulLeftCLM_mul {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM E hg₁ ∘L smulLeftCLM E hg₂ = smulLeftCLM E (hg₁.mul hg₂) := by
+  ext f x
+  simp [smul_smul]
+
+@[simp]
+theorem smulLeftCLM_const (c : 𝕜) :
+    smulLeftCLM E (Function.HasTemperateGrowth.const c (E := D)) = c • .id 𝕜 _ := by
+  ext
+  simp
 
 end Multiplication
 
