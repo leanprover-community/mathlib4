@@ -237,8 +237,8 @@ variable [F.Braided]
 protected instance Full.mapCommMon [F.Full] [F.Faithful] : F.mapCommMon.Full where
   map_surjective := F.mapMon.map_surjective
 
-/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
-faithful too. -/
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
+`CommMonCat(F) : CommMonCat C ⥤ CommMonCat D` is fully faithful too. -/
 @[simps]
 protected def FullyFaithful.mapCommMon (hF : F.FullyFaithful) : F.mapCommMon.FullyFaithful where
   preimage f := .mk <| hF.preimage f.hom

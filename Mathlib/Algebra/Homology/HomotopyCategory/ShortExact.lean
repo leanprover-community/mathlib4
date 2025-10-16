@@ -35,7 +35,7 @@ lemma homologySequenceδ_quotient_mapTriangle_obj
     (homologyFunctor C (up ℤ) 0).homologySequenceδ
         ((quotient C (up ℤ)).mapTriangle.obj T) n₀ n₁ h =
       (homologyFunctorFactors C (up ℤ) n₀).hom.app _ ≫
-        (HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftMap T.mor₃ n₀ n₁ (by omega) ≫
+        (HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftMap T.mor₃ n₀ n₁ (by cutsat) ≫
         (homologyFunctorFactors C (up ℤ) n₁).inv.app _ := by
   apply homologyFunctor_shiftMap
 
@@ -101,7 +101,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
   dsimp [Functor.shiftMap, homologyFunctor_shift]
   rw [HomologicalComplex.homologyπ_naturality_assoc,
     HomologicalComplex.liftCycles_comp_cyclesMap_assoc,
-    S.X₁.liftCycles_shift_homologyπ_assoc _ _ _ _ n₁ (by omega) (n₁ + 1) (by simp),
+    S.X₁.liftCycles_shift_homologyπ_assoc _ _ _ _ n₁ (by cutsat) (n₁ + 1) (by simp),
     Iso.inv_hom_id_app]
   dsimp [homologyFunctor_shift]
   simp only [hab, add_comp, assoc, inl_v_triangle_mor₃_f_assoc,

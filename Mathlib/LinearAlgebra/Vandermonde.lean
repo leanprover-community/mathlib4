@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Peter Nelson
 -/
+import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
@@ -24,7 +25,7 @@ the `α × Fin n` matrix with `i`th row `[(w i) ^ (n-1), (v i) * (w i)^(n-2), ..
 `projVandermonde v w = rectVandermonde v w n` is the square matrix case, where `α = Fin n`.
 The determinant of `projVandermonde v w` is the product of `v j * w i - v i * w j`,
 taken over all pairs `i,j` with `i < j`, which gives a similar characterization of
-when it it nonsingular. Since `vandermonde v w = projVandermonde v 1`,
+when it is nonsingular. Since `vandermonde v w = projVandermonde v 1`,
 we can derive most of the API for the former in terms of the latter.
 
 These extensions of Vandermonde matrices arise in the study of complete arcs in finite geometry,

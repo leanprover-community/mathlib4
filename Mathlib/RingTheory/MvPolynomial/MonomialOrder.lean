@@ -48,10 +48,10 @@ and a monomial order `m : MonomialOrder σ`.
   `f` and `g`.
 
 * `m.degree_mul_of_mul_leadingCoeff_ne_zero` : if the product of the leading coefficients
-  is non zero, then the degree is the sum of the degrees.
+  is nonzero, then the degree is the sum of the degrees.
 
 * `m.leadingCoeff_mul_of_mul_leadingCoeff_ne_zero` : if the product of the leading coefficients
-  is non zero, then the leading coefficient is that product.
+  is nonzero, then the leading coefficient is that product.
 
 * `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
   assert the  equality when the leading coefficient of `f` or `g` is regular,
@@ -61,10 +61,10 @@ and a monomial order `m : MonomialOrder σ`.
   and `m.leadingCoeff_mul` say that `m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g`
 
 * `m.degree_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
-  of `f` is non zero, then the degree of `f ^ n` is `n • (m.degree f)`
+  of `f` is nonzero, then the degree of `f ^ n` is `n • (m.degree f)`
 
 * `m.leadingCoeff_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
-  of `f` is non zero, then the leading coefficient of `f ^ n` is that power.
+  of `f` is nonzero, then the leading coefficient of `f ^ n` is that power.
 
 * `m.degree_prod_of_regular` : the degree of a product of polynomials whose leading coefficients
   are regular is the sum of their degrees.

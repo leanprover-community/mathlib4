@@ -118,7 +118,8 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- is non-empty.
   obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
       yoneda.obj ((CostructuredArrow.toOver yoneda (colimit F)).obj <|
-        (pre P.F yoneda (colimit F)).obj <| (map (colimit.ι F i)).obj <| mk _))) :=
+        (CostructuredArrow.pre P.F yoneda (colimit F)).obj <|
+          (map (colimit.ι F i)).obj <| mk _))) :=
     exists_nonempty_limit_obj_of_isColimit F G _ hc _ (Iso.refl _) hi
   have htO : (CostructuredArrow.toOver yoneda (colimit F)).FullyFaithful := .ofFullyFaithful _
   -- Since the inclusion `y : CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` is fully

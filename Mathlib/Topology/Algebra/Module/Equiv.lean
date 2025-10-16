@@ -1095,11 +1095,12 @@ lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
   exact ⟨M.trans N, rfl⟩
 
 lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
-    (hf : f ∘L g = id R M₂) (hg : g ∘L f = id R M) :
+    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.IsInvertible :=
   ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
 
-lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M} (hf : f ∘L g = id R M₂) (hg : g ∘L f = id R M) :
+lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
+    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.inverse = g := by
   have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
   rw [this, inverse_equiv]
@@ -1202,7 +1203,7 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
 @[deprecated (since := "2025-04-22")]
 alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
 
-@[simp] theorem inverse_id : (id R M).inverse = id R M := by
+@[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
 

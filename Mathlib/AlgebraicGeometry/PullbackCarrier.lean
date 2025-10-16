@@ -298,7 +298,7 @@ lemma exists_preimage_pullback (x : X) (y : Y) (h : f.base x = g.base y) :
 lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y ⟶ S} :
     IsEmpty ↑(Limits.pullback f g) ↔ Disjoint (Set.range f.base) (Set.range g.base) := by
   refine ⟨?_, Scheme.isEmpty_pullback f g⟩
-  rw [← not_nonempty_iff, Set.disjoint_iff_forall_ne]
+  rw [Set.disjoint_iff_forall_ne]
   contrapose!
   rintro ⟨_, ⟨x, rfl⟩, _, ⟨y, rfl⟩, e⟩
   obtain ⟨z, -⟩ := exists_preimage_pullback x y e
@@ -367,6 +367,22 @@ instance isJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) :
   exists_preimage_fst_triplet_of_prop {X Y S} f g _ hg x y hxy := by
     obtain ⟨a, b, h⟩ := Pullback.exists_preimage_pullback x y hxy
     use a
+
+/-- The comparison map for pullbacks under the forgetful functor `Scheme ⥤ Type u` is surjective. -/
+lemma pullbackComparison_forget_surjective {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) :
+    Function.Surjective (pullbackComparison forget f g) := by
+  refine .of_comp_left (fun x ↦ ?_) <|
+    injective_of_mono (Types.pullbackIsoPullback (forget.map f) (forget.map g)).hom
+  obtain ⟨z, h1, h2⟩ := Pullback.exists_preimage_pullback (f := f) (g := g) x.1.1 x.1.2 x.2
+  use z
+  ext
+  · simp only [Function.comp_apply, Types.pullbackIsoPullback_hom_fst]
+    rwa [← types_comp_apply (g := pullback.fst _ _), pullbackComparison_comp_fst]
+  · simp only [Function.comp_apply, Types.pullbackIsoPullback_hom_snd]
+    rwa [← types_comp_apply (g := pullback.snd _ _), pullbackComparison_comp_snd]
+
+@[deprecated (since := "2025-10-06")]
+alias Pullback.forget_comparison_surjective := pullbackComparison_forget_surjective
 
 end Scheme
 

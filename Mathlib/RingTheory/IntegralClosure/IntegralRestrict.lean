@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Norm.Transitivity
 # Restriction of various maps between fields to integrally closed subrings.
 
 In this file, we assume `A` is an integrally closed domain; `K` is the fraction ring of `A`;
-`L` is a finite (separable) extension of `K`; `B` is the integral closure of `A` in `L`.
+`L` is a finite extension of `K`; `B` is the integral closure of `A` in `L`.
 We call this the AKLB setup.
 
 ## Main definition
@@ -76,7 +76,7 @@ variable [Algebra.IsAlgebraic K L]
 section galLift
 variable {A B B₂ B₃}
 
-/-- A generalization of the the lift `End(B/A) → End(L/K)` in an ALKB setup.
+/-- A generalization of the lift `End(B/A) → End(L/K)` in an ALKB setup.
 This is inverse to the restriction. See `galRestrictHom`. -/
 noncomputable
 def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
@@ -272,9 +272,8 @@ lemma Algebra.algebraMap_intTrace (x : B) :
     ← AlgEquiv.commutes (FractionRing.algEquiv B L)]
   apply Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv
-  apply IsLocalization.ringHom_ext A⁰
-  simp only [AlgEquiv.toRingEquiv_eq_coe, ← AlgEquiv.coe_ringHom_commutes, RingHom.comp_assoc,
-    AlgHom.comp_algebraMap_of_tower, ← IsScalarTower.algebraMap_eq, RingHom.comp_assoc]
+  ext
+  exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
 lemma Algebra.algebraMap_intTrace_fractionRing (x : B) :
     algebraMap A (FractionRing A) (Algebra.intTrace A B x) =
@@ -353,7 +352,7 @@ variable [IsIntegrallyClosed A]
 /-- The restriction of the norm on `L/K` restricted onto `B/A` in an AKLB setup.
 See `Algebra.intNorm` instead. -/
 noncomputable
-def Algebra.intNormAux [Algebra.IsSeparable K L] :
+def Algebra.intNormAux :
     B →* A where
   toFun := fun s ↦ IsIntegralClosure.mk' (R := A) A (Algebra.norm K (algebraMap B L s))
     (isIntegral_norm K <| IsIntegral.map (IsScalarTower.toAlgHom A B L)
@@ -363,7 +362,8 @@ def Algebra.intNormAux [Algebra.IsSeparable K L] :
 
 variable {A K L B}
 
-lemma Algebra.map_intNormAux [Algebra.IsSeparable K L] (x : B) :
+omit [FiniteDimensional K L] in
+lemma Algebra.map_intNormAux (x : B) :
     algebraMap A K (Algebra.intNormAux A K L B x) = Algebra.norm K (algebraMap B L x) := by
   dsimp [Algebra.intNormAux]
   exact IsIntegralClosure.algebraMap_mk' _ _ _
@@ -371,7 +371,6 @@ lemma Algebra.map_intNormAux [Algebra.IsSeparable K L] (x : B) :
 variable (A B)
 variable [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
-variable [Algebra.IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
 
 /-- The norm of a finite extension of integrally closed domains `B/A` is the restriction of
 the norm on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
@@ -399,9 +398,8 @@ lemma Algebra.algebraMap_intNorm (x : B) :
     ← AlgEquiv.commutes (FractionRing.algEquiv B L)]
   apply Algebra.norm_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv
-  apply IsLocalization.ringHom_ext A⁰
-  simp only [AlgEquiv.toRingEquiv_eq_coe, ← AlgEquiv.coe_ringHom_commutes, RingHom.comp_assoc,
-    AlgHom.comp_algebraMap_of_tower, ← IsScalarTower.algebraMap_eq, RingHom.comp_assoc]
+  ext
+  exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
 @[simp]
 lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
@@ -418,9 +416,7 @@ variable (A B)
 
 theorem Algebra.intNorm_intNorm {C : Type*} [CommRing C] [IsDomain C] [IsIntegrallyClosed C]
     [Algebra A C] [Algebra B C] [IsScalarTower A B C] [Module.Finite A C] [Module.Finite B C]
-    [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C]
-    [Algebra.IsSeparable (FractionRing A) (FractionRing C)]
-    [Algebra.IsSeparable (FractionRing B) (FractionRing C)] (x : C) :
+    [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C] (x : C) :
     intNorm A B (intNorm B C x) = intNorm A C x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
@@ -449,8 +445,7 @@ variable {A B}
 
 @[simp]
 theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Module.Finite A B₂]
-    [NoZeroSMulDivisors A B₂] [Algebra.IsSeparable (FractionRing A) (FractionRing B₂)] (x : B)
-    (σ : B ≃ₐ[A] B₂) :
+    [NoZeroSMulDivisors A B₂] (x : B) (σ : B ≃ₐ[A] B₂) :
     Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
@@ -471,7 +466,6 @@ lemma Algebra.intNorm_ne_zero {x : B} : Algebra.intNorm A B x ≠ 0 ↔ x ≠ 0 
 
 variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrallyClosed Bₘ]
 variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
-variable [Algebra.IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
 
 include M in
 lemma Algebra.intNorm_eq_of_isLocalization (x : B) :

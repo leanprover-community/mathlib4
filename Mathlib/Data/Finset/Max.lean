@@ -270,7 +270,7 @@ theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
 `min'_lt_max'` which is sometimes more convenient.
 -/
 theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
-    s.min' (Finset.card_pos.1 <| by omega) < s.max' (Finset.card_pos.1 <| by omega) := by
+    s.min' (Finset.card_pos.1 <| by cutsat) < s.max' (Finset.card_pos.1 <| by cutsat) := by
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 
@@ -282,19 +282,19 @@ theorem min'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.N
 
 theorem map_ofDual_min (s : Finset αᵒᵈ) : s.min.map ofDual = (s.image ofDual).max := by
   rw [max_eq_sup_withBot, sup_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithBot.map_id _
 
 theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
   rw [min_eq_inf_withTop, inf_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithTop.map_id _
 
 theorem map_toDual_min (s : Finset α) : s.min.map toDual = (s.image toDual).max := by
   rw [max_eq_sup_withBot, sup_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithBot.map_id _
 
 theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
   rw [min_eq_inf_withTop, inf_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithTop.map_id _
 
 theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by

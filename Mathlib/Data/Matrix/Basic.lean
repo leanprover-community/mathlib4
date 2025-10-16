@@ -229,9 +229,7 @@ instance instAlgebra : Algebra R (Matrix n n α) where
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
-    algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
-  dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
-  split_ifs with h <;> simp [h]
+    algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := rfl
 
 theorem algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) := rfl
@@ -879,5 +877,32 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
 variable {R m α}
 
 end Transpose
+
+section NonUnitalNonAssocSemiring
+variable {ι : Type*} [NonUnitalNonAssocSemiring α] [Fintype n]
+
+theorem sum_mulVec (s : Finset ι) (x : ι → Matrix m n α) (y : n → α) :
+    (∑ i ∈ s, x i) *ᵥ y = ∑ i ∈ s, x i *ᵥ y := by
+  ext
+  simp only [mulVec, dotProduct, sum_apply, Finset.sum_mul, Finset.sum_apply]
+  rw [Finset.sum_comm]
+
+theorem mulVec_sum (x : Matrix m n α) (s : Finset ι) (y : ι → (n → α)) :
+    x *ᵥ ∑ i ∈ s, y i = ∑ i ∈ s, x *ᵥ y i := by
+  ext
+  simp only [mulVec, dotProduct_sum, Finset.sum_apply]
+
+theorem sum_vecMul (s : Finset ι) (x : ι → (n → α)) (y : Matrix n m α) :
+    (∑ i ∈ s, x i) ᵥ* y = ∑ i ∈ s, x i ᵥ* y := by
+  ext
+  simp only [vecMul, sum_dotProduct, Finset.sum_apply]
+
+theorem vecMul_sum (x : n → α) (s : Finset ι) (y : ι → Matrix n m α) :
+    x ᵥ* (∑ i ∈ s, y i) = ∑ i ∈ s, x ᵥ* y i := by
+  ext
+  simp only [vecMul, dotProduct, sum_apply, Finset.mul_sum, Finset.sum_apply]
+  rw [Finset.sum_comm]
+
+end NonUnitalNonAssocSemiring
 
 end Matrix

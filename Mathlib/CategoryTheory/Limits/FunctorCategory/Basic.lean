@@ -23,7 +23,7 @@ We also show that `F : D ⥤ K ⥤ C` preserves (co)limits if it does so for eac
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe w' w v₁ v₂ u₁ u₂ v v' u u'
 
 namespace CategoryTheory.Limits
