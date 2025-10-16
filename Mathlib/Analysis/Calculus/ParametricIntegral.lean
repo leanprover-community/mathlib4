@@ -9,6 +9,7 @@ import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -367,6 +368,73 @@ theorem hasFDerivAt_parametric_primitive_of_lip' (F : H → ℝ → E) (F' : ℝ
 
 @[inherit_doc] local notation:70 u " ⬝ " φ =>
   ContinuousLinearMap.comp (ContinuousLinearMap.toSpanSingleton ℝ u) φ
+
+
+variable [FiniteDimensional ℝ H]
+
+theorem hasFDerivAt_parametric_primitive_of_contDiff' {F : H → ℝ → E} (hF : ContDiff ℝ 1 ↿F)
+    {s : H → ℝ} (hs : ContDiff ℝ 1 s) (x₀ : H) (a : ℝ) :
+    (IntervalIntegrable (fun t ↦ fderiv ℝ (fun x ↦ F x t) x₀) volume a <| s x₀) ∧
+      HasFDerivAt (fun x : H ↦ ∫ t in a..s x, F x t)
+        ((∫ t in a..s x₀, fderiv ℝ (fun x ↦ F x t) x₀) + F x₀ (s x₀) ⬝ fderiv ℝ s x₀) x₀ := by
+  set a₀ := min a (s x₀) - 1
+  set b₀ := max a (s x₀) + 1
+  have ha : a ∈ Ioo a₀ b₀ := by
+    dsimp [a₀, b₀]
+    constructor
+    linarith [min_le_left a (s x₀)]
+    linarith [le_max_left a (s x₀)]
+  have ht₀ : s x₀ ∈ Ioo a₀ b₀ := by
+    dsimp [a₀, b₀]
+    constructor
+    linarith [min_le_right a (s x₀)]
+    linarith [le_max_right a (s x₀)]
+  have cpct : IsCompact (closedBall x₀ 1 ×ˢ Icc a₀ b₀) :=
+    (ProperSpace.isCompact_closedBall x₀ 1).prod isCompact_Icc
+  obtain ⟨K, F_lip⟩ : ∃ K, ∀ t ∈ Ioo a₀ b₀, LipschitzOnWith K (fun x ↦ F x t) (ball x₀ 1) := by
+    have conv : Convex ℝ (closedBall x₀ 1 ×ˢ Icc a₀ b₀) :=
+      (convex_closedBall x₀ 1).prod (convex_Icc a₀ b₀)
+    rcases hF.lipschitzOnWith le_rfl conv cpct with ⟨K, hK⟩
+    use K
+    intro t t_in
+    rw [show (fun x : H ↦ F x t) = uncurry F ∘ fun x : H ↦ (x, t) by ext; simp, ← mul_one K]
+    apply hK.comp (LipschitzWith.prodMk_right t).lipschitzOnWith
+    rw [mapsTo_iff_image_subset]
+    rintro ⟨x, s⟩ ⟨x', hx, h⟩; cases h
+    exact ⟨ball_subset_closedBall hx, mem_Icc_of_Ioo t_in⟩
+  have cont_x (x) : Continuous (F x) := hF.continuous.comp (Continuous.prodMk_right x)
+  have int_Icc (x) : IntegrableOn (F x) (Icc a₀ b₀) := (cont_x x).continuousOn.integrableOn_Icc
+  have int_Ioo (x) : IntegrableOn (F x) (Ioo a₀ b₀) := (int_Icc x).mono_set Ioo_subset_Icc_self
+  apply
+    hasFDerivAt_parametric_primitive_of_lip' _ _ zero_lt_one ha ht₀
+      (fun x _hx ↦ (cont_x x).aestronglyMeasurable) (int_Ioo x₀) (cont_x x₀).continuousAt _ _ _
+      (continuousAt_const : (ContinuousAt fun _ : ℝ ↦ (K : ℝ)) <| s x₀) fun _t ↦
+      NNReal.coe_nonneg K
+  · apply ae_of_all
+    intro t
+    apply (ContDiff.hasStrictFDerivAt _ le_rfl).hasFDerivAt
+    rw [show (fun x ↦ F x t) = uncurry F ∘ fun x ↦ (x, t) by ext; simp]
+    exact hF.comp ((contDiff_prodMk_left t).of_le le_top)
+  · exact (ContDiff.hasStrictFDerivAt hs le_rfl).hasFDerivAt
+  · rfl
+  · apply Continuous.aestronglyMeasurable
+    have :
+      (fun t ↦ fderiv ℝ (fun x : H ↦ F x t) x₀) =
+        (fun φ : H × ℝ →L[ℝ] E ↦ φ.comp (inl ℝ H ℝ)) ∘
+          (fderiv ℝ <| uncurry F) ∘ fun t ↦ (x₀, t) := by
+      ext t
+      have : HasFDerivAt (fun e ↦ F e t) ((fderiv ℝ (uncurry F) (x₀, t)).comp (inl ℝ H ℝ)) x₀ :=
+        (hF.hasStrictFDerivAt le_rfl).hasFDerivAt.comp _ (hasFDerivAt_prodMk_left _ _)
+      rw [this.fderiv]
+      rfl
+    rw [this]
+    exact (inl ℝ H ℝ).compRightL.continuous.comp
+      ((hF.continuous_fderiv le_rfl).comp <| Continuous.prodMk_right x₀)
+  · simp_rw [ae_restrict_iff' measurableSet_Ioo]
+    filter_upwards with t t_in
+    rw [nnabs_coe K]
+    exact F_lip t t_in
+  · exact integrableOn_const measure_Ioo_lt_top.ne
 
 end
 
