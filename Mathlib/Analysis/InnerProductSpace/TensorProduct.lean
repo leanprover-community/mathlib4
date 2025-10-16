@@ -104,12 +104,8 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   have (i) (j) : (e.toBasis.tensorProduct f.toBasis).repr y (i, j) = 0 := by
     rw [inner_self y e f, RCLike.ofReal_eq_zero,
       Finset.sum_eq_zero_iff_of_nonneg fun _ _ => by simp] at hx
-    simp only [Finset.mem_univ, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
-      norm_eq_zero, forall_const, Prod.forall] at hx
-    exact hx _ _
-  have : y = 0 := by
-    rw [(e.toBasis.tensorProduct f.toBasis).ext_elem_iff]
-    simp only [this, map_zero, Finsupp.coe_zero, Pi.zero_apply, implies_true]
+    simpa using hx (i, j)
+  have : y = 0 := by simp [(e.toBasis.tensorProduct f.toBasis).ext_elem_iff, this]
   rw [this, map_zero]
 
 private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
