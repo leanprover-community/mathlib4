@@ -79,34 +79,36 @@ lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y
 open scoped ComplexOrder
 open Module
 
+-- holds in any inner product space, but we want this to set up the instance
+private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E ⊗[𝕜] F)
+    (be : OrthonormalBasis ι 𝕜 E) (bf : OrthonormalBasis ι' 𝕜 F) :
+    inner 𝕜 x x = ∑ i, ‖(be.toBasis.tensorProduct bf.toBasis).repr x i‖ ^ 2 := by
+  classical
+  conv_lhs => rw [x.basis_sum_repr be.toBasis bf.toBasis]
+  simp only [inner_def, map_sum, LinearMap.sum_apply]
+  simp [OrthonormalBasis.inner_eq_ite, ← Finset.sum_product', RCLike.mul_conj]
+
 private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
   /-
-  The way we prove this is by first noting that every element of a tensor product lies
+  The way we prove this is by noting that every element of a tensor product lies
   in the tensor product of some finite submodules.
   So for `x : E ⊗ F`, there exists finite submodules `E', F'` such that `x ∈ mapIncl E' F'`.
-  Let `y : E' ⊗ F'` such that `x = mapIncl E' F' y`.
-  Let `e` be an orthonormal basis of `E'` and `f` be an orthonormal basis of `F'`.
-  Then it is easy to see that because `⟪x, x⟫ = 0`, we get
-  `(e.toBasis.tensorProduct f.toBasis).repr y (i, j) = 0` for all `i, j`. Which means `y = 0`.
-  And so `x = 0`.
+  And so the rest then follows from the above lemma `inner_self`.
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
-  obtain ⟨y, rfl⟩ := Set.singleton_subset_iff.mp hz
+  obtain ⟨y : E' ⊗ F', rfl : mapIncl E' F' y = x⟩ := Set.singleton_subset_iff.mp hz
   rw [inner_mapIncl_mapIncl] at hx
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
-  rw [y.basis_sum_repr e.toBasis f.toBasis] at hx
-  simp only [OrthonormalBasis.coe_toBasis, inner_def] at hx
-  simp only [map_smulₛₗ, map_sum, LinearMap.sum_apply, LinearMap.smul_apply, RingHom.id_apply,
-    ← inner_def, inner_tmul, smul_eq_mul, OrthonormalBasis.inner_eq_ite, mul_ite, mul_one,
-    mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte] at hx
-  simp only [RCLike.mul_conj, ← Finset.sum_product', Finset.univ_product_univ, Prod.mk.eta] at hx
-  rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => by simp)] at hx
-  simp only [Finset.mem_univ, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
-    map_eq_zero, norm_eq_zero, forall_const, Prod.forall] at hx
+  have (i) (j) : (e.toBasis.tensorProduct f.toBasis).repr y (i, j) = 0 := by
+    rw [inner_self y e f] at hx
+    rw [RCLike.ofReal_eq_zero, Finset.sum_eq_zero_iff_of_nonneg fun _ _ => by simp] at hx
+    simp only [Finset.mem_univ, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
+      norm_eq_zero, forall_const, Prod.forall] at hx
+    exact hx _ _
   have : y = 0 := by
-    rw [Basis.ext_elem_iff (e.toBasis.tensorProduct f.toBasis)]
-    simp only [hx, map_zero, Finsupp.coe_zero, Pi.zero_apply, implies_true]
+    rw [(e.toBasis.tensorProduct f.toBasis).ext_elem_iff]
+    simp only [this, map_zero, Finsupp.coe_zero, Pi.zero_apply, implies_true]
   rw [this, map_zero]
 
 private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
@@ -114,26 +116,15 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   /-
   Similarly to the above proof, for `x : E ⊗ F`, there exists finite submodules `E', F'` such that
   `x ∈ mapIncl E' F'`.
-  Let `y : E' ⊗ F'` such that `x = mapIncl E' F' y`.
-  Let `e` be an orthonormal basis of `E'` and `f` be an orthonormal basis of `F'`.
-  Then it is easy to see that
-  `⟪x, x⟫ = ∑ i j, ‖(e.toBasis.tensorProduct f.toBasis).repr y (i, j)‖ ^ 2`,
-  which is clearly nonnegative.
+  And so the rest then follows from the above lemma `inner_self`.
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   obtain ⟨y, rfl⟩ := Set.singleton_subset_iff.mp hz
   rw [inner_mapIncl_mapIncl]
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
-  rw [y.basis_sum_repr e.toBasis f.toBasis]
-  simp only [OrthonormalBasis.coe_toBasis, inner_def, map_sum, LinearMap.sum_apply, map_smulₛₗ]
-  simp only [LinearMap.smul_apply, RingHom.id_apply, ← inner_def, inner_tmul, smul_eq_mul,
-    OrthonormalBasis.inner_eq_ite, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
-    Finset.mem_univ, ↓reduceIte, ← Finset.sum_product', RCLike.mul_conj]
-  apply Finset.sum_nonneg
-  intro i hi
-  rw [← RCLike.ofReal_pow, RCLike.ofReal_re]
-  exact sq_nonneg _
+  rw [inner_self y e f, RCLike.ofReal_re]
+  exact Finset.sum_nonneg fun i hi ↦ sq_nonneg _
 
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
   letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
