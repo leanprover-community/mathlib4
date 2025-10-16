@@ -3,59 +3,45 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.IsNormal
 import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.PPWithUniv
 import Mathlib.Order.Category.LinOrd
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+import Mathlib.Data.Real.Basic
 /-!
 # OrderTypes
 
-OrderTypes are defined as equivalences of well-ordered sets under order isomorphism. They are endowed
-with a total order, where an OrderType is smaller than another one if it embeds into it as an
-initial segment (or, equivalently, in any way). This total order is well founded.
+OrderTypes are defined as equivalences of linear orders under order isomorphism. They are endowed
+with a total order, where an OrderType is smaller than another one there is an order embedding
+into it.
 
 ## Main definitions
 
 * `OrderType`: the type of OrderTypes (in a given universe)
-* `OrderType.type α`: given a well-founded order `r`, this is the corresponding OrderType
-* `OrderType.typein r a`: given a well-founded order `r` on a type `α`, and `a : α`, the OrderType
-  corresponding to all elements smaller than `a`.
-* `enum r ⟨o, h⟩`: given a well-order `r` on a type `α`, and an OrderType `o` strictly smaller than
-  the OrderType corresponding to `r` (this is the assumption `h`), returns the `o`-th element of `α`.
-  In other words, the elements of `α` can be enumerated using OrderTypes up to `type α`.
+* `OrderType.type α`: given a type `α` with a linear order, this is the corresponding OrderType,
 * `OrderType.card o`: the cardinality of an OrderType `o`.
-* `OrderType.lift` lifts an OrderType in universe `u` to an OrderType in universe `max u v`.
-  For a version registering additionally that this is an initial segment embedding, see
-  `OrderType.liftInitialSeg`.
-  For a version registering that it is a principal segment embedding if `u < v`, see
-  `OrderType.liftPrincipalSeg`.
-* `OrderType.omega0` or `ω` is the order type of `ℕ`. It is called this to match `Cardinal.aleph0`
-  and so that the omega function can be named `OrderType.omega`. This definition is universe
-  polymorphic: `OrderType.omega0.{u} : OrderType.{u}` (contrast with `ℕ : Type`, which lives in
-  a specific universe). In some cases the universe level has to be given explicitly.
 
-* `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
-  every element of `o₁` is smaller than every element of `o₂`.
-  The main properties of addition (and the other operations on OrderTypes) are stated and proved in
-  `Mathlib/SetTheory/OrderType/Arithmetic.lean`.
-  Here, we only introduce it and prove its basic properties to deduce the fact that the order on
-  OrderTypes is total (and well founded).
-* `succ o` is the successor of the OrderType `o`.
-* `Cardinal.ord c`: when `c` is a cardinal, `ord c` is the smallest OrderType with this cardinality.
-  It is the canonical way to represent a cardinal with an OrderType.
-
-A conditionally complete linear order with bot structure is registered on OrderTypes, where `⊥` is
-`0`, the OrderType corresponding to the empty type, and `Inf` is the minimum for nonempty sets and `0`
-for the empty set by convention.
+A linear order with a bottom element is registered on OrderTypes, where `⊥` is
+`0`, the OrderType corresponding to the empty type.
 
 ## Notation
 
-* `ω` is a notation for the first infinite OrderType in the scope `OrderType`.
--/
+* `ω` is a notation for the first infinite OrderType in the scope `OrderType`,
+which is the order type of `ℕ` with its natural order.
+* `η` is a notation for the order type of the rational numbers,
+which is the order type of `ℚ` with its natural order.
+* `θ` is a notation for the order type of the real numbers on the interval `(0,1)`.
 
-assert_not_exists Module Field
+## References
+
+* <https://en.wikipedia.org/wiki/Order_type>
+* Dauben, J. W. Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
+  NJ: Princeton University Press, 1990.
+* Enderton, Herbert B.. Elements of Set Theory. United Kingdom: Academic Press, 1977.
+
+## Tags
+
+order type, order isomorphism, linear order, cardinal
+-/
 
 noncomputable section
 
@@ -64,10 +50,8 @@ open scoped Cardinal InitialSeg
 
 universe u v w
 
-
-
 instance : LE PEmpty where
- le x y := False
+ le _ _ := False
 
 
 instance : LE Empty where
@@ -88,34 +72,29 @@ instance : LinearOrder Empty where
  le_total x y := x.elim
  toDecidableLE := Classical.decRel LE.le
 
-
 def PEmpty_iso : PEmpty ≃o PEmpty := by trivial
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
 def ordIsoOfIsEmpty (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β]
     [IsEmpty β] [IsEmpty α] : α ≃o β :=
-  ⟨Equiv.equivOfIsEmpty α β, @fun a => isEmptyElim a⟩
+  ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
 
 def OrderType.ofUniqueOfIrrefl [r : LinearOrder α]
     [l : LinearOrder β] [Unique α] [Unique β] : α ≃o β :=
   ⟨Equiv.ofUnique α β, by simp⟩
 
-/-- Equivalence relation on well orders on arbitrary types in universe `u`, given by order
+/-- Equivalence relation on linear orders on arbitrary types in universe `u`, given by order
 isomorphism. -/
 instance OrderType.isEquivalent : Setoid LinOrd where
   r := fun lin_ord₁ lin_ord₂ ↦ Nonempty (lin_ord₁ ≃o lin_ord₂)
-  iseqv := ⟨fun _ => ⟨.refl _⟩, fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans e₂⟩⟩
+  iseqv := ⟨fun _ ↦ ⟨.refl _⟩, fun ⟨e⟩ ↦ ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ ↦ ⟨e₁.trans e₂⟩⟩
 
-/-- `OrderType.{u}` is the type of well orders in `Type u`, up to order isomorphism. -/
+/-- `OrderType.{u}` is the type of linear orders in `Type u`, up to order isomorphism. -/
 @[pp_with_univ]
 def OrderType : Type (u + 1) :=
   Quotient OrderType.isEquivalent
 
-/-- A "canonical" type order-isomorphic to the OrderType `o`, living in the same universe. This is
-defined through the axiom of choice.
-
-Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`. -/
 def OrderType.toType (o : OrderType) : Type u :=
   o.out.carrier
 
@@ -149,16 +128,16 @@ theorem type_eq {α β} [LinearOrder α] [LinearOrder β] :
     type α = type β ↔ Nonempty (α ≃o β) :=
   Quotient.eq'
 
-theorem _root_.RelIso.OrderType_type_eq {α β} [LinearOrder α]
+theorem _root_.RelIso.ordertype_congr {α β} [LinearOrder α]
     [LinearOrder β] (h : α ≃o β) : type α = type β :=
   type_eq.2 ⟨h⟩
 
 theorem type_eq_zero_of_empty [LinearOrder α] [IsEmpty α] : type α = 0 :=
-  (ordIsoOfIsEmpty α PEmpty).OrderType_type_eq
+  (ordIsoOfIsEmpty α PEmpty).ordertype_congr
 
 @[simp]
 theorem type_eq_zero_iff_isEmpty [LinearOrder α] : type α = 0 ↔ IsEmpty α :=
-  ⟨fun h =>
+  ⟨fun h ↦
     let ⟨s⟩ := type_eq.1 h
     s.toEquiv.isEmpty,
     @type_eq_zero_of_empty α _⟩
@@ -176,7 +155,7 @@ theorem type_empty : type Empty = 0 :=
 
 theorem type_eq_one_of_unique [LinearOrder α] [Nonempty α] [Subsingleton α] : type α = 1 := by
   cases nonempty_unique α
-  exact (@ofUniqueOfIrrefl _).OrderType_type_eq
+  exact (@ofUniqueOfIrrefl _).ordertype_congr
 
 @[simp]
 theorem type_eq_one_iff_unique [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
@@ -220,7 +199,7 @@ Not to be confused with well-founded recursion `OrderType.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₂ {C : OrderType → OrderType → Prop} (o₁ o₂ : OrderType)
     (H : ∀ α [LinearOrder α] β [LinearOrder β], C (type α) (type β)) : C o₁ o₂ :=
-  Quotient.inductionOn₂ o₁ o₂ fun α β => H α β
+  Quotient.inductionOn₂ o₁ o₂ fun α β ↦ H α β
 
 /-- `Quotient.inductionOn₃` specialized to OrderTypes.
 
@@ -229,21 +208,20 @@ Not to be confused with well-founded recursion `OrderType.induction`. -/
 theorem inductionOn₃ {C : OrderType → OrderType → OrderType → Prop} (o₁ o₂ o₃ : OrderType)
     (H : ∀ α [LinearOrder α] β [LinearOrder β] γ [LinearOrder γ],
       C (type α) (type β) (type γ)) : C o₁ o₂ o₃ :=
-  Quotient.inductionOn₃ o₁ o₂ o₃ fun α β γ =>
+  Quotient.inductionOn₃ o₁ o₂ o₃ fun α β γ ↦
     H α β γ
 
 open Classical in
 /-- To prove a result on OrderTypes, it suffices to prove it for order types of well-orders. -/
 @[elab_as_elim]
-theorem inductionOnLinOrd  {C : OrderType → Prop} (o : OrderType)
+theorem inductionOnLinOrd {C : OrderType → Prop} (o : OrderType)
     (H : ∀ α [LinearOrder α], C (type α)) : C o :=
   inductionOn o fun α ↦ H α
 
 open Classical in
-/-- To define a function on OrderTypes, it suffices to define them on order types of well-orders.
-
-Since `LinearOrder` is data-carrying, `liftOnLinOrd_type` is not a definitional equality, unlike
-`Quotient.liftOn_mk` which is always def-eq. -/
+/-- To define a function on OrderTypes,
+ it suffices to define them on all linear order isomorphisms.
+-/
 def liftOnLinOrd {δ : Sort v} (o : OrderType) (f : ∀ (α) [LinearOrder α], δ)
     (c : ∀ (α) [LinearOrder α] (β) [LinearOrder β],
       type α = type β → f α = f β) : δ :=
@@ -257,3 +235,120 @@ theorem liftOnLinOrd_type {δ : Sort v} (f : ∀ (α) [LinearOrder α], δ)
     liftOnLinOrd (type γ) f c = f γ := by
   change Quotient.liftOn' ⟦_⟧ _ _ = _
   rw [Quotient.liftOn'_mk]
+
+
+/-! ### The order on OrderTypes -/
+
+/--
+For `OrderType`:
+
+Less-than-or-equal is defined such that linear orders `r` on `α` and `s` on `β`
+satisfy `type α ≤ type β` if there exists an order embedding from `α` to `β`.
+-/
+instance partialOrder : PartialOrder OrderType where
+  le a b :=
+    Quotient.liftOn₂ a b (fun r s ↦ Nonempty (r ↪o s))
+    fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ propext
+      ⟨fun ⟨h⟩ ↦ ⟨(f.symm.toOrderEmbedding.trans h).trans g.toOrderEmbedding⟩, fun ⟨h⟩ ↦
+        ⟨(f.toOrderEmbedding.trans h).trans g.symm.toOrderEmbedding⟩⟩
+  le_refl := Quot.ind fun _ ↦ ⟨(OrderIso.refl _).toOrderEmbedding⟩
+  le_trans a b c :=
+    Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
+  le_antisymm a b :=
+    Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ ↦ by
+      refine Quot.sound ⟨⟨⟨h₁,h₂,sorry,sorry⟩,by sorry⟩⟩
+
+
+instance : LinearOrder OrderType :=
+  {inferInstanceAs (PartialOrder OrderType) with
+    le_total := fun a b ↦ by
+       sorry
+    toDecidableLE := Classical.decRel _ }
+
+theorem _root_.InitialSeg.OrderType_type_le {α β}
+    [LinearOrder α] [LinearOrder β] (h : α ↪o β) : type α ≤ type β :=
+  ⟨h⟩
+
+theorem _root_.RelEmbedding.OrderType_type_le {α β}
+    [LinearOrder α] [LinearOrder β] (h : α ↪o β) : type α ≤ type β :=
+  ⟨h⟩
+
+protected theorem zero_le (o : OrderType) : 0 ≤ o :=
+  inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.OrderType_type_le)
+
+instance : OrderBot OrderType where
+  bot := 0
+  bot_le := OrderType.zero_le
+
+@[simp]
+theorem bot_eq_zero : (⊥ : OrderType) = 0 :=
+  rfl
+
+instance instIsEmptyIioZero : IsEmpty (Iio (0 : OrderType)) := by
+  simp [← bot_eq_zero]
+
+protected theorem le_zero {o : OrderType} : o ≤ 0 ↔ o = 0 :=
+  le_bot_iff
+
+protected theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 :=
+  bot_lt_iff_ne_bot
+
+@[simp]
+protected theorem not_lt_zero (o : OrderType) : ¬o < 0 :=
+  not_lt_bot
+
+theorem eq_zero_or_pos : ∀ a : OrderType, a = 0 ∨ 0 < a :=
+  eq_bot_or_bot_lt
+
+instance : ZeroLEOneClass OrderType :=
+  ⟨OrderType.zero_le _⟩
+
+instance instNeZeroOne : NeZero (1 : OrderType) :=
+  ⟨OrderType.one_ne_zero⟩
+
+theorem type_le_iff {α β} [LinearOrder α]
+    [LinearOrder β] : type α ≤ type β ↔ Nonempty (α ↪o β) :=
+  Iff.rfl
+
+theorem type_le_iff' {α β} [inst1 : LinearOrder α]
+    [inst2 : LinearOrder β] : type α ≤ type β ↔ Nonempty (inst1.le ↪r inst2.le) :=
+  ⟨fun f ↦ f, fun f ↦ f⟩
+
+/-- The cardinal of an OrderType is the cardinality of any type on which a relation with that order
+type is defined. -/
+def card : OrderType → Cardinal :=
+  Quotient.map _ fun _ _ ⟨e⟩ ↦ ⟨e.toEquiv⟩
+
+@[simp]
+theorem card_type [LinearOrder α] : card (type α) = #α :=
+  rfl
+
+@[gcongr]
+theorem card_le_card {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
+  inductionOn o₁ fun _ ↦ inductionOn o₂ fun _ ↦ sorry
+
+@[simp]
+theorem card_zero : card 0 = 0 := mk_eq_zero _
+
+@[simp]
+theorem card_one : card 1 = 1 := mk_eq_one _
+
+/-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
+def omega0 : OrderType := type ℕ
+
+/-- The order type of the rational numbers. -/
+def eta : OrderType := type ℚ
+
+/-- The order type of the real numbers on the interval `(0,1)`. -/
+def theta : OrderType := type (Set.Ioo (0 : ℝ) 1)
+
+@[inherit_doc]
+scoped notation "ω" => OrderType.omega0
+
+@[inherit_doc]
+scoped notation "η" => OrderType.eta
+
+@[inherit_doc]
+scoped notation "θ" => OrderType.theta
+
+end OrderType
