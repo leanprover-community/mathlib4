@@ -90,8 +90,10 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
 
 namespace ModEq
 
-theorem self_mul_add : m * a + b ≡ b [MOD m] := by
-  simp [Nat.ModEq]
+theorem modulus_mul_add : m * a + b ≡ b [MOD m] := by simp [Nat.ModEq]
+
+@[deprecated (since := "2025-10-16")]
+alias self_mul_add := modulus_mul_add
 
 lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
   modEq_of_dvd <| Int.ofNat_dvd.mpr d |>.trans h.dvd
@@ -243,60 +245,60 @@ theorem right_modEq_add_iff : b ≡ a + b [MOD n] ↔ n ∣ a := by
   rw [ModEq.comm, add_modEq_right_iff]
 
 @[simp]
-theorem add_self_modEq_iff : a + n ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
+theorem add_modulus_modEq_iff : a + n ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem self_add_modEq_iff : n + a ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
-  rw [add_comm, add_self_modEq_iff]
+theorem modulus_add_modEq_iff : n + a ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
+  rw [add_comm, add_modulus_modEq_iff]
 
 @[simp]
-theorem modEq_add_self_iff : a ≡ b + n [MOD n] ↔ a ≡ b [MOD n] := by
+theorem modEq_add_modulus_iff : a ≡ b + n [MOD n] ↔ a ≡ b [MOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem modEq_self_add_iff : a ≡ n + b [MOD n] ↔ a ≡ b [MOD n] := by
+theorem modEq_modulus_add_iff : a ≡ n + b [MOD n] ↔ a ≡ b [MOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem add_mul_self_modEq_iff : a + b * n ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
+theorem add_mul_modulus_modEq_iff : a + b * n ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem mul_self_add_modEq_iff : b * n + a ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
-  rw [add_comm, add_mul_self_modEq_iff]
+theorem mul_modulus_add_modEq_iff : b * n + a ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
+  rw [add_comm, add_mul_modulus_modEq_iff]
 
 @[simp]
-theorem modEq_add_mul_self_iff : a ≡ b + c * n [MOD n] ↔ a ≡ b [MOD n] := by
+theorem modEq_add_mul_modulus_iff : a ≡ b + c * n [MOD n] ↔ a ≡ b [MOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem modEq_mul_self_add_iff : a ≡ b * n + c [MOD n] ↔ a ≡ c [MOD n] := by
-  rw [add_comm, modEq_add_mul_self_iff]
+theorem modEq_mul_modulus_add_iff : a ≡ b * n + c [MOD n] ↔ a ≡ c [MOD n] := by
+  rw [add_comm, modEq_add_mul_modulus_iff]
 
 @[simp]
-theorem add_self_mul_modEq_iff : a + n * b ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
+theorem add_modulus_mul_modEq_iff : a + n * b ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem self_mul_add_modEq_iff : n * b + a ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
-  rw [add_comm, add_self_mul_modEq_iff]
+theorem modulus_mul_add_modEq_iff : n * b + a ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
+  rw [add_comm, add_modulus_mul_modEq_iff]
 
 @[simp]
-theorem modEq_add_self_mul_iff : a ≡ b + n * c [MOD n] ↔ a ≡ b [MOD n] := by
+theorem modEq_add_modulus_mul_iff : a ≡ b + n * c [MOD n] ↔ a ≡ b [MOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem modEq_self_mul_add_iff : a ≡ n * b + c [MOD n] ↔ a ≡ c [MOD n] := by
-  rw [add_comm, modEq_add_self_mul_iff]
+theorem modEq_modulus_mul_add_iff : a ≡ n * b + c [MOD n] ↔ a ≡ c [MOD n] := by
+  rw [add_comm, modEq_add_modulus_mul_iff]
 
 @[simp]
-theorem sub_self_modEq_iff (h : n ≤ a) : a - n ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
-  rw [← add_self_modEq_iff, Nat.sub_add_cancel h]
+theorem sub_modulus_modEq_iff (h : n ≤ a) : a - n ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
+  rw [← add_modulus_modEq_iff, Nat.sub_add_cancel h]
 
 @[simp]
-theorem modEq_sub_self_iff (h : n ≤ b) : a ≡ b - n [MOD n] ↔ a ≡ b [MOD n] := by
-  rw [← modEq_add_self_iff, Nat.sub_add_cancel h]
+theorem modEq_sub_modulus_iff (h : n ≤ b) : a ≡ b - n [MOD n] ↔ a ≡ b [MOD n] := by
+  rw [← modEq_add_modulus_iff, Nat.sub_add_cancel h]
 
 lemma modEq_sub (h : b ≤ a) : a ≡ b [MOD a - b] := (modEq_of_dvd <| by rw [Int.ofNat_sub h]).symm
 
