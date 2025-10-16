@@ -11,6 +11,7 @@ import Mathlib.Analysis.Distribution.TemperedDistribution
 
 -/
 
+noncomputable section
 
 open SchwartzMap ContinuousLinearMap
 open MeasureTheory MeasureTheory.Measure
@@ -32,14 +33,6 @@ variable --[NormedSpace ℝ E] [NormedSpace 𝕜 E]
 
 variable (f : 𝓢'(𝕜, H, E, V)) (g : H → 𝕜) (hg : g.HasTemperateGrowth)
 
-#check _root_.smulLeftCLM V hg (E := E)
-#check _root_.fourierTransformCLM
-
-#check ContDiff.norm_sq
-#check ContDiff.sqrt
-
-#check norm_iteratedFDeriv_comp_le'
-
 @[fun_prop]
 theorem foo (s : ℝ) : ContDiff ℝ ∞ (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)) := by
   have : ∀ (x : H), 1 + ‖x‖^2 ≠ 0 := by
@@ -55,7 +48,7 @@ theorem bar (s : ℝ) : (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)).HasTemperateGrow
     exact (contDiff_const.add (contDiff_fun_id.norm_sq ℝ)).rpow_const_of_ne this
   intro n
   rcases exists_nat_gt s with ⟨k, hk⟩
-  use k + n, 1
+  use k + n, ↑n ! * k ^ n * 2 ^ n
   intro x
   have hdiff1 : ContDiff ℝ ∞ (fun (x : H) ↦ (1 + ‖x‖^2)) :=
     contDiff_const.add (contDiff_fun_id.norm_sq ℝ)
@@ -76,9 +69,10 @@ theorem bar (s : ℝ) : (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)).HasTemperateGrow
   have hfderiv : (∀ (i : ℕ), 1 ≤ i → i ≤ n →
       ‖iteratedFDeriv ℝ i (fun x ↦ 1 + ‖x‖ ^ 2) x‖ ≤ (2 * ‖x‖) ^ i) := by
     intro i hi hi'
+
     sorry
   have hgderiv : (∀ i ≤ n,
-      ‖iteratedFDerivWithin ℝ i (fun y ↦ y ^ (s / 2)) t (1 + ‖x‖ ^ 2)‖ ≤ (1 + ‖x‖)^k) := by
+      ‖iteratedFDerivWithin ℝ i (fun y ↦ y ^ (s / 2)) t (1 + ‖x‖ ^ 2)‖ ≤ k^n * (1 + ‖x‖)^k) := by
       intro i hi
       rw [norm_iteratedFDerivWithin_eq_norm_iteratedDerivWithin]
       rw [iteratedDerivWithin_eq_iterate]
@@ -86,37 +80,52 @@ theorem bar (s : ℝ) : (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)).HasTemperateGrow
       sorry
   have := norm_iteratedFDeriv_comp_le' ht hunique hdiff2 hdiff1 hn x hgderiv hfderiv
   have hpow : ‖x‖^n ≤ (1 + ‖x‖)^n := by
-    sorry
+    refine pow_le_pow_left₀ (by positivity) ?_ n
+    linarith
   apply le_trans this
   grw [mul_pow, hpow, pow_add]
   move_mul [(1 + ‖x‖) ^ n, (1 + ‖x‖) ^ k]
-  gcongr 2
+  gcongr
 
-  sorry
-
-#exit
-
-noncomputable
-def fourierMultiplierCLM {g : H → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(H, E) →L[𝕜] 𝓢(H, E) :=
+def SchwartzMap.fourierMultiplierCLM {g : H → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(H, E) →L[𝕜] 𝓢(H, E) :=
     (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L (smulLeftCLM E hg) ∘L
       (fourierTransformCLM 𝕜)
 
-@[simp]
 theorem fourierMultiplierCLM_apply {g : H → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(H, E)) :
     fourierMultiplierCLM hg f = ((smulLeftCLM E hg) f.fourierTransform).fourierTransformInv := by
   unfold fourierMultiplierCLM
   simp
 
-theorem fourierMultiplierCLM_apply_apply {g : H → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(H, E)) (x : H) :
-    fourierMultiplierCLM hg f x = 𝓕⁻ (g • 𝓕 f) x := by
-  simp
-  congr
-
-theorem fourierMultiplierCLM_const_apply (f : 𝓢(H, E)) (c : 𝕜) :
+@[simp]
+theorem SchwartzMap.fourierMultiplierCLM_const_apply (f : 𝓢(H, E)) (c : 𝕜) :
     fourierMultiplierCLM (Function.HasTemperateGrowth.const c) f = c • f := by
-  --ext x
   unfold fourierMultiplierCLM
-  simp only [smulLeftCLM_const, coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply,
-    fourierTransformCLM_apply, smulCLM_apply, map_smul, fourierTransformCLE_symm_apply]
-  congr
-  sorry
+  simp
+
+variable (E V) in
+def TemperedDistribution.fourierMultiplierCLM {g : H → 𝕜} (hg : g.HasTemperateGrowth) :
+    𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
+  mkCompCLM V (SchwartzMap.fourierMultiplierCLM hg)
+
+@[simp]
+theorem TemperedDistribution.fourierMultiplierCLM_apply {g : H → 𝕜} (hg : g.HasTemperateGrowth)
+  (f : 𝓢'(𝕜, H, E, V)) (h : 𝓢(H, E)) : TemperedDistribution.fourierMultiplierCLM E V hg f h =
+      f (SchwartzMap.fourierMultiplierCLM hg h) := rfl
+
+@[simp]
+theorem TemperedDistribution.fourierMultiplierCLM_const_apply (f : 𝓢'(𝕜, H, E, V)) (c : 𝕜) :
+    TemperedDistribution.fourierMultiplierCLM E V (.const c) f = c • f := by
+  ext
+  simp
+
+variable [NormedSpace ℂ V] [CompleteSpace V]
+
+def memSobolev {g : H → ℂ} (hg : g.HasTemperateGrowth) (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) : Prop :=
+  ∃ (f' : Lp E 2 (volume : Measure H)),
+    TemperedDistribution.fourierMultiplierCLM (E →L[ℂ] V) V hg f = Lp.toTemperedDistribution ℂ V f'
+
+theorem memSobolev_one {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : memSobolev (.const 1) f) :
+    ∃ (f' : Lp E 2 (volume : Measure H)), f = Lp.toTemperedDistribution ℂ V f' := by
+  rcases hf with ⟨f', hf'⟩
+  use f'
+  simpa using hf'
