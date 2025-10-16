@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.FieldTheory.Galois.Notation
 import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 
@@ -16,7 +17,6 @@ In this file we define normal field extensions.
 
 - `Normal F K` where `K` is a field extension of `F`.
 -/
-
 
 noncomputable section
 
@@ -148,7 +148,7 @@ def AlgHom.restrictNormal [Normal F E] : E →ₐ[F] E :=
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F E K₁)).toAlgHom
 
 /-- Restrict algebra homomorphism to normal subfield (`AlgEquiv` version) -/
-def AlgHom.restrictNormal' [Normal F E] : E ≃ₐ[F] E :=
+def AlgHom.restrictNormal' [Normal F E] : Gal(E/F) :=
   AlgEquiv.ofBijective (AlgHom.restrictNormal ϕ E) (AlgHom.normal_bijective F E E _)
 
 @[simp]
@@ -164,7 +164,7 @@ theorem AlgHom.restrictNormal_comp [Normal F E] :
     (algebraMap E K₃).injective (by simp only [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
 
 /-- Restrict algebra isomorphism to a normal subfield -/
-def AlgEquiv.restrictNormal [Normal F E] : E ≃ₐ[F] E :=
+def AlgEquiv.restrictNormal [Normal F E] : Gal(E/F) :=
   AlgHom.restrictNormal' χ.toAlgHom E
 
 @[simp]
@@ -179,11 +179,11 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
       (by simp only [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
 
 /-- Restriction to a normal subfield as a group homomorphism -/
-def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃ₐ[F] E :=
+def AlgEquiv.restrictNormalHom [Normal F E] : Gal(K₁/F) →* Gal(E/F) :=
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 
 lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F L]
-    (σ : (K₁ ≃ₐ[F] K₁)) (x : L) : restrictNormalHom L σ x = σ x :=
+    (σ : Gal(K₁/F)) (x : L) : restrictNormalHom L σ x = σ x :=
   AlgEquiv.restrictNormal_commutes σ L x
 
 variable (F K₁)
@@ -191,7 +191,7 @@ variable (F K₁)
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an
 equivalence. -/
 @[simps, stacks 0BR4]
-def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E where
+def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ Gal(E/F) where
   toFun σ := AlgHom.restrictNormal' σ E
   invFun σ := (IsScalarTower.toAlgHom F E K₁).comp σ.toAlgHom
   left_inv σ := by
@@ -213,7 +213,7 @@ is the identity map. -/
 @[simp]
 theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
     [Field F] [Field K] [Algebra F K] [Normal F K] :
-    AlgEquiv.restrictNormalHom K = MonoidHom.id (K ≃ₐ[F] K) := by
+    AlgEquiv.restrictNormalHom K = MonoidHom.id Gal(K/F) := by
   ext f x
   dsimp only [restrictNormalHom, MonoidHom.mk'_apply, MonoidHom.id_apply]
   apply (algebraMap K K).injective
