@@ -695,7 +695,8 @@ lemma Preconnected.exists_vertex_connected_deleteVerts_singleton_of_fintype_of_n
     · intro _ _ ⟨_, _, _, _, _⟩
       aesop
   · aesop
-  · have := Fintype.ofFinite ((toSubgraph T T_le_H).neighborSet v)
+  · have : Nontrivial (toSubgraph T T_le_H).verts := by simp_all
+    have := Fintype.ofFinite ((toSubgraph T T_le_H).neighborSet v)
     apply Connected.coeSubgraph
     apply (T_conn.toSubgraph T_le_H).preconnected.connected_deleteVerts_singleton_of_degree_eq_one
     simp [← hv]
