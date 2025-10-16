@@ -107,11 +107,17 @@ theorem le {m} {L : List ℕ} (hL : IsAdmissible m L) : ∀ k (h : k < L.length)
 @[grind →] lemma of_cons {m a L} (h : IsAdmissible m (a :: L)) :
     IsAdmissible (m + 1) L := by cases L <;> grind
 
+@[deprecated (since := "2025-10-15")]
+alias tail := IsAdmissible.of_cons
+
 lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by cases L <;> grind
 
 theorem pairwise {m L} (hL : IsAdmissible m L) : L.Pairwise (· < ·) :=
   hL.isChain.pairwise
+
+@[deprecated  (since := "2025-10-16")]
+alias sorted := pairwise
 
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
 @[grind →]
@@ -223,6 +229,9 @@ def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
 @[grind ←]
 lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
   induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
+
+@[deprecated  (since := "2025-10-16")]
+alias simplicialEvalσ_of_lt_mem := simplicialEvalσ_of_le_mem
 
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
   induction L <;> grind [Monotone]

@@ -297,6 +297,7 @@ theorem IsChain.cons {x} : ∀ {l : List α}, IsChain R l → (∀ y ∈ l.head?
   | [], _, _ => .singleton x
   | _ :: _, hl, H => hl.cons_cons <| H _ rfl
 
+@[deprecated (since := "2025-10-16")] alias IsChain.cons' := IsChain.cons
 @[deprecated (since := "2025-09-24")] alias Chain'.cons' := IsChain.cons
 
 lemma IsChain.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
@@ -309,7 +310,8 @@ lemma IsChain.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
 
 theorem isChain_cons {x l} : IsChain R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ IsChain R l :=
   ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons h₁⟩
-
+  
+@[deprecated (since := "2025-10-16")] alias isChain_cons' := isChain_cons
 @[deprecated (since := "2025-09-24")] alias chain'_cons' := isChain_cons
 
 theorem isChain_append :
