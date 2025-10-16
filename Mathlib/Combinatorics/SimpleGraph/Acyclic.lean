@@ -320,7 +320,8 @@ lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [Decid
     intro z hz
     rw [Set.mem_compl_iff, Set.mem_singleton_iff]
     obtain ⟨pwz, pzx, p_eq_pwzx⟩ := mem_support_iff_exists_append.mp hz
-    /- Prove vertex v is not in the walk by showing that vertex u is passed twice. -/
+    /- Prove vertex v is not in the path formed from the concatenated walks
+    by showing that vertex u must then be passed twice. -/
     by_contra
     subst_vars
     refine List.nodup_iff_forall_not_duplicate.mp (pwu.append pux).toPath.nodup_support u ?_
