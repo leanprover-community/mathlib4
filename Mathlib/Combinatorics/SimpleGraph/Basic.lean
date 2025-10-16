@@ -808,23 +808,23 @@ end Incidence
 
 section Subsingleton
 
-theorem subsingleton_iff_subsingleton : Subsingleton V ↔ Subsingleton (SimpleGraph V) := by
-  refine ⟨fun _ ↦ Unique.instSubsingleton, fun h ↦ ?_⟩
+theorem subsingleton_iff : Subsingleton (SimpleGraph V) ↔ Subsingleton V := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ Unique.instSubsingleton⟩
   contrapose! h
   exact instNontrivial
 
-theorem nontrivial_iff_nontrivial : Nontrivial V ↔ Nontrivial (SimpleGraph V) := by
-  refine ⟨fun _ ↦ instNontrivial, fun h ↦ ?_⟩
+theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ instNontrivial⟩
   contrapose! h
   exact Unique.instSubsingleton
 
 theorem nontrivial_of_ne_bot {G : SimpleGraph V} (h : G ≠ ⊥) : Nontrivial V := by
   contrapose! h
-  exact subsingleton_iff_subsingleton.mp h |>.allEq _ _
+  exact subsingleton_iff.mpr h |>.allEq _ _
 
 theorem nontrivial_of_ne_top {G : SimpleGraph V} (h : G ≠ ⊤) : Nontrivial V := by
   contrapose! h
-  exact subsingleton_iff_subsingleton.mp h |>.allEq _ _
+  exact subsingleton_iff.mpr h |>.allEq _ _
 
 end Subsingleton
 
