@@ -53,7 +53,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
     simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', enorm, ← ENNReal.coe_mul] using hδε' hηδ
   refine ⟨η, hη_pos, fun s hs => ?_⟩
   refine (eLpNorm_indicator_const_le _ _).trans (le_trans ?_ hη_le)
-  exact mul_le_mul_left' (ENNReal.rpow_le_rpow hs hp₀') _
+  gcongr
 
 section Topology
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
