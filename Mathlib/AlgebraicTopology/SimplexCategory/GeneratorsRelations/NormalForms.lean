@@ -263,7 +263,7 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
       simp only [standardσ_cons, Category.assoc, this,
         h_rec hL.tail (j + 1) (by grind) (by grind)]
 
-attribute [local grind! .] simplicialInsert_length simplicialInsert_isAdmissible in
+attribute [local grind] simplicialInsert_length simplicialInsert_isAdmissible in
 /-- Using `standardσ_simplicialInsert`, we can prove that every morphism satisfying `P_σ` is equal
 to some `standardσ` for some admissible list of indices. -/
 theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf : P_σ f) :
