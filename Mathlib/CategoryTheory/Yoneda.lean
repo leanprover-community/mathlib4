@@ -61,6 +61,12 @@ def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ where
   map f :=
     { app := fun _ g => f.unop ≫ g }
 
+/-- Variant of the co-Yoneda embedding which allows a raise in the universe level
+for the category of types. -/
+@[pp_with_univ]
+abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type max w v₁ :=
+  uliftYoneda.{w}.flip
+
 namespace Yoneda
 
 theorem obj_map_id {X Y : C} (f : op X ⟶ op Y) :
