@@ -16,7 +16,7 @@ integrable on `a..b`.
 * `LocallyBoundedVariationOn.deriv_intervalIntegrable` - If `f` has bounded variation on `a..b`,
 then `f'` is interval integrable on `a..b`.
 * `AbsolutelyContinuousOnInterval.ae_differentiableAt` - If `f` is absolutely continuous on `a..b`,
-then `f'` exists a.e. on `uIcc a b`.
+then `f'` exists a.e. on `a..b`.
 * `AbsolutelyContinuousOnInterval.deriv_intervalIntegrable` - If `f` is absolutely continuous on
 `a..b`, then `f'` is interval integrable on `a..b`.
 
