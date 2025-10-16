@@ -85,7 +85,11 @@ private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E �
     (e : OrthonormalBasis ι 𝕜 E) (f : OrthonormalBasis ι' 𝕜 F) :
     inner 𝕜 x x = ∑ i, ‖(e.toBasis.tensorProduct f.toBasis).repr x i‖ ^ 2 := by
   classical
-  conv_lhs => rw [x.basis_sum_repr e.toBasis f.toBasis]
+  -- maybe turn this into a lemma
+  have : x = ∑ i : ι, ∑ j : ι', (e.toBasis.tensorProduct f.toBasis).repr x (i, j) • e i ⊗ₜ f j := by
+    conv_lhs => rw [← (e.toBasis.tensorProduct f.toBasis).sum_repr x]
+    simp [← Finset.sum_product', Basis.tensorProduct_apply']
+  conv_lhs => rw [this]
   simp only [inner_def, map_sum, LinearMap.sum_apply]
   simp [OrthonormalBasis.inner_eq_ite, ← Finset.sum_product', RCLike.mul_conj]
 
@@ -366,7 +370,9 @@ theorem Orthonormal.tmul
 /-- The tensor product of two orthonormal bases is orthonormal. -/
 theorem Orthonormal.basisTensorProduct
     {b₁ : Basis ι₁ 𝕜 E} {b₂ : Basis ι₂ 𝕜 F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
-    Orthonormal 𝕜 (b₁.tensorProduct b₂) := b₁.coe_tensorProduct b₂ ▸ hb₁.tmul hb₂
+    Orthonormal 𝕜 (b₁.tensorProduct b₂) := by
+  convert hb₁.tmul hb₂
+  exact b₁.tensorProduct_apply' b₂ _
 
 namespace OrthonormalBasis
 variable [Fintype ι₁] [Fintype ι₂]
@@ -402,10 +408,6 @@ lemma tensorProduct_repr_tmul_apply'
 lemma toBasis_tensorProduct (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
     (b₁.tensorProduct b₂).toBasis = b₁.toBasis.tensorProduct b₂.toBasis := by
   simp [OrthonormalBasis.tensorProduct]
-
-lemma coe_tensorProduct (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) :
-    ⇑(b₁.tensorProduct b₂) = fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ b₂ i.2 := by
-  ext; rw [tensorProduct_apply']
 
 end OrthonormalBasis
 end orthonormal

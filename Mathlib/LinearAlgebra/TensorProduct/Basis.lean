@@ -53,10 +53,6 @@ theorem tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N) (m :
     (tensorProduct b c).repr (m ⊗ₜ n) (i, j) = c.repr n j • b.repr m i := by
   simp [tensorProduct]
 
-lemma coe_tensorProduct (b : Basis ι R M) (c : Basis κ R N) :
-    ⇑(b.tensorProduct c) = fun i : ι × κ ↦ b i.1 ⊗ₜ c i.2 := by
-  ext; rw [tensorProduct_apply']
-
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 /-- The lift of an `R`-basis of `M` to an `S`-basis of the base change `S ⊗[R] M`. -/
@@ -191,13 +187,5 @@ instance Module.Free.tensor : Module.Free S (M ⊗[R] N) :=
   of_basis (bM.2.tensorProduct bN.2)
 
 end CommSemiring
-
-theorem TensorProduct.basis_sum_repr {R E F : Type*} [CommSemiring R]
-    [AddCommGroup E] [Module R E] [AddCommGroup F] [Module R F]
-    {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] (b₁ : Basis ι₁ R E) (b₂ : Basis ι₂ R F)
-    (x : TensorProduct R E F) :
-    x = ∑ i : ι₁, ∑ j : ι₂, (b₁.tensorProduct b₂).repr x (i, j) • b₁ i ⊗ₜ[R] b₂ j := by
-  conv_lhs => rw [← (b₁.tensorProduct b₂).sum_repr x]
-  simp [← Finset.sum_product', Basis.coe_tensorProduct]
 
 end
