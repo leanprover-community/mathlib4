@@ -14,19 +14,38 @@ import Mathlib.Analysis.Calculus.Deriv.Prod
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 
 /-!
+# Poincaré lemma for 1-forms
+
+In this file we prove Poincaré lemma for 1-forms for convex sets.
+Namely, we show that a closed 1-form on a convex subset of a normed space is exact.
+
+We also prove that the integrals of a closed 1-form
+along 2 curves that are joined by a `C²`-smooth homotopy are equal.
+In the future, this will allow us to prove Poincaré lemma for simply connected open sets
+and, more generally, for simply connected locally convex sets.
+
+## Main statements
+
+TODO
+
+## Implementation notes
+
+In this file, we represent a 1-form as `ω : E → E →L[𝕜] F`, where `𝕜` is `ℝ` or `ℂ`,
+not as `ω : E → E [⋀^Fin 1]→L[𝕜] F`.
+A 1-form represented this way is closed
+iff its Fréchet derivative `dω : E → E →L[𝕜] E →L[𝕜] F` is symmetric, `dω a x y = dω a y x`.
 -/
 
 open scoped unitInterval Interval Pointwise Topology
-open Function Set MeasureTheory Filter
-open AffineMap (lineMap)
+open AffineMap Filter Function MeasureTheory Set
 
-attribute [fun_prop] Continuous.IccExtend
+variable {E F : Type*}
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {a b c d : E}
 
 theorem ContinuousMap.Homotopy.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn
-    {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
-    {a b c d : E}
     {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F} {γ₁ : Path a b} {γ₂ : Path c d} {s : Set E}
-    (φ : γ₁.toContinuousMap.Homotopy γ₂) (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
+    (φ : (γ₁ : C(I, E)).Homotopy γ₂) (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
     (hdω : ∀ x ∈ s, ∀ a ∈ tangentConeAt ℝ s x, ∀ b ∈ tangentConeAt ℝ s x, dω x a b = dω x b a)
     (hφs : ∀ a, φ a ∈ s)
     (hF : ContDiffOn ℝ 2 (fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2)
@@ -164,8 +183,6 @@ theorem ContinuousMap.Homotopy.curveIntegral_add_curveIntegral_eq_of_hasFDerivWi
     exact integrableOn_zero
 
 theorem hasFDerivWithinAt_curveIntegral_segment_target_source {𝕜 : Type*} [RCLike 𝕜]
-    {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
-    [NormedSpace ℝ E] [NormedSpace ℝ F]
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F] {a : E}
     {ω : E → E →L[𝕜] F} {s : Set E} (hs : Convex ℝ s) (hω : ContinuousOn ω s) (ha : a ∈ s) :
     HasFDerivWithinAt (curveIntegral (ω · |>.restrictScalars ℝ) <| .segment a ·) (ω a) s a := by
@@ -202,11 +219,6 @@ theorem hasFDerivWithinAt_curveIntegral_segment_target_source {𝕜 : Type*} [RC
     · exact fun _ ↦ hs.lineMap_mem ha hbs
   · simp
 
-
-variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-  {a b c d : E}
-
 theorem Convex.curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric
     {s : Set E} (hs : Convex ℝ s) {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F}
     (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
@@ -217,27 +229,22 @@ theorem Convex.curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric
   set φ := ContinuousMap.Homotopy.affine (Path.segment a b : C(I, E)) (Path.segment a c)
   have := φ.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn hω hdω ?_ ?_
   · convert this using 2
-    · simp only [φ]
-      -- TODO: why do we need to explicitly give `f`?
-      rw [ContinuousMap.Homotopy.evalAt_affine (Path.segment a b : C(I, E))]
-      dsimp only [ContinuousMap.coe_coe]
-      rw [← Path.cast_segment (Path.segment a b).target (Path.segment a c).target,
-        curveIntegral_cast]
-    · simp only [φ]
-      rw [ContinuousMap.Homotopy.evalAt_affine (Path.segment a b : C(I, E))]
-      dsimp only [ContinuousMap.coe_coe]
-      rw [← Path.cast_segment (Path.segment a b).source (Path.segment a c).source]
+    · dsimp [φ]
+      rw [← Path.cast_segment (lineMap_apply_one a b) (lineMap_apply_one a c), curveIntegral_cast]
+    · dsimp [φ]
+      rw [← Path.cast_segment (lineMap_apply_zero a b) (lineMap_apply_zero a c)]
       simp
-  · aesop (add unsafe Convex.lineMap_mem)
+  · simp [Convex.lineMap_mem, φ, *]
   · have : EqOn (fun x : ℝ × ℝ ↦ IccExtend zero_le_one (φ.extend x.1) x.2)
         (fun x ↦ lineMap (lineMap a b x.2) (lineMap a c x.2) x.1) (I ×ˢ I) := by
       rintro ⟨x, y⟩ ⟨hx, hy⟩
+      lift x to I using hx
       lift y to I using hy
-      simp [φ, hx]
-    refine .congr (ContDiff.contDiffOn ?_) this
+      simp [φ]
+    refine .congr ?_ this
+    -- TODO: add `ContDiff.lineMap` etc
     simp only [AffineMap.lineMap_apply_module]
-    apply_rules [ContDiff.add, ContDiff.smul, contDiff_const, ContDiff.neg, contDiff_fst,
-      contDiff_snd]
+    fun_prop
 
 theorem Convex.hasFDerivWithinAt_curveIntegral_segment_of_hasFDerivWithinAt_symmetric
     [CompleteSpace F] {s : Set E} (hs : Convex ℝ s) {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F}
