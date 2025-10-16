@@ -172,31 +172,35 @@ lemma extendScalars'_map_shortExact (f : R →+* S) (flat : f.Flat)
     (T.map (extendScalars' f)).ShortExact where
   exact := by
     let _ := RingHom.toAlgebra f
-    have : Function.Exact (T.f.hom.baseChange S) (T.g.hom.baseChange S) :=
+    have exac : Function.Exact (T.f.hom.baseChange S) (T.g.hom.baseChange S) :=
       lTensor_exact S ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp h.exact)
         h.moduleCat_surjective_g
     have : Function.Exact (ExtendScalars'.map' f T.f) (ExtendScalars'.map' f T.g) := by
-      simp only [ExtendScalars'.map', hom_ofHom]
-
-      sorry
+      simp only [ExtendScalars'.map', hom_ofHom, LinearMap.exact_iff, LinearEquiv.range_comp]
+      rw [LinearMap.comp_assoc, LinearEquiv.ker_comp]
+      ext x
+      simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+      convert exac ((Shrink.linearEquiv S (TensorProduct R S T.X₂)) x)
+      rw [LinearMap.range_comp, ← Submodule.comap_equiv_eq_map_symm, Submodule.mem_comap]
+      rfl
     exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
   mono_f := by
     let _ := RingHom.toAlgebra f
-    have : Function.Injective (T.f.hom.baseChange S) :=
+    have inj : Function.Injective (T.f.hom.baseChange S) :=
       flat.lTensor_preserves_injective_linearMap T.f.hom h.moduleCat_injective_f
     have : Function.Injective (ExtendScalars'.map' f T.f) := by
-      simp only [ExtendScalars'.map', hom_ofHom]
-
-      sorry
+      simp only [ExtendScalars'.map', hom_ofHom, ← LinearMap.ker_eq_bot]
+      rw [LinearMap.comp_assoc, LinearEquiv.ker_comp, LinearMap.ker_eq_bot]
+      exact inj.comp (LinearEquiv.injective _)
     exact (mono_iff_injective (T.map (extendScalars' f)).f).mpr this
   epi_g := by
     let _ := RingHom.toAlgebra f
-    have : Function.Surjective (T.g.hom.baseChange S) :=
+    have surj : Function.Surjective (T.g.hom.baseChange S) :=
       LinearMap.lTensor_surjective S h.moduleCat_surjective_g
     have : Function.Surjective (ExtendScalars'.map' f T.g) := by
-      simp only [ExtendScalars'.map', hom_ofHom]
-
-      sorry
+      simp only [ExtendScalars'.map', hom_ofHom, ← LinearMap.range_eq_top]
+      rw [LinearEquiv.range_comp, LinearMap.range_eq_top]
+      exact (Shrink.linearEquiv S (TensorProduct R S T.X₃)).symm.surjective.comp surj
     exact (epi_iff_surjective (T.map (extendScalars' f)).g).mpr this
 
 lemma extendScalars'_preservesFiniteLimits (f : R →+* S)
@@ -244,10 +248,17 @@ lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCom
     have : h₂ (f x) = f' (h₁ x) := congrFun (congrArg DFunLike.coe comm1) x
     simp [isb1.equiv_symm_apply, isb2.equiv_tmul, this]
   let N₃' := TensorProduct R S M₃
-  let isb3' := TensorProduct.isBaseChange R M₃ S
   let g'' : N₂ →ₗ[S] N₃' := (g.baseChange S).comp isb2.equiv.symm.toLinearMap
-  have exac2' : Function.Exact f' g'' := by sorry
-  have surj2' : Function.Surjective g'' := by sorry
+  have exac2' : Function.Exact f' g'' := by
+    have exac2'' : Function.Exact (f.baseChange S) (g.baseChange S) := lTensor_exact S exac1 surj1
+    simp only [LinearMap.exact_iff, eqmap, g'', LinearEquiv.range_comp]
+    ext x
+    rw [LinearMap.mem_ker, LinearMap.comp_apply]
+    convert exac2'' (isb2.equiv.symm x)
+    rw [LinearMap.range_comp, Submodule.map_equiv_eq_comap_symm, Submodule.mem_comap]
+    rfl
+  have surj2' : Function.Surjective g'' :=
+    (LinearMap.lTensor_surjective S surj1).comp isb2.equiv.symm.surjective
   have kereq : LinearMap.ker g'' = LinearMap.ker g' := by
     rw [LinearMap.exact_iff.mp exac2', LinearMap.exact_iff.mp exac2]
   let e : N₃' ≃ₗ[S] N₃ := ((LinearMap.quotKerEquivOfSurjective _ surj2').symm.trans
