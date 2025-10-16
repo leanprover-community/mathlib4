@@ -862,7 +862,10 @@ variable {f : M → M'} {s: Set M}
 #guard_msgs in
 #check {x | CMDiffAt[s] 2 f x}
 
--- TODO: this errors, separate issue! #check {x | CMDiffAt ∞ f x}
+open ContDiff in -- for the ∞ notation
+/-- info: {x | ContMDiffAt I I' ∞ f x} : Set M -/
+#guard_msgs in
+#check {x | CMDiffAt ∞ f x}
 
 /-- info: {x | Injective ⇑(mfderiv I I' f x)} : Set M -/
 #guard_msgs in
