@@ -377,7 +377,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   rcases h with h | h
   · rw [sub_eq_zero] at h
     exact mod_cast h
-  · apply (hirr.ne_zero (pow_eq_zero h)).elim
+  · apply (hirr.ne_zero (eq_zero_of_pow_eq_zero h)).elim
 
 /-!
 ## The additive valuation on a DVR
