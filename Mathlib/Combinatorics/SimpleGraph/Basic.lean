@@ -808,12 +808,12 @@ end Incidence
 
 section Subsingleton
 
-theorem subsingleton_iff : Subsingleton (SimpleGraph V) ↔ Subsingleton V := by
+protected theorem subsingleton_iff : Subsingleton (SimpleGraph V) ↔ Subsingleton V := by
   refine ⟨fun h ↦ ?_, fun _ ↦ Unique.instSubsingleton⟩
   contrapose! h
   exact instNontrivial
 
-theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V := by
+protected theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V := by
   refine ⟨fun h ↦ ?_, fun _ ↦ instNontrivial⟩
   contrapose! h
   exact Unique.instSubsingleton
