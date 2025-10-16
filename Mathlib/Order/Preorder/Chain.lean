@@ -125,13 +125,12 @@ theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·)
   h.mono Set.diff_subset
 
 theorem isChain_preimage_subtypeVal (s t : Set α) :
-    IsChain (fun x y : ↑s ↦ r x y) (s ↓∩ t : Set ↑s) ↔ IsChain r (s ∩ t) :=
+    @IsChain ↑s (r · ·) (s ↓∩ t) ↔ IsChain r (s ∩ t) :=
   ⟨fun h a ha b hb hne ↦ @h ⟨a, by grind⟩ (by grind) ⟨b, by grind⟩ (by grind) (by grind),
    fun h a ha b hb hne ↦ @h a (by grind) b (by grind) (Subtype.coe_ne_coe.mpr hne)⟩
 
-theorem isChain_coe_univ_iff {s : Set α} :
-    @IsChain ↑s (r ↑· ↑·) Set.univ ↔ IsChain r s := by
-  simpa using isChain_preimage_subtypeVal s Set.univ
+theorem isChain_coe_univ_iff {s : Set α} : @IsChain ↑s (r · ·) univ ↔ IsChain r s := by
+  simpa using isChain_preimage_subtypeVal s univ
 
 section Rel
 

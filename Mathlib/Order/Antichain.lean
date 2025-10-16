@@ -179,13 +179,12 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
 end IsAntichain
 
 theorem isAntichain_preimage_subtypeVal (s t : Set α) :
-    IsAntichain (fun x y : ↑s ↦ r x y) (s ↓∩ t : Set ↑s) ↔ IsAntichain r (s ∩ t) :=
+    @IsAntichain ↑s (r · ·) (s ↓∩ t) ↔ IsAntichain r (s ∩ t) :=
   ⟨fun h a ha b hb hne ↦ @h ⟨a, by grind⟩ (by grind) ⟨b, by grind⟩ (by grind) (by grind),
    fun h a ha b hb hne ↦ @h a (by grind) b (by grind) (Subtype.coe_ne_coe.mpr hne)⟩
 
-theorem isAntichain_coe_univ_iff {s : Set α} :
-    @IsAntichain ↑s (r ↑· ↑·) Set.univ ↔ IsAntichain r s := by
-  simpa using isAntichain_preimage_subtypeVal s Set.univ
+theorem isAntichain_coe_univ_iff {s : Set α} : @IsAntichain ↑s (r · ·) univ ↔ IsAntichain r s := by
+  simpa using isAntichain_preimage_subtypeVal s univ
 
 theorem isAntichain_union :
     IsAntichain r (s ∪ t) ↔
