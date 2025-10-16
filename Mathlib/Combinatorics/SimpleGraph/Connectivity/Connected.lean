@@ -163,8 +163,8 @@ protected lemma Preconnected.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.
 
 lemma preconnected_bot_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
-  contrapose h
-  simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot]
+  contrapose! h
+  simp [nontrivial_iff.mp h, Preconnected, reachable_bot]
 
 lemma preconnected_bot [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
   preconnected_bot_iff_subsingleton.mpr ‹_›
@@ -313,8 +313,7 @@ instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
 
 instance isEmpty [IsEmpty V] : IsEmpty (ConnectedComponent G) := by
   by_contra! hc
-  rw [@not_isEmpty_iff] at hc
-  obtain ⟨v, _⟩ := (Classical.inhabited_of_nonempty hc).default.exists_rep
+  obtain ⟨v, _⟩ := hc.some.exists_rep
   exact IsEmpty.false v
 
 @[elab_as_elim]
@@ -754,13 +753,13 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
   refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
   obtain ⟨P, hP⟩ := hG.exists_isPath w x
-  obtain heP | heP := em' <| s(x,y) ∈ P.edges
-  · exact ⟨(P.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
+  obtain heP | heP := em' <| s(x, y) ∈ P.edges
+  · exact ⟨(P.toDeleteEdges {s(x, y)} (by aesop)).reverse⟩
   have hyP := P.snd_mem_support_of_mem_edges heP
   let P₁ := P.takeUntil y hyP
   have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
-  have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
+  have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
+  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
 
 end BridgeEdges
 

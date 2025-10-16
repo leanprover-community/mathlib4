@@ -51,11 +51,11 @@ performed by the `coherence` tactic.
 The simp-normal form of morphisms is defined to be an expression that has the minimal number of
 parentheses. More precisely,
 1. it is a composition of morphisms like `f₁ ≫ f₂ ≫ f₃ ≫ f₄ ≫ f₅` such that each `fᵢ` is
-  either a structural morphisms (morphisms made up only of identities, associators, unitors)
-  or non-structural morphisms, and
+  either a structural morphism (morphisms made up only of identities, associators, unitors)
+  or a non-structural morphism, and
 2. each non-structural morphism in the composition is of the form `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅`,
-  where each `Xᵢ` is a object that is not the identity or a tensor and `f` is a non-structural
-  morphisms that is not the identity or a composite.
+  where each `Xᵢ` is an object that is not the identity or a tensor and `f` is a non-structural
+  morphism that is not the identity or a composite.
 
 Note that `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅` is actually `X₁ ◁ (X₂ ◁ (X₃ ◁ ((f ▷ X₄) ▷ X₅)))`.
 
@@ -1028,7 +1028,7 @@ section ObjectProperty
 
 /-- The restriction of a monoidal category along an object property
 that's closed under the monoidal structure. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev MonoidalCategory.fullSubcategory
     {C : Type u} [Category.{v} C] [MonoidalCategory C] (P : ObjectProperty C)
     (tensorUnit : P (𝟙_ C))

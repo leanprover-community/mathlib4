@@ -122,7 +122,7 @@ theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap �
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
     calc
       ‖c • f x‖ = ‖c‖ * ‖f x‖ := norm_smul c (f x)
-      _ ≤ ‖c‖ * (M * ‖x‖) := mul_le_mul_of_nonneg_left (hM _) (norm_nonneg _)
+      _ ≤ ‖c‖ * (M * ‖x‖) := by grw [hM]
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e := by

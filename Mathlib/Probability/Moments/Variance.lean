@@ -375,7 +375,7 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
 
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
 nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
-    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
+    (hY : MemLp Y 2 μ) (h : X ⟂ᵢ[μ] Y) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
   by_cases h' : X =ᵐ[μ] 0
   · rw [variance_congr h', variance_congr h'.add_right]
     simp
@@ -385,14 +385,14 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
 
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
 lemma IndepFun.variance_fun_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
-    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
+    (hY : MemLp Y 2 μ) (h : X ⟂ᵢ[μ] Y) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
   h.variance_add hX hY
 
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
 nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι}
     (hs : ∀ i ∈ s, MemLp (X i) 2 μ)
-    (h : Set.Pairwise ↑s fun i j => IndepFun (X i) (X j) μ) :
+    (h : Set.Pairwise ↑s fun i j => X i ⟂ᵢ[μ] X j) :
     variance (∑ i ∈ s, X i) μ = ∑ i ∈ s, variance (X i) μ := by
   by_cases h'' : ∀ i ∈ s, X i =ᵐ[μ] 0
   · rw [variance_congr (Y := 0), variance_zero]

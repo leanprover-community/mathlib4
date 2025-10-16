@@ -222,7 +222,7 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
   rw [last_eraseLast, last]
-  have := s.step ⟨s.length - 1, by omega⟩
+  have := s.step ⟨s.length - 1, by cutsat⟩
   simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
   convert this using 3
   exact (tsub_add_cancel_of_le h).symm

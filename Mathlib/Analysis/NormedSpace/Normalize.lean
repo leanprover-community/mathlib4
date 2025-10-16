@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Data.Sign.Defs
 
 /-!
 # Normalized vector
@@ -26,13 +27,18 @@ theorem normalize_zero_eq_zero : normalize (0 : V) = 0 := by
   simp [normalize]
 
 @[simp]
-theorem norm_smul_normalize (x : V) : ‖x‖ • normalize x = x := by
-  by_cases hx : x = 0
-  all_goals simp [normalize, hx]
+theorem normalize_eq_zero_iff (x : V) : normalize x = 0 ↔ x = 0 := by
+  by_cases hx : x = 0 <;> simp [normalize, hx]
 
 @[simp]
-lemma norm_normalize_eq_one_iff {x : V} : ‖normalize x‖ = 1 ↔ x ≠ 0 :=
-  ⟨by rintro hx rfl; simp at hx, fun h ↦ by simp [normalize, h, norm_smul]⟩
+theorem norm_smul_normalize (x : V) : ‖x‖ • normalize x = x := by
+  by_cases hx : x = 0 <;> simp [normalize, hx]
+
+@[simp]
+lemma norm_normalize_eq_one_iff {x : V} : ‖normalize x‖ = 1 ↔ x ≠ 0 := by
+  by_cases hx : x = 0 <;> simp [normalize, hx, norm_smul]
+
+alias ⟨_, norm_normalize⟩ := norm_normalize_eq_one_iff
 
 lemma normalize_eq_self_of_norm_eq_one {x : V} (h : ‖x‖ = 1) : normalize x = x := by
   simp [normalize, h]
@@ -49,10 +55,17 @@ theorem normalize_neg (x : V) : normalize (- x) = - normalize x := by
 
 theorem normalize_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
     normalize (r • x) = normalize x := by
-  simp [normalize, norm_smul, smul_smul, abs_of_pos hr, mul_assoc, inv_mul_cancel₀ hr.ne']
+  simp [normalize, norm_smul, smul_smul, abs_of_pos hr, hr.ne']
 
 theorem normalize_smul_of_neg {r : ℝ} (hr : r < 0) (x : V) :
     normalize (r • x) = - normalize x := by
   simpa using normalize_smul_of_pos (show 0 < -r by linarith) (-x)
+
+theorem normalize_smul (r : ℝ) (x : V) :
+    normalize (r • x) = (SignType.sign r : ℝ) • normalize x := by
+  rcases lt_trichotomy 0 r with (h_pos | rfl | h_neg)
+  · simp [normalize_smul_of_pos, h_pos]
+  · simp
+  · simp [normalize_smul_of_neg, h_neg]
 
 end NormedSpace

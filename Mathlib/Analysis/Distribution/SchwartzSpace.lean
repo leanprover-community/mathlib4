@@ -11,6 +11,7 @@ import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Topology.Algebra.UniformFilterBasis
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.Tactic.MoveAdd
 import Mathlib.MeasureTheory.Function.L2Space
 
@@ -296,6 +297,9 @@ instance instNeg : Neg 𝓢(E, F) :=
     ⟨-f, (f.smooth _).neg, fun k n =>
       ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
 
+@[simp]
+theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
+
 end Neg
 
 section Add
@@ -516,6 +520,8 @@ end Topology
 
 section TemperateGrowth
 
+open Asymptotics
+
 /-! ### Functions of temperate growth -/
 
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
@@ -523,23 +529,60 @@ polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
   ContDiff ℝ ∞ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
 
+/-- A function has temperate growth if and only if it is smooth and its `n`-th iterated
+derivative is `O((1 + ‖x‖) ^ k)` for some `k : ℕ` (depending on `n`).
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+
+TODO: when `E` is finite dimensional, this is equivalent to the derivatives being `O(‖x‖ ^ k)`
+as `‖x‖ → ∞`.
+-/
+theorem _root_.Function.hasTemperateGrowth_iff_isBigO {f : E → F} :
+    f.HasTemperateGrowth ↔ ContDiff ℝ ∞ f ∧
+      ∀ n, ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k):= by
+  simp_rw [Asymptotics.isBigO_top]
+  congrm ContDiff ℝ ∞ f ∧ (∀ n, ∃ k C, ∀ x, _ ≤ C * ?_)
+  rw [norm_pow, Real.norm_of_nonneg (by positivity)]
+
+/-- If `f` as temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
+some `k : ℕ` (depending on `n`).
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+-/
+theorem _root_.Function.HasTemperateGrowth.isBigO {f : E → F}
+    (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
+    ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) :=
+  Function.hasTemperateGrowth_iff_isBigO.mp hf_temperate |>.2 n
+
+/-- If `f` as temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
+derivatives of `f` of order `≤ N` are `O((1 + ‖x‖) ^ k)`.
+
+Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
+-/
+theorem _root_.Function.HasTemperateGrowth.isBigO_uniform {f : E → F}
+    (hf_temperate : f.HasTemperateGrowth) (N : ℕ) :
+    ∃ k, ∀ n ≤ N, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
+  choose k hk using hf_temperate.isBigO
+  use (Finset.range (N + 1)).sup k
+  intro n hn
+  refine (hk n).trans (isBigO_of_le _ fun x ↦ ?_)
+  rw [Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity)]
+  gcongr
+  · simp
+  · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
+
 theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
-  choose k C f using hf_temperate.2
-  use (Finset.range (n + 1)).sup k
-  let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := le_max_left _ _
-  use C', hC'
-  intro N hN x
-  rw [← Finset.mem_range_succ_iff] at hN
-  grw [f]
-  gcongr
-  · simp only [C', Finset.le_sup'_iff, le_max_iff]
-    right
-    exact ⟨N, hN, le_rfl⟩
-  · simp
-  exact Finset.le_sup hN
+  rcases hf_temperate.isBigO_uniform n with ⟨k, hk⟩
+  set F := fun x (N : Fin (n+1)) ↦ iteratedFDeriv ℝ N f x
+  have : F =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
+    simp_rw [F, isBigO_pi, Fin.forall_iff, Nat.lt_succ]
+    exact hk
+  rcases this.exists_nonneg with ⟨C, C_nonneg, hC⟩
+  simp (discharger := positivity) only [isBigOWith_top, Real.norm_of_nonneg,
+    pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ] at hC
+  exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
 
 lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
@@ -568,6 +611,11 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
+
+theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
+  refine ⟨smooth f ⊤, fun n => ?_⟩
+  rcases f.decay 0 n with ⟨C, Cpos, hC⟩
+  exact ⟨0, C, by simpa using hC⟩
 
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
@@ -694,6 +742,25 @@ theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p
 
 end TemperateGrowth
 
+section HasCompactSupport
+
+/-- A smooth compactly supported function is a Schwartz function. -/
+@[simps]
+def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSupport f)
+    (h₂ : ContDiff ℝ ∞ f) : 𝓢(E, F) where
+  toFun := f
+  smooth' := h₂
+  decay' k n := by
+    set g := fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖
+    have hg₁ : Continuous g := by
+      apply Continuous.mul (by fun_prop)
+      exact (h₂.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
+    have hg₂ : HasCompactSupport g := (h₁.iteratedFDeriv _).norm.mul_left
+    obtain ⟨x₀, hx₀⟩ := hg₁.exists_forall_ge_of_hasCompactSupport hg₂
+    exact ⟨g x₀, hx₀⟩
+
+end HasCompactSupport
+
 section CLM
 
 /-! ### Construction of continuous linear maps between Schwartz spaces -/
@@ -708,7 +775,7 @@ variable {σ : 𝕜 →+* 𝕜'}
 /-- Create a semilinear map between Schwartz spaces.
 
 Note: This is a helper definition for `mkCLM`. -/
-def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
+def mkLM (A : 𝓢(D, E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
     (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
@@ -727,7 +794,7 @@ def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + 
 /-- Create a continuous semilinear map between Schwartz spaces.
 
 For an example of using this definition, see `fderivCLM`. -/
-def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
+def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
     (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
@@ -799,12 +866,7 @@ where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate g
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
     𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
   refine mkCLM (fun f x => B (f x) (g x))
-    (fun _ _ _ => by
-      simp only [map_add, Pi.add_apply,
-        ContinuousLinearMap.add_apply])
-    (fun _ _ _ => by
-      simp only [map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-        RingHom.id_apply])
+    (fun _ _ _ => by simp) (fun _ _ _ => by simp)
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
       ((f.smooth ⊤).prodMk hg.1)) ?_
   rintro ⟨k, n⟩
@@ -845,6 +907,10 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   move_mul [(1 + ‖x‖) ^ l]
   gcongr
   simp
+
+@[simp]
+theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) : bilinLeftCLM B hg f = fun x => B (f x) (g x) := rfl
 
 end Multiplication
 
@@ -963,7 +1029,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
-  mkCLM (fderiv ℝ) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
+  mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => fderiv_const_smul f.differentiableAt a)
     (fun f => (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
@@ -974,9 +1040,12 @@ def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
 theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv ℝ f x :=
   rfl
 
+theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
+  f.differentiableAt.hasFDerivAt
+
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
-  mkCLM deriv (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
+  mkCLM (deriv ·) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => deriv_const_smul a f.differentiableAt)
     (fun f => (contDiff_succ_iff_deriv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
@@ -987,6 +1056,9 @@ def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
 @[simp]
 theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 f x = deriv f x :=
   rfl
+
+theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
+  f.differentiableAt.hasDerivAt
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
@@ -1363,5 +1435,42 @@ theorem inner_toL2_toL2_eq (f g : 𝓢(H, V)) (μ : Measure H := by volume_tac) 
   rw [hf, hg]
 
 end L2
+
+section integration_by_parts
+
+open ENNReal MeasureTheory
+
+variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a general bilinear map. -/
+theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
+    (L : E →L[ℝ] F →L[ℝ] V) :
+    ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
+  MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
+    f.hasDerivAt g.hasDerivAt (bilinLeftCLM L (derivCLM ℝ g).hasTemperateGrowth f).integrable
+    (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).integrable
+    (bilinLeftCLM L g.hasTemperateGrowth f).integrable
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a Schwartz function with values in continuous linear maps. -/
+theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)) (g : 𝓢(ℝ, F)) :
+    ∫ (x : ℝ), f x (deriv g x) = -∫ (x : ℝ), deriv f x (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g
+    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for multiplication of scalar-valued Schwartz functions. -/
+theorem integral_mul_deriv_eq_neg_deriv_mul (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, 𝕜)) :
+    ∫ (x : ℝ), f x * (deriv g x) = -∫ (x : ℝ), deriv f x * (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜)
+
+end integration_by_parts
+
 
 end SchwartzMap

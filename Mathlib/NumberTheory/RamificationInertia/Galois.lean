@@ -84,7 +84,7 @@ variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [A
   [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [IsIntegralClosure B A L] [FiniteDimensional K L]
 
-noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
+noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
   smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp
@@ -96,11 +96,11 @@ noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
     rw [map_mul]
     exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
 
-theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B) :
+theorem coe_smul_primesOver_eq_map_galRestrict (σ : Gal(L/K)) (P : primesOver p B) :
     (σ • P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
-theorem coe_smul_primesOver_mk_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : Ideal B) [P.IsPrime]
+theorem coe_smul_primesOver_mk_eq_map_galRestrict (σ : Gal(L/K)) (P : Ideal B) [P.IsPrime]
     [P.LiesOver p] : (σ • primesOver.mk p P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
@@ -133,7 +133,7 @@ theorem isPretransitive_of_isGalois [IsGalois K L] :
     rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
     exact ⟨σ, Subtype.val_inj.mp hs⟩
 
-instance [IsGalois K L] : MulAction.IsPretransitive (L ≃ₐ[K] L) (primesOver p B) where
+instance [IsGalois K L] : MulAction.IsPretransitive Gal(L/K) (primesOver p B) where
   exists_smul_eq := by
     intro ⟨P, _, _⟩ ⟨Q, _, _⟩
     rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
@@ -198,7 +198,7 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
   rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
-  rw [← sum_ramification_inertia B p K L hpb]
+  rw [← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
   rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp

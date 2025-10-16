@@ -175,7 +175,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     cases eq_zero_or_eq_zero_of_smul_eq_zero this
     · linarith
     · contradiction
-  obtain rfl : n = 0 := by omega
+  obtain rfl : n = 0 := by cutsat
   simpa using h
 
 /-- The sum of the angles of a possibly degenerate triangle (where one of the
@@ -403,8 +403,6 @@ theorem angle_lt_iff_dist_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P
 theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
     ∠ a c b ≤ ∠ a b c ↔ dist a b ≤ dist a c := by
   rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
-  have h1 := (angle_lt_iff_dist_lt h).not
-  simp at h1
-  exact h1
+  simpa using (angle_lt_iff_dist_lt h).not
 
 end EuclideanGeometry

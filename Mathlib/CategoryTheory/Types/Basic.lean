@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Data.Set.CoeSort
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ToAdditive
@@ -34,7 +33,7 @@ We prove some basic facts about the category `Type`:
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v v' w u u'
 
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
@@ -357,6 +356,11 @@ instance : SplitEpiCategory (Type u) where
     IsSplitEpi.mk' <|
       { section_ := Function.surjInv <| (epi_iff_surjective f).1 hf
         id := funext <| Function.rightInverse_surjInv <| (epi_iff_surjective f).1 hf }
+
+theorem isSplitEpi_iff_surjective {X Y : Type u} (f : X ⟶ Y) :
+    IsSplitEpi f ↔ Function.Surjective f :=
+  Iff.intro (fun _ => surjective_of_epi _)
+    fun hf => (by simp only [(epi_iff_surjective f).mpr hf, isSplitEpi_of_epi])
 
 end CategoryTheory
 

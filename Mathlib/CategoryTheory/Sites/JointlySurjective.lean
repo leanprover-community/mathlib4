@@ -14,7 +14,8 @@ families as coverings. We show that this precoverage is stable under the standar
 
 ## Notes
 
-See `CategoryTheory.Sites.Types` for the Grothendieck topology of jointly surjective covers.
+See `Mathlib/CategoryTheory/Sites/Types.lean` for the Grothendieck topology of jointly surjective
+covers.
 -/
 
 universe u
@@ -85,6 +86,12 @@ lemma Presieve.mem_comap_jointlySurjectivePrecoverage_iff {X : C} {R : Presieve 
     exact ⟨_, _, hf, hi⟩
   · obtain ⟨Y, g, hg, hi⟩ := h x
     exact ⟨_, _, ⟨hg⟩, hi⟩
+
+lemma Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff {X : C} {ι : Type*}
+    {Y : ι → C} {f : ∀ i, Y i ⟶ X} :
+    ofArrows Y f ∈ Types.jointlySurjectivePrecoverage.comap F X ↔
+      ∀ x : F.obj X, ∃ (i : ι), x ∈ Set.range (F.map (f i)) := by
+  simp
 
 /-- The pullback of the jointly surjective precoverage of types to any category `C` via a
 (forgetful) functor `C ⥤ Type u` is stable under base change if the canonical map

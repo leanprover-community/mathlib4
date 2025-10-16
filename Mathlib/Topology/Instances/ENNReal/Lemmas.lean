@@ -405,7 +405,7 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
     intro x
     refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
     · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-    · exact Or.inl fun h => H (pow_eq_zero h)
+    · exact Or.inl fun h => H (eq_zero_of_pow_eq_zero h)
     · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, not_true, Ne,
         not_false_iff, false_and]
     · simp only [H, true_or, Ne, not_false_iff]
@@ -771,7 +771,7 @@ theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t 
 
 theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
-  rw [← tsum_fintype]
+  rw [← tsum_fintype (L := SummationFilter.unconditional _)]
   exact tsum_iUnion_le_tsum f t
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
@@ -967,8 +967,7 @@ theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : 
   tsum_lt_tsum hle hi hg
 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
-  rw [← tsum_zero]
-  exact tsum_lt_tsum (fun a => zero_le _) hi hg
+  simpa using tsum_lt_tsum (fun a => zero_le _) hi hg
 
 open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :

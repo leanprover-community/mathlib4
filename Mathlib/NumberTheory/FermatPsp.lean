@@ -89,9 +89,9 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
     -- suffices to show that `n - 1` isn't zero. However, we know that `n - 1` isn't zero because we
     -- assumed `2 ≤ n` when doing `by_cases`.
     refine dvd_of_mul_right_dvd (dvd_pow_self (k * j) ?_)
-    omega
+    cutsat
   -- If `n = 1`, then it follows trivially that `n` is coprime with `b`.
-  · rw [show n = 1 by omega]
+  · rw [show n = 1 by cutsat]
     simp
 
 theorem probablePrime_iff_modEq (n : ℕ) {b : ℕ} (h : 1 ≤ b) :
@@ -113,7 +113,7 @@ This lemma is a small wrapper based on `coprime_of_probablePrime`
 -/
 theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : Nat.Coprime n b := by
   rcases h with ⟨hp, _, hn₂⟩
-  exact coprime_of_probablePrime hp (by omega) h₁
+  exact coprime_of_probablePrime hp (by cutsat) h₁
 
 /-- All composite numbers are Fermat pseudoprimes to base 1.
 -/
@@ -299,7 +299,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
       linarith [show 3 ≤ b ^ 2 - 1 from le_tsub_of_add_le_left (show 4 ≤ b ^ 2 by nlinarith)]
     rwa [Nat.mul_div_cancel _ h₂] at h₁
   rw [Nat.mul_sub_left_distrib, mul_one, pow_mul]
-  conv_rhs => rw [← Nat.sub_add_cancel (show 1 ≤ p by omega)]
+  conv_rhs => rw [← Nat.sub_add_cancel (show 1 ≤ p by cutsat)]
   rw [Nat.pow_succ (b ^ 2)]
   suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2 by
     apply lt_of_le_of_lt'
@@ -308,7 +308,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
       exact tsub_lt_tsub_right_of_le this h
   suffices h : p < (b ^ 2) ^ (p - 1) by gcongr
   rw [← pow_mul, Nat.mul_sub_left_distrib, mul_one]
-  have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by omega)
+  have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by cutsat)
   have : 2 + p ≤ 2 * p := by omega
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
   exact this.trans_lt (Nat.lt_pow_self b_ge_two)
@@ -341,15 +341,15 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
     use psp_from_prime b p
     constructor
     · exact psp_from_prime_psp b_ge_two hp₂ h₉ h₆
-    · exact le_trans (show m ≤ p by omega) (le_of_lt h₁₀)
+    · exact le_trans (show m ≤ p by cutsat) (le_of_lt h₁₀)
   -- If `¬2 ≤ b`, then `b = 1`. Since all composite numbers are pseudoprimes to base 1, we can pick
   -- any composite number greater than m. We choose `2 * (m + 2)` because it is greater than `m` and
   -- is composite for all natural numbers `m`.
   · have h₁ : b = 1 := by omega
     rw [h₁]
     use 2 * (m + 2)
-    have : ¬Nat.Prime (2 * (m + 2)) := Nat.not_prime_mul (by omega) (by omega)
-    exact ⟨fermatPsp_base_one (by omega) this, by omega⟩
+    have : ¬Nat.Prime (2 * (m + 2)) := Nat.not_prime_mul (by cutsat) (by cutsat)
+    exact ⟨fermatPsp_base_one (by cutsat) this, by cutsat⟩
 
 theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.atTop, FermatPsp n b := by
   -- Based on the proof of `Nat.frequently_atTop_modEq_one`

@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Opposites
 # Opposites of joins of categories
 
 This file constructs the canonical equivalence of categories `(C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ`.
-The equivalence gets characterized in both directions.
+This equivalence is characterized in both directions.
 
 -/
 

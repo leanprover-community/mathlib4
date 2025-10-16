@@ -7,7 +7,7 @@ import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Data.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.Prime
 
@@ -42,9 +42,7 @@ open goldenRatio
 
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
 theorem inv_goldenRatio : φ⁻¹ = -ψ := by
-  have : 1 + √5 ≠ 0 := by positivity
-  simp [field, add_mul, mul_sub]
-  ring
+  grind
 
 @[deprecated (since := "2025-08-23")] alias _root_.inv_gold := inv_goldenRatio
 
@@ -57,9 +55,7 @@ theorem inv_goldenConj : ψ⁻¹ = -φ := by
 
 @[simp]
 theorem goldenRatio_mul_goldenConj : φ * ψ = -1 := by
-  field_simp
-  rw [← sq_sub_sq]
-  norm_num
+  grind
 
 @[deprecated (since := "2025-08-23")] alias _root_.gold_mul_goldConj := goldenRatio_mul_goldenConj
 
@@ -93,24 +89,20 @@ theorem goldenRatio_sub_goldenConj : φ - ψ = √5 := by ring
 @[deprecated (since := "2025-08-23")] alias _root_.gold_sub_goldConj := goldenRatio_sub_goldenConj
 
 theorem goldenRatio_pow_sub_goldenRatio_pow (n : ℕ) : φ ^ (n + 2) - φ ^ (n + 1) = φ ^ n := by
-  rw [goldenRatio]; ring_nf; norm_num; ring
+  grind
 
 @[deprecated (since := "2025-08-23")]
 alias gold_pow_sub_gold_pow := goldenRatio_pow_sub_goldenRatio_pow
 
 @[simp 1200]
 theorem goldenRatio_sq : φ ^ 2 = φ + 1 := by
-  rw [goldenRatio, ← sub_eq_zero]
-  ring_nf
-  rw [Real.sq_sqrt] <;> norm_num
+  grind
 
 @[deprecated (since := "2025-08-23")] alias _root_.gold_sq := goldenRatio_sq
 
 @[simp 1200]
 theorem goldenConj_sq : ψ ^ 2 = ψ + 1 := by
-  rw [goldenConj, ← sub_eq_zero]
-  ring_nf
-  rw [Real.sq_sqrt] <;> norm_num
+  grind
 
 @[deprecated (since := "2025-08-23")] alias _root_.goldConj_sq := goldenConj_sq
 

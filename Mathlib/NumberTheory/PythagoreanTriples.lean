@@ -184,7 +184,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
 theorem isClassified_of_isPrimitiveClassified (hp : h.IsPrimitiveClassified) : h.IsClassified := by
   obtain ⟨m, n, H⟩ := hp
   use 1, m, n
-  omega
+  cutsat
 
 theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrimitiveClassified) :
     h.IsClassified := by
@@ -435,7 +435,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
     rw [hw1, neg_sq, one_pow, add_eq_right] at hq
-    exact pow_eq_zero hq
+    exact eq_zero_of_pow_eq_zero hq
   have hQ : ∀ x : ℚ, 1 + x ^ 2 ≠ 0 := by
     intro q
     apply ne_of_gt
@@ -485,7 +485,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     exfalso
     have h1 : 2 ∣ (Int.gcd n m : ℤ) :=
       Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hn2) (Int.dvd_of_emod_eq_zero hm2)
-    omega
+    cutsat
   · -- m even, n odd
     apply h.isPrimitiveClassified_aux hc hzpos hm2n2 hv2 hw2 _ hmncp
     · apply Or.intro_left
@@ -509,7 +509,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
         rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by simp : (2 : ℤ) ≠ 0)]
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
-      · omega
+      · cutsat
     norm_num [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
@@ -611,7 +611,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
           exact ht3
         · rw [Int.neg_emod_two, Int.neg_emod_two]
           apply And.intro ht4
-          omega
+          cutsat
       · exfalso
         revert h_pos
         rw [h_neg]

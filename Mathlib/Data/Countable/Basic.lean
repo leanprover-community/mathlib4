@@ -80,6 +80,8 @@ instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
 instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) := Option.instUncountable
 instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) := Option.instUncountable
 
+@[simp] lemma untopD_coe_enat (d n : ℕ) : WithTop.untopD d (n : ℕ∞) = n := rfl
+
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
@@ -94,13 +96,11 @@ instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
   exact (Prod.mk_right_injective default).uncountable
 
 lemma countable_left_of_prod_of_nonempty [Nonempty β] (h : Countable (α × β)) : Countable α := by
-  contrapose h
-  rw [not_countable_iff] at *
+  contrapose! h
   infer_instance
 
 lemma countable_right_of_prod_of_nonempty [Nonempty α] (h : Countable (α × β)) : Countable β := by
-  contrapose h
-  rw [not_countable_iff] at *
+  contrapose! h
   infer_instance
 
 lemma countable_prod_swap [Countable (α × β)] : Countable (β × α) :=

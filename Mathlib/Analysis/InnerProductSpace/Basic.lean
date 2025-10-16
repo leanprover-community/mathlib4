@@ -861,19 +861,19 @@ This is not registered as an instance since
 
 However, it can be used in a proof to obtain a real inner product space structure from a given
 `𝕜`-inner product space structure. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
-    NormedSpace.restrictScalars ℝ 𝕜
-      E with
+    NormedSpace.restrictScalars ℝ 𝕜 E with
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
     conj_inner_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
-      change re ⟪x + y, z⟫ = re ⟪x, z⟫ + re ⟪y, z⟫
-      simp only [inner_add_left, map_add]
+      simp only [Inner.rclikeToReal, inner_add_left, map_add]
     smul_left := fun x y r => by
-      change re ⟪(r : 𝕜) • x, y⟫ = r * re ⟪x, y⟫
-      simp only [inner_smul_left, conj_ofReal, re_ofReal_mul] }
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E
+      have : r • x = (r : 𝕜) • x := rfl
+      simp only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
+        re_ofReal_mul] }
 
 variable {E}
 

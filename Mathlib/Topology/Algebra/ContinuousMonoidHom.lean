@@ -396,7 +396,9 @@ variable (M)
 /-- The identity map is a continuous multiplicative isomorphism. -/
 @[to_additive (attr := refl) /-- The identity map is a continuous additive isomorphism. -/]
 def refl : M ≃ₜ* M :=
-  { MulEquiv.refl _ with }
+  { MulEquiv.refl _ with
+    continuous_toFun := by dsimp; fun_prop
+    continuous_invFun := by dsimp; fun_prop }
 
 @[to_additive]
 instance : Inhabited (M ≃ₜ* M) := ⟨ContinuousMulEquiv.refl M⟩
@@ -417,7 +419,14 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
   { cme.toMulEquiv.symm with
   continuous_toFun := cme.continuous_invFun
   continuous_invFun := cme.continuous_toFun }
+
+/-- See Note [custom simps projection] -/
+@[to_additive /-- See Note [custom simps projection] -/]
+def Simps.symm_apply [Mul G] [Mul H] (e : G ≃ₜ* H) : H → G :=
+  e.symm
+
 initialize_simps_projections ContinuousMulEquiv (toFun → apply, invFun → symm_apply)
+
 initialize_simps_projections ContinuousAddEquiv (toFun → apply, invFun → symm_apply)
 
 @[to_additive]
@@ -542,6 +551,38 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
 end unique
 
 end ContinuousMulEquiv
+
+namespace MulEquiv
+
+variable {G H} [Mul G] [Mul H] (e : G ≃* H) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s)
+include he
+
+/-- A `MulEquiv` that respects open sets is a `ContinuousMulEquiv`. -/
+@[to_additive (attr := simps apply symm_apply)
+/-- An `AddEquiv` that respects open sets is a `ContinuousAddEquiv`. -/]
+def toContinuousMulEquiv : G ≃ₜ* H where
+  toFun := e
+  invFun := e.symm
+  __ := e
+  __ := e.toEquiv.toHomeomorph he
+
+variable {e}
+
+@[to_additive, simp]
+lemma toMulEquiv_toContinuousMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) = e :=
+  rfl
+
+@[to_additive, simp] lemma toHomeomorph_toContinuousMulEquiv :
+    (e.toContinuousMulEquiv he : G ≃ₜ H) = e.toHomeomorph he :=
+  rfl
+
+@[to_additive]
+lemma symm_toContinuousMulEquiv :
+    (e.toContinuousMulEquiv he).symm = e.symm.toContinuousMulEquiv
+      (fun s ↦ by convert (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
+  rfl
+
+end MulEquiv
 
 end
 

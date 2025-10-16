@@ -305,7 +305,7 @@ protected theorem hasBasis_uniformity_of_basis {ι : Sort*} {p : ι → Prop} {s
     (fun _ hU =>
       let ⟨i, hi, hiU⟩ := h.mem_iff.mp hU
       ⟨i, hi, fun _ huv x => hiU (huv x)⟩)
-    fun i hi => ⟨s i, h.mem_of_mem hi, subset_refl _⟩
+    fun i hi => ⟨s i, h.mem_of_mem hi, subset_rfl⟩
 
 /-- For `f : α →ᵤ β`, `𝓝 f` admits the family `{g | ∀ x, (f x, g x) ∈ V}` for `V ∈ 𝓑` as a filter
 basis, for any basis `𝓑` of `𝓤 β`. -/

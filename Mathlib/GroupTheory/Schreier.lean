@@ -220,6 +220,6 @@ instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
   refine Nat.finite_of_card_ne_zero fun h => ?_
   rw [card_commutator_closureCommutatorRepresentatives, h, zero_dvd_iff] at h2
-  exact FiniteIndex.index_ne_zero (pow_eq_zero h2)
+  exact FiniteIndex.index_ne_zero (eq_zero_of_pow_eq_zero h2)
 
 end Subgroup

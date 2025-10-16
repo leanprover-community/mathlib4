@@ -66,26 +66,6 @@ theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsFi
   (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
     (Ideal.Quotient.field _).toIsField
 
-section IsUnit
-
-open nonZeroDivisors
-
-/-- If an element of an Artinian ring is not a zero divisor then it is a unit. -/
-theorem isUnit_of_mem_nonZeroDivisors {a : R} (ha : a ∈ R⁰) : IsUnit a :=
-  IsUnit.isUnit_iff_mulLeft_bijective.mpr <|
-    IsArtinian.bijective_of_injective_endomorphism (LinearMap.mulLeft R a)
-      fun _ _ ↦ (mul_cancel_left_mem_nonZeroDivisors ha).mp
-
-/-- In an Artinian ring, an element is a unit iff it is a non-zero-divisor.
-See also `isUnit_iff_mem_nonZeroDivisors_of_finite`. -/
-theorem isUnit_iff_mem_nonZeroDivisors {a : R} : IsUnit a ↔ a ∈ R⁰ :=
-  ⟨IsUnit.mem_nonZeroDivisors, isUnit_of_mem_nonZeroDivisors⟩
-
-theorem isUnit_submonoid_eq : IsUnit.submonoid R = R⁰ := by
-  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
-
-end IsUnit
-
 section Localization
 
 variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]

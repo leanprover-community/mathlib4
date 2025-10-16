@@ -230,10 +230,14 @@ theorem mul_lt_mul_iff_right₀ [PosMulStrictMono α] [PosMulReflectLT α] (a0 :
     a * b < a * c ↔ b < c :=
   @rel_iff_cov α>0 α (fun x y => x * y) (· < ·) _ _ ⟨a, a0⟩ _ _
 
+@[deprecated (since := "2025-09-25")] alias mul_lt_mul_left := mul_lt_mul_iff_right₀
+
 @[simp]
 theorem mul_lt_mul_iff_left₀ [MulPosStrictMono α] [MulPosReflectLT α] (a0 : 0 < a) :
     b * a < c * a ↔ b < c :=
   @rel_iff_cov α>0 α (fun x y => y * x) (· < ·) _ _ ⟨a, a0⟩ _ _
+
+@[deprecated (since := "2025-09-25")] alias mul_lt_mul_right := mul_lt_mul_iff_left₀
 
 @[simp]
 theorem mul_le_mul_iff_right₀ [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) :

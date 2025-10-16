@@ -232,8 +232,9 @@ theorem integral_fourierIntegral_smul_eq_flip
       ∫ x, (f x) • (fourierIntegral e ν L.flip g x) ∂μ :=
   integral_bilin_fourierIntegral_eq_flip (ContinuousLinearMap.lsmul ℂ ℂ) he hL hf hg
 
-/-- The Fourier transform satisfies `∫ 𝓕 f * conj g = ∫ f * conj (𝓕⁻¹ g)`, i.e.,
-Parseval's identity or Plancherel's theorem.
+/-- The Fourier transform satisfies `∫ 𝓕 f * conj g = ∫ f * conj (𝓕⁻¹ g)`, which together
+with the Fourier inversion theorem yields Plancherel's theorem. The stated version is more
+convenient since it does only require integrability of `f` and `g`.
 
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_sesq_fourierIntegral_eq_neg_flip
@@ -260,7 +261,7 @@ theorem integral_sesq_fourierIntegral_eq_neg_flip
   _ = ∫ x, (∫ ξ, M (f x) (e (-(-L.flip ξ) x) • g ξ) ∂ν) ∂μ := by
     simp only [LinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower, LinearMap.neg_apply,
       neg_neg]
-  _ = ∫ x, (M (f x)) (∫ ξ, e (-(-L.flip ξ) x) • g ξ ∂ν) ∂μ := by
+  _ = ∫ x, M (f x) (∫ ξ, e (-(-L.flip ξ) x) • g ξ ∂ν) ∂μ := by
     congr with x
     apply ContinuousLinearMap.integral_comp_comm
     have hLflip : Continuous fun (p : W × V) => (-L.flip p.1) p.2 :=

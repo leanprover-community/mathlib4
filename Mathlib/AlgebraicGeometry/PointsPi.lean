@@ -10,7 +10,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 # `Π Rᵢ`-Points of Schemes
 
 We show that the canonical map `X(Π Rᵢ) ⟶ Π X(Rᵢ)` (`AlgebraicGeometry.pointsPi`)
-is injective and surjective under various assumptions
+is injective and surjective under various assumptions.
 
 -/
 
@@ -35,9 +35,9 @@ lemma Ideal.span_eq_top_of_span_image_evalRingHom
   simpa [Finsupp.sum_fintype] using hf i
 
 lemma eq_top_of_sigmaSpec_subset_of_isCompact
-    (U : Spec(Π i, R i).Opens) (V : Set Spec(Π i, R i))
+    (U : (Spec <| .of <| Π i, R i).Opens) (V : Set (Spec <| .of <| Π i, R i))
     (hV : ↑(sigmaSpec R).opensRange ⊆ V)
-    (hV' : IsCompact (X := Spec(Π i, R i)) V)
+    (hV' : IsCompact (X := Spec (.of <| Π i, R i)) V)
     (hVU : V ⊆ U) : U = ⊤ := by
   obtain ⟨s, hs⟩ := (PrimeSpectrum.isOpen_iff _).mp U.2
   obtain ⟨t, hts, ht, ht'⟩ : ∃ t ⊆ s, t.Finite ∧ V ⊆ ⋃ i ∈ t, (basicOpen i).1 := by
@@ -59,7 +59,7 @@ lemma eq_top_of_sigmaSpec_subset_of_isCompact
   simpa [← zeroLocus_span s, zeroLocus_empty_iff_eq_top.mpr this] using hs
 
 lemma eq_bot_of_comp_quotientMk_eq_sigmaSpec (I : Ideal (Π i, R i))
-    (f : (∐ fun i ↦ Spec (R i)) ⟶ Spec((Π i, R i) ⧸ I))
+    (f : (∐ fun i ↦ Spec (R i)) ⟶ Spec (.of <| (Π i, R i) ⧸ I))
     (hf : f ≫ Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I)) = sigmaSpec R) :
     I = ⊥ := by
   refine le_bot_iff.mp fun x hx ↦ ?_
@@ -70,13 +70,13 @@ lemma eq_bot_of_comp_quotientMk_eq_sigmaSpec (I : Ideal (Π i, R i))
 /-- If `V` is a locally closed subscheme of `Spec (Π Rᵢ)` containing `∐ Spec Rᵢ`, then
 `V = Spec (Π Rᵢ)`. -/
 lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
-    (f : (∐ fun i ↦ Spec (R i)) ⟶ V) (g : V ⟶ Spec(Π i, R i))
+    (f : (∐ fun i ↦ Spec (R i)) ⟶ V) (g : V ⟶ Spec (.of <| Π i, R i))
     [IsImmersion g] [CompactSpace V]
     (hU' : f ≫ g = sigmaSpec R) : IsIso g := by
   have : g.coborderRange = ⊤ := by
     apply eq_top_of_sigmaSpec_subset_of_isCompact (hVU := subset_coborder)
-    · simpa only [← hU'] using Set.range_comp_subset_range f.base g.base
-    · exact isCompact_range g.base.hom.2
+    · simpa only [← hU'] using Set.range_comp_subset_range f g
+    · exact isCompact_range g.continuous
   have : IsClosedImmersion g := by
     have : IsIso g.coborderRange.ι := by rw [this, ← Scheme.topIso_hom]; infer_instance
     rw [← g.liftCoborder_ι]
@@ -92,7 +92,7 @@ variable (X : Scheme)
 This is injective if `X` is quasi-separated, surjective if `X` is affine,
 or if `X` is compact and each `Rᵢ` is local. -/
 noncomputable
-def pointsPi : (Spec(Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
+def pointsPi : (Spec (.of <| Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
   fun f i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i)) ≫ f
 
 lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi R X) := by
@@ -114,10 +114,10 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     Function.Surjective (pointsPi R X) := by
   intro f
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (i : _) : ∃ j, Set.range (f i).base ⊆ (𝒰.f j).opensRange := by
-    refine ⟨𝒰.idx ((f i).base (IsLocalRing.closedPoint (R i))), ?_⟩
+  have (i : _) : ∃ j, Set.range (f i) ⊆ (𝒰.f j).opensRange := by
+    refine ⟨𝒰.idx ((f i) (IsLocalRing.closedPoint (R i))), ?_⟩
     rintro _ ⟨x, rfl⟩
-    exact ((IsLocalRing.specializes_closedPoint x).map (f i).base.hom.2).mem_open
+    exact ((IsLocalRing.specializes_closedPoint x).map (f i).continuous).mem_open
       (𝒰.f _).opensRange.2 (𝒰.covers _)
   choose j hj using this
   have (j₀ : _) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.X j₀)

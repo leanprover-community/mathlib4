@@ -21,7 +21,7 @@ import Mathlib.RingTheory.Valuation.LocalSubring
   it is quasi-separated and satisfies the uniqueness part of the valuative criterion.
 - `AlgebraicGeometry.IsProper.eq_valuativeCriterion`:
   A morphism is proper if and only if
-  it is qcqs and of fintite type and satisfies the valuative criterion.
+  it is qcqs and of finite type and satisfies the valuative criterion.
 
 ## Future projects
 Show that it suffices to check discrete valuation rings when the base is Noetherian.
@@ -58,9 +58,9 @@ structure ValuativeCommSq {X Y : Scheme.{u}} (f : X ⟶ Y) where
   [algebra : Algebra R K]
   [isFractionRing : IsFractionRing R K]
   /-- The top map in a valuative commutative map. -/
-  (i₁ : Spec(K) ⟶ X)
+  (i₁ : Spec (.of K) ⟶ X)
   /-- The bottom map in a valuative commutative map. -/
-  (i₂ : Spec(R) ⟶ Y)
+  (i₂ : Spec (.of R) ⟶ Y)
   (commSq : CommSq i₁ (Spec.map (CommRingCat.ofHom (algebraMap R K))) f i₂)
 
 namespace ValuativeCommSq
@@ -108,7 +108,7 @@ open IsLocalRing
 
 @[stacks 01KE]
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
-    SpecializingMap f.base := by
+    SpecializingMap f := by
   intro x' y h
   let stalk_y_to_residue_x' : Y.presheaf.stalk y ⟶ X.residueField x' :=
     Y.presheaf.stalkSpecializes h ≫ f.stalkMap x' ≫ X.residue x'
@@ -118,18 +118,18 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
   have w : X.fromSpecResidueField x' ≫ f =
       Spec.map (CommRingCat.ofHom (algebraMap A (X.residueField x'))) ≫
         Spec.map stalk_y_to_A ≫ Y.fromSpecStalk y := by
-    rw [Scheme.fromSpecResidueField, Category.assoc, ← Scheme.Spec_map_stalkMap_fromSpecStalk,
-      ← Scheme.Spec_map_stalkSpecializes_fromSpecStalk h]
+    rw [Scheme.fromSpecResidueField, Category.assoc, ← Scheme.SpecMap_stalkMap_fromSpecStalk,
+      ← Scheme.SpecMap_stalkSpecializes_fromSpecStalk h]
     simp_rw [← Spec.map_comp_assoc]
     rfl
   obtain ⟨l, hl₁, hl₂⟩ := (H { R := A, K := X.residueField x', commSq := ⟨w⟩, .. }).exists_lift
   dsimp only at hl₁ hl₂
-  refine ⟨l.base (closedPoint A), ?_, ?_⟩
+  refine ⟨l (closedPoint A), ?_, ?_⟩
   · simp_rw [← Scheme.fromSpecResidueField_apply x' (closedPoint (X.residueField x')), ← hl₁]
-    exact (specializes_closedPoint _).map l.base.hom.2
-  · rw [← Scheme.comp_base_apply, hl₂]
-    simp only [Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
-    have : (Spec.map stalk_y_to_A).base (closedPoint A) = closedPoint (Y.presheaf.stalk y) :=
+    exact (specializes_closedPoint _).map l.continuous
+  · rw [← Scheme.Hom.comp_apply, hl₂]
+    simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply]
+    have : Spec.map stalk_y_to_A (closedPoint A) = closedPoint (Y.presheaf.stalk y) :=
       comap_closedPoint (S := A) (stalk_y_to_residue_x'.hom.codRestrict A.toSubring hA)
     rw [this, Y.fromSpecStalk_closedPoint]
 
@@ -144,10 +144,10 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
   letI : Field (CommRingCat.of K) := ‹_›
   replace H := H (pullback.snd i₂ f) i₂ (pullback.fst i₂ f) (.of_hasPullback i₂ f)
   let lft := pullback.lift (Spec.map (CommRingCat.ofHom (algebraMap R K))) i₁ w.symm
-  obtain ⟨x, h₁, h₂⟩ := @H (lft.base (closedPoint _)) _ (specializes_closedPoint (R := R) _)
-  let e : CommRingCat.of R ≅ Spec(R).presheaf.stalk ((pullback.fst i₂ f).base x) :=
+  obtain ⟨x, h₁, h₂⟩ := @H (lft (closedPoint _)) _ (specializes_closedPoint (R := R) _)
+  let e : CommRingCat.of R ≅ (Spec <| .of R).presheaf.stalk (pullback.fst i₂ f x) :=
     (stalkClosedPointIso (.of R)).symm ≪≫
-      Spec(R).presheaf.stalkCongr (.of_eq h₂.symm)
+      (Spec <| .of R).presheaf.stalkCongr (.of_eq h₂.symm)
   let α := e.hom ≫ (pullback.fst i₂ f).stalkMap x
   have : IsLocalHom e.hom.hom := isLocalHom_of_isIso e.hom
   have : IsLocalHom α.hom := inferInstanceAs
@@ -156,13 +156,13 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
   have hαβ : α ≫ β = CommRingCat.ofHom (algebraMap R K) := by
     simp only [CommRingCat.coe_of, Iso.trans_hom, Iso.symm_hom, TopCat.Presheaf.stalkCongr_hom,
       Category.assoc, α, e, β, stalkClosedPointIso_inv, StructureSheaf.toStalk]
-    change (Scheme.ΓSpecIso (.of R)).inv ≫ Spec(R).presheaf.germ _ _ _ ≫ _ = _
-    simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ_assoc]
+    change (Scheme.ΓSpecIso (.of R)).inv ≫ (Spec <| .of R).presheaf.germ _ _ _ ≫ _ = _
+    simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.Hom.germ_stalkMap_assoc]
     -- `map_top` introduces defeq problems, according to `check_compositions`.
     -- This is probably the cause of the `erw` needed below.
     simp only [TopologicalSpace.Opens.map_top]
     rw [Scheme.germ_stalkClosedPointTo lft ⊤ trivial]
-    erw [← Scheme.comp_app_assoc lft (pullback.fst i₂ f)]
+    erw [← Scheme.Hom.comp_app_assoc lft (pullback.fst i₂ f)]
     rw [pullback.lift_fst]
     simp
   have hbij := (bijective_rangeRestrict_comp_of_valuationRing (R := R) (K := K) α.hom β.hom
@@ -177,16 +177,16 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
       ((RingEquiv.ofBijective _ hbij).apply_symm_apply (β.hom.rangeRestrict x)))
   refine ⟨⟨⟨Spec.map ((pullback.snd i₂ f).stalkMap x ≫ φ) ≫ X.fromSpecStalk _, ?_, ?_⟩⟩⟩
   · simp only [← Spec.map_comp_assoc, Category.assoc, hφβ]
-    simp only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,
-      Scheme.Spec_map_stalkSpecializes_fromSpecStalk_assoc, β]
+    simp only [Spec.map_comp, Category.assoc, Scheme.SpecMap_stalkMap_fromSpecStalk,
+      Scheme.SpecMap_stalkSpecializes_fromSpecStalk_assoc, β]
     -- This next line only fires as `rw`, not `simp`:
     rw [Scheme.Spec_stalkClosedPointTo_fromSpecStalk_assoc]
     simp [lft]
-  · simp only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,
+  · simp only [Spec.map_comp, Category.assoc, Scheme.SpecMap_stalkMap_fromSpecStalk,
       ← pullback.condition]
-    rw [← Scheme.Spec_map_stalkMap_fromSpecStalk_assoc, ← Spec.map_comp_assoc, hαφ']
+    rw [← Scheme.SpecMap_stalkMap_fromSpecStalk_assoc, ← Spec.map_comp_assoc, hαφ']
     simp only [Iso.trans_inv, TopCat.Presheaf.stalkCongr_inv, Iso.symm_inv, Spec.map_comp,
-      Category.assoc, Scheme.Spec_map_stalkSpecializes_fromSpecStalk_assoc, e]
+      Category.assoc, Scheme.SpecMap_stalkSpecializes_fromSpecStalk_assoc, e]
     rw [← Spec_stalkClosedPointIso, ← Spec.map_comp_assoc,
       Iso.inv_hom_id, Spec.map_id, Category.id_comp]
 
@@ -261,7 +261,7 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     constructor
     refine ⟨S.i₂ ≫ pullback.fst _ _, ?_, ?_⟩
     · simp [← S.commSq.w_assoc]
-    · simp
+    · simp only [Category.assoc]
       apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
       · simp
       · simp only [Category.assoc, pullback.diagonal_snd, Category.comp_id]
@@ -276,7 +276,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
   dsimp at *
   have h := hl₁'.trans hl₂'.symm
   let Z := pullback (pullback.diagonal f) (pullback.lift l₁ l₂ h)
-  let g : Z ⟶ Spec(S.R) := pullback.snd _ _
+  let g : Z ⟶ Spec (.of S.R) := pullback.snd _ _
   have : IsClosedImmersion g := MorphismProperty.pullback_snd _ _ inferInstance
   have hZ : IsAffine Z := by
     rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
@@ -290,7 +290,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
     refine (HasAffineProperty.iff_of_isAffine (P := MorphismProperty.isomorphisms Scheme)).mpr ?_
     exact ⟨hZ, (ConcreteCategory.isIso_iff_bijective _).mpr h⟩
   constructor
-  · let l : Spec(S.K) ⟶ Z :=
+  · let l : Spec (.of S.K) ⟶ Z :=
       pullback.lift S.i₁ (Spec.map (CommRingCat.ofHom (algebraMap S.R S.K))) (by
         apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
         · simpa using hl₁.symm
@@ -307,7 +307,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
       change P _
       rw [← MorphismProperty.arrow_mk_iso_iff (P := P) e]
       exact FaithfulSMul.algebraMap_injective S.R S.K
-    rw [Scheme.comp_appTop] at this
+    rw [Scheme.Hom.comp_appTop] at this
     exact Function.Injective.of_comp this
   · rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
     exact this.right

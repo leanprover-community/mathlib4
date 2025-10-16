@@ -98,7 +98,7 @@ lemma le_iff (L₁ L₂ : FiniteGaloisIntermediateField k K) :
 
 variable (k) in
 /-- The minimal (finite) Galois intermediate field containing a finite set `s : Set K` in a
-Galois extension `K/k` defined as the the normal closure of the field obtained by adjoining
+Galois extension `K/k` defined as the normal closure of the field obtained by adjoining
 the set `s : Set K` to `k`. -/
 noncomputable def adjoin [IsGalois k K] (s : Set K) [Finite s] :
     FiniteGaloisIntermediateField k K := {
@@ -138,11 +138,11 @@ theorem adjoin_simple_map_algHom [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
   simpa only [Set.image_singleton] using adjoin_map f { x }
 
 @[simp]
-theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
+theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : Gal(K/k)) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
   adjoin_simple_map_algHom (f : K →ₐ[k] K) x
 
-nonrec lemma mem_fixingSubgroup_iff (α : K ≃ₐ[k] K) (L : FiniteGaloisIntermediateField k K) :
+nonrec lemma mem_fixingSubgroup_iff (α : Gal(K/k)) (L : FiniteGaloisIntermediateField k K) :
     α ∈ L.fixingSubgroup ↔ α.restrictNormalHom L = 1 := by
   simp [IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
     AlgEquiv.restrictNormalHom_apply]
