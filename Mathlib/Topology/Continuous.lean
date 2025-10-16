@@ -324,7 +324,7 @@ in different definitionally equal ways (omitting some typing information)
 * `Continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
 
 However, lemmas with this conclusion are not nice to use in practice because
-1. They confuse the elaborator. The following examples fails, because of limitations in the
+1. They confuse the elaborator. The following example fails, because of limitations in the
   elaboration process.
   ```
   variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
