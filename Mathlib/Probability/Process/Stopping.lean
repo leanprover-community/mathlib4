@@ -1140,8 +1140,8 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
   specialize hbdd ω
   lift τ ω to ℕ using hτ_top ω with t ht
   lift π ω to ℕ using hπ_top ω with b hb
-  simp only [WithTop.untopA_coe_enat, Nat.cast_le, Nat.cast_lt, iff_and_self, and_imp]
   simp only [Nat.cast_le] at hbdd
+  simp
   grind
 
 section AddCommMonoid
