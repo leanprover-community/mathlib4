@@ -299,15 +299,14 @@ theorem hasFDerivAt_parametric_primitive_of_lip' (F : H → ℝ → E) (F' : ℝ
     replace h_lipsch : ∀ᵐ t ∂volume.restrict (Ι a (s x₀)),
         LipschitzOnWith (nnabs (bound t)) (fun x : H ↦ F x t) (ball x₀ ε) :=
       ae_restrict_of_ae_restrict_of_subset (ordConnected_Ioo.uIoc_subset ha hsx₀) h_lipsch
-    filter_upwards [h_lipsch, h_diff]
-    intro t ht_lip ht_diff
+    filter_upwards [h_lipsch, h_diff] with t ht_lip ht_diff
     rw [show bound t = nnabs (bound t) by simp [bound_nonneg t] ]
     exact ht_diff.le_of_lipschitzOn (ball_mem_nhds x₀ ε_pos) ht_lip
   · have D₁ : HasFDerivAt (fun x ↦ φ x (s x₀)) (∫ t in a..s x₀, F' t) x₀ := by
       replace hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) (volume.restrict (Ι a (s x₀))) :=
         Eventually.mono (ball_mem_nhds x₀ ε_pos) fun x hx ↦ hF_meas_ball hx ha hsx₀
-      replace hF_int : IntervalIntegrable (F x₀) volume a (s x₀) := hF_int_ball hx₀ ha hsx₀
-      exact (hasFDerivAt_integral_of_dominated_loc_of_lip_interval ε_pos hF_meas hF_int hF'_meas
+      exact (hasFDerivAt_integral_of_dominated_loc_of_lip_interval ε_pos hF_meas
+        (hF_int_ball hx₀ ha hsx₀) hF'_meas
         (ae_restrict_of_ae_restrict_of_subset (ordConnected_Ioo.uIoc_subset ha hsx₀) h_lipsch)
         (bound_int ha hsx₀) h_diff).2
     have D₂ : HasFDerivAt (fun x ↦ φ x₀ (s x)) ((toSpanSingleton ℝ (F x₀ (s x₀))).comp s') x₀ := by
@@ -326,8 +325,7 @@ theorem hasFDerivAt_parametric_primitive_of_lip' (F : H → ℝ → E) (F' : ℝ
           ⟨Ioo a₀ b₀, Ioo_nhds, bound_integrable.1⟩
         refine (intervalIntegral.integral_hasDerivAt_right (bound_int ha hsx₀)
           M bound_cont).hasFDerivAt.isBigO_sub.congr' ?_ EventuallyEq.rfl
-        filter_upwards [Ioo_nhds]
-        rintro t ht
+        filter_upwards [Ioo_nhds] with t ht
         rw [intervalIntegral.integral_interval_sub_left (bound_int ha ht) (bound_int ha hsx₀)]
       have O₂ : (fun x ↦ ‖x - x₀‖) =O[𝓝 x₀] fun x ↦ ‖x - x₀‖ := isBigO_refl _ _
       have O₃ : (fun x ↦ ∫ t : ℝ in s x₀..s x, F x t - F x₀ t) =O[𝓝 x₀] fun x ↦
