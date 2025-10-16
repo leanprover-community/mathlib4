@@ -58,3 +58,6 @@ attribute [data_synth]
   hasFDerivAt_inv
   HasFDerivAt.div_const
   HasFDerivAt.fun_div
+  HasFDerivAt.prod
+  HasFDerivAt.fst
+  HasFDerivAt.snd
