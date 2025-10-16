@@ -217,11 +217,14 @@ namespace ContinuousLinearMap
 /-- A continuous linear endomorphism `T` of a Hilbert space is **positive** if it is symmetric
   and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
 def IsPositive (T : E →L[𝕜] E) : Prop :=
-  (∀ x y, ⟪T x, y⟫ = ⟪x, T y⟫) ∧ ∀ x, 0 ≤ T.reApplyInnerSelf x
+  T.IsSymmetric ∧ ∀ x, 0 ≤ T.reApplyInnerSelf x
+
+theorem isPositive_def {T : E →L[𝕜] E} :
+    T.IsPositive ↔ T.IsSymmetric ∧ ∀ x, 0 ≤ T.reApplyInnerSelf x := Iff.rfl
 
 /-- In a complete space, a continuous linear endomorphism `T` is **positive** if it is
 symmetric and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
-theorem isPositive_def [CompleteSpace E] {T : E →L[𝕜] E} :
+theorem isPositive_def' [CompleteSpace E] {T : E →L[𝕜] E} :
     T.IsPositive ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ T.reApplyInnerSelf x := by
   simp [IsPositive, isSelfAdjoint_iff_isSymmetric, LinearMap.IsSymmetric]
 
@@ -305,7 +308,7 @@ theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 
 @[aesop safe apply]
 theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[𝕜] E}
     (hT : T.IsPositive) (S : E →L[𝕜] F) : (S ∘L T ∘L S†).IsPositive := by
-  refine isPositive_def.mpr ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
+  refine isPositive_def'.mpr ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
