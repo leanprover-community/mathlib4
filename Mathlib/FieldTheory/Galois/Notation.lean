@@ -39,7 +39,7 @@ partial def delabGal : Delab := whenPPOption getPPNotation do
   guard <| (← getExpr).isAppOfArity ``AlgEquiv 8
   let [u, v, _] := (← getExpr).getAppFn'.constLevels! | failure
   let #[R, A, B, _, _, _, _, _] := (← getExpr).getAppArgs | failure
-  guard (A == B) -- We require that A = B syntatically, not merely defeq.
+  guard (A == B) -- We require that A = B syntactically, not merely defeq.
   let some _ ← Meta.synthInstance? (.app (.const ``Field [u]) R) | failure
   let some _ ← Meta.synthInstance? (.app (.const ``Field [v]) A) | failure
   `(Gal($(← withNaryArg 1 <| delab)/$(← withNaryArg 0 <| delab)))
