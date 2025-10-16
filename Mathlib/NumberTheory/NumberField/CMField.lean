@@ -489,7 +489,7 @@ open IntermediateField in
 /--
 A totally complex field that has a unique complex conjugation is CM.
 -/
-theorem _root_.NumberField.IsCMField.of_forall_isConj {σ : K ≃ₐ[ℚ] K}
+theorem _root_.NumberField.IsCMField.of_forall_isConj {σ : Gal(K/ℚ)}
     (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) : IsCMField K := by
   have : IsTotallyReal (fixedField (Subgroup.zpowers σ)) := ⟨fun w ↦ by
     obtain ⟨W, rfl⟩ := w.comap_surjective (K := K)
@@ -506,10 +506,10 @@ theorem _root_.NumberField.IsCMField.of_forall_isConj {σ : K ≃ₐ[ℚ] K}
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/
-instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
+instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative Gal(K/ℚ)] :
     IsCMField K := by
   let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
-  obtain ⟨σ, hσ₁⟩ : ∃ σ : K ≃ₐ[ℚ] K, ComplexEmbedding.IsConj φ σ :=
+  obtain ⟨σ, hσ₁⟩ : ∃ σ : Gal(K/ℚ), ComplexEmbedding.IsConj φ σ :=
     exists_isConj_of_isRamified <|
       isRamified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
   have hσ₂ : ∀ (φ : K →+* ℂ), ComplexEmbedding.IsConj φ σ := by

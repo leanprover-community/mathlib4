@@ -17,8 +17,8 @@ This is true as long as `C` is additive.
 Here, `C ⥤ₗ D` is the category of finite-limits-preserving functors from `C` to `D`.
 
 To construct a functor from `C ⥤ₗ Type v` to `C ⥤ₗ AddCommGrpCat.{v}`, notice that a left-exact
-functor `F : C ⥤ Type v` induces a functor `CommGrp_ C ⥤ CommGrp_ (Type v)`. But `CommGrp_ C` is
-equivalent to `C`, and `CommGrp_ (Type v)` is equivalent to `AddCommGrpCat.{v}`, so we turn this
+functor `F : C ⥤ Type v` induces a functor `CommGrp C ⥤ CommGrp (Type v)`. But `CommGrp C` is
+equivalent to `C`, and `CommGrp (Type v)` is equivalent to `AddCommGrpCat.{v}`, so we turn this
 into a functor `C ⥤ AddCommGrpCat.{v}`. By construction, composing with the forgetful
 functor recovers the functor we started with, so since the forgetful functor reflects finite
 limits and `F` preserves finite limits, our constructed functor also preserves finite limits. It
@@ -75,7 +75,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
       (F ⋙ forget AddCommGrpCat).mapCommGrp.obj (Preadditive.commGrpEquivalence.functor.obj X) := by
   letI : (F ⋙ forget AddCommGrpCat).Braided := .ofChosenFiniteProducts _
   letI : F.Monoidal := .ofChosenFiniteProducts _
-  refine CommGrp_.mkIso Multiplicative.toAdd.toIso (by
+  refine CommGrp.mkIso Multiplicative.toAdd.toIso (by
     erw [Functor.mapCommGrp_obj_grp_one]
     cat_disch) ?_
   dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_coe, -forget_map]
