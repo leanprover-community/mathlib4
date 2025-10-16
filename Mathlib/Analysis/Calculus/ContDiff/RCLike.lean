@@ -140,14 +140,16 @@ lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : Local
   rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
   use K, t
 
--- should be easy
+-- lemma: if f is locally Lipschitz on a compact set s, it is Lipschitz
+-- why? at each point, you have a neighbourhood on which f is Lipschitz with some constant Kᵢ
+-- finitely many of these neighbourhoods cover s
+-- taking the maximum of the corresponding Kᵢ gives you a Lipschitz constant on K
+
+-- missing lemma, should be easy (but irrelevant for this PR)
 lemma LipschitzOnWith.closure {K}
     (hcont : ContinuousOn f (closure s)) (hf : LipschitzOnWith K f s) :
     LipschitzOnWith K f (closure s) := by
   sorry
-
--- locally Lipschitz on K and K compact => Lipschitz on K!
--- plus global versions!
 
 /-- If `f` is `C¹` on a convex compact set `s`, it is Lipschitz on `s`. -/
 theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiffOn ℝ n f s)
