@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Julian Kuelshammer
+Authors: Julian Kuelshammer, Weijie Jiang
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
@@ -187,3 +187,74 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = c
       aesop
 
 end Tree
+
+/-!
+# Schroder numbers
+
+The Schröder numbers (http://oeis.org/A006318) are a sequence of integers that appear in various
+combinatorial contexts.
+
+## Main definitions
+* `largeSchroder n`: the `n`th large Schroder number, defined recursively as
+  `largeSchroder (n + 1) = largeSchroder n +
+    ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)`.
+* `smallSchroder n`: the `n`th small Schroder number, defined as
+  `smallSchroder n = largeSchroder n / 2` for `n ≠ 1` and `smallSchroder 1 = 1`.
+-/
+
+open Nat
+
+def largeSchroder : ℕ → ℕ
+  | 0 => 1
+  | n + 1 =>
+    largeSchroder n +
+      ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)
+
+@[simp]
+theorem largeSchroder_zero : largeSchroder 0 = 1 := by
+  simp [largeSchroder]
+
+@[simp]
+theorem largeSchroder_one : largeSchroder 1 = 2 := by
+  simp [largeSchroder]
+
+@[simp]
+theorem largeSchroder_two : largeSchroder 2 = 6 := by
+  simp [largeSchroder]
+
+theorem largeSchroder_succ (n : ℕ) :
+  largeSchroder (n + 1) = largeSchroder n +
+    ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i) := by
+  rw [largeSchroder]
+
+theorem largeSchroder_succ' (n : ℕ) :
+  largeSchroder (n + 1) = largeSchroder n +
+    ∑ ij ∈ antidiagonal n, largeSchroder ij.1 * largeSchroder ij.2 := by
+  rw [largeSchroder_succ, Nat.sum_antidiagonal_eq_sum_range_succ
+      (fun x y => largeSchroder x * largeSchroder y) n, sum_range]
+
+theorem largeSchroder_succ_range (n : ℕ) :
+  largeSchroder (n + 1) = largeSchroder n +
+    ∑ i ∈ Finset.range (n + 1), largeSchroder i * largeSchroder (n - i) := by
+  rw [largeSchroder_succ, sum_range]
+
+def smallSchroder (n : ℕ) : ℚ :=
+  match n with
+  | 0 => 0
+  | 1 => 1
+  | _ => largeSchroder n / 2
+
+@[simp]
+theorem smallSchroder_zero : smallSchroder 0 = 0 := by
+  simp [smallSchroder]
+
+@[simp]
+theorem smallSchroder_one : smallSchroder 1 = 1 := by
+  simp [smallSchroder]
+
+@[simp]
+theorem largeSchroder_eq_smallSchroder_mul_two {n : ℕ} (h : 2 ≤ n) :
+  largeSchroder n = smallSchroder n * 2 := by
+  have : n ≠ 0 ∧ n ≠ 1 := by omega
+  obtain ⟨_, _⟩ := this
+  simp [smallSchroder]
