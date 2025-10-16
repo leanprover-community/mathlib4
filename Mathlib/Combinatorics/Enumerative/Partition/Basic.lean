@@ -217,6 +217,14 @@ def distincts (n : ℕ) : Finset (Partition n) :=
 def oddDistincts (n : ℕ) : Finset (Partition n) :=
   odds n ∩ distincts n
 
+/-- The finset of those partitions in which every part satisfies a certain condition. -/
+def restricted (n : ℕ) (p : ℕ → Prop) [DecidablePred p] : Finset (n.Partition) :=
+  Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, p i
+
+/-- The finset of those partitions in which every part is used less than `m` times. -/
+def countRestricted (n : ℕ) (m : ℕ) : Finset (n.Partition) :=
+  Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, x.parts.count i < m
+
 end Partition
 
 end Nat
