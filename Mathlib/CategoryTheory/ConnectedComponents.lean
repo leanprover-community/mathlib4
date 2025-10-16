@@ -127,7 +127,7 @@ instance (j : ConnectedComponents J) : IsConnected j.Component := by
     (fun x y _ _ h => ?_) _ _ h₁₂ hl₁ _
   exact zag_of_zag_obj (ConnectedComponents.ι _) h
 
-/-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the
+/-- The disjoint union of `J`'s connected components, written explicitly as a sigma-type with the
 category structure.
 This category is equivalent to `J`.
 -/
