@@ -79,13 +79,13 @@ lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y
 open scoped ComplexOrder
 open Module
 
-/-- This holds in any inner product space, but we need this to set up the instance.
+/- This holds in any inner product space, but we need this to set up the instance.
 This is a helper lemma for showing that this inner product is positive definite. -/
 private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E ⊗[𝕜] F)
-    (be : OrthonormalBasis ι 𝕜 E) (bf : OrthonormalBasis ι' 𝕜 F) :
-    inner 𝕜 x x = ∑ i, ‖(be.toBasis.tensorProduct bf.toBasis).repr x i‖ ^ 2 := by
+    (e : OrthonormalBasis ι 𝕜 E) (f : OrthonormalBasis ι' 𝕜 F) :
+    inner 𝕜 x x = ∑ i, ‖(e.toBasis.tensorProduct f.toBasis).repr x i‖ ^ 2 := by
   classical
-  conv_lhs => rw [x.basis_sum_repr be.toBasis bf.toBasis]
+  conv_lhs => rw [x.basis_sum_repr e.toBasis f.toBasis]
   simp only [inner_def, map_sum, LinearMap.sum_apply]
   simp [OrthonormalBasis.inner_eq_ite, ← Finset.sum_product', RCLike.mul_conj]
 
@@ -94,15 +94,14 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   The way we prove this is by noting that every element of a tensor product lies
   in the tensor product of some finite submodules.
   So for `x : E ⊗ F`, there exists finite submodules `E', F'` such that `x ∈ mapIncl E' F'`.
-  And so the rest then follows from the above lemma `inner_self`.
+  And so the rest then follows from the above lemmas `inner_mapIncl_mapIncl` and `inner_self`.
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   obtain ⟨y : E' ⊗ F', rfl : mapIncl E' F' y = x⟩ := Set.singleton_subset_iff.mp hz
-  rw [inner_mapIncl_mapIncl] at hx
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
   have (i) (j) : (e.toBasis.tensorProduct f.toBasis).repr y (i, j) = 0 := by
-    rw [inner_self y e f, RCLike.ofReal_eq_zero,
+    rw [inner_mapIncl_mapIncl, inner_self y e f, RCLike.ofReal_eq_zero,
       Finset.sum_eq_zero_iff_of_nonneg fun _ _ => by simp] at hx
     simpa using hx (i, j)
   have : y = 0 := by simp [(e.toBasis.tensorProduct f.toBasis).ext_elem_iff, this]
@@ -113,7 +112,7 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   /-
   Similarly to the above proof, for `x : E ⊗ F`, there exists finite submodules `E', F'` such that
   `x ∈ mapIncl E' F'`.
-  And so the rest then follows from the above lemma `inner_self`.
+  And so the rest then follows from the above lemmas `inner_mapIncl_mapIncl` and `inner_self`.
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
   obtain ⟨y, rfl⟩ := Set.singleton_subset_iff.mp hz
@@ -165,9 +164,8 @@ theorem _root_.RCLike.inner_tmul_eq (a b c d : 𝕜) :
 
 /-- Given `x, y : E ⊗ F`, `x = y` iff `⟪x, a ⊗ₜ b⟫ = ⟪y, a ⊗ₜ b⟫` for all `a, b`. -/
 protected theorem ext_iff_inner_right {x y : E ⊗[𝕜] F} :
-    x = y ↔ ∀ a b, inner 𝕜 x (a ⊗ₜ[𝕜] b) = inner 𝕜 y (a ⊗ₜ[𝕜] b) := by
-  rw [← innerSL_inj (𝕜 := 𝕜), ← ContinuousLinearMap.coe_inj, TensorProduct.ext_iff]
-  simp [LinearMap.ext_iff]
+    x = y ↔ ∀ a b, inner 𝕜 x (a ⊗ₜ[𝕜] b) = inner 𝕜 y (a ⊗ₜ[𝕜] b) :=
+  ⟨fun h _ _ ↦ h ▸ rfl, fun h ↦ innerSL_inj.mp <| ContinuousLinearMap.coe_inj.mp <| ext' h⟩
 
 /-- Given `x, y : E ⊗ F`, `x = y` iff `⟪a ⊗ₜ b, x⟫ = ⟪a ⊗ₜ b, y⟫` for all `a, b`. -/
 protected theorem ext_iff_inner_left {x y : E ⊗[𝕜] F} :
