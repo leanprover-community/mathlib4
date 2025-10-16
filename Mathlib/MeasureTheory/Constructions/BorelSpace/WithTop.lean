@@ -3,7 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.Order.WithTop
 
 /-!
@@ -54,16 +54,9 @@ lemma measurable_untopA [Nonempty ι] : Measurable (WithTop.untopA (α := ι)) :
 lemma measurable_coe : Measurable (fun x : ι ↦ (x : WithTop ι)) := continuous_coe.measurable
 
 @[fun_prop]
-lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} [SecondCountableTopology ι]
-    {f : α → ι} (hf : Measurable f) :
-    Measurable (fun x ↦ (f x : WithTop ι)) := by
-  refine measurable_of_Iic fun i ↦ ?_
-  cases i with
-  | top => simp
-  | coe i =>
-    have : ((fun x ↦ ↑(f x)) ⁻¹' Set.Iic (i : WithTop ι)) = (f ⁻¹' Set.Iic i) := by ext; simp
-    rw [this]
-    exact hf measurableSet_Iic
+lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} {f : α → ι} (hf : Measurable f) :
+    Measurable (fun x ↦ (f x : WithTop ι)) :=
+  measurable_coe.comp hf
 
 @[fun_prop]
 lemma _root_.Measurable.untopD {α} {mα : MeasurableSpace α} (d : ι)

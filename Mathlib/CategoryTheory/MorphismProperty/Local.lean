@@ -43,7 +43,7 @@ variable (K : Precoverage C)
 
 /--
 A property of morphisms `P` in `C` is local at the target with respect to the precoverage `K` if
-it respects ismorphisms, and:
+it respects isomorphisms, and:
 `P` holds for `f : X ⟶ Y` if and only if it holds for the restrictions of `f` to `Uᵢ` for a
 `0`-hypercover `{Uᵢ}` of `Y` in the precoverage `K`.
 
@@ -117,7 +117,7 @@ alias iff_of_zeroHypercover_target := IsLocalAtTarget.iff_of_zeroHypercover
 
 /--
 A property of morphisms `P` in `C` is local at the source with respect to the precoverage `K` if
-it respects ismorphisms, and:
+it respects isomorphisms, and:
 `P` holds for `f : X ⟶ Y` if and only if it holds for the restrictions of `f` to `Uᵢ` for a
 `0`-hypercover `{Uᵢ}` of `X` in the precoverage `K`.
 
