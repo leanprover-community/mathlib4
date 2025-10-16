@@ -342,7 +342,7 @@ lemma card_stabilizer [IsGalois k K] :
   · rwa [← not_isUnramified_iff_card_stabilizer_eq_two]
 
 lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified k w) :
-    Even (Nat.card <| Gal(K/k)) := by
+    Even (Nat.card Gal(K/k)) := by
   by_cases H : Finite Gal(K/k)
   · cases nonempty_fintype Gal(K/k)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
@@ -352,7 +352,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
     exact H (Nat.finite_of_card_ne_zero e)
 
 lemma even_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified k w) :
-    Even (Nat.card <| Gal(K/k)) :=
+    Even (Nat.card Gal(K/k)) :=
   even_nat_card_aut_of_not_isUnramified hw
 
 lemma even_finrank_of_not_isUnramified [IsGalois k K]
@@ -380,7 +380,7 @@ lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
 
 lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K]
     {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedIn K) :
-    Even (Nat.card <| Gal(K/k)) := by
+    Even (Nat.card Gal(K/k)) := by
   obtain ⟨v, rfl⟩ := comap_surjective (K := K) w
   rw [isUnramifiedIn_comap] at hw
   exact even_card_aut_of_not_isUnramified hw
@@ -495,7 +495,7 @@ lemma NumberField.InfinitePlace.isUnramifiedIn [IsUnramifiedAtInfinitePlaces k K
 variable {K}
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K]
-    (h : Odd (Nat.card <| Gal(K/k))) : IsUnramifiedAtInfinitePlaces k K :=
+    (h : Odd (Nat.card Gal(K/k))) : IsUnramifiedAtInfinitePlaces k K :=
   ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_finrank [IsGalois k K]
