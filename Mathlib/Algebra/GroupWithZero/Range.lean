@@ -152,9 +152,8 @@ lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
 
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp
 
-@[simp]
 lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) = f a := by
-  simp [restrict₀_apply]
+  simp only [restrict₀_apply, embedding_apply]
   split_ifs <;>
   simp_all
 
