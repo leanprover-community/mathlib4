@@ -699,7 +699,7 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
-  omega
+  cutsat
 
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
@@ -1010,6 +1010,12 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
   exact (P.mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hpb)).trans <| Iff.intro
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
+
+variable {R} (A) in
+theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
+    [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    primesOverFinset p A = {IsLocalRing.maximalIdeal A} := by
+  rw [← Finset.coe_eq_singleton, coe_primesOverFinset hp0, IsLocalRing.primesOver_eq A hp0]
 
 namespace IsDedekindDomain.HeightOneSpectrum
 

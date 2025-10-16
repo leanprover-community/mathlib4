@@ -18,11 +18,10 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
-  It roughly states that
-  `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant `b ∈ (0,1)`.
 * `sumTransform`: The transformation which turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
+* `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
+  `n^p (1 + ∑ g(u) / u^(p+1))`
 
 
 ## References
@@ -474,9 +473,9 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
 ### Akra-Bazzi exponent `p`
 
 Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
-`∑ a_i b_i^p = 1`.  This section shows the existence and uniqueness of this exponent `p` for any
-`R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
-namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
+`∑ a_i b_i^p = 1`. This section shows the existence and uniqueness of this exponent `p` for any
+`R : AkraBazziRecurrence`. These results are used in the next section to define the asymptotic
+bound expression. -/
 
 @[continuity, fun_prop]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -535,8 +534,9 @@ lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
 ### The sum transform
 
 This section defines the "sum transform" of a function `g` as
-`∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`,
-and uses it to define `asympBound` as the bound satisfied by an Akra-Bazzi recurrence.
+`∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`, and uses it to define `asympBound` as the bound satisfied
+by an Akra-Bazzi recurrence, namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. Here, the exponent `p`
+refers to the one established in the previous section.
 
 Several properties of the sum transform are then proven.
 -/
@@ -599,10 +599,10 @@ lemma eventually_atTop_sumTransform_le :
          _ ≤ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
           gcongr with u hu
           rw [Finset.mem_Ico] at hu
-          have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+          have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
           refine hn₂ u ?_
           rw [Set.mem_Icc]
-          refine ⟨?_, by norm_cast; omega⟩
+          refine ⟨?_, by norm_cast; cutsat⟩
           calc c₁ * n ≤ r i n := by exact hn₁ i
                     _ ≤ u := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
@@ -631,10 +631,10 @@ lemma eventually_atTop_sumTransform_le :
       _ ≤ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u     := by exact_mod_cast hu'.1
       _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
@@ -678,10 +678,10 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u     := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
@@ -712,10 +712,10 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
