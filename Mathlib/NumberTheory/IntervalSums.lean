@@ -149,7 +149,7 @@ instance : (IocFilter ℤ).LeAtTop where
 variable {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α] [ContinuousMul α]
 
 @[to_additive]
-lemma multipliable_IcoFilter_of_multiplible_SymmetricConditional
+lemma multipliable_IcoFilter_of_multiplible_symCondInt
     (hf : Multipliable f symCondInt) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     Multipliable f (IcoFilter ℤ) := by
   have := (hf.hasProd)
@@ -164,7 +164,7 @@ lemma multipliable_IcoFilter_of_multiplible_SymmetricConditional
   simpa using hf2
 
 @[to_additive]
-lemma tprod_SymmetricConditional_eq_tprod_IcoFilter [T2Space α]
+lemma tprod_symCondInt_eq_tprod_IcoFilter [T2Space α]
     (hf : Multipliable f symCondInt) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     ∏'[symCondInt] b, f b = ∏'[IcoFilter ℤ] b, f b := by
   have := (hf.hasProd)
