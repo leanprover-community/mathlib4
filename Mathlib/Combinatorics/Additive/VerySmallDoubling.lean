@@ -295,7 +295,7 @@ lemma smul_inv_mul_eq_inv_mul_opSMul (h : #(A * A) < (3 / 2 : ℚ) * #A) (ha : a
   · rw [subset_smul_finset_iff, ← op_inv]
     calc
       a •> (A⁻¹ * A) <• a⁻¹ ⊆ a •> (A⁻¹ * A) * A⁻¹ := op_smul_finset_subset_mul (by simpa)
-      _ ⊆ A * (A⁻¹ * A) * A⁻¹ := by gcongr; exact smul_finset_subset_mul (by simpa)
+      _ ⊆ A * (A⁻¹ * A) * A⁻¹ := by grw [smul_finset_subset_mul (by simpa)]
       _ = A⁻¹ * A := by
         simp_rw [← coe_inj, coe_mul]
         rw [← mul_assoc, ← invMulSubgroup_eq_mul_inv _ h, mul_assoc,
@@ -303,7 +303,7 @@ lemma smul_inv_mul_eq_inv_mul_opSMul (h : #(A * A) < (3 / 2 : ℚ) * #A) (ha : a
   · rw [subset_smul_finset_iff]
     calc
       a⁻¹ •> ((A⁻¹ * A) <• a) ⊆ A⁻¹ * (A⁻¹ * A) <• a := smul_finset_subset_mul (by simpa)
-      _ ⊆ A⁻¹ * ((A⁻¹ * A) * A) := by gcongr; exact op_smul_finset_subset_mul (by simpa)
+      _ ⊆ A⁻¹ * ((A⁻¹ * A) * A) := by grw [op_smul_finset_subset_mul (by simpa)]
       _ = A⁻¹ * A := by
         rw [← mul_inv_eq_inv_mul_of_doubling_lt_two <| weaken_doubling h]
         simp_rw [← coe_inj, coe_mul]
@@ -535,7 +535,7 @@ private lemma expansion_submodularity :
   have : K * #(A ∩ B) + K * #(A ∪ B) = K * #A + K * #B := by simp only [← mul_add, this]
   have : (#(A * S ∩ (B * S)) + #(A * S ∪ B * S) : ℝ) = #(A * S) + #(B * S) :=
     mod_cast card_inter_add_card_union (A * S) (B * S)
-  have : (#((A ∩ B) * S) : ℝ) ≤ #(A * S ∩ (B * S)) := by gcongr; exact inter_mul_subset
+  have : (#((A ∩ B) * S) : ℝ) ≤ #(A * S ∩ (B * S)) := by grw [inter_mul_subset]
   simp_rw [expansion, union_mul]
   nlinarith
 
@@ -599,12 +599,10 @@ private lemma IsFragment.inter (hK : K ≤ 1) (hS : S.Nonempty) (hA : IsFragment
 private lemma IsAtom.eq_of_inter_nonempty (hK : K ≤ 1) (hS : S.Nonempty)
     (hA : IsAtom K S A) (hB : IsAtom K S B) (hAB : (A ∩ B).Nonempty) : A = B := by
   replace hAB := hA.isFragment.inter hK hS hB.isFragment hAB
-  have := hA.2 hAB
-  have := hB.2 hAB
-  replace hA := eq_of_subset_of_card_le inter_subset_left <| hA.2 hAB <| by
-    gcongr; exact inter_subset_left
-  replace hB := eq_of_subset_of_card_le inter_subset_right <| hB.2 hAB <| by
-    gcongr; exact inter_subset_right
+  replace hA := hA.2 hAB <| by grw [inter_subset_left]
+  replace hB := hB.2 hAB <| by grw [inter_subset_right]
+  replace hA := eq_of_subset_of_card_le inter_subset_left hA
+  replace hB := eq_of_subset_of_card_le inter_subset_right hB
   exact hA.symm.trans hB
 
 /-- For `K < 1` and `S ⊆ G` finite and nonempty, the value of connectivity is attained by a
