@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Subpresheaf.Equalizer
 /-!
 # Horns
 
-This file introduce horns `Λ[n, i]`.
+This file introduces horns `Λ[n, i]`.
 
 -/
 
