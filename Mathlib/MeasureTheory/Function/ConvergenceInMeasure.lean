@@ -169,19 +169,13 @@ theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable_edist [IsFiniteMeas
   rw [Set.mem_compl_iff, Set.notMem_setOf_iff, edist_comm, not_le]
   exact hN n hn x hx
 
-/-- Auxiliary lemma for `tendstoInMeasure_of_tendsto_ae`. -/
-theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable [IsFiniteMeasure μ]
-    (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
-    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g :=
-  tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable_edist (fun n ↦ (hf n).edist hg) hfg
-
 /-- Convergence a.e. implies convergence in measure in a finite measure space. -/
 theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
   have hg : AEStronglyMeasurable g μ := aestronglyMeasurable_of_tendsto_ae _ hf hfg
   refine TendstoInMeasure.congr (fun i => (hf i).ae_eq_mk.symm) hg.ae_eq_mk.symm ?_
-  refine tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable
-    (fun i => (hf i).stronglyMeasurable_mk) hg.stronglyMeasurable_mk ?_
+  refine tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable_edist
+    (fun n ↦ (hf n).stronglyMeasurable_mk.edist hg.stronglyMeasurable_mk) ?_
   have hf_eq_ae : ∀ᵐ x ∂μ, ∀ n, (hf n).mk (f n) x = f n x :=
     ae_all_iff.mpr fun n => (hf n).ae_eq_mk.symm
   filter_upwards [hf_eq_ae, hg.ae_eq_mk, hfg] with x hxf hxg hxfg
