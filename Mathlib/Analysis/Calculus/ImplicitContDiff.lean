@@ -121,9 +121,8 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   rw [nhds_prod_eq, eventually_swap_iff] at this hfst
   apply this.curry.self_of_nhds.mp
   apply hfst.curry.self_of_nhds.mono
-  intro x
   simp_rw [Prod.swap_prod_mk]
-  intro h1 h2
+  intro x h1 h2
   rw [← h2]
   congr 1
   ext
