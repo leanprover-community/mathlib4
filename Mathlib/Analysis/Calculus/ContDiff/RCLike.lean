@@ -127,23 +127,18 @@ theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDif
     ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
   (hf.hasStrictFDerivAt le_rfl).exists_lipschitzOnWith
 
-/-- If `f` is `C^1` on a convex set `s`, it is locally Lipschitz on `s`. -/
+/-- If `f` is `C¹` on a convex set `s`, it is locally Lipschitz on `s`. -/
 lemma ContDiffOn.locallyLipschitzOn {f : E → F} {s : Set E} (hs : Convex ℝ s)
     (hf : ContDiffOn ℝ 1 f s) : LocallyLipschitzOn s f := by
   intro x hx
   obtain ⟨K, t, ht, hf⟩ := ContDiffWithinAt.exists_lipschitzOnWith (hf x hx) hs
   use K, t
 
-/-- If `f` is `C^1`, it is locally Lipschitz. -/
+/-- If `f` is `C¹`, it is locally Lipschitz. -/
 lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : LocallyLipschitz f := by
   intro x
   rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
   use K, t
-
--- lemma: if f is locally Lipschitz on a compact set s, it is Lipschitz
--- why? at each point, you have a neighbourhood on which f is Lipschitz with some constant Kᵢ
--- finitely many of these neighbourhoods cover s
--- taking the maximum of the corresponding Kᵢ gives you a Lipschitz constant on K
 
 -- missing lemma, should be easy (but irrelevant for this PR)
 lemma LipschitzOnWith.closure {K}
@@ -151,33 +146,22 @@ lemma LipschitzOnWith.closure {K}
     LipschitzOnWith K f (closure s) := by
   sorry
 
+-- TODO: move to LocallyLipschitz
+-- lemma: if f is locally Lipschitz on a compact set s, it is Lipschitz
+-- why? at each point, you have a neighbourhood on which f is Lipschitz with some constant Kᵢ
+-- finitely many of these neighbourhoods cover s
+-- taking the maximum of the corresponding Kᵢ gives you a Lipschitz constant on K
+lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : E → F} (hs : IsCompact s)
+  (hf : LocallyLipschitzOn s f) : ∃ K, LipschitzOnWith K f s := sorry
+
 /-- If `f` is `C¹` on a convex compact set `s`, it is Lipschitz on `s`. -/
 theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiffOn ℝ n f s)
-    (hn : 1 ≤ n) (hs : Convex ℝ s) (hs' : IsCompact s) (hs'' : UniqueDiffOn ℝ s) :
+    (hn : 1 ≤ n) (hs : Convex ℝ s) (hs' : IsCompact s) :
     ∃ K, LipschitzOnWith K f s := by
-  -- Use
-  have : ContinuousOn (fderiv ℝ f) (interior s) := by
-    have : ContDiffOn ℝ n f (interior s) := hf.mono interior_subset
-    apply this.continuousOn_fderiv_of_isOpen isOpen_interior hn
-  -- deduce: f is lipschitz on (closure (interior s))
-  -- does that include s?? no!
+  apply LocallyLipschitzOn.exists_lipschitzOnWith_of_compact hs'
+  apply (hf.of_le hn).locallyLipschitzOn hs
 
-  obtain ⟨M, M_nonneg, hM⟩ := (bddAbove_iff_exists_ge 0).mp
-    (hs'.image_of_continuousOn (hf.continuousOn_fderivWithin hs'' hn).norm).bddAbove
-  simp_rw [forall_mem_image] at hM
-  use ⟨M, M_nonneg⟩
-  exact Convex.lipschitzOnWith_of_nnnorm_fderivWithin_le (hf.differentiableOn hn) hM hs
-
-/-- A `C¹` function is Lipschitz on each convex compact set. -/
-theorem ContDiff.exists_lipschitzOnWith {s : Set E} {f : E → F} {n}
-    (hf : ContDiff ℝ n f) (hn : 1 ≤ n) (hs : Convex ℝ s) (hs' : IsCompact s) :
-    ∃ K, LipschitzOnWith K f s := by
-  have : UniqueDiffOn ℝ s := by
-    refine uniqueDiffOn_convex hs ?hs
-    sorry -- `s` has non-empty interior: is an extra condition!
-  exact hf.contDiffOn.exists_lipschitzOnWith hn hs hs' this
-
-/-- A `C^1` function with compact support is Lipschitz. -/
+/-- A `C^n` function with compact support is Lipschitz. -/
 theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}
     (hf : HasCompactSupport f) (h'f : ContDiff 𝕂 n f) (hn : 1 ≤ n) :
     ∃ C, LipschitzWith C f := by
