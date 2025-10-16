@@ -51,7 +51,7 @@ theorem mk_zero : mk K (0 : L) = 0 :=
 theorem mk_eq_zero_iff (x : L) : mk K x = 0 ↔ x = 0 := by
   rw [eq_comm (b := 0), ← mk_zero, mk_eq_mk, isConjRoot_zero_iff_eq_zero]
 
-instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] : DecidableEq (ConjRootClass K L) :=
+instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] : DecidableEq (ConjRootClass K L) :=
   Quotient.decidableEq (d := IsConjRoot.decidable)
 
 /-- `c.carrier` is the set of conjugates represented by `c`. -/
@@ -97,15 +97,15 @@ theorem exists_mem_carrier_add_eq_zero (x y : ConjRootClass K L) :
     induction y with
     | h y => exact ⟨-y, mk_neg y, y, rfl, neg_add_cancel _⟩
 
-instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootClass K L) :
+instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (c : ConjRootClass K L) :
     DecidablePred (· ∈ c.carrier) := fun x ↦
   decidable_of_iff (mk K x = c) (by simp)
 
-instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootClass K L) :
+instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (c : ConjRootClass K L) :
     Fintype c.carrier :=
   Quotient.recOnSubsingleton c fun x =>
     .ofFinset
-      ((Finset.univ (α := L ≃ₐ[K] L)).image (· x))
+      ((Finset.univ (α := Gal(L/K))).image (· x))
       (fun _ ↦ by simp [← isConjRoot_iff_exists_algEquiv, ← mk_eq_mk])
 
 open Polynomial
